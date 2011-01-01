@@ -6,7 +6,7 @@ import imcode.server.user._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 
-
+// todo add security check, add editAndSave, add external UI
 class UserManager(app: ImcmsApplication) {
   val userSelect = new UserSelect
 
@@ -15,7 +15,7 @@ class UserManager(app: ImcmsApplication) {
 
     ui.miNew setCommand block {
       app.initAndShow(new OkCancelDialog("New user")) { dlg =>
-        let(dlg setMainContent new UserDialogContent) { c =>
+        dlg.mainUI = letert(new UserEditorUI) { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
             c.tslRoles.addAvailableItem(role.getId, role.getName)
           }
@@ -48,7 +48,7 @@ class UserManager(app: ImcmsApplication) {
    ui.miEdit setCommand block {
       whenSelected(ui.userSelectUI.tblUsers) { userId =>
         app.initAndShow(new OkCancelDialog("Edit user")) { dlg =>
-          let(dlg setMainContent new UserDialogContent) { c =>
+          let(dlg setMainContent new UserEditorUI) { c =>
             val user = roleMapper.getUser(userId.intValue)
             val userRoleIds = user.getRoleIds
 
@@ -100,18 +100,21 @@ class UserManager(app: ImcmsApplication) {
 
 
 class UserManagerUI(val userSelectUI: UserSelectUI) extends VerticalLayout with Spacing {
-  val menuBar = new MenuBar
-  val miNew = menuBar.addItem("Add new", null) // new ThemeResource("icons/16/document-add.png")
-  val miEdit = menuBar.addItem("Edit", null)   // new ThemeResource("icons/16/settings.png")
+  import com.imcode.imcms.vaadin.Theme.Icons._
 
-  addComponents(this, menuBar, userSelectUI)
+  val mb = new MenuBar
+  val miNew = mb.addItem("Add new", New16)
+  val miEdit = mb.addItem("Edit", Edit16)
+  val miHelp = mb.addItem("Help", Help16)
+
+  addComponents(this, mb, userSelectUI)
 }
 
 
 /**
  * Add/Edit user dialog content.
  */
-class UserDialogContent extends FormLayout {
+class UserEditorUI extends FormLayout {
   val txtLogin = new TextField("Username")
   val txtPassword = new TextField("4-16 characters") with Secret
   val txtVerifyPassword = new TextField("4-16 characters (retype)") with Secret
