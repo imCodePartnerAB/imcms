@@ -23,12 +23,6 @@ public class SystemData implements java.io.Serializable {
     /** The systemmessage */
     private String systemMessage;
 
-    /**
-     * Default language id.
-     * @see com.imcode.imcms.api.I18nLanguage
-     */
-    private Integer languageId;
-
 
     /** Get the startdocument **/
     public int getStartDocument() {
@@ -87,13 +81,5 @@ public class SystemData implements java.io.Serializable {
     /** Get the systemmessage */
     public void setSystemMessage(String systemMessage) {
 	this.systemMessage = systemMessage ;
-    }
-
-    public Integer getLanguageId() {
-        return languageId;
-    }
-
-    public void setLanguageId(Integer languageId) {
-        this.languageId = languageId;
     }
 }

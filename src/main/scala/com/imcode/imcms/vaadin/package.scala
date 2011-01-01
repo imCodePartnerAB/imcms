@@ -33,7 +33,7 @@ package object vaadin {
 
   implicit def fn0ToPropertyValueChangeListenerB(f: () => Unit) = propertyValueChangeListener { _ => f() }
 
-  def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
+  def addComponents(container: ComponentContainer, component: Component, components: Component*) = {
     component +: components foreach { c => container addComponent c }
     container
   }

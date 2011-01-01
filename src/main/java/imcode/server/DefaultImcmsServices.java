@@ -670,11 +670,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         String webMasterAddress = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 7", parameters, Utility.SINGLE_STRING_HANDLER));
         sd.setWebMasterAddress(webMasterAddress);
 
-        final Object[] parameters0 = new String[0];
-        String languageId = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 8", parameters, Utility.SINGLE_STRING_HANDLER));
-        sd.setLanguageId(Integer.parseInt(languageId));
-
-
         return sd;
     }
 

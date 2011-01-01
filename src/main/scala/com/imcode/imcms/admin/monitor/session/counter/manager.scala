@@ -97,8 +97,10 @@ class SessionCounterManagerUI extends VerticalLayout with Spacing with Undefined
   val miReset = mb.addItem("Reset", Delete16)
   val miHelp = mb.addItem("Help", Help16)
   val dataUI = new SessionCounterEditorUI
-  val rc = new ReloadableContentUI(dataUI)
+  val dataPanel = new Panel(new VerticalLayout with UndefinedSize with Margin) with UndefinedSize
+  val rc = new ReloadableContentUI(dataPanel)
 
+  dataPanel.addComponent(dataUI)
   addComponents(this, mb, rc)
 }
 
