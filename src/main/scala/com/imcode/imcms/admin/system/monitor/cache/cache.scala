@@ -1,5 +1,5 @@
 package com.imcode
-package imcms.admin.monitor.cache
+package imcms.admin.system.monitor.cache
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._

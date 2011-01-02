@@ -1,5 +1,5 @@
 package com.imcode
-package imcms.admin.monitor.session.counter
+package imcms.admin.system.monitor.session.counter
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._

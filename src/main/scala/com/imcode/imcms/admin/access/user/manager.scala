@@ -15,7 +15,7 @@ class UserManager(app: ImcmsApplication) {
 
     ui.miNew setCommand block {
       app.initAndShow(new OkCancelDialog("New user")) { dlg =>
-        dlg.mainUI = letert(new UserEditorUI) { c =>
+        dlg.mainUI = letret(new UserEditorUI) { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
             c.tslRoles.addAvailableItem(role.getId, role.getName)
           }

@@ -1,5 +1,5 @@
 package com.imcode
-package imcms.admin.settings.property
+package imcms.admin.system.settings.property
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._

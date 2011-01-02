@@ -20,7 +20,7 @@
     (com.vaadin.data Property Property$ValueChangeListener)
     ;(com.imcode.imcms.vaadin OkCancelDialog)
     ;(com.imcode.imcms.sysadmin.filemanager FileBrowser FileBrowserWithImagePreview)
-    (com.imcode.imcms.admin.filesystem FileBrowser)
+    (com.imcode.imcms.admin.file FileBrowser)
 
     (com.vaadin.data.util ObjectProperty FilesystemContainer)))
 

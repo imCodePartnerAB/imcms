@@ -103,10 +103,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   
   object Menu extends MenuItem {
     object About extends MenuItem(this)
-    object Settings extends MenuItem(this) {
-      object Languages extends MenuItem(this, Some(Done16))
-      object Properties extends MenuItem(this, Some(Done16))
-    }
+
     object Documents extends MenuItem(this) {
       object Categories extends MenuItem(this, Some(Done16))
       object Templates extends MenuItem(this, Some(Done16))
@@ -120,13 +117,17 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       object Roles extends MenuItem(this, Some(Done16))
       object IP_Access extends MenuItem(this, Some(Done16))
     }
-    object Statistics extends MenuItem(this) {
-      object SearchTerms extends MenuItem(this)
-      object Session extends MenuItem(this, Some(Done16))
-    }
-    object Filesystem extends MenuItem(this)
+    object Files extends MenuItem(this)
     object System extends MenuItem(this) {
-      object Cache extends MenuItem(this)  
+      object Settings extends MenuItem(this) {
+        object Languages extends MenuItem(this, Some(Done16))
+        object Properties extends MenuItem(this, Some(Done16))
+      }
+      object Monitor extends MenuItem(this) {
+        object SearchTerms extends MenuItem(this)
+        object Session extends MenuItem(this, Some(Done16))
+        object Cache extends MenuItem(this)
+      }
     }
   } 
 
@@ -239,20 +240,20 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
           e.getProperty.getValue match {
             case null | Menu.About => labelAbout
             
-            case Menu.Statistics.SearchTerms => searchTerms
+            case Menu.System.Monitor.SearchTerms => searchTerms
             case Menu.Documents.Categories => categories
-            case Menu.Settings.Languages => languagesPanel
-            case Menu.Settings.Properties => settingsProperties
-            case Menu.Statistics.Session => sessionMonitor
+            case Menu.System.Settings.Languages => languagesPanel
+            case Menu.System.Settings.Properties => settingsProperties
+            case Menu.System.Monitor.Session => sessionMonitor
             case Menu.Documents => documentsTable
             case Menu.Permissions.Roles => roles
             case Menu.Permissions.Users => users
             case Menu.Permissions.IP_Access => ipAccess
-            case Menu.Filesystem => filesystem
+            case Menu.Files => filesystem
             case Menu.Documents.Templates => templates
             case Menu.Documents.Structure => docStructure
             case Menu.Documents.Edit => docadmin
-            case Menu.System.Cache => systemCacheView 
+            case Menu.System.Monitor.Cache => systemCacheView
 
             case other => NA(other)
           })
@@ -418,11 +419,11 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 //
 //    new cache.View(Imcms.getDocumentMapper.getCahcingDocumentGetter)
 //  }
-  def systemCacheView = new com.imcode.imcms.admin.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
+  def systemCacheView = new com.imcode.imcms.admin.system.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
 
 
   lazy val languagesPanel = new VerticalLayout with Margin {
-    val manager = new com.imcode.imcms.admin.settings.language.LanguageManager(app)
+    val manager = new com.imcode.imcms.admin.system.settings.language.LanguageManager(app)
     val tabSheet = new TabSheet
     tabSheet.addTab(manager.ui, "Language", Tab32)
 
@@ -498,7 +499,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
 
   lazy val settingsProperties = new VerticalLayout with Margin {
-    val manager = new com.imcode.imcms.admin.settings.property.PropertyManagerManager(app)
+    val manager = new com.imcode.imcms.admin.system.settings.property.PropertyManagerManager(app)
     val tabSheet = new TabSheet
     tabSheet.addTab(manager.ui, "System Properties", Tab32)
 
@@ -509,7 +510,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
 
   lazy val sessionMonitor = new VerticalLayout with Margin {
-    val manager = new com.imcode.imcms.admin.monitor.session.counter.SessionCounterManager(app)
+    val manager = new com.imcode.imcms.admin.system.monitor.session.counter.SessionCounterManager(app)
     val tabSheet = new TabSheet
     tabSheet.addTab(manager.ui, "Counter", Tab32)
 
@@ -572,7 +573,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     addTab(new VerticalLayoutUI("File manager") {
       setSizeFull
 
-      addComponent(new com.imcode.imcms.admin.filesystem.FileManager ui)
+      addComponent(new com.imcode.imcms.admin.file.FileManager ui)
     })
   }
 
