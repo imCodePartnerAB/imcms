@@ -10,6 +10,7 @@ import imcms.dao.IPAccessDao
 import imcms.api.IPAccess
 import imcode.util.Utility.{ipLongToString, ipStringToLong}
 import com.vaadin.ui.Window.Notification
+import imcms.admin.access.user.UserSelectDialog
 
 // todo: ipv4; add/handle ipv6?
 // todo: Should select user from user select!!
@@ -69,16 +70,23 @@ class IPAccessManager(app: ImcmsApplication) {
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
       dlg.mainUI = letret(new IPAccessEditorUI) { c =>
+
         c.txtId.value = if (isNew) "" else id.toString
-        roleMapper.getAllUsers foreach { u => c.sltUser.addItem(Int box u.getId, u.getLoginName) }
-        ?(vo.getUserId) foreach { c.sltUser.select(_) }
+        c.userPickerUI.txtLoginName.value = (?(vo.getUserId) map { roleMapper getUser _.intValue } map { _.getLoginName } getOrElse "")
         c.txtFrom.value = ?(vo.getStart) map toDDN getOrElse ""
         c.txtTo.value = ?(vo.getEnd) map toDDN getOrElse ""
+        c.userPickerUI.btnChoose addListener block {
+          app.initAndShow(new OkCancelDialog("Choose user") with UserSelectDialog) { userSelectDlg =>
+            userSelectDlg.setOkHandler {
+              c.userPickerUI.txtLoginName.value = (userSelectDlg.userSelect.selection map (_.getLoginName) getOrElse "")
+            }
+          }
+        }
 
         dlg setOkHandler {
           let(vo.clone) { voc =>
             // todo: validate
-            voc.setUserId(c.sltUser.getValue.asInstanceOf[JInteger])
+            voc.setUserId(Int box (roleMapper getUser c.userPickerUI.txtLoginName.value getId))
             voc.setStart(fromDDN(c.txtFrom.value))
             voc.setEnd(fromDDN(c.txtTo.value))
 
@@ -148,10 +156,18 @@ class IPAccessManagerUI extends VerticalLayout with Spacing with UndefinedSize {
 
 
 class IPAccessEditorUI extends FormLayout with UndefinedSize {
+  class UserPickerUI extends HorizontalLayout with Spacing with UndefinedSize {
+    val txtLoginName = new TextField  { setInputPrompt("No user selected") }    // with ReadOnly
+    val btnChoose = new Button("...") { setStyleName("small") }
+
+    addComponents(this, txtLoginName, btnChoose)
+    setCaption("User")
+  }
+
   val txtId = new TextField("Id") with Disabled
-  val sltUser = new Select("Users") with XSelect[JInteger] with NoNullSelection
+  val userPickerUI = new UserPickerUI
   val txtFrom = new TextField("From")
   val txtTo = new TextField("To")
 
-  addComponents(this, txtId, sltUser, txtFrom, txtTo)
+  addComponents(this, txtId, userPickerUI, txtFrom, txtTo)
 }

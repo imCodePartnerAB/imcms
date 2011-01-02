@@ -94,6 +94,7 @@ trait UndefinedSize { this: AbstractComponent =>
   setSizeUndefined
 }
 
+
 trait Scrollable { this: com.vaadin.terminal.Scrollable =>
   setScrollable(true)
 }

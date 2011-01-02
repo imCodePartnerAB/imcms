@@ -10,49 +10,17 @@ import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 
 import java.util.concurrent.atomic.AtomicReference
+import util.event.Publisher
 
 // todo: db access, filtering should be optimized, + lazy loading/limit/pagination
-class UserSelect {
+class UserSelect extends Publisher[Option[UserDomainObject]] {
   private val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
   private val selectionRef = new AtomicReference[Option[UserDomainObject]](None)
-
-  val selectionListeners = ListBuffer.empty[Option[UserDomainObject] => Unit]
 
   val ui: UserSelectUI = letret(new UserSelectUI) { ui =>
     roleMapper.getAllRolesExceptUsersRole foreach { role =>
       ui.filterUI.lstRoles.addItem(role.getId)
       ui.filterUI.lstRoles.setItemCaption(role.getId, role.getName)
-    }
-
-    ui.tblUsers.itemsProvider = () => {
-      val matchesAlways = Function.const(true)_
-
-      val matchesText: UserDomainObject => Boolean = ui.filterUI.txtText.value.trim match {
-        case text if text.isEmpty => matchesAlways
-        case text => { _.getLoginName.contains(text) }
-      }
-
-      val matchesRole: UserDomainObject => Boolean = ui.filterUI.lstRoles.value match {
-        case rolesIds if rolesIds.isEmpty => matchesAlways
-        case rolesIds => { _.getRoleIds.intersect(rolesIds.toSeq).nonEmpty }
-      }
-
-      val matchesActive: UserDomainObject => Boolean = ui.filterUI.chkShowInactive.booleanValue match {
-        case true => matchesAlways
-        case false => { _.isActive }
-      }
-
-      val matchesAll = (user: UserDomainObject) => List(matchesText, matchesRole, matchesActive) forall (_ apply user)
-
-      for {
-        user <- roleMapper.getAllUsers.toList if matchesAll(user)
-        userId = Int box user.getId
-      } yield userId -> List(userId,
-                             user.getLoginName,
-                             user.getFirstName,
-                             user.getLastName,
-                             Boolean box user.isSuperAdmin,
-                             Boolean box user.isActive)
     }
 
     ui.filterUI.btnApply addListener block { reload() }
@@ -72,9 +40,40 @@ class UserSelect {
 
   def selection = selectionRef.get
 
-  def reload() = ui.tblUsers.reload()
+  def reload() {
+    val matchesAlways = Function.const(true)_
 
-  def notifyListeners() = let(selection) { optionUser => for (listener <- selectionListeners) listener(optionUser) }
+    val matchesText: UserDomainObject => Boolean = ui.filterUI.txtText.value.trim match {
+      case text if text.isEmpty => matchesAlways
+      case text => { _.getLoginName.contains(text) }
+    }
+
+    val matchesRole: UserDomainObject => Boolean = ui.filterUI.lstRoles.value match {
+      case rolesIds if rolesIds.isEmpty => matchesAlways
+      case rolesIds => { _.getRoleIds.intersect(rolesIds.toSeq).nonEmpty }
+    }
+
+    val matchesActive: UserDomainObject => Boolean = ui.filterUI.chkShowInactive.booleanValue match {
+      case true => matchesAlways
+      case false => { _.isActive }
+    }
+
+    val matchesAll = (user: UserDomainObject) => List(matchesText, matchesRole, matchesActive) forall (_ apply user)
+
+    ui.tblUsers.removeAllItems
+    for {
+      user <- roleMapper.getAllUsers.toList if matchesAll(user)
+      userId = Int box user.getId
+    } ui.tblUsers.addItem(Array[AnyRef](userId,
+                            user.getLoginName,
+                            user.getFirstName,
+                            user.getLastName,
+                            Boolean box user.isSuperAdmin,
+                            Boolean box user.isActive),
+                          userId)
+  }
+
+  override def notifyListeners() = notifyListeners(selection)
 }
 
 
@@ -85,16 +84,16 @@ class UserSelect {
 trait UserSelectDialog { this: OkCancelDialog =>
   val userSelect = new UserSelect
 
-  mainContent = userSelect.ui
+  mainUI = userSelect.ui
 
-  userSelect.selectionListeners += { btnOk setEnabled _.isDefined }
+  userSelect.listen { btnOk setEnabled _.isDefined }
   userSelect.notifyListeners()
 }
 
 
 class UserSelectUI extends VerticalLayout with UndefinedSize {
   val filterUI = new UserSelectFilterUI
-  val tblUsers = new Table with ValueType[JInteger] with ItemIdType[JInteger] with Reloadable with Immediate with Selectable {
+  val tblUsers = new Table with ValueType[JInteger] with ItemIdType[JInteger] with Immediate with Selectable {
     addContainerProperties(this,
       ContainerProperty[JInteger]("Id"),
       ContainerProperty[String]("Login"),

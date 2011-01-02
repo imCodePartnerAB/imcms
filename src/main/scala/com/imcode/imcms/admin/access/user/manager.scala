@@ -93,7 +93,7 @@ class UserManager(app: ImcmsApplication) {
       }
     }
 
-    userSelect.selectionListeners += { ui.miEdit setEnabled _.isDefined }
+    userSelect.listen { ui.miEdit setEnabled _.isDefined }
     userSelect.notifyListeners()
   }
 }
