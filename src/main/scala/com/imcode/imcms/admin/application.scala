@@ -102,7 +102,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
   
   object Menu extends MenuItem {
-    object About extends MenuItem(this)
+    object About extends MenuItem(this, Some(About16))
 
     object Documents extends MenuItem(this) {
       object Categories extends MenuItem(this, Some(Done16))
@@ -117,7 +117,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       object Roles extends MenuItem(this, Some(Done16))
       object IP_Access extends MenuItem(this, Some(Done16))
     }
-    object Files extends MenuItem(this)
+
     object System extends MenuItem(this) {
       object Settings extends MenuItem(this) {
         object Languages extends MenuItem(this, Some(Done16))
@@ -128,6 +128,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
         object Session extends MenuItem(this, Some(Done16))
         object Cache extends MenuItem(this)
       }
+      object Files extends MenuItem(this)
     }
   } 
 
@@ -249,7 +250,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
             case Menu.Permissions.Roles => roles
             case Menu.Permissions.Users => users
             case Menu.Permissions.IP_Access => ipAccess
-            case Menu.Files => filesystem
+            case Menu.System.Files => filesystem
             case Menu.Documents.Templates => templates
             case Menu.Documents.Structure => docStructure
             case Menu.Documents.Edit => docadmin
@@ -573,7 +574,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     addTab(new VerticalLayoutUI("File manager") {
       setSizeFull
 
-      addComponent(new com.imcode.imcms.admin.file.FileManager ui)
+      addComponent(new com.imcode.imcms.admin.system.file.FileManager ui)
     })
   }
 

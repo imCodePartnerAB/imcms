@@ -1,5 +1,5 @@
 package com.imcode
-package imcms.admin.file
+package imcms.admin.system.file
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
@@ -23,7 +23,7 @@ class FileManager {
 }
 
 
-class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with FullSize {
+class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar
   val miReload = mb.addItem("Reload", null)
   val miView = mb.addItem("View", null)

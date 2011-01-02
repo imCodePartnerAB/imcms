@@ -7,6 +7,7 @@ object Theme {
   implicit val stringToThemeResource = new TR(_:String)
 
   object Icons {
+    val About16 = "icons/16/globe.png" : TR
     val Help16 = "icons/16/help.png" : TR
     val New16 = "icons/16/document-add.png" : TR
     val Edit16 = "icons/16/settings.png" : TR

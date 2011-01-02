@@ -7,7 +7,7 @@ import imcode.server.user._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import com.vaadin.ui.Window.Notification
-import imcms.admin.file._
+import imcms.admin.system.file._
 import org.apache.commons.io.FileUtils
 import java.io.{ByteArrayInputStream, File}
 import imcms.security.{PermissionDenied, PermissionGranted}
