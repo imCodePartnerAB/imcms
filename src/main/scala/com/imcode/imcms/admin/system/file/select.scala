@@ -2,20 +2,17 @@ package com.imcode
 package imcms.admin.system.file
 
 import scala.collection.JavaConversions._
-import com.vaadin.data.Property
-import com.vaadin.data.Property._
-import imcode.server.user._
 import com.imcode.imcms.vaadin._
-import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
+import java.io.{File}
 import com.vaadin.ui._
 import com.imcode.util.event.Publisher
 import java.util.concurrent.atomic.AtomicBoolean
 import com.vaadin.Application
 import com.vaadin.terminal._
-import io.Source
 import org.apache.commons.io.FileUtils
 
 //// todo add predicate - see comments on canPreview
+// todo implement download
 //  // refactor to predicate fn taken as parameter
 //  def canPreview(file: File) = file.getName matches ".*\\.(gif|jpg|jpeg|png)$"
 
@@ -38,7 +35,7 @@ class FileDialog(caption: String, browser: FileBrowser)
           for {
             data <- dlg.upload.data
             dir <- browser.dirTreeSelection
-            filename = dlg.upload.ui.txtSaveAsName.value // check not empty
+            filename = dlg.upload.ui.txtSaveAsName.value // todo: check not empty
             file = new File(dir, filename)
           } {
             if (file.exists && !dlg.upload.ui.chkOverwrite.booleanValue) error("File exists")
@@ -59,8 +56,8 @@ class FileDialog(caption: String, browser: FileBrowser)
 
   browser.notifyListeners()
   // todo: refactor out
-  browser.ui.setSplitPosition(15)
-  setWidth("500px"); setHeight("400px")
+  browser.ui.setSplitPosition(25)
+  setWidth("500px"); setHeight("350px")
 }
 
 

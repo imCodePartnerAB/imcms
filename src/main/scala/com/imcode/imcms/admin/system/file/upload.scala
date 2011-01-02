@@ -45,7 +45,10 @@ class FileUpload extends Publisher[UploadStatus] {
     ui.upload.addListener(new Upload.StartedListener {
       def uploadStarted(ev: Upload#StartedEvent) = {
         reset()
+        ui.txtSaveAsName.setEnabled(true)
         ui.txtSaveAsName.value = fileNameToSaveAsName(ev.getFilename)
+        ui.txtSaveAsName.setEnabled(false)
+        ui.pi.setEnabled(true)
         notifyListeners(UploadStarted(ev))
       }
     })
@@ -57,6 +60,10 @@ class FileUpload extends Publisher[UploadStatus] {
     })
     ui.upload.addListener(new Upload.FailedListener {
       def uploadFailed(ev: Upload#FailedEvent) {
+        ui.txtSaveAsName.setEnabled(true)
+        ui.txtSaveAsName.value = ""
+        ui.txtSaveAsName.setEnabled(false)
+        ui.pi.setEnabled(false)
         ui.getApplication.getMainWindow.showNotification("Upload has been interrupted", Notification.TYPE_ERROR_MESSAGE)
         notifyListeners(UploadFailed(ev))
       }
@@ -66,19 +73,27 @@ class FileUpload extends Publisher[UploadStatus] {
         let(UploadedData(ev.getFilename, ev.getMIMEType, receiver.out.toByteArray)) { data =>
           dataRef.set(Some(data))
           ui.txtSaveAsName.setEnabled(true)
-          ui.txtSaveAsName.value = ev.getFilename
+          ui.chkOverwrite.setEnabled(true)
           notifyListeners(UploadSucceeded(ev, data))
         }
       }
     })
   }
 
+  reset()
+
   def reset() {
     dataRef.set(None)
+    ui.chkOverwrite.setEnabled(true)
+    ui.chkOverwrite.value = false
+    ui.chkOverwrite.setEnabled(false)
+    ui.txtSaveAsName.setEnabled(true)
     ui.txtSaveAsName.value = ""
     ui.txtSaveAsName.setEnabled(false)
+    ui.pi.setEnabled(true)
     ui.pi.setValue(0f)
     ui.pi.setPollingInterval(500)
+    ui.pi.setEnabled(false)
     notifyListeners(UploadNew)
   }
 
@@ -92,5 +107,5 @@ class FileUploadUI extends FormLayout with UndefinedSize {
   val chkOverwrite = new CheckBox("Overwrite existing")
 
   upload.setButtonCaption("...")
-  addComponents(this, upload, txtSaveAsName, chkOverwrite, pi)
+  addComponents(this, upload, pi, txtSaveAsName, chkOverwrite)
 }
