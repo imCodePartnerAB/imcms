@@ -34,8 +34,8 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
   val miDownload = mb.addItem("Download", null)
   val miUpload = mb.addItem("Upload", null)
 
-  setExpandRatio(browserUI, 1.0f)
   addComponents(this, mb, browserUI)
+  setExpandRatio(browserUI, 1.0f)
 }
 
 
