@@ -272,4 +272,15 @@
         <function-signature>boolean canEditDocumentInformation(imcode.server.document.DocumentDomainObject, javax.servlet.jsp.PageContext)</function-signature>
     </function>
 
+    <tag>
+        <name>imageArchive</name>
+        <tag-class>com.imcode.imcms.addon.imagearchive.tag.ImageArchiveTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
 </taglib>

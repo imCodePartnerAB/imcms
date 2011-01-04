@@ -37,9 +37,9 @@ public class ImageOp {
     }
     
     private static final String getApplicationPath(Config config, String appName) {
-        File magickPath = config.getImageMagickPath();
-        
-        if (magickPath != null && !magickPath.equals(Imcms.getPath())) {
+        String magickPath = config.getImageMagickPath();
+
+        if (magickPath != null && !"".equals(magickPath) && !magickPath.equals(Imcms.getPath())) {
             return new File(magickPath, appName).getAbsolutePath();
         }
         

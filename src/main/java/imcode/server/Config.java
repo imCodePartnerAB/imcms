@@ -20,7 +20,12 @@ public class Config {
     private File imageCachePath;
     private String imageCacheAllowedPaths;
     private long imageCacheMaxSize;
-    private File imageMagickPath;
+    /**
+     * Path to ImageMagick 'bin' directory.<br/>
+    {@link imcode.server.DefaultImcmsServices#createConfigFromProperties DefaultImcmsServices.createConfigFromProperties} sets
+     {@link imcode.server.DefaultImcmsServices.WebappRelativeFileConverter WebappRelativeFileConverter} for File type, that's why this field is a String. 
+     */
+    private String imageMagickPath;
     private String imageUrl;
     private String smtpServer;
     private int smtpPort;
@@ -230,11 +235,11 @@ public class Config {
         this.imageCachePath = imageCachePath;
     }
 
-    public File getImageMagickPath() {
+    public String getImageMagickPath() {
         return imageMagickPath;
     }
 
-    public void setImageMagickPath(File imageMagickPath) {
+    public void setImageMagickPath(String imageMagickPath) {
         this.imageMagickPath = imageMagickPath;
     }
 }
