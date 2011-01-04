@@ -30,7 +30,7 @@ public class ImageArchiveTag extends TagSupport {
                 } else {
                     iframe += defaultStyle;
                 }
-                iframe += "seamless></iframe>";
+                iframe += "seamless frameBorder='0'></iframe>";
                 out.print(iframe);
             }
         } catch (IOException e) {
