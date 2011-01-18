@@ -174,7 +174,7 @@ function getFile() {
 
 function previewFile() {
 	try {
-		var file = document.getElementById("dir").value + "/" + getFile();
+		var file = "<%= Imcms.getServices().getConfig().getImageUrl() %>" + getFile() ;
 		if (isImageFile(file)) {
 			popWinOpen(800,570,"$contextPath/imcms/$language/jsp/FileAdmin_preview.jsp?file=" + escape(file),"",1,0);
 			return false;
