@@ -38,6 +38,11 @@ package object vaadin {
     container
   }
 
+  def addNamedComponents(container: CustomLayout, component: (String, Component), components: (String, Component)*) = {
+    for ((location, component) <- component +: components) container.addComponent(component, location)
+    container
+  }
+
   def addContainerProperties(container: Container, properties: ContainerProperty[_]*) =
     properties foreach { p =>
       container.addContainerProperty(p.id, p.clazz, p.defaultValue)
