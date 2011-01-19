@@ -667,8 +667,11 @@ public class DocumentMapper implements DocumentGetter {
                     docId, docVersionNo));
         }
 
+        Integer docCopyId = documentSaver.copyDocument(meta, i18nMetas, docs, user);
+
+        invalidateDocument(docCopyId);
         
-        return documentSaver.copyDocument(meta, i18nMetas, docs, user);
+        return docCopyId;
     }
     
 

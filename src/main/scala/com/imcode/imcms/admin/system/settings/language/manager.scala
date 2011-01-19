@@ -167,31 +167,31 @@ class LanguageManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   addComponents(this, mb, rc)
 }
 
-//class LanguageEditorUI extends FormLayout with UndefinedSize {
-//  val txtId = new TextField("Id") with Disabled
-//  val txtCode = new TextField("Code")
-//  val txtName = new TextField("Name")
-//  val txtNativeName = new TextField("Native name")
-//  val chkEnabled = new CheckBox("Enabled")
-//
-//  addComponents(this, txtId, txtCode, txtName, txtNativeName, chkEnabled)
-//}
-
-
-//
-// Custom UI demo
-//
-class LanguageEditorUI extends CustomLayout("LanguageEditorUI") with UndefinedSize {
+class LanguageEditorUI extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled
   val txtCode = new TextField("Code")
   val txtName = new TextField("Name")
   val txtNativeName = new TextField("Native name")
   val chkEnabled = new CheckBox("Enabled")
 
-  addNamedComponents(this,
-    "txtId" -> txtId,
-    "txtCode" -> txtCode,
-    "txtName" -> txtName,
-    "txtNativeName" -> txtNativeName,
-    "chkEnabled" -> chkEnabled)
+  addComponents(this, txtId, txtCode, txtName, txtNativeName, chkEnabled)
 }
+
+
+////
+//// Custom UI demo
+////
+//class LanguageEditorUI extends CustomLayout("LanguageEditorUI") with UndefinedSize{
+//  val txtId = new TextField("Id") with Disabled
+//  val txtCode = new TextField("Code")
+//  val txtName = new TextField("Name")
+//  val txtNativeName = new TextField("Native name")
+//  val chkEnabled = new CheckBox("Enabled")
+//
+//  addNamedComponents(this,
+//    "txtId" -> txtId,
+//    "txtCode" -> txtCode,
+//    "txtName" -> txtName,
+//    "txtNativeName" -> txtNativeName,
+//    "chkEnabled" -> chkEnabled)
+//}
