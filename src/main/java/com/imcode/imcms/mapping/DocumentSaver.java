@@ -64,13 +64,13 @@ public class DocumentSaver {
 
 
     /**
-     * Saves edited text-document text and non-saved enclosing content loop if any.
-     * If text is enclosed into unsaved content loop then the loop must also exist in document.
      *
-     * @see com.imcode.imcms.servlet.admin.SaveText
-     * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      *
-     * @throws IllegalStateException if a text refers non-existing content loop.
+     *
+     *
+     *
+     *
+     *
      *
      * TODO: Update doc modified dt
      */

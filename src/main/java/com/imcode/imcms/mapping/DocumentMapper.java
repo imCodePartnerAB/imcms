@@ -660,7 +660,7 @@ public class DocumentMapper implements DocumentGetter {
 
             docs.add(doc);
         }
-        
+
         if (docs.isEmpty()) {
             throw new IllegalArgumentException(String.format(
                     "Unable to copy. Source document does not exists. DocId: %d, doc version no: %d.",
