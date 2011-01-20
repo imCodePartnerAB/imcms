@@ -90,9 +90,7 @@ class DB(ds: DataSource) extends Logger {
         scripts foreach { script =>
           logger.debug("Running script %s." format script)
 
-          using(new FileReader(script)) { reader =>
-            scriptRunner runScript reader
-          }
+          using(new FileReader(script)) { scriptRunner runScript _ }
         }
       }
     }
