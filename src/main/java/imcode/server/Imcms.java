@@ -53,6 +53,9 @@ public class Imcms {
     /** Prefs config path relative to deployment path. */
     private static final String DEFAULT_RELATIVE_PREFS_CONFIG_PATH = "WEB-INF/conf";
 
+    /**  */
+    private static final String DEFAULT_SQL_SCRIPTS_PATH = "WEB-INF/sql";
+
     private static Logger logger = Logger.getLogger(Imcms.class);
 
     /** Services. */
@@ -73,7 +76,9 @@ public class Imcms {
     /** Springframework application context. */
     public static ApplicationContext applicationContext;
 
-    private static String relativePrefsConfigPath = DEFAULT_RELATIVE_PREFS_CONFIG_PATH; 
+    private static String relativePrefsConfigPath = DEFAULT_RELATIVE_PREFS_CONFIG_PATH;
+
+    private static String sqlScriptsPath = DEFAULT_SQL_SCRIPTS_PATH;
 
 	/**
      * @see com.imcode.imcms.servlet.ImcmsFilter
@@ -411,7 +416,10 @@ public class Imcms {
      * Inits and/or updates database if necessary.
      */
     public static void prepareDatabase() {
-        String scriptsDir = new File(path.getAbsolutePath(), "WEB-INF/sql").getAbsolutePath();
+        String scriptsDir = (getSQLScriptsPath().equals(DEFAULT_SQL_SCRIPTS_PATH)
+            ? new File(path.getAbsolutePath(), getSQLScriptsPath()).getAbsolutePath()
+            : getSQLScriptsPath());
+
         URL schemaConfFileURL = Imcms.class.getResource("/schema.xml");
 
         if (schemaConfFileURL == null) throw new RuntimeException("Schema file could not be found");
@@ -462,5 +470,13 @@ public class Imcms {
 
     public static void setPrepareDatabaseOnStart(boolean prepareDatabaseOnStart) {
         Imcms.prepareDatabaseOnStart = prepareDatabaseOnStart;
+    }
+
+    public static String getSQLScriptsPath() {
+        return sqlScriptsPath;
+    }
+
+    public static void setSQLScriptsPath(String sqlScriptsPath) {
+        Imcms.sqlScriptsPath = sqlScriptsPath;
     }
 }

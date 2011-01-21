@@ -6,10 +6,13 @@ import java.util.Properties
 import java.io.{FileReader, File}
 import org.springframework.context.support.FileSystemXmlApplicationContext
 import org.springframework.context.ApplicationContext
+import imcode.server.Imcms
 
 object Util {
   // ??? If located inside createFileWatcher then compiles but init fails ???
   case class State[T](lastAccessNano: Long, lastModified: Long, handlerResult: T)
+
+  //def createResourceWatcher[R, H](resourceFn: () => R, poolIntervalNano: Long = 1000)(handler: R => H)
 
   def createFileWatcher[T](fileFn: () => File, poolIntervalNano: Long = 1000)(handler: File => T) = new Function0[T] {
 
@@ -35,16 +38,7 @@ object Util {
 }
 
 
-object Project {
-  def apply(): Project = apply(".")
-  def apply(homePath: String) = new Project(homePath)
-
-  def initImcms(prepareDBOnStart: Boolean = false) {}
-}
-
-class Project(homePath: String) {
-
-  private val homeRef = new AtomicReference[File]
+class Project(dirPath: String) {
 
   private val buildPropertiesFileWatcher = Util.createFileWatcher(fileFn("build.properties")) { file =>
     using(new FileReader(file)) { reader =>
@@ -54,35 +48,43 @@ class Project(homePath: String) {
 
   private val springAppContextRef = new AtomicReference(Option.empty[ApplicationContext])
 
-  cd(homePath)
+  val dir = new File(dirPath).getCanonicalFile
 
+  val buildProperties = buildPropertiesFileWatcher()
 
-  def cd(homePath: String) = homeRef.set(new File(homePath).getCanonicalFile)
+  def buildProperty(name: String) = buildProperties getProperty name
 
-  def home = homeRef.get
+  def path(relativePath: String) = new File(dir, relativePath).getCanonicalPath
 
-  //def path = home.getCanonicalPath
-
-  def file(relativePath: String) = new File(home, relativePath)
+  def file(relativePath: String) = new File(dir, relativePath)
 
   def fileFn(relativePath: String) = () => file(relativePath)
 
-  def dir(relativePath: String) = new File(home, relativePath)
+  def subDir(relativePath: String) = new File(dir, relativePath)
 
-  def dirFn(relativePath: String) = () => dir(relativePath)
-
-  def buildProperties = buildPropertiesFileWatcher()
-
-  def buildProperty(name: String) = buildProperties getProperty name
+  def subDirFn(relativePath: String) = () => subDir(relativePath)
 
   def testProperty() = error("not impl")
 
   def springAppContext(reload: Boolean = false) = synchronized {
+    System.setProperty("log4j.configuration", "file:" + path("src/test/resources/log4j.xml"))
+    System.setProperty("com.imcode.imcms.project.dir", path("."))
+
     if (springAppContextRef.get.isEmpty || reload) {
       springAppContextRef set Some(new FileSystemXmlApplicationContext(
         "file:" + file("src/test/resources/applicationContextTest.xml").getCanonicalPath))
     }
 
     springAppContextRef.get.get
+  }
+
+  def initImcms(start: Boolean = false, prepareDBOnStart: Boolean = false) {
+    Imcms.setRelativePrefsConfigPath("")
+    Imcms.setPath(subDir("src/test/resources"))
+    Imcms.setSQLScriptsPath(path("src/main/webapp/WEB-INF/sql"))
+    Imcms.setApplicationContext(springAppContext())
+    Imcms.setPrepareDatabaseOnStart(prepareDBOnStart)
+
+    if (start) Imcms.start
   }
 }

@@ -25,16 +25,15 @@
   
   <context:property-placeholder location="**/conf/server.properties"/>
 	 
-  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-    <property name="driverClassName" value="${JdbcDriver}"/>
-    <property name="url" value="${JdbcUrl}"/>
-    <property name="username" value="${User}"/>
-    <property name="password" value="${Password}"/>
-    <property name="testOnBorrow" value="true"/>
-    <property name="validationQuery" value="select 1"/>    
-    <property name="defaultAutoCommit" value="false"/>
-    <property name="maxActive" value="${MaxConnectionCount}"/>
-  </bean>
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+    p:driverClassName="${JdbcDriver}"
+    p:url="${JdbcUrl}"
+    p:username="${User}"
+    p:password="${Password}"
+    p:testOnBorrow="true"
+    p:validationQuery="select 1"
+    p:defaultAutoCommit="false"
+    p:maxActive="${MaxConnectionCount}"/>
   
   <bean id="dataSourceWithAutoCommit" parent="dataSource">  
     <property name="defaultAutoCommit" value="true"/>
@@ -131,16 +130,14 @@
           p:contentLoopDao-ref="contentLoopDao"/>
 
 
-    <bean id="documentLoader" class="com.imcode.imcms.mapping.DocumentLoader">
-      <property name="metaDao" ref="metaDao"/>
-        <property name="documentVersionDao" ref="documentVersionDao"/>
-      <property name="documentInitializingVisitor" ref="documentInitializingVisitor"/>
-    </bean>
+    <bean id="documentLoader" class="com.imcode.imcms.mapping.DocumentLoader"
+      p:metaDao-ref="metaDao"
+      p:documentVersionDao-ref="documentVersionDao"
+      p:documentInitializingVisitor-ref="documentInitializingVisitor"/>
 
     
-  <bean id="documentInitializingVisitor" class="com.imcode.imcms.mapping.DocumentInitializingVisitor">
-    <property name="metaDao" ref="metaDao"/>
-    <property name="textDocumentInitializer" ref="textDocumentInitializer"/>
-  </bean>  
+    <bean id="documentInitializingVisitor" class="com.imcode.imcms.mapping.DocumentInitializingVisitor"
+      p:metaDao-ref="metaDao"
+      p:textDocumentInitializer-ref="textDocumentInitializer"/>
     
 </beans>
