@@ -35,15 +35,12 @@
     p:defaultAutoCommit="false"
     p:maxActive="${MaxConnectionCount}"/>
   
-  <bean id="dataSourceWithAutoCommit" parent="dataSource">  
-    <property name="defaultAutoCommit" value="true"/>
-  </bean>   
+  <bean id="dataSourceWithAutoCommit" parent="dataSource"
+    p:defaultAutoCommit="true"/>
   
-  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-    <property name="configLocation" value="WEB-INF/classes/hibernate.cfg.xml"/>
-    
-    <property name="dataSource" ref="dataSource"/>
-  </bean>  
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
+    p:configLocation="WEB-INF/classes/hibernate.cfg.xml"
+    p:dataSource-ref="dataSource"/>
   
   <bean id="localeResolver" class="com.imcode.imcms.web.util.ImcmsLocaleResolver"/>
   

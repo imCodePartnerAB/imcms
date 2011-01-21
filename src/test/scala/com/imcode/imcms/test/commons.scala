@@ -1,5 +1,5 @@
 package com.imcode
-package imcms
+package imcms.test
 
 import java.util.concurrent.atomic.{AtomicLong, AtomicReference}
 import java.util.Properties
@@ -7,6 +7,7 @@ import java.io.{FileReader, File}
 import org.springframework.context.support.FileSystemXmlApplicationContext
 import org.springframework.context.ApplicationContext
 import imcode.server.Imcms
+import org.apache.commons.dbcp.BasicDataSource
 
 object Util {
   // ??? If located inside createFileWatcher then compiles but init fails ???
@@ -38,9 +39,20 @@ object Util {
 }
 
 
+object Project {
+  def apply(): Project = apply(".")
+  def apply(dirPath: String): Project = new Project(dirPath)
+}
+
 class Project(dirPath: String) {
 
   private val buildPropertiesFileWatcher = Util.createFileWatcher(fileFn("build.properties")) { file =>
+    using(new FileReader(file)) { reader =>
+      letret(new Properties) { _ load reader }
+    }
+  }
+
+ private val testPropertiesFileWatcher = Util.createFileWatcher(fileFn("src/test/resources/server.properties")) { file =>
     using(new FileReader(file)) { reader =>
       letret(new Properties) { _ load reader }
     }
@@ -52,7 +64,14 @@ class Project(dirPath: String) {
 
   val buildProperties = buildPropertiesFileWatcher()
 
-  def buildProperty(name: String) = buildProperties getProperty name
+  val testProperties = testPropertiesFileWatcher()
+
+  val buildProperty = buildProperties.getProperty(_:String)
+
+  val testProperty = testProperties.getProperty(_:String)
+
+  System.setProperty("log4j.configuration", "file:" + path("src/test/resources/log4j.xml"))
+
 
   def path(relativePath: String) = new File(dir, relativePath).getCanonicalPath
 
@@ -64,10 +83,9 @@ class Project(dirPath: String) {
 
   def subDirFn(relativePath: String) = () => subDir(relativePath)
 
-  def testProperty() = error("not impl")
+
 
   def springAppContext(reload: Boolean = false) = synchronized {
-    System.setProperty("log4j.configuration", "file:" + path("src/test/resources/log4j.xml"))
     System.setProperty("com.imcode.imcms.project.dir", path("."))
 
     if (springAppContextRef.get.isEmpty || reload) {
@@ -86,5 +104,50 @@ class Project(dirPath: String) {
     Imcms.setPrepareDatabaseOnStart(prepareDBOnStart)
 
     if (start) Imcms.start
+  }
+
+  def loc = error("not implemented") // "java|jsp|htm|html|xml|properties|sql|clj|scala"
+}
+
+
+class DB(project: Project) {
+
+  import com.imcode.imcms.db.{DB => DBAccess, Schema}
+
+  def createDataSource(withDBName: Boolean = true, autocommit: Boolean = false) =
+    letret(new BasicDataSource) { ds =>
+      ds.setUsername(project.testProperty("User"))
+      ds.setPassword(project.testProperty("Password"))
+      ds.setDriverClassName(project.testProperty("JdbcDriver"))
+      ds.setUrl(if (withDBName) project.testProperty("JdbcUrl")
+                else project.testProperty("__JdbcUrlWithoutDBName__"))
+
+      ds.setDefaultAutoCommit(autocommit)
+    }
+
+  def recreate() {
+    let(new DBAccess(createDataSource(withDBName=false))) { access =>
+      access.template.update("DROP DATABASE IF EXISTS %s" format project.testProperty("__DBName__"))
+      access.template.update("CREATE DATABASE %s" format project.testProperty("__DBName__"))
+    }
+  }
+
+  def createHibernateSessionFactory {}
+
+  def hibernateProperties {}
+
+  def runScripts(script: String, scripts: String*) {
+    let(new DBAccess(createDataSource(withDBName=false))) { access =>
+      access.runScripts(script +: scripts map { project path _ })
+    }
+  }
+
+  def prepare(recreateBeforePrepare: Boolean = false) {
+    if (recreateBeforePrepare) recreate()
+
+    val scriptsDir = project.path("src/main/webapp/WEB-INF/sql")
+    val schema = Schema.load(project.file("src/main/resources/schema.xml")).changeScriptsDir(scriptsDir)
+
+    let(new DBAccess(createDataSource())) { _ prepare schema }
   }
 }

@@ -82,7 +82,7 @@ class DB(ds: DataSource) extends Logger {
   }
 
   
-  def runScripts(scripts: List[String]): Unit = synchronized {
+  def runScripts(scripts: Seq[String]): Unit = synchronized {
     template.getJdbcOperations execute new ConnectionCallback[Unit] {
       def doInConnection(connection: Connection) {
         val scriptRunner = new ScriptRunner(ds.getConnection, false, true)
