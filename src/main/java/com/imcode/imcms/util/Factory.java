@@ -93,7 +93,7 @@ public class Factory {
 
 
     public static ImageDomainObject createImage(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no) {
-        return createImage(docId, docVersionNo, language, null);
+        return createImage(docId, docVersionNo, language, no, null);
     }
 
     public static ImageDomainObject createImage(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no, Integer contentIndex) {

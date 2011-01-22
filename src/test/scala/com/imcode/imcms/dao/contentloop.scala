@@ -33,7 +33,7 @@ class ContentLoopDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     val project = Project()
     val db = new DB(project)
 
-    db.recreate();
+    db.recreate()
   }
 
 
