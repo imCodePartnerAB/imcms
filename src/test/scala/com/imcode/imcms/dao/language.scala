@@ -12,7 +12,10 @@ import org.hibernate.Session
 import org.junit.Assert._
 import org.springframework.orm.hibernate3.HibernateCallback
 import imcms.api.{SystemProperty, I18nLanguage, Content}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class LanguageDaoSuite extends JUnitSuite with BeforeAndAfterAll {
 
   var systemDao: SystemDao = _

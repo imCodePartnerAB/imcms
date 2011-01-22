@@ -1022,11 +1022,24 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.7.1</version>
                 <configuration>
-                    <skipTests>true</skipTests>
+                    <!--<skipTests>false</skipTests>-->
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                    <argLine>-Xms64m -Xmx1024m</argLine>
+                    <includes>
+                        <include>**/*IncludeDaoSpec.java</include>
+                        <!--<include>**/dao/IncludeDaoSuite.java</include>-->
+                        <!--<include>**/*Suite.java</include>-->
+                    </includes>
                 </configuration>
             </plugin>
 
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.7.1</version>
+              </plugin>
 
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
@@ -1120,6 +1133,15 @@
         </repository>
     </distributionManagement>
 
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.7.1</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
     <scm>
         <connection>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</connection>

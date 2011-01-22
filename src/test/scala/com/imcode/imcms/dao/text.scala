@@ -13,7 +13,10 @@ import imcode.server.user.UserDomainObject
 import imcms.util.Factory
 import imcms.api.{I18nLanguage, TextHistory}
 import imcode.server.document.textdocument.TextDomainObject
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class TextDaoSuite extends JUnitSuite with BeforeAndAfterAll {
 
 	var textDao: TextDao = _

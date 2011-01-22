@@ -10,7 +10,10 @@ import com.imcode.imcms.test.Project
 
 import org.junit.Assert._
 import imcms.mapping.orm.TemplateNames
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 //todo: Test named queries
 class TemplateNamesDaoSuite extends JUnitSuite with BeforeAndAfterAll {
 

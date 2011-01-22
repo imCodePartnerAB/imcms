@@ -14,7 +14,10 @@ import org.junit.Assert._
 import org.springframework.orm.hibernate3.HibernateCallback
 
 import com.imcode.imcms.api.ContentLoop
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class ContentLoopDaoSuite extends JUnitSuite with BeforeAndAfterAll {
 
   // loops predefined in src/test/resources/dbunit-content_loop.xml: loop_<contents-count>_[sort-order]_id

@@ -10,7 +10,10 @@ import com.imcode.imcms.test.DB
 import com.imcode.imcms.test.Project
 import org.hibernate.Session
 import imcms.api.{SystemProperty, Content}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class SystemPropertyDaoSuite extends JUnitSuite with BeforeAndAfterAll {
 
   var systemDao: SystemDao = _

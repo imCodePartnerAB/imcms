@@ -14,7 +14,10 @@ import imcode.server.user.UserDomainObject
 import imcms.util.Factory
 import imcode.server.document.textdocument.ImageDomainObject
 import imcms.api.{ImageHistory, I18nLanguage, Content}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class ImageDaoSuite extends JUnitSuite with BeforeAndAfterAll {
 
   var imageDao: ImageDao = _

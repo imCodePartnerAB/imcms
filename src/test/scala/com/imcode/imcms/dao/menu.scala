@@ -12,7 +12,10 @@ import org.junit.Assert._
 import imcode.server.user.UserDomainObject
 import imcms.api.MenuHistory
 import imcode.server.document.textdocument.{TreeSortKeyDomainObject, MenuItemDomainObject, MenuDomainObject}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 //todo: Test named queries
 class MenuDaoSuite extends JUnitSuite with BeforeAndAfterAll {
 

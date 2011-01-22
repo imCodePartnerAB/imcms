@@ -2,7 +2,6 @@ package com.imcode
 package imcms.dao
 
 import org.scalatest.junit.JUnitSuite
-import org.scalatest.BeforeAndAfterAll
 import org.junit.{Before, Test}
 
 import com.imcode.imcms.test.DB
@@ -10,8 +9,13 @@ import com.imcode.imcms.test.Project
 
 import org.junit.Assert._
 import imcms.mapping.orm.Include
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.{WordSpec, BeforeAndAfterEach, BeforeAndAfterAll}
+import org.scalatest.matchers.MustMatchers
 
-class IncludeDaoSuite extends JUnitSuite with BeforeAndAfterAll {
+@RunWith(classOf[JUnitRunner])
+class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var metaDao: MetaDao = _
 
@@ -22,9 +26,7 @@ class IncludeDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     db.recreate()
   }
 
-
-  @Before
-  def resetDBData() {
+  override def beforeEach {
     val project = Project()
     val db = new DB(project)
     val sf = db.createHibernateSessionFactory(classOf[Include])
@@ -36,29 +38,27 @@ class IncludeDaoSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test
-  def getIncludes() {
-    val includes = metaDao.getIncludes(1001)
-    assertEquals(3, includes.size)
-  }
+  "A MetaDao" should {
+    "get all [3] text doc's includes" in {
+      metaDao.getIncludes(1001) must have size (3)
+    }
 
+    "save new text doc's include" in {
+      val include = new Include
+      include.setMetaId(1002)
+      include.setIncludedDocumentId(1001)
 
-  @Test
-  def saveInclude() {
-    val include = new Include
-    include.setMetaId(1002)
-    include.setIncludedDocumentId(1001)
+      metaDao.saveInclude(include)
 
-    metaDao.saveInclude(include)
+      include.getId must not be (null)
+    }
 
-    assertNotNull(include.getId)
-  }
+    "delete all [3] text doc's includes" in {
+      expect(3) {
+        metaDao.deleteIncludes(1001)
+      }
 
-
-  @Test
-  def deleteIncludes() {
-    val deletedCount = metaDao.deleteIncludes(1001)
-
-    assertEquals(deletedCount, 3)
+      metaDao.getIncludes(1001) must be ('empty)
+    }
   }
 }

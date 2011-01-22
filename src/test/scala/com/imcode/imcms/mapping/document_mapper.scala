@@ -19,7 +19,10 @@ import imcode.server.document.textdocument.{NoPermissionToAddDocumentToMenuExcep
 import imcms.api.{ContentLoop, I18nSupport}
 import imcode.server.document.{HtmlDocumentDomainObject, FileDocumentDomainObject, UrlDocumentDomainObject, DocumentTypeDomainObject}
 import imcms.mapping.{DocumentStoringVisitor, DocumentCreatingVisitor, DocumentMapper}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
 
   var docMapper: DocumentMapper = _
