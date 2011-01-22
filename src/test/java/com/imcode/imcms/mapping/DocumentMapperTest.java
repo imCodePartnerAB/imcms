@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.Script;
 import com.imcode.imcms.api.*;
 
 import com.imcode.imcms.test.DB;
