@@ -37,7 +37,7 @@ public class DocumentMapperTest {
 
     @BeforeClass
     public static void setUpClass() {
-        Project project = Project.apply();
+        Project project = Project.apply(".");
         DB db = new DB(project);
 
         db.recreate();

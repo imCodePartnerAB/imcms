@@ -42,8 +42,7 @@ object Util {
 
 
 object Project {
-  def apply(): Project = apply(".")
-  def apply(dirPath: String): Project = new Project(dirPath)
+  def apply(dirPath: String = ".") = new Project(dirPath)
 }
 
 class Project(dirPath: String) {
