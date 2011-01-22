@@ -3,6 +3,8 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.Script;
 import com.imcode.imcms.api.*;
 
+import com.imcode.imcms.test.DB;
+import com.imcode.imcms.test.Project;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
@@ -35,10 +37,13 @@ public class DocumentMapperTest {
 
     @BeforeClass
     public static void setUpClass() {
-        Script.prepareDB(true);
-        Script.initImcms(false);
-        
-        Imcms.start();
+        Project project = Project.apply();
+        DB db = new DB(project);
+
+        db.recreate();
+        project.initImcms(true, true);
+
+
         i18nSupport = Imcms.getI18nSupport();
         docMapper = Imcms.getServices().getDocumentMapper();
         admin = Imcms.getServices().verifyUser("admin", "admin");

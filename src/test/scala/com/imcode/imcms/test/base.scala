@@ -8,6 +8,8 @@ import org.springframework.context.support.FileSystemXmlApplicationContext
 import org.springframework.context.ApplicationContext
 import imcode.server.Imcms
 import org.apache.commons.dbcp.BasicDataSource
+import org.hibernate.cfg.AnnotationConfiguration
+import org.hibernate.SessionFactory
 
 object Util {
   // ??? If located inside createFileWatcher then compiles but init fails ???
@@ -132,12 +134,34 @@ class DB(project: Project) {
     }
   }
 
-  def createHibernateSessionFactory {}
 
-  def hibernateProperties {}
+  def createHibernateSessionFactory(annotatedClasses: Class[_]*): SessionFactory =
+    createHibernateSessionFactory(annotatedClasses.toSeq)
+
+  def createHibernateSessionFactory(annotatedClasses: Seq[Class[_]], xmlFiles: String*) =
+    let(new AnnotationConfiguration) { c =>
+      for ((name, value) <- hibernateProperties) c.setProperty(name, value)
+      annotatedClasses foreach { c addAnnotatedClass _}
+      xmlFiles foreach { c addFile _ }
+
+      c.buildSessionFactory
+    }
+
+  def hibernateProperties = Map(
+    "hibernate.dialect" -> "org.hibernate.dialect.MySQLInnoDBDialect",
+    "hibernate.connection.driver_class" -> project.testProperty("JdbcDriver"),
+    "hibernate.connection.url" -> project.testProperty("JdbcUrl"),
+    "hibernate.connection.username" -> project.testProperty("User"),
+    "hibernate.connection.password" -> project.testProperty("Password"),
+    "hibernate.connection.pool_size" -> "1",
+    "hibernate.connection.autocommit" -> "true",
+    "hibernate.cache.provider_class" -> "org.hibernate.cache.HashtableCacheProvider",
+    "hibernate.hbm2ddl.auto" -> "create-drop",
+    "hibernate.show_sql" -> "true"
+  )
 
   def runScripts(script: String, scripts: String*) {
-    let(new DBAccess(createDataSource(withDBName=false))) { access =>
+    let(new DBAccess(createDataSource())) { access =>
       access.runScripts(script +: scripts map { project path _ })
     }
   }
