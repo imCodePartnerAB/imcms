@@ -1,36 +1,22 @@
 package com.imcode
 package imcms.dao
 
-import org.scalatest.junit.JUnitSuite
-import org.junit.{Before, Test}
-
-import com.imcode.imcms.test.DB
-import com.imcode.imcms.test.Project
-
-import org.junit.Assert._
 import imcms.mapping.orm.Include
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{WordSpec, BeforeAndAfterEach, BeforeAndAfterAll}
 import org.scalatest.matchers.MustMatchers
+import imcms.test.Base.{db}
 
 @RunWith(classOf[JUnitRunner])
 class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var metaDao: MetaDao = _
 
-  override def beforeAll {
-    val project = Project()
-    val db = new DB(project)
+  override def beforeAll() = db.recreate()
 
-    db.recreate()
-  }
-
-  override def beforeEach {
-    val project = Project()
-    val db = new DB(project)
+  override def beforeEach() {
     val sf = db.createHibernateSessionFactory(classOf[Include])
-
     db.runScripts("src/test/resources/sql/include_dao.sql")
 
     metaDao = new MetaDao
@@ -39,7 +25,7 @@ class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll w
 
 
   "A MetaDao" should {
-    "get all [3] text doc's includes" in {
+    "return all [3] existing text doc's includes" in {
       metaDao.getIncludes(1001) must have size (3)
     }
 
@@ -53,7 +39,7 @@ class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll w
       include.getId must not be (null)
     }
 
-    "delete all [3] text doc's includes" in {
+    "delete all [3] existing text doc's includes" in {
       expect(3) {
         metaDao.deleteIncludes(1001)
       }

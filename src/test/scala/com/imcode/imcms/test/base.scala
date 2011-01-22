@@ -11,6 +11,11 @@ import org.apache.commons.dbcp.BasicDataSource
 import org.hibernate.cfg.AnnotationConfiguration
 import org.hibernate.SessionFactory
 
+object Base {
+  val project = Project()
+  val db = new DB(project)
+}
+
 object Util {
   // ??? If located inside createFileWatcher then compiles but init fails ???
   case class State[T](lastAccessNano: Long, lastModified: Long, handlerResult: T)
