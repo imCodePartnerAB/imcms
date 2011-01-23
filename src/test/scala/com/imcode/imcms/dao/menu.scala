@@ -1,43 +1,29 @@
 package com.imcode
 package imcms.dao
 
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.BeforeAndAfterAll
-import org.junit.{Before, Test}
-
-import com.imcode.imcms.test.DB
-import com.imcode.imcms.test.Project
-
-import org.junit.Assert._
 import imcode.server.user.UserDomainObject
 import imcms.api.MenuHistory
 import imcode.server.document.textdocument.{TreeSortKeyDomainObject, MenuItemDomainObject, MenuDomainObject}
+import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.MustMatchers
+import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import imcms.test.Base.{db}
 
 @RunWith(classOf[JUnitRunner])
 //todo: Test named queries
-class MenuDaoSuite extends JUnitSuite with BeforeAndAfterAll {
+class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var menuDao: MenuDao = _
 
   val ADMIN = new UserDomainObject(0)
 
-  override def beforeAll {
-    val project = Project()
-    val db = new DB(project)
+  override def beforeAll() = db.recreate()
 
-    db.recreate()
-  }
-
-
-  @Before
-  def resetDBData() {
-    val project = Project()
-    val db = new DB(project)
-
+  override def beforeEach() {
     val sf = db.createHibernateSessionFactory(Seq(classOf[MenuDomainObject], classOf[MenuHistory]),
-              "src/main/resources/com/imcode/imcms/hbm/Menu.hbm.xml")
+               "src/main/resources/com/imcode/imcms/hbm/Menu.hbm.xml")
 
     db.runScripts("src/test/resources/sql/menu_dao.sql")
 
@@ -46,13 +32,13 @@ class MenuDaoSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test def getMenus() {
+  test("get all text doc's menus") {
     val menus = menuDao.getMenus(1001, 0)
     assertEquals(menus.size, 3)
   }
 
 
-  @Test def insertMenu() {
+  test("create and save new text doc's menu") {
     var menus = menuDao.getMenus(1001, 0)
     assertEquals(menus.size, 3)
 
@@ -79,7 +65,7 @@ class MenuDaoSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test def deleteMenu() {
+  test("delete existing text doc's menu") {
     var menus = menuDao.getMenus(1001, 0)
     assertEquals(menus.size, 3)
 
@@ -90,7 +76,7 @@ class MenuDaoSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test def deleteMenus() {
+  test("delete all text doc's menus") {
     var menus = menuDao.getMenus(1001, 0)
     assertEquals(menus.size, 3)
 

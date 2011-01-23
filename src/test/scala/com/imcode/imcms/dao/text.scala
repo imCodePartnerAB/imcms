@@ -1,48 +1,33 @@
 package com.imcode
 package imcms.dao
 
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.BeforeAndAfterAll
-import org.junit.{Before, Test}
-
-import com.imcode.imcms.test.DB
-import com.imcode.imcms.test.Project
-
-import org.junit.Assert._
 import imcode.server.user.UserDomainObject
 import imcms.util.Factory
 import imcms.api.{I18nLanguage, TextHistory}
 import imcode.server.document.textdocument.TextDomainObject
+import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.MustMatchers
+import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import imcms.test.Base.{db}
 
 @RunWith(classOf[JUnitRunner])
-class TextDaoSuite extends JUnitSuite with BeforeAndAfterAll {
+class TextDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var textDao: TextDao = _
 
   val ENGLISH = Factory.createLanguage(1, "en", "English")
-
   val SWEDISH = Factory.createLanguage(2, "sv", "Swedish")
 
   val ADMIN = new UserDomainObject(0)
 
+  override def beforeAll() = db.recreate()
 
-  override def beforeAll {
-    val project = Project()
-    val db = new DB(project)
-
-    db.recreate()
-  }
-
-  @Before
-  def resetDBData() {
-    val project = Project()
-    val db = new DB(project)
-
+  override def beforeEach() {
     val sf = db.createHibernateSessionFactory(Seq(classOf[I18nLanguage], classOf[TextDomainObject], classOf[TextHistory]),
-              "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
-              "src/main/resources/com/imcode/imcms/hbm/Text.hbm.xml")
+               "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
+               "src/main/resources/com/imcode/imcms/hbm/Text.hbm.xml")
 
     db.runScripts("src/test/resources/sql/text_dao.sql")
 
@@ -67,16 +52,14 @@ class TextDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     */
 
 
-  @Test
-  def saveText() {
+  test("save new text doc's text") {
     val text = Factory.createText(1001, 0, 0, ENGLISH)
 
     textDao.saveText(text)
   }
 
 
-  @Test
-  def updateText() {
+  test("update existing text doc's text") {
     val text = Factory.createText(1001, 0, 0, ENGLISH)
 
     textDao.saveText(text)
@@ -89,8 +72,7 @@ class TextDaoSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test
-  def deleteTexts() {
+  test("delete text doc's text in a given language") {
     for (no <- 1 to 2) {
       val text_en = Factory.createText(1001, 0, no, ENGLISH)
       val text_sw = Factory.createText(1001, 0, no, SWEDISH)
@@ -108,16 +90,14 @@ class TextDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     assertEquals(deletedCount_sw, 3)
   }
 
-  @Test
-  def saveTextHistory() {
+  test("save text doc's text history") {
     val textHistory = new TextHistory(Factory.createText(1001, 0, 0, ENGLISH), ADMIN)
 
     textDao.saveTextHistory(textHistory)
   }
 
 
-  @Test
-  def getTextsByDocIdAndDocVersionNo() {
+  test("get text doc's texts by doc id and doc version no") {
     for (versionNo <- 0 until 2; no <- 0 until 5) {
       val text_en = Factory.createText(1001, versionNo, no, ENGLISH)
       val text_sw = Factory.createText(1001, versionNo, no, SWEDISH)
@@ -134,8 +114,7 @@ class TextDaoSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test
-  def getTextsByDocIdAndDocVersionNoAndLanguage() {
+  test("get text doc's texts by doc id and doc version no and language") {
     for (versionNo <- 0 until 3; no <- 0 until 5) {
       val text_en = Factory.createText(1001, versionNo, no, ENGLISH)
       val text_sw = Factory.createText(1001, versionNo, no, SWEDISH)

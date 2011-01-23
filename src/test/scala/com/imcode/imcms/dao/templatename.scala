@@ -1,36 +1,23 @@
 package com.imcode
 package imcms.dao
 
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.BeforeAndAfterAll
-import org.junit.{Before, Test}
-
-import com.imcode.imcms.test.DB
-import com.imcode.imcms.test.Project
-
-import org.junit.Assert._
 import imcms.mapping.orm.TemplateNames
+import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.MustMatchers
+import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import imcms.test.Base.{db}
 
 @RunWith(classOf[JUnitRunner])
 //todo: Test named queries
-class TemplateNamesDaoSuite extends JUnitSuite with BeforeAndAfterAll {
+class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var metaDao: MetaDao = _
 
-  override def beforeAll {
-    val project = Project()
-    val db = new DB(project)
+  override def beforeAll() = db.recreate()
 
-    db.recreate()
-  }
-
-
-  @Before
-  def resetDBData() {
-    val project = Project()
-    val db = new DB(project)
+  override def beforeEach() {
     val sf = db.createHibernateSessionFactory(classOf[TemplateNames])
 
     db.runScripts("src/test/resources/sql/template_names_dao.sql")
@@ -40,19 +27,19 @@ class TemplateNamesDaoSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test def getNonExistingTemplateNames() {
+  test("get non exiting template names") {
     val tns = metaDao.getTemplateNames(10001)
 
     assertNull(tns)
   }
 
-  @Test def getTemplateNames() {
+  test("get existing template names") {
     val tns = metaDao.getTemplateNames(1001)
 
     assertNotNull(tns)
   }
 
-  @Test def updateTemplateNames() {
+  test("update existing template names") {
     var tns = metaDao.getTemplateNames(1001)
     assertNotNull(tns);
 
@@ -63,7 +50,7 @@ class TemplateNamesDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     assertEquals("UPDATED", tns.getTemplateName())
   }
 
-  @Test def deleteTemplateNames() {
+  test("delete existing template names") {
     var tns = metaDao.getTemplateNames(1001)
     assertNotNull(tns)
 
@@ -74,7 +61,7 @@ class TemplateNamesDaoSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test def insertTemplateNames() {
+  test("create and save template names") {
     var tns = metaDao.getTemplateNames(1001)
     assertNotNull(tns)
 

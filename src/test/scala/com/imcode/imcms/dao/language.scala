@@ -1,40 +1,25 @@
 package com.imcode
 package imcms.dao
 
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.BeforeAndAfterAll
-import org.junit.{Before, Test}
-
-import com.imcode.imcms.test.DB
-import com.imcode.imcms.test.Project
-import org.hibernate.Session
-
+import imcms.api.{SystemProperty, I18nLanguage}
 import org.junit.Assert._
-import org.springframework.orm.hibernate3.HibernateCallback
-import imcms.api.{SystemProperty, I18nLanguage, Content}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.MustMatchers
+import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import imcms.test.Base.{db}
 
 @RunWith(classOf[JUnitRunner])
-class LanguageDaoSuite extends JUnitSuite with BeforeAndAfterAll {
+class LanguageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
   var systemDao: SystemDao = _
   var languageDao: LanguageDao = _
 
-  override def beforeAll {
-    val project = Project()
-    val db = new DB(project)
+  override def beforeAll() = db.recreate()
 
-    db.recreate();
-  }
-
-  @Before
-  def resetDBData {
-    val project = Project()
-    val db = new DB(project)
-
+  override def beforeEach() {
     val sf = db.createHibernateSessionFactory(Seq(classOf[SystemProperty], classOf[I18nLanguage]),
-              "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml")
+               "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml")
 
     db.runScripts("src/test/resources/sql/language_dao.sql")
 
@@ -44,14 +29,12 @@ class LanguageDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     languageDao.setSessionFactory(sf)
   }
 
-  @Test
-  def getAllLanguages {
+  test("get all [2] languages") {
     val languages = languageDao.getAllLanguages
     assertTrue("DB contains 2 languages.", languages.size == 2)
   }
 
-  @Test
-  def saveLanguage {
+  test("save new language") {
     val id = 3
     val code: String = "ee"
 
@@ -69,8 +52,7 @@ class LanguageDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     assertNotNull("Language with code %s exists." format code, languageDao.getByCode(code))
   }
 
-  @Test
-  def updateLanguage {
+  test("update existing language") {
     var language = languageDao.getById(1)
     assertTrue("Language is enabled.", language.isEnabled.booleanValue)
     language.setEnabled(false)
@@ -79,8 +61,7 @@ class LanguageDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     assertFalse("Language is disabled.", language.isEnabled.booleanValue)
   }
 
-  @Test
-  def getDefaultLanguage {
+  test("get defailt language") {
     val property = systemDao.getProperty("DefaultLanguageId")
     assertNotNull("DefaultLanguageId system property exists.", property)
     assertEquals("DefaultLanguageId system property is set to %d." format 1, new JInteger(1), property.getValueAsInteger)
@@ -88,8 +69,7 @@ class LanguageDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     assertNotNull("Default language exists.", language)
   }
 
-  @Test
-  def getLanguageByCode {
+  test("get existing language by code") {
     for (code <- Array("en", "sv"); language = languageDao.getByCode(code)) {
       assertNotNull("Language with code %s is exists." format code, language)
       assertEquals("Language code is correct.", code, language.getCode)
@@ -99,8 +79,7 @@ class LanguageDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     }
   }
 
-  @Test
-  def getLanguageById {
+  test("get existing language by id") {
     for (id <- Array(1, 2); language = languageDao.getById(id)) {
       assertNotNull("Language with id %d is exists." format id, language)
       assertEquals("Language id is correct.", id, language.getId)
@@ -108,9 +87,7 @@ class LanguageDaoSuite extends JUnitSuite with BeforeAndAfterAll {
     assertNull("Language with id %d does not exists." format 3, languageDao.getById(3))
   }
 
-
-  @Test
-  def changeDefaultLanguage {
+  test("change default language") {
     val property = systemDao.getProperty("DefaultLanguageId")
     property.setValue("2")
     systemDao.saveProperty(property)

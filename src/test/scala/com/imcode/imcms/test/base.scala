@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.test
 
-import java.util.concurrent.atomic.{AtomicLong, AtomicReference}
+import java.util.concurrent.atomic.{AtomicReference}
 import java.util.Properties
 import java.io.{FileReader, File}
 import org.springframework.context.support.FileSystemXmlApplicationContext
@@ -52,6 +52,8 @@ object Project {
 
 class Project(dirPath: String) {
 
+  private val dirRef = new AtomicReference[File]
+
   private val buildPropertiesFileWatcher = Util.createFileWatcher(fileFn("build.properties")) { file =>
     using(new FileReader(file)) { reader =>
       letret(new Properties) { _ load reader }
@@ -66,8 +68,6 @@ class Project(dirPath: String) {
 
   private val springAppContextRef = new AtomicReference(Option.empty[ApplicationContext])
 
-  val dir = new File(dirPath).getCanonicalFile
-
   val buildProperties = buildPropertiesFileWatcher()
 
   val testProperties = testPropertiesFileWatcher()
@@ -76,8 +76,15 @@ class Project(dirPath: String) {
 
   val testProperty = testProperties.getProperty(_:String)
 
+
   System.setProperty("log4j.configuration", "file:" + path("src/test/resources/log4j.xml"))
 
+  cd(dirPath)
+
+
+  def dir() = dirRef.get
+
+  def cd(newDirPath: String) = dirRef.set(new File(newDirPath).getCanonicalFile)
 
   def path(relativePath: String) = new File(dir, relativePath).getCanonicalPath
 
@@ -88,8 +95,6 @@ class Project(dirPath: String) {
   def subDir(relativePath: String) = new File(dir, relativePath)
 
   def subDirFn(relativePath: String) = () => subDir(relativePath)
-
-
 
   def springAppContext(reload: Boolean = false) = synchronized {
     System.setProperty("com.imcode.imcms.project.dir", path("."))
