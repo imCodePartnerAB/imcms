@@ -79,7 +79,7 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
     imageDao.saveImage(image)
 	}
 
-	text("save text doc's image history") {
+	test("save text doc's image history") {
     val image = Factory.createImage(1001, 0, ENGLISH, 1000)
     val imageHistory = new ImageHistory(image, ADMIN)
 

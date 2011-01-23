@@ -2,14 +2,6 @@ package com.imcode
 package imcms.dao
 
 import scala.collection.JavaConversions._
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.BeforeAndAfterAll
-import org.junit.Test
-
-import com.imcode.imcms.test.DB
-import com.imcode.imcms.test.Project
-
-import org.junit.Assert._
 import imcode.server.user.UserDomainObject
 import imcode.server.Imcms
 import java.io.ByteArrayInputStream
@@ -17,23 +9,24 @@ import imcode.util.io.InputStreamSource
 import org.apache.commons.io.FileUtils
 import imcode.server.document.textdocument.{NoPermissionToAddDocumentToMenuException, MenuItemDomainObject, MenuDomainObject, TextDocumentDomainObject}
 import imcms.api.{ContentLoop, I18nSupport}
-import imcode.server.document.{HtmlDocumentDomainObject, FileDocumentDomainObject, UrlDocumentDomainObject, DocumentTypeDomainObject}
-import imcms.mapping.{DocumentStoringVisitor, DocumentCreatingVisitor, DocumentMapper}
+import imcms.mapping.{DocumentStoringVisitor, DocumentMapper}
+import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.MustMatchers
+import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import imcms.test.Base.{project, db}
+import imcode.server.document._
 
 @RunWith(classOf[JUnitRunner])
-class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
+class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
   var docMapper: DocumentMapper = _
   var admin: UserDomainObject = _
   var user: UserDomainObject = _
   var i18nSupport: I18nSupport = _
 
-  override def beforeAll {
-    val project = Project()
-    val db = new DB(project)
-
+  override def beforeAll() {
     db.recreate()
     project.initImcms(true, true)
 
@@ -46,26 +39,22 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
   override def afterAll() = Imcms.stop()
 
 
-  @Test
-  def saveNewTextDocument() {
+  test("save new text doc") {
     saveNewTextDocumentFn()
   }
 
 
-  @Test
-  def saveNewUrlDocument() {
+  test("save new url doc") {
     saveNewUrlDocumentFn()
   }
 
 
-  @Test
-  def saveNewHtmlDocument() {
+  test("save new html doc") {
     saveNewHtmlDocumentFn()
   }
 
 
-  @Test
-  def saveNewFileDocument() {
+  test("save new file doc") {
     saveNewFileDocumentFn()
   }
 
@@ -158,72 +147,67 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test
-  def saveTextDocument()  {
+  test("update existing text document") {
     val doc = saveNewTextDocumentFn()
 
     docMapper.saveDocument(doc, admin)
   }
 
 
-  //@Test(enabled = true, expectedExceptions = NoPermissionToEditDocumentException.class)
-  @Test
-  def saveTextDocumentNoPermissions() {
+  test("try save new document without required permissions") {
     val doc = saveNewTextDocumentFn()
 
-    docMapper.saveDocument(doc, user)
+    intercept[NoPermissionToEditDocumentException] {
+      docMapper.saveDocument(doc, user)
+    }
   }
 
 
-  @Test
-  def saveHtmlDocument() {
+  test("update existing html document") {
     val doc = saveNewHtmlDocumentFn()
 
     docMapper.saveDocument(doc, admin)
   }
 
-  @Test
-  def saveUrlDocument()  {
+  test("update existing url document") {
     val doc = saveNewUrlDocumentFn()
 
     docMapper.saveDocument(doc, admin)
   }
 
 
-  @Test
-  def saveFileDocument() {
+  test("update existing file document") {
     val doc = saveNewFileDocumentFn()
 
     docMapper.saveDocument(doc, admin)
   }
 
 
-  @Test
-  def addMenu() {
-      val textDoc = saveNewTextDocumentFn()
-      val menuDoc = saveNewTextDocumentFn()
+  test("add menu to text doc") {
+    val textDoc = saveNewTextDocumentFn()
+    val menuDoc = saveNewTextDocumentFn()
 
-      val menu = new MenuDomainObject
-      val item = new MenuItemDomainObject(docMapper.getDocumentReference(menuDoc))
-      menu.addMenuItem(item)
+    val menu = new MenuDomainObject
+    val item = new MenuItemDomainObject(docMapper.getDocumentReference(menuDoc))
+    menu.addMenuItem(item)
 
 
-      textDoc.setMenu(0, menu)
+    textDoc.setMenu(0, menu)
 
-      docMapper.saveDocument(textDoc, admin)
+    docMapper.saveDocument(textDoc, admin)
 
-      val savedTextDoc = docMapper.getCustomDocument(textDoc.getId, textDoc.getVersionNo, textDoc.getLanguage)
-        .asInstanceOf[TextDocumentDomainObject]
+    val savedTextDoc = docMapper.getCustomDocument(textDoc.getId, textDoc.getVersionNo, textDoc.getLanguage)
+      .asInstanceOf[TextDocumentDomainObject]
 
-      val savedMenu = savedTextDoc.getMenus.get(0)
+    val savedMenu = savedTextDoc.getMenus.get(0)
 
-      assertNotNull(savedMenu)
+    assertNotNull(savedMenu)
 
-      assertEquals(savedMenu.getMenuItems.length, 1)
+    assertEquals(savedMenu.getMenuItems.length, 1)
 
-      val savedMenuDoc = savedMenu.getMenuItems()(0).getDocument
+    val savedMenuDoc = savedMenu.getMenuItems()(0).getDocument
 
-      assertEquals(savedMenuDoc.getId, menuDoc.getId);
+    assertEquals(savedMenuDoc.getId, menuDoc.getId)
 
   }
 
@@ -266,16 +250,16 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
 //    }
 
 
-
-  @Test(expected = classOf[NoPermissionToAddDocumentToMenuException])
-  def copyTextDocumentNoPermission() {
+  test("try copy existing text doc without required permissions") {
     val doc = saveNewTextDocumentFn()
-    val docCopy = docMapper.copyDocument(doc, user)
+
+    intercept[NoPermissionToAddDocumentToMenuException] {
+      val docCopy = docMapper.copyDocument(doc, user)
+    }
   }
 
 
-  @Test
-  def copyTextDocument() {
+  test("copy text doc") {
     //TextDocumentDomainObject doc = saveNewTextDocumentFn();
     for (l <- Imcms.getI18nSupport.getLanguages) {
       val doc = docMapper.getDocument(1001).asInstanceOf[TextDocumentDomainObject]
@@ -297,22 +281,19 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
 
 
 
-  @Test
-  def copyHtmlsDocument() {
+  test("copy HTML doc") {
     val doc = saveNewHtmlDocumentFn()
     val docCopy = docMapper.copyDocument(doc, admin)
   }
 
 
-  @Test
-  def copyUrlDocument() {
+  test("copy URL doc") {
     val doc = saveNewUrlDocumentFn()
     val docCopy = docMapper.copyDocument(doc, admin)
   }
 
 
-  @Test
-  def copyFileDocument()  {
+  test("copy File doc")  {
     val doc = saveNewFileDocumentFn()
     val docCopy = docMapper.copyDocument(doc, admin)
   }
@@ -344,8 +325,7 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
 //    }
 
 
-  @Test
-  def changeDocumentDefaultVersion() {
+  test("change doc default version") {
     val parentDoc = getMainWorkingDocumentInDefaultLanguage(true)
     var doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin)
 
@@ -382,8 +362,7 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
 //    }
 
 
-  @Test
-  def getDocuments() {
+  test("get all documents") {
     val ids = docMapper.getAllDocumentIds()
     val docs = docMapper.getDocuments(ids)
 
@@ -391,26 +370,17 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test
-  def getTextDocument() {
+  test("get working version of a doc") {
     getMainWorkingDocumentInDefaultLanguage(true)
   }
 
+  test("get File doc") (pending)
 
-  @Test
-  def getFileDocument(): Unit = pending
+  test("get HTML doc") (pending)
 
+  test("get URL doc") (pending)
 
-  @Test
-  def getHtmlDocument(): Unit = pending
-
-
-  @Test
-  def getUrlDocument(): Unit = pending
-
-
-  @Test
-  def makeTextDocumentVersion() {
+  test("make text doc version") {
     val workingVersionDoc = getMainWorkingDocumentInDefaultLanguage(true)
     val info = docMapper.getDocumentVersionInfo(workingVersionDoc.getId)
 
@@ -432,12 +402,10 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
   /**
    * Saves document's content (all expect meta).
    */
-  @Test
-  def saveDocumentContent(): Unit = pending
+  test("save doc content") (pending)
 
 
-  @Test
-  def makeHtmlDocumentVersion() {
+  test("make HTML doc version") {
     val doc = saveNewHtmlDocumentFn();
 
     val info = docMapper.getDocumentVersionInfo(doc.getId)
@@ -457,8 +425,7 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test
-  def makeUrlDocumentVersion() {
+  test("make URL doc version") {
     val doc = saveNewUrlDocumentFn();
     val info = docMapper.getDocumentVersionInfo(doc.getId)
 
@@ -477,8 +444,7 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test
-  def makeFileDocumentVersion() {
+  test("make file doc version") {
     val doc = saveNewFileDocumentFn()
     val info = docMapper.getDocumentVersionInfo(doc.getId)
     val docVersionNew = docMapper.makeDocumentVersion(doc.getId, admin)
@@ -497,20 +463,13 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test
-  def getDocumentVersionInfo(): Unit = pending
+  test("get doc version info") (pending)
 
+  test("save text doc text") (pending)
 
-  @Test
-  def saveTextDocumentText(): Unit = pending
+  test("save text doc image") (pending)
 
-
-  @Test
-  def saveTextDocumentImage(): Unit = pending
-
-
-  @Test
-  def saveTextDocumentContentLoop() {
+  test("save text doc content loop") {
     val doc = saveNewTextDocumentFn()
     val loop = new ContentLoop
     loop.addFirstContent
@@ -521,53 +480,45 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
   }
 
 
-  @Test
-  def invalidateDocument() {
+  test("invalidate doc") {
     val doc = saveNewTextDocumentFn()
 
     docMapper.invalidateDocument(doc)
   }
 
-  @Test
-  def getWorkingDocument() {
+  test("get working version of a doc in default language") {
     val doc = getMainWorkingDocumentInDefaultLanguage(true)
   }
 
 
-  @Test
-  def getDefaultDocument() {
+  test("get default document") {
     val doc = docMapper.getDefaultDocument(1001)
 
     assertNotNull(doc)
   }
 
 
-  @Test
-  def getCustomDocument(): Unit = pending
+  test("get custom doc") (pending)
 
 
-  @Test
-  def deleteTextDocument() {
+  test("delete text doc") {
     val doc = saveNewTextDocumentFn()
     docMapper.deleteDocument(doc, admin)
   }
 
 
-  @Test
-  def deleteHtmlDocument() {
+  test("delete HTML doc") {
     val doc = saveNewHtmlDocumentFn()
     docMapper.deleteDocument(doc, admin)
   }
 
 
-  @Test
-  def deleteUrlDocument() {
+  test("delete URL doc") {
     val doc = saveNewUrlDocumentFn()
     docMapper.deleteDocument(doc, admin)
   }
 
-  @Test
-  def deleteFileDocument() {
+  test("delete File doc") {
     val doc = saveNewFileDocumentFn()
 
     for (i <- 0 to 2) {
@@ -587,6 +538,8 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
       assertTrue(!file.exists)
     }
   }
+
+  test("update doc permissions") (pending)
 
 
   def getMainWorkingDocumentInDefaultLanguage(assertDocExists: Boolean) = {
@@ -626,7 +579,4 @@ class DocumentMapperSuite extends JUnitSuite with BeforeAndAfterAll {
 //                {unsavedContentLoopNo, unsavedContentNo}
 //        };
 //    }
-
-
-  def updateDocumentPermissions(): Unit = pending
 }

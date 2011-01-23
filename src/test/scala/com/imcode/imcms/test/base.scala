@@ -12,7 +12,7 @@ import org.hibernate.cfg.AnnotationConfiguration
 import org.hibernate.SessionFactory
 
 object Base {
-  val project = Project()
+  val project = new Project
   val db = new DB(project)
 }
 
@@ -46,11 +46,7 @@ object Util {
 }
 
 
-object Project {
-  def apply(dirPath: String = ".") = new Project(dirPath)
-}
-
-class Project(dirPath: String) {
+class Project(dirPath: String = ".") {
 
   private val dirRef = new AtomicReference[File]
 

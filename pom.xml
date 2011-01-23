@@ -1028,10 +1028,8 @@
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <argLine>-Xms64m -Xmx1024m</argLine>
                     <includes>
-                        <include>**/*IncludeDaoSpec.java</include>
-                        <include>**/*SystemPropertyDaoSpec.java</include>
-                        <!--<include>**/dao/IncludeDaoSuite.java</include>-->
-                        <!--<include>**/*Suite.java</include>-->
+                        <include>**/*Spec.java</include>
+                        <include>**/*Suite.java</include>
                     </includes>
                 </configuration>
             </plugin>
