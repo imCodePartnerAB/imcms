@@ -198,7 +198,7 @@ public class DocumentMapper implements DocumentGetter {
 
     
     /**
-     * Saves document as new.
+     * Saves doc as new.
      * 
      * @param doc
      * @param user
@@ -207,7 +207,6 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
-     *
      *
      * @see #createDocumentOfTypeFromParent(int, imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      * @see imcode.server.document.DocumentDomainObject#fromDocumentTypeId(int)
@@ -253,7 +252,6 @@ public class DocumentMapper implements DocumentGetter {
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         T docClone = (T)doc.clone();
-        I18nLanguage language = docClone.getLanguage();
         List<I18nMeta> i18nMetasClone = new LinkedList<I18nMeta>();
 
         for (Map.Entry<I18nLanguage, I18nMeta> e: i18nMetas.entrySet()) {
@@ -264,7 +262,7 @@ public class DocumentMapper implements DocumentGetter {
 
         invalidateDocument(docId);
 
-        return (T)getWorkingDocument(docId, language);
+        return (T)getWorkingDocument(docId, docClone.getLanguage());
     }
 
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<I18nLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
@@ -968,7 +966,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         @Override
-        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<DocumentSaver.SaveParameter> saveParams, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveDocument(document, labelsMap, user);
         }
     }

@@ -580,3 +580,8 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
 //        };
 //    }
 }
+
+
+class DocSaveSuite {
+
+}

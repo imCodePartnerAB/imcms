@@ -30,15 +30,6 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
 
 
     protected void dispatchOkFromDocumentInformation( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getDocument() ;
-
-        String parameterName = EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS;
-
-        if (null != request.getParameter( parameterName ) ) {
-            textDocument.setText( 1, new TextDomainObject( textDocument.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN ) );
-            textDocument.setText( 2, new TextDomainObject( textDocument.getMenuText(), TextDomainObject.TEXT_TYPE_HTML ) );
-        }
-                
         saveDocumentAndReturn(request, response);
     }
 

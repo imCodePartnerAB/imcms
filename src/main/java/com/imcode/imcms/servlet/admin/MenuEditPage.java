@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.mapping.DocumentSaver;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -277,7 +278,7 @@ public class MenuEditPage extends OkCancelPage {
 
 
         @Override
-        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, UserDomainObject user)
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<DocumentSaver.SaveParameter> saveParams, UserDomainObject user)
                 throws NoPermissionInternalException, DocumentSaveException {
 
             if ( null != savedDocument ) {
@@ -286,7 +287,7 @@ public class MenuEditPage extends OkCancelPage {
 
             final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
-            savedDocument = documentMapper.saveNewDocument(document, labelsMap, user);
+            savedDocument = documentMapper.saveNewDocument(document, labelsMap, saveParams, user);
 
             if ( null == parentMenuIndex ) {
                 return;

@@ -286,7 +286,7 @@ public class ImcmsFilter implements Filter {
         
         DocGetterCallback.Params params = new DocGetterCallback.Params(user, language, defaultLanguage);
 
-        // Switch version
+        // Switch doc version if a user requested that
         if (!user.isDefaultUser()) {
             String docIdentity = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID);
             String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION);
@@ -301,24 +301,25 @@ public class ImcmsFilter implements Filter {
                     }
 
                     if (StringUtils.isEmpty(docVersionNoStr)) {
-                        docGetterCallback = new DocGetterCallback.DocGetterCallbackDefault(params);
+                        docGetterCallback = new DocGetterCallback.Default(params);
                     } else {
                         Integer docVersionNo = Integer.parseInt(docVersionNoStr);
 
                         if (docVersionNo.equals(DocumentVersion.WORKING_VERSION_NO)) {
-                            docGetterCallback = new DocGetterCallback.DocGetterCallbackWorking(params, docId);
+                            docGetterCallback = new DocGetterCallback.Working(params, docId);
                         } else {
-                            docGetterCallback = new DocGetterCallback.DocGetterCallbackCustom(params, docId, docVersionNo);
+                            docGetterCallback = new DocGetterCallback.Custom(params, docId, docVersionNo);
                         }
                     }
                } catch (NumberFormatException e) {
+                    // add handling
                     throw new AssertionError(e);
                }
             }
         }
 
         docGetterCallback = docGetterCallback == null
-                ? new DocGetterCallback.DocGetterCallbackDefault(params)
+                ? new DocGetterCallback.Default(params)
                 : docGetterCallback.copy(params);
 
         user.setDocGetterCallback(docGetterCallback);

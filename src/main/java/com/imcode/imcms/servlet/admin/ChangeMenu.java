@@ -26,6 +26,15 @@ import com.imcode.imcms.mapping.DocumentSaveException;
 
 public class ChangeMenu extends HttpServlet {
 
+    /**
+     * If a user has rights to edit menu then forwards request to MenuEditPage
+     * otherwise request is ignored.
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {
 
@@ -65,6 +74,9 @@ public class ChangeMenu extends HttpServlet {
         menuEditPage.forward(request, response);
     }
 
+    /**
+     * Redirects back to a managed page in menu-edit mode.
+     */
     private static class RedirectToMenuEditDispatchCommand implements DispatchCommand {
 
         private TextDocumentDomainObject parentDocument;

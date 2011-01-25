@@ -2,6 +2,7 @@ package com.imcode.imcms.flow;
 
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.DocumentSaver;
 import com.imcode.imcms.util.Factory;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -148,8 +149,12 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     
     @Override
     protected synchronized void saveDocument( HttpServletRequest request ) {
+        EnumSet<DocumentSaver.SaveParameter> saveParams =
+            request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS) != null
+                ? EnumSet.of(DocumentSaver.SaveParameter.CopyI18nMetaTextsIntoTextFields)
+                : EnumSet.noneOf(DocumentSaver.SaveParameter.class);
         try {
-            saveDocumentCommand.saveI18nDocument(getDocument(), labelsMap, Utility.getLoggedOnUser(request));
+            saveDocumentCommand.saveDocumentWithI18nSupport(getDocument(), labelsMap, saveParams, Utility.getLoggedOnUser(request));
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {

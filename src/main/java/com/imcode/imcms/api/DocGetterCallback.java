@@ -7,10 +7,13 @@ import imcode.server.user.UserDomainObject;
 /**
  * Parametrized callback for DocumentMapper#getDocument method.
  * 
- * A callback is created per a http request and bond to the thread local in the Imcms singleton.
- * Working doc callback is associated with a particular document id.
- * Custom doc callback is associated with a particular document id and version.
- * 
+ * A callback is created per a http request and bound to the thread local in the Imcms singleton.
+ *
+ * Default doc callback always returns default version of any doc if it is present and a user is allowed to access it.
+ *
+ * Working and Custom doc callback returns working and custom version of a document for particular id;
+ * for other doc ids they behave exactly as default doc callback.
+ *
  * @see imcode.server.Imcms
  * @see com.imcode.imcms.servlet.ImcmsFilter
  * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(Integer)
@@ -71,9 +74,10 @@ public abstract class DocGetterCallback implements Cloneable {
 
     public abstract DocumentDomainObject getDoc(DocumentMapper docMapper, Integer docId);
 
-    public static class DocGetterCallbackDefault extends DocGetterCallback {
 
-        public DocGetterCallbackDefault(Params params) {
+    public static class Default extends DocGetterCallback {
+
+        public Default(Params params) {
             super(params);
         }
 
@@ -103,11 +107,11 @@ public abstract class DocGetterCallback implements Cloneable {
 
 
 
-    public static class DocGetterCallbackWorking extends DocGetterCallbackDefault {
+    public static class Working extends Default {
 
         private Integer docId;
 
-        public DocGetterCallbackWorking(Params params, Integer docId) {
+        public Working(Params params, Integer docId) {
             super(params);
             this.docId = docId;
         }
@@ -122,13 +126,13 @@ public abstract class DocGetterCallback implements Cloneable {
 
     
 
-    public static class DocGetterCallbackCustom extends DocGetterCallbackDefault {
+    public static class Custom extends Default {
 
         private Integer docId;
 
         private Integer docVersionNo;                
 
-        public DocGetterCallbackCustom(Params params, Integer docId, Integer docVersionNo) {
+        public Custom(Params params, Integer docId, Integer docVersionNo) {
             super(params);
             this.docId = docId;
             this.docVersionNo = docVersionNo;

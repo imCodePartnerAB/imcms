@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.DocIdentityCleanerVisitor;
+import com.imcode.imcms.util.Factory;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -25,6 +26,7 @@ import com.imcode.imcms.dao.*;
 public class DocumentSaver {
 
     public enum SaveParameter {
+        // Applies to text document only.
         CopyI18nMetaTextsIntoTextFields
     }
 
@@ -523,14 +525,24 @@ public class DocumentSaver {
         
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
-        if (doc instanceof TextDocumentDomainObject && parameters.contains(SaveParameter.CopyI18nMetaTextsIntoTextFields)) {
-            //todo: refactor and set for  all languages???
-            TextDocumentDomainObject textDoc = (TextDocumentDomainObject)doc;
-            textDoc.setText(1, new TextDomainObject(doc.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN));           
-            textDoc.setText(2, new TextDomainObject(doc.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN));
-        }
-
         doc.accept(docCreatingVisitor);
+
+        // refactor
+        if (doc instanceof TextDocumentDomainObject && parameters.contains(SaveParameter.CopyI18nMetaTextsIntoTextFields)) {
+            TextDocumentDomainObject textDoc = (TextDocumentDomainObject)doc;
+            for (I18nMeta i18nMeta: i18nMetas) {
+                TextDomainObject text1 = new TextDomainObject(i18nMeta.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN);
+                TextDomainObject text2 = new TextDomainObject(i18nMeta.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN);
+
+                text1.setNo(1);
+                text2.setNo(2);
+                text1.setLanguage(i18nMeta.getLanguage());
+                text2.setLanguage(i18nMeta.getLanguage());
+
+                docCreatingVisitor.saveTextDocumentText(textDoc, text1, user);
+                docCreatingVisitor.saveTextDocumentText(textDoc, text2, user);
+            }
+        }
 
         return docId;
     }

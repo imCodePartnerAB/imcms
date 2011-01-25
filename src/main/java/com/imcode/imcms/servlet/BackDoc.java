@@ -34,7 +34,6 @@ public class BackDoc extends HttpServlet {
      * doGet()
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-
         ImcmsServices imcref = Imcms.getServices();
         Utility.setDefaultHtmlContentType( res );
 
@@ -45,7 +44,7 @@ public class BackDoc extends HttpServlet {
             redirectToDocumentId( req, res, lastTextDocument.getId() );
         } else {
             DocGetterCallback.Params params = new DocGetterCallback.Params(Imcms.getUser(), Imcms.getI18nSupport().getDefaultLanguage(), Imcms.getI18nSupport().getDefaultLanguage());
-            DocGetterCallback callback = new DocGetterCallback.DocGetterCallbackDefault(params);
+            DocGetterCallback callback = new DocGetterCallback.Default(params);
             Imcms.getUser().setDocGetterCallback(callback);
             redirectToDocumentId( req, res, imcref.getSystemData().getStartDocument() );
         }
@@ -62,23 +61,20 @@ public class BackDoc extends HttpServlet {
 
     // todo: refactor
     public static DocumentDomainObject getNextToLastTextDocumentFromHistory( Stack<HistoryElement> history, ImcmsServices imcref ) {
-
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         HistoryElement he = history.pop();
         Imcms.getUser().setDocGetterCallback(he.docGetterCallback);
         DocumentDomainObject document = documentMapper.getDocument(he.docId); // remove top document from stack ( this is current text document )
 
-        if (!history.empty() ) {
-
-            while ( !history.empty() ) {
-                he = history.pop();
-                Imcms.getUser().setDocGetterCallback(he.docGetterCallback);
-                document = documentMapper.getDocument(he.docId);
-                if ( isTextDocument( document ) ) {
-                    break;
-                }
+        while (!history.empty()) {
+            he = history.pop();
+            Imcms.getUser().setDocGetterCallback(he.docGetterCallback);
+            document = documentMapper.getDocument(he.docId);
+            if (isTextDocument( document)) {
+                break;
             }
         }
+
         return document;
     }
 
