@@ -61,7 +61,10 @@
   
   <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
     <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>  
+  </bean>
+
+  <bean id="dao" abstract="true" class="com.imcode.imcms.dao.SpringHibernateTemplate"
+    p:hibernateTemplate-ref="hibernateTemplate"/>
   
   <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao">
     <property name="sessionFactory" ref="sessionFactory"/>
@@ -76,9 +79,7 @@
     <property name="languageDao" ref="languageDao"/>
   </bean> 
   
-  <bean id="textDao" class="com.imcode.imcms.dao.TextDao">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
+  <bean id="textDao" class="com.imcode.imcms.dao.TextDao" parent="dao"/>
   
   <bean id="categoryMapper" class="com.imcode.imcms.mapping.CategoryMapper">
     <property name="sessionFactory" ref="sessionFactory"/>

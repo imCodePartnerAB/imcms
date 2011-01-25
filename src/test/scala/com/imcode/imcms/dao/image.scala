@@ -20,10 +20,10 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
   var imageDao: ImageDao = _
   var languageDao: LanguageDao = _
 
-  val ENGLISH = Factory.createLanguage(1, "en", "English")
-  val SWEDISH = Factory.createLanguage(2, "sv", "Swedish")
+  val english = Factory.createLanguage(1, "en", "English")
+  val swedish = Factory.createLanguage(2, "sv", "Swedish")
 
-  val ADMIN = new UserDomainObject(0)
+  val admin = new UserDomainObject(0)
 
   override def beforeAll() = db.recreate()
 
@@ -55,33 +55,33 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
   }
 
   test("get text doc's images by doc id, doc version no and language") {
-    val images = imageDao.getImages(1001, 0, ENGLISH.getId)
+    val images = imageDao.getImages(1001, 0, english.getId)
     assertEquals(3, images.size)
   }
 
 
   test("get text doc's image by doc id, doc version no, language and no") {
-		val image = imageDao.getImage(ENGLISH.getId().intValue, 1001, 0, 0, null, null)
+		val image = imageDao.getImage(english.getId().intValue, 1001, 0, 0, null, null)
     assertNotNull(image)
 	}
 
 
 	test("delete text doc's images in a given language") {
-    val deletedCount = imageDao.deleteImages(1001, 0, ENGLISH.getId)
+    val deletedCount = imageDao.deleteImages(1001, 0, english.getId)
 
     assertEquals(3, deletedCount)
 	}
 
 
 	test("save text doc image") {
-    val image = Factory.createImage(1001, 0, ENGLISH, 1000)
+    val image = Factory.createImage(1001, 0, english, 1000)
 
     imageDao.saveImage(image)
 	}
 
 	test("save text doc's image history") {
-    val image = Factory.createImage(1001, 0, ENGLISH, 1000)
-    val imageHistory = new ImageHistory(image, ADMIN)
+    val image = Factory.createImage(1001, 0, english, 1000)
+    val imageHistory = new ImageHistory(image, admin)
 
     imageDao.saveImageHistory(imageHistory)
 	}

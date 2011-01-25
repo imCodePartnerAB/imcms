@@ -1,6 +1,11 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.*;
+import com.imcode.imcms.dao.ContentLoopDao;
+import com.imcode.imcms.dao.ImageDao;
+import com.imcode.imcms.dao.MenuDao;
+import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.dao.TextDao;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;

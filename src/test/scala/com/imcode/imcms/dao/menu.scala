@@ -17,7 +17,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
 
 	var menuDao: MenuDao = _
 
-  val ADMIN = new UserDomainObject(0)
+  val admin = new UserDomainObject(0)
 
   override def beforeAll() = db.recreate()
 
@@ -60,7 +60,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
 
     assertEquals(menus.size, 4)
 
-    val menuHistory = new MenuHistory(menu, ADMIN)
+    val menuHistory = new MenuHistory(menu, admin)
     menuDao.saveMenuHistory(menuHistory)
   }
 
