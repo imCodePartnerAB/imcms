@@ -197,10 +197,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public int getId() {
-        Integer id = meta.getId();
+        Integer id = getIdValue();
 		return id == null ? ID_NEW : id;
-
 	}
+
+    public Integer getIdValue() {
+        return meta.getId();
+    }
 
 	public void setId(int id) {
 		meta.setId(id);
