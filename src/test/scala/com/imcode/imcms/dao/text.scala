@@ -37,10 +37,10 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
                "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
                "src/main/resources/com/imcode/imcms/hbm/Text.hbm.xml")
 
-    db.runScripts("src/test/resources/sql/text_dao.sql")
-
     textDao = new TextDao
     textDao.hibernateTemplate = new HibernateTemplate(sf)
+
+    db.runScripts("src/test/resources/sql/text_dao.sql")
   }
 
   def withFixture(test: OneArgTest) {
@@ -64,7 +64,7 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
       text: String = Default.text,
       language: I18nLanguage) =
 
-    letret(Factory.createText(docId, no, docVersionNo, language)) { vo =>
+    letret(Factory.createText(docId, docVersionNo, no, language)) { vo =>
       for (ContentInfo(loopNo: Int, contentNo: Int) <- contentInfo) {
         vo.setContentLoopNo(loopNo)
         vo.setContentNo(contentNo)
@@ -89,22 +89,6 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
     }
 
 
-	/*
-	@Test void getExistingText() {
-		def text = textDao.getText(1001, 1, 1)
-
-		Assert.assertNotNull(text)
-	}
-
-
-    @Test void getNonExistingText() {
-        def text = textDao.getText(10001, 1, 1)
-
-        assertNull(text, "Text does not exists")
-    }
-    */
-
-
   test("save new text doc's text") { language =>
     val text = saveNewTextDoc(language = language)
     val texts = textDao.getTexts(Default.docId, Default.docVersionNo, language)
@@ -113,86 +97,88 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
     val queriedText = texts.head
     queriedText must have (
       'id (text.getId),
+      'type (text.getType),
       'docId (Default.docId),
       'docVersionNo (Default.docVersionNo),
       'contentLoopNo (null),
       'contentNo (null),
       'no (Default.no),
       'text (Default.text),
-      'language (language)
-    )
+      'language (language))
   }
 
 
   test("update existing text doc's text") { language =>
-    val text = saveNewTextDoc(language = language)
-    val textClone = text.clone
+    val text = saveNewTextDoc(text="initial text", language = language)
+    val updatedText = text.clone
+    val updatedTextValue = "modified text"
+    val updatedDocVersionNo = 1
 
-    val updatedText = Factory.createText(1001, 0, 0, english)
-    updatedText.setId(text.getId)
+    updatedText.setText(updatedTextValue)
+    updatedText.setDocVersionNo(updatedDocVersionNo)
 
-    updatedText.setText("updated text")
     textDao.saveText(updatedText)
+    val queriedText = textDao.getTextById(text.getId)
+    queriedText must have (
+      'id (text.getId),
+      'type (text.getType),
+      'docId (text.getDocId),
+      'docVersionNo (updatedDocVersionNo),
+      'contentLoopNo (text.getContentLoopNo),
+      'contentNo (text.getContentNo),
+      'no (text.getNo),
+      'text (updatedTextValue),
+      'language (language))
   }
 
 
-  test("delete text doc's text in a given language") { () =>
-    for (no <- 1 to 2) {
-      val text_en = Factory.createText(1001, 0, no, english)
-      val text_sw = Factory.createText(1001, 0, no, swedish)
+  test("delete text doc's text") { () =>
+    val nos = 0 until 5
 
-      textDao.saveText(text_en)
-      textDao.saveText(text_sw)
-    }
+    for (indexNo <- nos; language <- languages)
+      saveNewTextDoc(docId = Default.docId, docVersionNo = Default.docVersionNo, no = indexNo, language = language)
 
-    val deletedCount_en = textDao.deleteTexts(1001, 0, english.getId)
-
-    assertEquals(deletedCount_en, 3)
-
-    val deletedCount_sw = textDao.deleteTexts(1001, 0, swedish)
-
-    assertEquals(deletedCount_sw, 3)
+    for (language <- languages)
+      expect(nos.size) {
+        textDao.deleteTexts(Default.docId, Default.docVersionNo, language)
+      }
   }
 
-  test("save text doc's text history") { () =>
-    val textHistory = new TextHistory(Factory.createText(1001, 0, 0, english), admin)
+  test("save text doc's text history") { language =>
+    val text = saveNewTextDoc(language = language)
+    val textHistory = new TextHistory(text, admin)
 
     textDao.saveTextHistory(textHistory)
   }
 
 
   test("get text doc's texts by doc id and doc version no") { () =>
-    for (versionNo <- 0 until 2; no <- 0 until 5) {
-      val text_en = Factory.createText(1001, versionNo, no, english)
-      val text_sw = Factory.createText(1001, versionNo, no, swedish)
+    val versionNos = 0 until 2
+    val nos = 0 until 5
 
-      textDao.saveText(text_en);
-      textDao.saveText(text_sw);
-    }
+    for (versionNo <- versionNos; indexNo <- nos; language <- languages)
+      saveNewTextDoc(docId = Default.docId, docVersionNo = versionNo, no = indexNo, language = language)
 
-    for (versionNo <- 0 to 2) {
-      val texts = textDao.getTexts(1001, versionNo);
+    for (versionNo <- versionNos) {
+      val texts = textDao.getTexts(1001, versionNo)
 
-      assertEquals(texts.size(), 5 * 2);
+      expect(nos.size * languages.size) { texts.size }
     }
   }
 
 
   test("get text doc's texts by doc id and doc version no and language") { () =>
-    for (versionNo <- 0 until 3; no <- 0 until 5) {
-      val text_en = Factory.createText(1001, versionNo, no, english)
-      val text_sw = Factory.createText(1001, versionNo, no, swedish)
+    val versionNos = 0 until 2
+    val nos = 0 until 5
 
-      textDao.saveText(text_en)
-      textDao.saveText(text_sw)
-    }
+    for (versionNo <- versionNos; indexNo <- nos; language <- languages)
+      saveNewTextDoc(docId = Default.docId, docVersionNo = versionNo, no = indexNo, language = language)
 
-    for (versionNo <- 0 until 3) {
-      val texts_en = textDao.getTexts(1001, versionNo, english)
-      val texts_sw = textDao.getTexts(1001, versionNo, swedish)
 
-      assertEquals(texts_en.size(), 5)
-      assertEquals(texts_sw.size(), 5)
+    for (versionNo <- versionNos; language <- languages) {
+      val texts = textDao.getTexts(Default.docId, versionNo, language)
+
+      expect(5) { texts.size }
     }
   }
 }
