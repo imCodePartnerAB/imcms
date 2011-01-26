@@ -83,9 +83,7 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
 
-  <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean> 
+  <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao" parent="dao"/>
 
   <bean id="ipAccessDao" class="com.imcode.imcms.dao.IPAccessDao">
     <constructor-arg ref="sessionFactory"/>
