@@ -2,6 +2,7 @@ package imcode.server.document.textdocument;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
+import org.aspectj.bridge.MessageWriter;
 
 import java.io.Serializable;
 
@@ -18,15 +19,15 @@ import javax.persistence.Transient;
 @Embeddable
 public class MenuItemDomainObject implements Cloneable, Serializable {
 
-	@Transient
-    private DocumentReference documentReference;
-    
 	@Column(name="manual_sort_order")
 	private Integer sortKey;
 	
 	@Column(name="tree_sort_index")
 	private String treeSortIndex;	
-    
+
+    @Transient
+    private DocumentReference documentReference;
+
     @Transient
     private TreeSortKeyDomainObject treeSortKey;
     
@@ -76,8 +77,17 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         return documentReference;
     }
     
-    protected MenuItemDomainObject clone() throws CloneNotSupportedException {
-        return (MenuItemDomainObject)super.clone();
+    public MenuItemDomainObject clone() throws CloneNotSupportedException {
+        MenuItemDomainObject clone = (MenuItemDomainObject)super.clone();
+        if (treeSortKey != null) {
+            clone.treeSortKey = new TreeSortKeyDomainObject(treeSortKey.getTreeSortKey());
+        }
+
+        if (documentReference != null) {
+            clone.documentReference = documentReference.clone();
+        }
+
+        return clone;
     }
 
     public DocumentDomainObject getDocument() {

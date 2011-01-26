@@ -1,9 +1,6 @@
 package com.imcode
 package imcms.dao
 
-import org.hibernate.Session
-import org.springframework.orm.hibernate3.HibernateCallback
-
 import com.imcode.imcms.api.ContentLoop
 import org.junit.Assert._
 import org.junit.runner.RunWith
@@ -11,6 +8,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test.Base.{db}
+import org.springframework.orm.hibernate3.{HibernateTemplate}
 
 @RunWith(classOf[JUnitRunner])
 class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -33,10 +31,10 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val sf = db.createHibernateSessionFactory(Seq(classOf[ContentLoop]),
                "src/main/resources/com/imcode/imcms/hbm/ContentLoop.hbm.xml")
 
-    db.runScripts("src/test/resources/sql/content_loop_dao.sql")
-
     contentLoopDao = new ContentLoopDao
-    contentLoopDao.setSessionFactory(sf)
+    contentLoopDao.hibernateTemplate = new HibernateTemplate(sf)
+
+    db.runScripts("src/test/resources/sql/content_loop_dao.sql")
   }
 
 
@@ -130,10 +128,10 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
     assertEquals("Content count matches", contentsCount, savedContents.size)
 
     for (i <- 0 until contentsCount) {
-        val content = contents.get(i)
-        val savedContent = savedContents.get(i)
+      val content = contents.get(i)
+      val savedContent = savedContents.get(i)
 
-        assertEquals("Contents no-s mathces.", content.getNo, savedContent.getNo)
+      assertEquals("Contents no-s mathces.", content.getNo, savedContent.getNo)
     }
 	}
 
@@ -146,11 +144,10 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
   }
 
 
-  def getNextLoopNo(): JInteger = contentLoopDao.execute(new HibernateCallback[JInteger] {
-    def doInHibernate(session: Session) =
-      session.createQuery("select max(l.no) from ContentLoop l where l.docId = 1001 and l.docVersionNo = 0"
-      ).uniqueResult().asInstanceOf[JInteger]
-  }) match {
+  def getNextLoopNo(): JInteger = contentLoopDao.withSession {
+    _.createQuery("select max(l.no) from ContentLoop l where l.docId = 1001 and l.docVersionNo = 0")
+    .uniqueResult().asInstanceOf[JInteger]
+  } match {
     case null => 0
     case n => n.intValue + 1
   }

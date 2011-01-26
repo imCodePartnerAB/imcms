@@ -2,7 +2,7 @@ package imcode.server.document;
 
 import java.io.Serializable;
 
-public abstract class DocumentReference implements Serializable {
+public abstract class DocumentReference implements Serializable, Cloneable {
 
     private final int documentId;
 
@@ -32,5 +32,10 @@ public abstract class DocumentReference implements Serializable {
 
         return documentId == that.documentId;
 
+    }
+
+    @Override
+    public DocumentReference clone() throws CloneNotSupportedException {
+        return (DocumentReference)super.clone();
     }
 }

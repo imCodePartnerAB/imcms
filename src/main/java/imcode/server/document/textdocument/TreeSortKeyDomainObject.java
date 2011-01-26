@@ -15,6 +15,8 @@ public class TreeSortKeyDomainObject implements Comparable, Serializable {
 
     private final int[] keys;
 
+    private String treeSortKey;
+
     public TreeSortKeyDomainObject( String treeSortKey ) {
         if (null == treeSortKey) {
             throw new NullArgumentException("treeSortKey");
@@ -29,6 +31,8 @@ public class TreeSortKeyDomainObject implements Comparable, Serializable {
             } catch( NumberFormatException ignored ) {}
         }
         keys = ArrayUtils.toPrimitive( (Integer[])keyList.toArray( new Integer[keyList.size()] )) ;
+
+        setTreeSortKey(treeSortKey);
     }
 
     public int getLevelCount() {
@@ -75,5 +79,13 @@ public class TreeSortKeyDomainObject implements Comparable, Serializable {
 
     public int hashCode() {
         return new HashCodeBuilder().append(keys).toHashCode();
+    }
+
+    public String getTreeSortKey() {
+        return treeSortKey;
+    }
+
+    public void setTreeSortKey(String treeSortKey) {
+        this.treeSortKey = treeSortKey;
     }
 }

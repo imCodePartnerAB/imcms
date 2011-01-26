@@ -223,7 +223,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         menus.put(no, newMenu);
 
-        return newMenu;
+        return newMenu.clone();
     }
 
     /**
