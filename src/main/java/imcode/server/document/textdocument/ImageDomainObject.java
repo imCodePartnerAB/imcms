@@ -44,7 +44,7 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
 	@Column(name="doc_version_no")
 	private Integer docVersionNo;
 
-    /** Image no in a document.*/
+    /** Image order no in a text doc.*/
     private String no = "";
 	
     private int width;

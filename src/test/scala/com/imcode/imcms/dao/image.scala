@@ -1,8 +1,6 @@
 package com.imcode
 package imcms.dao
 
-import org.scalatest.BeforeAndAfterAll
-
 import imcode.server.user.UserDomainObject
 import imcms.util.Factory
 import imcode.server.document.textdocument.ImageDomainObject
@@ -13,6 +11,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test.Base.{db}
+import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])
 class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -32,19 +31,19 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
                "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
                "src/main/resources/com/imcode/imcms/hbm/Image.hbm.xml")
 
-    db.runScripts("src/test/resources/sql/image_dao.sql")
-
     imageDao = new ImageDao
-    imageDao.setSessionFactory(sf)
+    imageDao.hibernateTemplate = new HibernateTemplate(sf)
 
     languageDao = new LanguageDao
     languageDao.setSessionFactory(sf)
 
-    imageDao.setLanguageDao(languageDao)
+    imageDao.languageDao = languageDao
+
+    db.runScripts("src/test/resources/sql/image_dao.sql")
   }
 
-  test("get text doc's images by index") {
-    val images = imageDao.getImagesByIndex(1001, 0, 0, null, null, false)
+  test("get text doc's images by no") {
+    val images = imageDao.getImagesByIndex(1001, 0, 1, null, null, false)
     assertEquals(2, images.size)
   }
 
@@ -61,7 +60,7 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
 
 
   test("get text doc's image by doc id, doc version no, language and no") {
-		val image = imageDao.getImage(english.getId().intValue, 1001, 0, 0, null, null)
+		val image = imageDao.getImage(english.getId().intValue, 1001, 0, 1, null, null)
     assertNotNull(image)
 	}
 

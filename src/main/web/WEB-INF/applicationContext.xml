@@ -74,10 +74,8 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
   
-  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao">
-    <property name="sessionFactory" ref="sessionFactory"/>
-    <property name="languageDao" ref="languageDao"/>
-  </bean> 
+  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao" parent="dao"
+    p:languageDao-ref="languageDao"/>
   
   <bean id="textDao" class="com.imcode.imcms.dao.TextDao" parent="dao"/>
   

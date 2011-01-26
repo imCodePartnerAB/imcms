@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import scala.collection.JavaConversions._
 import com.imcode.imcms.api.I18nLanguage
 import com.imcode.imcms.api.TextHistory
 import imcode.server.document.textdocument.TextDomainObject
@@ -11,9 +12,7 @@ class TextDao extends SpringHibernateTemplate {
 
   /** Inserts or updates text. */
   @Transactional
-  def saveText(text: TextDomainObject) = letret(text) {
-    hibernateTemplate.saveOrUpdate(_)
-  }
+  def saveText(text: TextDomainObject) = letret(text) { hibernateTemplate.saveOrUpdate }
 
 
   @Transactional

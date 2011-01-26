@@ -166,7 +166,7 @@ class DB(project: Project) {
   )
 
   def runScripts(script: String, scripts: String*) {
-    let(new DBAccess(createDataSource())) { access =>
+    let(new DBAccess(createDataSource(autocommit=true))) { access =>
       access.runScripts(script +: scripts map { project path _ })
     }
   }
