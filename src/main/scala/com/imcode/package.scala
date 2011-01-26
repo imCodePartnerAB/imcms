@@ -9,6 +9,7 @@ package object imcode {
   type JFloat = java.lang.Float
   type JDouble = java.lang.Double
   type JCollection[A] = java.util.Collection[A]
+  type JList[A] = java.util.List[A]
 
   val EX = scala.util.control.Exception
 
