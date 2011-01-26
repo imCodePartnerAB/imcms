@@ -10,6 +10,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test.Base.{db}
+import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])
 //todo: Test named queries
@@ -25,10 +26,10 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
     val sf = db.createHibernateSessionFactory(Seq(classOf[MenuDomainObject], classOf[MenuHistory]),
                "src/main/resources/com/imcode/imcms/hbm/Menu.hbm.xml")
 
-    db.runScripts("src/test/resources/sql/menu_dao.sql")
-
     menuDao = new MenuDao
-    menuDao.setSessionFactory(sf)
+    menuDao.hibernateTemplate = new HibernateTemplate(sf)
+
+    db.runScripts("src/test/resources/sql/menu_dao.sql")
   }
 
 

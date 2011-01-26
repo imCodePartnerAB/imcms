@@ -65,25 +65,27 @@
 
   <bean id="dao" abstract="true" class="com.imcode.imcms.dao.SpringHibernateTemplate"
     p:hibernateTemplate-ref="hibernateTemplate"/>
-  
+
+  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao" parent="dao"
+    p:languageDao-ref="languageDao"/>
+
+  <bean id="textDao" class="com.imcode.imcms.dao.TextDao" parent="dao"/>
+
+  <bean id="menuDao" class="com.imcode.imcms.dao.MenuDao" parent="dao"/>
+
+  <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao" parent="dao"/>
+
   <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
   <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDao">
     <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>  
-  
-  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao" parent="dao"
-    p:languageDao-ref="languageDao"/>
-  
-  <bean id="textDao" class="com.imcode.imcms.dao.TextDao" parent="dao"/>
-  
+  </bean>
+
   <bean id="categoryMapper" class="com.imcode.imcms.mapping.CategoryMapper">
     <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>  
-
-  <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao" parent="dao"/>
+  </bean>
 
   <bean id="ipAccessDao" class="com.imcode.imcms.dao.IPAccessDao">
     <constructor-arg ref="sessionFactory"/>
@@ -93,10 +95,6 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>         
   
-  <bean id="menuDao" class="com.imcode.imcms.dao.MenuDao">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
-
   <bean id="systemDao" class="com.imcode.imcms.dao.SystemDao">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
