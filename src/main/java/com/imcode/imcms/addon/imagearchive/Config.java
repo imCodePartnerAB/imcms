@@ -1,5 +1,7 @@
 package com.imcode.imcms.addon.imagearchive;
 
+import imcode.util.io.FileUtility;
+
 import java.io.File;
 
 public class Config {
@@ -20,7 +22,7 @@ public class Config {
 
     
     public File getStoragePath() {
-        return storagePath;
+        return FileUtility.getFileFromWebappRelativePath(storagePath.toString());
     }
 
     public void setStoragePath(File storagePath) {
@@ -36,7 +38,7 @@ public class Config {
     }
 
     public File getImagesPath() {
-        return imagesPath;
+        return FileUtility.getFileFromWebappRelativePath(imagesPath.toString());
     }
 
     public void setImagesPath(File imagesPath) {
@@ -44,7 +46,7 @@ public class Config {
     }
 
     public File getLibrariesPath() {
-        return librariesPath;
+        return FileUtility.getFileFromWebappRelativePath(librariesPath.toString());
     }
 
     public void setLibrariesPath(File librariesPath) {
