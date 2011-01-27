@@ -6,7 +6,7 @@
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>6.0.0-alpha48-SNAPSHOT</version>
+    <version>6.0.0-alpha49</version>
     <name>imCMS</name>
 
     <profiles>
@@ -422,10 +422,11 @@
                     <artifactId>activation</artifactId>
                     <groupId>javax.activation</groupId>
                 </exclusion>
-                <exclusion>
-                    <artifactId>servlet-api</artifactId>
-                    <groupId>javax.servlet</groupId>
-                </exclusion>
+                <!-- BUG/ISSUE: If this dependency (servlet-api 2.3) is excluded then client projects do not compile -->
+                <!--<exclusion>-->
+                    <!--<artifactId>servlet-api</artifactId>-->
+                    <!--<groupId>javax.servlet</groupId>-->
+                <!--</exclusion>-->
                 <exclusion>
                     <artifactId>commons-lang</artifactId>
                     <groupId>commons-lang</groupId>
