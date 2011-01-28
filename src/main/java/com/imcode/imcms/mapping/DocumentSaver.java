@@ -55,7 +55,7 @@ public class DocumentSaver {
      * Updates doc's last modified date time if it was not changed explicitly.
      * @param doc
      */
-    public void maybeUpdateLastModifiedDt(DocumentDomainObject doc) {
+    public void updateLastModifiedDtIfNotSetExplicitly(DocumentDomainObject doc) {
         Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getActualModifiedDatetime());
         Date modifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getModifiedDatetime());
         boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
@@ -78,8 +78,8 @@ public class DocumentSaver {
         createEnclosingContentLoopIfNecessary(doc, text);
 
     	new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(doc, text, user);
-        maybeUpdateLastModifiedDt(doc);
-        metaDao.updateModified(doc, user);
+        updateLastModifiedDtIfNotSetExplicitly(doc);
+        metaDao.touch(doc, user);
     }
 
 
@@ -89,8 +89,8 @@ public class DocumentSaver {
         menu.setDocVersionNo(doc.getVersion().getNo());
 
         new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(doc, menu, user);
-        maybeUpdateLastModifiedDt(doc);
-        metaDao.updateModified(doc, user);
+        updateLastModifiedDtIfNotSetExplicitly(doc);
+        metaDao.touch(doc, user);
     }
 
 
@@ -107,7 +107,8 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public void saveImages(TextDocumentDomainObject doc, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveImages(TextDocumentDomainObject doc, Collection<ImageDomainObject> images, UserDomainObject user)
+            throws NoPermissionInternalException, DocumentSaveException {
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
         createEnclosingContentLoopIfNecessary(doc, images.iterator().next());
@@ -116,8 +117,8 @@ public class DocumentSaver {
             storingVisitor.saveTextDocumentImage(doc, image, user);
         }
 
-        maybeUpdateLastModifiedDt(doc);
-        metaDao.updateModified(doc, user);
+        updateLastModifiedDtIfNotSetExplicitly(doc);
+        metaDao.touch(doc, user);
     }
 
 
@@ -129,8 +130,8 @@ public class DocumentSaver {
 
         storingVisitor.saveTextDocumentImage(doc, image, user);
 
-        maybeUpdateLastModifiedDt(doc);
-        metaDao.updateModified(doc, user);
+        updateLastModifiedDtIfNotSetExplicitly(doc);
+        metaDao.touch(doc, user);
     }
     
 
@@ -296,21 +297,10 @@ public class DocumentSaver {
 //    }
 
 
-    /**
-     * If lastModifiedDate was not changed explicitly since the document had been loaded then it is set to `now`.
-     */
     @Transactional
     public void updateDocument(DocumentDomainObject doc, List<I18nMeta> i18nMetas, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(doc);
-
         //document.loadAllLazilyLoaded();
-
-        Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getActualModifiedDatetime());
-        Date modifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getModifiedDatetime());
-        boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
-        if (modifiedDatetimeUnchanged) {
-            doc.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
-        }
 
         if (user.canEditPermissionsFor(oldDoc)) {
             newUpdateDocumentRolePermissions(doc, user, oldDoc);
@@ -326,6 +316,8 @@ public class DocumentSaver {
         }
 
         doc.accept(savingVisitor);
+        updateLastModifiedDtIfNotSetExplicitly(doc);
+        metaDao.touch(doc, user);
     }    
 
 //    private Integer saveNewDocument(UserDomainObject user, DocumentDomainObject document, boolean copying)

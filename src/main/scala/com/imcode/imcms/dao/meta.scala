@@ -18,8 +18,9 @@ class MetaDao extends SpringHibernateTemplate {
   @Transactional
   def getMeta(docId: JInteger) = hibernateTemplate.get(classOf[Meta], docId)
 
+  /**  Updates doc's access and modified date-time. */
   @Transactional
-  def updateModified(doc: DocumentDomainObject, user: UserDomainObject) = withSession { session =>
+  def touch(doc: DocumentDomainObject, user: UserDomainObject) = withSession { session =>
     session.createQuery("UPDATE Meta m SET m.modifiedDatetime = :modifiedDt WHERE m.id = :docId")
       .setParameter("modifiedDt", doc.getModifiedDatetime)
       .setParameter("docId", doc.getIdValue)
