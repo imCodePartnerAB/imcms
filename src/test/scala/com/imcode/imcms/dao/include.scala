@@ -7,6 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{WordSpec, BeforeAndAfterEach, BeforeAndAfterAll}
 import org.scalatest.matchers.MustMatchers
 import imcms.test.Base.{db}
+import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])
 class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -20,7 +21,7 @@ class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll w
     db.runScripts("src/test/resources/sql/include_dao.sql")
 
     metaDao = new MetaDao
-    metaDao.setSessionFactory(sf)
+    metaDao.hibernateTemplate = new HibernateTemplate(sf)
   }
 
 

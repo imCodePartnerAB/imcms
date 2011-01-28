@@ -75,9 +75,7 @@
 
   <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao" parent="dao"/>
 
-  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
+  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao" parent="dao"/>
   
   <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDao">
     <property name="sessionFactory" ref="sessionFactory"/>

@@ -8,6 +8,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test.Base.{db}
+import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])
 //todo: Test named queries
@@ -23,7 +24,7 @@ class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAft
     db.runScripts("src/test/resources/sql/template_names_dao.sql")
 
     metaDao = new MetaDao
-    metaDao.setSessionFactory(sf)
+    metaDao.hibernateTemplate = new HibernateTemplate(sf)
   }
 
 

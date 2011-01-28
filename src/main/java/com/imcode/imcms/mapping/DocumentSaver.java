@@ -49,7 +49,21 @@ public class DocumentSaver {
     private MenuDao menuDao;
     
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
-    
+
+
+    /**
+     * Updates doc's last modified date time if it was not changed explicitly.
+     * @param doc
+     */
+    public void maybeUpdateLastModifiedDt(DocumentDomainObject doc) {
+        Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getActualModifiedDatetime());
+        Date modifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getModifiedDatetime());
+        boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
+        if (modifiedDatetimeUnchanged) {
+            doc.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
+        }
+    }
+
     /**
      * Saves edited text-document text and non-saved enclosing content loop if any.
      * If text is enclosed into unsaved content loop then the loop must also exist in document.
@@ -58,26 +72,25 @@ public class DocumentSaver {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      *
      * @throws IllegalStateException if a text refers non-existing content loop.
-     * 
-     * TODO: Update doc modified dt
      */
     @Transactional     
     public void saveText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         createEnclosingContentLoopIfNecessary(doc, text);
 
     	new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(doc, text, user);
+        maybeUpdateLastModifiedDt(doc);
+        metaDao.updateModified(doc, user);
     }
 
 
-    /**
-     * TODO: Update doc modified dt
-     */
     @Transactional
     public void saveMenu(TextDocumentDomainObject doc, MenuDomainObject menu, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         menu.setDocId(doc.getId());
         menu.setDocVersionNo(doc.getVersion().getNo());
 
         new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(doc, menu, user);
+        maybeUpdateLastModifiedDt(doc);
+        metaDao.updateModified(doc, user);
     }
 
 
@@ -92,8 +105,6 @@ public class DocumentSaver {
      * @param user
      * @throws NoPermissionInternalException
      * @throws DocumentSaveException
-     *
-     * TODO: Update doc modified dt
      */
     @Transactional
     public void saveImages(TextDocumentDomainObject doc, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
@@ -104,6 +115,9 @@ public class DocumentSaver {
         for (ImageDomainObject image: images) {
             storingVisitor.saveTextDocumentImage(doc, image, user);
         }
+
+        maybeUpdateLastModifiedDt(doc);
+        metaDao.updateModified(doc, user);
     }
 
 
@@ -114,6 +128,9 @@ public class DocumentSaver {
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
         storingVisitor.saveTextDocumentImage(doc, image, user);
+
+        maybeUpdateLastModifiedDt(doc);
+        metaDao.updateModified(doc, user);
     }
     
 
