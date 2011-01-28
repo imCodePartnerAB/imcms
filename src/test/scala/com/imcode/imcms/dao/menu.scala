@@ -13,7 +13,6 @@ import imcms.test.Base.{db}
 import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])
-//todo: Test named queries
 class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var menuDao: MenuDao = _

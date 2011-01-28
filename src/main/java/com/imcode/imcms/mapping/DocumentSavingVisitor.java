@@ -14,21 +14,17 @@ import com.imcode.imcms.mapping.orm.UrlReference;
 
 /**
  * Updates existing document fields.
- * 
+ * <p/>
  * Not a public API. Must not be used directly.
  *
  * @see com.imcode.imcms.mapping.DocumentSaver
  */
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
-	/**
-	 * Current version of a document.
-	 */
+    /** Current version of a document. */
     private DocumentDomainObject oldDocument;
-    
-    /**
-     * An user performing save operation. 
-     */
+
+    /** An user performing save operation. */
     private UserDomainObject savingUser;
 
     public DocumentSavingVisitor(DocumentDomainObject documentInDatabase,
@@ -39,48 +35,44 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     }
 
     // runs inside transaction   
-    public void visitHtmlDocument( HtmlDocumentDomainObject document ) {
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
-    	
-    	HtmlReference htmlReference = new HtmlReference();
-    	
-    	htmlReference.setDocId(document.getMeta().getId());
-        htmlReference.setDocVersionNo(document.getVersionNo());
-    	htmlReference.setHtml(document.getHtml());
+    public void visitHtmlDocument(HtmlDocumentDomainObject document) {
+        HtmlReference htmlReference = new HtmlReference();
 
-        dao.deleteHtmlReference(document.getId(), document.getVersionNo());
-    	dao.saveHtmlReference(htmlReference);
+        htmlReference.setDocId(document.getIdValue());
+        htmlReference.setDocVersionNo(document.getVersionNo());
+        htmlReference.setHtml(document.getHtml());
+
+        metaDao.deleteHtmlReference(document.getId(), document.getVersionNo());
+        metaDao.saveHtmlReference(htmlReference);
     }
 
     // runs inside transaction   
-    public void visitUrlDocument( UrlDocumentDomainObject document ) {
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
-    	
-    	UrlReference reference = new UrlReference();
-    	reference.setDocId(document.getMeta().getId());
+    public void visitUrlDocument(UrlDocumentDomainObject document) {
+        UrlReference reference = new UrlReference();
+        reference.setDocId(document.getIdValue());
         reference.setDocVersionNo(document.getVersionNo());
-    	reference.setUrl(document.getUrl());
-	    reference.setUrlTarget("");
-    	reference.setUrlText("");
-    	reference.setUrlLanguagePrefix("");
-    	reference.setUrlFrameName("");
+        reference.setUrl(document.getUrl());
+        reference.setUrlTarget("");
+        reference.setUrlText("");
+        reference.setUrlLanguagePrefix("");
+        reference.setUrlFrameName("");
 
-        dao.deleteUrlReference(document.getId(), document.getVersionNo());
-	    dao.saveUrlReference(reference);
+        metaDao.deleteUrlReference(document.getId(), document.getVersionNo());
+        metaDao.saveUrlReference(reference);
     }
 
     // runs inside transaction 
-    public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
-        updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject)oldDocument, savingUser);        
-        updateTextDocumentTexts( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
-        updateTextDocumentImages( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
+    public void visitTextDocument(final TextDocumentDomainObject textDocument) {
+        updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
+        updateTextDocumentTexts(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
+        updateTextDocumentImages(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
         updateTextDocumentIncludes(textDocument);
         updateTextDocumentContentLoops(textDocument, null, null);
 
-        boolean menusChanged = !textDocument.getMenus().equals( ( (TextDocumentDomainObject)oldDocument ).getMenus() );
-	
-        if ( menusChanged ) {
-            updateTextDocumentMenus( textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
+        boolean menusChanged = !textDocument.getMenus().equals(((TextDocumentDomainObject) oldDocument).getMenus());
+
+        if (menusChanged) {
+            updateTextDocumentMenus(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
         }
     }
 

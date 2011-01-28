@@ -23,14 +23,13 @@ import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.hibernate.annotations.ForeignKey;
 
 /**
  * Menu is a one-level navigation control between documents.
  * A menu can contain any number of items - links to other documents.
  */
-@Entity(name="Menu")
-@Table(name="imcms_text_doc_menus")
+@Entity(name = "Menu")
+@Table(name = "imcms_text_doc_menus")
 public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem, DocOrderedItem {
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
@@ -41,53 +40,54 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
     public final static int MENU_SORT_ORDER__DEFAULT = MENU_SORT_ORDER__BY_HEADLINE;
 
     public final static int DEFAULT_SORT_KEY = 500;
-    
+
     private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
-    
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-	
-	@Column(name="sort_order")
+
+    @Column(name = "sort_order")
     private int sortOrder;
-	
-	@Column(name="no")
-	private Integer no;
-	
 
-    @Column(name="doc_version_no")
-	private Integer docVersionNo;
+    @Column(name = "no")
+    private Integer no;
 
-    @Column(name="doc_id")
-	private Integer docId;
-    
+    @Column(name = "doc_version_no")
+    private Integer docVersionNo;
 
-    /** Map of included meta_id to included DocumentDomainObject. -> */
-	@ElementCollection(fetch=FetchType.EAGER)
+    @Column(name = "doc_id")
+    private Integer docId;
+
+
+    /**
+     * Map of included meta_id to included DocumentDomainObject.
+     */
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-	    name = "imcms_text_doc_menu_items",
-	    joinColumns = @JoinColumn(name="menu_id")
-	)
-    @MapKeyColumn(name="to_doc_id")
+            name = "imcms_text_doc_menu_items",
+            joinColumns = @JoinColumn(name = "menu_id"))
+    @MapKeyColumn(name = "to_doc_id")
     private Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
 
     public MenuDomainObject() {
-        this( null, MENU_SORT_ORDER__DEFAULT );
+        this(null, MENU_SORT_ORDER__DEFAULT);
     }
 
     public MenuDomainObject clone() {
         try {
-            MenuDomainObject clone = (MenuDomainObject)super.clone() ;
+            MenuDomainObject clone = (MenuDomainObject) super.clone();
             clone.menuItems = new HashMap<Integer, MenuItemDomainObject>();
-            for (Map.Entry<Integer, MenuItemDomainObject> entry: menuItems.entrySet()) {
-                clone.menuItems.put(entry.getKey(), entry.getValue().clone()) ;
+            for (Map.Entry<Integer, MenuItemDomainObject> entry : menuItems.entrySet()) {
+                clone.menuItems.put(entry.getKey(), entry.getValue().clone());
             }
-            return clone ;
-        } catch ( CloneNotSupportedException e ) {
-            throw new UnhandledException( e );
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new UnhandledException(e);
         }
     }
 
-    public MenuDomainObject( Long id, int sortOrder ) {
+    public MenuDomainObject(Long id, int sortOrder) {
         this.id = id;
         this.sortOrder = sortOrder;
         menuItems = new HashMap<Integer, MenuItemDomainObject>();
@@ -97,7 +97,7 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
         return id;
     }
 
-    public void setId( Long id ) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -105,59 +105,63 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
         return sortOrder;
     }
 
-    public MenuItemDomainObject[] getMenuItemsUserCanSee( UserDomainObject user ) {
-        List menuItemsUserCanSee = getMenuItemsVisibleToUser( user );
-        return (MenuItemDomainObject[])menuItemsUserCanSee.toArray( new MenuItemDomainObject[menuItemsUserCanSee.size()] );
+    public MenuItemDomainObject[] getMenuItemsUserCanSee(UserDomainObject user) {
+        List menuItemsUserCanSee = getMenuItemsVisibleToUser(user);
+        return (MenuItemDomainObject[]) menuItemsUserCanSee.toArray(new MenuItemDomainObject[menuItemsUserCanSee.size()]);
     }
 
-    List getMenuItemsVisibleToUser( UserDomainObject user ) {
+    List getMenuItemsVisibleToUser(UserDomainObject user) {
         MenuItemDomainObject[] menuItemsArray = getMenuItems();
-        List menuItemsUserCanSee = new ArrayList(this.menuItems.size()) ;
-        for ( int i = 0; i < menuItemsArray.length; i++ ) {
+        List menuItemsUserCanSee = new ArrayList(this.menuItems.size());
+        for (int i = 0; i < menuItemsArray.length; i++) {
             MenuItemDomainObject menuItem = menuItemsArray[i];
-            if (user.canSeeDocumentWhenEditingMenus( menuItem.getDocument() )) {
-                menuItemsUserCanSee.add(menuItem) ;
+            if (user.canSeeDocumentWhenEditingMenus(menuItem.getDocument())) {
+                menuItemsUserCanSee.add(menuItem);
             }
         }
-        Collections.sort( menuItemsUserCanSee, getMenuItemComparatorForSortOrder( sortOrder ) );
+        Collections.sort(menuItemsUserCanSee, getMenuItemComparatorForSortOrder(sortOrder));
         return menuItemsUserCanSee;
     }
 
-    public MenuItemDomainObject[] getPublishedMenuItemsUserCanSee( UserDomainObject user ) {
-        List menuItems = getMenuItemsVisibleToUser( user ) ;
-        CollectionUtils.filter( menuItems, new Predicate() {
-            public boolean evaluate( Object object ) {
-                return ((MenuItemDomainObject)object).getDocument().isActive() ;
+    /**
+     * @return Menu items pointing to active documents.
+     */
+    public MenuItemDomainObject[] getPublishedMenuItemsUserCanSee(UserDomainObject user) {
+        List menuItems = getMenuItemsVisibleToUser(user);
+        CollectionUtils.filter(menuItems, new Predicate() {
+            public boolean evaluate(Object object) {
+                return ((MenuItemDomainObject) object).getDocument().isActive();
             }
-        } );
-        return (MenuItemDomainObject[])menuItems.toArray( new MenuItemDomainObject[menuItems.size()] );
+        });
+        return (MenuItemDomainObject[]) menuItems.toArray(new MenuItemDomainObject[menuItems.size()]);
     }
 
     public MenuItemDomainObject[] getMenuItems() {
         Set menuItemsUnsorted = getMenuItemsUnsorted();
         MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[]) menuItemsUnsorted.toArray(new MenuItemDomainObject[menuItemsUnsorted.size()]);
-        Arrays.sort( menuItemsArray, getMenuItemComparatorForSortOrder( sortOrder ) );
+        Arrays.sort(menuItemsArray, getMenuItemComparatorForSortOrder(sortOrder));
         return menuItemsArray;
     }
 
     public Set getMenuItemsUnsorted() {
         HashSet set = new HashSet();
-        for ( Iterator iterator = menuItems.values().iterator(); iterator.hasNext(); ) {
+        for (Iterator iterator = menuItems.values().iterator(); iterator.hasNext();) {
             MenuItemDomainObject menuItem = (MenuItemDomainObject) iterator.next();
             if (null != menuItem.getDocument()) {
-                set.add(menuItem) ;
+                set.add(menuItem);
             }
         }
         return set;
     }
 
-    
+
     /**
      * Adds menu item to this menu only if it contains a document.
+     *
      * @param menuItem
      */
-    public void addMenuItem( MenuItemDomainObject menuItem ) {
-        if ( null == menuItem.getSortKey() ) {
+    public void addMenuItem(MenuItemDomainObject menuItem) {
+        if (null == menuItem.getSortKey()) {
             generateSortKey(menuItem);
         }
         if (null != menuItem.getDocument()) {
@@ -167,57 +171,58 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
 
 
     /**
-     * Adds menu item to this menu. 
+     * Adds menu item to this menu.
+     *
      * @param menuItem
-     */    
+     */
     public void addMenuItemUnchecked(MenuItemDomainObject menuItem) {
-        if ( null == menuItem.getSortKey() ) {
+        if (null == menuItem.getSortKey()) {
             generateSortKey(menuItem);
         }
-        
-        menuItems.put( new Integer(menuItem.getDocumentId()), menuItem );
+
+        menuItems.put(new Integer(menuItem.getDocumentId()), menuItem);
     }
 
     private void generateSortKey(MenuItemDomainObject menuItem) {
         Integer maxSortKey = getMaxSortKey();
         Integer sortKey;
-        if ( null != maxSortKey ) {
-            sortKey = new Integer( maxSortKey.intValue() + DEFAULT_SORT_KEY_INCREMENT );
+        if (null != maxSortKey) {
+            sortKey = new Integer(maxSortKey.intValue() + DEFAULT_SORT_KEY_INCREMENT);
         } else {
-            sortKey = new Integer( DEFAULT_SORT_KEY );
+            sortKey = new Integer(DEFAULT_SORT_KEY);
         }
         menuItem.setSortKey(sortKey);
     }
 
     private Integer getMaxSortKey() {
-        Collection menuItemSortKeys = CollectionUtils.collect( menuItems.values(), new Transformer() {
-            public Object transform( Object o ) {
-                return ( (MenuItemDomainObject)o ).getSortKey();
+        Collection menuItemSortKeys = CollectionUtils.collect(menuItems.values(), new Transformer() {
+            public Object transform(Object o) {
+                return ((MenuItemDomainObject) o).getSortKey();
             }
-        } );
-        if ( menuItemSortKeys.isEmpty() ) {
+        });
+        if (menuItemSortKeys.isEmpty()) {
             return null;
         }
-        return (Integer)Collections.max( menuItemSortKeys );
+        return (Integer) Collections.max(menuItemSortKeys);
     }
 
-    private Comparator getMenuItemComparatorForSortOrder( int sortOrder ) {
+    private Comparator getMenuItemComparatorForSortOrder(int sortOrder) {
 
-        Comparator comparator = MenuItemComparator.HEADLINE.chain( MenuItemComparator.ID );
-        if ( sortOrder == MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER ) {
-            comparator = MenuItemComparator.TREE_SORT_KEY.chain( comparator );
-        } else if ( sortOrder == MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED ) {
-            comparator = MenuItemComparator.SORT_KEY.reversed().chain( comparator );
-        } else if ( sortOrder == MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED ) {
-            comparator = MenuItemComparator.MODIFIED_DATETIME.reversed().chain( comparator );
-        } else if ( sortOrder == MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED ) {
-            comparator = MenuItemComparator.PUBLISHED_DATETIME.reversed().chain( comparator ) ;
+        Comparator comparator = MenuItemComparator.HEADLINE.chain(MenuItemComparator.ID);
+        if (sortOrder == MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER) {
+            comparator = MenuItemComparator.TREE_SORT_KEY.chain(comparator);
+        } else if (sortOrder == MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED) {
+            comparator = MenuItemComparator.SORT_KEY.reversed().chain(comparator);
+        } else if (sortOrder == MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED) {
+            comparator = MenuItemComparator.MODIFIED_DATETIME.reversed().chain(comparator);
+        } else if (sortOrder == MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED) {
+            comparator = MenuItemComparator.PUBLISHED_DATETIME.reversed().chain(comparator);
         }
         return comparator;
     }
 
-    public void setSortOrder( int sortOrder ) {
-        switch ( sortOrder ) {
+    public void setSortOrder(int sortOrder) {
+        switch (sortOrder) {
             case MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED:
             case MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER:
             case MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED:
@@ -226,38 +231,38 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
                 this.sortOrder = sortOrder;
                 break;
             default:
-                throw new IllegalArgumentException( "Bad sort order. Use one of the constants." );
+                throw new IllegalArgumentException("Bad sort order. Use one of the constants.");
         }
     }
 
-    public void removeMenuItemByDocumentId( int childId ) {
-        menuItems.remove( new Integer( childId )) ;
+    public void removeMenuItemByDocumentId(int childId) {
+        menuItems.remove(new Integer(childId));
     }
 
-    public boolean equals( Object obj ) {
+    public boolean equals(Object obj) {
         if (!(obj instanceof MenuDomainObject)) {
-            return false ;
+            return false;
         }
-        MenuDomainObject otherMenu = (MenuDomainObject)obj;
-        return  new EqualsBuilder().append(sortOrder, otherMenu.sortOrder)
+        MenuDomainObject otherMenu = (MenuDomainObject) obj;
+        return new EqualsBuilder().append(sortOrder, otherMenu.sortOrder)
                 .append(menuItems, otherMenu.menuItems).isEquals();
     }
 
     public int hashCode() {
-        return new HashCodeBuilder().append(sortOrder).append(menuItems).toHashCode() ;
+        return new HashCodeBuilder().append(sortOrder).append(menuItems).toHashCode();
     }
 
-	public Integer getDocId() {
-		return docId;
-	}
+    public Integer getDocId() {
+        return docId;
+    }
 
-	public void setDocId(Integer docId) {
-		this.docId = docId;
-	}
+    public void setDocId(Integer docId) {
+        this.docId = docId;
+    }
 
-	public Map<Integer, MenuItemDomainObject> getItemsMap() {
-		return menuItems;
-	}
+    public Map<Integer, MenuItemDomainObject> getItemsMap() {
+        return menuItems;
+    }
 
     public Integer getDocVersionNo() {
         return docVersionNo;
@@ -275,15 +280,19 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
         this.no = no;
     }
 
-    /** Use {@link MenuDomainObject#getNo()} instead. */
+    /**
+     * Use {@link MenuDomainObject#getNo()} instead.
+     */
     @Deprecated
-	public Integer getIndex() {
-		return getNo();
-	}
+    public Integer getIndex() {
+        return getNo();
+    }
 
-    /** Use {@link MenuDomainObject#setNo(Integer)} instead. */
+    /**
+     * Use {@link MenuDomainObject#setNo(Integer)} instead.
+     */
     @Deprecated
-	public void setIndex(Integer index) {
-		setNo(index);
-	}    
+    public void setIndex(Integer index) {
+        setNo(index);
+    }
 }

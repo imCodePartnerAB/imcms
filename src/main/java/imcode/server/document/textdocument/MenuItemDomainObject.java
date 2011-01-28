@@ -12,29 +12,30 @@ import javax.persistence.Transient;
 
 /**
  * Menu item descriptor.
- * 
+ *
  * @see imcode.server.document.textdocument.MenuDomainObject
  */
-//TODO: refactor equals, hashcode
+
 @Embeddable
 public class MenuItemDomainObject implements Cloneable, Serializable {
 
-	@Column(name="manual_sort_order")
-	private Integer sortKey;
-	
-	@Column(name="tree_sort_index")
-	private String treeSortIndex;	
+    @Column(name = "manual_sort_order")
+    private Integer sortKey;
+
+    @Column(name = "tree_sort_index")
+    private String treeSortIndex;
 
     @Transient
     private DocumentReference documentReference;
 
     @Transient
     private TreeSortKeyDomainObject treeSortKey;
-    
-    public MenuItemDomainObject() {}
 
-    public MenuItemDomainObject( DocumentReference documentReference,
-                                 Integer sortKey, TreeSortKeyDomainObject treeSortKey ) {
+    public MenuItemDomainObject() {
+    }
+
+    public MenuItemDomainObject(DocumentReference documentReference,
+                                Integer sortKey, TreeSortKeyDomainObject treeSortKey) {
         this.documentReference = documentReference;
         this.sortKey = sortKey;
         this.treeSortKey = treeSortKey;
@@ -44,26 +45,27 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         this(documentReference, null, new TreeSortKeyDomainObject(""));
     }
 
-    /*
-    public boolean equals( Object o ) {
-        if ( this == o ) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof MenuItemDomainObject ) ) {
+
+        if (!(o instanceof MenuItemDomainObject)) {
             return false;
         }
 
-        final MenuItemDomainObject otherMenuItem = (MenuItemDomainObject)o;
+        final MenuItemDomainObject otherMenuItem = (MenuItemDomainObject) o;
 
-        return sortKey.equals(otherMenuItem.sortKey);
-               //&& treeSortKey.equals(otherMenuItem.treeSortKey)
-               //&& documentReference.equals(otherMenuItem.documentReference);
+        return sortKey.equals(otherMenuItem.sortKey)
+                && treeSortKey.equals(otherMenuItem.treeSortKey)
+                && documentReference.equals(otherMenuItem.documentReference);
     }
-    */
 
-    //public int hashCode() {
-    //    return documentReference.hashCode();
-   // }
+    @Override
+    public int hashCode() {
+        return documentReference.hashCode();
+    }
 
     public Integer getSortKey() {
         return sortKey;
@@ -76,9 +78,9 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
     public DocumentReference getDocumentReference() {
         return documentReference;
     }
-    
+
     public MenuItemDomainObject clone() throws CloneNotSupportedException {
-        MenuItemDomainObject clone = (MenuItemDomainObject)super.clone();
+        MenuItemDomainObject clone = (MenuItemDomainObject) super.clone();
         if (treeSortKey != null) {
             clone.treeSortKey = new TreeSortKeyDomainObject(treeSortKey.getTreeSortKey());
         }
@@ -95,7 +97,7 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
             throw new IllegalStateException("Document reference is not initialized.");
 
         return documentReference.getDocument();
-    }    
+    }
 
     public int getDocumentId() {
         return documentReference.getDocumentId();
@@ -109,15 +111,15 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         this.treeSortKey = treeSortKey;
     }
 
-	public String getTreeSortIndex() {
-		return treeSortIndex;
-	}
+    public String getTreeSortIndex() {
+        return treeSortIndex;
+    }
 
-	public void setTreeSortIndex(String treeSortIndex) {
-		this.treeSortIndex = treeSortIndex;
-	}
+    public void setTreeSortIndex(String treeSortIndex) {
+        this.treeSortIndex = treeSortIndex;
+    }
 
-	public void setDocumentReference(DocumentReference documentReference) {
-		this.documentReference = documentReference;
-	}
+    public void setDocumentReference(DocumentReference documentReference) {
+        this.documentReference = documentReference;
+    }
 }

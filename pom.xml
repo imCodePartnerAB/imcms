@@ -6,7 +6,7 @@
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>6.0.0-alpha49</version>
+    <version>6.0.0-alpha50-SNAPSHOT</version>
     <name>imCMS</name>
 
     <profiles>

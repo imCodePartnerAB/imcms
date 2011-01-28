@@ -1,5 +1,6 @@
 package imcode.server ;
 
+import com.imcode.imcms.dao.MetaDao;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;

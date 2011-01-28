@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
-import com.imcode.imcms.dao.*;
 import com.imcode.imcms.mapping.orm.FileReference;
 import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;
@@ -48,14 +47,17 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     protected ImcmsServices services;
 
     private static final int FILE_BUFFER_LENGTH = 2048;
-    private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;    
+    private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
+
+    protected MetaDao metaDao;
 
     public DocumentStoringVisitor(ImcmsServices services) {
-        this.services = services ;
+        this.services = services;
+        this.metaDao = (MetaDao)services.getSpringBean("metaDao");
     }
 
     /**
-     * Saves (possibly rewrites) file if its InputStreamSource has been changed. 
+     * Saves (possibly rewrites) file if its InputStreamSource has been changed.
      *
      * @param fileDocumentId
      * @param docVersionNo
@@ -63,7 +65,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * @param fileId
      */
     protected void saveFileDocumentFile(int fileDocumentId, Integer docVersionNo, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
-                                         String fileId ) {
+                                        String fileId) {
         try {
             InputStreamSource inputStreamSource = fileDocumentFile.getInputStreamSource();
             InputStream in;
@@ -77,11 +79,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 return;
             }
 
-            File file = getFileForFileDocumentFile(fileDocumentId, docVersionNo, fileId );
+            File file = getFileForFileDocumentFile(fileDocumentId, docVersionNo, fileId);
 
             FileInputStreamSource fileInputStreamSource = new FileInputStreamSource(file);
-            boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(fileInputStreamSource) ;
-            if ( sameFileOnDisk ) {
+            boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(fileInputStreamSource);
+            if (sameFileOnDisk) {
                 in.close();
                 return;
             }
@@ -102,7 +104,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    
+
     /**
      * Returns file for FileDocumentFile.
      */
@@ -116,30 +118,30 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     /**
      * Returns FileDocumentFile filename.
-     *
+     * <p/>
      * File name is a combination of doc id, doc version no and fileId if present. For backward compatibility
      * a doc version no is omitted if it equals to 0 (working version).
-     *
-     * If fieldId is not blank its added to filename as an extension.  
-     *
+     * <p/>
+     * If fieldId is not blank its added to filename as an extension.
+     * <p/>
      * Ex: 1002.xxx where 1002 is a doc id, doc version no is 0 and xxx is fileId.
-     *     1002_3.xxx where 1002 is a doc id, 3 is a version no and xxx is fileId.
-     *     1002_2 where1002 is a doc id, 2 is a version no and fileId is blank.
+     * 1002_3.xxx where 1002 is a doc id, 3 is a version no and xxx is fileId.
+     * 1002_2 where1002 is a doc id, 2 is a version no and fileId is blank.
      *
      * @param fileDocumentId
      * @param docVersionNo
      * @param fileId
      * @return FileDocumentFile filename
-     */    
+     */
     public static String getFilenameForFileDocumentFile(int fileDocumentId, int docVersionNo, String fileId) {
-        String filename = "" + fileDocumentId ;
+        String filename = "" + fileDocumentId;
 
         if (docVersionNo != DocumentVersion.WORKING_VERSION_NO) {
             filename += ("_" + docVersionNo);
         }
 
-        if (StringUtils.isNotBlank( fileId )) {
-            filename += "." + FileUtility.escapeFilename(fileId) ;
+        if (StringUtils.isNotBlank(fileId)) {
+            filename += "." + FileUtility.escapeFilename(fileId);
         }
 
         return filename;
@@ -148,7 +150,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     /**
      * Saves text document text fields.
-     *
+     * <p/>
      * Deletes all existing text fields and then inserts new.
      *
      * @param textDocument
@@ -157,92 +159,87 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        TextDao textDao = (TextDao)services.getSpringBean("textDao");
+        TextDao textDao = (TextDao) services.getSpringBean("textDao");
 
-        Integer docId = textDocument.getMeta().getId();
+        Integer docId = textDocument.getIdValue();
         Integer docVersionNo = textDocument.getVersionNo();
         I18nLanguage language = textDocument.getLanguage();
 
         textDao.deleteTexts(docId, docVersionNo, language.getId());
         textDao.flush();
 
-        for (TextDomainObject text: textDocument.getTexts().values()) {
+        for (TextDomainObject text : textDocument.getTexts().values()) {
             text.setId(null);
             text.setDocId(docId);
             text.setDocVersionNo(docVersionNo);
             text.setLanguage(language);
-            
+
             saveTextDocumentText(textDocument, text, user);
         }
 
-
-        for (TextDomainObject text: textDocument.getLoopTexts().values()) {
+        for (TextDomainObject text : textDocument.getLoopTexts().values()) {
             text.setId(null);
             text.setDocId(docId);
             text.setDocVersionNo(docVersionNo);
             text.setLanguage(language);
-            
+
             saveTextDocumentText(textDocument, text, user);
         }
     }
 
     /**
-     *
      * @param textDocument
      * @param oldTextDocument
      * @param user
      */
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
-        Integer docId = textDocument.getMeta().getId();
-        Integer documentVersion = textDocument.getVersion().getNo();
-        Integer documentVersionNumber = textDocument.getVersion().getNo();
-        
-        dao.deleteLoops(docId, documentVersionNumber);
+        ContentLoopDao dao = (ContentLoopDao) services.getSpringBean("contentLoopDao");
+        Integer docId = textDocument.getIdValue();
+        Integer docVersionNo = textDocument.getVersionNo();
+
+        dao.deleteLoops(docId, docVersionNo);
         dao.flush();
-        
-        for (ContentLoop loop: textDocument.getContentLoops().values()) {
+
+        for (ContentLoop loop : textDocument.getContentLoops().values()) {
             loop.setId(null);
-        	loop.setDocId(docId);
-        	loop.setDocVersionNo(documentVersion);
-        	
-        	dao.saveLoop(loop);
-        }  	
+            loop.setDocId(docId);
+            loop.setDocVersionNo(docVersionNo);
+
+            dao.saveLoop(loop);
+        }
     }
 
-    
+
     @Transactional
-    public void updateDocumentLabels(DocumentDomainObject doc, DocumentDomainObject oldDoc, UserDomainObject user) {
-        I18nMeta labels = doc.get18nMeta();
-        MetaDao metaDao = (MetaDao)services.getSpringBean("metaDao");
+    public void updateDocumentI18nMeta(DocumentDomainObject doc, DocumentDomainObject oldDoc, UserDomainObject user) {
+        I18nMeta i18nMeta = doc.get18nMeta();
 
         metaDao.deleteI18nMeta(doc.getId(), doc.getLanguage().getId());
 
-        labels.setId(null);
-        labels.setDocId(doc.getMeta().getId());
-        labels.setLanguage(doc.getLanguage());
+        i18nMeta.setId(null);
+        i18nMeta.setDocId(doc.getIdValue());
+        i18nMeta.setLanguage(doc.getLanguage());
 
-        metaDao.saveI18nMeta(labels);
+        metaDao.saveI18nMeta(i18nMeta);
     }
 
-    
 
     /**
      * Saves text document's text.
-     * 
+     *
      * @param doc
      * @param text
      * @param user
      */
     @Transactional
     public void saveTextDocumentText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user) {
-        TextDao textDao = (TextDao)services.getSpringBean("textDao");
+        TextDao textDao = (TextDao) services.getSpringBean("textDao");
 
-        text.setDocId(doc.getId());
-        text.setDocVersionNo(doc.getVersion().getNo());
+        text.setDocId(doc.getIdValue());
+        text.setDocVersionNo(doc.getVersionNo());
 
         textDao.saveText(text);
-        
+
         TextHistory textHistory = new TextHistory(text, user);
         textDao.saveTextHistory(textHistory);
     }
@@ -252,26 +249,26 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     public void saveTextDocumentImage(TextDocumentDomainObject doc, ImageDomainObject image, UserDomainObject user) {
-        ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
-     
-        image.setDocId(doc.getId());
-        image.setDocVersionNo(doc.getVersion().getNo());
+        ImageDao imageDao = (ImageDao) services.getSpringBean("imageDao");
+
+        image.setDocId(doc.getIdValue());
+        image.setDocVersionNo(doc.getVersionNo());
 
         image.setImageUrl(image.getSource().toStorageString());
         image.setType(image.getSource().getTypeId());
-        
+
         imageDao.saveImage(image);
 
         ImageHistory imageHistory = new ImageHistory(image, user);
-        imageDao.saveImageHistory(imageHistory); 
+        imageDao.saveImageHistory(imageHistory);
     }
 
 
     @Transactional
     void updateTextDocumentImages(TextDocumentDomainObject doc, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
-        Integer docId = doc.getMeta().getId();
-        Integer docVersionNo = doc.getVersion().getNo();
+        ImageDao imageDao = (ImageDao) services.getSpringBean("imageDao");
+        Integer docId = doc.getIdValue();
+        Integer docVersionNo = doc.getVersionNo();
         I18nLanguage language = doc.getLanguage();
 
         imageDao.deleteImages(docId, docVersionNo, language.getId());
@@ -282,70 +279,64 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             image.setDocId(docId);
             image.setDocVersionNo(docVersionNo);
             image.setLanguage(language);
-            
+
             saveTextDocumentImage(doc, image, user);
         }
 
-
-        for (ImageDomainObject image: doc.getLoopImages().values()) {
+        for (ImageDomainObject image : doc.getLoopImages().values()) {
             image.setId(null);
             image.setDocId(docId);
             image.setDocVersionNo(docVersionNo);
             image.setLanguage(language);
-            
+
             saveTextDocumentImage(doc, image, user);
         }
     }
-    
-    
+
+
     @Transactional
     public void updateTextDocumentIncludes(TextDocumentDomainObject doc) {
-    	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
-    	Integer docId = doc.getMeta().getId();
+        Integer docId = doc.getIdValue();
 
-        dao.deleteIncludes(docId);
-        
-    	for (Map.Entry<Integer, Integer> entry: doc.getIncludesMap().entrySet()) {
-    		Include include = new Include();
+        metaDao.deleteIncludes(docId);
+
+        for (Map.Entry<Integer, Integer> entry : doc.getIncludesMap().entrySet()) {
+            Include include = new Include();
             include.setId(null);
-    		include.setMetaId(docId);
-    		include.setIndex(entry.getKey());
-    		include.setIncludedDocumentId(entry.getValue());
-    		
-    		dao.saveInclude(include);
-    	}
+            include.setMetaId(docId);
+            include.setIndex(entry.getKey());
+            include.setIncludedDocumentId(entry.getValue());
+
+            metaDao.saveInclude(include);
+        }
     }
 
-    
+
     @Transactional
     public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-    	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
+        Integer docId = textDocument.getIdValue();
 
-        Integer docId = textDocument.getMeta().getId();
+        TemplateNames templateNames = textDocument.getTemplateNames();
 
-    	TemplateNames templateNames = textDocument.getTemplateNames();
-        
-    	templateNames.setDocId(docId);
+        templateNames.setDocId(docId);
 
-    	dao.saveTemplateNames(templateNames);
+        metaDao.saveTemplateNames(templateNames);
     }
 
 
-    public void visitFileDocument( FileDocumentDomainObject fileDocument ) {    	
-    	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
-    	
-        dao.deleteFileReferences(fileDocument.getMeta().getId(), fileDocument.getVersionNo());
-        
-        for (Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> entry: fileDocument.getFiles().entrySet()) {
+    public void visitFileDocument(FileDocumentDomainObject fileDocument) {
+        metaDao.deleteFileReferences(fileDocument.getMeta().getId(), fileDocument.getVersionNo());
+
+        for (Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> entry : fileDocument.getFiles().entrySet()) {
             String fileId = entry.getKey();
             FileDocumentDomainObject.FileDocumentFile fileDocumentFile = entry.getValue();
 
             String filename = fileDocumentFile.getFilename();
-            if ( filename.length() > DB_FIELD_MAX_LENGTH__FILENAME ) {
-                filename = truncateFilename( filename, DB_FIELD_MAX_LENGTH__FILENAME );
+            if (filename.length() > DB_FIELD_MAX_LENGTH__FILENAME) {
+                filename = truncateFilename(filename, DB_FIELD_MAX_LENGTH__FILENAME);
             }
 
-            boolean isDefaultFile = fileId.equals( fileDocument.getDefaultFileId());
+            boolean isDefaultFile = fileId.equals(fileDocument.getDefaultFileId());
             FileReference fileRef = new FileReference();
             fileRef.setDocId(fileDocument.getMeta().getId());
             fileRef.setDocVersionNo(fileDocument.getVersionNo());
@@ -354,14 +345,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             fileRef.setDefaultFileId(isDefaultFile);
             fileRef.setMimeType(fileDocumentFile.getMimeType());
             fileRef.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
-            
-            
-            dao.saveFileReference(fileRef);
-            
-            saveFileDocumentFile(fileDocument.getId(), fileDocument.getVersionNo(), fileDocumentFile, fileId );
+
+            metaDao.saveFileReference(fileRef);
+
+            saveFileDocumentFile(fileDocument.getId(), fileDocument.getVersionNo(), fileDocumentFile, fileId);
         }
-        
-        DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;   
+
+        DocumentMapper.deleteOtherFileDocumentFiles(fileDocument);
     }
 
     private String truncateFilename(String filename, int length) {
@@ -386,30 +376,29 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     public void updateTextDocumentMenus(final TextDocumentDomainObject doc, final TextDocumentDomainObject oldDoc, final UserDomainObject user) {
-    	MenuDao dao = (MenuDao)services.getSpringBean("menuDao");
+        MenuDao dao = (MenuDao) services.getSpringBean("menuDao");
 
         Integer docId = doc.getId();
         Integer docVersionNo = doc.getVersionNo();
 
         dao.deleteMenus(docId, docVersionNo);
 
-		for (Map.Entry<Integer, MenuDomainObject> entry: doc.getMenus().entrySet()) {
-			MenuDomainObject menu = entry.getValue();
+        for (Map.Entry<Integer, MenuDomainObject> entry : doc.getMenus().entrySet()) {
+            MenuDomainObject menu = entry.getValue();
 
             menu.setId(null);
-			menu.setDocId(docId);
+            menu.setDocId(docId);
             menu.setDocVersionNo(docVersionNo);
-			menu.setNo(entry.getKey());
+            menu.setNo(entry.getKey());
 
-			updateTextDocumentMenu(doc, menu, user);
-		}
+            updateTextDocumentMenu(doc, menu, user);
+        }
     }
 
-    
-    public void updateTextDocumentMenu(final TextDocumentDomainObject textDocument, final MenuDomainObject menu, final UserDomainObject user) {
-    	MenuDao dao = (MenuDao)services.getSpringBean("menuDao");
 
-    	dao.saveMenu(menu);
+    public void updateTextDocumentMenu(final TextDocumentDomainObject textDocument, final MenuDomainObject menu, final UserDomainObject user) {
+        MenuDao dao = (MenuDao) services.getSpringBean("menuDao");
+        dao.saveMenu(menu);
 
         MenuHistory menuHistory = new MenuHistory(menu, user);
         dao.saveMenuHistory(menuHistory);

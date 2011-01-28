@@ -1,7 +1,12 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.DocIdentityCleanerVisitor;
-import com.imcode.imcms.util.Factory;
+import com.imcode.imcms.dao.ContentLoopDao;
+import com.imcode.imcms.dao.DocumentVersionDao;
+import com.imcode.imcms.dao.ImageDao;
+import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.dao.TextDao;
+import com.imcode.imcms.dao.MenuDao;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -16,7 +21,6 @@ import java.util.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.dao.*;
 
 /**
  * Used internally by DocumentMapper. Must NOT be used directly.
@@ -66,14 +70,6 @@ public class DocumentSaver {
 
 
     /**
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
      * TODO: Update doc modified dt
      */
     @Transactional
@@ -205,7 +201,7 @@ public class DocumentSaver {
             doc.setMeta(meta);
             doc.setVersion(nextVersion);
             
-            docCreationVisitor.updateDocumentLabels(doc, null, user);
+            docCreationVisitor.updateDocumentI18nMeta(doc, null, user);
         }
 
         for (DocumentDomainObject doc: docs.values()) {
@@ -673,11 +669,11 @@ public class DocumentSaver {
         this.documentVersionDao = documentVersionDao;
     }
 
-    public TextDao getTextDao() {
+    public com.imcode.imcms.dao.TextDao getTextDao() {
         return textDao;
     }
 
-    public void setTextDao(TextDao textDao) {
+    public void setTextDao(com.imcode.imcms.dao.TextDao textDao) {
         this.textDao = textDao;
     }
 

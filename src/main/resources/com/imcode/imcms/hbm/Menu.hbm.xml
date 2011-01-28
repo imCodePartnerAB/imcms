@@ -15,12 +15,4 @@
     ]]>
   </query>
 
-  <!-- Bulk delete -->
-  <!-- Unit test fail since hibernate can not (yet?) generate ON DELETE CASCADE -->  
-  <query name="Menu.deleteMenus">
-    <![CDATA[
-    DELETE FROM Menu m WHERE m.docId = :docId AND m.docVersionNo = :docVersionNo
-    ]]>
-  </query>
-
 </hibernate-mapping>
