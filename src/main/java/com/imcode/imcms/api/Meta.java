@@ -285,7 +285,7 @@ public class Meta implements Serializable, Cloneable {
 
 
     /**
-     * Might be empty.
+     * Enabled languages - might be empty.
      */
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinTable(

@@ -112,7 +112,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Creates new Document which inherits parent doc's meta excluding keywords and properties.
      *
-     * Document's data (labels, texts, images, urls, files, etc) is not inherited.
+     * Doc's i18nMeta(s) and content (texts, images, urls, files, etc) is not inherited.
      * 
      * @param documentTypeId
      * @param parentDoc

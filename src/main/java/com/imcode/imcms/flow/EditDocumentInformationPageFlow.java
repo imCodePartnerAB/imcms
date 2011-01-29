@@ -25,6 +25,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ObjectUtils;
 
 import com.imcode.imcms.api.Document;
@@ -104,7 +106,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     /** Document languages enabled/disabled states. */
     private Map<I18nLanguage, Boolean> languagesStates = new HashMap<I18nLanguage, Boolean>();
 
-    private Map<I18nLanguage, I18nMeta> labelsMap = new HashMap<I18nLanguage, I18nMeta>();
+    private Map<I18nLanguage, I18nMeta> i18nMetasMap = new HashMap<I18nLanguage, I18nMeta>();
 
 
     public EditDocumentInformationPageFlow(DocumentDomainObject document, DispatchCommand returnCommand,
@@ -112,36 +114,41 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         
         super(document, returnCommand, saveDocumentCommand);
 
-        // i18n support
-        Set<I18nLanguage> languages = new HashSet(Imcms.getI18nSupport().getLanguages());
+        Set<I18nLanguage> availableLanguages = new HashSet<I18nLanguage>(Imcms.getI18nSupport().getLanguages());
 
-        for (I18nLanguage language: languages) {
+        for (I18nLanguage language: availableLanguages) {
             languagesStates.put(language, false);
         }
 
-        // ???
-        languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
+        for (I18nLanguage language: document.getMeta().getLanguages()) {
+            languagesStates.put(language, true);
+        }
 
-        Integer docId = document.getMeta().getId();
-        
+        boolean atLeastOneIsEnabled = CollectionUtils.exists(languagesStates.values(), new Predicate() {
+            public boolean evaluate(Object object) {
+                return ((Boolean)object);
+            }
+        });
+
+        if (!atLeastOneIsEnabled) {
+            languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
+        }
+
+        Integer docId = document.getIdValue();
         MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
-        
+
         if (docId == null) {
-            for (I18nLanguage language: languages) {
-                labelsMap.put(language, Factory.createLabels(docId, language));
+            for (I18nLanguage language: availableLanguages) {
+                i18nMetasMap.put(language, Factory.createI18nMeta(docId, language));
             }
         } else {
-            for (I18nLanguage language: document.getMeta().getLanguages()) {
-                languagesStates.put(language, true);
-            }
-
-            for (I18nLanguage language: languages) {
-                I18nMeta labels = metaDao.getI18nMeta(docId, language);
-                if (labels == null) {
-                    labels = Factory.createLabels(docId, language);    
+            for (I18nLanguage language: availableLanguages) {
+                I18nMeta i18nMeta = metaDao.getI18nMeta(docId, language);
+                if (i18nMeta == null) {
+                    i18nMeta = Factory.createI18nMeta(docId, language);
                 }
 
-                labelsMap.put(language, labels);
+                i18nMetasMap.put(language, i18nMeta);
             }
         }
     }
@@ -154,7 +161,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
                 ? EnumSet.of(DocumentSaver.SaveParameter.CopyI18nMetaTextsIntoTextFields)
                 : EnumSet.noneOf(DocumentSaver.SaveParameter.class);
         try {
-            saveDocumentCommand.saveDocumentWithI18nSupport(getDocument(), labelsMap, saveParams, Utility.getLoggedOnUser(request));
+            saveDocumentCommand.saveDocumentWithI18nSupport(getDocument(), i18nMetasMap, saveParams, Utility.getLoggedOnUser(request));
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {
@@ -226,7 +233,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                labelsMap.get(language).setMenuImageURL(imageUrl);
+                i18nMetasMap.get(language).setMenuImageURL(imageUrl);
 
                 request.setAttribute( REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
                 dispatchToFirstPage( request, response );
@@ -297,7 +304,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     private void dispatchToDocumentInformationPage( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         DocumentInformationPage documentInformationPage = new DocumentInformationPage(getDocument(), adminButtonsHidden, errors);
         documentInformationPage.setLanguagesStates(languagesStates);
-        documentInformationPage.setLabelsMap(labelsMap);
+        documentInformationPage.setLabelsMap(i18nMetasMap);
         documentInformationPage.forward( request, response );
     }
 
@@ -318,7 +325,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         final CategoryMapper categoryMapper = service.getCategoryMapper();
         final DocumentMapper documentMapper = service.getDocumentMapper();
 
-        for (Map.Entry<I18nLanguage, I18nMeta> l: labelsMap.entrySet()) {
+        for (Map.Entry<I18nLanguage, I18nMeta> l: i18nMetasMap.entrySet()) {
         	String suffix = "_" + l.getKey().getCode();
 
             String headline = request.getParameter(REQUEST_PARAMETER__HEADLINE + suffix);
@@ -332,7 +339,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             labels.setMenuImageURL(imageURL);
         }
 
-        document.setI18nMeta(labelsMap.get(document.getLanguage()));
+        document.setI18nMeta(i18nMetasMap.get(document.getLanguage()));
 
         Set<I18nLanguage> enabledLanguages = document.getMeta().getLanguages();
 
@@ -527,7 +534,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         private Map<I18nLanguage, Boolean> languagesStates;
         private boolean adminButtonsHidden;
         private Set errors;
-        private Map<I18nLanguage, I18nMeta> labelsMap;
+        private Map<I18nLanguage, I18nMeta> i18nMetasMap;
 
         public DocumentInformationPage( DocumentDomainObject document, boolean adminButtonsHidden, Set errors ) {
             this.document = document;
@@ -536,11 +543,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         }
 
         public Map<I18nLanguage, I18nMeta> getLabelsMap() {
-            return labelsMap;
+            return i18nMetasMap;
         }
 
-        public void setLabelsMap(Map<I18nLanguage, I18nMeta> labelsMap) {
-            this.labelsMap = labelsMap;
+        public void setLabelsMap(Map<I18nLanguage, I18nMeta> i18nMetasMap) {
+            this.i18nMetasMap = i18nMetasMap;
         }
 
         

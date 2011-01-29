@@ -77,7 +77,7 @@ public class DocumentLoader {
         I18nMeta labels = metaDao.getI18nMeta(meta.getId(), language);
 
         if (labels == null) {
-            labels = Factory.createLabels(meta.getId(), language);
+            labels = Factory.createI18nMeta(meta.getId(), language);
         }
 
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());

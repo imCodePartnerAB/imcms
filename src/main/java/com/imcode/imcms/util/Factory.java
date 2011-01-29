@@ -36,14 +36,14 @@ public class Factory {
     }
 
 
-    public static I18nMeta createLabels(Integer docId, I18nLanguage language) {
-        I18nMeta labels = newInstance(I18nMeta.class, docId, language);
+    public static I18nMeta createI18nMeta(Integer docId, I18nLanguage language) {
+        I18nMeta i18nMeta = newInstance(I18nMeta.class, docId, language);
 
-        labels.setHeadline("");
-        labels.setMenuText("");
-        labels.setMenuImageURL("");
+        i18nMeta.setHeadline("");
+        i18nMeta.setMenuText("");
+        i18nMeta.setMenuImageURL("");
         
-        return labels;
+        return i18nMeta;
     }
 
     /**
