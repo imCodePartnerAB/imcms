@@ -17,16 +17,19 @@ class DocumentVersionDao extends SpringHibernateTemplate {
    */
   @Transactional
   def createVersion(docId: JInteger, userId: JInteger) = synchronized {
-    val no = withSession {
-      _.getNamedQuery("DocumentVersion.getLatestVersion")
-       .setParameter("docId", docId)
-       .uniqueResult().asInstanceOf[DocumentVersion]
-    } match {
+    val no = getLatestVersion(docId) match {
       case null => 0
       case version => version.getNo.intValue + 1
     }
 
     letret(new DocumentVersion(docId, no, userId, new Date)) { hibernateTemplate.save }
+  }
+
+  @Transactional
+  def getLatestVersion(docId: JInteger) = withSession {
+    _.getNamedQuery("DocumentVersion.getLatestVersion")
+     .setParameter("docId", docId)
+     .uniqueResult().asInstanceOf[DocumentVersion]
   }
 
 

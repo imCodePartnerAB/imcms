@@ -72,8 +72,22 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
       getVersion()
     }
 
-    "return [null] if version does not exists" in {
+    "return [null] if version does *not* exists" in {
       getVersion(1002, 0, assertExists = false) must be (null)
+    }
+
+    "return latest version" in {
+      val maxVersion = versionDao.getAllVersions(1001).max
+      val latestVersion = versionDao.getLatestVersion(1001)
+
+      maxVersion must not be (null)
+      latestVersion must not be (null)
+
+      latestVersion must equal (maxVersion)
+    }
+
+    "return [null] if there is *no* versions for provided docId" in {
+      versionDao.getLatestVersion(1002) must be (null)
     }
   }
 
