@@ -98,7 +98,7 @@ image-magick-path =
 
 # Path where all the images that are uploaded to image archive will be stored, can be relative or absolute.
 # For example: /var/image_archive
-image-archive-storage-path = 
+image-archive-storage-path = archive_images/
 
 # Path where temporary images that are being processed are stored. 
 # For example: /tmp or C:/tmp
