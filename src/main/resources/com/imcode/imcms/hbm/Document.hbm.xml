@@ -87,7 +87,7 @@
   <query name="DocumentVersion.changeDefaultVersion">
     <![CDATA[
 	  UPDATE Meta m
-	  SET m.defaultVersionNo = :defaultVersionNo, m.modifiedDatetime = :modifiedDatetime, m.publisherId = :publisherId
+	  SET m.defaultVersionNo = :defaultVersionNo, m.modifiedDatetime = :modifiedDt, m.publisherId = :publisherId
 	  WHERE m.id = :docId
     ]]>
   </query>

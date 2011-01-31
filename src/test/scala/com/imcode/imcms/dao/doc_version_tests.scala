@@ -8,13 +8,13 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import imcms.test.Base._
 import org.springframework.orm.hibernate3.HibernateTemplate
-import org.scalatest.{WordSpec, BeforeAndAfterEach, BeforeAndAfterAll}
 import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 import imcms.api._
+import org.scalatest._
 
 @RunWith(classOf[JUnitRunner])
-class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach with GivenWhenThen {
   implicit object DocumentVersion extends Ordering[DocumentVersion] {
     def compare(v1: DocumentVersion, v2: DocumentVersion) = v1.getNo.intValue - v2.getNo.intValue
   }
@@ -49,16 +49,84 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
   }
 
   def createVersion(docId: JInteger = 1001, userId: JInteger = admin.getId) =
-    letret(versionDao.createVersion(docId, userId)) { savedVO =>
+    let(versionDao.createVersion(docId, userId)) { savedVO =>
       savedVO.getId must not be (null)
-      savedVO must have (
-        'docId (docId),
-        'createdBy (userId),
-        'modifiedBy (userId)
-      )
+
+      letret(getVersion(docId, savedVO.getNo)) { loadedVO =>
+        loadedVO must have (
+          'docId (docId),
+          'createdBy (userId),
+          'modifiedBy (userId)
+        )
+      }
     }
 
+  def getVersion(docId: JInteger = 1001, no: JInteger = 0, assertExists: Boolean = true) =
+    letret(versionDao.getVersion(docId, no)) { version =>
+      if (assertExists) assert(version != null, "Version docId: %s, no: %s".format(docId, no))
+    }
+
+
+  "A DocVersionDao" should {
+    "return existing version" in {
+      getVersion()
+    }
+
+    "return [null] if version does not exists" in {
+      getVersion(1002, 0, assertExists = false) must be (null)
+    }
+  }
+
   "A DocVersionDao" when {
+    "changing default version" that {
+      "exists" should {
+        "change it" in {
+          given("default version eq [version 0]")
+          val version0 = getVersion(1001, 0)
+          val version1 = getVersion(1001, 1)
+
+          let(versionDao.getDefaultVersion(1001)) { defaultVersion =>
+            defaultVersion must not be (null)
+            assert(version0 === defaultVersion)
+          }
+
+          when("change it from 0 to 1")
+          versionDao.changeDefaultVersion(1001, 1, 0)
+
+          then("default version should eq [version 1]")
+          let(versionDao.getDefaultVersion(1001)) { defaultVersion =>
+            defaultVersion must not be (null)
+            assert(version1 === defaultVersion)
+          }
+        }
+      }
+
+      "does *not* exist" should {
+        "throw an exception" in {
+          intercept[Exception] {
+            versionDao.changeDefaultVersion(1002, 1, 0)
+          }
+        }
+      }
+    }
+
+    "getting default version" that {
+      "does *not* exist" should {
+        "return [null]" in {
+          versionDao.getDefaultVersion(1002) must be (null)
+        }
+      }
+
+      "is prevosly set for the doc" should {
+        "return it" in {
+          val version0 = getVersion(1001, 0)
+          val defaultVersion = versionDao.getDefaultVersion(1001)
+
+          assert(version0 === defaultVersion)
+        }
+      }
+    }
+
     "creating a new version and there are *no* existing versions" should set {
       "its no to [0]" in {
         createVersion(1002).getNo must be (0)
@@ -78,7 +146,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
           versionDao.getAllVersions(1001) must have size (3)
         }
 
-        "have latest version no [2]" in {
+        "have latest version no eq [2]" in {
           versionDao.getAllVersions(1001).max.getNo.intValue must be (2)
         }
       }

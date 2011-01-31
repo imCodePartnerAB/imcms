@@ -1,5 +1,7 @@
 package com.imcode.imcms.api;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -65,6 +67,29 @@ public class DocumentVersion implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        return this == that
+            ? true
+            : that instanceof DocumentVersion
+                ? hashCode() == that.hashCode()
+                : false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 3)
+            .append(id)
+            .append(no)
+            .append(docId)
+            .append(createdBy)
+            .append(createdDt)
+            .append(modifiedBy)
+            .append(modifiedDt)
+            .toHashCode();
+
     }
 
     public Long getId() {

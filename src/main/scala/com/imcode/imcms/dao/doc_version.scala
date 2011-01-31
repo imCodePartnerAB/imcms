@@ -49,14 +49,23 @@ class DocumentVersionDao extends SpringHibernateTemplate {
   }
 
   @Transactional
-  def changeDefaultVersion(docId: JInteger, version: DocumentVersion, user: UserDomainObject) = withSession {
-    _.getNamedQuery("DocumentVersion.changeDefaultVersion")
-     .setParameter("defaultVersionNo", version.getNo)
-     .setParameter("modifiedDatetime", version.getModifiedDt)
-     .setParameter("publisherId", user.getId)
-     .setParameter("docId", docId)
-     .executeUpdate()
-  }
+  def changeDefaultVersion(docId: JInteger, version: DocumentVersion, user: UserDomainObject): Int =
+    changeDefaultVersion(docId, version.getNo, user.getId)
+
+  @Transactional
+  def changeDefaultVersion(docId: JInteger, no: JInteger, userId: JInteger) =
+    let(getVersion(docId, no)) { version =>
+      require(version != null, "Version must exists")
+
+      withSession {
+        _.getNamedQuery("DocumentVersion.changeDefaultVersion")
+         .setParameter("defaultVersionNo", no)
+         .setParameter("modifiedDt", new Date)
+         .setParameter("publisherId", userId)
+         .setParameter("docId", docId)
+         .executeUpdate()
+      }
+    }
 
   @Transactional
   def getVersion(docId: JInteger, no: JInteger) = withSession {
