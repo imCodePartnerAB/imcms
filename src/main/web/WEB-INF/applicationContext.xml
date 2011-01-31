@@ -76,6 +76,8 @@
   <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao" parent="dao"/>
 
   <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao" parent="dao"/>
+
+  <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocumentVersionDao" parent="dao"/>
   
   <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDao">
     <property name="sessionFactory" ref="sessionFactory"/>
@@ -95,10 +97,6 @@
   
   <bean id="systemDao" class="com.imcode.imcms.dao.SystemDao">
     <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
-
-  <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocumentVersionDao">
-      <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
 
   <bean id="imageCacheMapper" class="com.imcode.imcms.mapping.ImageCacheMapper"/>

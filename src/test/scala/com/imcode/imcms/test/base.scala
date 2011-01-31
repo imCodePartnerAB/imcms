@@ -14,6 +14,12 @@ import org.hibernate.SessionFactory
 object Base {
   val project = new Project
   val db = new DB(project)
+
+  def withLogFailure[T](block: => T) =
+    EX.allCatch.withApply[T] { t =>
+      t.printStackTrace
+      throw t
+    } apply block
 }
 
 object Util {

@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional
 
 import com.imcode.imcms.api.{DocumentProperty, Meta, I18nMeta, I18nLanguage}
 import com.imcode.imcms.mapping.orm.{FileReference, HtmlReference, Include, TemplateNames, UrlReference}
-import java.util.Date
 import imcode.server.user.UserDomainObject
 
 class MetaDao extends SpringHibernateTemplate {

@@ -15,93 +15,99 @@ import javax.persistence.TemporalType;
  * A document version.
  */
 @Entity
-@Table(name="imcms_doc_versions")
+@Table(name = "imcms_doc_versions")
 public class DocumentVersion implements Cloneable {
 
-    /** Working version no is always 0.*/
+    /**
+     * Working version no is always 0.
+     */
     public static final Integer WORKING_VERSION_NO = 0;
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(name="doc_id", updatable=false)
-	private Integer docId;
+    @Column(name = "doc_id", updatable = false)
+    private Integer docId;
 
-	private Integer no;
-	
-	@Column(name="created_by", updatable=false)	
-	private Integer createdBy;
-	
-	@Column(name="created_dt", updatable = false)	
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdDt;
+    private Integer no;
 
-	@Column(name="modified_by", updatable=true, nullable=false)
-	private Integer modifiedBy;
+    @Column(name = "created_by", updatable = false)
+    private Integer createdBy;
 
-	@Column(name="modified_dt", updatable=true, nullable=false)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date modifiedDt;    
+    @Column(name = "created_dt", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDt;
 
-    public DocumentVersion() {}
-	
-	public DocumentVersion(Integer docId, Integer no, Integer createdBy, Date createdDt) {
-		this.docId = docId;
-		this.no = no;
+    @Column(name = "modified_by", updatable = true, nullable = false)
+    private Integer modifiedBy;
+
+    @Column(name = "modified_dt", updatable = true, nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifiedDt;
+
+    public DocumentVersion() {
+    }
+
+    public DocumentVersion(Integer docId, Integer no, Integer createdBy, Date createdDt) {
+        this.docId = docId;
+        this.no = no;
         this.createdBy = createdBy;
         this.createdDt = createdDt;
-	}	
-	
-	@Override
-	public DocumentVersion clone() {
-		try {
-			return (DocumentVersion)super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
-	}
+        this.modifiedBy = createdBy;
+        this.modifiedDt = createdDt;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    @Override
+    public DocumentVersion clone() {
+        try {
+            return (DocumentVersion) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Integer getDocId() {
-		return docId;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setDocId(Integer docId) {
-		this.docId = docId;
-	}
+    public Integer getDocId() {
+        return docId;
+    }
 
-	
-	public Integer getNo() {
-		return no;
-	}
-
-	public void setNo(Integer no) {
-		this.no = no;
-	}
+    public void setDocId(Integer docId) {
+        this.docId = docId;
+    }
 
 
-	public Integer getCreatedBy() {
-		return createdBy;
-	}
+    public Integer getNo() {
+        return no;
+    }
 
-	public void setCreatedBy(Integer createdBy) {
-		this.createdBy = createdBy;
-	}
+    public void setNo(Integer no) {
+        this.no = no;
+    }
 
-	public Date getCreatedDt() {
-		return createdDt;
-	}
 
-	public void setCreatedDt(Date createdDt) {
-		this.createdDt = createdDt;
-	}
+    public Integer getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Integer createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Date getCreatedDt() {
+        return createdDt;
+    }
+
+    public void setCreatedDt(Date createdDt) {
+        this.createdDt = createdDt;
+    }
 
     public Integer getModifiedBy() {
         return modifiedBy;
