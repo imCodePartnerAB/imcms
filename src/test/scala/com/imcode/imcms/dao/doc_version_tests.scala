@@ -68,7 +68,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
 
 
   "A DocVersionDao" should {
-    "return existing version" in {
+    "return version when it exists" in {
       getVersion()
     }
 
@@ -76,7 +76,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
       getVersion(1002, 0, assertExists = false) must be (null)
     }
 
-    "return latest version" in {
+    "return latest version when it exists" in {
       val maxVersion = versionDao.getAllVersions(1001).max
       val latestVersion = versionDao.getLatestVersion(1001)
 
