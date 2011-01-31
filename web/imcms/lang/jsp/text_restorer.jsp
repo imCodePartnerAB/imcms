@@ -291,12 +291,12 @@ function initRestore() {
 		
 		if (confirm("<%= isSwe ? "Vill du kopiera denna version till text-editorn?" : "Do you want to copy this version to the the text editor?" %>")) {
 			
-			var xinha = null ;
-			var xinhaActive = false ;
+			var editor = null ;
+			var editorActive = false ;
 			try {
-				xinha = eval("parent.parent.opener.xinha_editors.text") ;
-				var xinhaIframe = eval("parent.parent.opener.document.getElementById('XinhaIFrame_text')") ;
-				xinhaActive = (xinha && xinhaIframe) ;
+				editor = eval("parent.parent.opener.CKEDITOR.instances['text']") ;
+				//var xinhaIframe = eval("parent.parent.opener.document.getElementById('XinhaIFrame_text')") ;
+				editorActive = (undefined != editor) ;
 			} catch (ex) {}
 			
 			// Copy plain text
@@ -307,9 +307,11 @@ function initRestore() {
 				if (openerTextField) {
 					openerTextField.value = theContent ;
 					isCopied = true ;
-				} else if (xinhaActive) {
+				} else if (editorActive) {
 					parent.parent.opener.setTextMode() ;
-					window.setTimeout(function() { openerTextArea.value = theContent; }, 500) ;
+					window.setTimeout(function() {
+						openerTextArea.value = theContent;
+					}, 500) ;
 					isCopied = true ;
 				} else if (openerTextArea) {
 					openerTextArea.value = theContent ;
@@ -326,8 +328,8 @@ function initRestore() {
 				if (openerTextField) {
 					openerTextField.value = theContent ;
 					isCopied = true ;
-				} else if (xinhaActive) {
-					xinha.setEditorContent(theContent) ;
+				} else if (editorActive) {
+					editor.setData(theContent) ;
 					isCopied = true ;
 				} else if (openerTextArea) {
 					openerTextArea.value = theContent ;

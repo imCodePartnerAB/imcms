@@ -13,11 +13,71 @@ String cp = request.getContextPath() ;
 
 <jsp:include page="imcms_jquery-ui_1.8.5.js" />
 
-<%--
+
 jQ(document).ready(function($) {
-	//...
+	toolTip($, 'body') ;
 }) ;
+
+
+<%--
+/* *******************************************************************************************
+ *         ToolTip - Mouse over white plate with (i) icon or doc format icon (PDF, ZIP etc.) *
+ ******************************************************************************************* */
 --%>
+/*
+ * Tooltip script 
+ * powered by jQuery (http://www.jquery.com)
+ * 
+ * written by Alen Grakalic (http://cssglobe.com)
+ * modified by Tommy Ullberg, imCode Partner AB (http://www.imcms.net/)
+ * 
+ * for more info visit http://cssglobe.com/post/1695/easiest-tooltip-and-image-preview-using-jquery
+ *
+ */
+
+var oToolTipTimer = null ;
+
+this.toolTip = function($, selector){
+	if (oToolTipTimer) {
+		window.clearTimeout(oToolTipTimer) ;
+	}
+	xOffset = 10;
+	yOffset = 20;
+	$(selector + ' .toolTip,' + selector + ' .toolTipHide').hover(function(e){
+		this.t = this.title;
+		this.title = "";
+		var fileData = $(this).attr("rel") ;
+		this.iconClass = "" ;
+		if (null != fileData && fileData.length > 7 && fileData.indexOf("FIL") != -1) {
+			var fileExt = fileData.substring(4,7) ;
+			if (/^(PDF|DOC|ZIP|JPG|PNG|GIF|MP3|AVI|MPG)$/i.test(fileExt)) {
+				this.iconClass = "toolTipIcon_" + fileExt.toUpperCase() ;
+			}
+		} else if (null != fileData && fileData.indexOf("URL") != -1) {
+			this.iconClass = "toolTipIcon_EXT_LINK" ;
+		}
+		$("body").append('<div id="toolTipPop">'+ this.t.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/#LT#/g, "&lt;").replace(/#GT#/g, "&gt;") + '</div>');
+		$("#toolTipPop")
+			.css("top",(e.pageY + yOffset) + "px")
+			.css("left",(e.pageX + xOffset) + "px")
+			.fadeIn(document.all ? "fast" : "slow");
+		if ($(this).hasClass('toolTipHide')) {
+			$("#toolTipPop").delay(1000).fadeTo(500, 0) ;
+			//this.title = this.t;
+		}
+	}, function(){
+		this.title = this.t;
+		$("#toolTipPop").remove();
+	});
+	$(".toolTip,.toolTipHide").mousemove(function(e){
+		$("#toolTipPop")
+			.css("top",(e.pageY + yOffset) + "px")
+			.css("left",(e.pageX + xOffset) + "px") ;
+		if ("" != this.iconClass) {
+			$("#toolTipPop").addClass(this.iconClass) ;
+		}
+	});
+};
 
 <vel:velocity>
 

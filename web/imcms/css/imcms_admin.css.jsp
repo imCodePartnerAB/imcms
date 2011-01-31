@@ -3,6 +3,12 @@
 	contentType="text/css"
 %><%!
 
+/*
+
+	CSS for the blue/white admin UI
+
+*/
+
 /* *******************************************************************************************
  *         Method that writes the right fontSize, depending on the browser                   *
  ******************************************************************************************* */
@@ -15,12 +21,15 @@ private int fontSize( int size, boolean isNS ) {
 
 Perl5Util re = new Perl5Util() ;
 
+String cp = request.getContextPath() ;
+
 /* Check browser */
 
-String uAgent   = StringUtils.defaultString(request.getHeader("USER-AGENT")) ;
-boolean isIE    = re.match("/(MSIE \\d)/i", uAgent) ;
-boolean isGecko = re.match("/Gecko/i", uAgent) ;
-boolean isNS    = !isGecko && !isIE && re.match("/Mozilla/i", uAgent) ;
+String uAgent    = StringUtils.defaultString(request.getHeader("USER-AGENT")).toLowerCase() ;
+boolean isIE     = re.match("/(msie \\d)/i", uAgent) ;
+boolean isGecko  = re.match("/gecko/i", uAgent) ;
+boolean isWebKit = re.match("/webkit/i", uAgent) ;
+boolean isNS     = !isIE && !isGecko && !isWebKit && re.match("/mozilla/i", uAgent) ;
 
 String BORDER_COLOR_NORMAL     = "#668db6 #000 #000 #668db6" ;
 String BORDER_COLOR_NORMAL_SUB = "#668db6 #999 #999 #668db6" ;
@@ -183,8 +192,36 @@ if (isNS) { %>
 	border-color: <%= BORDER_COLOR_DISABLED %>;
 	cursor:pointer;
 	padding: <%= isGecko ? 1 : 0 %>px 2px; }<%
+} %>
+
+<% /* Medium - Used as extra, to get higher buttons: class=" imcmsFormBtnSmall imcmsFormBtnMedium" */ %>
+
+.imcmsFormBtnMedium {
+	padding: <%= isGecko ? 3 : 2 %>px 2px; }
+
+
+#validateBtn {
+	padding-left: 20px;
+	background-position: 0 -3px !important;
+	background-repeat: no-repeat;
+	cursor: pointer;<%--
+	filter: alpha(opacity=80);
+	-moz-opacity: 0.8;
+	-khtml-opacity: 0.8;
+	opacity: 0.8;--%>
 }
 
+.iconValidate_pending {
+	background-image: url(<%= cp %>/imcms/images/icons/icon_validate_pending.gif);
+}
+.iconValidate_true {
+	background-image: url(<%= cp %>/imcms/images/icons/icon_validate_true.gif);
+}
+.iconValidate_false {
+	background-image: url(<%= cp %>/imcms/images/icons/icon_validate_false.gif);
+}
+
+<%
 /* *******************************************************************************************
  *         Misc                                                                              *
  ******************************************************************************************* */ %>
@@ -226,3 +263,24 @@ SPAN.NavBtnTextInact, SPAN.NavBtnTextInact A:link, SPAN.NavBtnTextInact A:visite
 
 TD.NavBtnTextAct   { cursor: default; }
 TD.NavBtnTextInact { cursor: pointer; }
+
+
+/* *******************************************************************************************
+ *         toolTip                                                                           *
+ ******************************************************************************************* */
+
+#toolTipPop {
+	position: absolute !important;
+	border: 1px solid #000 !important;
+	border-radius: 4px !important;
+	<%= isGecko ? "-moz-border-radius: 4px !important;" : "" %>
+	<%= isWebKit ? "-webkit-border-radius: 4px !important;" : "" %>
+	padding: 5px 5px 5px 25px !important;
+	font: 11px Verdana,Geneva,sans-serif !important;
+	color: #000 !important;
+	text-shadow: 0 1px 0 #ccc !important;
+	text-align: left !important;
+	background: #fff url(<%= cp %>/imcms/images/icons/icon_info.gif) 4px 5px no-repeat !important;
+	z-index: 20000010 !important;
+	display: none;
+}

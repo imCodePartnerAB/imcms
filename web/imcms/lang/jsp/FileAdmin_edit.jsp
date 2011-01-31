@@ -268,11 +268,18 @@ if (isHelpWin) { %>
 
 <vel:velocity>
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+<script type="text/javascript" src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp"></script>
+<script type="text/javascript" src="$contextPath/imcms/$language/scripts/imcms_jquery.textarea.js"></script>
 </vel:velocity>
 
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
+<% if (!isReadonly) { %>
+jQ(document).ready(function($) {
+	$('#txtField').tabby() ;
+}) ;
+<% } %>
+
 function closeIt() {
 	window.close();
 	if (parent.opener) parent.opener.focus();
@@ -368,7 +375,7 @@ function resizeEditField() {
 			availH = parseInt(innerHeight);
 		}
 		if (availW > 0) elEdit.style.width = (availW - 13) + "px" ;
-		if (availH > 0) elEdit.style.height = (availH - 75) + "px" ;
+		if (availH > 0) elEdit.style.height = (availH - <%= isReadonly ? 75 : 90 %>) + "px" ;
 	}
 }
 
@@ -557,7 +564,10 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			}
 			if (!sError.equals("")) {
 				%><div class="imcmsAdmTextSmall" style="color:#cc0000"><%= sError %></div><%
-			} %></span></td>
+			} %></span><%
+			if (!isReadonly) { %>
+			<div class="imcmsAdmTextSmall" style="color:#999; padding: 4px 0 5px 8px;"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/9 ?></div><%
+			} %></td>
 	</tr><%
 			String taRows = (isTempl && !(isMac && (hasDocumentLayers || hasDocumentAll))) ? "39" : "40" ;
 			if (hasDocumentAll || (isMac && hasGetElementById)) { %>
@@ -567,15 +577,15 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			} else if (hasGetElementById) { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" valign="top">
-		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" wrap="soft" class="edit FileAdminEditEditor" style="width:98%; height:<%= (isTempl) ? 500 : 510 %>px;" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit FileAdminEditEditor" style="width:98%; height:<%= (isTempl) ? 500 : 510 %>px;" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (isMac && hasDocumentLayers) { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" class="imcmsAdmText">
-		<textarea name="txtField" id="txtField" cols="125" rows="<%= taRows %>" wrap="soft" class="edit FileAdminEditEditor" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="txtField" cols="125" rows="<%= taRows %>" class="edit FileAdminEditEditor" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" class="imcmsAdmText">
-		<textarea name="txtField" id="txtField" cols="82" rows="<%= taRows %>" wrap="soft" class="edit FileAdminEditEditor" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="txtField" cols="82" rows="<%= taRows %>" class="edit FileAdminEditEditor" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} %>
 <%= fileSrc %></textarea></td>
 	</tr>
@@ -585,7 +595,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 </table>
 <%
 if (isTempl && !(isMac && (hasDocumentLayers || hasDocumentAll))) { %>
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
 function imScriptCount(imType) {
 	var hits,arr1,arr2;

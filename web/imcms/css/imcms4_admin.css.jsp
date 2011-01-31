@@ -8,6 +8,12 @@
 	
 %><%
 
+/*
+
+	Parsed in to all templates - If the user has an admin panel.
+
+*/
+
 Perl5Util re = new Perl5Util() ;
 
 /* Check browser */
@@ -39,8 +45,9 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 	padding: 15px 0 10px 0 !important;
 }
 .adminPanelTable {
-	border-right: 1px solid #000 !important;
-	border-bottom: 1px solid #000 !important;
+	border-width: 1px 2px 2px 1px !important;
+	border-style: solid !important;
+	border-color: #ccc #000 #000 #ccc !important;
 	background-color: #f5f5f7 !important;
 }
 .adminPanelTd1 {
@@ -62,7 +69,9 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 #adminPanelTd1_2 .adminPanelText SPAN {
 	white-space: nowrap !important;
 }
-#adminPanelTd1_3 {}
+#adminPanelTd1_3 {
+	text-align: right !important;
+}
 .adminPanelTd2 {
 	padding: 3px !important;
 	height: 32px !important;
@@ -88,8 +97,9 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 	padding: 0 0 10px 0 !important;
 }
 #changePageTable {
-	border-right: 1px solid #000 !important;
-	border-bottom: 1px solid #000 !important;
+	border-width: 1px 2px 2px 1px !important;
+	border-style: solid !important;
+	border-color: #ccc #000 #000 #ccc !important;
 	background-color: #f5f5f7 !important;
 }
 #changePageTdTop {

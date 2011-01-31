@@ -5,10 +5,10 @@
 
 /*
 
-If you want to use your own CSS - remove the CSS-attibutes below and just use an @import statment. Eg:
+If you want to use your own CSS:
 
-@import url(my_css.css);
-@import url(default.css.jsp?editor=true);
+- Copy this file and rename it to: editor_site.css
+- If /css/editor_site.css exists it's used instead.
 
 */
 

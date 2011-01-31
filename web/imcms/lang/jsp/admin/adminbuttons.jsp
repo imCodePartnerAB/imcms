@@ -6,7 +6,7 @@
 	        imcode.server.document.textdocument.TextDocumentDomainObject,
 	        imcode.server.user.UserDomainObject,
 	        imcode.util.Html,
-	        imcode.util.Utility, org.apache.commons.lang.StringUtils, org.apache.commons.lang.StringEscapeUtils"
+	        imcode.util.Utility, org.apache.commons.lang.StringUtils, org.apache.commons.lang.StringEscapeUtils, imcode.server.document.DocumentTypeDomainObject"
 	
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
@@ -17,6 +17,8 @@
 UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
 DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
 DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document ) ;
+
+boolean isTextDocument = (DocumentTypeDomainObject.TEXT == document.getDocumentType()) ;
 
 %><vel:velocity>
 <div id="adminPanelDiv">
@@ -31,9 +33,11 @@ DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetF
 			<span class="adminPanelText">
 			<span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_id ?>"><b>Id:</b> <%= document.getId() %></span> &nbsp;
 			<span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_alias ?>"><b>Alias:</b> <%=
-			(null != document.getAlias()) ? "<span title=\"" + StringEscapeUtils.escapeHtml(document.getAlias()) + "\">" + StringUtils.abbreviate(document.getAlias(), 23) + "</span>" : "-" %></span> &nbsp;
+			(null != document.getAlias()) ? "<span title=\"" + StringEscapeUtils.escapeHtml(document.getAlias()) + "\">" + StringUtils.abbreviate(document.getAlias(), (isTextDocument ? 37 : 23)) + "</span>" : "-" %></span><%
+			if (!isTextDocument) { %> &nbsp;
 			<span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_type ?>"><b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b>
-			<%= document.getDocumentTypeName().toLocalizedString( request ) %></span> &nbsp;</span></td>
+			<%= document.getDocumentTypeName().toLocalizedString( request ) %></span><%
+			} %> &nbsp;</span></td>
 			<td id="adminPanelTd1_3" width="25%" align="right"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
 		</tr>
 		</table></td>
