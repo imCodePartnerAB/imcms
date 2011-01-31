@@ -41,7 +41,10 @@
 <html>
 <head>
 <title><? templates/sv/docinfo/change_meta_rights.html/1 ?></title>
-<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
+<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp" />
+<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms4_admin.css.jsp" />
+<script type="text/javascript" src="<%= request.getContextPath() %>/imcms/swe/scripts/imcms4_admin_script.js.jsp"></script>
+
 </head>
 <body bgcolor="#FFFFFF">
 

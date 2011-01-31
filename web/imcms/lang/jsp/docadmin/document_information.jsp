@@ -79,8 +79,10 @@ String formatTime(Date time) {
 <meta http-equiv="Cache-Control" content="must-revalidate">
 <meta http-equiv="Cache-Control" content="no-cache">
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp" />
+<script type="text/javascript" src="<%= request.getContextPath() %>/imcms/$language/scripts/imcms_admin.js.jsp"></script>
+<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms4_admin.css.jsp" />
+<script type="text/javascript" src="<%= request.getContextPath() %>/imcms/swe/scripts/imcms4_admin_script.js.jsp"></script>
 <%= jsCalendar.getHeadTagScripts() %>
 <script language="JavaScript">
 <!--
