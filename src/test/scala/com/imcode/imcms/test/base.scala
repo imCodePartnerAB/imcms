@@ -14,43 +14,7 @@ import org.hibernate.SessionFactory
 object Base {
   val project = new Project
   val db = new DB(project)
-
-  def withLogFailure[T](block: => T) =
-    EX.allCatch.withApply[T] { t =>
-      t.printStackTrace
-      throw t
-    } apply block
 }
-
-object Util {
-  // ??? If located inside createFileWatcher then compiles but init fails ???
-  case class State[T](lastAccessNano: Long, lastModified: Long, handlerResult: T)
-
-  //def createResourceWatcher[R, H](resourceFn: () => R, poolIntervalNano: Long = 1000)(handler: R => H)
-
-  def createFileWatcher[T](fileFn: () => File, poolIntervalNano: Long = 1000)(handler: File => T) = new Function0[T] {
-
-    val stateRef = new AtomicReference(Option.empty[State[T]])
-
-    def apply() = synchronized {
-      val now = System.nanoTime
-      val state = stateRef.get match {
-        case Some(state @ State(lastAccessNano, lastModified, handlerResult))
-          if lastAccessNano + poolIntervalNano < now || fileFn().lastModified == lastModified =>
-            state.copy(lastAccessNano = now)
-
-        case _ => let(fileFn()) { file =>
-          State(now, file.lastModified, handler(file))
-        }
-      }
-
-      stateRef set Some(state)
-
-      state.handlerResult
-    }
-  }
-}
-
 
 class Project(dirPath: String = ".") {
 
@@ -184,5 +148,34 @@ class DB(project: Project) {
     val schema = Schema.load(project.file("src/main/resources/schema.xml")).changeScriptsDir(scriptsDir)
 
     let(new DBAccess(createDataSource())) { _ prepare schema }
+  }
+}
+
+object Util {
+  // ??? If located inside createFileWatcher then compiles but init fails ???
+  case class State[T](lastAccessNano: Long, lastModified: Long, handlerResult: T)
+
+  //def createResourceWatcher[R, H](resourceFn: () => R, poolIntervalNano: Long = 1000)(handler: R => H)
+
+  def createFileWatcher[T](fileFn: () => File, poolIntervalNano: Long = 1000)(handler: File => T) = new Function0[T] {
+
+    val stateRef = new AtomicReference(Option.empty[State[T]])
+
+    def apply() = synchronized {
+      val now = System.nanoTime
+      val state = stateRef.get match {
+        case Some(state @ State(lastAccessNano, lastModified, handlerResult))
+          if lastAccessNano + poolIntervalNano < now || fileFn().lastModified == lastModified =>
+            state.copy(lastAccessNano = now)
+
+        case _ => let(fileFn()) { file =>
+          State(now, file.lastModified, handler(file))
+        }
+      }
+
+      stateRef set Some(state)
+
+      state.handlerResult
+    }
   }
 }

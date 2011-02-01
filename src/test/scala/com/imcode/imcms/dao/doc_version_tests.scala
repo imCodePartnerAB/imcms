@@ -6,7 +6,9 @@ import imcode.server.user.UserDomainObject
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
+import imcms.test._
 import imcms.test.Base._
+import imcms.test.fixtures.UserFX.{admin}
 import org.springframework.orm.hibernate3.HibernateTemplate
 import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
@@ -22,8 +24,6 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
   def set = afterWord("set")
 
   var versionDao: DocumentVersionDao = _
-
-  val admin = new UserDomainObject(0)
 
   override def beforeAll() = db.recreate()
 

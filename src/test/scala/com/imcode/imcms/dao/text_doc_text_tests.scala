@@ -11,6 +11,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test.Base.{db}
+import imcms.test.fixtures.LanguagesFX.{english, swedish, languages}
 import imcode.server.user.{RoleId, RoleDomainObject, UserDomainObject}
 import org.scalatest.fixture.FixtureFunSuite
 import org.springframework.orm.hibernate3.HibernateTemplate
@@ -21,10 +22,6 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
   type FixtureParam = I18nLanguage
 
 	var textDao: TextDao = _
-
-  val english = Factory.createLanguage(1, "en", "English")
-  val swedish = Factory.createLanguage(2, "sv", "Swedish")
-  val languages = Seq(english, swedish)
 
   val admin = new UserDomainObject(0) {
     addRoleId(RoleId.SUPERADMIN)

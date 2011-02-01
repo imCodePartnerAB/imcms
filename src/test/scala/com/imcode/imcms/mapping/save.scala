@@ -1,8 +1,6 @@
 package com.imcode
 package imcms.mapping
 
-import com.imcode.imcms.test.Project
-
 import imcode.server.document.FileDocumentDomainObject
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers
@@ -24,11 +22,5 @@ class SaveSpec extends WordSpec with ShouldMatchers {
     //   "does something other in {
     //   }
     // }
-  }
-
-  "this test" should {
-    "fail" in {
-      fail()
-    }
   }
 }

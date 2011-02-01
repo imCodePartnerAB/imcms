@@ -4,6 +4,7 @@ package imcms.dao
 import imcode.server.user.UserDomainObject
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import imcms.test.fixtures.UserFX.{admin}
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test.Base.{db}
@@ -14,8 +15,6 @@ class MetaDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
 
 	var metaDao: MetaDao = _
   var versionDao: DocumentVersionDao = _
-
-  val admin = new UserDomainObject(0)
 
   override def beforeAll() = db.recreate()
 
