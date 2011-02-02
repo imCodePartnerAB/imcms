@@ -6,26 +6,32 @@ import imcms.util.Factory
 import imcode.server.user.{RoleId, UserDomainObject}
 
 object DocFX {
-  // default doc/meta id - this doc/meta or an entity which have doc/meta id field always exists (or re-created) before each test.
-  val defaultId = 1001
+  val Seq(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth) = 1001 to 1010
 
-  // doc/meta id an entity which have doc/meta id field which *may* not exists (see a test doc) before a test.
-  val nextId = defaultId + 1
+  // default doc/meta id - this doc/meta or an entity which have doc/meta id field always exists (or re-created) before each test.
+  val defaultId = first
 
   // doc/meta id an entity which have doc/meta id field which *never* exists before a test.
-  val newId = Int.MaxValue
+  val newId = Int.MaxValue / 2
+
+  // missing doc/meta id an entity which have doc/meta id field
+  val missingId = Int.MaxValue
 }
 
 object VersionFX {
-  val defaultNo = 0
-  val nextNo = defaultNo + 1
-  val newNo = Int.MaxValue
+  val Seq(zero, one, two, three, four, five, six, seven, eight, nine, ten) = 0 to 10
+
+  val defaultNo = zero
+  val newNo = Int.MaxValue / 2
+  val missingNo = Int.MaxValue
 }
 
-object DocItem {
-  val defaultNo = 0
-  val nextNo = defaultNo + 1
-  val newNo = Int.MaxValue
+object DocItemFX {
+  val Seq(zero, one, two, three, four, five, six, seven, eight, nine, ten) = 0 to 10
+
+  val defaultNo = zero
+  val newNo = Int.MaxValue / 2
+  val missingNo = Int.MaxValue
 }
 
 object UserFX {
@@ -34,7 +40,9 @@ object UserFX {
     addRoleId(RoleId.SUPERADMIN)
   }
 
-  def user = new UserDomainObject(0)
+  def user = new UserDomainObject(2) {
+    addRoleId(RoleId.USERS)
+  }
 }
 
 object LanguagesFX {

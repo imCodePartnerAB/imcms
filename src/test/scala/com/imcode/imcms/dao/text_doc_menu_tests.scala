@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import scala.collection.JavaConversions._
 import imcms.api.MenuHistory
 import imcode.server.document.textdocument.{TreeSortKeyDomainObject, MenuItemDomainObject, MenuDomainObject}
 import org.junit.runner.RunWith
@@ -8,8 +9,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test._
+import fixtures.{DocItemFX, DocFX, VersionFX}
 import imcms.test.fixtures.UserFX.{admin}
-import imcms.test.fixtures.{DocFX, VersionFX}
 import imcms.test.Base.{db}
 import org.springframework.orm.hibernate3.HibernateTemplate
 
@@ -18,7 +19,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
 
 	var menuDao: MenuDao = _
 
-  val menuNos = 0 to 4
+  val menuNos = 1 to 4
 
   override def beforeAll() = withLogFailure { db.recreate() }
 
@@ -29,32 +30,63 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
     menuDao = new MenuDao
     menuDao.hibernateTemplate = new HibernateTemplate(sf)
 
-    db.runScripts("src/test/resources/sql/menu_dao.sql")
+    db.runScripts("src/test/resources/sql/text_doc_menu_dao.sql")
   }
 
-  def getMenu(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, no: JInteger = 0, assertExists: Boolean = true) =
-    letret(menuDao.getMenu) { menu =>
-      if (assertExists) menu must not be (null)
+  def menu(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, no: JInteger = DocItemFX.defaultNo, assertExists: Boolean = true) =
+    letret(menuDao.getMenu(docId, docVersionNo, no)) { menu =>
+      if (assertExists) {
+        menu must not be (null)
+        menu must have (
+          'docId (docId),
+          'docVersionNo (docVersionNo),
+          'no (no)
+        )
+      }
     }
 
 
-  def getMenus(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, assertExists: Boolean = true) =
+  def menus(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, assertNotEmpty: Boolean = true) =
     letret(menuDao.getMenus(docId, docVersionNo)) { menus =>
-      if (assertExists) menus must not be ('empty)
+      if (assertNotEmpty) {
+        menus must not be ('empty)
+        menus foreach { menu =>
+          menu must have (
+            'docId (docId),
+            'docVersionNo (docVersionNo)
+          )
+        }
+      }
     }
 
+  def defaultMenu() = menu()
+  def defaultMenus() = menus()
 
-  test("get all [4] text doc's menus") {
-    val menus = getMenus()
-    menus must have size (4)
+
+  test("get all [4] menus") {
+    val menus = defaultMenus()
+    menus must have size (menuNos.size)
 
     for (menu <- menus) {
-      menu.getItemsMap must have size (menu.getNo)
+      expect(menu.getNo.intValue, "Items count in a menu") {
+        menu.getItemsMap.size
+      }
     }
   }
 
+  test("get existing menu") {
+    defaultMenu()
+  }
 
-  test("create and save new text doc's menu") {
+  test("get missing menu") {
+    menu(no = DocItemFX.missingNo, assertExists = false) must be ('null)
+  }
+
+  test("get missing menus") {
+    menus(no = DocItemFX.missingNo, assertExists = false) must be ('empty)
+  }
+
+  test("save new menu") {
     val menu = new MenuDomainObject
     menu.setDocId(DocFX.defaultId)
     menu.setDocVersionNo(VersionFX.defaultNo)
@@ -69,33 +101,26 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
 
     menuDao.saveMenu(menu)
 
-    let(menuDao.getMenus(DocFX.defaultId, VersionFX.defaultNo)) { menus =>
-      menus must have size (menuNos.size + 1)
-    }
+    defaultMenus() must have size (menuNos.size + 1)
 
     val menuHistory = new MenuHistory(menu, admin)
     menuDao.saveMenuHistory(menuHistory)
   }
 
-
-  test("delete one existing menu") {
-    val no = 0
-
-    let(getMenu()) { menu =>
-      menuDao.deleteMenu(menus.get(0))
+  test("delete existing menu") {
+    let(defaultMenu()) { menu =>
+      menuDao.deleteMenu(menu)
     }
 
-    let(menuDao.getMenus(DocFX.defaultId, VersionFX.defaultNo)) { menus =>
-      menus mast have size (menuNos.size - 1)
-    }
+    menu(assertExists = false) must be (null)
   }
 
 
-  test("delete all text doc's menus") {
+  test("delete all menus") {
     menuDao.deleteMenus(DocFX.defaultId, VersionFX.defaultNo)
 
-    let(menuDao.getMenus(DocFX.defaultId, VersionFX.defaultNo)) { menus =>
-      menus mast be ('empty)
+    let(menus(assertNotEmpty = false)) { menus =>
+      menus must be ('empty)
     }
   }
 }

@@ -12,10 +12,13 @@ import imcode.server.document.textdocument.MenuDomainObject
 class MenuDao extends SpringHibernateTemplate {
 
   @Transactional
-  def getMenu(docId: JInteger, docVersionNo: JInteger, no: JInteger) =
-    hibernateTemplate.findByNamedQueryAndNamedParam("Menu.getMenu",
-      Array("docId", "docVersionNo", "no"),
-      Array[AnyRef](docId, docVersionNo, no)).asInstanceOf[MenuDomainObject]
+  def getMenu(docId: JInteger, docVersionNo: JInteger, no: JInteger) = withSession {
+    _.getNamedQuery("Menu.getMenu")
+     .setParameter("docId", docId)
+     .setParameter("docVersionNo", docVersionNo)
+     .setParameter("no", no)
+     .uniqueResult().asInstanceOf[MenuDomainObject]
+  }
 
   @Transactional
   def getMenus(docId: JInteger, docVersionNo: JInteger) =

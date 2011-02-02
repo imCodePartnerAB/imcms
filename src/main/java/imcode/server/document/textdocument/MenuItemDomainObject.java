@@ -2,6 +2,8 @@ package imcode.server.document.textdocument;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.aspectj.bridge.MessageWriter;
 
 import java.io.Serializable;
@@ -57,14 +59,15 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
 
         final MenuItemDomainObject otherMenuItem = (MenuItemDomainObject) o;
 
-        return sortKey.equals(otherMenuItem.sortKey)
-                && treeSortKey.equals(otherMenuItem.treeSortKey)
-                && documentReference.equals(otherMenuItem.documentReference);
+        return new EqualsBuilder()
+                .append(sortKey, otherMenuItem.sortKey)
+                .append(documentReference, otherMenuItem.documentReference)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return documentReference.hashCode();
+        return new HashCodeBuilder(5, 7).append(documentReference).toHashCode();
     }
 
     public Integer getSortKey() {
