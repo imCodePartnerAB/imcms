@@ -83,7 +83,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
   }
 
   test("get missing menus") {
-    menus(no = DocItemFX.missingNo, assertExists = false) must be ('empty)
+    menus(docId = DocFX.missingId, assertNotEmpty = false) must be ('empty)
   }
 
   test("save new menu") {

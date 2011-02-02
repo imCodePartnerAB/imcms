@@ -24,7 +24,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
     public static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
 
-    // key: fileId, value: FileDocumentFile
+    // key: file id
     private Map<String, FileDocumentFile> files = createFilesMap();
 
     private String defaultFileId;

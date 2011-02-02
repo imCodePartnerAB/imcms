@@ -16,8 +16,6 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Clock;
-import imcode.util.SystemClock;
 import imcode.util.io.FileUtility;
 
 import java.io.File;
@@ -52,8 +50,6 @@ public class DocumentMapper implements DocumentGetter {
 
     private Database database;
     private DocumentIndex documentIndex;
-    
-    private Clock clock = new SystemClock();
     
     private ImcmsServices imcmsServices;
     
@@ -405,12 +401,12 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * Changes document's active version.
+     * Changes doc's default version.
      */
-    public void changeDocumentDefaultVersion(Integer docId, Integer newDocDefaultVersionNo, UserDomainObject user)
+    public void changeDocumentDefaultVersion(Integer docId, Integer newDocDefaultVersionNo, UserDomainObject publisher)
     throws DocumentSaveException, NoPermissionToEditDocumentException {
         try {
-    	    documentSaver.changeDocumentDefaultVersion(docId, newDocDefaultVersionNo, user);
+    	    documentSaver.changeDocumentDefaultVersion(docId, newDocDefaultVersionNo, publisher);
         } finally {
             invalidateDocument(docId);
         }
@@ -783,10 +779,6 @@ public class DocumentMapper implements DocumentGetter {
         return database;
     }
 
-    public Clock getClock() {
-        return clock;
-    }
-
     public ImcmsServices getImcmsServices() {
         return imcmsServices;
     }
@@ -857,10 +849,6 @@ public class DocumentMapper implements DocumentGetter {
 	    } finally {
 	        invalidateDocument(document);
 	    }
-    }
-
-    public void setClock(Clock clock) {
-        this.clock = clock;
     }
 
     public void setDocumentIndex(DocumentIndex documentIndex) {

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.api.{DocumentProperty, Meta, I18nMeta, I18nLanguage}
 import com.imcode.imcms.mapping.orm.{FileReference, HtmlReference, Include, TemplateNames, UrlReference}
 import imcode.server.user.UserDomainObject
+import java.util.Date
 
 class MetaDao extends SpringHibernateTemplate {
 
@@ -19,19 +20,30 @@ class MetaDao extends SpringHibernateTemplate {
 
   /**  Updates doc's access and modified date-time. */
   @Transactional
-  def touch(doc: DocumentDomainObject, user: UserDomainObject) = withSession { session =>
+  def touch(doc: DocumentDomainObject, user: UserDomainObject): Unit = touch(doc, new Date, user)
+
+  @Transactional
+  def touch(doc: DocumentDomainObject, dt:Date, user: UserDomainObject): Unit =
+    touch(doc.getIdValue, doc.getVersionNo, doc.getModifiedDatetime, user.getId)
+
+  @Transactional
+  def touch(docId: JInteger, docVersionNo: JInteger, userId: JInteger): Unit =
+    touch(docId, docVersionNo, new Date, userId)
+
+  @Transactional
+  def touch(docId: JInteger, docVersionNo: JInteger, dt: Date, userId: JInteger) = withSession { session =>
     session.createQuery("UPDATE Meta m SET m.modifiedDatetime = :modifiedDt WHERE m.id = :docId")
-      .setParameter("modifiedDt", doc.getModifiedDatetime)
-      .setParameter("docId", doc.getIdValue)
+      .setParameter("modifiedDt", dt)
+      .setParameter("docId", docId)
       .executeUpdate()
 
     session.createQuery(
       """UPDATE DocumentVersion v SET v.modifiedDt = :modifiedDt, v.modifiedBy = :modifiedBy
          WHERE v.docId = :docId AND v.no = :docVersionNo""")
-      .setParameter("modifiedDt", doc.getModifiedDatetime)
-      .setParameter("modifiedBy", Int box user.getId)
-      .setParameter("docId", doc.getIdValue)
-      .setParameter("docVersionNo", doc.getVersionNo)
+      .setParameter("modifiedDt", dt)
+      .setParameter("modifiedBy", userId)
+      .setParameter("docId", docId)
+      .setParameter("docVersionNo", docVersionNo)
       .executeUpdate()
   }
 

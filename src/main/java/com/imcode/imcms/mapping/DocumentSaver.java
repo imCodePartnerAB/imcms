@@ -52,15 +52,16 @@ public class DocumentSaver {
 
 
     /**
-     * Updates doc's last modified date time if it was not changed explicitly.
+     * Updates doc's last modified date time if it was not set explicitly.
      * @param doc
      */
-    public void updateLastModifiedDtIfNotSetExplicitly(DocumentDomainObject doc) {
-        Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getActualModifiedDatetime());
+    public void updateModifiedDtIfNotSetExplicitly(DocumentDomainObject doc) {
+        Date explicitlyModifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getActualModifiedDatetime());
         Date modifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getModifiedDatetime());
-        boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
+        boolean modifiedDatetimeUnchanged = explicitlyModifiedDatetime.equals(modifiedDatetime);
+
         if (modifiedDatetimeUnchanged) {
-            doc.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
+            doc.setModifiedDatetime(new Date());
         }
     }
 
@@ -78,7 +79,7 @@ public class DocumentSaver {
         createEnclosingContentLoopIfNecessary(doc, text);
 
     	new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(doc, text, user);
-        updateLastModifiedDtIfNotSetExplicitly(doc);
+
         metaDao.touch(doc, user);
     }
 
@@ -89,7 +90,7 @@ public class DocumentSaver {
         menu.setDocVersionNo(doc.getVersion().getNo());
 
         new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(doc, menu, user);
-        updateLastModifiedDtIfNotSetExplicitly(doc);
+
         metaDao.touch(doc, user);
     }
 
@@ -117,7 +118,6 @@ public class DocumentSaver {
             storingVisitor.saveTextDocumentImage(doc, image, user);
         }
 
-        updateLastModifiedDtIfNotSetExplicitly(doc);
         metaDao.touch(doc, user);
     }
 
@@ -130,7 +130,6 @@ public class DocumentSaver {
 
         storingVisitor.saveTextDocumentImage(doc, image, user);
 
-        updateLastModifiedDtIfNotSetExplicitly(doc);
         metaDao.touch(doc, user);
     }
     
@@ -172,27 +171,21 @@ public class DocumentSaver {
         return loop;
     }
 
-    /**
-     * Document publisher is changed to a user.
-     * Document modified date-time is set to a version's modified date-time.
-     * 
-     * @param docId
-     * @param versionNo
-     * @param user
-     */
+
     @Transactional
-    public void changeDocumentDefaultVersion(Integer docId, Integer versionNo, UserDomainObject user) {              
+    public void changeDocumentDefaultVersion(Integer docId, Integer docVersionNo, UserDomainObject publisher) {
         DocumentVersion currentDefaultVersion = documentVersionDao.getDefaultVersion(docId);
 
-        if (currentDefaultVersion.getNo() != versionNo) {
-            DocumentVersion version = documentVersionDao.getVersion(docId, versionNo);
+        if (!currentDefaultVersion.getNo().equals(docVersionNo)) {
+            DocumentVersion version = documentVersionDao.getVersion(docId, docVersionNo);
             if (version == null) {
                 throw new IllegalStateException(
                         String.format("Can not change doc %d version. Version no %d does not exists.",
-                        docId, versionNo));
+                        docId, docVersionNo));
             }
 
-            documentVersionDao.changeDefaultVersion(docId, version, user);
+            documentVersionDao.changeDefaultVersion(docId, version, publisher);
+            metaDao.touch(docId, docVersionNo, publisher.getId());
         }
     }
 
@@ -316,8 +309,8 @@ public class DocumentSaver {
         }
 
         doc.accept(savingVisitor);
-        updateLastModifiedDtIfNotSetExplicitly(doc);
-        metaDao.touch(doc, user);
+        updateModifiedDtIfNotSetExplicitly(doc);
+        metaDao.touch(doc, doc.getModifiedDatetime(), user);
     }    
 
 //    private Integer saveNewDocument(UserDomainObject user, DocumentDomainObject document, boolean copying)

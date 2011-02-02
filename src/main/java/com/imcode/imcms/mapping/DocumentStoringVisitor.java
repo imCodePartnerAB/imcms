@@ -119,22 +119,23 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     /**
      * Returns FileDocumentFile filename.
      * <p/>
-     * File name is a combination of doc id, doc version no and fileId if present. For backward compatibility
-     * a doc version no is omitted if it equals to 0 (working version).
+     * File name is a unique combination of doc id, doc version no and fileId (when not a blank).
+     * For backward compatibility a doc version no is omitted if it equals to 0 (working version).
      * <p/>
      * If fieldId is not blank its added to filename as an extension.
      * <p/>
-     * Ex: 1002.xxx where 1002 is a doc id, doc version no is 0 and xxx is fileId.
-     * 1002_3.xxx where 1002 is a doc id, 3 is a version no and xxx is fileId.
-     * 1002_2 where1002 is a doc id, 2 is a version no and fileId is blank.
+     * Examples:
+     *   1002.xxx - 1002 is a doc id, doc version no is 0 and xxx is fileId.
+     *   1002_3.xxx - 1002 is a doc id, 3 is a version no and xxx is fileId.
+     *   1002_2 - 1002 is a doc id, 2 is a version no and fileId is blank.
      *
-     * @param fileDocumentId
+     * @param docId
      * @param docVersionNo
      * @param fileId
      * @return FileDocumentFile filename
      */
-    public static String getFilenameForFileDocumentFile(int fileDocumentId, int docVersionNo, String fileId) {
-        String filename = "" + fileDocumentId;
+    public static String getFilenameForFileDocumentFile(int docId, int docVersionNo, String fileId) {
+        String filename = "" + docId;
 
         if (docVersionNo != DocumentVersion.WORKING_VERSION_NO) {
             filename += ("_" + docVersionNo);
