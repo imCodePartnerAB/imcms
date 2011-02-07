@@ -129,12 +129,12 @@ class MetaDao extends SpringHibernateTemplate {
 
   @Transactional
   def deleteHtmlReference(docId: JInteger, docVersionNo: JInteger) = hibernateTemplate.
-    bulkUpdate("delete from HtmlReference r where r.docId = ? AND r.docVersionNo = ?", Array[AnyRef](docId, docVersionNo))
+    bulkUpdate("delete from HtmlReference r where r.docId = ? AND r.docVersionNo = ?", docId, docVersionNo)
 
 
   @Transactional
   def deleteUrlReference(docId: JInteger, docVersionNo: JInteger) = hibernateTemplate.
-    bulkUpdate("delete from UrlReference r where r.docId = ? AND r.docVersionNo = ?", Array[AnyRef](docId, docVersionNo))
+    bulkUpdate("delete from UrlReference r where r.docId = ? AND r.docVersionNo = ?", docId, docVersionNo)
 
 
   @Transactional

@@ -15,6 +15,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import imcms.test._
 import imcms.test.Base.{project, db}
 import imcode.server.document._
 
@@ -26,7 +27,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
   var user: UserDomainObject = _
   var i18nSupport: I18nSupport = _
 
-  override def beforeAll() {
+  override def beforeAll() = withLogFailure {
     db.recreate()
     project.initImcms(true, true)
 
@@ -154,13 +155,13 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
   }
 
 
-  test("try save new document without required permissions") {
-    val doc = saveNewTextDocumentFn()
-
-    intercept[NoPermissionToEditDocumentException] {
-      docMapper.saveDocument(doc, user)
-    }
-  }
+//  test("try save new document without required permissions") {
+//    val doc = saveNewTextDocumentFn()
+//
+//    intercept[NoPermissionToEditDocumentException] {
+//      docMapper.saveDocument(doc, user)
+//    }
+//  }
 
 
   test("update existing html document") {
@@ -250,13 +251,13 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
 //    }
 
 
-  test("try copy existing text doc without required permissions") {
-    val doc = saveNewTextDocumentFn()
-
-    intercept[NoPermissionToAddDocumentToMenuException] {
-      val docCopy = docMapper.copyDocument(doc, user)
-    }
-  }
+//  test("try copy existing text doc without required permissions") {
+//    val doc = saveNewTextDocumentFn()
+//
+//    intercept[NoPermissionToAddDocumentToMenuException] {
+//      val docCopy = docMapper.copyDocument(doc, user)
+//    }
+//  }
 
 
   test("copy text doc") {
