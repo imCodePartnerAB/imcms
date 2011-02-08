@@ -33,7 +33,6 @@ import com.imcode.db.Database;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * NOTES:
@@ -63,7 +62,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Document loader caching proxy. Intercepts calls to DocumentLoader.
      */
-    private DocumentLoaderCachingProxy documentLoaderCachingProxy;
+    private DocLoaderCache documentLoaderCachingProxy;
 
     /**
      * Contain document saving and updating routines.
@@ -89,7 +88,7 @@ public class DocumentMapper implements DocumentGetter {
         documentLoader = (DocumentLoader) services.getSpringBean("documentLoader");
         documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
 
-        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentLoader, Imcms.getI18nSupport().getLanguages(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocLoaderCache(documentLoader, Imcms.getI18nSupport().getLanguages(), documentCacheMaxSize);
         categoryMapper = (CategoryMapper) services.getSpringBean("categoryMapper");
 
         documentSaver = (DocumentSaver) services.getSpringBean("documentSaver");
@@ -103,7 +102,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return version support for a given document or null if document does not exist.
      */
     public DocumentVersionInfo getDocumentVersionInfo(Integer documentId) {
-        return documentLoaderCachingProxy.getDocumentVersionInfo(documentId);
+        return documentLoaderCachingProxy.getDocVersionInfo(documentId);
     }
 
 
@@ -341,7 +340,7 @@ public class DocumentMapper implements DocumentGetter {
         Map<I18nLanguage, DocumentDomainObject> docs = new HashMap<I18nLanguage, DocumentDomainObject>();
 
         for (I18nLanguage language : Imcms.getI18nSupport().getLanguages()) {
-            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDocument(docId, DocumentVersion.WORKING_VERSION_NO, language);
+            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(docId, DocumentVersion.WORKING_VERSION_NO, language);
 
             if (doc != null) {
                 docs.put(language, doc);
@@ -382,7 +381,7 @@ public class DocumentMapper implements DocumentGetter {
 
 
     public void invalidateDocument(Integer docId) {
-        documentLoaderCachingProxy.removeDocumentFromCache(docId);
+        documentLoaderCachingProxy.removeDocFromCache(docId);
         documentIndex.indexDocument(docId);
     }
 
@@ -436,7 +435,7 @@ public class DocumentMapper implements DocumentGetter {
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
 
-        documentLoaderCachingProxy.removeDocumentFromCache(document.getId());
+        documentLoaderCachingProxy.removeDocFromCache(document.getId());
     }
 
     public Map<Integer, String> getAllDocumentTypeIdsAndNamesInUsersLanguage(UserDomainObject user) {
@@ -699,7 +698,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public DocumentDomainObject getWorkingDocument(Integer docId, I18nLanguage language) {
-        return documentLoaderCachingProxy.getWorkingDocument(docId, language);
+        return documentLoaderCachingProxy.getWorkingDoc(docId, language);
     }
 
     /**
@@ -709,7 +708,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public DocumentDomainObject getDefaultDocument(Integer docId, I18nLanguage language) {
-        return documentLoaderCachingProxy.getDefaultDocument(docId, language);
+        return documentLoaderCachingProxy.getDefaultDoc(docId, language);
     }
 
 
@@ -725,7 +724,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public DocumentDomainObject getCustomDocument(Integer docId, Integer docVersionNo, I18nLanguage language) {
-        return documentLoaderCachingProxy.getCustomDocument(docId, docVersionNo, language);
+        return documentLoaderCachingProxy.getCustomDoc(docId, docVersionNo, language);
     }
 
 
@@ -990,7 +989,7 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public DocumentLoaderCachingProxy getDocumentLoaderCachingProxy() {
+    public DocLoaderCache getDocumentLoaderCachingProxy() {
         return documentLoaderCachingProxy;
     }
 }

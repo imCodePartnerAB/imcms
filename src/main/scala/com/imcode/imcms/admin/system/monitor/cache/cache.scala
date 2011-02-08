@@ -4,12 +4,13 @@ package imcms.admin.system.monitor.cache
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin._
-import com.imcode.imcms.mapping.DocumentLoaderCachingProxy
 import java.util.Date
 import imcms.api.DocumentVersion
-import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.DocumentTypeDomainObject
+import imcms.mapping.{DocLoaderCache}
+;
 
-class View(docLoaderCache: DocumentLoaderCachingProxy) extends VerticalLayout with Margin with Spacing {
+class View(docLoaderCache: DocLoaderCache) extends VerticalLayout with Margin with Spacing {
   val tblMetas = new Table("Metas") with ValueType[JInteger] with ResourceCaption with Selectable with Immediate {
     addContainerProperties(this,
       ContainerProperty[JInteger]("Id"),
@@ -70,7 +71,7 @@ class View(docLoaderCache: DocumentLoaderCachingProxy) extends VerticalLayout wi
         tblLanguages.addItem(Array(l.getName), l.getId)  
       }
 
-      docLoaderCache.getDocumentVersionInfo(docId).getVersions foreach { v =>
+      docLoaderCache.getDocVersionInfo(docId).getVersions foreach { v =>
         tblVersions.addItem(Array(v.getNo, v.getCreatedDt, v.getModifiedDt), v.getNo)
       }                                                                                
 

@@ -27,7 +27,7 @@ object MetaModel {
   /** Creates meta model for existing document. */
   def apply(id: JInteger): MetaModel = {
     val meta = Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy.getMeta(id).clone
-    val versionInfo = Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy.getDocumentVersionInfo(id)
+    val versionInfo = Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy.getDocVersionInfo(id)
     val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
     val languagesMap = MMap[I18nLanguage, Boolean]()
 
