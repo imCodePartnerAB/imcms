@@ -54,8 +54,6 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
         version.setId(null);
         version.setDocId(null);
         version.setNo(0);
-
-        // TODO: add created by, created dt?
     }
 
     @Override

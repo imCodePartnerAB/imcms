@@ -44,16 +44,16 @@ class View(docLoaderCache: DocumentLoaderCachingProxy) extends VerticalLayout wi
 
   def reload() {
     tblMetas.removeAllItems
-    for ((id, m) <- docLoaderCache.getMetas) {
-      tblMetas.addItem(Array(id,
-                             DocumentTypeDomainObject.TYPES.get(m.getDocumentTypeId).getName,
-                             m.getCreatedDatetime,
-                             m.getModifiedDatetime,
-                             let(m.getDefaultVersionNo) { no =>
-                               if (no == DocumentVersion.WORKING_VERSION_NO) "Working" else no.toString
-                             }),
-                       id)
-    }
+//    for ((id, m) <- docLoaderCache.getMetas) {
+//      tblMetas.addItem(Array(id,
+//                             DocumentTypeDomainObject.TYPES.get(m.getDocumentTypeId).getName,
+//                             m.getCreatedDatetime,
+//                             m.getModifiedDatetime,
+//                             let(m.getDefaultVersionNo) { no =>
+//                               if (no == DocumentVersion.WORKING_VERSION_NO) "Working" else no.toString
+//                             }),
+//                       id)
+//    }
   }
 
   btnReload addListener block {
@@ -76,17 +76,17 @@ class View(docLoaderCache: DocumentLoaderCachingProxy) extends VerticalLayout wi
 
       val counter = new java.util.concurrent.atomic.AtomicInteger(0)
       
-      for {
-        docMap <- docLoaderCache.getWorkingDocuments.values
-        (id, doc) <- docMap if id == docId
-        no = Int box counter.incrementAndGet
-      } tblDocs.addItem(Array(no, "Working", doc.getLanguage.getName), no)
-
-      for {
-        docMap <- docLoaderCache.getDefaultDocuments.values
-        (id, doc) <- docMap if id == docId
-        no = Int box counter.incrementAndGet
-      } tblDocs.addItem(Array(no, doc.getVersionNo.toString, doc.getLanguage.getName), no)
+//      for {
+//        docMap <- docLoaderCache.getWorkingDocuments.values
+//        (id, doc) <- docMap if id == docId
+//        no = Int box counter.incrementAndGet
+//      } tblDocs.addItem(Array(no, "Working", doc.getLanguage.getName), no)
+//
+//      for {
+//        docMap <- docLoaderCache.getDefaultDocuments.values
+//        (id, doc) <- docMap if id == docId
+//        no = Int box counter.incrementAndGet
+//      } tblDocs.addItem(Array(no, doc.getVersionNo.toString, doc.getLanguage.getName), no)
     }
   }
 

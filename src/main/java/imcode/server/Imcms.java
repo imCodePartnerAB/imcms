@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.sql.DataSource;
 
@@ -71,7 +72,7 @@ public class Imcms {
 
     private static ImcmsMode mode = ImcmsMode.MAINTENANCE;
     private static List<ImcmsListener> listeners = new LinkedList<ImcmsListener>();
-    private static Exception startEx;
+    private static AtomicReference<Exception> startEx = new AtomicReference<Exception>();
 
     /** Springframework application context. */
     public static ApplicationContext applicationContext;
@@ -102,19 +103,18 @@ public class Imcms {
         return services;
     }
 
-    //  TODO: Refactor.
     public static void start() throws StartupException {
-        if (path == null) {
-            throw new IllegalStateException("Imcms path is not set.");
-        }        
-
-        if (applicationContext == null) {
-            throw new IllegalStateException("Spring application context is not set.");
-        }
-        
-        setStartEx(null);
+        clearStarEx();
 
         try {
+            if (path == null) {
+                throw new IllegalStateException("Imcms path is not set.");
+            }
+
+            if (applicationContext == null) {
+                throw new IllegalStateException("Spring application context is not set.");
+            }
+
             users = new ThreadLocal<UserDomainObject>();
 
             if (prepareDatabaseOnStart) {
@@ -315,12 +315,20 @@ public class Imcms {
     }
 
 
-    public static void setStartEx(Exception startEx) {
-        Imcms.startEx = startEx;
+    public static Exception getStartEx() {
+        return startEx.get();
+    }
+
+    private static void setStartEx(Exception ex) {
+        Imcms.startEx.set(ex);
         
         for (ImcmsListener listener: listeners) {
-            listener.onImcmsStartEx(startEx);
+            listener.onImcmsStartEx(ex);
         }
+    }
+
+    private static void clearStarEx() {
+        Imcms.startEx.set(null);
     }
 
 
@@ -336,7 +344,6 @@ public class Imcms {
     /**
      * Initializes I18N support.
      * Reads languages from the database.
-     * Please note that one (and only one) language in the database table i18n_languages must be set as default.
      */
 	private static void initI18nSupport() {
     	logger.info("Initializing i18n support.");
@@ -354,7 +361,7 @@ public class Imcms {
         SystemProperty languageIdProperty =  systemDao.getProperty("DefaultLanguageId");
 
         if (languageIdProperty == null) {
-    		String msg = "I18n configuration error. Default language is not set.";
+    		String msg = "I18n configuration error. Default language (DefaultLanguageId system property) is not set.";
     		logger.fatal(msg);
     		throw new I18nException(msg);
         }
@@ -438,10 +445,6 @@ public class Imcms {
 
     public static void setApplicationContext(ApplicationContext applicationContext) {
         Imcms.applicationContext = applicationContext;
-    }
-
-    public static Exception getStartEx() {
-        return startEx;
     }
 
     public static I18nSupport getI18nSupport() {

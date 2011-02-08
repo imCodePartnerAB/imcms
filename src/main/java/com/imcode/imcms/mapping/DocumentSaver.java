@@ -198,7 +198,6 @@ public class DocumentSaver {
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
-    //todo: add security check.
     @Transactional
     public DocumentVersion makeDocumentVersion(final Meta meta, Map<I18nLanguage, DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
