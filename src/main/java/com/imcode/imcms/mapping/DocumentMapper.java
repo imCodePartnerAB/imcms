@@ -62,7 +62,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Document loader caching proxy. Intercepts calls to DocumentLoader.
      */
-    private DocLoaderCache documentLoaderCachingProxy;
+    private DocLoaderCachingProxy documentLoaderCachingProxy;
 
     /**
      * Contain document saving and updating routines.
@@ -88,7 +88,7 @@ public class DocumentMapper implements DocumentGetter {
         documentLoader = (DocumentLoader) services.getSpringBean("documentLoader");
         documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
 
-        documentLoaderCachingProxy = new DocLoaderCache(documentLoader, Imcms.getI18nSupport().getLanguages(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, Imcms.getI18nSupport().getLanguages(), documentCacheMaxSize);
         categoryMapper = (CategoryMapper) services.getSpringBean("categoryMapper");
 
         documentSaver = (DocumentSaver) services.getSpringBean("documentSaver");
@@ -989,7 +989,7 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public DocLoaderCache getDocumentLoaderCachingProxy() {
+    public DocLoaderCachingProxy getDocumentLoaderCachingProxy() {
         return documentLoaderCachingProxy;
     }
 }
