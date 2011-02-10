@@ -10,7 +10,6 @@ import imcode.util.Utility
 import imcode.server.user._
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.{SystemData, Imcms}
-import java.util.{Date}
 import com.vaadin.ui.Layout.MarginInfo
 import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import com.vaadin.terminal.{FileResource, Resource, UserError}
@@ -19,8 +18,19 @@ import com.vaadin.data.util.FilesystemContainer
 import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
+import java.util.{Collections, Date}
 
 //todo: manager actions
+
+class DirFilesystemContainer(dir: File) extends FilesystemContainer(dir) {
+  setFilter(new FilenameFilter {
+    def accept(file: File, name: String) = let(new File(file, name)) { fsNode =>
+      fsNode.isDirectory && !fsNode.isHidden
+    }
+  })
+
+  override def rootItemIds() = Collections.unmodifiableCollection(Collections.singleton(dir))
+}
 
 sealed trait FileSelection
 case class DirTreeSelection(selection: Option[File]) extends FileSelection
@@ -50,14 +60,17 @@ object Location {
 }
 
 class FileBrowser extends Publisher[FileSelection] {
+  // locations views
   private val locations = MMap.empty[Component, (DirTree, DirContent)]
   private val dirTreeSelectionRef = new AtomicReference[Option[File]](None)
   private val dirContentSelectionRef = new AtomicReference[Option[File]](None)
+  private val currentLocation = new AtomicReference[Option[(DirTree, DirContent)]](None)
 
   val ui = letret(new FileBrowserUI) { ui =>
     ui.accDirTrees.addListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
-        val (dirTree, dirContent) = locations(e.getTabSheet.getSelectedTab)
+        val location @ (dirTree, dirContent) = locations(e.getTabSheet.getSelectedTab)
+        currentLocation.set(location)
         // No selection? => reload
         if (dirTree.ui.value == null) dirTree.reload()
         ui.setSecondComponent(dirContent.ui)
@@ -94,10 +107,13 @@ class FileBrowser extends Publisher[FileSelection] {
   }
 
   // reloads dir content in a current accordion's tab.
-  def reloadDirContent() = for {
-    dirContent <- (?(ui.accDirTrees.getSelectedTab) map locations map (_._2))
-    selectedDir <- dirTreeSelection
-  } dirContent.reload(selectedDir)
+  def reloadDirContent() =
+    for {
+      dirContent <- (?(ui.accDirTrees.getSelectedTab) map locations map (_._2))
+      selectedDir <- dirTreeSelection
+    } dirContent.reload(selectedDir)
+
+  def location() = currentLocation.get
 }
 
 
@@ -113,16 +129,7 @@ class DirTree(dir: File) {
   val ui = new Tree with SingleSelect2[File] with ItemIdType[File] with Immediate with NoNullSelection
 
   def reload() {
-    val fc = new FilesystemContainer(dir)
-    val filter = new FilenameFilter {
-      def accept(file: File, name: String) = let(new File(file, name)) { fsNode =>
-        fsNode.isDirectory && !fsNode.isHidden
-      }
-    }
-
-    fc.setFilter(filter)
-
-    ui.setContainerDataSource(fc)
+    ui.setContainerDataSource(new DirFilesystemContainer(dir))
     ui.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM)
     ui.select(dir)
   }

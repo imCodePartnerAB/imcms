@@ -9,7 +9,7 @@ import imcode.server.document.{CategoryDomainObject}
 import java.io.File
 import com.vaadin.ui.Window.Notification
 
-class FileManager {
+class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser) { browser =>
     browser.addLocation("Home", Location(Imcms.getPath))
     browser.addLocation("Templates", Location(new File(Imcms.getPath, "WEB-INF/templates/text")))
@@ -19,20 +19,67 @@ class FileManager {
   }
 
   val ui = letret(new FileManagerUI(browser.ui)) { ui =>
+    ui.miDelete setCommand block {
+      browser.dirContentSelection foreach { file =>
+        app.initAndShow(new ConfirmationDialog("Delete selected file")) { dlg =>
+          dlg setOkHandler {
+//            for ((dirTree, dirContent) <- browser.location) {
+//              dirContent.
+//            }
+            if (file.delete) {
+              browser.reloadDirContent()
+            }
+          }
+        }
+      }
+    }
+
+    ui.miCopy setCommand block {
+      browser.dirContentSelection foreach { file =>
+      }
+    }
+
+    ui.miMove setCommand block {
+      browser.dirContentSelection foreach { file =>
+      }
+    }
+
+    ui.miView setCommand block {
+      browser.dirContentSelection foreach { file =>
+      }
+    }
+
+    ui.miEdit setCommand block {
+      browser.dirContentSelection foreach { file =>
+      }
+    }
+
+    ui.miUpload setCommand block {
+    }
+
+    ui.miDownload setCommand block {
+      browser.dirContentSelection foreach { file =>
+      }
+    }
+
+    ui.miReload setCommand block {
+      //reload tree content?
+      browser.reloadDirContent
+    }
   }
 }
 
 
 class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar
-  val miReload = mb.addItem("Reload", null)
+  val miReload = mb.addItem("Reload")
   val miView = mb.addItem("View", null)
   val miEdit = mb.addItem("Edit", null)
   val miCopy = mb.addItem("Copy", null)
   val miMove = mb.addItem("Move", null)
   val miDelete = mb.addItem("Delete", null)
   val miDownload = mb.addItem("Download", null)
-  val miUpload = mb.addItem("Upload", null)
+  val miUpload = mb.addItem("Uploa, null)d", null)
 
   addComponents(this, mb, browserUI)
   setExpandRatio(browserUI, 1.0f)
