@@ -37,6 +37,11 @@ package object imcode {
 //    }
 //  }
 
+  class Piper[A](a: A) { def |>[B](f: A => B) = f(a) }
+
+  implicit def pipe_everything[A](a: A) = new Piper(a)
+
+
   /** Creates zero arity fn from by-name parameter. */
   def block(byName: => Unit) = byName _
 

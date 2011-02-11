@@ -70,7 +70,7 @@ class FileBrowser extends Publisher[FileSelection] {
     ui.accDirTrees.addListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
         val location @ (dirTree, dirContent) = locations(e.getTabSheet.getSelectedTab)
-        currentLocation.set(location)
+        currentLocation.set(?(location))
         // No selection? => reload
         if (dirTree.ui.value == null) dirTree.reload()
         ui.setSecondComponent(dirContent.ui)

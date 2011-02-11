@@ -574,7 +574,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     addTab(new VerticalLayoutUI("File manager") {
       setSizeFull
 
-      addComponent(new com.imcode.imcms.admin.system.file.FileManager ui)
+      addComponent((new com.imcode.imcms.admin.system.file.FileManager(app)).ui)
     })
   }
 
