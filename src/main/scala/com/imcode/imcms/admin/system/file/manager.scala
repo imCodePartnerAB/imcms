@@ -11,11 +11,11 @@ import com.vaadin.ui.Window.Notification
 
 class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser) { browser =>
-    browser.addLocation("Home", Location(Imcms.getPath))
-    browser.addLocation("Templates", Location(new File(Imcms.getPath, "WEB-INF/templates/text")))
-    browser.addLocation("Images", Location(new File(Imcms.getPath, "images")))
-    browser.addLocation("Conf", Location(new File(Imcms.getPath, "WEB-INF/conf")))
-    browser.addLocation("Logs", Location(new File(Imcms.getPath, "WEB-INF/logs")))
+    browser.addPlace("Home", Place(Imcms.getPath))
+    browser.addPlace("Templates", Place(new File(Imcms.getPath, "WEB-INF/templates/text")))
+    browser.addPlace("Images", Place(new File(Imcms.getPath, "images")))
+    browser.addPlace("Conf", Place(new File(Imcms.getPath, "WEB-INF/conf")))
+    browser.addPlace("Logs", Place(new File(Imcms.getPath, "WEB-INF/logs")))
   }
 
   val ui = letret(new FileManagerUI(browser.ui)) { ui =>

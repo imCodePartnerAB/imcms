@@ -18,18 +18,19 @@ import com.vaadin.data.util.FilesystemContainer
 import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
-import java.util.{Collections, Date}
+import java.util.{Date}
 
-//todo: manager actions
+class DirFilesystemContainer(root: File) extends FilesystemContainer(root) {
 
-class DirFilesystemContainer(dir: File) extends FilesystemContainer(dir) {
+  import java.util.Collections._
+
   setFilter(new FilenameFilter {
     def accept(file: File, name: String) = let(new File(file, name)) { fsNode =>
       fsNode.isDirectory && !fsNode.isHidden
     }
   })
 
-  override def rootItemIds() = Collections.unmodifiableCollection(Collections.singleton(dir))
+  override def rootItemIds() = root |> singleton[File] |> unmodifiableCollection[File]
 }
 
 sealed trait FileSelection
@@ -39,38 +40,42 @@ case class DirContentSelection(selection: Option[File]) extends FileSelection
 
 // todo: ADD DIR CONTENT MULTI SELECT?????
 
-class Location(val dir: File, val dirContentFilter: File => Boolean, recursive: Boolean=true)
+object DirContentFilter {
 
-object Location {
   import scala.util.matching.Regex
 
-  def defaultFileFilter(fsNode: File) = fsNode.isFile && !fsNode.isHidden
+  def apply(filter: File => Boolean, filters: File => Boolean*) = (file: File) => filter +: filters forall { _ apply file }
 
-  def fileNameREFilter(re: Regex)(fsNode: File) = defaultFileFilter(fsNode) && re.unapplySeq(fsNode.getName).isDefined
+  val notHidden = apply(!_.isHidden)
 
-  def fileExtFilter(ext: String, exts: String*) = fileNameREFilter("""(?i).*\.(%s)""".format(ext +: exts mkString("|")).r)_
+  val fileOnly = apply(notHidden, _.isFile)
 
-  val imageFileFilter = fileExtFilter("png", "gif", "jpg", "jpeg")
+  def nameRE(re: Regex)(fsNode: File) = re.unapplySeq(fsNode.getName).isDefined
 
-  val templateFileFilter = fileExtFilter("jsp", "jspx", "html")
+  def fileWithExt(ext: String, exts: String*) = nameRE("""(?i).*\.(%s)""".format(ext +: exts mkString("|")).r)_
 
-  def apply(dir: File): Location = apply(dir, defaultFileFilter)
+  val imageFile = fileWithExt("png", "gif", "jpg", "jpeg")
 
-  def apply(dir: File, dirContentFilter: File => Boolean) = new Location(dir, dirContentFilter)
+  val templateFile = fileWithExt("jsp", "jspx", "html")
 }
 
+
+case class Place(dirTreeRoot: File, dirContentFilter: File => Boolean = DirContentFilter.notHidden, recursive: Boolean = true)
+
+
 class FileBrowser extends Publisher[FileSelection] {
-  // locations views
-  private val locations = MMap.empty[Component, (DirTree, DirContent)]
+  type DirTreeTab = Component
+
+  private val locations = MMap.empty[DirTreeTab, (DirTree, DirContent)]
   private val dirTreeSelectionRef = new AtomicReference[Option[File]](None)
   private val dirContentSelectionRef = new AtomicReference[Option[File]](None)
-  private val currentLocation = new AtomicReference[Option[(DirTree, DirContent)]](None)
+  private val locationRef = new AtomicReference[Option[(DirTree, DirContent)]](None)
 
   val ui = letret(new FileBrowserUI) { ui =>
     ui.accDirTrees.addListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
         val location @ (dirTree, dirContent) = locations(e.getTabSheet.getSelectedTab)
-        currentLocation.set(?(location))
+        locationRef.set(?(location))
         // No selection? => reload
         if (dirTree.ui.value == null) dirTree.reload()
         ui.setSecondComponent(dirContent.ui)
@@ -78,9 +83,9 @@ class FileBrowser extends Publisher[FileSelection] {
     })
   }
 
-  def addLocation(caption: String, location: Location, icon: Option[Resource] = None) {
-    val dirTree = new DirTree(location.dir)
-    val dirContent = new DirContent(location.dirContentFilter)
+  def addPlace(caption: String, place: Place, icon: Option[Resource] = None) {
+    val dirTree = new DirTree(place.dirTreeRoot)
+    val dirContent = new DirContent(place.dirContentFilter)
 
     dirTree.ui addListener block {
       dirTreeSelectionRef set ?(dirTree.ui.value)
@@ -113,7 +118,7 @@ class FileBrowser extends Publisher[FileSelection] {
       selectedDir <- dirTreeSelection
     } dirContent.reload(selectedDir)
 
-  def location() = currentLocation.get
+  def location() = locationRef.get
 }
 
 
@@ -125,13 +130,13 @@ class FileBrowserUI extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) with F
 }
 
 
-class DirTree(dir: File) {
+class DirTree(root: File) {
   val ui = new Tree with SingleSelect2[File] with ItemIdType[File] with Immediate with NoNullSelection
 
   def reload() {
-    ui.setContainerDataSource(new DirFilesystemContainer(dir))
+    ui.setContainerDataSource(new DirFilesystemContainer(root))
     ui.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM)
-    ui.select(dir)
+    ui.select(root)
   }
 }
 
@@ -146,22 +151,32 @@ class DirContent(filter: File => Boolean) {
 
     import Table._
     ui.setColumnAlignments(Array(ALIGN_LEFT, ALIGN_LEFT, ALIGN_RIGHT, ALIGN_RIGHT))
+    ui.setRowHeaderMode(ROW_HEADER_MODE_ICON_ONLY);
+    //ui.setItemIconPropertyId();
   }
 
   def reload(dir: File) {
     val base = 1024
     val baseFn = java.lang.Math.pow(1024, _:Int).toInt
+    val (dirs, files) = dir.listFiles.partition(_.isDirectory)
 
     ui.removeAllItems()
-    for (fsNode <- dir.listFiles() if filter(fsNode)) {
-      val (size, units) = fsNode.length match {
+
+    dirs.sortWith((d1, d2) => d1.getName.compareToIgnoreCase(d2.getName) < 0) foreach { dir =>
+      ui.addItem(Array[AnyRef](dir.getName, new Date(dir.lastModified), "--", "Folder"), dir)
+      ui.setItemIcon(dir, Theme.Icons.Folder16)
+    }
+
+    for (file <- files.sortWith((f1, f2) => f1.getName.compareToIgnoreCase(f2.getName) < 0) if filter(file)) {
+      val (size, units) = file.length match {
         case size if size < baseFn(1) => (size, "--")
         case size if size < baseFn(2) => (size / base, "KB")
         case size if size < baseFn(3) => (size / base, "MB")
         case size => (size / base, "GB")
       }
 
-      ui.addItem(Array[AnyRef](fsNode.getName, new Date(fsNode.lastModified), "%d %s".format(size, units), "--"), fsNode)
+      ui.addItem(Array[AnyRef](file.getName, new Date(file.lastModified), "%d %s".format(size, units), "File"), file)
+      ui.setItemIcon(file, Theme.Icons.File16)
     }
   }
 }

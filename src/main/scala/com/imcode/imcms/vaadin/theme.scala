@@ -21,5 +21,7 @@ object Theme {
     val Ok32 = "icons/32/ok.png" : TR
     val Done16 = Ok16
     val Done32 = Ok32
+    val File16 = "icons/16/document.png" : TR
+    val Folder16 = "icons/16/folder.png" : TR
   }
 }
