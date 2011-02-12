@@ -54,6 +54,8 @@ package object imcode {
     expr
   }
 
+  //def whenNonEmpty[A](xs:Seq[A])(f: Seq[A] => Unit) = if (xs.nonEmpty) f(xs)
+
   def forlet[T](exprs: T*)(fn: T => Unit): Unit = exprs foreach fn
 
   def using[R <: {def close(): Unit}, T](resource: R)(fn: R => T): T = try {

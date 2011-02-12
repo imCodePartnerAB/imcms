@@ -20,30 +20,23 @@ class FileManager(app: ImcmsApplication) {
 
   val ui = letret(new FileManagerUI(browser.ui)) { ui =>
     ui.miDelete setCommand block {
-      let(browser.dirContentSelection.items) {
-        case fsNodes if fsNodes.nonEmpty =>
-          app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
-            dlg setOkHandler {
-              fsNodes foreach (_.delete)
-              browser.reloadDirContent()
-            }
+      if (browser.dirContentSelection.nonEmpty) {
+        app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
+          dlg setOkHandler {
+            browser.dirContentSelection.items foreach (_.delete)
+            browser.reloadDirContent()
           }
-
-        case _ =>
-      }
-
-      browser.dirContentSelection.items foreach { fsNode =>
-
+        }
       }
     }
 
     ui.miCopy setCommand block {
-      browser.dirContentSelection.items foreach { file =>
+      if (browser.dirContentSelection.nonEmpty) {
       }
     }
 
     ui.miMove setCommand block {
-      browser.dirContentSelection.items foreach { file =>
+      if (browser.dirContentSelection.nonEmpty) {
       }
     }
 

@@ -20,7 +20,8 @@ import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 import java.util.{Date}
 
-class DirFilesystemContainer(root: File) extends FilesystemContainer(root) {
+/** Directory tree container with a single root. */
+class DirTreeContainer(root: File) extends FilesystemContainer(root) {
 
   import java.util.Collections._
 
@@ -31,12 +32,17 @@ class DirFilesystemContainer(root: File) extends FilesystemContainer(root) {
   })
 
   override def rootItemIds() = root |> singleton[File] |> unmodifiableCollection[File]
+
+  override def addRoot(root: File) = error("Operation is not allowed.")
 }
 
+
+/** Prefenied directory tree filters. */
 object DirContentFilter {
 
   import scala.util.matching.Regex
 
+  /** Creates a compund filter from a sequence of filters. */
   def apply(filter: File => Boolean, filters: File => Boolean*) = (file: File) => filter +: filters forall { _ apply file }
 
   val notHidden = apply(!_.isHidden)
@@ -52,13 +58,14 @@ object DirContentFilter {
   val templateFile = fileWithExt("jsp", "jspx", "html")
 }
 
-
+/** Browser predefined place (bookmark). */
 case class Place(dirTreeRoot: File, dirContentFilter: File => Boolean = DirContentFilter.notHidden, recursive: Boolean = true)
 
 sealed trait BrowserSelection
 case class DirTreeSelection(item: Option[File]) extends BrowserSelection
 case class DirContentSelection(items: Seq[File]) extends BrowserSelection {
   def first = items.headOption
+  def nonEmpty = items.nonEmpty
 }
 
 
@@ -112,14 +119,12 @@ class FileBrowser(val isMultiSelect: Boolean = false) extends Publisher[BrowserS
     notifyListeners(dirContentSelection)
   }
 
+  def location = locationRef.get
+
   // reloads dir content in a current accordion's tab.
   def reloadDirContent() =
-    for {
-      dirContent <- (?(ui.accDirTrees.getSelectedTab) map locations map (_._2))
-      selectedDir <- dirTreeSelection.item
-    } dirContent.reload(selectedDir)
-
-  def location() = locationRef.get
+    for ((_, dirContent) <- location; selectedDir <- dirTreeSelection.item)
+      dirContent.reload(selectedDir)
 }
 
 
@@ -135,7 +140,7 @@ class DirTree(root: File) {
   val ui = new Tree with SingleSelect2[File] with ItemIdType[File] with Immediate with NoNullSelection
 
   def reload() {
-    ui.setContainerDataSource(new DirFilesystemContainer(root))
+    ui.setContainerDataSource(new DirTreeContainer(root))
     ui.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM)
     ui.select(root)
   }
@@ -161,9 +166,7 @@ class DirContent(filter: File => Boolean, multiSelect: Boolean) {
     ui.setRowHeaderMode(ROW_HEADER_MODE_ICON_ONLY);
   }
 
-  /**
-   * Populates table with items - dir child dirs and files.
-   */
+  /** Populates table with dir children. */
   def reload(dir: File) {
     val base = 1024
     val baseFn = java.lang.Math.pow(1024, _:Int).toInt
