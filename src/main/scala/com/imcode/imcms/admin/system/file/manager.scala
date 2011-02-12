@@ -10,7 +10,7 @@ import java.io.File
 import com.vaadin.ui.Window.Notification
 
 class FileManager(app: ImcmsApplication) {
-  val browser = letret(new FileBrowser) { browser =>
+  val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
     browser.addPlace("Home", Place(Imcms.getPath))
     browser.addPlace("Templates", Place(new File(Imcms.getPath, "WEB-INF/templates/text")))
     browser.addPlace("Images", Place(new File(Imcms.getPath, "images")))
@@ -20,37 +20,40 @@ class FileManager(app: ImcmsApplication) {
 
   val ui = letret(new FileManagerUI(browser.ui)) { ui =>
     ui.miDelete setCommand block {
-      browser.dirContentSelection foreach { file =>
-        app.initAndShow(new ConfirmationDialog("Delete selected file")) { dlg =>
-          dlg setOkHandler {
-//            for ((dirTree, dirContent) <- browser.location) {
-//              dirContent.
-//            }
-            if (file.delete) {
+      let(browser.dirContentSelection.items) {
+        case fsNodes if fsNodes.nonEmpty =>
+          app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
+            dlg setOkHandler {
+              fsNodes foreach (_.delete)
               browser.reloadDirContent()
             }
           }
-        }
+
+        case _ =>
+      }
+
+      browser.dirContentSelection.items foreach { fsNode =>
+
       }
     }
 
     ui.miCopy setCommand block {
-      browser.dirContentSelection foreach { file =>
+      browser.dirContentSelection.items foreach { file =>
       }
     }
 
     ui.miMove setCommand block {
-      browser.dirContentSelection foreach { file =>
+      browser.dirContentSelection.items foreach { file =>
       }
     }
 
     ui.miView setCommand block {
-      browser.dirContentSelection foreach { file =>
+      browser.dirContentSelection.first foreach { file =>
       }
     }
 
     ui.miEdit setCommand block {
-      browser.dirContentSelection foreach { file =>
+      browser.dirContentSelection.first foreach { file =>
       }
     }
 
@@ -58,7 +61,7 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miDownload setCommand block {
-      browser.dirContentSelection foreach { file =>
+      browser.dirContentSelection.first foreach { file =>
       }
     }
 

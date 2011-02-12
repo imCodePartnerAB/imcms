@@ -33,13 +33,6 @@ class DirFilesystemContainer(root: File) extends FilesystemContainer(root) {
   override def rootItemIds() = root |> singleton[File] |> unmodifiableCollection[File]
 }
 
-sealed trait FileSelection
-case class DirTreeSelection(selection: Option[File]) extends FileSelection
-case class DirContentSelection(selection: Option[File]) extends FileSelection
-// case class DirContentMultiSelection(selection: File*) extends FileSelection  ???
-
-// todo: ADD DIR CONTENT MULTI SELECT?????
-
 object DirContentFilter {
 
   import scala.util.matching.Regex
@@ -62,14 +55,20 @@ object DirContentFilter {
 
 case class Place(dirTreeRoot: File, dirContentFilter: File => Boolean = DirContentFilter.notHidden, recursive: Boolean = true)
 
+sealed trait BrowserSelection
+case class DirTreeSelection(item: Option[File]) extends BrowserSelection
+case class DirContentSelection(items: Seq[File]) extends BrowserSelection {
+  def first = items.headOption
+}
 
-class FileBrowser extends Publisher[FileSelection] {
+
+class FileBrowser(val isMultiSelect: Boolean = false) extends Publisher[BrowserSelection] {
   type DirTreeTab = Component
 
   private val locations = MMap.empty[DirTreeTab, (DirTree, DirContent)]
-  private val dirTreeSelectionRef = new AtomicReference[Option[File]](None)
-  private val dirContentSelectionRef = new AtomicReference[Option[File]](None)
-  private val locationRef = new AtomicReference[Option[(DirTree, DirContent)]](None)
+  private val dirTreeSelectionRef = new AtomicReference(DirTreeSelection(Option.empty[File]))
+  private val dirContentSelectionRef = new AtomicReference(DirContentSelection(Seq.empty[File]))
+  private val locationRef = new AtomicReference(Option.empty[(DirTree, DirContent)])
 
   val ui = letret(new FileBrowserUI) { ui =>
     ui.accDirTrees.addListener(new TabSheet.SelectedTabChangeListener {
@@ -85,18 +84,20 @@ class FileBrowser extends Publisher[FileSelection] {
 
   def addPlace(caption: String, place: Place, icon: Option[Resource] = None) {
     val dirTree = new DirTree(place.dirTreeRoot)
-    val dirContent = new DirContent(place.dirContentFilter)
+    val dirContent = new DirContent(place.dirContentFilter, isMultiSelect)
 
     dirTree.ui addListener block {
-      dirTreeSelectionRef set ?(dirTree.ui.value)
+      dirTreeSelectionRef set DirTreeSelection(?(dirTree.ui.value))
 
       whenSelected(dirTree.ui) { dirContent reload _ }
-      notifyListeners(DirTreeSelection(dirTreeSelection))
+      notifyListeners(dirTreeSelection)
     }
 
     dirContent.ui addListener block {
-      dirContentSelectionRef set ?(dirContent.ui.value)
-      notifyListeners(DirContentSelection(dirContentSelection))
+      dirContentSelectionRef set DirContentSelection(if (isMultiSelect) dirContent.ui.asInstanceOf[MultiSelect2[File]].value.toSeq
+                                                     else ?(dirContent.ui.asInstanceOf[SingleSelect2[File]].value).toSeq)
+
+      notifyListeners(dirContentSelection)
     }
 
     locations(dirTree.ui) = (dirTree, dirContent)
@@ -107,15 +108,15 @@ class FileBrowser extends Publisher[FileSelection] {
   def dirContentSelection = dirContentSelectionRef.get
 
   override def notifyListeners() {
-    notifyListeners(DirTreeSelection(dirTreeSelection))
-    notifyListeners(DirContentSelection(dirContentSelection))
+    notifyListeners(dirTreeSelection)
+    notifyListeners(dirContentSelection)
   }
 
   // reloads dir content in a current accordion's tab.
   def reloadDirContent() =
     for {
       dirContent <- (?(ui.accDirTrees.getSelectedTab) map locations map (_._2))
-      selectedDir <- dirTreeSelection
+      selectedDir <- dirTreeSelection.item
     } dirContent.reload(selectedDir)
 
   def location() = locationRef.get
@@ -141,8 +142,14 @@ class DirTree(root: File) {
 }
 
 
-class DirContent(filter: File => Boolean) {
-  val ui = letret(new Table with Selectable with SingleSelect2[File] with ItemIdType[File] with Immediate with FullSize) { ui =>
+class DirContent(filter: File => Boolean, multiSelect: Boolean) {
+  val ui = letret(if (multiSelect) new Table with MultiSelect2[File]
+                  else             new Table with SingleSelect2[File]) { ui =>
+
+    ui.setSizeFull
+    ui.setImmediate(true)
+    ui.setSelectable(true)
+
     addContainerProperties(ui,
       CP[String]("Name"),
       CP[Date]("Date modified"),
@@ -152,9 +159,11 @@ class DirContent(filter: File => Boolean) {
     import Table._
     ui.setColumnAlignments(Array(ALIGN_LEFT, ALIGN_LEFT, ALIGN_RIGHT, ALIGN_RIGHT))
     ui.setRowHeaderMode(ROW_HEADER_MODE_ICON_ONLY);
-    //ui.setItemIconPropertyId();
   }
 
+  /**
+   * Populates table with items - dir child dirs and files.
+   */
   def reload(dir: File) {
     val base = 1024
     val baseFn = java.lang.Math.pow(1024, _:Int).toInt

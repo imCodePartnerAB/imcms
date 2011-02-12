@@ -34,7 +34,7 @@ class FileDialog(caption: String, browser: FileBrowser)
         dlg.setOkHandler {
           for {
             data <- dlg.upload.data
-            dir <- browser.dirTreeSelection
+            dir <- browser.dirTreeSelection.item
             filename = dlg.upload.ui.txtSaveAsName.value // todo: check not empty
             file = new File(dir, filename)
           } {
@@ -50,7 +50,7 @@ class FileDialog(caption: String, browser: FileBrowser)
   }
 
   browser listen {
-    case DirContentSelection(selection) => btnOk setEnabled selection.isDefined
+    case DirContentSelection(items) => btnOk setEnabled items.nonEmpty
     case _ =>
   }
 
@@ -124,7 +124,7 @@ class FilePreview(browser: FileBrowser) {
 
   ui.btnEnlarge addListener block {
     for {
-      file <- browser.dirContentSelection
+      file <- browser.dirContentSelection.first
       fpc = FilePreviewContent(ui.getApplication, file) if fpc.allowsFullSizePreview
     } ui.getApplication.initAndShow(new Window("Preview"), resizable = true) { w =>
       w.getContent.addComponent(fpc.content)
@@ -134,11 +134,11 @@ class FilePreview(browser: FileBrowser) {
 
   browser listen { ev =>
     if (enabled) ev match {
-      case DirContentSelection(Some(file)) =>
+      case DirContentSelection(Seq(file)) =>
         val fpc = FilePreviewContent(ui.getApplication, file)
         preview.set(fpc.content)
         ui.btnEnlarge.setEnabled(fpc.allowsFullSizePreview)
-      case DirContentSelection(None) =>
+      case DirContentSelection(Nil) =>
         preview.clear
       case other =>
     }
@@ -175,7 +175,7 @@ class ImagePicker(app: Application, browser: FileBrowser) {
   val fileDialog = letret(new FileDialog("Pick an image", browser)) { dlg =>
     dlg.preview.enabled = true
     dlg.setOkHandler {
-      for (file <- browser.dirContentSelection)
+      for (file <- browser.dirContentSelection.first)
         preview.set(new Embedded("", new FileResource(file, app)))
     }
   }

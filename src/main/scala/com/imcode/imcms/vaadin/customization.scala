@@ -41,10 +41,6 @@ trait DataType[A >: Null] extends AbstractComponent {
   def data_=(d: A) = setData(d)
 }
 
-//trait SelectType[V] extends ValueType[V] with AbstractSelect {
-//  def itemIds = getItemIds.asInstanceOf[JCollection[V]]
-//}
-
 trait Disabled { this: Component =>
   setEnabled(false)
 }
@@ -156,6 +152,10 @@ trait SingleSelect2[T >: Null] extends XSelect[T] with ValueType[T] {
   setMultiSelect(false)
 
   def isSelected = value != null
+}
+
+trait MultiSelect2[T >: Null] extends XSelect[T] with ValueType[JCollection[T]] {
+  setMultiSelect(true)
 }
 
 trait Now extends DateField {
