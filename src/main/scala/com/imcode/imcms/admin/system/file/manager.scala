@@ -9,7 +9,6 @@ import imcode.server.document.{CategoryDomainObject}
 import java.io.File
 import com.vaadin.ui.Window.Notification
 import org.apache.commons.io.FileUtils
-import java.util.concurrent.CountDownLatch
 
 class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
@@ -53,13 +52,13 @@ class FileManager(app: ImcmsApplication) {
 
     ui.miCopy setCommand block {
       if (browser.dirContentSelection.nonEmpty) {
-        val browser = letret(new FileBrowser) { browser =>
-          browser.addPlace("Home", Place(Imcms.getPath))
+        val dirSelectBrowser = letret(new FileBrowser) { b =>
+          b.addPlace("Home", Place(Imcms.getPath))
         }
 
-        app.initAndShow(new DirSelectionDialog("Select distenation directory", browser)) { dlg =>
+        app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
           dlg setOkHandler {
-            val destDir = browser.dirTreeSelection.item.get
+            val destDir = dirSelectBrowser.dirTreeSelection.item.get
             def copyOp(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
                                      else FileUtils.copyDirectoryToDirectory(item, destDir)
 
