@@ -8,6 +8,8 @@ import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import imcode.server.document.{CategoryDomainObject}
 import java.io.File
 import com.vaadin.ui.Window.Notification
+import org.apache.commons.io.FileUtils
+import java.util.concurrent.CountDownLatch
 
 class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
@@ -19,11 +21,30 @@ class FileManager(app: ImcmsApplication) {
   }
 
   val ui = letret(new FileManagerUI(browser.ui)) { ui =>
+    def applyOpToItems(items: Seq[File], op: File => Unit, opFailMsg: String) {
+      items match {
+        case item :: rest =>
+          def applyOpToRestItems() = applyOpToItems(rest, op, opFailMsg)
+
+          EX.handling(classOf[Exception]) by { _ =>
+            app.initAndShow(new ConfirmationDialog(opFailMsg format item)) { dlg =>
+              dlg.btnOk.setCaption("Skip")
+              dlg.setOkHandler { applyOpToRestItems() }
+            }
+          } apply {
+            op(item)
+            applyOpToRestItems()
+          }
+
+        case _ =>
+      }
+    }
+
     ui.miDelete setCommand block {
       if (browser.dirContentSelection.nonEmpty) {
         app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
           dlg setOkHandler {
-            browser.dirContentSelection.items foreach (_.delete)
+            applyOpToItems(browser.dirContentSelection.items, FileUtils.forceDelete, "Unable to delete item %s.")
             browser.reloadDirContent()
           }
         }
@@ -32,6 +53,20 @@ class FileManager(app: ImcmsApplication) {
 
     ui.miCopy setCommand block {
       if (browser.dirContentSelection.nonEmpty) {
+        val browser = letret(new FileBrowser) { browser =>
+          browser.addPlace("Home", Place(Imcms.getPath))
+        }
+
+        app.initAndShow(new DirSelectionDialog("Select distenation directory", browser)) { dlg =>
+          dlg setOkHandler {
+            val destDir = browser.dirTreeSelection.item.get
+            def copyOp(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
+                                     else FileUtils.copyDirectoryToDirectory(item, destDir)
+
+            applyOpToItems(browser.dirContentSelection.items, copyOp, "Unable to copy item %s.")
+            browser.reloadDirContent()
+          }
+        }
       }
     }
 

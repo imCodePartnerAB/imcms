@@ -198,6 +198,9 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
 
   /**
    * Adds Ok button listener which invokes a handler and closes dialog if there is no exception.
+   *
+   * // replace all listeners ???
+   * // disallow adding listeners to ok button???
    */
   def setOkHandler(handler: => Unit) {
     btnOk addListener block {
@@ -209,7 +212,20 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
         }
       }
     }
-  }  
+  }
+
+  // invoke with default empty block on init?
+  def setCancelHandler(handler: => Unit) {
+    btnCancel addListener block {
+      EX.allCatch.either(handler) match {
+        case Right(_) => close
+        case Left(ex) => using(new java.io.StringWriter) { w =>
+          ex.printStackTrace(new java.io.PrintWriter(w))
+          throw ex
+        }
+      }
+    }
+  }
 }
 
 

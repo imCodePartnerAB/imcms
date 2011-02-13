@@ -11,6 +11,23 @@ import com.vaadin.Application
 import com.vaadin.terminal._
 import org.apache.commons.io.FileUtils
 
+
+class DirSelectionDialog(caption: String, browser: FileBrowser)
+    extends OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
+
+  mainContent = browser.ui
+
+  browser listen {
+    case DirTreeSelection(item) => btnOk setEnabled item.isDefined
+    case _ =>
+  }
+
+  browser.notifyListeners()
+  // todo: refactor out
+  browser.ui.setSplitPosition(25)
+  setWidth("500px"); setHeight("350px")
+}
+
 //// todo add predicate - see comments on canPreview
 // todo implement download
 //  // refactor to predicate fn taken as parameter
