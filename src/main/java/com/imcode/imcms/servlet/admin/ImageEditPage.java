@@ -37,6 +37,7 @@ import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import org.apache.commons.lang.math.NumberUtils;
 
 public class ImageEditPage extends OkCancelPage {
@@ -81,7 +82,7 @@ public class ImageEditPage extends OkCancelPage {
 
     private TextDocumentDomainObject document;
     private String label;
-    private final Handler<List<ImageDomainObject>> imageCommand;
+    private final Handler<ImageEditResult> imageCommand;
     private final LocalizedMessage heading;
     private boolean linkable;
     private boolean shareImages;
@@ -98,10 +99,11 @@ public class ImageEditPage extends OkCancelPage {
      * Edited images.
      */
     private List<ImageDomainObject> images = new LinkedList<ImageDomainObject>();
+    private List<ImageDomainObject> origImages = new LinkedList<ImageDomainObject>();
 
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
                          LocalizedMessage heading, String label, ServletContext servletContext,
-                         Handler<List<ImageDomainObject>> imageCommand,
+                         Handler<ImageEditResult> imageCommand,
                          DispatchCommand returnCommand, boolean linkable,
                          int forcedWidth, int forcedHeight) {
         super(returnCommand, returnCommand);
@@ -113,12 +115,6 @@ public class ImageEditPage extends OkCancelPage {
         this.linkable = linkable ;
         this.forcedWidth = forcedWidth;
         this.forcedHeight = forcedHeight;
-
-        for (ImageDomainObject i: images) {
-            i.setNo(image.getNo());
-
-            forceWidthHeight(i);
-        }
 
         forceWidthHeight(image);
 
@@ -260,7 +256,7 @@ public class ImageEditPage extends OkCancelPage {
         image.setAlternateText(req.getParameter(REQUEST_PARAMETER__IMAGE_ALT));
         
         image.setLowResolutionUrl(req.getParameter(REQUEST_PARAMETER__IMAGE_LOWSRC));
-        
+
         shareImages = req.getParameter(REQUEST_PARAMETER__SHARE_IMAGE) != null;
 
         clearArchivePropertiesIfNullSource(image);
@@ -548,7 +544,8 @@ public class ImageEditPage extends OkCancelPage {
 
     protected void dispatchOk(HttpServletRequest request,
                               HttpServletResponse response) throws IOException, ServletException {
-        imageCommand.handle(images);
+        ImageEditResult editResult = new ImageEditResult(shareImages, origImages, images);
+        imageCommand.handle(editResult);
         super.dispatchOk(request, response);
     }
 
@@ -561,6 +558,13 @@ public class ImageEditPage extends OkCancelPage {
 	 */
 	public void setImages(List<ImageDomainObject> images) {
 		this.images = images;
+        origImages = new ArrayList<ImageDomainObject>(images.size());
+
+        for (ImageDomainObject img : images) {
+            forceWidthHeight(img);
+
+            origImages.add(img.clone());
+        }
 		
 		boolean mayShareImages = images != null && images.size() > 1;
 		

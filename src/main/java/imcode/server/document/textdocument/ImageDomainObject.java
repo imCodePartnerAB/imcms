@@ -21,16 +21,21 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.util.ImageSize;
+import imcode.server.Imcms;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Entity(name="Image")
 @Table(name="imcms_text_doc_images")
 public class ImageDomainObject implements Serializable, Cloneable, DocVersionItem, DocI18nItem, DocContentLoopItem, DocOrderedItem {
 	
     public static final int IMAGE_NAME_LENGTH = 40;
+
+    private static final int GEN_FILE_LENGTH = 255;
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
@@ -102,6 +107,9 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
 
     @Column(name="rotate_angle", nullable=false)
     private short rotateAngle;
+
+    @Column(name="gen_file", length=GEN_FILE_LENGTH)
+    private String generatedFilename;
     
     /**
      * i18n support 
@@ -287,6 +295,49 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
 
     public String getUrlPathRelativeToContextPath() {
         return source.getUrlPathRelativeToContextPath( );
+    }
+
+    public File getGeneratedFile() {
+        File basePath = Imcms.getServices().getConfig().getImagePath();
+
+        return new File(basePath, "generated/" + getGeneratedFilename());
+    }
+
+    public String getGeneratedUrlPath(String contextPath) {
+        return contextPath + getGeneratedUrlPathRelativeToContextPath();
+    }
+
+    public String getGeneratedUrlPathRelativeToContextPath() {
+        String imagesUrl = Imcms.getServices().getConfig().getImageUrl();
+
+        return imagesUrl + "generated/" + getGeneratedFilename();
+    }
+
+    public String getGeneratedFilename() {
+        return generatedFilename;
+    }
+
+    public void setGeneratedFilename(String generatedFilename) {
+        this.generatedFilename = generatedFilename;
+    }
+
+    public void generateFilename() {
+        String suffix = "_" + UUID.randomUUID().toString();
+
+        Format fmt = getFormat();
+        if (fmt != null) {
+            suffix += "." + fmt.getExtension();
+        }
+
+        int maxlength = GEN_FILE_LENGTH - suffix.length();
+
+        String filename = source.getNameWithoutExt();
+
+        if (filename.length() > maxlength) {
+            filename = filename.substring(0, maxlength);
+        }
+
+        generatedFilename = filename + suffix;
     }
 
     public long getSize() {
@@ -609,6 +660,11 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
             }
 
             return true;
+        }
+
+        public boolean isSame(CropRegion other) {
+            return (!valid && !other.valid) ||
+                    valid && other.valid && equals(other);
         }
     }
 

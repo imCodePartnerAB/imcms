@@ -19,7 +19,7 @@ public class ImageArchiveImageSource extends ImageSource {
     }
 
     @Override
-    InputStreamSource getInputStreamSource() {
+    public InputStreamSource getInputStreamSource() {
         return new FileInputStreamSource(getFile());
     }
 
@@ -60,5 +60,10 @@ public class ImageArchiveImageSource extends ImageSource {
     @Override
     public String toStorageString() {
         return path;
+    }
+
+    @Override
+    public String getName() {
+        return new File(path).getName();
     }
 }

@@ -12,7 +12,7 @@
     <% if (null != image && StringUtils.isNotBlank(image.getUrlPathRelativeToContextPath())) { %>
         <% ImageSize displaySize = image.getDisplayImageSize(); %>
         param = new Object();
-        param.src = '<%= StringEscapeUtils.escapeJavaScript(ImcmsImageUtils.getImageUrl(image, request.getContextPath())) %>';
+        param.src = '<%= StringEscapeUtils.escapeJavaScript(ImcmsImageUtils.getImageUrl(image, request.getContextPath(), true)) %>';
         param["alt"] = '<%= StringEscapeUtils.escapeJavaScript(image.getAlternateText())%>';
         <% if (StringUtils.isNotBlank(image.getAlign())) { %>
             param["align"] = '<%= StringEscapeUtils.escapeJavaScript(image.getAlign())%>';

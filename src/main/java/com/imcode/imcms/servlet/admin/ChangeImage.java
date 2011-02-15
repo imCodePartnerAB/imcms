@@ -27,8 +27,12 @@ import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.servlet.ImageCacheManager;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
+import imcode.util.ImcmsImageUtils;
+import java.io.File;
+import java.util.UUID;
 import org.apache.commons.lang.math.NumberUtils;
 
 /**
@@ -92,10 +96,35 @@ public class ChangeImage extends HttpServlet {
             }
         };
         
-        Handler<List<ImageDomainObject>> imageCommand = new Handler<List<ImageDomainObject>>() {
-            public void handle(List<ImageDomainObject> images) {
+        Handler<ImageEditResult> imageCommand = new Handler<ImageEditResult>() {
+            public void handle(ImageEditResult editResult) {
+                boolean shareImages = editResult.isShareImages();
+                List<ImageDomainObject> origImages = editResult.getOrigImages();
+                List<ImageDomainObject> images = editResult.getEditedImages();
+
                 ImcmsServices services = Imcms.getServices();
+                String firstGeneratedFilename = null;
                 
+                for (int i = 0, len = origImages.size(); i < len; ++i) {
+                    ImageDomainObject origImage = origImages.get(i);
+                    ImageDomainObject editImage = images.get(i);
+                    
+                    boolean first = (i == 0);
+
+                    if (first || !shareImages) {
+                        if (ImcmsImageUtils.changedImageGenerationParams(origImage, editImage)) {
+                            editImage.generateFilename();
+                        }
+                    }
+                    if (first) {
+                        firstGeneratedFilename = editImage.getGeneratedFilename();
+                    } else if (shareImages) {
+                        editImage.setGeneratedFilename(firstGeneratedFilename);
+                    }
+
+                    ImcmsImageUtils.generateImage(editImage, false);
+                }
+
                 try {
                     services.getDocumentMapper().saveTextDocImages(document, images, user);
                 } catch ( NoPermissionToEditDocumentException e ) {

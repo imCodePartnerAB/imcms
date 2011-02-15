@@ -20,7 +20,7 @@ public abstract class ImageSource implements Serializable {
     private ImageInfo cachedImageInfo;
     private Date cachedImageInfoTime;
 
-    abstract InputStreamSource getInputStreamSource( );
+    public abstract InputStreamSource getInputStreamSource( );
 
     public abstract String getUrlPathRelativeToContextPath( );
 
@@ -65,5 +65,18 @@ public abstract class ImageSource implements Serializable {
             return true ;
         }
     }
+
+    public String getNameWithoutExt() {
+        String name = getName();
+
+        int periodIndex = name.lastIndexOf('.');
+        if (periodIndex != -1) {
+            name = name.substring(0, periodIndex);
+        }
+
+        return name;
+    }
+
+    public abstract String getName();
 }
 

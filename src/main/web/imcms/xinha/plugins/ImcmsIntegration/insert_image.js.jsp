@@ -23,7 +23,8 @@ Xinha.prototype._insertImage = function(image)
         %>
 
         var src = image.getAttribute("src"),
-            url, format, width, height, cropX1, cropY1, cropX2, cropY2, rotateAngle, queryIndex;
+            url, format, width, height, cropX1, cropY1, cropX2, cropY2, 
+            rotateAngle, queryIndex, genFile;
 
         if (src && (queryIndex = src.indexOf("?")) != -1) {
             var parts = src.substring(queryIndex + 1).split("&");
@@ -69,6 +70,9 @@ Xinha.prototype._insertImage = function(image)
                     case "rangle":
                         rotateAngle = value;
                         break;
+                    case "gen_file":
+                        genFile = value;
+                        break;
                     default:
                         break;
                 }
@@ -95,6 +99,9 @@ Xinha.prototype._insertImage = function(image)
             '<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>'   : (image.style.marginTop || image.vspace || '').replace(/px/, ''),
             '<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>'  : (image.style.marginRight || image.hspace || '').replace(/px/, '')
         };
+        if (genFile) {
+            outparam['<%= EditImage.REQUEST_PARAMETER__GENFILE %>'] = genFile;
+        }
     }
     var queryString = '';
     for ( var i in outparam )

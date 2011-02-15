@@ -308,7 +308,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 					  <td style="padding-bottom:10px;"><%="<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"%></td>
 						<td style="padding-bottom:10px;" align="center">						
 						<div id="previewDiv${suffix}"><%
-							String imageTag = (!i18nImage.isEmpty()) ? ImcmsImageUtils.getImageHtmlTag(i18nImage, request, new Properties()) : "" ;
+							String imageTag = (!i18nImage.isEmpty()) ? ImcmsImageUtils.getImageHandlingHtmlTag(i18nImage, request, new Properties()) : "" ;
 							if (!"".equals(imageTag)) {
 								boolean isScaled = false ;
 								try {

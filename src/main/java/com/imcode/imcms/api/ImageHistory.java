@@ -83,6 +83,9 @@ public class ImageHistory {
     @Column(name="rotate_angle", nullable=false)
     private short rotateAngle;
 
+    @Column(name="gen_file")
+    private String generatedFilename;
+
     /**
      * i18n support
      */
@@ -128,6 +131,7 @@ public class ImageHistory {
         setFormat(imageDO.getFormat());
         setCropRegion(imageDO.getCropRegion());
         setRotateDirection(imageDO.getRotateDirection());
+        setGeneratedFilename(imageDO.getGeneratedFilename());
     }
 
     public Long getId() {
@@ -338,5 +342,13 @@ public class ImageHistory {
 
     public void setRotateDirection(RotateDirection dir) {
         this.rotateAngle = (short) (dir != null ? dir.getAngle() : 0);
+    }
+
+    public String getGeneratedFilename() {
+        return generatedFilename;
+    }
+
+    public void setGeneratedFilename(String generatedFilename) {
+        this.generatedFilename = generatedFilename;
     }
 }
