@@ -1,5 +1,6 @@
 package imcode.server;
 
+import com.imcode.imcms.api.SearchResult;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexWrapper;
@@ -25,6 +26,10 @@ public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
 
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return super.search(fixQuery(query), searchingUser);
+    }
+
+    public SearchResult search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
+        return super.search(fixQuery(query), searchingUser, startPosition, maxResults);
     }
 
     DocumentQuery fixQuery(DocumentQuery documentQuery) {

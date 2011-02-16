@@ -261,6 +261,32 @@ public class DocumentService {
         }
     }
 
+    public SearchResult getDocuments(final SearchQuery query, int startPosition, int maxResults) throws SearchException {
+        try {
+            SearchResult result = getDocumentMapper().getDocumentIndex().search(new DocumentQuery() {
+                public Query getQuery() {
+                    return query.getQuery();
+                }
+
+                public Sort getSort() {
+                    return query.getSort();
+                }
+
+                public boolean isLogged() {
+                    return query.isLogged();
+                }
+            }, contentManagementSystem.getCurrentUser().getInternal(), startPosition, maxResults);
+
+            ApiDocumentWrappingList documents = new ApiDocumentWrappingList(result.getDocuments(), contentManagementSystem);
+            result.setDocuments(documents);
+
+            return result;
+
+        } catch (RuntimeException e) {
+            throw new SearchException(e);
+        }
+    }
+
     public Document[] search(SearchQuery query) throws SearchException {
         List documents = getDocuments(query) ;
         return (Document[]) documents.toArray(new Document[documents.size()]);

@@ -1,5 +1,6 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.api.SearchResult;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -27,5 +28,9 @@ public class DocumentIndexWrapper implements DocumentIndex {
 
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return index.search(query, searchingUser) ;
+    }
+
+    public SearchResult search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
+        return index.search(query, searchingUser, startPosition, maxResults);
     }
 }

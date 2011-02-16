@@ -1,5 +1,6 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.api.SearchResult;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -30,6 +31,7 @@ import org.apache.lucene.search.IndexSearcher;
 import com.imcode.imcms.mapping.DocumentGetter;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.util.HumanReadable;
+import java.util.ArrayList;
 
 class DefaultDirectoryIndex implements DirectoryIndex {
 
@@ -52,6 +54,12 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
+        SearchResult result = search(query, searchingUser, 0, -1);
+
+        return result.getDocuments();
+    }
+
+    public SearchResult search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
         try {
             IndexSearcher indexSearcher = new IndexSearcher( directory.toString() );
             try {
@@ -59,13 +67,13 @@ class DefaultDirectoryIndex implements DirectoryIndex {
                 searchStopWatch.start();
                 Hits hits = indexSearcher.search( query.getQuery(), query.getSort() );
                 long searchTime = searchStopWatch.getTime();
-                List documentList = getDocumentListForHits( hits, searchingUser );
+                SearchResult result = getDocumentListForHits( hits, searchingUser, startPosition, maxResults );
                 if (log.isDebugEnabled()) {
                     log.debug( "Search for " + query.getQuery().toString() + ": " + searchTime + "ms. Total: "
                            + searchStopWatch.getTime()
                            + "ms." );
                 }
-                return documentList ;
+                return result ;
             } finally {
                 indexSearcher.close();
             }
@@ -82,9 +90,24 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    private List getDocumentListForHits( final Hits hits, final UserDomainObject searchingUser ) {
+    private SearchResult getDocumentListForHits( final Hits hits, final UserDomainObject searchingUser,
+            int startPosition, int maxResults ) {
+
         DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter();
         List documentIds = new DocumentIdHitsList(hits) ;
+
+        SearchResult result = new SearchResult();
+        int totalCount = documentIds.size();
+        result.setTotalCount(totalCount);
+
+        if (maxResults >= 0) {
+            startPosition = Math.min(startPosition, totalCount);
+            int toIndex = startPosition + maxResults;
+            toIndex = Math.min(toIndex, totalCount);
+
+            documentIds = documentIds.subList(startPosition, toIndex);
+        }
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         List documentList = documentGetter.getDocuments(documentIds) ;
@@ -92,7 +115,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         if (log.isDebugEnabled()) {
             log.debug("Got "+documentList.size()+" documents in "+stopWatch.getTime()+"ms.");
         }
-        if (documentList.size() != hits.length()) {
+        if (documentList.size() != documentIds.size()) {
             inconsistent = true ;
         }
         CollectionUtils.filter(documentList, new Predicate() {
@@ -101,7 +124,10 @@ class DefaultDirectoryIndex implements DirectoryIndex {
                 return searchingUser.canSearchFor(document) ;
             }
         });
-        return documentList ;
+
+        result.setDocuments(documentList);
+
+        return result;
     }
 
     public void indexDocument( DocumentDomainObject document ) throws IndexException {
@@ -250,6 +276,25 @@ class DefaultDirectoryIndex implements DirectoryIndex {
             } catch ( IOException e ) {
                 throw new IndexException(e);
             }
+        }
+
+        public List subList(int fromIndex, int toIndex) {
+            if (fromIndex < 0) {
+                throw new IndexOutOfBoundsException("fromIndex < 0");
+            } else if (toIndex > size()) {
+                throw new IndexOutOfBoundsException("toIndex > size");
+            } else if (fromIndex > toIndex) {
+                throw new IndexOutOfBoundsException("fromIndex > toIndex");
+            }
+
+
+            List list = new ArrayList(toIndex - fromIndex);
+
+            for (int i = fromIndex; i < toIndex; ++i) {
+                list.add(get(i));
+            }
+
+            return list;
         }
 
         public int size() {

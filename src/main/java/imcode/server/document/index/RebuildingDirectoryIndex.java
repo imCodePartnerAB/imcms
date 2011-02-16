@@ -1,5 +1,6 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.api.SearchResult;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
@@ -166,6 +167,20 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
     }
 
+    public SearchResult search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
+        try {
+            SearchResult result = index.search(query, searchingUser, startPosition, maxResults);
+            if ( index.isInconsistent() ) {
+                rebuildBecauseOfError("Index is inconsistent.", null);
+            }
+            return result;
+        } catch ( IndexException ex ) {
+            rebuildBecauseOfError("Search failed.", ex);
+
+            return new SearchResult(Collections.EMPTY_LIST, 0);
+        }
+    }
+
     private void rebuildBecauseOfError(String message, IndexException ex) {
         log.error(message+" Starting index rebuild.", ex);
         rebuild();
@@ -205,6 +220,10 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
 
         public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
             return Collections.EMPTY_LIST;
+        }
+
+        public SearchResult search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
+            return new SearchResult(Collections.EMPTY_LIST, 0);
         }
 
         public void rebuild() throws IndexException {

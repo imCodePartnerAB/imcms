@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.api.SearchResult;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentQuery;
@@ -23,6 +24,14 @@ public class MockDocumentIndex implements DocumentIndex {
 
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return Arrays.asList(new DocumentDomainObject[0]);
+    }
+
+    public SearchResult search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
+        List documents = Arrays.asList(new DocumentDomainObject[0]);
+
+        SearchResult result = new SearchResult(documents, documents.size());
+
+        return result;
     }
 
     public void rebuild() {

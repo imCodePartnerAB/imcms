@@ -1,5 +1,6 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.api.SearchResult;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -45,6 +46,8 @@ public interface DocumentIndex {
     void removeDocument( DocumentDomainObject document ) throws IndexException;
 
     List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
+
+    SearchResult search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException;
 
     void rebuild() throws IndexException;
 }

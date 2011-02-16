@@ -1,5 +1,6 @@
 package imcode.server;
 
+import com.imcode.imcms.api.SearchResult;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexWrapper;
 import imcode.server.document.index.DocumentQuery;
@@ -38,6 +39,15 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
         Query query = documentQuery.getQuery();
         logTerms(getTerms(query));
         return super.search(documentQuery, searchingUser);
+    }
+
+    @Override
+    public SearchResult search(DocumentQuery documentQuery, UserDomainObject searchingUser, int startPosition,
+            int maxResults) throws IndexException {
+
+        Query query = documentQuery.getQuery();
+        logTerms(getTerms(query));
+        return super.search(documentQuery, searchingUser, startPosition, maxResults);
     }
 
     private Collection<String> getTerms(Query query) {
