@@ -31,7 +31,7 @@ class FileUploadDialog(caption: String = "") extends OkCancelDialog(caption) {
 }
 
 class FileUpload extends Publisher[UploadStatus] {
-  private val dataRef = new AtomicReference[Option[UploadedData]](None)
+  private val dataRef = new AtomicReference(Option.empty[UploadedData])
 
   /** Creates file save as name from original filename. */
   var fileNameToSaveAsName = identity[String]_
@@ -98,6 +98,10 @@ class FileUpload extends Publisher[UploadStatus] {
   }
 
   def data = dataRef.get
+
+  def saveAsName = ui.txtSaveAsName.value
+
+  def isOverwrite = ui.chkOverwrite.value
 }
 
 class FileUploadUI extends FormLayout with UndefinedSize {

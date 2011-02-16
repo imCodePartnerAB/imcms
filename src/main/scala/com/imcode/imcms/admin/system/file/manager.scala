@@ -104,6 +104,23 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miUpload setCommandHandler {
+      app.initAndShow(new FileUploadDialog("Upload file")) { dlg =>
+        dlg.setOkHandler {
+          for {
+            UploadedData(_, _, content) <- dlg.upload.data
+            dir <- browser.dirTreeSelection.item
+            file = new File(dir, dlg.upload.saveAsName)
+          } {
+            if (file.exists && !dlg.upload.isOverwrite) {
+              app.show(new MsgDialog("File allready exists", "Please choose different name or check 'overwrite existing'"))
+              error("File %s allready exists" format file.getCanonicalPath)
+            } else {
+              FileUtils.writeByteArrayToFile(file, content)
+              browser.reloadDirContent()
+            }
+          }
+        }
+      }
     }
 
     ui.miDownload setCommandHandler {
