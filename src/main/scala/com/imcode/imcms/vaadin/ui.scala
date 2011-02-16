@@ -78,6 +78,13 @@ class MenuBarWrapper(mb: MenuBar) {
 class MenuItemWrapper(mi: MenuBar#MenuItem) {
   def addItem(caption: String, resource: Resource) = mi.addItem(caption, resource, null)
   def addItem(caption: String) = mi.addItem(caption, null)
+
+  def setCommandListener(listener: MenuBar#MenuItem => Unit) =
+    mi.setCommand(new MenuBar.Command {
+      def menuSelected(mi: MenuBar#MenuItem) = listener(mi)
+    })
+
+  def setCommandHandler(handler: => Unit) = setCommandListener(_ => handler)
 }
 
 class ButtonWrapper(button: Button) {

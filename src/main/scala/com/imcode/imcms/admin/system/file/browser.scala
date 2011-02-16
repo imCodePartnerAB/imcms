@@ -125,6 +125,9 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   def reloadDirContent() =
     for ((_, dirContent) <- location; selectedDir <- dirTreeSelection.item)
       dirContent.reload(selectedDir)
+
+  def reload() =
+    for ((dirTree, _) <- location) dirTree.reload()
 }
 
 
@@ -166,7 +169,7 @@ class DirContent(filter: File => Boolean, selectable: Boolean, multiSelect: Bool
     ui.setRowHeaderMode(ROW_HEADER_MODE_ICON_ONLY);
   }
 
-  /** Populates table with dir children. */
+  /** Populates table with dir items. */
   def reload(dir: File) {
     val base = 1024
     val baseFn = java.lang.Math.pow(1024, _:Int).toInt

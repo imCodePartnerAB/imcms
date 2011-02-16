@@ -156,6 +156,7 @@ trait SingleSelect2[T >: Null] extends XSelect[T] with ValueType[T] {
 
   override def setMultiSelect(multiSelect: Boolean) {
     require(!multiSelect, "must be false")
+    super.setMultiSelect(multiSelect)
   }
 }
 
@@ -164,6 +165,7 @@ trait MultiSelect2[T >: Null] extends XSelect[T] with ValueType[JCollection[T]] 
 
   override def setMultiSelect(multiSelect: Boolean) {
     require(multiSelect, "must be true")
+    super.setMultiSelect(multiSelect)
   }
 
   def isSelected = value.nonEmpty
