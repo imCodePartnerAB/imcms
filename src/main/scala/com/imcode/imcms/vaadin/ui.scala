@@ -80,6 +80,16 @@ class MenuItemWrapper(mi: MenuBar#MenuItem) {
   def addItem(caption: String) = mi.addItem(caption, null)
 }
 
+class ButtonWrapper(button: Button) {
+
+  def addClickListener(listener: Button#ClickEvent => Unit) =
+    button.addListener(new Button.ClickListener {
+      def buttonClick(event: Button#ClickEvent) = listener(event)
+    })
+
+  def addClickHandler(handler: => Unit) = addClickListener(_ => handler)
+}
+
 /**
  * Must be mixed-in into a component which parent is ImcmsApplication.
  */
@@ -164,7 +174,7 @@ class OKDialog(caption: String = "") extends Dialog(caption) {
 
   buttonsBarUI = btnOk
 
-  btnOk addListener block { close }
+  btnOk addClickHandler { close() }
 }
 
 
@@ -177,7 +187,7 @@ class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
   mainUI = lblMessage
   buttonsBarUI = btnOk
 
-  btnOk addListener block { close }
+  btnOk addClickHandler { close() }
 }
 
 
@@ -194,7 +204,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
 
   buttonsBarUI = lytButtons
 
-  btnCancel addListener block { close }
+  btnCancel addClickHandler { close() }
 
   /**
    * Adds Ok button listener which invokes a handler and closes dialog if there is no exception.
@@ -203,7 +213,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
    * // disallow adding listeners to ok button???
    */
   def setOkHandler(handler: => Unit) {
-    btnOk addListener block {
+    btnOk addClickHandler {
       EX.allCatch.either(handler) match {
         case Right(_) => close
         case Left(ex) => using(new java.io.StringWriter) { w =>
@@ -216,7 +226,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
 
   // invoke with default empty block on init?
   def setCancelHandler(handler: => Unit) {
-    btnCancel addListener block {
+    btnCancel addClickHandler {
       EX.allCatch.either(handler) match {
         case Right(_) => close
         case Left(ex) => using(new java.io.StringWriter) { w =>
@@ -290,11 +300,11 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
     l setItemCaptionMode AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT
   }
 
-  btnAdd addListener block { move(lstAvailable, lstChosen) }
-  btnRemove addListener block { move(lstChosen, lstAvailable) }
+  btnAdd addClickHandler { move(lstAvailable, lstChosen) }
+  btnRemove addClickHandler { move(lstChosen, lstAvailable) }
 
-  lstAvailable addListener block { reset() }
-  lstChosen addListener block { reset() }
+  lstAvailable addValueChangeHandler { reset() }
+  lstChosen addValueChangeHandler { reset() }
 
   reset()
 
@@ -484,13 +494,13 @@ class TableView extends VerticalLayout {
     setImmediate(true)
     setPageLength(10)
 
-    this addListener block { resetComponents }
+    this addValueChangeHandler { resetComponents }
 
     tableFields foreach { addContainerProperties(this, _) }
   }
 
   val btnReload = new Button("Reload") {
-    this addListener block { reloadTable }
+    this addClickHandler { reloadTable }
     setStyleName(Button.STYLE_LINK)
     setIcon(new ThemeResource("icons/16/reload.png"))
   }

@@ -303,7 +303,7 @@ class NewTextDocumentFlowPage2UI extends VerticalLayout with FullSize with Spaci
 class NewTextDocumentFlowPage2(metaModel: MetaModel) {
   val ui = new NewTextDocumentFlowPage2UI
 
-  ui.chkCopyI18nMetaTextsToTextFields addListener block { reload() }
+  ui.chkCopyI18nMetaTextsToTextFields addClickHandler { reload() }
   reload()
 
   def isCopyI18nMetaTextsToTextFields = ui.chkCopyI18nMetaTextsToTextFields.booleanValue

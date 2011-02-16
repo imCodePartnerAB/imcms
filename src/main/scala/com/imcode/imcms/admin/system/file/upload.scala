@@ -27,7 +27,7 @@ class FileUploadDialog(caption: String = "") extends OkCancelDialog(caption) {
 
   upload.listen { btnOk setEnabled _.isInstanceOf[UploadSucceeded] }
 
-  btnCancel addListener block { upload.ui.upload.interruptUpload }
+  btnCancel addClickHandler { upload.ui.upload.interruptUpload }
 }
 
 class FileUpload extends Publisher[UploadStatus] {

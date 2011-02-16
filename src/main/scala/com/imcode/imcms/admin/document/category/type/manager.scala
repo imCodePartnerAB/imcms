@@ -17,8 +17,8 @@ class CategoryTypeManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val ui = letret(new CategoryTypeManagerUI) { ui =>
-    ui.rc.btnReload addListener block { reload() }
-    ui.tblTypes addListener block { handleSelection() }
+    ui.rc.btnReload addClickHandler { reload() }
+    ui.tblTypes addValueChangeHandler { handleSelection() }
 
     ui.miNew setCommand block { editAndSave(new CategoryTypeDomainObject) }
     ui.miEdit setCommand block {

@@ -38,14 +38,14 @@ class Flow[T](commit: () => Either[String, T], firstPage: FlowPage, restPages: F
   val commitListeners = ListBuffer.empty[T => Unit]
 
   val ui = letret(new FlowUI) { ui =>
-    ui.bar.btnPrev addListener block {
+    ui.bar.btnPrev addClickHandler {
       maybeGoPrev match {
         case Some(page) => ui.setContent(page.ui())
         case _ => ui.getWindow.showNotification("This is the first page", "Press 'Next' or 'Finish'", Notification.TYPE_WARNING_MESSAGE)
       }
     }
 
-    ui.bar.btnNext addListener block {
+    ui.bar.btnNext addClickHandler {
       maybeGoNext match {
         case Left(errorMsg) => ui.getWindow.showNotification("Can't go to the next page", errorMsg, Notification.TYPE_ERROR_MESSAGE)
         case Right(Some(page)) => ui.setContent(page.ui())
@@ -53,7 +53,7 @@ class Flow[T](commit: () => Either[String, T], firstPage: FlowPage, restPages: F
       }
     }
 
-    ui.bar.btnFinish addListener block {
+    ui.bar.btnFinish addClickHandler {
       commit() match {
         case Left(errorMsg) => ui.getWindow.showNotification("Can't commit flow", errorMsg, Notification.TYPE_ERROR_MESSAGE)
         case Right(result) => commitListeners foreach { _.apply(result) }

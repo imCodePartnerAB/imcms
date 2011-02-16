@@ -15,7 +15,7 @@ import imcode.server.{SystemData, Imcms}
 class PropertyManagerManager(app: ImcmsApplication) {
 
   val ui = letret(new PropertyManagerUI) { ui =>
-    ui.rc.btnReload addListener block { reload() }
+    ui.rc.btnReload addClickHandler { reload() }
     ui.miEdit setCommand block {
       app.initAndShow(new OkCancelDialog("Edit system properties")) { dlg =>
         dlg.mainUI = letret(new PropertyEditorUI) { eui =>

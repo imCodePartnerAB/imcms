@@ -57,11 +57,11 @@ class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Ma
 //    }
   }
 
-  btnReload addListener block {
+  btnReload addClickHandler {
     reload()
   }
 
-  tblMetas addListener block {
+  tblMetas addValueChangeHandler {
     tblVersions.removeAllItems
     tblDocs.removeAllItems
     tblLanguages.removeAllItems

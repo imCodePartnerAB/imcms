@@ -37,7 +37,7 @@ class DirTreeContainer(root: File) extends FilesystemContainer(root) {
 }
 
 
-/** Prefenied directory tree filters. */
+/** Predefined directory tree filters. */
 object DirContentFilter {
 
   import scala.util.matching.Regex
@@ -69,7 +69,7 @@ case class DirContentSelection(items: Seq[File]) extends BrowserSelection {
 }
 
 
-class FileBrowser(val isMultiSelect: Boolean = false) extends Publisher[BrowserSelection] {
+class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean = false) extends Publisher[BrowserSelection] {
   type DirTreeTab = Component
 
   private val locations = MMap.empty[DirTreeTab, (DirTree, DirContent)]
@@ -91,16 +91,16 @@ class FileBrowser(val isMultiSelect: Boolean = false) extends Publisher[BrowserS
 
   def addPlace(caption: String, place: Place, icon: Option[Resource] = None) {
     val dirTree = new DirTree(place.dirTreeRoot)
-    val dirContent = new DirContent(place.dirContentFilter, isMultiSelect)
+    val dirContent = new DirContent(place.dirContentFilter, isSelectable, isMultiSelect)
 
-    dirTree.ui addListener block {
+    dirTree.ui addValueChangeHandler {
       dirTreeSelectionRef set DirTreeSelection(?(dirTree.ui.value))
 
       whenSelected(dirTree.ui) { dirContent reload _ }
       notifyListeners(dirTreeSelection)
     }
 
-    dirContent.ui addListener block {
+    dirContent.ui addValueChangeHandler {
       dirContentSelectionRef set DirContentSelection(if (isMultiSelect) dirContent.ui.asInstanceOf[MultiSelect2[File]].value.toSeq
                                                      else ?(dirContent.ui.asInstanceOf[SingleSelect2[File]].value).toSeq)
 
@@ -147,13 +147,13 @@ class DirTree(root: File) {
 }
 
 
-class DirContent(filter: File => Boolean, multiSelect: Boolean) {
+class DirContent(filter: File => Boolean, selectable: Boolean, multiSelect: Boolean) {
   val ui = letret(if (multiSelect) new Table with MultiSelect2[File]
                   else             new Table with SingleSelect2[File]) { ui =>
 
     ui.setSizeFull
     ui.setImmediate(true)
-    ui.setSelectable(true)
+    ui.setSelectable(selectable)
 
     addContainerProperties(ui,
       CP[String]("Name"),

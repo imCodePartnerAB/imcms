@@ -18,8 +18,8 @@ class TemplateGroupManager(app: ImcmsApplication) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
 
   val ui = letret(new TemplateGroupManagerUI) { ui =>
-    ui.rc.btnReload addListener block { reload() }
-    ui.tblGroups addListener block { handleSelection() }
+    ui.rc.btnReload addClickHandler { reload() }
+    ui.tblGroups addValueChangeHandler { handleSelection() }
 
     ui.miNew setCommand block { editAndSave(new TemplateGroupDomainObject(0, null)) }
     ui.miEdit setCommand block {

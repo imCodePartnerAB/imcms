@@ -95,7 +95,7 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
 
     // changes model:
     //  - languages and meta 
-    ui.lytI18n.btnSettings addListener block {
+    ui.lytI18n.btnSettings addClickHandler {
       application.initAndShow(new OkCancelDialog("I18n settings")) { dlg =>
         val content = dlg.setMainContent(new I18nSettingsDialogContent)
 
@@ -121,7 +121,7 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
     }
 
     // affects model
-    ui.lytSearch.lytKeywords.btnEdit addListener block {
+    ui.lytSearch.lytKeywords.btnEdit addClickHandler {
       application.initAndShow(new OkCancelDialog("Keywords")) { dlg =>
         val keywords = model.meta.getKeywords
         val content = new KeywordsDialogContent(keywords.toSeq)
@@ -137,7 +137,7 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
     }
 
     // affects model
-    ui.lytCategories.btnEdit addListener block {
+    ui.lytCategories.btnEdit addClickHandler {
       application.initAndShow(new OkCancelDialog("Categories") with CustomSizeDialog) { dlg =>
         val content = dlg.setMainContent(new CategoriesDialogContent)
         val categoryIds = model.meta.getCategoryIds
@@ -188,7 +188,7 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
     }
 
     // affects model
-    ui.lytPublication.btnChoosePublisher addListener block {
+    ui.lytPublication.btnChoosePublisher addClickHandler {
       application.initAndShow(new OkCancelDialog("Choose publisher") with UserSelectDialog) { dlg =>
         dlg.setOkHandler {
           dlg.userSelect.selection match {
@@ -206,7 +206,7 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
 
     // does NOT alter meta - only reads its values
     let(ui.lytPublication) { lyt =>
-      lyt.chkEnd addListener block {
+      lyt.chkEnd addClickHandler {
         lyt.chkEnd.booleanValue match {
           case true =>
             lyt.calEnd.setEnabled(true)
@@ -366,7 +366,7 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
   addComponent(btnRemove, 2, 0)
   addComponent(lstKeywords, 0, 1, 2, 1)
 
-  btnAdd addListener block {
+  btnAdd addClickHandler {
     txtKeyword.value.trim.toLowerCase match {
       case value if value.length > 0 && lstKeywords.getItem(value) == null =>
         setKeywords(value :: lstKeywords.getItemIds.asInstanceOf[ItemIds].toList)
@@ -376,11 +376,11 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
     txtKeyword setValue ""
   }
 
-  btnRemove addListener block {
+  btnRemove addClickHandler {
     whenSelected(lstKeywords) { _ foreach (lstKeywords removeItem _) }
   }
 
-  lstKeywords addListener block {
+  lstKeywords addValueChangeHandler {
     lstKeywords.value match {
       case List(value) => txtKeyword setValue value
       case List(_, _, _*) => txtKeyword setValue ""

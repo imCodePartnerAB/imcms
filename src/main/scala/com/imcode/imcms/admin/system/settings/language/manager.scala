@@ -16,8 +16,8 @@ class LanguageManager(app: ImcmsApplication) {
   private val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
 
   val ui = letret(new LanguageManagerUI) { ui =>
-    ui.rc.btnReload addListener block { reload() }
-    ui.tblLanguages addListener block { handleSelection() }
+    ui.rc.btnReload addClickHandler { reload() }
+    ui.tblLanguages addValueChangeHandler { handleSelection() }
 
     ui.miNew setCommand block { editAndSave(new I18nLanguage) }
     ui.miEdit setCommand block {

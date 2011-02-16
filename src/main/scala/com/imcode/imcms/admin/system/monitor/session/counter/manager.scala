@@ -25,7 +25,7 @@ object SessionCounter {
 
 class SessionCounterManager(app: ImcmsApplication) {
   val ui = letret(new SessionCounterManagerUI) { ui =>
-    ui.rc.btnReload addListener block { reload() }
+    ui.rc.btnReload addClickHandler { reload() }
     ui.miEdit setCommand block {
       app.initAndShow(new OkCancelDialog("Edit session counter")) { dlg =>
         dlg.mainUI = letret(new SessionCounterEditorUI) { c =>

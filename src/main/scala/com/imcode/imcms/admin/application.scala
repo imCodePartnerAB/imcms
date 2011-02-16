@@ -140,13 +140,13 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       setImmediate(true)
       setPageLength(10)
 
-      addListener(block { resetComponents })
+      this.addValueChangeHandler { resetComponents }
 
       tableProperties foreach (addContainerProperties(this, _))
     }
 
     val btnReload = new Button("Reload") {
-      addListener(block { reloadTableItems })
+      this.addClickHandler { reloadTableItems }
       setStyleName(Button.STYLE_LINK)
       setIcon(new ThemeResource("icons/16/reload.png"))
     }
@@ -235,31 +235,30 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       }
     }
 
-    treeMenu addListener (new ValueChangeListener {
-      def valueChange(e: ValueChangeEvent) {
-        content.setSecondComponent(
-          e.getProperty.getValue match {
-            case null | Menu.About => labelAbout
-            
-            case Menu.System.Monitor.SearchTerms => searchTerms
-            case Menu.Documents.Categories => categories
-            case Menu.System.Settings.Languages => languagesPanel
-            case Menu.System.Settings.Properties => settingsProperties
-            case Menu.System.Monitor.Session => sessionMonitor
-            case Menu.Documents => documentsTable
-            case Menu.Permissions.Roles => roles
-            case Menu.Permissions.Users => users
-            case Menu.Permissions.IP_Access => ipAccess
-            case Menu.System.Files => filesystem
-            case Menu.Documents.Templates => templates
-            case Menu.Documents.Structure => docStructure
-            case Menu.Documents.Edit => docadmin
-            case Menu.System.Monitor.Cache => systemCacheView
+    treeMenu addValueChangeListener { e =>
+      content.setSecondComponent(
+        e.getProperty.getValue match {
+          case null | Menu.About => labelAbout
 
-            case other => NA(other)
-          })
-      }
-    })
+          case Menu.System.Monitor.SearchTerms => searchTerms
+          case Menu.Documents.Categories => categories
+          case Menu.System.Settings.Languages => languagesPanel
+          case Menu.System.Settings.Properties => settingsProperties
+          case Menu.System.Monitor.Session => sessionMonitor
+          case Menu.Documents => documentsTable
+          case Menu.Permissions.Roles => roles
+          case Menu.Permissions.Users => users
+          case Menu.Permissions.IP_Access => ipAccess
+          case Menu.System.Files => filesystem
+          case Menu.Documents.Templates => templates
+          case Menu.Documents.Structure => docStructure
+          case Menu.Documents.Edit => docadmin
+          case Menu.System.Monitor.Cache => systemCacheView
+
+          case other => NA(other)
+        })
+    }
+
 
     content setFirstComponent treeMenu
     //this setContent content
@@ -310,9 +309,9 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       addComponents(this, btnNewTextDoc, btnNewFileDoc, btnNewUrlDoc, btnDocInfo, btnEdit, btnDocPermissions, btnReload)
     }
 
-    btnReload addListener { reload _ }
+    btnReload addClickHandler { reload _ }
 
-    btnNewTextDoc addListener block {
+    btnNewTextDoc addClickHandler {
       app.initAndShow(new Dialog("New text document") with BottomMarginDialog) { dlg =>
         val parentDoc = dm.getDocument(1001)
         val onCommit = { doc: TextDocumentDomainObject =>
@@ -333,7 +332,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       }
     }
 
-    btnDocPermissions addListener block {
+    btnDocPermissions addClickHandler {
 
       whenSelected(tblDocs) { id =>
         val model = MetaModel(id)
@@ -347,7 +346,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       }
     }
     
-    btnDocInfo addListener block {
+    btnDocInfo addClickHandler {
       whenSelected(tblDocs) { id =>
         val model = MetaModel(id)
         val editor = new MetaEditor(app, model)
@@ -358,7 +357,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       }
     }
 
-    btnNewUrlDoc addListener block {
+    btnNewUrlDoc addClickHandler {
       app.initAndShow(new Dialog("New url document")) { dlg =>
         val parentDoc = dm.getDocument(1001)
         val flow = docAdmin.newURLDocFlow(parentDoc)
@@ -368,7 +367,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       }
     }
 
-    btnNewFileDoc addListener block {
+    btnNewFileDoc addClickHandler {
       app.initAndShow(new Dialog("New file document")) { dlg =>
         val parentDoc = dm.getDocument(1001)
         val onCommit = { doc: FileDocumentDomainObject =>
@@ -382,18 +381,18 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
         flow.commitListeners += onCommit
 
-        flowUI.bar.btnCancel addListener block {
+        flowUI.bar.btnCancel addClickHandler {
           dlg.close
         }
         
-        dlg.setMainContent(flowUI)
+        dlg.mainUI = flowUI
 
         dlg.setWidth("600px")
         dlg.setHeight("800px")
       }
     }
 
-    btnEdit addListener block {
+    btnEdit addClickHandler {
       whenSelected(tblDocs) { id =>
         // show edit meta dialog
       }
@@ -561,7 +560,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
         }
       }
 
-      lytBar.btnReload addListener block { reload() }
+      lytBar.btnReload addClickHandler { reload() }
 
       reload()
     })
@@ -631,7 +630,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
         setSpacing(true)
       }
 
-      lytMenu.btnShow addListener block {
+      lytMenu.btnShow addClickHandler {
         lytMenu.txtId.getValue match {
           case IntNumber(id) =>
             Imcms.getServices.getDocumentMapper.getDocument(id) match {

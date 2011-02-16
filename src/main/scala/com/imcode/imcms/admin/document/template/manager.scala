@@ -20,7 +20,7 @@ class TemplateManager(app: ImcmsApplication) {
   private val fileRE = """(?i)(.+?)(?:\.(\w+))?""".r // filename, (optional extension)
 
   val ui = letret(new TemplateManagerUI) { ui =>
-    ui.tblTemplates addListener block { handleSelection() }
+    ui.tblTemplates addValueChangeHandler { handleSelection() }
     ui.miUpload setCommand block {
       app.initAndShow(new FileUploadDialog("Upload template file")) { dlg =>
         // strips filename extension, trims and replaces spaces with underscores

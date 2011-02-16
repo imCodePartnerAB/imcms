@@ -23,14 +23,14 @@ class UserSelect extends Publisher[Option[UserDomainObject]] {
       ui.filterUI.lstRoles.setItemCaption(role.getId, role.getName)
     }
 
-    ui.filterUI.btnApply addListener block { reload() }
-    ui.filterUI.btnReset addListener block {
+    ui.filterUI.btnApply addClickHandler { reload() }
+    ui.filterUI.btnReset addClickHandler {
       ui.filterUI.txtText.value = ""
       ui.filterUI.chkShowInactive.value = false
       ui.filterUI.lstRoles.value foreach ui.filterUI.lstRoles.unselect
       reload()
     }
-    ui.tblUsers addListener block {
+    ui.tblUsers addValueChangeHandler {
       selectionRef.set(Option(ui.tblUsers.value) map { roleMapper getUser _.intValue })
       notifyListeners()
     }

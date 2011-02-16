@@ -14,8 +14,8 @@ class RoleManager(app: ImcmsApplication) {
   private def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
   val ui = letret(new RoleManagerUI) { ui =>
-    ui.rc.btnReload addListener block { reload() }
-    ui.tblRoles addListener block { handleSelection() }
+    ui.rc.btnReload addClickHandler { reload() }
+    ui.tblRoles addValueChangeHandler { handleSelection() }
 
     ui.miNew setCommand block { editAndSave(new RoleDomainObject("")) }
     ui.miEdit setCommand block {

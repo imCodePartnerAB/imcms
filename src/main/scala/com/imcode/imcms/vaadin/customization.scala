@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.vaadin
 
+import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.vaadin.data.{Item, Container, Property}
 import com.vaadin.terminal.Sizeable
@@ -152,10 +153,20 @@ trait SingleSelect2[T >: Null] extends XSelect[T] with ValueType[T] {
   setMultiSelect(false)
 
   def isSelected = value != null
+
+  override def setMultiSelect(multiSelect: Boolean) {
+    require(!multiSelect, "must be false")
+  }
 }
 
 trait MultiSelect2[T >: Null] extends XSelect[T] with ValueType[JCollection[T]] {
   setMultiSelect(true)
+
+  override def setMultiSelect(multiSelect: Boolean) {
+    require(multiSelect, "must be true")
+  }
+
+  def isSelected = value.nonEmpty
 }
 
 trait Now extends DateField {

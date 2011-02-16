@@ -3,8 +3,8 @@ package imcms
 
 import com.vaadin.ui._
 import com.vaadin.data.{Container, Property}
-import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 import com.vaadin.Application
+import com.vaadin.data.Property.{ValueChangeNotifier, ValueChangeEvent, ValueChangeListener}
 
 package object vaadin {
 
@@ -17,21 +17,7 @@ package object vaadin {
     def menuSelected(mi: MenuBar#MenuItem) = handler(mi)
   }
 
-  def buttonClickListener(eventHandler: Button#ClickEvent => Unit) =
-    new Button.ClickListener {
-      def buttonClick(event: Button#ClickEvent) = eventHandler(event)
-    }
-
-  def propertyValueChangeListener(handler: ValueChangeEvent => Unit): ValueChangeListener =
-    new Property.ValueChangeListener {
-      def valueChange(event: ValueChangeEvent) = handler(event)
-    }
-
-  implicit def fn0ToButtonClickListener(f: () => Unit) = buttonClickListener { _ => f() }
-  
   implicit def fn0ToMenuCommand(f: () => Unit) = menuCommand { _ => f() }
-
-  implicit def fn0ToPropertyValueChangeListenerB(f: () => Unit) = propertyValueChangeListener { _ => f() }
 
   def addComponents(container: ComponentContainer, component: Component, components: Component*) = {
     component +: components foreach { c => container addComponent c }
@@ -89,4 +75,14 @@ package object vaadin {
 
   implicit def wrapMenuItem(mi: MenuBar#MenuItem) = new MenuItemWrapper(mi)
 
+  implicit def wrapButton(button: Button) = new ButtonWrapper(button)
+
+  implicit def wrapValueChangeNotifier(vcn: Property.ValueChangeNotifier) = new {
+    def addValueChangeListener(listener: Property.ValueChangeEvent => Unit) =
+      vcn.addListener(new Property.ValueChangeListener {
+        def valueChange(event: ValueChangeEvent) = listener(event)
+      })
+
+    def addValueChangeHandler(handler: => Unit) = addValueChangeListener(_ => handler)
+  }
 }

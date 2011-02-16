@@ -24,8 +24,8 @@ class IPAccessManager(app: ImcmsApplication) {
   private val fromDDN = ipStringToLong(_:String).toString
 
   val ui = letret(new IPAccessManagerUI) { ui =>
-    ui.rc.btnReload addListener block { reload() }
-    ui.tblIP addListener block { handleSelection() }
+    ui.rc.btnReload addClickHandler { reload() }
+    ui.tblIP addValueChangeHandler { handleSelection() }
 
     ui.miNew setCommand block { editAndSave(new IPAccess) }
     ui.miEdit setCommand block {
@@ -75,7 +75,7 @@ class IPAccessManager(app: ImcmsApplication) {
         c.userPickerUI.txtLoginName.value = (?(vo.getUserId) map { roleMapper getUser _.intValue } map { _.getLoginName } getOrElse "")
         c.txtFrom.value = ?(vo.getStart) map toDDN getOrElse ""
         c.txtTo.value = ?(vo.getEnd) map toDDN getOrElse ""
-        c.userPickerUI.btnChoose addListener block {
+        c.userPickerUI.btnChoose addClickHandler {
           app.initAndShow(new OkCancelDialog("Choose user") with UserSelectDialog) { userSelectDlg =>
             userSelectDlg.setOkHandler {
               c.userPickerUI.txtLoginName.value = (userSelectDlg.userSelect.selection map (_.getLoginName) getOrElse "")
