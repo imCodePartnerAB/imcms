@@ -70,10 +70,12 @@ class FileUpload extends Publisher[UploadStatus] {
     })
     ui.upload.addListener(new Upload.SucceededListener {
       def uploadSucceeded(ev: Upload#SucceededEvent) {
+        ui.txtSaveAsName.setEnabled(true)
+        ui.chkOverwrite.setEnabled(true)
+        ui.pi.setValue(1f)
+
         let(UploadedData(ev.getFilename, ev.getMIMEType, receiver.out.toByteArray)) { data =>
           dataRef.set(Some(data))
-          ui.txtSaveAsName.setEnabled(true)
-          ui.chkOverwrite.setEnabled(true)
           notifyListeners(UploadSucceeded(ev, data))
         }
       }
