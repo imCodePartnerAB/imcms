@@ -101,7 +101,7 @@ class FileUpload extends Publisher[UploadStatus] {
 
   def saveAsName = ui.txtSaveAsName.value
 
-  def isOverwrite = ui.chkOverwrite.value
+  def isOverwrite = ui.chkOverwrite.booleanValue
 }
 
 class FileUploadUI extends FormLayout with UndefinedSize {

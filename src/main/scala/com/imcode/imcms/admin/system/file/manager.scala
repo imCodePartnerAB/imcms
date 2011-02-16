@@ -9,6 +9,7 @@ import imcode.server.document.{CategoryDomainObject}
 import java.io.File
 import com.vaadin.ui.Window.Notification
 import org.apache.commons.io.FileUtils
+import com.vaadin.terminal.FileResource
 
 class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
@@ -125,6 +126,13 @@ class FileManager(app: ImcmsApplication) {
 
     ui.miDownload setCommandHandler {
       browser.dirContentSelection.first foreach { file =>
+        app.getMainWindow.open(
+          new FileResource(file, app) {
+            override def getStream() = letret(super.getStream) { ds =>
+              ds.setParameter("Content-Disposition", """attachment; filename="%s"""" format file.getName)
+            }
+          }
+        )
       }
     }
 
