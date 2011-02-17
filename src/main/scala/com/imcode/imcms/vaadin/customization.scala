@@ -133,6 +133,7 @@ trait NoNullSelection extends AbstractSelect {
   setNullSelectionAllowed(false)
 }
 
+@deprecated("Prototype, replace with MultiSelect2")
 trait MultiSelect extends AbstractSelect {
   setMultiSelect(true)
 }

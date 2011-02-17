@@ -440,9 +440,9 @@ trait UploadEventHandler extends Upload.SucceededListener with Upload.FailedList
     handleEvent(e)
   }
 
-  def uploadSucceeded(e: Upload#SucceededEvent) = processEvent(e)
+  def uploadSucceeded(e: Upload.SucceededEvent) = processEvent(e)
 
-  def uploadFailed(e: Upload#FailedEvent) = processEvent(e)
+  def uploadFailed(e: Upload.FailedEvent) = processEvent(e)
 
   def handleEvent(e: E): Unit
 

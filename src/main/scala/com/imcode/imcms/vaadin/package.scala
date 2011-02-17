@@ -5,6 +5,7 @@ import com.vaadin.ui._
 import com.vaadin.data.{Container, Property}
 import com.vaadin.Application
 import com.vaadin.data.Property.{ValueChangeNotifier, ValueChangeEvent, ValueChangeListener}
+import com.vaadin.terminal.Sizeable
 
 package object vaadin {
 
@@ -57,6 +58,9 @@ package object vaadin {
   /** Text field value type is always String */
   implicit def wrapTextField(textField: TextField) = new TextField(textField) with ValueType[String]
 
+  /** Text area field value type is always String */
+  implicit def wrapTextArea(textArea: TextArea) = new TextArea(textArea) with ValueType[String]
+
   /** Label value type is always String */
   implicit def wrapLabel(label: Label) = new Label(label) with ValueType[String]  
 
@@ -84,5 +88,18 @@ package object vaadin {
       })
 
     def addValueChangeHandler(handler: => Unit) = addValueChangeListener(_ => handler)
+  }
+
+
+  implicit def wrapSizeable(sizeable: Sizeable) = new {
+    def setSize(size: Tuple2[Float, Float], units: Int = Sizeable.UNITS_PIXELS) {
+      sizeable.setWidth(size._1, units)
+      sizeable.setHeight(size._2, units)
+    }
+
+    def setSize(size: Tuple2[String, String]) {
+      sizeable.setWidth(size._1)
+      sizeable.setHeight(size._2)
+    }
   }
 }

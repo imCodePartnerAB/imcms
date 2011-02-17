@@ -162,9 +162,9 @@ class FileDocFileDialogContent extends FormLayout {
     setButtonCaption("Select")
 
     def handleEvent(e: com.vaadin.ui.Component.Event) = e match {
-      case e: Upload#SucceededEvent =>
+      case e: Upload.SucceededEvent =>
         alterNameTextField()
-      case e: Upload#FailedEvent =>
+      case e: Upload.FailedEvent =>
         uploadReceiver.uploadRef.set(None)
         alterNameTextField()
       case _ =>

@@ -13,10 +13,10 @@ case class UploadedData(filename: String, mimeType: String, content: Array[Byte]
 
 sealed trait UploadStatus
 case object UploadNew extends UploadStatus
-case class UploadStarted(event: Upload#StartedEvent) extends UploadStatus
+case class UploadStarted(event: Upload.StartedEvent) extends UploadStatus
 case class UploadProgress(readBytes: Long, contentLength: Long) extends UploadStatus
-case class UploadSucceeded(event: Upload#SucceededEvent, data: UploadedData) extends UploadStatus
-case class UploadFailed(event: Upload#FailedEvent) extends UploadStatus
+case class UploadSucceeded(event: Upload.SucceededEvent, data: UploadedData) extends UploadStatus
+case class UploadFailed(event: Upload.FailedEvent) extends UploadStatus
 
 
 
@@ -43,7 +43,7 @@ class FileUpload extends Publisher[UploadStatus] {
 
     ui.upload.setReceiver(receiver)
     ui.upload.addListener(new Upload.StartedListener {
-      def uploadStarted(ev: Upload#StartedEvent) = {
+      def uploadStarted(ev: Upload.StartedEvent) = {
         reset()
         ui.txtSaveAsName.setEnabled(true)
         ui.txtSaveAsName.value = fileNameToSaveAsName(ev.getFilename)
@@ -59,7 +59,7 @@ class FileUpload extends Publisher[UploadStatus] {
       }
     })
     ui.upload.addListener(new Upload.FailedListener {
-      def uploadFailed(ev: Upload#FailedEvent) {
+      def uploadFailed(ev: Upload.FailedEvent) {
         ui.txtSaveAsName.setEnabled(true)
         ui.txtSaveAsName.value = ""
         ui.txtSaveAsName.setEnabled(false)
@@ -69,7 +69,7 @@ class FileUpload extends Publisher[UploadStatus] {
       }
     })
     ui.upload.addListener(new Upload.SucceededListener {
-      def uploadSucceeded(ev: Upload#SucceededEvent) {
+      def uploadSucceeded(ev: Upload.SucceededEvent) {
         ui.txtSaveAsName.setEnabled(true)
         ui.chkOverwrite.setEnabled(true)
         ui.pi.setValue(1f)

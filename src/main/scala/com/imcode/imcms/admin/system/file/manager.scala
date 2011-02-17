@@ -95,12 +95,25 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miView setCommandHandler {
-      browser.dirContentSelection.first foreach { file =>
+      for (item <- browser.dirContentSelection.first /*isViewable(file)*/) {
+        app.initAndShow(new OKDialog("Content of %s" format item) with CustomSizeDialog) { dlg =>
+          dlg.mainUI = new TextArea("", scala.io.Source.fromFile(item).mkString) with ReadOnly with FullSize
+          dlg.setSize((500f, 500f))
+        }
       }
     }
 
     ui.miEdit setCommandHandler {
-      browser.dirContentSelection.first foreach { file =>
+      for (item <- browser.dirContentSelection.first /*isViewable(file)*/) {
+        app.initAndShow(new OkCancelDialog("Edit content of %s" format item) with CustomSizeDialog) { dlg =>
+          val textArea = new TextArea("", scala.io.Source.fromFile(item).mkString) with FullSize
+          dlg.mainUI = textArea
+          dlg.setSize((500f, 500f))
+
+          dlg.setOkHandler {
+            FileUtils.writeStringToFile(item, textArea.value)
+          }
+        }
       }
     }
 
@@ -152,7 +165,7 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
   val miMove = mb.addItem("Move", null)
   val miDelete = mb.addItem("Delete", null)
   val miDownload = mb.addItem("Download", null)
-  val miUpload = mb.addItem("Uploa, null)d", null)
+  val miUpload = mb.addItem("Upload", null)
 
   addComponents(this, mb, browserUI)
   setExpandRatio(browserUI, 1.0f)
