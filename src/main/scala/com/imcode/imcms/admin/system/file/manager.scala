@@ -30,6 +30,7 @@ class FileManager(app: ImcmsApplication) {
       items match {
         case item :: rest =>
           def applyOpToRestItems() = applyOpToItems(rest, op, opFailMsg)
+          def applyOpToEmptyItems() = applyOpToItems(Nil, op, opFailMsg)
 
           try {
             op(item)
@@ -38,25 +39,25 @@ class FileManager(app: ImcmsApplication) {
             case _ => app.initAndShow(new ConfirmationDialog(opFailMsg format item)) { dlg =>
               dlg.btnOk.setCaption("Skip")
               dlg.setOkHandler { applyOpToRestItems() }
+              dlg.setCancelHandler { applyOpToEmptyItems() }
             }
           }
 
-        case _ =>
+        case _ => browser.reload()
       }
     }
 
-    ui.miDelete setCommandHandler {
+    ui.miEditDelete setCommandHandler {
       if (browser.dirContentSelection.nonEmpty) {
         app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
           dlg setOkHandler {
             applyOpToItems(browser.dirContentSelection.items, FileUtils.forceDelete, "Unable to delete item %s.")
-            browser.reload()
           }
         }
       }
     }
 
-    ui.miCopy setCommandHandler {
+    ui.miEditCopy setCommandHandler {
       if (browser.dirContentSelection.nonEmpty) {
         val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
           b.addPlace("Home", Place(Imcms.getPath))
@@ -69,43 +70,41 @@ class FileManager(app: ImcmsApplication) {
                                      else FileUtils.copyDirectoryToDirectory(item, destDir)
 
             applyOpToItems(browser.dirContentSelection.items, copyOp, "Unable to copy item %s.")
-            browser.reload()
           }
         }
       }
     }
 
-    ui.miMove setCommandHandler {
+    ui.miEditMove setCommandHandler {
       if (browser.dirContentSelection.nonEmpty) {
         val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
           b.addPlace("Home", Place(Imcms.getPath))
         }
 
-        app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
+        app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser), resizable = true) { dlg =>
           dlg setOkHandler {
             val destDir = dirSelectBrowser.dirTreeSelection.item.get
             def copyOp(item: File) = if (item.isFile) FileUtils.moveDirectoryToDirectory(item, destDir, false)
                                      else FileUtils.moveDirectoryToDirectory(item, destDir, false)
 
             applyOpToItems(browser.dirContentSelection.items, copyOp, "Unable to move item %s.")
-            browser.reload()
           }
         }
       }
     }
 
-    ui.miView setCommandHandler {
+    ui.miFilePreview setCommandHandler {
       for (item <- browser.dirContentSelection.first /*isViewable(file)*/) {
-        app.initAndShow(new OKDialog("Content of %s" format item) with CustomSizeDialog) { dlg =>
+        app.initAndShow(new OKDialog("Content of %s" format item) with CustomSizeDialog, resizable = true) { dlg =>
           dlg.mainUI = new TextArea("", scala.io.Source.fromFile(item).mkString) with ReadOnly with FullSize
           dlg.setSize((500f, 500f))
         }
       }
     }
 
-    ui.miEdit setCommandHandler {
+    ui.miFileEdit setCommandHandler {
       for (item <- browser.dirContentSelection.first /*isViewable(file)*/) {
-        app.initAndShow(new OkCancelDialog("Edit content of %s" format item) with CustomSizeDialog) { dlg =>
+        app.initAndShow(new OkCancelDialog("Edit content of %s" format item) with CustomSizeDialog, resizable = true) { dlg =>
           val textArea = new TextArea("", scala.io.Source.fromFile(item).mkString) with FullSize
           dlg.mainUI = textArea
           dlg.setSize((500f, 500f))
@@ -117,7 +116,7 @@ class FileManager(app: ImcmsApplication) {
       }
     }
 
-    ui.miUpload setCommandHandler {
+    ui.miFileUpload setCommandHandler {
       app.initAndShow(new FileUploadDialog("Upload file")) { dlg =>
         dlg.setOkHandler {
           for {
@@ -137,7 +136,7 @@ class FileManager(app: ImcmsApplication) {
       }
     }
 
-    ui.miDownload setCommandHandler {
+    ui.miFileDownload setCommandHandler {
       browser.dirContentSelection.first foreach { file =>
         app.getMainWindow.open(
           new FileResource(file, app) {
@@ -149,7 +148,7 @@ class FileManager(app: ImcmsApplication) {
       }
     }
 
-    ui.miReload setCommandHandler {
+    ui.miViewReload setCommandHandler {
       browser.reload()
     }
   }
@@ -158,14 +157,20 @@ class FileManager(app: ImcmsApplication) {
 
 class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar
-  val miReload = mb.addItem("Reload")
-  val miView = mb.addItem("View", null)
-  val miEdit = mb.addItem("Edit", null)
-  val miCopy = mb.addItem("Copy", null)
-  val miMove = mb.addItem("Move", null)
-  val miDelete = mb.addItem("Delete", null)
-  val miDownload = mb.addItem("Download", null)
-  val miUpload = mb.addItem("Upload", null)
+  val miFile = mb.addItem("File")
+  val miFilePreview = miFile.addItem("Preview")
+  val miFileEdit = miFile.addItem("Edit content")
+  val miFileUpload = miFile.addItem("Upload")
+  val miFileDownload = miFile.addItem("Download")
+  val miNew = mb.addItem("New")
+  val miNewDir = miNew.addItem("Directory")
+  val miEdit = mb.addItem("Edit")
+  val miEditCopy = miEdit.addItem("Copy to...")
+  val miEditMove = miEdit.addItem("Move to...")
+  val miEditDelete = miEdit.addItem("Delete")
+  val miView = mb.addItem("View")
+  val miViewReload = miView.addItem("Reload")
+  val miHelp = mb.addItem("Help")
 
   addComponents(this, mb, browserUI)
   setExpandRatio(browserUI, 1.0f)

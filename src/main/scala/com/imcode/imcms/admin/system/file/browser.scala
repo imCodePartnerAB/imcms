@@ -131,7 +131,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 }
 
 
-class FileBrowserUI extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) with FullSize {
+class FileBrowserUI extends HorizontalSplitPanel with FullSize {
   val accDirTrees = new Accordion with FullSize
 
   setFirstComponent(accDirTrees)
@@ -146,6 +146,7 @@ class DirTree(root: File) {
     ui.setContainerDataSource(new DirTreeContainer(root))
     ui.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM)
     ui.select(root)
+    ui.expandItem(root)
   }
 }
 
