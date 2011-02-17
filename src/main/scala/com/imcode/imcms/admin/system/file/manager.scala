@@ -18,32 +18,33 @@ class FileManager(app: ImcmsApplication) {
     browser.addPlace("Images", Place(new File(Imcms.getPath, "images")))
     browser.addPlace("Conf", Place(new File(Imcms.getPath, "WEB-INF/conf")))
     browser.addPlace("Logs", Place(new File(Imcms.getPath, "WEB-INF/logs")))
+    browser.addPlace("Logs", Place(new File(Imcms.getPath, "/abcdef")))
   }
 
   val ui = letret(new FileManagerUI(browser.ui)) { ui =>
 
     /**
      * Recursively applies op to an item.
-     * @param opFailMsg - fail message with unbound format parameter substitutable with item - ex. "Unable to copy %s."
+     * @param opFailMsg - fail message with unbound format parameter substitutable with fsNode - ex. "Unable to copy %s."
      */
-    def applyOpToItems(items: Seq[File], op: File => Unit, opFailMsg: String) {
-      items match {
-        case item :: rest =>
-          def applyOpToRestItems() = applyOpToItems(rest, op, opFailMsg)
-          def applyOpToEmptyItems() = applyOpToItems(Nil, op, opFailMsg)
+    def applyOpToFSNodes(op: File => Unit, opFailMsg: String, fsNodes: Seq[File] = browser.dirContentSelection.fsNodes) {
+      fsNodes match {
+        case fsNode :: rest =>
+          def applyOpToRestFSNodes() = applyOpToFSNodes(op, opFailMsg, rest)
+          def applyOpToEmptyFSNodes() = applyOpToFSNodes(op, opFailMsg, Nil)
 
           try {
-            op(item)
-            applyOpToRestItems()
+            op(fsNode)
+            applyOpToRestFSNodes()
           } catch {
-            case _ => app.initAndShow(new ConfirmationDialog(opFailMsg format item)) { dlg =>
+            case _ => app.initAndShow(new ConfirmationDialog(opFailMsg format fsNode)) { dlg =>
               dlg.btnOk.setCaption("Skip")
-              dlg.setOkHandler { applyOpToRestItems() }
-              dlg.setCancelHandler { applyOpToEmptyItems() }
+              dlg.setOkHandler { applyOpToRestFSNodes() }
+              dlg.setCancelHandler { applyOpToEmptyFSNodes() }
             }
           }
 
-        case _ => browser.reload()
+        case _ => browser.reloadDirTree(preserveDirTreeSelection = true)
       }
     }
 
@@ -51,7 +52,7 @@ class FileManager(app: ImcmsApplication) {
       if (browser.dirContentSelection.nonEmpty) {
         app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
           dlg setOkHandler {
-            applyOpToItems(browser.dirContentSelection.items, FileUtils.forceDelete, "Unable to delete item %s.")
+            applyOpToFSNodes(FileUtils.forceDelete, "Unable to delete item %s.")
           }
         }
       }
@@ -65,11 +66,11 @@ class FileManager(app: ImcmsApplication) {
 
         app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
           dlg setOkHandler {
-            val destDir = dirSelectBrowser.dirTreeSelection.item.get
-            def copyOp(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
-                                     else FileUtils.copyDirectoryToDirectory(item, destDir)
+            val destDir = dirSelectBrowser.dirTreeSelection.dir.get
+            def copyOp(fsNode: File) = if (fsNode.isFile) FileUtils.copyFileToDirectory(fsNode, destDir)
+                                       else FileUtils.copyDirectoryToDirectory(fsNode, destDir)
 
-            applyOpToItems(browser.dirContentSelection.items, copyOp, "Unable to copy item %s.")
+            applyOpToFSNodes(copyOp, "Unable to copy item %s.")
           }
         }
       }
@@ -83,11 +84,11 @@ class FileManager(app: ImcmsApplication) {
 
         app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser), resizable = true) { dlg =>
           dlg setOkHandler {
-            val destDir = dirSelectBrowser.dirTreeSelection.item.get
-            def copyOp(item: File) = if (item.isFile) FileUtils.moveDirectoryToDirectory(item, destDir, false)
-                                     else FileUtils.moveDirectoryToDirectory(item, destDir, false)
+            val destDir = dirSelectBrowser.dirTreeSelection.dir.get
+            def copyOp(fsNode: File) = if (fsNode.isFile) FileUtils.moveDirectoryToDirectory(fsNode, destDir, false)
+                                       else FileUtils.moveDirectoryToDirectory(fsNode, destDir, false)
 
-            applyOpToItems(browser.dirContentSelection.items, copyOp, "Unable to move item %s.")
+            applyOpToFSNodes(copyOp, "Unable to move item %s.")
           }
         }
       }
@@ -97,7 +98,7 @@ class FileManager(app: ImcmsApplication) {
       for (item <- browser.dirContentSelection.first /*isViewable(file)*/) {
         app.initAndShow(new OKDialog("Content of %s" format item) with CustomSizeDialog, resizable = true) { dlg =>
           dlg.mainUI = new TextArea("", scala.io.Source.fromFile(item).mkString) with ReadOnly with FullSize
-          dlg.setSize((500f, 500f))
+          dlg.setSize((500, 500))
         }
       }
     }
@@ -107,7 +108,7 @@ class FileManager(app: ImcmsApplication) {
         app.initAndShow(new OkCancelDialog("Edit content of %s" format item) with CustomSizeDialog, resizable = true) { dlg =>
           val textArea = new TextArea("", scala.io.Source.fromFile(item).mkString) with FullSize
           dlg.mainUI = textArea
-          dlg.setSize((500f, 500f))
+          dlg.setSize((500, 500))
 
           dlg.setOkHandler {
             FileUtils.writeStringToFile(item, textArea.value)
@@ -121,7 +122,7 @@ class FileManager(app: ImcmsApplication) {
         dlg.setOkHandler {
           for {
             UploadedData(_, _, content) <- dlg.upload.data
-            dir <- browser.dirTreeSelection.item
+            dir <- browser.dirTreeSelection.dir
             file = new File(dir, dlg.upload.saveAsName)
           } {
             if (file.exists && !dlg.upload.isOverwrite) {
@@ -149,7 +150,7 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miViewReload setCommandHandler {
-      browser.reload()
+      browser.reloadDirTree()
     }
   }
 }

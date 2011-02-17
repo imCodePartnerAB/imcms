@@ -62,12 +62,13 @@ object DirContentFilter {
 case class Place(dirTreeRoot: File, dirContentFilter: File => Boolean = DirContentFilter.notHidden, recursive: Boolean = true)
 
 sealed trait BrowserSelection
-case class DirTreeSelection(item: Option[File]) extends BrowserSelection
-case class DirContentSelection(items: Seq[File]) extends BrowserSelection {
-  def first = items.headOption
-  def nonEmpty = items.nonEmpty
+case class DirTreeSelection(dir: Option[File]) extends BrowserSelection
+case class DirContentSelection(fsNodes: Seq[File]) extends BrowserSelection {
+  def first = fsNodes.headOption
+  def nonEmpty = fsNodes.nonEmpty
 }
 
+// enum selectable:
 
 class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean = false) extends Publisher[BrowserSelection] {
   type DirTreeTab = Component
@@ -123,11 +124,15 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
   // reloads dir content in a current accordion's tab.
   def reloadDirContent() =
-    for ((_, dirContent) <- location; selectedDir <- dirTreeSelection.item)
+    for ((_, dirContent) <- location; selectedDir <- dirTreeSelection.dir)
       dirContent.reload(selectedDir)
 
-  def reload() =
-    for ((dirTree, _) <- location) dirTree.reload()
+  def reloadDirTree(preserveDirTreeSelection: Boolean = false) =
+    for ((dirTree, _) <- location; selectedDirOpt = ?(dirTree.ui.value)) {
+      dirTree.reload()
+      if (preserveDirTreeSelection)
+        for (dir <- selectedDirOpt if dir.isDirectory) dirTree.ui.value = dir
+    }
 }
 
 

@@ -97,9 +97,9 @@ package object vaadin {
       sizeable.setHeight(size._2, units)
     }
 
-    def setSize(size: Tuple2[String, String]) {
-      sizeable.setWidth(size._1)
-      sizeable.setHeight(size._2)
+    def setSize(width: String, height: String) {
+      sizeable.setWidth(width)
+      sizeable.setHeight(height)
     }
   }
 }

@@ -51,7 +51,7 @@ class FileDialog(caption: String, browser: FileBrowser)
         dlg.setOkHandler {
           for {
             data <- dlg.upload.data
-            dir <- browser.dirTreeSelection.item
+            dir <- browser.dirTreeSelection.dir
             filename = dlg.upload.ui.txtSaveAsName.value // todo: check not empty
             file = new File(dir, filename)
           } {
