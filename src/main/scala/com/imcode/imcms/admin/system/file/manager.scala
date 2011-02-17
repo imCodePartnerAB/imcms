@@ -27,75 +27,77 @@ class FileManager(app: ImcmsApplication) {
      * Recursively applies op to an item.
      * @param opFailMsg - fail message with unbound format parameter substitutable with fsNode - ex. "Unable to copy %s."
      */
-    def applyOpToFSNodes(op: File => Unit, opFailMsg: String, fsNodes: Seq[File] = browser.dirContentSelection.fsNodes) {
-      fsNodes match {
-        case fsNode :: rest =>
-          def applyOpToRestFSNodes() = applyOpToFSNodes(op, opFailMsg, rest)
-          def applyOpToEmptyFSNodes() = applyOpToFSNodes(op, opFailMsg, Nil)
+    def applyOpToItems(items: Seq[File], op: File => Unit, opFailMsg: String) {
+      items match {
+        case item :: rest =>
+          def applyOpToRestItems() = applyOpToItems(rest, op, opFailMsg)
+          def applyOpToEmptyItems() = applyOpToItems(Nil, op, opFailMsg)
 
           try {
-            op(fsNode)
-            applyOpToRestFSNodes()
+            op(item)
+            applyOpToRestItems()
           } catch {
-            case _ => app.initAndShow(new ConfirmationDialog(opFailMsg format fsNode)) { dlg =>
+            case _ => app.initAndShow(new ConfirmationDialog(opFailMsg format item)) { dlg =>
               dlg.btnOk.setCaption("Skip")
-              dlg.setOkHandler { applyOpToRestFSNodes() }
-              dlg.setCancelHandler { applyOpToEmptyFSNodes() }
+              dlg.setOkHandler { applyOpToRestItems() }
+              dlg.setCancelHandler { applyOpToEmptyItems() }
             }
           }
 
-        case _ => browser.reloadDirTree(preserveDirTreeSelection = true)
+        case _ => browser.reloadLocationDir(preserveDirTreeSelection = true)
       }
     }
 
     ui.miEditDelete setCommandHandler {
-      if (browser.dirContentSelection.nonEmpty) {
+      for (selection <- browser.selection if selection.nonEmpty) {
         app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
           dlg setOkHandler {
-            applyOpToFSNodes(FileUtils.forceDelete, "Unable to delete item %s.")
+            applyOpToItems(selection.items, FileUtils.forceDelete, "Unable to delete item %s.")
           }
         }
       }
     }
 
     ui.miEditCopy setCommandHandler {
-      if (browser.dirContentSelection.nonEmpty) {
+      for (selection <- browser.selection if selection.nonEmpty) {
         val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
           b.addPlace("Home", Place(Imcms.getPath))
         }
 
         app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
           dlg setOkHandler {
-            val destDir = dirSelectBrowser.dirTreeSelection.dir.get
-            def copyOp(fsNode: File) = if (fsNode.isFile) FileUtils.copyFileToDirectory(fsNode, destDir)
-                                       else FileUtils.copyDirectoryToDirectory(fsNode, destDir)
+            for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
+              def op(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
+                                   else FileUtils.copyDirectoryToDirectory(item, destDir)
 
-            applyOpToFSNodes(copyOp, "Unable to copy item %s.")
+              applyOpToItems(selection.items, op, "Unable to copy item %s.")
+            }
           }
         }
       }
     }
 
     ui.miEditMove setCommandHandler {
-      if (browser.dirContentSelection.nonEmpty) {
+      for (selection <- browser.selection if selection.nonEmpty) {
         val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
           b.addPlace("Home", Place(Imcms.getPath))
         }
 
-        app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser), resizable = true) { dlg =>
+        app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
           dlg setOkHandler {
-            val destDir = dirSelectBrowser.dirTreeSelection.dir.get
-            def copyOp(fsNode: File) = if (fsNode.isFile) FileUtils.moveDirectoryToDirectory(fsNode, destDir, false)
-                                       else FileUtils.moveDirectoryToDirectory(fsNode, destDir, false)
+            for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
+              def op(item: File) = if (item.isFile) FileUtils.moveDirectoryToDirectory(item, destDir, false)
+                                   else FileUtils.moveDirectoryToDirectory(item, destDir, false)
 
-            applyOpToFSNodes(copyOp, "Unable to move item %s.")
+              applyOpToItems(selection.items, op, "Unable to move item %s.")
+            }
           }
         }
       }
     }
 
     ui.miFilePreview setCommandHandler {
-      for (item <- browser.dirContentSelection.first /*isViewable(file)*/) {
+      for (selection <- browser.selection; item <- selection.first /*isViewable(item)*/) {
         app.initAndShow(new OKDialog("Content of %s" format item) with CustomSizeDialog, resizable = true) { dlg =>
           dlg.mainUI = new TextArea("", scala.io.Source.fromFile(item).mkString) with ReadOnly with FullSize
           dlg.setSize((500, 500))
@@ -104,7 +106,7 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miFileEdit setCommandHandler {
-      for (item <- browser.dirContentSelection.first /*isViewable(file)*/) {
+      for (selection <- browser.selection; item <- selection.first /*isEditable(item)*/) {
         app.initAndShow(new OkCancelDialog("Edit content of %s" format item) with CustomSizeDialog, resizable = true) { dlg =>
           val textArea = new TextArea("", scala.io.Source.fromFile(item).mkString) with FullSize
           dlg.mainUI = textArea
@@ -118,19 +120,20 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miFileUpload setCommandHandler {
-      app.initAndShow(new FileUploadDialog("Upload file")) { dlg =>
-        dlg.setOkHandler {
-          for {
-            UploadedData(_, _, content) <- dlg.upload.data
-            dir <- browser.dirTreeSelection.dir
-            file = new File(dir, dlg.upload.saveAsName)
-          } {
-            if (file.exists && !dlg.upload.isOverwrite) {
-              app.show(new MsgDialog("File allready exists", "Please choose different name or check 'overwrite existing'"))
-              error("File %s allready exists" format file.getCanonicalPath)
-            } else {
-              FileUtils.writeByteArrayToFile(file, content)
-              browser.reloadDirContent()
+      for (selection <- browser.selection; dir = selection.dir) {
+        app.initAndShow(new FileUploadDialog("Upload file")) { dlg =>
+          dlg.setOkHandler {
+            for {
+              UploadedData(_, _, content) <- dlg.upload.data
+              file = new File(dir, dlg.upload.saveAsName)
+            } {
+              if (file.exists && !dlg.upload.isOverwrite) {
+                app.show(new MsgDialog("File allready exists", "Please choose different name or check 'overwrite existing'"))
+                error("File %s allready exists" format file.getCanonicalPath)
+              } else {
+                FileUtils.writeByteArrayToFile(file, content)
+                browser.reloadLocationItems()
+              }
             }
           }
         }
@@ -138,11 +141,11 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miFileDownload setCommandHandler {
-      browser.dirContentSelection.first foreach { file =>
+      for (selection <- browser.selection; item <- selection.first if item.isFile) {
         app.getMainWindow.open(
-          new FileResource(file, app) {
+          new FileResource(item, app) {
             override def getStream() = letret(super.getStream) { ds =>
-              ds.setParameter("Content-Disposition", """attachment; filename="%s"""" format file.getName)
+              ds.setParameter("Content-Disposition", """attachment; filename="%s"""" format item.getName)
             }
           }
         )
@@ -150,7 +153,7 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miViewReload setCommandHandler {
-      browser.reloadDirTree()
+      browser.reloadLocationDir()
     }
   }
 }

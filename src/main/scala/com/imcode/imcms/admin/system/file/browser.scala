@@ -61,31 +61,32 @@ object DirContentFilter {
 /** Browser predefined place (bookmark). */
 case class Place(dirTreeRoot: File, dirContentFilter: File => Boolean = DirContentFilter.notHidden, recursive: Boolean = true)
 
-sealed trait BrowserSelection
-case class DirTreeSelection(dir: Option[File]) extends BrowserSelection
-case class DirContentSelection(fsNodes: Seq[File]) extends BrowserSelection {
-  def first = fsNodes.headOption
-  def nonEmpty = fsNodes.nonEmpty
+
+case class FileBrowserSelection(dir: File, items: Seq[File]) {
+  def first = items.headOption
+  def nonEmpty = items.nonEmpty
 }
 
 // enum selectable:
 
-class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean = false) extends Publisher[BrowserSelection] {
+class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean = false)
+    extends Publisher[Option[FileBrowserSelection]] {
+
   type DirTreeTab = Component
 
   private val locations = MMap.empty[DirTreeTab, (DirTree, DirContent)]
-  private val dirTreeSelectionRef = new AtomicReference(DirTreeSelection(Option.empty[File]))
-  private val dirContentSelectionRef = new AtomicReference(DirContentSelection(Seq.empty[File]))
   private val locationRef = new AtomicReference(Option.empty[(DirTree, DirContent)])
+  private val selectionRef = new AtomicReference(Option.empty[FileBrowserSelection])
 
   val ui = letret(new FileBrowserUI) { ui =>
     ui.accDirTrees.addListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
-        val location @ (dirTree, dirContent) = locations(e.getTabSheet.getSelectedTab)
-        locationRef.set(?(location))
-        // No selection? => reload
-        if (dirTree.ui.value == null) dirTree.reload()
-        ui.setSecondComponent(dirContent.ui)
+        val locationOpt = locations.get(e.getTabSheet.getSelectedTab)
+        locationRef.set(locationOpt)
+
+        for ((dirTree, dirContent) <- locationOpt) {
+          ui.setSecondComponent(dirContent.ui)
+        }
       }
     })
   }
@@ -95,44 +96,64 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
     val dirContent = new DirContent(place.dirContentFilter, isSelectable, isMultiSelect)
 
     dirTree.ui addValueChangeHandler {
-      dirTreeSelectionRef set DirTreeSelection(?(dirTree.ui.value))
+      ?(dirTree.ui.value) match {
+        case Some(dir) =>
+          dirContent.reload(dir)
+          let(Some(FileBrowserSelection(dir, Nil))) { selection =>
+            selectionRef.set(selection)
+            notifyListeners(selection)
+          }
 
-      whenSelected(dirTree.ui) { dirContent reload _ }
-      notifyListeners(dirTreeSelection)
+        case _ =>
+          dirContent.ui.removeAllItems()
+
+          let(None) { selection =>
+            selectionRef.set(selection)
+            notifyListeners(selection)
+          }
+      }
     }
 
     dirContent.ui addValueChangeHandler {
-      dirContentSelectionRef set DirContentSelection(if (isMultiSelect) dirContent.ui.asInstanceOf[MultiSelect2[File]].value.toSeq
-                                                     else ?(dirContent.ui.asInstanceOf[SingleSelect2[File]].value).toSeq)
+      ?(dirTree.ui.value) match {
+        case Some(dir) =>
+          val items = if (isMultiSelect) dirContent.ui.asInstanceOf[MultiSelect2[File]].value.toSeq
+                      else ?(dirContent.ui.asInstanceOf[SingleSelect2[File]].value).toSeq
 
-      notifyListeners(dirContentSelection)
+          let(Some(FileBrowserSelection(dir, items))) { selection =>
+            selectionRef.set(selection)
+            notifyListeners(selection)
+          }
+
+        case _ =>
+          let(None) { selection =>
+            selectionRef.set(selection)
+            notifyListeners(selection)
+          }
+      }
     }
+
+    dirTree.reload()
 
     locations(dirTree.ui) = (dirTree, dirContent)
     ui.accDirTrees.addTab(dirTree.ui, caption, icon.orNull)
   }
 
-  def dirTreeSelection = dirTreeSelectionRef.get
-  def dirContentSelection = dirContentSelectionRef.get
+  override def notifyListeners() = notifyListeners(selection)
 
-  override def notifyListeners() {
-    notifyListeners(dirTreeSelection)
-    notifyListeners(dirContentSelection)
-  }
+  def selection = selectionRef.get
 
   def location = locationRef.get
 
-  // reloads dir content in a current accordion's tab.
-  def reloadDirContent() =
-    for ((_, dirContent) <- location; selectedDir <- dirTreeSelection.dir)
-      dirContent.reload(selectedDir)
-
-  def reloadDirTree(preserveDirTreeSelection: Boolean = false) =
-    for ((dirTree, _) <- location; selectedDirOpt = ?(dirTree.ui.value)) {
+  def reloadLocationDir(preserveDirTreeSelection: Boolean = false) =
+    for ((dirTree, _) <- location; dir = dirTree.ui.value) {
       dirTree.reload()
-      if (preserveDirTreeSelection)
-        for (dir <- selectedDirOpt if dir.isDirectory) dirTree.ui.value = dir
+      if (preserveDirTreeSelection && dir.isDirectory) dirTree.ui.value = dir
     }
+
+  def reloadLocationItems() =
+    for ((dirTree, dirContent) <- location; dir = dirTree.ui.value)
+      dirContent.reload(dir)
 }
 
 
