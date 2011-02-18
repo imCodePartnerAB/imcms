@@ -168,6 +168,15 @@ class FileManager(app: ImcmsApplication) {
       }
     }
   }
+
+  browser.listen { e =>
+    ui.lblDirTreePath.value = e match {
+      case Some(FileBrowserSelection(dir, _)) => dir.getCanonicalPath
+      case _ => ""
+    }
+  }
+
+  browser.notifyListeners()
 }
 
 
@@ -188,6 +197,8 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
   val miViewReload = miView.addItem("Reload")
   val miHelp = mb.addItem("Help")
 
-  addComponents(this, mb, browserUI)
+  val lblDirTreePath = new Label
+
+  addComponents(this, mb, browserUI, lblDirTreePath)
   setExpandRatio(browserUI, 1.0f)
 }
