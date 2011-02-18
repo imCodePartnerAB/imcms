@@ -13,11 +13,11 @@ import com.vaadin.terminal.FileResource
 
 class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
-    browser.addPlace("Home", Place(Imcms.getPath))
-    browser.addPlace("Templates", Place(new File(Imcms.getPath, "WEB-INF/templates/text")))
-    browser.addPlace("Images", Place(new File(Imcms.getPath, "images")))
-    browser.addPlace("Conf", Place(new File(Imcms.getPath, "WEB-INF/conf")))
-    browser.addPlace("Logs", Place(new File(Imcms.getPath, "WEB-INF/logs")))
+    browser.addLocation("Home", LocationConf(Imcms.getPath))
+    browser.addLocation("Templates", LocationConf(new File(Imcms.getPath, "WEB-INF/templates/text")))
+    browser.addLocation("Images", LocationConf(new File(Imcms.getPath, "images")))
+    browser.addLocation("Conf", LocationConf(new File(Imcms.getPath, "WEB-INF/conf")))
+    browser.addLocation("Logs", LocationConf(new File(Imcms.getPath, "WEB-INF/logs")))
   }
 
   val ui = letret(new FileManagerUI(browser.ui)) { ui =>
@@ -60,7 +60,7 @@ class FileManager(app: ImcmsApplication) {
     ui.miEditCopy setCommandHandler {
       for (selection <- browser.selection if selection.nonEmpty) {
         val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
-          b.addPlace("Home", Place(Imcms.getPath))
+          b.addLocation("Home", LocationConf(Imcms.getPath))
         }
 
         app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
@@ -70,6 +70,7 @@ class FileManager(app: ImcmsApplication) {
                                    else FileUtils.copyDirectoryToDirectory(item, destDir)
 
               applyOpToItems(selection.items, op, "Unable to copy item %s.")
+              //browser.cd(destDir)
             }
           }
         }
@@ -79,7 +80,7 @@ class FileManager(app: ImcmsApplication) {
     ui.miEditMove setCommandHandler {
       for (selection <- browser.selection if selection.nonEmpty) {
         val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
-          b.addPlace("Home", Place(Imcms.getPath))
+          b.addLocation("Home", LocationConf(Imcms.getPath))
         }
 
         app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
@@ -89,6 +90,7 @@ class FileManager(app: ImcmsApplication) {
                                    else FileUtils.moveDirectoryToDirectory(item, destDir, false)
 
               applyOpToItems(selection.items, op, "Unable to move item %s.")
+              //browser.cd(destDir)
             }
           }
         }
