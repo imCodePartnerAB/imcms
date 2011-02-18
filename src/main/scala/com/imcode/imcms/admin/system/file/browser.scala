@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 import java.util.{Date}
 
-/** Directory tree container with a single visible root. */
-class DirTreeContainer(root: File) extends FilesystemContainer(root) {
+/** Directory tree with a single root. */
+class LocationTreeContainer(root: File) extends FilesystemContainer(root) {
 
   import java.util.Collections._
 
@@ -29,8 +29,8 @@ class DirTreeContainer(root: File) extends FilesystemContainer(root) {
 }
 
 
-/** Predefined directory items filters. */
-object DirItemsFilter {
+/** Predefined dir items filters. */
+object LocationItemsFilter {
 
   import scala.util.matching.Regex
 
@@ -50,11 +50,11 @@ object DirItemsFilter {
   val templateFile = fileWithExt("jsp", "jspx", "html")
 }
 
-/** Browser predefined location (bookmark). */
-case class LocationConf(root: File, itemsFilter: File => Boolean = DirItemsFilter.notHidden, recursive: Boolean = true)
+/** Browser location (bookmark) conf. */
+case class LocationConf(root: File, itemsFilter: File => Boolean = LocationItemsFilter.notHidden, recursive: Boolean = true)
 
 
-case class FileBrowserSelection(dir: File, items: Seq[File]) {
+case class LocationSelection(dir: File, items: Seq[File]) {
   def first = items.headOption
   def nonEmpty = items.nonEmpty
   def isSingle = items.size == 1
@@ -63,43 +63,47 @@ case class FileBrowserSelection(dir: File, items: Seq[File]) {
 // enum selectable??:
 
 class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean = false)
-    extends Publisher[Option[FileBrowserSelection]] {
+    extends Publisher[Option[LocationSelection]] {
 
-  type DirTreeTab = Component
+  type LocationTreeUI = Component
 
-  private val locations = MMap.empty[DirTreeTab, (DirTree, DirItems)]
-  private val locationRef = new AtomicReference(Option.empty[(DirTree, DirItems)])
-  private val selectionRef = new AtomicReference(Option.empty[FileBrowserSelection])
+  private val locations = MMap.empty[LocationTreeUI, (LocationTree, LocationItems)]
+
+  /** Current (visible) location. */
+  private val locationRef = new AtomicReference(Option.empty[(LocationTree, LocationItems)])
+
+  /** Selection in a current location */
+  private val selectionRef = new AtomicReference(Option.empty[LocationSelection])
 
   val ui = letret(new FileBrowserUI) { ui =>
-    ui.accDirTrees.addListener(new TabSheet.SelectedTabChangeListener {
+    ui.accLocationTrees.addListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
         val locationOpt = locations.get(e.getTabSheet.getSelectedTab)
         locationRef.set(locationOpt)
 
-        for ((dirTree, dirItems) <- locationOpt) {
-          ui.setSecondComponent(dirItems.ui)
-          updateSelection(dirTree, dirItems)
+        for ((locationTree, locationItems) <- locationOpt) {
+          ui.setSecondComponent(locationItems.ui)
+          updateSelection(locationTree, locationItems)
         }
       }
     })
   }
 
   def addLocation(caption: String, conf: LocationConf, icon: Option[Resource] = None) {
-    val dirTree = new DirTree(conf.root)
-    val dirItems = new DirItems(conf.itemsFilter, isSelectable, isMultiSelect)
+    val locationTree = new LocationTree(conf.root)
+    val locationItems = new LocationItems(conf.itemsFilter, isSelectable, isMultiSelect)
 
-    dirTree.ui addValueChangeHandler {
-      ?(dirTree.ui.value) match {
+    locationTree.ui addValueChangeHandler {
+      ?(locationTree.ui.value) match {
         case Some(dir) =>
-          dirItems.reload(dir)
-          let(Some(FileBrowserSelection(dir, Nil))) { selection =>
+          locationItems.reload(dir)
+          let(Some(LocationSelection(dir, Nil))) { selection =>
             selectionRef.set(selection)
             notifyListeners(selection)
           }
 
         case _ =>
-          dirItems.ui.removeAllItems()
+          locationItems.ui.removeAllItems()
 
           let(None) { selection =>
             selectionRef.set(selection)
@@ -108,13 +112,13 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       }
     }
 
-    dirItems.ui addValueChangeHandler { updateSelection(dirTree, dirItems) }
+    locationItems.ui addValueChangeHandler { updateSelection(locationTree, locationItems) }
 
-    dirItems.ui.addItemClickListener {
+    locationItems.ui.addItemClickListener {
       case e if e.isDoubleClick => e.getItemId match {
-        case item: File if item.isDirectory => // cd(dirTree, dir) OR cd(placeId, dir)
-          dirTree.ui.select(item)
-          dirTree.ui.expandItem(item.getParentFile)
+        case item: File if item.isDirectory => // cd(locationTree, dir) OR cd(placeId, dir)
+          locationTree.ui.select(item)
+          locationTree.ui.expandItem(item.getParentFile)
 
         case _ =>
       }
@@ -122,19 +126,19 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       case _ =>
     }
 
-    dirTree.reload()
+    locationTree.reload()
 
-    locations(dirTree.ui) = (dirTree, dirItems)
-    ui.accDirTrees.addTab(dirTree.ui, caption, icon.orNull)
+    locations(locationTree.ui) = (locationTree, locationItems)
+    ui.accLocationTrees.addTab(locationTree.ui, caption, icon.orNull)
   }
 
-  private def updateSelection(dirTree: DirTree, dirItems: DirItems) {
-    ?(dirTree.ui.value) match {
+  private def updateSelection(locationTree: LocationTree, locationItems: LocationItems) {
+    ?(locationTree.ui.value) match {
       case Some(dir) =>
-        val items = if (isMultiSelect) dirItems.ui.asInstanceOf[MultiSelect2[File]].value.toSeq
-                    else ?(dirItems.ui.asInstanceOf[SingleSelect2[File]].value).toSeq
+        val items = if (isMultiSelect) locationItems.ui.asInstanceOf[MultiSelect2[File]].value.toSeq
+                    else ?(locationItems.ui.asInstanceOf[SingleSelect2[File]].value).toSeq
 
-        let(Some(FileBrowserSelection(dir, items))) { selection =>
+        let(Some(LocationSelection(dir, items))) { selection =>
           selectionRef.set(selection)
           notifyListeners(selection)
         }
@@ -154,18 +158,18 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   def location = locationRef.get
 
   def reloadLocationDir(preserveDirTreeSelection: Boolean = true) =
-    for ((dirTree, _) <- location; dir = dirTree.ui.value) {
-      dirTree.reload()
-      if (preserveDirTreeSelection && dir.isDirectory) dirTree.ui.value = dir
+    for ((locationTree, _) <- location; dir = locationTree.ui.value) {
+      locationTree.reload()
+      if (preserveDirTreeSelection && dir.isDirectory) locationTree.ui.value = dir
     }
 
   def reloadLocationItems() =
-    for ((dirTree, dirItems) <- location; dir = dirTree.ui.value)
-      dirItems.reload(dir)
+    for ((locationTree, locationItems) <- location; dir = locationTree.ui.value)
+      locationItems.reload(dir)
 
 
   def cd(dir: File) =
-    for ((dirTree, _) <- location; tree = dirTree.ui) {
+    for ((locationTree, _) <- location; tree = locationTree.ui) {
       tree.select(dir)
       tree.expandItem(dir)
     }
@@ -173,18 +177,18 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
 
 class FileBrowserUI extends HorizontalSplitPanel with FullSize {
-  val accDirTrees = new Accordion with FullSize
+  val accLocationTrees = new Accordion with FullSize
 
-  setFirstComponent(accDirTrees)
+  setFirstComponent(accLocationTrees)
   setSplitPosition(15)
 }
 
 
-class DirTree(root: File) {
+class LocationTree(root: File) {
   val ui = new Tree with SingleSelect2[File] with ItemIdType[File] with Immediate with NoNullSelection
 
   def reload() {
-    ui.setContainerDataSource(new DirTreeContainer(root))
+    ui.setContainerDataSource(new LocationTreeContainer(root))
     ui.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM)
     select(root)
   }
@@ -196,7 +200,7 @@ class DirTree(root: File) {
 }
 
 
-class DirItems(filter: File => Boolean, selectable: Boolean, multiSelect: Boolean) {
+class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: Boolean) {
   val ui = letret(if (multiSelect) new Table with MultiSelect2[File]
                   else             new Table with SingleSelect2[File]) { ui =>
 

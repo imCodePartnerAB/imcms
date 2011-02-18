@@ -150,11 +150,11 @@ class FilePreview(browser: FileBrowser) {
 
   browser listen { ev =>
     if (enabled) ev match {
-      case Some(FileBrowserSelection(_, Seq(file))) =>
+      case Some(LocationSelection(_, Seq(file))) =>
         val fpc = FilePreviewContent(ui.getApplication, file)
         preview.set(fpc.content)
         ui.btnEnlarge.setEnabled(fpc.allowsFullSizePreview)
-      case Some(FileBrowserSelection(_, Nil)) =>
+      case Some(LocationSelection(_, Nil)) =>
         preview.clear
       case other =>
     }

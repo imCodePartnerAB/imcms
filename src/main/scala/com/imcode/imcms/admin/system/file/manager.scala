@@ -173,7 +173,7 @@ class FileManager(app: ImcmsApplication) {
 
   browser.listen { e =>
     ui.lblDirTreePath.value = e match {
-      case Some(FileBrowserSelection(dir, _)) => dir.getCanonicalPath
+      case Some(LocationSelection(dir, _)) => dir.getCanonicalPath
       case _ => ""
     }
   }
