@@ -86,6 +86,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
         for ((dirTree, dirContent) <- locationOpt) {
           ui.setSecondComponent(dirContent.ui)
+          updateSelection(dirTree, dirContent)
         }
       }
     })
@@ -114,29 +115,31 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       }
     }
 
-    dirContent.ui addValueChangeHandler {
-      ?(dirTree.ui.value) match {
-        case Some(dir) =>
-          val items = if (isMultiSelect) dirContent.ui.asInstanceOf[MultiSelect2[File]].value.toSeq
-                      else ?(dirContent.ui.asInstanceOf[SingleSelect2[File]].value).toSeq
-
-          let(Some(FileBrowserSelection(dir, items))) { selection =>
-            selectionRef.set(selection)
-            notifyListeners(selection)
-          }
-
-        case _ =>
-          let(None) { selection =>
-            selectionRef.set(selection)
-            notifyListeners(selection)
-          }
-      }
-    }
+    dirContent.ui addValueChangeHandler { updateSelection(dirTree, dirContent) }
 
     dirTree.reload()
 
     locations(dirTree.ui) = (dirTree, dirContent)
     ui.accDirTrees.addTab(dirTree.ui, caption, icon.orNull)
+  }
+
+  private def updateSelection(dirTree: DirTree, dirContent: DirContent) {
+    ?(dirTree.ui.value) match {
+      case Some(dir) =>
+        val items = if (isMultiSelect) dirContent.ui.asInstanceOf[MultiSelect2[File]].value.toSeq
+                    else ?(dirContent.ui.asInstanceOf[SingleSelect2[File]].value).toSeq
+
+        let(Some(FileBrowserSelection(dir, items))) { selection =>
+          selectionRef.set(selection)
+          notifyListeners(selection)
+        }
+
+      case _ =>
+        let(None) { selection =>
+          selectionRef.set(selection)
+          notifyListeners(selection)
+        }
+    }
   }
 
   override def notifyListeners() = notifyListeners(selection)
