@@ -145,7 +145,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
   def location = locationRef.get
 
-  def reloadLocationDir(preserveDirTreeSelection: Boolean = false) =
+  def reloadLocationDir(preserveDirTreeSelection: Boolean = true) =
     for ((dirTree, _) <- location; dir = dirTree.ui.value) {
       dirTree.reload()
       if (preserveDirTreeSelection && dir.isDirectory) dirTree.ui.value = dir

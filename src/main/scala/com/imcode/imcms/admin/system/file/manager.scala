@@ -18,7 +18,6 @@ class FileManager(app: ImcmsApplication) {
     browser.addPlace("Images", Place(new File(Imcms.getPath, "images")))
     browser.addPlace("Conf", Place(new File(Imcms.getPath, "WEB-INF/conf")))
     browser.addPlace("Logs", Place(new File(Imcms.getPath, "WEB-INF/logs")))
-    browser.addPlace("Logs", Place(new File(Imcms.getPath, "/abcdef")))
   }
 
   val ui = letret(new FileManagerUI(browser.ui)) { ui =>
@@ -86,7 +85,7 @@ class FileManager(app: ImcmsApplication) {
         app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
           dlg setOkHandler {
             for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
-              def op(item: File) = if (item.isFile) FileUtils.moveDirectoryToDirectory(item, destDir, false)
+              def op(item: File) = if (item.isFile) FileUtils.moveFileToDirectory(item, destDir, false)
                                    else FileUtils.moveDirectoryToDirectory(item, destDir, false)
 
               applyOpToItems(selection.items, op, "Unable to move item %s.")
@@ -153,7 +152,20 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miViewReload setCommandHandler {
-      browser.reloadLocationDir()
+      browser.reloadLocationDir(preserveDirTreeSelection = true)
+    }
+
+    ui.miNewDir setCommandHandler {
+      for (selection <- browser.selection) {
+        app.initAndShow(new OkCancelDialog("New directory")) { dlg =>
+          val txtName = new TextField("Name")
+          dlg.mainUI = txtName
+          dlg.setOkHandler {
+            FileUtils.forceMkdir(new File(selection.dir, txtName.value))
+            browser.reloadLocationDir()
+          }
+        }
+      }
     }
   }
 }
