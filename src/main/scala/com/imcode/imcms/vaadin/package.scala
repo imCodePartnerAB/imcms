@@ -6,6 +6,7 @@ import com.vaadin.data.{Container, Property}
 import com.vaadin.Application
 import com.vaadin.data.Property.{ValueChangeNotifier, ValueChangeEvent, ValueChangeListener}
 import com.vaadin.terminal.Sizeable
+import com.vaadin.event.ItemClickEvent
 
 package object vaadin {
 
@@ -89,6 +90,15 @@ package object vaadin {
 
     def addValueChangeHandler(handler: => Unit) = addValueChangeListener(_ => handler)
   }
+
+  implicit def wrapItemClickNotifier(notifier: ItemClickEvent.ItemClickNotifier) = new {
+    def addItemClickListener(listener: ItemClickEvent => Unit) =
+      notifier.addListener(new ItemClickEvent.ItemClickListener {
+        def itemClick(event: ItemClickEvent) = listener(event)
+      })
+  }
+
+
 
 
   implicit def wrapSizeable(sizeable: Sizeable) = new {

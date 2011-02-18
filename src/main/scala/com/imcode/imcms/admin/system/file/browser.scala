@@ -3,19 +3,16 @@ package imcms.admin.system.file
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import com.vaadin.data.Property
-import com.vaadin.data.Property._
+//import com.vaadin.data.Property
+//import com.vaadin.data.Property._
 
-import imcode.util.Utility
-import imcode.server.user._
+//import imcode.util.Utility
+//import imcode.server.user._
 import scala.collection.mutable.{Map => MMap}
-import imcode.server.{SystemData, Imcms}
-import com.vaadin.ui.Layout.MarginInfo
-import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
-import com.vaadin.terminal.{FileResource, Resource, UserError}
+import com.vaadin.terminal.{Resource}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import com.vaadin.data.util.FilesystemContainer
-import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
+import java.io.{FilenameFilter, File}
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 import java.util.{Date}
@@ -116,6 +113,18 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
     }
 
     dirContent.ui addValueChangeHandler { updateSelection(dirTree, dirContent) }
+
+    dirContent.ui.addItemClickListener {
+      case e if e.isDoubleClick => e.getItemId match {
+        case item: File if item.isDirectory =>
+          dirTree.ui.select(item)
+          dirTree.ui.expandItem(item.getParentFile)
+
+        case _ =>
+      }
+
+      case _ =>
+    }
 
     dirTree.reload()
 
