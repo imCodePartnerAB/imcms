@@ -26,11 +26,11 @@ class FileManager(app: ImcmsApplication) {
      * Recursively applies op to an item.
      * @param opFailMsg - fail message with unbound format parameter substitutable with fsNode - ex. "Unable to copy %s."
      */
-    def applyOpToItems(items: Seq[File], op: File => Unit, opFailMsg: String) {
+    def applyOpToItems(items: Seq[File], op: File => Unit, opFailMsg: String, afterFn: () => Any = () => ()) {
       items match {
         case item :: rest =>
-          def applyOpToRestItems() = applyOpToItems(rest, op, opFailMsg)
-          def applyOpToEmptyItems() = applyOpToItems(Nil, op, opFailMsg)
+          def applyOpToRestItems() = applyOpToItems(rest, op, opFailMsg, afterFn)
+          def applyOpToEmptyItems() = applyOpToItems(Nil, op, opFailMsg, afterFn)
 
           try {
             op(item)
@@ -43,7 +43,17 @@ class FileManager(app: ImcmsApplication) {
             }
           }
 
-        case _ => browser.reloadLocationDir(preserveDirTreeSelection = true)
+        case _ =>
+          browser.reloadLocationTree(preserveTreeSelection = true)
+          afterFn()
+      }
+    }
+
+    def promptCd(root: File, dir: File) = () => {
+      app.initAndShow(new OKDialog("Done")) { dlg =>
+        dlg.btnOk.addClickHandler {
+          browser.cd(root, dir)
+        }
       }
     }
 
@@ -69,8 +79,8 @@ class FileManager(app: ImcmsApplication) {
               def op(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
                                    else FileUtils.copyDirectoryToDirectory(item, destDir)
 
-              applyOpToItems(selection.items, op, "Unable to copy item %s.")
-              //browser.cd(destDir)
+              val afterFn = promptCd(dirSelectBrowser.location.get._1.root, destDir)
+              applyOpToItems(selection.items, op, "Unable to copy item %s.", afterFn)
             }
           }
         }
@@ -90,7 +100,6 @@ class FileManager(app: ImcmsApplication) {
                                    else FileUtils.moveDirectoryToDirectory(item, destDir, false)
 
               applyOpToItems(selection.items, op, "Unable to move item %s.")
-              //browser.cd(destDir)
             }
           }
         }
@@ -154,7 +163,7 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miViewReload setCommandHandler {
-      browser.reloadLocationDir(preserveDirTreeSelection = true)
+      browser.reloadLocationTree(preserveTreeSelection = true)
     }
 
     ui.miNewDir setCommandHandler {
@@ -164,7 +173,7 @@ class FileManager(app: ImcmsApplication) {
           dlg.mainUI = txtName
           dlg.setOkHandler {
             FileUtils.forceMkdir(new File(selection.dir, txtName.value))
-            browser.reloadLocationDir()
+            browser.reloadLocationTree()
           }
         }
       }

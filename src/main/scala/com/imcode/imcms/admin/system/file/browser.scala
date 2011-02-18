@@ -65,12 +65,13 @@ case class LocationSelection(dir: File, items: Seq[File]) {
 class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean = false)
     extends Publisher[Option[LocationSelection]] {
 
+  type Location = (LocationTree, LocationItems)
   type LocationTreeUI = Component
 
-  private val locations = MMap.empty[LocationTreeUI, (LocationTree, LocationItems)]
+  private val locations = MMap.empty[LocationTreeUI, Location]
 
   /** Current (visible) location. */
-  private val locationRef = new AtomicReference(Option.empty[(LocationTree, LocationItems)])
+  private val locationRef = new AtomicReference(Option.empty[Location])
 
   /** Selection in a current location */
   private val selectionRef = new AtomicReference(Option.empty[LocationSelection])
@@ -150,14 +151,22 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
   override def notifyListeners() = notifyListeners(selection)
 
+  /** Returns selection in a current location. */
   def selection = selectionRef.get
 
+  /** Returns current (visible) location */
   def location = locationRef.get
 
-  def reloadLocationDir(preserveDirTreeSelection: Boolean = true) =
+  /** Finds location by its root. */
+  def location(root: File): Option[Location] =
+    locations.find {
+      case (_, (locationTree, _)) => locationTree.root == root
+    } map { _._2 }
+
+  def reloadLocationTree(preserveTreeSelection: Boolean = true) =
     for ((locationTree, _) <- location; dir = locationTree.ui.value) {
       locationTree.reload()
-      if (preserveDirTreeSelection && dir.isDirectory) locationTree.ui.value = dir
+      if (preserveTreeSelection && dir.isDirectory) locationTree.cd(dir)
     }
 
   def reloadLocationItems() =
@@ -165,10 +174,15 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       locationItems.reload(dir)
 
 
-  def cd(dir: File) =
-    for ((locationTree, _) <- location; tree = locationTree.ui) {
-      tree.select(dir)
-      tree.expandItem(dir)
+  // mark moved/copied items??? selection???
+  def cd(root: File, selectedDir: File, selectedItems: Seq[File] = Nil) =
+    locations.find {
+      case (_, (locationTree, _)) => locationTree.root == root
+    } foreach {
+      case (tab, (locationTree, _)) =>
+        ui.accLocationTrees.setSelectedTab(tab)
+        locationTree.cd(selectedDir)
+        // mark moved items ???
     }
 }
 
@@ -181,7 +195,7 @@ class FileBrowserUI extends HorizontalSplitPanel with FullSize {
 }
 
 
-class LocationTree(root: File) {
+class LocationTree(val root: File) {
   val ui = new Tree with SingleSelect2[File] with ItemIdType[File] with Immediate with NoNullSelection
 
   def reload() {
