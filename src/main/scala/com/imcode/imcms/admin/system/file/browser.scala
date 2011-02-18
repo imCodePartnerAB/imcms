@@ -116,10 +116,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
     locationItems.ui.addItemClickListener {
       case e if e.isDoubleClick => e.getItemId match {
-        case item: File if item.isDirectory => // cd(locationTree, dir) OR cd(placeId, dir)
-          locationTree.ui.select(item)
-          locationTree.ui.expandItem(item.getParentFile)
-
+        case item: File if item.isDirectory => locationTree.cd(item)
         case _ =>
       }
 
@@ -190,10 +187,10 @@ class LocationTree(root: File) {
   def reload() {
     ui.setContainerDataSource(new LocationTreeContainer(root))
     ui.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM)
-    select(root)
+    cd(root)
   }
 
-  def select(dir: File) {
+  def cd(dir: File) {
     ui.select(dir)
     ui.expandItem(if (dir == root) dir else dir.getParentFile)
   }
