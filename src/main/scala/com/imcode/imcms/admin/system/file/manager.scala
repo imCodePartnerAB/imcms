@@ -10,6 +10,7 @@ import java.io.File
 import com.vaadin.ui.Window.Notification
 import org.apache.commons.io.FileUtils
 import com.vaadin.terminal.FileResource
+import annotation.tailrec
 
 class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
@@ -73,9 +74,10 @@ class FileManager(app: ImcmsApplication) {
           b.addLocation("Home", LocationConf(Imcms.getPath))
         }
 
-        app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
+        app.initAndShow(new DirSelectionDialog("Select distination directory", dirSelectBrowser)) { dlg =>
           dlg setOkHandler {
             for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
+              //copy dialog/progress ???
               def op(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
                                    else FileUtils.copyDirectoryToDirectory(item, destDir)
 
@@ -212,4 +214,95 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
 
   addComponents(this, mb, browserUI, lblDirTreePath)
   setExpandRatio(browserUI, 1.0f)
+}
+
+
+
+class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
+  val dialogUI = new ItemsTransferDialogUI
+
+  def copy() =
+    for (selection <- browser.selection if selection.nonEmpty) {
+      val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
+        b.addLocation("Home", LocationConf(Imcms.getPath))
+      }
+
+      def copyItems(itemsToCopy: Seq[File], copiedItems: Seq[File]): Unit = itemsToCopy match {
+        case item :: items =>
+          def copyItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
+            if (!destItem.exists) {
+              // try/catch - handle error
+              if (item.isFile) FileUtils.copyFile(item, destItem)
+              else FileUtils.copyDirectory(items, destItem)
+
+              copyItems(items, destItem :: copiedItems)
+              // try/catch - handle error
+            } else {
+              app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists")) { dlg =>
+                val dlgMainUI = letert(new ItemRenameDialogUI) { ui =>
+                  ui.lblMsg.value = "Please provide different name"
+                }
+
+                dlg.mainUI = dlgMainUI
+                dlg.setYesHandler { copyItem(dlgMainUI.txtName.value) }
+                dlg.setNoHandler { copyItems(items, copiedItems) }
+                dlg.setCancelHandler { copyItems(Nil, copiedItems) }
+              }
+            }
+          }
+
+          copyItem(item.getName)
+
+        case _ => if (copiedItems.nonEmpty) {
+          // Yes/No dialog
+          app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview")) { dlg =>
+            dlg.setOkHandler { browser.cd(dirSelectBrowser.location.get._1.root, destDir, destDir) }
+          }
+        }
+      }
+
+
+      def spawnItemsCopy() {
+        app.initAndShow(new OKDialog("Copying files into %s" format destDir)) { dlg =>
+          dlg.mainUI = dialogUI
+          dlg.btnOk.setCaption("Cancel")
+
+          dlg.btnOk.addClickHandler {
+            // stop copying
+          }
+
+
+        }
+      }
+
+      app.initAndShow(new DirSelectionDialog("Select distination directory", dirSelectBrowser, Seq(selection.dir))) { dlg =>
+        dlg setOkHandler { spawnItemsCopy() }
+      }
+
+          for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
+            //copy dialog/progress ???
+            def op(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
+                                 else FileUtils.copyDirectoryToDirectory(item, destDir)
+
+            val afterFn = promptCd(dirSelectBrowser.location.get._1.root, destDir)
+            applyOpToItems(selection.items, op, "Unable to copy item %s.", afterFn)
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/** File/Dir Copy/Move UI */
+class ItemsTransferDialogUI extends FormLayout with Spacing with UndefinedSize {
+  val lblMsg = new Label
+}
+
+
+class ItemRenameDialogUI extends FormLayout with Spacing with UndefinedSize {
+  val lblMsg = new Label
+  val txtName = new TextField("Name")
+
+  addComponents(this, lblMsg, txtName)
 }

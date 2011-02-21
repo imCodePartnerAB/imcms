@@ -175,10 +175,83 @@ trait CustomSizeDialog extends Dialog {
   content.setRowExpandRatio(0, 1f)
 }
 
-/** Empty dialog window. */
-class OKDialog(caption: String = "") extends Dialog(caption) {
+trait YesButton extends Dialog {
+  val btnYes = new Button("Yes") { setIcon(new ThemeResource("icons/16/ok.png")) }
+
+  def setYesHandler(handler: => Unit) {
+    btnYes addClickHandler {
+      EX.allCatch.either(handler) match {
+        case Right(_) => close()
+        case Left(ex) => using(new java.io.StringWriter) { w =>
+          ex.printStackTrace(new java.io.PrintWriter(w))
+          throw ex
+        }
+      }
+    }
+  }
+}
+
+trait NoButton extends Dialog {
+  val btnNo = new Button("No") { setIcon(new ThemeResource("icons/16/cancel.png")) }
+
+  def setNoHandler(handler: => Unit) {
+    btnNo addClickHandler {
+      EX.allCatch.either(handler) match {
+        case Right(_) => close()
+        case Left(ex) => using(new java.io.StringWriter) { w =>
+          ex.printStackTrace(new java.io.PrintWriter(w))
+          throw ex
+        }
+      }
+    }
+  }
+}
+
+trait OKButton extends Dialog {
   val btnOk = new Button("Ok") { setIcon(new ThemeResource("icons/16/ok.png")) }
 
+  setOkHandler {}
+
+  /**
+   * Adds Ok button listener which invokes a handler and closes dialog if there is no exception.
+   *
+   * // replace all listeners ???
+   * // disallow adding listeners to ok button???
+   */
+  def setOkHandler(handler: => Unit) {
+    btnOk addClickHandler {
+      EX.allCatch.either(handler) match {
+        case Right(_) => close()
+        case Left(ex) => using(new java.io.StringWriter) { w =>
+          ex.printStackTrace(new java.io.PrintWriter(w))
+          throw ex
+        }
+      }
+    }
+  }
+}
+
+
+trait CancelButton extends Dialog {
+  val btnCancel = new Button("Cancel") { setIcon(new ThemeResource("icons/16/cancel.png")) }
+
+  setCancelHandler {}
+
+  def setCancelHandler(handler: => Unit) {
+    btnCancel addClickHandler {
+      EX.allCatch.either(handler) match {
+        case Right(_) => close()
+        case Left(ex) => using(new java.io.StringWriter) { w =>
+          ex.printStackTrace(new java.io.PrintWriter(w))
+          throw ex
+        }
+      }
+    }
+  }
+}
+
+/** Empty dialog window. */
+class OKDialog(caption: String = "") extends Dialog(caption) with OKButton {
   buttonsBarUI = btnOk
 
   btnOk addClickHandler { close() }
@@ -199,50 +272,30 @@ class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
 
 
 /** OKCancel dialog window. */
-class OkCancelDialog(caption: String = "") extends Dialog(caption) {
-  val btnOk = new Button("Ok") { setIcon(new ThemeResource("icons/16/ok.png")) }
-  val btnCancel = new Button("Cancel") { setIcon(new ThemeResource("icons/16/cancel.png")) }
+class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton with CancelButton {
+
   val lytButtons = new GridLayout(2, 1) with Spacing {
-    addComponent(btnOk)
-    addComponent(btnCancel)
+    addComponents(this, btnOk, btnCancel)
+
     setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)
     setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
   }
 
   buttonsBarUI = lytButtons
+}
 
-  btnCancel addClickHandler { close() }
+/** YesNoCancel dialog window. */
+class YesNoCancelDialog(caption: String = "") extends Dialog(caption) with YesButton with NoButton with CancelButton {
 
-  /**
-   * Adds Ok button listener which invokes a handler and closes dialog if there is no exception.
-   *
-   * // replace all listeners ???
-   * // disallow adding listeners to ok button???
-   */
-  def setOkHandler(handler: => Unit) {
-    btnOk addClickHandler {
-      EX.allCatch.either(handler) match {
-        case Right(_) => close
-        case Left(ex) => using(new java.io.StringWriter) { w =>
-          ex.printStackTrace(new java.io.PrintWriter(w))
-          throw ex
-        }
-      }
-    }
+  val lytButtons = new GridLayout(3, 1) with Spacing {
+    addComponents(this, btnYes, btnNo, btnCancel)
+
+    setComponentAlignment(btnYes, Alignment.MIDDLE_RIGHT)
+    setComponentAlignment(btnNo, Alignment.MIDDLE_CENTER)
+    setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
   }
 
-  // invoke with default empty block on init?
-  def setCancelHandler(handler: => Unit) {
-    btnCancel addClickHandler {
-      EX.allCatch.either(handler) match {
-        case Right(_) => close
-        case Left(ex) => using(new java.io.StringWriter) { w =>
-          ex.printStackTrace(new java.io.PrintWriter(w))
-          throw ex
-        }
-      }
-    }
-  }
+  buttonsBarUI = lytButtons
 }
 
 

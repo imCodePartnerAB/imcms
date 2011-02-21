@@ -12,12 +12,15 @@ import com.vaadin.terminal._
 import org.apache.commons.io.FileUtils
 
 
-class DirSelectionDialog(caption: String, browser: FileBrowser)
+class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Seq[File] = Nil)
     extends OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
 
   mainContent = browser.ui
 
-  browser listen { btnOk setEnabled _.isDefined }
+  browser listen {
+    case None => btnOk setEnabled false
+    case Some(LocationSelection(dir, items)) => btnOk.setEnabled(!excludedDirs.contains(dir))
+  }
 
   browser.notifyListeners()
   // todo: refactor out

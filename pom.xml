@@ -692,20 +692,6 @@
         </dependency>
 
         <!--<dependency>-->
-        <!--<groupId>org.clojure</groupId>-->
-        <!--<artifactId>clojure</artifactId>-->
-        <!--<version>1.2.0</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>org.clojure</groupId>-->
-        <!--<artifactId>clojure-contrib</artifactId>-->
-        <!--<version>1.2.0</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
         <!--<groupId>org.eclipse.jetty</groupId>-->
         <!--<artifactId>jetty-server</artifactId>-->
         <!--<version>7.0.0.RC6</version>-->
