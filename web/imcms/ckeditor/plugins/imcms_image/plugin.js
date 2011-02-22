@@ -117,7 +117,7 @@
 				editor.insertElement(img) ;
 				//console.log('img (not exist): ' + img) ;
 			} else { // If the <img/> tag exists in the editor (var img = image ;) - change it.
-				img.src = returnImage.src ;
+				img.setAttribute('src', returnImage.src) ;
 				//console.log('img (exist): ' + img) ;
 			}
 			

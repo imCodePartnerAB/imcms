@@ -23,6 +23,7 @@ boolean DEBUG_VALIDATION    = false ;
 boolean DEBUG_EDITOR        = false ;
 boolean DEBUG_CHANGED       = false ;
 boolean DEBUG_CHANGED_CONT  = false ;
+boolean DEBUG_SAVE          = false ;
 
 %><%!
 
@@ -48,7 +49,7 @@ response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);
 
 List<String> formats = new ArrayList<String>();
-String[] formatParameterValues = request.getParameterValues("format");
+String[] formatParameterValues = textEditPage.getFormats();
 if (null != formatParameterValues) {
     formats.addAll(Arrays.asList(formatParameterValues));
     formats.remove("");
@@ -58,10 +59,16 @@ boolean showModeEditor = formats.isEmpty();
 boolean showModeText   = formats.contains("text") || showModeEditor;
 boolean showModeHtml   = formats.contains("html") || formats.contains("none") || showModeEditor ;
 boolean editorHidden   = getCookie("imcms_hide_editor", request).equals("true") ;
-int rows = (request.getParameter("rows") != null && request.getParameter("rows").matches("^\\d+$")) ? Integer.parseInt(request.getParameter("rows")) : 0 ;
+int rows = (null != textEditPage.getRows() && textEditPage.getRows().matches("^\\d+$")) ? Integer.parseInt(textEditPage.getRows()) : 0 ;
 
 if (rows > 0) {
 	showModeEditor = false;
+}
+
+int width = (null != textEditPage.getWidth() && textEditPage.getWidth().matches("^\\d+$")) ? Integer.parseInt(textEditPage.getWidth()) : 0 ;
+
+if (!(width >= 150 && width <= 600)) {
+	width = 0 ;
 }
 
 boolean editorActive = (TextDomainObject.TEXT_TYPE_HTML == textEditPage.getType() && !editorHidden) ;
@@ -85,42 +92,37 @@ try {
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script>
 	<script src="<%= cp %>/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 	<script type="text/javascript" src="<%= cp %>/imcms/ckeditor/ckeditor.js"></script>
-	<script type="text/javascript" src="<%= cp %>/imcms/ckeditor/plugins/imcms_integration/init.js.jsp<%= editorActive ? "?html=true" : "" %>"></script>
-	
-<script type="text/javascript"><%
-if (showModeEditor && !editorHidden) { %>
-jQuery(document).ready(function($) {
-	if ($('textarea#text').length > 0) {
-		startCkEditor($) ;<%----%>
-		$(window).resize(function() {
-			setSizeOfEditor($) ;
-		}) ;
-	}
-}) ;<%
-} %>
+	<script type="text/javascript" src="<%= cp %>/imcms/ckeditor/plugins/imcms_integration/init.js.jsp"></script>
 
-function setSizeOfEditor($) {
-	var newH = $(window).height() - 330 ;
-	if (newH < 200) {
-		newH = 200 ;
-	}
-	if ($('#editor iframe:first').length > 0) $('#editor iframe:first').height(newH) ;
-	if ($('textarea.cke_source').length > 0) $('textarea.cke_source').height(newH) ;
-	if ($('#cke_contents_text').length > 0) $('#cke_contents_text').height(newH) ;
+</vel:velocity>
+<style type="text/css">
+body {
+	<%= "overflow: -moz-scrollbars-vertical;" %>
 }
-
-function startCkEditor($) {
-	initCkEditor('text', '<%= LanguageMapper.convert639_2to639_1(Utility.getLoggedOnUser(request).getLanguageIso639_2()) %>', 'imCMS_ALL') ;
-}
-</script>
+</style>
+<vel:velocity>
 
 </head>
 <body bgcolor="#fff" style="margin-bottom:0;">
 
 
 <form id="mainForm" method="POST" action="<%= cp %>/servlet/SaveText">
-<input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>" />
-<input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>" />
+<input type="hidden" name="meta_id" value="<%= textEditPage.getDocumentId() %>" />
+<input type="hidden" name="txt_no" value="<%= textEditPage.getTextIndex() %>" /><%
+if (null != textEditPage.getLabel() && !"".equals(textEditPage.getLabel())) { %>
+<input type="hidden" name="label" value="<%= StringEscapeUtils.escapeHtml(textEditPage.getLabel()) %>" /><%
+}
+if (null != textEditPage.getFormats()) {
+	for (String format : textEditPage.getFormats()) { %>
+<input type="hidden" name="format" value="<%= StringEscapeUtils.escapeHtml(format) %>" /><%
+	}
+}
+if (null != textEditPage.getRows() && !"".equals(textEditPage.getRows())) { %>
+<input type="hidden" name="rows" value="<%= StringEscapeUtils.escapeHtml(textEditPage.getRows()) %>" /><%
+}
+if (null != textEditPage.getWidth() && !"".equals(textEditPage.getWidth())) { %>
+<input type="hidden" name="width" value="<%= StringEscapeUtils.escapeHtml(textEditPage.getWidth()) %>" /><%
+} %>
 
 <%
 if (rows > 0) {
@@ -137,7 +139,7 @@ if (rows > 0) {
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td>
-		<input type="submit" value="<? global/back ?>" name="cancel" class="imcmsFormBtn leaveChangeTextBtn" /></td><%
+		<input type="submit" id="backBtnTop" value="<? global/back ?>" name="cancel" class="imcmsFormBtn leaveChangeTextBtn" /></td><%
 		if (showModeEditor) { %>
 		<td style="color:#fff; padding: 0 10px 0 20px;" nowrap="nowrap"><? install/htdocs/sv/htmleditor/editor/editor.jsp/3000 ?></td>
 		<td><%
@@ -154,12 +156,21 @@ if (rows > 0) {
 			} %></td><%
 		} %>
 		<td style="color:#fff; padding-left:20px;" nowrap="nowrap">
-			<div id="contentChangedDiv_true" style="display:none; color:#faa; font-style:italic;">
-				<%= isSwe ? "Innehållet har ändrats!" : "The content has been changed!" %>
+			<div id="contentChangedDiv" style="display:block; float:left; margin-right:10px;">
+				<div id="contentChangedDiv_true" style="display:none; color:#faa; font-style:italic;">
+					<%= isSwe ? "Innehållet har ändrats!" : "The content has been changed!" %>
+				</div>
+				<div id="contentChangedDiv_false" style="display:block; color:#afa; font-style:italic;">
+					<%= isSwe ? "Innehållet har inte ändrats!" : "The content has not been changed!" %>
+				</div>
 			</div>
-			<div id="contentChangedDiv_false" style="display:block; color:#afa; font-style:italic;">
-				<%= isSwe ? "Innehållet har inte ändrats!" : "The content has not been changed!" %>
+			<div id="contentSavedDiv_true" style="display:none; float:left; color:#afa; font-style:italic; font-weight:bold;">
+				<%= isSwe ? "Innehållet har sparats!" : "The content has been saved!" %>
 			</div>
+			<div id="contentSavedDiv_false" style="display:none; float:left; color:#faa; font-style:italic; font-weight:bold;">
+				<%= isSwe ? "Innehållet kunde inte sparats!" : "The content could not be saved!" %>
+			</div>
+			<div style="clear:both;"></div>
 		</td>
 	</tr>
 	</table></td>
@@ -200,9 +211,9 @@ if (rows > 0) {
 					"Automatic validation require some memory,<br/>" +
 					"so turn it off when it's not needed.")
 			%>"><input type="checkbox" id="validationActive" value="true"<%=
-			validationIsActive ? " checked=\"checked\"" : "" %> style="vertical-align:middle;" />
+			validationIsActive ? " checked=\"checked\"" : "" %> style="vertical-align:-2px;" />
 			<%= isSwe ? "Validera automatiskt" : "Validate automatically" %></label>
-		<button id="validateBtn" class="imcmsFormBtnSmall imcmsFormBtnMedium toolTip iconValidate_pending" style="width:110px;"
+		<button id="validateBtn" class="imcmsFormBtnSmall imcmsFormBtnMedium toolTip iconValidate_pending" style="width:110px; margin-left:10px;"
 			      title="<%= StringEscapeUtils.escapeHtml(isSwe ?
 					"Validera texten och visa resultat av<br/>" +
 					"W3C-valideringen i ett popupfönster.<br/>" +
@@ -222,14 +233,27 @@ if (rows > 0) {
 </vel:velocity>
 <tr>
 	<td colspan="2" class="imcmsAdmForm">
-        <div id="editor"><%
-	        if (1 == rows) { %>
-	          <input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
-	        } else { %>
-            <textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width: 100%;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
-	        } %>
-        </div>
-    </td>
+		<div id="toolBar"></div>
+	</td>
+</tr><%
+	if (width > 0) { %>
+<tr>
+	<td colspan="2" class="imcmsAdmForm" style="padding: 3px 0 0 5px;">
+	<%= isSwe ? "Innehåll - Bredd: " + width + "px." : "Content - Width: " + width + "px." %> &nbsp;
+	<a id="resetWidthLink" href="javascript://resetWidth()"><%=
+			isSwe ? "Ladda om och visa med normal bredd" : "Reload and show with normal width"
+			%> &raquo;</a></td>
+</tr><%
+	} %>
+<tr>
+	<td colspan="2" class="imcmsAdmForm">
+	<div id="editor"><%
+	if (1 == rows) { %>
+	<input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
+	} else { %>
+	<textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width:<%= width > 0 ? (width + 6) + "px" : "100%" %>;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
+	} %>
+	</div></td>
 </tr>
 <vel:velocity>
 <tr>
@@ -258,10 +282,11 @@ if (rows > 0) {
 	} %></td>
 	
 	<td align="right">
-	<input tabindex="2" type="submit" class="imcmsFormBtn" name="ok" value="<fmt:message key="templates/sv/change_text.html/2006" />" />
-	<input tabindex="3" type="submit" class="imcmsFormBtn" name="save" value="<fmt:message key="templates/sv/change_text.html/save" />" />
-	<input tabindex="4" type="reset" class="imcmsFormBtn" id="resetFormBtn" value="<fmt:message key="templates/sv/change_text.html/2007" />" />
-	<input tabindex="5" type="submit" class="imcmsFormBtn leaveChangeTextBtn" name="cancel" value="<fmt:message key="global/back" />" /></td>
+	<input tabindex="2" type="submit" class="imcmsFormBtn" id="saveCloseBtn" name="ok" value="<fmt:message key="templates/sv/change_text.html/2006" />" />
+	<input tabindex="3" type="submit" class="imcmsFormBtn" id="saveBtn" name="save" value="<fmt:message key="templates/sv/change_text.html/save" />" />
+	<input tabindex="4" type="submit" class="imcmsFormBtn" id="reloadBtn" value="<fmt:message key="templates/sv/change_text.html/reload" />" />
+	<input tabindex="5" type="reset" class="imcmsFormBtn" id="resetFormBtn" value="<fmt:message key="templates/sv/change_text.html/2007" />" />
+	<input tabindex="6" type="submit" class="imcmsFormBtn leaveChangeTextBtn" id="backBtn" name="cancel" value="<fmt:message key="global/back" />" /></td>
 </tr>
 </table>
 #gui_bottom()
@@ -322,8 +347,9 @@ if (1 == rows) { %>
 	font-size: 11px;
 }
 </style>
-<div id="validationDisableDiv" style="position:absolute; display:none; top:0; left:0; background-color:#f5f5f7;"></div>
-<div id="validationDisableDivInfo" style="<%
+<div id="disableDiv" style="position:absolute; display:none; top:0; left:0; background-color:#f5f5f7;"></div>
+
+<div id="disableDivInfoValidation" style="<%
 	%>position:absolute; display:none; top:0; left:0; width:300px; padding:20px; background-color:#ffd;<%
 	%>border: 1px solid #ccc; font-size:13px !important; font-style:italic; color:#000; text-align:center;">
 	<img src="<%= cp %>/imcms/images/icons/ajax-loader.gif" alt="" style="vertical-align:middle; margin-right:10px;" /><%
@@ -332,9 +358,23 @@ if (1 == rows) { %>
 		<%= isSwe ? "Denna ruta stängs automatiskt när" : "This box closes automatically when" %><br/>
 		<%= isSwe ? "valideringen är genomförd." : "the validation is completed." %>
 	</div>
-	<div id="validationDisableDivInfoClose"
+	<div id="disableDivInfoValidationClose"
 	     style="position:absolute; top:5px; right:5px; padding: 2px 3px; background-color:#f33; color:#fff; font-weight:bold; font-style:normal; cursor:pointer;">X</div>
 </div>
+
+<div id="disableDivInfoSaving" style="<%
+	%>position:absolute; display:none; top:0; left:0; width:300px; padding:20px; background-color:#ffd;<%
+	%>border: 1px solid #ccc; font-size:13px !important; font-style:italic; color:#000; text-align:center;">
+	<img src="<%= cp %>/imcms/images/icons/ajax-loader.gif" alt="" style="vertical-align:middle; margin-right:10px;" /><%
+	%><%= isSwe ? "Sparar" : "Saving" %>...
+	<div style="font-size:12px !important; padding-top:15px;">
+		<%= isSwe ? "Denna ruta stängs automatiskt" : "This box closes automatically" %><br/>
+		<%= isSwe ? "när detta är genomfört." : "when this is completed." %>
+	</div>
+	<div id="disableDivInfoSavingClose"
+	     style="position:absolute; top:5px; right:5px; padding: 2px 3px; background-color:#f33; color:#fff; font-weight:bold; font-style:normal; cursor:pointer;">X</div>
+</div>
+
 <div style="display:none;">
 	<div id="validationDiv" title="<%= isSwe ? "Validering - Resultat" : "Validation - Result" %>">
 		<a name="jumpbar"></a>
@@ -348,30 +388,40 @@ if (1 == rows) { %>
 		</div><%
 		} %>
 	</div>
-</div><%
+</div>
 
-if (showModeEditor) { %>
+<%--
+/* *******************************************************************************************
+ *         Editor initiation                                                                 *
+ ******************************************************************************************* */
+--%>
 
 <script type="text/javascript">
-function setTextMode() {
+
+function setTextMode() {<%
+	if (showModeEditor) { %>
 	enableFormButtons(jQuery) ;
 	try {
 		var editor = CKEDITOR.instances['text'] ;
 		if (editor) {
 			editor.destroy() ;
 		}
-	} catch (e) {}
+	} catch (e) {}<%
+	} %>
+	addEventsToNoEditor(jQuery) ;
 }
 
-function setHtmlMode() {
+function setHtmlMode() {<%
+	if (showModeEditor) { %>
 	enableFormButtons(jQuery) ;
 	try {
 		var editor = CKEDITOR.instances['text'] ;
 		if (undefined == editor && 'true' != getCookie("imcms_hide_editor")) {
-			startCkEditor(jQuery) ;
+			initEditor(jQuery) ;
 			addEventsToEditor(jQuery) ;
 		}
-	} catch (e) {}
+	} catch (e) {}<%
+	} %>
 }
 
 function toggleEditorOnOff(on) {
@@ -385,10 +435,66 @@ function toggleEditorOnOff(on) {
 		jQuery('#editorOnOffBtn0').hide(0) ;
 	}
 }
-</script><%
-} %>
 
-<script type="text/javascript">
+function checkIframeScroll($, theEditor) {<%
+	if (width > 0) { %>
+	var wantedW = <%= width %> ;
+	var editor  = (theEditor || CKEDITOR.instances['text']) ;
+	var $iframeBody = $('#editor iframe:first').contents().find('body') ;
+	if ($iframeBody && editor) {
+		var $editorContainer = $('#cke_text') ;
+		var containerW   = $editorContainer.data('orgWidth') || $editorContainer.width() ;
+		if (containerW > 0) {
+			var iframeBodyW  = $iframeBody.width() ;
+			var noScrollDiff = $editorContainer.data('noScrollDiff') || (containerW - wantedW) ;
+			if ('' == $editorContainer.data('noScrollDiff')) {
+				$editorContainer.data('noScrollDiff', noScrollDiff) ;
+			}<%--
+			console.log(', iframeBodyW: ' + iframeBodyW + ', wantedW: ' + wantedW + ', (iframeBodyW < wantedW): ' + (iframeBodyW < wantedW) + ', containerW: ' + containerW + ', noScrollDiff: ' + noScrollDiff) ; --%>
+			if (iframeBodyW < wantedW) {
+				$editorContainer.data('orgWidth', containerW) ;
+				$editorContainer.width(wantedW + (wantedW - iframeBodyW) + noScrollDiff) ;<%--
+				console.log('checkIframeScroll: (SCROLL) ' + (wantedW + (wantedW - iframeBodyW) + noScrollDiff)) ; --%>
+			} else if (iframeBodyW > wantedW) {
+				$editorContainer.width(wantedW + noScrollDiff) ;<%--
+				console.log('checkIframeScroll: (NO SCROLL) ' + (wantedW + noScrollDiff)) ;
+			} else {
+				console.log('checkIframeScroll: (NO CHANGE) - (iframeBodyW == wantedW): ' + (iframeBodyW == wantedW)) ; --%>
+			}
+		}
+	}<%
+	} %>
+}
+
+function setSizeOfEditor($) {
+	var newH = $(window).height() - 350 ;
+	if (newH < 200) {
+		newH = 200 ;
+	}
+	if ($('#editor iframe:first').length > 0) $('#editor iframe:first').height(newH) ;
+	if ($('textarea.cke_source').length > 0) $('textarea.cke_source').height(newH) ;
+	if ($('#cke_contents_text').length > 0) $('#cke_contents_text').height(newH) ;
+}
+
+var editorHasBeenInitiated = false ;
+
+function initEditor($) {
+	if ($('textarea#text').length > 0) {
+		startCkEditor($) ;
+		if (!editorHasBeenInitiated) {
+			$(window).resize(function() {
+				setSizeOfEditor($) ;
+				checkIframeScroll($) ;
+			}) ;
+			editorHasBeenInitiated = true ;
+		}
+	}
+}
+
+function startCkEditor($) {
+	initCkEditor($, 'text', '<%= LanguageMapper.convert639_2to639_1(Utility.getLoggedOnUser(request).getLanguageIso639_2()) %>', '<%= (width > 0) ? (width+18) + "" : "" %>', 'imCMS_ALL') ;
+}
+
 function setTextAreaSize($) {
 	if ($('#text').length > 0) {
 		var winH = $(window).height() ;
@@ -398,18 +504,29 @@ function setTextAreaSize($) {
 	}
 }
 
-jQuery(document).ready(function($) {
+jQuery(document).ready(function($) {<%
 	
-	initSessionChecker($) ;<%
+	if (editorActive && showModeEditor && !editorHidden) { %>
+	initEditor($) ;<%
+	}
 	
 	if (0 == rows) { %>
 	setTextAreaSize($) ;
+	
 	$(window).resize(function() {
 		setTextAreaSize($) ;
 	}) ;<%
 	} %>
 	
+	initSessionChecker($) ;
+	
 }) ;
+
+<%--
+/* *******************************************************************************************
+ *         Check Session TimeOut                                                             *
+ ******************************************************************************************* */
+--%>
 
 var oSessionTimer ;
 var sessionTimeOutMs = <%= session.getMaxInactiveInterval() * 1000 %> ;<%-- session.getMaxInactiveInterval() * 1000 --%>
@@ -542,6 +659,10 @@ function getHeightOfDialog($) {
 	return dialogH ;
 }
 
+
+var oTimerChangeCheckNoEditor = null ;
+var oTimerChangeCheckEditor = null ;
+
 jQuery(document).ready(function($) {
 	
 	<%-- Validation dialog --%>
@@ -593,13 +714,8 @@ jQuery(document).ready(function($) {
 	var editor = CKEDITOR.instances['text'] ;
 	if (editor) {
 		addEventsToEditor($) ;
-	} else {
-		window.setInterval(function() {
-			checkEditorChanged($, null) ;
-		}, 2000) ;
-		$('#text,#text_1row').live('keyup mouseup blur paste', function() {
-			autoValidation($) ;
-		}) ;
+	} else if (<%= !editorActive %>) {
+		addEventsToNoEditor($) ;
 	}
 	
 }) ;
@@ -640,12 +756,21 @@ function autoValidation($) {
 	}
 }
 
+<%--
+/* *******************************************************************************************
+ *         Check for changes                                                                 *
+ ******************************************************************************************* */
+--%>
+var isSaving  = false ;
 var isChanged = false ;<%
 if (DEBUG_CHANGED_CONT) { %>
 var hasCheckedCompare = false ;<%
 } %>
 
-function checkEditorChanged($, editor) {
+function checkEditorChanged($, editor) {<%
+	if (DEBUG_CHANGED) { %>
+	if (console) console.log('function checkEditorChanged($, ' + (null != editor ? 'editor' : 'null') + ')') ;<%
+	} %>
 	try {
 		if (null == editor && $('#text,#text_1row').length > 0) {
 			var savedHtml  = $('#savedHtml').val() ;
@@ -673,14 +798,58 @@ function checkEditorChanged($, editor) {
 	if (console) console.log('isChanged: ' + isChanged) ;<%
 	} %>
 	$(':submit.leaveChangeTextBtn').unbind('click') ;
+	$('#reloadBtn').unbind('click') ;
+	$('#resetWidthLink').unbind('click') ;
 	if (isChanged) {
+		var changedMessage = '<%= isSwe ? "Innehållet har ändrats!\\nVill du ladda om sidan utan att spara?" : "The content is changed!\\nDo you want to reload the page without saving?" %>' ;
 		$(':submit.leaveChangeTextBtn').bind('click', function() {
 			return confirm('<%= isSwe ? "Innehållet har ändrats!\\nVill du lämna utan att spara?" : "The content is changed!\\nDo you want to leave without saving?" %>') ;
 		}) ;
+		$('#reloadBtn').bind('click', function(event) {
+			event.preventDefault() ;
+			if (confirm(changedMessage)) {
+				location.replace(location.href) ;			
+			}
+		}) ;
+		$('#resetWidthLink').bind('click', function(event) {
+			event.preventDefault() ;
+			if (confirm(changedMessage)) {
+				location.replace(removeURLParam(location.href, 'width')) ;				
+			}
+		}) ;
+	} else {
+		$('#reloadBtn').bind('click', function(event) {
+			event.preventDefault() ;
+			location.replace(location.href) ;
+		}) ;
+		$('#resetWidthLink').bind('click', function(event) {
+			event.preventDefault() ;
+			location.replace(removeURLParam(location.href, 'width')) ;
+		}) ;
 	}
-	$('#contentChangedDiv_' + !isChanged).fadeOut('fast', function() {
-		$('#contentChangedDiv_' + isChanged).fadeIn('fast') ;
-	}) ;
+	if (!isSaving) {
+		if (isChanged) {
+			$('#reloadBtn').disableImcmsBtn() ;
+		} else {
+			$('#reloadBtn').enableImcmsBtn() ;
+		}
+		$('#contentChangedDiv_' + !isChanged).fadeOut('fast', function() {
+			$('#contentChangedDiv_' + isChanged).fadeIn('fast') ;
+		}) ;
+	}
+}
+
+function resetChangedContent($) {
+	var editor  = CKEDITOR.instances['text'] ;
+	if (editor) {
+		editor.resetDirty() ;
+		editor.updateElement() ;
+	}
+	var editedHtml = $('#text,#text_1row').first().val() ;
+	$('#savedHtml').val(editedHtml) ;
+	isChanged = false ;
+	isSaving  = false ;
+	checkEditorChanged($, editor) ;
 }
 
 function disableFormButtons($) {
@@ -702,12 +871,32 @@ function getIFrameDocument(iframe) {
 	}
 }
 
+function addEventsToNoEditor($) {<%
+	if (DEBUG_EDITOR) { %>
+	if (console) console.log('addEventsToNoEditor()!') ;<%
+	} %>
+	if (oTimerChangeCheckEditor) {
+		window.clearInterval(oTimerChangeCheckEditor) ;<%
+		if (DEBUG_CHANGED) { %>
+		if (console) console.log('EXEC: clearInterval(checkEditorChanged($, editor))') ;<%
+		} %>
+	}<%
+	if (DEBUG_CHANGED) { %>
+	if (console) console.log('EXEC: setInterval(checkEditorChanged($, null))') ;<%
+	} %>
+	oTimerChangeCheckNoEditor = window.setInterval(function() {
+		checkEditorChanged($, null) ;
+	}, 2000) ;
+	$('#text,#text_1row').live('keyup mouseup blur paste', function() {
+		autoValidation($) ;
+	}) ;
+}
 
 function addEventsToEditor($) {
 	var editor = CKEDITOR.instances['text'] ;
 	if (editor) {<%
 		if (DEBUG_EDITOR) { %>
-		if (console) console.log('addEventsToEditor : editor active!') ;<%
+		if (console) console.log('addEventsToEditor() : editor active!') ;<%
 		} %>
 		
 		if (!editor.document) {
@@ -744,8 +933,18 @@ function addEventsToEditor($) {
 			editor.setData($('#savedHtml').val()) ;<%-- The textarea is resetted but not the editor --%>
 		}) ;
 		
-		window.setInterval(function() {
+		if (oTimerChangeCheckNoEditor) {
+			window.clearInterval(oTimerChangeCheckNoEditor) ;<%
+			if (DEBUG_CHANGED) { %>
+			if (console) console.log('EXEC: clearInterval(checkEditorChanged($, null))') ;<%
+			} %>
+		}<%
+		if (DEBUG_CHANGED) { %>
+		if (console) console.log('EXEC: setInterval(checkEditorChanged($, editor))') ;<%
+		} %>
+		oTimerChangeCheckEditor = window.setInterval(function() {
 			checkEditorChanged($, editor) ;
+			checkIframeScroll($, editor) ;
 		}, 2000) ;
 		
 		editor.on('afterCommandExec', function(e) {<%--
@@ -794,9 +993,9 @@ function addEventsToEditor($) {
 			enableFormButtons($) ;
 		}) ;
 		
-	} else {<%
+	} else if (<%= (showModeEditor && !editorHidden) %>) {<%
 		if (DEBUG_EDITOR) { %>
-		if (console) console.log('addEventsToEditor : editor NOT active!') ;<%
+		if (console) console.log('addEventsToEditor() : editor NOT active - RETRY!') ;<%
 		} %>
 		window.setTimeout(function() {
 			addEventsToEditor($) ;
@@ -807,28 +1006,28 @@ function addEventsToEditor($) {
 <%-- Button extensions --%>
 jQuery.fn.extend({
 	disableBtn: function(btnText){
-		$(this).html(btnText).fadeTo(100, 0.2).attr('disable', 'disable') ;<%
+		$(this).html(btnText).fadeTo(100, 0.2).attr('disabled', 'disabled') ;<%
 		if (DEBUG_VALIDATION) { %>
 		if (console) console.log('disableBtn') ;<%
 		} %>
 	},
 	enableBtn: function(btnText){
-		$(this).html(btnText).fadeTo(100, 1).removeAttr('disable') ;<%
+		$(this).html(btnText).fadeTo(100, 1).removeAttr('disabled') ;<%
 		if (DEBUG_VALIDATION) { %>
 		if (console) console.log('enableBtn') ;<%
 		} %>
 	},
 	enableBtnAndHide: function(btnText, speed){
-		$(this).html(btnText).fadeTo(100, 1).removeAttr('disable').hide(speed) ;
+		$(this).html(btnText).fadeTo(100, 1).removeAttr('disabled').hide(speed) ;
 	},
 	enableImcmsBtn: function(){
-		$(this).removeAttr('disable').addClass('imcmsFormBtn').removeClass('imcmsFormBtnDisabled') ;<%
+		$(this).removeAttr('disabled').addClass('imcmsFormBtn').removeClass('imcmsFormBtnDisabled') ;<%
 		if (DEBUG_VALIDATION) { %>
 		if (console) console.log('enableImcmsBtn') ;<%
 		} %>
 	},
 	disableImcmsBtn: function(){
-		$(this).addClass('imcmsFormBtnDisabled').removeClass('imcmsFormBtn').attr('disable','disable') ;<%
+		$(this).addClass('imcmsFormBtnDisabled').removeClass('imcmsFormBtn').attr('disabled','disabled') ;<%
 		if (DEBUG_VALIDATION) { %>
 		if (console) console.log('disableImcmsBtn') ;<%
 		} %>
@@ -842,10 +1041,11 @@ jQuery.fn.extend({
 }) ;
 
 
-function showDisableDiv($, completeFn) {
+function showDisableDiv($, isValidation, completeFn) {
 	var oMain    = $('#mainTable') ;
-	var oOverlay = $('#validationDisableDiv') ;
-	var oInfo    = $('#validationDisableDivInfo') ;
+	var oOverlay = $('#disableDiv') ;
+	var oInfo    = (isValidation) ? $('#disableDivInfoValidation') : $('#disableDivInfoSaving') ;
+	var oClose   = (isValidation) ? $('#disableDivInfoValidationClose') : $('#disableDivInfoSavingClose') ;
 	var oPos     = $(oMain).position() ;
 	if ($(oOverlay).is(':hidden')) {
 		$('#hoverTitleHeadDiv,#hoverTitleBody').hide(0) ;
@@ -862,17 +1062,17 @@ function showDisableDiv($, completeFn) {
 		if (DEBUG_VALIDATION) { %>
 		if (console) console.log('showDisableDiv()') ;<%
 		} %>
-		$('#validationDisableDivInfoClose').click(function() {
-			hideDisableDiv($) ;
+		$(oClose).click(function() {
+			hideDisableDiv($, isValidation) ;
 		}) ;
 	}
 	if ($.isFunction(completeFn)) {
 		completeFn() ;
 	}
 }
-function hideDisableDiv($, completeFn) {
-	var oOverlay = $('#validationDisableDiv') ;
-	var oInfo    = $('#validationDisableDivInfo') ;
+function hideDisableDiv($, isValidation, completeFn) {
+	var oOverlay = $('#disableDiv') ;
+	var oInfo    = (isValidation) ? $('#disableDivInfoValidation') : $('#disableDivInfoSaving') ;
 	if ($(oOverlay).is(':visible')) {
 		$(oInfo).fadeOut(0, function() {
 			$(oOverlay).fadeOut(0) ;<%
@@ -893,22 +1093,32 @@ function validateText($, showResults) {
 	} %>
 	$(oBtn).disableBtn('<%= isSwe ? "Validerar..." : "Validates..." %>') ;
 	$('#validationErrorDiv').ajaxError(function(e, xhr, settings, exception){
-		hideDisableDiv($) ;
+		hideDisableDiv($, true) ;
 		if (0 == $(this).find('#validationErrorDivStatus').length) {
 			$(this).append('<div id="validationErrorDivStatus" style="color:red;">Error i:<br/>' + getDataUrl + '<br/>' + settings.url + '<br/><i>' + xhr.statusText + '</i></div>').slideDown('slow') ;
 		}
 	}) ;
 	if (showResults) {
-		showDisableDiv($) ;
+		showDisableDiv($, true) ;
 	}
 	var textContent = '' ;
 	var editor = CKEDITOR.instances['text'] ;
 	if (editor) {
-		textContent = editor.getData() ;
+		textContent = editor.getData() ;<%
+		if (DEBUG_VALIDATION) { %>
+		console.log('Validate editor!') ;<%
+		} %>
 	} else if ($('#text_1row').length > 0) {
-		textContent = $('#text_1row').val() ;
+		textContent = $('#text_1row').val() ;<%
+		if (DEBUG_VALIDATION) { %>
+		console.log('Validate 1 row!') ;<%
+		} %>
 	} else if ($('#text').length > 0) {
-		textContent = $('#text').val() ;
+		var isTextMode = (<%= (showModeText && !showModeHtml) + " || " %>$('#format_type_text').is(':checked')) ;
+		textContent = (isTextMode) ? $('#text').html() : $('#text').val() ;<%
+		if (DEBUG_VALIDATION) { %>
+		console.log('Validate textarea! - isTextMode: ' + isTextMode) ;<%
+		} %>
 	}
 	textContent = textContent.replace(/<\?[^\?]+?\?>/g, '') ;
 	$.ajax({
@@ -936,7 +1146,7 @@ function validateText($, showResults) {
 					var responseHtml  = (null == response || !showResults) ? '' : response.getHtml ;
 					var responseError = (null == response) ? '' : response.error ;
 					if (!isOk) {
-						hideDisableDiv($, function() {
+						hideDisableDiv($, true, function() {
 							if ('' != responseError && 0 == $(this).find('#validationErrorDivStatus').length) {
 								$('#validationErrorDiv').append('<div id="validationErrorDivStatus" style="color:red;">Error: <i>' + responseError + '</i></div>')
 							}
@@ -949,7 +1159,7 @@ function validateText($, showResults) {
 									.removeClass('iconValidate_' + !isValid)
 									.addClass('iconValidate_' + isValid)
 									.enableBtn('<%= isSwe ? "Validera texten" : "Validate the text" %>') ;
-							hideDisableDiv($) ;
+							hideDisableDiv($, true) ;
 						} else {
 							$(oBtn)
 									.removeClass('iconValidate_pending')
@@ -995,7 +1205,7 @@ function validateText($, showResults) {
 							}
 							$('#validationDiv').scrollTop(0) ;
 							$(oBtn).enableBtn('<%= isSwe ? "Validera texten" : "Validate the text" %>') ;
-							hideDisableDiv($) ;
+							hideDisableDiv($, true) ;
 							$dialog.dialog('open') ;
 						}
 					}
@@ -1007,6 +1217,137 @@ function validateText($, showResults) {
 		}
 	}) ;
 }
+
+
+<%--
+/* *******************************************************************************************
+ *         Save changes through Ajax                                                         *
+ ******************************************************************************************* */
+--%>
+
+jQuery(document).ready(function($) {
+	$('#saveCloseBtn').live('click', function(event) {
+		event.preventDefault() ;
+		saveText($, true) ;
+	}) ;
+	$('#saveBtn').live('click', function(event) {
+		event.preventDefault() ;
+		saveText($, false) ;
+	}) ;
+}) ;
+
+function saveText($, closeAfter) {
+	isSaving = true ;
+	var isSavedSuccess = false ;
+	var $btnSaveClose = $('#saveCloseBtn') ;
+	var $btnSave      = $('#saveBtn') ;
+	var $btnReset     = $('#resetBtn') ;
+	var $btnBack      = $('#backBtn') ;
+	$btnSaveClose.disableImcmsBtn() ;
+	$btnSave.disableImcmsBtn() ;
+	$btnReset.disableImcmsBtn() ;
+	$btnBack.disableImcmsBtn() ;
+	$('#validationErrorDiv').ajaxError(function(e, xhr, settings, exception){
+		hideDisableDiv($, false) ;
+		if (0 == $(this).find('#validationErrorDivStatus').length) {
+			$(this).append('<div id="validationErrorDivStatus" style="color:red;">Error i:<br/>' + getDataUrl + '<br/>' + settings.url + '<br/><i>' + xhr.statusText + '</i></div>').slideDown('slow') ;
+		}
+	}) ;
+	showDisableDiv($, false) ;
+	var textContent = '' ;
+	var editor = CKEDITOR.instances['text'] ;
+	if (editor) {
+		textContent = editor.getData() ;<%
+		if (DEBUG_SAVE) { %>
+		console.log('Save editor!') ;<%
+		} %>
+	} else if ($('#text_1row').length > 0) {
+		textContent = $('#text_1row').val() ;<%
+		if (DEBUG_SAVE) { %>
+		console.log('Save 1 row!') ;<%
+		} %>
+	} else if ($('#text').length > 0) {
+		textContent = $('#text').val() ;<%
+		if (DEBUG_SAVE) { %>
+		console.log('Save textarea!') ;<%
+		} %>
+	}
+	$.ajax({
+		url     : '<%= AjaxServlet.getPath(cp) %>',
+		type    : 'POST',
+		dataType : 'json',
+		data    : {
+			action  : 'saveText',
+			meta_id : <%= textEditPage.getDocumentId() %>,
+			txt_no  : <%= textEditPage.getTextIndex() %>,
+			do_log  : isChanged,
+			format  : $(':radio[name=format_type]:checked').val() || $('input[name=format_type]').val(),
+			text    : textContent
+		},
+		cache   : false,
+		success : function(response) {
+			var isSaved       = (null != response && response.isSaved) ;
+			var responseError = (null == response) ? '' : response.error ;
+			if (isSaved) {<%
+				if (DEBUG_SAVE) { %>
+				console.log('saved!') ;<%
+				} %>
+				$('#contentSavedDiv_true')
+					.fadeIn('fast')<%
+					for (int i = 0; i < 2; i++) { %>
+					.animate({color:'#20568d'}, 200)
+					.animate({color:'#afa'}, 200)<%
+					} %>
+					.delay(2000)
+					.slideUp('fast') ;
+				resetChangedContent($) ;
+				isSavedSuccess = true ;
+				isSaving = false ;
+			} else {<%
+				if (DEBUG_SAVE) { %>
+				console.log('NOT saved!') ;<%
+				} %>
+				hideDisableDiv($, false, function() {
+					if ('' != responseError && 0 == $(this).find('#validationErrorDivStatus').length) {
+						$('#validationErrorDiv').append('<div id="validationErrorDivStatus" style="color:red;">Error: <i>' + responseError + '</i></div>')
+					}
+					$('#validationErrorDiv').slideDown('slow') ;
+				}) ;
+				isSaving = false ;
+			}
+		},
+		error: function() {
+			$('#validationErrorDiv').slideDown('slow') ;
+			isSaving = false ;
+		}
+	}) ;
+	hideDisableDiv($, false, function() {
+		$btnSaveClose.enableImcmsBtn() ;
+		$btnSave.enableImcmsBtn() ;
+		$btnReset.enableImcmsBtn() ;
+		$btnBack.enableImcmsBtn() ;
+		if (closeAfter && isSavedSuccess) {
+			$backBtn.trigger('click') ;
+		}
+	}) ;
+}
+
+function removeURLParam(url, param) {
+ var urlparts= url.split('?');
+ if (urlparts.length>=2) {
+  var prefix= encodeURIComponent(param)+'=';
+  var pars= urlparts[1].split(/[&;]/g);
+  for (var i=pars.length; i-- > 0;)
+   if (pars[i].indexOf(prefix, 0)==0)
+    pars.splice(i, 1);
+  if (pars.length > 0)
+   return urlparts[0]+'?'+pars.join('&');
+  else
+   return urlparts[0];
+ } else
+  return url;
+}
+
 </script>
 
 

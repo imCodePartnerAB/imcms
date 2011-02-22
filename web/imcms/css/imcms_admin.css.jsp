@@ -161,7 +161,7 @@ if (isNS) { %>
 	font: 11px Tahoma, Arial, sans-serif;
 	border: <%= isGecko ? 1 : 2 %>px outset #dae4ef;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
-	cursor:pointer;
+	cursor:default;
 	padding: <%= isGecko ? 3 : 2 %>px 8px; }
 
 .imcmsFormBtnSubDisabled {
@@ -190,7 +190,7 @@ if (isNS) { %>
 	font: 10px Tahoma, Arial, sans-serif;
 	border: <%= isGecko ? 1 : 2 %>px outset #dae4ef;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
-	cursor:pointer;
+	cursor:default;
 	padding: <%= isGecko ? 1 : 0 %>px 2px; }<%
 } %>
 

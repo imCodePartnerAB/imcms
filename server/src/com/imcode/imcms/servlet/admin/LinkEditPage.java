@@ -4,7 +4,6 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.servlet.DocumentFinder;
-import com.imcode.imcms.api.Document;
 import com.imcode.imcms.mapping.DocumentMapper;
 import org.apache.commons.lang.StringUtils;
 
@@ -50,9 +49,13 @@ public class LinkEditPage extends OkCancelPage {
     }
 
     public enum Parameter {
+        TYPE,
         HREF,
         TITLE,
         TARGET,
+        CLASS,
+        STYLE,
+        OTHER,
         SEARCH
     }
 
@@ -69,7 +72,15 @@ public class LinkEditPage extends OkCancelPage {
                     if (null != documentId) {
 												DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper() ;
 	                      DocumentDomainObject doc = documentMapper.getDocument(documentId) ;
-                        setLink(new SimpleLink(request.getContextPath()+"/"+doc.getName(), link.getTitle(), link.getTarget()));
+                        setLink(new SimpleLink(
+				                        link.getType(),
+				                        request.getContextPath()+"/"+doc.getName(),
+				                        link.getTitle(),
+				                        link.getTarget(),
+				                        link.getCssClass(),
+				                        link.getCssStyle(),
+				                        link.getOtherParams())
+                        );
                     }
                     forward(request, response);
                 }
@@ -85,10 +96,14 @@ public class LinkEditPage extends OkCancelPage {
     }
 
     private EditLink.Link getLinkFromRequest(HttpServletRequest request) {
+        final int type = Integer.parseInt(StringUtils.defaultString(request.getParameter(Parameter.TYPE.toString()), "1"));
         final String href = StringUtils.defaultString(request.getParameter(Parameter.HREF.toString()));
         final String title = StringUtils.defaultString(request.getParameter(Parameter.TITLE.toString()));
         final String target = EditDocumentInformationPageFlow.getTargetFromRequest(request, Parameter.TARGET.toString());
-        return new SimpleLink(href, title, isTargetEditable() ? target : link.getTarget());
+        final String cssClass = StringUtils.defaultString(request.getParameter(Parameter.CLASS.toString()));
+        final String cssStyle = StringUtils.defaultString(request.getParameter(Parameter.STYLE.toString()));
+        final String otherParams = StringUtils.defaultString(request.getParameter(Parameter.OTHER.toString()));
+        return new SimpleLink(type, href, title, isTargetEditable() ? target : link.getTarget(), cssClass, cssStyle, otherParams);
     }
 
     public String getPath(HttpServletRequest request) {
@@ -97,14 +112,26 @@ public class LinkEditPage extends OkCancelPage {
 
     static class SimpleLink implements EditLink.Link {
 
-        private final String href;
-        private final String title;
-        private final String target;
+        private int type = 1; // type selectBox values from edit_link.jsp
+        private String href;
+        private String title;
+        private String target;
+        private String cssClass = null;
+        private String cssStyle = null;
+        private String otherParams = null;
 
-        public SimpleLink(String href, String title, String target) {
+        public SimpleLink(int type, String href, String title, String target, String cssClass, String cssStyle, String otherParams) {
+            this.type = type;
             this.href = href;
             this.title = title;
             this.target = target;
+            this.cssClass = cssClass;
+            this.cssStyle = cssStyle;
+            this.otherParams = otherParams;
+        }
+
+        public int getType() {
+            return type;
         }
 
         public String getHref() {
@@ -117,6 +144,18 @@ public class LinkEditPage extends OkCancelPage {
 
         public String getTarget() {
             return target;
+        }
+
+        public String getCssClass() {
+            return (null != cssClass) ? cssClass : "";
+        }
+
+        public String getCssStyle() {
+            return (null != cssStyle) ? cssStyle : "";
+        }
+
+        public String getOtherParams() {
+            return (null != otherParams) ? otherParams : "";
         }
     }
 

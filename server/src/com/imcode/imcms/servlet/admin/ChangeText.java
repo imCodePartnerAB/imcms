@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Edit textdocument in a document.
@@ -45,8 +47,10 @@ public class ChangeText extends HttpServlet {
         if ( null == text ) {
             text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_HTML );
         }
-        String formatsParameter = request.getParameter("formats");
-        TextEditPage page = new TextEditPage( documentId, textIndex, text, label );
+				String[] formats = request.getParameterValues("format") ;
+	      String rows = StringUtils.defaultString(request.getParameter("rows")) ;
+	      String width = StringUtils.defaultString(request.getParameter("width")) ;
+				TextEditPage page = new TextEditPage( documentId, textIndex, text, label, formats, rows, width );
         page.forward( request, res, user );
 
     }
@@ -58,6 +62,9 @@ public class ChangeText extends HttpServlet {
         private int textIndex;
         private String label;
         private TextDomainObject text;
+        private String[] formats;
+        private String rows;
+        private String width;
 
         public enum Format {
             NONE,
@@ -65,11 +72,14 @@ public class ChangeText extends HttpServlet {
             EDITOR
         }
         
-        public TextEditPage( int documentId, int textIndex, TextDomainObject text, String label ) {
+        public TextEditPage( int documentId, int textIndex, TextDomainObject text, String label, String[] formats, String rows, String width ) {
             this.documentId = documentId;
             this.text = text;
             this.textIndex = textIndex;
             this.label = label;
+            this.formats = formats;
+            this.rows = rows;
+            this.width = width;
         }
 
         public int getDocumentId() {
@@ -92,7 +102,19 @@ public class ChangeText extends HttpServlet {
             return text.getType();
         }
 
-        public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
+				public String[] getFormats() {
+					return formats;
+				}
+	
+				public String getRows() {
+					return rows;
+				}
+	
+				public String getWidth() {
+					return width;
+				}
+
+				public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
             request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
             String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__CHANGE_TEXT;
             request.getRequestDispatcher( forwardPath ).forward( request, response );

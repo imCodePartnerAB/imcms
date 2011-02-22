@@ -7,6 +7,7 @@ CKEDITOR.config.resize_enabled                = true ;
 CKEDITOR.config.resize_dir                    = 'vertical' ;
 CKEDITOR.config.disableNativeSpellChecker     = false ;
 CKEDITOR.config.image_removeLinkByEmptyURL    = true ;
+CKEDITOR.config.startupFocus                  = true ;
 
 //CKEDITOR.config.pasteFromWordCleanupFile      = 'default' ;
 CKEDITOR.config.pasteFromWordPromptCleanup    = true ;
@@ -35,19 +36,22 @@ CKEDITOR.config.plugins                       = '' +
 																								'horizontalrule,' +
 																								'htmldataprocessor,' +
 																					//			'image,' +
-                                                'indent,justify,keystrokes,link,list,liststyle,maximize,newpage,pagebreak,pastefromword,pastetext,popup,' +
+                                                'indent,' +
+																								'justify,' +
+																								'keystrokes,' +
+																					//			'link,' +
+																								'list,liststyle,maximize,newpage,pagebreak,pastefromword,pastetext,popup,' +
                                                 'preview,print,removeformat,resize,save,scayt,smiley,showblocks,showborders,sourcearea,stylescombo,table,tabletools,' +
                                                 'specialchar,tab,templates,toolbar,undo,wysiwygarea,wsc' ;
 
 
-CKEDITOR.config.extraPlugins                  = 'pastefromword,pastetext,tab,autogrow,imcms_image' ;
-
+CKEDITOR.config.extraPlugins                  = 'imcms_image,imcms_link,pastefromword,pastetext,tab' ;//,autogrow
 
 CKEDITOR.config.toolbar_imCMS_ALL = [
 	['Source','Maximize', 'Preview'],
 	['Cut','Copy','Paste','PasteText','PasteFromWord', 'SpellChecker'],
 	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-	['Link','Unlink','Anchor'],['ImcmsImage','Table'],
+	['ImcmsLink','Unlink','Anchor'],['ImcmsImage','Table'],
 	['SpecialChar','ShowBlocks'],
 	'/',
 	['Format','-','Bold','Italic','Underline','Strike','-','Subscript','Superscript'],

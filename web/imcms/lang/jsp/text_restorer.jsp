@@ -111,7 +111,8 @@ if (action.equals("setDateSpan")) {
 } else if (session.getAttribute("EDITOR_SAVER_DATE_SPAN") != null) {
 	dateSpan = (String) session.getAttribute("EDITOR_SAVER_DATE_SPAN") ;
 } else {
-	dateSpan = " AND t.modified_datetime >= '" + dfD.format(new Date()) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'" ;
+	// OLD DEFAULT - ONE DAY: dateSpan = " AND t.modified_datetime >= '" + dfD.format(new Date()) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'" ;
+	dateSpan = "" ; // NEW DEFAULT - ALL
 }
 
 String sContent  = "" ;
@@ -379,7 +380,7 @@ String heading = isSwe ? "Tidigare versioner av textfält #TXT# på sida #META##
 
 String alias = thisDoc.getAlias() != null ? thisDoc.getAlias() : "" ;
 if (!alias.equals("")) {
-	alias = " &nbsp;<span style='font-size:11px; font-weight:normal;'>&quot;" + alias + "&quot;</span>" ;
+	alias = " &nbsp;<span style='font-size:11px; font-weight:normal;' title='" + StringEscapeUtils.escapeHtml(alias) + "'>&quot;" + StringUtils.abbreviate(alias, 45) + "&quot;</span>" ;
 }
 
 heading = heading

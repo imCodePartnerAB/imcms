@@ -6,7 +6,7 @@
 	        java.io.InputStream,
 	        java.io.InputStreamReader,
 	        java.io.BufferedReader,
-	        org.apache.oro.text.perl.Perl5Util"
+	        org.apache.oro.text.perl.Perl5Util, org.apache.commons.lang.StringUtils"
 	
 	contentType="text/javascript"
 	pageEncoding="UTF-8"
@@ -38,7 +38,48 @@ public static String getURLcontent( String urlString, String encoding ) {
 		}
 }
 
-%><%-- Did some playing. Thought I'd continue later.<%
+%><%
+
+boolean loadJq = (!"false".equals(StringUtils.defaultString(request.getParameter("loadJq")))) ;
+
+if (loadJq) { %>
+
+<jsp:include page="imcms_jquery_1.4.2.js" />
+
+<jsp:include page="imcms_jquery-ui_1.8.5.js" />
+
+jQ(document).ready(function($) {
+	$('a.imcms_text_admin').live('click', function(event) {
+		event.preventDefault() ;
+		var $this = $(this) ;
+		var uniqueId = $this.attr('rev') ;
+		var linkHref = $this.attr('href') ;
+		var $textFieldDummy = $('#imcms_text_field_dummy_' + uniqueId) ;
+		if (1 == $textFieldDummy.length) {
+			$textFieldDummy.show(0, function() {
+				var textW = $textFieldDummy.width() ;
+				if (textW >= 150 && textW <= 600) {
+					linkHref += '&amp;width=' + textW ;
+				}
+				$textFieldDummy.hide(0) ;
+			}) ;
+		}
+		imcmsOpenPath(event, linkHref.replace(/&amp;/g, '&')) ;
+	}) ;
+}) ;
+
+function imcmsOpenPath(event, path) {
+	if (event && (event.ctrlKey || event.shiftKey)) {
+		window.open(path) ;
+	} else {
+		document.location = path ;
+	}
+}
+
+<% } %><%--
+
+
+// Make new jQ version of jQuery: <%
 
 Perl5Util re = new Perl5Util() ;
 
@@ -53,6 +94,9 @@ jQueryUi   = re.substitute("s#jQuery#jQ#g", jQueryUi).replace("* jQ", "* jQuery"
 <%= jQueryMain %>
 
 <%= jQueryUi %>
+
+
+//Did some playing. Thought I'd continue later.
 
 
 jQ(document).ready(function($) {

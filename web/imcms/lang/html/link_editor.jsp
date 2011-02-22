@@ -71,7 +71,7 @@
 		<td><input type="text" name="createLinkValue" size="54" maxlength="100" style="width: 100%" value="<? install/htdocs/imcms/html/link_editor.jsp/21/1 ?>"></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText" nowrap><? install/htdocs/imcms/html/link_editor.jsp/22 ?></td>
+		<td class="imcmsAdmText" nowrap><? edit/link/cssClass ?></td>
 		<td><input type="text" name="createLinkCss" size="20" maxlength="50" style="width: 150" value=""></td>
 	</tr>
 	<tr>

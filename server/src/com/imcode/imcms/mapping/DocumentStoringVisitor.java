@@ -151,7 +151,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
          				sqlInsertTextHistory(oldTextDocument, textIndex, oldText, user);
          			}
 	        		
-	         		if (!text.getText().equals(oldTextValue)) {	         			
+	         		if (!text.getText().equals(oldTextValue) || text.getType() != oldText.getType()) {	         			
 	         			saveText = true;
 	         		}          		
             	}
@@ -162,7 +162,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             		sqlInsertTextHistory(textDocument, textIndex, text, user);      
             	}
             	
-            	sqlDeleteText(textDocument, textIndex, text);
+            	sqlDeleteText(textDocument, textIndex);
             	sqlInsertText(textDocument, textIndex, text);           	
             }
         }
@@ -216,12 +216,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    private void sqlDeleteText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
-    	Object[] parameters = new String[] {"" + textDocument.getId(), 
-        		"" + textIndex, "" + text.getType()};
+    private void sqlDeleteText(TextDocumentDomainObject textDocument, Integer textIndex) {
+    	Object[] parameters = new String[] { "" + textDocument.getId(), "" + textIndex };
     	
         database.execute(new SqlUpdateCommand(
-        		"DELETE FROM texts WHERE meta_id = ? AND name = ? AND type = ?", parameters));
+        		"DELETE FROM texts WHERE meta_id = ? AND name = ?", parameters));
     }
     
     private void sqlInsertText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {

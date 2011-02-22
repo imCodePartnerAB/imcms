@@ -1,8 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.flow.DispatchCommand;
-import imcode.server.document.DocumentDomainObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,12 +13,22 @@ import org.apache.commons.lang.StringUtils;
 public class EditLink extends HttpServlet {
 
     private static final String REQUEST_ATTRIBUTE__DOCUMENT_ID = EditLink.class.getName()+".documentId";
+		
+		public final static String[] OTHER_PARAMETERS = {
+						"id", "name", "charset", "coords", "hreflang", "rel", "rev", "shape", "accesskey", "dir", "lang", "tabindex", "xml:lang",
+						"onclick", "ondblclick", "onblur", "onfocus", "onmouseover", "onmouseout", "onmouseup", "onmousedown", "onmousemove", "onkeyup", "onkeydown", "onkeypress"
+		} ;
+		
     public enum Parameter {
         RETURN,
+        TYPE,
         HREF,
         TITLE,
         TARGET,
         USE_TARGET,
+        CLASS,
+        STYLE,
+        OTHER,
     }
 
     protected void doGet(HttpServletRequest request,
@@ -28,9 +36,13 @@ public class EditLink extends HttpServlet {
 
         final String returnPath = getStringParameter(request, Parameter.RETURN) ;
 
-        Link link = new LinkEditPage.SimpleLink(getStringParameter(request, Parameter.HREF),
+        Link link = new LinkEditPage.SimpleLink(getIntParameter(request, Parameter.TYPE, 1),
+                                                getStringParameter(request, Parameter.HREF),
                                                 getStringParameter(request, Parameter.TITLE),
-                                                getStringParameter(request, Parameter.TARGET)) ;
+                                                getStringParameter(request, Parameter.TARGET),
+                                                getStringParameter(request, Parameter.CLASS),
+                                                getStringParameter(request, Parameter.STYLE),
+                                                getStringParameter(request, Parameter.OTHER)) ;
         final LinkRetrievalCommand linkRetrievalCommand = new LinkRetrievalCommand();
         LinkEditPage linkEditPage = new LinkEditPage(new DispatchCommand() {
             public void dispatch(HttpServletRequest request,
@@ -47,6 +59,15 @@ public class EditLink extends HttpServlet {
         return StringUtils.defaultString(request.getParameter(parameter.toString()));
     }
 
+    private int getIntParameter(HttpServletRequest request, Parameter parameter, int defVal) {
+	    try {
+		    if (null != request.getParameter(parameter.toString())) {
+			    return Integer.parseInt(request.getParameter(parameter.toString()));
+		    }
+	    } catch (Exception e) {}
+	    return defVal ;
+    }
+
     public static String linkTo(HttpServletRequest request, String returnPath) {
         return request.getContextPath()+"/servlet/EditLink?"+Parameter.RETURN+"="+returnPath ;
     }
@@ -57,11 +78,19 @@ public class EditLink extends HttpServlet {
 
     public interface Link {
 
+        int getType() ;
+
         String getHref() ;
 
         String getTitle() ;
 
         String getTarget() ;
+
+        String getCssClass() ;
+
+        String getCssStyle() ;
+
+        String getOtherParams() ;
 
     }
 

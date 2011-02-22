@@ -14,11 +14,14 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
 import imcode.util.ShouldNotBeThrownException;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 public final class SaveText extends HttpServlet {
 
@@ -49,9 +52,31 @@ public final class SaveText extends HttpServlet {
             TextDomainObject text = new TextDomainObject( text_string, text_format );
 
             saveText( documentMapper, text, document, txt_no, imcref, meta_id, user );
-
+	          
+						String label = StringUtils.defaultString(req.getParameter("label")) ;
+						String[] formats = req.getParameterValues("format") ;
+						String rows = StringUtils.defaultString(req.getParameter("rows")) ;
+						String width = StringUtils.defaultString(req.getParameter("width")) ;
+	        
+						String redirPath = "ChangeText?meta_id="+meta_id+"&txt="+txt_no ;
+	          
+	          if (!"".equals(label)) {
+		          redirPath += "&label=" + URLEncoder.encode(label, Imcms.UTF_8_ENCODING) ;
+	          }
+	          if (null != formats && formats.length > 0) {
+		          for (String format : formats) {
+			          redirPath += "&format=" + URLEncoder.encode(format, Imcms.UTF_8_ENCODING) ;
+		          }
+	          }
+	          if (!"".equals(rows)) {
+		          redirPath += "&rows=" + URLEncoder.encode(rows, Imcms.UTF_8_ENCODING) ;
+	          }
+	          if (!"".equals(width)) {
+		          redirPath += "&width=" + URLEncoder.encode(width, Imcms.UTF_8_ENCODING) ;
+	          }
+	          
             if (null != req.getParameter( "save" )) {
-                res.sendRedirect( "ChangeText?meta_id="+meta_id+"&txt="+txt_no );
+                res.sendRedirect( redirPath );
                 return ;
             }
         }
