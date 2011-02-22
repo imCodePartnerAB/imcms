@@ -56,9 +56,9 @@ case class LocationConf(root: File, itemsFilter: File => Boolean = LocationItems
 
 
 case class LocationSelection(dir: File, items: Seq[File]) {
-  def first = items.headOption
-  def nonEmpty = items.nonEmpty
-  def isSingle = items.size == 1
+  def firstItem = items.headOption
+  def hasItems = items.nonEmpty
+  def hasSingleItem = items.size == 1
 }
 
 // enum selectable??:
@@ -189,8 +189,8 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       case (tab, (locationTree, locationItems)) =>
         ui.accLocationTrees.setSelectedTab(tab)
         locationTree.cd(locationSelection.dir)
-        if (isSelectable && locationSelection.nonEmpty) {
-          locationItems.ui.value = if (isMultiSelect) locationSelection.items else locationSelection.first
+        if (isSelectable && locationSelection.hasItems) {
+          locationItems.ui.value = if (isMultiSelect) locationSelection.items else locationSelection.firstItem.get
         }
     }
 }

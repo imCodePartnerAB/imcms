@@ -68,7 +68,7 @@ class FileDialog(caption: String, browser: FileBrowser)
   }
 
   browser listen {
-    case Some(selection) => btnOk setEnabled selection.nonEmpty
+    case Some(selection) => btnOk setEnabled selection.hasItems
     case _ => btnOk setEnabled false
   }
 

@@ -11,6 +11,7 @@ import com.vaadin.ui.Window.Notification
 import org.apache.commons.io.FileUtils
 import com.vaadin.terminal.FileResource
 import annotation.tailrec
+import actors.Actor
 
 class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
@@ -219,77 +220,110 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
 
 
 class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
-  val dialogUI = new ItemsTransferDialogUI
 
   def copy() =
-    for (selection <- browser.selection if selection.nonEmpty) {
-      val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
-        b.addLocation("Home", LocationConf(Imcms.getPath))
-      }
+    def copyItems(itemsToCopy: Seq[File], copiedItems: Seq[File]): Unit = itemsToCopy match {
+      case item :: items =>
+        def copyItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
+          if (!destItem.exists) {
+            // try/catch - handle error
+            if (item.isFile) FileUtils.copyFile(item, destItem)
+            else FileUtils.copyDirectory(items, destItem)
 
-      def copyItems(itemsToCopy: Seq[File], copiedItems: Seq[File]): Unit = itemsToCopy match {
-        case item :: items =>
-          def copyItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
-            if (!destItem.exists) {
-              // try/catch - handle error
-              if (item.isFile) FileUtils.copyFile(item, destItem)
-              else FileUtils.copyDirectory(items, destItem)
-
-              copyItems(items, destItem :: copiedItems)
-              // try/catch - handle error
-            } else {
-              app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists")) { dlg =>
-                val dlgMainUI = letert(new ItemRenameDialogUI) { ui =>
-                  ui.lblMsg.value = "Please provide different name"
-                }
-
-                dlg.mainUI = dlgMainUI
-                dlg.setYesHandler { copyItem(dlgMainUI.txtName.value) }
-                dlg.setNoHandler { copyItems(items, copiedItems) }
-                dlg.setCancelHandler { copyItems(Nil, copiedItems) }
+            copyItems(items, destItem :: copiedItems)
+            // try/catch - handle error
+          } else {
+            app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists")) { dlg =>
+              val dlgMainUI = letert(new ItemRenameDialogUI) { ui =>
+                ui.lblMsg.value = "Please provide different name"
               }
+
+              dlg.mainUI = dlgMainUI
+              dlg.setYesHandler { copyItem(dlgMainUI.txtName.value) }
+              dlg.setNoHandler { copyItems(items, copiedItems) }
+              dlg.setCancelHandler { copyItems(Nil, copiedItems) }
             }
           }
-
-          copyItem(item.getName)
-
-        case _ => if (copiedItems.nonEmpty) {
-          // Yes/No dialog
-          app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview")) { dlg =>
-            dlg.setOkHandler { browser.select(dirSelectBrowser.location.get._1.root, destDir, destDir) }
-          }
         }
-      }
 
+        copyItem(item.getName)
 
-      def spawnItemsCopy() {
-        app.initAndShow(new OKDialog("Copying files into %s" format destDir)) { dlg =>
-          dlg.mainUI = dialogUI
-          dlg.btnOk.setCaption("Cancel")
-
-          dlg.btnOk.addClickHandler {
-            // stop copying
-          }
-
-
-        }
-      }
-
-      app.initAndShow(new DirSelectionDialog("Select distination directory", dirSelectBrowser, Seq(selection.dir))) { dlg =>
-        dlg setOkHandler { spawnItemsCopy() }
-      }
-
-          for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
-            //copy dialog/progress ???
-            def op(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
-                                 else FileUtils.copyDirectoryToDirectory(item, destDir)
-
-            val afterFn = promptCd(dirSelectBrowser.location.get._1.root, destDir)
-            applyOpToItems(selection.items, op, "Unable to copy item %s.", afterFn)
-          }
+      case _ => if (copiedItems.nonEmpty) {
+        // Yes/No dialog
+        app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview")) { dlg =>
+          dlg.setOkHandler { browser.select(dirSelectBrowser.location.get._1.root, destDir, destDir) }
         }
       }
     }
+
+
+    def copyItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
+      app.initAndShow(new OKDialog("Copying files into %s" format destDir)) { dlg =>
+        val dialogUI = new ItemsTransferDialogUI
+
+        dlg.mainUI = dialogUI
+        dlg.btnOk.setCaption("Cancel")
+
+        case class Transfer(remainingItems: Seq[File], processedItems: Seq[File])
+
+        object CopyActor extends Actor {
+          def act() {
+            react {
+              case ('process, Transfer(Nil, Nil)) =>
+                // no items copied
+
+              case ('process, Transfer(Nil, processedItems)) =>
+                // end
+
+              case ('process, Transfer(remainingItems, processedItems)) =>
+                // spawn { copy src dest }
+                // act()
+
+              case ('item_exists, Transfer(remainingItems, processedItems)) =>
+                // rename
+                // spanw, acr
+
+              case ('error, Transfer(remainingItems, processedItems)) =>
+                // cancel, skip, retry
+
+              case 'cancel =>
+                react {
+                  case (_, Transfer(remainingItems, processedItems))
+                  case _ => // error
+                }
+
+              case _ => // stop receiving messages, error
+            }
+          }
+        }
+
+        dlg.btnOk.addClickHandler {
+          dlg.btnOk.setEnabled(false)
+          dialogUI.lblMsg.value = "Cancelling"
+          CopyActor ! 'cancel
+        }
+
+        CopyActor.start()
+        CopyActor ! ('process, Transfer(items, Nil))
+      }
+    }
+
+    // refactor into dest dir selection method
+    for (selection <- browser.selection if selection.nonEmpty) {
+      val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { dsb =>
+        dsb.addLocation("Home", LocationConf(Imcms.getPath))
+      }
+
+      app.initAndShow(new DirSelectionDialog("Select distination directory", dirSelectBrowser, Seq(selection.dir))) { dlg =>
+        dlg setOkHandler {
+          for {
+            destLocation <- dirSelectBrowser.location
+            destSelection <- dirSelectBrowser.selection
+          } copyItems(destLocation.root, destSelection.dir, selection.items)
+        }
+      }
+    }
+
   }
 }
 
@@ -297,6 +331,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 /** File/Dir Copy/Move UI */
 class ItemsTransferDialogUI extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label
+  val pi = new ProgressIndicator
 }
 
 
