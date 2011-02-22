@@ -53,7 +53,7 @@ class FileManager(app: ImcmsApplication) {
     def promptCd(root: File, dir: File) = () => {
       app.initAndShow(new OKDialog("Done")) { dlg =>
         dlg.btnOk.addClickHandler {
-          browser.cd(root, dir)
+          browser.select(root, dir)
         }
       }
     }
@@ -256,7 +256,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
         case _ => if (copiedItems.nonEmpty) {
           // Yes/No dialog
           app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview")) { dlg =>
-            dlg.setOkHandler { browser.cd(dirSelectBrowser.location.get._1.root, destDir, destDir) }
+            dlg.setOkHandler { browser.select(dirSelectBrowser.location.get._1.root, destDir, destDir) }
           }
         }
       }

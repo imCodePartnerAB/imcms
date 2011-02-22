@@ -50,7 +50,8 @@ object LocationItemsFilter {
   val templateFile = fileWithExt("jsp", "jspx", "html")
 }
 
-/** Browser location (bookmark) conf. */
+
+/** File browser location (bookmark) conf. */
 case class LocationConf(root: File, itemsFilter: File => Boolean = LocationItemsFilter.notHidden, recursive: Boolean = true)
 
 
@@ -62,6 +63,10 @@ case class LocationSelection(dir: File, items: Seq[File]) {
 
 // enum selectable??:
 
+/**
+ * A file browser can have any number of locations (bookmarks).
+ * A location is uniquely identified by its root dir.
+ */
 class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean = false)
     extends Publisher[Option[LocationSelection]] {
 
@@ -174,15 +179,19 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       locationItems.reload(dir)
 
 
-  // mark moved/copied items??? selection???
-  def cd(root: File, selectedDir: File, selectedItems: Seq[File] = Nil) =
+  def select(locationRoot: File, selectedDir: File, selectedItems: Seq[File] = Nil): Unit =
+    select(locationRoot, new LocationSelection(selectedDir, selectedItems))
+
+  def select(locationRoot: File, locationSelection: LocationSelection) =
     locations.find {
       case (_, (locationTree, _)) => locationTree.root == root
     } foreach {
-      case (tab, (locationTree, _)) =>
+      case (tab, (locationTree, locationItems)) =>
         ui.accLocationTrees.setSelectedTab(tab)
-        locationTree.cd(selectedDir)
-        // mark moved items ???
+        locationTree.cd(locationSelection.dir)
+        if (isSelectable && locationSelection.nonEmpty) {
+          locationItems.ui.value = if (isMultiSelect) locationSelection.items else locationSelection.first
+        }
     }
 }
 
