@@ -178,141 +178,149 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
 }
 
 
-
+// ItemsTransferHelper
 class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
-  case class Transfer(remaining: Seq[File], processed: Seq[File])
+  // transfer state
+  case class ItemsState(remaining: Seq[File], processed: Seq[File])
 
   def copy() {
-    def copy(actor: Actor, destDir: File, transferState: Transfer) = transferState match {
-      case Transfer(item :: remaining, processed) =>
-        def copyItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
-          if (!destItem.exists) {
-            // try/catch - handle error
-            if (item.isFile) FileUtils.copyFile(item, destItem)
-            else FileUtils.copyDirectory(item, destItem)
-
-            actor ! Transfer(remaining, destItem +: processed)
-            // try/catch - handle error
-          } else {
-            app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists" format destItemName)) { dlg =>
-              val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
-                dlgUI.lblMsg.value = "Please provide different name"
-                dlgUI.txtName.value = destItemName
-              }
-
-              dlg.mainUI = dlgUI
-              dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) }
-              dlg.wrapNoHandler { actor ! Transfer(remaining, processed) }
-              dlg.setCancelHandler { actor ! Transfer(Nil, processed) }
-            }
-          }
-        }
-
-        copyItem(item.getName)
-
-      case _ =>
-        actor ! transferState
-    }
-
-
-    /**
-     * Asynchronously copies selected browser items into destination dir.
-     * Client-side is periodically updated using progress indicator pooling feature - this means that
-     * all UI updates must be synchronized against Application.
-     */
-    def asyncCopyItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
-
-      def finish(transferDialog: Dialog, transferState: Transfer) = app.synchronized {
-        transferDialog.close()
-
-        if (transferState.processed.isEmpty) {
-          app.showWarningNotification("No items where copied")
-        } else {
-          app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview" format transferState.processed.size)) { dlg =>
-            dlg.wrapOkHandler { browser.select(destLocationRoot, destDir, transferState.processed) }
-          }
-        }
-      }
-
-      def handleUndefinedEvent(transferDialog: Dialog, event: Any) = app.synchronized {
-        transferDialog.close()
-        app.showErrorNotification("An error occured while copying items", event.toString)
-      }
-
-
-      app.initAndShow(new CancelDialog("Copying files into %s" format destDir)) { dlg =>
-        val dlgUI = new ItemsTransferDialogUI
-
-        dlg.mainUI = dlgUI
-        dlgUI.lblMsg.value = "Preparing to copy"
-
-        object CopyActor extends Actor {
-
-          def act() {
-            react {
-              case transferState @ Transfer(Nil, _) => finish(dlg, transferState)
-
-              case transferState @ Transfer(item :: _, _) =>
-                app.synchronized {
-                  dlgUI.lblMsg.value = "Copying " + item.getName
-                }
-
-                Actor.actor {
-                  Thread.sleep(5000)
-                  copy(CopyActor, destDir, transferState)
-                }
-
-                act()
-
-              case 'cancel =>
-                react {
-                  case transferState: Transfer => finish(dlg, transferState)
-                  case undefined => handleUndefinedEvent(dlg, undefined)
-                }
-
-              case undefined => handleUndefinedEvent(dlg, undefined)
-            }
-          }
-        }
-
-        dlg.btnCancel.addClickHandler {
-          app.synchronized {
-            dlg.btnCancel.setEnabled(false)
-            dlgUI.lblMsg.value = "Cancelling"
-          }
-
-          CopyActor ! 'cancel
-        }
-
-        CopyActor ! TransferState(items, Nil)
-        CopyActor.start()
-      }
-    }
-
     // refactor into dest dir selection method??
     for (selection <- browser.selection if selection.hasItems) {
       val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { dsb =>
         dsb.addLocation("Home", LocationConf(Imcms.getPath))
       }
 
-      app.initAndShow(new DirSelectionDialog("Select distination directory", dirSelectBrowser, Seq(selection.dir))) { dlg =>
+      app.initAndShow(new DirSelectionDialog("Copy to", dirSelectBrowser, Seq(selection.dir))) { dlg =>
         dlg wrapOkHandler {
           for {
             destLocation <- dirSelectBrowser.location
             destSelection <- dirSelectBrowser.selection
-          } copyItems(destLocation._1.root, destSelection.dir, selection.items)
+          } asyncCopyItems(destLocation._1.root, destSelection.dir, selection.items)
+        }
+      }
+    }
+  }
+
+
+  /**
+   * Asynchronously copies selected browser items into destination directory.
+   * If at least one item was copied prompts user to select copied items in destination directory.
+   *
+   * Client-side is periodically updated using progress indicator pooling feature - this means that
+   * all UI updates must be synchronized against Application.
+   */
+  private def asyncCopyItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
+
+    def finish(transferDialog: Dialog, itemsState: ItemsState) = app.synchronized {
+      transferDialog.close()
+
+      if (itemsState.processed.isEmpty) {
+        app.showWarningNotification("No items where copied")
+      } else {
+        app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview" format itemsState.processed.size)) { dlg =>
+          dlg.wrapOkHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
         }
       }
     }
 
+    def handleUndefinedEvent(transferDialog: Dialog, event: Any) = app.synchronized {
+      transferDialog.close()
+      app.showErrorNotification("An error occured while copying items", event.toString)
+    }
+
+
+    app.initAndShow(new CancelDialog("Copying items into .../%s" format destDir)) { dlg =>
+      val dlgUI = new ItemsTransferDialogUI
+
+      dlg.mainUI = dlgUI
+      dlgUI.lblMsg.value = "Preparing to copy"
+
+      object CopyActor extends Actor {
+
+        def act() {
+          react {
+            case itemsState @ ItemsState(Nil, _) => finish(dlg, itemsState)
+
+            case itemsState @ ItemsState(item :: _, _) =>
+              app.synchronized {
+                dlgUI.lblMsg.value = "Copying " + item.getName
+              }
+
+              Actor.actor {
+                Thread.sleep(5000)
+                asyncCopyItem(CopyActor, destDir, itemsState)
+              }
+
+              act()
+
+            case 'cancel =>
+              react {
+                case itemsState: ItemsState => finish(dlg, itemsState)
+                case undefined => handleUndefinedEvent(dlg, undefined)
+              }
+
+            case undefined => handleUndefinedEvent(dlg, undefined)
+          }
+        }
+      }
+
+      dlg.btnCancel.addClickHandler {
+        app.synchronized {
+          dlg.btnCancel.setEnabled(false)
+          dlgUI.lblMsg.value = "Cancelling"
+        }
+
+        CopyActor ! 'cancel
+      }
+
+      CopyActor ! itemsState(items, Nil)
+      CopyActor.start()
+    }
+  }
+
+  /**
+   * Attempts to copy fist of the remaining items into the destination dir.
+   * Updates transfer state and send it to the actor.
+   * todo: synchronize ui ops
+   */
+  private def asyncCopyItem(actor: Actor, destDir: File, itemsState: ItemsState) = itemsState match {
+    case ItemsState(item :: remaining, processed) =>
+      // allows item renaming
+      def copyItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
+        if (!destItem.exists) {
+          // try/catch - handle error
+          if (item.isFile) FileUtils.copyFile(item, destItem)
+          else FileUtils.copyDirectory(item, destItem)
+
+          actor ! ItemsState(remaining, destItem +: processed)
+          // try/catch - handle error
+        } else {
+          app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists" format destItemName)) { dlg =>
+            val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
+              dlgUI.lblMsg.value = "Please provide different name"
+              dlgUI.txtName.value = destItemName
+            }
+
+            dlg.mainUI = dlgUI
+            dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) }
+            dlg.wrapNoHandler { actor ! ItemsState(remaining, processed) }
+            dlg.setCancelHandler { actor ! ItemsState(Nil, processed) }
+          }
+        }
+      }
+
+      copyItem(item.getName)
+
+    case _ =>
+      actor ! itemsState
   }
 }
 
 
 /** File/Dir Copy/Move UI */
 class ItemsTransferDialogUI extends FormLayout with Spacing with UndefinedSize {
-  val lblMsg = new Label
+  val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 
   addComponents(this, lblMsg, pi)
@@ -320,7 +328,7 @@ class ItemsTransferDialogUI extends FormLayout with Spacing with UndefinedSize {
 
 
 class ItemRenameDialogUI extends FormLayout with Spacing with UndefinedSize {
-  val lblMsg = new Label
+  val lblMsg = new Label with UndefinedSize
   val txtName = new TextField("Name")
 
   addComponents(this, lblMsg, txtName)
