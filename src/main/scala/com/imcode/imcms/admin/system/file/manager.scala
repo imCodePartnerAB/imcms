@@ -51,6 +51,12 @@ class FileManager(app: ImcmsApplication) {
       }
     }
 
+    ui.miEditRename setCommandHandler {
+      for (selection <- browser.selection if selection.hasSingleItem) {
+        // rename
+      }
+    }
+
     ui.miEditDelete setCommandHandler {
       for (selection <- browser.selection if selection.hasItems) {
         app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
@@ -166,6 +172,7 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
   val miEdit = mb.addItem("Edit")
   val miEditCopy = miEdit.addItem("Copy to...")
   val miEditMove = miEdit.addItem("Move to...")
+  val miEditRename = miEdit.addItem("Rename")
   val miEditDelete = miEdit.addItem("Delete")
   val miView = mb.addItem("View")
   val miViewReload = miView.addItem("Reload")
@@ -237,7 +244,6 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
       dlgUI.lblMsg.value = "Preparing to copy"
 
       object CopyActor extends Actor {
-
         def act() {
           react {
             case itemsState @ ItemsState(Nil, _) => finish(dlg, itemsState)
@@ -274,7 +280,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
         CopyActor ! 'cancel
       }
 
-      CopyActor ! itemsState(items, Nil)
+      CopyActor ! ItemsState(items, Nil)
       CopyActor.start()
     }
   }
@@ -292,12 +298,12 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
             if (item.isFile) FileUtils.copyFile(item, destItem)
             else FileUtils.copyDirectory(item, destItem)
 
-            actor ! ItemsState(remaining, destItem +: processed)
+            stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
             case e => app.synchronized {
               app.initAndShow(new OkCancelDialog("Unable to copy")) { dlg =>
                 dlg.btnOk.setCaption("Skip")
-                dlg.mainUI = new Label("An error occured while coping item %s." format destItemName)
+                dlg.mainUI = new Label("An error occured while coping item %s." format item.getName) with UndefinedSize
 
                 dlg.wrapOkHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
@@ -306,9 +312,9 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
           }
         } else {
           app.synchronized {
-            app.initAndShow(new YesNoCancelDialog("Unable to copy") { dlg =>
+            app.initAndShow(new YesNoCancelDialog("Unable to copy")) { dlg =>
               val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
-                dlgUI.lblMsg.value = "Item %s allready exists in .../%s".format(destItemName, destDir)
+                dlgUI.lblMsg.value = "Item %s allready exists in .../%s".format(destItemName, destDir.getName)
                 dlgUI.txtName.value = destItemName
               }
 
@@ -316,7 +322,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
               dlg.btnNo.setCaption("Skip")
 
               dlg.mainUI = dlgUI
-              dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) } // spawn?
+              dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) }
               dlg.wrapNoHandler { stateHandler ! ItemsState(remaining, processed) }
               dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
             }
@@ -327,7 +333,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
       copyItem(item.getName)
 
     case _ =>
-      actor ! itemsState
+      stateHandler ! itemsState
   }
 }
 
