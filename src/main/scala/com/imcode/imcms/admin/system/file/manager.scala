@@ -68,11 +68,11 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miEditCopy setCommandHandler {
-      new ItemsTransfer(app, browser) copy
+      new ItemsTransfer(app, browser) copy()
     }
 
     ui.miEditMove setCommandHandler {
-      new ItemsTransfer(app, browser) copy
+      new ItemsTransfer(app, browser) move()
     }
 
     ui.miFilePreview setCommandHandler {
@@ -186,6 +186,7 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
 
 
 // ItemsTransferHelper
+// todo: refactor duplicated code code
 class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
   // transfer state
@@ -210,16 +211,35 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
   }
 
 
+  def move() {
+    // refactor into dest dir selection method??
+    for (selection <- browser.selection if selection.hasItems) {
+      val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { dsb =>
+        dsb.addLocation("Home", LocationConf(Imcms.getPath))
+      }
+
+      app.initAndShow(new DirSelectionDialog("Move to", dirSelectBrowser, Seq(selection.dir))) { dlg =>
+        dlg wrapOkHandler {
+          for {
+            destLocation <- dirSelectBrowser.location
+            destSelection <- dirSelectBrowser.selection
+          } asyncMoveItems(destLocation._1.root, destSelection.dir, selection.items)
+        }
+      }
+    }
+  }
+
+
   /**
    * Asynchronously copies selected browser items into destination directory.
    * If at least one item was copied prompts user to select copied items in destination directory.
    *
-   * Client-side is periodically updated using progress indicator pooling feature - this means that
+   * Client-side is updated using progress indicator pooling feature - this means that
    * all UI updates must be synchronized against Application.
    */
   private def asyncCopyItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
 
-    def finish(transferDialog: Dialog, itemsState: ItemsState) = app.synchronized {
+    def handleFinished(transferDialog: Dialog, itemsState: ItemsState) = app.synchronized {
       transferDialog.close()
 
       if (itemsState.processed.isEmpty) {
@@ -231,11 +251,10 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
       }
     }
 
-    def handleUndefinedEvent(transferDialog: Dialog, event: Any) = app.synchronized {
+    def handleUndefined(transferDialog: Dialog, msg: Any) = app.synchronized {
       transferDialog.close()
-      app.showErrorNotification("An error occured while copying items", event.toString)
+      app.showErrorNotification("An error occured while copying items", msg.toString)
     }
-
 
     app.initAndShow(new CancelDialog("Copying items into .../%s" format destDir)) { dlg =>
       val dlgUI = new ItemsTransferDialogUI
@@ -246,7 +265,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
       object CopyActor extends Actor {
         def act() {
           react {
-            case itemsState @ ItemsState(Nil, _) => finish(dlg, itemsState)
+            case itemsState @ ItemsState(Nil, _) => handleFinished(dlg, itemsState)
 
             case itemsState @ ItemsState(item :: _, _) =>
               app.synchronized {
@@ -262,11 +281,11 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
             case 'cancel =>
               react {
-                case itemsState: ItemsState => finish(dlg, itemsState)
-                case undefined => handleUndefinedEvent(dlg, undefined)
+                case itemsState: ItemsState => handleFinished(dlg, itemsState)
+                case undefined => handleUndefined(dlg, undefined)
               }
 
-            case undefined => handleUndefinedEvent(dlg, undefined)
+            case undefined => handleUndefined(dlg, undefined)
           }
         }
       }
@@ -288,6 +307,9 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
   /**
    * Attempts to copy fist of the remaining items into the destination dir.
    * Updates transfer state and send it to the actor.
+   *
+   * Client-side is updated using progress indicator pooling feature - this means that
+   * all UI updates must be synchronized against Application.
    */
   private def asyncCopyItem(stateHandler: Actor, destDir: File, itemsState: ItemsState) = itemsState match {
     case ItemsState(item :: remaining, processed) =>
@@ -335,6 +357,135 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
     case _ =>
       stateHandler ! itemsState
   }
+
+  /**
+   * Asynchronously moves selected browser items into destination directory.
+   * If at least one item was copied prompts user to select copied items in destination directory.
+   *
+   * Client-side is updated using progress indicator pooling feature - this means that
+   * all UI updates must be synchronized against Application.
+   */
+  private def asyncMoveItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
+
+    def handleFinished(transferDialog: Dialog, itemsState: ItemsState) = app.synchronized {
+      transferDialog.close()
+
+      if (itemsState.processed.isEmpty) {
+        app.showWarningNotification("No items where moved")
+      } else {
+        app.initAndShow(new ConfirmationDialog("Finished", "%d items where moved. Would you like to preview" format itemsState.processed.size)) { dlg =>
+          dlg.wrapOkHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
+        }
+      }
+    }
+
+    def handleUndefined(transferDialog: Dialog, msg: Any) = app.synchronized {
+      transferDialog.close()
+      app.showErrorNotification("An error occured while moving items", msg.toString)
+    }
+
+    app.initAndShow(new CancelDialog("Moving items into .../%s" format destDir)) { dlg =>
+      val dlgUI = new ItemsTransferDialogUI
+
+      dlg.mainUI = dlgUI
+      dlgUI.lblMsg.value = "Preparing to move"
+
+      object MoveActor extends Actor {
+        def act() {
+          react {
+            case itemsState @ ItemsState(Nil, _) => handleFinished(dlg, itemsState)
+
+            case itemsState @ ItemsState(item :: _, _) =>
+              app.synchronized {
+                dlgUI.lblMsg.value = "Moving " + item.getName
+              }
+
+              Actor.actor {
+                Thread.sleep(5000)
+                asyncMoveItem(MoveActor, destDir, itemsState)
+              }
+
+              act()
+
+            case 'cancel =>
+              react {
+                case itemsState: ItemsState => handleFinished(dlg, itemsState)
+                case undefined => handleUndefined(dlg, undefined)
+              }
+
+            case undefined => handleUndefined(dlg, undefined)
+          }
+        }
+      }
+
+      dlg.btnCancel.addClickHandler {
+        app.synchronized {
+          dlg.btnCancel.setEnabled(false)
+          dlgUI.lblMsg.value = "Cancelling"
+        }
+
+        MoveActor ! 'cancel
+      }
+
+      MoveActor ! ItemsState(items, Nil)
+      MoveActor.start()
+    }
+  }
+
+  /**
+   * Attempts to move fist of the remaining items into the destination dir.
+   * Updates transfer state and send it to the actor.
+   *
+   * Client-side is updated using progress indicator pooling feature - this means that
+   * all UI updates must be synchronized against Application.
+   */
+  private def asyncMoveItem(stateHandler: Actor, destDir: File, itemsState: ItemsState) = itemsState match {
+    case ItemsState(item :: remaining, processed) =>
+      // allows item renaming
+      def moveItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
+        if (!destItem.exists) {
+          try {
+            if (item.isFile) FileUtils.moveFile(item, destItem)
+            else FileUtils.moveDirectory(item, destItem)
+
+            stateHandler ! ItemsState(remaining, destItem +: processed)
+          } catch {
+            case e => app.synchronized {
+              app.initAndShow(new OkCancelDialog("Unable to move")) { dlg =>
+                dlg.btnOk.setCaption("Skip")
+                dlg.mainUI = new Label("An error occured while moving item %s." format item.getName) with UndefinedSize
+
+                dlg.wrapOkHandler { stateHandler ! ItemsState(remaining, processed) }
+                dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
+              }
+            }
+          }
+        } else {
+          app.synchronized {
+            app.initAndShow(new YesNoCancelDialog("Unable to move")) { dlg =>
+              val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
+                dlgUI.lblMsg.value = "Item %s allready exists in .../%s".format(destItemName, destDir.getName)
+                dlgUI.txtName.value = destItemName
+              }
+
+              dlg.btnYes.setCaption("Rename")
+              dlg.btnNo.setCaption("Skip")
+
+              dlg.mainUI = dlgUI
+              dlg.wrapYesHandler { moveItem(dlgUI.txtName.value) }
+              dlg.wrapNoHandler { stateHandler ! ItemsState(remaining, processed) }
+              dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
+            }
+          }
+        }
+      }
+
+      moveItem(item.getName)
+
+    case _ =>
+      stateHandler ! itemsState
+  }
+
 }
 
 
