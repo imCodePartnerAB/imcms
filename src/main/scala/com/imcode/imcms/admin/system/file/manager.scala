@@ -282,30 +282,44 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
   /**
    * Attempts to copy fist of the remaining items into the destination dir.
    * Updates transfer state and send it to the actor.
-   * todo: synchronize ui ops
    */
-  private def asyncCopyItem(actor: Actor, destDir: File, itemsState: ItemsState) = itemsState match {
+  private def asyncCopyItem(stateHandler: Actor, destDir: File, itemsState: ItemsState) = itemsState match {
     case ItemsState(item :: remaining, processed) =>
       // allows item renaming
       def copyItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
         if (!destItem.exists) {
-          // try/catch - handle error
-          if (item.isFile) FileUtils.copyFile(item, destItem)
-          else FileUtils.copyDirectory(item, destItem)
+          try {
+            if (item.isFile) FileUtils.copyFile(item, destItem)
+            else FileUtils.copyDirectory(item, destItem)
 
-          actor ! ItemsState(remaining, destItem +: processed)
-          // try/catch - handle error
-        } else {
-          app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists" format destItemName)) { dlg =>
-            val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
-              dlgUI.lblMsg.value = "Please provide different name"
-              dlgUI.txtName.value = destItemName
+            actor ! ItemsState(remaining, destItem +: processed)
+          } catch {
+            case e => app.synchronized {
+              app.initAndShow(new OkCancelDialog("Unable to copy")) { dlg =>
+                dlg.btnOk.setCaption("Skip")
+                dlg.mainUI = new Label("An error occured while coping item %s." format destItemName)
+
+                dlg.wrapOkHandler { stateHandler ! ItemsState(remaining, processed) }
+                dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
+              }
             }
+          }
+        } else {
+          app.synchronized {
+            app.initAndShow(new YesNoCancelDialog("Unable to copy") { dlg =>
+              val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
+                dlgUI.lblMsg.value = "Item %s allready exists in .../%s".format(destItemName, destDir)
+                dlgUI.txtName.value = destItemName
+              }
 
-            dlg.mainUI = dlgUI
-            dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) }
-            dlg.wrapNoHandler { actor ! ItemsState(remaining, processed) }
-            dlg.setCancelHandler { actor ! ItemsState(Nil, processed) }
+              dlg.btnYes.setCaption("Rename")
+              dlg.btnNo.setCaption("Skip")
+
+              dlg.mainUI = dlgUI
+              dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) } // spawn?
+              dlg.wrapNoHandler { stateHandler ! ItemsState(remaining, processed) }
+              dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
+            }
           }
         }
       }
