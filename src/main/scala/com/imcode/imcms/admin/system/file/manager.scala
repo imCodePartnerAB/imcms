@@ -41,7 +41,7 @@ class FileManager(app: ImcmsApplication) {
             case _ => app.initAndShow(new ConfirmationDialog(opFailMsg format item)) { dlg =>
               dlg.btnOk.setCaption("Skip")
               dlg.setOkHandler { applyOpToRestItems() }
-              dlg.setCancelHandler { applyOpToEmptyItems() }
+              dlg.wrapCancelHandler { applyOpToEmptyItems() }
             }
           }
 
@@ -236,13 +236,14 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
             actor ! (('process, TransferState(remaining, destItem +: processed)))
             // try/catch - handle error
           } else {
-            app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists")) { dlg =>
-              val dlgMainUI = letret(new ItemRenameDialogUI) { ui =>
-                ui.lblMsg.value = "Please provide different name"
+            app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists" format destItemName)) { dlg =>
+              val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
+                dlgUI.lblMsg.value = "Please provide different name"
+                dlgUI.txtName.value = destItemName
               }
 
-              dlg.mainUI = dlgMainUI
-              dlg.setYesHandler { copyItem(dlgMainUI.txtName.value) }
+              dlg.mainUI = dlgUI
+              dlg.setYesHandler { copyItem(dlgUI.txtName.value) }
               dlg.setNoHandler { actor ! (('process, TransferState(remaining, processed))) }
               dlg.setCancelHandler { actor ! (('process, TransferState(Nil, processed))) }
             }
@@ -264,7 +265,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
         if (transferState.processed.isEmpty) {
           app.showWarningNotification("No items where copied")
         } else {
-          app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview")) { dlg =>
+          app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview" format transferState.processed.size)) { dlg =>
             dlg.setOkHandler { browser.select(destLocationRoot, destDir, transferState.processed) }
           }
         }
@@ -276,12 +277,11 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
       }
 
 
-      app.initAndShow(new OKDialog("Copying files into %s" format destDir)) { dlg =>
-        val dialogUI = new ItemsTransferDialogUI
+      app.initAndShow(new CancelDialog("Copying files into %s" format destDir)) { dlg =>
+        val dlgUI = new ItemsTransferDialogUI
 
-        dlg.mainUI = dialogUI
-        dlg.btnOk.setCaption("Cancel")
-        dialogUI.lblMsg.value = "Preparing to copy"
+        dlg.mainUI = dlgUI
+        dlgUI.lblMsg.value = "Preparing to copy"
 
         object CopyActor extends Actor {
 
@@ -292,7 +292,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
               case ('process, transferState @ TransferState(item :: _, _)) =>
                 app.synchronized {
-                  dialogUI.lblMsg.value = "Copying " + item.getName
+                  dlgUI.lblMsg.value = "Copying " + item.getName
                 }
 
                 Actor.actor {
@@ -313,21 +313,21 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
           }
         }
 
-        dlg.btnOk.addClickHandler {
+        dlg.btnCancel.addClickHandler {
           app.synchronized {
-            dlg.btnOk.setEnabled(false)
-            dialogUI.lblMsg.value = "Cancelling"
+            dlg.btnCancel.setEnabled(false)
+            dlgUI.lblMsg.value = "Cancelling"
           }
 
           CopyActor ! 'cancel
         }
 
-        CopyActor.start()
         CopyActor ! (('process, TransferState(items, Nil)))
+        CopyActor.start()
       }
     }
 
-    // refactor into dest dir selection method
+    // refactor into dest dir selection method??
     for (selection <- browser.selection if selection.hasItems) {
       val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { dsb =>
         dsb.addLocation("Home", LocationConf(Imcms.getPath))

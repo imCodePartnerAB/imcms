@@ -232,12 +232,36 @@ trait OKButton extends Dialog {
 }
 
 
+trait SingleClickListener extends Button {
+  private val clickListenerRef = new AtomicReference(Option.empty[Button.ClickListener])
+
+  override def addListener(listener: Button.ClickListener) {
+    clickListenerRef.synchronized {
+      for (currentListener <- clickListenerRef.getAndSet(?(listener))) {
+        super.removeListener(currentListener)
+      }
+
+      super.addListener(listener)
+    }
+  }
+
+  override def removeListener(listener: Button.ClickListener) {
+    clickListenerRef.synchronized {
+      for (currentListener <- clickListenerRef.get if currentListener eq listener) {
+        super.removeListener(currentListener)
+        clickListenerRef.set(None)
+      }
+    }
+  }
+}
+
+
 trait CancelButton extends Dialog {
-  val btnCancel = new Button("Cancel") { setIcon(new ThemeResource("icons/16/cancel.png")) }
+  val btnCancel = new Button("Cancel") with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
-  setCancelHandler {}
+  wrapCancelHandler {}
 
-  def setCancelHandler(handler: => Unit) {
+  def wrapCancelHandler(handler: => Unit) {
     btnCancel addClickHandler {
       EX.allCatch.either(handler) match {
         case Right(_) => close()
@@ -248,13 +272,18 @@ trait CancelButton extends Dialog {
       }
     }
   }
+
+  def setCancelHandler(handler: => Unit) = btnCancel.addClickHandler(handler)
 }
 
 /** Empty dialog window. */
 class OKDialog(caption: String = "") extends Dialog(caption) with OKButton {
   buttonsBarUI = btnOk
+}
 
-  btnOk addClickHandler { close() }
+/** Empty dialog window. */
+class CancelDialog(caption: String = "") extends Dialog(caption) with CancelButton {
+  buttonsBarUI = btnCancel
 }
 
 
