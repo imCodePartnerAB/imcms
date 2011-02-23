@@ -143,7 +143,7 @@ class FilePreview(browser: FileBrowser) {
   ui.btnEnlarge addClickHandler {
     for {
       selection <- browser.selection
-      file <- selection.first
+      file <- selection.firstItem
       fpc = FilePreviewContent(ui.getApplication, file) if fpc.allowsFullSizePreview
     } ui.getApplication.initAndShow(new Window("Preview"), resizable = true) { w =>
       w.getContent.addComponent(fpc.content)
@@ -194,7 +194,7 @@ class ImagePicker(app: Application, browser: FileBrowser) {
   val fileDialog = letret(new FileDialog("Pick an image", browser)) { dlg =>
     dlg.preview.enabled = true
     dlg.setOkHandler {
-      for (selection <- browser.selection; file <- selection.first)
+      for (selection <- browser.selection; file <- selection.firstItem)
         preview.set(new Embedded("", new FileResource(file, app)))
     }
   }

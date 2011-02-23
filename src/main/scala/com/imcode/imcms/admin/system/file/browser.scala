@@ -184,13 +184,13 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
   def select(locationRoot: File, locationSelection: LocationSelection) =
     locations.find {
-      case (_, (locationTree, _)) => locationTree.root == root
+      case (_, (locationTree, _)) => locationTree.root == locationRoot
     } foreach {
       case (tab, (locationTree, locationItems)) =>
         ui.accLocationTrees.setSelectedTab(tab)
         locationTree.cd(locationSelection.dir)
         if (isSelectable && locationSelection.hasItems) {
-          locationItems.ui.value = if (isMultiSelect) locationSelection.items else locationSelection.firstItem.get
+          locationItems.ui.setValue(if (isMultiSelect) asJavaCollection(locationSelection.items) else locationSelection.firstItem.get)
         }
     }
 }

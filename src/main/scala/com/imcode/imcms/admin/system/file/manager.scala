@@ -60,7 +60,7 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miEditDelete setCommandHandler {
-      for (selection <- browser.selection if selection.nonEmpty) {
+      for (selection <- browser.selection if selection.hasItems) {
         app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
           dlg setOkHandler {
             applyOpToItems(selection.items, FileUtils.forceDelete, "Unable to delete item %s.")
@@ -70,47 +70,48 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miEditCopy setCommandHandler {
-      for (selection <- browser.selection if selection.nonEmpty) {
-        val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
-          b.addLocation("Home", LocationConf(Imcms.getPath))
-        }
-
-        app.initAndShow(new DirSelectionDialog("Select distination directory", dirSelectBrowser)) { dlg =>
-          dlg setOkHandler {
-            for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
-              //copy dialog/progress ???
-              def op(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
-                                   else FileUtils.copyDirectoryToDirectory(item, destDir)
-
-              val afterFn = promptCd(dirSelectBrowser.location.get._1.root, destDir)
-              applyOpToItems(selection.items, op, "Unable to copy item %s.", afterFn)
-            }
-          }
-        }
-      }
+//      for (selection <- browser.selection if selection.nonEmpty) {
+//        val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
+//          b.addLocation("Home", LocationConf(Imcms.getPath))
+//        }
+//
+//        app.initAndShow(new DirSelectionDialog("Select distination directory", dirSelectBrowser)) { dlg =>
+//          dlg setOkHandler {
+//            for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
+//              //copy dialog/progress ???
+//              def op(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
+//                                   else FileUtils.copyDirectoryToDirectory(item, destDir)
+//
+//              val afterFn = promptCd(dirSelectBrowser.location.get._1.root, destDir)
+//              applyOpToItems(selection.items, op, "Unable to copy item %s.", afterFn)
+//            }
+//          }
+//        }
+//      }
+      new ItemsTransfer(app, browser) copy
     }
 
     ui.miEditMove setCommandHandler {
-      for (selection <- browser.selection if selection.nonEmpty) {
-        val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
-          b.addLocation("Home", LocationConf(Imcms.getPath))
-        }
-
-        app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
-          dlg setOkHandler {
-            for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
-              def op(item: File) = if (item.isFile) FileUtils.moveFileToDirectory(item, destDir, false)
-                                   else FileUtils.moveDirectoryToDirectory(item, destDir, false)
-
-              applyOpToItems(selection.items, op, "Unable to move item %s.")
-            }
-          }
-        }
-      }
+//      for (selection <- browser.selection if selection.hasItems) {
+//        val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
+//          b.addLocation("Home", LocationConf(Imcms.getPath))
+//        }
+//
+//        app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
+//          dlg setOkHandler {
+//            for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
+//              def op(item: File) = if (item.isFile) FileUtils.moveFileToDirectory(item, destDir, false)
+//                                   else FileUtils.moveDirectoryToDirectory(item, destDir, false)
+//
+//              applyOpToItems(selection.items, op, "Unable to move item %s.")
+//            }
+//          }
+//        }
+//      }
     }
 
     ui.miFilePreview setCommandHandler {
-      for (selection <- browser.selection; item <- selection.first /*isViewable(item)*/) {
+      for (selection <- browser.selection; item <- selection.firstItem /*isViewable(item)*/) {
         app.initAndShow(new OKDialog("Content of %s" format item) with CustomSizeDialog, resizable = true) { dlg =>
           dlg.mainUI = new TextArea("", scala.io.Source.fromFile(item).mkString) with ReadOnly with FullSize
           dlg.setSize((500, 500))
@@ -119,7 +120,7 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miFileEdit setCommandHandler {
-      for (selection <- browser.selection; item <- selection.first /*isEditable(item)*/) {
+      for (selection <- browser.selection; item <- selection.firstItem /*isEditable(item)*/) {
         app.initAndShow(new OkCancelDialog("Edit content of %s" format item) with CustomSizeDialog, resizable = true) { dlg =>
           val textArea = new TextArea("", scala.io.Source.fromFile(item).mkString) with FullSize
           dlg.mainUI = textArea
@@ -154,7 +155,7 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miFileDownload setCommandHandler {
-      for (selection <- browser.selection; item <- selection.first if item.isFile) {
+      for (selection <- browser.selection; item <- selection.firstItem if item.isFile) {
         app.getMainWindow.open(
           new FileResource(item, app) {
             override def getStream() = letret(super.getStream) { ds =>
@@ -221,78 +222,90 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
 
 class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
-  def copy() =
-    def copyItems(itemsToCopy: Seq[File], copiedItems: Seq[File]): Unit = itemsToCopy match {
-      case item :: items =>
+  case class TransferState(remaining: Seq[File], processed: Seq[File])
+
+  def copy() {
+    def copy(actor: Actor, destDir: File, transferState: TransferState) = transferState match {
+      case TransferState(item :: remaining, processed) =>
         def copyItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
           if (!destItem.exists) {
             // try/catch - handle error
             if (item.isFile) FileUtils.copyFile(item, destItem)
-            else FileUtils.copyDirectory(items, destItem)
+            else FileUtils.copyDirectory(item, destItem)
 
-            copyItems(items, destItem :: copiedItems)
+            actor ! (('process, TransferState(remaining, destItem +: processed)))
             // try/catch - handle error
           } else {
             app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists")) { dlg =>
-              val dlgMainUI = letert(new ItemRenameDialogUI) { ui =>
+              val dlgMainUI = letret(new ItemRenameDialogUI) { ui =>
                 ui.lblMsg.value = "Please provide different name"
               }
 
               dlg.mainUI = dlgMainUI
               dlg.setYesHandler { copyItem(dlgMainUI.txtName.value) }
-              dlg.setNoHandler { copyItems(items, copiedItems) }
-              dlg.setCancelHandler { copyItems(Nil, copiedItems) }
+              dlg.setNoHandler { actor ! (('process, TransferState(remaining, processed))) }
+              dlg.setCancelHandler { actor ! (('process, TransferState(Nil, processed))) }
             }
           }
         }
 
         copyItem(item.getName)
 
-      case _ => if (copiedItems.nonEmpty) {
-        // Yes/No dialog
-        app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview")) { dlg =>
-          dlg.setOkHandler { browser.select(dirSelectBrowser.location.get._1.root, destDir, destDir) }
-        }
-      }
+      case _ =>
+        actor ! ('process, transferState)
     }
 
 
     def copyItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
+
+      def finish(transferDialog: Dialog, transferState: TransferState) {
+        transferDialog.close()
+
+        if (transferState.processed.isEmpty) {
+          app.showWarningNotification("No items where copied")
+        } else {
+          app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview")) { dlg =>
+            dlg.setOkHandler { browser.select(destLocationRoot, destDir, transferState.processed) }
+          }
+        }
+      }
+
+      def handleUndefinedEvent(transferDialog: Dialog, event: Any) {
+        transferDialog.close()
+        app.showErrorNotification("An error occured while copying items", event.toString)
+      }
+
+
       app.initAndShow(new OKDialog("Copying files into %s" format destDir)) { dlg =>
         val dialogUI = new ItemsTransferDialogUI
 
         dlg.mainUI = dialogUI
         dlg.btnOk.setCaption("Cancel")
 
-        case class Transfer(remainingItems: Seq[File], processedItems: Seq[File])
-
         object CopyActor extends Actor {
+
           def act() {
             react {
-              case ('process, Transfer(Nil, Nil)) =>
-                // no items copied
+              case ('process, transferState @ TransferState(Nil, _)) =>
+                finish(dlg, transferState)
 
-              case ('process, Transfer(Nil, processedItems)) =>
-                // end
+              case ('process, transferState @ TransferState(item :: _, _)) =>
+                dialogUI.lblMsg.value = "Copying " + item.getName
 
-              case ('process, Transfer(remainingItems, processedItems)) =>
-                // spawn { copy src dest }
-                // act()
+                Actor.actor {
+                  Thread.sleep(5000)
+                  copy(CopyActor, destDir, transferState)
+                }
 
-              case ('item_exists, Transfer(remainingItems, processedItems)) =>
-                // rename
-                // spanw, acr
-
-              case ('error, Transfer(remainingItems, processedItems)) =>
-                // cancel, skip, retry
+                act()
 
               case 'cancel =>
                 react {
-                  case (_, Transfer(remainingItems, processedItems))
-                  case _ => // error
+                  case (_, transferState: TransferState) => finish(dlg, transferState)
+                  case undefined => handleUndefinedEvent(dlg, undefined)
                 }
 
-              case _ => // stop receiving messages, error
+              case undefined => handleUndefinedEvent(dlg, undefined)
             }
           }
         }
@@ -304,12 +317,12 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
         }
 
         CopyActor.start()
-        CopyActor ! ('process, Transfer(items, Nil))
+        CopyActor ! (('process, TransferState(items, Nil)))
       }
     }
 
     // refactor into dest dir selection method
-    for (selection <- browser.selection if selection.nonEmpty) {
+    for (selection <- browser.selection if selection.hasItems) {
       val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { dsb =>
         dsb.addLocation("Home", LocationConf(Imcms.getPath))
       }
@@ -319,7 +332,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
           for {
             destLocation <- dirSelectBrowser.location
             destSelection <- dirSelectBrowser.selection
-          } copyItems(destLocation.root, destSelection.dir, selection.items)
+          } copyItems(destLocation._1.root, destSelection.dir, selection.items)
         }
       }
     }
@@ -332,6 +345,8 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 class ItemsTransferDialogUI extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label
   val pi = new ProgressIndicator
+
+  addComponents(this, lblMsg, pi)
 }
 
 
