@@ -233,7 +233,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
             if (item.isFile) FileUtils.copyFile(item, destItem)
             else FileUtils.copyDirectory(item, destItem)
 
-            actor ! (('process, TransferState(remaining, destItem +: processed)))
+            actor ! TransferState(remaining, destItem +: processed)
             // try/catch - handle error
           } else {
             app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists" format destItemName)) { dlg =>
@@ -244,8 +244,8 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
               dlg.mainUI = dlgUI
               dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) }
-              dlg.wrapNoHandler { actor ! (('process, TransferState(remaining, processed))) }
-              dlg.setCancelHandler { actor ! (('process, TransferState(Nil, processed))) }
+              dlg.wrapNoHandler { actor ! TransferState(remaining, processed) }
+              dlg.setCancelHandler { actor ! TransferState(Nil, processed) }
             }
           }
         }
@@ -253,7 +253,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
         copyItem(item.getName)
 
       case _ =>
-        actor ! ('process, transferState)
+        actor ! transferState
     }
 
 
@@ -287,10 +287,9 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
           def act() {
             react {
-              case ('process, transferState @ TransferState(Nil, _)) =>
-                finish(dlg, transferState)
+              case transferState @ TransferState(Nil, _) => finish(dlg, transferState)
 
-              case ('process, transferState @ TransferState(item :: _, _)) =>
+              case transferState @ TransferState(item :: _, _) =>
                 app.synchronized {
                   dlgUI.lblMsg.value = "Copying " + item.getName
                 }
@@ -304,7 +303,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
               case 'cancel =>
                 react {
-                  case (_, transferState: TransferState) => finish(dlg, transferState)
+                  case transferState: TransferState => finish(dlg, transferState)
                   case undefined => handleUndefinedEvent(dlg, undefined)
                 }
 
@@ -322,7 +321,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
           CopyActor ! 'cancel
         }
 
-        CopyActor ! (('process, TransferState(items, Nil)))
+        CopyActor ! TransferState(items, Nil)
         CopyActor.start()
       }
     }
