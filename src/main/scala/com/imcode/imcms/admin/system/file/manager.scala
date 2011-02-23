@@ -258,7 +258,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
     def copyItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
 
-      def finish(transferDialog: Dialog, transferState: TransferState) {
+      def finish(transferDialog: Dialog, transferState: TransferState) = app.synchronized {
         transferDialog.close()
 
         if (transferState.processed.isEmpty) {
@@ -270,7 +270,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
         }
       }
 
-      def handleUndefinedEvent(transferDialog: Dialog, event: Any) {
+      def handleUndefinedEvent(transferDialog: Dialog, event: Any) = app.synchronized {
         transferDialog.close()
         app.showErrorNotification("An error occured while copying items", event.toString)
       }
@@ -281,6 +281,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
         dlg.mainUI = dialogUI
         dlg.btnOk.setCaption("Cancel")
+        dialogUI.lblMsg.value = "Preparing to copy"
 
         object CopyActor extends Actor {
 
@@ -290,7 +291,9 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
                 finish(dlg, transferState)
 
               case ('process, transferState @ TransferState(item :: _, _)) =>
-                dialogUI.lblMsg.value = "Copying " + item.getName
+                app.synchronized {
+                  dialogUI.lblMsg.value = "Copying " + item.getName
+                }
 
                 Actor.actor {
                   Thread.sleep(5000)
@@ -311,8 +314,11 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
         }
 
         dlg.btnOk.addClickHandler {
-          dlg.btnOk.setEnabled(false)
-          dialogUI.lblMsg.value = "Cancelling"
+          app.synchronized {
+            dlg.btnOk.setEnabled(false)
+            dialogUI.lblMsg.value = "Cancelling"
+          }
+
           CopyActor ! 'cancel
         }
 
