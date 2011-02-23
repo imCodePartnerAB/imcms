@@ -39,7 +39,7 @@ class IPAccessManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblIP) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected IP access?")) { dlg =>
-          dlg setOkHandler {
+          dlg wrapOkHandler {
             app.privileged(permission) {
               EX.allCatch.either(ipAccessDao delete id) match {
                 case Right(_) =>
@@ -77,13 +77,13 @@ class IPAccessManager(app: ImcmsApplication) {
         c.txtTo.value = ?(vo.getEnd) map toDDN getOrElse ""
         c.userPickerUI.btnChoose addClickHandler {
           app.initAndShow(new OkCancelDialog("Choose user") with UserSelectDialog) { userSelectDlg =>
-            userSelectDlg.setOkHandler {
+            userSelectDlg.wrapOkHandler {
               c.userPickerUI.txtLoginName.value = (userSelectDlg.userSelect.selection map (_.getLoginName) getOrElse "")
             }
           }
         }
 
-        dlg setOkHandler {
+        dlg wrapOkHandler {
           let(vo.clone) { voc =>
             // todo: validate
             voc.setUserId(Int box (roleMapper getUser c.userPickerUI.txtLoginName.value getId))

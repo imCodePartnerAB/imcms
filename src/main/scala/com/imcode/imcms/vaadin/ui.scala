@@ -97,6 +97,29 @@ class ButtonWrapper(button: Button) {
   def addClickHandler(handler: => Unit) = addClickListener(_ => handler)
 }
 
+trait SingleClickListener extends Button {
+  private val clickListenerRef = new AtomicReference(Option.empty[Button.ClickListener])
+
+  override def addListener(listener: Button.ClickListener) {
+    clickListenerRef.synchronized {
+      for (currentListener <- clickListenerRef.getAndSet(?(listener))) {
+        super.removeListener(currentListener)
+      }
+
+      super.addListener(listener)
+    }
+  }
+
+  override def removeListener(listener: Button.ClickListener) {
+    clickListenerRef.synchronized {
+      for (currentListener <- clickListenerRef.get if currentListener eq listener) {
+        super.removeListener(currentListener)
+        clickListenerRef.set(None)
+      }
+    }
+  }
+}
+
 /**
  * Must be mixed-in into a component which parent is ImcmsApplication.
  */
@@ -176,9 +199,9 @@ trait CustomSizeDialog extends Dialog {
 }
 
 trait YesButton extends Dialog {
-  val btnYes = new Button("Yes") { setIcon(new ThemeResource("icons/16/ok.png")) }
+  val btnYes = new Button("Yes") with SingleClickListener { setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  def setYesHandler(handler: => Unit) {
+  def wrapYesHandler(handler: => Unit) {
     btnYes addClickHandler {
       EX.allCatch.either(handler) match {
         case Right(_) => close()
@@ -192,9 +215,9 @@ trait YesButton extends Dialog {
 }
 
 trait NoButton extends Dialog {
-  val btnNo = new Button("No") { setIcon(new ThemeResource("icons/16/cancel.png")) }
+  val btnNo = new Button("No") with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
-  def setNoHandler(handler: => Unit) {
+  def wrapNoHandler(handler: => Unit) {
     btnNo addClickHandler {
       EX.allCatch.either(handler) match {
         case Right(_) => close()
@@ -208,17 +231,14 @@ trait NoButton extends Dialog {
 }
 
 trait OKButton extends Dialog {
-  val btnOk = new Button("Ok") { setIcon(new ThemeResource("icons/16/ok.png")) }
+  val btnOk = new Button("Ok") with SingleClickListener { setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  setOkHandler {}
+  wrapOkHandler {}
 
   /**
    * Adds Ok button listener which invokes a handler and closes dialog if there is no exception.
-   *
-   * // replace all listeners ???
-   * // disallow adding listeners to ok button???
    */
-  def setOkHandler(handler: => Unit) {
+  def wrapOkHandler(handler: => Unit) {
     btnOk addClickHandler {
       EX.allCatch.either(handler) match {
         case Right(_) => close()
@@ -229,31 +249,12 @@ trait OKButton extends Dialog {
       }
     }
   }
+
+  def setOkHandler(handler: => Unit) = btnOk.addClickHandler(handler)
 }
 
 
-trait SingleClickListener extends Button {
-  private val clickListenerRef = new AtomicReference(Option.empty[Button.ClickListener])
 
-  override def addListener(listener: Button.ClickListener) {
-    clickListenerRef.synchronized {
-      for (currentListener <- clickListenerRef.getAndSet(?(listener))) {
-        super.removeListener(currentListener)
-      }
-
-      super.addListener(listener)
-    }
-  }
-
-  override def removeListener(listener: Button.ClickListener) {
-    clickListenerRef.synchronized {
-      for (currentListener <- clickListenerRef.get if currentListener eq listener) {
-        super.removeListener(currentListener)
-        clickListenerRef.set(None)
-      }
-    }
-  }
-}
 
 
 trait CancelButton extends Dialog {

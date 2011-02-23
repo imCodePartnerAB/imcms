@@ -32,7 +32,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblTypes) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected category type?")) { dlg =>
-          dlg setOkHandler {
+          dlg wrapOkHandler {
             app.privileged(permission) {
               EX.allCatch.either(?(categoryMapper getCategoryTypeById id.intValue) foreach categoryMapper.deleteCategoryTypeFromDb) match {
                 case Right(_) =>
@@ -70,7 +70,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
         c.chkInherited.value = Boolean box vo.isInherited
         c.chkMultiSelect.value = Boolean box vo.isMultiselect
 
-        dlg setOkHandler {
+        dlg wrapOkHandler {
           let(vo.clone()) { voc =>
             voc setName c.txtName.value.trim
             voc setInherited c.chkInherited.booleanValue

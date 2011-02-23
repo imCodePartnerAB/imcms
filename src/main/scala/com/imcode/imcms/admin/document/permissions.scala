@@ -42,7 +42,7 @@ class PermissionsEditor(app: ImcmsApplication, meta: Meta, user: UserDomainObjec
             c.lstRoles.addItem(roleId, roleMapper.getRole(roleId).getName)
           }
 
-          dlg.setOkHandler {
+          dlg.wrapOkHandler {
             roleIdToPermissionSetType.setPermissionSetTypeForRole(c.lstRoles.value, READ)
             ui.tblRolesPermissions.reload()
           }

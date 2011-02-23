@@ -33,7 +33,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblGroups) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected template group?")) { dlg =>
-          dlg setOkHandler {
+          dlg wrapOkHandler {
             app.privileged(permission) {
               EX.allCatch.either(templateMapper deleteTemplateGroup id.intValue) match {
                 case Right(_) =>
@@ -70,7 +70,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
         templateMapper.getTemplatesInGroup(vo) foreach (c.twsTemplates addChosenItem _.getName)
         templateMapper.getTemplatesNotInGroup(vo) foreach (c.twsTemplates addAvailableItem _.getName)
 
-        dlg.setOkHandler {
+        dlg.wrapOkHandler {
           app.privileged(permission) {
             val voc = if (isNew) {
               templateMapper.createTemplateGroup(c.txtName.value)

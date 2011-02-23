@@ -31,7 +31,7 @@ class LanguageManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblLanguages) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected language?")) { dlg =>
-          dlg setOkHandler {
+          dlg wrapOkHandler {
             app.privileged(permission) {
               EX.allCatch.either(languageDao.deleteLanguage(id)) match {
                 case Right(_) =>
@@ -50,7 +50,7 @@ class LanguageManager(app: ImcmsApplication) {
     ui.miSetDefault setCommand block {
       whenSelected(ui.tblLanguages) { id =>
         app.initAndShow(new ConfirmationDialog("Change default language?")) { dlg =>
-          dlg setOkHandler {
+          dlg wrapOkHandler {
             app.privileged(permission) {
               val property = systemDao.getProperty("DefaultLanguageId")
               property.setValue(id.toString)
@@ -91,7 +91,7 @@ class LanguageManager(app: ImcmsApplication) {
         c.txtNativeName.value = ?(vo.getNativeName) getOrElse ""
         c.chkEnabled.value = ?(vo.isEnabled) getOrElse (Boolean box false)
 
-        dlg setOkHandler {
+        dlg wrapOkHandler {
           let(vo.clone) { voc =>
             // todo: validate
             voc.setCode(c.txtCode.value)

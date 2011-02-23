@@ -199,7 +199,7 @@ class FileDocEditor(app: ImcmsApplication, doc: FileDocumentDomainObject, mimeTy
             c.sltMimeType.addItem(name)  
           }
 
-          w setOkHandler {
+          w wrapOkHandler {
             c.uploadReceiver.uploadRef.get match {
               case Some(upload) =>
                 val file = new FileDocumentFile
@@ -232,7 +232,7 @@ class FileDocEditor(app: ImcmsApplication, doc: FileDocumentDomainObject, mimeTy
             //c.sltMimeType.value = "" // todo: set
             c.lblUploadStatus.value = fdf.getFilename
 
-            dlg setOkHandler {
+            dlg wrapOkHandler {
               c.uploadReceiver.uploadRef.get match {
                 case Some(upload) => // relace fdf
                   val newFdf = new FileDocumentFile

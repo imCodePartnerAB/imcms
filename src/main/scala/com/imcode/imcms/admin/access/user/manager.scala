@@ -27,7 +27,7 @@ class UserManager(app: ImcmsApplication) {
 
           c.chkActivated.setValue(true)
 
-          dlg setOkHandler {
+          dlg wrapOkHandler {
             let(new UserDomainObject) { u =>
               u setActive c.chkActivated.booleanValue
               u setFirstName c.txtFirstName.value
@@ -76,7 +76,7 @@ class UserManager(app: ImcmsApplication) {
 
             c.sltUILanguage.select(user.getLanguageIso639_2)
 
-            dlg setOkHandler {
+            dlg wrapOkHandler {
               user setActive c.chkActivated.booleanValue
               user setFirstName c.txtFirstName.value
               user setLastName c.txtLastName.value

@@ -29,7 +29,7 @@ class RoleManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblRoles) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected role?")) { dlg =>
-          dlg setOkHandler {
+          dlg wrapOkHandler {
             app.privileged(permission) {
               EX.allCatch.either(?(roleMapper getRole id) foreach roleMapper.deleteRole) match {
                 case Right(_) =>
@@ -71,7 +71,7 @@ class RoleManager(app: ImcmsApplication) {
         c.txtName.value = vo.getName
         for ((permission, chkBox) <- permsToChkBoxes) chkBox.value = vo.getPermissions.contains(permission)
 
-        dlg setOkHandler {
+        dlg wrapOkHandler {
           let(vo.clone) { voc =>
             // todo: validate
             voc.setName(c.txtName.value)

@@ -40,7 +40,7 @@ class FileManager(app: ImcmsApplication) {
           } catch {
             case _ => app.initAndShow(new ConfirmationDialog(opFailMsg format item)) { dlg =>
               dlg.btnOk.setCaption("Skip")
-              dlg.setOkHandler { applyOpToRestItems() }
+              dlg.wrapOkHandler { applyOpToRestItems() }
               dlg.wrapCancelHandler { applyOpToEmptyItems() }
             }
           }
@@ -62,7 +62,7 @@ class FileManager(app: ImcmsApplication) {
     ui.miEditDelete setCommandHandler {
       for (selection <- browser.selection if selection.hasItems) {
         app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
-          dlg setOkHandler {
+          dlg wrapOkHandler {
             applyOpToItems(selection.items, FileUtils.forceDelete, "Unable to delete item %s.")
           }
         }
@@ -76,7 +76,7 @@ class FileManager(app: ImcmsApplication) {
 //        }
 //
 //        app.initAndShow(new DirSelectionDialog("Select distination directory", dirSelectBrowser)) { dlg =>
-//          dlg setOkHandler {
+//          dlg wrapOkHandler {
 //            for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
 //              //copy dialog/progress ???
 //              def op(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
@@ -98,7 +98,7 @@ class FileManager(app: ImcmsApplication) {
 //        }
 //
 //        app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
-//          dlg setOkHandler {
+//          dlg wrapOkHandler {
 //            for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
 //              def op(item: File) = if (item.isFile) FileUtils.moveFileToDirectory(item, destDir, false)
 //                                   else FileUtils.moveDirectoryToDirectory(item, destDir, false)
@@ -126,7 +126,7 @@ class FileManager(app: ImcmsApplication) {
           dlg.mainUI = textArea
           dlg.setSize((500, 500))
 
-          dlg.setOkHandler {
+          dlg.wrapOkHandler {
             FileUtils.writeStringToFile(item, textArea.value)
           }
         }
@@ -136,7 +136,7 @@ class FileManager(app: ImcmsApplication) {
     ui.miFileUpload setCommandHandler {
       for (selection <- browser.selection; dir = selection.dir) {
         app.initAndShow(new FileUploadDialog("Upload file")) { dlg =>
-          dlg.setOkHandler {
+          dlg.wrapOkHandler {
             for {
               UploadedData(_, _, content) <- dlg.upload.data
               file = new File(dir, dlg.upload.saveAsName)
@@ -175,7 +175,7 @@ class FileManager(app: ImcmsApplication) {
         app.initAndShow(new OkCancelDialog("New directory")) { dlg =>
           val txtName = new TextField("Name")
           dlg.mainUI = txtName
-          dlg.setOkHandler {
+          dlg.wrapOkHandler {
             FileUtils.forceMkdir(new File(selection.dir, txtName.value))
             browser.reloadLocationTree()
           }
@@ -243,8 +243,8 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
               }
 
               dlg.mainUI = dlgUI
-              dlg.setYesHandler { copyItem(dlgUI.txtName.value) }
-              dlg.setNoHandler { actor ! (('process, TransferState(remaining, processed))) }
+              dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) }
+              dlg.wrapNoHandler { actor ! (('process, TransferState(remaining, processed))) }
               dlg.setCancelHandler { actor ! (('process, TransferState(Nil, processed))) }
             }
           }
@@ -266,7 +266,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
           app.showWarningNotification("No items where copied")
         } else {
           app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview" format transferState.processed.size)) { dlg =>
-            dlg.setOkHandler { browser.select(destLocationRoot, destDir, transferState.processed) }
+            dlg.wrapOkHandler { browser.select(destLocationRoot, destDir, transferState.processed) }
           }
         }
       }
@@ -334,7 +334,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
       }
 
       app.initAndShow(new DirSelectionDialog("Select distination directory", dirSelectBrowser, Seq(selection.dir))) { dlg =>
-        dlg setOkHandler {
+        dlg wrapOkHandler {
           for {
             destLocation <- dirSelectBrowser.location
             destSelection <- dirSelectBrowser.selection

@@ -25,7 +25,7 @@ class TemplateManager(app: ImcmsApplication) {
       app.initAndShow(new FileUploadDialog("Upload template file")) { dlg =>
         // strips filename extension, trims and replaces spaces with underscores
         dlg.upload.fileNameToSaveAsName = fileRE.unapplySeq(_:String).map(_.head.trim.replaceAll("""\s""", "_")).get
-        dlg.setOkHandler {
+        dlg.wrapOkHandler {
           for {
             data <- dlg.upload.data
             name = dlg.upload.ui.txtSaveAsName.value // todo: check not empty
@@ -57,7 +57,7 @@ class TemplateManager(app: ImcmsApplication) {
           }
 
           dlg.mainUI = fileRenameUI
-          dlg.setOkHandler {
+          dlg.wrapOkHandler {
             app.privileged(permission) {
               templateMapper.renameTemplate(name, fileRenameUI.txtName.value)
             }
@@ -82,7 +82,7 @@ class TemplateManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new ConfirmationDialog("Delete selected template?")) { dlg =>
-          dlg setOkHandler {
+          dlg wrapOkHandler {
             app.privileged(permission) {
               EX.allCatch.either(?(templateMapper getTemplateByName name) foreach templateMapper.deleteTemplate) match {
                 case Right(_) =>

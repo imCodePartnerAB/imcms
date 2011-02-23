@@ -28,7 +28,7 @@ class PropertyManagerManager(app: ImcmsApplication) {
             eui.serverMasterUI.txtEmail.value = d.getServerMasterAddress
           }
 
-          dlg.setOkHandler {
+          dlg.wrapOkHandler {
             app.privileged(permission) {
               val systemData = letret(Imcms.getServices.getSystemData) { d =>
                 d setStartDocument eui.txtStartPageNumber.value.toInt

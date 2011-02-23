@@ -48,7 +48,7 @@ class FileDialog(caption: String, browser: FileBrowser)
 
     ui.miFileUpload setCommand block {
       ui.getApplication.initAndShow(new FileUploadDialog("Upload file")) { dlg =>
-        dlg.setOkHandler {
+        dlg.wrapOkHandler {
           for {
             data <- dlg.upload.data
             selection <- browser.selection
@@ -193,7 +193,7 @@ class ImagePicker(app: Application, browser: FileBrowser) {
   val preview = new EmbeddedPreview; preview.stubUI.value = "No Icon"
   val fileDialog = letret(new FileDialog("Pick an image", browser)) { dlg =>
     dlg.preview.enabled = true
-    dlg.setOkHandler {
+    dlg.wrapOkHandler {
       for (selection <- browser.selection; file <- selection.firstItem)
         preview.set(new Embedded("", new FileResource(file, app)))
     }
