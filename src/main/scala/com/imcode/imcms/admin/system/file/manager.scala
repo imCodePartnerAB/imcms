@@ -46,16 +46,8 @@ class FileManager(app: ImcmsApplication) {
           }
 
         case _ =>
-          browser.reloadLocationTree(preserveTreeSelection = true)
+          browser.reloadLocation(preserveTreeSelection = true)
           afterFn()
-      }
-    }
-
-    def promptCd(root: File, dir: File) = () => {
-      app.initAndShow(new OKDialog("Done")) { dlg =>
-        dlg.btnOk.addClickHandler {
-          browser.select(root, dir)
-        }
       }
     }
 
@@ -70,44 +62,11 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miEditCopy setCommandHandler {
-//      for (selection <- browser.selection if selection.nonEmpty) {
-//        val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
-//          b.addLocation("Home", LocationConf(Imcms.getPath))
-//        }
-//
-//        app.initAndShow(new DirSelectionDialog("Select distination directory", dirSelectBrowser)) { dlg =>
-//          dlg wrapOkHandler {
-//            for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
-//              //copy dialog/progress ???
-//              def op(item: File) = if (item.isFile) FileUtils.copyFileToDirectory(item, destDir)
-//                                   else FileUtils.copyDirectoryToDirectory(item, destDir)
-//
-//              val afterFn = promptCd(dirSelectBrowser.location.get._1.root, destDir)
-//              applyOpToItems(selection.items, op, "Unable to copy item %s.", afterFn)
-//            }
-//          }
-//        }
-//      }
       new ItemsTransfer(app, browser) copy
     }
 
     ui.miEditMove setCommandHandler {
-//      for (selection <- browser.selection if selection.hasItems) {
-//        val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { b =>
-//          b.addLocation("Home", LocationConf(Imcms.getPath))
-//        }
-//
-//        app.initAndShow(new DirSelectionDialog("Select distenation directory", dirSelectBrowser)) { dlg =>
-//          dlg wrapOkHandler {
-//            for (destSelection <- dirSelectBrowser.selection; destDir = destSelection.dir) {
-//              def op(item: File) = if (item.isFile) FileUtils.moveFileToDirectory(item, destDir, false)
-//                                   else FileUtils.moveDirectoryToDirectory(item, destDir, false)
-//
-//              applyOpToItems(selection.items, op, "Unable to move item %s.")
-//            }
-//          }
-//        }
-//      }
+      new ItemsTransfer(app, browser) copy
     }
 
     ui.miFilePreview setCommandHandler {
@@ -167,7 +126,7 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miViewReload setCommandHandler {
-      browser.reloadLocationTree(preserveTreeSelection = true)
+      browser.reloadLocation(preserveTreeSelection = true)
     }
 
     ui.miNewDir setCommandHandler {
@@ -177,7 +136,7 @@ class FileManager(app: ImcmsApplication) {
           dlg.mainUI = txtName
           dlg.wrapOkHandler {
             FileUtils.forceMkdir(new File(selection.dir, txtName.value))
-            browser.reloadLocationTree()
+            browser.reloadLocation()
           }
         }
       }
@@ -222,18 +181,18 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
 
 class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
-  case class TransferState(remaining: Seq[File], processed: Seq[File])
+  case class Transfer(remaining: Seq[File], processed: Seq[File])
 
   def copy() {
-    def copy(actor: Actor, destDir: File, transferState: TransferState) = transferState match {
-      case TransferState(item :: remaining, processed) =>
+    def copy(actor: Actor, destDir: File, transferState: Transfer) = transferState match {
+      case Transfer(item :: remaining, processed) =>
         def copyItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
           if (!destItem.exists) {
             // try/catch - handle error
             if (item.isFile) FileUtils.copyFile(item, destItem)
             else FileUtils.copyDirectory(item, destItem)
 
-            actor ! TransferState(remaining, destItem +: processed)
+            actor ! Transfer(remaining, destItem +: processed)
             // try/catch - handle error
           } else {
             app.initAndShow(new YesNoCancelDialog("Item with name %s allready exists" format destItemName)) { dlg =>
@@ -244,8 +203,8 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
               dlg.mainUI = dlgUI
               dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) }
-              dlg.wrapNoHandler { actor ! TransferState(remaining, processed) }
-              dlg.setCancelHandler { actor ! TransferState(Nil, processed) }
+              dlg.wrapNoHandler { actor ! Transfer(remaining, processed) }
+              dlg.setCancelHandler { actor ! Transfer(Nil, processed) }
             }
           }
         }
@@ -257,9 +216,14 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
     }
 
 
-    def copyItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
+    /**
+     * Asynchronously copies selected browser items into destination dir.
+     * Client-side is periodically updated using progress indicator pooling feature - this means that
+     * all UI updates must be synchronized against Application.
+     */
+    def asyncCopyItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
 
-      def finish(transferDialog: Dialog, transferState: TransferState) = app.synchronized {
+      def finish(transferDialog: Dialog, transferState: Transfer) = app.synchronized {
         transferDialog.close()
 
         if (transferState.processed.isEmpty) {
@@ -287,9 +251,9 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
           def act() {
             react {
-              case transferState @ TransferState(Nil, _) => finish(dlg, transferState)
+              case transferState @ Transfer(Nil, _) => finish(dlg, transferState)
 
-              case transferState @ TransferState(item :: _, _) =>
+              case transferState @ Transfer(item :: _, _) =>
                 app.synchronized {
                   dlgUI.lblMsg.value = "Copying " + item.getName
                 }
@@ -303,7 +267,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 
               case 'cancel =>
                 react {
-                  case transferState: TransferState => finish(dlg, transferState)
+                  case transferState: Transfer => finish(dlg, transferState)
                   case undefined => handleUndefinedEvent(dlg, undefined)
                 }
 

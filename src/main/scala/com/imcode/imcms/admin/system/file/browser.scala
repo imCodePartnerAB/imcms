@@ -168,7 +168,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       case (_, (locationTree, _)) => locationTree.root == root
     } map { _._2 }
 
-  def reloadLocationTree(preserveTreeSelection: Boolean = true) =
+  def reloadLocation(preserveTreeSelection: Boolean = true) =
     for ((locationTree, _) <- location; dir = locationTree.ui.value) {
       locationTree.reload()
       if (preserveTreeSelection && dir.isDirectory) locationTree.cd(dir)
