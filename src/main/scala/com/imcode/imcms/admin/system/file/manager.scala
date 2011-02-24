@@ -20,7 +20,9 @@ class FileManager(app: ImcmsApplication) {
     browser.addLocation("Logs", LocationConf(new File(Imcms.getPath, "WEB-INF/logs")))
   }
 
-  val ui = letret(new FileManagerUI(browser.ui)) { ui =>
+  val preview = new FilePreview(browser)
+
+  val ui = letret(new FileManagerUI(browser.ui, preview.ui)) { ui =>
 
     ui.miEditRename setCommandHandler {
       for (selection <- browser.selection if selection.hasSingleItem) {
@@ -121,11 +123,9 @@ class FileManager(app: ImcmsApplication) {
           LocationSelection(dir, items) <- e
           (locationTree, _) <- browser.location
 
-          canonicalRoot = locationTree.root.getCanonicalFile
-          dirs = canonicalRoot ::
-                 Iterator.iterate(dir)(_.getParentFile).takeWhile(_ != canonicalRoot).toList.reverse
-
-          dirPath = let("/") { separator => dirs.map(_.getName).mkString(separator) + separator }
+          root = locationTree.root.getCanonicalFile
+          dirs = root :: Iterator.iterate(dir)(_.getParentFile).takeWhile(_.getCanonicalFile != root).toList.reverse
+          dirPath = dirs.map(_.getName).mkString("", "/", "/")
         } yield {
           dirPath + (items match {
             case Nil => ""
@@ -142,7 +142,7 @@ class FileManager(app: ImcmsApplication) {
 }
 
 
-class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacing with FullSize {
+class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar
   val miFile = mb.addItem("File")
   val miFilePreview = miFile.addItem("Preview")
