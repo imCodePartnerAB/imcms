@@ -352,7 +352,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 
               handleFinished(dlg, itemsState)
 
-            case itemsState @ ItemsState(item :: _, _) =>
+            case itemsState @ ItemsState(remaining @ (item :: _), _) =>
               app.synchronized {
                 dlgUI.lblMsg.value = "Copying " + item.getName
 
@@ -491,7 +491,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 
               handleFinished(dlg, itemsState)
 
-            case itemsState @ ItemsState(item :: _, _) =>
+            case itemsState @ ItemsState(remaining @ (item :: _), _) =>
               app.synchronized {
                 dlgUI.lblMsg.value = "Moving " + item.getName
 
