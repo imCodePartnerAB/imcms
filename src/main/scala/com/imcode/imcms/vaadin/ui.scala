@@ -289,15 +289,10 @@ class CancelDialog(caption: String = "") extends Dialog(caption) with CancelButt
 
 
 /** Message dialog window. */
-class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
-  val btnOk = new Button("Ok") { setIcon(new ThemeResource("icons/16/ok.png")) }
-
+class MsgDialog(caption: String = "", msg: String ="") extends OKDialog(caption) {
   val lblMessage = new Label(msg) with UndefinedSize
 
   mainUI = lblMessage
-  buttonsBarUI = btnOk
-
-  btnOk addClickHandler { close() }
 }
 
 

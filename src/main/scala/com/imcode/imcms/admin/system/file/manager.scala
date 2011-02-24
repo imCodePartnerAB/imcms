@@ -4,14 +4,12 @@ package imcms.admin.system.file
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
-import imcode.server.document.{CategoryDomainObject}
+import com.imcode.imcms.vaadin._
 import java.io.File
-import com.vaadin.ui.Window.Notification
 import org.apache.commons.io.FileUtils
 import com.vaadin.terminal.FileResource
-import annotation.tailrec
 import actors.Actor
+import scala.concurrent.ops.{spawn}
 
 class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
@@ -24,33 +22,6 @@ class FileManager(app: ImcmsApplication) {
 
   val ui = letret(new FileManagerUI(browser.ui)) { ui =>
 
-    /**
-     * Recursively applies op to an item.
-     * @param opFailMsg - fail message with unbound format parameter substitutable with fsNode - ex. "Unable to copy %s."
-     */
-    def applyOpToItems(items: Seq[File], op: File => Unit, opFailMsg: String, afterFn: () => Any = () => ()) {
-      items match {
-        case item :: rest =>
-          def applyOpToRestItems() = applyOpToItems(rest, op, opFailMsg, afterFn)
-          def applyOpToEmptyItems() = applyOpToItems(Nil, op, opFailMsg, afterFn)
-
-          try {
-            op(item)
-            applyOpToRestItems()
-          } catch {
-            case _ => app.initAndShow(new ConfirmationDialog(opFailMsg format item)) { dlg =>
-              dlg.btnOk.setCaption("Skip")
-              dlg.wrapOkHandler { applyOpToRestItems() }
-              dlg.wrapCancelHandler { applyOpToEmptyItems() }
-            }
-          }
-
-        case _ =>
-          browser.reloadLocation(preserveTreeSelection = true)
-          afterFn()
-      }
-    }
-
     ui.miEditRename setCommandHandler {
       for (selection <- browser.selection if selection.hasSingleItem) {
         // rename
@@ -58,21 +29,15 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miEditDelete setCommandHandler {
-      for (selection <- browser.selection if selection.hasItems) {
-        app.initAndShow(new ConfirmationDialog("Delete selected items")) { dlg =>
-          dlg wrapOkHandler {
-            applyOpToItems(selection.items, FileUtils.forceDelete, "Unable to delete item %s.")
-          }
-        }
-      }
+      new ItemsDeleteHelper(app, browser) delete()
     }
 
     ui.miEditCopy setCommandHandler {
-      new ItemsTransfer(app, browser) copy()
+      new ItemsTransferHelper(app, browser) copy()
     }
 
     ui.miEditMove setCommandHandler {
-      new ItemsTransfer(app, browser) move()
+      new ItemsTransferHelper(app, browser) move()
     }
 
     ui.miFilePreview setCommandHandler {
@@ -185,12 +150,126 @@ class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with Spacin
 }
 
 
-// ItemsTransferHelper
-// todo: refactor duplicated code code
-class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
+// helpers - AsyncItemsHandlers
 
-  // transfer state
-  case class ItemsState(remaining: Seq[File], processed: Seq[File])
+case class ItemsState(remaining: Seq[File], processed: Seq[File])
+
+
+class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
+
+  def delete() = for (selection <- browser.selection if selection.hasItems) {
+    app.initAndShow(new ConfirmationDialog("Delete selected items?")) { dlg =>
+      dlg wrapOkHandler { asyncDeleteItems(selection.items) }
+    }
+  }
+
+  private def asyncDeleteItems(items: Seq[File]) {
+    def handleFinished(progressDialog: Dialog, itemsState: ItemsState) = app.synchronized {
+      progressDialog.close()
+
+      if (itemsState.processed.isEmpty) {
+        app.showWarningNotification("No items where deleted")
+      } else {
+        browser.reloadLocation()
+
+        app.show(new MsgDialog("Finished", "Deleted %d item(s)." format itemsState.processed.size))
+      }
+    }
+
+    def handleUndefined(progressDialog: Dialog, msg: Any) = app.synchronized {
+      progressDialog.close()
+      app.showErrorNotification("An error occured while deleting items", msg.toString)
+    }
+
+    app.initAndShow(new CancelDialog("Deleting items")) { dlg =>
+      val dlgUI = new ItemsDeleteHelperDialogUI
+      dlg.mainUI = dlgUI
+      dlgUI.lblMsg.value = "Preparing to delete"
+      dlgUI.pi.setPollingInterval(500)
+
+      object DeleteActor extends Actor {
+        def act() {
+          react {
+            case itemsState @ ItemsState(Nil, _) =>
+              app.synchronized {
+                dlgUI.pi.setValue(1)
+              }
+
+              handleFinished(dlg, itemsState)
+
+            case itemsState @ ItemsState(remaining @ (item :: _), _) =>
+              app.synchronized {
+                let (items.size.asInstanceOf[Float]) { max =>
+                  dlgUI.pi.setValue((max - remaining.size) / max)
+                }
+
+                dlgUI.lblMsg.value = "Deleting " + item.getName
+              }
+
+              spawn {
+                Thread.sleep(2000)
+                asyncDeleteItem(DeleteActor, itemsState)
+              }
+
+              act()
+
+            case 'cancel =>
+              react {
+                case itemsState: ItemsState => handleFinished(dlg, itemsState)
+                case undefined => handleUndefined(dlg, undefined)
+              }
+
+            case undefined => handleUndefined(dlg, undefined)
+          }
+        }
+      }
+
+      dlg.setCancelHandler {
+        app.synchronized {
+          dlg.btnCancel.setEnabled(false)
+          dlgUI.lblMsg.value = "Cancelling"
+        }
+
+        DeleteActor ! 'cancel
+      }
+
+      DeleteActor ! ItemsState(items, Nil)
+      DeleteActor.start()
+    }
+  }
+
+  /**
+   * Attempts to delete fist of the remaining items into the destination dir.
+   * Updates transfer state and send it to the actor.
+   *
+   * Client-side is updated using progress indicator pooling feature - this means that
+   * all UI updates must be synchronized against Application.
+   */
+  private def asyncDeleteItem(stateHandler: Actor, itemsState: ItemsState) = itemsState match {
+    case ItemsState(item :: remaining, processed) =>
+      try {
+        FileUtils.forceDelete(item)
+        stateHandler ! ItemsState(remaining, item +: processed)
+      } catch {
+        case e => app.synchronized {
+          app.initAndShow(new OkCancelDialog("Unable to delete")) { dlg =>
+            dlg.btnOk.setCaption("Skip")
+            dlg.mainUI = new Label("An error occured while deleting item %s." format item.getName) with UndefinedSize
+
+            dlg.wrapOkHandler { stateHandler ! ItemsState(remaining, processed) }
+            dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
+          }
+        }
+      }
+
+    case _ =>
+      stateHandler ! itemsState
+  }
+}
+
+
+// todo: refactor - merge duplicated code
+class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 
   def copy() {
     // refactor into dest dir selection method??
@@ -257,23 +336,33 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
     }
 
     app.initAndShow(new CancelDialog("Copying items into .../%s" format destDir)) { dlg =>
-      val dlgUI = new ItemsTransferDialogUI
+      val dlgUI = new ItemsTransferHelperDialogUI
 
       dlg.mainUI = dlgUI
       dlgUI.lblMsg.value = "Preparing to copy"
+      dlgUI.pi.setPollingInterval(500)
 
       object CopyActor extends Actor {
         def act() {
           react {
-            case itemsState @ ItemsState(Nil, _) => handleFinished(dlg, itemsState)
+            case itemsState @ ItemsState(Nil, _) =>
+              app.synchronized {
+                dlgUI.pi.setValue(1)
+              }
+
+              handleFinished(dlg, itemsState)
 
             case itemsState @ ItemsState(item :: _, _) =>
               app.synchronized {
                 dlgUI.lblMsg.value = "Copying " + item.getName
+
+                let (items.size.asInstanceOf[Float]) { max =>
+                  dlgUI.pi.setValue((max - remaining.size) / max)
+                }
               }
 
-              Actor.actor {
-                Thread.sleep(5000)
+              spawn {
+                Thread.sleep(2000)
                 asyncCopyItem(CopyActor, destDir, itemsState)
               }
 
@@ -290,7 +379,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
         }
       }
 
-      dlg.btnCancel.addClickHandler {
+      dlg.setCancelHandler {
         app.synchronized {
           dlg.btnCancel.setEnabled(false)
           dlgUI.lblMsg.value = "Cancelling"
@@ -375,6 +464,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
       } else {
         app.initAndShow(new ConfirmationDialog("Finished", "%d items where moved. Would you like to preview" format itemsState.processed.size)) { dlg =>
           dlg.wrapOkHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
+          dlg.wrapCancelHandler { browser.reloadLocation() }
         }
       }
     }
@@ -385,23 +475,33 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
     }
 
     app.initAndShow(new CancelDialog("Moving items into .../%s" format destDir)) { dlg =>
-      val dlgUI = new ItemsTransferDialogUI
+      val dlgUI = new ItemsTransferHelperDialogUI
 
       dlg.mainUI = dlgUI
       dlgUI.lblMsg.value = "Preparing to move"
+      dlgUI.pi.setPollingInterval(500)
 
       object MoveActor extends Actor {
         def act() {
           react {
-            case itemsState @ ItemsState(Nil, _) => handleFinished(dlg, itemsState)
+            case itemsState @ ItemsState(Nil, _) =>
+              app.synchronized {
+                dlgUI.pi.setValue(1)
+              }
+
+              handleFinished(dlg, itemsState)
 
             case itemsState @ ItemsState(item :: _, _) =>
               app.synchronized {
                 dlgUI.lblMsg.value = "Moving " + item.getName
+
+                let (items.size.asInstanceOf[Float]) { max =>
+                  dlgUI.pi.setValue((max - remaining.size) / max)
+                }
               }
 
-              Actor.actor {
-                Thread.sleep(5000)
+              spawn {
+                Thread.sleep(2000)
                 asyncMoveItem(MoveActor, destDir, itemsState)
               }
 
@@ -418,7 +518,7 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
         }
       }
 
-      dlg.btnCancel.addClickHandler {
+      dlg.setCancelHandler {
         app.synchronized {
           dlg.btnCancel.setEnabled(false)
           dlgUI.lblMsg.value = "Cancelling"
@@ -489,8 +589,15 @@ class ItemsTransfer(app: ImcmsApplication, browser: FileBrowser) {
 }
 
 
-/** File/Dir Copy/Move UI */
-class ItemsTransferDialogUI extends FormLayout with Spacing with UndefinedSize {
+class ItemsDeleteHelperDialogUI extends FormLayout with Spacing with UndefinedSize {
+  val lblMsg = new Label with UndefinedSize
+  val pi = new ProgressIndicator
+
+  addComponents(this, lblMsg, pi)
+}
+
+
+class ItemsTransferHelperDialogUI extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 
