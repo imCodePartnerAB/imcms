@@ -225,10 +225,8 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
       }
 
       dlg.setCancelHandler {
-        app.synchronized {
-          dlg.btnCancel.setEnabled(false)
-          dlgUI.lblMsg.value = "Cancelling"
-        }
+        dlg.btnCancel.setEnabled(false)
+        dlgUI.lblMsg.value = "Cancelling"
 
         DeleteActor ! 'cancel
       }
@@ -380,10 +378,8 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
       }
 
       dlg.setCancelHandler {
-        app.synchronized {
-          dlg.btnCancel.setEnabled(false)
-          dlgUI.lblMsg.value = "Cancelling"
-        }
+        dlg.btnCancel.setEnabled(false)
+        dlgUI.lblMsg.value = "Cancelling"
 
         CopyActor ! 'cancel
       }
@@ -519,10 +515,8 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
       }
 
       dlg.setCancelHandler {
-        app.synchronized {
-          dlg.btnCancel.setEnabled(false)
-          dlgUI.lblMsg.value = "Cancelling"
-        }
+        dlg.btnCancel.setEnabled(false)
+        dlgUI.lblMsg.value = "Cancelling"
 
         MoveActor ! 'cancel
       }
