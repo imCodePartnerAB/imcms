@@ -215,8 +215,16 @@ class FileBrowserUI extends HorizontalSplitPanel with FullSize {
 }
 
 
+trait FSItemIcon extends AbstractSelect {
+  override def getItemIcon(itemId: AnyRef) = itemId.asInstanceOf[File] match {
+    case item if item.isDirectory => Theme.Icons.Folder16
+    case _ => Theme.Icons.File16
+  }
+}
+
+
 class LocationTree(val root: File) {
-  val ui = new Tree with SingleSelect2[File] with Immediate with NoNullSelection
+  val ui = new Tree with SingleSelect2[File] with Immediate with NoNullSelection with FSItemIcon
 
   def reload() {
     ui.setContainerDataSource(new LocationTreeContainer(root.getCanonicalFile))
@@ -234,8 +242,9 @@ class LocationTree(val root: File) {
 
 
 class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: Boolean) {
-  val ui = letret(if (multiSelect) new Table with MultiSelect2[File]
-                  else             new Table with SingleSelect2[File]) { ui =>
+
+  val ui = letret(if (multiSelect) new Table with MultiSelect2[File] with FSItemIcon
+                  else             new Table with SingleSelect2[File] with FSItemIcon) { ui =>
 
     ui.setSizeFull
     ui.setImmediate(true)
@@ -262,7 +271,6 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
 
     dirs.sortWith((d1, d2) => d1.getName.compareToIgnoreCase(d2.getName) < 0) foreach { dir =>
       ui.addItem(Array[AnyRef](dir.getName, new Date(dir.lastModified), "--", "Folder"), dir)
-      ui.setItemIcon(dir, Theme.Icons.Folder16)
     }
 
     for (file <- files.sortWith((f1, f2) => f1.getName.compareToIgnoreCase(f2.getName) < 0) if filter(file)) {
@@ -274,7 +282,6 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
       }
 
       ui.addItem(Array[AnyRef](file.getName, new Date(file.lastModified), "%d %s".format(size, units), "File"), file)
-      ui.setItemIcon(file, Theme.Icons.File16)
     }
   }
 }
