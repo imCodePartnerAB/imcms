@@ -21,8 +21,8 @@ class TemplateGroupManager(app: ImcmsApplication) {
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblGroups addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommand block { editAndSave(new TemplateGroupDomainObject(0, null)) }
-    ui.miEdit setCommand block {
+    ui.miNew setCommandHandler { editAndSave(new TemplateGroupDomainObject(0, null)) }
+    ui.miEdit setCommandHandler {
       whenSelected(ui.tblGroups) { id =>
         templateMapper.getTemplateGroupById(id.intValue) match {
           case null => reload()
@@ -30,7 +30,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miDelete setCommand block {
+    ui.miDelete setCommandHandler {
       whenSelected(ui.tblGroups) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected template group?")) { dlg =>
           dlg wrapOkHandler {

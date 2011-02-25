@@ -34,7 +34,7 @@ class PermissionsEditor(app: ImcmsApplication, meta: Meta, user: UserDomainObjec
           (roleId, role.getName :: types.map(t => if (t == documentPermissionSetType) "X" else ""))
     }
 
-    ui.miRolePermissionAdd setCommand block {
+    ui.miRolePermissionAdd setCommandHandler {
       app.initAndShow(new OkCancelDialog("Add role permission")) { dlg =>
         let(dlg.setMainContent(new AddRolePermissionDialogContent)) { c =>
           c.ogPermission.setValue("Read")
@@ -50,11 +50,11 @@ class PermissionsEditor(app: ImcmsApplication, meta: Meta, user: UserDomainObjec
       }
     }
 
-    ui.miRolePermissionEdit setCommand block {
+    ui.miRolePermissionEdit setCommandHandler {
 
     }
 
-    ui.miRolePermissionDelete setCommand block {
+    ui.miRolePermissionDelete setCommandHandler {
 
     }    
     // user role??

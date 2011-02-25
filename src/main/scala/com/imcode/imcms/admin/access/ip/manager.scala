@@ -27,8 +27,8 @@ class IPAccessManager(app: ImcmsApplication) {
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblIP addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommand block { editAndSave(new IPAccess) }
-    ui.miEdit setCommand block {
+    ui.miNew setCommandHandler { editAndSave(new IPAccess) }
+    ui.miEdit setCommandHandler {
       whenSelected(ui.tblIP) { id =>
         ipAccessDao.get(id) match {
           case null => reload()
@@ -36,7 +36,7 @@ class IPAccessManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miDelete setCommand block {
+    ui.miDelete setCommandHandler {
       whenSelected(ui.tblIP) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected IP access?")) { dlg =>
           dlg wrapOkHandler {

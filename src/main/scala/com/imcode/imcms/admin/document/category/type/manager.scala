@@ -20,8 +20,8 @@ class CategoryTypeManager(app: ImcmsApplication) {
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblTypes addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommand block { editAndSave(new CategoryTypeDomainObject) }
-    ui.miEdit setCommand block {
+    ui.miNew setCommandHandler { editAndSave(new CategoryTypeDomainObject) }
+    ui.miEdit setCommandHandler {
       whenSelected(ui.tblTypes) { id =>
         categoryMapper.getCategoryTypeById(id.intValue) match {
           case null => reload()
@@ -29,7 +29,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miDelete setCommand block {
+    ui.miDelete setCommandHandler {
       whenSelected(ui.tblTypes) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected category type?")) { dlg =>
           dlg wrapOkHandler {

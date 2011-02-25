@@ -21,7 +21,7 @@ class TemplateManager(app: ImcmsApplication) {
 
   val ui = letret(new TemplateManagerUI) { ui =>
     ui.tblTemplates addValueChangeHandler { handleSelection() }
-    ui.miUpload setCommand block {
+    ui.miUpload setCommandHandler {
       app.initAndShow(new FileUploadDialog("Upload template file")) { dlg =>
         // strips filename extension, trims and replaces spaces with underscores
         dlg.upload.fileNameToSaveAsName = fileRE.unapplySeq(_:String).map(_.head.trim.replaceAll("""\s""", "_")).get
@@ -49,7 +49,7 @@ class TemplateManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miRename setCommand block {
+    ui.miRename setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new OkCancelDialog("Rename template")) { dlg =>
           val fileRenameUI = letret(new TemplateRenameUI) { c =>
@@ -67,7 +67,7 @@ class TemplateManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miEditContent setCommand block {
+    ui.miEditContent setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoMarginDialog) { dlg =>
           dlg.mainContent = letret(new TemplateContentEditorUI) { c =>
@@ -79,7 +79,7 @@ class TemplateManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miDelete setCommand block {
+    ui.miDelete setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new ConfirmationDialog("Delete selected template?")) { dlg =>
           dlg wrapOkHandler {

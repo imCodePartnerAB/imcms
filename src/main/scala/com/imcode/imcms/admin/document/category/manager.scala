@@ -26,8 +26,8 @@ class CategoryManager(app: ImcmsApplication) {
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblCategories addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommand block { editAndSave(new CategoryDomainObject) }
-    ui.miEdit setCommand block {
+    ui.miNew setCommandHandler { editAndSave(new CategoryDomainObject) }
+    ui.miEdit setCommandHandler {
       whenSelected(ui.tblCategories) { id =>
         categoryMapper.getCategoryById(id.intValue) match {
           case null => reload()
@@ -36,7 +36,7 @@ class CategoryManager(app: ImcmsApplication) {
       }
     }
 
-    ui.miDelete setCommand block {
+    ui.miDelete setCommandHandler {
       whenSelected(ui.tblCategories) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected category?")) { dlg =>
           dlg wrapOkHandler {

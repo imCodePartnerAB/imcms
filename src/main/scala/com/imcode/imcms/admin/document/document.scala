@@ -192,7 +192,7 @@ class FileDocEditor(app: ImcmsApplication, doc: FileDocumentDomainObject, mimeTy
 
     ui.tblFiles.reload()
 
-    ui.miNew setCommand block {
+    ui.miNew setCommandHandler {
       app.initAndShow(new OkCancelDialog("Add file")) { w =>
         let(w setMainContent new FileDocFileDialogContent) { c =>
           for (MimeType(name, displayName) <- mimeTypes) {
@@ -222,7 +222,7 @@ class FileDocEditor(app: ImcmsApplication, doc: FileDocumentDomainObject, mimeTy
     }
 
     // todo: replace old file - delete from storage
-    ui.miEdit setCommand block {
+    ui.miEdit setCommandHandler {
       whenSelected(ui.tblFiles) { fileId =>
         app.initAndShow(new OkCancelDialog("Edit file")) { dlg =>
           let(dlg.setMainContent(new FileDocFileDialogContent)) { c =>
@@ -259,7 +259,7 @@ class FileDocEditor(app: ImcmsApplication, doc: FileDocumentDomainObject, mimeTy
       }
     }
 
-    ui.miDelete setCommand block {
+    ui.miDelete setCommandHandler {
       whenSelected(ui.tblFiles) { fileId =>
         doc.removeFile(fileId)
 
@@ -267,7 +267,7 @@ class FileDocEditor(app: ImcmsApplication, doc: FileDocumentDomainObject, mimeTy
       }
     }
 
-    ui.miSetDefault setCommand block {
+    ui.miSetDefault setCommandHandler {
       whenSelected(ui.tblFiles) { fileId =>
         doc.setDefaultFileId(fileId)
 

@@ -42,11 +42,11 @@ class FileDialog(caption: String, browser: FileBrowser)
   val preview = new FilePreview(browser)
 
   mainContent = letret(new FileDialogUI(browser.ui, preview.ui)) { ui =>
-    ui.miViewPreview setCommand block {
+    ui.miViewPreview setCommandHandler {
       preview.enabled = !preview.enabled
     }
 
-    ui.miFileUpload setCommand block {
+    ui.miFileUpload setCommandHandler {
       ui.getApplication.initAndShow(new FileUploadDialog("Upload file")) { dlg =>
         dlg.wrapOkHandler {
           for {

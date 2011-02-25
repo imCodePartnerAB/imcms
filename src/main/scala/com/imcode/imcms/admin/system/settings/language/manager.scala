@@ -19,8 +19,8 @@ class LanguageManager(app: ImcmsApplication) {
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblLanguages addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommand block { editAndSave(new I18nLanguage) }
-    ui.miEdit setCommand block {
+    ui.miNew setCommandHandler { editAndSave(new I18nLanguage) }
+    ui.miEdit setCommandHandler {
       whenSelected(ui.tblLanguages) { id =>
         languageDao.getById(id) match {
           case null => reload()
@@ -28,7 +28,7 @@ class LanguageManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miDelete setCommand block {
+    ui.miDelete setCommandHandler {
       whenSelected(ui.tblLanguages) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected language?")) { dlg =>
           dlg wrapOkHandler {
@@ -47,7 +47,7 @@ class LanguageManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miSetDefault setCommand block {
+    ui.miSetDefault setCommandHandler {
       whenSelected(ui.tblLanguages) { id =>
         app.initAndShow(new ConfirmationDialog("Change default language?")) { dlg =>
           dlg wrapOkHandler {

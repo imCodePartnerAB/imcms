@@ -17,8 +17,8 @@ class RoleManager(app: ImcmsApplication) {
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblRoles addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommand block { editAndSave(new RoleDomainObject("")) }
-    ui.miEdit setCommand block {
+    ui.miNew setCommandHandler { editAndSave(new RoleDomainObject("")) }
+    ui.miEdit setCommandHandler {
       whenSelected(ui.tblRoles) { id =>
         roleMapper.getRole(id) match {
           case null => reload()
@@ -26,7 +26,7 @@ class RoleManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miDelete setCommand block {
+    ui.miDelete setCommandHandler {
       whenSelected(ui.tblRoles) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected role?")) { dlg =>
           dlg wrapOkHandler {

@@ -13,7 +13,7 @@ class UserManager(app: ImcmsApplication) {
   val ui = letret(new UserManagerUI(userSelect.ui)) { ui =>
     val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
-    ui.miNew setCommand block {
+    ui.miNew setCommandHandler {
       app.initAndShow(new OkCancelDialog("New user")) { dlg =>
         dlg.mainUI = letret(new UserEditorUI) { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
@@ -45,7 +45,7 @@ class UserManager(app: ImcmsApplication) {
       }
     }
 
-   ui.miEdit setCommand block {
+   ui.miEdit setCommandHandler {
       whenSelected(ui.userSelectUI.tblUsers) { userId =>
         app.initAndShow(new OkCancelDialog("Edit user")) { dlg =>
           let(dlg setMainContent new UserEditorUI) { c =>
