@@ -23,5 +23,13 @@ object Theme {
     val Done32 = Ok32
     val File16 = "icons/16/document.png" : TR
     val Folder16 = "icons/16/folder.png" : TR
+
+    object Browser {
+      val TabHome32 = "icons/16/document-web.png" : TR
+      val TabImages32 = "icons/16/document-image.png" : TR
+      val TabTemplates32 = "icons/16/document-ppt.png" : TR
+      val TabConf32 = "icons/16/document-txt.png" : TR
+      val TabLogs32 = "icons/16/document.png" : TR
+    }
   }
 }

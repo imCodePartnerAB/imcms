@@ -13,11 +13,11 @@ import scala.concurrent.ops.{spawn}
 
 class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
-    browser.addLocation("Home", LocationConf(Imcms.getPath))
-    browser.addLocation("Templates", LocationConf(new File(Imcms.getPath, "WEB-INF/templates/text")))
-    browser.addLocation("Images", LocationConf(new File(Imcms.getPath, "images")))
-    browser.addLocation("Conf", LocationConf(new File(Imcms.getPath, "WEB-INF/conf")))
-    browser.addLocation("Logs", LocationConf(new File(Imcms.getPath, "WEB-INF/logs")))
+    browser.addLocation("Home", LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))
+    browser.addLocation("Templates", LocationConf(new File(Imcms.getPath, "WEB-INF/templates/text")), ?(Theme.Icons.Browser.TabTemplates32))
+    browser.addLocation("Images", LocationConf(new File(Imcms.getPath, "images")), ?(Theme.Icons.Browser.TabImages32))
+    browser.addLocation("Conf", LocationConf(new File(Imcms.getPath, "WEB-INF/conf")), ?(Theme.Icons.Browser.TabConf32))
+    browser.addLocation("Logs", LocationConf(new File(Imcms.getPath, "WEB-INF/logs")), ?(Theme.Icons.Browser.TabLogs32))
   }
 
   val preview = letret(new FilePreview(browser)) { preview =>
