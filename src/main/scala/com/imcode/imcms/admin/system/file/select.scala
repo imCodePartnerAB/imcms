@@ -132,8 +132,7 @@ object FilePreviewContent {
 }
 
 /**
- * File preview is set to listen to browser's dir selection.
- * If selected file is eligible to preview...
+ * Listens to browser selection and displays content associated with that item type.
  */
 class FilePreview(browser: FileBrowser) {
   private val enabledRef = new AtomicBoolean(false)
@@ -143,6 +142,7 @@ class FilePreview(browser: FileBrowser) {
   ui.btnEnlarge addClickHandler {
     for {
       selection <- browser.selection
+      if selection.hasSingleItem
       file <- selection.firstItem
       fpc = FilePreviewContent(ui.getApplication, file) if fpc.allowsFullSizePreview
     } ui.getApplication.initAndShow(new Window("Preview"), resizable = true) { w =>

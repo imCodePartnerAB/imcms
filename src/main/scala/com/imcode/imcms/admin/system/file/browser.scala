@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 import java.util.{Date}
 
-/** Directory tree with a single root. */
+/** Hierarchical filesystem (non-hidden dirs) container with a single root. */
 class LocationTreeContainer(root: File) extends FilesystemContainer(root) {
 
   import java.util.Collections._
@@ -61,7 +61,6 @@ case class LocationSelection(dir: File, items: Seq[File]) {
   def hasSingleItem = items.size == 1
 }
 
-// enum selectable??:
 
 /**
  * A file browser can have any number of locations (bookmarks).
@@ -71,9 +70,9 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
     extends Publisher[Option[LocationSelection]] {
 
   type Location = (LocationTree, LocationItems)
-  type LocationTreeUI = Component
+  type Tab = Component // location tree ui
 
-  private val locations = MMap.empty[LocationTreeUI, Location]
+  private val tabsToLocations = MMap.empty[Tab, Location]
 
   /** Current (visible) location. */
   private val locationRef = new AtomicReference(Option.empty[Location])
@@ -84,7 +83,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   val ui = letret(new FileBrowserUI) { ui =>
     ui.accLocationTrees.addListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
-        val locationOpt = locations.get(e.getTabSheet.getSelectedTab)
+        val locationOpt = tabsToLocations.get(e.getTabSheet.getSelectedTab)
         locationRef.set(locationOpt)
 
         for ((locationTree, locationItems) <- locationOpt) {
@@ -122,7 +121,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
     locationItems.ui.addItemClickListener {
       case e if e.isDoubleClick => e.getItemId match {
-        case item: File if item.isDirectory => locationTree.cd(item)
+        case item: File if item.isDirectory => locationTree.selection = item
         case _ =>
       }
 
@@ -131,7 +130,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
     locationTree.reload()
 
-    locations(locationTree.ui) = (locationTree, locationItems)
+    tabsToLocations(locationTree.ui) = (locationTree, locationItems)
     ui.accLocationTrees.addTab(locationTree.ui, caption, icon.orNull)
   }
 
@@ -162,33 +161,45 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   /** Returns current (visible) location */
   def location = locationRef.get
 
-  /** Finds location by its root. */
-  def location(root: File): Option[Location] =
-    locations.find {
-      case (_, (locationTree, _)) => locationTree.root == root
-    } map { _._2 }
+  def locations: Map[File, Location] =
+    tabsToLocations.values map {
+      case loc @ (locationTree, _) => locationTree.root.getCanonicalFile -> loc
+    } toMap
 
+  /** Returns location by its root. */
+  def location(root: File): Option[Location] = locations.get(root.getCanonicalFile)
+
+  /** Reloads current location. */
   def reloadLocation(preserveTreeSelection: Boolean = true) =
     for ((locationTree, _) <- location; dir = locationTree.ui.value) {
       locationTree.reload()
-      if (preserveTreeSelection && dir.isDirectory) locationTree.cd(dir)
+      if (preserveTreeSelection && dir.isDirectory) locationTree.selection = dir
     }
 
+  /** Reloads current location's items. */
   def reloadLocationItems() =
     for ((locationTree, locationItems) <- location; dir = locationTree.ui.value)
       locationItems.reload(dir)
 
 
-  def select(locationRoot: File, selectedDir: File, selectedItems: Seq[File] = Nil): Unit =
-    select(locationRoot, new LocationSelection(selectedDir, selectedItems))
+  /**
+   * Changes current selection.
+   * Also changes current location if its root is other than provided locationRoot.
+   */
+  def select(locationRoot: File, dir: File, items: Seq[File] = Nil): Unit =
+    select(locationRoot, new LocationSelection(dir, items))
 
+  /**
+   * Changes current selection.
+   * Also changes current location if its root is other than provided locationRoot.
+   */
   def select(locationRoot: File, locationSelection: LocationSelection) =
-    locations.find {
-      case (_, (locationTree, _)) => locationTree.root == locationRoot
+    tabsToLocations.find {
+      case (_, (locationTree, _)) => locationTree.root.getCanonicalFile == locationRoot.getCanonicalFile
     } foreach {
       case (tab, (locationTree, locationItems)) =>
         ui.accLocationTrees.setSelectedTab(tab)
-        locationTree.cd(locationSelection.dir)
+        locationTree.selection = locationSelection.dir
         if (isSelectable && locationSelection.hasItems) {
           locationItems.ui.setValue(if (isMultiSelect) asJavaCollection(locationSelection.items) else locationSelection.firstItem.get)
         }
@@ -205,18 +216,20 @@ class FileBrowserUI extends HorizontalSplitPanel with FullSize {
 
 
 class LocationTree(val root: File) {
-  val ui = new Tree with SingleSelect2[File] with ItemIdType[File] with Immediate with NoNullSelection
+  val ui = new Tree with SingleSelect2[File] with Immediate with NoNullSelection
 
   def reload() {
-    ui.setContainerDataSource(new LocationTreeContainer(root))
+    ui.setContainerDataSource(new LocationTreeContainer(root.getCanonicalFile))
     ui.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM)
-    cd(root)
+    selection = root
   }
 
-  def cd(dir: File) {
+  def selection_=(dir: File) = let(dir.getCanonicalFile) { dir =>
     ui.select(dir)
     ui.expandItem(if (dir == root) dir else dir.getParentFile)
   }
+
+  def selection = ui.value
 }
 
 

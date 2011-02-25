@@ -174,7 +174,7 @@ class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends 
 
   val lblSelectionPath = new Label
 
-  addComponent(mb, 0, 0, 1, 0)                     ˚
+  addComponent(mb, 0, 0, 1, 0)
   addComponents(this, browserUI, previewUI)
   addComponent(lblSelectionPath, 0, 2, 1, 2)
 
