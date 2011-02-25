@@ -20,13 +20,24 @@ class FileManager(app: ImcmsApplication) {
     browser.addLocation("Logs", LocationConf(new File(Imcms.getPath, "WEB-INF/logs")))
   }
 
-  val preview = new FilePreview(browser)
+  val preview = letret(new FilePreview(browser)) { preview =>
+    preview.ui.previewUI.setSize((256, 256))
+  }
 
   val ui = letret(new FileManagerUI(browser.ui, preview.ui)) { ui =>
 
     ui.miEditRename setCommandHandler {
-      for (selection <- browser.selection if selection.hasSingleItem) {
-        // rename
+      for (selection <- browser.selection if selection.hasSingleItem; item <- selection.firstItem) {
+        app.initAndShow(new OkCancelDialog("Rename to")) { dlg =>
+          val dlgUI = new ItemRenameDialogUI
+          dlg.mainUI = dlgUI
+          dlgUI.txtName.value = item.getName
+
+          dlg.wrapOkHandler {
+            item.renameTo(new File(item.getParentFile, dlgUI.txtName.value))
+            browser.reloadLocation()
+          }
+        }
       }
     }
 
@@ -124,7 +135,7 @@ class FileManager(app: ImcmsApplication) {
           (locationTree, _) <- browser.location
 
           locationRoot = locationTree.root.getCanonicalFile
-          dirs = root :: Iterator.iterate(dir)(_.getParentFile).takeWhile(_.getCanonicalFile != locationRoot).toList.reverse
+          dirs = locationRoot :: Iterator.iterate(dir)(_.getParentFile).takeWhile(_.getCanonicalFile != locationRoot).toList.reverse
           dirPath = dirs.map(_.getName).mkString("", "/", "/")
         } yield {
           dirPath + (items match {
@@ -163,17 +174,17 @@ class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends 
 
   val lblSelectionPath = new Label
 
-  addComponent(mb, 0, 0, 1, 0)
+  addComponent(mb, 0, 0, 1, 0)                     ˚
   addComponents(this, browserUI, previewUI)
   addComponent(lblSelectionPath, 0, 2, 1, 2)
 
   setComponentAlignment(previewUI, Alignment.MIDDLE_CENTER)
-  previewUI.setMargin(false, true, false, true)
+  //previewUI.setMargin(false, true, false, true)
 
   setColumnExpandRatio(0, 1f)
   setRowExpandRatio(1, 1f)
 
-  setExpandRatio(browserUI, 1.0f)
+  //setExpandRatio(browserUI, 1.0f)
 }
 
 
