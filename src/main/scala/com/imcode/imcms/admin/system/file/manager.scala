@@ -11,26 +11,10 @@ import com.vaadin.terminal.FileResource
 import actors.Actor
 import scala.concurrent.ops.{spawn}
 
-//object FileManager {
-//  def mainLocationRoot = Imcms.getPath
-//
-//  def configureLocations(browser: FileBrowser) {
-//    browser.addLocation("Home", LocationConf(mainLocationRoot), ?(Theme.Icons.Browser.TabHome32))
-//    browser.addLocation("Templates", LocationConf(new File(mainLocationRoot, "WEB-INF/templates/text")), ?(Theme.Icons.Browser.TabTemplates32))
-//    browser.addLocation("Images", LocationConf(new File(mainLocationRoot, "images")), ?(Theme.Icons.Browser.TabImages32))
-//    browser.addLocation("Conf", LocationConf(new File(mainLocationRoot, "WEB-INF/conf")), ?(Theme.Icons.Browser.TabConf32))
-//    browser.addLocation("Logs", LocationConf(new File(mainLocationRoot, "WEB-INF/logs")), ?(Theme.Icons.Browser.TabLogs32))
-//  }
-//}
+
 
 class FileManager(app: ImcmsApplication) {
-  val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
-    browser.addLocation("Home", LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))
-    browser.addLocation("Templates", LocationConf(new File(Imcms.getPath, "WEB-INF/templates/text")), ?(Theme.Icons.Browser.TabTemplates32))
-    browser.addLocation("Images", LocationConf(new File(Imcms.getPath, "images")), ?(Theme.Icons.Browser.TabImages32))
-    browser.addLocation("Conf", LocationConf(new File(Imcms.getPath, "WEB-INF/conf")), ?(Theme.Icons.Browser.TabConf32))
-    browser.addLocation("Logs", LocationConf(new File(Imcms.getPath, "WEB-INF/logs")), ?(Theme.Icons.Browser.TabLogs32))
-  }
+  val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))
 
   val preview = letret(new FilePreview(browser)) { preview =>
     preview.ui.previewUI.setSize((256, 256))
@@ -322,9 +306,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
   def copy() {
     // refactor into dest dir selection method??
     for (selection <- browser.selection if selection.hasItems) {
-      val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { dsb =>
-        dsb.addLocation("Home", LocationConf(Imcms.getPath))
-      }
+      val dirSelectBrowser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isSelectable = false))
 
       app.initAndShow(new DirSelectionDialog("Copy to", dirSelectBrowser, Seq(selection.dir))) { dlg =>
         dlg wrapOkHandler {

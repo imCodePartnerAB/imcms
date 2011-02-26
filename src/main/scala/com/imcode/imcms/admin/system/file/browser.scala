@@ -11,6 +11,7 @@ import java.io.{FilenameFilter, File}
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 import java.util.{Date}
+import imcode.server.Imcms
 
 /** Hierarchical filesystem (non-hidden dirs) container with a single root. */
 class LocationTreeContainer(root: File) extends FilesystemContainer(root) {
@@ -59,6 +60,30 @@ case class LocationSelection(dir: File, items: Seq[File]) {
   def firstItem = items.headOption
   def hasItems = items.nonEmpty
   def hasSingleItem = items.size == 1
+}
+
+
+object ImcmsFileBrowser {
+
+  def addLocation(caption: String, conf: LocationConf, image: Option[Resource])(browser: FileBrowser) =
+    letret(browser) { _ => browser.addLocation(caption, conf, image) }
+
+  val addHomeLocation = addLocation("Home", LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))_
+
+  val addImagesLocation =
+    addLocation("Images", LocationConf(new File(Imcms.getPath, "images")), ?(Theme.Icons.Browser.TabImages32))_
+
+  val addTemplatesLocation =
+    addLocation("Templates", LocationConf(new File(Imcms.getPath, "WEB-INF/templates/text")), ?(Theme.Icons.Browser.TabTemplates32))_
+
+  val addLogsLocation =
+    addLocation("Logs", LocationConf(new File(Imcms.getPath, "WEB-INF/logs")), ?(Theme.Icons.Browser.TabLogs32))_
+
+  val addConfLocation =
+    addLocation("Conf", LocationConf(new File(Imcms.getPath, "WEB-INF/conf")), ?(Theme.Icons.Browser.TabConf32))_
+
+  val addAllLocations =
+    Function.chain(Seq(addHomeLocation, addImagesLocation, addTemplatesLocation, addLogsLocation, addConfLocation))
 }
 
 

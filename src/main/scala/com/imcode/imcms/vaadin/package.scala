@@ -59,6 +59,9 @@ package object vaadin {
   /** Text field value type is always String */
   implicit def wrapTextField(textField: TextField) = new TextField(textField) with ValueType[String]
 
+  /** Password field value type is always String */
+  implicit def wrapPasswordField(field: PasswordField) = new PasswordField(field) with ValueType[String]
+
   /** Text area field value type is always String */
   implicit def wrapTextArea(textArea: TextArea) = new TextArea(textArea) with ValueType[String]
 
