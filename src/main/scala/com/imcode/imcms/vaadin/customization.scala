@@ -5,6 +5,7 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.vaadin.data.{Item, Container, Property}
 import com.vaadin.terminal.Sizeable
+import java.util.Collections
 
 /**
  * A container property.
@@ -170,6 +171,23 @@ trait MultiSelect2[T >: Null] extends XSelect[T] with ValueType[JCollection[T]] 
   }
 
   def isSelected = value.nonEmpty
+}
+
+
+trait MultiSelectBehavior[A >: Null] extends XSelect[A] {
+
+  def isSelected = value.nonEmpty
+
+  def value = getValue match {
+    case some if isMultiSelect => some.asInstanceOf[JCollection[A]]
+    case some => asJavaCollection(?(some.asInstanceOf[A]).toSeq)
+  }
+
+  def value_=(item: A) { value = ?(item).toSeq }
+
+  def value_=(collection: JCollection[A]) {
+    setValue(if (isMultiSelect) collection else collection.headOption.orNull)
+  }
 }
 
 trait Now extends DateField {

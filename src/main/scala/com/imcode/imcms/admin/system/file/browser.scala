@@ -137,10 +137,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   private def updateSelection(locationTree: LocationTree, locationItems: LocationItems) {
     ?(locationTree.ui.value) match {
       case Some(dir) =>
-        val items = if (isMultiSelect) locationItems.ui.asInstanceOf[MultiSelect2[File]].value.toSeq
-                    else ?(locationItems.ui.asInstanceOf[SingleSelect2[File]].value).toSeq
-
-        let(Some(LocationSelection(dir, items))) { selection =>
+        let(Some(LocationSelection(dir, locationItems.selection))) { selection =>
           selectionRef.set(selection)
           notifyListeners(selection)
         }
@@ -200,9 +197,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       case (tab, (locationTree, locationItems)) =>
         ui.accLocationTrees.setSelectedTab(tab)
         locationTree.selection = locationSelection.dir
-        if (isSelectable && locationSelection.hasItems) {
-          locationItems.ui.setValue(if (isMultiSelect) asJavaCollection(locationSelection.items) else locationSelection.firstItem.get)
-        }
+        if (isSelectable) locationItems.ui.value = locationSelection.items
     }
 }
 
@@ -243,12 +238,9 @@ class LocationTree(val root: File) {
 
 class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: Boolean) {
 
-  val ui = letret(if (multiSelect) new Table with MultiSelect2[File] with FSItemIcon
-                  else             new Table with SingleSelect2[File] with FSItemIcon) { ui =>
-
-    ui.setSizeFull
-    ui.setImmediate(true)
+  val ui = new Table with MultiSelectBehavior[File] with FSItemIcon with Immediate with FullSize { ui =>
     ui.setSelectable(selectable)
+    ui.setMultiSelect(multiSelect)
 
     addContainerProperties(ui,
       CP[String]("Name"),
@@ -284,4 +276,6 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
       ui.addItem(Array[AnyRef](file.getName, new Date(file.lastModified), "%d %s".format(size, units), "File"), file)
     }
   }
+
+  def selection = ui.value.toSeq
 }
