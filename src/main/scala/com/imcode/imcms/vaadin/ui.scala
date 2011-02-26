@@ -148,8 +148,8 @@ trait ResourceCaption extends AbstractComponent {
  *   -size is adjusted automatically according to its content size.
  */
 class Dialog(caption: String = "") extends Window(caption) {
-  protected val mainUICheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage
-  protected val buttonsBarUICheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage
+  protected val mainUICheck: Component => Unit = Checks.assertFixedSize
+  protected val buttonsBarUICheck: Component => Unit = Checks.assertFixedSize
 
   protected [this] val content = new GridLayout(1, 2) with Spacing with Margin
 

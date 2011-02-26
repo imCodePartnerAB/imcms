@@ -1,10 +1,10 @@
 package com.imcode
 package imcms.admin.access.user
 
-import com.vaadin.ui._
 import imcode.server.user._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
+import com.vaadin.ui._
 
 // todo add security check, add editAndSave, add external UI
 class UserManager(app: ImcmsApplication) {
@@ -116,8 +116,8 @@ class UserManagerUI(val userSelectUI: UserSelectUI) extends VerticalLayout with 
  */
 class UserEditorUI extends FormLayout {
   val txtLogin = new TextField("Username")
-  val txtPassword = new TextField("4-16 characters") with Secret
-  val txtVerifyPassword = new TextField("4-16 characters (retype)") with Secret
+  val txtPassword = new PasswordField("4-16 characters")
+  val txtVerifyPassword = new PasswordField("4-16 characters (retype)")
   val txtFirstName = new TextField("First")
   val txtLastName = new TextField("Last")
   val chkActivated = new CheckBox("Activated")

@@ -5,7 +5,6 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.vaadin.data.{Item, Container, Property}
 import com.vaadin.terminal.Sizeable
-import java.util.Collections
 
 /**
  * A container property.
@@ -47,9 +46,6 @@ trait Disabled { this: Component =>
   setEnabled(false)
 }
 
-trait Secret { this: TextField =>
-  setSecret(true)
-}
 
 trait ReadOnly { this: Component =>
   setReadOnly(true)
@@ -246,7 +242,7 @@ trait Reloadable extends Table {
 }
 
 object Checks {
-  def checkNoWidthOrHeightInPercentage(c: Component) {
+  def assertFixedSize(c: Component) {
     require(c.getWidthUnits != Sizeable.UNITS_PERCENTAGE, "Component width must not be difined in percentage.")
     require(c.getHeightUnits != Sizeable.UNITS_PERCENTAGE, "Component height must not be difined in percentage.")
   }

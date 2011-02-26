@@ -11,6 +11,18 @@ import com.vaadin.terminal.FileResource
 import actors.Actor
 import scala.concurrent.ops.{spawn}
 
+//object FileManager {
+//  def mainLocationRoot = Imcms.getPath
+//
+//  def configureLocations(browser: FileBrowser) {
+//    browser.addLocation("Home", LocationConf(mainLocationRoot), ?(Theme.Icons.Browser.TabHome32))
+//    browser.addLocation("Templates", LocationConf(new File(mainLocationRoot, "WEB-INF/templates/text")), ?(Theme.Icons.Browser.TabTemplates32))
+//    browser.addLocation("Images", LocationConf(new File(mainLocationRoot, "images")), ?(Theme.Icons.Browser.TabImages32))
+//    browser.addLocation("Conf", LocationConf(new File(mainLocationRoot, "WEB-INF/conf")), ?(Theme.Icons.Browser.TabConf32))
+//    browser.addLocation("Logs", LocationConf(new File(mainLocationRoot, "WEB-INF/logs")), ?(Theme.Icons.Browser.TabLogs32))
+//  }
+//}
+
 class FileManager(app: ImcmsApplication) {
   val browser = letret(new FileBrowser(isMultiSelect = true)) { browser =>
     browser.addLocation("Home", LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))
