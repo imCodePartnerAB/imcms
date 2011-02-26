@@ -174,6 +174,9 @@ trait MultiSelect2[T >: Null] extends XSelect[T] with ValueType[JCollection[T]] 
 }
 
 
+/**
+ * Type check <code>value<code> property always returns a collection.
+ */
 trait MultiSelectBehavior[A >: Null] extends XSelect[A] {
 
   def isSelected = value.nonEmpty
@@ -183,8 +186,12 @@ trait MultiSelectBehavior[A >: Null] extends XSelect[A] {
     case some => asJavaCollection(?(some.asInstanceOf[A]).toSeq)
   }
 
-  def value_=(item: A) { value = ?(item).toSeq }
+  /** Selects single item. */
+  def value_=(item: Option[A]) { value = item.toSeq }
 
+  /**
+   * @return collection of selected items or empty collection if there is no selected item(s).
+   */
   def value_=(collection: JCollection[A]) {
     setValue(if (isMultiSelect) collection else collection.headOption.orNull)
   }
