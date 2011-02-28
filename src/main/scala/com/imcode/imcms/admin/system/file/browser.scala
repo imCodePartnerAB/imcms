@@ -3,7 +3,7 @@ package imcms.admin.system.file
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import scala.collection.mutable.{Map => MMap}
+import scala.collection.mutable.{Map => MMap} // , HashMap, SynchronizedMap
 import com.vaadin.terminal.{Resource}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import com.vaadin.data.util.FilesystemContainer
@@ -52,8 +52,10 @@ object LocationItemsFilter {
 }
 
 
-/** File browser location (bookmark) conf. */
-case class LocationConf(root: File, itemsFilter: File => Boolean = LocationItemsFilter.notHidden, recursive: Boolean = true)
+/**
+ * File browser location (bookmark) conf.
+ */
+case class LocationConf(dir: File, relativePath: String = "", itemsFilter: File => Boolean = LocationItemsFilter.notHidden, recursive: Boolean = true)
 
 
 case class LocationSelection(dir: File, items: Seq[File]) {
@@ -71,20 +73,21 @@ object ImcmsFileBrowser {
   val addHomeLocation = addLocation("Home", LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))_
 
   val addImagesLocation =
-    addLocation("Images", LocationConf(new File(Imcms.getPath, "images")), ?(Theme.Icons.Browser.TabImages32))_
+    addLocation("Images", LocationConf(Imcms.getPath, "images"), ?(Theme.Icons.Browser.TabImages32))_
 
   val addTemplatesLocation =
-    addLocation("Templates", LocationConf(new File(Imcms.getPath, "WEB-INF/templates/text")), ?(Theme.Icons.Browser.TabTemplates32))_
+    addLocation("Templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), ?(Theme.Icons.Browser.TabTemplates32))_
 
   val addLogsLocation =
-    addLocation("Logs", LocationConf(new File(Imcms.getPath, "WEB-INF/logs")), ?(Theme.Icons.Browser.TabLogs32))_
+    addLocation("Logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), ?(Theme.Icons.Browser.TabLogs32))_
 
   val addConfLocation =
-    addLocation("Conf", LocationConf(new File(Imcms.getPath, "WEB-INF/conf")), ?(Theme.Icons.Browser.TabConf32))_
+    addLocation("Conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), ?(Theme.Icons.Browser.TabConf32))_
 
   val addAllLocations =
     Function.chain(Seq(addHomeLocation, addImagesLocation, addTemplatesLocation, addLogsLocation, addConfLocation))
 }
+
 
 
 /**
@@ -95,8 +98,10 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
     extends Publisher[Option[LocationSelection]] {
 
   type Location = (LocationTree, LocationItems)
+  type LocationRoot = File
   type Tab = Component // location tree ui
 
+  private val locationRootToConf = MMap.empty[LocationRoot, LocationConf]
   private val tabsToLocations = MMap.empty[Tab, Location]
 
   /** Current (visible) location. */
@@ -112,7 +117,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
         locationRef.set(locationOpt)
 
         for ((locationTree, locationItems) <- locationOpt) {
-          ui.setSecondComponent(locationItems.ui)
+          ui.spLocation.setSecondComponent(locationItems.ui)
           updateSelection(locationTree, locationItems)
         }
       }
@@ -120,7 +125,8 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   }
 
   def addLocation(caption: String, conf: LocationConf, icon: Option[Resource] = None) {
-    val locationTree = new LocationTree(conf.root)
+    val locationRoot = new File(conf.dir, conf.relativePath)
+    val locationTree = new LocationTree(locationRoot)
     val locationItems = new LocationItems(conf.itemsFilter, isSelectable, isMultiSelect)
 
     locationTree.ui addValueChangeHandler {
@@ -155,6 +161,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
     locationTree.reload()
 
+    locationRootToConf(locationRoot) = conf
     tabsToLocations(locationTree.ui) = (locationTree, locationItems)
     ui.accLocationTrees.addTab(locationTree.ui, caption, icon.orNull)
   }
@@ -224,14 +231,44 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
         locationTree.selection = locationSelection.dir
         if (isSelectable) locationItems.ui.value = locationSelection.items
     }
+
+  // primary constructor
+  listen { e =>
+    ui.lblSelectionPath.value = {
+      val pathOpt =
+        for {
+          LocationSelection(dir, items) <- e
+          (locationTree, _) <- location
+          conf <- locationRootToConf.get(locationTree.root)
+          confParent = ?(conf.dir.getParentFile).map(_.getCanonicalFile).orNull
+          dirs = Iterator.iterate(dir)(_.getParentFile).takeWhile(_.getCanonicalFile != confParent).toList.reverse
+          dirPath = dirs.map(_.getName).mkString("", "/", "/")
+        } yield {
+          dirPath + (items match {
+            case Nil => ""
+            case Seq(item) => item.getName
+            case _ => "..."
+          })
+        }
+
+      pathOpt getOrElse ""
+    }
+  }
+
+  notifyListeners()
 }
 
 
-class FileBrowserUI extends HorizontalSplitPanel with FullSize {
+class FileBrowserUI extends VerticalLayout with Spacing with FullSize {
+  val spLocation = new HorizontalSplitPanel with FullSize
   val accLocationTrees = new Accordion with FullSize
+  val lblSelectionPath = new Label
 
-  setFirstComponent(accLocationTrees)
-  setSplitPosition(15)
+  spLocation.setFirstComponent(accLocationTrees)
+  spLocation.setSplitPosition(15)
+
+  addComponents(this, spLocation, lblSelectionPath)
+  setExpandRatio(spLocation, 1.0f)
 }
 
 

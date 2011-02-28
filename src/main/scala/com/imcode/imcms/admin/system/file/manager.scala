@@ -122,34 +122,10 @@ class FileManager(app: ImcmsApplication) {
       }
     }
   }
-
-  browser.listen { e =>
-    ui.lblSelectionPath.value = {
-      val pathOpt =
-        for {
-          LocationSelection(dir, items) <- e
-          (locationTree, _) <- browser.location
-
-          locationRoot = locationTree.root.getCanonicalFile
-          dirs = locationRoot :: Iterator.iterate(dir)(_.getParentFile).takeWhile(_.getCanonicalFile != locationRoot).toList.reverse
-          dirPath = dirs.map(_.getName).mkString("", "/", "/")
-        } yield {
-          dirPath + (items match {
-            case Nil => ""
-            case Seq(item) => item.getName
-            case _ => "..."
-          })
-        }
-
-      pathOpt getOrElse ""
-    }
-  }
-
-  browser.notifyListeners()
 }
 
 
-class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends GridLayout(2, 3) with Spacing with FullSize {
+class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends GridLayout(2, 2) with Spacing with FullSize {
   val mb = new MenuBar
   val miFile = mb.addItem("File")
   val miFilePreview = miFile.addItem("Preview")
@@ -168,19 +144,11 @@ class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends 
   val miViewPreview = miView.addItem("Show/Hide preview")
   val miHelp = mb.addItem("Help")
 
-  val lblSelectionPath = new Label
-
   addComponent(mb, 0, 0, 1, 0)
   addComponents(this, browserUI, previewUI)
-  addComponent(lblSelectionPath, 0, 2, 1, 2)
-
   setComponentAlignment(previewUI, Alignment.MIDDLE_CENTER)
-  //previewUI.setMargin(false, true, false, true)
-
   setColumnExpandRatio(0, 1f)
   setRowExpandRatio(1, 1f)
-
-  //setExpandRatio(browserUI, 1.0f)
 }
 
 

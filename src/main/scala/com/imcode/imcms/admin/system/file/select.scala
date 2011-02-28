@@ -24,7 +24,7 @@ class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Se
 
   browser.notifyListeners()
   // todo: refactor out
-  browser.ui.setSplitPosition(25)
+  browser.ui.spLocation.setSplitPosition(25)
   setWidth("500px"); setHeight("350px")
 }
 
@@ -74,7 +74,7 @@ class FileDialog(caption: String, browser: FileBrowser)
 
   browser.notifyListeners()
   // todo: refactor out
-  browser.ui.setSplitPosition(25)
+  browser.ui.spLocation.setSplitPosition(25)
   setWidth("500px"); setHeight("350px")
 }
 
