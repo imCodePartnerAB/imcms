@@ -124,10 +124,10 @@ class FlowUI extends VerticalLayout with FullSize with Spacing {
  * If used in a dialog then flow bar should replace (/be used instead of) dialog buttons bar.
  */
 class FlowBarUI extends HorizontalLayout with Spacing with UndefinedSize {
-  val btnPrev = new Button("Prev") with ResourceCaption
-  val btnNext = new Button("Next") with ResourceCaption
-  val btnFinish = new Button("Finish") with ResourceCaption
-  val btnCancel = new Button("Cancel") with ResourceCaption
+  val btnPrev = new Button("Prev")
+  val btnNext = new Button("Next")
+  val btnFinish = new Button("Finish")
+  val btnCancel = new Button("Cancel")
 
   addComponents(this, btnCancel, btnPrev, btnNext, btnFinish)
 }

@@ -1,5 +1,6 @@
 package com.imcode
-package imcms.admin.system.file
+package imcms
+package admin.system.file
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
@@ -70,19 +71,19 @@ object ImcmsFileBrowser {
   def addLocation(caption: String, conf: LocationConf, image: Option[Resource])(browser: FileBrowser) =
     letret(browser) { _ => browser.addLocation(caption, conf, image) }
 
-  val addHomeLocation = addLocation("Home", LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))_
+  val addHomeLocation = addLocation("file.browser.location.home".i, LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))_
 
   val addImagesLocation =
-    addLocation("Images", LocationConf(Imcms.getPath, "images"), ?(Theme.Icons.Browser.TabImages32))_
+    addLocation("file.browser.location.images".i, LocationConf(Imcms.getPath, "images"), ?(Theme.Icons.Browser.TabImages32))_
 
   val addTemplatesLocation =
-    addLocation("Templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), ?(Theme.Icons.Browser.TabTemplates32))_
+    addLocation("file.browser.location.templates".i, LocationConf(Imcms.getPath, "WEB-INF/templates/text"), ?(Theme.Icons.Browser.TabTemplates32))_
 
   val addLogsLocation =
-    addLocation("Logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), ?(Theme.Icons.Browser.TabLogs32))_
+    addLocation("file.browser.location.logs".i, LocationConf(Imcms.getPath, "WEB-INF/logs"), ?(Theme.Icons.Browser.TabLogs32))_
 
   val addConfLocation =
-    addLocation("Conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), ?(Theme.Icons.Browser.TabConf32))_
+    addLocation("file.browser.location.conf".i, LocationConf(Imcms.getPath, "WEB-INF/conf"), ?(Theme.Icons.Browser.TabConf32))_
 
   val addAllLocations =
     Function.chain(Seq(addHomeLocation, addImagesLocation, addTemplatesLocation, addLogsLocation, addConfLocation))

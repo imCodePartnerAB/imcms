@@ -11,7 +11,7 @@ import imcms.mapping.{DocLoaderCachingProxy}
 ;
 
 class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Margin with Spacing {
-  val tblMetas = new Table("Metas") with ValueType[JInteger] with ResourceCaption with Selectable with Immediate {
+  val tblMetas = new Table("Metas") with ValueType[JInteger] with Selectable with Immediate {
     addContainerProperties(this,
       ContainerProperty[JInteger]("Id"),
       ContainerProperty[String]("Type"),
@@ -19,20 +19,20 @@ class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Ma
       ContainerProperty[Date]("Modified date"),
       ContainerProperty[String]("Default version"))    
   }
-  val tblVersions = new Table("Available versions") with ResourceCaption {
+  val tblVersions = new Table("Available versions") {
     addContainerProperties(this,
       ContainerProperty[JInteger]("No"),
       ContainerProperty[Date]("Created"),
       ContainerProperty[Date]("Modified"))
   }
-  val tblDocs = new Table("Documents") with ResourceCaption {
+  val tblDocs = new Table("Documents") {
     addContainerProperties(this,
       ContainerProperty[JInteger]("#"),
       ContainerProperty[String]("Version"),
       ContainerProperty[String]("Language"))
   }
 
-  val tblLanguages = new Table("Available languages") with ResourceCaption {
+  val tblLanguages = new Table("Available languages") {
     addContainerProperties(this,
       ContainerProperty[String]("Name"))    
   }

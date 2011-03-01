@@ -1,34 +1,22 @@
 package com.imcode
-package imcms.vaadin
+package imcms
+package vaadin
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
-import java.io.{ByteArrayOutputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.Application
-import java.util.{Collections, LinkedList, ResourceBundle, Date, Collection => JCollection}
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import imcode.util.Utility
 import com.vaadin.terminal.{Resource, Sizeable, ThemeResource, UserError}
 import com.vaadin.ui.Window.Notification
 import com.imcode.imcms.security._
+import java.io._
+import java.util.{Collection => JCollection}
 
 trait ImcmsApplication extends Application {
 
-  def content = getContext.asInstanceOf[WebApplicationContext]
-
-  def session = content.getHttpSession
-
-  def user = Utility.getLoggedOnUser(session)
-
-  // todo: implement
-  val resourceBundle = new ResourceBundle {
-    def handleGetObject(key: String)  = "<" + key + ">"
-
-    val getKeys = asJavaEnumeration(List.empty[String].iterator)
-  }
-
-
+  def user = Utility.getLoggedOnUser(this.session)
 
   /**
    * If permission is granted executes an action.
@@ -45,6 +33,10 @@ trait ImcmsApplication extends Application {
 }
 
 class ApplicationWrapper(app: Application) {
+
+  def content = app.getContext.asInstanceOf[WebApplicationContext]
+
+  def session = content.getHttpSession
 
   def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
     init(window)
@@ -120,22 +112,6 @@ trait SingleClickListener extends Button {
   }
 }
 
-/**
- * Must be mixed-in into a component which parent is ImcmsApplication.
- */
-trait ResourceCaption extends AbstractComponent {
-  
-  /**
-   * Returns resource string using original caption (assigned by setCaption) as a resource key or original caption if
-   * corresponding resource does not exists.
-   *
-   * @throws java.lang.ClassCastException if application is not an instance of ImcmsApplication
-   *
-   * @return caption.
-   */
-  override def getCaption() = getApplication.resourceBundle.getString(super.getCaption)
-}
-
 
 /**
  * Auto-adjustable size dialog window with full margin.
@@ -199,7 +175,7 @@ trait CustomSizeDialog extends Dialog {
 }
 
 trait YesButton extends Dialog {
-  val btnYes = new Button("Yes") with SingleClickListener { setIcon(new ThemeResource("icons/16/ok.png")) }
+  val btnYes = new Button("dlg.btn.yes".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/ok.png")) }
 
   def wrapYesHandler(handler: => Unit) {
     btnYes addClickHandler {
@@ -215,7 +191,7 @@ trait YesButton extends Dialog {
 }
 
 trait NoButton extends Dialog {
-  val btnNo = new Button("No") with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
+  val btnNo = new Button("dlg.btn.no".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
   def wrapNoHandler(handler: => Unit) {
     btnNo addClickHandler {
@@ -231,7 +207,7 @@ trait NoButton extends Dialog {
 }
 
 trait OKButton extends Dialog {
-  val btnOk = new Button("Ok") with SingleClickListener { setIcon(new ThemeResource("icons/16/ok.png")) }
+  val btnOk = new Button("dlg.btn.ok".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/ok.png")) }
 
   wrapOkHandler {}
 
@@ -258,7 +234,7 @@ trait OKButton extends Dialog {
 
 
 trait CancelButton extends Dialog {
-  val btnCancel = new Button("Cancel") with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
+  val btnCancel = new Button("dlg.btn.cancel".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
   wrapCancelHandler {}
 
@@ -326,7 +302,7 @@ class YesNoCancelDialog(caption: String = "") extends Dialog(caption) with YesBu
 
 /** Confirmation dialog window. */
 class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(caption) {
-  def this(msg: String = "") = this("Confirmation", msg)
+  def this(msg: String = "") = this("dlg.confirm.title".i, msg)
 
   val lblMessage = new Label(msg) with UndefinedSize
 
