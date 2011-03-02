@@ -1,5 +1,7 @@
 package imcode.util;
 
+import com.vaadin.Application;
+import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -455,10 +457,16 @@ public class Utility {
         if ( null != user && !user.isDefaultUser() && !req.isSecure() && Imcms.getServices().getConfig().getSecureLoginRequired() ) {
             return;
         }
-        req.getSession().setAttribute(LOGGED_IN_USER, user);
+        HttpSession session = req.getSession();
+        session.setAttribute(LOGGED_IN_USER, user);
         if (null != user) {
             // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
             user.setCurrentContextPath( req.getContextPath() );
+        }
+
+        // Close all vaadin applications associated with a session.
+        for (Application app: WebApplicationContext.getApplicationContext(session).getApplications()) {
+            app.close();
         }
     }
 

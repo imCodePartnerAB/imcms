@@ -2,17 +2,30 @@ package com.imcode
 
 import imcode.server.Imcms
 import java.util.{Locale, ResourceBundle}
+import java.text.MessageFormat
 
 package object imcms {
 
   type DocId = JInteger
 
-  implicit def stringAsI18nResource(s: String) = new {
-    def i = (for {
-      user <- ?(Imcms.getUser)
-      language = user.getLanguageIso639_2
-      bundle = ResourceBundle.getBundle("ui", new Locale(language))
-      value <- EX.allCatch.opt(bundle.getString(s))
-    } yield value) getOrElse "<#%s#>".format(s)
+  implicit def stringAsBundleResourceId(string: String) = new {
+
+    private def getLocale() = ?(Imcms.getUser) match {
+      case Some(user) => new Locale(user.getLanguageIso639_2)
+      case _ => Locale.getDefault
+    }
+
+    private def localize() = {
+      val locale = getLocale()
+      val bundle = ResourceBundle.getBundle("ui", locale)
+      (EX.allCatch.opt(bundle.getString(string)) getOrElse "<#%s#>".format(string), locale)
+    }
+
+
+    def i = localize()._1
+
+    def f(arg: AnyRef, args: AnyRef*) = localize() match {
+      case (message, locale) => new MessageFormat(message, locale).format(arg +: args toArray)
+    }
   }
 }

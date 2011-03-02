@@ -4,7 +4,7 @@ package admin.system.file
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import scala.collection.mutable.{Map => MMap} // , HashMap, SynchronizedMap
+import scala.collection.mutable.{Map => MMap}
 import com.vaadin.terminal.{Resource}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import com.vaadin.data.util.FilesystemContainer
@@ -68,22 +68,22 @@ case class LocationSelection(dir: File, items: Seq[File]) {
 
 object ImcmsFileBrowser {
 
-  def addLocation(caption: String, conf: LocationConf, image: Option[Resource])(browser: FileBrowser) =
-    letret(browser) { _ => browser.addLocation(caption, conf, image) }
+  def addLocation(captionResourceId: String, conf: LocationConf, image: Option[Resource])(browser: FileBrowser) =
+    letret(browser) { _ => browser.addLocation(captionResourceId.i, conf, image) }
 
-  val addHomeLocation = addLocation("file.browser.location.home".i, LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))_
+  val addHomeLocation = addLocation("file.browser.location.home", LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))_
 
   val addImagesLocation =
-    addLocation("file.browser.location.images".i, LocationConf(Imcms.getPath, "images"), ?(Theme.Icons.Browser.TabImages32))_
+    addLocation("file.browser.location.images", LocationConf(Imcms.getPath, "images"), ?(Theme.Icons.Browser.TabImages32))_
 
   val addTemplatesLocation =
-    addLocation("file.browser.location.templates".i, LocationConf(Imcms.getPath, "WEB-INF/templates/text"), ?(Theme.Icons.Browser.TabTemplates32))_
+    addLocation("file.browser.location.templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), ?(Theme.Icons.Browser.TabTemplates32))_
 
   val addLogsLocation =
-    addLocation("file.browser.location.logs".i, LocationConf(Imcms.getPath, "WEB-INF/logs"), ?(Theme.Icons.Browser.TabLogs32))_
+    addLocation("file.browser.location.logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), ?(Theme.Icons.Browser.TabLogs32))_
 
   val addConfLocation =
-    addLocation("file.browser.location.conf".i, LocationConf(Imcms.getPath, "WEB-INF/conf"), ?(Theme.Icons.Browser.TabConf32))_
+    addLocation("file.browser.location.conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), ?(Theme.Icons.Browser.TabConf32))_
 
   val addAllLocations =
     Function.chain(Seq(addHomeLocation, addImagesLocation, addTemplatesLocation, addLogsLocation, addConfLocation))
@@ -273,11 +273,10 @@ class FileBrowserUI extends VerticalLayout with Spacing with FullSize {
 }
 
 
+/** Select item can be a dir or a file. */
 trait FSItemIcon extends AbstractSelect {
-  override def getItemIcon(itemId: AnyRef) = itemId.asInstanceOf[File] match {
-    case item if item.isDirectory => Theme.Icons.Folder16
-    case _ => Theme.Icons.File16
-  }
+  override def getItemIcon(itemId: AnyRef) =
+    if (itemId.asInstanceOf[File].isDirectory) Theme.Icons.Folder16 else Theme.Icons.File16
 }
 
 
@@ -306,13 +305,13 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
     ui.setMultiSelect(multiSelect)
 
     addContainerProperties(ui,
-      CP[String]("Name"),
-      CP[Date]("Date modified"),
-      CP[String]("Size"),
-      CP[String]("Kind"))
+      CP[String]("file.browser.items.col.name".i),
+      CP[String]("file.browser.items.col.modified".i),
+      CP[String]("file.browser.items.col.size".i),
+      CP[String]("file.browser.items.col.kind".i))
 
     import Table._
-    ui.setColumnAlignments(Array(ALIGN_LEFT, ALIGN_LEFT, ALIGN_RIGHT, ALIGN_RIGHT))
+    ui.setColumnAlignments(Array(ALIGN_LEFT, ALIGN_RIGHT, ALIGN_RIGHT, ALIGN_RIGHT))
     ui.setRowHeaderMode(ROW_HEADER_MODE_ICON_ONLY);
   }
 
@@ -321,22 +320,23 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
     val base = 1024
     val baseFn = java.lang.Math.pow(1024, _:Int).toInt
     val (dirs, files) = dir.listFiles.partition(_.isDirectory)
+    def lastModified(file: File) = "file.browser.items.col.modified.fmt".f(file.lastModified.asInstanceOf[AnyRef])
 
     ui.removeAllItems()
 
     dirs.sortWith((d1, d2) => d1.getName.compareToIgnoreCase(d2.getName) < 0) foreach { dir =>
-      ui.addItem(Array[AnyRef](dir.getName, new Date(dir.lastModified), "--", "Folder"), dir)
+      ui.addItem(Array[AnyRef](dir.getName, lastModified(dir), "--", "file.browser.items.col.kind.dir".i), dir)
     }
 
     for (file <- files.sortWith((f1, f2) => f1.getName.compareToIgnoreCase(f2.getName) < 0) if filter(file)) {
       val (size, units) = file.length match {
-        case size if size < baseFn(1) => (size, "--")
+        case size if size < baseFn(1) => (0, "KB")
         case size if size < baseFn(2) => (size / base, "KB")
         case size if size < baseFn(3) => (size / base, "MB")
         case size => (size / base, "GB")
       }
 
-      ui.addItem(Array[AnyRef](file.getName, new Date(file.lastModified), "%d %s".format(size, units), "File"), file)
+      ui.addItem(Array[AnyRef](file.getName, lastModified(file), "%d %s".format(size, units), "file.browser.items.col.kind.file".i), file)
     }
   }
 

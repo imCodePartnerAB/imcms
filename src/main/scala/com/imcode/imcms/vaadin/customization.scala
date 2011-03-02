@@ -142,7 +142,7 @@ trait SingleSelect extends AbstractSelect {
 
 /** Select component eXtension. */
 trait XSelect[T >: Null] extends AbstractSelect with ItemIdType[T] {
-  def addItem(id: T, caption:String): Item = letret(addItem(id)) { _ =>
+  def addItem(id: T, caption: String): Item = letret(addItem(id)) { _ =>
     setItemCaption(id, caption)
   }
 }
