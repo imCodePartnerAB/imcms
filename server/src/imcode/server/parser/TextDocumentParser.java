@@ -100,7 +100,9 @@ public class TextDocumentParser {
             Perl5Matcher patMat = new Perl5Matcher();
 
             final String imcmsMessage     = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
-            final String imcmsAdminScript = service.getAdminTemplate( "textdoc/imcms_admin_headtag.html", user, null );
+            final String imcmsAdminScript = (viewing.isEditingTexts()) ?
+				            service.getAdminTemplate( "textdoc/imcms_admin_headtag_mode_text.html", user, null ) :
+				            service.getAdminTemplate( "textdoc/imcms_admin_headtag.html", user, null ) ;
 						HttpServletRequest request    = null;
 						HttpServletResponse response  = null;
 						boolean hasAdminPanel         = false;

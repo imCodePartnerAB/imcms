@@ -161,7 +161,7 @@ if (rows > 0) {
 					<%= isSwe ? "Innehållet har ändrats!" : "The content has been changed!" %>
 				</div>
 				<div id="contentChangedDiv_false" style="display:block; color:#afa; font-style:italic;">
-					<%= isSwe ? "Innehållet har inte ändrats!" : "The content has not been changed!" %>
+					<%= "&nbsp;" %>
 				</div>
 			</div>
 			<div id="contentSavedDiv_true" style="display:none; float:left; color:#afa; font-style:italic; font-weight:bold;">
@@ -251,7 +251,8 @@ if (rows > 0) {
 	if (1 == rows) { %>
 	<input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
 	} else { %>
-	<textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width:<%= width > 0 ? (width + 6) + "px" : "100%" %>;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
+	<textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width:<%= width > 0 ? (width + 6) + "px" : "100%" %>;"><%=
+	StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
 	} %>
 	</div></td>
 </tr>
@@ -1237,6 +1238,7 @@ jQuery(document).ready(function($) {
 }) ;
 
 function saveText($, closeAfter) {
+	console.log('closeAfter: ' + closeAfter) ;
 	isSaving = true ;
 	var isSavedSuccess = false ;
 	var $btnSaveClose = $('#saveCloseBtn') ;
@@ -1302,7 +1304,16 @@ function saveText($, closeAfter) {
 					.slideUp('fast') ;
 				resetChangedContent($) ;
 				isSavedSuccess = true ;
-				isSaving = false ;
+				isSaving = false ;<%
+				if (DEBUG_SAVE) { %>
+				console.log('closeAfter:' + closeAfter + ', isSavedSuccess:' + isSavedSuccess) ;<%
+				} %>
+				if (closeAfter && isSavedSuccess) {<%
+					if (DEBUG_SAVE) { %>
+					console.log('back') ;<%
+					} %>
+					$('#backBtnTop').trigger('click') ;
+				}
 			} else {<%
 				if (DEBUG_SAVE) { %>
 				console.log('NOT saved!') ;<%
@@ -1326,9 +1337,6 @@ function saveText($, closeAfter) {
 		$btnSave.enableImcmsBtn() ;
 		$btnReset.enableImcmsBtn() ;
 		$btnBack.enableImcmsBtn() ;
-		if (closeAfter && isSavedSuccess) {
-			$backBtn.trigger('click') ;
-		}
 	}) ;
 }
 

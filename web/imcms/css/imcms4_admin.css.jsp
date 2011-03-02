@@ -1,7 +1,15 @@
 <%@ page
 	
-	import="org.apache.oro.text.perl.Perl5Util,
-	        org.apache.commons.lang.StringUtils"
+	import="imcode.server.Imcms,
+	        java.io.BufferedReader,
+	        java.io.InputStream,
+	        java.io.InputStreamReader,
+	        java.net.URL,
+	        java.net.URLConnection,
+	        org.apache.commons.lang.StringUtils,
+	        org.apache.commons.lang.StringUtils,
+	        org.apache.oro.text.perl.Perl5Util,
+	        org.apache.oro.text.perl.Perl5Util"
 	
 	contentType="text/css"
 	pageEncoding="UTF-8"
@@ -14,6 +22,8 @@
 
 */
 
+boolean isTextMode = ("true".equals(StringUtils.defaultString(request.getParameter("textMode")))) ;
+
 Perl5Util re = new Perl5Util() ;
 
 /* Check browser */
@@ -21,6 +31,13 @@ Perl5Util re = new Perl5Util() ;
 String uAgent   = StringUtils.defaultString(request.getHeader("USER-AGENT")) ;
 boolean isIE    = re.match("/(MSIE \\d)/i", uAgent) ;
 boolean isGecko = re.match("/Gecko/i", uAgent) ;
+//boolean isWebKit = re.match("/webkit/i", uAgent) ;
+
+String BORDER_COLOR_NORMAL = "#668db6 #000 #000 #668db6" ;
+
+if (isGecko) {
+	BORDER_COLOR_NORMAL = "#466d96 #333 #333 #466d96" ;
+}
 
 %>
 .imcms_label,
@@ -39,7 +56,58 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 	background-color: #ffc !important;
 }
 
-/* adminMode */
+<%-- Inline Text Edit - [Save], [Abort] --%>
+
+.imcmsFormBtnSmall {
+	background-color: #20568d;
+	color: #fff;
+	font: 10px Tahoma, Arial, sans-serif;
+	border: <%= isGecko ? 1 : 2 %>px outset #668db6;
+	border-color: <%= BORDER_COLOR_NORMAL %>;
+	cursor:pointer;
+	padding: <%= isGecko ? 1 : 0 %>px 2px;
+}
+
+#imcmsInlineEditMessage_ok {
+	display: none;
+	margin: 5px 0 !important;
+	padding: 10px !important;
+	text-align: center !important;
+	font: bold italic 14px Tahoma, Arial, sans-serif !important;<%----%>
+	color: #0b0;
+	background-color: #ffc !important;
+	border: 1px solid #000 !important;
+}
+
+#imcmsInlineEditMessage_error {
+	display: none;
+	margin: 5px 0 !important;
+	padding: 10px !important;
+	text-align: center !important;
+	font: bold italic 14px Tahoma, Arial, sans-serif !important;<%----%>
+	color: #f00;
+	background-color: #ffc !important;
+	border: 1px solid #000 !important;
+}
+
+.imcmsFormBtnDiv {
+	margin-top: -2px !important;
+	padding: 3px;
+	background-color: #f0f0f2;
+	border: 1px solid #ccc !important;
+	border-top: 0 !important;
+}
+
+.imcmsFormBtnDiv .textMode {
+	float: left;
+	padding: 2px 0 0 0;
+	white-space: pre;
+	font: bold normal 11px 'Courier New', Courier, monospace !important;
+	color: #999 !important;
+}
+
+
+<%-- adminMode --%>
 
 #adminPanelDiv {
 	padding: 15px 0 10px 0 !important;
@@ -91,7 +159,7 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 	font-weight: bold !important;
 }
 
-/* changePage */
+<%-- changePage --%>
 
 #changePageDiv {
 	padding: 0 0 10px 0 !important;
@@ -159,7 +227,60 @@ A.imLinkHelp:hover {
 	text-decoration:none !important;
 }
 
+<%--
+imCMS version of jQuery UI CSS:
+--%>
+
+<jsp:include page="imcms_jquery-ui.css.jsp" />
+
 <%-- Testing feature --%>
 .ui-effects-transfer {
 	border: 2px dotted #20568d !important;
 }
+
+
+<%--!
+
+// Make new imCMS version of jQuery UI CSS: https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/redmond/jquery-ui.css
+
+
+private final static int CONNECTION_TIMEOUT_MILLIS = 3000 ;
+
+public static String getURLcontent( String urlString, String encoding ) {
+		try {
+				URL url = new URL(urlString) ;
+				URLConnection con = url.openConnection() ;
+				con.setConnectTimeout(CONNECTION_TIMEOUT_MILLIS);
+				con.connect() ;
+				InputStream is = (InputStream) con.getContent() ;
+				InputStreamReader isr = new InputStreamReader(is, encoding) ;
+				BufferedReader br = new BufferedReader(isr) ;
+				String line = br.readLine() ;
+				StringBuffer retVal = new StringBuffer();
+				while (line != null) {
+						retVal.append( line ).append( "\n" ) ;
+						line = br.readLine() ;
+				}
+				br.close() ;
+				return retVal.toString();
+		} catch (Exception ex) {
+				return null ;
+		}
+}
+
+%><%
+
+if (true) {
+	try {
+		String jQueryUiCss = getURLcontent("https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/redmond/jquery-ui.css", Imcms.UTF_8_ENCODING) ;
+		
+		out.print("\n\n\n\n" + jQueryUiCss.replaceAll("\\n.ui-", "\n.imcmsAdmin.ui-")) ;
+		
+		out.print("\n\n\n\n" + jQueryUiCss.replaceAll("\\n.ui-", "\n.imcmsAdmin .ui-")) ;
+		
+	} catch (Exception e) {
+		out.print("/* ERROR: " + e.getMessage() + " */");
+	}
+}
+
+--%>

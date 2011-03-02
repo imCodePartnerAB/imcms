@@ -21,7 +21,27 @@ SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm") ;
 String action = StringUtils.defaultString(request.getParameter("action")) ;
 String value  = StringUtils.defaultString(request.getParameter("value")) ;
 
-if ("saveText".equals(action)) {
+if ("getHelpTextInlineEditing".equals(action)) {
+	
+	boolean isSwe = false ;
+	try {
+		isSwe =	ContentManagementSystem.fromRequest(request).getCurrentUser().getLanguage().getIsoCode639_2().equals("swe");
+	} catch (Exception e) {}
+	
+	if (isSwe) { %>
+	<h3>Redigera på stället</h3>
+	<ul>
+		<li>...</li>
+	</ul><%
+	} else { %>
+	<h3>Edit in place!</h3>
+	<ul>
+		<li>...</li>
+	</ul><%
+	}
+	return ;
+	
+} else if ("saveText".equals(action)) {
 	
 	JSONObject jsonObject = new JSONObject() ;
 	

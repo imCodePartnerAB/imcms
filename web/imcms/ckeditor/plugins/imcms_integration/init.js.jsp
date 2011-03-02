@@ -7,7 +7,6 @@
 	        org.apache.commons.lang.StringUtils"
 	
 	contentType="text/javascript"
-	
 	pageEncoding="UTF-8"
 	
 %><%
@@ -32,23 +31,29 @@ var CKEDITOR_otherLinkParams    = [ '<%= StringUtils.join(EditLink.OTHER_PARAMET
 var contextPath                 = '<%= cp %>' ;
 
 
-function initCkEditor($, id, lang, width, toolBarSet) {<%--
-	var winH    = $(window).height() ;
-	var wantedH = (winH - 350) ;
-	var maxH    = (wantedH > 300) ? wantedH : 600 ;
-	console.log('winH: ' + winH + ', maxH: ' + maxH) ;--%>
-	CKEDITOR.replace(id,
-		{
-			customConfig       : '<%= ckPluginImcmsPath + "imcms_config.js?" + System.currentTimeMillis() %>',
-			contentsCss        : '<%= cp + "/css/" + (hasOwnCss ? "editor_site.css" : "editor_default.css") %>',
-			width              : width,
-			language           : lang,
-			toolbar            : toolBarSet,
-			sharedSpaces       : { top : 'toolBar' }<%--,
-			autoGrow_minHeight : 300,
-			autoGrow_maxHeight : maxH--%>
-		}
-	) ;
+function initCkEditor($, id, lang, width, toolBarSet) {
+	var isInlineEditing = (id.toLowerCase().indexOf('inline') != -1) ;
+	var oConfig = {
+		customConfig       : '<%= ckPluginImcmsPath + "imcms_config.js.jsp?" + System.currentTimeMillis() %>' + (isInlineEditing ? '&isInlineEditing=true' : ''),
+		contentsCss        : '<%= cp + "/css/" + (hasOwnCss ? "editor_site.css" : "editor_default.css") %>',
+		width              : width,
+		language           : lang,
+		toolbar            : toolBarSet,
+		sharedSpaces       : { top : 'toolBar' }<%--,
+		autoGrow_minHeight : 300,
+		autoGrow_maxHeight : maxH--%>
+	} ;
+	if (isInlineEditing) {
+		var iOffset = (/.*SIMPLE_[12]/.test(toolBarSet)) ? 200 : 300 ;
+		var winH    = $(window).height() ;
+		var wantedH = (winH - iOffset) ;
+		var maxH    = (wantedH > 700) ? 700 : (wantedH < 100) ? 100 : wantedH ;
+		if (maxH < 400) maxH = 400 ;<%-- Trying this value --%><%--
+		console.log('winH: ' + winH + ', maxH: ' + maxH) ; --%>
+		oConfig.autoGrow_minHeight = 100 ;
+		oConfig.autoGrow_maxHeight = maxH ;
+	}
+	CKEDITOR.replace(id, oConfig) ;
 	CKEDITOR.on('instanceReady', function(event) {
 		setSizeOfEditor($) ;
 		checkIframeScroll($) ;
@@ -88,6 +93,9 @@ function initCkEditor($, id, lang, width, toolBarSet) {<%--
 			elements : {
 				p : function( element ) {
 					if (element.attributes.hasbox) delete element.attributes.hasbox ;
+				},
+				img : function( element ) {
+					if (element.attributes.rel) delete element.attributes.rel ;
 				}
 			}
 		}) ;

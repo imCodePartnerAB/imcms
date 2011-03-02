@@ -1,4 +1,14 @@
+<%@ page
+	
+	contentType="text/javascript"
+	
+	pageEncoding="UTF-8"
+	
+%><%
 
+boolean isInlineEditing = (null != request.getParameter("isInlineEditing")) ;
+
+%>
 //CKEDITOR.config.language                      = 'sv';
 CKEDITOR.config.skin                          = 'office2003' ; // kama || v2 || office2003
 CKEDITOR.config.tabSpaces                     = 2 ;
@@ -45,7 +55,7 @@ CKEDITOR.config.plugins                       = '' +
                                                 'specialchar,tab,templates,toolbar,undo,wysiwygarea,wsc' ;
 
 
-CKEDITOR.config.extraPlugins                  = 'imcms_image,imcms_link,pastefromword,pastetext,tab' ;//,autogrow
+CKEDITOR.config.extraPlugins                  = 'imcms_image,imcms_link,pastefromword,pastetext,tab<%= isInlineEditing ? ",autogrow" : "" %>' ;//,autogrow
 
 CKEDITOR.config.toolbar_imCMS_ALL = [
 	['Source','Maximize', 'Preview'],
@@ -59,10 +69,24 @@ CKEDITOR.config.toolbar_imCMS_ALL = [
 	['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],['About']
 ] ;
 
-CKEDITOR.config.toolbar_imCMS_SIMPLE = [
-	['Source','Maximize','-','Bold','Italic','Underline','Strike','-','TextColor','BGColor','-','Link'],
-	'/',
-	['NumberedList','BulletedList','-','Outdent','Indent','-','RemoveFormat','SpecialChar']
+CKEDITOR.config.toolbar_imCMS_SIMPLE_3 = [
+	['Source','Maximize','-','Format','-','Bold','Italic','Underline','Strike','-','ImcmsLink','ImcmsImage'],
+	['NumberedList','BulletedList','-','Outdent','Indent','-','SpecialChar']
+] ;
+
+CKEDITOR.config.toolbar_imCMS_SIMPLE_2 = [
+	['Source','Maximize','-','Bold','Italic','Underline','Strike','-','ImcmsLink','ImcmsImage'],'/',
+	['NumberedList','BulletedList','-','Outdent','Indent','-','SpecialChar']
+] ;
+
+CKEDITOR.config.toolbar_imCMS_SIMPLE_1 = [
+	['Source','Maximize'],
+	['Bold','Italic','Underline','-','ImcmsLink']
+] ;
+
+CKEDITOR.config.toolbar_imCMS_SIMPLE_0 = [
+	['Source','Maximize'],'/',
+	['Bold','Italic','Underline','-','ImcmsLink']
 ] ;
 
 
