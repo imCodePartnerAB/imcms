@@ -11,6 +11,7 @@ import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcms.api._
 import imcms.servlet.superadmin.AdminSearchTerms
+import java.util.{Locale, Date}
 
 //import imcms.admin.chat.{MessageView, Chat}
 
@@ -18,7 +19,6 @@ import imcms.admin.access.user.{UserManager}
 import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
-import java.util.{Date}
 import scala.actors.Actor._
 import scala.actors._
 import imcode.server.document.textdocument.TextDocumentDomainObject
@@ -274,6 +274,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
   def init {
     setTheme("imcms")
+    setLocale(new Locale(user.getLanguageIso639_2))
     wndMain initMenu Menu
     Menu.items foreach { wndMain.treeMenu expandItemsRecursively _ }
     wndMain.treeMenu select Menu.About
