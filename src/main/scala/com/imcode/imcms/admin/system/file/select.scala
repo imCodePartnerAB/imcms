@@ -10,17 +10,36 @@ import java.util.concurrent.atomic.AtomicBoolean
 import com.vaadin.Application
 import com.vaadin.terminal._
 import org.apache.commons.io.FileUtils
-import io.Source
 import com.vaadin.ui._
 
-
+/**
+ * Common file operations used in file manager and preview.
+ */
 object FileOps {
+
+  val extRE = """(?i).*\.(\S+)""".r
+
+  /** Files with the following extensions can be shown directly in a browser. */
+  val immediatelyShowableExts = Set("gif", "png", "jpg", "jpeg")
+
+  /** Content of the files with the following extensions can be shown directly in a browser. */
+  val contentShowableExts = Set("txt", "jsp", "htm", "html", "xml", "xsl", "css")
+
+  val showableExt = immediatelyShowableExts | contentShowableExts
+
+  def ext(file: File) = extRE.unapplySeq(file.getName) map { _.head.toLowerCase }
+  def extString(file: File) = ext(file) getOrElse ""
+
+  def isShowable(file: File) = showableExt contains extString(file)
+  def isImmediatelyShowable(file: File) = immediatelyShowableExts contains extString(file)
+  def isContentShowable(file: File) = contentShowableExts contains extString(file)
+
 
   def download(app: Application, file: File) =
     app.getMainWindow.open(
       new FileResource(file, app) {
         override def getStream() = letret(super.getStream) { ds =>
-          ds.setParameter("Content-Disposition", """attachment; filename="%s"""" format item.getName)
+          ds.setParameter("Content-Disposition", """attachment; filename="%s"""" format file.getName)
         }
       }
     )
@@ -28,20 +47,23 @@ object FileOps {
 
   def showContent(app: Application, file: File) =
     app.initAndShow(new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog, resizable = true) { dlg =>
-      dlg.mainUI = new TextArea("", scala.io.Source.fromFile(item).mkString) with ReadOnly with FullSize
+      dlg.mainUI = new TextArea("", scala.io.Source.fromFile(file).mkString) with ReadOnly with FullSize
       dlg.setSize((500, 500))
     }
 
 
-  def show(app: Application, file: File) =
+  def showImmediately(app: Application, file: File) =
     app.initAndShow(new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog, resizable = true) { dlg =>
       dlg.mainUI = new Embedded("", new FileResource(file, app))
       dlg.setSize((500, 500))
     }
 
 
-  def op(app: Application, file: File): PartialFunction[File, Unit] = (app, file) => {
-
+  def default(app: Application, file: File) {
+    val op = if (isImmediatelyShowable(file)) showImmediately _
+             else if (isContentShowable(file)) showContent _
+             else download _
+    op(app, file)
   }
 }
 
@@ -141,17 +163,26 @@ class FilePreview(browser: FileBrowser) {
   browser listen { ev =>
     if (enabled) ev match {
       case Some(LocationSelection(_, Seq(item))) if item.isFile =>
-        val (previewIcon, previewAction, caption) = createPreviewSettings(item, ui.getApplication)
+        val app = ui.getApplication
+        val caption = if (FileOps.isShowable(item)) "file.preview.act.show".i
+                      else "file.browser.preview.act.download".i
+        val iconResource = if (FileOps.isImmediatelyShowable(item)) new FileResource(item, app)
+                           else new ThemeResource("images/noncommercial/%s.png".format(
+                             FileOps.extString(item) match {
+                               case ext @ ("txt" | "pdf") => ext
+                               case "jsp" | "htm" | "html" | "css" => "firefox"
+                               case _ => "file"
+                             }))
 
-        preview.set(previewIcon)
         ui.btnAction.setEnabled(true)
         ui.btnAction.setCaption(caption)
-        ui.btnAction.addClickHandler { previewAction() }
+        ui.btnAction.addClickHandler { FileOps.default(app, item) }
+        preview.set(new Embedded("", iconResource))
 
       case _ =>
         if (!preview.isEmpty) {
           preview.clear
-          updateDisabled(ui.btnAction) { _ setCaption "file.browser.preview.act.na".i }
+          updateDisabled(ui.btnAction) { _ setCaption "file.preview.act.na".i }
         }
     }
   }
@@ -165,37 +196,6 @@ class FilePreview(browser: FileBrowser) {
     enabledRef.set(enabled)
     ui.setVisible(enabled)
     if (enabled) browser.notifyListeners
-  }
-
-  private def createPreviewSettings(file: File, app: Application) = {
-    val extRE = """(?i).*\.(\S+)""".r
-
-    val ext = file.getName match {
-      case extRE(ext) => ext
-      case _ => ""
-    }
-
-    def showContent(iconName: String) = (
-      new Embedded("", new ThemeResource("images/noncommercial/%s.png" format iconName)),
-      FileOps.showContent(app, file),
-      "file.browser.preview.act.show".i
-    )
-
-    def downloadFile(iconName: String) = (
-      new Embedded("", new ThemeResource("images/noncommercial/%s.png" format iconName)),
-      FileOps.download(app, file),
-      "file.browser.preview.act.download".i
-    )
-
-    ext.toLowerCase match {
-      case "gif" | "png" | "jpg" | "jpeg" =>
-        (new Embedded("", new FileResource(file, app)), FileOps.show(app, file)_, "file.browser.preview.act.show".i)
-
-      case "txt" => showContent("txt")
-      case "jsp" | "htm" | "html" | "css" => showContent("firefox")
-      case "pdf" => downloadFile("pdf")
-      case _ => downloadFile("file")
-    }
   }
 }
 

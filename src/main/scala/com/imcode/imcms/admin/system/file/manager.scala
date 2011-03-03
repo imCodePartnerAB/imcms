@@ -1,5 +1,6 @@
 package com.imcode
-package imcms.admin.system.file
+package imcms
+package admin.system.file
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
@@ -22,7 +23,7 @@ class FileManager(app: ImcmsApplication) {
   val ui = letret(new FileManagerUI(browser.ui, preview.ui)) { ui =>
 
     ui.miEditRename setCommandHandler {
-      for ((dir, Seq(item)) <- browser.selection; if item.isFile) {
+      for (LocationSelection(dir, Seq(item)) <- browser.selection; if item.isFile) {
         app.initAndShow(new OkCancelDialog("file.mgr.dlg.rename.item.title".i)) { dlg =>
           val dlgUI = new ItemRenameDialogUI
           dlg.mainUI = dlgUI
@@ -33,13 +34,13 @@ class FileManager(app: ImcmsApplication) {
             let(dlgUI.txtName.value.trim) {
               case name if name.isEmpty || name.head == '.' || name.exists(forbiddenChars(_)) =>
                 val msg = "file.mgr.dlg.transfer.illegal.item.name.msg".i
-                dlgUI.txtName.value = msg
+                dlgUI.lblMsg.value = msg
                 error(msg)
 
               case name => new File(dir, name) match {
                 case file if file.exists =>
                   val msg = "file.mgr.dlg.transfer.item.exist.msg".f(name, dir)
-                  dlgUI.txtName.value = msg
+                  dlgUI.lblMsg.value = msg
                   error(msg)
 
                 case file => item.renameTo(file)
@@ -63,8 +64,8 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miFileShow setCommandHandler {
-      for ((_, Seq(item)) <- browser.selection; if item.isFile)
-        FileOps.show(app, item)
+      for (LocationSelection(_, Seq(item)) <- browser.selection; if item.isFile && FileOps.isShowable(item))
+        FileOps.default(app, item)
     }
 
     ui.miFileEdit setCommandHandler {
@@ -103,7 +104,7 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miFileDownload setCommandHandler {
-      for ((_, Seq(item)) <- browser.selection; if item.isFile)
+      for (LocationSelection(_, Seq(item)) <- browser.selection; if item.isFile)
         FileOps.download(app, item)
     }
 
@@ -136,15 +137,15 @@ class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends 
   val miFileDownload = miFile.addItem("file.mgr.menu.file.download".i)
   val miNew = mb.addItem("file.mgr.menu.new".i)
   val miNewDir = miNew.addItem("file.mgr.menu.new.dir".i)
-  val miEdit = mb.addItem("file.mgr.menu.edit")
-  val miEditCopy = miEdit.addItem("file.mgr.menu.edit.copy")
-  val miEditMove = miEdit.addItem("file.mgr.menu.edit.move")
-  val miEditRename = miEdit.addItem("file.mgr.menu.edit.rename")
-  val miEditDelete = miEdit.addItem("file.mgr.menu.edit.delete")
-  val miView = mb.addItem("file.mgr.menu.view")
-  val miViewReload = miView.addItem("file.mgr.menu.view.reload")
-  val miViewPreview = miView.addItem("file.mgr.menu.view.toggle_preview")
-  val miHelp = mb.addItem("file.mgr.menu.help")
+  val miEdit = mb.addItem("file.mgr.menu.edit".i)
+  val miEditCopy = miEdit.addItem("file.mgr.menu.edit.copy".i)
+  val miEditMove = miEdit.addItem("file.mgr.menu.edit.move".i)
+  val miEditRename = miEdit.addItem("file.mgr.menu.edit.rename".i)
+  val miEditDelete = miEdit.addItem("file.mgr.menu.edit.delete".i)
+  val miView = mb.addItem("file.mgr.menu.view".i)
+  val miViewReload = miView.addItem("file.mgr.menu.view.reload".i)
+  val miViewPreview = miView.addItem("file.mgr.menu.view.toggle_preview".i)
+  val miHelp = mb.addItem("file.mgr.menu.help".i)
 
   addComponent(mb, 0, 0, 1, 0)
   addComponents(this, browserUI, previewUI)
