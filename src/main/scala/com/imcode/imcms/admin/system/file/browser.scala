@@ -11,7 +11,6 @@ import com.vaadin.data.util.FilesystemContainer
 import java.io.{FilenameFilter, File}
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
-import java.util.{Date}
 import imcode.server.Imcms
 
 /** Hierarchical filesystem (non-hidden dirs) container with a single root. */

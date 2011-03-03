@@ -1,15 +1,49 @@
 package com.imcode
-package imcms.admin.system.file
+package imcms
+package admin.system.file
 
 import scala.collection.JavaConversions._
 import com.imcode.imcms.vaadin._
 import java.io.{File}
-import com.vaadin.ui._
 import com.imcode.util.event.Publisher
 import java.util.concurrent.atomic.AtomicBoolean
 import com.vaadin.Application
 import com.vaadin.terminal._
 import org.apache.commons.io.FileUtils
+import io.Source
+import com.vaadin.ui._
+
+
+object FileOps {
+
+  def download(app: Application, file: File) =
+    app.getMainWindow.open(
+      new FileResource(file, app) {
+        override def getStream() = letret(super.getStream) { ds =>
+          ds.setParameter("Content-Disposition", """attachment; filename="%s"""" format item.getName)
+        }
+      }
+    )
+
+
+  def showContent(app: Application, file: File) =
+    app.initAndShow(new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog, resizable = true) { dlg =>
+      dlg.mainUI = new TextArea("", scala.io.Source.fromFile(item).mkString) with ReadOnly with FullSize
+      dlg.setSize((500, 500))
+    }
+
+
+  def show(app: Application, file: File) =
+    app.initAndShow(new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog, resizable = true) { dlg =>
+      dlg.mainUI = new Embedded("", new FileResource(file, app))
+      dlg.setSize((500, 500))
+    }
+
+
+  def op(app: Application, file: File): PartialFunction[File, Unit] = (app, file) => {
+
+  }
+}
 
 
 class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Seq[File] = Nil)
@@ -28,10 +62,6 @@ class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Se
   setWidth("500px"); setHeight("350px")
 }
 
-//// todo add predicate - see comments on canPreview
-// todo implement download
-//  // refactor to predicate fn taken as parameter
-//  def canPreview(file: File) = file.getName matches ".*\\.(gif|jpg|jpeg|png)$"
 
 /**
  * Generic file dialog.
@@ -99,37 +129,6 @@ class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends G
   setRowExpandRatio(1, 1f)
 }
 
-/**
- * Full size preview is allowed if content source (resource) is an image of an appropriate size.
- */
-class FilePreviewContent(val content: Embedded, val allowsFullSizePreview: Boolean)
-
-// todo: add file size check
-object FilePreviewContent {
-  val extRE = """(?i).*\.(\S+)""".r
-
-  def apply(app: Application, file: File) = {
-    val ext = file.getName match {
-      case extRE(ext) => ext
-      case _ => ""
-    }
-
-    val (resource, isImage) = ext.toLowerCase match {
-      case "gif" | "png" | "jpg" | "jpeg" =>
-        (new FileResource(file, app), true)
-      case other =>
-        val imageName = other match {
-          case "txt" => "txt"
-          case "jsp" | "htm" | "html" | "css" => "firefox"
-          case "pdf" => "pdf"
-          case _ => "file"
-        }
-        (new ThemeResource("images/noncommercial/%s.png" format imageName), false)
-    }
-
-    new FilePreviewContent(new Embedded("", resource), isImage)
-  }
-}
 
 /**
  * Listens to browser selection and displays content associated with that item type.
@@ -139,31 +138,25 @@ class FilePreview(browser: FileBrowser) {
   val preview = new EmbeddedPreview
   val ui = new FilePreviewUI(preview.ui)
 
-  ui.btnEnlarge addClickHandler {
-    for {
-      selection <- browser.selection
-      if selection.hasSingleItem
-      file <- selection.firstItem
-      fpc = FilePreviewContent(ui.getApplication, file) if fpc.allowsFullSizePreview
-    } ui.getApplication.initAndShow(new Window("Preview"), resizable = true) { w =>
-      w.getContent.addComponent(fpc.content)
-      w.setWidth("500px"); w.setHeight("500px")
-    }
-  }
-
   browser listen { ev =>
     if (enabled) ev match {
-      case Some(LocationSelection(_, Seq(file))) =>
-        val fpc = FilePreviewContent(ui.getApplication, file)
-        preview.set(fpc.content)
-        ui.btnEnlarge.setEnabled(fpc.allowsFullSizePreview)
-      case Some(LocationSelection(_, Nil)) =>
-        preview.clear
-      case other =>
+      case Some(LocationSelection(_, Seq(item))) if item.isFile =>
+        val (previewIcon, previewAction, caption) = createPreviewSettings(item, ui.getApplication)
+
+        preview.set(previewIcon)
+        ui.btnAction.setEnabled(true)
+        ui.btnAction.setCaption(caption)
+        ui.btnAction.addClickHandler { previewAction() }
+
+      case _ =>
+        if (!preview.isEmpty) {
+          preview.clear
+          updateDisabled(ui.btnAction) { _ setCaption "file.browser.preview.act.na".i }
+        }
     }
   }
 
-  preview listen { ui.btnEnlarge setEnabled _.isDefined }
+  preview listen { ui.btnAction setEnabled _.isDefined }
   preview.notifyListeners()
   enabled = false
 
@@ -173,14 +166,45 @@ class FilePreview(browser: FileBrowser) {
     ui.setVisible(enabled)
     if (enabled) browser.notifyListeners
   }
+
+  private def createPreviewSettings(file: File, app: Application) = {
+    val extRE = """(?i).*\.(\S+)""".r
+
+    val ext = file.getName match {
+      case extRE(ext) => ext
+      case _ => ""
+    }
+
+    def showContent(iconName: String) = (
+      new Embedded("", new ThemeResource("images/noncommercial/%s.png" format iconName)),
+      FileOps.showContent(app, file),
+      "file.browser.preview.act.show".i
+    )
+
+    def downloadFile(iconName: String) = (
+      new Embedded("", new ThemeResource("images/noncommercial/%s.png" format iconName)),
+      FileOps.download(app, file),
+      "file.browser.preview.act.download".i
+    )
+
+    ext.toLowerCase match {
+      case "gif" | "png" | "jpg" | "jpeg" =>
+        (new Embedded("", new FileResource(file, app)), FileOps.show(app, file)_, "file.browser.preview.act.show".i)
+
+      case "txt" => showContent("txt")
+      case "jsp" | "htm" | "html" | "css" => showContent("firefox")
+      case "pdf" => downloadFile("pdf")
+      case _ => downloadFile("file")
+    }
+  }
 }
 
 
 class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) with Spacing {
-  val btnEnlarge = new Button("Enlarge") with LinkStyle
-  addComponents(this, previewUI, btnEnlarge)
+  val btnAction = new Button with SingleClickListener with LinkStyle
+  addComponents(this, previewUI, btnAction)
 
-  forlet(previewUI, btnEnlarge) { c => setComponentAlignment(c, Alignment.MIDDLE_CENTER) }
+  forlet(previewUI, btnAction) { c => setComponentAlignment(c, Alignment.MIDDLE_CENTER) }
 }
 
 /**
@@ -257,7 +281,7 @@ class EmbeddedPreview[A <: Component](val stubUI: A = new Label with UndefinedSi
   }
 }
 
-class EmbeddedPreviewUI(width: Int = 100, height: Int = 100) extends Panel {
+class EmbeddedPreviewUI(width: Int = 64, height: Int = 64) extends Panel {
   val content = new VerticalLayout with FullSize
 
   setContent(content)

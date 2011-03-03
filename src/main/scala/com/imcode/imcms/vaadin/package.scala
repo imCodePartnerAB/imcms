@@ -115,4 +115,10 @@ package object vaadin {
       sizeable.setHeight(height)
     }
   }
+
+  def updateDisabled(component: Component)(f: Component => Unit) {
+    component.setEnabled(true)
+    f(component)
+    component.setEnabled(false)
+  }
 }

@@ -12,7 +12,6 @@ import actors.Actor
 import scala.concurrent.ops.{spawn}
 
 
-
 class FileManager(app: ImcmsApplication) {
   val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))
 
@@ -23,15 +22,29 @@ class FileManager(app: ImcmsApplication) {
   val ui = letret(new FileManagerUI(browser.ui, preview.ui)) { ui =>
 
     ui.miEditRename setCommandHandler {
-      for (selection <- browser.selection if selection.hasSingleItem; item <- selection.firstItem) {
-        app.initAndShow(new OkCancelDialog("Rename to")) { dlg =>
+      for ((dir, Seq(item)) <- browser.selection; if item.isFile) {
+        app.initAndShow(new OkCancelDialog("file.mgr.dlg.rename.item.title".i)) { dlg =>
           val dlgUI = new ItemRenameDialogUI
           dlg.mainUI = dlgUI
           dlgUI.txtName.value = item.getName
 
           dlg.wrapOkHandler {
-            item.renameTo(new File(item.getParentFile, dlgUI.txtName.value))
-            browser.reloadLocation()
+            val forbiddenChars = """?"\/:;%*|<>""".toSet
+            let(dlgUI.txtName.value.trim) {
+              case name if name.isEmpty || name.head == '.' || name.exists(forbiddenChars(_)) =>
+                val msg = "file.mgr.dlg.transfer.illegal.item.name.msg".i
+                dlgUI.txtName.value = msg
+                error(msg)
+
+              case name => new File(dir, name) match {
+                case file if file.exists =>
+                  val msg = "file.mgr.dlg.transfer.item.exist.msg".f(name, dir)
+                  dlgUI.txtName.value = msg
+                  error(msg)
+
+                case file => item.renameTo(file)
+              }
+            }
           }
         }
       }
@@ -49,13 +62,9 @@ class FileManager(app: ImcmsApplication) {
       new ItemsTransferHelper(app, browser) move()
     }
 
-    ui.miFilePreview setCommandHandler {
-      for (selection <- browser.selection; item <- selection.firstItem /*isViewable(item)*/) {
-        app.initAndShow(new OKDialog("Content of %s" format item) with CustomSizeDialog, resizable = true) { dlg =>
-          dlg.mainUI = new TextArea("", scala.io.Source.fromFile(item).mkString) with ReadOnly with FullSize
-          dlg.setSize((500, 500))
-        }
-      }
+    ui.miFileShow setCommandHandler {
+      for ((_, Seq(item)) <- browser.selection; if item.isFile)
+        FileOps.show(app, item)
     }
 
     ui.miFileEdit setCommandHandler {
@@ -94,15 +103,8 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miFileDownload setCommandHandler {
-      for (selection <- browser.selection; item <- selection.firstItem if item.isFile) {
-        app.getMainWindow.open(
-          new FileResource(item, app) {
-            override def getStream() = letret(super.getStream) { ds =>
-              ds.setParameter("Content-Disposition", """attachment; filename="%s"""" format item.getName)
-            }
-          }
-        )
-      }
+      for ((_, Seq(item)) <- browser.selection; if item.isFile)
+        FileOps.download(app, item)
     }
 
     ui.miViewReload setCommandHandler { browser.reloadLocation(preserveTreeSelection = true) }
@@ -127,22 +129,22 @@ class FileManager(app: ImcmsApplication) {
 
 class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends GridLayout(2, 2) with Spacing with FullSize {
   val mb = new MenuBar
-  val miFile = mb.addItem("File")
-  val miFilePreview = miFile.addItem("Preview")
-  val miFileEdit = miFile.addItem("Edit content")
-  val miFileUpload = miFile.addItem("Upload")
-  val miFileDownload = miFile.addItem("Download")
-  val miNew = mb.addItem("New")
-  val miNewDir = miNew.addItem("Directory")
-  val miEdit = mb.addItem("Edit")
-  val miEditCopy = miEdit.addItem("Copy to...")
-  val miEditMove = miEdit.addItem("Move to...")
-  val miEditRename = miEdit.addItem("Rename")
-  val miEditDelete = miEdit.addItem("Delete")
-  val miView = mb.addItem("View")
-  val miViewReload = miView.addItem("Reload")
-  val miViewPreview = miView.addItem("Show/Hide preview")
-  val miHelp = mb.addItem("Help")
+  val miFile = mb.addItem("file.mgr.menu.file".i)
+  val miFileShow = miFile.addItem("file.mgr.menu.file.show".i)
+  val miFileEdit = miFile.addItem("file.mgr.menu.file.edit".i)
+  val miFileUpload = miFile.addItem("file.mgr.menu.file.upload".i)
+  val miFileDownload = miFile.addItem("file.mgr.menu.file.download".i)
+  val miNew = mb.addItem("file.mgr.menu.new".i)
+  val miNewDir = miNew.addItem("file.mgr.menu.new.dir".i)
+  val miEdit = mb.addItem("file.mgr.menu.edit")
+  val miEditCopy = miEdit.addItem("file.mgr.menu.edit.copy")
+  val miEditMove = miEdit.addItem("file.mgr.menu.edit.move")
+  val miEditRename = miEdit.addItem("file.mgr.menu.edit.rename")
+  val miEditDelete = miEdit.addItem("file.mgr.menu.edit.delete")
+  val miView = mb.addItem("file.mgr.menu.view")
+  val miViewReload = miView.addItem("file.mgr.menu.view.reload")
+  val miViewPreview = miView.addItem("file.mgr.menu.view.toggle_preview")
+  val miHelp = mb.addItem("file.mgr.menu.help")
 
   addComponent(mb, 0, 0, 1, 0)
   addComponents(this, browserUI, previewUI)
@@ -184,7 +186,7 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
     }
 
     app.initAndShow(new CancelDialog("Deleting items")) { dlg =>
-      val dlgUI = new ItemsDeleteHelperDialogUI
+      val dlgUI = new ItemsDeletePrgressDialogUI
       dlg.mainUI = dlgUI
       dlgUI.lblMsg.value = "Preparing to delete"
       dlgUI.pi.setPollingInterval(500)
@@ -334,7 +336,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
     }
 
     app.initAndShow(new CancelDialog("Copying items into .../%s" format destDir)) { dlg =>
-      val dlgUI = new ItemsTransferHelperDialogUI
+      val dlgUI = new ItemsTransferProgressDialogUI
 
       dlg.mainUI = dlgUI
       dlgUI.lblMsg.value = "Preparing to copy"
@@ -471,7 +473,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
     }
 
     app.initAndShow(new CancelDialog("Moving items into .../%s" format destDir)) { dlg =>
-      val dlgUI = new ItemsTransferHelperDialogUI
+      val dlgUI = new ItemsTransferProgressDialogUI
 
       dlg.mainUI = dlgUI
       dlgUI.lblMsg.value = "Preparing to move"
@@ -583,7 +585,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 }
 
 
-class ItemsDeleteHelperDialogUI extends FormLayout with Spacing with UndefinedSize {
+class ItemsDeletePrgressDialogUI extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 
@@ -591,7 +593,7 @@ class ItemsDeleteHelperDialogUI extends FormLayout with Spacing with UndefinedSi
 }
 
 
-class ItemsTransferHelperDialogUI extends FormLayout with Spacing with UndefinedSize {
+class ItemsTransferProgressDialogUI extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 
@@ -601,7 +603,7 @@ class ItemsTransferHelperDialogUI extends FormLayout with Spacing with Undefined
 
 class ItemRenameDialogUI extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label with UndefinedSize
-  val txtName = new TextField("Name")
+  val txtName = new TextField("file.mgr.dlg.transfer.item.frm.fld.name".i)
 
   addComponents(this, lblMsg, txtName)
 }
