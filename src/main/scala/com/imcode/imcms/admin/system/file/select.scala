@@ -20,18 +20,18 @@ object FileOps {
   val extRE = """(?i).*\.(\S+)""".r
 
   /** Files with the following extensions can be shown directly in a browser. */
-  val immediatelyShowableExts = Set("gif", "png", "jpg", "jpeg")
+  val directlyShowableExts = Set("gif", "png", "jpg", "jpeg")
 
   /** Content of the files with the following extensions can be shown directly in a browser. */
   val contentShowableExts = Set("txt", "jsp", "htm", "html", "xml", "xsl", "css")
 
-  val showableExt = immediatelyShowableExts | contentShowableExts
+  val showableExt = directlyShowableExts | contentShowableExts
 
   def ext(file: File) = extRE.unapplySeq(file.getName) map { _.head.toLowerCase }
   def extString(file: File) = ext(file) getOrElse ""
 
   def isShowable(file: File) = showableExt contains extString(file)
-  def isImmediatelyShowable(file: File) = immediatelyShowableExts contains extString(file)
+  def isDirectlyShowable(file: File) = directlyShowableExts contains extString(file)
   def isContentShowable(file: File) = contentShowableExts contains extString(file)
 
 
@@ -52,7 +52,7 @@ object FileOps {
     }
 
 
-  def showImmediately(app: Application, file: File) =
+  def showDirectly(app: Application, file: File) =
     app.initAndShow(new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog, resizable = true) { dlg =>
       dlg.mainUI = new Embedded("", new FileResource(file, app))
       dlg.setSize((500, 500))
@@ -60,7 +60,7 @@ object FileOps {
 
 
   def default(app: Application, file: File) {
-    val op = if (isImmediatelyShowable(file)) showImmediately _
+    val op = if (isDirectlyShowable(file)) showDirectly _
              else if (isContentShowable(file)) showContent _
              else download _
     op(app, file)
@@ -166,7 +166,7 @@ class FilePreview(browser: FileBrowser) {
         val app = ui.getApplication
         val caption = if (FileOps.isShowable(item)) "file.preview.act.show".i
                       else "file.browser.preview.act.download".i
-        val iconResource = if (FileOps.isImmediatelyShowable(item)) new FileResource(item, app)
+        val iconResource = if (FileOps.isDirectlyShowable(item)) new FileResource(item, app)
                            else new ThemeResource("images/noncommercial/%s.png".format(
                              FileOps.extString(item) match {
                                case ext @ ("txt" | "pdf") => ext

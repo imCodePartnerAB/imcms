@@ -8,9 +8,9 @@ import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 import java.io.File
 import org.apache.commons.io.FileUtils
-import com.vaadin.terminal.FileResource
 import actors.Actor
 import scala.concurrent.ops.{spawn}
+import com.vaadin.terminal.{UserError, FileResource}
 
 
 class FileManager(app: ImcmsApplication) {
@@ -24,7 +24,9 @@ class FileManager(app: ImcmsApplication) {
 
     ui.miEditRename setCommandHandler {
       for (LocationSelection(dir, Seq(item)) <- browser.selection; if item.isFile) {
-        app.initAndShow(new OkCancelDialog("file.mgr.dlg.rename.item.title".i)) { dlg =>
+        app.initAndShow(new OkCancelDialog("file.mgr.dlg.rename.item.title".f(item))) { dlg =>
+          dlg.btnOk.setCaption("file.mgr.dlg.transfer.item.btn.rename".i)
+
           val dlgUI = new ItemRenameDialogUI
           dlg.mainUI = dlgUI
           dlgUI.txtName.value = item.getName
@@ -35,17 +37,21 @@ class FileManager(app: ImcmsApplication) {
               case name if name.isEmpty || name.head == '.' || name.exists(forbiddenChars(_)) =>
                 val msg = "file.mgr.dlg.transfer.illegal.item.name.msg".i
                 dlgUI.lblMsg.value = msg
+                dlgUI.lblMsg.setComponentError(UserError(msg))
                 error(msg)
 
               case name => new File(dir, name) match {
                 case file if file.exists =>
                   val msg = "file.mgr.dlg.transfer.item.exist.msg".f(name, dir)
                   dlgUI.lblMsg.value = msg
+                  dlgUI.lblMsg.setComponentError(UserError(msg))
                   error(msg)
 
                 case file => item.renameTo(file)
               }
             }
+
+            app.showInfoNotification("file.mgr.rename.item.info.msg".i)
           }
         }
       }
@@ -69,8 +75,10 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miFileEdit setCommandHandler {
-      for (selection <- browser.selection; item <- selection.firstItem /*isEditable(item)*/) {
-        app.initAndShow(new OkCancelDialog("Edit content of %s" format item) with CustomSizeDialog, resizable = true) { dlg =>
+      for (LocationSelection(_, Seq(item)) <- browser.selection; if item.isFile) {
+        app.initAndShow(new OkCancelDialog("file.edit.dlg.title".f(item)) with CustomSizeDialog, resizable = true) { dlg =>
+          dlg.btnOk.setCaption("dlg.btn.save".i)
+
           val textArea = new TextArea("", scala.io.Source.fromFile(item).mkString) with FullSize
           dlg.mainUI = textArea
           dlg.setSize((500, 500))
