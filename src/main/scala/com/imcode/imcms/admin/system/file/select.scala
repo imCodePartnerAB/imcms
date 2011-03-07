@@ -48,14 +48,14 @@ object FileOps {
   def showContent(app: Application, file: File) =
     app.initAndShow(new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog, resizable = true) { dlg =>
       dlg.mainUI = new TextArea("", scala.io.Source.fromFile(file).mkString) with ReadOnly with FullSize
-      dlg.setSize((500, 500))
+      dlg.setSize(500, 500)
     }
 
 
   def showDirectly(app: Application, file: File) =
     app.initAndShow(new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog, resizable = true) { dlg =>
       dlg.mainUI = new Embedded("", new FileResource(file, app))
-      dlg.setSize((500, 500))
+      dlg.setSize(500, 500)
     }
 
 
@@ -81,7 +81,7 @@ class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Se
   browser.notifyListeners()
   // todo: refactor out
   browser.ui.spLocation.setSplitPosition(25)
-  setWidth("500px"); setHeight("350px")
+  this.setSize(550, 450)
 }
 
 

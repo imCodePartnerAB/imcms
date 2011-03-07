@@ -12,19 +12,18 @@ import actors.Actor
 import scala.concurrent.ops.{spawn}
 import com.vaadin.terminal.{UserError, FileResource}
 
-
 class FileManager(app: ImcmsApplication) {
   val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))
 
   val preview = letret(new FilePreview(browser)) { preview =>
-    preview.ui.previewUI.setSize((256, 256))
+    preview.ui.previewUI.setSize(256, 256)
   }
 
   val ui = letret(new FileManagerUI(browser.ui, preview.ui)) { ui =>
 
     ui.miEditRename setCommandHandler {
       for (LocationSelection(dir, Seq(item)) <- browser.selection; if item.isFile) {
-        app.initAndShow(new OkCancelDialog("file.mgr.dlg.rename.item.title".f(item))) { dlg =>
+        app.initAndShow(new OkCancelDialog("file.mgr.dlg.rename.item.title".f(item.getName))) { dlg =>
           dlg.btnOk.setCaption("file.mgr.dlg.transfer.item.btn.rename".i)
 
           val dlgUI = new ItemRenameDialogUI
@@ -32,19 +31,20 @@ class FileManager(app: ImcmsApplication) {
           dlgUI.txtName.value = item.getName
 
           dlg.wrapOkHandler {
-            val forbiddenChars = """?"\/:;%*|<>""".toSet
+            val forbiddenChars = """?"\/:;%*|<>"""
+            val forbiddenCharsSet = forbiddenChars.toSet
             let(dlgUI.txtName.value.trim) {
-              case name if name.isEmpty || name.head == '.' || name.exists(forbiddenChars(_)) =>
-                val msg = "file.mgr.dlg.transfer.illegal.item.name.msg".i
+              case name if name.isEmpty || name.head == '.' || name.exists(forbiddenCharsSet(_)) =>
+                val msg = "file.mgr.dlg.illegal.item.name.msg".f(forbiddenChars)
                 dlgUI.lblMsg.value = msg
-                dlgUI.lblMsg.setComponentError(UserError(msg))
+                dlgUI.lblMsg.setComponentError(new UserError(msg))
                 error(msg)
 
               case name => new File(dir, name) match {
                 case file if file.exists =>
-                  val msg = "file.mgr.dlg.transfer.item.exist.msg".f(name, dir)
+                  val msg = "file.mgr.dlg.transfer.item.exist.msg".f(name, dir.getName)
                   dlgUI.lblMsg.value = msg
-                  dlgUI.lblMsg.setComponentError(UserError(msg))
+                  dlgUI.lblMsg.setComponentError(new UserError(msg))
                   error(msg)
 
                 case file => item.renameTo(file)
@@ -81,7 +81,7 @@ class FileManager(app: ImcmsApplication) {
 
           val textArea = new TextArea("", scala.io.Source.fromFile(item).mkString) with FullSize
           dlg.mainUI = textArea
-          dlg.setSize((500, 500))
+          dlg.setSize(500, 500)
 
           dlg.wrapOkHandler {
             FileUtils.writeStringToFile(item, textArea.value)
@@ -91,15 +91,15 @@ class FileManager(app: ImcmsApplication) {
     }
 
     ui.miFileUpload setCommandHandler {
-      for (selection <- browser.selection; dir = selection.dir) {
-        app.initAndShow(new FileUploadDialog("Upload file")) { dlg =>
+      for (LocationSelection(dir, _) <- browser.selection) {
+        app.initAndShow(new FileUploadDialog("file.upload.dlg.title".i)) { dlg =>
           dlg.wrapOkHandler {
             for {
               UploadedData(_, _, content) <- dlg.upload.data
               file = new File(dir, dlg.upload.saveAsName)
             } {
               if (file.exists && !dlg.upload.isOverwrite) {
-                app.show(new MsgDialog("File allready exists", "Please choose different name or check 'overwrite existing'"))
+                app.show(new MsgDialog("file.mgr.dlg.upload.item.exist.title".i, "file.mgr.dlg.upload.item.exist.msg".i))
                 error("File %s allready exists" format file.getCanonicalPath)
               } else {
                 FileUtils.writeByteArrayToFile(file, content)
@@ -122,12 +122,27 @@ class FileManager(app: ImcmsApplication) {
 
     ui.miNewDir setCommandHandler {
       for (selection <- browser.selection) {
-        app.initAndShow(new OkCancelDialog("New directory")) { dlg =>
-          val txtName = new TextField("Name")
-          dlg.mainUI = txtName
+        app.initAndShow(new OkCancelDialog("file.mgr.dlg.new_dir.title".i)) { dlg =>
+          val txtName = new TextField("file.mgr.dlg.new_dir.frm.fld.name".i)
+          val lblMsg = new Label with UndefinedSize
+          dlg.mainUI = new FormLayout with UndefinedSize {addComponents(this, lblMsg, txtName) }
+
+          // refactor
+          val forbiddenChars = """?"\/:;%*|<>"""
+          val forbiddenCharsSet = forbiddenChars.toSet
+
           dlg.wrapOkHandler {
-            FileUtils.forceMkdir(new File(selection.dir, txtName.value))
-            browser.reloadLocation()
+            txtName.value.trim match {
+              case name if name.isEmpty || name.head == '.' || name.exists(forbiddenCharsSet(_))  =>
+                val msg = "file.mgr.dlg.illegal.item.name.msg".f(forbiddenChars)
+                lblMsg.value = msg
+                lblMsg.setComponentError(new UserError(msg))
+                error(msg)
+
+              case name =>
+                FileUtils.forceMkdir(new File(selection.dir, txtName.value))
+                browser.reloadLocation()
+            }
           }
         }
       }
@@ -171,7 +186,7 @@ case class ItemsState(remaining: Seq[File], processed: Seq[File])
 class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
 
   def delete() = for (selection <- browser.selection if selection.hasItems) {
-    app.initAndShow(new ConfirmationDialog("Delete selected items?")) { dlg =>
+    app.initAndShow(new ConfirmationDialog("file.mgr.dlg.delete.confirm.msg".i)) { dlg =>
       dlg wrapOkHandler { asyncDeleteItems(selection.items) }
     }
   }
@@ -181,23 +196,23 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
       progressDialog.close()
 
       if (itemsState.processed.isEmpty) {
-        app.showWarningNotification("No items where deleted")
+        app.showWarningNotification("file.mgr.delete.nop.warn.msg".i)
       } else {
         browser.reloadLocation()
 
-        app.show(new MsgDialog("Finished", "Deleted %d item(s)." format itemsState.processed.size))
+        app.show(new InformationDialog("file.mgr.dlg.delete.summary.msg".f(itemsState.processed.size)))
       }
     }
-
+    // no i18n
     def handleUndefined(progressDialog: Dialog, msg: Any) = app.synchronized {
       progressDialog.close()
       app.showErrorNotification("An error occured while deleting items", msg.toString)
     }
 
-    app.initAndShow(new CancelDialog("Deleting items")) { dlg =>
+    app.initAndShow(new CancelDialog("dlg.progress.title".i)) { dlg =>
       val dlgUI = new ItemsDeletePrgressDialogUI
       dlg.mainUI = dlgUI
-      dlgUI.lblMsg.value = "Preparing to delete"
+      dlgUI.lblMsg.value = "file.mgr.dlg.delete.progress.prepare.msg".i
       dlgUI.pi.setPollingInterval(500)
 
       object DeleteActor extends Actor {
@@ -216,7 +231,8 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
                   dlgUI.pi.setValue((max - remaining.size) / max)
                 }
 
-                dlgUI.lblMsg.value = "Deleting " + item.getName
+                val parentName = ?(item.getParentFile) map (_.getName) getOrElse "."
+                dlgUI.lblMsg.value = "file.mgr.dlg.delete.progress.msg".f(item.getName, parentName)
               }
 
               spawn {
@@ -239,7 +255,7 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
 
       dlg.setCancelHandler {
         dlg.btnCancel.setEnabled(false)
-        dlgUI.lblMsg.value = "Cancelling"
+        dlgUI.lblMsg.value = "dlg.progress.cancelling.msg".i
 
         DeleteActor ! 'cancel
       }
@@ -263,9 +279,8 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
         stateHandler ! ItemsState(remaining, item +: processed)
       } catch {
         case e => app.synchronized {
-          app.initAndShow(new OkCancelDialog("Unable to delete")) { dlg =>
-            dlg.btnOk.setCaption("Skip")
-            dlg.mainUI = new Label("An error occured while deleting item %s." format item.getName) with UndefinedSize
+          app.initAndShow(new OkCancelErrorDialog("file.mgr.dlg.delete.item.err.msg".f(item.getName))) { dlg =>
+            dlg.btnOk.setCaption("dlg.btn.skip".i)
 
             dlg.wrapOkHandler { stateHandler ! ItemsState(remaining, processed) }
             dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
@@ -287,7 +302,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
     for (selection <- browser.selection if selection.hasItems) {
       val dirSelectBrowser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isSelectable = false))
 
-      app.initAndShow(new DirSelectionDialog("Copy to", dirSelectBrowser, Seq(selection.dir))) { dlg =>
+      app.initAndShow(new DirSelectionDialog("file.mgr.dlg.select.copy.dest.title".i, dirSelectBrowser, Seq(selection.dir)), resizable = true) { dlg =>
         dlg wrapOkHandler {
           for {
             destLocation <- dirSelectBrowser.location
@@ -302,11 +317,9 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
   def move() {
     // refactor into dest dir selection method??
     for (selection <- browser.selection if selection.hasItems) {
-      val dirSelectBrowser = letret(new FileBrowser(isSelectable = false)) { dsb =>
-        dsb.addLocation("Home", LocationConf(Imcms.getPath))
-      }
+      val dirSelectBrowser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isSelectable = false))
 
-      app.initAndShow(new DirSelectionDialog("Move to", dirSelectBrowser, Seq(selection.dir))) { dlg =>
+      app.initAndShow(new DirSelectionDialog("file.mgr.dlg.select.move.dest.title", dirSelectBrowser, Seq(selection.dir)), resizable = true) { dlg =>
         dlg wrapOkHandler {
           for {
             destLocation <- dirSelectBrowser.location
@@ -331,24 +344,24 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
       transferDialog.close()
 
       if (itemsState.processed.isEmpty) {
-        app.showWarningNotification("No items where copied")
+        app.showWarningNotification("file.mgr.copy.nop.warn.msg".i)
       } else {
-        app.initAndShow(new ConfirmationDialog("Finished", "%d items where copied. Would you like to preview" format itemsState.processed.size)) { dlg =>
+        app.initAndShow(new ConfirmationDialog("dlg.info.title".i, "file.mgr.dlg.copy.summary.msg".f(itemsState.processed.size, destDir.getName))) { dlg =>
           dlg.wrapOkHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
         }
       }
     }
-
+    // no i18n
     def handleUndefined(transferDialog: Dialog, msg: Any) = app.synchronized {
       transferDialog.close()
       app.showErrorNotification("An error occured while copying items", msg.toString)
     }
 
-    app.initAndShow(new CancelDialog("Copying items into .../%s" format destDir)) { dlg =>
+    app.initAndShow(new CancelDialog("dlg.progress.title".i)) { dlg =>
       val dlgUI = new ItemsTransferProgressDialogUI
 
       dlg.mainUI = dlgUI
-      dlgUI.lblMsg.value = "Preparing to copy"
+      dlgUI.lblMsg.value = "file.mgr.dlg.copy.progress.prepare.msg".i
       dlgUI.pi.setPollingInterval(500)
 
       object CopyActor extends Actor {
@@ -363,7 +376,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 
             case itemsState @ ItemsState(remaining @ (item :: _), _) =>
               app.synchronized {
-                dlgUI.lblMsg.value = "Copying " + item.getName
+                dlgUI.lblMsg.value = "file.mgr.dlg.copy.progress.msg".f(item.getName, destDir.getName)
 
                 let (items.size.asInstanceOf[Float]) { max =>
                   dlgUI.pi.setValue((max - remaining.size) / max)
@@ -390,7 +403,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 
       dlg.setCancelHandler {
         dlg.btnCancel.setEnabled(false)
-        dlgUI.lblMsg.value = "Cancelling"
+        dlgUI.lblMsg.value = "dlg.progress.cancelling.msg".i
 
         CopyActor ! 'cancel
       }
@@ -419,9 +432,9 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
             case e => app.synchronized {
-              app.initAndShow(new OkCancelDialog("Unable to copy")) { dlg =>
-                dlg.btnOk.setCaption("Skip")
-                dlg.mainUI = new Label("An error occured while coping item %s." format item.getName) with UndefinedSize
+              app.initAndShow(new OkCancelErrorDialog("Unable to copy")) { dlg =>
+                dlg.btnOk.setCaption("dlg.btn.skip".i)
+                dlg.mainUI = new Label("file.mgr.dlg.copy.item.err.msg".f(item.getName)) with UndefinedSize
 
                 dlg.wrapOkHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
@@ -430,14 +443,14 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
           }
         } else {
           app.synchronized {
-            app.initAndShow(new YesNoCancelDialog("Unable to copy")) { dlg =>
+            app.initAndShow(new YesNoCancelDialog("file.mgr.dlg.copy.item.issue.title".i)) { dlg =>
               val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
-                dlgUI.lblMsg.value = "Item %s allready exists in .../%s".format(destItemName, destDir.getName)
+                dlgUI.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
                 dlgUI.txtName.value = destItemName
               }
 
-              dlg.btnYes.setCaption("Rename")
-              dlg.btnNo.setCaption("Skip")
+              dlg.btnYes.setCaption("dlg.btn.rename".i)
+              dlg.btnNo.setCaption("dlg.btn.skip".i)
 
               dlg.mainUI = dlgUI
               dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) }
@@ -467,25 +480,25 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
       transferDialog.close()
 
       if (itemsState.processed.isEmpty) {
-        app.showWarningNotification("No items where moved")
+        app.showWarningNotification("file.mgr.move.nop.warn.msg".i)
       } else {
-        app.initAndShow(new ConfirmationDialog("Finished", "%d items where moved. Would you like to preview" format itemsState.processed.size)) { dlg =>
+        app.initAndShow(new ConfirmationDialog("dlg.info.title".i, "file.mgr.dlg.move.summary.msg".f(itemsState.processed.size, destDir.getName))) { dlg =>
           dlg.wrapOkHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
           dlg.wrapCancelHandler { browser.reloadLocation() }
         }
       }
     }
-
+    // no i18n
     def handleUndefined(transferDialog: Dialog, msg: Any) = app.synchronized {
       transferDialog.close()
       app.showErrorNotification("An error occured while moving items", msg.toString)
     }
 
-    app.initAndShow(new CancelDialog("Moving items into .../%s" format destDir)) { dlg =>
+    app.initAndShow(new CancelDialog("dlg.progress.title".i)) { dlg =>
       val dlgUI = new ItemsTransferProgressDialogUI
 
       dlg.mainUI = dlgUI
-      dlgUI.lblMsg.value = "Preparing to move"
+      dlgUI.lblMsg.value = "file.mgr.dlg.move.progress.prepare.msg".i
       dlgUI.pi.setPollingInterval(500)
 
       object MoveActor extends Actor {
@@ -500,7 +513,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 
             case itemsState @ ItemsState(remaining @ (item :: _), _) =>
               app.synchronized {
-                dlgUI.lblMsg.value = "Moving " + item.getName
+                dlgUI.lblMsg.value = "file.mgr.dlg.move.progress.msg".f(item.getName, destDir.getName)
 
                 let (items.size.asInstanceOf[Float]) { max =>
                   dlgUI.pi.setValue((max - remaining.size) / max)
@@ -527,7 +540,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 
       dlg.setCancelHandler {
         dlg.btnCancel.setEnabled(false)
-        dlgUI.lblMsg.value = "Cancelling"
+        dlgUI.lblMsg.value = "dlg.progress.cancelling.msg".i
 
         MoveActor ! 'cancel
       }
@@ -556,10 +569,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
             case e => app.synchronized {
-              app.initAndShow(new OkCancelDialog("Unable to move")) { dlg =>
-                dlg.btnOk.setCaption("Skip")
-                dlg.mainUI = new Label("An error occured while moving item %s." format item.getName) with UndefinedSize
-
+              app.initAndShow(new OkCancelErrorDialog("file.mgr.dlg.move.item.err.msg".f(item.getName))) { dlg =>
                 dlg.wrapOkHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
               }
@@ -567,14 +577,14 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
           }
         } else {
           app.synchronized {
-            app.initAndShow(new YesNoCancelDialog("Unable to move")) { dlg =>
+            app.initAndShow(new YesNoCancelDialog("file.mgr.dlg.move.item.issue.title".i)) { dlg =>
               val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
-                dlgUI.lblMsg.value = "Item %s allready exists in .../%s".format(destItemName, destDir.getName)
+                dlgUI.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
                 dlgUI.txtName.value = destItemName
               }
 
-              dlg.btnYes.setCaption("Rename")
-              dlg.btnNo.setCaption("Skip")
+              dlg.btnYes.setCaption("dlg.btn.rename".i)
+              dlg.btnNo.setCaption("dlg.btn.skip".i)
 
               dlg.mainUI = dlgUI
               dlg.wrapYesHandler { moveItem(dlgUI.txtName.value) }

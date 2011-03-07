@@ -105,9 +105,9 @@ package object vaadin {
 
 
   implicit def wrapSizeable(sizeable: Sizeable) = new {
-    def setSize(size: Tuple2[Float, Float], units: Int = Sizeable.UNITS_PIXELS) {
-      sizeable.setWidth(size._1, units)
-      sizeable.setHeight(size._2, units)
+    def setSize(width: Float, height: Float, units: Int = Sizeable.UNITS_PIXELS) {
+      sizeable.setWidth(width, units)
+      sizeable.setHeight(height, units)
     }
 
     def setSize(width: String, height: String) {

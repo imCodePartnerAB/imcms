@@ -24,8 +24,8 @@ package object imcms {
 
     def i = localize()._1
 
-    def f(arg: AnyRef, args: AnyRef*) = localize() match {
-      case (message, locale) => new MessageFormat(message, locale).format(arg +: args toArray)
+    def f(arg: Any, args: Any*) = localize() match {
+      case (message, locale) => new MessageFormat(message, locale).format((arg +: args toArray).map(_.asInstanceOf[AnyRef]))
     }
   }
 }

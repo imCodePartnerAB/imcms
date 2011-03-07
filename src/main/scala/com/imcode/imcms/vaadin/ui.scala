@@ -264,13 +264,17 @@ class CancelDialog(caption: String = "") extends Dialog(caption) with CancelButt
 }
 
 
-/** Message dialog window. */
-class MsgDialog(caption: String = "", msg: String ="") extends OKDialog(caption) {
-  val lblMessage = new Label(msg) with UndefinedSize
+
+trait MsgLabel { this: Dialog =>
+  val lblMessage = new Label with UndefinedSize
 
   mainUI = lblMessage
 }
 
+/** Message dialog window. */
+class MsgDialog(caption: String = "", msg: String ="") extends OKDialog(caption) with MsgLabel {
+  lblMessage.value = msg
+}
 
 /** OKCancel dialog window. */
 class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton with CancelButton {
@@ -307,6 +311,18 @@ class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(ca
   val lblMessage = new Label(msg) with UndefinedSize
 
   mainUI = lblMessage
+}
+
+
+/** Information dialog window. */
+class InformationDialog(msg: String = "") extends MsgDialog("dlg.info.title".i, msg)
+
+/** Error dialog window. */
+class ErrorDialog(msg: String = "") extends MsgDialog("dlg.err.title".i, msg)
+
+/** Error dialog window. */
+class OkCancelErrorDialog(msg: String = "") extends OkCancelDialog("dlg.err.title".i) with MsgLabel {
+  lblMessage.value = msg
 }
 
 

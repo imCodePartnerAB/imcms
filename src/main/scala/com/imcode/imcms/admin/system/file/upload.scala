@@ -1,5 +1,6 @@
 package com.imcode
-package imcms.admin.system.file
+package imcms
+package admin.system.file
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
@@ -64,7 +65,7 @@ class FileUpload extends Publisher[UploadStatus] {
         ui.txtSaveAsName.value = ""
         ui.txtSaveAsName.setEnabled(false)
         ui.pi.setEnabled(false)
-        ui.getApplication.getMainWindow.showNotification("Upload has been interrupted", Notification.TYPE_ERROR_MESSAGE)
+        ui.getApplication.showWarningNotification("file.upload.interrupted.warn.msg".i)
         notifyListeners(UploadFailed(ev))
       }
     })
@@ -107,10 +108,10 @@ class FileUpload extends Publisher[UploadStatus] {
 }
 
 class FileUploadUI extends FormLayout with UndefinedSize {
-  val upload = new Upload("Choose file", null) with Immediate
-  val txtSaveAsName = new TextField("Save as")
-  val pi = new ProgressIndicator; pi.setCaption("Progress")
-  val chkOverwrite = new CheckBox("Overwrite existing")
+  val upload = new Upload("file.upload.dlg.frm.fld.select".i, null) with Immediate
+  val txtSaveAsName = new TextField("file.upload.dlg.frm.fld.save_as".i)
+  val pi = new ProgressIndicator; pi.setCaption("file.upload.dlg.frm.fld.progress".i)
+  val chkOverwrite = new CheckBox("file.upload.dlg.frm.fld.overwrite".i)
 
   upload.setButtonCaption("...")
   addComponents(this, upload, pi, txtSaveAsName, chkOverwrite)
