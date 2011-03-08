@@ -128,7 +128,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
         object Session extends MenuItem(this, Some(Done16))
         object Cache extends MenuItem(this)
       }
-      object Files extends MenuItem(this)
+      object Files extends MenuItem(this, Some(Done16))
     }
   } 
 

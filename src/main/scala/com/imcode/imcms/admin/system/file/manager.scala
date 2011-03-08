@@ -152,23 +152,25 @@ class FileManager(app: ImcmsApplication) {
 
 
 class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends GridLayout(2, 2) with Spacing with FullSize {
+  import Theme.Icons._
+
   val mb = new MenuBar
-  val miFile = mb.addItem("file.mgr.menu.file".i)
+  val miFile = mb.addItem("file.mgr.menu.file".i, File16)
   val miFileShow = miFile.addItem("file.mgr.menu.file.show".i)
   val miFileEdit = miFile.addItem("file.mgr.menu.file.edit".i)
   val miFileUpload = miFile.addItem("file.mgr.menu.file.upload".i)
   val miFileDownload = miFile.addItem("file.mgr.menu.file.download".i)
-  val miNew = mb.addItem("file.mgr.menu.new".i)
+  val miNew = mb.addItem("file.mgr.menu.new".i, New16)
   val miNewDir = miNew.addItem("file.mgr.menu.new.dir".i)
-  val miEdit = mb.addItem("file.mgr.menu.edit".i)
+  val miEdit = mb.addItem("file.mgr.menu.edit".i, Edit16)
   val miEditCopy = miEdit.addItem("file.mgr.menu.edit.copy".i)
   val miEditMove = miEdit.addItem("file.mgr.menu.edit.move".i)
   val miEditRename = miEdit.addItem("file.mgr.menu.edit.rename".i)
   val miEditDelete = miEdit.addItem("file.mgr.menu.edit.delete".i)
-  val miView = mb.addItem("file.mgr.menu.view".i)
-  val miViewReload = miView.addItem("file.mgr.menu.view.reload".i)
+  val miView = mb.addItem("file.mgr.menu.view".i, View)
+  val miViewReload = miView.addItem("file.mgr.menu.view.reload".i, Reload16)
   val miViewPreview = miView.addItem("file.mgr.menu.view.toggle_preview".i)
-  val miHelp = mb.addItem("file.mgr.menu.help".i)
+  val miHelp = mb.addItem("file.mgr.menu.help".i, Help16)
 
   addComponent(mb, 0, 0, 1, 0)
   addComponents(this, browserUI, previewUI)
