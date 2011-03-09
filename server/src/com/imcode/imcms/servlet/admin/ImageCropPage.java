@@ -35,8 +35,6 @@ public class ImageCropPage extends OkCancelPage {
 	
 	private Handler<CropRegion> selectRegionCommand;
 	private CropRegion region;
-	private Integer metaId;
-	private Integer imageIndex;
 	private ImageDomainObject image;
 	private int imageWidth;
 	private int imageHeight;
@@ -44,15 +42,13 @@ public class ImageCropPage extends OkCancelPage {
 	private int forcedHeight;
 
 	
-	public ImageCropPage(DispatchCommand okCancelCommand, Handler<CropRegion> selectRegionCommand, Integer metaId, Integer imageIndex, 
+	public ImageCropPage(DispatchCommand okCancelCommand, Handler<CropRegion> selectRegionCommand, 
 	        ImageDomainObject image, int forcedWidth, int forcedHeight) {
 		super(okCancelCommand, okCancelCommand);
 		
 		this.selectRegionCommand = selectRegionCommand;
 		this.image = image;
 		this.region = image.getCropRegion();
-		this.metaId = metaId;
-		this.imageIndex = imageIndex;
 		this.forcedWidth = forcedWidth;
 		this.forcedHeight = forcedHeight;
 		
@@ -166,12 +162,4 @@ public class ImageCropPage extends OkCancelPage {
 	public ImageDomainObject getImage() {
 		return image;
 	}
-	
-	public Integer getMetaId() {
-        return metaId;
-    }
-	
-	public Integer getImageIndex() {
-        return imageIndex;
-    }
 }

@@ -18,4 +18,12 @@
       <script location="diff-image_handling-mssql-4.11-4.12.sql"/>
     </vendor>
   </diff>
+  <diff version="4.13">
+    <vendor name="mysql">
+      <script location="diff-4.12-4.13-mysql.sql"/>
+    </vendor>
+    <vendor name="mssql">
+      <script location="diff-4.12-4.13-mssql.sql"/>
+    </vendor>
+  </diff>
 </schema-upgrade>

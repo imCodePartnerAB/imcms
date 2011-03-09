@@ -396,9 +396,7 @@ public class ImageEditPage extends OkCancelPage {
 			}
 		};
 		
-		Integer metaId = (document != null ? document.getId() : null);
-		
-		ImageCropPage cropPage = new ImageCropPage(returnCommand, cropHandler, metaId, imageIndex, image, forcedWidth, forcedHeight);
+		ImageCropPage cropPage = new ImageCropPage(returnCommand, cropHandler, image, forcedWidth, forcedHeight);
 		cropPage.forward(request, response);
     }
 

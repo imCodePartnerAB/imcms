@@ -1,6 +1,7 @@
 package imcode.server.document.textdocument;
 
 import com.imcode.util.ImageSize;
+import imcode.server.Imcms;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -8,13 +9,17 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
+import java.io.File;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ImageDomainObject implements Serializable {
+    public static final int GEN_FILE_LENGTH = 255;
+
     private ImageSource source = new NullImageSource();
 
     private String name = "";
@@ -32,6 +37,7 @@ public class ImageDomainObject implements Serializable {
     private Format format;
     private CropRegion cropRegion = new CropRegion();
     private RotateDirection rotateDirection = RotateDirection.NORTH;
+    private String generatedFilename;
 
     public String getName() {
         return name;
@@ -180,7 +186,7 @@ public class ImageDomainObject implements Serializable {
     public void setRotateDirection(RotateDirection rotateDirection) {
         this.rotateDirection = rotateDirection;
     }
-
+    
 	public void setSourceAndClearSize(ImageSource source) {
         setSource( source );
         setWidth( 0 );
@@ -208,6 +214,49 @@ public class ImageDomainObject implements Serializable {
 
     public String getUrlPathRelativeToContextPath() {
         return source.getUrlPathRelativeToContextPath( );
+    }
+
+    public File getGeneratedFile() {
+        File basePath = Imcms.getServices().getConfig().getImagePath();
+
+        return new File(basePath, "generated/" + getGeneratedFilename());
+    }
+
+    public String getGeneratedUrlPath(String contextPath) {
+        return contextPath + getGeneratedUrlPathRelativeToContextPath();
+    }
+
+    public String getGeneratedUrlPathRelativeToContextPath() {
+        String imagesUrl = Imcms.getServices().getConfig().getImageUrl();
+
+        return imagesUrl + "generated/" + getGeneratedFilename();
+    }
+
+    public String getGeneratedFilename() {
+        return generatedFilename;
+    }
+
+    public void setGeneratedFilename(String generatedFilename) {
+        this.generatedFilename = generatedFilename;
+    }
+
+    public void generateFilename() {
+        String suffix = "_" + UUID.randomUUID().toString();
+
+        Format fmt = getFormat();
+        if (fmt != null) {
+            suffix += "." + fmt.getExtension();
+        }
+
+        int maxlength = GEN_FILE_LENGTH - suffix.length();
+
+        String filename = source.getNameWithoutExt();
+
+        if (filename.length() > maxlength) {
+            filename = filename.substring(0, maxlength);
+        }
+
+        generatedFilename = filename + suffix;
     }
 
     public long getSize() {

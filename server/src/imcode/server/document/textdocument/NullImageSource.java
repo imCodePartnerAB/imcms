@@ -25,5 +25,9 @@ public class NullImageSource extends ImageSource {
     public Date getModifiedDatetime( ) {
         return null;
     }
+
+    public String getName() {
+        return "";
+    }
 }
  

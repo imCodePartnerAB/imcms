@@ -61,4 +61,8 @@ public class ImageArchiveImageSource extends ImageSource {
 	public Date getModifiedDatetime() {
 		return new Date(getFile().lastModified());
 	}
+
+    public String getName() {
+        return new File(path).getName();
+    }
 }

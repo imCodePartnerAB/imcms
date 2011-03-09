@@ -2,11 +2,6 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
-import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
-import imcode.util.image.Filter;
-import imcode.util.image.ImageOp;
-import imcode.util.image.Resize;
 
 import java.io.File;
 
@@ -14,8 +9,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.imcode.imcms.mapping.ImageCacheMapper;
+import imcode.util.ImcmsImageUtils;
 import java.util.Collection;
 
+@Deprecated
 public class ImageCacheManager {
 	private static final Log log = LogFactory.getLog(ImageCacheManager.class);
 	
@@ -86,42 +83,12 @@ public class ImageCacheManager {
 		File cacheFile = new File(bucketFile, imageCache.getId());
 		
 		try {
-			ImageOp operation = new ImageOp(Imcms.getServices().getConfig()).input(imageFile);
+			boolean result = ImcmsImageUtils.generateImage(imageFile, cacheFile, imageCache.getFormat(),
+                    imageCache.getWidth(), imageCache.getHeight(), imageCache.getCropRegion(), imageCache.getRotateDirection());
 			
-			RotateDirection rotateDirection = imageCache.getRotateDirection();
-			if (rotateDirection != RotateDirection.NORTH) {
-			    operation.rotate(rotateDirection.getAngle());
-			}
-			
-			CropRegion cropRegion = imageCache.getCropRegion();
-			int width = imageCache.getWidth();
-			int height = imageCache.getHeight();
-			
-			if (cropRegion.isValid()) {
-				int cropWidth = cropRegion.getWidth();
-				int cropHeight = cropRegion.getHeight();
-				
-				operation.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
-			}
-			
-			if (width > 0 || height > 0) {
-                Integer w = (width > 0 ? width : null);
-                Integer h = (height > 0 ? height : null);
-                Resize resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
-                
-                operation.filter(Filter.LANCZOS);
-                operation.resize(w, h, resize);
-	        }
-			
-			if (imageCache.getFormat() != null) {
-				operation.outputFormat(imageCache.getFormat());
-			}
-			
-			if (!operation.processToFile(cacheFile)) {
-				if (cacheFile.exists()) {
-					cacheFile.delete();
-				}
-			}
+			if (!result && cacheFile.exists()) {
+                cacheFile.delete();
+            }
 			
 			return cacheFile;
 		} catch (Exception ex) {

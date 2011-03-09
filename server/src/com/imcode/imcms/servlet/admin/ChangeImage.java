@@ -12,6 +12,7 @@ import imcode.server.document.textdocument.*;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.user.UserDomainObject;
+import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.ShouldNotBeThrownException;
@@ -59,6 +60,9 @@ public class ChangeImage extends HttpServlet {
         };
         Handler<ImageDomainObject> imageCommand = new Handler<ImageDomainObject>() {
             public void handle(ImageDomainObject image) {
+                image.generateFilename();
+                ImcmsImageUtils.generateImage(image, false);
+
                 ImcmsServices services = Imcms.getServices();
                 document.setImage(imageIndex, image);
                 try {

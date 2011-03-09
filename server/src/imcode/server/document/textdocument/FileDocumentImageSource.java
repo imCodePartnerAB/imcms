@@ -53,4 +53,8 @@ public class FileDocumentImageSource extends ImageSource {
         return getFileDocument().getModifiedDatetime( );
     }
 
+    public String getName() {
+        return Integer.toString(fileDocumentReference.getDocumentId());
+    }
+
 }

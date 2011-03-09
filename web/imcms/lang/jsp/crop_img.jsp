@@ -144,13 +144,8 @@
                         <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
                             <tr>
                                 <td colspan="2" align="center">
-                                    <c:url var="imageUrl" value="/imagehandling">
+                                    <c:url var="imageUrl" value="/servlet/ImagePreview">
                                         <c:param name="path" value="${image.urlPathRelativeToContextPath}"/>
-                                        
-                                        <c:if test="${cropPage.metaId ne null}">
-                                            <c:param name="meta_id" value="${cropPage.metaId}"/>
-                                            <c:param name="image_index" value="${cropPage.imageIndex}"/>
-                                        </c:if>
 
                                         <c:param name="rangle" value="${image.rotateDirection.angle}"/>
                                     </c:url>

@@ -9,11 +9,13 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 import com.imcode.imcms.flow.DispatchCommand;
+import imcode.util.ImcmsImageUtils;
 
 public class EditImage extends HttpServlet {
 
     private static final String REQUEST_ATTRIBUTE__IMAGE = EditImage.class+".image";
     public static final String REQUEST_PARAMETER__RETURN = "return";
+    public static final String REQUEST_PARAMETER__GENFILE = "gen_file";
 
     public void doGet(final HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
@@ -23,7 +25,14 @@ public class EditImage extends HttpServlet {
         DispatchCommand returnCommand = new DispatchCommand() {
             public void dispatch(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {
-                request.setAttribute(REQUEST_ATTRIBUTE__IMAGE, imageCommand.getImage());
+                ImageDomainObject image = imageCommand.getImage();
+
+                if (image != null) {
+                    image.generateFilename();
+                    ImcmsImageUtils.generateImage(image, false);
+                }
+
+                request.setAttribute(REQUEST_ATTRIBUTE__IMAGE, image);
                 request.getRequestDispatcher(returnPath).forward(request, response);
             }
         };

@@ -183,7 +183,7 @@ public class TextDocumentInitializer {
                 DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id,name,image_name,imgurl,"
                                                                                  + "width,height,border,v_space,h_space,"
                                                                                  + "target,align,alt_text,low_scr,linkurl,type,archive_image_id, "
-																				 + "format, crop_x1, crop_y1, crop_x2, crop_y2, rotate_angle  "
+																				 + "format, crop_x1, crop_y1, crop_x2, crop_y2, rotate_angle, gen_file  "
                                                                                  + "FROM images WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
@@ -216,6 +216,7 @@ public class TextDocumentInitializer {
                             image.setCropRegion(region);
                             
                             image.setRotateDirection(RotateDirection.getByAngleDefaultIfNull(rs.getShort(22)));
+                            image.setGeneratedFilename(rs.getString(23));
 
                             if ( StringUtils.isNotBlank(imageSource) ) {
                                 if ( ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {

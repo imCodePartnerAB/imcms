@@ -8,15 +8,15 @@
 			var outparam = null ;
 			
 			if (typeof image == 'undefined') {
-				image = image.getParentElement() ;
-				if (image && 'img' != image.tagName.toLowerCase()) {
+				image = image.getParent() ;
+				if (image && 'img' != image.getName()) {
 					image = null ;
 				}
 			}
 			
 			if (image) {
 				var src = image.getAttribute('src') ;
-				var url, format, width, height, cropX1, cropY1, cropX2, cropY2, rotateAngle, queryIndex ;
+				var url, format, width, height, cropX1, cropY1, cropX2, cropY2, rotateAngle, queryIndex, genFile ;
 				
 				if (src && (queryIndex = src.indexOf('?')) != -1) {
 					var parts = src.substring(queryIndex + 1).split('&') ;
@@ -62,6 +62,9 @@
 							case 'rangle':
 								rotateAngle = value ;
 								break ;
+                            case 'gen_file':
+                                genFile = value;
+                                break;
 							default:
 								break ;
 						}
@@ -85,6 +88,10 @@
 					'h_space'      : (image.getStyle('margin-right') || image.getAttribute('hspace') || '0').replace(/[^\d]/g, ''),
 					'image_name'   : image.getAttribute('id') || image.getAttribute('name')
 				} ;
+
+                if (genFile) {
+                    outparam['gen_file'] = genFile;
+                }
 			}
 			
 			var queryString = '' ;
@@ -106,24 +113,12 @@
 			}
 			
 			//console.log('image: ' + image + '\nreturnImage.src: ' + returnImage.src) ;
-			
-			var img = image ;
-			
-			//console.log('img.src (before): ' + img.src) ;
-			
-			if (!img) { // If the <img/> tag doesn't exists in the editor - create it.
-				img = editor.document.createElement('img') ;
-				img.setAttribute('src', returnImage.src) ;
-				editor.insertElement(img) ;
-				//console.log('img (not exist): ' + img) ;
-			} else { // If the <img/> tag exists in the editor (var img = image ;) - change it.
-				img.setAttribute('src', returnImage.src) ;
-				//console.log('img (exist): ' + img) ;
-			}
-			
-			//console.log('img.src (after): ' + img.src) ;
-			
-			img.removeAttribute('rel') ; // Old! Don't remember why...
+
+            // Always recreate the image tag, otherwise the content will lag behind when
+            // editing existing images.
+			var img = editor.document.createElement('img') ;
+            img.setAttribute('src', returnImage.src) ;
+            editor.insertElement(img) ;
 			
 			for (var parameter in returnImage) {
 				var parameterValue = returnImage[parameter] ;
@@ -159,7 +154,7 @@
 						break ;
 				}
 			}
-			
+            
 		}
 	} ;
 	

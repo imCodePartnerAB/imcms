@@ -22,7 +22,7 @@ ImageDomainObject image = EditImage.getImage(request);
 <script type="text/javascript"><%
 if (null != image && StringUtils.isNotBlank(image.getUrlPathRelativeToContextPath())) { %>
 window.returnValue = {
-	src    : '<%= StringEscapeUtils.escapeJavaScript(ImcmsImageUtils.getImageUrl(image, request.getContextPath())) %>',
+	src    : '<%= StringEscapeUtils.escapeJavaScript(ImcmsImageUtils.getImageUrl(image, request.getContextPath(), true)) %>',
 	alt    : '<%= StringEscapeUtils.escapeJavaScript(image.getAlternateText()) %>',<%
 	if (StringUtils.isNotBlank(image.getAlign())) { %>
 	align  : '<%= StringEscapeUtils.escapeJavaScript(image.getAlign()) %>',<%
