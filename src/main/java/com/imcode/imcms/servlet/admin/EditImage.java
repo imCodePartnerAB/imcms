@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.imcode.imcms.flow.DispatchCommand;
 import imcode.util.ImcmsImageUtils;
 import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * Used to edit/insert image in (Xina) editor. 
@@ -52,9 +51,6 @@ public class EditImage extends HttpServlet {
         ImageDomainObject editImage = imageEditPage.getImages().get(0);
         editImage.setGeneratedFilename(request.getParameter(REQUEST_PARAMETER__GENFILE));
 
-        ImageDomainObject origImage = editImage.clone();
-        returnCommand.setOrigImage(origImage);
-
         imageEditPage.forward(request, response);
     }
 
@@ -85,19 +81,13 @@ public class EditImage extends HttpServlet {
     private static class ImageDispatchCommand implements DispatchCommand {
         private String returnPath;
         private ImageRetrievalCommand imageCommand;
-        private ImageDomainObject origImage;
 
         public void dispatch(HttpServletRequest request,
                              HttpServletResponse response) throws IOException, ServletException {
             ImageDomainObject editImage = imageCommand.getImage();
 
             if (editImage != null) {
-                editImage.setGeneratedFilename(origImage.getGeneratedFilename());
-                
-                if (ImcmsImageUtils.changedImageGenerationParams(origImage, editImage)) {
-                    editImage.generateFilename();
-                }
-
+                editImage.generateFilename();
                 ImcmsImageUtils.generateImage(editImage, false);
             }
 
@@ -111,10 +101,6 @@ public class EditImage extends HttpServlet {
 
         public void setImageCommand(ImageRetrievalCommand imageCommand) {
             this.imageCommand = imageCommand;
-        }
-
-        public void setOrigImage(ImageDomainObject origImage) {
-            this.origImage = origImage;
         }
     }
 }

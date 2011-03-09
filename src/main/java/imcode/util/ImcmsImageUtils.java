@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,12 +51,12 @@ public class ImcmsImageUtils {
         return getImageHtmlTag(image, request, attributes, absoluteUrl, false);
     }
 
-    public static String getImageHandlingHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
+    public static String getImagePreviewHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
         return getImageHtmlTag(image, request, attributes, false, true);
     }
 
     private static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes,
-            boolean absoluteUrl, boolean forceImageHandling) {
+            boolean absoluteUrl, boolean forPreview) {
         
         StringBuffer imageTagBuffer = new StringBuffer(96);
         if ( image.getSize() > 0 ) {
@@ -69,8 +70,8 @@ public class ImcmsImageUtils {
             }
 
             String urlEscapedImageUrl;
-            if (forceImageHandling) {
-                urlEscapedImageUrl = getImageHandlingUrl(image, request.getContextPath());
+            if (forPreview) {
+                urlEscapedImageUrl = getImagePreviewUrl(image, request.getContextPath());
             } else {
                 urlEscapedImageUrl = getImageUrl(image, request.getContextPath());
             }
@@ -163,21 +164,27 @@ public class ImcmsImageUtils {
         String url = image.getGeneratedUrlPath(contextPath);
 
         if (includeQueryParams) {
-            url += getImageQueryString(image);
+            url += getImageQueryString(image, false);
         }
 
         return url;
     }
 
+    @Deprecated
     public static String getImageHandlingUrl(ImageDomainObject image, String contextPath) {
         
-        return contextPath + "/imagehandling" + getImageQueryString(image);
+        return contextPath + "/imagehandling" + getImageQueryString(image, false);
     }
 
-    private static String getImageQueryString(ImageDomainObject image) {
+    public static String getImagePreviewUrl(ImageDomainObject image, String contextPath) {
+
+        return contextPath + "/servlet/ImagePreview" + getImageQueryString(image, true);
+    }
+
+    private static String getImageQueryString(ImageDomainObject image, boolean forPreview) {
         StringBuilder builder = new StringBuilder("?");
 
-        if (image.getSource() instanceof FileDocumentImageSource) {
+        if (!forPreview && image.getSource() instanceof FileDocumentImageSource) {
         	FileDocumentImageSource source = (FileDocumentImageSource) image.getSource();
         	builder.append("file_id=");
         	builder.append(source.getFileDocument().getId());
@@ -211,7 +218,7 @@ public class ImcmsImageUtils {
         builder.append("&rangle=");
         builder.append(image.getRotateDirection().getAngle());
 
-        if (image.getGeneratedFilename() != null) {
+        if (!forPreview && image.getGeneratedFilename() != null) {
             builder.append("&gen_file=");
             builder.append(image.getGeneratedFilename());
         }
@@ -247,38 +254,6 @@ public class ImcmsImageUtils {
         return imageSource;
     }
 
-    public static boolean changedImageGenerationParams(ImageDomainObject origImage, ImageDomainObject editImage) {
-        String origSourcePath = origImage.getUrlPathRelativeToContextPath();
-        String editSourcePath = editImage.getUrlPathRelativeToContextPath();
-
-        boolean changedParam = false;
-        
-        if (origImage.getGeneratedFilename() == null) {
-            changedParam = true;
-
-        } else if (!origSourcePath.equals(editSourcePath)) {
-            changedParam = true;
-
-        } else if (origImage.getFormat() != editImage.getFormat()) {
-            changedParam = true;
-
-        } else if (!origImage.getCropRegion().isSame(editImage.getCropRegion())) {
-            changedParam = true;
-
-        } else if (origImage.getWidth() != editImage.getWidth()) {
-            changedParam = true;
-
-        } else if (origImage.getHeight() != editImage.getHeight()) {
-            changedParam = true;
-
-        } else if (origImage.getRotateDirection() != editImage.getRotateDirection()) {
-            changedParam = true;
-            
-        }
-        
-        return changedParam;
-    }
-
     public static void generateImage(ImageDomainObject image, boolean overwrite) {
         File genFile = image.getGeneratedFile();
 
@@ -305,6 +280,11 @@ public class ImcmsImageUtils {
                 return;
             }
 
+            File parentFile = genFile.getParentFile();
+            if (!parentFile.exists()) {
+                parentFile.mkdir();
+            }
+
             tempFile = File.createTempFile("genimg", null);
 
             input = source.getInputStreamSource().getInputStream();
@@ -313,44 +293,8 @@ public class ImcmsImageUtils {
             IOUtils.copy(input, output);
             IOUtils.closeQuietly(output);
 
-            ImageOp op = new ImageOp().input(tempFile);
-
-            RotateDirection rotateDir = image.getRotateDirection();
-            if (rotateDir != RotateDirection.NORTH) {
-                op.rotate(rotateDir.getAngle());
-            }
-
-            CropRegion cropRegion = image.getCropRegion();
-            if (cropRegion.isValid()) {
-                int cropWidth = cropRegion.getWidth();
-                int cropHeight = cropRegion.getHeight();
-
-                op.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
-            }
-
-            int width = image.getWidth();
-            int height = image.getHeight();
-
-            if (width > 0 || height > 0) {
-                Integer w = (width > 0 ? width : null);
-                Integer h = (height > 0 ? height : null);
-                Resize resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
-
-                op.filter(Filter.LANCZOS);
-                op.resize(w, h, resize);
-            }
-
-            Format format = image.getFormat();
-            if (format != null) {
-                op.outputFormat(format);
-            }
-
-            File parentFile = genFile.getParentFile();
-            if (!parentFile.exists()) {
-                parentFile.mkdir();
-            }
-
-            op.processToFile(genFile);
+            generateImage(tempFile, genFile, image.getFormat(), image.getWidth(), image.getHeight(),
+                    image.getCropRegion(), image.getRotateDirection());
 
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
@@ -363,5 +307,62 @@ public class ImcmsImageUtils {
                 tempFile.delete();
             }
         }
+    }
+
+    public static boolean generateImage(File imageFile, File destFile, Format format, int width, int height,
+            CropRegion cropRegion, RotateDirection rotateDir) {
+
+        ImageOp operation = new ImageOp().input(imageFile);
+
+
+        if (rotateDir != RotateDirection.NORTH) {
+            operation.rotate(rotateDir.getAngle());
+        }
+
+        if (cropRegion.isValid()) {
+            int cropWidth = cropRegion.getWidth();
+            int cropHeight = cropRegion.getHeight();
+
+            operation.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
+        }
+
+        if (width > 0 || height > 0) {
+            Integer w = (width > 0 ? width : null);
+            Integer h = (height > 0 ? height : null);
+            Resize resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
+
+            operation.filter(Filter.LANCZOS);
+            operation.resize(w, h, resize);
+        }
+
+        if (format != null) {
+            operation.outputFormat(format);
+        }
+
+        return operation.processToFile(destFile);
+    }
+
+    public static String getImageETag(String path, File imageFile, Format format, int width, int height,
+            CropRegion cropRegion, RotateDirection rotateDirection) {
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(path);
+        builder.append(imageFile.length());
+        builder.append(imageFile.lastModified());
+        builder.append(width);
+        builder.append(height);
+        builder.append(rotateDirection.name());
+
+        if (format != null) {
+            builder.append(format.getOrdinal());
+        }
+        if (cropRegion != null) {
+            builder.append(cropRegion.getCropX1());
+            builder.append(cropRegion.getCropY1());
+            builder.append(cropRegion.getCropX2());
+            builder.append(cropRegion.getCropY2());
+        }
+
+        return "W/\"" + DigestUtils.md5Hex(builder.toString()) + "\"";
     }
 }

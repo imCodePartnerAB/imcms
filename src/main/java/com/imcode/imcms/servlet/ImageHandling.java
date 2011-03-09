@@ -7,6 +7,7 @@ import imcode.server.document.FileDocumentDomainObject.FileDocumentFile;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
+import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
@@ -40,6 +41,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+@Deprecated
 public class ImageHandling extends HttpServlet {
 	private static final long serialVersionUID = 6075455980496678862L;
 
@@ -107,15 +109,28 @@ public class ImageHandling extends HttpServlet {
 		
 		int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
 		RotateDirection rotateDirection = RotateDirection.getByAngleDefaultIfNull(rotateAngle);
-		 
-		ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, format, width,
+
+        ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, format, width,
                 height, cropRegion, rotateDirection);
 		String cacheId = imageCache.getId();
-		
+
+        String etag = null;
 		File cacheFile = ImageCacheManager.getCacheFile(imageCache);
+
 		if (cacheFile != null) {
+            if (path != null) {
+                File imageFile = getLocalFile(path);
+
+                etag = ImcmsImageUtils.getImageETag(path, imageFile, format, width, height, cropRegion, rotateDirection);
+
+                String ifNoneMatch = request.getHeader("If-None-Match");
+                if (etag.equals(ifNoneMatch)) {
+                    response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                    return;
+                }
+            }
 			
-			writeImageToResponse(cacheId, cacheFile, format, desiredFilename, response); 
+			writeImageToResponse(cacheId, cacheFile, format, desiredFilename, etag, response);
 			return;
 		}
 		
@@ -152,12 +167,17 @@ public class ImageHandling extends HttpServlet {
 			return;
 		}
 		
-		Format outputFormat = (format != null ? format : imageInfo.getFormat());
-		writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, response);
+        Format outputFormat = (format != null ? format : imageInfo.getFormat());
+		writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, etag, response);
 	}
 	
-	private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename, 
+	private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename, String etag,
 			HttpServletResponse response) {
+
+        if (etag != null) {
+            response.addHeader("ETag", etag);
+        }
+
 		if (format != null) {
 			response.setContentType(format.getMimeType());
 		} else {

@@ -145,7 +145,7 @@
                         <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
                             <tr>
                                 <td colspan="2" align="center">
-                                    <c:url var="imageUrl" value="/imagehandling">
+                                    <c:url var="imageUrl" value="/servlet/ImagePreview">
                                         <c:param name="path" value="${image.urlPathRelativeToContextPath}"/>
                                         <c:param name="rangle" value="${rotateDirection.angle}"/>
                                     </c:url>

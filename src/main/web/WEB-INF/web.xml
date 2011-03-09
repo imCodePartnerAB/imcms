@@ -349,6 +349,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.ImagePreview</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.ImagePreview</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.AdminPanelServlet</servlet-class>
     </servlet>
@@ -602,6 +607,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.ImageHandling</servlet-name>
         <url-pattern>/imagehandling/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.ImagePreview</servlet-name>
+        <url-pattern>/servlet/ImagePreview</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
