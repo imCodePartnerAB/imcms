@@ -167,7 +167,7 @@ class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends 
   val miEditMove = miEdit.addItem("file.mgr.menu.edit.move".i)
   val miEditRename = miEdit.addItem("file.mgr.menu.edit.rename".i)
   val miEditDelete = miEdit.addItem("file.mgr.menu.edit.delete".i)
-  val miView = mb.addItem("file.mgr.menu.view".i, View)
+  val miView = mb.addItem("file.mgr.menu.view".i)
   val miViewReload = miView.addItem("file.mgr.menu.view.reload".i, Reload16)
   val miViewPreview = miView.addItem("file.mgr.menu.view.toggle_preview".i)
   val miHelp = mb.addItem("file.mgr.menu.help".i, Help16)
@@ -233,7 +233,7 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
                   dlgUI.pi.setValue((max - remaining.size) / max)
                 }
 
-                val parentName = ?(item.getParentFile) map (_.getName) getOrElse "."
+                val parentName = Option(item.getParentFile) map (_.getName) getOrElse "."
                 dlgUI.lblMsg.value = "file.mgr.dlg.delete.progress.msg".f(item.getName, parentName)
               }
 

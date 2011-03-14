@@ -8,35 +8,12 @@ import scala.collection.JavaConversions._
 import imcode.server.document.DocumentDomainObject
 import imcms.api.{DocumentVersionInfo, Meta, I18nLanguage}
 
-case class CacheWrapper[K >: Null, V >: Null](cache: Cache) {
-  def get(key: K) = ?(cache.get(key)).map(_.getObjectValue).orNull.asInstanceOf[V]
-
-  def put(key: K, value: V) = cache.put(new Element(key, value))
-
-  def remove(key: K) = cache.remove(key)
-
-  def getOrLoad(key: K)(loader: => V) = get(key) match {
-    case null => letret(loader) {
-      case null =>
-      case value => put(key, value)
-    }
-
-    case value => value
-  }
-}
-
-
-object CacheWrapper {
-  def apply[K >: Null, V >: Null](cacheConfiguration: CacheConfiguration) =
-    new CacheWrapper[K, V](new Cache(cacheConfiguration))
-}
-
 
 class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLanguage], size: Int) {
 
   val cacheManager = new CacheManager
 
-  case class DocCacheKey(docId: JInteger, languageId: JInteger)
+  case class DocCacheKey(docId: DocId, languageId: LanguageId)
 
   def cacheConfiguration(name: String) = letret(new CacheConfiguration) { cc =>
     cc.setMaxElementsInMemory(size)
@@ -59,9 +36,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
   /**
    * @return doc's meta or null if doc does not exists
    */
-  def getMeta(docId: DocId) = metas.getOrLoad(docId) {
-    docLoader.loadMeta(docId)
-  }
+  def getMeta(docId: DocId) = metas.getOrLoad(docId) { docLoader.loadMeta(docId) }
 
   /**
    * @return doc's version info or null if doc does not exists
@@ -145,4 +120,28 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
       aliasesToIds.remove(alias)
     }
   }
+}
+
+
+case class CacheWrapper[K >: Null, V >: Null](cache: Cache) {
+  def get(key: K) = ?(cache.get(key)).map(_.getObjectValue).orNull.asInstanceOf[V]
+
+  def put(key: K, value: V) = cache.put(new Element(key, value))
+
+  def remove(key: K) = cache.remove(key)
+
+  def getOrLoad(key: K)(loader: => V) = get(key) match {
+    case null => letret(loader) {
+      case null =>
+      case value => put(key, value)
+    }
+
+    case value => value
+  }
+}
+
+
+object CacheWrapper {
+  def apply[K >: Null, V >: Null](cacheConfiguration: CacheConfiguration) =
+    new CacheWrapper[K, V](new Cache(cacheConfiguration))
 }

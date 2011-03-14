@@ -245,7 +245,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
           case Menu.System.Settings.Languages => languagesPanel
           case Menu.System.Settings.Properties => settingsProperties
           case Menu.System.Monitor.Session => sessionMonitor
-          case Menu.Documents => documentsTable
+          case Menu.Documents => documents
           case Menu.Permissions.Roles => roles
           case Menu.Permissions.Users => users
           case Menu.Permissions.IP_Access => ipAccess
@@ -434,44 +434,14 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
   
 
-  def documentsTable = new TabSheetView {
-    addTab(new VerticalLayoutUI("Documents") {
-      val table = new Table()
-      table.addContainerProperty("Page alias", classOf[String],  null)
-      table.addContainerProperty("Status", classOf[String],  null)
-      table.addContainerProperty("Type", classOf[JInteger],  null)
-      table.addContainerProperty("Admin", classOf[String],  null)
-      table.addContainerProperty("Ref.", classOf[String],  null)
-      table.addContainerProperty("Child documents", classOf[String],  null)
+  lazy val documents = new VerticalLayout with Margin {
+    val manager = new com.imcode.imcms.admin.document.DocManager(app)
+    val tabSheet = new TabSheet
+    tabSheet.addTab(manager.ui, "Document", Tab32)
 
-      val metaDao = Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao]
+    manager.ui.setMargin(true)
 
-      metaDao.getAllDocumentIds.toList.foreach { id =>
-        val meta = metaDao getMeta id
-        val alias = meta.getProperties.get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) match {
-          case null => ""
-          case value => value
-        }
-
-        val status = meta.getPublicationStatus match {
-          case Document.PublicationStatus.NEW => "New"
-          case Document.PublicationStatus.APPROVED => "Approved"
-          case Document.PublicationStatus.DISAPPROVED => "Disapproved"
-        }
-
-        table.addItem(Array(alias, status, meta.getDocumentType, id.toString, Int box 0, Int box 0), id)
-      }
-
-      val controls = new HorizontalLayout
-
-      controls.addComponent(new Label("List between:"))
-      controls.addComponent(new TextField)
-      controls.addComponent(new Label("-"))
-      controls.addComponent(new TextField)
-      controls.addComponent(new Button("List"))
-
-      addComponents(this, controls, table)
-    })
+    addComponent(tabSheet)
   }
 
   lazy val ipAccess = new VerticalLayout with Margin {

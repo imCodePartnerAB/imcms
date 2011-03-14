@@ -8,6 +8,8 @@ package object imcms {
 
   type DocId = JInteger
 
+  type LanguageId = JInteger
+
   implicit def stringAsBundleResourceId(string: String) = new {
 
     private def getLocale() = ?(Imcms.getUser) match {
