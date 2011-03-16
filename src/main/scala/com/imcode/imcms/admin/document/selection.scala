@@ -31,7 +31,7 @@ class DocSelectionUI extends VerticalLayout with Spacing with FullSize {
 
 
 object DocTableUI {
-  def apply(fullSize: Boolean = false) = new Table with MultiSelect2[DocumentDomainObject] { table =>
+  def apply(fullSize: Boolean = false) = new Table with DocStatusItemIcon with MultiSelect2[DocumentDomainObject] { table =>
     addContainerProperties(table,
       CP[String]("doc.list.col.alias"),
       CP[String]("doc.list.col.status"),
@@ -67,7 +67,7 @@ object DocTableUI {
     table.addGeneratedColumn("doc.list.col.parents", new Table.ColumnGenerator {
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) =
         docMapper.getDocumentMenuPairsContainingDocument(itemId.asInstanceOf[DocumentDomainObject]) match {
-          case pairs if pairs.nonEmpty => letret(new Tree) { tree =>
+          case pairs if pairs.nonEmpty => letret(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
             val root = new {}
             tree.addItem(root)
             tree.setItemCaption(root, pairs.size.toString)
@@ -88,7 +88,7 @@ object DocTableUI {
         itemId match {
           case textDoc: TextDocumentDomainObject =>
             docMapper.getDocuments(textDoc.getChildDocumentIds) match {
-              case childDocs if childDocs.nonEmpty =>letret(new Tree) { tree =>
+              case childDocs if childDocs.nonEmpty =>letret(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
                 val root = new {}
                 tree.addItem(root)
                 tree.setItemCaption(root, childDocs.size.toString)
@@ -112,10 +112,14 @@ object DocTableUI {
       "doc.list.col.admin".i, "doc.list.col.parents".i, "doc.list.col.children".i))
 
     table.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
+  }
+}
 
-    override def getItemIcon(itemId: AnyRef) =
-      new ExternalResource("imcms/eng/images/admin/status/%s.gif" format
-        itemId.asInstanceOf[DocumentDomainObject].getLifeCyclePhase.toString
-      )
+trait DocStatusItemIcon extends AbstractSelect {
+  override def getItemIcon(itemId: AnyRef) = itemId match {
+    case doc: DocumentDomainObject => new ExternalResource("imcms/eng/images/admin/status/%s.gif" format
+      itemId.asInstanceOf[DocumentDomainObject].getLifeCyclePhase.toString)
+
+    case _ => null
   }
 }
