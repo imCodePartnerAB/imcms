@@ -11,7 +11,16 @@ import imcode.server.Imcms
 import dao.MetaDao
 import imcode.server.document.DocumentDomainObject
 import api.Document
+import com.vaadin.event.Action
 
+
+object Actions {
+  val View = new Action("doc.tbl.action.view".i)
+  val AddToSelection = new Action("doc.tbl.action.add_to_selection".i)
+  val Edit = new Action("doc.tbl.action.edit".i)
+  val Exclude = new Action("doc.tbl.action.exclude".i)
+  val Delete = new Action("doc.tbl.action.delete".i)
+}
 
 class DocManager(app: ImcmsApplication) {
   val docSelection = new DocSelection(app)
@@ -25,6 +34,19 @@ class DocManager(app: ImcmsApplication) {
     ui.miViewSelection.setCommandHandler {
       app.show(docSelectionDlg, modal = false, resizable = true)
     }
+
+    ui.tblDocs.addActionHandler(new Action.Handler {
+      import Actions._
+
+      def getActions(target: AnyRef, sender: AnyRef) = Array(AddToSelection, Exclude, View, Edit, Delete)
+
+      def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
+        action match {
+          case AddToSelection => docSelection.ui.tblDocs.addItem(target)
+          case Exclude => sender.asInstanceOf[Table].removeItem(target)
+          case _ =>
+        }
+    })
   }
 
   reload()
@@ -43,7 +65,7 @@ class DocManager(app: ImcmsApplication) {
         case Document.PublicationStatus.DISAPPROVED => "Disapproved"
       }
 
-      ui.tblDocs.addItem(Array[AnyRef](alias, status, meta.getDocumentType, id.toString), doc)
+      ui.tblDocs.addItem(Array[AnyRef](id, Int box doc.getDocumentType.getId, status, alias), doc)
     }
   }
 }

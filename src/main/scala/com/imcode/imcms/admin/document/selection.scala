@@ -10,12 +10,24 @@ import com.vaadin.ui.Table.CellStyleGenerator
 import com.vaadin.ui._
 import imcode.server.Imcms
 import imcode.server.document.textdocument.TextDocumentDomainObject
-import imcode.util.Html
 import com.vaadin.terminal.{ExternalResource, Resource}
 import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
+import com.vaadin.event.Action
 
 class DocSelection(app: ImcmsApplication) {
   val ui = new DocSelectionUI
+
+  ui.tblDocs.addActionHandler(new Action.Handler {
+    import Actions._
+
+    def getActions(target: AnyRef, sender: AnyRef) = Array(Exclude, View, Edit, Delete)
+
+    def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
+      action match {
+        case Exclude => sender.asInstanceOf[Table].removeItem(target)
+        case _ =>
+      }
+  })
 }
 
 
@@ -31,12 +43,13 @@ class DocSelectionUI extends VerticalLayout with Spacing with FullSize {
 
 
 object DocTableUI {
-  def apply(fullSize: Boolean = false) = new Table with DocStatusItemIcon with MultiSelect2[DocumentDomainObject] { table =>
+  def apply(fullSize: Boolean = false) = new Table with DocStatusItemIcon with MultiSelect2[DocumentDomainObject] with Selectable { table =>
     addContainerProperties(table,
-      CP[String]("doc.list.col.alias"),
-      CP[String]("doc.list.col.status"),
-      CP[JInteger]("doc.list.col.type"),
-      CP[String]("doc.list.col.admin"))
+      CP[JInteger]("doc.tbl.col.id"),
+      CP[JInteger]("doc.tbl.col.type"),
+      CP[String]("doc.tbl.col.status"),
+      CP[String]("doc.tbl.col.alias"))
+
 
     if (fullSize) table.setSizeFull
 
@@ -64,10 +77,37 @@ object DocTableUI {
 
     val docMapper = Imcms.getServices.getDocumentMapper
 
-    table.addGeneratedColumn("doc.list.col.parents", new Table.ColumnGenerator {
+
+    trait TreeActionHandler extends Tree {
+      addActionHandler(new Action.Handler {
+        import Actions._
+
+        def getActions(target: AnyRef, sender: AnyRef) = target match {
+          case doc: DocumentDomainObject => Array(AddToSelection, View)
+          case _ => Array.empty[Action]
+        }
+
+        def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
+          action match {
+            case AddToSelection => //docSelection.ui.tblDocs.addItem(target)
+            case _ =>
+          }
+      })
+    }
+
+    table.addGeneratedColumn("doc.tbl.col.parents", new Table.ColumnGenerator {
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) =
-        docMapper.getDocumentMenuPairsContainingDocument(itemId.asInstanceOf[DocumentDomainObject]) match {
-          case pairs if pairs.nonEmpty => letret(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
+        docMapper.getDocumentMenuPairsContainingDocument(itemId.asInstanceOf[DocumentDomainObject]).toList match {
+          case List() => null
+          case List(pair) =>
+            letret(new Tree with TreeActionHandler with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
+              val parentDoc = pair.getDocument
+              tree.addItem(parentDoc)
+              tree.setChildrenAllowed(parentDoc, false)
+              tree.setItemCaption(parentDoc, "%s - %s" format (parentDoc.getId, parentDoc.getHeadline))
+            }
+
+          case pairs => letret(new Tree with TreeActionHandler with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
             val root = new {}
             tree.addItem(root)
             tree.setItemCaption(root, pairs.size.toString)
@@ -78,17 +118,23 @@ object DocTableUI {
               tree.setParent(parentDoc, root)
             }
           }
-
-          case _ => null
         }
     })
 
-    table.addGeneratedColumn("doc.list.col.children", new Table.ColumnGenerator {
+    table.addGeneratedColumn("doc.tbl.col.children", new Table.ColumnGenerator {
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) =
         itemId match {
           case textDoc: TextDocumentDomainObject =>
-            docMapper.getDocuments(textDoc.getChildDocumentIds) match {
-              case childDocs if childDocs.nonEmpty =>letret(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
+            docMapper.getDocuments(textDoc.getChildDocumentIds).toList match {
+              case List() => null
+              case List(childDoc) =>
+                letret(new Tree with TreeActionHandler with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
+                  tree.addItem(childDoc)
+                  tree.setChildrenAllowed(childDoc, false)
+                  tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
+                }
+
+              case childDocs =>letret(new Tree with TreeActionHandler with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
                 val root = new {}
                 tree.addItem(root)
                 tree.setItemCaption(root, childDocs.size.toString)
@@ -100,16 +146,14 @@ object DocTableUI {
                   // >>> link to list documents
                 }
               }
-
-              case _ => null
             }
 
           case _ => null
         }
     })
 
-    table.setColumnHeaders(Array("doc.list.col.alias".i, "doc.list.col.status".i, "doc.list.col.type".i,
-      "doc.list.col.admin".i, "doc.list.col.parents".i, "doc.list.col.children".i))
+    table.setColumnHeaders(Array("doc.tbl.col.id".i, "doc.tbl.col.type".i, "doc.tbl.col.status".i,
+      "doc.tbl.col.alias".i, "doc.tbl.col.parents".i, "doc.tbl.col.children".i))
 
     table.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
   }
