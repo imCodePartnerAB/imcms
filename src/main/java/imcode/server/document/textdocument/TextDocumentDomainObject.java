@@ -137,8 +137,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return DocumentTypeDomainObject.TEXT;
     }
 
-    public Set getChildDocumentIds() {
-        Set childDocuments = new HashSet();
+    public Set<Integer> getChildDocumentIds() {
+        Set<Integer> childDocuments = new HashSet<Integer>();
 
         for (MenuDomainObject menu : getMenus().values()) {
             for (MenuItemDomainObject menuItem : menu.getMenuItems()) {

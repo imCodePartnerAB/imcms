@@ -209,7 +209,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
 
   val wndMain = new Window {
-    val content = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
+    val content = new HorizontalSplitPanel {
       setSplitPosition(15)
       setSizeFull
     }

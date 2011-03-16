@@ -31,14 +31,11 @@ class DocManager(app: ImcmsApplication) {
 
   // temp
   def reload() {
-    val metaDao = Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao]
+    val docMapper = Imcms.getServices.getDocumentMapper
 
-    metaDao.getAllDocumentIds.toList.foreach { id =>
-      val meta = metaDao getMeta id
-      val alias = meta.getProperties.get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) match {
-        case null => ""
-        case value => value
-      }
+    for (id <- docMapper.getAllDocumentIds; doc <- ?(docMapper.getDefaultDocument(id))) {
+      val meta = doc.getMeta
+      val alias = ?(meta.getProperties.get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) getOrElse ""
 
       val status = meta.getPublicationStatus match {
         case Document.PublicationStatus.NEW => "New"
@@ -46,7 +43,7 @@ class DocManager(app: ImcmsApplication) {
         case Document.PublicationStatus.DISAPPROVED => "Disapproved"
       }
 
-      ui.tblDocs.addItem(Array[AnyRef](alias, status, meta.getDocumentType, id.toString, Int box 0, Int box 0), id)
+      ui.tblDocs.addItem(Array[AnyRef](alias, status, meta.getDocumentType, id.toString), doc)
     }
   }
 }
