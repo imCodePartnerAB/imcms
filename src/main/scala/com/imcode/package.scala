@@ -11,7 +11,13 @@ package object imcode {
   type JCollection[A] = java.util.Collection[A]
   type JList[A] = java.util.List[A]
 
+  implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
+
   val EX = scala.util.control.Exception
+
+  def ??? = let((new Exception).getStackTrace()(1)) { se =>
+    error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
+  }
 
   //?? delete ??
   def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)

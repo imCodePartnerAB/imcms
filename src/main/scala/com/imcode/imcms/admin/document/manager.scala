@@ -55,18 +55,20 @@ class DocManager(app: ImcmsApplication) {
   def reload() {
     val docMapper = Imcms.getServices.getDocumentMapper
 
-    for (id <- docMapper.getAllDocumentIds; doc <- ?(docMapper.getDefaultDocument(id))) {
-      val meta = doc.getMeta
-      val alias = ?(meta.getProperties.get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) getOrElse ""
+    docMapper.getAllDocumentIds.foreach(ui.tblDocs.addItem(_))
 
-      val status = meta.getPublicationStatus match {
-        case Document.PublicationStatus.NEW => "New"
-        case Document.PublicationStatus.APPROVED => "Approved"
-        case Document.PublicationStatus.DISAPPROVED => "Disapproved"
-      }
-
-      ui.tblDocs.addItem(Array[AnyRef](id, Int box doc.getDocumentType.getId, status, alias), doc)
-    }
+//    for (id <- docMapper.getAllDocumentIds; doc <- ?(docMapper.getDefaultDocument(id))) {
+//      val meta = doc.getMeta
+//      val alias = ?(meta.getProperties.get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) getOrElse ""
+//
+//      val status = meta.getPublicationStatus match {
+//        case Document.PublicationStatus.NEW => "New"
+//        case Document.PublicationStatus.APPROVED => "Approved"
+//        case Document.PublicationStatus.DISAPPROVED => "Disapproved"
+//      }
+//
+//      ui.tblDocs.addItem(Array[AnyRef](id, Int box doc.getDocumentType.getId, status, alias), doc)
+//    }
   }
 }
 
