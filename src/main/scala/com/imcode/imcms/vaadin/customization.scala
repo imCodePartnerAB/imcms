@@ -122,6 +122,10 @@ trait Selectable { this: {def setSelectable(selectable: Boolean): Unit} =>
   setSelectable(true)
 }
 
+trait NotSelectable { this: {def setSelectable(selectable: Boolean): Unit} =>
+  setSelectable(false)
+}
+
 trait NullSelection extends AbstractSelect {
   setNullSelectionAllowed(true)
 }

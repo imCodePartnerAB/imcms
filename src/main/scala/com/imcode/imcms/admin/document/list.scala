@@ -19,7 +19,7 @@ import collection.immutable.{SortedSet, ListMap, ListSet}
 import api.Document
 
 
-case class FunctionProperty[A](propertyFn: Function0[A])(implicit mf: Manifest[A]) extends Property {
+case class FunctionProperty[A](valueGetter: Function0[A])(implicit mf: Manifest[A]) extends Property {
 
   def setReadOnly(newStatus: Boolean) = throw new UnsupportedOperationException
 
@@ -29,9 +29,9 @@ case class FunctionProperty[A](propertyFn: Function0[A])(implicit mf: Manifest[A
 
   def setValue(newValue: AnyRef) = throw new UnsupportedOperationException
 
-  def getValue = propertyFn().asInstanceOf[AnyRef]
+  def getValue = valueGetter().asInstanceOf[AnyRef]
 
-  override def toString = getValue.toString
+  override def toString = ?(getValue) map { _.toString } getOrElse ""
 }
 
 /**
@@ -43,7 +43,9 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
       "doc.tbl.col.id" -> classOf[DocId],
       "doc.tbl.col.type" -> classOf[JInteger],
       "doc.tbl.col.status" -> classOf[String],
-      "doc.tbl.col.alias" -> classOf[String])
+      "doc.tbl.col.alias" -> classOf[String],
+      "doc.tbl.col.parents" -> classOf[Component],
+      "doc.tbl.col.children" -> classOf[Component])
 
   private val propertyIds = propertyIdToType.keys.toList
 
@@ -60,12 +62,65 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
     def getItemProperty(id: AnyRef) = FunctionProperty(id match {
       case "doc.tbl.col.id" => doc.getId
       case "doc.tbl.col.type" => doc.getDocumentTypeId
-      case "doc.tbl.col.alias" => () => ?(doc.getAlias).getOrElse("")
+      case "doc.tbl.col.alias" => doc.getAlias
       case "doc.tbl.col.status" =>
         () => doc.getPublicationStatus match {
           case Document.PublicationStatus.NEW => "New"
           case Document.PublicationStatus.APPROVED => "Approved"
           case Document.PublicationStatus.DISAPPROVED => "Disapproved"
+        }
+
+      case "doc.tbl.col.parents" =>
+        () => Imcms.getServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
+          case List() => null
+          case List(pair) =>
+            letret(new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon) { tree =>
+              val parentDoc = pair.getDocument
+              tree.addItem(parentDoc)
+              tree.setChildrenAllowed(parentDoc, false)
+              tree.setItemCaption(parentDoc, "%s - %s" format (parentDoc.getId, parentDoc.getHeadline))
+            }
+
+          case pairs => letret(new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon) { tree =>
+            val root = new {}
+            tree.addItem(root)
+            tree.setItemCaption(root, pairs.size.toString)
+            for (pair <- pairs; parentDoc = pair.getDocument) {
+              tree.addItem(parentDoc)
+              tree.setChildrenAllowed(parentDoc, false)
+              tree.setItemCaption(parentDoc, "%s - %s" format (parentDoc.getId, parentDoc.getHeadline))
+              tree.setParent(parentDoc, root)
+            }
+          }
+        }
+
+      case "doc.tbl.col.children" =>
+        () => doc match {
+          case textDoc: TextDocumentDomainObject =>
+            Imcms.getServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).toList match {
+              case List() => null
+              case List(childDoc) =>
+                letret(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable) { tree =>
+                  tree.addItem(childDoc)
+                  tree.setChildrenAllowed(childDoc, false)
+                  tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
+                }
+
+              case childDocs =>letret(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable) { tree =>
+                val root = new {}
+                tree.addItem(root)
+                tree.setItemCaption(root, childDocs.size.toString)
+                for (childDoc <- childDocs) {
+                  tree.addItem(childDoc)
+                  tree.setChildrenAllowed(childDoc, false)
+                  tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
+                  tree.setParent(childDoc, root)
+                  // >>> link to list documents
+                }
+              }
+            }
+
+          case _ => null
         }
     })
   }
@@ -100,8 +155,14 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
 }
 
 object DocTableUI {
-  def apply(fullSize: Boolean = false) = new Table("", new DocTableContainer) with MultiSelect2[DocId] with Selectable { table =>
-    if (fullSize) table.setSizeFull
+  def apply(fullSize: Boolean = false) = let(new DocTableContainer) { container =>
+    new Table("", container) with DocTableItemIcon with MultiSelect2[DocId] with Selectable { table =>
+      if (fullSize) table.setSizeFull
+      setColumnCollapsingAllowed(true)
+      setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
+      setColumnHeaders(container.getContainerPropertyIds map (_.i) toArray )
+      List("doc.tbl.col.parents", "doc.tbl.col.children") foreach { setColumnCollapsed(_, true) }
+    }
   }
 
   def apply2(fullSize: Boolean = false) = new Table with DocStatusItemIcon with MultiSelect2[DocumentDomainObject] with Selectable { table =>
@@ -224,6 +285,15 @@ trait DocStatusItemIcon extends AbstractSelect {
   override def getItemIcon(itemId: AnyRef) = itemId match {
     case doc: DocumentDomainObject => new ExternalResource("imcms/eng/images/admin/status/%s.gif" format
       itemId.asInstanceOf[DocumentDomainObject].getLifeCyclePhase.toString)
+
+    case _ => null
+  }
+}
+
+trait DocTableItemIcon extends AbstractSelect with XSelect[DocId] {
+  override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
+    case docItem: DocTableContainer#DocItem =>
+      new ExternalResource("imcms/eng/images/admin/status/%s.gif" format docItem.doc.getLifeCyclePhase.toString)
 
     case _ => null
   }
