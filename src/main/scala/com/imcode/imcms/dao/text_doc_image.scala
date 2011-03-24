@@ -22,9 +22,12 @@ object ImageUtil {
     for (url <- ?(image) map (_.getImageUrl) map (_.trim)) {
       image.setSource(
         image.getType.intValue match {
+          case ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT =>
+            // used used exclusively in file docs
+            error("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. Id: %s, no: %s. url: %s.".format(image.getId, image.getNo, url))
+
           case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH => new ImagesPathRelativePathImageSource(url)
           case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE => new ImageArchiveImageSource(url)
-          // matching against FileDocumentImageSource is not required here, since its used exclusively by file docs.
           case _ => new NullImageSource
         }
       )
