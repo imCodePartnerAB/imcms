@@ -9,6 +9,7 @@ import imcode.server.document.textdocument.ImagesPathRelativePathImageSource
 import org.springframework.transaction.annotation.Transactional
 
 import imcode.server.document.textdocument.ImageArchiveImageSource
+import imcode.server.document.textdocument.NullImageSource
 import imcode.server.document.textdocument.ImageSource
 
 object ImageUtil {
@@ -20,8 +21,13 @@ object ImageUtil {
     case image =>
       ?(image.getImageUrl) map (_.trim) match {
         case Some(url) => image.setSource(
-          if (image.getType() == ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE) new ImageArchiveImageSource(url)
-          else new ImagesPathRelativePathImageSource(url))
+	    image.getType.asInstanceOf[Int] match {
+	      case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH => new ImagesPathRelativePathImageSource(url)
+	      case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE => new ImageArchiveImageSource(url)
+	      // XXX: what about FileDocumentImageSource
+	      case _ => new NullImageSource
+	    }
+	)
         case _ =>
       }
   }

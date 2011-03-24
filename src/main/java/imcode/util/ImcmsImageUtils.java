@@ -241,13 +241,17 @@ public class ImcmsImageUtils {
                 if (imageUrl.startsWith(imageArchiveImagesUrl)) {
                     imageUrl = imageUrl.substring(imageArchiveImagesUrl.length());
 
-                    imageSource = new ImageArchiveImageSource(imageUrl);
+		    if (StringUtils.isNotBlank(imageUrl)) {
+			imageSource = new ImageArchiveImageSource(imageUrl);
+		    }
                 } else {
                     if (imageUrl.startsWith(imagesPath)) {
                         imageUrl = imageUrl.substring(imagesPath.length());
                     }
 
-                    imageSource = new ImagesPathRelativePathImageSource(imageUrl);
+		    if (StringUtils.isNotBlank(imageUrl)) {
+			imageSource = new ImagesPathRelativePathImageSource(imageUrl);
+		    }
                 }
             }
         }

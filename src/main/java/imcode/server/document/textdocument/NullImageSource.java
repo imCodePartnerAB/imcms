@@ -18,6 +18,11 @@ public class NullImageSource extends ImageSource {
         return "";
     }
 
+    @Override
+    public boolean isEmpty() {
+	return true;
+    }
+
     public int getTypeId( ) {
         return ImageSource.IMAGE_TYPE_ID__NULL;
     }
