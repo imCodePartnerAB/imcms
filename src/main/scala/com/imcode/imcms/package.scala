@@ -20,7 +20,7 @@ package object imcms {
     private def localize() = {
       val locale = getLocale()
       val bundle = ResourceBundle.getBundle("ui", locale)
-      (EX.allCatch.opt(bundle.getString(string)) getOrElse "<#%s#>".format(string), locale)
+      (EX.allCatch.opt(bundle.getString(string)) getOrElse "<#%s#>".format(string.split('.').last), locale)
     }
 
 

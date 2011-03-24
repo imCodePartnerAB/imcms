@@ -2,14 +2,14 @@ package com
 
 package object imcode {
 
-  type JClass[T >: Null] = java.lang.Class[T]
+  type JClass[A >: Null] = java.lang.Class[A]
   type JBoolean = java.lang.Boolean
   type JInteger = java.lang.Integer
   type JLong = java.lang.Long
   type JFloat = java.lang.Float
   type JDouble = java.lang.Double
-  type JCollection[A] = java.util.Collection[A]
-  type JList[A] = java.util.List[A]
+  type JCollection[A >: Null] = java.util.Collection[A]
+  type JList[A >: Null] = java.util.List[A]
 
   implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
 

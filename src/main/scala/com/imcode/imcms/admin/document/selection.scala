@@ -46,6 +46,8 @@ class DocBasicSearch {
 }
 
 class DocBasicSearchUI extends GridLayout(3, 4) with Spacing with UndefinedSize {
+  addStyleName("imcms-doc-search-lyt")
+
   val lblRange = new Label("doc.search.frm.range.caption".i) with UndefinedSize
   val lytRange = new HorizontalLayout with Spacing with UndefinedSize {
     val txtFrom = new TextField("doc.search.frm.range.txt.from".i)
@@ -70,6 +72,8 @@ class DocBasicSearchUI extends GridLayout(3, 4) with Spacing with UndefinedSize 
   val btnClearStatus = new Button("doc.search.frm.btn.clear".i) with LinkStyle
 
   val lytAdvanced = new HorizontalLayout with Spacing with UndefinedSize {
+    addStyleName("imcms-doc-search-lyt-advanced")
+
     val chkAdvanced = new CheckBox("doc.search.frm.chk.advanced".i)
     val btnAdvanced = new Button("...") { setStyleName("small") }
 

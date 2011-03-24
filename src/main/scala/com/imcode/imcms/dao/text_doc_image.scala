@@ -16,20 +16,17 @@ object ImageUtil {
 
   def initImagesSources(images: JList[ImageDomainObject]) = letret(images) { _ foreach initImageSource }
 
-  def initImageSource(image: ImageDomainObject) = letret(image) {
-    case null =>
-    case image =>
-      ?(image.getImageUrl) map (_.trim) match {
-        case Some(url) => image.setSource(
-	    image.getType.asInstanceOf[Int] match {
-	      case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH => new ImagesPathRelativePathImageSource(url)
-	      case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE => new ImageArchiveImageSource(url)
-	      // XXX: what about FileDocumentImageSource
-	      case _ => new NullImageSource
-	    }
-	)
-        case _ =>
-      }
+  def initImageSource(image: ImageDomainObject) = letret(image) { _ =>
+    for (url <- ?(image) map (_.getImageUrl) map (_.trim)) {
+      image.setSource(
+        image.getType.intValue match {
+          case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH => new ImagesPathRelativePathImageSource(url)
+          case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE => new ImageArchiveImageSource(url)
+          // matching against FileDocumentImageSource is not required since its used exclusively for file docs.
+          case _ => new NullImageSource
+        }
+      )
+    }
   }
 }
 
