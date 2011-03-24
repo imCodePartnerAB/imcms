@@ -14,15 +14,17 @@ import imcode.server.document.textdocument.ImageSource
 
 object ImageUtil {
 
+  /** Inits TextDocument images. */
   def initImagesSources(images: JList[ImageDomainObject]) = letret(images) { _ foreach initImageSource }
 
+  /** Inits TextDocument image. */
   def initImageSource(image: ImageDomainObject) = letret(image) { _ =>
     for (url <- ?(image) map (_.getImageUrl) map (_.trim)) {
       image.setSource(
         image.getType.intValue match {
           case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH => new ImagesPathRelativePathImageSource(url)
           case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE => new ImageArchiveImageSource(url)
-          // matching against FileDocumentImageSource is not required since its used exclusively for file docs.
+          // matching against FileDocumentImageSource is not required here, since its used exclusively by file docs.
           case _ => new NullImageSource
         }
       )
@@ -43,21 +45,18 @@ class ImageDao extends SpringHibernateTemplate {
                        createImageIfNotExists: Boolean): JList[ImageDomainObject] =
     for {
       language <- languageDao.getAllLanguages
-      imageOpt = ?(getImage(language.getId, docId, docVersionNo, no, loopNo, contentNo))
-      if imageOpt.isDefined || createImageIfNotExists
-    } yield {
-      imageOpt match {
-        case (Some(image)) => image
-        case _ => letret(new ImageDomainObject) { image =>
-          image.setDocId(docId)
-          image.setName(no.toString)
+      image <- PartialFunction.condOpt(getImage(language.getId, docId, docVersionNo, no, loopNo, contentNo)) {
+        case image if image != null => image
+        case _ if createImageIfNotExists => new ImageDomainObject {
+          setDocId(docId)
+          setName(no.toString)
 
-          image.setLanguage(language)
-          image.setContentLoopNo(loopNo)
-          image.setContentNo(contentNo)
+          setLanguage(language)
+          setContentLoopNo(loopNo)
+          setContentNo(contentNo)
         }
       }
-    }
+    } yield image
 
 
   @Transactional
@@ -115,9 +114,9 @@ class ImageDao extends SpringHibernateTemplate {
   @Transactional
   def deleteImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) = withSession {
     _.getNamedQuery("Image.deleteImages")
-      .setParameter("docId", docId)
-      .setParameter("docVersionNo", docVersionNo)
-      .setParameter("languageId", languageId)
-      .executeUpdate()
+     .setParameter("docId", docId)
+     .setParameter("docVersionNo", docVersionNo)
+     .setParameter("languageId", languageId)
+     .executeUpdate()
   }
 }
