@@ -1,21 +1,34 @@
 @import "../reindeer/styles.css";
 
-/*@import "../runo/styles.css";*/
+.max-width {
+    width: 100%;
+}
 
-/*.v-select-optiongroup-horizontalgroup .v-select-option {*/
-    /*display: inline-block;*/
-/*}*/
+table#doc_search_basic {
+    background: #fffff0;
+    border: solid 1px #a9a9a9;
+    border-collapse: collapse;
+}
 
-/*.v-select-option.v-radiobutton {*/
-    /*padding-right: 10px;*/
-/*}*/
+table#doc_search_basic td,
+table#doc_search_basic th {
+    padding: 0.3em;
+    border: solid 1px #a9a9a9;
+    border-left: none;
+    border-right: none;
+}
 
-/*.v-app {*/
-    /*background: green;*/
-/*}*/
+table#doc_search_basic th {
+    text-align: right;
+}
 
-/*.v-label {*/
-    /*background: green;*/
-/*}*/
+table#doc_search_basic th.custom,
+table#doc_search_basic td.custom {
+    background: #e0ffff;
+}
+
+table#doc_search_basic #buttons {
+    border-left: solid 1px #a9a9a9;
+}
 
 

@@ -14,16 +14,16 @@ import imcode.server.document.textdocument.ImageSource
 
 object ImageUtil {
 
-  /** Inits TextDocument images. */
+  /** Inits Text docs images sources. */
   def initImagesSources(images: JList[ImageDomainObject]) = letret(images) { _ foreach initImageSource }
 
-  /** Inits TextDocument image. */
+  /** Inits Text doc's image source. */
   def initImageSource(image: ImageDomainObject) = letret(image) { _ =>
     for (url <- ?(image) map (_.getImageUrl) map (_.trim)) {
       image.setSource(
         image.getType.intValue match {
           case ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT =>
-            // used used exclusively in file docs
+            // This type is used in file docs ONLY
             error("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. Id: %s, no: %s. url: %s.".format(image.getId, image.getNo, url))
 
           case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH => new ImagesPathRelativePathImageSource(url)

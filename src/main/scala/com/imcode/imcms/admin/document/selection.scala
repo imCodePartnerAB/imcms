@@ -45,49 +45,71 @@ class DocBasicSearch {
 
 }
 
-class DocBasicSearchUI extends GridLayout(3, 4) with Spacing with UndefinedSize {
-  addStyleName("imcms-doc-search-lyt")
+class DocBasicSearchUI extends CustomLayout("doc_search_basic") {
+  setWidth("700px")
 
-  val lblRange = new Label("doc.search.frm.range.caption".i) with UndefinedSize
+  val lblRange = new Label("doc.basic.search.frm.lbl.range".i) with UndefinedSize
   val lytRange = new HorizontalLayout with Spacing with UndefinedSize {
-    val txtFrom = new TextField("doc.search.frm.range.txt.from".i)
-    val txtTo = new TextField("doc.search.frm.range.txt.to".i)
+    val txtFrom = new TextField { setInputPrompt("doc.basic.search.frm.txt.range.from.prompt".i); setColumns(5) }
+    val txtTo = new TextField { setInputPrompt("doc.basic.search.frm.txt.range.to.prompt".i); setColumns(5) }
 
     addComponents(this, txtFrom, txtTo)
   }
-  val btnClearRange = new Button("doc.search.frm.btn.clear".i) with LinkStyle
 
-  val lblText = new Label("doc.search.frm.text.caption".i) with UndefinedSize
-  val txtText = new TextField { setInputPrompt("doc.search.frm.text.prompt".i) }
-  val btnClearText = new Button("doc.search.frm.btn.clear".i) with LinkStyle
+  val lblText = new Label("doc.basic.search.frm.lbl.text".i) with UndefinedSize
+  val txtText = new TextField { setInputPrompt("doc.basic.search.frm.txt.text.prompt".i) }
 
-  val lblStatus = new Label("doc.search.frm.status.caption".i) with UndefinedSize
+  val lblStatus = new Label("doc.basic.search.frm.lbl.status".i) with UndefinedSize
   val lytStatus = new HorizontalLayout with Spacing with UndefinedSize {
-    val chkNew = new CheckBox("doc.search.frm.ckh.status.new".i)
-    val chkPublished = new CheckBox("doc.search.frm.chk.status.published".i)
-    val chkExpired = new CheckBox("doc.search.frm.chk.status.expired".i)
+    val chkNew = new CheckBox("doc.basic.search.frm.ckh.status.new".i)
+    val chkPublished = new CheckBox("doc.basic.search.frm.chk.status.published".i)
+    val chkExpired = new CheckBox("doc.basic.search.frm.chk.status.expired".i)
 
     addComponents(this, chkNew, chkPublished, chkExpired)
   }
-  val btnClearStatus = new Button("doc.search.frm.btn.clear".i) with LinkStyle
 
-  val lytAdvanced = new HorizontalLayout with Spacing with UndefinedSize {
-    addStyleName("imcms-doc-search-lyt-advanced")
-
-    val chkAdvanced = new CheckBox("doc.search.frm.chk.advanced".i)
-    val btnAdvanced = new Button("...") { setStyleName("small") }
+  val lblAdvanced = new Label("doc.basic.search.frm.lbl.advanced".i) with UndefinedSize
+  val lytAdvanced = new HorizontalLayout with UndefinedSize {
+    val chkAdvanced = new CheckBox
+    val btnAdvanced = new Button("doc.basic.search.frm.btn.advanced".i) with LinkStyle
 
     addComponents(this, chkAdvanced, btnAdvanced)
   }
-  val btnClearAll = new Button("doc.search.frm.btn.clear_all".i) with LinkStyle
 
-  addComponents(this,
-    lblRange, lytRange, btnClearRange,
-    lblText, txtText, btnClearText,
-    lblStatus, lytStatus, btnClearStatus)
+  val lytButtons = new HorizontalLayout with UndefinedSize with Spacing {
+    val btnClear = new Button("doc.basic.search.frm.btn.clear".i) { setStyleName("small") }
+    val btnSearch = new Button("doc.basic.search.frm.btn.search".i) { setStyleName("small") }
 
-  addComponent(lytAdvanced, 0, 3, 1, 3)
-  addComponent(btnClearAll)
+    addComponents(this, btnClear, btnSearch)
+  }
+
+  addNamedComponents(this,
+    "doc.basic.search.frm.lbl.range" -> lblRange,
+    "doc.basic.search.frm.range" -> lytRange,
+    "doc.basic.search.frm.lbl.text" -> lblText,
+    "doc.basic.search.frm.txt.text" -> txtText,
+    "doc.basic.search.frm.lbl.status" -> lblStatus,
+    "doc.basic.search.frm.status" -> lytStatus,
+    "doc.basic.search.frm.lbl.advanced" -> lblAdvanced,
+    "doc.basic.search.frm.advanced" -> lytAdvanced,
+    "doc.basic.search.frm.buttons" -> lytButtons
+  )
 }
 
 
+class DocCustomSearchUI extends CustomLayout("doc_search_custom") {
+  setWidth("700px")
+
+
+//  addNamedComponents(this,
+//    "doc.basic.search.frm.lbl.range" -> lblRange,
+//    "doc.basic.search.frm.range" -> lytRange,
+//    "doc.basic.search.frm.lbl.text" -> lblText,
+//    "doc.basic.search.frm.txt.text" -> txtText,
+//    "doc.basic.search.frm.lbl.status" -> lblStatus,
+//    "doc.basic.search.frm.status" -> lytStatus,
+//    "doc.basic.search.frm.lbl.custom" -> lblCustom,
+//    "doc.basic.search.frm.custom" -> lytCustom,
+//    "doc.basic.search.frm.buttons" -> lytButtons
+//  )
+}
