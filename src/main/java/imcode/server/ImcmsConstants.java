@@ -72,12 +72,18 @@ public interface ImcmsConstants {
     int DISPATCH_FLAG__PUBLISH = PERM_PUBLISH;
     int DISPATCH_FLAG__SET_DEFAULT_VERSION = SET_DEFAULT_VERSION;
 
-    /** meta_id is the legacy identifier used across the project. */
+    /** Doc's id; 'meta_id' is the legacy identifier used across the project. */
     public static final String REQUEST_PARAM__DOC_ID = "meta_id";
     
-    /** Document language code. */
+    /** Doc's language code. */
     public static final String REQUEST_PARAM__DOC_LANGUAGE = "imcms.doc.language";
 
-    /** Document version no. */
+    /** Doc's version no. */
     public static final String REQUEST_PARAM__DOC_VERSION = "imcms.doc.version";
+
+    /** Overrides default return URL when a user leaves the editor or add-on. */
+    public static final String REQUEST_PARAM__RETURN_URL = "imcms.return.url";
+
+    /** Editor op optional status. */
+    public static final String REQUEST_PARAM__RETURN_STATUS__NOT_AUTHORIZED = "imcms.return.status.na";
 }

@@ -276,6 +276,9 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     private AtomicReference<DocGetterCallback> docGetterCallbackRef = new AtomicReference<DocGetterCallback>();
 
+    /**
+     * @return document getter callback associated with this user.
+     */
     public DocGetterCallback getDocGetterCallback() {
         return docGetterCallbackRef.get();
     }

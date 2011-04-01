@@ -99,7 +99,14 @@ if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { 
 <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE%>"  value="<%= currentLanguage.getCode() %>">
 <input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>">
 <input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>">
-
+<%
+String returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
+if (returnUrl != null) {
+    %>
+    <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__RETURN_URL%>" value="<%=returnUrl%>">
+    <%
+}
+%>
 <%
 Integer loopNo = text.getContentLoopNo();
 if (loopNo != null) {

@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -21,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 
@@ -36,13 +36,11 @@ public final class SaveText extends HttpServlet {
 
         // Check if user has permission to be here
         ImcmsServices imcref = Imcms.getServices();
-        int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        int meta_id = Integer.parseInt(req.getParameter("meta_id"));
+        UserDomainObject user = Utility.getLoggedOnUser(req);
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        //TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id, user.getDocumentShowSettings().getVersionSelector() );
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(meta_id);
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
-        I18nLanguage language = Imcms.getUser().getDocGetterCallback().getParams().language;
 
         if (permissionSet.getEditTexts() && req.getParameter( "cancel" ) == null ) {
             int txt_no = Integer.parseInt( req.getParameter( "txt_no" ) );
@@ -71,10 +69,6 @@ public final class SaveText extends HttpServlet {
             Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
             Integer contentIndex = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);            
 
-            //TextDomainObject text = loopNo == null
-            //       ? document.getText(language, txt_no)
-            //        : document.getText(language, loopNo, contentIndex, txt_no);
-
             TextDomainObject text = loopNo == null
                     ? document.getText(txt_no)
                     : document.getText(txt_no, loopNo, contentIndex);            
@@ -99,14 +93,24 @@ public final class SaveText extends HttpServlet {
                     url += "&loop_no="+loopNo+"&content_index="+contentIndex;
                 }
 
+                String returnUrl = req.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
+
+                if (returnUrl != null)
+                    url += "&" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=" + returnUrl;
+
                 res.sendRedirect(url);
                 return ;
             }
         }
 
-        res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags="
-                          + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS );
+        String returnUrl = req.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
 
+        if (returnUrl != null) {
+            res.sendRedirect(returnUrl);
+        } else {
+            res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags="
+                              + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS );
+        }
     }
 
     private void saveText(DocumentMapper documentMapper, TextDomainObject text, TextDocumentDomainObject document,
