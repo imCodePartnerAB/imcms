@@ -170,7 +170,7 @@ if (null != formatParameterValues) {
 	<tr valign="top">
 		<td width="80%">
 		<div id="theLabel"><b class="imcmsAdmHeadingSmall">Label:</b> <%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></div></td>
-		
+
 		<td width="20%" align="right" style="padding-top:3px; padding-left:15px;">
 		<input tabindex="6" type="button" class="imcmsFormBtnSmall" value="<%= isSwe ? "Återställ tidigare versioner" : "Restore earlier versions" %>"
 		       onclick="openTextRestorer(); return false"></td>
@@ -187,6 +187,12 @@ if (null != languages) { %>
 	<tr><%
 	int iCount = 0 ;
 	int languagesPerRow = 7 ;
+    // Removes ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE param(s)
+    String queryString = request.getQueryString().replaceAll(
+        String.format("%s.*?(&|$)", ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE),
+        ""
+    );
+
 	for (I18nLanguage lang: languages) {
 		String langCode       = lang.getCode() ;
 		String langName       = lang.getName() ;
@@ -194,7 +200,7 @@ if (null != languages) { %>
 		boolean isEnabled  = true;//(i18nMeta.getEnabled()) ;
 		boolean isDefault  = (null != defaultLanguage && defaultLanguage.equals(lang)) ;
 		boolean isCurrent  = (null != currentLanguage && currentLanguage.equals(lang)) ;
-		String queryString = request.getQueryString().replaceAll("lang=[a-z]{2}&?", "") ;
+
 		String href_0      = "<a href=\"ChangeText?" + ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE + "=" + langCode + "&amp;" + queryString + "\" title=\"" + langName + "/" + langNameNative + "#DATA#\" style=\"#STYLE#\">" ;
 		String href_1      = "</a>" ;
 		String sData = "" ;
@@ -276,7 +282,7 @@ function getElementsByClassAttribute(node, tagname, sClass) {
 		return null ;
 	}
 }
-				
+
 function setTextMode() {
 	try {
 		var editors = getElementsByClassAttribute(document, "table", "htmlarea") ;
@@ -314,7 +320,7 @@ function setHtmlMode() {
         <input type="radio" name="format_type" id="format_type_text" value="0" <% if (TextDomainObject.TEXT_TYPE_PLAIN==textEditPage.getType()) { %> checked<% } %>
                <% if (showModeEditor) { %>onclick="setTextMode()"<% } %>>
         <label for="format_type_text">Text</label>
-        <input type="radio" name="format_type" id="format_type_html" value="1" <% if (TextDomainObject.TEXT_TYPE_PLAIN!=textEditPage.getType()) { %> checked<% } %> 
+        <input type="radio" name="format_type" id="format_type_html" value="1" <% if (TextDomainObject.TEXT_TYPE_PLAIN!=textEditPage.getType()) { %> checked<% } %>
                <% if (showModeEditor) { %>onclick="setHtmlMode()"<% } %>>
         <label for="format_type_html">Editor/HTML</label>
         <% } else if (showModeText) { %>

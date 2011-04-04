@@ -81,9 +81,6 @@ public interface ImcmsConstants {
     /** Doc's version no. */
     public static final String REQUEST_PARAM__DOC_VERSION = "imcms.doc.version";
 
-    /** Overrides default return URL when a user leaves the editor or add-on. */
+    /** Overrides default return URL which is used when a user leaves the editor or an add-on page. */
     public static final String REQUEST_PARAM__RETURN_URL = "imcms.return.url";
-
-    /** Editor op optional status. */
-    public static final String REQUEST_PARAM__RETURN_STATUS__NOT_AUTHORIZED = "imcms.return.status.na";
 }

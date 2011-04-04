@@ -45,13 +45,7 @@ public class ChangeText extends HttpServlet {
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(textDocument);
 
         if (!textDocumentPermissionSet.getEditTexts()) {    // Checking to see if user may edit this
-            String returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
-
-            if (returnUrl != null) {
-                res.sendRedirect(returnUrl + "?" + ImcmsConstants.REQUEST_PARAM__RETURN_STATUS__NOT_AUTHORIZED + "=");
-            } else {
-                AdminDoc.adminDoc(documentId, user, request, res, getServletContext());
-            }
+            AdminDoc.adminDoc(documentId, user, request, res, getServletContext());
 
             return;
         }
@@ -76,10 +70,6 @@ public class ChangeText extends HttpServlet {
             text.setContentLoopNo(loopNo);
             text.setContentNo(contentIndex);
         }
-
-        // Get rid of language param
-        String queryString = request.getQueryString().replaceAll(String.format("%s=..&?", ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE), "");
-        request.setAttribute("queryString", queryString);
 
         TextEditPage page = new TextEditPage(documentId, textIndex, text, label);
 

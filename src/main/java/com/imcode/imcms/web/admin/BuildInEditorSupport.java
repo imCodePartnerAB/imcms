@@ -12,7 +12,9 @@ import java.net.URLEncoder;
  */
 public class BuildInEditorSupport {
 
-    /** Creates URL for text editing. */
+    /**
+     * Creates URL for text editing.
+     */
     public static String createTextEditorURL(HttpServletRequest request, String returnURL, int docId, int textNo) {
         String contextPath = request.getContextPath();
         String fullReturnURL = contextPath + "/" + returnURL;
