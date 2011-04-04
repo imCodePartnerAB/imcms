@@ -11,5 +11,14 @@
             <%=((TextDocumentDomainObject)Imcms.getServices().getDocumentMapper().getDocument(1001)).getText(1).getText()%>
         </a>
     <p>
+
+    <p>
+        <a href="<%=BuildInEditorSupport.createImageEditorURL(request, "build_in_text_editor.jsp", 1001, 3)%>">
+            <img src="
+                <%=((TextDocumentDomainObject)Imcms.getServices().getDocumentMapper().getDocument(1001)).getImage(3).getSource().getUrlPathRelativeToContextPath()%>
+                "/>
+        </a>
+    <p>
+
 </body>
 </html>

@@ -9,6 +9,7 @@ import java.net.URLEncoder;
 
 /**
  * Factory for construction build-in editors URLs.
+ * NB! for demonstration purposes only -
  */
 public class BuildInEditorSupport {
 
@@ -28,6 +29,25 @@ public class BuildInEditorSupport {
                         fullReturnURL,
                         docId,
                         textNo);//,
+                  //  "utf-8");
+        //} catch (UnsupportedEncodingException e) {
+        //    throw new RuntimeException(e);
+        //}
+    }
+
+    public static String createImageEditorURL(HttpServletRequest request, String returnURL, int docId, int no) {
+        String contextPath = request.getContextPath();
+        String fullReturnURL = contextPath + "/" + returnURL;
+        String editorBaseURL = contextPath + "/servlet/ChangeImage";
+
+        //try {
+            return //URLEncoder.encode(
+                    String.format("%s?%s=%s&meta_id=%d&img=%d",
+                        editorBaseURL,
+                        ImcmsConstants.REQUEST_PARAM__RETURN_URL,
+                        fullReturnURL,
+                        docId,
+                        no);//,
                   //  "utf-8");
         //} catch (UnsupportedEncodingException e) {
         //    throw new RuntimeException(e);

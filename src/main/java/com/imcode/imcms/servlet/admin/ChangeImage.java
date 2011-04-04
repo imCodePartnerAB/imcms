@@ -33,7 +33,7 @@ import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
 /**
- * Change image withe the same 'no' for all available languages. 
+ * Change image withe the same 'no' for all available languages.
  */
 public class ChangeImage extends HttpServlet {
 
@@ -48,51 +48,53 @@ public class ChangeImage extends HttpServlet {
         final DocumentMapper documentMapper = imcref.getDocumentMapper();
         final Integer documentId = Integer.parseInt(request.getParameter("meta_id"));
         String loopNoStr = request.getParameter("loop_no");
-        String contentNoStr = request.getParameter("content_no");        
+        String contentNoStr = request.getParameter("content_no");
         Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
-        
-        //final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(
-        //		documentId, user.getDocumentShowSettings().getVersionSelector());
+        final String returnURL = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
 
-        final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(
-        		documentId);        
-        
+        final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(
+                documentId);
+
         final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));
         int forcedWidth = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__WIDTH));
         int forcedHeight = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__HEIGHT));
         forcedWidth = Math.max(forcedWidth, 0);
         forcedHeight = Math.max(forcedHeight, 0);
-        
+
         /**
          * Image DTO. Holds generic properties such as size and border. 
          */
         final ImageDomainObject defaultImage = loopNo == null
                 ? document.getImage(imageIndex)
                 : document.getImage(imageIndex, loopNo, contentNo);
-        final ImageDomainObject image = defaultImage != null 
-        	? defaultImage
-        	: new ImageDomainObject();
+        final ImageDomainObject image = defaultImage != null
+                ? defaultImage
+                : new ImageDomainObject();
 
         image.setNo(imageIndex);
         image.setContentLoopNo(loopNo);
         image.setContentNo(contentNo);
 
         // Check if user has image rights
-        if ( !ImageEditPage.userHasImagePermissionsOnDocument(user, document) ) {
+        if (!ImageEditPage.userHasImagePermissionsOnDocument(user, document)) {
             Utility.redirectToStartDocument(request, response);
             return;
         }
 
-        DispatchCommand returnCommand = new DispatchCommand() {
-            public void dispatch(HttpServletRequest request,
-                                 HttpServletResponse response) throws IOException {
-                response.sendRedirect("AdminDoc?meta_id=" + document.getId() + "&flags="
-                                      + ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES);
+        DispatchCommand returnCommand =
+            new DispatchCommand() {
+                public void dispatch(HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException {
+                    String redirectURL = returnURL == null
+                            ? "AdminDoc?meta_id=" + document.getId() + "&flags="
+                                + ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES
+                            : returnURL;
 
-            }
-        };
-        
+                    response.sendRedirect(redirectURL);
+                }
+            };
+
         Handler<ImageEditResult> imageCommand = new Handler<ImageEditResult>() {
             public void handle(ImageEditResult editResult) {
                 boolean shareImages = editResult.isShareImages();
@@ -100,10 +102,10 @@ public class ChangeImage extends HttpServlet {
 
                 ImcmsServices services = Imcms.getServices();
                 String firstGeneratedFilename = null;
-                
+
                 for (int i = 0, len = images.size(); i < len; ++i) {
                     ImageDomainObject editImage = images.get(i);
-                    
+
                     boolean first = (i == 0);
 
                     if (first || !shareImages) {
@@ -120,29 +122,29 @@ public class ChangeImage extends HttpServlet {
 
                 try {
                     services.getDocumentMapper().saveTextDocImages(document, images, user);
-                } catch ( NoPermissionToEditDocumentException e ) {
+                } catch (NoPermissionToEditDocumentException e) {
                     throw new ShouldHaveCheckedPermissionsEarlierException(e);
-                } catch ( NoPermissionToAddDocumentToMenuException e ) {
+                } catch (NoPermissionToAddDocumentToMenuException e) {
                     throw new ConcurrentDocumentModificationException(e);
-                } catch ( DocumentSaveException e ) {
+                } catch (DocumentSaveException e) {
                     throw new ShouldNotBeThrownException(e);
                 }
                 services.updateMainLog("ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
-                                       " in  " + "[" + document.getId() + "] modified by user: [" +
-                                       user.getFullName() + "]");
+                        " in  " + "[" + document.getId() + "] modified by user: [" +
+                        user.getFullName() + "]");
 
             }
-            
+
         };
-        
-        ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
-        
+
+        ImageDao imageDao = (ImageDao) Imcms.getServices().getSpringBean("imageDao");
+
         List<ImageDomainObject> images = imageDao.getImagesByIndex(document.getMeta().getId(),
-                document.getVersion().getNo() ,imageIndex, loopNo, contentNo, true);
-        
+                document.getVersion().getNo(), imageIndex, loopNo, contentNo, true);
+
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);
-        
+
         imageEditPage.setImages(images);
         imageEditPage.forward(request, response);
     }

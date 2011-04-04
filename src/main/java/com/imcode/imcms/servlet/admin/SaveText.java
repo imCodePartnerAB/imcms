@@ -41,6 +41,7 @@ public final class SaveText extends HttpServlet {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(meta_id);
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
+        String returnURL = req.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
 
         if (permissionSet.getEditTexts() && req.getParameter( "cancel" ) == null ) {
             int txt_no = Integer.parseInt( req.getParameter( "txt_no" ) );
@@ -93,20 +94,16 @@ public final class SaveText extends HttpServlet {
                     url += "&loop_no="+loopNo+"&content_index="+contentIndex;
                 }
 
-                String returnUrl = req.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
-
-                if (returnUrl != null)
-                    url += "&" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=" + returnUrl;
+                if (returnURL != null)
+                    url += "&" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=" + returnURL;
 
                 res.sendRedirect(url);
                 return ;
             }
         }
 
-        String returnUrl = req.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
-
-        if (returnUrl != null) {
-            res.sendRedirect(returnUrl);
+        if (returnURL != null) {
+            res.sendRedirect(returnURL);
         } else {
             res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags="
                               + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS );
