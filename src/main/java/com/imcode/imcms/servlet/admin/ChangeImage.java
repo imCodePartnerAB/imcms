@@ -51,7 +51,6 @@ public class ChangeImage extends HttpServlet {
         String contentNoStr = request.getParameter("content_no");
         Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
-        final String returnURL = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
 
         final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(
                 documentId);
@@ -82,6 +81,7 @@ public class ChangeImage extends HttpServlet {
             return;
         }
 
+        final String returnURL = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
         DispatchCommand returnCommand =
             new DispatchCommand() {
                 public void dispatch(HttpServletRequest request,

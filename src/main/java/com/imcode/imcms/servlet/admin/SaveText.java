@@ -94,8 +94,9 @@ public final class SaveText extends HttpServlet {
                     url += "&loop_no="+loopNo+"&content_index="+contentIndex;
                 }
 
-                if (returnURL != null)
+                if (returnURL != null) {
                     url += "&" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=" + returnURL;
+                }
 
                 res.sendRedirect(url);
                 return ;
