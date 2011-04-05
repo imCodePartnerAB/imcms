@@ -77,9 +77,10 @@ public final class SaveText extends HttpServlet {
 		          redirPath += "&width=" + URLEncoder.encode(width, Imcms.UTF_8_ENCODING) ;
 	          }
 
-            if (returnURL != null)
+            if (returnURL != null) {
                 redirPath += "&" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=" + returnURL;
-	          
+            }
+
             if (null != req.getParameter( "save" )) {
                 res.sendRedirect( redirPath );
                 return ;
