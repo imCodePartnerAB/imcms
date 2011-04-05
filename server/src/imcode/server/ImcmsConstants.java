@@ -71,4 +71,7 @@ public interface ImcmsConstants {
     int DISPATCH_FLAG__EDIT_MENU = PERM_EDIT_TEXT_DOCUMENT_MENUS;
     int DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES = PERM_EDIT_TEXT_DOCUMENT_IMAGES;
     int DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE = PERM_EDIT_PERMISSIONS;
+
+    /** Overrides default return URL which is used when a user leaves the editor or an add-on page. */
+    public static final String REQUEST_PARAM__RETURN_URL = "imcms.return.url";
 }
