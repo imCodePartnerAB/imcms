@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -37,6 +38,7 @@ public final class SaveText extends HttpServlet {
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
 
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
+        String returnURL = req.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
 
         if ( permissionSet.getEditTexts()
              && req.getParameter( "cancel" ) == null ) {
@@ -74,6 +76,9 @@ public final class SaveText extends HttpServlet {
 	          if (!"".equals(width)) {
 		          redirPath += "&width=" + URLEncoder.encode(width, Imcms.UTF_8_ENCODING) ;
 	          }
+
+            if (returnURL != null)
+                redirPath += "&" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=" + returnURL;
 	          
             if (null != req.getParameter( "save" )) {
                 res.sendRedirect( redirPath );
@@ -81,8 +86,12 @@ public final class SaveText extends HttpServlet {
             }
         }
 
-        res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags="
-                          + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS );
+        if (returnURL != null) {
+            res.sendRedirect(returnURL);
+        } else {
+            res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags="
+                              + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS );
+        }
 
     }
 

@@ -50,14 +50,20 @@ public class ChangeImage extends HttpServlet {
             return;
         }
 
-        DispatchCommand returnCommand = new DispatchCommand() {
-            public void dispatch(HttpServletRequest request,
-                                 HttpServletResponse response) throws IOException {
-                response.sendRedirect("AdminDoc?meta_id=" + document.getId() + "&flags="
-                                      + ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES);
+        final String returnURL = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
+        DispatchCommand returnCommand =
+            new DispatchCommand() {
+                public void dispatch(HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException {
+                    String redirectURL = returnURL == null
+                            ? "AdminDoc?meta_id=" + document.getId() + "&flags="
+                                + ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES
+                            : returnURL;
 
-            }
-        };
+                    response.sendRedirect(redirectURL);
+                }
+            };
+
         Handler<ImageDomainObject> imageCommand = new Handler<ImageDomainObject>() {
             public void handle(ImageDomainObject image) {
                 image.generateFilename();
