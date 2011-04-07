@@ -7,9 +7,6 @@ import com.imcode.imcms.vaadin._
 import scala.collection.JavaConversions._
 import vaadin.{ImcmsApplication, FullSize}
 import imcode.server.Imcms
-import dao.MetaDao
-import imcode.server.document.DocumentDomainObject
-import api.Document
 import com.vaadin.event.Action
 import com.vaadin.ui._
 
@@ -84,4 +81,36 @@ class DocManagerUI(docViewUI: Component) extends VerticalLayout with Spacing wit
   val miViewSelection = miView.addItem("Selection")
 
   addComponents(this, mb, docViewUI)
+}
+
+
+
+/**
+ * Custom docs collection.
+ */
+class DocSelection(app: ImcmsApplication) {
+  val docFilteredView = new DocFilteredView
+  val ui = new DocSelectionUI(docFilteredView.ui)
+
+  docFilteredView.docTableUI.addActionHandler(new Action.Handler {
+    import Actions._
+
+    def getActions(target: AnyRef, sender: AnyRef) = Array(Exclude, View, Edit, Delete)
+
+    def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
+      action match {
+        case Exclude => sender.asInstanceOf[Table].removeItem(target)
+        case _ =>
+      }
+  })
+}
+
+
+class DocSelectionUI(docViewUI: Component) extends VerticalLayout with Spacing with FullSize {
+  val mb = new MenuBar
+  val miDoc = mb.addItem("Document")
+  val miView = mb.addItem("Filter") // -> search in selection
+
+  addComponents(this, mb, docViewUI)
+  setExpandRatio(docViewUI, 1.0f)
 }
