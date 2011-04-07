@@ -19,29 +19,43 @@ import collection.immutable.{SortedSet, ListMap, ListSet}
 import api.Document
 
 
-class DocFilteredView {
-  val basicFilter = new DocBasicFilter
-  val advancedFilter = new DocAdvancedFilter
-  val advancedFilterPanel = new Panel with Scrollable with UndefinedSize with FullHeight {
+class DocSearchableView {
+  val basicSearch = new DocBasicSearch
+  val advancedSearch = new DocAdvancedSearch
+  val advancedSearchPanel = new Panel with Scrollable with UndefinedSize with FullHeight {
     setStyleName(Panel.STYLE_LIGHT)
-    setContent(advancedFilter.ui)
+    setContent(advancedSearch.ui)
   }
 
   val docTableUI = new DocTableUI with FullSize
 
   val ui = letret(new GridLayout(1, 2) with Spacing with FullSize) { ui =>
-    ui.addComponent(basicFilter.ui)
+    ui.addComponent(basicSearch.ui)
     ui.addComponent(docTableUI)
     ui.setRowExpandRatio(1, 1f)
 
-    basicFilter.ui.btnAdvanced.addClickHandler {
+    basicSearch.ui.btnAdvanced.addClickHandler {
       val component = ui.getComponent(0, 1) match {
-        case `docTableUI` => advancedFilterPanel
+        case `docTableUI` => advancedSearchPanel
         case _ => docTableUI
       }
 
       ui.removeComponent(0, 1)
       ui.addComponent(component, 0, 1)
+    }
+
+    basicSearch.ui.lytButtons.btnSearch.addClickHandler {
+      // check
+      ui.removeComponent(0, 1)
+      ui.addComponent(docTableUI, 0, 1)
+    }
+
+    basicSearch.ui.chkAdvanced.addValueChangeHandler {
+      if (!basicSearch.ui.chkAdvanced.booleanValue) {
+        // check
+        ui.removeComponent(0, 1)
+        ui.addComponent(docTableUI, 0, 1)
+      }
     }
   }
 }
@@ -338,107 +352,121 @@ trait DocTableItemIcon extends AbstractSelect with XSelect[DocId] {
 }
 
 
-class DocBasicFilter {
-  val ui = letret(new DocBasicFilterUI) { ui =>
+class DocBasicSearch {
+  val ui = letret(new DocBasicSearchUI) { ui =>
     ui.lytButtons.btnClear.addClickHandler { reset() }
 
-    ui.chkText.addClickHandler { ui.txtText setEnabled ui.chkText.booleanValue }
+//    ui.chkText.addClickHandler { ui.txtText setEnabled ui.chkText.booleanValue }
+//
+//    ui.chkRange.addClickHandler { ui.lytRange setEnabled ui.chkRange.booleanValue }
+//
+//    ui.chkType.addClickHandler { ui.lytType setEnabled ui.chkType.booleanValue }
+//
+//    ui.chkAdvanced.addClickHandler { ui.btnAdvanced setEnabled ui.chkAdvanced.booleanValue }
 
-    ui.chkRange.addClickHandler { ui.lytRange setEnabled ui.chkRange.booleanValue }
+    ui.chkText.addValueChangeHandler { ui.txtText setEnabled ui.chkText.booleanValue }
 
-    ui.chkStatus.addClickHandler { ui.lytStatus setEnabled ui.chkStatus.booleanValue }
+    ui.chkRange.addValueChangeHandler { ui.lytRange setEnabled ui.chkRange.booleanValue }
 
-    ui.chkAdvanced.addClickHandler { ui.btnAdvanced setEnabled ui.chkAdvanced.booleanValue }
+    ui.chkType.addValueChangeHandler { ui.lytType setEnabled ui.chkType.booleanValue }
+
+    ui.chkAdvanced.addValueChangeHandler { ui.btnAdvanced setEnabled ui.chkAdvanced.booleanValue }
   }
 
   reset()
 
   def reset() {
-    ui.chkAdvanced.value = false
-    ui.chkRange.value = false
-    ui.chkStatus.value = false
+    ui.chkRange.value = true
+    ui.chkType.value = true
     ui.chkText.value = true
+    ui.chkAdvanced.value = true
+    forlet(ui.lytType.chkText, ui.lytType.chkFile, ui.lytType.chkHtml) { _.value = true }
+    ui.chkAdvanced.value = false
+
+    ui.lytRange.txtFrom.value = ""
+    ui.lytRange.txtTo.value = ""
+    ui.txtText.value = ""
   }
 }
 
-class DocBasicFilterUI extends CustomLayout("admin/doc/filter/basic") {
+class DocBasicSearchUI extends CustomLayout("admin/doc/search/basic") {
   setWidth("700px")
 
   // prompt - real numbers: lower, upper
-  val chkRange = new CheckBox("doc.filter.basic.frm.lbl.range".i) with Immediate with UndefinedSize
+  val chkRange = new CheckBox("doc.search.basic.frm.lbl.range".i) with Immediate
   val lytRange = new HorizontalLayout with Spacing with UndefinedSize {
-    val txtFrom = new TextField { setInputPrompt("doc.filter.basic.frm.txt.range.from.prompt".i); setColumns(5) }
-    val txtTo = new TextField { setInputPrompt("doc.filter.basic.frm.txt.range.to.prompt".i); setColumns(5) }
+    val txtFrom = new TextField { setInputPrompt("doc.search.basic.frm.txt.range.from.prompt".i); setColumns(5) }
+    val txtTo = new TextField { setInputPrompt("doc.search.basic.frm.txt.range.to.prompt".i); setColumns(5) }
 
     addComponents(this, txtFrom, txtTo)
   }
   // prompt - any text
-  val chkText = new CheckBox("doc.filter.basic.frm.lbl.text".i) with Immediate with UndefinedSize
-  val txtText = new TextField { setInputPrompt("doc.filter.basic.frm.txt.text.prompt".i) }
+  val chkText = new CheckBox("doc.search.basic.frm.lbl.text".i) with Immediate
+  val txtText = new TextField { setInputPrompt("doc.search.basic.frm.txt.text.prompt".i) }
 
-  val chkStatus = new CheckBox("doc.filter.basic.frm.lbl.status".i) with Immediate with UndefinedSize
-  val lytStatus = new HorizontalLayout with Spacing with UndefinedSize {
-    val chkNew = new CheckBox("doc.filter.basic.frm.ckh.status.new".i)
-    val chkPublished = new CheckBox("doc.filter.basic.frm.chk.status.published".i)
-    val chkExpired = new CheckBox("doc.filter.basic.frm.chk.status.expired".i)
-
-    addComponents(this, chkNew, chkPublished, chkExpired)
-  }
-
-  val chkAdvanced = new CheckBox("doc.filter.basic.frm.chk.advanced".i) with Immediate with UndefinedSize
-  val btnAdvanced = new Button("doc.filter.basic.frm.btn.advanced".i) with LinkStyle
-
-
-  val lytButtons = new HorizontalLayout with UndefinedSize with Spacing {
-    val btnClear = new Button("doc.filter.basic.frm.btn.clear".i) { setStyleName("small") }
-    val btnApply = new Button("doc.filter.basic.frm.btn.apply".i) { setStyleName("small") }
-
-    addComponents(this, btnClear, btnApply)
-  }
-
-  addNamedComponents(this,
-    "doc.filter.basic.frm.chk.range" -> chkRange,
-    "doc.filter.basic.frm.range" -> lytRange,
-    "doc.filter.basic.frm.chk.text" -> chkText,
-    "doc.filter.basic.frm.txt.text" -> txtText,
-    "doc.filter.basic.frm.chk.status" -> chkStatus,
-    "doc.filter.basic.frm.status" -> lytStatus,
-    "doc.filter.basic.frm.chk.advanced" -> chkAdvanced,
-    "doc.filter.basic.frm.btn.advanced" -> btnAdvanced,
-    "doc.filter.basic.frm.buttons" -> lytButtons
-  )
-}
-
-
-class DocAdvancedFilter {
-  val ui = new DocAdvancedFilterUI
-}
-
-class DocAdvancedFilterUI extends CustomLayout("admin/doc/filter/advanced") {
-  setWidth("700px")
-
-  val lblPredefined = new Label("doc.filter.advanced.frm.lbl.predefined".i) with UndefinedSize
-  val cbPredefined = new ComboBox
-
-  val chkType = new CheckBox("doc.filter.advanced.frm.chk.type".i)
+  val chkType = new CheckBox("doc.search.basic.frm.chk.type".i) with Immediate
   val lytType = new HorizontalLayout with UndefinedSize with Spacing {
-    val chkText = new CheckBox("doc.filter.advanced.frm.chk.type.text".i)
-    val chkFile = new CheckBox("doc.filter.advanced.frm.chk.type.file".i)
-    val chkHtml = new CheckBox("doc.filter.advanced.frm.chk.type.html".i)
+    val chkText = new CheckBox("doc.search.basic.frm.chk.type.text".i)
+    val chkFile = new CheckBox("doc.search.basic.frm.chk.type.file".i)
+    val chkHtml = new CheckBox("doc.search.basic.frm.chk.type.html".i)
 
     addComponents(this, chkText, chkFile, chkHtml)
   }
 
-  val chkDates = new CheckBox("doc.filter.advanced.frm.chk.dates".i)
+  val chkAdvanced = new CheckBox("doc.search.basic.frm.chk.advanced".i) with Immediate
+  val btnAdvanced = new Button("doc.search.basic.frm.btn.advanced".i) with LinkStyle
+
+
+  val lytButtons = new HorizontalLayout with UndefinedSize with Spacing {
+    val btnClear = new Button("doc.search.basic.frm.btn.clear".i) { setStyleName("small") }
+    val btnSearch = new Button("doc.search.basic.frm.btn.search".i) { setStyleName("small") }
+
+    addComponents(this, btnClear, btnSearch)
+  }
+
+  addNamedComponents(this,
+    "doc.search.basic.frm.chk.range" -> chkRange,
+    "doc.search.basic.frm.range" -> lytRange,
+    "doc.search.basic.frm.chk.text" -> chkText,
+    "doc.search.basic.frm.txt.text" -> txtText,
+    "doc.search.basic.frm.chk.type" -> chkType,
+    "doc.search.basic.frm.type" -> lytType,
+    "doc.search.basic.frm.chk.advanced" -> chkAdvanced,
+    "doc.search.basic.frm.btn.advanced" -> btnAdvanced,
+    "doc.search.basic.frm.buttons" -> lytButtons
+  )
+}
+
+
+class DocAdvancedSearch {
+  val ui = new DocAdvancedSearchUI
+}
+
+class DocAdvancedSearchUI extends CustomLayout("admin/doc/search/advanced") {
+  setWidth("700px")
+
+  val lblPredefined = new Label("doc.search.advanced.frm.lbl.predefined".i) with UndefinedSize
+  val cbPredefined = new ComboBox
+
+  val chkStatus = new CheckBox("doc.search.advanced.frm.chk.status".i) with Immediate with UndefinedSize
+  val lytStatus = new HorizontalLayout with Spacing with UndefinedSize {
+    val chkNew = new CheckBox("doc.search.advanced.frm.ckh.status.new".i)
+    val chkPublished = new CheckBox("doc.search.advanced.frm.chk.status.published".i)
+    val chkExpired = new CheckBox("doc.search.advanced.frm.chk.status.expired".i)
+
+    addComponents(this, chkNew, chkPublished, chkExpired)
+  }
+
+  val chkDates = new CheckBox("doc.search.advanced.frm.chk.dates".i)
   val lytDates = new VerticalLayout with UndefinedSize with Spacing
 
-  val chkCategories = new CheckBox("doc.filter.advanced.frm.chk.categories".i)
+  val chkCategories = new CheckBox("doc.search.advanced.frm.chk.categories".i)
   val tcsCategories = new TwinColSelect
 
-  val chkRelationship = new CheckBox("doc.filter.advanced.frm.chk.relationship".i)
+  val chkRelationship = new CheckBox("doc.search.advanced.frm.chk.relationship".i)
   val lytRelationship = new HorizontalLayout with Spacing with UndefinedSize {
-    val cbParents = new ComboBox("doc.filter.advanced.frm.chk.relationship.parents".i)
-    val cbChildren = new ComboBox("doc.filter.advanced.frm.chk.relationship.children".i)
+    val cbParents = new ComboBox("doc.search.advanced.frm.chk.relationship.parents".i)
+    val cbChildren = new ComboBox("doc.search.advanced.frm.chk.relationship.children".i)
 
     cbParents.addItem("-not selected-")
     cbParents.addItem("With parents")
@@ -454,25 +482,25 @@ class DocAdvancedFilterUI extends CustomLayout("admin/doc/filter/advanced") {
     addComponents(this, cbParents, cbChildren)
   }
 
-  val chkMaintainers = new CheckBox("doc.filter.advanced.frm.chk.maintainers".i)
+  val chkMaintainers = new CheckBox("doc.search.advanced.frm.chk.maintainers".i)
   val lytMaintainers = new HorizontalLayout with UndefinedSize {
-    val lstCreators = new ListSelect("doc.filter.advanced.frm.chk.maintainers.creators".i)
+    val lstCreators = new ListSelect("doc.search.advanced.frm.chk.maintainers.creators".i)
 
     addComponents(this, lstCreators)
   }
 
   addNamedComponents(this,
-    "doc.filter.advanced.frm.chk.type" -> chkType,
-    "doc.filter.advanced.frm.lyt.type" -> lytType,
-    "doc.filter.advanced.frm.lbl.predefined" -> lblPredefined,
-    "doc.filter.advanced.frm.cb.predefined" -> cbPredefined,
-    "doc.filter.advanced.frm.chk.dates" -> chkDates,
-    "doc.filter.advanced.frm.lyt.dates" -> lytDates,
-    "doc.filter.advanced.frm.chk.relationship" -> chkRelationship,
-    "doc.filter.advanced.frm.lyt.relationship" -> lytRelationship,
-    "doc.filter.advanced.frm.chk.categories" -> chkCategories,
-    "doc.filter.advanced.frm.tcs.categories" -> tcsCategories,
-    "doc.filter.advanced.frm.chk.maintainers" -> chkMaintainers,
-    "doc.filter.advanced.frm.lyt.maintainers" -> lytMaintainers
+    "doc.search.advanced.frm.chk.status" -> chkStatus,
+    "doc.search.advanced.frm.status" -> lytStatus,
+    "doc.search.advanced.frm.lbl.predefined" -> lblPredefined,
+    "doc.search.advanced.frm.cb.predefined" -> cbPredefined,
+    "doc.search.advanced.frm.chk.dates" -> chkDates,
+    "doc.search.advanced.frm.lyt.dates" -> lytDates,
+    "doc.search.advanced.frm.chk.relationship" -> chkRelationship,
+    "doc.search.advanced.frm.lyt.relationship" -> lytRelationship,
+    "doc.search.advanced.frm.chk.categories" -> chkCategories,
+    "doc.search.advanced.frm.tcs.categories" -> tcsCategories,
+    "doc.search.advanced.frm.chk.maintainers" -> chkMaintainers,
+    "doc.search.advanced.frm.lyt.maintainers" -> lytMaintainers
   )
 }

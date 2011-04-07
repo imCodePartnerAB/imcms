@@ -4,39 +4,39 @@
     width: 100%;
 }
 
-table#doc_filter_basic,
-table#doc_filter_advanced {
+table#doc_search_basic,
+table#doc_search_advanced {
     border: solid 1px #a9a9a9;
     border-collapse: collapse;
 }
 
-table#doc_filter_basic {
+table#doc_search_basic {
     background: #fffff0;
 }
 
-table#doc_filter_advanced {
+table#doc_search_advanced {
     background: #e0ffff;
 }
 
 
-table#doc_filter_basic th,
-table#doc_filter_advanced th {
+table#doc_search_basic th,
+table#doc_search_advanced th {
     text-align: left;
     width: 100px;
 }
 
-table#doc_filter_basic th {
+table#doc_search_basic th {
     background: #f5f5dc;
 }
 
-table#doc_filter_advanced th {
+table#doc_search_advanced th {
     background: #add8e6;
 }
 
-table#doc_filter_basic td,
-table#doc_filter_basic th,
-table#doc_filter_advanced td,
-table#doc_filter_advanced th {
+table#doc_search_basic td,
+table#doc_search_basic th,
+table#doc_search_advanced td,
+table#doc_search_advanced th {
     padding: 0.3em;
     border: solid 1px #a9a9a9;
     border-left: none;
@@ -44,15 +44,15 @@ table#doc_filter_advanced th {
 }
 
 
-table#doc_filter_basic th.advanced {
+table#doc_search_basic th.advanced {
     background: #add8e6;
 }
 
-table#doc_filter_basic td.advanced {
+table#doc_search_basic td.advanced {
     background: #e0ffff;
 }
 
-table#doc_filter_basic #buttons {
+table#doc_search_basic #buttons {
     border-left: solid 1px #a9a9a9;
 }
 
