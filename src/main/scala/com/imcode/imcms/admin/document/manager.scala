@@ -43,7 +43,7 @@ class DocManager(app: ImcmsApplication) {
 
       def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
         action match {
-          case AddToSelection => docSelection.ui.tblDocs.addItem(target)
+          case AddToSelection => docSelection.docFilteredView.docTableUI.addItem(target)
           case Exclude => sender.asInstanceOf[Table].removeItem(target)
           case _ =>
         }

@@ -18,7 +18,7 @@ import com.vaadin.event.Action
 class DocFilteredView {
   val basicFilter = new DocBasicFilter
   val advancedFilter = new DocAdvancedFilter
-  val advancedFilterPanel = new Panel with Scrollable with FullSize {
+  val advancedFilterPanel = new Panel with Scrollable with UndefinedSize with FullHeight {
     setStyleName(Panel.STYLE_LIGHT)
     setContent(advancedFilter.ui)
   }
@@ -47,9 +47,10 @@ class DocFilteredView {
  * Custom docs collection.
  */
 class DocSelection(app: ImcmsApplication) {
-  val ui = new DocSelectionUI
+  val docFilteredView = new DocFilteredView
+  val ui = new DocSelectionUI(docFilteredView.ui)
 
-  ui.tblDocs.addActionHandler(new Action.Handler {
+  docFilteredView.docTableUI.addActionHandler(new Action.Handler {
     import Actions._
 
     def getActions(target: AnyRef, sender: AnyRef) = Array(Exclude, View, Edit, Delete)
@@ -63,14 +64,13 @@ class DocSelection(app: ImcmsApplication) {
 }
 
 
-class DocSelectionUI extends VerticalLayout with Spacing with FullSize {
-  val tblDocs = DocTableUI(fullSize = true)
+class DocSelectionUI(docViewUI: Component) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar
   val miDoc = mb.addItem("Document")
   val miView = mb.addItem("Filter") // -> search in selection
 
-  addComponents(this, mb, new DocBasicFilterUI, tblDocs)
-  setExpandRatio(tblDocs, 1.0f)
+  addComponents(this, mb, docViewUI)
+  setExpandRatio(docViewUI, 1.0f)
 }
 
 

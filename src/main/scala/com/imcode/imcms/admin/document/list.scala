@@ -159,7 +159,7 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
 
 object DocTableUI {
   def apply(fullSize: Boolean = false) = let(new DocTableContainer) { container =>
-    new Table("", container) with DocTableItemIcon with MultiSelect2[DocId] with Selectable { table =>
+    new Table(null, container) with DocTableItemIcon with MultiSelect2[DocId] with Selectable { table =>
       if (fullSize) table.setSizeFull
       setColumnCollapsingAllowed(true)
       setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
