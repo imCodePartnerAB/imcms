@@ -127,9 +127,9 @@ class DocBasicFilterUI extends CustomLayout("admin/doc/filter/basic") {
 
   val lytButtons = new HorizontalLayout with UndefinedSize with Spacing {
     val btnClear = new Button("doc.filter.basic.frm.btn.clear".i) { setStyleName("small") }
-    val btnSearch = new Button("doc.filter.basic.frm.btn.search".i) { setStyleName("small") }
+    val btnApply = new Button("doc.filter.basic.frm.btn.apply".i) { setStyleName("small") }
 
-    addComponents(this, btnClear, btnSearch)
+    addComponents(this, btnClear, btnApply)
   }
 
   addNamedComponents(this,

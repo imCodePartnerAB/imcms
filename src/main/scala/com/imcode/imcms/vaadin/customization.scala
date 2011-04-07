@@ -5,6 +5,7 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.vaadin.data.{Item, Container, Property}
 import com.vaadin.terminal.Sizeable
+import java.util.Collections
 
 /**
  * A container property.
@@ -177,23 +178,33 @@ trait MultiSelect2[T >: Null] extends XSelect[T] with ValueType[JCollection[T]] 
 /**
  * Type check <code>value<code> property always returns a collection.
  */
-trait MultiSelectBehavior[A >: Null] extends XSelect[A] {
+trait MultiSelectBehavior[A >: Null <: AnyRef] extends XSelect[A] {
 
-  def isSelected = value.nonEmpty
-
-  def value = getValue match {
-    case some if isMultiSelect => some.asInstanceOf[JCollection[A]]
-    case some => asJavaCollection(?(some.asInstanceOf[A]).toSeq)
-  }
+  /**
+   * @return seq of selected items or empty collection if there is no selected item(s).
+   */
+  def value = getValue.asInstanceOf[JCollection[A]].toSeq
 
   /** Selects single item. */
-  def value_=(item: Option[A]) { value = item.toSeq }
+  def value_=(item: Option[A]) { setValue(item.orNull) }
+
+  def value_=(seq: Seq[A]) { setValue(asJavaCollection(seq)) }
+
+  def first = value.headOption
+
+  def isSelected = value.nonEmpty
 
   /**
    * @return collection of selected items or empty collection if there is no selected item(s).
    */
-  def value_=(collection: JCollection[A]) {
-    setValue(if (isMultiSelect) collection else collection.headOption.orNull)
+  final override def getValue() = let(super.getValue) { v => if (isMultiSelect) v else ?(v).toSeq } //asJavaCollection(
+
+  final override def setValue(v: AnyRef) {
+    v match {
+      case null => super.setValue(if (isMultiSelect) Collections.emptyList[AnyRef] else null)
+      case coll: JCollection[_] => super.setValue(if (isMultiSelect) coll else coll.headOption.orNull)
+      case _ => super.setValue(if (isMultiSelect) Collections.singletonList(v) else v)
+    }
   }
 }
 
