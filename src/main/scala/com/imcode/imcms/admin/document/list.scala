@@ -154,6 +154,9 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
   def getItemIds = itemIds
 }
 
+// doc table <- for selecting doc
+
+
 object DocTableUI {
   def apply(fullSize: Boolean = false) = let(new DocTableContainer) { container =>
     new Table("", container) with DocTableItemIcon with MultiSelect2[DocId] with Selectable { table =>

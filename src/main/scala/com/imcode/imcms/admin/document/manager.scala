@@ -6,12 +6,12 @@ import com.imcode.imcms.vaadin._
 
 import scala.collection.JavaConversions._
 import vaadin.{ImcmsApplication, FullSize}
-import com.vaadin.ui.{GridLayout, MenuBar, Table, VerticalLayout}
 import imcode.server.Imcms
 import dao.MetaDao
 import imcode.server.document.DocumentDomainObject
 import api.Document
 import com.vaadin.event.Action
+import com.vaadin.ui._
 
 
 object Actions {
@@ -24,18 +24,19 @@ object Actions {
 
 class DocManager(app: ImcmsApplication) {
   val docSelection = new DocSelection(app)
+  val docView = new DocFilteredView
 
   val docSelectionDlg = letret(new OKDialog("Selected documents") with CustomSizeDialog) { dlg =>
     dlg.mainUI = docSelection.ui
     dlg.setSize(500, 500)
   }
 
-  val ui = letret(new DocManagerUI) { ui =>
+  val ui = letret(new DocManagerUI(docView.ui)) { ui =>
     ui.miViewSelection.setCommandHandler {
       app.show(docSelectionDlg, modal = false, resizable = true)
     }
 
-    ui.tblDocs.addActionHandler(new Action.Handler {
+    docView.docTableUI.addActionHandler(new Action.Handler {
       import Actions._
 
       def getActions(target: AnyRef, sender: AnyRef) = Array(AddToSelection, Exclude, View, Edit, Delete)
@@ -55,7 +56,7 @@ class DocManager(app: ImcmsApplication) {
   def reload() {
     val docMapper = Imcms.getServices.getDocumentMapper
 
-    docMapper.getAllDocumentIds.foreach(ui.tblDocs.addItem(_))
+    docMapper.getAllDocumentIds.foreach(docView.docTableUI.addItem(_))
 
 //    for (id <- docMapper.getAllDocumentIds; doc <- ?(docMapper.getDefaultDocument(id))) {
 //      val meta = doc.getMeta
@@ -72,8 +73,7 @@ class DocManager(app: ImcmsApplication) {
   }
 }
 
-class DocManagerUI extends VerticalLayout with Spacing with FullSize {
-  val tblDocs = DocTableUI()
+class DocManagerUI(docViewUI: Component) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar
   val miDoc = mb.addItem("Document")
   val miDocNew = miDoc.addItem("New")
@@ -83,5 +83,5 @@ class DocManagerUI extends VerticalLayout with Spacing with FullSize {
   val miView = mb.addItem("View")
   val miViewSelection = miView.addItem("Selection")
 
-  addComponents(this, mb, tblDocs)
+  addComponents(this, mb, docViewUI)
 }

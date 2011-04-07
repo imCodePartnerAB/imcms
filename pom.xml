@@ -930,7 +930,7 @@
                         <phase>clean</phase>
                         <configuration>
                             <tasks>
-                                <delete dir="${basedir}/webapp" verbose="true"/>
+                                <delete dir="${basedir}/src/main/webapp" verbose="true"/>
                             </tasks>
                         </configuration>
                         <goals>
