@@ -11,12 +11,13 @@ import com.vaadin.ui._
 import imcode.server.Imcms
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import com.vaadin.terminal.{ExternalResource, Resource}
-import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
 import com.vaadin.event.Action
 import com.vaadin.data.{Property, Item, Container}
 import java.lang.Class
 import collection.immutable.{SortedSet, ListMap, ListSet}
 import api.Document
+import imcode.server.document.{DocumentTypeDomainObject, LifeCyclePhase, DocumentDomainObject}
+import PartialFunction.condOpt
 
 
 class DocSearchableView {
@@ -353,52 +354,130 @@ trait DocTableItemIcon extends AbstractSelect with XSelect[DocId] {
 
 
 class DocBasicSearch {
-  val ui = letret(new DocBasicSearchUI) { ui =>
+  private var state = DocBasicSearchState()
+
+  val ui: DocBasicSearchUI = letret(new DocBasicSearchUI) { ui =>
     ui.lytButtons.btnClear.addClickHandler { reset() }
 
-//    ui.chkText.addClickHandler { ui.txtText setEnabled ui.chkText.booleanValue }
-//
-//    ui.chkRange.addClickHandler { ui.lytRange setEnabled ui.chkRange.booleanValue }
-//
-//    ui.chkType.addClickHandler { ui.lytType setEnabled ui.chkType.booleanValue }
-//
-//    ui.chkAdvanced.addClickHandler { ui.btnAdvanced setEnabled ui.chkAdvanced.booleanValue }
+    ui.chkRange.addClickHandler { state = alterRange(state) }
 
-    ui.chkText.addValueChangeHandler { ui.txtText setEnabled ui.chkText.booleanValue }
+    ui.chkText.addClickHandler { state = alterText(state) }
 
-    ui.chkRange.addValueChangeHandler { ui.lytRange setEnabled ui.chkRange.booleanValue }
+    ui.chkType.addClickHandler { state = alterType(state) }
 
-    ui.chkType.addValueChangeHandler { ui.lytType setEnabled ui.chkType.booleanValue }
-
-    ui.chkAdvanced.addValueChangeHandler { ui.btnAdvanced setEnabled ui.chkAdvanced.booleanValue }
+    ui.chkAdvanced.addClickHandler {
+      ui.btnAdvanced setEnabled ui.chkAdvanced.booleanValue
+    }
   }
 
   reset()
 
-  def reset() {
-    ui.chkRange.value = true
-    ui.chkType.value = true
-    ui.chkText.value = true
-    ui.chkAdvanced.value = true
-    forlet(ui.lytType.chkText, ui.lytType.chkFile, ui.lytType.chkHtml) { _.value = true }
-    ui.chkAdvanced.value = false
 
-    ui.lytRange.txtFrom.value = ""
-    ui.lytRange.txtTo.value = ""
-    ui.txtText.value = ""
+  private def alterRange(currentState: DocBasicSearchState) = {
+    if (ui.chkRange.isChecked) {
+      ui.lytRange.setEnabled(true)
+      ui.lytRange.txtStart.value = currentState.range.start.map(_.toString).getOrElse("")
+      ui.lytRange.txtEnd.value = currentState.range.end.map(_.toString).getOrElse("")
+      currentState
+    } else {
+      val newState = currentState.copy(
+        range = DocRange(
+          condOpt(ui.lytRange.txtStart.value.trim) { case value if value.nonEmpty => value.toInt },
+          condOpt(ui.lytRange.txtEnd.value.trim) { case value if value.nonEmpty => value.toInt }
+        )
+      )
+
+      ui.lytRange.setEnabled(true)
+      ui.lytRange.txtStart.value = "" // range get default value
+      ui.lytRange.txtEnd.value = ""  // range get default value
+      ui.lytRange.setEnabled(false)
+      newState
+    }
   }
+
+  private def alterText(currentState: DocBasicSearchState) = {
+    if (ui.chkText.isChecked) {
+      ui.txtText.setEnabled(true)
+      ui.txtText.value = currentState.text.getOrElse("")
+      currentState
+    } else {
+      val newState = currentState.copy(
+        text = condOpt(ui.txtText.value.trim) { case value if value.nonEmpty => value }
+      )
+
+      ui.txtText.setEnabled(true)
+      ui.txtText.value = "" // default text
+      ui.txtText.setEnabled(false)
+      newState
+    }
+  }
+
+  private def alterType(currentState: DocBasicSearchState) = {
+    if (ui.chkType.isChecked) {
+      ui.lytType.setEnabled(true)
+      ui.lytType.chkText.checked = currentState.docType.map(_(DocumentTypeDomainObject.TEXT)).getOrElse(true)
+      ui.lytType.chkFile.checked = currentState.docType.map(_(DocumentTypeDomainObject.FILE)).getOrElse(true)
+      ui.lytType.chkHtml.checked = currentState.docType.map(_(DocumentTypeDomainObject.HTML)).getOrElse(true)
+      currentState
+    } else {
+      val newState = currentState.copy(
+        docType = Some(
+          Set(
+            condOpt(ui.lytType.chkText.isChecked) { case true => DocumentTypeDomainObject.TEXT},
+            condOpt(ui.lytType.chkFile.isChecked) { case true => DocumentTypeDomainObject.FILE},
+            condOpt(ui.lytType.chkHtml.isChecked) { case true => DocumentTypeDomainObject.HTML}
+          ).flatten
+        )
+      )
+
+      ui.lytType.setEnabled(true)
+      forlet(ui.lytType.chkText, ui.lytType.chkFile, ui.lytType.chkHtml) { _.check }
+      ui.lytType.setEnabled(false)
+      newState
+    }
+  }
+
+  def reset() {
+    ui.chkRange.checked = true
+    ui.chkText.checked = true
+    ui.chkType.checked = false
+    ui.chkAdvanced.checked = false
+
+    setState(DocBasicSearchState())
+  }
+
+  def setState(newState: DocBasicSearchState) {
+    alterRange(newState)
+    alterText(newState)
+    alterType(newState)
+
+    state = newState
+  }
+
+  def getState() = state
 }
 
-class DocBasicSearchUI extends CustomLayout("admin/doc/search/basic") with FullWidth {
-  //setWidth("700px")
+// defaults?
+case class DocRange(start: Option[Int] = None, end: Option[Int] = None)
 
+// defaults? remove?
+case class DocBasicSearchState(
+  range: DocRange = DocRange(),
+  // defaultRange???
+  text: Option[String] = None,
+  docType: Option[Set[DocumentTypeDomainObject]] = None,
+  advanced: Boolean = false
+)
+
+
+class DocBasicSearchUI extends CustomLayout("admin/doc/search/basic") with FullWidth {
   // prompt - real numbers: lower, upper
   val chkRange = new CheckBox("doc.search.basic.frm.lbl.range".i) with Immediate
   val lytRange = new HorizontalLayout with Spacing with UndefinedSize {
-    val txtFrom = new TextField { setInputPrompt("doc.search.basic.frm.txt.range.from.prompt".i); setColumns(5) }
-    val txtTo = new TextField { setInputPrompt("doc.search.basic.frm.txt.range.to.prompt".i); setColumns(5) }
+    val txtStart = new TextField { setInputPrompt("doc.search.basic.frm.txt.range.start.prompt".i); setColumns(5) }
+    val txtEnd = new TextField { setInputPrompt("doc.search.basic.frm.txt.range.end.prompt".i); setColumns(5) }
 
-    addComponents(this, txtFrom, txtTo)
+    addComponents(this, txtStart, txtEnd)
   }
   // prompt - any text
   val chkText = new CheckBox("doc.search.basic.frm.lbl.text".i) with Immediate
@@ -443,8 +522,6 @@ class DocAdvancedSearch {
 }
 
 class DocAdvancedSearchUI extends CustomLayout("admin/doc/search/advanced") with FullWidth {
-  //setWidth("700px")
-
   val lblPredefined = new Label("doc.search.advanced.frm.lbl.predefined".i) with UndefinedSize
   val cbPredefined = new ComboBox
 

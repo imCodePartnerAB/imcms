@@ -68,8 +68,19 @@ package object vaadin {
   /** Label value type is always String */
   implicit def wrapLabel(label: Label) = new Label(label) with ValueType[String]  
 
+  trait Checkable extends CheckBox {
+    def isChecked = checked
+    def isUnchecked = !isChecked
+
+    def checked = booleanValue
+    def checked_=(value: Boolean) = setValue(value.asInstanceOf[AnyRef])
+
+    def check { checked = true }
+    def uncheck { checked = false }
+  }
+
   /** Checkbox value type is always JBoolean */
-  implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBox("", checkBox) with ValueType[JBoolean]
+  implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBox("", checkBox) with Checkable with ValueType[JBoolean]
 
   /** Date field value type is always Date */
   implicit def wrapDateField(dateField: DateField) = new DateField(dateField) with ValueType[java.util.Date]
