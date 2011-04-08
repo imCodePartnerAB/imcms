@@ -389,8 +389,8 @@ class DocBasicSearch {
   }
 }
 
-class DocBasicSearchUI extends CustomLayout("admin/doc/search/basic") {
-  setWidth("700px")
+class DocBasicSearchUI extends CustomLayout("admin/doc/search/basic") with FullWidth {
+  //setWidth("700px")
 
   // prompt - real numbers: lower, upper
   val chkRange = new CheckBox("doc.search.basic.frm.lbl.range".i) with Immediate
@@ -442,8 +442,8 @@ class DocAdvancedSearch {
   val ui = new DocAdvancedSearchUI
 }
 
-class DocAdvancedSearchUI extends CustomLayout("admin/doc/search/advanced") {
-  setWidth("700px")
+class DocAdvancedSearchUI extends CustomLayout("admin/doc/search/advanced") with FullWidth {
+  //setWidth("700px")
 
   val lblPredefined = new Label("doc.search.advanced.frm.lbl.predefined".i) with UndefinedSize
   val cbPredefined = new ComboBox

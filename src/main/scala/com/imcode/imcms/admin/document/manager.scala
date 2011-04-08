@@ -81,6 +81,7 @@ class DocManagerUI(docViewUI: Component) extends VerticalLayout with Spacing wit
   val miViewSelection = miView.addItem("Selection")
 
   addComponents(this, mb, docViewUI)
+  setExpandRatio(docViewUI, 1.0f)
 }
 
 

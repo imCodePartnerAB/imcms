@@ -434,9 +434,9 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
   
 
-  lazy val documents = new VerticalLayout with Margin {
+  lazy val documents = new VerticalLayout with Margin with FullSize {
     val manager = new com.imcode.imcms.admin.document.DocManager(app)
-    val tabSheet = new TabSheet
+    val tabSheet = new TabSheet with FullSize
     tabSheet.addTab(manager.ui, "Document", Tab32)
 
     manager.ui.setMargin(true)
