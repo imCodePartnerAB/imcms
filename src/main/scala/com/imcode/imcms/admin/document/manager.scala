@@ -21,26 +21,26 @@ object Actions {
 
 class DocManager(app: ImcmsApplication) {
   val docSelection = new DocSelection(app)
-  val docSearchableView = new DocSearchableView
+  val docSearch = new DocSearch with DocDBRange
 
   val docSelectionDlg = letret(new OKDialog("Selected documents") with CustomSizeDialog) { dlg =>
     dlg.mainUI = docSelection.ui
     dlg.setSize(500, 500)
   }
 
-  val ui = letret(new DocManagerUI(docSearchableView.ui)) { ui =>
+  val ui = letret(new DocManagerUI(docSearch.ui)) { ui =>
     ui.miViewSelection.setCommandHandler {
       app.show(docSelectionDlg, modal = false, resizable = true)
     }
 
-    docSearchableView.docTableUI.addActionHandler(new Action.Handler {
+    docSearch.docTableUI.addActionHandler(new Action.Handler {
       import Actions._
 
       def getActions(target: AnyRef, sender: AnyRef) = Array(AddToSelection, Exclude, View, Edit, Delete)
 
       def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
         action match {
-          case AddToSelection => docSelection.docSearchableView.docTableUI.addItem(target)
+          case AddToSelection => docSelection.docSearch.docTableUI.addItem(target)
           case Exclude => sender.asInstanceOf[Table].removeItem(target)
           case _ =>
         }
@@ -53,7 +53,7 @@ class DocManager(app: ImcmsApplication) {
   def reload() {
     val docMapper = Imcms.getServices.getDocumentMapper
 
-    docMapper.getAllDocumentIds.foreach(docSearchableView.docTableUI.addItem(_))
+    docMapper.getAllDocumentIds.foreach(docSearch.docTableUI.addItem(_))
 
 //    for (id <- docMapper.getAllDocumentIds; doc <- ?(docMapper.getDefaultDocument(id))) {
 //      val meta = doc.getMeta
@@ -90,10 +90,10 @@ class DocManagerUI(docViewUI: Component) extends VerticalLayout with Spacing wit
  * Custom docs collection.
  */
 class DocSelection(app: ImcmsApplication) {
-  val docSearchableView = new DocSearchableView
-  val ui = new DocSelectionUI(docSearchableView.ui)
+  val docSearch = new DocSearch with DocItemsRange
+  val ui = new DocSelectionUI(docSearch.ui)
 
-  docSearchableView.docTableUI.addActionHandler(new Action.Handler {
+  docSearch.docTableUI.addActionHandler(new Action.Handler {
     import Actions._
 
     def getActions(target: AnyRef, sender: AnyRef) = Array(Exclude, View, Edit, Delete)

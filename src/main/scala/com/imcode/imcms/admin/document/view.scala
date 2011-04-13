@@ -14,30 +14,52 @@ import com.vaadin.terminal.{ExternalResource, Resource}
 import com.vaadin.event.Action
 import com.vaadin.data.{Property, Item, Container}
 import java.lang.Class
-import collection.immutable.{SortedSet, ListMap, ListSet}
+import collection.immutable.{SortedSet, ListMap}
 import api.Document
-import imcode.server.document.{DocumentTypeDomainObject, LifeCyclePhase, DocumentDomainObject}
+import imcode.server.document.{DocumentTypeDomainObject, DocumentDomainObject}
 import PartialFunction.condOpt
+import com.vaadin.data.Container.ItemSetChangeListener
 
 
-class DocSearchableView {
-  val basicSearch = new DocBasicSearch
-  val advancedSearch = new DocAdvancedSearch
-  val advancedSearchPanel = new Panel with Scrollable with UndefinedSize with FullHeight {
+trait DocItemsRange { this: DocSearch =>
+  docTableUI.addListener(new Container.ItemSetChangeListener {
+    def containerItemSetChange(event: Container.ItemSetChangeEvent) {
+      basicSearchForm.setRangeInputPrompt(
+        condOpt(docTableUI.container.getItemIds) { case ids if ids.nonEmpty => (ids.min.intValue, ids.max.intValue) }
+      )
+    }
+  })
+}
+
+
+trait DocDBRange { this: DocSearch =>
+  // check if db is not empty or NPE might be thrown
+  val idRange = Imcms.getServices.getDocumentMapper.getDocumentIdRange
+  basicSearchForm.setRangeInputPrompt(Some(idRange.getMinimumInteger, idRange.getMaximumInteger))
+}
+
+/**
+ * Doc search consists of two forms for specifying search params and a table that displays search result.
+ */
+class DocSearch {
+  val basicSearchForm = new DocBasicSearchForm
+  val advancedSearchForm = new DocAdvancedSearchForm
+  val advancedSearchFormPanel = new Panel with Scrollable with UndefinedSize with FullHeight {
     setStyleName(Panel.STYLE_LIGHT)
-    setContent(advancedSearch.ui)
+    setContent(advancedSearchForm.ui)
   }
-
+  // listen for changes and modify search range.
+  // db range -> range; selected docs: only docs in 'selection'
   val docTableUI = new DocTableUI with FullSize
 
   val ui = letret(new GridLayout(1, 2) with Spacing with FullSize) { ui =>
-    ui.addComponent(basicSearch.ui)
+    ui.addComponent(basicSearchForm.ui)
     ui.addComponent(docTableUI)
     ui.setRowExpandRatio(1, 1f)
 
-    basicSearch.ui.btnAdvanced.addClickHandler {
+    basicSearchForm.ui.btnAdvanced.addClickHandler {
       val component = ui.getComponent(0, 1) match {
-        case `docTableUI` => advancedSearchPanel
+        case `docTableUI` => advancedSearchFormPanel
         case _ => docTableUI
       }
 
@@ -45,14 +67,15 @@ class DocSearchableView {
       ui.addComponent(component, 0, 1)
     }
 
-    basicSearch.ui.lytButtons.btnSearch.addClickHandler {
+    basicSearchForm.ui.lytButtons.btnSearch.addClickHandler {
       // check
       ui.removeComponent(0, 1)
       ui.addComponent(docTableUI, 0, 1)
+      basicSearchForm.setRangeInputPrompt(Some(1001, 1051))
     }
 
-    basicSearch.ui.chkAdvanced.addValueChangeHandler {
-      if (!basicSearch.ui.chkAdvanced.booleanValue) {
+    basicSearchForm.ui.chkAdvanced.addValueChangeHandler {
+      if (!basicSearchForm.ui.chkAdvanced.booleanValue) {
         // check
         ui.removeComponent(0, 1)
         ui.addComponent(docTableUI, 0, 1)
@@ -80,7 +103,7 @@ case class FunctionProperty[A](valueGetter: Function0[A])(implicit mf: Manifest[
 /**
  * Doc table container
  */
-class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty) extends Container {
+class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty) extends Container with Container.Ordered { //with Container.ItemSetChangeNotifier
 
   private val propertyIdToType = ListMap(
       "doc.tbl.col.id" -> classOf[DocId],
@@ -195,10 +218,41 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
   def removeContainerProperty(propertyId: AnyRef) = throw new UnsupportedOperationException
 
   def getItemIds = itemIds
+
+//  def removeListener(listener: ItemSetChangeListener) {}
+//
+//  def addListener(listener: ItemSetChangeListener) {}
+  def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef) = null
+
+  def addItemAfter(previousItemId: AnyRef) = null
+
+  def isLastId(itemId: AnyRef) = itemId == lastItemId
+
+  def isFirstId(itemId: AnyRef) = itemId == firstItemId
+
+  def lastItemId() = itemIds.last
+
+  def firstItemId() = itemIds.head
+
+  // extremely ineffective prototype
+  def prevItemId(itemId: AnyRef) = let(itemIds.toIndexedSeq) { seq =>
+    seq.indexOf(itemId.asInstanceOf[DocId]) match {
+      case index if index > 0 => seq(index - 1)
+      case _ => null
+    }
+  }
+
+  // extremely ineffective prototype
+  def nextItemId(itemId: AnyRef) = let(itemIds.toIndexedSeq) { seq =>
+    seq.indexOf(itemId.asInstanceOf[DocId]) match {
+      case index if index < (size - 1) => seq(index + 1)
+      case _ => null
+    }
+  }
 }
 
 
-class DocTableUI(container: DocTableContainer = new DocTableContainer) extends Table(null, container)
+class DocTableUI(val container: DocTableContainer = new DocTableContainer) extends Table(null, container)
     with MultiSelectBehavior[DocId] with DocTableItemIcon with Selectable {
 
   setColumnCollapsingAllowed(true)
@@ -353,10 +407,10 @@ trait DocTableItemIcon extends AbstractSelect with XSelect[DocId] {
 }
 
 
-class DocBasicSearch {
-  private var state = DocBasicSearchState()
+class DocBasicSearchForm {
+  private var state = DocBasicSearchFormState()
 
-  val ui: DocBasicSearchUI = letret(new DocBasicSearchUI) { ui =>
+  val ui: DocBasicFormSearchUI = letret(new DocBasicFormSearchUI) { ui =>
     ui.lytButtons.btnClear.addClickHandler { reset() }
 
     ui.chkRange.addClickHandler { state = alterRange(state) }
@@ -365,26 +419,51 @@ class DocBasicSearch {
 
     ui.chkType.addClickHandler { state = alterType(state) }
 
-    ui.chkAdvanced.addClickHandler {
-      ui.btnAdvanced setEnabled ui.chkAdvanced.booleanValue
+    ui.chkAdvanced.addValueChangeHandler {
+      ui.btnAdvanced.setEnabled(ui.chkAdvanced.isChecked)
     }
   }
 
   reset()
 
+  def setRangeInputPrompt(range: Option[(Int, Int)]) {
+    let(range map { case (start, end) => (start.toString, end.toString) } getOrElse ("", "")) {
+      case (start, end) =>
+        ui.lytRange.txtStart.setInputPrompt(start)
+        ui.lytRange.txtEnd.setInputPrompt(end)
+    }
+  }
 
-  private def alterRange(currentState: DocBasicSearchState) = {
+  def reset() {
+    ui.chkRange.checked = true
+    ui.chkText.checked = true
+    ui.chkType.checked = true
+    ui.chkAdvanced.checked = false
+
+    setState(DocBasicSearchFormState())
+  }
+
+  def setState(newState: DocBasicSearchFormState) {
+    alterRange(newState)
+    alterText(newState)
+    alterType(newState)
+
+    state = newState
+  }
+
+  def getState() = state
+
+  private def alterRange(currentState: DocBasicSearchFormState) = {
     if (ui.chkRange.isChecked) {
       ui.lytRange.setEnabled(true)
-      ui.lytRange.txtStart.value = currentState.range.start.map(_.toString).getOrElse("")
-      ui.lytRange.txtEnd.value = currentState.range.end.map(_.toString).getOrElse("")
+      ui.lytRange.txtStart.value = currentState.range.flatMap(_.start).map(_.toString).getOrElse("")
+      ui.lytRange.txtEnd.value = currentState.range.flatMap(_.end).map(_.toString).getOrElse("")
       currentState
     } else {
+      val start = condOpt(ui.lytRange.txtStart.value.trim) { case value if value.nonEmpty => value.toInt }
+      val end = condOpt(ui.lytRange.txtEnd.value.trim) { case value if value.nonEmpty => value.toInt }
       val newState = currentState.copy(
-        range = DocRange(
-          condOpt(ui.lytRange.txtStart.value.trim) { case value if value.nonEmpty => value.toInt },
-          condOpt(ui.lytRange.txtEnd.value.trim) { case value if value.nonEmpty => value.toInt }
-        )
+        range = if (start.isEmpty && end.isEmpty) None else Some(DocRange(start, end))
       )
 
       ui.lytRange.setEnabled(true)
@@ -395,7 +474,7 @@ class DocBasicSearch {
     }
   }
 
-  private def alterText(currentState: DocBasicSearchState) = {
+  private def alterText(currentState: DocBasicSearchFormState) = {
     if (ui.chkText.isChecked) {
       ui.txtText.setEnabled(true)
       ui.txtText.value = currentState.text.getOrElse("")
@@ -412,7 +491,7 @@ class DocBasicSearch {
     }
   }
 
-  private def alterType(currentState: DocBasicSearchState) = {
+  private def alterType(currentState: DocBasicSearchFormState) = {
     if (ui.chkType.isChecked) {
       ui.lytType.setEnabled(true)
       ui.lytType.chkText.checked = currentState.docType.map(_(DocumentTypeDomainObject.TEXT)).getOrElse(true)
@@ -420,14 +499,15 @@ class DocBasicSearch {
       ui.lytType.chkHtml.checked = currentState.docType.map(_(DocumentTypeDomainObject.HTML)).getOrElse(true)
       currentState
     } else {
+      val types =
+        Set(
+          condOpt(ui.lytType.chkText.isChecked) { case true => DocumentTypeDomainObject.TEXT },
+          condOpt(ui.lytType.chkFile.isChecked) { case true => DocumentTypeDomainObject.FILE },
+          condOpt(ui.lytType.chkHtml.isChecked) { case true => DocumentTypeDomainObject.HTML }
+        ).flatten
+
       val newState = currentState.copy(
-        docType = Some(
-          Set(
-            condOpt(ui.lytType.chkText.isChecked) { case true => DocumentTypeDomainObject.TEXT},
-            condOpt(ui.lytType.chkFile.isChecked) { case true => DocumentTypeDomainObject.FILE},
-            condOpt(ui.lytType.chkHtml.isChecked) { case true => DocumentTypeDomainObject.HTML}
-          ).flatten
-        )
+        docType = if (types.size == 3) None else Some(types)
       )
 
       ui.lytType.setEnabled(true)
@@ -436,51 +516,28 @@ class DocBasicSearch {
       newState
     }
   }
-
-  def reset() {
-    ui.chkRange.checked = true
-    ui.chkText.checked = true
-    ui.chkType.checked = false
-    ui.chkAdvanced.checked = false
-
-    setState(DocBasicSearchState())
-  }
-
-  def setState(newState: DocBasicSearchState) {
-    alterRange(newState)
-    alterText(newState)
-    alterType(newState)
-
-    state = newState
-  }
-
-  def getState() = state
 }
 
-// defaults?
 case class DocRange(start: Option[Int] = None, end: Option[Int] = None)
 
-// defaults? remove?
-case class DocBasicSearchState(
-  range: DocRange = DocRange(),
-  // defaultRange???
+case class DocBasicSearchFormState(
+  range: Option[DocRange] = None,
   text: Option[String] = None,
-  docType: Option[Set[DocumentTypeDomainObject]] = None,
-  advanced: Boolean = false
+  docType: Option[Set[DocumentTypeDomainObject]] = None
 )
 
 
-class DocBasicSearchUI extends CustomLayout("admin/doc/search/basic") with FullWidth {
-  // prompt - real numbers: lower, upper
-  val chkRange = new CheckBox("doc.search.basic.frm.lbl.range".i) with Immediate
+class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic") with FullWidth {
+
+  val chkRange = new CheckBox("doc.search.basic.frm.chk.range".i) with Immediate
   val lytRange = new HorizontalLayout with Spacing with UndefinedSize {
-    val txtStart = new TextField { setInputPrompt("doc.search.basic.frm.txt.range.start.prompt".i); setColumns(5) }
-    val txtEnd = new TextField { setInputPrompt("doc.search.basic.frm.txt.range.end.prompt".i); setColumns(5) }
+    val txtStart = new TextField { setColumns(5) }
+    val txtEnd = new TextField { setColumns(5) }
 
     addComponents(this, txtStart, txtEnd)
   }
-  // prompt - any text
-  val chkText = new CheckBox("doc.search.basic.frm.lbl.text".i) with Immediate
+
+  val chkText = new CheckBox("doc.search.basic.frm.chk.text".i) with Immediate
   val txtText = new TextField { setInputPrompt("doc.search.basic.frm.txt.text.prompt".i) }
 
   val chkType = new CheckBox("doc.search.basic.frm.chk.type".i) with Immediate
@@ -517,11 +574,11 @@ class DocBasicSearchUI extends CustomLayout("admin/doc/search/basic") with FullW
 }
 
 
-class DocAdvancedSearch {
-  val ui = new DocAdvancedSearchUI
+class DocAdvancedSearchForm {
+  val ui = new DocAdvancedSearchFormUI
 }
 
-class DocAdvancedSearchUI extends CustomLayout("admin/doc/search/advanced") with FullWidth {
+class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced") with FullWidth {
   val lblPredefined = new Label("doc.search.advanced.frm.lbl.predefined".i) with UndefinedSize
   val cbPredefined = new ComboBox
 
