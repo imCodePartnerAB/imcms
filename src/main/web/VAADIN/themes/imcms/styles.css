@@ -4,12 +4,14 @@
     width: 100%;
 }
 
+table#user_search,
 table#doc_search_basic,
 table#doc_search_advanced {
     border: solid 1px #a9a9a9;
     border-collapse: collapse;
 }
 
+table#user_search,
 table#doc_search_basic {
     background: #fffff0;
 }
@@ -18,13 +20,14 @@ table#doc_search_advanced {
     background: #e0ffff;
 }
 
-
+table#user_search th,
 table#doc_search_basic th,
 table#doc_search_advanced th {
     text-align: left;
     width: 100px;
 }
 
+table#user_search th,
 table#doc_search_basic th {
     background: #f5f5dc;
 }
@@ -33,6 +36,8 @@ table#doc_search_advanced th {
     background: #add8e6;
 }
 
+table#user_search td,
+table#user_search th,
 table#doc_search_basic td,
 table#doc_search_basic th,
 table#doc_search_advanced td,
@@ -52,6 +57,7 @@ table#doc_search_basic td.advanced {
     background: #e0ffff;
 }
 
+table#user_search #buttons,
 table#doc_search_basic #buttons {
     border-left: solid 1px #a9a9a9;
 }

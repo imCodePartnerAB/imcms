@@ -18,7 +18,7 @@ import collection.immutable.{SortedSet, ListMap}
 import api.Document
 import imcode.server.document.{DocumentTypeDomainObject, DocumentDomainObject}
 import PartialFunction.condOpt
-import com.vaadin.data.Container.ItemSetChangeListener
+import admin.access.user.UserSearchDialog
 
 
 trait DocItemsRange { this: DocSearch =>
@@ -534,7 +534,7 @@ case class DocAdvancedSearchFormState(
 
 
 
-class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic") with FullWidth {
+class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") with FullWidth {
 
   val chkRange = new CheckBox("doc.search.basic.frm.chk.range".i) with Immediate
   val lytRange = new HorizontalLayout with Spacing with UndefinedSize {
@@ -648,7 +648,7 @@ class DocAdvancedSearchForm {
   }
 }
 
-class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced") with FullWidth {
+class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_form") with FullWidth {
   val lblPredefined = new Label("doc.search.advanced.frm.lbl.predefined".i) with UndefinedSize
   val cbPredefined = new ComboBox
 
@@ -688,9 +688,11 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced") 
 
   val chkMaintainers = new CheckBox("doc.search.advanced.frm.chk.maintainers".i) with Immediate
   val lytMaintainers = new HorizontalLayout with UndefinedSize {
-    val lstCreators = new ListSelect("doc.search.advanced.frm.chk.maintainers.creators".i)
+    //val lstCreators = new ListSelect("doc.search.advanced.frm.chk.maintainers.creators".i)
+    val ulCreators = new UserListUI("doc.search.advanced.frm.chk.maintainers.creators".i) with UserListUISetup
+    val ulPublishers = new UserListUI("doc.search.advanced.frm.chk.maintainers.publishers".i) with UserListUISetup
 
-    addComponents(this, lstCreators)
+    addComponents(this, ulCreators, ulPublishers)
   }
 
   addNamedComponents(this,
@@ -707,4 +709,36 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced") 
     "doc.search.advanced.frm.chk.maintainers" -> chkMaintainers,
     "doc.search.advanced.frm.lyt.maintainers" -> lytMaintainers
   )
+}
+
+
+/**
+ * Control for managing list of users.
+ */
+trait UserListUISetup { this: UserListUI =>
+
+  btnAdd.addClickHandler {
+    getApplication.initAndShow(new OkCancelDialog with UserSearchDialog) { dlg =>
+      dlg.setOkHandler {
+        for (user <- dlg.search.selection) lstUsers.addItem(Int box user.getId, "#" + user.getLoginName)
+      }
+    }
+  }
+
+  btnRemove.addClickHandler {
+    lstUsers.value.foreach(lstUsers.removeItem)
+  }
+}
+
+
+class UserListUI(caption: String = "") extends GridLayout(2, 1) with Spacing {
+  val lstUsers = new ListSelect(caption) with MultiSelectBehavior[UserId]
+  val btnAdd = new Button("+")
+  val btnRemove = new Button("-")
+  val lytButtons = new VerticalLayout with UndefinedSize with Spacing
+
+  addComponents(lytButtons, btnRemove, btnAdd)
+  addComponents(this, lstUsers, lytButtons)
+
+  setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
 }

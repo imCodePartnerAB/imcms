@@ -7,7 +7,7 @@ import java.text.MessageFormat
 package object imcms {
 
   type DocId = JInteger
-
+  type UserId = JInteger
   type LanguageId = JInteger
 
   implicit def stringAsBundleResourceId(string: String) = new {

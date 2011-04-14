@@ -197,7 +197,7 @@ trait MultiSelectBehavior[A >: Null <: AnyRef] extends XSelect[A] {
   /**
    * @return collection of selected items or empty collection if there is no selected item(s).
    */
-  final override def getValue() = let(super.getValue) { v => if (isMultiSelect) v else ?(v).toSeq } //asJavaCollection(
+  final override def getValue() = let(super.getValue) { v => if (isMultiSelect) v else asJavaCollection(?(v).toSeq) }
 
   final override def setValue(v: AnyRef) {
     v match {
