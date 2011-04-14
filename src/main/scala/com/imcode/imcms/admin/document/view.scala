@@ -526,6 +526,13 @@ case class DocBasicSearchFormState(
   docType: Option[Set[DocumentTypeDomainObject]] = None
 )
 
+case class DocAdvancedSearchFormState(
+/*
+
+*/
+)
+
+
 
 class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic") with FullWidth {
 
@@ -576,13 +583,76 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic") with F
 
 class DocAdvancedSearchForm {
   val ui = new DocAdvancedSearchFormUI
+
+  ui.chkCategories.addClickHandler {
+    alterCategories()
+  }
+
+  ui.chkDates.addClickHandler {
+    alterDates()
+  }
+
+  ui.chkRelationship.addClickHandler {
+    alterRelationships()
+  }
+
+  ui.chkMaintainers.addClickHandler {
+    alterMaintainers()
+  }
+
+  alterCategories()
+  alterMaintainers()
+  alterRelationships()
+  alterDates()
+
+  for {
+    categoryType <- Imcms.getServices.getCategoryMapper.getAllCategoryTypes
+    category <- Imcms.getServices.getCategoryMapper.getAllCategoriesOfType(categoryType)
+  } {
+    ui.tcsCategories.addItem(category)
+    ui.tcsCategories.setItemCaption(category, categoryType.getName + ":" + category.getName)
+    ?(category.getImageUrl).foreach(url => ui.tcsCategories.setItemIcon(category, new ExternalResource(url)))
+  }
+
+  private def alterCategories() {
+    if (ui.chkCategories.checked) {
+      ui.addComponent(ui.tcsCategories, "doc.search.advanced.frm.tcs.categories")
+    } else {
+      ui.addComponent(new Label("all") with UndefinedSize, "doc.search.advanced.frm.tcs.categories")
+    }
+  }
+
+  private def alterMaintainers() {
+    if (ui.chkMaintainers.checked) {
+      ui.addComponent(ui.lytMaintainers, "doc.search.advanced.frm.lyt.maintainers")
+    } else {
+      ui.addComponent(new Label("all") with UndefinedSize, "doc.search.advanced.frm.lyt.maintainers")
+    }
+  }
+
+  // change: Relationship -> Relationship|s|
+  private def alterRelationships() {
+    if (ui.chkRelationship.checked) {
+      ui.addComponent(ui.lytRelationship, "doc.search.advanced.frm.lyt.relationship")
+    } else {
+      ui.addComponent(new Label("all") with UndefinedSize, "doc.search.advanced.frm.lyt.relationship")
+    }
+  }
+
+  private def alterDates() {
+    if (ui.chkDates.checked) {
+      ui.addComponent(ui.lytDates, "doc.search.advanced.frm.lyt.dates")
+    } else {
+      ui.addComponent(new Label("all") with UndefinedSize, "doc.search.advanced.frm.lyt.dates")
+    }
+  }
 }
 
 class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced") with FullWidth {
   val lblPredefined = new Label("doc.search.advanced.frm.lbl.predefined".i) with UndefinedSize
   val cbPredefined = new ComboBox
 
-  val chkStatus = new CheckBox("doc.search.advanced.frm.chk.status".i) with Immediate with UndefinedSize
+  val chkStatus = new CheckBox("doc.search.advanced.frm.chk.status".i) with Immediate
   val lytStatus = new HorizontalLayout with Spacing with UndefinedSize {
     val chkNew = new CheckBox("doc.search.advanced.frm.ckh.status.new".i)
     val chkPublished = new CheckBox("doc.search.advanced.frm.chk.status.published".i)
@@ -591,32 +661,32 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced") 
     addComponents(this, chkNew, chkPublished, chkExpired)
   }
 
-  val chkDates = new CheckBox("doc.search.advanced.frm.chk.dates".i)
+  val chkDates = new CheckBox("doc.search.advanced.frm.chk.dates".i) with Immediate
   val lytDates = new VerticalLayout with UndefinedSize with Spacing
 
-  val chkCategories = new CheckBox("doc.search.advanced.frm.chk.categories".i)
+  val chkCategories = new CheckBox("doc.search.advanced.frm.chk.categories".i) with Immediate
   val tcsCategories = new TwinColSelect
 
-  val chkRelationship = new CheckBox("doc.search.advanced.frm.chk.relationship".i)
+  val chkRelationship = new CheckBox("doc.search.advanced.frm.chk.relationship".i) with Immediate
   val lytRelationship = new HorizontalLayout with Spacing with UndefinedSize {
     val cbParents = new ComboBox("doc.search.advanced.frm.chk.relationship.parents".i)
     val cbChildren = new ComboBox("doc.search.advanced.frm.chk.relationship.children".i)
 
-    cbParents.addItem("-not selected-")
+    cbParents.addItem("-not specified-")
     cbParents.addItem("With parents")
     cbParents.addItem("Without parents")
 
-    cbChildren.addItem("-not selected-")
+    cbChildren.addItem("-not specified-")
     cbChildren.addItem("With children")
     cbChildren.addItem("Without children")
 
-    cbParents.setNullSelectionItemId("-not selected-")
-    cbChildren.setNullSelectionItemId("-not selected-")
+    cbParents.setNullSelectionItemId("-not specified-")
+    cbChildren.setNullSelectionItemId("-not specified-")
 
     addComponents(this, cbParents, cbChildren)
   }
 
-  val chkMaintainers = new CheckBox("doc.search.advanced.frm.chk.maintainers".i)
+  val chkMaintainers = new CheckBox("doc.search.advanced.frm.chk.maintainers".i) with Immediate
   val lytMaintainers = new HorizontalLayout with UndefinedSize {
     val lstCreators = new ListSelect("doc.search.advanced.frm.chk.maintainers.creators".i)
 
