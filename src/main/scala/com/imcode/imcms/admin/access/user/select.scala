@@ -11,6 +11,8 @@ import com.imcode.imcms.vaadin._
 
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
+import scala.PartialFunction.{condOpt}
+import java.util.Collections
 
 // todo: db access, filtering should be optimized, + lazy loading/limit/pagination
 class UserSelect extends Publisher[Option[UserDomainObject]] {
@@ -171,18 +173,11 @@ class UserSearch extends Publisher[Seq[UserDomainObject]] {
       ContainerProperty[String]("admin.access.user.search.tbl.col.last_name".i),
       ContainerProperty[JBoolean]("admin.access.user.search.tbl.col.superadmin?".i),
       ContainerProperty[JBoolean]("admin.access.user.search.tbl.col.active?".i))
-
-    setPageLength(5)
   }
 
   val ui = letret(new GridLayout(1, 2) with Spacing) { ui =>
     addComponents(ui, form.ui, resultUI)
   } // ui
-
-  roleMapper.getAllRolesExceptUsersRole foreach { role =>
-    form.ui.tcsRoles.addItem(role.getId)
-    form.ui.tcsRoles.setItemCaption(role.getId, role.getName)
-  }
 
   resultUI.addValueChangeHandler {
     selectionRef.set(resultUI.value map { roleMapper getUser _.intValue })
@@ -190,12 +185,30 @@ class UserSearch extends Publisher[Seq[UserDomainObject]] {
   }
 
   form.ui.lytButtons.btnSearch.addClickHandler {
+    search()
+  }
+
+  form.ui.lytButtons.btnClear.addClickHandler {
     reload()
   }
 
   reload()
 
+
   def reload() {
+    form.ui.tcsRoles.removeAllItems
+
+    roleMapper.getAllRolesExceptUsersRole foreach { role =>
+      form.ui.tcsRoles.addItem(role.getId)
+      form.ui.tcsRoles.setItemCaption(role.getId, role.getName)
+    }
+
+    form.reset()
+    search()
+  }
+
+
+  def search() {
     val matchesAlways = Function.const(true)_
 
     val matchesText: UserDomainObject => Boolean = form.ui.txtText.value.trim match {
@@ -235,17 +248,78 @@ class UserSearch extends Publisher[Seq[UserDomainObject]] {
 }
 
 
+case class UserSearchFormState(
+  text: Option[String] = None,
+  roleIds: Option[Seq[RoleId]] = None
+)
+
 class UserSearchForm {
+  private var state = UserSearchFormState()
+
   val ui = new UserSearchFormUI
+
+  ui.chkText.addClickHandler { state = alterText(state) }
+  ui.chkRole.addClickHandler { state = alterRoles(state) }
+
+  def reset() {
+    ui.chkText.check
+    ui.chkRole.uncheck
+    ui.chkIncludeInactive.uncheck
+
+    setState(UserSearchFormState())
+  }
+
+  def setState(newState: UserSearchFormState) {
+    alterText(newState)
+    alterRoles(newState)
+
+    state = newState
+  }
+
+  def alterText(currentState: UserSearchFormState) = {
+    if (ui.chkText.isChecked) {
+      ui.txtText.setEnabled(true)
+      ui.txtText.value = currentState.text.getOrElse("")
+      currentState
+    } else {
+      val newState = currentState.copy(
+        text = condOpt(ui.txtText.value.trim) { case text if text.nonEmpty => text }
+      )
+
+      ui.txtText.setEnabled(true)
+      ui.txtText.value = ""
+      ui.txtText.setEnabled(false)
+      newState
+    }
+  }
+
+  def alterRoles(currentState: UserSearchFormState) = {
+    if (ui.chkRole.isChecked) {
+      ui.tcsRoles.setEnabled(true)
+      ui.tcsRoles.value = Seq.empty[RoleId]
+      for (roleIds <- currentState.roleIds) ui.tcsRoles.value = roleIds
+      currentState
+    } else {
+      val newState = currentState.copy(roleIds = condOpt(ui.tcsRoles.value) { case ids if ids.nonEmpty => ids })
+
+      ui.tcsRoles.setEnabled(true)
+      ui.tcsRoles.value = ui.tcsRoles.itemIds.toSeq
+      ui.tcsRoles.setEnabled(false)
+      newState
+    }
+  }
 }
 
 
 class UserSearchFormUI extends CustomLayout("admin/access/user/search/form") with UndefinedSize {
   val chkText = new CheckBox("admin.access.user.search.frm.chk.text".i) with Immediate
-  val txtText = new TextField
+  val txtText = new TextField("admin.access.user.search.frm.text.caption".i) {
+    setInputPrompt("admin.access.user.search.frm.text.prompt".i)
+  }
+
   val chkRole = new CheckBox("admin.access.user.search.frm.chk.roles".i) with Immediate
   val tcsRoles = new TwinColSelect with MultiSelectBehavior[RoleId]
-  val chkOther = new CheckBox("admin.access.user.search.frm.chk.other".i) with Immediate
+  //val chkOther = new Label("Misc") with UndefinedSize //new CheckBox("admin.access.user.search.frm.chk.other".i) with Immediate
   val chkIncludeInactive = new CheckBox("admin.access.user.search.frm.other.chk.include_inactive".i)
   val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
     val btnClear = new Button("admin.access.user.search.frm.buttons.btn.clear".i) { setStyleName("small") }
@@ -254,13 +328,16 @@ class UserSearchFormUI extends CustomLayout("admin/access/user/search/form") wit
     addComponents(this, btnClear, btnSearch)
   }
 
+  tcsRoles.setLeftColumnCaption("admin.access.user.search.frm.roles.tcs.lbl.available".i)
+  tcsRoles.setRightColumnCaption("admin.access.user.search.frm.roles.tcs.lbl.selected".i)
+
   addNamedComponents(this,
     "admin.access.user.search.frm.chk.text" -> chkText,
     "admin.access.user.search.frm.text" -> txtText,
     "admin.access.user.search.frm.chk.roles" -> chkRole,
     "admin.access.user.search.frm.roles" -> tcsRoles,
-    "admin.access.user.search.frm.chk.other" -> chkOther,
-    "admin.access.user.search.frm.other" -> chkIncludeInactive,
+    //"admin.access.user.search.frm.chk.other" -> chkOther,
+    "admin.access.user.search.frm.misc" -> chkIncludeInactive,
     "admin.access.user.search.frm.buttons" -> lytButtons
   )
 }

@@ -712,9 +712,6 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
 }
 
 
-/**
- * Control for managing list of users.
- */
 trait UserListUISetup { this: UserListUI =>
 
   btnAdd.addClickHandler {
@@ -731,6 +728,9 @@ trait UserListUISetup { this: UserListUI =>
 }
 
 
+/**
+ * Component for managing list of users.
+ */
 class UserListUI(caption: String = "") extends GridLayout(2, 1) with Spacing {
   val lstUsers = new ListSelect(caption) with MultiSelectBehavior[UserId]
   val btnAdd = new Button("+")
