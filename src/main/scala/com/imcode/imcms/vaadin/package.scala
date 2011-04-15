@@ -53,6 +53,11 @@ package object vaadin {
     case value => Some(fn(value))
   }
 
+  def whenSingle[A, B](seq: Seq[A])(fn: A => B): Option[B] = seq match {
+    case Seq(a) => Some(fn(a))
+    case _ => None
+  }
+
   @deprecated("prototype code")
   def addItem(table: Table, id: AnyRef, data: AnyRef*) = table.addItem(data.toArray[AnyRef], id)
 

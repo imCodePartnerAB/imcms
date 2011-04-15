@@ -1,7 +1,6 @@
 package com.imcode
 package imcms.admin.document
 
-import imcms.admin.access.user.{UserSelectDialog}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.api._
@@ -10,6 +9,7 @@ import imcode.server.{Imcms}
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.document._
 import com.imcode.imcms.vaadin.{TwinSelect => TWSelect, _}
+import imcms.admin.access.user.{UserSearchDialog}
 
 /** Meta model */
 class MetaModel(val meta: Meta,
@@ -189,14 +189,14 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
 
     // affects model
     ui.lytPublication.btnChoosePublisher addClickHandler {
-      application.initAndShow(new OkCancelDialog("Choose publisher") with UserSelectDialog) { dlg =>
+      application.initAndShow(new OkCancelDialog("Choose publisher") with UserSearchDialog) { dlg =>
         dlg.wrapOkHandler {
-          dlg.userSelect.selection match {
-            case Some(user) =>
+          dlg.search.selection match {
+            case Seq(user) =>
               model.meta.setPublisherId(user.getId)
               ui.lytPublication.lblPublisherName.value = user.getLoginName
 
-            case None =>
+            case _ =>
               model.meta.setPublisherId(null)
               ui.lytPublication.lblPublisherName.value = "No publisher selected"
           }

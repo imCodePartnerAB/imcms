@@ -8,9 +8,9 @@ import com.vaadin.ui._
 
 // todo add security check, add editAndSave, add external UI
 class UserManager(app: ImcmsApplication) {
-  val userSelect = new UserSelect
+  private val search = new UserSearch(multiSelect = true)
 
-  val ui = letret(new UserManagerUI(userSelect.ui)) { ui =>
+  val ui = letret(new UserManagerUI(search.ui)) { ui =>
     val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     ui.miNew setCommandHandler {
@@ -38,18 +38,17 @@ class UserManager(app: ImcmsApplication) {
               u setLanguageIso639_2 c.sltUILanguage.value
 
               roleMapper.addUser(u)
-              userSelect.reload()
+              search.reload()
             }
           }
         }
       }
     }
 
-   ui.miEdit setCommandHandler {
-      whenSelected(ui.userSelectUI.tblUsers) { userId =>
+    ui.miEdit setCommandHandler {
+      whenSingle(search.selection) { user =>
         app.initAndShow(new OkCancelDialog("Edit user")) { dlg =>
-          let(dlg setMainContent new UserEditorUI) { c =>
-            val user = roleMapper.getUser(userId.intValue)
+          dlg.mainUI = letret(new UserEditorUI) { c =>
             val userRoleIds = user.getRoleIds
 
             c.chkActivated setValue user.isActive
@@ -86,20 +85,20 @@ class UserManager(app: ImcmsApplication) {
               user setLanguageIso639_2 c.sltUILanguage.value
 
               roleMapper.saveUser(user)
-              userSelect.reload()
+              search.reload()
             }
           }
         }
       }
     }
 
-    userSelect.listen { ui.miEdit setEnabled _.isDefined }
-    userSelect.notifyListeners()
+    search.listen { ui.miEdit setEnabled _.size == 1 }
+    search.notifyListeners()
   }
 }
 
 
-class UserManagerUI(val userSelectUI: UserSelectUI) extends VerticalLayout with Spacing {
+class UserManagerUI(val searchUI: Component) extends VerticalLayout with Spacing {
   import com.imcode.imcms.vaadin.Theme.Icons._
 
   val mb = new MenuBar
@@ -107,7 +106,7 @@ class UserManagerUI(val userSelectUI: UserSelectUI) extends VerticalLayout with 
   val miEdit = mb.addItem("Edit", Edit16)
   val miHelp = mb.addItem("Help", Help16)
 
-  addComponents(this, mb, userSelectUI)
+  addComponents(this, mb, searchUI)
 }
 
 
