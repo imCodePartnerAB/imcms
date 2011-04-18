@@ -19,7 +19,7 @@ import api.Document
 import imcode.server.document.{DocumentTypeDomainObject, DocumentDomainObject}
 import PartialFunction.condOpt
 import admin.access.user.UserSearchDialog
-
+import java.util.{Calendar, Date}
 
 trait DocItemsRange { this: DocSearch =>
   docTableUI.addListener(new Container.ItemSetChangeListener {
@@ -662,7 +662,14 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
   }
 
   val chkDates = new CheckBox("doc.search.advanced.frm.chk.dates".i) with Immediate
-  val lytDates = new VerticalLayout with UndefinedSize with Spacing
+  val lytDates = new FormLayout with UndefinedSize {
+    val drCreated = new DocDateRangeUI("created") with DocDateRangeUISetup
+    val drModified = new DocDateRangeUI("modified") with DocDateRangeUISetup
+    val drPublished = new DocDateRangeUI("published") with DocDateRangeUISetup
+    val drExpired = new DocDateRangeUI("expired") with DocDateRangeUISetup
+
+    addComponents(this, drCreated, drModified, drPublished, drExpired)
+  }
 
   val chkCategories = new CheckBox("doc.search.advanced.frm.chk.categories".i) with Immediate
   val tcsCategories = new TwinColSelect
@@ -687,10 +694,14 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
   }
 
   val chkMaintainers = new CheckBox("doc.search.advanced.frm.chk.maintainers".i) with Immediate
-  val lytMaintainers = new HorizontalLayout with UndefinedSize {
-    //val lstCreators = new ListSelect("doc.search.advanced.frm.chk.maintainers.creators".i)
-    val ulCreators = new UserListUI("doc.search.advanced.frm.chk.maintainers.creators".i) with UserListUISetup
-    val ulPublishers = new UserListUI("doc.search.advanced.frm.chk.maintainers.publishers".i) with UserListUISetup
+  val lytMaintainers = new HorizontalLayout with Spacing with UndefinedSize{
+    val ulCreators = new UserListUI("doc.search.advanced.frm.chk.maintainers.creators".i) with UserListUISetup {
+      val searchDialogCaption = "Select creator"
+    }
+
+    val ulPublishers = new UserListUI("doc.search.advanced.frm.chk.maintainers.publishers".i) with UserListUISetup {
+      val searchDialogCaption = "Select publisher"
+    }
 
     addComponents(this, ulCreators, ulPublishers)
   }
@@ -713,10 +724,11 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
 
 
 trait UserListUISetup { this: UserListUI =>
+  val searchDialogCaption: String
 
   btnAdd.addClickHandler {
-    getApplication.initAndShow(new OkCancelDialog with UserSearchDialog) { dlg =>
-      dlg.setOkHandler {
+    getApplication.initAndShow(new OkCancelDialog(searchDialogCaption) with UserSearchDialog) { dlg =>
+      dlg.wrapOkHandler {
         for (user <- dlg.search.selection) lstUsers.addItem(Int box user.getId, "#" + user.getLoginName)
       }
     }
@@ -731,7 +743,7 @@ trait UserListUISetup { this: UserListUI =>
 /**
  * Component for managing list of users.
  */
-class UserListUI(caption: String = "") extends GridLayout(2, 1) with Spacing {
+class UserListUI(caption: String = "") extends GridLayout(2, 1) {
   val lstUsers = new ListSelect(caption) with MultiSelectBehavior[UserId]
   val btnAdd = new Button("+")
   val btnRemove = new Button("-")
@@ -741,4 +753,71 @@ class UserListUI(caption: String = "") extends GridLayout(2, 1) with Spacing {
   addComponents(this, lstUsers, lytButtons)
 
   setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
+}
+
+
+object DocRangeType extends Enumeration {
+  val Undefined, Custom, Day, Week, Month, Quarter, Year = Value
+}
+
+
+class DocDateRangeUI(caption: String = "") extends HorizontalLayout with Spacing with UndefinedSize {
+  val cbRangeType = new ComboBox with ValueType[DocRangeType.Value] with NoNullSelection with Immediate
+  val dtFrom = new PopupDateField with DayResolution
+  val dtTo = new PopupDateField with DayResolution
+
+  dtFrom.setInputPrompt("From")
+  dtTo.setInputPrompt("To")
+
+  setCaption(caption)
+
+  addComponents(this, cbRangeType, dtFrom, dtTo)
+}
+
+
+trait DocDateRangeUISetup { this: DocDateRangeUI =>
+  import DocRangeType._
+
+  cbRangeType.addValueChangeHandler {
+    forlet(dtFrom, dtTo) { _ setEnabled false }
+    val now = new Date
+    val calendar = Calendar.getInstance
+
+    cbRangeType.value match {
+      case Undefined =>
+        dtFrom.setValue(null)
+        dtTo.setValue(null)
+
+      case Custom =>
+        forlet(dtFrom, dtTo) { dt => dt setEnabled true; dt.value = now }
+
+      case Day =>
+        calendar.add(Calendar.DAY_OF_MONTH, -1)
+        dtFrom.value = calendar.getTime
+        dtTo.value = now
+
+      case Week =>
+        calendar.add(Calendar.DAY_OF_MONTH, -7)
+        dtFrom.value = calendar.getTime
+        dtTo.value = now
+
+      case Month =>
+        calendar.add(Calendar.MONTH, -1)
+        dtFrom.value = calendar.getTime
+        dtTo.value = now
+
+      case Quarter =>
+        calendar.add(Calendar.MONTH, -3)
+        dtFrom.value = calendar.getTime
+        dtTo.value = now
+
+      case Year =>
+        calendar.add(Calendar.YEAR, -1)
+        dtFrom.value = calendar.getTime
+        dtTo.value = now
+    }
+  }
+
+  values foreach { cbRangeType addItem _ }
+  cbRangeType.value = Undefined
 }

@@ -113,7 +113,7 @@ class UserManagerUI(val searchUI: Component) extends VerticalLayout with Spacing
 /**
  * Add/Edit user dialog content.
  */
-class UserEditorUI extends FormLayout {
+class UserEditorUI extends FormLayout with UndefinedSize {
   val txtLogin = new TextField("Username")
   val txtPassword = new PasswordField("4-16 characters")
   val txtVerifyPassword = new PasswordField("4-16 characters (retype)")
@@ -124,24 +124,24 @@ class UserEditorUI extends FormLayout {
   val sltUILanguage = new Select("Interface language") with ValueType[String] with NoNullSelection
   val txtEmail = new TextField("Email")
 
-  val lytPassword = new HorizontalLayoutUI("Password") {
+  val lytPassword = new HorizontalLayoutUI("Password") with UndefinedSize {
       addComponent(txtPassword)
       addComponent(txtVerifyPassword)
   }
 
-  val lytName = new HorizontalLayoutUI("Name") {
+  val lytName = new HorizontalLayoutUI("Name") with UndefinedSize {
       addComponent(txtFirstName)
       addComponent(txtLastName)
   }
 
-  val lytLogin = new HorizontalLayoutUI("Login") {
+  val lytLogin = new HorizontalLayoutUI("Login") with UndefinedSize {
     addComponents(this, txtLogin, chkActivated)
     setComponentAlignment(chkActivated, Alignment.BOTTOM_LEFT)
   }
 
   val btnContacts = new Button("Edit...") with LinkStyle with Disabled
 
-  val lytContacts = new HorizontalLayout {
+  val lytContacts = new HorizontalLayout with UndefinedSize {
     setCaption("Contacts")
     addComponent(btnContacts)
   }

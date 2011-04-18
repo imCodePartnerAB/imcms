@@ -17,9 +17,6 @@ import scala.PartialFunction.{condOpt}
 //
 
 
-
-
-
 trait UserSearchDialog { this: OkCancelDialog =>
   val search = new UserSearch
 
