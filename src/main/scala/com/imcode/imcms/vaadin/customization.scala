@@ -262,3 +262,18 @@ object Checks {
     require(c.getHeightUnits != Sizeable.UNITS_PERCENTAGE, "Component height must not be difined in percentage.")
   }
 }
+
+case class FunctionProperty[A](valueFn: () => A)(implicit mf: Manifest[A]) extends Property {
+
+  def setReadOnly(newStatus: Boolean) = throw new UnsupportedOperationException
+
+  val isReadOnly = true
+
+  val getType = mf.erasure
+
+  def setValue(newValue: AnyRef) = throw new UnsupportedOperationException
+
+  def getValue = valueFn().asInstanceOf[AnyRef]
+
+  override def toString = ?(getValue) map { _.toString } getOrElse ""
+}

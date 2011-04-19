@@ -20,47 +20,32 @@ import imcode.server.document.{DocumentTypeDomainObject, DocumentDomainObject}
 import PartialFunction.condOpt
 import admin.access.user.UserSearchDialog
 import java.util.{Calendar, Date}
+import java.util.concurrent.atomic.AtomicReference
 
-trait DocItemsRange { this: DocSearch =>
-  docTableUI.addListener(new Container.ItemSetChangeListener {
-    def containerItemSetChange(event: Container.ItemSetChangeEvent) {
-      basicSearchForm.setRangeInputPrompt(
-        condOpt(docTableUI.container.getItemIds) { case ids if ids.nonEmpty => (ids.min.intValue, ids.max.intValue) }
-      )
-    }
-  })
-}
-
-
-trait DocDBRange { this: DocSearch =>
-  // check if db is not empty or NPE might be thrown
-  val idRange = Imcms.getServices.getDocumentMapper.getDocumentIdRange
-  basicSearchForm.setRangeInputPrompt(Some(idRange.getMinimumInteger, idRange.getMaximumInteger))
-}
+case class DocFilter()
 
 /**
  * Doc search consists of two forms for specifying search params and a table that displays search result.
  */
-class DocSearch {
+class DocSearch(val docProvider: DocProvider) {
   val basicSearchForm = new DocBasicSearchForm
   val advancedSearchForm = new DocAdvancedSearchForm
   val advancedSearchFormPanel = new Panel with Scrollable with UndefinedSize with FullHeight {
     setStyleName(Panel.STYLE_LIGHT)
     setContent(advancedSearchForm.ui)
   }
-  // listen for changes and modify search range.
-  // db range -> range; selected docs: only docs in 'selection'
-  val docTableUI = new DocTableUI with FullSize
+
+  val docViewUI = new DocViewUI(new DocContainer) with FullSize
 
   val ui = letret(new GridLayout(1, 2) with Spacing with FullSize) { ui =>
     ui.addComponent(basicSearchForm.ui)
-    ui.addComponent(docTableUI)
+    ui.addComponent(docViewUI)
     ui.setRowExpandRatio(1, 1f)
 
     basicSearchForm.ui.btnAdvanced.addClickHandler {
       val component = ui.getComponent(0, 1) match {
-        case `docTableUI` => advancedSearchFormPanel
-        case _ => docTableUI
+        case `docViewUI` => advancedSearchFormPanel
+        case _ => docViewUI
       }
 
       ui.removeComponent(0, 1)
@@ -70,8 +55,8 @@ class DocSearch {
     basicSearchForm.ui.lytButtons.btnSearch.addClickHandler {
       // check
       ui.removeComponent(0, 1)
-      ui.addComponent(docTableUI, 0, 1)
-      basicSearchForm.setRangeInputPrompt(Some(1001, 1051))
+      ui.addComponent(docViewUI, 0, 1)
+      submit()
     }
 
     basicSearchForm.ui.lytButtons.btnClear.addClickHandler { reset() }
@@ -80,7 +65,7 @@ class DocSearch {
       if (!basicSearchForm.ui.chkAdvanced.booleanValue) {
         // check
         ui.removeComponent(0, 1)
-        ui.addComponent(docTableUI, 0, 1)
+        ui.addComponent(docViewUI, 0, 1)
       }
     }
   }
@@ -88,29 +73,52 @@ class DocSearch {
   def reset() {
     basicSearchForm.reset()
     advancedSearchForm.reset()
+    update()
+    submit()
+  }
+
+  def update() {
+    basicSearchForm.setRangeInputPrompt(docProvider.range)
+  }
+
+  def submit() {
+    docViewUI.setContainerDataSource(new DocContainer(docProvider.docIds))
   }
 }
 
 
-case class FunctionProperty[A](valueGetter: Function0[A])(implicit mf: Manifest[A]) extends Property {
-
-  def setReadOnly(newStatus: Boolean) = throw new UnsupportedOperationException
-
-  val isReadOnly = true
-
-  val getType = mf.erasure
-
-  def setValue(newValue: AnyRef) = throw new UnsupportedOperationException
-
-  def getValue = valueGetter().asInstanceOf[AnyRef]
-
-  override def toString = ?(getValue) map { _.toString } getOrElse ""
+trait DocProvider {
+  def range: Option[(DocId, DocId)]
+  def docIds: Seq[DocId]
 }
 
-/**
- * Doc table container
- */
-class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty) extends Container with Container.Ordered { //with Container.ItemSetChangeNotifier
+
+class AllDocProvider extends DocProvider {
+  private val docMapper = Imcms.getServices.getDocumentMapper
+
+  def range = let(docMapper.getDocumentIdRange) { idsRange =>
+    Some(Int box idsRange.getMinimumInteger, Int box idsRange.getMaximumInteger)
+  }
+
+  def docIds = docMapper.getAllDocumentIds.toSeq
+}
+
+
+class CustomDocProvider extends DocProvider {
+
+  private var customDocIds = Seq.empty[DocId]
+
+  def range = condOpt(docIds) { case ids if ids.nonEmpty => (ids.min, ids.max) }
+
+  def docIds = customDocIds
+
+  def addDocId(docId: DocId) = customDocIds :+= docId
+
+  def removeDocId(docId: DocId) = customDocIds.remove(docId)
+}
+
+
+class DocContainer(docIds: Seq[DocId] = Seq.empty) extends Container with Container.Ordered {
 
   private val propertyIdToType = ListMap(
       "doc.tbl.col.id" -> classOf[DocId],
@@ -202,9 +210,11 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
 
   def addItem() = throw new UnsupportedOperationException
 
-  def addItem(itemId: AnyRef) = let(itemId.asInstanceOf[JInteger]) { id =>
-    letret(DocItem(id)) { _ => itemIds += id }
-  }
+  def removeItem(itemId: AnyRef) = throw new UnsupportedOperationException
+
+  def addItem(itemId: AnyRef) = throw new UnsupportedOperationException
+
+  def removeAllItems = throw new UnsupportedOperationException
 
   def getType(propertyId: AnyRef) = propertyIdToType(propertyId.asInstanceOf[String])
 
@@ -212,23 +222,16 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
 
   def getContainerProperty(itemId: AnyRef, propertyId: AnyRef) = getItem(itemId).getItemProperty(propertyId)
 
-  def size = itemIds.size
+  def size = docIds.size
 
-  def removeItem(itemId: AnyRef) = letret(true) { _ => itemIds -= itemId.asInstanceOf[JInteger] }
-
-  def removeAllItems = letret(true) { _ => itemIds = SortedSet.empty }
-
-  def containsId(itemId: AnyRef) = itemIds.contains(itemId.asInstanceOf[JInteger])
+  def containsId(itemId: AnyRef) = docIds.contains(itemId.asInstanceOf[JInteger])
 
   def addContainerProperty(propertyId: AnyRef, `type` : Class[_], defaultValue: AnyRef) = throw new UnsupportedOperationException
 
   def removeContainerProperty(propertyId: AnyRef) = throw new UnsupportedOperationException
 
-  def getItemIds = itemIds
+  def getItemIds = docIds
 
-//  def removeListener(listener: ItemSetChangeListener) {}
-//
-//  def addListener(listener: ItemSetChangeListener) {}
   def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef) = null
 
   def addItemAfter(previousItemId: AnyRef) = null
@@ -237,12 +240,12 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
 
   def isFirstId(itemId: AnyRef) = itemId == firstItemId
 
-  def lastItemId() = itemIds.last
+  def lastItemId() = docIds.last
 
-  def firstItemId() = itemIds.head
+  def firstItemId() = docIds.head
 
   // extremely ineffective prototype
-  def prevItemId(itemId: AnyRef) = let(itemIds.toIndexedSeq) { seq =>
+  def prevItemId(itemId: AnyRef) = let(docIds.toIndexedSeq) { seq =>
     seq.indexOf(itemId.asInstanceOf[DocId]) match {
       case index if index > 0 => seq(index - 1)
       case _ => null
@@ -250,7 +253,7 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
   }
 
   // extremely ineffective prototype
-  def nextItemId(itemId: AnyRef) = let(itemIds.toIndexedSeq) { seq =>
+  def nextItemId(itemId: AnyRef) = let(docIds.toIndexedSeq) { seq =>
     seq.indexOf(itemId.asInstanceOf[DocId]) match {
       case index if index < (size - 1) => seq(index + 1)
       case _ => null
@@ -259,17 +262,23 @@ class DocTableContainer(private var itemIds: SortedSet[DocId] = SortedSet.empty)
 }
 
 
-class DocTableUI(val container: DocTableContainer = new DocTableContainer) extends Table(null, container)
+class DocViewUI(container: DocContainer) extends Table(null, container)
     with MultiSelectBehavior[DocId] with DocTableItemIcon with Selectable {
 
   setColumnCollapsingAllowed(true)
   setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
   setColumnHeaders(container.getContainerPropertyIds map (_.i) toArray )
   List("doc.tbl.col.parents", "doc.tbl.col.children") foreach { setColumnCollapsed(_, true) }
+
+  def setContainer(container: DocContainer) {
+    val collapsedColumns = getContainerPropertyIds filter isColumnCollapsed
+    setContainerDataSource(container)
+    collapsedColumns foreach (setColumnCollapsed(_, true))
+  }
 }
 
-//object DocTableUI {
-//  def apply(fullSize: Boolean = false) = let(new DocTableContainer) { container =>
+//object DocViewUI {
+//  def apply(fullSize: Boolean = false) = let(new DocContainer) { container =>
 //    new Table(null, container) with DocTableItemIcon with MultiSelect2[DocId] with Selectable { table =>
 //      if (fullSize) table.setSizeFull
 //      setColumnCollapsingAllowed(true)
@@ -406,7 +415,7 @@ trait DocStatusItemIcon extends AbstractSelect {
 
 trait DocTableItemIcon extends AbstractSelect with XSelect[DocId] {
   override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
-    case docItem: DocTableContainer#DocItem =>
+    case docItem: DocContainer#DocItem =>
       new ExternalResource("imcms/eng/images/admin/status/%s.gif" format docItem.doc.getLifeCyclePhase.toString)
 
     case _ => null
@@ -429,7 +438,7 @@ class DocBasicSearchForm {
     }
   }
 
-  def setRangeInputPrompt(range: Option[(Int, Int)]) {
+  def setRangeInputPrompt(range: Option[(DocId, DocId)]) {
     let(range map { case (start, end) => (start.toString, end.toString) } getOrElse ("", "")) {
       case (start, end) =>
         ui.lytRange.txtStart.setInputPrompt(start)
@@ -466,7 +475,7 @@ class DocBasicSearchForm {
       val start = condOpt(ui.lytRange.txtStart.value.trim) { case value if value.nonEmpty => value.toInt }
       val end = condOpt(ui.lytRange.txtEnd.value.trim) { case value if value.nonEmpty => value.toInt }
       val newState = currentState.copy(
-        range = if (start.isEmpty && end.isEmpty) None else Some(DocRange(start, end))
+        range = if (start.isEmpty && end.isEmpty) None else Some(DocSearchRange(start, end))
       )
 
       ui.lytRange.setEnabled(true)
@@ -521,10 +530,10 @@ class DocBasicSearchForm {
   }
 }
 
-case class DocRange(start: Option[Int] = None, end: Option[Int] = None)
+case class DocSearchRange(start: Option[Int] = None, end: Option[Int] = None)
 
 case class DocBasicSearchFormState(
-  range: Option[DocRange] = None,
+  range: Option[DocSearchRange] = None,
   text: Option[String] = None,
   docType: Option[Set[DocumentTypeDomainObject]] = None
 )
