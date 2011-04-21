@@ -20,10 +20,32 @@
       <function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
       <function-signature>java.lang.String join(java.util.Collection, java.lang.String)</function-signature>
   </function>
-  
+
+
+   <tag>
+        <name>libraryChildren</name>
+        <tag-class>com.imcode.imcms.addon.imagearchive.tag.LibraryChildren</tag-class>
+        <body-content>empty</body-content>
+       <attribute>
+           <name>library</name>
+           <required>true</required>
+           <rtexprvalue>true</rtexprvalue>
+       </attribute>
+       <attribute>
+           <name>currentLibrary</name>
+           <required>true</required>
+           <rtexprvalue>true</rtexprvalue>
+       </attribute>
+       <attribute>
+           <name>libraries</name>
+           <required>true</required>
+           <rtexprvalue>true</rtexprvalue>
+       </attribute>
+   </tag>
+
   <tag>
       <name>param</name>
-      <tagclass>com.imcode.imcms.addon.imagearchive.tag.param.ParamTag</tagclass>
+      <tag-class>com.imcode.imcms.addon.imagearchive.tag.param.ParamTag</tag-class>
       <body-content>empty</body-content>
       
       <attribute>
@@ -34,18 +56,19 @@
   </tag>
   <tag>
       <name>params</name>
-      <tagclass>com.imcode.imcms.addon.imagearchive.tag.param.ParamsTag</tagclass>
+      <tag-class>com.imcode.imcms.addon.imagearchive.tag.param.ParamsTag</tag-class>
       <body-content>JSP</body-content>
       
       <attribute>
           <name>var</name>
           <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
       </attribute>
   </tag>
   
   <tag>
       <name>pagination</name>
-      <tagclass>com.imcode.imcms.addon.imagearchive.tag.pagination.PaginationTag</tagclass>
+      <tag-class>com.imcode.imcms.addon.imagearchive.tag.pagination.PaginationTag</tag-class>
       <body-content>JSP</body-content>
       
       <attribute>
