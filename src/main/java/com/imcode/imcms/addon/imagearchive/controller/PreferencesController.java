@@ -1,5 +1,6 @@
 package com.imcode.imcms.addon.imagearchive.controller;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +90,14 @@ public class PreferencesController {
         model.put("currentRole", role);
         
         List<Libraries> libraries = facade.getLibraryService().findLibraries();
+        final List<File> firstLevelLibraries = facade.getFileService().listFirstLevelLibraryFolders();
+        CollectionUtils.filter(libraries, new Predicate() {
+            public boolean evaluate(Object o) {
+                Libraries lib = (Libraries) o;
+                return lib.getFilepath() != null && firstLevelLibraries.contains(new File(lib.getFilepath()));
+            }
+        });
+
         Libraries library = getLibrary(session, libraries);
         
         List<Roles> availableLibraryRoles = Collections.emptyList();
@@ -129,8 +141,8 @@ public class PreferencesController {
         model.put("categories", facade.getCategoryService().getCategories());
         
         model.put("roles", roles);
-        
-        model.put("libraries", facade.getLibraryService().findLibraries());
+
+        model.put("libraries", libraries);
         model.put("freeCategories", facade.getRoleService().findFreeCategories(role.getId()));
         model.put("roleCategories", facade.getRoleService().findRoleCategories(role.getId()));
         

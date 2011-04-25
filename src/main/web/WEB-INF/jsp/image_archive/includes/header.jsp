@@ -8,10 +8,13 @@
     <meta http-equiv="imagetoolbar" content="no" />
     <link rel="shortcut icon" href="${contextPath}/images/favicon.ico"/>
     <link href="${contextPath}/css/image_archive.css" rel="stylesheet" type="text/css" />
+    <link href="${contextPath}/css/blue/style.css" rel="stylesheet" type="text/css" />
     
     ${css}
     <script type="text/javascript" src="${contextPath}/js/jquery-1.3.2.js"></script>
     <script type="text/javascript" src="${contextPath}/js/image_archive.js"></script>
+    <script type="text/javascript" src="${contextPath}/js/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="${contextPath}/js/jquery.qtip-1.0.0-rc3.min.js"></script>
     ${javascript}
 </head>
 <body>

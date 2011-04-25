@@ -55,7 +55,7 @@ public class LibraryService {
 
         syncOldLibraryFolders();
 
-        Set<String> folders = facade.getFileService().listLibraryFolders();
+        List<File> folders = facade.getFileService().listLibraryFolders();
 
         if (folders.isEmpty()) {
             session.getNamedQuery("deleteLibraryRoles")
@@ -97,11 +97,12 @@ public class LibraryService {
                     .executeUpdate();
         }
 
-        for (String folderNm : folders) {
+        for (File folder : folders) {
             Libraries lib = new Libraries();
-            lib.setFolderNm(folderNm);
-            lib.setLibraryNm(StringUtils.substring(folderNm, 0, 120));
+            lib.setFolderNm(folder.getName());
+            lib.setLibraryNm(StringUtils.substring(folder.getName(), 0, 120));
             lib.setLibraryType(Libraries.TYPE_STANDARD);
+            lib.setFilepath(folder.getPath());
 
             session.persist(lib);
         }
@@ -288,7 +289,7 @@ public class LibraryService {
 
         if (user.isSuperAdmin()) {
             return session.createQuery(
-                    "SELECT lib.id AS id, lib.libraryNm AS libraryNm FROM Libraries lib ORDER BY lib.libraryNm")
+                    "SELECT lib.id AS id, lib.libraryNm AS libraryNm, lib.filepath AS filepath FROM Libraries lib ORDER BY lib.libraryNm")
                     .setResultTransformer(Transformers.aliasToBean(LibrariesDto.class))
                     .list();
         }

@@ -43,6 +43,17 @@
        </attribute>
    </tag>
 
+    <tag>
+        <name>isInArchive</name>
+        <tag-class>com.imcode.imcms.addon.imagearchive.tag.ArchiveUtils</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>image</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
   <tag>
       <name>param</name>
       <tag-class>com.imcode.imcms.addon.imagearchive.tag.param.ParamTag</tag-class>

@@ -415,7 +415,7 @@ public class ImageService {
         } else {
             builder.append(
             		"DISTINCT im.id AS id, im.imageNm AS imageNm, im.width AS width, im.height AS height, " +
-            		"         e.artist AS artist, im.createdDt as createdDt, e.description ");
+            		"         e.artist AS artist, im.createdDt as createdDt, e.description, im.fileSize AS fileSize ");
         }
         
         builder.append("FROM Images im ");
@@ -633,6 +633,7 @@ public class ImageService {
             image.setWidth((Integer) row.get("width"));
             image.setHeight((Integer) row.get("height"));
             image.setArtist((String) row.get("artist"));
+            image.setFileSize((Integer) row.get("fileSize"));
 
             images.add(image);
         }

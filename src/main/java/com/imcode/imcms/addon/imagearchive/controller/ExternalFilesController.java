@@ -4,14 +4,13 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -79,13 +78,22 @@ public class ExternalFilesController {
         ModelAndView mav = new ModelAndView("image_archive/pages/external_files/external_files");
         
         List<LibrariesDto> libraries = facade.getLibraryService().findLibraries(user);
+        final List<File> firstLevelLibraries = facade.getFileService().listFirstLevelLibraryFolders();
+        CollectionUtils.filter(libraries, new Predicate() {
+            public boolean evaluate(Object o) {
+                LibrariesDto lib = (LibrariesDto) o;
+                return lib.getFilepath() != null && firstLevelLibraries.contains(new File(lib.getFilepath()));
+            }
+        });
+        List<LibrariesDto> allLibraries = facade.getLibraryService().findLibraries(user);
         
         LibrariesDto library = getLibrary(session, user, libraries);
         LibrarySort sortBy = getSortBy(session);
         List<LibraryEntryDto> libraryEntries = facade.getFileService().listLibraryEntries(library, sortBy);
-        
+
         mav.addObject("currentLibrary", library);
         mav.addObject("libraries", libraries);
+        mav.addObject("allLibraries", allLibraries);
         mav.addObject("libraryEntries", libraryEntries);
         mav.addObject("sortBy", sortBy);
         mav.addObject("externalFiles", new ExternalFilesCommand());
@@ -413,6 +421,47 @@ public class ExternalFilesController {
         model.put("name", name);
         
         return new ModelAndView("image_archive/pages/external_files/preview", model);
+    }
+
+    @RequestMapping("/archive/external-files/preview-tooltip")
+    public ModelAndView previewTooltipHandler(
+            @RequestParam(required=false) Integer id,
+            @RequestParam(required=false) String name,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
+        User user = cms.getCurrentUser();
+
+        LibrariesDto library = null;
+        ImageInfo imageInfo = null;
+        Integer fileSize = null;
+        if (!user.isDefaultUser() && id != null) {
+            if (id == LibrariesDto.USER_LIBRARY_ID) {
+                library = LibrariesDto.userLibrary(user);
+            } else {
+                library = facade.getLibraryService().findLibraryById(user, id);
+            }
+
+            name = StringUtils.trimToNull(name);
+
+            if (name != null) {
+                File imageFile = facade.getFileService().getImageFileFromLibrary(library, name);
+                if (imageFile != null) {
+                    fileSize = (int) imageFile.length();
+                    imageInfo = ImageOp.getImageInfo(imageFile);
+                }
+            }
+        }
+
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("user", user);
+        model.put("library", library);
+        model.put("imageInfo", imageInfo);
+        model.put("name", name);
+        model.put("size", fileSize);
+
+        return new ModelAndView("image_archive/pages/external_files/preview-tooltip", model);
     }
     
     @RequestMapping("/archive/external-files/image")

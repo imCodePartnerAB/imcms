@@ -413,7 +413,12 @@ var initExternalFiles = function() {
             
             return false;
         });
-        
+
+        $("#listOfLibraries li").click(function(event) {
+            event.stopPropagation();
+            changeLibrary($(this).attr("data-library-id"));
+        });
+
         var currentSortBy = $("input:radio:checked").val();
         $("input[name=sortBy]").click(function() {
             var sortBy = $(this).val();
@@ -435,7 +440,7 @@ var initExternalFiles = function() {
         };
         
         $("#show").click(function() {
-            var selected = $("#fileNames :selected");
+            var selected = $("#fileNames :checked");
             if (selected.length) {
                 showFilePreview(libraryId, selected.val());
             }

@@ -278,126 +278,160 @@ public class FileService {
         
         return filename;
     }
-    
-    public Set<String> listLibraryFolders() {
+
+    private List<File> getSubdirs(File file, FileFilter filter) {
+        if(file == null) {
+            return Collections.emptyList();
+        }
+
+        File[] subDirsTmp = file.listFiles(filter);
+        if(subDirsTmp == null) {
+            subDirsTmp = new File[0];
+        }
+
+        List<File> subdirs = Arrays.asList(subDirsTmp);
+        subdirs = new ArrayList<File>(subdirs);
+
+        List<File> deepSubdirs = new ArrayList<File>();
+        for(File subdir : subdirs) {
+            deepSubdirs.addAll(getSubdirs(subdir, filter));
+        }
+
+        subdirs.addAll(deepSubdirs);
+        return subdirs;
+    }
+
+    public List<File> listFirstLevelLibraryFolders() {
         final String usersFolder = config.getUsersLibraryFolder();
-        
+
         File[] files = config.getLibrariesPath().listFiles(new FileFilter() {
             public boolean accept(File file) {
                 String name = file.getName();
-                
+
                 return file.isDirectory() && !name.equals(usersFolder) && name.length() <= 255;
             }
         });
-        
+
         if (files == null) {
-        	return Collections.emptySet();
+        	return Collections.emptyList();
         }
-        
-        Set<String> dirNames = new HashSet<String>(files.length);
-        
-        for (int i = 0, len = files.length; i < len; i++) {
-            dirNames.add(files[i].getName());
-        }
-        
-        return dirNames;
+
+        return Arrays.asList(files);
     }
-    
+
+    public List<File> listLibraryFolders() {
+        final String usersFolder = config.getUsersLibraryFolder();
+
+        List<File> files = getSubdirs(config.getLibrariesPath(), new FileFilter() {
+            public boolean accept(File file) {
+                String name = file.getName();
+
+                return file.isDirectory() && !name.equals(usersFolder) && name.length() <= 255;
+            }
+        });
+
+        if (files == null) {
+        	return Collections.emptyList();
+        }
+
+        return files;
+    }
+
     @SuppressWarnings("unchecked")
     public List<LibraryEntryDto> listLibraryEntries(LibrariesDto library, LibrarySort sortBy) {
         File libraryFile = null;
-        
+
         if (library.isUserLibrary()) {
             String libraryComponent = String.format("%s/%s", config.getUsersLibraryFolder(), library.getFolderNm());
-            
+
             libraryFile = new File(config.getLibrariesPath(), libraryComponent);
-            
+
         } else if (library.getLibraryType() == Libraries.TYPE_OLD_LIBRARY) {
             libraryFile = new File(library.getFilepath(), library.getFolderNm());
-            
+
         } else {
             libraryFile = new File(config.getLibrariesPath(), library.getFolderNm());
-            
+
         }
-        
+
         if (!(libraryFile.exists() || libraryFile.isDirectory())) {
             return Collections.emptyList();
         }
-        
+
         Collection<File> files = FileUtils.listFiles(libraryFile, IMAGE_EXTENSIONS, false);
         List<LibraryEntryDto> entries = new ArrayList<LibraryEntryDto>(files.size());
-        
+
         for (File file : files) {
             LibraryEntryDto entry = new LibraryEntryDto();
             entry.setFileName(file.getName());
             entry.setFileSize((int) file.length());
             entry.setLastModified(file.lastModified());
-            
+
             entries.add(entry);
         }
-        
+
         Collections.sort(entries, new LibraryEntryComparator(sortBy));
-        
+
         return entries;
     }
-    
+
     public boolean storeImageToLibrary(LibrariesDto library, File tempFile, String fileName) {
         File imageFile = getLibraryFile(library, fileName);
         try {
             FileUtils.copyFile(tempFile, imageFile);
-            
+
             return true;
         } catch (Exception ex) {
             imageFile.delete();
         }
-        
+
         return false;
     }
-    
+
     public boolean storeZipToLibrary(LibrariesDto library, File tempFile) {
         File parent = null;
         
         if (library.isUserLibrary()) {
             parent = new File(config.getLibrariesPath(), config.getUsersLibraryFolder());
-            
+
         } else if (library.getLibraryType() == Libraries.TYPE_OLD_LIBRARY) {
             parent = new File(library.getFilepath());
-            
+
         } else {
-            parent = config.getLibrariesPath();
-            
+            parent = new File(config.getLibrariesPath(), library.getFilepath());
+
         }
-        
+
         File rootPath = new File(parent, library.getFolderNm());
-        
+
         ZipFile zip = null;
         try {
             zip = new ZipFile(tempFile, ZipFile.OPEN_READ);
-            
+
             Enumeration<? extends ZipEntry> entries = zip.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                
+
                 String fileName = entry.getName();
                 Matcher matcher = FILENAME_PATTERN.matcher(fileName);
-                
+
                 if (!matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
                     continue;
                 }
-                
+
                 String extension = StringUtils.substringAfterLast(fileName, ".").toLowerCase();
                 if (!IMAGE_EXTENSIONS_SET.contains(extension)) {
                     continue;
                 }
-                
+
                 File entryFile = new File(rootPath, fileName);
-                
+
                 InputStream inputStream = null;
                 OutputStream outputStream = null;
                 try {
                     inputStream = zip.getInputStream(entry);
                     outputStream = new BufferedOutputStream(FileUtils.openOutputStream(entryFile));
-                    
+
                     IOUtils.copy(inputStream, outputStream);
                 } catch (Exception ex) {
                     log.warn(ex.getMessage(), ex);
@@ -407,7 +441,7 @@ public class FileService {
                     IOUtils.closeQuietly(inputStream);
                 }
             }
-            
+
             return true;
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
@@ -420,24 +454,24 @@ public class FileService {
                 }
             }
         }
-        
+
         return false;
     }
-    
+
     public void deleteFileFromLibrary(LibrariesDto library, String fileName) {
         File file = getLibraryFile(library, fileName);
         file.delete();
     }
-    
+
     public File getImageFileFromLibrary(LibrariesDto library, String fileName) {
         File file = getLibraryFile(library, fileName);
         if (!file.exists()) {
             return null;
         }
-        
+
         return file;
     }
-    
+
     private File getLibraryFile(LibrariesDto library, String fileName) {
         File parent = null;
         
