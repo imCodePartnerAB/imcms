@@ -13,7 +13,19 @@
         </c:when>
         <c:otherwise>
             <input type="hidden" id="libraryId" value="${currentLibrary.id}"/>
-            <div class="clearfix" style="width:85%;margin:0 auto;">
+            <div class="clearfix">
+                <label class="left" for="file" style="margin:3px 20px 3px 0;">
+                    <spring:message code="archive.externalFiles.uploadImageZip" htmlEscape="true"/>
+                </label>
+                <div class="left">
+                    <c:set var="disabled" value="${not currentLibrary.canChange}"/>
+                    <spring:message var="uploadText" code="archive.addImage.upload" htmlEscape="true"/>
+                    <input type="file" id="file" name="file" ${disabled ? 'disabled="disabled"' : ''} />
+                    <input type="submit" name="upload" value="${uploadText}" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}" /><br/>
+                    <form:errors path="file" cssClass="red"/>
+                </div>
+            </div>
+            <div class="clearfix" style="width:85%;margin:0 auto;margin-top:30px;">
                 <div class="left" style="width:80%;">
                     <label for="libraries" class="left"><spring:message code="archive.externalFiles.libraries" htmlEscape="true"/></label>
                     <label for="fileNames" class="right"><spring:message code="archive.externalFiles.imageFiles" htmlEscape="true"/></label>
@@ -119,7 +131,6 @@
                                 <th>Name</th>
                                 <th>Size</th>
                                 <th>Date</th>
-                                <th>In archive</th>
                             </thead>
                             <tbody>
                                 <c:forEach var="entry" items="${libraryEntries}">
@@ -141,11 +152,15 @@
 
                                     <spring:message var="fileNameText" code="archive.externalFiles.fileName" arguments="${fileNameArgs}" htmlEscape="true"/>
                                     <tr>
-                                        <td><input type="checkbox" name="fileNames" value="${fn:escapeXml(entry.fileName)}"/></td>
+                                        <td>
+                                            <c:if test="${archive:isInArchive(entry, pageContext)}">
+                                                <span style="font-weight:bold;font-size:20px;color:green;">&#10003;</span>
+                                            </c:if>
+                                            <input type="checkbox" name="fileNames" value="${fn:escapeXml(entry.fileName)}"/>
+                                        </td>
                                         <td class="fileName">${entry.fileName}</td>
                                         <td>${fileSize}</td>
                                         <td>${lastModifiedText}</td>
-                                        <td><archive:isInArchive image="${entry}"/></td>
                                     </tr>
                                     <%--<option value="${fn:escapeXml(entry.fileName)}" title="${fileNameText}">--%>
                                         <%--${fileNameText}--%>
@@ -224,18 +239,6 @@
                 </div>
             </div>
 
-            <div style="margin-top:30px;">
-                <label class="left" for="file" style="margin:3px 20px 3px 0;">
-                    <spring:message code="archive.externalFiles.uploadImageZip" htmlEscape="true"/>
-                </label>
-                <div class="left">
-                    <c:set var="disabled" value="${not currentLibrary.canChange}"/>
-                    <spring:message var="uploadText" code="archive.addImage.upload" htmlEscape="true"/>
-                    <input type="file" id="file" name="file" ${disabled ? 'disabled="disabled"' : ''} />
-                    <input type="submit" name="upload" value="${uploadText}" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}" /><br/>
-                    <form:errors path="file" cssClass="red"/>
-                </div>
-            </div>
         </c:otherwise>
     </c:choose>
 </form:form>

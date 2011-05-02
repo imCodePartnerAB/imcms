@@ -350,7 +350,7 @@ public class FileService {
             libraryFile = new File(library.getFilepath(), library.getFolderNm());
 
         } else {
-            libraryFile = new File(config.getLibrariesPath(), library.getFolderNm());
+            libraryFile = new File(library.getFilepath(), library.getFolderNm());
 
         }
 
@@ -398,7 +398,7 @@ public class FileService {
             parent = new File(library.getFilepath());
 
         } else {
-            parent = new File(config.getLibrariesPath(), library.getFilepath());
+            parent = new File(library.getFilepath());
 
         }
 

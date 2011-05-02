@@ -20,6 +20,11 @@
       <function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
       <function-signature>java.lang.String join(java.util.Collection, java.lang.String)</function-signature>
   </function>
+    <function>
+        <name>isInArchive</name>
+        <function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
+        <function-signature>boolean isInArchive(com.imcode.imcms.addon.imagearchive.dto.LibraryEntryDto, javax.servlet.jsp.PageContext)</function-signature>
+    </function>
 
 
    <tag>
@@ -42,17 +47,6 @@
            <rtexprvalue>true</rtexprvalue>
        </attribute>
    </tag>
-
-    <tag>
-        <name>isInArchive</name>
-        <tag-class>com.imcode.imcms.addon.imagearchive.tag.ArchiveUtils</tag-class>
-        <body-content>empty</body-content>
-        <attribute>
-            <name>image</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-    </tag>
 
   <tag>
       <name>param</name>

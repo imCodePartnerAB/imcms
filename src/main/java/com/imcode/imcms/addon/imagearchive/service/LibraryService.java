@@ -69,7 +69,7 @@ public class LibraryService {
         }
 
         List<Libraries> existingLibraries = session.createQuery(
-                "SELECT lib.id AS id, lib.folderNm AS folderNm FROM Libraries lib WHERE lib.libraryType = :typeStandard")
+                "SELECT lib.id AS id, lib.folderNm AS folderNm, lib.filepath as filepath FROM Libraries lib WHERE lib.libraryType = :typeStandard")
                 .setShort("typeStandard", Libraries.TYPE_STANDARD)
                 .setResultTransformer(Transformers.aliasToBean(Libraries.class))
                 .list();
@@ -77,12 +77,12 @@ public class LibraryService {
         List<Integer> toDelete = new ArrayList<Integer>();
 
         for (Libraries lib : existingLibraries) {
-            String folderNm = lib.getFolderNm();
+            File libraryFolder = new File(lib.getFilepath(), lib.getFolderNm());
 
-            if (!folders.contains(folderNm)) {
+            if (!folders.contains(libraryFolder)) {
                 toDelete.add(lib.getId());
             } else {
-                folders.remove(folderNm);
+                folders.remove(libraryFolder);
             }
         }
 
@@ -102,7 +102,7 @@ public class LibraryService {
             lib.setFolderNm(folder.getName());
             lib.setLibraryNm(StringUtils.substring(folder.getName(), 0, 120));
             lib.setLibraryType(Libraries.TYPE_STANDARD);
-            lib.setFilepath(folder.getPath());
+            lib.setFilepath(folder.getParent());
 
             session.persist(lib);
         }
@@ -289,7 +289,8 @@ public class LibraryService {
 
         if (user.isSuperAdmin()) {
             return session.createQuery(
-                    "SELECT lib.id AS id, lib.libraryNm AS libraryNm, lib.filepath AS filepath FROM Libraries lib ORDER BY lib.libraryNm")
+                    "SELECT lib.id AS id, lib.libraryNm AS libraryNm, lib.filepath AS filepath, lib.folderNm AS folderNm" +
+                            " FROM Libraries lib ORDER BY lib.libraryNm")
                     .setResultTransformer(Transformers.aliasToBean(LibrariesDto.class))
                     .list();
         }
@@ -300,7 +301,8 @@ public class LibraryService {
         }
 
         return session.createQuery(
-                "SELECT DISTINCT lib.id AS id, lib.libraryNm AS libraryNm FROM LibraryRoles lr INNER JOIN lr.library lib " +
+                "SELECT DISTINCT lib.id AS id, lib.libraryNm AS libraryNm, lib.filepath AS filepath, lib.folderNm AS folderNm" +
+                        " FROM LibraryRoles lr INNER JOIN lr.library lib " +
                 "WHERE lr.roleId IN (:roleIds) ORDER BY lib.libraryNm ")
                 .setParameterList("roleIds", roleIds)
                 .setResultTransformer(Transformers.aliasToBean(LibrariesDto.class))

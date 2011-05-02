@@ -18,7 +18,7 @@ public class LibraryChildren extends TagSupport {
     public int doStartTag() throws JspException {
         String path = getLibrary().getFilepath();
         if (path != null) {
-            File file = new File(path);
+            File file = new File(path, getLibrary().getLibraryNm());
             try {
                 JspWriter out = pageContext.getOut();
                 LibrariesDto lib = getLibrary();
@@ -68,7 +68,7 @@ public class LibraryChildren extends TagSupport {
     private LibrariesDto matchPathToLibrary(File path) {
         for(LibrariesDto lib: getLibraries()) {
             if(lib.getFilepath() != null) {
-                File f = new File(lib.getFilepath());
+                File f = new File(lib.getFilepath(), lib.getLibraryNm());
                 if(path.equals(f)) {
                     return lib;
                 }

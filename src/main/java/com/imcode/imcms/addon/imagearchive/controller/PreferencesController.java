@@ -94,7 +94,7 @@ public class PreferencesController {
         CollectionUtils.filter(libraries, new Predicate() {
             public boolean evaluate(Object o) {
                 Libraries lib = (Libraries) o;
-                return lib.getFilepath() != null && firstLevelLibraries.contains(new File(lib.getFilepath()));
+                return firstLevelLibraries.contains(new File(lib.getFilepath(), lib.getFolderNm()));
             }
         });
 
