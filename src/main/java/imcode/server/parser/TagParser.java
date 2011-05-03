@@ -410,9 +410,10 @@ public class TagParser {
     public String tagText(Properties attributes, ContentLoop loop, Content content) {
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
 
-        if ( shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && textMode ) {
+        if ( shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse==null ) {
             return "";
         }
+
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
         String noStr = attributes.getProperty("no");
         int no;
@@ -440,7 +441,7 @@ public class TagParser {
             }
         }
 
-        if ( textMode ) {
+        if (textMode && (textDocumentToUse.getId() == document.getId())) {
             HttpServletRequest request = documentRequest.getHttpServletRequest();
             HttpServletResponse response = documentRequest.getHttpServletResponse();
             String formatsAttribute = attributes.getProperty("formats", "");
