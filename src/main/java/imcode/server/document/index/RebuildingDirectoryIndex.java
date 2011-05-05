@@ -3,27 +3,29 @@ package imcode.server.document.index;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.request.LukeRequest;
+import org.apache.solr.common.util.NamedList;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class RebuildingDirectoryIndex implements DocumentIndex {
 
     private final static Logger log = Logger.getLogger(RebuildingDirectoryIndex.class.getName());
+
+    private final static String SOLR_INDEX_PARAM = "index";
+    private final static String SOLR_INDEX_LAST_MODIFIED_PARAM = "lastModified";
+    private final static String SOLR_INDEX_NUMDOCS_PARAM = "numDocs";
 
     private final BackgroundIndexBuilder backgroundIndexBuilder;
     private final long indexRebuildSchedulePeriodInMilliseconds;
@@ -32,24 +34,35 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
 
     private DirectoryIndex index = new NullDirectoryIndex();
 
-    public RebuildingDirectoryIndex(File indexParentDirectory, float indexRebuildSchedulePeriodInMinutes,
-                                    IndexDocumentFactory indexDocumentFactory) {
-        indexRebuildSchedulePeriodInMilliseconds = (long) ( indexRebuildSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE );
-        backgroundIndexBuilder = new BackgroundIndexBuilder(indexParentDirectory, this, indexDocumentFactory);
+    public RebuildingDirectoryIndex(SolrServer solrServer, float indexRebuildSchedulePeriodInMinutes,
+                                    SolrIndexDocumentFactory indexDocumentFactory) {
+        indexRebuildSchedulePeriodInMilliseconds = (long) ( indexRebuildSchedulePeriodInMinutes * DateUtils.MILLIS_PER_MINUTE );
+        backgroundIndexBuilder = new BackgroundIndexBuilder(solrServer, this, indexDocumentFactory);
 
-        File indexDirectory = findLatestIndexDirectory(indexParentDirectory);
-        long indexModifiedTime = 0;
-        if ( null != indexDirectory ) {
-            indexModifiedTime = indexDirectory.lastModified();
-            index = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
-        } else {
-            rebuildBecauseOfError("No existing index.", null);
-        }
+        try {
+            NamedList solrParams = solrServer.request(new LukeRequest());
 
-        if ( isSchedulingIndexRebuilds() ) {
-            log.info("First index rebuild scheduled at " + formatDatetime(restartIndexRebuildScheduling(indexModifiedTime)));
-        } else {
-            log.info("Scheduling of index rebuilds is disabled.");
+            NamedList indexParams = (NamedList)solrParams.get(SOLR_INDEX_PARAM);
+            int numDocs = (Integer)indexParams.get(SOLR_INDEX_NUMDOCS_PARAM);
+            Date lastModifiedDate = (Date)indexParams.get(SOLR_INDEX_LAST_MODIFIED_PARAM);
+
+            long indexModifiedTime = 0;
+            if ( numDocs > 0) {
+                indexModifiedTime = lastModifiedDate.getTime();
+                index = new SolrDirectoryIndex(solrServer, indexDocumentFactory);
+            } else {
+                rebuildBecauseOfError("No existing index.", null);
+            }
+
+            if ( isSchedulingIndexRebuilds() ) {
+                log.info("First index rebuild scheduled at " + formatDatetime(restartIndexRebuildScheduling(indexModifiedTime)));
+            } else {
+                log.info("Scheduling of index rebuilds is disabled.");
+            }
+        } catch (SolrServerException e) {
+            throw new IndexException(e);
+        } catch (IOException e) {
+            throw new IndexException(e);
         }
     }
 
@@ -73,7 +86,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
         try {
             log.debug("Restarting scheduling of index rebuilds. First rebuild at "+formatDatetime(nextTime)+".") ;
-            backgroundIndexBuilder.touchIndexParentDirectory();
+//            backgroundIndexBuilder.touchIndexParentDirectory();
             currentIndexRebuildTimerTask = new IndexRebuildTimerTask(indexRebuildSchedulePeriodInMilliseconds, backgroundIndexBuilder);
             scheduledIndexRebuildTimer.scheduleAtFixedRate(currentIndexRebuildTimerTask, nextTime, indexRebuildSchedulePeriodInMilliseconds);
         } catch ( IllegalStateException ise ) {
@@ -83,40 +96,6 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
 
     private boolean isSchedulingIndexRebuilds() {
         return indexRebuildSchedulePeriodInMilliseconds > 0;
-    }
-
-    static File findLatestIndexDirectory(File indexParentDirectory) {
-        try {
-            if ( indexParentDirectory.exists() && !indexParentDirectory.isDirectory() ) {
-                log.debug("Deleting non-directory " + indexParentDirectory);
-                FileUtils.forceDelete(indexParentDirectory);
-            }
-            if ( !indexParentDirectory.exists() ) {
-                log.debug("Creating directory " + indexParentDirectory);
-                FileUtils.forceMkdir(indexParentDirectory);
-            }
-            File[] indexDirectories = indexParentDirectory.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
-            sortFilesByLastModifiedWithLatestFirst(indexDirectories);
-            File indexDirectory = null;
-            for ( int i = 0; i < indexDirectories.length; i++ ) {
-                File directory = indexDirectories[i];
-                if ( IndexReader.indexExists(directory) ) {
-                    if ( null == indexDirectory ) {
-                        log.debug("Found index in directory " + directory);
-                        indexDirectory = directory;
-                    } else {
-                        log.debug("Deleting old index directory " + directory);
-                        FileUtils.forceDelete(directory);
-                    }
-                } else {
-                    log.debug("Deleting non-index directory " + directory);
-                    FileUtils.forceDelete(directory);
-                }
-            }
-            return indexDirectory;
-        } catch ( IOException ioe ) {
-            throw new IndexException(ioe);
-        }
     }
 
     private static void sortFilesByLastModifiedWithLatestFirst(File[] indexDirectories) {

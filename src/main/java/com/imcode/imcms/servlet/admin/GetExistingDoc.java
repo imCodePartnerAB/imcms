@@ -51,8 +51,8 @@ import com.imcode.imcms.flow.Page;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import org.apache.lucene.document.DateTools;
 import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.solr.common.util.DateUtil;
 
 public class GetExistingDoc extends HttpServlet {
 
@@ -73,6 +73,8 @@ public class GetExistingDoc extends HttpServlet {
         {"publication_start_datetime", new LocalizedMessage( SORT_BY_LANGUAGE_KEY_PREFIX+"published_datetime") },
     };
     static final Map SORT_ORDERS_MAP = Utility.getMapViewOfObjectPairArray( SORT_ORDERS_ARRAY) ;
+
+    private DateFormat solrDateFormat = DateUtil.getThreadLocalDateFormat();
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         ImcmsServices imcref = Imcms.getServices();
@@ -412,10 +414,10 @@ public class GetExistingDoc extends HttpServlet {
                 }
 
                 Term startDateTerm = null != startDate
-                                     ? new Term( wantedIndexDateField, DateTools.dateToString(startDate, DateTools.Resolution.SECOND)) : null;
+                                    ? new Term( wantedIndexDateField, solrDateFormat.format(startDate)) 
+                                    : null;
                 Term endDateTerm = null != endDate
-                                   ? new Term( wantedIndexDateField,
-                                               DateTools.dateToString( addOneDayToDate( endDate ), DateTools.Resolution.SECOND ) )
+                                   ? new Term( wantedIndexDateField, solrDateFormat.format( addOneDayToDate( endDate )) )
                                    : null;
                 RangeQuery dateRangeQuery = new RangeQuery( startDateTerm, endDateTerm, true );
                 query.add( dateRangeQuery, Occur.MUST );

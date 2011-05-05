@@ -1,6 +1,5 @@
 <%@ page import="com.imcode.imcms.api.*,
                  imcode.server.Imcms,
-                 org.apache.lucene.document.DateTools,
                  org.apache.lucene.index.Term,
                  org.apache.lucene.search.BooleanQuery,
                  org.apache.lucene.search.BooleanClause.Occur, 
@@ -8,11 +7,12 @@
                  org.apache.lucene.search.Sort,
                  org.apache.lucene.search.SortField,
                  org.apache.lucene.search.TermQuery,
-                 java.util.Calendar, java.util.Date"
+                 java.util.Calendar, java.util.Date, 
+                 java.text.DateFormat"
          errorPage="error.jsp"
-
          contentType="text/html; charset=UTF-8"%>
 <%
+    DateFormat solrDateFormat = org.apache.solr.common.util.DateUtil.getThreadLocalDateFormat();
 	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING);
 	ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
@@ -54,7 +54,7 @@
             Date startDate = calendar.getTime() ;
             calendar.set(2005, Calendar.JANUARY, 1) ;
             Date endDate = calendar.getTime() ;
-            luceneQuery.add(new RangeQuery(new Term("modified_datetime", DateTools.dateToString(startDate, DateTools.Resolution.SECOND)), new Term("modified_datetime", DateTools.dateToString(endDate, DateTools.Resolution.SECOND)), false), Occur.MUST);
+            luceneQuery.add(new RangeQuery(new Term("modified_datetime", solrDateFormat.format(startDate)), new Term("modified_datetime", solrDateFormat.format(endDate)), false), Occur.MUST);
             query = new LuceneQuery(luceneQuery);
             query.setSort(new Sort("modified_datetime"));
             documents = documentService.search(query);
@@ -111,8 +111,8 @@
         <%
             luceneQuery = new BooleanQuery();
             luceneQuery.add(new TermQuery(new Term("status", ""+Document.PublicationStatus.NEW)), Occur.MUST) ;
-            Term lowerTerm = new Term("publication_start_datetime", DateTools.dateToString(new Date(0), DateTools.Resolution.SECOND));
-            Term upperTerm = new Term("publication_start_datetime", DateTools.dateToString(new Date(), DateTools.Resolution.SECOND));
+            Term lowerTerm = new Term("publication_start_datetime", solrDateFormat.format(new Date(0)));
+            Term upperTerm = new Term("publication_start_datetime", solrDateFormat.format(new Date()));
             luceneQuery.add(new RangeQuery(lowerTerm, upperTerm, false), Occur.MUST);
             query = new LuceneQuery(luceneQuery) ;
             query.setSort(new Sort("publication_start_datetime"));

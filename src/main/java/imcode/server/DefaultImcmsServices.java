@@ -2,8 +2,9 @@ package imcode.server;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.IndexDocumentFactory;
 import imcode.server.document.index.RebuildingDirectoryIndex;
+import imcode.server.document.index.SolrIndexDocumentFactory;
+import imcode.server.document.index.SolrFactory;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.Authenticator;
@@ -52,9 +53,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
@@ -233,9 +234,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initDocumentMapper() {
-        File indexDirectory = new File(getRealContextPath(), "WEB-INF/index");
+        SolrFactory solrFactory = SolrFactory.getInstance();
+        SolrServer solrServer = solrFactory.createServer();
         documentMapper = new DocumentMapper(this, this.getDatabase());
-        documentMapper.setDocumentIndex(new LoggingDocumentIndex(database, new PhaseQueryFixingDocumentIndex(new RebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes(), new IndexDocumentFactory(getCategoryMapper()))))) ;
+        documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,
+                new PhaseQueryFixingDocumentIndex(
+                    new RebuildingDirectoryIndex(solrServer, getConfig().getIndexingSchedulePeriodInMinutes(),
+                        new SolrIndexDocumentFactory(getCategoryMapper()))))) ;
     }
 
     private void initTemplateMapper() {

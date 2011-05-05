@@ -38,7 +38,6 @@ import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.flow.Page;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
-import org.apache.lucene.document.DateTools;
 import org.apache.lucene.search.BooleanClause.Occur;
 
 public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderPage {
@@ -75,6 +74,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
     private int documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
     private DocumentDomainObject selectedDocument;
     private Query query;
+    private DateFormat solrDateFormat = org.apache.solr.common.util.DateUtil.getThreadLocalDateFormat();
 
     private DocumentFinder documentFinder;
 
@@ -224,8 +224,11 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
                 dateField = DocumentIndex.FIELD__PUBLICATION_START_DATETIME;
             }
 
-            Term lowerTerm = new Term( dateField, DateTools.dateToString(calculatedStartDate, DateTools.Resolution.MINUTE));
-            Term upperTerm = new Term( dateField, DateTools.dateToString(calculatedEndDate, DateTools.Resolution.MINUTE) );
+//            Term lowerTerm = new Term( dateField, DateTools.dateToString(calculatedStartDate, DateTools.Resolution.MINUTE));
+            Term lowerTerm = new Term( dateField, solrDateFormat.format(calculatedStartDate));
+//            Term upperTerm = new Term( dateField, DateTools.dateToString(calculatedEndDate, DateTools.Resolution.MINUTE) );
+            Term upperTerm = new Term( dateField, solrDateFormat.format(calculatedEndDate) );
+
             Query publicationStartedQuery = new RangeQuery( lowerTerm, upperTerm, true );
             newQuery.add( publicationStartedQuery, Occur.MUST );
         }

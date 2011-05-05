@@ -2,7 +2,7 @@ package imcode.server.document.index;
 
 public interface DirectoryIndex extends DocumentIndex {
 
-    boolean isInconsistent();
+    boolean isInconsistent() throws IndexException;
 
-    void delete();
+    void delete() throws IndexException;
 }

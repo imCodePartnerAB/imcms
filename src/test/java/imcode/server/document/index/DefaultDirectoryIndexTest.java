@@ -7,7 +7,7 @@ import org.junit.Test;
  */
 public class DefaultDirectoryIndexTest {
 
-    DefaultDirectoryIndex index;
+    SolrDirectoryIndex index;
 
     @Test
     public void indexDocument() {}

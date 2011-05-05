@@ -5,9 +5,6 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.List;
 
-/**
- * @see DefaultDirectoryIndex.
- */
 public interface DocumentIndex {
 
     String FIELD__DOC_TYPE_ID = "doc_type_id";

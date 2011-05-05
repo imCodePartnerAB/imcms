@@ -1,8 +1,5 @@
 package imcode.server.document.index;
 
-import imcode.server.document.DocumentDomainObject;
-
-import java.io.File;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -11,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.apache.solr.client.solrj.SolrServer;
 
 class IndexBuildingThread extends Thread {
 
@@ -18,24 +16,25 @@ class IndexBuildingThread extends Thread {
     private final Set<Integer> documentsToRemoveFromNewIndex = Collections.synchronizedSet(new LinkedHashSet<Integer>());
     private final static Logger log = Logger.getLogger(IndexBuildingThread.class.getName());
     private final BackgroundIndexBuilder backgroundIndexBuilder;
-    private final File indexDirectory;
 
     private boolean indexing;
-    private IndexDocumentFactory indexDocumentFactory;
+    private SolrServer solrServer;
+    private SolrIndexDocumentFactory indexDocumentFactory;
 
-    IndexBuildingThread(BackgroundIndexBuilder backgroundIndexBuilder, File indexDirectory,
-                        IndexDocumentFactory indexDocumentFactory) {
-        this.indexDirectory = indexDirectory;
+    IndexBuildingThread(BackgroundIndexBuilder backgroundIndexBuilder,
+                        SolrServer solrServer,
+                        SolrIndexDocumentFactory indexDocumentFactory) {
         this.backgroundIndexBuilder = backgroundIndexBuilder;
         setName(ClassUtils.getShortClassName(getClass())+"-"+getName());
         setPriority(Thread.MIN_PRIORITY);
         setDaemon(true);
+        this.solrServer = solrServer;
         this.indexDocumentFactory = indexDocumentFactory;
     }
 
     public void run() {
         NDC.push(Thread.currentThread().getName());
-        DefaultDirectoryIndex newIndex = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory) ;
+        SolrDirectoryIndex newIndex = new SolrDirectoryIndex(solrServer, indexDocumentFactory) ;
         try {
             synchronized ( this ) {
                 indexing = true ;

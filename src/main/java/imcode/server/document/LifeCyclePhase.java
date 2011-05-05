@@ -11,9 +11,8 @@ import org.apache.lucene.search.RangeQuery;
 import org.apache.lucene.search.TermQuery;
 
 import com.imcode.imcms.api.Document;
-import org.apache.lucene.document.DateField;
-import org.apache.lucene.document.DateTools;
 import org.apache.lucene.search.BooleanClause;
+import org.apache.solr.common.util.DateUtil;
 
 public abstract class LifeCyclePhase {
 
@@ -85,7 +84,8 @@ public abstract class LifeCyclePhase {
      */
     private static RangeQuery getDateRangeQuery(String field, Date now) {
         return new RangeQuery(null,
-                              new Term(field, DateTools.dateToString(now, DateTools.Resolution.MINUTE)),
+                                new Term(field, DateUtil.getThreadLocalDateFormat().format(now)),
+//                              new Term(field, DateTool.dateToString(now, DateTools.Resolution.MINUTE)),
                               true);
     }
 
