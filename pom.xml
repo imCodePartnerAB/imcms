@@ -691,6 +691,22 @@
             <version>2.8.1</version>
         </dependency>
 
+        <dependency>
+           <artifactId>solr-solrj</artifactId>
+           <groupId>org.apache.solr</groupId>
+           <version>1.4.0</version>
+           <type>jar</type>
+           <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+           <artifactId>solr-core</artifactId>
+           <groupId>org.apache.solr</groupId>
+           <version>1.4.0</version>
+           <type>jar</type>
+           <scope>compile</scope>
+        </dependency>
+
         <!--<dependency>-->
         <!--<groupId>org.eclipse.jetty</groupId>-->
         <!--<artifactId>jetty-server</artifactId>-->
