@@ -11,10 +11,13 @@ import java.net.URL;
 
 public class HttpSolrFactory extends SolrFactory {
 
+    public HttpSolrFactory(Config config) {
+        super(config);
+    }
+
     @Override
     public SolrServer createServer() {
         try {
-            Config config = Imcms.getServices().getConfig();
             URL url = new URL(new URL(config.getSolrHttpServerURL()), config.getSolrCoreName());
             return new CommonsHttpSolrServer(url);
         } catch (MalformedURLException e) {

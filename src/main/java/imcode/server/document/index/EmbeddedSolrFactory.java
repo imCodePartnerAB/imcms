@@ -21,10 +21,13 @@ public class EmbeddedSolrFactory extends SolrFactory {
         }
     }
 
+    public EmbeddedSolrFactory(Config config) {
+        super(config);
+    }
+
     @Override
     public SolrServer createServer() {
         try {
-            Config config = Imcms.getServices().getConfig();
             return new EmbeddedSolrServer(coreContainer, config.getSolrCoreName());
         } catch (Exception e) {
             throw new IndexException(e);
