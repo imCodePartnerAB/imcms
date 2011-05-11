@@ -1,4 +1,5 @@
-package com.imcode.imcms.admin.doc.template
+package com.imcode
+package imcms.admin.doc
 
 package object template {
   type TemplateGroupId = JInteger
