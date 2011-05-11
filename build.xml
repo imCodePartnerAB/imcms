@@ -197,17 +197,17 @@
     </target>
 
     <target name="database-create" depends="init">
-
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
              userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
             CREATE DATABASE ${db-name}
         </sql>
+    </target>
 
+    <target name="database-init" depends="init">
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
             <transaction src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}-${db-target}.sql"/>
         </sql>
-
     </target>
 
     <target name="database-drop" depends="init">
@@ -220,6 +220,8 @@
     </target>
 
     <target name="database-recreate" depends="init,database-drop,database-create"/>
+
+    <target name="database-recreate-init" depends="init,database-drop,database-create,database-init"/>
 
     <target name="install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
         <copy todir="${webapproot}">
