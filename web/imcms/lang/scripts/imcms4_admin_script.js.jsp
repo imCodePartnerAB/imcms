@@ -134,60 +134,64 @@ jQ(document).ready(function($) {
 	<%--
 	Init contextMenu
 	--%>
-	$(".imcms_text_admin").contextMenu(
-		{
-			menu: 'imcmsContextMenuTextField'
-		}, function abort(id, el) {<%--
-			console.log(
-				'ABORT:\n' +
-				'  id:     ' + id + '\n' +
-				'  href:   ' + $(el).attr('href')
-			) ;--%>
-		}, function callback(id, action, $el, pos) {<%--
-			console.log(
-				'CALLBACK:\n' +
-				'  id:     ' + id + '\n' +
-				'  action: ' + action + '\n' +
-				'  href:   ' + $el.attr('href') + '\n' +
-				'  rev:    ' + $el.attr('rev') + '\n' +
-				'  html:   ' + $el.outerHTML()
-			) ;--%>
-			switch (action) {
-				case 'OPEN_NORMAL':
-					window.setTimeout(function() {
-						openTextEditNormal($, $el, id, null) ;
-					}, 1000) ;
-					break ;
-				case 'OPEN_INLINE_EDITING':
-					$('#' + id + '_container').trigger('dblclick') ;
-					break ;
-				case 'USE_INLINE_EDITING':
-					private_USE_INLINE_EDITING = !private_USE_INLINE_EDITING ;
-					imcmsSetCookie('<%= USE_INLINE_EDITING %>', private_USE_INLINE_EDITING + '') ;
-					$('#li_USE_INLINE_EDITING').removeClass('active') ;
-					$('#li_OPEN_INLINE_EDITING').removeClass('disabled') ;
-					if (private_USE_INLINE_EDITING) {
-						$('#li_USE_INLINE_EDITING').addClass('active') ;
-						editablePluginActivate($) ;
-					} else {
-						$('#li_OPEN_INLINE_EDITING').addClass('disabled') ;
-						editablePluginDestroy($) ;
+	try {
+		if ($(".imcms_text_admin").length > 0) {
+			$(".imcms_text_admin").contextMenu(
+				{
+					menu: 'imcmsContextMenuTextField'
+				}, function abort(id, el) {<%--
+					console.log(
+						'ABORT:\n' +
+						'  id:     ' + id + '\n' +
+						'  href:   ' + $(el).attr('href')
+					) ;--%>
+				}, function callback(id, action, $el, pos) {<%--
+					console.log(
+						'CALLBACK:\n' +
+						'  id:     ' + id + '\n' +
+						'  action: ' + action + '\n' +
+						'  href:   ' + $el.attr('href') + '\n' +
+						'  rev:    ' + $el.attr('rev') + '\n' +
+						'  html:   ' + $el.outerHTML()
+					) ;--%>
+					switch (action) {
+						case 'OPEN_NORMAL':
+							window.setTimeout(function() {
+								openTextEditNormal($, $el, id, null) ;
+							}, 1000) ;
+							break ;
+						case 'OPEN_INLINE_EDITING':
+							$('#' + id + '_container').trigger('dblclick') ;
+							break ;
+						case 'USE_INLINE_EDITING':
+							private_USE_INLINE_EDITING = !private_USE_INLINE_EDITING ;
+							imcmsSetCookie('<%= USE_INLINE_EDITING %>', private_USE_INLINE_EDITING + '') ;
+							$('#li_USE_INLINE_EDITING').removeClass('active') ;
+							$('#li_OPEN_INLINE_EDITING').removeClass('disabled') ;
+							if (private_USE_INLINE_EDITING) {
+								$('#li_USE_INLINE_EDITING').addClass('active') ;
+								editablePluginActivate($) ;
+							} else {
+								$('#li_OPEN_INLINE_EDITING').addClass('disabled') ;
+								editablePluginDestroy($) ;
+							}
+							break ;
+						case 'USE_WIDTH':
+							private_USE_WIDTH = !private_USE_WIDTH ;
+							imcmsSetCookie('<%= USE_WIDTH %>', private_USE_WIDTH + '') ;
+							$('#li_USE_WIDTH').removeClass('active') ;
+							if (private_USE_WIDTH) {
+								$('#li_USE_WIDTH').addClass('active') ;
+							}
+							break ;
+						case 'SHOW_HELP':
+							$dialog.dialog('open') ;
+							break ;
 					}
-					break ;
-				case 'USE_WIDTH':
-					private_USE_WIDTH = !private_USE_WIDTH ;
-					imcmsSetCookie('<%= USE_WIDTH %>', private_USE_WIDTH + '') ;
-					$('#li_USE_WIDTH').removeClass('active') ;
-					if (private_USE_WIDTH) {
-						$('#li_USE_WIDTH').addClass('active') ;
-					}
-					break ;
-				case 'SHOW_HELP':
-					$dialog.dialog('open') ;
-					break ;
-			}
+				}
+			) ;
 		}
-	) ;
+	} catch (e) {}
 	
 }) ;
 
