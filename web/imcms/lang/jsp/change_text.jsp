@@ -1237,8 +1237,10 @@ jQuery(document).ready(function($) {
 	}) ;
 }) ;
 
-function saveText($, closeAfter) {
-	console.log('closeAfter: ' + closeAfter) ;
+function saveText($, closeAfter) {<%
+	if (DEBUG_SAVE) { %>
+	console.log('closeAfter: ' + closeAfter) ;<%
+	} %>
 	isSaving = true ;
 	var isSavedSuccess = false ;
 	var $btnSaveClose = $('#saveCloseBtn') ;
