@@ -129,6 +129,9 @@ request.setAttribute("documentationUrl", documentationUrl);
 </tr>
 </table>
 
+<br/>
+<imcms:text document="1004" no='1' label='<br/>Text' pre='<div class="text">' post='</div>' />
+<imcms:text document="1004" no='2' label='<br/>Text' pre='<div class="text">' post='</div>' />
 
 </body>
 </html>

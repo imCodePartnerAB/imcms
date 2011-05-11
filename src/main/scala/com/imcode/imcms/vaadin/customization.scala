@@ -26,6 +26,10 @@ case class ContainerProperty[A >: Null : Manifest](id: AnyRef, defaultValue: Any
 trait ValueType[A >: Null] extends Property {
   def value = getValue.asInstanceOf[A]
   def value_=(v: A) = setValue(v)
+
+  def trim(implicit ev: A =:= String) = value.trim
+  def isBlank(implicit ev: A =:= String) = trim.isEmpty
+  def notBlank(implicit ev: A =:= String) = !isBlank
 }
 
 trait ItemIdType[A >: Null] extends Container {

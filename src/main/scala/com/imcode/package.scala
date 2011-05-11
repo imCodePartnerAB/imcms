@@ -22,19 +22,16 @@ package object imcode {
   //?? delete ??
   def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
 
-  //?? delete ??
+  /** extractor */
   object IntNumber {
-    import scala.util.control.Exception.catching
-
-    def unapply(s: String): Option[Int] = catching(classOf[NumberFormatException]) opt { s.toInt }
+    def unapply(s: String): Option[Int] = EX.catching(classOf[NumberFormatException]) opt { s.toInt }
   }
 
-//  object PosInt {
-//    def unapply(s: String): Boolean = s match {
-//      case Int(n) => n >= 0
-//      case _ => false
-//    }
-//  }
+  /** extractor */
+  object PosInt {
+    def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(0 >=)
+  }
+
 //
 //  object NegInt {
 //    def unapply(s: String): Boolean = s match {
@@ -63,6 +60,8 @@ package object imcode {
     fn(expr)
     expr
   }
+
+  def whenOpt[A](expr: Boolean)(byName: => A) = PartialFunction.condOpt(expr) { case true => byName }
 
   //def whenNonEmpty[A](xs:Seq[A])(f: Seq[A] => Unit) = if (xs.nonEmpty) f(xs)
 

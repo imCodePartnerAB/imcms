@@ -2,7 +2,7 @@ package com.imcode
 package imcms.admin
 
 
-import document.PermissionsEditor
+import doc.PermissionsEditor
 import scala.collection.JavaConversions._
 import com.imcode._
 import com.vaadin.ui._
@@ -284,7 +284,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
   // doadmin prototype
   def docadmin = {
-    import com.imcode.imcms.admin.document.{MetaEditor, EditorsFactory, MetaModel}
+    import com.imcode.imcms.admin.doc.{MetaEditor, EditorsFactory, MetaModel}
 
     val dm = Imcms.getServices.getDocumentMapper
     val btnNewTextDoc = new Button("New text doc")
@@ -435,7 +435,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   
 
   lazy val documents = new VerticalLayout with Margin with FullSize {
-    val manager = new com.imcode.imcms.admin.document.DocManager(app)
+    val manager = new com.imcode.imcms.admin.doc.DocManager(app)
     val tabSheet = new TabSheet with FullSize
     tabSheet.addTab(manager.ui, "Document", Tab32)
 
@@ -549,8 +549,8 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
 
   lazy val templates = new VerticalLayout with Margin {
-    val templateManager = new com.imcode.imcms.admin.document.template.TemplateManager(app)
-    val templateGroupManager = new com.imcode.imcms.admin.document.template.group.TemplateGroupManager(app)
+    val templateManager = new com.imcode.imcms.admin.doc.template.TemplateManager(app)
+    val templateGroupManager = new com.imcode.imcms.admin.doc.template.group.TemplateGroupManager(app)
 
     val tabSheet = new TabSheet
     tabSheet.addTab(templateManager.ui, "Templates", Tab32)
@@ -564,8 +564,8 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
 
   lazy val categories = new VerticalLayout with Margin {
-    val categoryManager = new com.imcode.imcms.admin.document.category.CategoryManager(app)
-    val categoryTypeManager = new com.imcode.imcms.admin.document.category.`type`.CategoryTypeManager(app)
+    val categoryManager = new com.imcode.imcms.admin.doc.category.CategoryManager(app)
+    val categoryTypeManager = new com.imcode.imcms.admin.doc.category.`type`.CategoryTypeManager(app)
 
     val tabSheet = new TabSheet
     tabSheet.addTab(categoryManager.ui, "Categories ", Tab32)
