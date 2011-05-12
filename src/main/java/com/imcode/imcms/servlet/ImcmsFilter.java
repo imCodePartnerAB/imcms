@@ -40,7 +40,7 @@ import com.imcode.imcms.api.I18nLanguage;
  * Front filter - initializes Imcms and intercepts all requests.
  *
  * Request handling depends on a current imcms mode:
- * When in maintenance mode service unavailable error is sent.
+ * When in maintenance mode then service unavailable error is sent.
  * Otherwise request is processed normally.
  *
  * @see imcode.server.Imcms
@@ -73,67 +73,71 @@ public class ImcmsFilter implements Filter {
 
         public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
                 throws IOException, ServletException {
-            req.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
+            try {
+                req.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
 
-            HttpServletRequest request = (HttpServletRequest)req;
-            HttpServletResponse response = (HttpServletResponse)res;
+                HttpServletRequest request = (HttpServletRequest)req;
+                HttpServletResponse response = (HttpServletResponse)res;
 
-            HttpSession session = request.getSession();
+                HttpSession session = request.getSession();
 
-            ImcmsServices service = Imcms.getServices();
+                ImcmsServices service = Imcms.getServices();
 
-            if ( session.isNew() ) {
-                service.incrementSessionCounter();
-                setDomainSessionCookie( response, session );
-            }
-
-            String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
-            FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
-                                                                  null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
-            if ( null != workaroundUriEncoding ) {
-                request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
-            }
-
-            UserDomainObject user = Utility.getLoggedOnUser(request) ;
-            if ( null == user ) {
-                user = service.verifyUserByIpOrDefault(request.getRemoteAddr()) ;
-                assert user.isActive() ;
-                Utility.makeUserLoggedIn(request, user);
-                
-            // todo: add check AND NOT logged in by IP; optimize;
-            // In case system denies multiple login for the same user
-            // invalidate current session if it does not match to
-            // last user's session and redirect a user to the login page.
-            } else if (!user.isDefaultUser() && service.getConfig().isDenyMultipleUserLogin()) {
-                String sessionId = session.getId();
-                String lastUserSessionId = service
-                        .getImcmsAuthenticatorAndUserAndRoleMapper()
-                        .getUserSessionId(user);
-
-                if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
-                    VerifyUser.forwardToLoginPageTooManySessions(request, response);
-
-                    return;
+                if ( session.isNew() ) {
+                    service.incrementSessionCounter();
+                    setDomainSessionCookie( response, session );
                 }
+
+                String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
+                FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
+                                                                      null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
+                if ( null != workaroundUriEncoding ) {
+                    request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
+                }
+
+                UserDomainObject user = Utility.getLoggedOnUser(request) ;
+                if ( null == user ) {
+                    user = service.verifyUserByIpOrDefault(request.getRemoteAddr()) ;
+                    assert user.isActive() ;
+                    Utility.makeUserLoggedIn(request, user);
+
+                // todo: add check AND NOT logged in by IP; optimize;
+                // In case system denies multiple login for the same user
+                // invalidate current session if it does not match to
+                // last user's session and redirect a user to the login page.
+                } else if (!user.isDefaultUser() && service.getConfig().isDenyMultipleUserLogin()) {
+                    String sessionId = session.getId();
+                    String lastUserSessionId = service
+                            .getImcmsAuthenticatorAndUserAndRoleMapper()
+                            .getUserSessionId(user);
+
+                    if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
+                        VerifyUser.forwardToLoginPageTooManySessions(request, response);
+
+                        return;
+                    }
+                }
+
+                ResourceBundle resourceBundle = Utility.getResourceBundle(request);
+                Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
+
+                Imcms.setUser(user);
+                DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user);
+
+                Utility.initRequestWithApi(request, user);
+
+                NDC.setMaxDepth( 0 );
+                String contextPath = request.getContextPath();
+                if ( !"".equals( contextPath ) ) {
+                    NDC.push( contextPath );
+                }
+                NDC.push( StringUtils.substringAfterLast( request.getRequestURI(), "/" ) );
+
+                handleDocumentUri(filterChain, request, response, service, fallbackDecoder);
+                NDC.setMaxDepth( 0 );
+            } finally {
+                Imcms.removeUser();
             }
-
-            ResourceBundle resourceBundle = Utility.getResourceBundle(request);
-            Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
-
-            Imcms.setUser(user);
-            DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user);
-
-            Utility.initRequestWithApi(request, user);
-
-            NDC.setMaxDepth( 0 );
-            String contextPath = request.getContextPath();
-            if ( !"".equals( contextPath ) ) {
-                NDC.push( contextPath );
-            }
-            NDC.push( StringUtils.substringAfterLast( request.getRequestURI(), "/" ) );
-
-            handleDocumentUri(filterChain, request, response, service, fallbackDecoder);
-            NDC.setMaxDepth( 0 );
         }
 
         public void init(FilterConfig filterConfig) throws ServletException {}

@@ -9,6 +9,8 @@ import imcode.server.{Imcms, ImcmsConstants}
 
 
 object DocGetterCallbackUtil {
+
+  /** Creates callback and associates it with a current user. */
   def createAndSetDocGetterCallback(request: HttpServletRequest, user: UserDomainObject) {
     val currentDocGetterCallback = user.getDocGetterCallback
     val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage

@@ -284,6 +284,10 @@ public class Imcms {
     	users.set(user);
     }
 
+    public static void removeUser() {
+    	users.set(null);
+    }
+
     /**
      * Returns DocGetterCallback instance
      * @return
