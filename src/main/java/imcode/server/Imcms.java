@@ -118,7 +118,7 @@ public class Imcms {
                 throw new IllegalStateException("Spring application context is not set.");
             }
 
-            users = new ThreadLocal<UserDomainObject>();
+            users = new InheritableThreadLocal<UserDomainObject>();
 
             if (prepareDatabaseOnStart) {
                 prepareDatabase();
