@@ -76,9 +76,11 @@ public class Imcms {
     private static String sqlScriptsPath = DEFAULT_RELATIVE_SQL_SCRIPTS_PATH;
 
 	/**
+     * Users associated with servlet requests.
+     *
      * @see com.imcode.imcms.servlet.ImcmsFilter
      */
-	private static ThreadLocal<UserDomainObject> users;
+	private static InheritableThreadLocal<UserDomainObject> users;
    
     /**
      * Internalization support.
@@ -274,23 +276,30 @@ public class Imcms {
     }
 
     public static class StartupException extends RuntimeException {
-
         public StartupException(String message, Exception e) {
             super(message, e) ;
         }
     }
 
+
+    /**
+     * Associates a user with a current thread.
+     * This is a system call - must be never used in a client code.
+     */
     public static void setUser(UserDomainObject user) {
     	users.set(user);
     }
 
+    /**
+     * Removes a user from a current thread.
+     * This is a system call - must be never used in a client code.
+     */
     public static void removeUser() {
     	users.set(null);
     }
 
     /**
-     * Returns DocGetterCallback instance
-     * @return
+     * @return a user associated with a current thread.
      */
     public static UserDomainObject getUser() {
     	return users.get();
