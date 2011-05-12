@@ -53,7 +53,7 @@ public class ChangeText extends HttpServlet {
         int textIndex = Integer.parseInt(request.getParameter("txt"));
         String label = null == request.getParameter("label") ? "" : request.getParameter("label");
 
-        I18nLanguage language = Imcms.getUser().getDocGetterCallback().getParams().language;
+        I18nLanguage language = Imcms.getUser().getDocGetterCallback().getParams().language();
         TextDomainObject text = loopNo == null
                 ? textDocument.getText(textIndex)
                 : textDocument.getText(textIndex, loopNo, contentIndex);

@@ -5,5 +5,9 @@ package com.imcode.imcms.servlet;
  */
 public enum ImcmsMode {
 
-    NORMAL, MAINTENANCE
+    /** All core services and functionality is available. */
+    NORMAL,
+
+    /** All/Some core services or/and functionality might not be available. */
+    MAINTENANCE
 }

@@ -529,7 +529,7 @@ public class TagParser {
                            ContentLoop loop, Content content) {
 
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
-        if ( shouldOutputNothingAccordingToMode(attributes, imageMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && imageMode ) {
+        if ( shouldOutputNothingAccordingToMode(attributes, imageMode) || textDocumentToUse==null) {
             return "";
         }
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
@@ -558,7 +558,7 @@ public class TagParser {
             imageTag = ImcmsImageUtils.getImageHtmlTag(image, httpServletRequest, attributes);
         }
 
-        if ( imageMode ) {
+        if (imageMode && (textDocumentToUse.getId() == document.getId())) {
             String[] replace_tags = getLabelTags(attributes, imageIndex, imageTag, textDocumentToUse);
             String admin_template_file;
             if ( "".equals(imageTag) ) { // no data in the db-field.

@@ -37,8 +37,6 @@ import com.imcode.imcms.servlet.ImcmsListener;
 
 /**
  * Singleton registry.
- * 
- * Path and ApplicationContext must be set before the start method invocation.
  */
 public class Imcms {
 
@@ -48,38 +46,34 @@ public class Imcms {
     public static final String UTF_8_ENCODING = "UTF-8";
     public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
 
-    /** Absolute deployment path. */
+    /** Absolute application (deployment) path. */
     private static File path;
     
     /** Prefs config path relative to deployment path. */
     private static final String DEFAULT_RELATIVE_PREFS_CONFIG_PATH = "WEB-INF/conf";
 
-    /**  */
-    private static final String DEFAULT_SQL_SCRIPTS_PATH = "WEB-INF/sql";
+    /** SQL scripts directory path relative to deployment path */
+    private static final String DEFAULT_RELATIVE_SQL_SCRIPTS_PATH = "WEB-INF/sql";
 
     private static Logger logger = Logger.getLogger(Imcms.class);
 
-    /** Services. */
+    /** Core services. */
     private static ImcmsServices services;
 
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
 
-    /**
-     * Used to disable db init/upgrade on start-up.
-     */
+    /** Used to disable db init/upgrade on start. */
     private static boolean prepareDatabaseOnStart = true;
 
     private static ImcmsMode mode = ImcmsMode.MAINTENANCE;
     private static List<ImcmsListener> listeners = new LinkedList<ImcmsListener>();
     private static AtomicReference<Exception> startEx = new AtomicReference<Exception>();
 
-    /** Springframework application context. */
+    /** Spring-framework application context. */
     public static ApplicationContext applicationContext;
 
-    private static String relativePrefsConfigPath = DEFAULT_RELATIVE_PREFS_CONFIG_PATH;
-
-    private static String sqlScriptsPath = DEFAULT_SQL_SCRIPTS_PATH;
+    private static String sqlScriptsPath = DEFAULT_RELATIVE_SQL_SCRIPTS_PATH;
 
 	/**
      * @see com.imcode.imcms.servlet.ImcmsFilter
@@ -103,6 +97,13 @@ public class Imcms {
         return services;
     }
 
+    /**
+     * Initializes services.
+     *
+     * Path and ApplicationContext must be set.
+     *
+     * @throws StartupException
+     */
     public static void start() throws StartupException {
         clearStarEx();
 
@@ -129,16 +130,16 @@ public class Imcms {
                 listener.onImcmsStart();
             }
         } catch (Exception e) {
-            logger.error(e, e);
+            String msg = "Application could not be started. Please see the log file in WEB-INF/logs/ for details.";
+            logger.error(msg, e);
             setStartEx(e);
 
-            throw new StartupException("" +
-                    "Application could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
+            throw new StartupException(msg, e);
         }
     }
 
     public static void setPath(File path) {
-        File prefsConfigPath = new File(path, relativePrefsConfigPath);
+        File prefsConfigPath = new File(path, DEFAULT_RELATIVE_PREFS_CONFIG_PATH);
 
         setPath(path, prefsConfigPath);
     }
@@ -423,9 +424,10 @@ public class Imcms {
      * Inits and/or updates database if necessary.
      */
     public static void prepareDatabase() {
-        String scriptsDir = (getSQLScriptsPath().equals(DEFAULT_SQL_SCRIPTS_PATH)
-            ? new File(path.getAbsolutePath(), getSQLScriptsPath()).getAbsolutePath()
-            : getSQLScriptsPath());
+        String sqlScriptsPath = getSQLScriptsPath();
+        String sqlScriptsPathReal = (sqlScriptsPath.equals(DEFAULT_RELATIVE_SQL_SCRIPTS_PATH)
+            ? new File(path.getAbsolutePath(), sqlScriptsPath).getAbsolutePath()
+            : sqlScriptsPath);
 
         URL schemaConfFileURL = Imcms.class.getResource("/schema.xml");
 
@@ -436,7 +438,7 @@ public class Imcms {
         DataSource dataSource = (DataSource)getSpringBean("dataSource");
         DB db = new DB(dataSource);
 
-        db.prepare(schema.changeScriptsDir(scriptsDir));
+        db.prepare(schema.changeScriptsDir(sqlScriptsPathReal));
     }
 
     public static ApplicationContext getApplicationContext() {
@@ -457,14 +459,6 @@ public class Imcms {
 
     public static void addListener(ImcmsListener listener) {
         listeners.add(listener);
-    }
-
-    public static String getRelativePrefsConfigPath() {
-        return relativePrefsConfigPath;
-    }
-
-    public static void setRelativePrefsConfigPath(String relativePrefsConfigPath) {
-        Imcms.relativePrefsConfigPath = relativePrefsConfigPath;
     }
 
     public static boolean isPrepareDatabaseOnStart() {

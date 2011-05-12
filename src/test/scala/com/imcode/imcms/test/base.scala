@@ -74,8 +74,10 @@ class Project(dirPath: String = ".") {
   }
 
   def initImcms(start: Boolean = false, prepareDBOnStart: Boolean = false) {
-    Imcms.setRelativePrefsConfigPath("")
-    Imcms.setPath(subDir("src/test/resources"))
+    let(subDir("src/test/resources")) { path =>
+      Imcms.setPath(path, path)
+    }
+
     Imcms.setSQLScriptsPath(path("src/main/webapp/WEB-INF/sql"))
     Imcms.setApplicationContext(springAppContext())
     Imcms.setPrepareDatabaseOnStart(prepareDBOnStart)

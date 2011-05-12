@@ -9,13 +9,13 @@ import DocumentStoringVisitor.getFilenameForFileDocumentFile
 import imcms.api.DocumentVersion.WORKING_VERSION_NO
 
 @RunWith(classOf[JUnitRunner])
-class FilenameSpeck extends WordSpec {
+class FilenameSpec extends WordSpec {
 
   implicit def unbox(value: JInteger) = value.intValue
 
   "the result of getFilenameForFileDocumentFile invocation" when {
     "doc version is a working version and file id is a blank" should {
-      "be 'docId'" in {
+      "be just 'docId'" in {
         expect("1001") {
           getFilenameForFileDocumentFile(1001, WORKING_VERSION_NO, null)
         }

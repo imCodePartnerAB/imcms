@@ -708,7 +708,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
     
     private boolean languageIsActive(DocumentDomainObject document) {
-    	I18nLanguage currentLanguage = getDocGetterCallback().getParams().language;
+    	I18nLanguage currentLanguage = getDocGetterCallback().getParams().language();
     	Meta meta = document.getMeta();
     	boolean enabled = meta.getLanguages().contains(currentLanguage);
     	

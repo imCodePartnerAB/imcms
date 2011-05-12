@@ -1,6 +1,8 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.api.DefaultDocGetterCallback;
 import com.imcode.imcms.api.DocGetterCallback;
+import com.imcode.imcms.api.Params;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -43,8 +45,8 @@ public class BackDoc extends HttpServlet {
         if (null != lastTextDocument ) {
             redirectToDocumentId( req, res, lastTextDocument.getId() );
         } else {
-            DocGetterCallback.Params params = new DocGetterCallback.Params(Imcms.getUser(), Imcms.getI18nSupport().getDefaultLanguage(), Imcms.getI18nSupport().getDefaultLanguage());
-            DocGetterCallback callback = new DocGetterCallback.Default(params);
+            Params params = new Params(Imcms.getUser(), Imcms.getI18nSupport().getDefaultLanguage(), Imcms.getI18nSupport().getDefaultLanguage());
+            DocGetterCallback callback = new DefaultDocGetterCallback(params);
             Imcms.getUser().setDocGetterCallback(callback);
             redirectToDocumentId( req, res, imcref.getSystemData().getStartDocument() );
         }

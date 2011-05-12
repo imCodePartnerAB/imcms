@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.DocGetterCallback;
+import com.imcode.imcms.api.DocGetterCallbackUtil;
 import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -120,7 +121,7 @@ public class ImcmsFilter implements Filter {
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
             Imcms.setUser(user);
-            createAndSetDocGetterCallback(request, user);
+            DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user);
 
             Utility.initRequestWithApi(request, user);
 
@@ -256,72 +257,5 @@ public class ImcmsFilter implements Filter {
             cookie.setPath( "/" );
             ((HttpServletResponse)response).addCookie( cookie );
         }
-    }
-
-
-    /**
-     * Create and sets doc getter callback to an user. 
-     *
-     * All users allowed to change document language but only privileged users allowed to switch
-     * document's version.
-     *
-     * If document version parameter is present but it is a blank then it is treated as default version no.
-     * 
-     * @param request
-     * @param user
-     */
-    private void createAndSetDocGetterCallback(HttpServletRequest request, UserDomainObject user) {
-        DocGetterCallback docGetterCallback = user.getDocGetterCallback();
-
-        String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
-        I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage();
-        I18nLanguage language = languageCode != null
-                ? Imcms.getI18nSupport().getByCode(languageCode)
-                : docGetterCallback != null
-                    ? docGetterCallback.getParams().language
-                    : null;
-
-        if (language == null) language = Imcms.getI18nSupport().getForHost(request.getServerName());
-        if (language == null) language = defaultLanguage;
-        
-        DocGetterCallback.Params params = new DocGetterCallback.Params(user, language, defaultLanguage);
-
-        // Switch doc version if a user requested that
-        if (!user.isDefaultUser()) {
-            String docIdentity = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID);
-            String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION);
-            
-            if (docIdentity != null && docVersionNoStr != null) {
-                try {
-                    Integer docId = Imcms.getServices().getDocumentMapper().toDocumentId(docIdentity);
-
-                    if (docId == null) {
-                        throw new RuntimeException(
-                                String.format("Document with identity %s does not exists.", docIdentity));
-                    }
-
-                    if (StringUtils.isEmpty(docVersionNoStr)) {
-                        docGetterCallback = new DocGetterCallback.Default(params);
-                    } else {
-                        Integer docVersionNo = Integer.parseInt(docVersionNoStr);
-
-                        if (docVersionNo.equals(DocumentVersion.WORKING_VERSION_NO)) {
-                            docGetterCallback = new DocGetterCallback.Working(params, docId);
-                        } else {
-                            docGetterCallback = new DocGetterCallback.Custom(params, docId, docVersionNo);
-                        }
-                    }
-               } catch (NumberFormatException e) {
-                    // add handling
-                    throw new AssertionError(e);
-               }
-            }
-        }
-
-        docGetterCallback = docGetterCallback == null
-                ? new DocGetterCallback.Default(params)
-                : docGetterCallback.copy(params);
-
-        user.setDocGetterCallback(docGetterCallback);
     }
 }

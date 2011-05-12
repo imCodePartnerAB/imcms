@@ -821,7 +821,7 @@ public class DocumentMapper implements DocumentGetter {
         UserDomainObject user = Imcms.getUser();
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
         I18nLanguage language = callback != null
-                ? callback.getParams().language
+                ? callback.getParams().language()
                 : Imcms.getI18nSupport().getDefaultLanguage();
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
