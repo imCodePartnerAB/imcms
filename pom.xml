@@ -667,28 +667,28 @@
         <!-- ================ -->
         <dependency>
             <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.8.1</version>
+            <version>2.9.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest</artifactId>
-            <version>1.2</version>
+            <artifactId>scalatest_2.9.0</artifactId>
+            <version>1.4.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.scala-tools.testing</groupId>
-            <artifactId>scalacheck_2.8.1</artifactId>
-            <version>1.8</version>
+            <artifactId>scalacheck_2.9.0</artifactId>
+            <version>1.9</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-compiler</artifactId>
-            <version>2.8.1</version>
         </dependency>
 
         <dependency>
@@ -840,9 +840,9 @@
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
-                <version>2.15.0</version>
+                <version>2.15.2</version>
                 <configuration>
-                    <scalaVersion>2.8.1</scalaVersion>
+                    <scalaVersion>2.9.0</scalaVersion>
                     <jvmArgs>
                         <jvmArg>-Xms64m</jvmArg>
                         <jvmArg>-Xmx1024m</jvmArg>

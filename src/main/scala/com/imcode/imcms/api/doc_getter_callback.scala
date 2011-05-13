@@ -28,10 +28,10 @@ object DocGetterCallbackUtil {
         if !user.isDefaultUser
       } yield {
         val docId = ?(Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity)).getOrElse {
-          error("Document with identity %s does not exists." format docIdentity)
+          sys.error("Document with identity %s does not exists." format docIdentity)
         }
 
-        Integer.parseInt(docVersionNoStr) match {
+        Integer.valueOf(docVersionNoStr) match {
           case DocumentVersion.WORKING_VERSION_NO => WorkingDocGetterCallback(params, docId)
           case docVersionNo => CustomDocGetterCallback(params, docId, docVersionNo)
         }
@@ -50,7 +50,7 @@ object DocGetterCallbackUtil {
 
 /**
  * Parametrized callback for DocumentMapper#getDocument method.
- * A callback is (re)created on each request and (re)assigned to a user session object.
+ * A callback is (re)created on each request and (re)assigned to a user.
  *
  * Default doc callback always returns default version of any doc if it is present and a user has at least 'view' rights on it.
  *

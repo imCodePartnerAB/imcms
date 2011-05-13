@@ -179,7 +179,7 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
           sltCategories foreach (categoryIds add _.value.getId)
           twsCategories foreach (_.chosenItemIds foreach (categoryIds add _.getId))
 
-          ui.lytCategories.txtCategories.value = categoryIds map (categoriesMap.get(_).getName) mkString ", "
+          ui.lytCategories.txtCategories.value = categoryIds map (categoriesMap(_).getName) mkString ", "
         }
 
         dlg.setWidth("400px")
