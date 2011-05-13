@@ -92,6 +92,6 @@ class LanguageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll
     property.setValue("2")
     systemDao.saveProperty(property)
     val language = languageDao.getById(systemDao.getProperty("DefaultLanguageId").getValueAsInteger)
-    assertEquals("Language id is correct.", language.getId, new Integer(2))
+    assertEquals("Language id is correct.", language.getId, 2)
   }
 }

@@ -4,6 +4,8 @@ package fixtures
 
 import imcms.util.Factory
 import imcode.server.user.{RoleId, UserDomainObject}
+import scala.collection.JavaConversions._
+import imcms.api.{I18nLanguage, I18nSupport}
 
 object DocFX {
   val Seq(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth) = 1001 to 1010
@@ -50,6 +52,11 @@ object LanguagesFX {
   def swedish = Factory.createLanguage(2, "sv", "Swedish")
   def default = english
   def languages = Seq(english, swedish)
+  def i18nSupport = new I18nSupport {
+    setDefaultLanguage(default)
+    setLanguages(languages)
+    setHosts(Map.empty[String, I18nLanguage])
+  }
 }
 
 // mem; from db?

@@ -10,7 +10,7 @@ import imcode.server.{Imcms, ImcmsConstants}
 
 object DocGetterCallbackUtil {
 
-  /** Creates callback and associates it with a current user. */
+  /** Creates callback and sets it to a user. */
   def createAndSetDocGetterCallback(request: HttpServletRequest, user: UserDomainObject) {
     val currentDocGetterCallback = user.getDocGetterCallback
     val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
@@ -27,8 +27,12 @@ object DocGetterCallbackUtil {
         docVersionNoStr <- ?(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION))
         if !user.isDefaultUser
       } yield {
-        val docId = ?(Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity)).getOrElse {
-          sys.error("Document with identity %s does not exists." format docIdentity)
+        val docId: JInteger = docIdentity match {
+          case IntNumber(n) => n
+          case _ =>
+            ?(Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity)).getOrElse {
+              sys.error("Document with identity %s does not exists." format docIdentity)
+            }
         }
 
         Integer.valueOf(docVersionNoStr) match {
