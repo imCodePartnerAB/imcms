@@ -58,6 +58,7 @@
         <mkdir dir="${main.webapp.dir}/javascript"/>
         <mkdir dir="${main.webapp.dir}/jsp"/>
         <mkdir dir="${main.webapp.dir}/user"/>
+        <mkdir dir="${main.webapp.dir}/solr"/>
 
         <mkdir dir="${main.webapp.webinf.dir}/includes"/>
         <mkdir dir="${main.webapp.webinf.dir}/logs"/>
@@ -81,6 +82,10 @@
 
         <copy todir="${main.webapp.dir}">
             <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
+        </copy>
+        
+        <copy todir="${main.webapp.dir}/solr">
+            <fileset dir="src/main/solr" />
         </copy>
 
         <antcall target="web-lang">

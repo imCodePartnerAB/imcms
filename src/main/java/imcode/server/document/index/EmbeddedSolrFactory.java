@@ -33,4 +33,9 @@ public class EmbeddedSolrFactory extends SolrFactory {
             throw new IndexException(e);
         }
     }
+
+    @Override
+    public void destroy() {
+        coreContainer.shutdown();
+    }
 }

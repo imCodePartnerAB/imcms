@@ -35,9 +35,10 @@ public abstract class SolrFactory {
         return ssFactory;
     }
 
-    public SolrFactory(Config config) {
+    SolrFactory(Config config) {
         this.config = config;
     }
 
     public abstract SolrServer createServer();
+    public abstract void destroy();
 }

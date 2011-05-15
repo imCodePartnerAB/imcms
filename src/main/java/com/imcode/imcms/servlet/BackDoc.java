@@ -10,6 +10,7 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.util.Utility;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Stack;
 
 import javax.servlet.ServletException;
@@ -21,7 +22,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 
 public class BackDoc extends HttpServlet {
 
-    public static class HistoryElement {
+    public static class HistoryElement implements Serializable {
         public final Integer docId;
 
         public final DocGetterCallback docGetterCallback;

@@ -24,4 +24,7 @@ public class HttpSolrFactory extends SolrFactory {
             throw new IndexException(e);
         }
     }
+
+    @Override
+    public void destroy() { }
 }

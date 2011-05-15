@@ -77,6 +77,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private Config config;
 
     private static final int DEFAULT_STARTDOCUMENT = 1001;
+    private static final String SOLR_HOME_PROPERTY = "solr.solr.home";
 
     private SystemData sysData;
 
@@ -119,6 +120,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
+        System.setProperty(SOLR_HOME_PROPERTY, FileUtility.getFileFromWebappRelativePath("/solr").getAbsolutePath());
         initConfig(props);
         initKeyStore();
         initSysData();
