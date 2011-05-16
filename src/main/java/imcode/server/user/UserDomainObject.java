@@ -27,7 +27,7 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.Meta;
 
 public class UserDomainObject implements Cloneable, Serializable {
-	
+
     public static final int DEFAULT_USER_ID = 2;
 
     protected int id;
@@ -60,6 +60,8 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /** Http session id.*/
     private String sessionId;
+
+    private boolean authenticatedByIp;
 
     public UserDomainObject() {
     }
@@ -780,5 +782,18 @@ public class UserDomainObject implements Cloneable, Serializable {
     public boolean hasAdminPanelForDocument(DocumentDomainObject document) {
         return !(null == document || !(canEdit(document) || isUserAdminAndCanEditAtLeastOneRole() || canAccessAdminPages()));
     }
-    
+
+    /**
+     * @return if this user was authenticated by IP.
+     *
+     * @see imcode.server.Config#isDenyMultipleUserSessions()
+     * @see com.imcode.imcms.servlet.ImcmsFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+     */
+    public boolean isAuthenticatedByIp() {
+        return authenticatedByIp;
+    }
+
+    public void setAuthenticatedByIp(boolean authenticatedByIp) {
+        this.authenticatedByIp = authenticatedByIp;
+    }
 }

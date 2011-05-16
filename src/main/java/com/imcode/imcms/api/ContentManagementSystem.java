@@ -51,7 +51,7 @@ public abstract class ContentManagementSystem {
         
         ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
 
-        if (services.getConfig().isDenyMultipleUserLogin()) {
+        if (services.getConfig().isDenyMultipleUserSessions()) {
             User currentUser = cms.getCurrentUser();
             currentUser.setSessionId(request.getSession().getId());
             cms.getUserService().updateUserSession(currentUser);

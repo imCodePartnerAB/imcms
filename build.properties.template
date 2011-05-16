@@ -2,7 +2,8 @@
 # You just have to fill in the blanks.
 # You shouldn't change any defaults unless you know what you are doing.
 
-# Denies multiple login for same user. To enable this option change property value to true. 
+# Denies multiple login for same user. To enable this option change property value to true.
+# Please note that setting this property to true will not affect users authenticated by an IP address.
 deny-multiple-user-login = false
 
 # Database parameters

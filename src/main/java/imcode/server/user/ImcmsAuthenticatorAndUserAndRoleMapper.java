@@ -662,7 +662,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         String userIdString = (String) services.getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.SINGLE_STRING_HANDLER));
 
         if ( null != userIdString ) {
-            return getUser(Integer.parseInt(userIdString));
+            UserDomainObject user = getUser(Integer.parseInt(userIdString));
+            if (user != null) {
+                user.setAuthenticatedByIp(true);
+            }
+
+            return user;
         }
         return null;
     }

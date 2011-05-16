@@ -1,11 +1,8 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.DocGetterCallback;
 import com.imcode.imcms.api.DocGetterCallbackUtil;
-import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
@@ -16,6 +13,7 @@ import java.nio.charset.Charset;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import javax.mail.Session;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -33,8 +31,6 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-
-import com.imcode.imcms.api.I18nLanguage;
 
 /**
  * Front filter - initializes Imcms and intercepts all requests.
@@ -66,7 +62,6 @@ public class ImcmsFilter implements Filter {
         public void init(FilterConfig filterConfig) throws ServletException {}
         public void destroy() {}
     };
-
 
     /** Processes request normally. */
     private Filter normalModeFilter = new Filter() {
@@ -101,11 +96,11 @@ public class ImcmsFilter implements Filter {
                     assert user.isActive() ;
                     Utility.makeUserLoggedIn(request, user);
 
-                // todo: add check AND NOT logged in by IP; optimize;
-                // In case system denies multiple login for the same user
-                // invalidate current session if it does not match to
-                // last user's session and redirect a user to the login page.
-                } else if (!user.isDefaultUser() && service.getConfig().isDenyMultipleUserLogin()) {
+                // todo: optimize;
+                // In case system denies multiple sessions for the same user and the user was not authenticated by an IP:
+                // -invalidates current session if it does not match to last user's session
+                // -redirects to the login page.
+                } else if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserSessions()) {
                     String sessionId = session.getId();
                     String lastUserSessionId = service
                             .getImcmsAuthenticatorAndUserAndRoleMapper()

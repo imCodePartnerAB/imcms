@@ -200,10 +200,15 @@ public class Config {
         this.secureLoginRequired = secureLoginRequired;
     }
 
-    public boolean isDenyMultipleUserLogin() {
+    public boolean isDenyMultipleUserSessions() {
         return denyMultipleUserLogin;
     }
 
+    public void setDenyMultipleUserSessions(boolean denyMultipleUserSessions) {
+        setDenyMultipleUserLogin(denyMultipleUserSessions);
+    }
+
+    @Deprecated
     public void setDenyMultipleUserLogin(boolean denyMultipleUserLogin) {
         this.denyMultipleUserLogin = denyMultipleUserLogin;
     }
