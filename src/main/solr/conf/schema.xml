@@ -426,7 +426,7 @@
        when adding a document.
    -->
 
-   <field name="meta_id" type="int" indexed="true" stored="true" />
+   <field name="meta_id" type="string" indexed="true" stored="true" />
    <field name="meta_id_lexicographic" type="int" indexed="true" stored="false"/>
    <field name="role_id" type="int" indexed="true" stored="false" multiValued="true" />
    <field name="meta_headline" type="string" indexed="true" stored="false" />

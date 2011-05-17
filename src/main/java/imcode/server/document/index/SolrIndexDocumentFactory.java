@@ -173,7 +173,7 @@ public class SolrIndexDocumentFactory {
                 log.warn("Failed to index datetime '" + dateFormat.format(date) + "' in field '" + fieldName + "' of document " + documentId, re);
             }
         }
-        indexDocument.addField(fieldName, "");
+//        indexDocument.addField(fieldName, "");
     }
 
 //    static Field unStoredKeyword(String fieldName, String fieldValue) {
