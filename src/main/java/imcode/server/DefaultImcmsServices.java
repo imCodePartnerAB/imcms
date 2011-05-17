@@ -76,8 +76,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private TextDocumentParser textDocParser;
     private Config config;
 
-    private static final int DEFAULT_STARTDOCUMENT = 1001;
     private static final String SOLR_HOME_PROPERTY = "solr.solr.home";
+    private static final int DEFAULT_STARTDOCUMENT = 1001;
 
     private SystemData sysData;
 
@@ -120,7 +120,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
-        System.setProperty(SOLR_HOME_PROPERTY, FileUtility.getFileFromWebappRelativePath("/solr").getAbsolutePath());
+        setSolrHomeSystemPropertyIfNotAssignedExternally();
         initConfig(props);
         initKeyStore();
         initSysData();
@@ -131,6 +131,17 @@ final public class DefaultImcmsServices implements ImcmsServices {
         initTemplateMapper();
         initImageCacheMapper();
         initTextDocParser();
+    }
+
+    private void setSolrHomeSystemPropertyIfNotAssignedExternally() {
+        String solrHome =  System.getProperty(SOLR_HOME_PROPERTY);
+        if (solrHome != null) {
+            log.info(String.format("Solr home is set to '%s'.", solrHome));
+        } else {
+            String defaultSolrHome = FileUtility.getFileFromWebappRelativePath("WEB-INF/solr").getAbsolutePath();
+            log.info(String.format("Solr home is not set. Using default '%s'", defaultSolrHome));
+            System.setProperty(SOLR_HOME_PROPERTY, defaultSolrHome);
+        }
     }
 
     private void initKeyStore() {

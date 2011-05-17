@@ -22,6 +22,7 @@
 		
     <property name="webinf.conf.dir" value="${main.webapp.webinf.dir}/conf"/>
     <property name="webinf.templates.dir" value="${main.webapp.webinf.dir}/templates"/>
+    <property name="webinf.solr.dir" value="${main.webapp.webinf.dir}/solr"/>
 
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate"/>
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>   
@@ -58,7 +59,7 @@
         <mkdir dir="${main.webapp.dir}/javascript"/>
         <mkdir dir="${main.webapp.dir}/jsp"/>
         <mkdir dir="${main.webapp.dir}/user"/>
-        <mkdir dir="${main.webapp.dir}/solr"/>
+        <mkdir dir="${webinf.solr.dir}"/>
 
         <mkdir dir="${main.webapp.webinf.dir}/includes"/>
         <mkdir dir="${main.webapp.webinf.dir}/logs"/>
@@ -84,7 +85,7 @@
             <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
         </copy>
         
-        <copy todir="${main.webapp.dir}/solr">
+        <copy todir="${webinf.solr.dir}">
             <fileset dir="src/main/solr" />
         </copy>
 
