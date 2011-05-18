@@ -217,19 +217,21 @@ public class DocumentSaver {
         Iterator<DocumentDomainObject> docIterator = docs.iterator();
         DocumentDomainObject firstDoc = docIterator.next();
 
+        // Currently only text doc has i18n content.
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
             firstDoc.accept(docSavingVisitor);
         } else {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject)firstDoc;
 
             docSavingVisitor.updateTextDocumentContentLoops(textDoc, null, user);
-            docSavingVisitor.updateTextDocumentTexts(textDoc, null, user);
+            docSavingVisitor.updateTextDocumentMenus(textDoc, null, user);
+            docSavingVisitor.updateTextDocumentTemplateNames(textDoc, null, user);
+            docSavingVisitor.updateTextDocumentIncludes(textDoc);
 
             for (DocumentDomainObject doc: docs) {
                 textDoc = (TextDocumentDomainObject)doc;
-
+                docSavingVisitor.updateTextDocumentTexts(textDoc, null, user);
                 docSavingVisitor.updateTextDocumentImages(textDoc, null, user);
-                docSavingVisitor.updateTextDocumentMenus(textDoc, null, user);
             }
         }
 
@@ -315,13 +317,13 @@ public class DocumentSaver {
 
             docCreatingVisitor.updateTextDocumentContentLoops(textDoc, null, user);
             docCreatingVisitor.updateTextDocumentMenus(textDoc, null, user);
+            docCreatingVisitor.updateTextDocumentTemplateNames(textDoc, null, user);
+            docCreatingVisitor.updateTextDocumentIncludes(textDoc);
 
             for (DocumentDomainObject doc: docs) {
                 textDoc = (TextDocumentDomainObject)doc;
-
                 docCreatingVisitor.updateTextDocumentTexts(textDoc, null, user);
                 docCreatingVisitor.updateTextDocumentImages(textDoc, null, user);
-
             }
         }
 
