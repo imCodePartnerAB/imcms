@@ -190,20 +190,22 @@ public class DocumentSaver {
     }
 
 
-
     /**
+     *
+     * @param meta
      * @param docs
      * @param user
-     * @return saved document id.
+     * @return
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
     @Transactional
-    public DocumentVersion makeDocumentVersion(final Meta meta, List<DocumentDomainObject> docs, UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
+        DocumentDomainObject firstDoc = docs.get(0);
+        Meta meta = firstDoc.getMeta().clone();
         DocumentVersion nextVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
-
         DocumentSavingVisitor docSavingVisitor = new DocumentSavingVisitor(null, documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc: docs) {
@@ -211,11 +213,8 @@ public class DocumentSaver {
             doc.setMeta(meta);
             doc.setVersion(nextVersion);
             
-            docSavingVisitor.updateDocumentI18nMeta(doc, null, user);
+            docSavingVisitor.updateDocumentI18nMeta(doc, user);
         }
-
-        Iterator<DocumentDomainObject> docIterator = docs.iterator();
-        DocumentDomainObject firstDoc = docIterator.next();
 
         // Currently only text doc has i18n content.
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
@@ -223,15 +222,15 @@ public class DocumentSaver {
         } else {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject)firstDoc;
 
-            docSavingVisitor.updateTextDocumentContentLoops(textDoc, null, user);
-            docSavingVisitor.updateTextDocumentMenus(textDoc, null, user);
-            docSavingVisitor.updateTextDocumentTemplateNames(textDoc, null, user);
+            docSavingVisitor.updateTextDocumentContentLoops(textDoc, user);
+            docSavingVisitor.updateTextDocumentMenus(textDoc, user);
+            docSavingVisitor.updateTextDocumentTemplateNames(textDoc, user);
             docSavingVisitor.updateTextDocumentIncludes(textDoc);
 
             for (DocumentDomainObject doc: docs) {
                 textDoc = (TextDocumentDomainObject)doc;
-                docSavingVisitor.updateTextDocumentTexts(textDoc, null, user);
-                docSavingVisitor.updateTextDocumentImages(textDoc, null, user);
+                docSavingVisitor.updateTextDocumentTexts(textDoc, user);
+                docSavingVisitor.updateTextDocumentImages(textDoc, user);
             }
         }
 
@@ -275,7 +274,8 @@ public class DocumentSaver {
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentDomainObject firstDoc = docs.get(0);
-        Meta meta = firstDoc.getMeta();
+        Meta meta = firstDoc.getMeta().clone();
+
         checkDocumentForSave(firstDoc);
 
         documentMapper.setCreatedAndModifiedDatetimes(meta, new Date());
@@ -305,25 +305,21 @@ public class DocumentSaver {
             doc.setVersion(copyDocVersion);
         }
 
-
-        Iterator<DocumentDomainObject> docIterator = docs.iterator();
-        firstDoc = docIterator.next();
-
         // Currently only text doc has i18n content.
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
             firstDoc.accept(docCreatingVisitor);
         } else {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject)firstDoc;
 
-            docCreatingVisitor.updateTextDocumentContentLoops(textDoc, null, user);
-            docCreatingVisitor.updateTextDocumentMenus(textDoc, null, user);
-            docCreatingVisitor.updateTextDocumentTemplateNames(textDoc, null, user);
+            docCreatingVisitor.updateTextDocumentContentLoops(textDoc, user);
+            docCreatingVisitor.updateTextDocumentMenus(textDoc, user);
+            docCreatingVisitor.updateTextDocumentTemplateNames(textDoc, user);
             docCreatingVisitor.updateTextDocumentIncludes(textDoc);
 
             for (DocumentDomainObject doc: docs) {
                 textDoc = (TextDocumentDomainObject)doc;
-                docCreatingVisitor.updateTextDocumentTexts(textDoc, null, user);
-                docCreatingVisitor.updateTextDocumentImages(textDoc, null, user);
+                docCreatingVisitor.updateTextDocumentTexts(textDoc, user);
+                docCreatingVisitor.updateTextDocumentImages(textDoc, user);
             }
         }
 

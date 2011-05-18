@@ -335,8 +335,6 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentVersion makeDocumentVersion(final Integer docId, final UserDomainObject user)
             throws DocumentSaveException {
 
-        Meta meta = documentLoaderCachingProxy.getMeta(docId);
-
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         for (I18nLanguage language : Imcms.getI18nSupport().getLanguages()) {
@@ -350,7 +348,7 @@ public class DocumentMapper implements DocumentGetter {
                     docId));
         }
 
-        DocumentVersion version = documentSaver.makeDocumentVersion(meta, docs, user);
+        DocumentVersion version = documentSaver.makeDocumentVersion(docs, user);
 
         invalidateDocument(docId);
 

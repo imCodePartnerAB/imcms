@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -8,7 +7,6 @@ import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
-import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.orm.HtmlReference;
 import com.imcode.imcms.mapping.orm.UrlReference;
 
@@ -64,16 +62,16 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     // runs inside transaction 
     public void visitTextDocument(final TextDocumentDomainObject textDocument) {
         // NB! Content loops must be created before texts and images they possibly contain.
-        updateTextDocumentContentLoops(textDocument, null, null);
-        updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
-        updateTextDocumentTexts(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
-        updateTextDocumentImages(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
+        updateTextDocumentContentLoops(textDocument, savingUser);
+        updateTextDocumentTemplateNames(textDocument, savingUser);
+        updateTextDocumentTexts(textDocument, savingUser);
+        updateTextDocumentImages(textDocument, savingUser);
         updateTextDocumentIncludes(textDocument);
 
         boolean menusChanged = !textDocument.getMenus().equals(((TextDocumentDomainObject) oldDocument).getMenus());
 
         if (menusChanged) {
-            updateTextDocumentMenus(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
+            updateTextDocumentMenus(textDocument, savingUser);
         }
     }
 

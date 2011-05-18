@@ -155,11 +155,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * Deletes all existing text fields and then inserts new.
      *
      * @param textDocument
-     * @param oldTextDocument
      * @param user
      */
     @Transactional
-    void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+    void updateTextDocumentTexts(TextDocumentDomainObject textDocument, UserDomainObject user) {
         TextDao textDao = (TextDao) services.getSpringBean("textDao");
 
         Integer docId = textDocument.getIdValue();
@@ -190,10 +189,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     /**
      * @param textDocument
-     * @param oldTextDocument
      * @param user
      */
-    public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+    public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, UserDomainObject user) {
         ContentLoopDao dao = (ContentLoopDao) services.getSpringBean("contentLoopDao");
         Integer docId = textDocument.getIdValue();
         Integer docVersionNo = textDocument.getVersionNo();
@@ -212,7 +210,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
 
     @Transactional
-    public void updateDocumentI18nMeta(DocumentDomainObject doc, DocumentDomainObject oldDoc, UserDomainObject user) {
+    public void updateDocumentI18nMeta(DocumentDomainObject doc, UserDomainObject user) {
         I18nMeta i18nMeta = doc.get18nMeta();
 
         metaDao.deleteI18nMeta(doc.getId(), doc.getLanguage().getId());
@@ -266,7 +264,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
 
     @Transactional
-    void updateTextDocumentImages(TextDocumentDomainObject doc, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+    void updateTextDocumentImages(TextDocumentDomainObject doc, UserDomainObject user) {
         ImageDao imageDao = (ImageDao) services.getSpringBean("imageDao");
         Integer docId = doc.getIdValue();
         Integer docVersionNo = doc.getVersionNo();
@@ -314,7 +312,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
 
     @Transactional
-    public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+    public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, UserDomainObject user) {
         Integer docId = textDocument.getIdValue();
 
         TemplateNames templateNames = textDocument.getTemplateNames();
@@ -376,7 +374,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         return extensions;
     }
 
-    public void updateTextDocumentMenus(final TextDocumentDomainObject doc, final TextDocumentDomainObject oldDoc, final UserDomainObject user) {
+    public void updateTextDocumentMenus(final TextDocumentDomainObject doc, final UserDomainObject user) {
         MenuDao dao = (MenuDao) services.getSpringBean("menuDao");
 
         Integer docId = doc.getId();
