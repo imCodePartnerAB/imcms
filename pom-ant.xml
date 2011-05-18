@@ -150,6 +150,9 @@
 
         <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
 
+        <filter token="db-name" value="${db-name}"/>
+        <filter token="db-url-without-db-name" value="${db-url-without-db-name}"/>
+
         <filter token="db-driver" value="${db-driver}"/>
         <filter token="db-url" value="${db-url}"/>
         <filter token="db-name" value="${db-name}"/>

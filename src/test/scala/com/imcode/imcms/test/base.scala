@@ -44,6 +44,7 @@ class Project(dirPath: String = ".") {
 
 
   System.setProperty("log4j.configuration", "file:" + path("src/test/resources/log4j.xml"))
+  System.setProperty("solr.solr.home", path("src/main/solr"))
 
   cd(dirPath)
 
@@ -99,15 +100,15 @@ class DB(project: Project) {
       ds.setPassword(project.testProperty("Password"))
       ds.setDriverClassName(project.testProperty("JdbcDriver"))
       ds.setUrl(if (withDBName) project.testProperty("JdbcUrl")
-                else project.testProperty("__JdbcUrlWithoutDBName__"))
+                else project.testProperty("JdbcUrlWithoutDBName"))
 
       ds.setDefaultAutoCommit(autocommit)
     }
 
   def recreate() {
     let(new DBAccess(createDataSource(withDBName=false))) { access =>
-      access.template.update("DROP DATABASE IF EXISTS %s" format project.testProperty("__DBName__"))
-      access.template.update("CREATE DATABASE %s" format project.testProperty("__DBName__"))
+      access.template.update("DROP DATABASE IF EXISTS %s" format project.testProperty("DBName"))
+      access.template.update("CREATE DATABASE %s" format project.testProperty("DBName"))
     }
   }
 

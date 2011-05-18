@@ -97,10 +97,10 @@ public class ImcmsFilter implements Filter {
                     Utility.makeUserLoggedIn(request, user);
 
                 // todo: optimize;
-                // In case system denies multiple sessions for the same user and the user was not authenticated by an IP:
+                // In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
                 // -invalidates current session if it does not match to last user's session
                 // -redirects to the login page.
-                } else if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserSessions()) {
+                } else if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
                     String sessionId = session.getId();
                     String lastUserSessionId = service
                             .getImcmsAuthenticatorAndUserAndRoleMapper()

@@ -56,6 +56,8 @@ class MenuDao extends SpringHibernateTemplate {
       }
     }
 
+    session.flush
+
     count
   }
 

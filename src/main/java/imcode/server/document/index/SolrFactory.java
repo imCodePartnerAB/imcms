@@ -11,7 +11,7 @@ import java.lang.reflect.Constructor;
 
 public abstract class SolrFactory {
 
-    private static final String DEFAULT_SOLR_SERVER_FACTORY = "imcode.server.document.index.EmbeddedSolrServerFactory";
+    private static final String DEFAULT_SOLR_SERVER_FACTORY = "imcode.server.document.index.EmbeddedSolrFactory";
     
     private static SolrFactory ssFactory;
 

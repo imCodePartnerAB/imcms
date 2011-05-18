@@ -27,9 +27,10 @@ public class DocumentVersionCreationVisitor extends DocumentSavingVisitor {
      * Visits non shared nodes. 
      */
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
+        // NB! Content loops must be created before texts and images they possibly contain.
+        updateTextDocumentContentLoops(textDocument, null, null);
         updateTextDocumentTexts( textDocument, null, getSavingUser());
         updateTextDocumentImages( textDocument, null, getSavingUser());
-        updateTextDocumentContentLoops(textDocument, null, null);
         updateTextDocumentMenus( textDocument, null, getSavingUser());
     }
 }
