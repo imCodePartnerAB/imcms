@@ -197,6 +197,10 @@
         <filter token="image-archive-max-image-upload-size" value="${image-archive-max-image-upload-size}"/>
         <filter token="image-archive-max-zip-upload-size" value="${image-archive-max-zip-upload-size}"/>
         <filter token="image-cache-max-size" value="${image-cache-max-size}"/>
+
+        <filter token="solr-factory" value="${solr-factory}"/>
+        <filter token="solr-core-name" value="${solr-core-name}"/>
+        <filter token="solr-http-server-url" value="${solr-http-server-url}"/>
     </target>
 
 </project>
