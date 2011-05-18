@@ -54,14 +54,10 @@ public class DocumentMapper implements DocumentGetter {
 
     private NativeQueriesDao nativeQueriesDao;
 
-    /**
-     * Instantiated using SpringFramework.
-     */
+    /** Instantiated by SpringFramework. */
     private DocumentLoader documentLoader;
 
-    /**
-     * Document loader caching proxy. Intercepts calls to DocumentLoader.
-     */
+    /** Document loader caching proxy. Intercepts calls to DocumentLoader. */
     private DocLoaderCachingProxy documentLoaderCachingProxy;
 
     /**
@@ -72,11 +68,8 @@ public class DocumentMapper implements DocumentGetter {
 
     private CategoryMapper categoryMapper;
 
-    /**
-     * Empty constructor for unit testing.
-     */
-    public DocumentMapper() {
-    }
+    /** Empty constructor for unit testing. */
+    public DocumentMapper() {}
 
     public DocumentMapper(ImcmsServices services, Database database) {
         this.imcmsServices = services;
@@ -99,7 +92,7 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * @param documentId document id.
-     * @return version support for a given document or null if document does not exist.
+     * @return version info for a given document or null if document does not exist.
      */
     public DocumentVersionInfo getDocumentVersionInfo(Integer documentId) {
         return documentLoaderCachingProxy.getDocVersionInfo(documentId);
@@ -116,7 +109,11 @@ public class DocumentMapper implements DocumentGetter {
      * @param user
      * @return
      */
-    public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parentDoc, final UserDomainObject user) {
+    public DocumentDomainObject createDocumentOfTypeFromParent(
+            final int documentTypeId,
+            final DocumentDomainObject parentDoc,
+            final UserDomainObject user) {
+
         DocumentDomainObject newDocument;
 
         if (DocumentTypeDomainObject.TEXT_ID == documentTypeId) {

@@ -20,9 +20,7 @@ import javax.persistence.TemporalType;
 @Table(name = "imcms_doc_versions")
 public class DocumentVersion implements Cloneable {
 
-    /**
-     * Working version no is always 0.
-     */
+    /** Working version no is always 0. */
     public static final Integer WORKING_VERSION_NO = 0;
 
     @Id
@@ -48,8 +46,7 @@ public class DocumentVersion implements Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
-    public DocumentVersion() {
-    }
+    public DocumentVersion() {}
 
     public DocumentVersion(Integer docId, Integer no, Integer createdBy, Date createdDt) {
         this.docId = docId;
