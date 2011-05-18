@@ -199,25 +199,38 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public DocumentVersion makeDocumentVersion(final Meta meta, Map<I18nLanguage, DocumentDomainObject> docs, UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(final Meta meta, List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentVersion nextVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
 
-        DocumentVersionCreationVisitor docCreationVisitor = new DocumentVersionCreationVisitor(documentMapper.getImcmsServices(), user);
+        DocumentSavingVisitor docSavingVisitor = new DocumentSavingVisitor(null, documentMapper.getImcmsServices(), user);
 
-        for (DocumentDomainObject doc: docs.values()) {
+        for (DocumentDomainObject doc: docs) {
             doc.accept(new DocIdentityCleanerVisitor());
             doc.setMeta(meta);
             doc.setVersion(nextVersion);
             
-            docCreationVisitor.updateDocumentI18nMeta(doc, null, user);
+            docSavingVisitor.updateDocumentI18nMeta(doc, null, user);
         }
 
-        for (DocumentDomainObject doc: docs.values()) {
-            doc.accept(docCreationVisitor);
-            // Only text doc has i18n content.
-            if (!(doc instanceof TextDocumentDomainObject)) break; 
+        Iterator<DocumentDomainObject> docIterator = docs.iterator();
+        DocumentDomainObject firstDoc = docIterator.next();
+
+        if (!(firstDoc instanceof TextDocumentDomainObject)) {
+            firstDoc.accept(docSavingVisitor);
+        } else {
+            TextDocumentDomainObject textDoc = (TextDocumentDomainObject)firstDoc;
+
+            docSavingVisitor.updateTextDocumentContentLoops(textDoc, null, user);
+            docSavingVisitor.updateTextDocumentTexts(textDoc, null, user);
+
+            for (DocumentDomainObject doc: docs) {
+                textDoc = (TextDocumentDomainObject)doc;
+
+                docSavingVisitor.updateTextDocumentImages(textDoc, null, user);
+                docSavingVisitor.updateTextDocumentMenus(textDoc, null, user);
+            }
         }
 
         return nextVersion;
@@ -249,8 +262,6 @@ public class DocumentSaver {
 
 
     /**
-     * @param meta
-     * @param i18nMetas
      * @param docs
      * @param user
      * @return
@@ -258,10 +269,11 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public Integer copyDocument(Meta meta, List<I18nMeta> i18nMetas, List<DocumentDomainObject> docs, UserDomainObject user)
+    public Integer copyDocument(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentDomainObject firstDoc = docs.get(0);
+        Meta meta = firstDoc.getMeta();
         checkDocumentForSave(firstDoc);
 
         documentMapper.setCreatedAndModifiedDatetimes(meta, new Date());
@@ -274,7 +286,9 @@ public class DocumentSaver {
         meta.setId(null);
         Integer copyDocId = saveMeta(meta).getId();
         metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
-        for (I18nMeta i18nMeta: i18nMetas) {
+        for (DocumentDomainObject doc: docs) {
+            I18nMeta i18nMeta = doc.get18nMeta();
+
             i18nMeta.setId(null);
             i18nMeta.setDocId(copyDocId);
 
@@ -284,14 +298,31 @@ public class DocumentSaver {
         DocumentVersion copyDocVersion = documentVersionDao.createVersion(copyDocId, user.getId());
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
-        // Currently only text doc has i18n content.
         for (DocumentDomainObject doc: docs) {
             doc.setMeta(meta);
             doc.setVersion(copyDocVersion);
+        }
 
-            doc.accept(docCreatingVisitor);
 
-            if (!(doc instanceof TextDocumentDomainObject)) break;
+        Iterator<DocumentDomainObject> docIterator = docs.iterator();
+        firstDoc = docIterator.next();
+
+        // Currently only text doc has i18n content.
+        if (!(firstDoc instanceof TextDocumentDomainObject)) {
+            firstDoc.accept(docCreatingVisitor);
+        } else {
+            TextDocumentDomainObject textDoc = (TextDocumentDomainObject)firstDoc;
+
+            docCreatingVisitor.updateTextDocumentContentLoops(textDoc, null, user);
+            docCreatingVisitor.updateTextDocumentMenus(textDoc, null, user);
+
+            for (DocumentDomainObject doc: docs) {
+                textDoc = (TextDocumentDomainObject)doc;
+
+                docCreatingVisitor.updateTextDocumentTexts(textDoc, null, user);
+                docCreatingVisitor.updateTextDocumentImages(textDoc, null, user);
+
+            }
         }
 
         return copyDocId;

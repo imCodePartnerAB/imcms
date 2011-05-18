@@ -63,11 +63,12 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction 
     public void visitTextDocument(final TextDocumentDomainObject textDocument) {
+        // NB! Content loops must be created before texts and images they possibly contain.
+        updateTextDocumentContentLoops(textDocument, null, null);
         updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
         updateTextDocumentTexts(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
         updateTextDocumentImages(textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
         updateTextDocumentIncludes(textDocument);
-        updateTextDocumentContentLoops(textDocument, null, null);
 
         boolean menusChanged = !textDocument.getMenus().equals(((TextDocumentDomainObject) oldDocument).getMenus());
 

@@ -337,14 +337,11 @@ public class DocumentMapper implements DocumentGetter {
 
         Meta meta = documentLoaderCachingProxy.getMeta(docId);
 
-        Map<I18nLanguage, DocumentDomainObject> docs = new HashMap<I18nLanguage, DocumentDomainObject>();
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         for (I18nLanguage language : Imcms.getI18nSupport().getLanguages()) {
             DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(docId, DocumentVersion.WORKING_VERSION_NO, language);
-
-            if (doc != null) {
-                docs.put(language, doc);
-            }
+            docs.add(doc);
         }
 
         if (docs.isEmpty()) {
@@ -352,7 +349,6 @@ public class DocumentMapper implements DocumentGetter {
                     "Unable to make next document version. Working document does not exists: docId: %d.",
                     docId));
         }
-
 
         DocumentVersion version = documentSaver.makeDocumentVersion(meta, docs, user);
 
@@ -619,7 +615,7 @@ public class DocumentMapper implements DocumentGetter {
                     docId, docVersionNo));
         }
 
-        Integer docCopyId = documentSaver.copyDocument(meta, i18nMetas, docs, user);
+        Integer docCopyId = documentSaver.copyDocument(docs, user);
 
         invalidateDocument(docCopyId);
 
