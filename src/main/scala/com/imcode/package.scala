@@ -81,6 +81,8 @@ package object imcode {
     ret.toList
   }
 
+  implicit def JIntegerToInt(ji: JInteger) = ji.intValue
+
   /**
    * Converts camel-case string into underscore.
    * ex: IPAccess => ip_access, SearchTerms => search_terms, mrX => mr_x, iBot => i_bot
