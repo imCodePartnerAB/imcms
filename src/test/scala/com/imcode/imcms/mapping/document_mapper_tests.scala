@@ -197,6 +197,18 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
     val savedDoc = docMapper.saveNewDocument(newDoc, admin)
 
+    for (loopNo <- 0 until loopsCount) {
+      val loop = savedDoc.getContentLoop(loopNo);
+      assertNotNull(loop)
+
+      expect(loop.getContents.size, "contents in the loop")(loopNo)
+
+      for (contentNo <- 0 until loopNo) {
+        val content = loop.getContent(contentNo)
+        assertNotNull(content)
+      }
+    }
+
     for ((textType, no) <- textTypeToNo) {
       val text = savedDoc.getText(no)
 
@@ -204,6 +216,17 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       assertEquals(no, text.getNo)
       assertEquals(textType, text.getType)
       assertEquals(textPrefix + no, text.getText)
+
+      for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
+        val text = savedDoc.getText(no, loopNo, contentNo)
+
+        assertNotNull(text)
+        assertEquals(no, text.getNo)
+        assertEquals(loopNo, text.getContentLoopNo)
+        assertEquals(contentNo, text.getContentNo)
+        assertEquals(textType, text.getType)
+        assertEquals(textPrefix + no + "_%d:%d".format(loopNo, contentNo), text.getText)
+      }
     }
 
     savedDoc
