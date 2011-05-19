@@ -16,6 +16,18 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
+//    public static final class ContentInfo {
+//
+//        public final int loopNo;
+//
+//        public final int contentNo;
+//
+//        public ContentInfo(int loopNo, int contentNo) {
+//            this.loopNo = loopNo;
+//            this.contentNo = contentNo;
+//        }
+//    }
+
     /**
      * Content loop unique item key.
      */

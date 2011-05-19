@@ -2,22 +2,25 @@ package com.imcode
 package imcms.dao
 
 import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import imcode.server.user.UserDomainObject
 import imcode.server.Imcms
 import java.io.ByteArrayInputStream
 import imcode.util.io.InputStreamSource
 import org.apache.commons.io.FileUtils
 import imcode.server.document.textdocument.{NoPermissionToAddDocumentToMenuException, MenuItemDomainObject, MenuDomainObject, TextDocumentDomainObject}
-import imcms.api.{ContentLoop, I18nSupport}
-import imcms.mapping.{DocumentStoringVisitor, DocumentMapper}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test._
+import fixtures.LanguagesFX
 import imcms.test.Base.{project, db}
 import imcode.server.document._
+import java.util.EnumSet
+import imcms.mapping.{DocumentSaver, DocumentStoringVisitor, DocumentMapper}
+import imcms.api.{I18nMeta, ContentLoop, I18nSupport}
 
 @RunWith(classOf[JUnitRunner])
 class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -40,10 +43,51 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
   override def afterAll() = Imcms.stop()
 
 
-  test("save new text doc") {
+  test("save new empty text doc") {
     saveNewTextDocumentFn()
   }
 
+  test("save new text doc with save params: CopyI18nMetaTextsIntoTextFields") {
+    val parentDoc = getMainWorkingDocumentInDefaultLanguage(true)
+    val newDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin)
+      .asInstanceOf[TextDocumentDomainObject]
+
+    val headlinePrefix = "headline_"
+    val menuTextPrefix = "menu_text_"
+
+    val i18nMetas = i18nSupport.getLanguages.map { language =>
+      val i18nMeta = new I18nMeta
+
+      i18nMeta.setLanguage(language)
+      i18nMeta.setHeadline(headlinePrefix + language.getCode)
+      i18nMeta.setMenuText(menuTextPrefix + language.getCode)
+
+      language -> i18nMeta
+    }.toMap.asJava
+
+    val id = docMapper.saveNewDocument(
+      newDoc,
+      i18nMetas,
+      EnumSet.of(DocumentSaver.SaveParameter.CopyI18nMetaTextsIntoTextFields),
+      admin).getMeta.getId
+
+    i18nSupport.getLanguages.map { language =>
+      val doc = docMapper.getDefaultDocument(id, language).asInstanceOf[TextDocumentDomainObject]
+
+      expect(2, "texts in a doc") {
+        doc.getTexts.size
+      }
+
+      val text1 = doc.getText(1)
+      val text2 = doc.getText(2)
+
+      assertNotNull(text1)
+      assertNotNull(text2)
+
+      assertEquals(headlinePrefix + language.getCode, text1.getText)
+      assertEquals(menuTextPrefix + language.getCode, text2.getText)
+    }
+  }
 
   test("save new url doc") {
     saveNewUrlDocumentFn()
@@ -580,9 +624,4 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
 //                {unsavedContentLoopNo, unsavedContentNo}
 //        };
 //    }
-}
-
-
-class DocSaveSuite {
-
 }

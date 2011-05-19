@@ -36,11 +36,7 @@ import com.imcode.imcms.flow.DocumentPageFlow;
 
 /**
  * NOTES:
- * <p/>
- * DocumentSaver is instantiated using SpringFramework factory
- * in order to support declared (AOP) transactions.
- * <p/>
- * DocumentLoader is instantiated using SpringFramework factory
+ * DocumentSaver and DocumentLoader are instantiated by SpringFramework
  * in order to support declared (AOP) transactions.
  */
 public class DocumentMapper implements DocumentGetter {

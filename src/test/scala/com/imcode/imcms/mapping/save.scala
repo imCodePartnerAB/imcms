@@ -16,11 +16,5 @@ class SaveSpec extends WordSpec with ShouldMatchers {
 
     "has default file" in {
     }
-    // privode somethinc that {
-    //   "does somethong" in {
-    //   }
-    //   "does something other in {
-    //   }
-    // }
   }
 }
