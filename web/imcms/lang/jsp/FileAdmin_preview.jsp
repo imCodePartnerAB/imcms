@@ -20,7 +20,7 @@
  ******************************************************************* */
 
 String acceptedExtPattern = "/" +
-	"(\\.(GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|JSP|ASP|FRAG)+$)" +
+	"(\\.(GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|JSP|ASP|FRAG|PROPERTIES)+$)" +
 	"|(\\.LOG+)" +
 	"/i" ;
 

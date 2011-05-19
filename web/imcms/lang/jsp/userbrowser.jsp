@@ -62,7 +62,7 @@
     <tr>
         <td class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/16 ?> </td>
         <td>
-            <select name="<%= UserBrowser.REQUEST_PARAMETER__ROLE_ID %>" size="5" multiple >
+            <select id="<%= UserBrowser.REQUEST_PARAMETER__ROLE_ID %>" name="<%= UserBrowser.REQUEST_PARAMETER__ROLE_ID %>" size="5" multiple >
             <%= Html.createOptionList(Arrays.asList(allRoles), userBrowserPage.getSelectedRoles(), new UserEditorPage.RoleToStringPairTransformer()) %>
 		    </select>
         </td>
@@ -79,7 +79,7 @@
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <td><input type="submit" class="imcmsFormBtnSmall" name="<%= UserBrowser.REQUEST_PARAMETER__SHOW_USERS_BUTTON %>" value="<? templates/sv/AdminChangeUser.htm/2004 ?>"></td>
+            <td><input type="submit" class="imcmsFormBtnSmall" id="<%= UserBrowser.REQUEST_PARAMETER__SHOW_USERS_BUTTON %>" name="<%= UserBrowser.REQUEST_PARAMETER__SHOW_USERS_BUTTON %>" value="<? templates/sv/AdminChangeUser.htm/2004 ?>"></td>
         </tr>
         </table>
     </td>
@@ -104,7 +104,7 @@
         <table border="0" cellspacing="0" cellpadding="0" width="100%">
         <tr valign="top">
             <td width="80%">
-            <select name="<%= UserBrowser.REQUEST_PARAMETER__USER_ID %>" size="15" style="width: 100%;">
+            <select id="<%= UserBrowser.REQUEST_PARAMETER__USER_ID %>" name="<%= UserBrowser.REQUEST_PARAMETER__USER_ID %>" size="15" style="width: 100%;">
                 <%
 
                     for ( int i = 0; i < users.length; i++ ) {
@@ -114,6 +114,7 @@
             </select></td>
             <td width="20%" align="right">
             <input type="submit" class="imcmsFormBtnSmall"
+                id="<%= UserBrowser.REQUEST_PARAMETER__SELECT_USER_BUTTON %>"
                 name="<%= UserBrowser.REQUEST_PARAMETER__SELECT_USER_BUTTON %>"
                 value="<%= userFinder.getSelectButtonText().toLocalizedString(request) %>"
                 style="width:10em">
@@ -132,8 +133,31 @@
 </table>
 </form>
 
-<script language="JavaScript">
-<!--
+<script type="text/javascript">
+jQ(document).ready(function($) {
+	<%--
+	When somethings selected in a selectBox and you click [Enter], then the default button is clicked.
+	--%>
+	$('#<%= UserBrowser.REQUEST_PARAMETER__ROLE_ID %>').keypress(function (e) {
+		if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+			$('#<%= UserBrowser.REQUEST_PARAMETER__SHOW_USERS_BUTTON %>').click() ;
+			return false ;
+		} else {
+			return true ;
+		}
+	}) ;
+	
+	$('#<%= UserBrowser.REQUEST_PARAMETER__USER_ID %>').keypress(function (e) {
+		if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+			$('#<%= UserBrowser.REQUEST_PARAMETER__SELECT_USER_BUTTON %>').click() ;
+			return false ;
+		} else {
+			return true ;
+		}
+	}) ;
+	
+}) ;
+
 var sSearch = unescape(getParam("search")) ;
 if (sSearch != "" && sSearch != " ") document.forms[1].searchstring.value = sSearch ;
 
@@ -146,7 +170,6 @@ function evalEditUser() {
 		return true;
 	}
 }
-//-->
 </script>
 #gui_end_of_page()
 </vel:velocity>

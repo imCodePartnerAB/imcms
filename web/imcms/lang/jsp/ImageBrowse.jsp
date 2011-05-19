@@ -77,7 +77,7 @@ if (null != imageBrowsePage.getLabel() ) { %>
             <tr>
                 <td>
 								<select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_URL %>" size="15"
-								        ondblclick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON ) %>'].click();" style="width:270px;"><%
+								        ondblclick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__OK_BUTTON ) %>'].click();" style="width:270px;"><%
 								String imageOptionsList = imageBrowsePage.getImagesOptionList() ;
 								if (!"".equals(imageOptionsList)) { %>
 									<%= imageOptionsList %><%

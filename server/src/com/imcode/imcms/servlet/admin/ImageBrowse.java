@@ -47,6 +47,7 @@ public class ImageBrowse extends HttpServlet {
     public static final String REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON = "ImageBrowse.button.change";
     public static final String REQUEST_PARAMETER__IMAGE_URL = "imglist";
     public static final String REQUEST_PARAMETER__IMAGE_DIRECTORY = "dirlist";
+    public static final String REQUEST_PARAMETER__IMAGE_DIRECTORY_SESSION = "ImageBrowse_dirlist";
     public static final String REQUEST_PARAMETER__LABEL = "label";
     public static final String REQUEST_PARAMETER__UPLOAD_BUTTON = "upload";
     public static final String REQUEST_PARAMETER__FILE = "file";
@@ -101,11 +102,23 @@ public class ImageBrowse extends HttpServlet {
         }
 
         String imageDirectoryString = request.getParameter( REQUEST_PARAMETER__IMAGE_DIRECTORY );
-        File selectedDirectory = null != selectedImage ? selectedImage.getParentFile() : imagesRoot;
+        File lastVisitedDirectory = null ;
+        try {
+            lastVisitedDirectory = (null != request.getSession().getAttribute(REQUEST_PARAMETER__IMAGE_DIRECTORY_SESSION)) ?
+                (File) request.getSession().getAttribute(REQUEST_PARAMETER__IMAGE_DIRECTORY_SESSION) :
+                null ;
+        } catch (Exception ignore) {}
+        File selectedDirectory =
+                (null != selectedImage) ?
+                  selectedImage.getParentFile() :
+                  (null != lastVisitedDirectory) ?
+                      lastVisitedDirectory :
+                      imagesRoot;
         if ( null != imageDirectoryString ) {
             File imageDirectory = new File( imagesRoot.getParentFile(), imageDirectoryString );
             if ( FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, imageDirectory ) ) {
                 selectedDirectory = imageDirectory;
+                request.getSession().setAttribute(REQUEST_PARAMETER__IMAGE_DIRECTORY_SESSION, selectedDirectory) ;
             }
         }
 

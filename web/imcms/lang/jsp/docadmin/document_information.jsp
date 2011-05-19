@@ -194,29 +194,36 @@ function checkFocus() {
 	</tr>
     <tr>
 	    <td colspan="2">#gui_hr( 'cccccc' )</td>
-	</tr><% if( !documentInformationPage.getErrors().isEmpty() &&
-            documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR__ALREADY_EXIST) ) {%>
-    <tr>
-        <td colspan="2" class="error"><span style='color:red'><%= EditDocumentInformationPageFlow.ALIAS_ERROR__ALREADY_EXIST.toLocalizedString(user) %></span></td>
-    </tr><%} else if( !documentInformationPage.getErrors().isEmpty() &&
-            documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR__USED_BY_SYSTEM) ) {%>
-    <tr>
-        <td colspan="2" class="error"><span style='color:red'><%= EditDocumentInformationPageFlow.ALIAS_ERROR__USED_BY_SYSTEM.toLocalizedString(user) %></span></td>
-    </tr><%}%>
-    <tr>
-        <td class="imcmsAdmText" nowrap><? global/Page_alias ?></td>
-        <td>
-        <table border="0" cellspacing="0" cellpadding="0" width="100%">
-        <tr>
-            <td  align="right" width="85%"><%= "http://" + request.getServerName() + request.getContextPath() + "/" %>&nbsp;<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS %>" size="40" maxlength="255"
-            value="<%= ObjectUtils.defaultIfNull( StringEscapeUtils.escapeHtml( document.getAlias() ), "" ) %>"></td>
-            <td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_ALIAS_LIST %>"
-            value=" <? global/view ?> "></td>
-        </tr>
-        </table></td>
-    </tr>
-
-    <tr>
+	</tr><%
+	if( !documentInformationPage.getErrors().isEmpty() && documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR__ALREADY_EXIST) ) {%>
+	<tr>
+		<td colspan="2" class="error"><span style='color:red'><%= EditDocumentInformationPageFlow.ALIAS_ERROR__ALREADY_EXIST.toLocalizedString(user) %></span></td>
+	</tr><%
+	} else if( !documentInformationPage.getErrors().isEmpty() &&
+		documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR__USED_BY_SYSTEM) ) {%>
+	<tr>
+		<td colspan="2" class="error"><span style='color:red'><%= EditDocumentInformationPageFlow.ALIAS_ERROR__USED_BY_SYSTEM.toLocalizedString(user) %></span></td>
+	</tr><%
+	} %>
+	<tr>
+		<td class="imcmsAdmText" nowrap><? global/Page_alias ?></td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr><%
+			String aliasInfoPath = "http://" + request.getServerName() + request.getContextPath() + "/" ;
+			if (aliasInfoPath.length() > 40) {
+				aliasInfoPath = request.getContextPath() + "/" ;
+			} %>
+			<td width="10%" nowrap="nowrap"><%= aliasInfoPath %>&nbsp;</td>
+			<td width="80%" align="right"><input type="text"
+				name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS %>" size="40" maxlength="255"
+				value="<%= ObjectUtils.defaultIfNull( StringEscapeUtils.escapeHtml( document.getAlias() ), "" ) %>" style="width:99%;" /></td>
+			<td align="right" style="padding-left:5px;"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_ALIAS_LIST %>" value=" <? global/view ?> "></td>
+		</tr>
+		</table></td>
+	</tr>
+	
+	<tr>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1"></td>
 	</tr>
@@ -315,24 +322,22 @@ function checkFocus() {
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1"></td>
 	</tr>
 	</table></td>
-</tr><%
+</tr>
+</table><%
 
 /* *******************************************************************************************
  *         ADVANCED                                                                          *
  ******************************************************************************************* */
 
 %>
-<tbody id="advanced">
+<div id="advanced">
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center" onMouseOver="checkFocus();">
 <tr>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
 		<td><span class="imcmsAdmHeading"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/21/1 ?></span></td>
-		<script language="javascript">
-		if (hasGetElementById) {
-			document.writeln('<td align="right"><input type="button" id="advanced_button1" class="imcmsFormBtnSmall" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button_hide ?>" onClick="toggleAdvanced()"></td>') ;
-		}
-		</script>
+		<td align="right"><input type="button" id="advanced_button1" class="imcmsFormBtnSmall advanced_button" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button_hide ?>"></td>
 	</tr>
 	</table>
 	#gui_hr( "blue" )</td>
@@ -615,11 +620,13 @@ function checkFocus() {
 	</tr>
 	</table></td>
 </tr>
-</tbody><%
+</table>
+</div><%
 /* *******************************************************************************************
  *         END ADVANCED                                                                      *
  ******************************************************************************************* */
 %>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center" onMouseOver="checkFocus();">
 <tr>
 	<td>#gui_hr( "blue" )</td>
 </tr>
@@ -627,12 +634,8 @@ function checkFocus() {
 	<td align="right">
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<script language="javascript">
-		if (hasGetElementById) {
-			document.writeln('<td><input type="button" id="advanced_button2" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td>') ;
-			document.writeln('<td>&nbsp;&nbsp;</td>') ;
-		}
-		</script>
+		<td><input type="button" id="advanced_button2" class="imcmsFormBtn advanced_button" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>"></td>
+		<td>&nbsp;&nbsp;</td>
 		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= PageFlow.REQUEST_PARAMETER__OK_BUTTON %>" onClick="return singleclicked();"
 		value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> "></td>
 		<td>&nbsp;</td>
@@ -657,7 +660,7 @@ if (!adminButtonsHidden) {
 	}
 }
 %>
-<script language="javascript">
+<script type="text/javascript">
 <!--<%
 String viewCookieName = "document_information_view" ;
 
@@ -674,35 +677,43 @@ if (all_cookies.length > 0) {
 } %>
 var viewCookieName = "<%= viewCookieName %>" ;
 var BTN_SHOW_VALUE = "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" ;
-var BTN_HIDE_VALUE = "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button_hide ?>" ;<%
+var BTN_HIDE_VALUE = "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button_hide ?>" ;
 
-if (actCookieValue.equals("advanced")) { %>
-document.getElementById("advanced").style.display = (isGecko) ? "table-row-group" : "block" ;
-document.getElementById("advanced_button1").value = BTN_HIDE_VALUE ;
-document.getElementById("advanced_button2").value = BTN_HIDE_VALUE ;<%
-} else { %>
-document.getElementById("advanced").style.display = "none" ;
-document.getElementById("advanced_button1").value = BTN_SHOW_VALUE ;
-document.getElementById("advanced_button2").value = BTN_SHOW_VALUE ;<%
-} %>
+jQ(document).ready(function($) {
+	
+	<% if (actCookieValue.equals("advanced")) { %>
+	$('#advanced').show(0) ;
+	$('#advanced_button1').val(BTN_HIDE_VALUE) ;
+	$('#advanced_button2').val(BTN_HIDE_VALUE) ;
+	<% } else { %>
+	$('#advanced').hide(0) ;
+	$('#advanced_button1').val(BTN_SHOW_VALUE) ;
+	$('#advanced_button2').val(BTN_SHOW_VALUE) ;
+	<% } %>
+	
+	$('.advanced_button').live('click', function(event) {
+		event.preventDefault() ;
+		toggleAdvanced($) ;
+	}) ;
+	
+}) ;
 
-function toggleAdvanced(show) {
-	if (!hasGetElementById) {
-		return ;
-	}
-	var advancedDisplay = document.getElementById("advanced").style.display ;
+function toggleAdvanced($) {
+	var isVisible = $('#advanced').is(':visible') ;
+	isVisible = !isVisible ;
 	var advancedButtonValue = BTN_SHOW_VALUE ;
 	var viewCookieValue = "simple" ;
-	if (advancedDisplay == "none") {
-		advancedDisplay = (isGecko) ? "table-row-group" : "block" ;
+	if (isVisible) {
 		advancedButtonValue = BTN_HIDE_VALUE ;
 		viewCookieValue = "advanced" ;
-	} else {
-		advancedDisplay = "none" ;
 	}
-	document.getElementById("advanced").style.display = advancedDisplay ;
-	document.getElementById("advanced_button1").value = advancedButtonValue ;
-	document.getElementById("advanced_button2").value = advancedButtonValue ;
+	if (isVisible) {
+		$('#advanced').slideDown('slow') ;
+	} else {
+		$('#advanced').slideUp('slow') ;
+	}
+	$('#advanced_button1').val(advancedButtonValue) ;
+	$('#advanced_button2').val(advancedButtonValue) ;
 	setCookie(viewCookieName, viewCookieValue) ;
 }
 

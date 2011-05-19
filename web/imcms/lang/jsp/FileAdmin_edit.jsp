@@ -21,9 +21,9 @@ if (!user.isSuperAdmin()) {
  *           SETTINGS                                                *
  ******************************************************************* */
 
-String acceptedExtPattern         = "/\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG)+$/i" ;
+String acceptedExtPattern         = "/\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG|PROPERTIES)+$/i" ;
 String acceptedExtPatternReadonly = "/" +
-	"(\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG)+$)" +
+	"(\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG|PROPERTIES)+$)" +
 	"|(\\.LOG+)" +
 	"/i" ;
 
