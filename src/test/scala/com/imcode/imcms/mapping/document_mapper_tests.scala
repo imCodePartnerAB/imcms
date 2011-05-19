@@ -8,7 +8,6 @@ import imcode.server.Imcms
 import java.io.ByteArrayInputStream
 import imcode.util.io.InputStreamSource
 import org.apache.commons.io.FileUtils
-import imcode.server.document.textdocument.{NoPermissionToAddDocumentToMenuException, MenuItemDomainObject, MenuDomainObject, TextDocumentDomainObject}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -21,6 +20,9 @@ import imcode.server.document._
 import java.util.EnumSet
 import imcms.mapping.{DocumentSaver, DocumentStoringVisitor, DocumentMapper}
 import imcms.api.{I18nMeta, ContentLoop, I18nSupport}
+import textdocument._
+import imcms.api.TextDocument.TextField
+import imcms.util.Factory
 
 @RunWith(classOf[JUnitRunner])
 class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -145,12 +147,66 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
   }
 
 
+  test("save new text doc with data") {
+    saveNewTextDocumentWithData()
+  }
+
+
   def saveNewTextDocumentFn() = {
     val parentDoc = getMainWorkingDocumentInDefaultLanguage(true)
     val newDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin)
-      .asInstanceOf[TextDocumentDomainObject]
+                          .asInstanceOf[TextDocumentDomainObject]
 
     docMapper.saveNewDocument(newDoc, admin)
+  }
+
+
+  def saveNewTextDocumentWithData() = {
+    val parentDoc = getMainWorkingDocumentInDefaultLanguage(true)
+    val newDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin)
+                          .asInstanceOf[TextDocumentDomainObject]
+
+    val fieldsCountOfEachType = 10
+    val loopsCount = 5
+    val textTypeToNo = Stream.continually(Seq(TextField.Format.PLAIN, TextField.Format.HTML).map(_.getType))
+                             .flatten.zipWithIndex
+                             .take(fieldsCountOfEachType)
+    val textPrefix = "text_"
+
+    for (loopNo <- 0 until loopsCount) {
+      val loop = Factory.createContentLoop(null, null, loopNo)
+
+      for (contentNo <- 0 until loopNo) {
+        loop.addLastContent
+      }
+
+      newDoc.setContentLoop(loopNo, loop)
+    }
+
+    for ((textType, no) <- textTypeToNo) {
+      val text = new TextDomainObject(textPrefix + no, textType)
+      newDoc.setText(no, text)
+
+      for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
+        val text = Factory.createText(null, null, null, null, loopNo, contentNo)
+        text.setText(textPrefix + no + "_%d:%d".format(loopNo, contentNo))
+        text.setType(textType)
+        newDoc.setText(no, text)
+      }
+    }
+
+    val savedDoc = docMapper.saveNewDocument(newDoc, admin)
+
+    for ((textType, no) <- textTypeToNo) {
+      val text = savedDoc.getText(no)
+
+      assertNotNull(text)
+      assertEquals(no, text.getNo)
+      assertEquals(textType, text.getType)
+      assertEquals(textPrefix + no, text.getText)
+    }
+
+    savedDoc
   }
 
 

@@ -69,22 +69,24 @@ public class Factory {
      * @return
      */
     public static TextDomainObject createText(Integer docId, Integer docVersionNo, Integer no, I18nLanguage language) {
-        return createText(docId, docVersionNo, no, language, null);
+        return createText(docId, docVersionNo, no, language, null, null);
     }
 
-    
+
     /**
      *
      * @param docId
      * @param docVersionNo
-     * @param language
      * @param no
-     * @param contentIndex
+     * @param language
+     * @param loopNo
+     * @param contentNo
      * @return
      */
-    public static TextDomainObject createText(Integer docId, Integer docVersionNo, Integer no, I18nLanguage language, Integer contentIndex) {
+    public static TextDomainObject createText(Integer docId, Integer docVersionNo, Integer no, I18nLanguage language, Integer loopNo, Integer contentNo) {
         TextDomainObject text = newInstance(TextDomainObject.class, docId, docVersionNo, language, no);
-        text.setContentNo(contentIndex);
+        text.setContentLoopNo(loopNo);
+        text.setContentNo(contentNo);
 
         return text;
     }
@@ -126,13 +128,13 @@ public class Factory {
     }
 
 
-    public static TextDomainObject createNextText(TextDocumentDomainObject doc) {
-        return createNextText(doc, null);
-    }
-    
-    public static TextDomainObject createNextText(TextDocumentDomainObject doc, Integer contentIndex) {
-        return createText(doc.getId(), doc.getVersion().getNo(), getNextItemNo(doc.getTexts().values()), doc.getLanguage(), contentIndex);
-    }
+//    public static TextDomainObject createNextText(TextDocumentDomainObject doc) {
+//        return createNextText(doc, null);
+//    }
+//
+//    public static TextDomainObject createNextText(TextDocumentDomainObject doc, Integer contentIndex) {
+//        return createText(doc.getId(), doc.getVersion().getNo(), getNextItemNo(doc.getTexts().values()), doc.getLanguage(), contentIndex, null);
+//    }
 
     public static ImageDomainObject createNextImage(TextDocumentDomainObject doc) {
         return createNextImage(doc, null);

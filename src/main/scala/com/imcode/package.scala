@@ -81,6 +81,7 @@ package object imcode {
     ret.toList
   }
 
+  // should be removed after migration to 2.9
   implicit def JIntegerToInt(ji: JInteger) = ji.intValue
 
   /**
