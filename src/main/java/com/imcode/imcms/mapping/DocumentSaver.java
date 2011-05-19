@@ -287,7 +287,7 @@ public class DocumentSaver {
         Integer copyDocId = saveMeta(meta).getId();
         metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
         for (DocumentDomainObject doc: docs) {
-            I18nMeta i18nMeta = doc.get18nMeta();
+            I18nMeta i18nMeta = doc.getI18nMeta();
 
             i18nMeta.setId(null);
             i18nMeta.setDocId(copyDocId);

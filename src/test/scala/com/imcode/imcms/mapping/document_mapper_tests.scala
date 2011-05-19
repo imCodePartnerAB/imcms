@@ -47,7 +47,44 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     saveNewTextDocumentFn()
   }
 
-  test("save new text doc with save params: CopyI18nMetaTextsIntoTextFields") {
+  test("save new text doc with EMPTY save params") {
+    val parentDoc = getMainWorkingDocumentInDefaultLanguage(true)
+    val newDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin)
+      .asInstanceOf[TextDocumentDomainObject]
+
+    val headlinePrefix = "headline_"
+    val menuTextPrefix = "menu_text_"
+
+    val i18nMetas = i18nSupport.getLanguages.map { language =>
+      val i18nMeta = new I18nMeta
+
+      i18nMeta.setLanguage(language)
+      i18nMeta.setHeadline(headlinePrefix + language.getCode)
+      i18nMeta.setMenuText(menuTextPrefix + language.getCode)
+
+      language -> i18nMeta
+    }.toMap.asJava
+
+    val id = docMapper.saveNewDocument(
+      newDoc,
+      i18nMetas,
+      EnumSet.noneOf(classOf[DocumentSaver.SaveParameter]),
+      admin).getMeta.getId
+
+    i18nSupport.getLanguages.map { language =>
+      val doc = docMapper.getDefaultDocument(id, language).asInstanceOf[TextDocumentDomainObject]
+
+      assertEquals(headlinePrefix + language.getCode, doc.getHeadline)
+      assertEquals(menuTextPrefix + language.getCode, doc.getMenuText)
+
+      expect(0, "texts in a doc") {
+        doc.getTexts.size
+      }
+    }
+  }
+
+
+  test("save new text doc with [CopyI18nMetaTextsIntoTextFields] save params") {
     val parentDoc = getMainWorkingDocumentInDefaultLanguage(true)
     val newDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin)
       .asInstanceOf[TextDocumentDomainObject]
@@ -74,6 +111,9 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     i18nSupport.getLanguages.map { language =>
       val doc = docMapper.getDefaultDocument(id, language).asInstanceOf[TextDocumentDomainObject]
 
+      assertEquals(headlinePrefix + language.getCode, doc.getHeadline)
+      assertEquals(menuTextPrefix + language.getCode, doc.getMenuText)
+
       expect(2, "texts in a doc") {
         doc.getTexts.size
       }
@@ -88,6 +128,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       assertEquals(menuTextPrefix + language.getCode, text2.getText)
     }
   }
+
 
   test("save new url doc") {
     saveNewUrlDocumentFn()

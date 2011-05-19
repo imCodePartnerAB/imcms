@@ -211,7 +211,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     public void updateDocumentI18nMeta(DocumentDomainObject doc, UserDomainObject user) {
-        I18nMeta i18nMeta = doc.get18nMeta();
+        I18nMeta i18nMeta = doc.getI18nMeta();
 
         metaDao.deleteI18nMeta(doc.getId(), doc.getLanguage().getId());
 

@@ -47,7 +47,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
     @Override
     protected void visitOtherDocument(DocumentDomainObject doc) {
 		doc.getMeta().setId(null);
-        doc.get18nMeta().setId(null);
+        doc.getI18nMeta().setId(null);
 
         DocumentVersion version = doc.getVersion();
 

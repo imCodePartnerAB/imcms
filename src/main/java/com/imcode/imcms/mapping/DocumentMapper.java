@@ -209,7 +209,7 @@ public class DocumentMapper implements DocumentGetter {
             docClone.setLanguage(language);
         }
 
-        I18nMeta i18nMeta = docClone.get18nMeta();
+        I18nMeta i18nMeta = docClone.getI18nMeta();
         i18nMeta.setLanguage(language);
 
         Map<I18nLanguage, I18nMeta> i18nMetas = new HashMap<I18nLanguage, I18nMeta>();
@@ -240,14 +240,19 @@ public class DocumentMapper implements DocumentGetter {
                                                               final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        T docClone = (T) doc.clone();
-        List<I18nMeta> i18nMetasClone = new LinkedList<I18nMeta>();
-
-        for (Map.Entry<I18nLanguage, I18nMeta> e : i18nMetas.entrySet()) {
-            i18nMetasClone.add(e.getValue().clone());
+        if (i18nMetas.isEmpty()) {
+            throw new IllegalArgumentException(String.format(
+                    "Unable to save new document. i18nMetas must not be empty."));
         }
 
-        Integer docId = documentSaver.saveNewDocument(docClone, i18nMetasClone, parameters, user);
+        T docClone = (T) doc.clone();
+        List<I18nMeta> i18nMetasList = new LinkedList<I18nMeta>();
+
+        for (Map.Entry<I18nLanguage, I18nMeta> e : i18nMetas.entrySet()) {
+            i18nMetasList.add(e.getValue().clone());
+        }
+
+        Integer docId = documentSaver.saveNewDocument(docClone, i18nMetasList, parameters, user);
 
         invalidateDocument(docId);
 
@@ -268,7 +273,7 @@ public class DocumentMapper implements DocumentGetter {
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
         DocumentDomainObject docClone = doc.clone();
         I18nLanguage language = docClone.getLanguage();
-        I18nMeta i18nMeta = docClone.get18nMeta();
+        I18nMeta i18nMeta = docClone.getI18nMeta();
 
         Map<I18nLanguage, I18nMeta> i18nMetas = new HashMap<I18nLanguage, I18nMeta>();
         i18nMetas.put(language, i18nMeta);

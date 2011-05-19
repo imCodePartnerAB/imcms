@@ -540,7 +540,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     
-    public I18nMeta get18nMeta() {
+    public I18nMeta getI18nMeta() {
         return i18nMeta;
     }
 
