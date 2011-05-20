@@ -47,7 +47,11 @@ public final class SaveText extends HttpServlet {
 
             // get textdocument
             String text_string = req.getParameter( "text" );
-            text_string = text_string.replaceAll("&lt;\\?imcms:contextpath\\?&gt;", "<?imcms:contextpath?>");
+            text_string = text_string
+							.replace(StringEscapeUtils.escapeHtml("<?imcms:contextpath?>"), "<?imcms:contextpath?>")
+							.replace(URLEncoder.encode("<?imcms:contextpath?>", Imcms.ISO_8859_1_ENCODING), "<?imcms:contextpath?>")
+							.replace(URLEncoder.encode("<?imcms:contextpath?>", Imcms.UTF_8_ENCODING), "<?imcms:contextpath?>")
+							.replace("%3C?imcms:contextpath?%3E", "<?imcms:contextpath?>") ;
 
             int text_format = Integer.parseInt( req.getParameter( "format_type" ) );
 

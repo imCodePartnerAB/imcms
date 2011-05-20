@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -50,7 +51,8 @@ public class ChangeText extends HttpServlet {
 				String[] formats = request.getParameterValues("format") ;
 	      String rows = StringUtils.defaultString(request.getParameter("rows")) ;
 	      String width = StringUtils.defaultString(request.getParameter("width")) ;
-				TextEditPage page = new TextEditPage( documentId, textIndex, text, label, formats, rows, width );
+	      String returnUrl = StringUtils.defaultString(request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL)) ;
+				TextEditPage page = new TextEditPage( documentId, textIndex, text, label, formats, rows, width, returnUrl );
         page.forward( request, res, user );
 
     }
@@ -65,6 +67,7 @@ public class ChangeText extends HttpServlet {
         private String[] formats;
         private String rows;
         private String width;
+        private String returnUrl;
 
         public enum Format {
             NONE,
@@ -72,7 +75,7 @@ public class ChangeText extends HttpServlet {
             EDITOR
         }
         
-        public TextEditPage( int documentId, int textIndex, TextDomainObject text, String label, String[] formats, String rows, String width ) {
+        public TextEditPage( int documentId, int textIndex, TextDomainObject text, String label, String[] formats, String rows, String width, String returnUrl ) {
             this.documentId = documentId;
             this.text = text;
             this.textIndex = textIndex;
@@ -80,6 +83,7 @@ public class ChangeText extends HttpServlet {
             this.formats = formats;
             this.rows = rows;
             this.width = width;
+            this.returnUrl = returnUrl;
         }
 
         public int getDocumentId() {
@@ -112,6 +116,10 @@ public class ChangeText extends HttpServlet {
 	
 				public String getWidth() {
 					return width;
+				}
+	
+				public String getReturnUrl() {
+					return returnUrl;
 				}
 
 				public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {

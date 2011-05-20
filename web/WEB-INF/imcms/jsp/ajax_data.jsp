@@ -6,7 +6,7 @@
 	        java.sql.ResultSet,
 	        java.text.SimpleDateFormat,
 	        java.util.Date,
-	        org.apache.commons.lang.StringUtils, org.json.simple.JSONObject, imcode.server.ImcmsServices, imcode.server.Imcms, imcode.server.user.UserDomainObject, imcode.util.Utility, com.imcode.imcms.mapping.DocumentMapper, imcode.server.document.textdocument.TextDocumentDomainObject, imcode.server.document.TextDocumentPermissionSetDomainObject, imcode.server.document.textdocument.TextDomainObject, imcode.server.document.NoPermissionToEditDocumentException, imcode.util.ShouldHaveCheckedPermissionsEarlierException, imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException, imcode.server.document.ConcurrentDocumentModificationException, com.imcode.imcms.mapping.DocumentSaveException, imcode.util.ShouldNotBeThrownException"
+	        org.apache.commons.lang.StringUtils, org.json.simple.JSONObject, imcode.server.ImcmsServices, imcode.server.Imcms, imcode.server.user.UserDomainObject, imcode.util.Utility, com.imcode.imcms.mapping.DocumentMapper, imcode.server.document.textdocument.TextDocumentDomainObject, imcode.server.document.TextDocumentPermissionSetDomainObject, imcode.server.document.textdocument.TextDomainObject, imcode.server.document.NoPermissionToEditDocumentException, imcode.util.ShouldHaveCheckedPermissionsEarlierException, imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException, imcode.server.document.ConcurrentDocumentModificationException, com.imcode.imcms.mapping.DocumentSaveException, imcode.util.ShouldNotBeThrownException, org.apache.commons.lang.StringEscapeUtils, java.net.URLEncoder"
 
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
@@ -50,6 +50,11 @@ if ("getHelpTextInlineEditing".equals(action)) {
 	int format  = Integer.parseInt(request.getParameter("format")) ;
 	String text = request.getParameter("text") ;
 	boolean doLog = (null != request.getParameter("do_log")) ;
+	text = text
+		.replace(StringEscapeUtils.escapeHtml("<?imcms:contextpath?>"), "<?imcms:contextpath?>")
+		.replace(URLEncoder.encode("<?imcms:contextpath?>", Imcms.ISO_8859_1_ENCODING), "<?imcms:contextpath?>")
+		.replace(URLEncoder.encode("<?imcms:contextpath?>", Imcms.UTF_8_ENCODING), "<?imcms:contextpath?>")
+		.replace("%3C?imcms:contextpath?%3E", "<?imcms:contextpath?>") ;
 	
 	ImcmsServices imcref = Imcms.getServices() ;
 	UserDomainObject user = Utility.getLoggedOnUser(request) ;

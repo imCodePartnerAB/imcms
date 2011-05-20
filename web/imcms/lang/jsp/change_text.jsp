@@ -2,6 +2,7 @@
 
 	import="com.imcode.imcms.servlet.admin.ChangeText,
 	        imcode.server.Imcms,
+	        imcode.server.ImcmsConstants,
 	        imcode.server.LanguageMapper,
 	        imcode.server.document.textdocument.TextDomainObject,
 	        imcode.util.Utility,
@@ -117,18 +118,15 @@ if (null != textEditPage.getFormats()) {
 <input type="hidden" name="format" value="<%= StringEscapeUtils.escapeHtml(format) %>" /><%
 	}
 }
-if (null != textEditPage.getRows() && !"".equals(textEditPage.getRows())) { %>
-<input type="hidden" name="rows" value="<%= StringEscapeUtils.escapeHtml(textEditPage.getRows()) %>" /><%
-}
 if (null != textEditPage.getWidth() && !"".equals(textEditPage.getWidth())) { %>
 <input type="hidden" name="width" value="<%= StringEscapeUtils.escapeHtml(textEditPage.getWidth()) %>" /><%
-} %>
-
-<%
-if (rows > 0) {
-	%><input type="hidden" name="rows"  value="<%=rows%>" /><%
 }
-%>
+if (rows > 0) { %>
+<input type="hidden" name="rows"  value="<%=rows%>" /><%
+}
+if (null != textEditPage.getReturnUrl() && !"".equals(textEditPage.getReturnUrl())) { %>
+<input type="hidden" name="<%= ImcmsConstants.REQUEST_PARAM__RETURN_URL %>" value="<%= StringEscapeUtils.escapeHtml(textEditPage.getReturnUrl()) %>" /><%
+} %>
 
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
