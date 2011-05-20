@@ -1,3 +1,7 @@
 #Document version support
 #New admin interface
 #Imcms modes - normal/maintenance
+#For devs:
+Languages/Tehcnologies/Descissions/API
+Notes:
+-Tests are mostly integrational

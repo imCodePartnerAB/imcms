@@ -675,9 +675,23 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
   }
 
 
+  test("insert text doc text field") {
+    val doc = saveNewTextDocumentFn()
+    val no = 0
+    val text = "text"
+
+    expect(null, "Text field does not exists") {
+      doc.getText(textNo)
+    }
+
+    docMapper.saveTextDocText(doc, text)
+
+    // check:
+    // touch, creation of enclosed content loop, no is not specified.
+  }
+
   test("get doc version info") (pending)
 
-  test("save text doc text") (pending)
 
   test("save text doc image") (pending)
 

@@ -236,6 +236,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         text.setDocId(doc.getIdValue());
         text.setDocVersionNo(doc.getVersionNo());
+        text.setLanguage(doc.getLanguage());
 
         textDao.saveText(text);
 
