@@ -1,14 +1,63 @@
 <%@ page language="java"
 
-	import="imcode.util.Utility,
-	        org.apache.oro.text.perl.Perl5Util,
+	import="com.glaforge.i18n.io.SmartEncodingInputStream,
+	        imcode.util.Utility,
+	        imcode.server.user.UserDomainObject,
+	        imcode.server.Imcms,
 	        java.io.*,
-            imcode.server.user.UserDomainObject, imcode.server.Imcms, org.apache.commons.lang.StringUtils"
+	        org.apache.oro.text.perl.Perl5Util,
+	        org.apache.commons.lang.StringUtils, java.net.URLEncoder"
 	
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><%
+%><%@taglib prefix="vel" uri="imcmsvelocity"%><%!
+
+private static String convertUtf8ToIso(String string) {
+	try {
+		return new String(string.getBytes(Imcms.UTF_8_ENCODING), Imcms.ISO_8859_1_ENCODING) ;
+	} catch (Exception e) {
+		return string ;
+	}
+}
+private static String convertIsoToUtf8(String string) {
+	try {
+		return new String(string.getBytes(Imcms.ISO_8859_1_ENCODING), Imcms.UTF_8_ENCODING) ;
+	} catch (Exception e) {
+		return string ;
+	}
+}
+
+private static boolean isValidUtf8(String str) { // Not failsafe, but better than before!
+	String strIso       = convertUtf8ToIso(str) ;
+	String strUtf       = convertIsoToUtf8(str) ;
+	return (!strIso.contains("¿½") || strIso.equals(str) || strIso.equals(strUtf)) ;
+}
+
+/*
+http://svn.codehaus.org/guessencoding/trunk/src/main/java/com/glaforge/i18n/io/SmartEncodingInputStream.java
+*/
+
+private static String getFileContent(File file, String encoding) {
+	try {
+		FileInputStream fis   = new FileInputStream(file) ;
+		SmartEncodingInputStream smartIS = new SmartEncodingInputStream(fis, 8192, java.nio.charset.Charset.forName(encoding));
+		Reader reader = smartIS.getReader();
+		BufferedReader br = new BufferedReader(reader);
+		String fileLine, fileSrc = "" ;
+		while ((fileLine = br.readLine()) != null) {
+			String tempStr = fileLine + "\n" ;
+			if (tempStr.length() > 0) {
+				fileSrc += tempStr ;
+			}
+		}
+		br.close() ;
+		return fileSrc ;
+	} catch (IOException e) {}
+	return "" ;
+}
+
+%><%
 
 request.setCharacterEncoding("UTF-8");
     
@@ -124,7 +173,8 @@ if (doSave) {
 		/*for (int i = 0; i < fuckedUpUmlingBack.length; i = i + 2) {
 			fileSrc = fileSrc.replaceAll(fuckedUpUmlingBack[i],fuckedUpUmlingBack[i+1]) ;
 		}*/
-		fileOut = new OutputStreamWriter(new FileOutputStream(fn), Imcms.DEFAULT_ENCODING) ;
+		boolean isGuessedAsIsoFile = (null != request.getParameter("isGuessedAsIsoFile")) ;
+		fileOut = new OutputStreamWriter(new FileOutputStream(fn), isGuessedAsIsoFile ? Imcms.ISO_8859_1_ENCODING : Imcms.UTF_8_ENCODING) ;
 		fileOut.write(fileSrc) ;
 		isSaved = true ;
 	} catch (FileNotFoundException fnEx) {
@@ -136,26 +186,21 @@ if (doSave) {
 			fileOut.close() ;
 		}
 	}
+	response.sendRedirect(thisPage + "?file=" + java.net.URLEncoder.encode(file, Imcms.UTF_8_ENCODING) + (isReadonly ? "&readonly=1" : "")) ;
+	return ;
 }
 
 /* if Is editable file - Read file and show it */
 
-String fileLine ;
-String tempStr ;
+boolean isGuessedAsIsoFile = false ;
 
 if (isEditable && !doSave) {
 
-	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fn), "UTF-8")) ;
-
-	fileSrc = "" ;
-	while ((fileLine = br.readLine()) != null) {
-		tempStr = fileLine + "\n" ;
-		if (tempStr.length() > 0) {
-			fileSrc += tempStr ;
-		}
+	fileSrc = getFileContent(fn, Imcms.UTF_8_ENCODING) ;
+	if (!isValidUtf8(fileSrc)) {
+		fileSrc = getFileContent(fn, Imcms.ISO_8859_1_ENCODING) ;
+		isGuessedAsIsoFile = true ;
 	}
-	br.close() ;
-
 
 } else if (!isEditable) {
 
@@ -265,7 +310,9 @@ if (isHelpWin) { %>
 <html>
 <head>
 <title>:: imCMS ::</title>
-
+<!--
+Encoding: <%= isGuessedAsIsoFile ? "ISO 8859-1" : "UTF-8" %>
+-->
 <vel:velocity>
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script type="text/javascript" src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp"></script>
@@ -467,7 +514,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 
 				}
 				out.print(fileNameToShow) ;
-			} %>&quot;</span></td>
+			} %>&quot; &nbsp; <span style="font-size:9px;">(<%= isGuessedAsIsoFile ? "ISO 8859-1" : "UTF-8" %>)</span></span></td>
 		</tr>
 		</table></td>
 
@@ -517,6 +564,9 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			if (isTempl) { %>
 			<input type="hidden" name="template" value="1">
 			<input type="hidden" name="templName" value="<%= templName %>"><%
+			} %><%
+			if (isGuessedAsIsoFile) { %>
+			<input type="hidden" name="isGuessedAsIsoFile" value="true"><%
 			} %>
 			<table border="0" cellspacing="0" cellpadding="0">
 			<tr>
@@ -534,7 +584,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 		</tr>
 		</table><%
 		} else { // readonly %>
-		<form name="editForm" action="<%= thisPage %>" method="post" onSubmit="return doSave(); return false">
+		<%= "<form name=\"editForm\" action=\"" + thisPage + "\" method=\"post\" onSubmit=\"return doSave(); return false\">" %>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><%
@@ -573,24 +623,24 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			if (hasDocumentAll || (isMac && hasGetElementById)) { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center">
-		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit FileAdminEditEditor" style="width:790px; height:<%=(isTempl || (isMac && hasDocumentAll)) ? 505 : 515 %>px;" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="<%= "txtField" %>" cols="90" rows="<%= taRows %>" class="edit FileAdminEditEditor" style="width:790px; height:<%=(isTempl || (isMac && hasDocumentAll)) ? 505 : 515 %>px;" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (hasGetElementById) { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" valign="top">
-		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit FileAdminEditEditor" style="width:98%; height:<%= (isTempl) ? 500 : 510 %>px;" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="<%= "txtField" %>" cols="90" rows="<%= taRows %>" class="edit FileAdminEditEditor" style="width:98%; height:<%= (isTempl) ? 500 : 510 %>px;" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (isMac && hasDocumentLayers) { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" class="imcmsAdmText">
-		<textarea name="txtField" id="txtField" cols="125" rows="<%= taRows %>" class="edit FileAdminEditEditor" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="<%= "txtField" %>" cols="125" rows="<%= taRows %>" class="edit FileAdminEditEditor" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" class="imcmsAdmText">
-		<textarea name="txtField" id="txtField" cols="82" rows="<%= taRows %>" class="edit FileAdminEditEditor" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="<%= "txtField" %>" cols="82" rows="<%= taRows %>" class="edit FileAdminEditEditor" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} %>
 <%= fileSrc %></textarea></td>
 	</tr>
 	</table>
-	</form></td>
+	<%= "</form>" %></td>
 </tr>
 </table>
 <%
