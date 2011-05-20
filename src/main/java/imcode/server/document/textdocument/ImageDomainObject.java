@@ -3,16 +3,7 @@ package imcode.server.document.textdocument;
 import java.io.IOException;
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
@@ -43,15 +34,16 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
 	@Transient
 	private ImageSource source = new NullImageSource();
 	
-	@Column(name="doc_id")
+	@Column(name="doc_id", nullable=false)
 	private Integer docId;
 	
-	@Column(name="doc_version_no")
+	@Column(name="doc_version_no", nullable=false)
 	private Integer docVersionNo;
 
     /** Image order no in a text doc.*/
     private String no = "";
-	
+
+
     private int width;
     private int height;
     private int border;
@@ -439,6 +431,10 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
 		this.id = id;
 	}
 
+    /**
+     * @see ImageSource
+     * @return image source type
+     */
 	public Integer getType() {
 		return type;
 	}

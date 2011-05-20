@@ -183,15 +183,42 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       newDoc.setContentLoop(loopNo, loop)
     }
 
+    val menus = 0 until fieldsCountOfEachType map { menuNo =>
+      val menu = new MenuDomainObject
+      0 until menuNo foreach { _ =>
+        menu.addMenuItem(new MenuItemDomainObject(new GetterDocumentReference(saveNewTextDocumentFn().getId)))
+      }
+
+      menuNo -> menu
+    } toMap
+
     for ((textType, no) <- textTypeToNo) {
       val text = new TextDomainObject(textPrefix + no, textType)
+      val image = new ImageDomainObject
+      val menu = new MenuDomainObject
+
+      menus(no).getMenuItems foreach { menuItem =>
+        menu.addMenuItem(new MenuItemDomainObject(new GetterDocumentReference(menuItem.getDocumentId)))
+      }
+
+      image.setType(ImageSource.IMAGE_TYPE_ID__NULL)
+
       newDoc.setText(no, text)
+      newDoc.setImage(no, image)
+      newDoc.setMenu(no, menu)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
         val text = Factory.createText(null, null, null, null, loopNo, contentNo)
+        val image = new ImageDomainObject
+
+        image.setContentLoopNo(loopNo)
+        image.setContentNo(contentNo)
+
         text.setText(textPrefix + no + "_%d:%d".format(loopNo, contentNo))
         text.setType(textType)
+
         newDoc.setText(no, text)
+        newDoc.setImage(no, image)
       }
     }
 
@@ -209,16 +236,30 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       }
     }
 
+
+
     for ((textType, no) <- textTypeToNo) {
       val text = savedDoc.getText(no)
+      val image = savedDoc.getImage(no)
+      val menu = savedDoc.getMenu(no)
 
       assertNotNull(text)
       assertEquals(no, text.getNo)
       assertEquals(textType, text.getType)
       assertEquals(textPrefix + no, text.getText)
 
+      assertNotNull(image)
+      assertEquals(no, image.getNo)
+      assertEquals(ImageSource.IMAGE_TYPE_ID__NULL, image.getType)
+
+      assertNotNull(menu)
+      val menuItems = menu.getItemsMap
+      assertEquals(no, menuItems.size)
+      //assertTrue(menuItems.values.forall(_.getDocumentId == parentDoc.getId))
+
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
         val text = savedDoc.getText(no, loopNo, contentNo)
+        val image = savedDoc.getImage(no, loopNo, contentNo)
 
         assertNotNull(text)
         assertEquals(no, text.getNo)
@@ -226,6 +267,10 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
         assertEquals(contentNo, text.getContentNo)
         assertEquals(textType, text.getType)
         assertEquals(textPrefix + no + "_%d:%d".format(loopNo, contentNo), text.getText)
+
+        assertNotNull(image)
+        assertEquals(no, image.getNo)
+        assertEquals(ImageSource.IMAGE_TYPE_ID__NULL, image.getType)
       }
     }
 

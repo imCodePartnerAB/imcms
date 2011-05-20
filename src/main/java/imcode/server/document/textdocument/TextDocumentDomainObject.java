@@ -186,7 +186,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-    public TextDomainObject getText(Integer textNo, Integer loopNo, Integer contentNo) {
+    public TextDomainObject getText(int textNo, int loopNo, int contentNo) {
         return loopTexts.get(new ContentLoopItemKey(textNo, loopNo, contentNo));
     }
 
@@ -247,7 +247,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @param text
      * @return
      */
-    public TextDomainObject setText(Integer no, TextDomainObject text) {
+    public TextDomainObject setText(int no, TextDomainObject text) {
         Integer docId = getIdValue();
         Integer docVersionNo = getVersionNo();
 
@@ -422,7 +422,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return images.get(no);
     }
 
-    public ImageDomainObject getImage(Integer imageNo, Integer loopNo, Integer contentNo) {
+    public ImageDomainObject getImage(int imageNo, int loopNo, int contentNo) {
         return loopImages.get(new ContentLoopItemKey(imageNo, loopNo, contentNo));
     }
 

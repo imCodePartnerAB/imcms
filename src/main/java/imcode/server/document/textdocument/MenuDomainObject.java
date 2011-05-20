@@ -171,7 +171,7 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
 
 
     /**
-     * Adds menu item to this menu.
+     * Adds menu item to this menu without checking if it references a document.
      *
      * @param menuItem
      */
