@@ -15,7 +15,7 @@
           imcode.util.Utility,
           imcode.util.image.Format,
           org.apache.commons.lang.StringEscapeUtils,
-          org.apache.commons.lang.StringUtils, java.util.Properties"
+          org.apache.commons.lang.StringUtils, java.util.Properties, imcode.server.ImcmsConstants"
 
 	contentType="text/html; charset=UTF-8"
 
@@ -192,8 +192,12 @@ function resetCrop() {
 <input type="hidden" id="h_crop_y1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 %>" value="<%= cropRegion.getCropY1() %>"/>
 <input type="hidden" id="h_crop_x2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 %>" value="<%= cropRegion.getCropX2() %>"/>
 <input type="hidden" id="h_crop_y2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y2 %>" value="<%= cropRegion.getCropY2() %>"/>
-<input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__ROTATE_ANGLE %>" value="<%= image.getRotateDirection().getAngle() %>"/>
-    
+<input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__ROTATE_ANGLE %>" value="<%= image.getRotateDirection().getAngle() %>"/><%
+
+// Sometimes it jumped wrong if this wasn't here.
+if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUrl())) { %>
+<input type="hidden" name="<%= ImcmsConstants.REQUEST_PARAM__RETURN_URL %>" value="<%= StringEscapeUtils.escapeHtml(imageEditPage.getReturnUrl()) %>" /><%
+} %>
     <table border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td>

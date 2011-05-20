@@ -116,12 +116,13 @@ public class ImageEditPage extends OkCancelPage {
     private boolean linkable;
     private int forcedWidth;
     private int forcedHeight;
+    private String returnUrl;
 
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image, Integer imageIndex, 
                          LocalizedMessage heading, String label, ServletContext servletContext,
                          Handler<ImageDomainObject> imageCommand,
                          DispatchCommand returnCommand, boolean linkable, 
-                         int forcedWidth, int forcedHeight) {
+                         int forcedWidth, int forcedHeight, String returnUrl) {
         super(returnCommand, returnCommand);
         this.document = document;
         this.image = image;
@@ -133,7 +134,7 @@ public class ImageEditPage extends OkCancelPage {
         this.linkable = linkable ;
         this.forcedWidth = forcedWidth;
         this.forcedHeight = forcedHeight;
-        
+        this.returnUrl = returnUrl;
         forceWidthHeight();
     }
     
@@ -526,6 +527,10 @@ public class ImageEditPage extends OkCancelPage {
 
 	public Integer getImageIndex() {
 		return imageIndex;
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
 	}
 
 	private static class HeadlineWildcardQueryParser implements QueryParser {

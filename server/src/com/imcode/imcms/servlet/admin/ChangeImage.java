@@ -90,7 +90,7 @@ public class ChangeImage extends HttpServlet {
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", String.valueOf(imageIndex), String.valueOf(document.getId()));
         ImageEditPage imageEditPage = new ImageEditPage(document, image, imageIndex, heading, 
         		StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, 
-        		returnCommand, true, forcedWidth, forcedHeight);
+        		returnCommand, true, forcedWidth, forcedHeight, returnURL);
         imageEditPage.forward(request, response);
 
     }

@@ -1,18 +1,20 @@
 <%@ page import="com.imcode.imcms.flow.OkCancelPage, com.imcode.imcms.flow.Page, com.imcode.imcms.servlet.admin.MenuEditPage, com.imcode.imcms.util.l10n.LocalizedMessage, com.imcode.util.HtmlBuilder, imcode.server.document.DocumentDomainObject, imcode.server.document.DocumentTypeDomainObject, imcode.server.document.TextDocumentPermissionSetDomainObject, imcode.server.document.textdocument.MenuDomainObject, imcode.server.document.textdocument.MenuItemDomainObject, imcode.server.document.textdocument.TextDocumentDomainObject, imcode.server.document.textdocument.TreeSortKeyDomainObject, imcode.server.user.UserDomainObject, imcode.util.Html, imcode.util.IdLocalizedNamePair, imcode.util.IdLocalizedNamePairToOptionTransformer, imcode.util.Utility, org.apache.commons.collections.CollectionUtils, org.apache.commons.collections.Predicate, org.apache.commons.lang.StringEscapeUtils, org.apache.commons.lang.StringUtils, java.util.ArrayList, java.util.Arrays, java.util.List, java.util.Set"%>
 <%@ page contentType="text/html; charset=UTF-8"%><%
     
-    MenuEditPage menuEditPage = (MenuEditPage) Page.fromRequest(request);
-    final MenuDomainObject menu = menuEditPage.getMenu();
-    UserDomainObject user = Utility.getLoggedOnUser(request);
-    MenuItemDomainObject[] menuItemsUserCanSee = menu.getMenuItemsUserCanSee(user);
-    TextDocumentDomainObject textDocument = menuEditPage.getTextDocument();
+MenuEditPage menuEditPage = (MenuEditPage) Page.fromRequest(request);
+final MenuDomainObject menu = menuEditPage.getMenu();
+UserDomainObject user = Utility.getLoggedOnUser(request);
+MenuItemDomainObject[] menuItemsUserCanSee = menu.getMenuItemsUserCanSee(user);
+TextDocumentDomainObject textDocument = menuEditPage.getTextDocument();
+
+String cp = request.getContextPath() ;
 
 %><%@taglib prefix="vel" uri="imcmsvelocity" %><vel:velocity><html>
     <head>
-        <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
+        <link rel="stylesheet" type="text/css" href="<%= cp %>/imcms/css/imcms_admin.css.jsp">
     </head>
     <body>
-        <form action="<%= request.getContextPath() %>/servlet/PageDispatcher" method="POST">
+        <form action="<%= cp %>/servlet/PageDispatcher" method="POST">
             <%= Page.htmlHidden(request) %>
 
         #gui_outer_start()
@@ -66,39 +68,38 @@
                 <input type="submit" name="<%= MenuEditPage.SORT %>" value="<? templates/sv/textdoc/archive_del_button.html/1 ?>" class="imcmsFormBtnSmall">
             </div>
             #gui_hr("cccccc")
-            <div>
-            <%
-                for ( MenuItemDomainObject menuItem : menuItemsUserCanSee ) {
-                    DocumentDomainObject menuItemDocument = menuItem.getDocument();
-                    String headline = menuItemDocument.getHeadline();
-                    if ( StringUtils.isBlank(headline) ) {
-                        headline = "_" ;
-                    }
-                    %>
-                    <div>
-                        <%
-                            if (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER || menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED ) {
-                                TreeSortKeyDomainObject treeSortKey = menuItem.getTreeSortKey();
-                                String sortKey = treeSortKey.toString() ;
-                                if (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED) {
-                                    sortKey =  menuItem.getSortKey() == null ? "" : menuItem.getSortKey().toString() ;
-                                }
-                                %><input type="text" name="<%= MenuEditPage.SORT_KEY %><%= menuItemDocument.getId() %>" size="<%= (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER) ? 25 : 5 %>" value="<%= StringEscapeUtils.escapeHtml(sortKey) %>"><%
-                            }
-                        %><%= Html.getLinkedStatusIconTemplate( menuItem.getDocument(), user, request ) %> 
-                        <input type="checkbox" name="<%= MenuEditPage.SELECTED %>" value="<%= menuItemDocument.getId() %>">
-                        <% if (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER) {
-                            %><%= StringUtils.repeat("&nbsp;", menuItem.getTreeSortKey().getLevelCount()*2) %><%
-                        } %>
-                        <a href="<%= request.getContextPath() %>/<%= menuItemDocument.getName() %>"><%= StringEscapeUtils.escapeHtml(headline) %></a>
-                        <% if (user.canEdit(menuItemDocument)) {
-                            %>&nbsp;<a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= menuItemDocument.getId() %>"><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/ico_txt.gif" border="0"></a><%
-                        } %>
-                    </div>
-                    <%
-                }
-            %>
-            </div>
+		<%= "<div style=\"width:" + (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER ? 600 : 500) + "px;\">" %>
+			<table border="0" cellspacing="0" cellpadding="3"><%
+			for ( MenuItemDomainObject menuItem : menuItemsUserCanSee ) {
+				DocumentDomainObject menuItemDocument = menuItem.getDocument();
+				String headline = menuItemDocument.getHeadline();
+				if ( StringUtils.isBlank(headline) ) {
+					headline = "_" ;
+				} %>
+			<tr><%
+				if (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER || menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED ) {
+					TreeSortKeyDomainObject treeSortKey = menuItem.getTreeSortKey();
+					String sortKey = treeSortKey.toString() ;
+					if (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED) {
+						sortKey =  menuItem.getSortKey() == null ? "" : menuItem.getSortKey().toString() ;
+					} %>
+				<td><input type="text" name="<%=
+					MenuEditPage.SORT_KEY %><%= menuItemDocument.getId() %>" size="<%=
+					(menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER) ? 25 : 5 %>" value="<%=
+					StringEscapeUtils.escapeHtml(sortKey) %>" /></td><%
+				} %>
+				<td><%= Html.getLinkedStatusIconTemplate( menuItem.getDocument(), user, request ) %></td>
+				<td><input type="checkbox" name="<%= MenuEditPage.SELECTED %>" value="<%= menuItemDocument.getId() %>" /></td>
+				<td<%= (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER) ? " style=\"padding-left:" + ((menuItem.getTreeSortKey().getLevelCount() * 10) - 7) + "px\"" : "" %>>
+				<a href="<%= cp %>/<%= menuItemDocument.getName() %>"><%= StringEscapeUtils.escapeHtml(headline) %></a><%
+				if (user.canEdit(menuItemDocument)) {
+					%>&nbsp;<a href="<%= cp %>/servlet/AdminDoc?meta_id=<%= menuItemDocument.getId() %>"><img src="<%=
+					cp %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/ico_txt.gif" border="0" alt="" /></a><%
+				} %></td>
+			</tr><%
+			} %>
+			</table>
+		<%= "<div>" %>
             #gui_hr("cccccc")
             <div>
                 <input type="submit" name="<%= MenuEditPage.COPY %>" value="<? templates/sv/textdoc/archive_del_button.html/2001 ?>" class="imcmsFormBtnSmall">

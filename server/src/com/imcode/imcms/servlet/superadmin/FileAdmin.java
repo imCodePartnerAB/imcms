@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.util.HumanReadable;
 import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -149,10 +150,10 @@ public class FileAdmin extends HttpServlet {
         String dirParameter = request.getParameter( parameter );
         return new File( webappPath, dirParameter ).getCanonicalFile();
     }
-
+		
     private File[] getRoots() {
         String rootpaths = Imcms.getServices().getConfig().getFileAdminRootPaths();
-        List rootList = new ArrayList();
+        List<File> rootList = new ArrayList<File>();
         if ( rootpaths != null ) {
             StringTokenizer st = new StringTokenizer( rootpaths, ":;" );
             int tokenCount = st.countTokens();
@@ -164,7 +165,20 @@ public class FileAdmin extends HttpServlet {
                 }
             }
         }
-        return (File[])rootList.toArray( new File[rootList.size()] );
+	      // New:
+				StringTokenizer st = new StringTokenizer( ImcmsConstants.fileAdminRootPathsMandatoryIfExists, ":;" );
+				int tokenCount = st.countTokens();
+				for ( int i = 0; i < tokenCount; i++ ) {
+						String oneRoot = st.nextToken().trim();
+						File oneRootFile = FileUtility.getFileFromWebappRelativePath( oneRoot );
+						if ( oneRootFile.isDirectory() && !rootList.contains(oneRootFile) ) {
+								rootList.add( oneRootFile );
+						}
+				}
+	      // End new
+	      File[] directoryArray = rootList.toArray( new File[rootList.size()] );
+	      Arrays.sort(directoryArray) ;
+        return directoryArray ;
     }
 
     private boolean move( String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res,
