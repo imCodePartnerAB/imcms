@@ -29,11 +29,6 @@ import com.imcode.imcms.api.*;
  */
 public class DocumentSaver {
 
-    public enum SaveParameter {
-        // Applies to text document only.
-        CopyI18nMetaTextsIntoTextFields
-    }
-
     private DocumentMapper documentMapper;
     
     private MetaDao metaDao;
@@ -326,7 +321,7 @@ public class DocumentSaver {
 
 
     @Transactional
-    public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, List<I18nMeta> i18nMetas, EnumSet<DocumentSaver.SaveParameter> parameters, UserDomainObject user)
+    public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, List<I18nMeta> i18nMetas, EnumSet<DocumentMapper.SaveDirectives> directiveses, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Meta meta = doc.getMeta();
@@ -367,7 +362,7 @@ public class DocumentSaver {
         doc.accept(docCreatingVisitor);
 
         // refactor
-        if (doc instanceof TextDocumentDomainObject && parameters.contains(SaveParameter.CopyI18nMetaTextsIntoTextFields)) {
+        if (doc instanceof TextDocumentDomainObject && directiveses.contains(DocumentMapper.SaveDirectives.CopyI18nMetaTextsIntoTextFields)) {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject)doc;
             for (I18nMeta i18nMeta: i18nMetas) {
                 TextDomainObject text1 = new TextDomainObject(i18nMeta.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN);

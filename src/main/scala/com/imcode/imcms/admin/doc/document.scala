@@ -1,7 +1,6 @@
 package com.imcode
 package imcms.admin.doc
 
-import imcms.mapping.DocumentSaver
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
@@ -18,6 +17,8 @@ import imcode.util.io.InputStreamSource
 import java.io.ByteArrayInputStream
 import textdocument.TextDocumentDomainObject
 import java.util.{EnumSet}
+import imcms.mapping.DocumentMapper.SaveDirectives
+import imcms.mapping.{DocumentMapper, DocumentSaver}
 
 //todo: type Component = UI ??
 
@@ -90,9 +91,9 @@ class EditorsFactory(app: ImcmsApplication, user: UserDomainObject) {
         doc.setMeta(metaModel.meta)
 
         val parameters = if (copyTextEditor.isCopyI18nMetaTextsToTextFields)
-          EnumSet.of(DocumentSaver.SaveParameter.CopyI18nMetaTextsIntoTextFields)
+          EnumSet.of(DocumentMapper.SaveDirectives.CopyI18nMetaTextsIntoTextFields)
         else
-          EnumSet.noneOf(classOf[DocumentSaver.SaveParameter])
+          EnumSet.noneOf(classOf[DocumentMapper.SaveDirectives])
 
         Imcms.getServices.getDocumentMapper.saveNewDocument(doc, metaModel.i18nMetas, parameters, user)//.asInstanceOf[TextDocumentDomainObject]
       } match {

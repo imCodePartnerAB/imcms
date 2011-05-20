@@ -41,6 +41,11 @@ import com.imcode.imcms.flow.DocumentPageFlow;
  */
 public class DocumentMapper implements DocumentGetter {
 
+    public enum SaveDirectives {
+        // Applies to text document only.
+        CopyI18nMetaTextsIntoTextFields
+    }
+
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
     private Database database;
@@ -220,23 +225,27 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * According to spec, when an user creates a new document using imCMS web interface he has ability
-     * to fill i18nMeta texts in all languages available in the system.
+     * Saves doc as new.
+     *
+     * According to the spec, new doc creation UI allows to provide i18nMeta texts
+     * in all languages available in the system.
      * However, a DocumentDomainObject has one-to-one relationship with i18nMeta.
      * To workaround this limitation and provide backward compatibility with legacy API,
-     * doc i18nMeta-s are passed in a separate parameters.
+     * i18nMeta-s are passed in a separate parameter and doc's i18nMeta is ignored.
      *
      * @param doc
      * @param i18nMetas
      * @param user
+     * @param directives
      * @param <T>
-     * @return
+     * @return saved document
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
      *
+     * @since 6.0
      */
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<I18nLanguage, I18nMeta> i18nMetas,
-                                                              EnumSet<DocumentSaver.SaveParameter> parameters,
+                                                              EnumSet<SaveDirectives> directives,
                                                               final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
@@ -252,17 +261,36 @@ public class DocumentMapper implements DocumentGetter {
             i18nMetasList.add(e.getValue().clone());
         }
 
-        Integer docId = documentSaver.saveNewDocument(docClone, i18nMetasList, parameters, user);
+        Integer docId = documentSaver.saveNewDocument(docClone, i18nMetasList, directives, user);
 
         invalidateDocument(docId);
 
         return (T) getWorkingDocument(docId, docClone.getLanguage());
     }
 
+    /**
+     * Saves doc as new.
+     *
+     * According to the spec, new doc creation UI allows to provide i18nMeta texts
+     * in all languages available in the system.
+     * However, a DocumentDomainObject has one-to-one relationship with i18nMeta.
+     * To workaround this limitation and provide backward compatibility with legacy API,
+     * i18nMeta-s are passed in a separate parameter and doc's i18nMeta is ignored.
+     *
+     * @param doc
+     * @param i18nMetas
+     * @param user
+     * @param <T>
+     * @return
+     * @throws DocumentSaveException
+     * @throws NoPermissionToAddDocumentToMenuException
+     *
+     * @since 6.0
+     */
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<I18nLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        return saveNewDocument(doc, i18nMetas, EnumSet.noneOf(DocumentSaver.SaveParameter.class), user);
+        return saveNewDocument(doc, i18nMetas, EnumSet.noneOf(SaveDirectives.class), user);
     }
 
 
@@ -286,6 +314,8 @@ public class DocumentMapper implements DocumentGetter {
      * Updates existing document.
      * See {@link #saveNewDocument(imcode.server.document.DocumentDomainObject, java.util.Map, imcode.server.user.UserDomainObject)}
      * to learn more about parameters.
+     *
+     * @since 6.0
      */
     public void saveDocument(final DocumentDomainObject doc, Map<I18nLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
@@ -356,6 +386,8 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Changes doc's default version.
+     *
+     * @since 6.0
      */
     public void changeDocumentDefaultVersion(Integer docId, Integer newDocDefaultVersionNo, UserDomainObject publisher)
             throws DocumentSaveException, NoPermissionToEditDocumentException {
@@ -902,7 +934,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         @Override
-        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<DocumentSaver.SaveParameter> saveParams, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<SaveDirectives> saveParams, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveDocument(document, labelsMap, user);
         }
     }
@@ -921,6 +953,7 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Sets default document version.
+     * @since 6.0
      */
     public static class SetDefaultDocumentVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
 
@@ -984,4 +1017,5 @@ public class DocumentMapper implements DocumentGetter {
     public DocLoaderCachingProxy getDocumentLoaderCachingProxy() {
         return documentLoaderCachingProxy;
     }
+
 }

@@ -23,6 +23,7 @@ import imcms.api.{I18nMeta, ContentLoop, I18nSupport}
 import textdocument._
 import imcms.api.TextDocument.TextField
 import imcms.util.Factory
+import imcms.mapping.DocumentMapper.SaveDirectives
 
 @RunWith(classOf[JUnitRunner])
 class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -70,7 +71,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val id = docMapper.saveNewDocument(
       newDoc,
       i18nMetas,
-      EnumSet.noneOf(classOf[DocumentSaver.SaveParameter]),
+      EnumSet.noneOf(classOf[DocumentMapper.SaveDirectives]),
       admin).getMeta.getId
 
     i18nSupport.getLanguages.map { language =>
@@ -107,7 +108,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val id = docMapper.saveNewDocument(
       newDoc,
       i18nMetas,
-      EnumSet.of(DocumentSaver.SaveParameter.CopyI18nMetaTextsIntoTextFields),
+      EnumSet.of(DocumentMapper.SaveDirectives.CopyI18nMetaTextsIntoTextFields),
       admin).getMeta.getId
 
     i18nSupport.getLanguages.map { language =>
@@ -255,7 +256,8 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       assertNotNull(menu)
       val menuItems = menu.getItemsMap
       assertEquals(no, menuItems.size)
-      //assertTrue(menuItems.values.forall(_.getDocumentId == parentDoc.getId))
+      assertEquals(menus(no).getMenuItems.map(_.getDocumentId).toSet,
+                   menuItems.values.map(_.getDocumentId).toSet)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
         val text = savedDoc.getText(no, loopNo, contentNo)

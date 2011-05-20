@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.mapping.DocumentSaver;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -278,7 +277,7 @@ public class MenuEditPage extends OkCancelPage {
 
 
         @Override
-        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<DocumentSaver.SaveParameter> saveParams, UserDomainObject user)
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<DocumentMapper.SaveDirectives> saveParams, UserDomainObject user)
                 throws NoPermissionInternalException, DocumentSaveException {
 
             if ( null != savedDocument ) {
