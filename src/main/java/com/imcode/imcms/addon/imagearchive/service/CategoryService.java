@@ -2,6 +2,9 @@ package com.imcode.imcms.addon.imagearchive.service;
 
 import java.util.List;
 
+import com.imcode.imcms.addon.imagearchive.dto.RoleCategoriesDto;
+import com.imcode.imcms.addon.imagearchive.entity.CategoryRoles;
+import com.imcode.imcms.addon.imagearchive.entity.Roles;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +33,19 @@ public class CategoryService {
 
         return types;
     }
-    
+
+    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    public List<CategoryRoles> findCategoryRoles(Roles role) {
+        List<CategoryRoles> categoryRoles = factory.getCurrentSession()
+                .createQuery("SELECT cr.categoryId AS categoryId, cr.roleId AS roleId, cr.canUse AS canUse, cr.canChange AS canChange " +
+                        "FROM CategoryRoles cr WHERE cr.roleId = :roleId")
+                .setInteger("roleId", role.getId())
+                .setResultTransformer(Transformers.aliasToBean(CategoryRoles.class))
+                .list();
+
+        return categoryRoles;
+    }
+
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public boolean existsCategory(String categoryName, int categoryTypeId) {
         
@@ -107,7 +122,8 @@ public class CategoryService {
         List<Categories> categories = factory.getCurrentSession()
                 .createQuery(
                 "SELECT c.id AS id, c.name AS name, c.typeId AS typeId FROM Categories c " +
-                "WHERE c.type.imageArchive IS TRUE ORDER BY c.name")
+                "WHERE c.type.name = :typeName ORDER BY c.name")
+                .setString("typeName", "Images")
                 .setResultTransformer(Transformers.aliasToBean(Categories.class))
                 .list();
 

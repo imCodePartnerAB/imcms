@@ -48,6 +48,12 @@ public class LibraryRoles implements Serializable {
     @Column(name="updated_dt", nullable=false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDt = new Date();
+
+    @Column(name = "canUse", nullable = false)
+    private Boolean canUse;
+
+    @Column(name = "canChange", nullable = false)
+    private Boolean canChange;
     
     
     public LibraryRoles() {
@@ -108,6 +114,22 @@ public class LibraryRoles implements Serializable {
 
     public void setUpdatedDt(Date updatedDt) {
         this.updatedDt = updatedDt;
+    }
+
+    public Boolean getCanUse() {
+        return canUse;
+    }
+
+    public void setCanUse(Boolean canUse) {
+        this.canUse = canUse;
+    }
+
+    public Boolean getCanChange() {
+        return canChange;
+    }
+
+    public void setCanChange(Boolean canChange) {
+        this.canChange = canChange;
     }
 
     

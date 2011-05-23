@@ -9,20 +9,13 @@ public class LibraryRolesDto implements Serializable {
     private int roleId;
     private int permissions;
     private String roleName;
+    private boolean canUse;
+    private boolean canChange;
 
     
     public LibraryRolesDto() {
     }
 
-    
-    public boolean isCanUse() {
-        return (permissions & LibraryRoles.PERMISSION_USE) == LibraryRoles.PERMISSION_USE;
-    }
-    
-    public boolean isCanChange() {
-        return (permissions & LibraryRoles.PERMISSION_CHANGE) == LibraryRoles.PERMISSION_CHANGE;
-    }
-    
     public int getPermissions() {
         return permissions;
     }
@@ -45,6 +38,22 @@ public class LibraryRolesDto implements Serializable {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+        public boolean isCanUse() {
+        return canUse;
+    }
+
+    public void setCanUse(boolean canUse) {
+        this.canUse = canUse;
+    }
+
+    public boolean isCanChange() {
+        return canChange;
+    }
+
+    public void setCanChange(boolean canChange) {
+        this.canChange = canChange;
     }
 
     

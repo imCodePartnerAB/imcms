@@ -8,7 +8,7 @@
         <![CDATA[
         SELECT 
           lr.roleId AS roleId, 
-          lr.permissions AS permissions, 
+          lr.permissions AS permissions, lr.canUse AS canUse, lr.canChange AS canChange,
           r.roleName AS roleName 
         FROM 
           LibraryRoles lr 

@@ -482,8 +482,8 @@ public class FileService {
             parent = new File(library.getFilepath());
             
         } else {
-            parent = config.getLibrariesPath();
-            
+            parent = new File(library.getFilepath());
+
         }
         
         return new File(parent, String.format("%s/%s", library.getFolderNm(), fileName));

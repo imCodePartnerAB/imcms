@@ -199,6 +199,17 @@ public class LibraryService {
                 .setResultTransformer(Transformers.aliasToBean(Roles.class))
                 .list();
     }
+
+    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    public List<Roles> findRoles() {
+
+        return factory.getCurrentSession()
+                .createQuery(
+                "SELECT r.id AS id, r.roleName AS roleName FROM Roles r " +
+                "ORDER BY r.roleName")
+                .setResultTransformer(Transformers.aliasToBean(Roles.class))
+                .list();
+    }
     
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public List<LibraryRolesDto> findLibraryRoles(int libraryId) {
@@ -223,7 +234,7 @@ public class LibraryService {
         if (libraryRoles.isEmpty()) {
             session.createQuery(
                     "DELETE FROM LibraryRoles lr WHERE lr.libraryId = :libraryId")
-                    .setInteger("libraryId", libraryId)
+                    .setInteger("libraryId", libraryId) 
                     .executeUpdate();
 
             return;
@@ -263,23 +274,25 @@ public class LibraryService {
             LibraryRoles libraryRole = new LibraryRoles();
             libraryRole.setLibraryId(libraryId);
             libraryRole.setRoleId(libraryRoleDto.getRoleId());
-            libraryRole.setPermissions(libraryRoleDto.getPermissions());
+            libraryRole.setCanUse(libraryRoleDto.isCanUse());
+            libraryRole.setCanChange(libraryRoleDto.isCanChange());
 
             session.persist(libraryRole);
         }
 
         Query updateQuery = session.createQuery(
-                "UPDATE LibraryRoles lr SET lr.permissions = :permissions, lr.updatedDt = current_timestamp() " +
+                "UPDATE LibraryRoles lr SET lr.canUse = :canUse, lr.canChange = :canChange, lr.updatedDt = current_timestamp() " +
                 "WHERE lr.libraryId = :libraryId AND lr.roleId = :roleId")
                 .setInteger("libraryId", libraryId);
         for (LibraryRolesDto libraryRoleDto : toUpdate) {
             updateQuery.setInteger("roleId", libraryRoleDto.getRoleId())
-                    .setInteger("permissions", libraryRoleDto.getPermissions())
+                    .setBoolean("canUse", libraryRoleDto.isCanUse())
+                    .setBoolean("canChange", libraryRoleDto.isCanChange())
                     .executeUpdate();
         }
 
         session.flush();
-
+        
     }
     
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)

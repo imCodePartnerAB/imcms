@@ -4,11 +4,8 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RolePermissionDomainObject;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.Set;
+import javax.persistence.*;
 
 @Entity
 @Table(name="roles")
@@ -41,7 +38,10 @@ public class Roles implements Serializable {
     
     @Column(name="admin_role", nullable=false)
     private int adminRole;
-    
+
+    @OneToMany
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id", insertable=false, updatable=false)
+    private Set<CategoryRoles> categoryRoles;
     
     public Roles() {
     }
@@ -93,6 +93,14 @@ public class Roles implements Serializable {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public Set<CategoryRoles> getCategoryRoles() {
+        return categoryRoles;
+    }
+
+    public void setCategoryRoles(Set<CategoryRoles> categoryRoles) {
+        this.categoryRoles = categoryRoles;
     }
     
     

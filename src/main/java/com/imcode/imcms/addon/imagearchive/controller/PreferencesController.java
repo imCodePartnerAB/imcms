@@ -1,14 +1,16 @@
 package com.imcode.imcms.addon.imagearchive.controller;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
+import com.imcode.imcms.addon.imagearchive.dto.RoleCategoriesDto;
+import com.imcode.imcms.addon.imagearchive.entity.*;
+import com.imcode.imcms.api.CategoryType;
+import com.imcode.imcms.api.CategoryTypeAlreadyExistsException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.logging.Log;
@@ -27,10 +29,6 @@ import com.imcode.imcms.addon.imagearchive.command.PreferencesActionCommand;
 import com.imcode.imcms.addon.imagearchive.command.SaveLibraryRolesCommand;
 import com.imcode.imcms.addon.imagearchive.command.SaveRoleCategoriesCommand;
 import com.imcode.imcms.addon.imagearchive.dto.LibraryRolesDto;
-import com.imcode.imcms.addon.imagearchive.entity.Categories;
-import com.imcode.imcms.addon.imagearchive.entity.CategoryTypes;
-import com.imcode.imcms.addon.imagearchive.entity.Libraries;
-import com.imcode.imcms.addon.imagearchive.entity.Roles;
 import com.imcode.imcms.addon.imagearchive.service.Facade;
 import com.imcode.imcms.addon.imagearchive.service.exception.CategoryExistsException;
 import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
@@ -99,27 +97,26 @@ public class PreferencesController {
         });
 
         Libraries library = getLibrary(session, libraries);
-        
-        List<Roles> availableLibraryRoles = Collections.emptyList();
-        List<LibraryRolesDto> libraryRoles = Collections.emptyList();
-        
-        if (library != null) {
-            availableLibraryRoles = facade.getLibraryService().findAvailableRoles(library.getId());
-            
-            libraryRoles = facade.getLibraryService().findLibraryRoles(library.getId());
+        model.put("currentLibrary", library);
+
+        CategoryType imagesCategoryType = cms.getDocumentService().getCategoryType("Images");
+        if(imagesCategoryType == null) {
+            try {
+                imagesCategoryType = cms.getDocumentService().createNewCategoryType("Images", 1);
+            } catch (CategoryTypeAlreadyExistsException e) {
+                e.printStackTrace();
+            }
         }
         
-        model.put("availableLibraryRoles", availableLibraryRoles);
-        model.put("libraryRoles", libraryRoles);
-        model.put("currentLibrary", library);
-        
         if (actionCommand.isCreateCategory()) {
+            createCategoryCommand.setCreateCategoryType(imagesCategoryType.getId());
             processCreateCategory(createCategoryCommand, createCategoryResult);
             
         } else if (actionCommand.isEditCategory()) {
             processEditCategory(editCategoryCommand);
             
         } else if (actionCommand.isSaveCategory()) {
+            editCategoryCommand.setEditCategoryType(imagesCategoryType.getId());
             processSaveCategory(editCategoryCommand, editCategoryResult);
             
         } else if (actionCommand.isRemoveCategory()) {
@@ -136,8 +133,24 @@ public class PreferencesController {
         if (!actionCommand.isSaveLibraryRoles() && library != null) {
             librariesCommand.setLibraryNm(library.getLibraryNm());
         }
+
+        /* after operations for up-to-date properties */
+        List<Roles> availableLibraryRoles = Collections.emptyList();
+        List<LibraryRolesDto> libraryRoles = Collections.emptyList();
+
+        if (library != null) {
+            availableLibraryRoles = facade.getLibraryService().findRoles();
+
+            libraryRoles = facade.getLibraryService().findLibraryRoles(library.getId());
+        }
+
+        model.put("availableLibraryRoles", availableLibraryRoles);
+        model.put("libraryRoles", libraryRoles);
+
+
+        List<CategoryRoles> categoryRoles = facade.getCategoryService().findCategoryRoles(role);
+        model.put("categoryRoles", categoryRoles);
         
-        model.put("categoryTypes", facade.getCategoryService().getCategoryTypes());
         model.put("categories", facade.getCategoryService().getCategories());
         
         model.put("roles", roles);
@@ -145,7 +158,8 @@ public class PreferencesController {
         model.put("libraries", libraries);
         model.put("freeCategories", facade.getRoleService().findFreeCategories(role.getId()));
         model.put("roleCategories", facade.getRoleService().findRoleCategories(role.getId()));
-        
+        model.put("allCategories", facade.getRoleService().findAllCategories());
+
         return "image_archive/pages/preferences";
     }
     
@@ -219,33 +233,32 @@ public class PreferencesController {
             }
         }
         
-        List<LibraryRolesDto> libraryRoles = command.getLibraryRoles();
-        List<LibraryRolesDto> assignedLibraryRoles = facade.getLibraryService().findLibraryRoles(library.getId());
-        List<Roles> availableLibraryRoles = facade.getLibraryService().findAvailableRoles(library.getId());
-        
-        for (LibraryRolesDto oldLibrary : assignedLibraryRoles) {
-            if (!libraryRoles.contains(oldLibrary)) {
-                Roles role = new Roles(oldLibrary.getRoleId());
-                role.setRoleName(oldLibrary.getRoleName());
-                
-                availableLibraryRoles.add(role);
-            }
-        }
-        
-        for (LibraryRolesDto libraryRole : libraryRoles) {
-            availableLibraryRoles.remove(new Roles(libraryRole.getRoleId()));
-        }
-        
-        model.put("libraryRoles", libraryRoles);
-        model.put("availableLibraryRoles", availableLibraryRoles);
+//        List<LibraryRolesDto> libraryRoles = command.getLibraryRoles();
+//        List<LibraryRolesDto> assignedLibraryRoles = facade.getLibraryService().findLibraryRoles(library.getId());
+//        List<Roles> availableLibraryRoles = facade.getLibraryService().findAvailableRoles(library.getId());
+//
+//        for (LibraryRolesDto oldLibrary : assignedLibraryRoles) {
+//            if (!libraryRoles.contains(oldLibrary)) {
+//                Roles role = new Roles(oldLibrary.getRoleId());
+//                role.setRoleName(oldLibrary.getRoleName());
+//
+//                availableLibraryRoles.add(role);
+//            }
+//        }
+//
+//        for (LibraryRolesDto libraryRole : libraryRoles) {
+//            availableLibraryRoles.remove(new Roles(libraryRole.getRoleId()));
+//        }
+//
+//        model.put("libraryRoles", libraryRoles);
+//        model.put("availableLibraryRoles", availableLibraryRoles);
     }
     
     private void processSaveRoleCategories(SaveRoleCategoriesCommand command, Map<String, Object> model) {
         try {
             Roles role = (Roles) model.get("currentRole");
             
-            facade.getRoleService().assignCategoryRoles(role, command.getAssignedCategoryIds(), 
-                    command.isCanUse(), command.isCanChange());
+            facade.getRoleService().assignCategoryRoles(role, command.getAssignedCategoryIds());
         } catch (Exception ex) {
             log.fatal(ex.getMessage(), ex);
         }

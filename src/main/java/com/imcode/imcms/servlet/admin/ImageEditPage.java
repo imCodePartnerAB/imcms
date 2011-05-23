@@ -74,6 +74,7 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID = "archive_img_id";
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME = "archive_img_nm";
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME = "archive_file_nm";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT = "archive_img_alt_text";
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
     static final LocalizedMessage ERROR_MESSAGE__FILE_NOT_IMAGE = new LocalizedMessage("error/servlet/images/file_not_image");
     public static final Format[] ALLOWED_FORMATS = new Format[] { Format.GIF, Format.JPEG, Format.PNG };
@@ -161,6 +162,7 @@ public class ImageEditPage extends OkCancelPage {
         String fileName = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME));
         String archiveImageIdStr = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID));
         String lang = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__I18N_CODE));
+        String altText = StringUtils.trimToNull(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT);
 
         ImageSource source = null;
         String urlPath = null;
@@ -193,6 +195,9 @@ public class ImageEditPage extends OkCancelPage {
             }
             if (archiveImageId != null) {
                 img.setArchiveImageId(archiveImageId);
+            }
+            if(altText != null) {
+                img.setAlternateText(altText);
             }
         }
 

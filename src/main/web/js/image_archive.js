@@ -308,9 +308,73 @@ var initPreferences = function() {
             
             return false;
         });
-        
-        $("#saveCategories").click(function() {
-            $("#categoryIds").val($.join(categoryIds, ","));
+
+
+        function toggleBulkSelectionCheckboxes(tableClassOrId) {
+            if($(tableClassOrId + " .use").length == $(tableClassOrId + " .use:checked").length) {
+                $(tableClassOrId + " .allCanUse").attr("checked", "checked");
+            } else {
+                $(tableClassOrId + " .allCanUse").removeAttr("checked");
+            }
+
+            if($(tableClassOrId + " .edit").length == $(tableClassOrId + " .edit:checked").length) {
+                $(tableClassOrId + " .allCanEdit").attr("checked", "checked");
+            } else {
+                $(tableClassOrId + " .allCanEdit").removeAttr("checked");
+            }
+        }
+
+        // sets click hanlders for bulk selection and  
+        function setupBulkSelectionCheckboxes(tableClassOrId) {
+            $(tableClassOrId + " .use").click(function() {
+                toggleBulkSelectionCheckboxes(tableClassOrId);
+            });
+
+            $(tableClassOrId + " .edit").click(function() {
+                toggleBulkSelectionCheckboxes(tableClassOrId);
+            });
+
+            toggleBulkSelectionCheckboxes(tableClassOrId);
+
+            $(tableClassOrId + " .allCanUse").click(function(){
+                if($(this).is(":checked")) {
+                    $(tableClassOrId + " .use").attr("checked", "checked");
+                } else {
+                    $(tableClassOrId + " .use").removeAttr("checked");
+                }
+            });
+    
+            $(tableClassOrId + " .allCanEdit").click(function(){                
+                if($(this).is(":checked")) {
+                    $(tableClassOrId + " .edit").attr("checked", "checked");
+                } else {
+                    $(tableClassOrId + " .edit").removeAttr("checked");
+                }
+            });
+        }
+
+        setupBulkSelectionCheckboxes(".roleTable");
+        setupBulkSelectionCheckboxes(".libraryCategoriesTable");
+
+        $("#saveCategoriesBtn").click(function() {
+            var categoryRightStr = "";
+            var dataRows = $(".roleTable tr.dataRow");
+            dataRows.each(function(){
+                categoryRightStr += $(this).find("input[type='hidden']").val();
+                categoryRightStr += ",";
+               if($(this).find(".use:checked").length) {
+                   categoryRightStr += "1,";
+               } else {
+                   categoryRightStr += "0,";
+               }
+
+               if($(this).find(".edit:checked").length) {
+                   categoryRightStr += "1-";
+               } else {
+                   categoryRightStr += "0-";
+               }
+            });
+            $("#categoryIds").val(categoryRightStr);
         });
         
         
@@ -372,20 +436,25 @@ var initPreferences = function() {
         
         attachLibraryRoleDelete($("#libraryRolesTbl"));
         
-        $("#saveLibraryRoles").click(function() {
-            var libraryRoles = [];
-            
-            $("#libraryRolesTbl :checked").each(function() {
-                var input = $(this);
-                var tr = input.parents("tr");
-                var roleName = $("td:first", tr).text();
-                var roleId = input.attr("name").split("_")[1];
-                var value = input.val();
-                
-                libraryRoles.push(encodeURIComponent(roleName) + "/" + roleId + "/" + value);
+        $("#saveLibraryRolesBtn").click(function() {
+            var libraryRoles = "";
+            var dataRows = $(".libraryCategoriesTable tr.dataRow");
+            dataRows.each(function(){
+                libraryRoles += $(this).find("input[type='hidden']").val();
+                libraryRoles += ",";
+               if($(this).find(".use:checked").length) {
+                   libraryRoles += "1,";
+               } else {
+                   libraryRoles += "0,";
+               }
+
+               if($(this).find(".edit:checked").length) {
+                   libraryRoles += "1-";
+               } else {
+                   libraryRoles += "0-";
+               }
             });
-            
-            $("#libraryRolesStr").val($.join(libraryRoles, "/"));
+            $("#libraryRolesStr").val(libraryRoles);
         });
     });
 };

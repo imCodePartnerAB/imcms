@@ -81,6 +81,9 @@ public class Images implements Serializable {
     @Column(name="publish_end_dt")
     @Temporal(TemporalType.DATE)
     private Date publishEndDt;
+
+    @Column(name="alt_text")
+    private String altText;
     
     @OneToMany
     @JoinTable(
@@ -182,6 +185,14 @@ public class Images implements Serializable {
 
     public void setPublishEndDt(Date publishEndDt) {
         this.publishEndDt = publishEndDt;
+    }
+
+    public String getAltText() {
+        return altText;
+    }
+
+    public void setAltText(String altText) {
+        this.altText = altText;
     }
 
     public String getUploadedBy() {

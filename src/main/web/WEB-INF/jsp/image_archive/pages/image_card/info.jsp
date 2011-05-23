@@ -1,3 +1,5 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <%@ page import="com.imcode.imcms.api.*" %>
 <% pageContext.setAttribute("user", ContentManagementSystem.fromRequest(request).getCurrentUser()); %>
@@ -20,7 +22,13 @@
                 <spring:message code="archive.imageCard.export.height" htmlEscape="true"/>
             </label>
             <form:input id="height" path="height" cssClass="left" cssStyle="width:80px;margin-left:5px;"/>
-            
+
+            <form:select  id="sizeUnit" path="sizeUnit">
+                <form:options items="${sizeUnits}" itemLabel="unitName"/>
+            </form:select>
+
+            <label for="keepAspectRatio"><spring:message code="archive.imageCard.export.keepAspectRatio" htmlEscape="true"/></label>
+            <form:checkbox id="keepAspectRatio" path="keepAspectRatio"/>
         
             <label for="fileFormat" class="left" style="margin-left:20px;">
                 <spring:message code="archive.imageCard.export.fileFormat" htmlEscape="true"/>
@@ -176,4 +184,10 @@
             <spring:message code="archive.dateFormat" arguments="${image.publishEndDt}" htmlEscape="true"/>
         </c:if>
     </span>
+</div>
+<div class="m15t minH20">
+    <span class="left" style="width:130px;">
+        <spring:message code="archive.changeData.altText" htmlEscape="true"/>
+    </span>
+    <span><c:out value="${image.altText}"/></span>
 </div>

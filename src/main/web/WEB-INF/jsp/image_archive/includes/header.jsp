@@ -11,7 +11,7 @@
     <link href="${contextPath}/css/blue/style.css" rel="stylesheet" type="text/css" />
     
     ${css}
-    <script type="text/javascript" src="${contextPath}/js/jquery-1.3.2.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
     <script type="text/javascript" src="${contextPath}/js/image_archive.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.qtip-1.0.0-rc3.min.js"></script>

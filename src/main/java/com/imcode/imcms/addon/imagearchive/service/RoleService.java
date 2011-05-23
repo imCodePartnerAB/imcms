@@ -1,5 +1,6 @@
 package com.imcode.imcms.addon.imagearchive.service;
 
+import com.imcode.imcms.addon.imagearchive.command.SaveRoleCategoriesCommand;
 import imcode.server.user.RolePermissionDomainObject;
 
 import java.util.ArrayList;
@@ -62,64 +63,36 @@ public class RoleService {
                 .setInteger("roleId", roleId)
                 .list();
     }
+
+    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    public List<Categories> findAllCategories() {
+
+        return factory.getCurrentSession()
+                .createQuery("SELECT c FROM Categories c WHERE " +
+                " c.type.name = :typeName ORDER BY c.name")
+                .setString("typeName", "Images")
+                .list();
+    }
     
-    public void assignCategoryRoles(Roles role, List<Integer> categoryIds, boolean canUse, boolean canChange) {
+    public void assignCategoryRoles(Roles role, List<SaveRoleCategoriesCommand.CategoryRight> categoryRights) {
 
         Session session = factory.getCurrentSession();
 
         StringBuilder deleteBuilder = new StringBuilder(
                 "DELETE FROM CategoryRoles cr WHERE cr.roleId = :roleId ");
 
-        if (categoryIds != null) {
-            deleteBuilder.append(" AND cr.categoryId NOT IN (:categoryIds) ");
-        }
 
         Query deleteQuery = session.createQuery(deleteBuilder.toString())
                 .setInteger("roleId", role.getId());
-        if (categoryIds != null) {
-            deleteQuery.setParameterList("categoryIds", categoryIds);
-        }
         deleteQuery.executeUpdate();
 
-        if (categoryIds != null) {
-            List<Integer> existingCategoryIds = session.createQuery(
-                    "SELECT cr.categoryId FROM CategoryRoles cr WHERE cr.roleId = :roleId AND cr.categoryId IN (:categoryIds)")
-                    .setInteger("roleId", role.getId())
-                    .setParameterList("categoryIds", categoryIds)
-                    .list();
-            Set<Integer> existingSet = new HashSet<Integer>(existingCategoryIds);
-
-            for (int id : categoryIds) {
-                if (!existingSet.contains(id)) {
-                    CategoryRoles cr = new CategoryRoles(id, role.getId());
+        if(categoryRights != null) {
+            for(SaveRoleCategoriesCommand.CategoryRight categoryRight: categoryRights) {
+                CategoryRoles cr = new CategoryRoles(categoryRight.getCategoryId(), role.getId(), categoryRight.isCanUse(), categoryRight.isCanEditOrAdd());
                     session.persist(cr);
-                }
             }
         }
         session.flush();
-
-        int permissions = (Integer) session.createQuery("SELECT r.permissions FROM Roles r WHERE r.id = :roleId")
-                .setInteger("roleId", role.getId())
-                .uniqueResult();
-
-        if (canUse) {
-            permissions |= Roles.PERMISSION_USE_IMAGE;
-        } else {
-            permissions &= ~Roles.PERMISSION_USE_IMAGE;
-        }
-
-        if (canChange) {
-            permissions |= Roles.PERMISSION_CHANGE_IMAGE;
-        } else {
-            permissions &= ~Roles.PERMISSION_CHANGE_IMAGE;
-        }
-
-        session.createQuery("UPDATE Roles r SET r.permissions = :permissions WHERE r.id = :roleId")
-                .setInteger("permissions", permissions)
-                .setInteger("roleId", role.getId())
-                .executeUpdate();
-        role.setPermissions(permissions);
-
     }
     
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
