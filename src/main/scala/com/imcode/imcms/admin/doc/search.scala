@@ -20,14 +20,13 @@ import imcode.server.document.{DocumentTypeDomainObject, DocumentDomainObject}
 import PartialFunction.condOpt
 import admin.access.user.UserSearchDialog
 import java.util.{Calendar, Date}
-import java.util.concurrent.atomic.AtomicReference
-
-case class DocFilter()
+import com.vaadin.data.Container.ItemSetChangeListener
 
 /**
- * Doc search consists of two forms for specifying search params and a table that displays search result.
+ * Doc search consists of two forms (basic and advanced) for entering search params
+ * and a table that displays search result.
  */
-class DocSearch(val docProvider: DocProvider) {
+class DocSearch(val docsContainer: DocsContainer) {
   val basicSearchForm = new DocBasicSearchForm
   val advancedSearchForm = new DocAdvancedSearchForm
   val advancedSearchFormPanel = new Panel with Scrollable with UndefinedSize with FullHeight {
@@ -35,7 +34,7 @@ class DocSearch(val docProvider: DocProvider) {
     setContent(advancedSearchForm.ui)
   }
 
-  val docViewUI = new DocViewUI(new DocContainer) with FullSize
+  val docViewUI = new DocViewUI(docsContainer) with FullSize
 
   val ui = letret(new GridLayout(1, 2) with Spacing with FullSize) { ui =>
     ui.addComponent(basicSearchForm.ui)
@@ -80,49 +79,107 @@ class DocSearch(val docProvider: DocProvider) {
   }
 
   def update() {
-    basicSearchForm.setRangeInputPrompt(docProvider.range)
+    basicSearchForm.setRangeInputPrompt(docsContainer.range)
   }
 
   def submit() {
+    // hide advanced form
     //if (basicSearchForm.validate() && (basicSearchForm.ui.chkAdvanced.checked advancedSearchForm.validate()))
     System.out.println(">>>>QUERY: " + basicSearchForm.query.toString)
-    docViewUI.setContainerDataSource(new DocContainer(docProvider.docIds))
+    docsContainer.filter(None)
   }
+
+  /**
+   * Creates and returns query string.
+   *
+   * @return query string.
+   */
+  def query: String = ???
 }
 
 
-trait DocProvider {
-  def range: Option[(DocId, DocId)]
-  def docIds: Seq[DocId]
-}
+/**
+ * Database docs container.
+ */
+class DBDocsContainer extends DocsContainer {
 
-
-class AllDocProvider extends DocProvider {
   private val docMapper = Imcms.getServices.getDocumentMapper
+
+  private var filteredDocIds = Seq.empty[DocId]
+
+  def filter(query: Option[String]) {
+    filteredDocIds = docMapper.getAllDocumentIds.toSeq
+    notifyItemSetChanged()
+  }
+
+  def removeItem(itemId: AnyRef) = throw new UnsupportedOperationException
+
+  def addItem(itemId: AnyRef) = throw new UnsupportedOperationException
+
+  def removeAllItems() = throw new UnsupportedOperationException
 
   def range = let(docMapper.getDocumentIdRange) { idsRange =>
     Some(Int box idsRange.getMinimumInteger, Int box idsRange.getMaximumInteger)
   }
 
-  def docIds = docMapper.getAllDocumentIds.toSeq
+  def getItemIds = filteredDocIds
 }
 
 
-class CustomDocProvider extends DocProvider {
+/**
+ *
+ */
+class CustomDocsContainer extends DocsContainer {
 
-  private var customDocIds = Seq.empty[DocId]
+  private var docIds = Seq.empty[DocId]
+
+  private var filteredDocIds = Seq.empty[DocId]
 
   def range = condOpt(docIds) { case ids if ids.nonEmpty => (ids.min, ids.max) }
 
-  def docIds = customDocIds
+  def filter(query: Option[String]) {
+    filteredDocIds = docIds
+    notifyItemSetChanged()
+  }
 
-  def addDocId(docId: DocId) = customDocIds :+= docId
+  def removeItem(itemId: AnyRef) = docIds.remove(itemId.asInstanceOf[DocId])
 
-  def removeDocId(docId: DocId) = customDocIds.remove(docId)
+  def addItem(itemId: AnyRef) = letret(new DocItem(itemId.asInstanceOf[DocId])) { docItem =>
+    docIds :+= docItem.docId
+  }
+
+  def removeAllItems() = letret(true) { _ =>
+    docIds = Seq.empty
+    notifyItemSetChanged()
+  }
+
+  def getItemIds = filteredDocIds
 }
 
 
-class DocContainer(docIds: Seq[DocId] = Seq.empty) extends Container with Container.Ordered {
+trait ContainerItemSetChangeNotifier extends Container.ItemSetChangeNotifier { container: Container =>
+
+  private var listeners = Set.empty[ItemSetChangeListener]
+
+  def removeListener(listener: ItemSetChangeListener) {
+    listeners += listener
+  }
+
+  def addListener(listener: ItemSetChangeListener) {
+    listeners -= listener
+  }
+
+  protected def notifyItemSetChanged() {
+    val event = new Container.ItemSetChangeEvent {
+      def getContainer = container
+    }
+
+    listeners foreach { _ containerItemSetChange event }
+  }
+}
+
+
+abstract class DocsContainer extends Container with ContainerItemSetChangeNotifier with Container.Ordered with ItemIdType[DocId] {
 
   private val propertyIdToType = ListMap(
       "doc.tbl.col.id" -> classOf[DocId],
@@ -210,15 +267,23 @@ class DocContainer(docIds: Seq[DocId] = Seq.empty) extends Container with Contai
     })
   }
 
+  /**
+   * Filters docs in this container using SOLr query.
+   *
+   * @param Some(query) to restrict accessible docs set in this container or None to access all docs.
+   */
+  def filter(solrQuery: Option[String]): Unit
+
+  /**
+   * Returns full (non filtered) inclusive docs range of this container.
+   *
+   * @return Some(range) or None if there is no docs in this container.
+   */
+  def range: Option[(DocId, DocId)]
+
   def getContainerPropertyIds = propertyIds
 
   def addItem() = throw new UnsupportedOperationException
-
-  def removeItem(itemId: AnyRef) = throw new UnsupportedOperationException
-
-  def addItem(itemId: AnyRef) = throw new UnsupportedOperationException
-
-  def removeAllItems = throw new UnsupportedOperationException
 
   def getType(propertyId: AnyRef) = propertyIdToType(propertyId.asInstanceOf[String])
 
@@ -226,15 +291,13 @@ class DocContainer(docIds: Seq[DocId] = Seq.empty) extends Container with Contai
 
   def getContainerProperty(itemId: AnyRef, propertyId: AnyRef) = getItem(itemId).getItemProperty(propertyId)
 
-  def size = docIds.size
-
-  def containsId(itemId: AnyRef) = docIds.contains(itemId.asInstanceOf[JInteger])
+  def containsId(itemId: AnyRef) = getItemIds.contains(itemId)
 
   def addContainerProperty(propertyId: AnyRef, `type` : Class[_], defaultValue: AnyRef) = throw new UnsupportedOperationException
 
   def removeContainerProperty(propertyId: AnyRef) = throw new UnsupportedOperationException
 
-  def getItemIds = docIds
+  def size = getItemIds.size
 
   def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef) = null
 
@@ -244,12 +307,12 @@ class DocContainer(docIds: Seq[DocId] = Seq.empty) extends Container with Contai
 
   def isFirstId(itemId: AnyRef) = itemId == firstItemId
 
-  def lastItemId() = docIds.last
+  def lastItemId = itemIds.last
 
-  def firstItemId() = docIds.head
+  def firstItemId = itemIds.head
 
   // extremely ineffective prototype
-  def prevItemId(itemId: AnyRef) = let(docIds.toIndexedSeq) { seq =>
+  def prevItemId(itemId: AnyRef) = let(itemIds.toIndexedSeq) { seq =>
     seq.indexOf(itemId.asInstanceOf[DocId]) match {
       case index if index > 0 => seq(index - 1)
       case _ => null
@@ -257,7 +320,7 @@ class DocContainer(docIds: Seq[DocId] = Seq.empty) extends Container with Contai
   }
 
   // extremely ineffective prototype
-  def nextItemId(itemId: AnyRef) = let(docIds.toIndexedSeq) { seq =>
+  def nextItemId(itemId: AnyRef) = let(itemIds.toIndexedSeq) { seq =>
     seq.indexOf(itemId.asInstanceOf[DocId]) match {
       case index if index < (size - 1) => seq(index + 1)
       case _ => null
@@ -266,20 +329,20 @@ class DocContainer(docIds: Seq[DocId] = Seq.empty) extends Container with Contai
 }
 
 
-class DocViewUI(container: DocContainer) extends Table(null, container)
+class DocViewUI(container: DocsContainer) extends Table(null, container)
     with MultiSelectBehavior[DocId] with DocTableItemIcon with Selectable {
 
   setColumnCollapsingAllowed(true)
   setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
 
-  override def setContainerDataSource(container: Container) {
-    val collapsedColumns = getContainerPropertyIds filter isColumnCollapsed
-    super.setContainerDataSource(container)
-
-    setColumnHeaders(container.getContainerPropertyIds map (_.toString.i) toArray )
-    List("doc.tbl.col.parents", "doc.tbl.col.children") foreach { setColumnCollapsed(_, true) }
-    collapsedColumns foreach (setColumnCollapsed(_, true))
-  }
+//  override def setContainerDataSource(container: Container) {
+//    val collapsedColumns = getContainerPropertyIds filter isColumnCollapsed
+//    super.setContainerDataSource(container)
+//
+//    setColumnHeaders(container.getContainerPropertyIds map (_.toString.i) toArray )
+//    List("doc.tbl.col.parents", "doc.tbl.col.children") foreach { setColumnCollapsed(_, true) }
+//    collapsedColumns foreach (setColumnCollapsed(_, true))
+//  }
 }
 
 //object DocViewUI {
@@ -420,7 +483,7 @@ trait DocStatusItemIcon extends AbstractSelect {
 
 trait DocTableItemIcon extends AbstractSelect with XSelect[DocId] {
   override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
-    case docItem: DocContainer#DocItem =>
+    case docItem: DocsContainer#DocItem =>
       new ExternalResource("imcms/eng/images/admin/status/%s.gif" format docItem.doc.getLifeCyclePhase.toString)
 
     case _ => null

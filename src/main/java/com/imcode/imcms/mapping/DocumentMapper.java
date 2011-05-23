@@ -784,19 +784,22 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * Saves text and non-saved enclosing content loop if any.
+     * Saves text and non-saved enclosing content loop the text may refer.
+     * Updates doc's last modified datetime.
      * <p/>
-     * Non saved content loop might be added to the document by ContentLoopTag2.
+     * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
      *
      * @param doc - existing document
-     * @param text - text being saved.
+     * @param text - text being saved
      *
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      *
-     * @throws IllegalStateException if text 'no' is not set.
+     * @throws IllegalStateException if text 'no' is not set
      */
-    public synchronized void saveTextDocText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user)
+            throws NoPermissionInternalException, DocumentSaveException {
+
         if (text.getNo() == null)
             throw new IllegalStateException("text no is not set");
 

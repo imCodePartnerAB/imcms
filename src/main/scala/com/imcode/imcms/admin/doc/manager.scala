@@ -22,7 +22,7 @@ object Actions {
 
 class DocManager(app: ImcmsApplication) {
   val customDocs = new CustomDocs
-  val search = new DocSearch(new AllDocProvider)
+  val search = new DocSearch(new DBDocsContainer)
 
   val docSelectionDlg = letret(new OKDialog("Custom documents") with CustomSizeDialog) { dlg =>
     dlg.mainUI = customDocs.ui
@@ -42,7 +42,7 @@ class DocManager(app: ImcmsApplication) {
       def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
         action match {
           case AddToSelection =>
-            customDocs.provider.addDocId(target.asInstanceOf[DocId])
+            customDocs.search.docsContainer.addItem(target)
             customDocs.search.update()
             customDocs.search.submit()
           case _ =>
@@ -69,8 +69,7 @@ class DocManagerUI(searchUI: Component) extends VerticalLayout with Spacing with
 
 
 class CustomDocs {
-  val provider = new CustomDocProvider
-  val search = new DocSearch(provider)
+  val search = new DocSearch(new CustomDocsContainer)
   val ui = new CustomDocsUI(search.ui)
 
   search.docViewUI.addActionHandler(new Action.Handler {
