@@ -166,7 +166,7 @@ public class FileAdmin extends HttpServlet {
             }
         }
 	      // New:
-				StringTokenizer st = new StringTokenizer( ImcmsConstants.fileAdminRootPathsMandatoryIfExists, ":;" );
+				StringTokenizer st = new StringTokenizer( ImcmsConstants.FILE_ADMIN_ROOT_PATHS_MANDATORY_IF_EXISTS, ":;" );
 				int tokenCount = st.countTokens();
 				for ( int i = 0; i < tokenCount; i++ ) {
 						String oneRoot = st.nextToken().trim();

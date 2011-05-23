@@ -75,5 +75,5 @@ public interface ImcmsConstants {
     /** Overrides default return URL which is used when a user leaves the editor or an add-on page. */
     public static final String REQUEST_PARAM__RETURN_URL = "imcms.return.url";
 	
-		public static final String fileAdminRootPathsMandatoryIfExists = "css/;images/;images_gui/;imcms/;javascript/;jsp/;login/;user/;WEB-INF/jsp/;WEB-INF/logs;WEB-INF/templates/" ;
+		public static final String FILE_ADMIN_ROOT_PATHS_MANDATORY_IF_EXISTS = "css/;images/;images_gui/;imcms/;javascript/;jsp/;login/;user/;WEB-INF/jsp/;WEB-INF/logs;WEB-INF/templates/" ;
 }
