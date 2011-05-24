@@ -13,6 +13,9 @@ import com.vaadin.ui.Window.Notification
 import com.imcode.imcms.security._
 import java.io._
 import java.util.{Collection => JCollection}
+import com.vaadin.data.Container
+import com.vaadin.data.Container.ItemSetChangeListener
+import com.vaadin.data.Container.ItemSetChangeListener._
 
 trait ImcmsApplication extends Application {
 
@@ -642,4 +645,25 @@ class ReloadableContentUI[T <: Component](val content: T) extends GridLayout(1,2
   addComponents(this, content, btnReload)
   setComponentAlignment(content, Alignment.TOP_LEFT)
   setComponentAlignment(btnReload, Alignment.BOTTOM_RIGHT)
+}
+
+trait ContainerItemSetChangeNotifier extends Container.ItemSetChangeNotifier { container: Container =>
+
+  private var listeners = Set.empty[ItemSetChangeListener]
+
+  def removeListener(listener: ItemSetChangeListener) {
+    listeners += listener
+  }
+
+  def addListener(listener: ItemSetChangeListener) {
+    listeners -= listener
+  }
+
+  protected def notifyItemSetChanged() {
+    val event = new Container.ItemSetChangeEvent {
+      def getContainer = container
+    }
+
+    listeners foreach { _ containerItemSetChange event }
+  }
 }

@@ -1,8 +1,8 @@
 package com.imcode
 
-import imcode.server.Imcms
 import java.util.{Locale, ResourceBundle}
 import java.text.MessageFormat
+import imcode.server.{ImcmsServices, Imcms}
 
 package object imcms {
 
@@ -29,5 +29,9 @@ package object imcms {
     def f(arg: Any, args: Any*) = localize() match {
       case (message, locale) => new MessageFormat(message, locale).format((arg +: args toArray).map(_.asInstanceOf[AnyRef]))
     }
+  }
+
+  trait ImcmsServicesSupport {
+    def imcmsServices(implicit implicitImcmsServices: ImcmsServices = Imcms.getServices) = implicitImcmsServices
   }
 }

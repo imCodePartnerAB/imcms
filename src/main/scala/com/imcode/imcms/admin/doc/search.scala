@@ -8,7 +8,6 @@ import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import vaadin.{ImcmsApplication, FullSize}
 import com.vaadin.ui.Table.CellStyleGenerator
 import com.vaadin.ui._
-import imcode.server.Imcms
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import com.vaadin.terminal.{ExternalResource, Resource}
 import com.vaadin.event.Action
@@ -20,7 +19,6 @@ import imcode.server.document.{DocumentTypeDomainObject, DocumentDomainObject}
 import PartialFunction.condOpt
 import admin.access.user.UserSearchDialog
 import java.util.{Calendar, Date}
-import com.vaadin.data.Container.ItemSetChangeListener
 
 /**
  * Doc search consists of two forms (basic and advanced) for entering search params
@@ -103,11 +101,11 @@ class DocSearch(val docsContainer: DocsContainer) {
  */
 class DBDocsContainer extends DocsContainer {
 
-  private val docMapper = Imcms.getServices.getDocumentMapper
+  private val docMapper = imcmsServices.getDocumentMapper.getDocumentMapper
 
   private var filteredDocIds = Seq.empty[DocId]
 
-  def filter(query: Option[String]) {
+  def filter(solrQuery: Option[String]) {
     filteredDocIds = docMapper.getAllDocumentIds.toSeq
     notifyItemSetChanged()
   }
@@ -137,7 +135,7 @@ class CustomDocsContainer extends DocsContainer {
 
   def range = condOpt(docIds) { case ids if ids.nonEmpty => (ids.min, ids.max) }
 
-  def filter(query: Option[String]) {
+  def filter(solrQuery: Option[String]) {
     filteredDocIds = docIds
     notifyItemSetChanged()
   }
@@ -157,29 +155,11 @@ class CustomDocsContainer extends DocsContainer {
 }
 
 
-trait ContainerItemSetChangeNotifier extends Container.ItemSetChangeNotifier { container: Container =>
-
-  private var listeners = Set.empty[ItemSetChangeListener]
-
-  def removeListener(listener: ItemSetChangeListener) {
-    listeners += listener
-  }
-
-  def addListener(listener: ItemSetChangeListener) {
-    listeners -= listener
-  }
-
-  protected def notifyItemSetChanged() {
-    val event = new Container.ItemSetChangeEvent {
-      def getContainer = container
-    }
-
-    listeners foreach { _ containerItemSetChange event }
-  }
-}
-
-
-abstract class DocsContainer extends Container with ContainerItemSetChangeNotifier with Container.Ordered with ItemIdType[DocId] {
+abstract class DocsContainer extends Container
+    with ContainerItemSetChangeNotifier
+    with Container.Ordered
+    with ItemIdType[DocId]
+    with ImcmsServicesSupport {
 
   private val propertyIdToType = ListMap(
       "doc.tbl.col.id" -> classOf[DocId],
@@ -193,7 +173,7 @@ abstract class DocsContainer extends Container with ContainerItemSetChangeNotifi
 
   case class DocItem(docId: DocId) extends Item {
 
-    lazy val doc = Imcms.getServices.getDocumentMapper.getDocument(docId)
+    lazy val doc = imcmsServices.getDocumentMapper.getDocument(docId)
 
     def removeItemProperty(id: AnyRef) = throw new UnsupportedOperationException
 
@@ -213,9 +193,9 @@ abstract class DocsContainer extends Container with ContainerItemSetChangeNotifi
         }
 
       case "doc.tbl.col.parents" =>
-        () => Imcms.getServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
-          case List() => null
-          case List(pair) =>
+        () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
+          case Nil => null
+          case pair :: Nil =>
             letret(new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon) { tree =>
               val parentDoc = pair.getDocument
               tree.addItem(parentDoc)
@@ -239,7 +219,7 @@ abstract class DocsContainer extends Container with ContainerItemSetChangeNotifi
       case "doc.tbl.col.children" =>
         () => doc match {
           case textDoc: TextDocumentDomainObject =>
-            Imcms.getServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).toList match {
+            imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).toList match {
               case List() => null
               case List(childDoc) =>
                 letret(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable) { tree =>
@@ -287,7 +267,7 @@ abstract class DocsContainer extends Container with ContainerItemSetChangeNotifi
 
   def getType(propertyId: AnyRef) = propertyIdToType(propertyId.asInstanceOf[String])
 
-  def getItem(itemId: AnyRef) = DocItem(itemId.asInstanceOf[JInteger])
+  def getItem(itemId: AnyRef) = DocItem(itemId.asInstanceOf[DocId])
 
   def getContainerProperty(itemId: AnyRef, propertyId: AnyRef) = getItem(itemId).getItemProperty(propertyId)
 
@@ -701,7 +681,7 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
 }
 
 
-class DocAdvancedSearchForm {
+class DocAdvancedSearchForm extends ImcmsServicesSupport {
   val ui = new DocAdvancedSearchFormUI
 
   ui.chkCategories.addClickHandler { switchCategories() }
@@ -720,8 +700,8 @@ class DocAdvancedSearchForm {
     switchStatus()
 
     for {
-      categoryType <- Imcms.getServices.getCategoryMapper.getAllCategoryTypes
-      category <- Imcms.getServices.getCategoryMapper.getAllCategoriesOfType(categoryType)
+      categoryType <- imcmsServices.getCategoryMapper.getAllCategoryTypes
+      category <- imcmsServices.getCategoryMapper.getAllCategoriesOfType(categoryType)
     } {
       ui.tcsCategories.addItem(category)
       ui.tcsCategories.setItemCaption(category, categoryType.getName + ":" + category.getName)
