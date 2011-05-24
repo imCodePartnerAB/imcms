@@ -22,7 +22,7 @@ object Actions {
 
 class DocManager(app: ImcmsApplication) {
   val customDocs = new CustomDocs
-  val search = new DocSearch(new DBDocsContainer)
+  val search = new DocSearch(new AllDocsContainer)
 
   val docSelectionDlg = letret(new OKDialog("Custom documents") with CustomSizeDialog) { dlg =>
     dlg.mainUI = customDocs.ui
@@ -34,7 +34,7 @@ class DocManager(app: ImcmsApplication) {
       app.show(docSelectionDlg, modal = false, resizable = true)
     }
 
-    search.docViewUI.addActionHandler(new Action.Handler {
+    search.docsViewUI.addActionHandler(new Action.Handler {
       import Actions._
 
       def getActions(target: AnyRef, sender: AnyRef) = Array(AddToSelection, View, Edit, Delete)
@@ -49,8 +49,6 @@ class DocManager(app: ImcmsApplication) {
         }
     })
   }
-
-  search.submit()
 }
 
 class DocManagerUI(searchUI: Component) extends VerticalLayout with Spacing with FullSize {
@@ -72,7 +70,7 @@ class CustomDocs {
   val search = new DocSearch(new CustomDocsContainer)
   val ui = new CustomDocsUI(search.ui)
 
-  search.docViewUI.addActionHandler(new Action.Handler {
+  search.docsViewUI.addActionHandler(new Action.Handler {
     import Actions._
 
     def getActions(target: AnyRef, sender: AnyRef) = Array(Exclude, View, Edit, Delete)

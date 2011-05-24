@@ -14,14 +14,18 @@ import com.vaadin.event.Action
 import com.vaadin.data.{Property, Item, Container}
 import java.lang.Class
 import collection.immutable.{SortedSet, ListMap}
-import api.Document
 import imcode.server.document.{DocumentTypeDomainObject, DocumentDomainObject}
 import PartialFunction.condOpt
 import admin.access.user.UserSearchDialog
 import java.util.{Calendar, Date}
+import api.{LuceneParsedQuery, Document}
+import imcode.server.user.UserDomainObject
+import javax.management.remote.rmi._RMIConnection_Stub
+import imcode.server.document.index.SimpleDocumentQuery
+import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
 
 /**
- * Doc search consists of two forms (basic and advanced) for entering search params
+ * Doc search consists of two forms (basic and advanced)
  * and a table that displays search result.
  */
 class DocSearch(val docsContainer: DocsContainer) {
@@ -32,17 +36,17 @@ class DocSearch(val docsContainer: DocsContainer) {
     setContent(advancedSearchForm.ui)
   }
 
-  val docViewUI = new DocViewUI(docsContainer) with FullSize
+  val docsViewUI = new DocsViewUI(docsContainer) with FullSize
 
   val ui = letret(new GridLayout(1, 2) with Spacing with FullSize) { ui =>
     ui.addComponent(basicSearchForm.ui)
-    ui.addComponent(docViewUI)
+    ui.addComponent(docsViewUI)
     ui.setRowExpandRatio(1, 1f)
 
     basicSearchForm.ui.btnAdvanced.addClickHandler {
       val component = ui.getComponent(0, 1) match {
-        case `docViewUI` => advancedSearchFormPanel
-        case _ => docViewUI
+        case `docsViewUI` => advancedSearchFormPanel
+        case _ => docsViewUI
       }
 
       ui.removeComponent(0, 1)
@@ -52,7 +56,7 @@ class DocSearch(val docsContainer: DocsContainer) {
     basicSearchForm.ui.lytButtons.btnSearch.addClickHandler {
       // check
       ui.removeComponent(0, 1)
-      ui.addComponent(docViewUI, 0, 1)
+      ui.addComponent(docsViewUI, 0, 1)
       submit()
     }
 
@@ -62,12 +66,17 @@ class DocSearch(val docsContainer: DocsContainer) {
       if (!basicSearchForm.ui.chkAdvanced.booleanValue) {
         // check
         ui.removeComponent(0, 1)
-        ui.addComponent(docViewUI, 0, 1)
+        ui.addComponent(docsViewUI, 0, 1)
       }
     }
+
+//    ui.addListener(new ComponentAttachListener {
+//      def componentAttachedToContainer(event: ComponentAttachEvent) {
+//        reset()
+//      }
+//    })
   }
 
-  reset()
 
   def reset() {
     basicSearchForm.reset()
@@ -81,11 +90,14 @@ class DocSearch(val docsContainer: DocsContainer) {
   }
 
   def submit() {
-    // hide advanced form
-    //if (basicSearchForm.validate() && (basicSearchForm.ui.chkAdvanced.checked advancedSearchForm.validate()))
-    System.out.println(">>>>QUERY: " + basicSearchForm.query.toString)
-    docsContainer.filter(None)
+    docsContainer.search(
+      condOpt(basicSearchForm.ui.txtText.value.trim) {
+        case solrQuery if solrQuery.nonEmpty => solrQuery
+      },
+      ui.getApplication.user
+    )
   }
+
 
   /**
    * Creates and returns query string.
@@ -97,17 +109,20 @@ class DocSearch(val docsContainer: DocsContainer) {
 
 
 /**
- * Database docs container.
+ * Read only container which provides access to all docs.
  */
-class DBDocsContainer extends DocsContainer {
+class AllDocsContainer extends DocsContainer {
 
-  private val docMapper = imcmsServices.getDocumentMapper.getDocumentMapper
+  private val docMapper = imcmsServices.getDocumentMapper
 
   private var filteredDocIds = Seq.empty[DocId]
 
-  def filter(solrQuery: Option[String]) {
-    filteredDocIds = docMapper.getAllDocumentIds.toSeq
-    notifyItemSetChanged()
+  protected def filterDocs(solrQuery: Option[String], user: UserDomainObject) {
+    filteredDocIds = solrQuery match {
+      case None => docMapper.getAllDocumentIds.toSeq
+      case Some(query) => docMapper.getDocumentIndex.search(new SimpleDocumentQuery(LuceneParsedQuery.parse(query)), user)
+                                   .map(_.getMeta.getId)
+    }
   }
 
   def removeItem(itemId: AnyRef) = throw new UnsupportedOperationException
@@ -125,7 +140,7 @@ class DBDocsContainer extends DocsContainer {
 
 
 /**
- *
+ * Provides access to fully customizable set of docs.
  */
 class CustomDocsContainer extends DocsContainer {
 
@@ -135,9 +150,8 @@ class CustomDocsContainer extends DocsContainer {
 
   def range = condOpt(docIds) { case ids if ids.nonEmpty => (ids.min, ids.max) }
 
-  def filter(solrQuery: Option[String]) {
+  protected def filterDocs(solrQuery: Option[String], user: UserDomainObject) {
     filteredDocIds = docIds
-    notifyItemSetChanged()
   }
 
   def removeItem(itemId: AnyRef) = docIds.remove(itemId.asInstanceOf[DocId])
@@ -154,7 +168,9 @@ class CustomDocsContainer extends DocsContainer {
   def getItemIds = filteredDocIds
 }
 
-
+/**
+ * Provides access to docs.
+ */
 abstract class DocsContainer extends Container
     with ContainerItemSetChangeNotifier
     with Container.Ordered
@@ -248,11 +264,16 @@ abstract class DocsContainer extends Container
   }
 
   /**
-   * Filters docs in this container using SOLr query.
+   * Search docs in this container using SOLr query.
    *
    * @param Some(query) to restrict accessible docs set in this container or None to access all docs.
    */
-  def filter(solrQuery: Option[String]): Unit
+  def search(solrQuery: Option[String], user: UserDomainObject) {
+    filterDocs(solrQuery, user)
+    notifyItemSetChanged()
+  }
+
+  protected def filterDocs(solrQuery: Option[String], user: UserDomainObject): Unit
 
   /**
    * Returns full (non filtered) inclusive docs range of this container.
@@ -287,9 +308,9 @@ abstract class DocsContainer extends Container
 
   def isFirstId(itemId: AnyRef) = itemId == firstItemId
 
-  def lastItemId = itemIds.last
+  def lastItemId = itemIds.lastOption.orNull
 
-  def firstItemId = itemIds.head
+  def firstItemId = itemIds.headOption.orNull
 
   // extremely ineffective prototype
   def prevItemId(itemId: AnyRef) = let(itemIds.toIndexedSeq) { seq =>
@@ -309,7 +330,7 @@ abstract class DocsContainer extends Container
 }
 
 
-class DocViewUI(container: DocsContainer) extends Table(null, container)
+class DocsViewUI(container: DocsContainer) extends Table(null, container)
     with MultiSelectBehavior[DocId] with DocTableItemIcon with Selectable {
 
   setColumnCollapsingAllowed(true)
@@ -325,7 +346,7 @@ class DocViewUI(container: DocsContainer) extends Table(null, container)
 //  }
 }
 
-//object DocViewUI {
+//object DocsViewUI {
 //  def apply(fullSize: Boolean = false) = let(new DocContainer) { container =>
 //    new Table(null, container) with DocTableItemIcon with MultiSelect2[DocId] with Selectable { table =>
 //      if (fullSize) table.setSizeFull
