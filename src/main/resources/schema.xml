@@ -28,6 +28,9 @@
     <diff from="6.7" to="6.8">
       <script>diff/mysql-schema-diff-6.7-6.8.sql</script>
     </diff>
+    <diff from="6.8" to="6.9">
+      <script>diff/mysql-schema-diff-6.8-6.9.sql</script>
+    </diff>
   </diffs>
     
 </schema>
