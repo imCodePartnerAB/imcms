@@ -82,9 +82,15 @@ public class PreferencesController {
         }
         
         facade.getLibraryService().syncLibraryFolders();
-        
+
+
         List<Roles> roles = facade.getRoleService().findRoles();
         Roles role = getRole(session, roles);
+        Roles previousRole = (Roles)session.get("previousRole");
+        if(previousRole != null && !role.equals(previousRole)) {
+            model.put("editingRoles", true);
+        }
+        session.put("previousRole", role);
         model.put("currentRole", role);
         
         List<Libraries> libraries = facade.getLibraryService().findLibraries();
@@ -97,6 +103,11 @@ public class PreferencesController {
         });
 
         Libraries library = getLibrary(session, libraries);
+        Libraries previousLibrary = (Libraries) session.get("previousLibrary");
+        if(previousLibrary != null && !library.equals(previousLibrary)) {
+            model.put("editingLibraries", true);
+        }
+        session.put("previousLibrary", library);
         model.put("currentLibrary", library);
 
         CategoryType imagesCategoryType = cms.getDocumentService().getCategoryType("Images");
@@ -111,22 +122,28 @@ public class PreferencesController {
         if (actionCommand.isCreateCategory()) {
             createCategoryCommand.setCreateCategoryType(imagesCategoryType.getId());
             processCreateCategory(createCategoryCommand, createCategoryResult);
+            model.put("editingCategories", true);
             
         } else if (actionCommand.isEditCategory()) {
             processEditCategory(editCategoryCommand);
+            model.put("editingCategories", true);
             
         } else if (actionCommand.isSaveCategory()) {
             editCategoryCommand.setEditCategoryType(imagesCategoryType.getId());
             processSaveCategory(editCategoryCommand, editCategoryResult);
+            model.put("editingCategories", true);
             
         } else if (actionCommand.isRemoveCategory()) {
             processRemoveCategory(editCategoryCommand);
+            model.put("editingCategories", true);
             
         } else if (actionCommand.isSaveLibraryRoles() && library != null && librariesCommand.getLibraryRoles() != null) {
             processSaveLibraryRoles(librariesCommand, librariesResult, model);
+            model.put("editingLibraries", true);
             
         } else if (actionCommand.isSaveRoleCategories()) {
             processSaveRoleCategories(roleCategoriesCommand, model);
+            model.put("editingRoles", true);
             
         }
         
