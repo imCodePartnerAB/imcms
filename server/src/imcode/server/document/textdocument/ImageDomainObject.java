@@ -255,7 +255,26 @@ public class ImageDomainObject implements Serializable {
         if (filename.length() > maxlength) {
             filename = filename.substring(0, maxlength);
         }
-
+        
+        String[][] specialCharacterReplacements = {
+                { "\u00e5", "a" },// å
+                { "\u00c5", "A" },
+                { "\u00e4", "a" },// ä
+                { "\u00c4", "A" },
+                { "\u00f6", "o" },// ö
+                { "\u00d6", "O" },
+                { "\u00e9", "e" },// é
+                { "\u00c9", "E" },
+                { "\u00f8", "o" },// ø
+                { "\u00d8", "O" },
+                { "\u00e6", "ae" },// æ
+                { "\u00c6", "AE" },
+                { "\u0020", "_" } // space
+        } ;
+        for (String[] replacement : specialCharacterReplacements) {
+          filename = filename.replace(replacement[0], replacement[1]) ;
+        }
+        
         generatedFilename = filename + suffix;
     }
 

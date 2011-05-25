@@ -14,6 +14,7 @@ import imcode.util.io.FileUtility;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -187,7 +188,40 @@ public class ImageBrowse extends HttpServlet {
         }
     }
 
-    public static class ImageBrowserPage {
+	
+	public static String getSimpleFileSize( long size ) {
+		String sSize = size + " b" ;
+		try {
+			double dFileSize = (double) size ;
+			DecimalFormat df = new DecimalFormat("#.0") ;
+			if (dFileSize >= (1024 * 1024)) {
+				dFileSize = dFileSize / (1024 * 1024) ;
+				sSize  = df.format(dFileSize) ;
+				sSize  = sSize.replaceAll(",", ".") + " MB" ;
+			} else if (dFileSize >= 1024) {
+				dFileSize = dFileSize / 1024 ;
+				sSize  = df.format(dFileSize) ;
+				sSize  = sSize.replaceAll(",", ".") + " kB" ;
+			}
+		} catch ( NumberFormatException ex ) {
+			// ignore
+		}
+		return sSize ;
+	}
+
+	public static String truncateString( String str, int iTruncate ) {
+		String ret = str ;
+		try {
+			ret = ret.replaceAll("<[^>]+?>", "") ;
+			ret = ret.trim() ;
+			if (ret.length() > iTruncate) {
+				ret = ret.substring(0, iTruncate - 3).trim().replaceAll("\\n", "<br/>\n") + "..." ;
+			}
+		} catch (Exception ex) {} 
+		return ret ;
+	}
+
+	public static class ImageBrowserPage {
 
         private static final String REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE = "imagebrowsepage";
 
@@ -251,6 +285,16 @@ public class ImageBrowse extends HttpServlet {
                     }
                 }
             });
+        }
+
+        public List<File> getImagesList() throws IOException {
+            final File imagesRoot = Imcms.getServices().getConfig().getImagePath();
+            if ( null != currentImage ) {
+                imageUrl = FileUtility.relativeFileToString( FileUtility.relativizeFile( imagesRoot, currentImage ) );
+            }
+            File[] images = currentDirectory.listFiles( new ImageExtensionFilenameFilter() );
+            Arrays.sort( images );
+            return Arrays.asList( images ) ;
         }
 
         public String getImageUrl() {

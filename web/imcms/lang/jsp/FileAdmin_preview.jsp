@@ -8,12 +8,14 @@
 	        java.io.BufferedReader,
 	        java.io.File,
 	        java.io.FileInputStream,
-	        java.io.InputStreamReader, java.text.DecimalFormat, org.apache.commons.lang.StringEscapeUtils, java.io.IOException, org.apache.commons.lang.StringUtils, java.net.URLEncoder"
+	        java.io.InputStreamReader, java.text.DecimalFormat, org.apache.commons.lang.StringEscapeUtils, java.io.IOException, org.apache.commons.lang.StringUtils, java.net.URLEncoder, imcode.server.document.textdocument.ImageDomainObject, imcode.server.document.textdocument.ImagesPathRelativePathImageSource, imcode.util.ImcmsImageUtils"
 	
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 	
 %><%
+
+String cp = request.getContextPath() ;
 
 /* *******************************************************************
  *           SETTINGS                                                *
@@ -24,7 +26,7 @@ String acceptedExtPattern = "/" +
 	"|(\\.LOG+)" +
 	"/i" ;
 
-String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ; // path to buttons (with trailing /)
+String IMG_PATH   = cp+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ; // path to buttons (with trailing /)
 
 /* *******************************************************************
  *           INIT                                                    *
@@ -34,7 +36,7 @@ String file       = request.getParameter("file") ;
 String orgFileParam = StringUtils.defaultString(request.getParameter("file")) ;
 
 String frame      = (request.getParameter("frame") != null) ? request.getParameter("frame") : "FRAME" ;
-String thisPage = request.getContextPath() + request.getServletPath();
+String thisPage = cp + request.getServletPath();
 
 String zoom       = "" ;
 String defZoom    = "1.0" ;
@@ -59,7 +61,7 @@ if (request.getParameter("border") != null) {
 	hasBorder       = (session.getAttribute("border").equals("1")) ;
 }
 
-    File webRoot    = Imcms.getPath() ;
+File webRoot    = Imcms.getPath() ;
 File fn = new File(webRoot, file) ;
 
 /* Is image? */
@@ -95,7 +97,7 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 	String theButtons ;
 	boolean hasInlineButtons = false ;
 
-	theButtons = "<table border=0 bgcolor=\"#d6d3ce\" align=\"right\">\n<tr>" ;
+	theButtons = "<table border=\"0\" bgcolor=\"#d6d3ce\" align=\"right\">\n<tr>" ;
 	if (hasGetElementById && !hasDocumentAll && !isMac) {
 		hasInlineButtons = true ;
          theButtons += "\n   <td><a href=\"#\" onClick=\"find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sök!\"></a></td>" ;
@@ -163,8 +165,9 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 
 if (isImage) {
     try {
-        BufferedImage image = ImageIO.read( fn );
-        %><div class="imcmsAdmText" style="padding: 5px 0 <%= hasBorder ? 7 : 8 %>px 0; color:#666;">&quot;$contextPath<%= file.replaceAll("\\\\","/") %>&quot;<%
+        BufferedImage image = ImageIO.read( fn ); %>
+	<div class="imcmsAdmText" style="padding: 5px 0 <%= hasBorder ? 7 : 8 %>px 0; color:#666;">
+		&quot;<%= cp %><%= file.replaceAll("\\\\","/") %>&quot;<%
         if (image.getWidth() > 0 && image.getHeight() > 0 && !size.equals("")) {
             %> (<%
             if (image.getWidth() > 0 && image.getHeight() > 0) {
@@ -179,15 +182,25 @@ if (isImage) {
             if (!size.equals("")) {
                 %><%= size %><%
             } %>)<%
-        } %></div><%
+        } %>
+	</div><%
     } catch( IOException ignored ) {
 	    //out.print(ignored);
 	    if (hasGetElementById && !hasDocumentAll) zoom = "" ;
-    }
-    %><img name="theImg" id="theImg" src="$contextPath<%= Utility.escapeUrl(file).replaceAll("(%5C|%255C)","/") %>"<%= border + zoom %> alt=""><%
-} else {
-	%><%
-} %></div>
+    } %><%--
+	<img name="theImg" id="theImg" src="$contextPath<%= Utility.escapeUrl(file).replaceAll("(%5C|%255C)","/") %>"<%= border + zoom %> alt="">--%><%
+	
+		File imagesRoot = Imcms.getServices().getConfig().getImagePath() ;
+		ImageDomainObject iDO = new ImageDomainObject() ;
+		String path = file.replace(new File(imagesRoot, "/").toString(), "") ;
+		ImagesPathRelativePathImageSource imageSource = new ImagesPathRelativePathImageSource(path) ;
+		iDO.setSourceAndClearSize(imageSource) ;
+		String previewSrc = ImcmsImageUtils.getImagePreviewUrl(iDO, cp) ;
+		
+		%>
+	<img name="theImg" id="theImg" src="<%= previewSrc %>"<%= border + zoom %> alt="" /><%
+} %>
+</div>
 
 </body>
 </html><%

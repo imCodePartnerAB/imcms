@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.oro.text.perl.Perl5Util;
 
 public class ImagePreview extends HttpServlet {
     private static final long serialVersionUID = -5206637712530904625L;
@@ -59,6 +60,12 @@ public class ImagePreview extends HttpServlet {
         }
 
         String formatParam = StringUtils.trimToEmpty(request.getParameter("format")).toLowerCase();
+        if ("".equals(formatParam)) {
+	        Perl5Util re = new Perl5Util() ;
+	        if (re.match("/\\.([\\w]{3,4})$/i", path)) {
+		        formatParam = re.group(1).toLowerCase() ;
+	        }
+        }
         Format format = Format.findFormatByExtension(formatParam);
 
         if (format != null && !format.isWritable()) {
@@ -105,6 +112,7 @@ public class ImagePreview extends HttpServlet {
 
             if (result) {
                 String contentType = (format != null ? format.getMimeType() : "application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=\"" + imageFile.getName() + "\"") ;
                 response.addHeader("ETag", etag);
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.setContentType(contentType);
