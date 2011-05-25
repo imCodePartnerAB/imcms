@@ -3,10 +3,9 @@ package imcms
 package admin.doc
 
 import scala.collection.JavaConversions._
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.imcode.imcms.vaadin._
 
-import vaadin.{ImcmsApplication, FullSize}
-import com.vaadin.ui.Table.CellStyleGenerator
+import vaadin.{FullSize}
 import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import com.vaadin.terminal.{ExternalResource, Resource}
@@ -20,9 +19,15 @@ import admin.access.user.UserSearchDialog
 import java.util.{Calendar, Date}
 import api.{LuceneParsedQuery, Document}
 import imcode.server.user.UserDomainObject
-import javax.management.remote.rmi._RMIConnection_Stub
 import imcode.server.document.index.SimpleDocumentQuery
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
+
+//    // alias VIEW -> 1003
+//    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
+//    // admin: VIWE + ADMIN PANEL 1009 - Start page swe(Copy/Kopia) -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1009
+//    // ref -> DocumentReferences! 3 -> http://imcms.dev.imcode.com/servlet/DocumentReferences?returnurl=ListDocuments%3Fstart%3D1001%26end%3D1031%26showspan%3D%2BLista%2B&id=1001
+//    // children LIST DOCS -> 1023 - Testdoc-swe -> http://imcms.dev.imcode.com/servlet/ListDocuments?start=1023&end=1023
+// >>> Html.getLinkedStatusIconTemplate( document, user, request )
 
 /**
  * Doc search consists of two forms (basic and advanced)
@@ -31,50 +36,18 @@ import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachLi
 class DocSearch(val docsContainer: DocsContainer) {
   val basicSearchForm = new DocBasicSearchForm
   val advancedSearchForm = new DocAdvancedSearchForm
-  val advancedSearchFormPanel = new Panel with Scrollable with UndefinedSize with FullHeight {
-    setStyleName(Panel.STYLE_LIGHT)
-    setContent(advancedSearchForm.ui)
-  }
+  val docsUI = new DocsUI(docsContainer) with FullSize
 
-  val docsViewUI = new DocsViewUI(docsContainer) with FullSize
+  val ui = letret(new DocSearchUI(basicSearchForm.ui, advancedSearchForm.ui, docsUI)) { ui =>
+    val basicFormUI = basicSearchForm.ui
 
-  val ui = letret(new GridLayout(1, 2) with Spacing with FullSize) { ui =>
-    ui.addComponent(basicSearchForm.ui)
-    ui.addComponent(docsViewUI)
-    ui.setRowExpandRatio(1, 1f)
-
-    basicSearchForm.ui.btnAdvanced.addClickHandler {
-      val component = ui.getComponent(0, 1) match {
-        case `docsViewUI` => advancedSearchFormPanel
-        case _ => docsViewUI
-      }
-
-      ui.removeComponent(0, 1)
-      ui.addComponent(component, 0, 1)
+    basicFormUI.btnAdvanced.addClickHandler { ui.toggleAdvancedSearchForm() }
+    basicFormUI.chkAdvanced.addValueChangeHandler {
+      if (!basicFormUI.chkAdvanced.booleanValue) ui.advancedSearchFormVisible = false
     }
 
-    basicSearchForm.ui.lytButtons.btnSearch.addClickHandler {
-      // check
-      ui.removeComponent(0, 1)
-      ui.addComponent(docsViewUI, 0, 1)
-      submit()
-    }
-
-    basicSearchForm.ui.lytButtons.btnClear.addClickHandler { reset() }
-
-    basicSearchForm.ui.chkAdvanced.addValueChangeHandler {
-      if (!basicSearchForm.ui.chkAdvanced.booleanValue) {
-        // check
-        ui.removeComponent(0, 1)
-        ui.addComponent(docsViewUI, 0, 1)
-      }
-    }
-
-//    ui.addListener(new ComponentAttachListener {
-//      def componentAttachedToContainer(event: ComponentAttachEvent) {
-//        reset()
-//      }
-//    })
+    basicFormUI.lytButtons.btnSearch.addClickHandler { submit() }
+    basicFormUI.lytButtons.btnReset.addClickHandler { reset() }
   }
 
 
@@ -90,12 +63,18 @@ class DocSearch(val docsContainer: DocsContainer) {
   }
 
   def submit() {
-    docsContainer.search(
-      condOpt(basicSearchForm.ui.txtText.value.trim) {
-        case solrQuery if solrQuery.nonEmpty => solrQuery
-      },
-      ui.getApplication.user
-    )
+    createQuery() match {
+      case Left(throwable) =>
+        ui.getApplication.showErrorNotification(throwable.getMessage)
+
+      case Right(solrQueryOpt) =>
+        println(solrQueryOpt)
+
+        ui.removeComponent(0, 1)
+        ui.addComponent(docsUI, 0, 1)
+
+        docsContainer.search(solrQueryOpt, ui.getApplication.user)
+    }
   }
 
 
@@ -104,72 +83,93 @@ class DocSearch(val docsContainer: DocsContainer) {
    *
    * @return query string.
    */
-  def query: String = ???
-}
+  def createQuery(): Throwable Either Option[String] = EX.allCatch.either {
+    val basicFormUI = basicSearchForm.ui
+
+    val rangeOpt =
+      if (basicFormUI.chkRange.isUnchecked) None
+      else {
+        val start = condOpt(basicFormUI.lytRange.txtStart.trim) {
+          case value if value.nonEmpty => value match {
+            case PosInt(start) => start
+            case _ => error("-range must be pos nums-")
+          }
+        }
+
+        val end = condOpt(basicFormUI.lytRange.txtStart.trim) {
+          case value if value.nonEmpty => value match {
+            case PosInt(end) => end
+            case _ => error("-range must be pos nums-")
+          }
+        }
+
+        whenOpt(start.isDefined || end.isDefined) {
+          DocSearchRange(start, end)
+        }
+      }
 
 
-/**
- * Read only container which provides access to all docs.
- */
-class AllDocsContainer extends DocsContainer {
+    val textOpt: Option[String] =
+      if (basicFormUI.chkText.isUnchecked) None
+      else condOpt(basicFormUI.txtText.trim) {
+        case value if value.nonEmpty => value
+      }
 
-  private val docMapper = imcmsServices.getDocumentMapper
 
-  private var filteredDocIds = Seq.empty[DocId]
-
-  protected def filterDocs(solrQuery: Option[String], user: UserDomainObject) {
-    filteredDocIds = solrQuery match {
-      case None => docMapper.getAllDocumentIds.toSeq
-      case Some(query) => docMapper.getDocumentIndex.search(new SimpleDocumentQuery(LuceneParsedQuery.parse(query)), user)
-                                   .map(_.getMeta.getId)
+    val typesOpt: Option[List[String]] = whenOpt(basicFormUI.chkType.isChecked) {
+      Map(basicFormUI.lytType.chkFile -> "file",
+        basicFormUI.lytType.chkText -> "text",
+        basicFormUI.lytType.chkHtml -> "html"
+      ).filterKeys(_.isChecked).values.toList match {
+        case Nil => error("-when type is checked then at least one type should be selected-")
+        case types => types
+      }
     }
-  }
 
-  def removeItem(itemId: AnyRef) = throw new UnsupportedOperationException
 
-  def addItem(itemId: AnyRef) = throw new UnsupportedOperationException
-
-  def removeAllItems() = throw new UnsupportedOperationException
-
-  def range = let(docMapper.getDocumentIdRange) { idsRange =>
-    Some(Int box idsRange.getMinimumInteger, Int box idsRange.getMaximumInteger)
-  }
-
-  def getItemIds = filteredDocIds
+    List(
+      rangeOpt.map(range => "range:[%s TO %s]" format (range.start.getOrElse("*"), range.end.getOrElse("*"))),
+      textOpt.map("text:" + _),
+      typesOpt.map(_.mkString("type:(", " OR ", ")"))
+    ).flatten match {
+      case Nil => None
+      case terms => Some(terms.mkString(" "))
+    }
+  } // def createQuery()
 }
 
 
-/**
- * Provides access to fully customizable set of docs.
- */
-class CustomDocsContainer extends DocsContainer {
+class DocSearchUI(
+    basicSearchFormUI: DocBasicFormSearchUI,
+    advancedSearchFormUI: DocAdvancedSearchFormUI,
+    docsUI: DocsUI) extends GridLayout(1, 2) with Spacing with FullSize {
 
-  private var docIds = Seq.empty[DocId]
-
-  private var filteredDocIds = Seq.empty[DocId]
-
-  def range = condOpt(docIds) { case ids if ids.nonEmpty => (ids.min, ids.max) }
-
-  protected def filterDocs(solrQuery: Option[String], user: UserDomainObject) {
-    filteredDocIds = docIds
+  private val pnlAdvancedSearchForm = new Panel with Scrollable with UndefinedSize with FullHeight {
+    setStyleName(Panel.STYLE_LIGHT)
+    setContent(advancedSearchFormUI)
   }
 
-  def removeItem(itemId: AnyRef) = docIds.remove(itemId.asInstanceOf[DocId])
+  addComponent(basicSearchFormUI)
+  addComponent(docsUI)
+  setRowExpandRatio(1, 1f)
 
-  def addItem(itemId: AnyRef) = letret(new DocItem(itemId.asInstanceOf[DocId])) { docItem =>
-    docIds :+= docItem.docId
+  def toggleAdvancedSearchForm() =
+    advancedSearchFormVisible = !advancedSearchFormVisible
+
+  def advancedSearchFormVisible =
+    getComponent(0, 1) == pnlAdvancedSearchForm
+
+  def advancedSearchFormVisible_=(visible: Boolean) {
+    removeComponent(0, 1)
+    addComponent(if (visible) pnlAdvancedSearchForm else docsUI, 0, 1)
   }
-
-  def removeAllItems() = letret(true) { _ =>
-    docIds = Seq.empty
-    notifyItemSetChanged()
-  }
-
-  def getItemIds = filteredDocIds
 }
 
+
+
+
 /**
- * Provides access to docs.
+ * Docs container.
  */
 abstract class DocsContainer extends Container
     with ContainerItemSetChangeNotifier
@@ -269,11 +269,11 @@ abstract class DocsContainer extends Container
    * @param Some(query) to restrict accessible docs set in this container or None to access all docs.
    */
   def search(solrQuery: Option[String], user: UserDomainObject) {
-    filterDocs(solrQuery, user)
+    innerSearch(solrQuery, user)
     notifyItemSetChanged()
   }
 
-  protected def filterDocs(solrQuery: Option[String], user: UserDomainObject): Unit
+  protected def innerSearch(solrQuery: Option[String], user: UserDomainObject): Unit
 
   /**
    * Returns full (non filtered) inclusive docs range of this container.
@@ -330,148 +330,81 @@ abstract class DocsContainer extends Container
 }
 
 
-class DocsViewUI(container: DocsContainer) extends Table(null, container)
+/**
+ * Read only container which provides access to all docs.
+ */
+class AllDocsContainer extends DocsContainer {
+
+  private val docMapper = imcmsServices.getDocumentMapper
+
+  private var filteredDocIds = Seq.empty[DocId]
+
+  protected def innerSearch(solrQuery: Option[String], user: UserDomainObject) {
+    filteredDocIds = docMapper.getAllDocumentIds.toSeq
+
+//    filteredDocIds = solrQuery match {
+//      case None => docMapper.getAllDocumentIds.toSeq
+//      case Some(query) => docMapper.getDocumentIndex.search(new SimpleDocumentQuery(LuceneParsedQuery.parse(query)), user)
+//                                   .map(_.getMeta.getId)
+//    }
+  }
+
+  def removeItem(itemId: AnyRef) = throw new UnsupportedOperationException
+
+  def addItem(itemId: AnyRef) = throw new UnsupportedOperationException
+
+  def removeAllItems() = throw new UnsupportedOperationException
+
+  def range = let(docMapper.getDocumentIdRange) { idsRange =>
+    Some(Int box idsRange.getMinimumInteger, Int box idsRange.getMaximumInteger)
+  }
+
+  def getItemIds = filteredDocIds
+}
+
+
+/**
+ * Provides access to fully customizable set of docs.
+ */
+class CustomDocsContainer extends DocsContainer {
+
+  private var docIds = Seq.empty[DocId]
+
+  private var filteredDocIds = Seq.empty[DocId]
+
+  def range = condOpt(docIds) { case ids if ids.nonEmpty => (ids.min, ids.max) }
+
+  protected def innerSearch(solrQuery: Option[String], user: UserDomainObject) {
+    filteredDocIds = docIds
+  }
+
+  def removeItem(itemId: AnyRef) = docIds.remove(itemId.asInstanceOf[DocId])
+
+  def addItem(itemId: AnyRef) = letret(new DocItem(itemId.asInstanceOf[DocId])) { docItem =>
+    docIds :+= docItem.docId
+  }
+
+  def removeAllItems() = letret(true) { _ =>
+    docIds = Seq.empty
+    notifyItemSetChanged()
+  }
+
+  def getItemIds = filteredDocIds
+}
+
+
+
+class DocsUI(container: DocsContainer) extends Table(null, container)
     with MultiSelectBehavior[DocId] with DocTableItemIcon with Selectable {
 
   setColumnCollapsingAllowed(true)
   setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
 
-//  override def setContainerDataSource(container: Container) {
-//    val collapsedColumns = getContainerPropertyIds filter isColumnCollapsed
-//    super.setContainerDataSource(container)
-//
-//    setColumnHeaders(container.getContainerPropertyIds map (_.toString.i) toArray )
-//    List("doc.tbl.col.parents", "doc.tbl.col.children") foreach { setColumnCollapsed(_, true) }
-//    collapsedColumns foreach (setColumnCollapsed(_, true))
-//  }
+  setColumnHeaders(container.getContainerPropertyIds map (_.toString.i) toArray )
+  Seq("doc.tbl.col.parents", "doc.tbl.col.children") foreach { setColumnCollapsed(_, true) }
 }
 
-//object DocsViewUI {
-//  def apply(fullSize: Boolean = false) = let(new DocContainer) { container =>
-//    new Table(null, container) with DocTableItemIcon with MultiSelect2[DocId] with Selectable { table =>
-//      if (fullSize) table.setSizeFull
-//      setColumnCollapsingAllowed(true)
-//      setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
-//      setColumnHeaders(container.getContainerPropertyIds map (_.i) toArray )
-//      List("doc.tbl.col.parents", "doc.tbl.col.children") foreach { setColumnCollapsed(_, true) }
-//    }
-//  }
-//
-//  def apply2(fullSize: Boolean = false) = new Table with DocStatusItemIcon with MultiSelect2[DocumentDomainObject] with Selectable { table =>
-//    addContainerProperties(table,
-//      CP[JInteger]("doc.tbl.col.id"),
-//      CP[JInteger]("doc.tbl.col.type"),
-//      CP[String]("doc.tbl.col.status"),
-//      CP[String]("doc.tbl.col.alias"))
-//
-//
-//    if (fullSize) table.setSizeFull
-//
-////    table.setCellStyleGenerator(new CellStyleGenerator {
-////      def getStyle(itemId: AnyRef, propertyId: AnyRef) {
-////        if (propertyId == null) {
-////            // no propertyId, styling row
-////            return (markedRows.contains(itemId) ? "marked" : null);
-////        } else if (ExampleUtil.iso3166_PROPERTY_NAME.equals(propertyId)) {
-////            return "bold";
-////        } else {
-////            // no style
-////            return null;
-////        }
-////      }
-////    })
-//
-//    // alias VIEW -> 1003
-//    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
-//    // admin: VIWE + ADMIN PANEL 1009 - Start page swe(Copy/Kopia) -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1009
-//    // ref -> DocumentReferences! 3 -> http://imcms.dev.imcode.com/servlet/DocumentReferences?returnurl=ListDocuments%3Fstart%3D1001%26end%3D1031%26showspan%3D%2BLista%2B&id=1001
-//    // children LIST DOCS -> 1023 - Testdoc-swe -> http://imcms.dev.imcode.com/servlet/ListDocuments?start=1023&end=1023
-//
-//    // >>> Html.getLinkedStatusIconTemplate( document, user, request )
-//
-//    val docMapper = Imcms.getServices.getDocumentMapper
-//
-//
-//    trait TreeActionHandler extends Tree {
-//      addActionHandler(new Action.Handler {
-//        import Actions._
-//
-//        def getActions(target: AnyRef, sender: AnyRef) = target match {
-//          case doc: DocumentDomainObject => Array(AddToSelection, View)
-//          case _ => Array.empty[Action]
-//        }
-//
-//        def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
-//          action match {
-//            case AddToSelection => //docSelection.ui.tblDocs.addItem(target)
-//            case _ =>
-//          }
-//      })
-//    }
-//
-//    table.addGeneratedColumn("doc.tbl.col.parents", new Table.ColumnGenerator {
-//      def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) =
-//        docMapper.getDocumentMenuPairsContainingDocument(itemId.asInstanceOf[DocumentDomainObject]).toList match {
-//          case List() => null
-//          case List(pair) =>
-//            letret(new Tree with TreeActionHandler with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
-//              val parentDoc = pair.getDocument
-//              tree.addItem(parentDoc)
-//              tree.setChildrenAllowed(parentDoc, false)
-//              tree.setItemCaption(parentDoc, "%s - %s" format (parentDoc.getId, parentDoc.getHeadline))
-//            }
-//
-//          case pairs => letret(new Tree with TreeActionHandler with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
-//            val root = new {}
-//            tree.addItem(root)
-//            tree.setItemCaption(root, pairs.size.toString)
-//            for (pair <- pairs; parentDoc = pair.getDocument) {
-//              tree.addItem(parentDoc)
-//              tree.setChildrenAllowed(parentDoc, false)
-//              tree.setItemCaption(parentDoc, "%s - %s" format (parentDoc.getId, parentDoc.getHeadline))
-//              tree.setParent(parentDoc, root)
-//            }
-//          }
-//        }
-//    })
-//
-//    table.addGeneratedColumn("doc.tbl.col.children", new Table.ColumnGenerator {
-//      def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) =
-//        itemId match {
-//          case textDoc: TextDocumentDomainObject =>
-//            docMapper.getDocuments(textDoc.getChildDocumentIds).toList match {
-//              case List() => null
-//              case List(childDoc) =>
-//                letret(new Tree with TreeActionHandler with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
-//                  tree.addItem(childDoc)
-//                  tree.setChildrenAllowed(childDoc, false)
-//                  tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
-//                }
-//
-//              case childDocs =>letret(new Tree with TreeActionHandler with ItemIdType[DocumentDomainObject] with DocStatusItemIcon) { tree =>
-//                val root = new {}
-//                tree.addItem(root)
-//                tree.setItemCaption(root, childDocs.size.toString)
-//                for (childDoc <- childDocs) {
-//                  tree.addItem(childDoc)
-//                  tree.setChildrenAllowed(childDoc, false)
-//                  tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
-//                  tree.setParent(childDoc, root)
-//                  // >>> link to list documents
-//                }
-//              }
-//            }
-//
-//          case _ => null
-//        }
-//    })
-//
-//    table.setColumnHeaders(Array("doc.tbl.col.id".i, "doc.tbl.col.type".i, "doc.tbl.col.status".i,
-//      "doc.tbl.col.alias".i, "doc.tbl.col.parents".i, "doc.tbl.col.children".i))
-//
-//    table.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
-//  }
-//}
+
 
 trait DocStatusItemIcon extends AbstractSelect {
   override def getItemIcon(itemId: AnyRef) = itemId match {
@@ -515,52 +448,6 @@ class DocBasicSearchForm {
     }
   }
 
-  /** @return right 'solr query' or left 'validation error' */
-  def query: Either[Throwable, String] = EX.allCatch.either {
-    val rangeOpt = whenOpt(ui.chkRange.isChecked) {
-      DocSearchRange(
-        condOpt(ui.lytRange.txtStart.trim) {
-          case value if value.nonEmpty => value match {
-            case PosInt(start) => start
-            case _ => error("-range must be pos nums-")
-          }
-        },
-        condOpt(ui.lytRange.txtEnd.trim) {
-          case value if value.nonEmpty => value match {
-            case PosInt(end) => end
-            case _ => error("-range must be pos nums-")
-          }
-        }
-      )
-    }
-
-
-    val textOpt: Option[String] =
-      if (ui.chkText.isUnchecked) None
-      else condOpt(ui.txtText.trim) {
-        case value if value.nonEmpty => value
-      }
-
-
-    val typesOpt: Option[List[String]] = whenOpt(ui.chkType.isChecked) {
-      Map(ui.lytType.chkFile -> "file",
-        ui.lytType.chkText -> "text",
-        ui.lytType.chkHtml -> "html"
-      ).filterKeys(_.isChecked).values.toList match {
-        case Nil => error("-when type is checled then at least one type should be selected-")
-        case types => types
-      }
-    }
-
-    List(
-      rangeOpt.map(range => "range:[%s TO %s]" format (range.start.getOrElse("*"), range.end.getOrElse("*"))),
-      textOpt.map("text:" + _),
-      typesOpt.map(_.mkString("type:(", "AND", ")"))
-    ).flatten match {
-      case Nil => ""
-      case terms => terms.mkString(" ")
-    }
-  }
 
   def reset() {
     ui.chkRange.checked = true
@@ -595,8 +482,8 @@ class DocBasicSearchForm {
       )
 
       ui.lytRange.setEnabled(true)
-      ui.lytRange.txtStart.value = "" // range get default value
-      ui.lytRange.txtEnd.value = ""  // range get default value
+      ui.lytRange.txtStart.value = ""
+      ui.lytRange.txtEnd.value = ""
       ui.lytRange.setEnabled(false)
       newState
     }
@@ -657,7 +544,7 @@ case class DocBasicSearchFormState(
 
 class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") with FullWidth {
 
-  val chkRange = new CheckBox("doc.search.basic.frm.chk.range".i) with Immediate
+  val chkRange = new CheckBox("doc.search.basic.frm.fld.chk_range".i) with Immediate
   val lytRange = new HorizontalLayout with Spacing with UndefinedSize {
     val txtStart = new TextField { setColumns(5) }
     val txtEnd = new TextField { setColumns(5) }
@@ -665,39 +552,39 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
     addComponents(this, txtStart, txtEnd)
   }
 
-  val chkText = new CheckBox("doc.search.basic.frm.chk.text".i) with Immediate
-  val txtText = new TextField { setInputPrompt("doc.search.basic.frm.txt.text.prompt".i) }
+  val chkText = new CheckBox("doc.search.basic.frm.fld.chk_text".i) with Immediate
+  val txtText = new TextField { setInputPrompt("doc.search.basic.frm.fld.txt_text.prompt".i) }
 
-  val chkType = new CheckBox("doc.search.basic.frm.chk.type".i) with Immediate
+  val chkType = new CheckBox("doc.search.basic.frm.fld.chk_type".i) with Immediate
   val lytType = new HorizontalLayout with UndefinedSize with Spacing {
-    val chkText = new CheckBox("doc.search.basic.frm.chk.type.text".i)
-    val chkFile = new CheckBox("doc.search.basic.frm.chk.type.file".i)
-    val chkHtml = new CheckBox("doc.search.basic.frm.chk.type.html".i)
+    val chkText = new CheckBox("doc.search.basic.frm.fld.chk_type_text".i)
+    val chkFile = new CheckBox("doc.search.basic.frm.fld.chk_type_file".i)
+    val chkHtml = new CheckBox("doc.search.basic.frm.fld.chk_type_html".i)
 
     addComponents(this, chkText, chkFile, chkHtml)
   }
 
-  val chkAdvanced = new CheckBox("doc.search.basic.frm.chk.advanced".i) with Immediate
-  val btnAdvanced = new Button("doc.search.basic.frm.btn.advanced".i) with LinkStyle
+  val chkAdvanced = new CheckBox("doc.search.basic.frm.fld.chk_advanced".i) with Immediate
+  val btnAdvanced = new Button("doc.search.basic.frm.fld.btn_advanced".i) with LinkStyle
 
 
   val lytButtons = new HorizontalLayout with UndefinedSize with Spacing {
-    val btnClear = new Button("doc.search.basic.frm.btn.clear".i) { setStyleName("small") }
-    val btnSearch = new Button("doc.search.basic.frm.btn.search".i) { setStyleName("small") }
+    val btnReset = new Button("doc.search.basic.frm.fld.btn_reset".i) { setStyleName("small") }
+    val btnSearch = new Button("doc.search.basic.frm.fld.btn_search".i) { setStyleName("small") }
 
-    addComponents(this, btnClear, btnSearch)
+    addComponents(this, btnReset, btnSearch)
   }
 
   addNamedComponents(this,
-    "doc.search.basic.frm.chk.range" -> chkRange,
-    "doc.search.basic.frm.range" -> lytRange,
-    "doc.search.basic.frm.chk.text" -> chkText,
-    "doc.search.basic.frm.txt.text" -> txtText,
-    "doc.search.basic.frm.chk.type" -> chkType,
-    "doc.search.basic.frm.type" -> lytType,
-    "doc.search.basic.frm.chk.advanced" -> chkAdvanced,
-    "doc.search.basic.frm.btn.advanced" -> btnAdvanced,
-    "doc.search.basic.frm.buttons" -> lytButtons
+    "doc.search.basic.frm.fld.chk_range" -> chkRange,
+    "doc.search.basic.frm.fld.lyt_range" -> lytRange,
+    "doc.search.basic.frm.fld.chk_text" -> chkText,
+    "doc.search.basic.frm.fld.txt_text" -> txtText,
+    "doc.search.basic.frm.fld.chk_type" -> chkType,
+    "doc.search.basic.frm.fld.lyt_type" -> lytType,
+    "doc.search.basic.frm.fld.chk_advanced" -> chkAdvanced,
+    "doc.search.basic.frm.fld.btn_advanced" -> btnAdvanced,
+    "doc.search.basic.frm.fld.lyt_buttons" -> lytButtons
   )
 }
 
@@ -736,31 +623,31 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
       name)
   }
 
-  private def switchCategories() = switch(ui.chkCategories, ui.tcsCategories, "doc.search.advanced.frm.tcs.categories")
-  private def switchMaintainers() = switch(ui.chkMaintainers, ui.lytMaintainers, "doc.search.advanced.frm.lyt.maintainers")
-  private def switchRelationships() = switch(ui.chkRelationships, ui.lytRelationships, "doc.search.advanced.frm.lyt.relationship")
-  private def switchDates() = switch(ui.chkDates, ui.lytDates, "doc.search.advanced.frm.lyt.dates")
-  private def switchStatus() = switch(ui.chkStatus, ui.lytStatus, "doc.search.advanced.frm.status")
+  private def switchCategories() = switch(ui.chkCategories, ui.tcsCategories, "doc.search.advanced.frm.fld.tcs.categories")
+  private def switchMaintainers() = switch(ui.chkMaintainers, ui.lytMaintainers, "doc.search.advanced.frm.fld.lyt.maintainers")
+  private def switchRelationships() = switch(ui.chkRelationships, ui.lytRelationships, "doc.search.advanced.frm.fld.lyt.relationship")
+  private def switchDates() = switch(ui.chkDates, ui.lytDates, "doc.search.advanced.frm.fld.lyt.dates")
+  private def switchStatus() = switch(ui.chkStatus, ui.lytStatus, "doc.search.advanced.frm.fld.status")
 }
 
 
 class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_form") with FullWidth {
-  val lblPredefined = new Label("doc.search.advanced.frm.lbl.predefined".i) with UndefinedSize
+  val lblPredefined = new Label("doc.search.advanced.frm.fld.lbl.predefined".i) with UndefinedSize
   val cbPredefined = new ComboBox
 
-  val chkStatus = new CheckBox("doc.search.advanced.frm.chk.status".i) with Immediate
+  val chkStatus = new CheckBox("doc.search.advanced.frm.fld.chk.status".i) with Immediate
   val lytStatus = new HorizontalLayout with Spacing with UndefinedSize {
-    val chkNew = new CheckBox("doc.search.advanced.frm.ckh.status.new".i)
-    val chkPublished = new CheckBox("doc.search.advanced.frm.chk.status.published".i)
-    val chkUnpublished = new CheckBox("doc.search.advanced.frm.chk.status.unpublished".i)
-    val chkApproved = new CheckBox("doc.search.advanced.frm.chk.status.approved".i)
-    val chkDisapproved = new CheckBox("doc.search.advanced.frm.chk.status.disapproved".i)
-    val chkExpired = new CheckBox("doc.search.advanced.frm.chk.status.expired".i)
+    val chkNew = new CheckBox("doc.search.advanced.frm.fld.ckh.status.new".i)
+    val chkPublished = new CheckBox("doc.search.advanced.frm.fld.chk.status.published".i)
+    val chkUnpublished = new CheckBox("doc.search.advanced.frm.fld.chk.status.unpublished".i)
+    val chkApproved = new CheckBox("doc.search.advanced.frm.fld.chk.status.approved".i)
+    val chkDisapproved = new CheckBox("doc.search.advanced.frm.fld.chk.status.disapproved".i)
+    val chkExpired = new CheckBox("doc.search.advanced.frm.fld.chk.status.expired".i)
 
     addComponents(this, chkNew, chkPublished, chkUnpublished, chkApproved, chkDisapproved, chkExpired)
   }
 
-  val chkDates = new CheckBox("doc.search.advanced.frm.chk.dates".i) with Immediate
+  val chkDates = new CheckBox("doc.search.advanced.frm.fld.chk.dates".i) with Immediate
   val lytDates = new FormLayout with UndefinedSize {
     val drCreated = new DocDateRangeUI("created") with DocDateRangeUISetup
     val drModified = new DocDateRangeUI("modified") with DocDateRangeUISetup
@@ -770,13 +657,13 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
     addComponents(this, drCreated, drModified, drPublished, drExpired)
   }
 
-  val chkCategories = new CheckBox("doc.search.advanced.frm.chk.categories".i) with Immediate
+  val chkCategories = new CheckBox("doc.search.advanced.frm.fld.chk.categories".i) with Immediate
   val tcsCategories = new TwinColSelect
 
-  val chkRelationships = new CheckBox("doc.search.advanced.frm.chk.relationship".i) with Immediate
+  val chkRelationships = new CheckBox("doc.search.advanced.frm.fld.chk.relationship".i) with Immediate
   val lytRelationships = new HorizontalLayout with Spacing with UndefinedSize {
-    val cbParents = new ComboBox("doc.search.advanced.frm.chk.relationship.parents".i)
-    val cbChildren = new ComboBox("doc.search.advanced.frm.chk.relationship.children".i)
+    val cbParents = new ComboBox("doc.search.advanced.frm.fld.chk.relationship.parents".i)
+    val cbChildren = new ComboBox("doc.search.advanced.frm.fld.chk.relationship.children".i)
 
     cbParents.addItem("-not specified-")
     cbParents.addItem("With parents")
@@ -792,13 +679,13 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
     addComponents(this, cbParents, cbChildren)
   }
 
-  val chkMaintainers = new CheckBox("doc.search.advanced.frm.chk.maintainers".i) with Immediate
+  val chkMaintainers = new CheckBox("doc.search.advanced.frm.fld.chk.maintainers".i) with Immediate
   val lytMaintainers = new HorizontalLayout with Spacing with UndefinedSize{
-    val ulCreators = new UserListUI("doc.search.advanced.frm.chk.maintainers.creators".i) with UserListUISetup {
+    val ulCreators = new UserListUI("doc.search.advanced.frm.fld.chk.maintainers.creators".i) with UserListUISetup {
       val searchDialogCaption = "Select creator"
     }
 
-    val ulPublishers = new UserListUI("doc.search.advanced.frm.chk.maintainers.publishers".i) with UserListUISetup {
+    val ulPublishers = new UserListUI("doc.search.advanced.frm.fld.chk.maintainers.publishers".i) with UserListUISetup {
       val searchDialogCaption = "Select publisher"
     }
 
@@ -806,18 +693,18 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
   }
 
   addNamedComponents(this,
-    "doc.search.advanced.frm.chk.status" -> chkStatus,
-    "doc.search.advanced.frm.status" -> lytStatus,
-    "doc.search.advanced.frm.lbl.predefined" -> lblPredefined,
-    "doc.search.advanced.frm.cb.predefined" -> cbPredefined,
-    "doc.search.advanced.frm.chk.dates" -> chkDates,
-    "doc.search.advanced.frm.lyt.dates" -> lytDates,
-    "doc.search.advanced.frm.chk.relationship" -> chkRelationships,
-    "doc.search.advanced.frm.lyt.relationship" -> lytRelationships,
-    "doc.search.advanced.frm.chk.categories" -> chkCategories,
-    "doc.search.advanced.frm.tcs.categories" -> tcsCategories,
-    "doc.search.advanced.frm.chk.maintainers" -> chkMaintainers,
-    "doc.search.advanced.frm.lyt.maintainers" -> lytMaintainers
+    "doc.search.advanced.frm.fld.chk.status" -> chkStatus,
+    "doc.search.advanced.frm.fld.status" -> lytStatus,
+    "doc.search.advanced.frm.fld.lbl.predefined" -> lblPredefined,
+    "doc.search.advanced.frm.fld.cb.predefined" -> cbPredefined,
+    "doc.search.advanced.frm.fld.chk.dates" -> chkDates,
+    "doc.search.advanced.frm.fld.lyt.dates" -> lytDates,
+    "doc.search.advanced.frm.fld.chk.relationship" -> chkRelationships,
+    "doc.search.advanced.frm.fld.lyt.relationship" -> lytRelationships,
+    "doc.search.advanced.frm.fld.chk.categories" -> chkCategories,
+    "doc.search.advanced.frm.fld.tcs.categories" -> tcsCategories,
+    "doc.search.advanced.frm.fld.chk.maintainers" -> chkMaintainers,
+    "doc.search.advanced.frm.fld.lyt.maintainers" -> lytMaintainers
   )
 }
 

@@ -34,7 +34,7 @@ class DocManager(app: ImcmsApplication) {
       app.show(docSelectionDlg, modal = false, resizable = true)
     }
 
-    search.docsViewUI.addActionHandler(new Action.Handler {
+    search.docsUI.addActionHandler(new Action.Handler {
       import Actions._
 
       def getActions(target: AnyRef, sender: AnyRef) = Array(AddToSelection, View, Edit, Delete)
@@ -70,7 +70,7 @@ class CustomDocs {
   val search = new DocSearch(new CustomDocsContainer)
   val ui = new CustomDocsUI(search.ui)
 
-  search.docsViewUI.addActionHandler(new Action.Handler {
+  search.docsUI.addActionHandler(new Action.Handler {
     import Actions._
 
     def getActions(target: AnyRef, sender: AnyRef) = Array(Exclude, View, Edit, Delete)
