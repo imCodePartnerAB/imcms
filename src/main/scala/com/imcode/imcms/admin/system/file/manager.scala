@@ -77,7 +77,7 @@ class FileManager(app: ImcmsApplication) {
     ui.miFileEdit setCommandHandler {
       for (LocationSelection(_, Seq(item)) <- browser.selection; if item.isFile) {
         app.initAndShow(new OkCancelDialog("file.edit.dlg.title".f(item)) with CustomSizeDialog, resizable = true) { dlg =>
-          dlg.btnOk.setCaption("dlg.btn.save".i)
+          dlg.btnOk.setCaption("btn_save".i)
 
           val textArea = new TextArea("", scala.io.Source.fromFile(item).mkString) with FullSize
           dlg.mainUI = textArea
@@ -282,7 +282,7 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
       } catch {
         case e => app.synchronized {
           app.initAndShow(new OkCancelErrorDialog("file.mgr.dlg.delete.item.err.msg".f(item.getName))) { dlg =>
-            dlg.btnOk.setCaption("dlg.btn.skip".i)
+            dlg.btnOk.setCaption("btn_skip".i)
 
             dlg.wrapOkHandler { stateHandler ! ItemsState(remaining, processed) }
             dlg.wrapCancelHandler { stateHandler ! ItemsState(Nil, processed) }
@@ -435,7 +435,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
           } catch {
             case e => app.synchronized {
               app.initAndShow(new OkCancelErrorDialog("Unable to copy")) { dlg =>
-                dlg.btnOk.setCaption("dlg.btn.skip".i)
+                dlg.btnOk.setCaption("btn_skip".i)
                 dlg.mainUI = new Label("file.mgr.dlg.copy.item.err.msg".f(item.getName)) with UndefinedSize
 
                 dlg.wrapOkHandler { stateHandler ! ItemsState(remaining, processed) }
@@ -451,8 +451,8 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
                 dlgUI.txtName.value = destItemName
               }
 
-              dlg.btnYes.setCaption("dlg.btn.rename".i)
-              dlg.btnNo.setCaption("dlg.btn.skip".i)
+              dlg.btnYes.setCaption("btn_rename".i)
+              dlg.btnNo.setCaption("btn_skip".i)
 
               dlg.mainUI = dlgUI
               dlg.wrapYesHandler { copyItem(dlgUI.txtName.value) }
@@ -585,8 +585,8 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
                 dlgUI.txtName.value = destItemName
               }
 
-              dlg.btnYes.setCaption("dlg.btn.rename".i)
-              dlg.btnNo.setCaption("dlg.btn.skip".i)
+              dlg.btnYes.setCaption("btn_rename".i)
+              dlg.btnNo.setCaption("btn_skip".i)
 
               dlg.mainUI = dlgUI
               dlg.wrapYesHandler { moveItem(dlgUI.txtName.value) }

@@ -65,7 +65,7 @@ class DocSearch(val docsContainer: DocsContainer) {
   def submit() {
     createQuery() match {
       case Left(throwable) =>
-        ui.getApplication.showErrorNotification(throwable.getMessage)
+        ui.getApplication.show(new ErrorDialog(throwable.getMessage.i))
 
       case Right(solrQueryOpt) =>
         println(solrQueryOpt)
@@ -91,15 +91,15 @@ class DocSearch(val docsContainer: DocsContainer) {
       else {
         val start = condOpt(basicFormUI.lytRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
-            case PosInt(start) => start
-            case _ => error("-range must be pos nums-")
+            case IntNumber(start) => start
+            case _ => error("doc.search.param_validation_err_dlg.msg.illegal_range_value")
           }
         }
 
         val end = condOpt(basicFormUI.lytRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
-            case PosInt(end) => end
-            case _ => error("-range must be pos nums-")
+            case IntNumber(end) => end
+            case _ => error("doc.search.param_validation_err_dlg.msg.illegal_range_value")
           }
         }
 
@@ -121,7 +121,7 @@ class DocSearch(val docsContainer: DocsContainer) {
         basicFormUI.lytType.chkText -> "text",
         basicFormUI.lytType.chkHtml -> "html"
       ).filterKeys(_.isChecked).values.toList match {
-        case Nil => error("-when type is checked then at least one type should be selected-")
+        case Nil => error("doc.search.param_validation_err_dlg.msg.no_type_selected")
         case types => types
       }
     }
@@ -203,9 +203,9 @@ abstract class DocsContainer extends Container
       case "doc.tbl.col.alias" => doc.getAlias
       case "doc.tbl.col.status" =>
         () => doc.getPublicationStatus match {
-          case Document.PublicationStatus.NEW => "doc.pub.status.new".i
-          case Document.PublicationStatus.APPROVED => "doc.pub.status.approved".i
-          case Document.PublicationStatus.DISAPPROVED => "doc.pub.status.disapproved".i
+          case Document.PublicationStatus.NEW => "doc.publication_status.new".i
+          case Document.PublicationStatus.APPROVED => "doc.publication_status.approved".i
+          case Document.PublicationStatus.DISAPPROVED => "doc.publication_status.disapproved".i
         }
 
       case "doc.tbl.col.parents" =>
@@ -500,7 +500,7 @@ class DocBasicSearchForm {
       )
 
       ui.txtText.setEnabled(true)
-      ui.txtText.value = "" // default text
+      ui.txtText.value = ""
       ui.txtText.setEnabled(false)
       newState
     }
@@ -569,8 +569,8 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
 
 
   val lytButtons = new HorizontalLayout with UndefinedSize with Spacing {
-    val btnReset = new Button("doc.search.basic.frm.fld.btn_reset".i) { setStyleName("small") }
-    val btnSearch = new Button("doc.search.basic.frm.fld.btn_search".i) { setStyleName("small") }
+    val btnReset = new Button("btn_reset".i) { setStyleName("small") }
+    val btnSearch = new Button("btn_search".i) { setStyleName("small") }
 
     addComponents(this, btnReset, btnSearch)
   }

@@ -178,7 +178,7 @@ trait CustomSizeDialog extends Dialog {
 }
 
 trait YesButton extends Dialog {
-  val btnYes = new Button("dlg.btn.yes".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/ok.png")) }
+  val btnYes = new Button("btn_yes".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/ok.png")) }
 
   def wrapYesHandler(handler: => Unit) {
     btnYes addClickHandler {
@@ -194,7 +194,7 @@ trait YesButton extends Dialog {
 }
 
 trait NoButton extends Dialog {
-  val btnNo = new Button("dlg.btn.no".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
+  val btnNo = new Button("btn_no".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
   def wrapNoHandler(handler: => Unit) {
     btnNo addClickHandler {
@@ -210,7 +210,7 @@ trait NoButton extends Dialog {
 }
 
 trait OKButton extends Dialog {
-  val btnOk = new Button("dlg.btn.ok".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/ok.png")) }
+  val btnOk = new Button("btn_ok".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/ok.png")) }
 
   wrapOkHandler {}
 
@@ -237,7 +237,7 @@ trait OKButton extends Dialog {
 
 
 trait CancelButton extends Dialog {
-  val btnCancel = new Button("dlg.btn.cancel".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
+  val btnCancel = new Button("btn_cancel".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
   wrapCancelHandler {}
 
