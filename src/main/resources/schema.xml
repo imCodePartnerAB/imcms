@@ -1,4 +1,4 @@
-<schema version="6.8" scripts-dir="WEB-INF/sql"
+<schema version="6.9" scripts-dir="WEB-INF/sql"
     xsi:noNamespaceSchemaLocation="schema.xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
