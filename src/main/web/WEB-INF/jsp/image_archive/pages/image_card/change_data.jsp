@@ -1,4 +1,4 @@
-<h4><spring:message code="archive.changeData.chageImageData" htmlEscape="true"/></h4><div class="hr"></div>
+<%--<h4><spring:message code="archive.changeData.chageImageData" htmlEscape="true"/></h4><div class="hr"></div>--%>
 <c:url var="changeDataUrl" value="/web/archive/image/${image.id}/change"/>
 <form:form commandName="changeData" action="${changeDataUrl}" method="post" cssClass="m15t" enctype="multipart/form-data">
     <form:hidden path="changedFile"/>

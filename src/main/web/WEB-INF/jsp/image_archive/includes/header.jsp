@@ -15,6 +15,7 @@
     <script type="text/javascript" src="${contextPath}/js/image_archive.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.qtip-1.0.0-rc3.min.js"></script>
+    <script type="text/javascript" src="${contextPath}/js/jquery.tools.min.js"></script>
     ${javascript}
 </head>
 <body>

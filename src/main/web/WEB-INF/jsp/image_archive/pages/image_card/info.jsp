@@ -8,29 +8,57 @@
     <h4 class="left">
         <spring:message code="archive.imageCard.imageInfo" htmlEscape="true"/>
     </h4>
-    
-    <c:if test="${not user.defaultUser and not image.archived}">
-        <c:url var="exportUrl" value="/web/archive/image/${image.id}"/>
-        <form:form action="${exportUrl}" commandName="exportImage" method="post" cssClass="right" cssStyle="margin-right:30px;display:inline;">
+</div>
+
+<style type="text/css">
+    .modal {
+        background-color:#fff;
+		display:none;
+		width:350px;
+		padding:15px;
+        border:1px solid black;
+    }
+</style>
+<c:if test="${not user.defaultUser and not image.archived}">
+    <div class="modal" id="exportOverlay">
+        <h4>Export image</h4>
+    <c:url var="exportUrl" value="/web/archive/image/${image.id}"/>
+    <form:form action="${exportUrl}" commandName="exportImage" method="post" cssClass="right" cssStyle="margin-right:30px;display:inline;">
+
+        <div class="clearboth minH30">
             <label for="width" class="left">
                 <spring:message code="archive.imageCard.export.width" htmlEscape="true"/>
             </label>
-            <form:input id="width" path="width" cssClass="left" cssStyle="width:80px;margin-left:5px;"/>
-        
-        
-            <label for="height" class="left" style="margin-left:20px;">
+            <div class="left">
+                <form:input id="width" path="width" cssClass="left" cssStyle="width:80px;margin-left:5px;"/>
+            </div>
+            <div class="left">
+                <form:select  id="sizeUnit" path="sizeUnit">
+                    <form:options items="${sizeUnits}" itemLabel="unitName"/>
+                </form:select>
+            </div>
+        </div>
+
+        <div class="clearboth minH30">
+            <label for="height" class="left">
                 <spring:message code="archive.imageCard.export.height" htmlEscape="true"/>
             </label>
-            <form:input id="height" path="height" cssClass="left" cssStyle="width:80px;margin-left:5px;"/>
+            <div class="left">
+                <form:input id="height" path="height" cssClass="left" cssStyle="width:80px;margin-left:5px;"/>
+            </div>
+        </div>
 
-            <form:select  id="sizeUnit" path="sizeUnit">
-                <form:options items="${sizeUnits}" itemLabel="unitName"/>
-            </form:select>
+        <div class="clearboth minH30">
+            <label for="keepAspectRatio" class="left">
+                <spring:message code="archive.imageCard.export.keepAspectRatio" htmlEscape="true"/>
+            </label>
+            <div class="left">
+                <form:checkbox id="keepAspectRatio" path="keepAspectRatio"/>
+            </div>
+        </div>
 
-            <label for="keepAspectRatio"><spring:message code="archive.imageCard.export.keepAspectRatio" htmlEscape="true"/></label>
-            <form:checkbox id="keepAspectRatio" path="keepAspectRatio"/>
-        
-            <label for="fileFormat" class="left" style="margin-left:20px;">
+        <div class="clearboth minH30">
+            <label for="fileFormat" class="left">
                 <spring:message code="archive.imageCard.export.fileFormat" htmlEscape="true"/>
             </label>
             <select id="fileFormat" name="fileFormat" class="left" style="width:80px;margin-left:5px;">
@@ -40,8 +68,10 @@
                     </option>
                 </c:forEach>
             </select>
-        
-            <label for="quality" class="left" style="margin-left:20px;">
+        </div>
+
+        <div class="clearboth minH30">
+            <label for="quality" class="left">
                 <spring:message code="archive.imageCard.export.quality" htmlEscape="true"/>
             </label>
             <select id="quality" name="quality" class="left" style="width:80px;margin-left:5px;">
@@ -49,12 +79,31 @@
                     <option value="${quality}" ${exportImage.quality eq quality ? 'selected="selected"' : ''} >${quality}%</option>
                 </c:forEach>
             </select>
-        
-            <spring:message var="exportText" code="archive.imageCard.export.exportButton" htmlEscape="true"/>
-            <input type="submit" class="left btnBlue small" style="margin-left:20px;" name="export" value="${exportText}"/>
-        </form:form>
-    </c:if>
-</div>
+        </div>
+
+        <spring:message var="exportText" code="archive.imageCard.export.exportButton" htmlEscape="true"/>
+        <input type="button" class="btnBlue" name="cancel" value="Cancel" id="exportDialogCloseBtn"/>
+        <input type="submit" class="btnBlue" name="export" value="${exportText}"/>
+    </form:form>
+    </div>
+</c:if>
+
+
+<script type="text/javascript">
+    var triggers;
+    $(document).ready(function(){
+        triggers = $(".modalInput").overlay({
+            mask: {color:'#ffffff', opacity:0.0},
+            top: '25%',
+            closeOnClick: false
+        });
+
+        $("#exportDialogCloseBtn").click(function(){
+           triggers.eq(0).overlay().close();
+        });
+    });
+</script>
+
 
 <div class="hr"></div>
 

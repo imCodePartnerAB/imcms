@@ -123,7 +123,7 @@ public class ImageCardController {
             Integer width = command.getWidth();
             Integer height = command.getHeight();
             if (width != null || height != null) {
-                Resize resize = (width != null && height != null ? Resize.FORCE : Resize.DEFAULT);
+                Resize resize = (width != null && height != null && !command.isKeepAspectRatio() ? Resize.FORCE : Resize.DEFAULT);
                 op.filter(Filter.LANCZOS);
                 op.resize(width, height, resize);
             }

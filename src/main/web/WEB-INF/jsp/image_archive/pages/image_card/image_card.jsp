@@ -41,7 +41,27 @@
                 </form>
             </c:if>
         </div>
-        <div style="text-align:center;margin-bottom:20px;">
+    </div>
+
+    <div style="width:50%;float:left;margin-left:20px;">
+        <c:choose>
+            <c:when test="${action eq 'change'}">
+                <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/change_data.jsp" %>
+            </c:when>
+            <c:when test="${action eq 'erase'}">
+                <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/erase.jsp" %>
+            </c:when>
+            <c:when test="${action eq 'exif'}">
+                <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/exif.jsp" %>
+            </c:when>
+            <c:otherwise>
+                <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/info.jsp" %>
+                <div class="hr m10t"></div>
+            </c:otherwise>
+        </c:choose>
+    </div>
+    <div style="clear:both;"></div>
+    <div style="text-align:right;margin-bottom:20px;">
             <% pageContext.setAttribute("user", ContentManagementSystem.fromRequest(request).getCurrentUser()); %>
             <c:if test="${not user.defaultUser and not image.archived}">
                 <c:url var="useUrl" value="/web/archive/use">
@@ -74,26 +94,8 @@
                     <span><spring:message code="archive.imageCard.erase" htmlEscape="true"/></span>
                 </a>
             </c:if>
-        </div>
-    </div>
 
-    <div style="width:50%;float:left;margin-left:20px;">
-        <c:choose>
-            <c:when test="${action eq 'change'}">
-                <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/change_data.jsp" %>
-            </c:when>
-            <c:when test="${action eq 'erase'}">
-                <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/erase.jsp" %>
-            </c:when>
-            <c:when test="${action eq 'exif'}">
-                <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/exif.jsp" %>
-            </c:when>
-            <c:otherwise>
-                <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/info.jsp" %>
-                <div class="hr m10t"></div>
-            </c:otherwise>
-        </c:choose>
-    </div>
-    <div style="clear:both;"></div>
+            <input type="button" class="btnBlue modalInput" name="export" value="${exportText}" rel="#exportOverlay"/>
+        </div>
 </div>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/footer.jsp" %>
