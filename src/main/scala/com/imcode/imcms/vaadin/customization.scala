@@ -69,6 +69,10 @@ trait ExposeFireClick extends Button {
   override def fireClick() = super.fireClick()
 }
 
+trait ExposeValueChange extends AbstractField {
+  override def fireValueChange(repaintIsNotNeeded: Boolean) = super.fireValueChange(repaintIsNotNeeded)
+}
+
 trait Margin { this: Layout =>
   setMargin(true)
 }

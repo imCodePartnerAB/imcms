@@ -85,6 +85,7 @@ class DocSearch(val docsContainer: DocsContainer) {
    */
   def createQuery(): Throwable Either Option[String] = EX.allCatch.either {
     val basicFormUI = basicSearchForm.ui
+    val advancedFormUI = advancedSearchForm.ui
 
     val rangeOpt =
       if (basicFormUI.chkRange.isUnchecked) None
@@ -117,20 +118,39 @@ class DocSearch(val docsContainer: DocsContainer) {
 
 
     val typesOpt: Option[List[String]] = whenOpt(basicFormUI.chkType.isChecked) {
-      Map(basicFormUI.lytType.chkFile -> "file",
-        basicFormUI.lytType.chkText -> "text",
-        basicFormUI.lytType.chkHtml -> "html"
+      import basicFormUI.lytType._
+
+      Map(chkFile -> "file",
+          chkText -> "text",
+          chkHtml -> "html"
       ).filterKeys(_.isChecked).values.toList match {
         case Nil => error("doc.search.dlg_param_validation_err.msg.no_type_selected")
-        case types => types
+        case values => values
       }
     }
 
+    val statusesOpt: Option[List[String]] = whenOpt(advancedFormUI.chkStatus.isChecked) {
+      import advancedFormUI.lytStatus._
+
+      Map(chkNew -> "new",
+          chkPublished -> "published",
+          chkUnpublished -> "unpublished",
+          chkApproved -> "approved",
+          chkDisapproved -> "disapproved",
+          chkExpired -> "expired"
+      ).filterKeys(_.isChecked).values.toList match {
+        case Nil => error("doc.search.dlg_param_validation_err.msg.no_status_selected")
+        case values => values
+      }
+    }
+
+    //val datesOpt: Option[List[...]]
 
     List(
       rangeOpt.map(range => "range:[%s TO %s]" format (range.start.getOrElse("*"), range.end.getOrElse("*"))),
       textOpt.map("text:" + _),
-      typesOpt.map(_.mkString("type:(", " OR ", ")"))
+      typesOpt.map(_.mkString("type:(", " OR ", ")")),
+      statusesOpt.map(_.mkString("status:(", " OR ", ")"))
     ).flatten match {
       case Nil => None
       case terms => Some(terms.mkString(" "))
@@ -429,17 +449,17 @@ class DocBasicSearchForm {
   private var state = DocBasicSearchFormState()
 
   val ui: DocBasicFormSearchUI = letret(new DocBasicFormSearchUI) { ui =>
-    ui.chkRange.addClickHandler { state = alterRange(state) }
+    ui.chkRange.addValueChangeHandler { state = updateRangeState(state) }
 
-    ui.chkText.addClickHandler { state = alterText(state) }
+    ui.chkText.addValueChangeHandler { state = updateTextState(state) }
 
-    ui.chkType.addClickHandler { state = alterType(state) }
+    ui.chkType.addValueChangeHandler { state = updateTypeState(state) }
 
     ui.chkAdvanced.addValueChangeHandler {
       ui.lytAdvanced.setEnabled(ui.chkAdvanced.isChecked)
     }
 
-    Seq("doc.search.basic.frm.fld.cb_advanced_type.custom", "doc.search.basic.frm.fld.cb_advanced_type.last_xxx", "doc.search.basic.frm.fld.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId.i))
+    Seq("doc.search.basic.frm.fld.cb_advanced_type.custom", "doc.search.basic.frm.fld.cb_advanced_type.last_xxx", "doc.search.basic.frm.fld.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId, itemId.i))
   }
 
   def setRangeInputPrompt(range: Option[(DocId, DocId)]) {
@@ -454,23 +474,27 @@ class DocBasicSearchForm {
   def reset() {
     ui.chkRange.checked = true
     ui.chkText.checked = true
-    ui.chkType.checked = true
+    ui.chkType.checked = false
     ui.chkAdvanced.checked = false
 
+    forlet(ui.chkRange, ui.chkText, ui.chkType, ui.chkAdvanced)(_ fireValueChange true)
+
     setState(DocBasicSearchFormState())
+
+    ui.lytAdvanced.cbTypes.value = "doc.search.basic.frm.fld.cb_advanced_type.custom"
   }
 
   def setState(newState: DocBasicSearchFormState) {
-    alterRange(newState)
-    alterText(newState)
-    alterType(newState)
+    updateRangeState(newState)
+    updateTextState(newState)
+    updateTypeState(newState)
 
     state = newState
   }
 
   def getState() = state
 
-  private def alterRange(currentState: DocBasicSearchFormState) = {
+  private def updateRangeState(currentState: DocBasicSearchFormState) = {
     if (ui.chkRange.isChecked) {
       ui.lytRange.setEnabled(true)
       ui.lytRange.txtStart.value = currentState.range.flatMap(_.start).map(_.toString).getOrElse("")
@@ -491,7 +515,7 @@ class DocBasicSearchForm {
     }
   }
 
-  private def alterText(currentState: DocBasicSearchFormState) = {
+  private def updateTextState(currentState: DocBasicSearchFormState) = {
     if (ui.chkText.isChecked) {
       ui.txtText.setEnabled(true)
       ui.txtText.value = currentState.text.getOrElse("")
@@ -508,19 +532,19 @@ class DocBasicSearchForm {
     }
   }
 
-  private def alterType(currentState: DocBasicSearchFormState) = {
+  private def updateTypeState(currentState: DocBasicSearchFormState) = {
     if (ui.chkType.isChecked) {
       ui.lytType.setEnabled(true)
-      ui.lytType.chkText.checked = currentState.docType.map(_(DocumentTypeDomainObject.TEXT)).getOrElse(true)
-      ui.lytType.chkFile.checked = currentState.docType.map(_(DocumentTypeDomainObject.FILE)).getOrElse(true)
-      ui.lytType.chkHtml.checked = currentState.docType.map(_(DocumentTypeDomainObject.HTML)).getOrElse(true)
+      ui.lytType.chkText.checked = currentState.docType.map(_(DocumentTypeDomainObject.TEXT)).getOrElse(false)
+      ui.lytType.chkFile.checked = currentState.docType.map(_(DocumentTypeDomainObject.FILE)).getOrElse(false)
+      ui.lytType.chkHtml.checked = currentState.docType.map(_(DocumentTypeDomainObject.HTML)).getOrElse(false)
       currentState
     } else {
       val types =
         Set(
-          condOpt(ui.lytType.chkText.isChecked) { case true => DocumentTypeDomainObject.TEXT },
-          condOpt(ui.lytType.chkFile.isChecked) { case true => DocumentTypeDomainObject.FILE },
-          condOpt(ui.lytType.chkHtml.isChecked) { case true => DocumentTypeDomainObject.HTML }
+          whenOpt(ui.lytType.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
+          whenOpt(ui.lytType.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
+          whenOpt(ui.lytType.chkHtml.isChecked) { DocumentTypeDomainObject.HTML }
         ).flatten
 
       val newState = currentState.copy(
@@ -536,6 +560,7 @@ class DocBasicSearchForm {
 }
 
 case class DocSearchRange(start: Option[Int] = None, end: Option[Int] = None)
+case class DateSearchRange(start: Option[Date] = None, end: Option[Date] = None)
 
 case class DocBasicSearchFormState(
   range: Option[DocSearchRange] = None,
@@ -546,7 +571,7 @@ case class DocBasicSearchFormState(
 
 class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") with FullWidth {
 
-  val chkRange = new CheckBox("doc.search.basic.frm.fld.chk_range".i) with Immediate
+  val chkRange = new CheckBox("doc.search.basic.frm.fld.chk_range".i) with Immediate with ExposeValueChange
   val lytRange = new HorizontalLayout with Spacing with UndefinedSize {
     val txtStart = new TextField { setColumns(5) }
     val txtEnd = new TextField { setColumns(5) }
@@ -554,10 +579,10 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
     addComponents(this, txtStart, txtEnd)
   }
 
-  val chkText = new CheckBox("doc.search.basic.frm.fld.chk_text".i) with Immediate
+  val chkText = new CheckBox("doc.search.basic.frm.fld.chk_text".i) with Immediate with ExposeValueChange
   val txtText = new TextField { setInputPrompt("doc.search.basic.frm.fld.txt_text.prompt".i) }
 
-  val chkType = new CheckBox("doc.search.basic.frm.fld.chk_type".i) with Immediate
+  val chkType = new CheckBox("doc.search.basic.frm.fld.chk_type".i) with Immediate with ExposeValueChange
   val lytType = new HorizontalLayout with UndefinedSize with Spacing {
     val chkText = new CheckBox("doc.search.basic.frm.fld.chk_type_text".i)
     val chkFile = new CheckBox("doc.search.basic.frm.fld.chk_type_file".i)
@@ -566,11 +591,11 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
     addComponents(this, chkText, chkFile, chkHtml)
   }
 
-  val chkAdvanced = new CheckBox("doc.search.basic.frm.fld.chk_advanced".i) with Immediate
+  val chkAdvanced = new CheckBox("doc.search.basic.frm.fld.chk_advanced".i) with Immediate with ExposeValueChange
   //val btnAdvanced = new Button("doc.search.basic.frm.fld.btn_advanced".i) with LinkStyle
 
   val lytAdvanced = new HorizontalLayout with UndefinedSize with Spacing {
-    val cbTypes = new ComboBox
+    val cbTypes = new ComboBox with NoNullSelection with SingleSelect2[String] with Immediate
     val btnCustomize = new Button("...") with SmallStyle
     val btnSave = new Button("doc.search.basic.frm.fld.btn_advanced_save".i) with SmallStyle with Disabled
 
@@ -605,20 +630,25 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
 class DocAdvancedSearchForm extends ImcmsServicesSupport {
   val ui = new DocAdvancedSearchFormUI
 
-  ui.chkCategories.addClickHandler { switchCategories() }
-  ui.chkDates.addClickHandler { switchDates() }
-  ui.chkRelationships.addClickHandler { switchRelationships() }
-  ui.chkMaintainers.addClickHandler { switchMaintainers() }
-  ui.chkStatus.addClickHandler { switchStatus() }
+  ui.chkCategories.addClickHandler { toggleCategories() }
+  ui.chkDates.addClickHandler { toggleDates() }
+  ui.chkRelationships.addClickHandler { toggleRelationships() }
+  ui.chkMaintainers.addClickHandler { toggleMaintainers() }
+  ui.chkStatus.addClickHandler { toggleStatus() }
 
   def reset() {
     forlet(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers, ui.chkStatus)(_.uncheck)
+    forlet(ui.lytStatus.chkNew, ui.lytStatus.chkPublished, ui.lytStatus.chkUnpublished, ui.lytStatus.chkApproved, ui.lytStatus.chkDisapproved, ui.lytStatus.chkExpired)(_.uncheck)
 
-    switchCategories()
-    switchMaintainers()
-    switchRelationships()
-    switchDates()
-    switchStatus()
+    forlet(ui.lytDates.drCreated, ui.lytDates.drModified, ui.lytDates.drPublished, ui.lytDates.drExpired) { dr =>
+      dr.cbRangeType.value = DocRangeType.Undefined
+    }
+
+    toggleCategories()
+    toggleMaintainers()
+    toggleRelationships()
+    toggleDates()
+    toggleStatus()
 
     for {
       categoryType <- imcmsServices.getCategoryMapper.getAllCategoryTypes
@@ -628,19 +658,22 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
       ui.tcsCategories.setItemCaption(category, categoryType.getName + ":" + category.getName)
       ?(category.getImageUrl).foreach(url => ui.tcsCategories.setItemIcon(category, new ExternalResource(url)))
     }
+
+    ui.lytRelationships.cbParents.value = "doc.search.advanced.frm.fld.cb_relationships_parents.item.undefined"
+    ui.lytRelationships.cbChildren.value = "doc.search.advanced.frm.fld.cb_relationships_children.item.undefined"
   }
 
-  private def switch(checkBox: CheckBox, component: Component, name: String) {
+  private def toggle(checkBox: CheckBox, component: Component, name: String) {
     ui.addComponent(
       if (checkBox.checked) component else new Label("doc.search.advanced.frm.fld.lbl_undefined".i) with UndefinedSize,
       name)
   }
 
-  private def switchCategories() = switch(ui.chkCategories, ui.tcsCategories, "doc.search.advanced.frm.fld.tcs_categories")
-  private def switchMaintainers() = switch(ui.chkMaintainers, ui.lytMaintainers, "doc.search.advanced.frm.fld.lyt_maintainers")
-  private def switchRelationships() = switch(ui.chkRelationships, ui.lytRelationships, "doc.search.advanced.frm.fld.lyt_relationship")
-  private def switchDates() = switch(ui.chkDates, ui.lytDates, "doc.search.advanced.frm.fld.lyt_dates")
-  private def switchStatus() = switch(ui.chkStatus, ui.lytStatus, "doc.search.advanced.frm.fld.lyt_status")
+  private def toggleCategories() = toggle(ui.chkCategories, ui.tcsCategories, "doc.search.advanced.frm.fld.tcs_categories")
+  private def toggleMaintainers() = toggle(ui.chkMaintainers, ui.lytMaintainers, "doc.search.advanced.frm.fld.lyt_maintainers")
+  private def toggleRelationships() = toggle(ui.chkRelationships, ui.lytRelationships, "doc.search.advanced.frm.fld.lyt_relationships")
+  private def toggleDates() = toggle(ui.chkDates, ui.lytDates, "doc.search.advanced.frm.fld.lyt_dates")
+  private def toggleStatus() = toggle(ui.chkStatus, ui.lytStatus, "doc.search.advanced.frm.fld.lyt_status")
 }
 
 
@@ -672,8 +705,8 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
 
   val chkRelationships = new CheckBox("doc.search.advanced.frm.fld.chk_relationships".i) with Immediate
   val lytRelationships = new HorizontalLayout with Spacing with UndefinedSize {
-    val cbParents = new ComboBox("doc.search.advanced.frm.fld.chk_relationships_parents".i) with XSelect[String] with NoNullSelection
-    val cbChildren = new ComboBox("doc.search.advanced.frm.fld.chk_relationships_children".i) with XSelect[String] with NoNullSelection
+    val cbParents = new ComboBox("doc.search.advanced.frm.fld.chk_relationships_parents".i) with SingleSelect2[String] with NoNullSelection
+    val cbChildren = new ComboBox("doc.search.advanced.frm.fld.chk_relationships_children".i) with SingleSelect2[String] with NoNullSelection
 
     Seq("doc.search.advanced.frm.fld.cb_relationships_parents.item.undefined",
         "doc.search.advanced.frm.fld.cb_relationships_parents.item.has_parents",
@@ -684,9 +717,6 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
         "doc.search.advanced.frm.fld.cb_relationships_children.item.has_children",
         "doc.search.advanced.frm.fld.cb_relationships_children.item.no_children"
     ).foreach(itemId => cbChildren.addItem(itemId, itemId.i))
-
-    //cbParents.setNullSelectionItemId("doc.search.advanced.frm.fld.cb_relationships_parents.item.undefined")
-    //cbChildren.setNullSelectionItemId("doc.search.advanced.frm.fld.cb_relationships_children.item.undefined")
 
     addComponents(this, cbParents, cbChildren)
   }
@@ -753,11 +783,16 @@ class UserListUI(caption: String = "") extends GridLayout(2, 1) {
   setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
 }
 
-
+// I18n os not properly implemented - not dynamic
 object DocRangeType extends Enumeration {
-  val Undefined, Custom, Day, Week, Month, Quarter, Year = Value
+  val Undefined = Value("dr.cb_type.item.undefined".i)
+  val Custom = Value("dr.cb_type.item.custom".i)
+  val Day = Value("dr.cb_type.item.day".i)
+  val Week = Value("dr.cb_type.item.week".i)
+  val Month = Value("dr.cb_type.item.month".i)
+  val Quarter = Value("dr.cb_type.item.quarter".i)
+  val Year = Value("dr.cb_type.item.year".i)
 }
-
 
 class DocDateRangeUI(caption: String = "") extends HorizontalLayout with Spacing with UndefinedSize {
   val cbRangeType = new ComboBox with ValueType[DocRangeType.Value] with NoNullSelection with Immediate
