@@ -33,6 +33,8 @@ List<File> images = imageBrowsePage.getImagesList() ;
 
 String cp = request.getContextPath() ;
 
+int startUpHeight = (3 * (THUMB_BOUNDARIES + 45)) ;
+
 %>
 <vel:velocity>
 <html>
@@ -87,7 +89,7 @@ if (null != imageBrowsePage.getLabel() ) { %>
 </tr>
 <tr valign="top">
 	<td width="35%">
-	<select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_DIRECTORY %>" size="15" ondblclick="jQ('#changeDir').click();" style="width:260px;">
+	<select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_DIRECTORY %>" size="30" ondblclick="jQ('#changeDir').click();" style="width:260px; height:<%= startUpHeight + 10 %>px;">
 		<%=imageBrowsePage.getDirectoriesOptionList()%>
 	</select></td>
 	
@@ -104,7 +106,7 @@ if (null != imageBrowsePage.getLabel() ) { %>
 	</select>
 	--%>
 	
-	<div style="margin: 10px 0; height: <%= (3 * (THUMB_BOUNDARIES + 45)) %>px; overflow:auto;"><%
+	<div style="margin: 10px 0; height:<%= startUpHeight %>px; overflow:auto;"><%
 		if (null != images) {
 			int iCount = 0 ;
 			for (File file : images) {
@@ -142,7 +144,9 @@ if (null != imageBrowsePage.getLabel() ) { %>
 			<table border="0" cellspacing="0" cellpadding="0" style="width:<%= THUMB_BOUNDARIES %>px; border: 1px solid #ccc; background-color:#fff;">
 			<tr>
 				<td style="height:<%= THUMB_BOUNDARIES %>px; text-align:center; vertical-align:middle;">
-				<a href="javascript://choose()" title="<%= StringEscapeUtils.escapeHtml(fileName) %>" onclick="jQ('#imageCB<%= iCount %>').attr('checked', 'checked'); return false"><%
+				<a href="javascript://choose()" title="<%= StringEscapeUtils.escapeHtml(fileName) %>"
+				   onclick="jQ('#imageCB<%= iCount %>').attr('checked', 'checked'); return false"
+				   ondblclick="jQ('#imageCB<%= iCount %>').attr('checked', 'checked'); jQ('#useBtn').click(); return false"><%
 					%><img src="<%= previewSrc %>" alt="" class="previewImage" style="<%= imgStyle %>margin:0; border:0;" longdesc="<%= iCount %>" /><%
 				%></a></td>
 			</tr>
@@ -181,7 +185,7 @@ if (null != imageBrowsePage.getLabel() ) { %>
 	<td colspan="2" align="right">
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__OK_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2005" />"></td>
+		<td><input type="submit" class="imcmsFormBtn" id="useBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__OK_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2005" />"></td>
 		<td>&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2006" />"
 		onclick="return previewFile();"></td>
