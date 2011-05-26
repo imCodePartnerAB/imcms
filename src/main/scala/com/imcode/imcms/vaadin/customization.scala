@@ -114,6 +114,10 @@ trait LinkStyle { this: Button =>
   setStyleName(Button.STYLE_LINK)
 }
 
+trait SmallStyle { this: Button =>
+  setStyleName("small")
+}
+
 trait LightStyle { this: Panel =>
   setStyleName(Panel.STYLE_LIGHT)
 }

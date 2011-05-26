@@ -14,7 +14,7 @@ object Actions {
   val IncludeToSelection = new Action("doc.action.include_to_selection".i)
   val ExcludeFromSelection = new Action("doc.action.exclude_from_selection".i)
   val Edit = new Action("doc.action.edit".i)
-  val View = new Action("doc.action.view".i)
+  //val View = new Action("doc.action.view".i)
   val Delete = new Action("doc.action.delete".i)
 }
 
@@ -23,7 +23,7 @@ class DocManager(app: ImcmsApplication) {
   val customDocs = new CustomDocs
   val search = new DocSearch(new AllDocsContainer)
 
-  val docSelectionDlg = letret(new OKDialog("doc.selection.dlg.caption".i) with CustomSizeDialog) { dlg =>
+  val docSelectionDlg = letret(new OKDialog("doc.dlg_selection.caption".i) with CustomSizeDialog) { dlg =>
     dlg.mainUI = customDocs.ui
     dlg.setSize(500, 500)
   }
@@ -36,7 +36,7 @@ class DocManager(app: ImcmsApplication) {
     search.docsUI.addActionHandler(new Action.Handler {
       import Actions._
 
-      def getActions(target: AnyRef, sender: AnyRef) = Array(IncludeToSelection, View, Edit, Delete)
+      def getActions(target: AnyRef, sender: AnyRef) = Array(IncludeToSelection, Edit, Delete)
 
       def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
         action match {
@@ -56,7 +56,7 @@ class DocManagerUI(searchUI: Component) extends VerticalLayout with Spacing with
   val miDocNew = miDoc.addItem("doc.action.new".i)
   val miDocEdit = miDoc.addItem("doc.action.edit".i)
   val miDocDelete = miDoc.addItem("doc.action.delete".i)
-  val miView = mb.addItem("doc.action.view".i)
+  val miView = mb.addItem("doc.mgr.mi.view".i)
   val miShowSelection = miView.addItem("doc.action.show_selection".i)
 
   addComponents(this, mb, searchUI)
@@ -72,7 +72,7 @@ class CustomDocs {
   search.docsUI.addActionHandler(new Action.Handler {
     import Actions._
 
-    def getActions(target: AnyRef, sender: AnyRef) = Array(ExcludeFromSelection, View, Edit, Delete)
+    def getActions(target: AnyRef, sender: AnyRef) = Array(ExcludeFromSelection, Edit, Delete)
 
     def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
       action match {

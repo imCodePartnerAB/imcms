@@ -6,7 +6,6 @@ import scala.collection.JavaConversions._
 import com.imcode.imcms.vaadin._
 
 import vaadin.{FullSize}
-import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import com.vaadin.terminal.{ExternalResource, Resource}
 import com.vaadin.event.Action
@@ -21,6 +20,7 @@ import api.{LuceneParsedQuery, Document}
 import imcode.server.user.UserDomainObject
 import imcode.server.document.index.SimpleDocumentQuery
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
+import com.vaadin.ui._
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
@@ -41,7 +41,7 @@ class DocSearch(val docsContainer: DocsContainer) {
   val ui = letret(new DocSearchUI(basicSearchForm.ui, advancedSearchForm.ui, docsUI)) { ui =>
     val basicFormUI = basicSearchForm.ui
 
-    basicFormUI.btnAdvanced.addClickHandler { ui.toggleAdvancedSearchForm() }
+    basicFormUI.lytAdvanced.btnCustomize.addClickHandler { ui.toggleAdvancedSearchForm() }
     basicFormUI.chkAdvanced.addValueChangeHandler {
       if (!basicFormUI.chkAdvanced.booleanValue) ui.advancedSearchFormVisible = false
     }
@@ -92,14 +92,14 @@ class DocSearch(val docsContainer: DocsContainer) {
         val start = condOpt(basicFormUI.lytRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
             case IntNumber(start) => start
-            case _ => error("doc.search.param_validation_err_dlg.msg.illegal_range_value")
+            case _ => error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
           }
         }
 
         val end = condOpt(basicFormUI.lytRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
             case IntNumber(end) => end
-            case _ => error("doc.search.param_validation_err_dlg.msg.illegal_range_value")
+            case _ => error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
           }
         }
 
@@ -121,7 +121,7 @@ class DocSearch(val docsContainer: DocsContainer) {
         basicFormUI.lytType.chkText -> "text",
         basicFormUI.lytType.chkHtml -> "html"
       ).filterKeys(_.isChecked).values.toList match {
-        case Nil => error("doc.search.param_validation_err_dlg.msg.no_type_selected")
+        case Nil => error("doc.search.dlg_param_validation_err.msg.no_type_selected")
         case types => types
       }
     }
@@ -436,8 +436,10 @@ class DocBasicSearchForm {
     ui.chkType.addClickHandler { state = alterType(state) }
 
     ui.chkAdvanced.addValueChangeHandler {
-      ui.btnAdvanced.setEnabled(ui.chkAdvanced.isChecked)
+      ui.lytAdvanced.setEnabled(ui.chkAdvanced.isChecked)
     }
+
+    Seq("doc.search.basic.frm.fld.cb_advanced_type.custom", "doc.search.basic.frm.fld.cb_advanced_type.last_xxx", "doc.search.basic.frm.fld.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId.i))
   }
 
   def setRangeInputPrompt(range: Option[(DocId, DocId)]) {
@@ -565,12 +567,23 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
   }
 
   val chkAdvanced = new CheckBox("doc.search.basic.frm.fld.chk_advanced".i) with Immediate
-  val btnAdvanced = new Button("doc.search.basic.frm.fld.btn_advanced".i) with LinkStyle
+  //val btnAdvanced = new Button("doc.search.basic.frm.fld.btn_advanced".i) with LinkStyle
+
+  val lytAdvanced = new HorizontalLayout with UndefinedSize with Spacing {
+    val cbTypes = new ComboBox
+    val btnCustomize = new Button("...") with SmallStyle
+    val btnSave = new Button("doc.search.basic.frm.fld.btn_advanced_save".i) with SmallStyle with Disabled
+
+    forlet(cbTypes, btnCustomize, btnSave) { component =>
+      addComponent(component)
+      setComponentAlignment(component, Alignment.MIDDLE_LEFT)
+    }
+  }
 
 
   val lytButtons = new HorizontalLayout with UndefinedSize with Spacing {
-    val btnReset = new Button("btn_reset".i) { setStyleName("small") }
-    val btnSearch = new Button("btn_search".i) { setStyleName("small") }
+    val btnReset = new Button("btn_reset".i) with SmallStyle
+    val btnSearch = new Button("btn_search".i) with SmallStyle
 
     addComponents(this, btnReset, btnSearch)
   }
@@ -583,7 +596,7 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
     "doc.search.basic.frm.fld.chk_type" -> chkType,
     "doc.search.basic.frm.fld.lyt_type" -> lytType,
     "doc.search.basic.frm.fld.chk_advanced" -> chkAdvanced,
-    "doc.search.basic.frm.fld.btn_advanced" -> btnAdvanced,
+    "doc.search.basic.frm.fld.lyt_advanced" -> lytAdvanced,
     "doc.search.basic.frm.fld.lyt_buttons" -> lytButtons
   )
 }
@@ -619,92 +632,89 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
 
   private def switch(checkBox: CheckBox, component: Component, name: String) {
     ui.addComponent(
-      if (checkBox.checked) component else new Label("doc.search.advanced.lbl.all".i) with UndefinedSize,
+      if (checkBox.checked) component else new Label("doc.search.advanced.frm.fld.lbl_undefined".i) with UndefinedSize,
       name)
   }
 
-  private def switchCategories() = switch(ui.chkCategories, ui.tcsCategories, "doc.search.advanced.frm.fld.tcs.categories")
-  private def switchMaintainers() = switch(ui.chkMaintainers, ui.lytMaintainers, "doc.search.advanced.frm.fld.lyt.maintainers")
-  private def switchRelationships() = switch(ui.chkRelationships, ui.lytRelationships, "doc.search.advanced.frm.fld.lyt.relationship")
-  private def switchDates() = switch(ui.chkDates, ui.lytDates, "doc.search.advanced.frm.fld.lyt.dates")
-  private def switchStatus() = switch(ui.chkStatus, ui.lytStatus, "doc.search.advanced.frm.fld.status")
+  private def switchCategories() = switch(ui.chkCategories, ui.tcsCategories, "doc.search.advanced.frm.fld.tcs_categories")
+  private def switchMaintainers() = switch(ui.chkMaintainers, ui.lytMaintainers, "doc.search.advanced.frm.fld.lyt_maintainers")
+  private def switchRelationships() = switch(ui.chkRelationships, ui.lytRelationships, "doc.search.advanced.frm.fld.lyt_relationship")
+  private def switchDates() = switch(ui.chkDates, ui.lytDates, "doc.search.advanced.frm.fld.lyt_dates")
+  private def switchStatus() = switch(ui.chkStatus, ui.lytStatus, "doc.search.advanced.frm.fld.lyt_status")
 }
 
 
 class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_form") with FullWidth {
-  val lblPredefined = new Label("doc.search.advanced.frm.fld.lbl.predefined".i) with UndefinedSize
-  val cbPredefined = new ComboBox
-
-  val chkStatus = new CheckBox("doc.search.advanced.frm.fld.chk.status".i) with Immediate
+  val chkStatus = new CheckBox("doc.search.advanced.frm.fld.chk_status".i) with Immediate
   val lytStatus = new HorizontalLayout with Spacing with UndefinedSize {
-    val chkNew = new CheckBox("doc.search.advanced.frm.fld.ckh.status.new".i)
-    val chkPublished = new CheckBox("doc.search.advanced.frm.fld.chk.status.published".i)
-    val chkUnpublished = new CheckBox("doc.search.advanced.frm.fld.chk.status.unpublished".i)
-    val chkApproved = new CheckBox("doc.search.advanced.frm.fld.chk.status.approved".i)
-    val chkDisapproved = new CheckBox("doc.search.advanced.frm.fld.chk.status.disapproved".i)
-    val chkExpired = new CheckBox("doc.search.advanced.frm.fld.chk.status.expired".i)
+    val chkNew = new CheckBox("doc.search.advanced.frm.fld.chk_status_new".i)
+    val chkPublished = new CheckBox("doc.search.advanced.frm.fld.chk_status_published".i)
+    val chkUnpublished = new CheckBox("doc.search.advanced.frm.fld.chk_status_unpublished".i)
+    val chkApproved = new CheckBox("doc.search.advanced.frm.fld.chk_status_approved".i)
+    val chkDisapproved = new CheckBox("doc.search.advanced.frm.fld.chk_status_disapproved".i)
+    val chkExpired = new CheckBox("doc.search.advanced.frm.fld.chk_status_expired".i)
 
     addComponents(this, chkNew, chkPublished, chkUnpublished, chkApproved, chkDisapproved, chkExpired)
   }
 
-  val chkDates = new CheckBox("doc.search.advanced.frm.fld.chk.dates".i) with Immediate
+  val chkDates = new CheckBox("doc.search.advanced.frm.fld.chk_dates".i) with Immediate
   val lytDates = new FormLayout with UndefinedSize {
-    val drCreated = new DocDateRangeUI("created") with DocDateRangeUISetup
-    val drModified = new DocDateRangeUI("modified") with DocDateRangeUISetup
-    val drPublished = new DocDateRangeUI("published") with DocDateRangeUISetup
-    val drExpired = new DocDateRangeUI("expired") with DocDateRangeUISetup
+    val drCreated = new DocDateRangeUI("doc.search.advanced.frm.fld.dr_created".i) with DocDateRangeUISetup
+    val drModified = new DocDateRangeUI("doc.search.advanced.frm.fld.dr_modified".i) with DocDateRangeUISetup
+    val drPublished = new DocDateRangeUI("doc.search.advanced.frm.fld.dr_published".i) with DocDateRangeUISetup
+    val drExpired = new DocDateRangeUI("doc.search.advanced.frm.fld.dr_expired".i) with DocDateRangeUISetup
 
     addComponents(this, drCreated, drModified, drPublished, drExpired)
   }
 
-  val chkCategories = new CheckBox("doc.search.advanced.frm.fld.chk.categories".i) with Immediate
+  val chkCategories = new CheckBox("doc.search.advanced.frm.fld.chk_categories".i) with Immediate
   val tcsCategories = new TwinColSelect
 
-  val chkRelationships = new CheckBox("doc.search.advanced.frm.fld.chk.relationship".i) with Immediate
+  val chkRelationships = new CheckBox("doc.search.advanced.frm.fld.chk_relationships".i) with Immediate
   val lytRelationships = new HorizontalLayout with Spacing with UndefinedSize {
-    val cbParents = new ComboBox("doc.search.advanced.frm.fld.chk.relationship.parents".i)
-    val cbChildren = new ComboBox("doc.search.advanced.frm.fld.chk.relationship.children".i)
+    val cbParents = new ComboBox("doc.search.advanced.frm.fld.chk_relationships_parents".i) with XSelect[String] with NoNullSelection
+    val cbChildren = new ComboBox("doc.search.advanced.frm.fld.chk_relationships_children".i) with XSelect[String] with NoNullSelection
 
-    cbParents.addItem("-not specified-")
-    cbParents.addItem("With parents")
-    cbParents.addItem("Without parents")
+    Seq("doc.search.advanced.frm.fld.cb_relationships_parents.item.undefined",
+        "doc.search.advanced.frm.fld.cb_relationships_parents.item.has_parents",
+        "doc.search.advanced.frm.fld.cb_relationships_parents.item.no_parents"
+    ).foreach(itemId => cbParents.addItem(itemId, itemId.i))
 
-    cbChildren.addItem("-not specified-")
-    cbChildren.addItem("With children")
-    cbChildren.addItem("Without children")
+    Seq("doc.search.advanced.frm.fld.cb_relationships_children.item.undefined",
+        "doc.search.advanced.frm.fld.cb_relationships_children.item.has_children",
+        "doc.search.advanced.frm.fld.cb_relationships_children.item.no_children"
+    ).foreach(itemId => cbChildren.addItem(itemId, itemId.i))
 
-    cbParents.setNullSelectionItemId("-not specified-")
-    cbChildren.setNullSelectionItemId("-not specified-")
+    //cbParents.setNullSelectionItemId("doc.search.advanced.frm.fld.cb_relationships_parents.item.undefined")
+    //cbChildren.setNullSelectionItemId("doc.search.advanced.frm.fld.cb_relationships_children.item.undefined")
 
     addComponents(this, cbParents, cbChildren)
   }
 
-  val chkMaintainers = new CheckBox("doc.search.advanced.frm.fld.chk.maintainers".i) with Immediate
+  val chkMaintainers = new CheckBox("doc.search.advanced.frm.fld.chk_maintainers".i) with Immediate
   val lytMaintainers = new HorizontalLayout with Spacing with UndefinedSize{
-    val ulCreators = new UserListUI("doc.search.advanced.frm.fld.chk.maintainers.creators".i) with UserListUISetup {
-      val searchDialogCaption = "Select creator"
+    val ulCreators = new UserListUI("doc.search.advanced.frm.fld.chk_maintainers_creators".i) with UserListUISetup {
+      val searchDialogCaption = "doc.search.advanced.dlg_select_creators.caption".i
     }
 
-    val ulPublishers = new UserListUI("doc.search.advanced.frm.fld.chk.maintainers.publishers".i) with UserListUISetup {
-      val searchDialogCaption = "Select publisher"
+    val ulPublishers = new UserListUI("doc.search.advanced.frm.fld.chk_maintainers_publishers".i) with UserListUISetup {
+      val searchDialogCaption = "doc.search.advanced.dlg_select_publishers.caption".i
     }
 
     addComponents(this, ulCreators, ulPublishers)
   }
 
   addNamedComponents(this,
-    "doc.search.advanced.frm.fld.chk.status" -> chkStatus,
-    "doc.search.advanced.frm.fld.status" -> lytStatus,
-    "doc.search.advanced.frm.fld.lbl.predefined" -> lblPredefined,
-    "doc.search.advanced.frm.fld.cb.predefined" -> cbPredefined,
-    "doc.search.advanced.frm.fld.chk.dates" -> chkDates,
-    "doc.search.advanced.frm.fld.lyt.dates" -> lytDates,
-    "doc.search.advanced.frm.fld.chk.relationship" -> chkRelationships,
-    "doc.search.advanced.frm.fld.lyt.relationship" -> lytRelationships,
-    "doc.search.advanced.frm.fld.chk.categories" -> chkCategories,
-    "doc.search.advanced.frm.fld.tcs.categories" -> tcsCategories,
-    "doc.search.advanced.frm.fld.chk.maintainers" -> chkMaintainers,
-    "doc.search.advanced.frm.fld.lyt.maintainers" -> lytMaintainers
+    "doc.search.advanced.frm.fld.chk_status" -> chkStatus,
+    "doc.search.advanced.frm.fld.lyt_status" -> lytStatus,
+    "doc.search.advanced.frm.fld.chk_dates" -> chkDates,
+    "doc.search.advanced.frm.fld.lyt_dates" -> lytDates,
+    "doc.search.advanced.frm.fld.chk_relationships" -> chkRelationships,
+    "doc.search.advanced.frm.fld.lyt_relationships" -> lytRelationships,
+    "doc.search.advanced.frm.fld.chk_categories" -> chkCategories,
+    "doc.search.advanced.frm.fld.tcs_categories" -> tcsCategories,
+    "doc.search.advanced.frm.fld.chk_maintainers" -> chkMaintainers,
+    "doc.search.advanced.frm.fld.lyt_maintainers" -> lytMaintainers
   )
 }
 
@@ -754,8 +764,8 @@ class DocDateRangeUI(caption: String = "") extends HorizontalLayout with Spacing
   val dtFrom = new PopupDateField with DayResolution
   val dtTo = new PopupDateField with DayResolution
 
-  dtFrom.setInputPrompt("From")
-  dtTo.setInputPrompt("To")
+  dtFrom.setInputPrompt("dr.dt_from.prompt".i)
+  dtTo.setInputPrompt("dr.dt_to.prompt".i)
 
   setCaption(caption)
 
