@@ -21,8 +21,10 @@ String cp = request.getContextPath() ;
  *           SETTINGS                                                *
  ******************************************************************* */
 
+String ren = "(\\.[\\d]+)?" ;
+
 String acceptedExtPattern = "/" +
-	"(\\.(GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|JSP|ASP|FRAG|PROPERTIES)+$)" +
+	"(\\.(GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|JSP|ASP|FRAG|PROPERTIES)+" + ren + "$)" +
 	"|(\\.LOG+)" +
 	"/i" ;
 

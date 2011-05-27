@@ -70,9 +70,11 @@ if (!user.isSuperAdmin()) {
  *           SETTINGS                                                *
  ******************************************************************* */
 
-String acceptedExtPattern         = "/\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG|PROPERTIES)+$/i" ;
+String ren = "(\\.[\\d]+)?" ;
+
+String acceptedExtPattern         = "/\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG|PROPERTIES)+" + ren + "$/i" ;
 String acceptedExtPatternReadonly = "/" +
-	"(\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG|PROPERTIES)+$)" +
+	"(\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG|PROPERTIES)+" + ren + "$)" +
 	"|(\\.LOG+)" +
 	"/i" ;
 
