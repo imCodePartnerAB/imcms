@@ -637,14 +637,14 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
   }
 
   val chkAdvanced = new CheckBox("doc.search.basic.frm.fld.chk_advanced".i) with Immediate with ExposeValueChange
-  //val btnAdvanced = new Button("doc.search.basic.frm.fld.btn_advanced".i) with LinkStyle
 
   val lytAdvanced = new HorizontalLayout with UndefinedSize with Spacing {
     val cbTypes = new ComboBox with NoNullSelection with SingleSelect2[String] with Immediate
     val btnCustomize = new Button("...") with SmallStyle
-    val btnSave = new Button("doc.search.basic.frm.fld.btn_advanced_save".i) with SmallStyle with Disabled
+    val btnSaveAs = new Button("doc.search.basic.frm.fld.btn_advanced_save_as".i) with SmallStyle with Disabled
+    val btnDelete = new Button("doc.search.basic.frm.fld.btn_advanced_delete".i) with SmallStyle with Disabled
 
-    forlet(cbTypes, btnCustomize, btnSave) { component =>
+    forlet(cbTypes, btnCustomize, btnSaveAs, btnDelete) { component =>
       addComponent(component)
       setComponentAlignment(component, Alignment.MIDDLE_LEFT)
     }
