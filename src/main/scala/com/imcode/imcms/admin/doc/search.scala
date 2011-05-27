@@ -20,7 +20,9 @@ import api.{LuceneParsedQuery, Document}
 import imcode.server.user.UserDomainObject
 import imcode.server.document.index.SimpleDocumentQuery
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
+import web.admin.DateRange
 import com.vaadin.ui._
+import javax.management.remote.rmi._RMIConnection_Stub
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
@@ -144,10 +146,46 @@ class DocSearch(val docsContainer: DocsContainer) {
       }
     }
 
-    //val datesOpt: Option[List[...]]
+    val datesOpt: Option[Map[String, DateSearchRange]] =
+      if (advancedFormUI.chkDates.isUnchecked) None
+      else {
+        import advancedFormUI.lytDates._
+
+        val datesMap =
+          for {
+            (name, dr) <- Map("created" -> drCreated, "modified" -> drModified, "published" -> drPublished, "expired" -> drExpired)
+            if dr.cbRangeType.value != DocRangeType.Undefined
+            start = ?(dr.dtFrom.value)
+            end = ?(dr.dtTo.value)
+            if start.isDefined || end.isDefined
+
+            // todo: check start/end value
+          } yield
+            name -> DateSearchRange(start, end)
+
+        if (datesMap.isEmpty) None else Some(datesMap.toMap)
+      }
+
+//    // Not yet defined how to make such query
+//    val relationshipsOpt =
+//      if (advancedFormUI.chkRelationships.isUnchecked) None
+//      else {
+//        val parentsOpt = advancedFormUI.lytRelationships.cbParents.value
+//        val chidrenOpt = advancedFormUI.lytRelationships.cbChildren.value
+//      }
+
+    val categoriesOpt: Option[List[String]] = whenOpt(advancedFormUI.chkCategories.isChecked) {
+      advancedFormUI.tcsCategories.getItemIds.asInstanceOf[JCollection[String]].toList match {
+        case Nil => error("doc.search.dlg_param_validation_err.msg.no_category_selected")
+        case values => values
+      }
+    }
+
+    val creatorsOpt: Option[List[String]] = None
+    val publishersOpt: Option[List[String]] = None
 
     List(
-      rangeOpt.map(range => "range:[%s TO %s]" format (range.start.getOrElse("*"), range.end.getOrElse("*"))),
+      rangeOpt.map(range => "range:[%s TO %s]".format(range.start.getOrElse("*"), range.end.getOrElse("*"))),
       textOpt.map("text:" + _),
       typesOpt.map(_.mkString("type:(", " OR ", ")")),
       statusesOpt.map(_.mkString("status:(", " OR ", ")"))
@@ -644,6 +682,12 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
       dr.cbRangeType.value = DocRangeType.Undefined
     }
 
+    forlet(ui.lytMaintainers.ulCreators, ui.lytMaintainers.ulPublishers) { ul =>
+      ul.chkEnabled.uncheck
+      ul.chkEnabled.fireValueChange(true)
+      ul.lstUsers.removeAllItems
+    }
+
     toggleCategories()
     toggleMaintainers()
     toggleRelationships()
@@ -752,6 +796,10 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
 trait UserListUISetup { this: UserListUI =>
   val searchDialogCaption: String
 
+  chkEnabled.addValueChangeHandler {
+    forlet(lstUsers, lytButtons)(_ setEnabled chkEnabled.booleanValue)
+  }
+
   btnAdd.addClickHandler {
     getApplication.initAndShow(new OkCancelDialog(searchDialogCaption) with UserSearchDialog) { dlg =>
       dlg.wrapOkHandler {
@@ -769,15 +817,17 @@ trait UserListUISetup { this: UserListUI =>
 /**
  * Component for managing list of users.
  */
-class UserListUI(caption: String = "") extends GridLayout(2, 1) {
-  val lstUsers = new ListSelect(caption) with MultiSelectBehavior[UserId] with NoNullSelection {
+class UserListUI(caption: String = "") extends GridLayout(2, 2) {
+  val chkEnabled = new CheckBox(caption) with Immediate with ExposeValueChange
+  val lstUsers = new ListSelect with MultiSelectBehavior[UserId] with NoNullSelection {
     setColumns(20)
   }
-  val btnAdd = new Button("+")
-  val btnRemove = new Button("-")
+  val btnAdd = new Button("+") with SmallStyle
+  val btnRemove = new Button("-") with SmallStyle
   val lytButtons = new VerticalLayout with UndefinedSize
 
   addComponents(lytButtons, btnRemove, btnAdd)
+  addComponent(chkEnabled, 0, 0, 1, 0)
   addComponents(this, lstUsers, lytButtons)
 
   setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
@@ -851,6 +901,6 @@ trait DocDateRangeUISetup { this: DocDateRangeUI =>
     }
   }
 
-  DocRangeType.values foreach { v => cbRangeType addItem v; println("added: " + v) }
+  DocRangeType.values foreach (cbRangeType addItem _)
   cbRangeType.value = Undefined
 }
