@@ -18,7 +18,10 @@
 %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%!
 
-private final static int THUMB_BOUNDARIES = 130 ;
+private final static int THUMB_BOUNDARIES   = 130 ;
+
+private final static int MIN_CONTENT_WIDTH  = 760 ; // Entire table
+private final static int MIN_CONTENT_HEIGHT = 350 ; // Only div with images
 
 %><%
 
@@ -33,67 +36,63 @@ List<File> images = imageBrowsePage.getImagesList() ;
 
 String cp = request.getContextPath() ;
 
-int startUpHeight = (3 * (THUMB_BOUNDARIES + 45)) ;
 
-%>
-<vel:velocity>
-<html>
+%><vel:velocity><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-
 
 <title><fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/1" /></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp" />
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
-<body bgcolor="#FFFFFF" onLoad="focusField(0,'text')"<%
-	if (fromEditor) {
-		%> style="overflow:auto;" scroll="auto"<%
-	} %>>
+<body style="margin-bottom:0 !important;<%= fromEditor ? " overflow:auto;" : "" %>"<%= fromEditor ? " scroll=\"auto\"" : "" %>>
 
 
 #gui_outer_start()
 #gui_head("<fmt:message key="global/imcms_administration" />")
 <form action="ImageBrowse" method="POST" enctype="multipart/form-data">
-<input type="hidden" id="dir" name="dir" value="<%= ("\\" + FileUtility.relativizeFile( Imcms.getServices().getConfig().getImagePath().getParentFile(), currentDirectory ).toString()).replace("\\", "/") %>">
-<input type="hidden" name="editor_image" value="<%= request.getParameter("editor_image") %>">
-<input type="hidden" name="<%= ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER %>" value="<%=HttpSessionUtils.getSessionAttributeNameFromRequest(request, ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER)%>"><%
+<input type="hidden" id="dir" name="dir" value="<%= ("\\" + FileUtility.relativizeFile( Imcms.getServices().getConfig().getImagePath().getParentFile(), currentDirectory ).toString()).replace("\\", "/") %>" />
+<input type="hidden" name="editor_image" value="<%= request.getParameter("editor_image") %>" />
+<input type="hidden" name="<%= ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER %>" value="<%=HttpSessionUtils.getSessionAttributeNameFromRequest(request, ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER)%>" /><%
 if (null != imageBrowsePage.getLabel() ) { %>
-<input type="hidden" name="<%= ImageBrowse.REQUEST_PARAMETER__LABEL %>" value="<%=imageBrowsePage.getLabel()%>"><%
+<input type="hidden" name="<%= ImageBrowse.REQUEST_PARAMETER__LABEL %>" value="<%=imageBrowsePage.getLabel()%>" /><%
 } %>
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
-	<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2001" />"></td>
+	<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2001" />" /></td>
 	<td>&nbsp;</td>
-	<td><input type="button" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2002" />" title="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2003" />" class="imcmsFormBtn" onClick="openHelpW('ImageArchive')"></td>
+	<td><input type="button" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2002" />" title="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2003" />" class="imcmsFormBtn" onClick="openHelpW('ImageArchive')" /></td>
 </tr>
 </table>
 #gui_mid()
-<table border="0" cellspacing="0" cellpadding="2" width="760" align="center">
+<table id="mainTable" border="0" cellspacing="0" cellpadding="2" align="center" style="width:<%= MIN_CONTENT_WIDTH %>px;">
 <tr>
 	<td colspan="2">#gui_heading( "<fmt:message key="templates/sv/change_img.html/4/1" />" )</td>
 </tr>
 <tr>
-	<td width="35%">
+	<td style="width:260px;">
 	<table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
 	<tr>
 		<td><b><fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/5" /></b></td>
 		<td align="right">
-		<input type="submit" class="imcmsFormBtnSmall" id="changeDir" name="<%= ImageBrowse.REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2004" />"></td>
+		<input type="submit" class="imcmsFormBtnSmall" id="changeDir" name="<%= ImageBrowse.REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2004" />" /></td>
 	</tr>
 	</table></td>
 	
-	<td width="65%" style="padding-left:25px;">
+	<td style="padding-left:25px;">
 	<b><fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/7" /></b></td>
 </tr>
 <tr valign="top">
-	<td width="35%">
-	<select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_DIRECTORY %>" size="30" ondblclick="jQ('#changeDir').click();" style="width:260px; height:<%= startUpHeight + 10 %>px;">
+	<td>
+	<select id="directorySelect" name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_DIRECTORY %>" size="30" ondblclick="jQ('#changeDir').click();" style="width:260px; height:<%= MIN_CONTENT_HEIGHT + 10 %>px;">
 		<%=imageBrowsePage.getDirectoriesOptionList()%>
 	</select></td>
 	
-	<td width="65%" style="padding-left:25px;">
+	<td style="padding-left:25px;">
 	<%--
 	<select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_URL %>" size="15"
 		ondblclick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__OK_BUTTON ) %>'].click();" style="width:270px;"><%
@@ -106,7 +105,7 @@ if (null != imageBrowsePage.getLabel() ) { %>
 	</select>
 	--%>
 	
-	<div style="margin: 10px 0; height:<%= startUpHeight %>px; overflow:auto;"><%
+	<div id="thumbsDiv" style="margin: 10px 0; height:<%= MIN_CONTENT_HEIGHT %>px; overflow:auto;"><%
 		if (null != images) {
 			int iCount = 0 ;
 			for (File file : images) {
@@ -185,7 +184,7 @@ if (null != imageBrowsePage.getLabel() ) { %>
 	<td colspan="2" align="right">
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="submit" class="imcmsFormBtn" id="useBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__OK_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2005" />"></td>
+		<td><input type="submit" class="imcmsFormBtn" id="useBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__OK_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2005" />" /></td>
 		<td>&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2006" />"
 		onclick="return previewFile();"></td>
@@ -207,9 +206,9 @@ if (null != errorMessage) { %>
 	<td colspan="2">
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
-		<td><input type="file" name="<%= ImageBrowse.REQUEST_PARAMETER__FILE %>" id="theFile" size="54"></td>
+		<td><input type="file" name="<%= ImageBrowse.REQUEST_PARAMETER__FILE %>" id="theFile" size="54" /></td>
 		<td align="right">
-		<input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__UPLOAD_BUTTON %>" value="<fmt:message key="templates/sv/change_img.html/2005" />"></td>
+		<input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__UPLOAD_BUTTON %>" value="<fmt:message key="templates/sv/change_img.html/2005" />" /></td>
 	</tr>
 	</table></td>
 </tr>
@@ -290,7 +289,7 @@ function previewFile() {
 		if ('' != actFile) {
 			var file = "<%= Imcms.getServices().getConfig().getImageUrl() %>" + actFile ;
 			if (isImageFile(file)) {
-				popWinOpen(800,570,"$contextPath/imcms/$language/jsp/FileAdmin_preview.jsp?file=" + escape(file),"",1,0);
+				popWinOpen(800,570,"$contextPath/imcms/$language/jsp/FileAdmin_preview.jsp?file=" + encodeURIComponent(file),"",1,0);
 				return false;
 			}
 		}
@@ -298,6 +297,39 @@ function previewFile() {
 	return true ;
 }
 </vel:velocity>
+jQ(document).ready(function($) {
+	resizeContent($) ;
+	$(window).resize(function() {
+		resizeContent($) ;
+	}) ;
+}) ;
+
+function resizeContent($) {
+	var $display = $(window) ;
+	var displayW = $display.width() ;
+	var displayH = $display.height() ;<%--
+	imLog('display: ' + displayW + ' x ' + displayH) ;--%>
+	var minW   = <%= MIN_CONTENT_WIDTH %> ;
+	var minH   = <%= MIN_CONTENT_HEIGHT %> ;
+	var offsetW = 140 ;
+	var offsetH = 420 ;
+	var newW, newH ;
+	if (displayW > (minW + offsetW)) {
+		newW = displayW - offsetW ;
+	} else {
+		newW = minW ;
+	}
+	if (displayH > (minH + offsetH)) {
+		newH = displayH - offsetH ;<%----%>
+		imLog('1, newH: ' + newH) ;
+	} else {
+		newH = minH ;<%----%>
+		imLog('2, newH: ' + newH) ;
+	}
+	$('#mainTable').css('width', newW + 'px') ;
+	$('#directorySelect').css('height', (newH + 10) + 'px') ;
+	$('#thumbsDiv').css('height', newH + 'px') ;
+}
 //-->
 </script>
 

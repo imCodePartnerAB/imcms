@@ -2,11 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Html;
-import imcode.util.HttpSessionUtils;
-import imcode.util.ImageExtensionFilenameFilter;
-import imcode.util.ToStringPairTransformer;
-import imcode.util.Utility;
+import imcode.util.*;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
@@ -31,7 +27,6 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.imcode.util.HumanReadable;
 import com.imcode.util.MultipartHttpServletRequest;
 
 /**
@@ -261,7 +256,7 @@ public class ImageBrowse extends HttpServlet {
             });
         }
 
-        public String getImagesOptionList() throws IOException {
+        /*public String getImagesOptionList() throws IOException {
             final File imagesRoot = Imcms.getServices().getConfig().getImagePath();
             if ( null != currentImage ) {
                 imageUrl = FileUtility.relativeFileToString( FileUtility.relativizeFile( imagesRoot, currentImage ) );
@@ -285,14 +280,14 @@ public class ImageBrowse extends HttpServlet {
                     }
                 }
             });
-        }
+        }*/
 
         public List<File> getImagesList() throws IOException {
             final File imagesRoot = Imcms.getServices().getConfig().getImagePath();
             if ( null != currentImage ) {
                 imageUrl = FileUtility.relativeFileToString( FileUtility.relativizeFile( imagesRoot, currentImage ) );
             }
-            File[] images = currentDirectory.listFiles( new ImageExtensionFilenameFilter() );
+            File[] images = currentDirectory.listFiles( new ImageForWebExtensionFilenameFilter() );
             Arrays.sort( images );
             return Arrays.asList( images ) ;
         }

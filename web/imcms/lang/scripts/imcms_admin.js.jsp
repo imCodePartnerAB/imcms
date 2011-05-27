@@ -18,6 +18,13 @@ jQ(document).ready(function($) {
 	toolTip($, 'body') ;
 }) ;
 
+function imLog(mess) {
+	try {
+		if (window && window.console) {
+			window.console.log(mess) ;
+		}
+	} catch (e) {}
+}
 
 <%--
 /* *******************************************************************************************
