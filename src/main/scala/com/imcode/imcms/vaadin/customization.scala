@@ -2,6 +2,7 @@ package com.imcode
 package imcms.vaadin
 
 import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import com.vaadin.data.{Item, Container, Property}
 import com.vaadin.terminal.Sizeable
@@ -200,7 +201,7 @@ trait MultiSelectBehavior[A >: Null <: AnyRef] extends XSelect[A] {
   /** Selects single item. */
   def value_=(item: Option[A]) { setValue(item.orNull) }
 
-  def value_=(seq: Seq[A]) { setValue(asJavaCollection(seq)) }
+  def value_=(seq: Seq[A]) { setValue(seq.asJavaCollection) }
 
   def first = value.headOption
 
@@ -209,7 +210,12 @@ trait MultiSelectBehavior[A >: Null <: AnyRef] extends XSelect[A] {
   /**
    * @return collection of selected items or empty collection if there is no selected item(s).
    */
-  final override def getValue() = let(super.getValue) { v => if (isMultiSelect) v else asJavaCollection(?(v).toSeq) }
+  final override def getValue() = let(super.getValue) { v => if (isMultiSelect) v else ?(v).toSeq.asJavaCollection }
+
+  final override def setMultiSelect(multiSelect: Boolean) =
+    if (value.isEmpty) super.setMultiSelect(multiSelect)
+    else throw new IllegalStateException("Multi-select value can not be changed on non-empty select.")
+
 
   final override def setValue(v: AnyRef) {
     v match {

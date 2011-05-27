@@ -23,6 +23,7 @@ import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachLi
 import web.admin.DateRange
 import com.vaadin.ui._
 import javax.management.remote.rmi._RMIConnection_Stub
+import org.omg.PortableInterceptor.NON_EXISTENT
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
@@ -48,7 +49,7 @@ class DocSearch(val docsContainer: DocsContainer) {
       if (!basicFormUI.chkAdvanced.booleanValue) ui.advancedSearchFormVisible = false
     }
 
-    basicFormUI.lytButtons.btnSearch.addClickHandler { submit() }
+    basicFormUI.lytButtons.btnSearch.addClickHandler { search() }
     basicFormUI.lytButtons.btnReset.addClickHandler { reset() }
   }
 
@@ -57,14 +58,14 @@ class DocSearch(val docsContainer: DocsContainer) {
     basicSearchForm.reset()
     advancedSearchForm.reset()
     update()
-    submit()
+    search()
   }
 
   def update() {
     basicSearchForm.setRangeInputPrompt(docsContainer.range)
   }
 
-  def submit() {
+  def search() {
     createQuery() match {
       case Left(throwable) =>
         ui.getApplication.show(new ErrorDialog(throwable.getMessage.i))
@@ -119,31 +120,35 @@ class DocSearch(val docsContainer: DocsContainer) {
       }
 
 
-    val typesOpt: Option[List[String]] = whenOpt(basicFormUI.chkType.isChecked) {
-      import basicFormUI.lytType._
+    val typesOpt: Option[List[String]] =
+      if (basicFormUI.chkType.isUnchecked) None
+      else {
+        import basicFormUI.lytType._
 
-      Map(chkFile -> "file",
-          chkText -> "text",
-          chkHtml -> "html"
-      ).filterKeys(_.isChecked).values.toList match {
-        case Nil => error("doc.search.dlg_param_validation_err.msg.no_type_selected")
-        case values => values
-      }
+        Map(chkFile -> "file",
+            chkText -> "text",
+            chkHtml -> "html"
+        ).filterKeys(_.isChecked).values.toList match {
+          case Nil => None
+          case values => Some(values)
+        }
     }
 
-    val statusesOpt: Option[List[String]] = whenOpt(advancedFormUI.chkStatus.isChecked) {
+    val statusesOpt: Option[List[String]] =
+      if (advancedFormUI.chkStatus.isUnchecked) None
+      else {
       import advancedFormUI.lytStatus._
 
-      Map(chkNew -> "new",
-          chkPublished -> "published",
-          chkUnpublished -> "unpublished",
-          chkApproved -> "approved",
-          chkDisapproved -> "disapproved",
-          chkExpired -> "expired"
-      ).filterKeys(_.isChecked).values.toList match {
-        case Nil => error("doc.search.dlg_param_validation_err.msg.no_status_selected")
-        case values => values
-      }
+        Map(chkNew -> "new",
+            chkPublished -> "published",
+            chkUnpublished -> "unpublished",
+            chkApproved -> "approved",
+            chkDisapproved -> "disapproved",
+            chkExpired -> "expired"
+        ).filterKeys(_.isChecked).values.toList match {
+          case Nil => None
+          case values => Some(values)
+        }
     }
 
     val datesOpt: Option[Map[String, DateSearchRange]] =
@@ -174,12 +179,14 @@ class DocSearch(val docsContainer: DocsContainer) {
 //        val chidrenOpt = advancedFormUI.lytRelationships.cbChildren.value
 //      }
 
-    val categoriesOpt: Option[List[String]] = whenOpt(advancedFormUI.chkCategories.isChecked) {
-      advancedFormUI.tcsCategories.getItemIds.asInstanceOf[JCollection[String]].toList match {
-        case Nil => error("doc.search.dlg_param_validation_err.msg.no_category_selected")
-        case values => values
+    val categoriesOpt: Option[List[String]] =
+      if (advancedFormUI.chkCategories.isUnchecked) None
+      else {
+        advancedFormUI.tcsCategories.getItemIds.asInstanceOf[JCollection[String]].toList match {
+          case Nil => None
+          case values => Some(values)
+        }
       }
-    }
 
     val creatorsOpt: Option[List[String]] = None
     val publishersOpt: Option[List[String]] = None
@@ -458,7 +465,7 @@ class DocsUI(container: DocsContainer) extends Table(null, container)
   setColumnCollapsingAllowed(true)
   setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
 
-  setColumnHeaders(container.getContainerPropertyIds map (_.toString.i) toArray )
+  setColumnHeaders(container.getContainerPropertyIds.map(_.toString.i).toArray)
   Seq("doc.tbl.col.parents", "doc.tbl.col.children") foreach { setColumnCollapsed(_, true) }
 }
 
@@ -512,7 +519,7 @@ class DocBasicSearchForm {
   def reset() {
     ui.chkRange.checked = true
     ui.chkText.checked = true
-    ui.chkType.checked = false
+    ui.chkType.checked = true
     ui.chkAdvanced.checked = false
 
     forlet(ui.chkRange, ui.chkText, ui.chkType, ui.chkAdvanced)(_ fireValueChange true)
@@ -653,14 +660,14 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
 
   addNamedComponents(this,
     "doc.search.basic.frm.fld.chk_range" -> chkRange,
-    "doc.search.basic.frm.fld.lyt_range" -> lytRange,
+    "doc.search.basic.frm.fld.range" -> lytRange,
     "doc.search.basic.frm.fld.chk_text" -> chkText,
-    "doc.search.basic.frm.fld.txt_text" -> txtText,
+    "doc.search.basic.frm.fld.text" -> txtText,
     "doc.search.basic.frm.fld.chk_type" -> chkType,
-    "doc.search.basic.frm.fld.lyt_type" -> lytType,
+    "doc.search.basic.frm.fld.type" -> lytType,
     "doc.search.basic.frm.fld.chk_advanced" -> chkAdvanced,
-    "doc.search.basic.frm.fld.lyt_advanced" -> lytAdvanced,
-    "doc.search.basic.frm.fld.lyt_buttons" -> lytButtons
+    "doc.search.basic.frm.fld.advanced" -> lytAdvanced,
+    "doc.search.basic.frm.fld.buttons" -> lytButtons
   )
 }
 
@@ -713,11 +720,11 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
       name)
   }
 
-  private def toggleCategories() = toggle(ui.chkCategories, ui.tcsCategories, "doc.search.advanced.frm.fld.tcs_categories")
-  private def toggleMaintainers() = toggle(ui.chkMaintainers, ui.lytMaintainers, "doc.search.advanced.frm.fld.lyt_maintainers")
-  private def toggleRelationships() = toggle(ui.chkRelationships, ui.lytRelationships, "doc.search.advanced.frm.fld.lyt_relationships")
-  private def toggleDates() = toggle(ui.chkDates, ui.lytDates, "doc.search.advanced.frm.fld.lyt_dates")
-  private def toggleStatus() = toggle(ui.chkStatus, ui.lytStatus, "doc.search.advanced.frm.fld.lyt_status")
+  private def toggleCategories() = toggle(ui.chkCategories, ui.tcsCategories, "doc.search.advanced.frm.fld.categories")
+  private def toggleMaintainers() = toggle(ui.chkMaintainers, ui.lytMaintainers, "doc.search.advanced.frm.fld.maintainers")
+  private def toggleRelationships() = toggle(ui.chkRelationships, ui.lytRelationships, "doc.search.advanced.frm.fld.relationships")
+  private def toggleDates() = toggle(ui.chkDates, ui.lytDates, "doc.search.advanced.frm.fld.dates")
+  private def toggleStatus() = toggle(ui.chkStatus, ui.lytStatus, "doc.search.advanced.frm.fld.status")
 }
 
 
@@ -780,15 +787,15 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
 
   addNamedComponents(this,
     "doc.search.advanced.frm.fld.chk_status" -> chkStatus,
-    "doc.search.advanced.frm.fld.lyt_status" -> lytStatus,
+    "doc.search.advanced.frm.fld.status" -> lytStatus,
     "doc.search.advanced.frm.fld.chk_dates" -> chkDates,
-    "doc.search.advanced.frm.fld.lyt_dates" -> lytDates,
+    "doc.search.advanced.frm.fld.dates" -> lytDates,
     "doc.search.advanced.frm.fld.chk_relationships" -> chkRelationships,
-    "doc.search.advanced.frm.fld.lyt_relationships" -> lytRelationships,
+    "doc.search.advanced.frm.fld.relationships" -> lytRelationships,
     "doc.search.advanced.frm.fld.chk_categories" -> chkCategories,
-    "doc.search.advanced.frm.fld.tcs_categories" -> tcsCategories,
+    "doc.search.advanced.frm.fld.categories" -> tcsCategories,
     "doc.search.advanced.frm.fld.chk_maintainers" -> chkMaintainers,
-    "doc.search.advanced.frm.fld.lyt_maintainers" -> lytMaintainers
+    "doc.search.advanced.frm.fld.maintainers" -> lytMaintainers
   )
 }
 

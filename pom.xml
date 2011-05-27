@@ -871,6 +871,7 @@
                     <!--<scalaVersion>2.9.0</scalaVersion>-->
                     <scalaVersion>2.8.1</scalaVersion>
                     <jvmArgs>
+                        <!-- ...-Xss64m...-->
                         <jvmArg>-Xms64m</jvmArg>
                         <jvmArg>-Xmx1024m</jvmArg>
                     </jvmArgs>

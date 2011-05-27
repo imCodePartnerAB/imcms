@@ -43,7 +43,7 @@ class DocManager(app: ImcmsApplication) {
           case IncludeToSelection =>
             customDocs.search.docsContainer.addItem(target)
             customDocs.search.update()
-            customDocs.search.submit()
+            customDocs.search.search()
           case _ =>
         }
     })

@@ -1,17 +1,17 @@
 package com.imcode
-package imcms.admin.access.user
+package imcms
+package admin.access.user
 
 import imcode.server.user._
-import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 import com.vaadin.ui._
 
 // todo add security check, add editAndSave, add external UI
-class UserManager(app: ImcmsApplication) {
-  private val search = new UserSearch(multiSelect = true)
+class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
+  private val search = new UserSearch
 
   val ui = letret(new UserManagerUI(search.ui)) { ui =>
-    val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+    val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     ui.miNew setCommandHandler {
       app.initAndShow(new OkCancelDialog("New user")) { dlg =>
@@ -20,7 +20,7 @@ class UserManager(app: ImcmsApplication) {
             c.tslRoles.addAvailableItem(role.getId, role.getName)
           }
 
-          let(Imcms.getServices.getLanguageMapper.getDefaultLanguage) { l =>
+          let(imcmsServices.getLanguageMapper.getDefaultLanguage) { l =>
             c.sltUILanguage.addItem(l)
             c.sltUILanguage.select(l)
           }
@@ -38,7 +38,7 @@ class UserManager(app: ImcmsApplication) {
               u setLanguageIso639_2 c.sltUILanguage.value
 
               roleMapper.addUser(u)
-              search.reload()
+              search.reset()
             }
           }
         }
@@ -69,7 +69,7 @@ class UserManager(app: ImcmsApplication) {
               }
             }
 
-            let(Imcms.getServices.getLanguageMapper.getDefaultLanguage) { l =>
+            let(imcmsServices.getLanguageMapper.getDefaultLanguage) { l =>
               c.sltUILanguage.addItem(l)
             }
 
@@ -85,7 +85,7 @@ class UserManager(app: ImcmsApplication) {
               user setLanguageIso639_2 c.sltUILanguage.value
 
               roleMapper.saveUser(user)
-              search.reload()
+              search.reset()
             }
           }
         }
