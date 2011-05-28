@@ -1,5 +1,6 @@
 package com.imcode
-package imcms.vaadin
+package imcms
+package vaadin
 
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
@@ -185,6 +186,11 @@ trait MultiSelect2[T >: Null] extends XSelect[T] with ValueType[JCollection[T]] 
   }
 
   def isSelected = value.nonEmpty
+}
+
+trait DefaultI18nTCS extends TwinColSelect {
+  setLeftColumnCaption("tcs.col.available.caption".i)
+  setRightColumnCaption("tcs.col.selected.caption".i)
 }
 
 
