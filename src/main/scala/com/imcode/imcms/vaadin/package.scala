@@ -137,4 +137,12 @@ package object vaadin {
     f(component)
     component.setEnabled(false)
   }
+
+  object SearchFormUtil {
+    def toggle(layout: CustomLayout, name: String, checkBox: CheckBox, component: Component,
+               stub: => Component = { new Label("search.frm.fld.lbl_any_value".i) with UndefinedSize }) {
+
+      layout.addComponent(if (checkBox.checked) component else stub, name)
+    }
+  }
 }

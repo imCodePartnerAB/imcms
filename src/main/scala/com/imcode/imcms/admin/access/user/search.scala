@@ -12,6 +12,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import scala.Some
 
+
 trait UserSearchDialog { this: OkCancelDialog =>
   val search = new UserSearch
 
@@ -111,40 +112,30 @@ case class UserSearchFormState(
 class UserSearchForm extends ImcmsServicesSupport {
   val ui: UserSearchFormUI = letret(new UserSearchFormUI) { ui =>
     ui.chkText.addValueChangeHandler {
-      toggle("admin.access.user.search.frm.fld.text", ui.chkText, ui.txtText)
+      SearchFormUtil.toggle(ui, "admin.access.user.search.frm.fld.text", ui.chkText, ui.txtText)
     }
 
     ui.chkRoles.addValueChangeHandler {
-      toggle("admin.access.user.search.frm.fld.roles", ui.chkRoles, ui.tcsRoles)
+      SearchFormUtil.toggle(ui, "admin.access.user.search.frm.fld.roles", ui.chkRoles, ui.tcsRoles)
     }
   }
-
-  private def toggle(name: String, checkBox: CheckBox, component: Component,
-                     stub: => Component = { new Label("doc.search.advanced.frm.fld.lbl_undefined".i) with UndefinedSize }) {
-
-    ui.addComponent(if (checkBox.checked) component else stub, name)
-  }
-
 
   def reset() = setState(UserSearchFormState())
 
   def setState(state: UserSearchFormState) {
-    ui.txtText.value = state.text.getOrElse("")
-
-    ui.tcsRoles.removeAllItems
-
-    for (role <- imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllRolesExceptUsersRole) {
-      ui.tcsRoles.addItem(role.getId)
-      ui.tcsRoles.setItemCaption(role.getId, role.getName)
-    }
-
-    ui.tcsRoles.value = state.roles.getOrElse(Set.empty[RoleId]).asJavaCollection
-
     ui.chkText.checked = state.text.isDefined
     ui.chkRoles.checked = state.roles.isDefined
     ui.chkShowInactive.checked = state.isShowInactive
 
     forlet(ui.chkText, ui.chkRoles, ui.chkShowInactive)(_ fireValueChange true)
+
+    ui.txtText.value = state.text.getOrElse("")
+    ui.tcsRoles.removeAllItems
+    for (role <- imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllRolesExceptUsersRole) {
+      ui.tcsRoles.addItem(role.getId)
+      ui.tcsRoles.setItemCaption(role.getId, role.getName)
+    }
+    ui.tcsRoles.value = state.roles.getOrElse(Set.empty[RoleId]).asJavaCollection
   }
   
   def getState() = UserSearchFormState(

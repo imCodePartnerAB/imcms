@@ -21,9 +21,11 @@ import imcode.server.user.UserDomainObject
 import imcode.server.document.index.SimpleDocumentQuery
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
 import web.admin.DateRange
-import com.vaadin.ui._
 import javax.management.remote.rmi._RMIConnection_Stub
 import org.omg.PortableInterceptor.NON_EXISTENT
+import com.vaadin.ui._
+import admin.doc.DocSearchRange
+import scala.Some
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
@@ -71,7 +73,7 @@ class DocSearch(val docsContainer: DocsContainer) {
         ui.getApplication.show(new ErrorDialog(throwable.getMessage.i))
 
       case Right(solrQueryOpt) =>
-        println(solrQueryOpt)
+        println("Doc search query: " + solrQueryOpt)
 
         ui.removeComponent(0, 1)
         ui.addComponent(docsUI, 0, 1)
@@ -209,7 +211,7 @@ class DocSearchUI(
     advancedSearchFormUI: DocAdvancedSearchFormUI,
     docsUI: DocsUI) extends GridLayout(1, 2) with Spacing with FullSize {
 
-  private val pnlAdvancedSearchForm = new Panel with Scrollable with UndefinedSize with FullHeight {
+  private val pnlAdvancedSearchForm = new Panel with Scrollable with FullSize {
     setStyleName(Panel.STYLE_LIGHT)
     setContent(advancedSearchFormUI)
   }
@@ -491,20 +493,24 @@ trait DocTableItemIcon extends AbstractSelect with XSelect[DocId] {
 
 
 class DocBasicSearchForm {
-  private var state = DocBasicSearchFormState()
 
   val ui: DocBasicFormSearchUI = letret(new DocBasicFormSearchUI) { ui =>
-    ui.chkRange.addValueChangeHandler { state = updateRangeState(state) }
+    ui.chkRange.addValueChangeHandler {
+       SearchFormUtil.toggle(ui, "doc.search.basic.frm.fld.range", ui.chkRange, ui.lytRange,
+                             new Label("%s - %s".format(?(ui.lytRange.txtStart.getInputPrompt).getOrElse(""), ?(ui.lytRange.txtEnd.getInputPrompt).getOrElse(""))))
+    }
 
-    ui.chkText.addValueChangeHandler { state = updateTextState(state) }
+    ui.chkText.addValueChangeHandler {
+       SearchFormUtil.toggle(ui, "doc.search.basic.frm.fld.text", ui.chkText, ui.txtText)
+    }
 
-    ui.chkType.addValueChangeHandler { state = updateTypeState(state) }
+    ui.chkType.addValueChangeHandler {
+      SearchFormUtil.toggle(ui, "doc.search.basic.frm.fld.type", ui.chkType, ui.lytType)
+    }
 
     ui.chkAdvanced.addValueChangeHandler {
       ui.lytAdvanced.setEnabled(ui.chkAdvanced.isChecked)
     }
-
-    Seq("doc.search.basic.frm.fld.cb_advanced_type.custom", "doc.search.basic.frm.fld.cb_advanced_type.last_xxx", "doc.search.basic.frm.fld.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId, itemId.i))
   }
 
   def setRangeInputPrompt(range: Option[(DocId, DocId)]) {
@@ -516,101 +522,66 @@ class DocBasicSearchForm {
   }
 
 
-  def reset() {
-    ui.chkRange.checked = true
-    ui.chkText.checked = true
-    ui.chkType.checked = true
-    ui.chkAdvanced.checked = false
+  def reset() = setState(DocBasicSearchFormState())
 
+  def setState(state: DocBasicSearchFormState) {
+    ui.chkRange.checked = state.range.isDefined
+    ui.chkText.checked = state.text.isDefined
+    ui.chkType.checked = state.docType.isDefined
+    ui.chkAdvanced.checked = state.advanced.isDefined
     forlet(ui.chkRange, ui.chkText, ui.chkType, ui.chkAdvanced)(_ fireValueChange true)
 
-    setState(DocBasicSearchFormState())
+    ui.txtText.value = state.text.getOrElse("")
 
-    ui.lytAdvanced.cbTypes.value = "doc.search.basic.frm.fld.cb_advanced_type.custom"
-  }
-
-  def setState(newState: DocBasicSearchFormState) {
-    updateRangeState(newState)
-    updateTextState(newState)
-    updateTypeState(newState)
-
-    state = newState
-  }
-
-  def getState() = state
-
-  private def updateRangeState(currentState: DocBasicSearchFormState) = {
-    if (ui.chkRange.isChecked) {
-      ui.lytRange.setEnabled(true)
-      ui.lytRange.txtStart.value = currentState.range.flatMap(_.start).map(_.toString).getOrElse("")
-      ui.lytRange.txtEnd.value = currentState.range.flatMap(_.end).map(_.toString).getOrElse("")
-      currentState
-    } else {
-      val start = condOpt(ui.lytRange.txtStart.value.trim) { case value if value.nonEmpty => value.toInt }
-      val end = condOpt(ui.lytRange.txtEnd.value.trim) { case value if value.nonEmpty => value.toInt }
-      val newState = currentState.copy(
-        range = if (start.isEmpty && end.isEmpty) None else Some(DocSearchRange(start, end))
-      )
-
-      ui.lytRange.setEnabled(true)
-      ui.lytRange.txtStart.value = ""
-      ui.lytRange.txtEnd.value = ""
-      ui.lytRange.setEnabled(false)
-      newState
+    state.range.collect {
+      case DocSearchRange(start, end) => (start.map(_.toString).getOrElse(""), end.map(_.toString).getOrElse(""))
+    } getOrElse ("", "") match {
+      case (start, end) =>
+        ui.lytRange.txtStart.value = start
+        ui.lytRange.txtEnd.value = end
     }
+
+    ui.lytType.chkText.checked = state.docType.map(_(DocumentTypeDomainObject.TEXT)).getOrElse(false)
+    ui.lytType.chkFile.checked = state.docType.map(_(DocumentTypeDomainObject.FILE)).getOrElse(false)
+    ui.lytType.chkHtml.checked = state.docType.map(_(DocumentTypeDomainObject.HTML)).getOrElse(false)
+
+    // todo: DEMO, replace with real values when spec is complete
+    ui.lytAdvanced.cbTypes.removeAllItems()
+    Seq("doc.search.basic.frm.fld.cb_advanced_type.custom", "doc.search.basic.frm.fld.cb_advanced_type.last_xxx", "doc.search.basic.frm.fld.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId, itemId.i))
+    ui.lytAdvanced.cbTypes.value = state.advanced.getOrElse("doc.search.basic.frm.fld.cb_advanced_type.custom")
   }
 
-  private def updateTextState(currentState: DocBasicSearchFormState) = {
-    if (ui.chkText.isChecked) {
-      ui.txtText.setEnabled(true)
-      ui.txtText.value = currentState.text.getOrElse("")
-      currentState
-    } else {
-      val newState = currentState.copy(
-        text = condOpt(ui.txtText.value.trim) { case value if value.nonEmpty => value }
+  // todo: return Error Either State
+  def getState() = DocBasicSearchFormState(
+    range = whenOpt(ui.chkRange.isChecked) {
+      DocSearchRange(
+        condOpt(ui.lytRange.txtStart.trim) { case value if value.nonEmpty => value.toInt },
+        condOpt(ui.lytRange.txtEnd.trim) { case value if value.nonEmpty => value.toInt }
       )
+    },
 
-      ui.txtText.setEnabled(true)
-      ui.txtText.value = ""
-      ui.txtText.setEnabled(false)
-      newState
-    }
-  }
+    text = whenOpt(ui.chkText.isChecked)(ui.txtText.trim),
 
-  private def updateTypeState(currentState: DocBasicSearchFormState) = {
-    if (ui.chkType.isChecked) {
-      ui.lytType.setEnabled(true)
-      ui.lytType.chkText.checked = currentState.docType.map(_(DocumentTypeDomainObject.TEXT)).getOrElse(false)
-      ui.lytType.chkFile.checked = currentState.docType.map(_(DocumentTypeDomainObject.FILE)).getOrElse(false)
-      ui.lytType.chkHtml.checked = currentState.docType.map(_(DocumentTypeDomainObject.HTML)).getOrElse(false)
-      currentState
-    } else {
-      val types =
-        Set(
-          whenOpt(ui.lytType.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
-          whenOpt(ui.lytType.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
-          whenOpt(ui.lytType.chkHtml.isChecked) { DocumentTypeDomainObject.HTML }
-        ).flatten
+    docType = whenOpt(ui.chkType.isChecked) {
+      Set(
+        whenOpt(ui.lytType.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
+        whenOpt(ui.lytType.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
+        whenOpt(ui.lytType.chkHtml.isChecked) { DocumentTypeDomainObject.HTML }
+      ).flatten
+    },
 
-      val newState = currentState.copy(
-        docType = if (types.size == 3) None else Some(types)
-      )
-
-      ui.lytType.setEnabled(true)
-      forlet(ui.lytType.chkText, ui.lytType.chkFile, ui.lytType.chkHtml) { _.check }
-      ui.lytType.setEnabled(false)
-      newState
-    }
-  }
+    advanced = whenOpt(ui.chkAdvanced.isChecked)(ui.lytAdvanced.cbTypes.value)
+  )
 }
 
 case class DocSearchRange(start: Option[Int] = None, end: Option[Int] = None)
 case class DateSearchRange(start: Option[Date] = None, end: Option[Date] = None)
 
 case class DocBasicSearchFormState(
-  range: Option[DocSearchRange] = None,
-  text: Option[String] = None,
-  docType: Option[Set[DocumentTypeDomainObject]] = None
+  range: Option[DocSearchRange] = Some(DocSearchRange(None, None)),
+  text: Option[String] = Some(""),
+  docType: Option[Set[DocumentTypeDomainObject]] = Some(Set.empty),
+  advanced: Option[String] = None // value in drop-down
 )
 
 
@@ -675,11 +646,11 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
 class DocAdvancedSearchForm extends ImcmsServicesSupport {
   val ui = new DocAdvancedSearchFormUI
 
-  ui.chkCategories.addClickHandler { toggleCategories() }
-  ui.chkDates.addClickHandler { toggleDates() }
-  ui.chkRelationships.addClickHandler { toggleRelationships() }
-  ui.chkMaintainers.addClickHandler { toggleMaintainers() }
-  ui.chkStatus.addClickHandler { toggleStatus() }
+  ui.chkCategories.addValueChangeHandler { toggleCategories() }
+  ui.chkDates.addValueChangeHandler { toggleDates() }
+  ui.chkRelationships.addValueChangeHandler { toggleRelationships() }
+  ui.chkMaintainers.addValueChangeHandler { toggleMaintainers() }
+  ui.chkStatus.addValueChangeHandler { toggleStatus() }
 
   def reset() {
     forlet(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers, ui.chkStatus)(_.uncheck)
@@ -690,7 +661,7 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
     }
 
     forlet(ui.lytMaintainers.ulCreators, ui.lytMaintainers.ulPublishers) { ul =>
-      ul.chkEnabled.uncheck
+      ul.chkEnabled.check
       ul.chkEnabled.fireValueChange(true)
       ul.lstUsers.removeAllItems
     }
@@ -714,21 +685,15 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
     ui.lytRelationships.cbChildren.value = "doc.search.advanced.frm.fld.cb_relationships_children.item.undefined"
   }
 
-  private def toggle(checkBox: CheckBox, component: Component, name: String) {
-    ui.addComponent(
-      if (checkBox.checked) component else new Label("doc.search.advanced.frm.fld.lbl_undefined".i) with UndefinedSize,
-      name)
-  }
-
-  private def toggleCategories() = toggle(ui.chkCategories, ui.tcsCategories, "doc.search.advanced.frm.fld.categories")
-  private def toggleMaintainers() = toggle(ui.chkMaintainers, ui.lytMaintainers, "doc.search.advanced.frm.fld.maintainers")
-  private def toggleRelationships() = toggle(ui.chkRelationships, ui.lytRelationships, "doc.search.advanced.frm.fld.relationships")
-  private def toggleDates() = toggle(ui.chkDates, ui.lytDates, "doc.search.advanced.frm.fld.dates")
-  private def toggleStatus() = toggle(ui.chkStatus, ui.lytStatus, "doc.search.advanced.frm.fld.status")
+  private def toggleCategories() = SearchFormUtil.toggle(ui, "doc.search.advanced.frm.fld.categories", ui.chkCategories, ui.tcsCategories)
+  private def toggleMaintainers() = SearchFormUtil.toggle(ui, "doc.search.advanced.frm.fld.maintainers", ui.chkMaintainers, ui.lytMaintainers)
+  private def toggleRelationships() = SearchFormUtil.toggle(ui, "doc.search.advanced.frm.fld.relationships", ui.chkRelationships, ui.lytRelationships)
+  private def toggleDates() = SearchFormUtil.toggle(ui, "doc.search.advanced.frm.fld.dates", ui.chkDates, ui.lytDates)
+  private def toggleStatus() = SearchFormUtil.toggle(ui, "doc.search.advanced.frm.fld.status", ui.chkStatus, ui.lytStatus)
 }
 
 
-class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_form") with FullWidth {
+class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_form") with UndefinedSize {
   val chkStatus = new CheckBox("doc.search.advanced.frm.fld.chk_status".i) with Immediate
   val lytStatus = new HorizontalLayout with Spacing with UndefinedSize {
     val chkNew = new CheckBox("doc.search.advanced.frm.fld.chk_status_new".i)
