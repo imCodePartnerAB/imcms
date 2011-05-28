@@ -20,7 +20,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       app.initAndShow(new OkCancelDialog("user.dlg.new.caption".i)) { dlg =>
         dlg.mainUI = letret(new UserEditorUI) { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
-            c.tslRoles.addItem(role.getId, role.getName)
+            c.tcsRoles.addItem(role.getId, role.getName)
           }
 
           let(imcmsServices.getLanguageMapper.getDefaultLanguage) { l =>
@@ -37,7 +37,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
               u setLastName c.txtLastName.value
               u setLoginName c.txtLogin.value
               u setPassword c.txtPassword.value
-              u setRoleIds c.tslRoles.value.toSeq.toArray
+              u setRoleIds c.tcsRoles.value.toSeq.toArray
               u setLanguageIso639_2 c.sltUILanguage.value
 
               roleMapper.addUser(u)
@@ -59,10 +59,10 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
             c.txtPassword setValue user.getPassword
 
             for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
-              c.tslRoles.addItem(role.getId, role.getName)
+              c.tcsRoles.addItem(role.getId, role.getName)
             }
 
-            c.tslRoles.value = user.getRoleIds.filterNot(RoleId.USERS ==).toSeq
+            c.tcsRoles.value = user.getRoleIds.filterNot(RoleId.USERS ==).toSeq
 
             let(imcmsServices.getLanguageMapper.getDefaultLanguage) { l =>
               c.sltUILanguage.addItem(l)
@@ -76,7 +76,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
               user setLastName c.txtLastName.value
               user setLoginName c.txtLogin.value
               user setPassword c.txtPassword.value
-              user setRoleIds c.tslRoles.value.toSeq.toArray
+              user setRoleIds c.tcsRoles.value.toSeq.toArray
               user setLanguageIso639_2 c.sltUILanguage.value
 
               roleMapper.saveUser(user)
@@ -115,7 +115,7 @@ class UserEditorUI extends FormLayout with UndefinedSize {
   val txtFirstName = new TextField("user.editor.frm.fld.txt_first_name".i)
   val txtLastName = new TextField("user.editor.frm.fld.txt_last_name".i)
   val chkActivated = new CheckBox("user.editor.frm.fld.chk_activated".i)
-  val tslRoles = new TwinColSelect("user.editor.frm.fld.tcs_roles".i) with MultiSelect2[RoleId] with DefaultI18nTCS
+  val tcsRoles = new TwinColSelect("user.editor.frm.fld.tcs_roles".i) with MultiSelect2[RoleId] with TCSDefaultI18n
   val sltUILanguage = new Select("user.editor.frm.fld.interface_language".i) with ValueType[String] with NoNullSelection
   val txtEmail = new TextField("user.editor.frm.fld.email".i)
 
@@ -142,5 +142,5 @@ class UserEditorUI extends FormLayout with UndefinedSize {
 
   forlet(txtLogin, txtPassword, txtVerifyPassword, txtEmail) { _ setRequired true }
 
-  addComponents(this, lytLogin, lytPassword, lytName, txtEmail, sltUILanguage, tslRoles, lytContacts)
+  addComponents(this, lytLogin, lytPassword, lytName, txtEmail, sltUILanguage, tcsRoles, lytContacts)
 }

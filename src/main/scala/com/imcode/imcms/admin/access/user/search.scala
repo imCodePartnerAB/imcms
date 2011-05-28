@@ -154,7 +154,7 @@ class UserSearchFormUI extends CustomLayout("admin/access/user/search/form") wit
   }
 
   val chkRoles = new CheckBox("user.search.frm.fld.chk_roles".i) with ExposeValueChange with Immediate
-  val tcsRoles = new TwinColSelect with MultiSelect2[RoleId]
+  val tcsRoles = new TwinColSelect with MultiSelect2[RoleId] with TCSDefaultI18n
   val chkShowInactive = new CheckBox("user.search.frm.fld.chk_show_inactive".i) with ExposeValueChange with Immediate
   val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
     val btnReset = new Button("btn_reset".i) with SmallStyle

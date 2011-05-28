@@ -188,7 +188,7 @@ trait MultiSelect2[T >: Null] extends XSelect[T] with ValueType[JCollection[T]] 
   def isSelected = value.nonEmpty
 }
 
-trait DefaultI18nTCS extends TwinColSelect {
+trait TCSDefaultI18n extends TwinColSelect {
   setLeftColumnCaption("tcs.col.available.caption".i)
   setRightColumnCaption("tcs.col.selected.caption".i)
 }
