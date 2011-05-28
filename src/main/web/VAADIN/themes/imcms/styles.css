@@ -14,10 +14,12 @@ table#doc_search_advanced {
 table#user_search,
 table#doc_search_basic {
     background: #fffff0;
+    margin-bottom: 1px;
 }
 
 table#doc_search_advanced {
     background: #e0ffff;
+    margin-top: -1px;
 }
 
 table#user_search th,

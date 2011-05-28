@@ -209,7 +209,7 @@ class DocSearch(val docsContainer: DocsContainer) {
 class DocSearchUI(
     basicSearchFormUI: DocBasicFormSearchUI,
     advancedSearchFormUI: DocAdvancedSearchFormUI,
-    docsUI: DocsUI) extends GridLayout(1, 2) with Spacing with FullSize {
+    docsUI: DocsUI) extends GridLayout(1, 2) with FullSize {
 
   private val pnlAdvancedSearchForm = new Panel with Scrollable with FullSize {
     setStyleName(Panel.STYLE_LIGHT)

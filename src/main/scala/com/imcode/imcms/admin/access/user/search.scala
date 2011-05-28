@@ -42,7 +42,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
     setColumnHeaders(getContainerPropertyIds.map(_.toString.i).toArray)
   }
 
-  val ui = letret(new GridLayout(1, 2) with Spacing) { ui =>
+  val ui = letret(new GridLayout(1, 2)) { ui =>
     addComponents(ui, form.ui, usersUI)
   }
 
