@@ -34,14 +34,17 @@ class SolrDirectoryIndex implements DirectoryIndex {
     private final static DateFormat solrDateFormat = DateUtil.getThreadLocalDateFormat();
 
     private final SolrServer solrServer;
+    private final DocumentMapper documentMapper;
     private final SolrIndexDocumentFactory indexDocumentFactory;
 
     private boolean inconsistent;
 
     private static final int NUM_HITS = 1;
 
-    SolrDirectoryIndex(SolrServer solrServer, SolrIndexDocumentFactory indexDocumentFactory) {
+    SolrDirectoryIndex(SolrServer solrServer, DocumentMapper documentMapper,
+                       SolrIndexDocumentFactory indexDocumentFactory) {
         this.solrServer = solrServer;
+        this.documentMapper = documentMapper;
         this.indexDocumentFactory = indexDocumentFactory;
     }
     
@@ -132,11 +135,10 @@ class SolrDirectoryIndex implements DirectoryIndex {
 
     private List<DocumentDomainObject> getDocumentList( final SolrDocumentList docsList, 
                                                                final UserDomainObject searchingUser ) {
-        DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper();
         List<Integer> documentIds = new DocumentIdsList(docsList) ;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        List<DocumentDomainObject> documentList = documentGetter.getDocuments(documentIds);
+        List<DocumentDomainObject> documentList = documentMapper.getDocuments(documentIds);
         stopWatch.stop();
         if (log.isDebugEnabled()) {
             log.debug("Got "+documentList.size()+" documents in "+stopWatch.getTime()+"ms.");
@@ -154,7 +156,6 @@ class SolrDirectoryIndex implements DirectoryIndex {
     }
 
     private Date indexAllDocuments() throws SolrServerException, IOException {
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         List<Integer> documentIds = documentMapper.getAllDocumentIds();
         int documentsCount = documentIds.size();
 

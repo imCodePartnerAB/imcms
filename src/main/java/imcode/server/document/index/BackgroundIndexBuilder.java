@@ -1,5 +1,6 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
 
@@ -24,6 +25,10 @@ public class BackgroundIndexBuilder {
         this.indexDocumentFactory = indexDocumentFactory;
     }
 
+    DocumentMapper getDocumentMapper() {
+        return rebuildingDirectoryIndex.getDocumentMapper();
+    }
+
     public synchronized void start() {
         try {
             NDC.push(ClassUtils.getShortClassName(getClass())+"-"+Utility.numberToAlphaNumerics(System.identityHashCode(this)));
@@ -43,6 +48,10 @@ public class BackgroundIndexBuilder {
         } finally {
             NDC.pop();
         }
+    }
+
+    RebuildingDirectoryIndex getRebuildingDirectoryIndex() {
+        return rebuildingDirectoryIndex;
     }
 
     public synchronized void addDocument(Integer docId) {

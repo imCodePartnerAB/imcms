@@ -1,5 +1,6 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
@@ -31,11 +32,14 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     private final long indexRebuildSchedulePeriodInMilliseconds;
     private final Timer scheduledIndexRebuildTimer = new Timer(true);
     private IndexRebuildTimerTask currentIndexRebuildTimerTask ;
+    private DocumentMapper documentMapper;
 
     private DirectoryIndex index = new NullDirectoryIndex();
 
-    public RebuildingDirectoryIndex(SolrServer solrServer, float indexRebuildSchedulePeriodInMinutes,
+    public RebuildingDirectoryIndex(SolrServer solrServer, DocumentMapper documentMapper,
+                                    float indexRebuildSchedulePeriodInMinutes,
                                     SolrIndexDocumentFactory indexDocumentFactory) {
+        this.documentMapper = documentMapper;
         indexRebuildSchedulePeriodInMilliseconds = (long) ( indexRebuildSchedulePeriodInMinutes * DateUtils.MILLIS_PER_MINUTE );
         backgroundIndexBuilder = new BackgroundIndexBuilder(solrServer, this, indexDocumentFactory);
 
@@ -49,7 +53,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
             long indexModifiedTime = 0;
             if ( numDocs > 0) {
                 indexModifiedTime = lastModifiedDate.getTime();
-                index = new SolrDirectoryIndex(solrServer, indexDocumentFactory);
+                index = new SolrDirectoryIndex(solrServer, documentMapper, indexDocumentFactory);
             } else {
                 rebuildBecauseOfError("No existing index.", null);
             }
@@ -64,6 +68,10 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         } catch (IOException e) {
             throw new IndexException(e);
         }
+    }
+
+    DocumentMapper getDocumentMapper() {
+        return documentMapper;
     }
 
     private synchronized Date restartIndexRebuildScheduling(long indexModifiedTime) {

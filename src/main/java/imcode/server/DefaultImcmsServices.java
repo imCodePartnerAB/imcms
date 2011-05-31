@@ -252,7 +252,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
         documentMapper = new DocumentMapper(this, this.getDatabase());
         documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,
                 new PhaseQueryFixingDocumentIndex(
-                    new RebuildingDirectoryIndex(solrServer, getConfig().getIndexingSchedulePeriodInMinutes(),
+                    new RebuildingDirectoryIndex(solrServer, documentMapper,
+                        getConfig().getIndexingSchedulePeriodInMinutes(),
                         new SolrIndexDocumentFactory(getCategoryMapper()))))) ;
     }
 

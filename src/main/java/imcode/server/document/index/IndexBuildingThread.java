@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -34,7 +35,9 @@ class IndexBuildingThread extends Thread {
 
     public void run() {
         NDC.push(Thread.currentThread().getName());
-        SolrDirectoryIndex newIndex = new SolrDirectoryIndex(solrServer, indexDocumentFactory) ;
+        SolrDirectoryIndex newIndex = new SolrDirectoryIndex(solrServer,
+                backgroundIndexBuilder.getDocumentMapper(),
+                indexDocumentFactory) ;
         try {
             synchronized ( this ) {
                 indexing = true ;
