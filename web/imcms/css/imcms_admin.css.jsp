@@ -200,6 +200,16 @@ if (isNS) { %>
 	padding: <%= isGecko ? 3 : 2 %>px 2px; }
 
 
+.imcmsFormBtnCancel {
+	background-color: #dc4d4d;
+	border-color: #dc4d4d;
+}
+
+.imcmsFormBtnDefault {
+	background-color: #61b863;
+	border-color: #61b863;
+}
+
 #validateBtn {
 	padding-left: 20px;
 	background-position: 0 -3px !important;
@@ -219,6 +229,21 @@ if (isNS) { %>
 }
 .iconValidate_false {
 	background-image: url(<%= cp %>/imcms/images/icons/icon_validate_false.gif);
+}
+
+#menuItems .ui-sortable-handle {
+	width: 50px;
+	height: 20px;
+	margin: 0;
+	padding: 0;
+	cursor: move;
+	background: transparent url(<%= cp %>/imcms/images/icons/icon_move.gif) 50% 50% no-repeat;
+}
+#handleHeading {
+	width: 50px;
+	margin: 0;
+	padding: 0 0 5px 0;
+	font-weight: bold;
 }
 
 <%

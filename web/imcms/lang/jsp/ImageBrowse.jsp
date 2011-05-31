@@ -63,7 +63,7 @@ if (null != imageBrowsePage.getLabel() ) { %>
 } %>
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
-	<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2001" />" /></td>
+	<td><input type="Submit" class="imcmsFormBtn imcmsFormBtnCancel" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2001" />" /></td>
 	<td>&nbsp;</td>
 	<td><input type="button" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2002" />" title="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2003" />" class="imcmsFormBtn" onClick="openHelpW('ImageArchive')" /></td>
 </tr>
@@ -84,7 +84,10 @@ if (null != imageBrowsePage.getLabel() ) { %>
 	</table></td>
 	
 	<td style="padding-left:25px;">
-	<b><fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/7" /></b></td>
+	<b><fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/7" /></b>
+	<span class="imcmsAdmDim" style="padding-left:20px;">
+		Double click image to use. Single click to select.
+	</span></td>
 </tr>
 <tr valign="top">
 	<td>
@@ -184,12 +187,12 @@ if (null != imageBrowsePage.getLabel() ) { %>
 	<td colspan="2" align="right">
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="submit" class="imcmsFormBtn" id="useBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__OK_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2005" />" /></td>
+		<td><input type="submit" class="imcmsFormBtn imcmsFormBtnDefault" id="useBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__OK_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2005" />" /></td>
 		<td>&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2006" />"
 		onclick="return previewFile();"></td>
 		<td>&nbsp;</td>
-		<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2007" />"></td>
+		<td><input type="Submit" class="imcmsFormBtn imcmsFormBtnCancel" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/2007" />"></td>
 	</tr>
 	</table></td>
 </tr>
