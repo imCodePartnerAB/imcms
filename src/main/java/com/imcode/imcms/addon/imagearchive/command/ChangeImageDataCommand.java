@@ -37,6 +37,7 @@ public class ChangeImageDataCommand implements Serializable {
     private Date publishDate;
     private Date archiveDate;
     private Date publishEndDate;
+    private String altText;
     
     private List<Integer> categoryIds = new ArrayList<Integer>();
     private List<String> keywordNames = new ArrayList<String>();
@@ -55,6 +56,7 @@ public class ChangeImageDataCommand implements Serializable {
         this.description = exif.getDescription();
         this.imageNm = image.getImageNm();
         this.uploadedBy = image.getUploadedBy();
+        this.altText = image.getAltText();
         
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         
@@ -92,6 +94,7 @@ public class ChangeImageDataCommand implements Serializable {
         image.setPublishDt(publishDate);
         image.setArchiveDt(archiveDate);
         image.setPublishEndDt(publishEndDate);
+        image.setAltText(altText);
     }
     
     public String getArchiveDt() {
@@ -310,5 +313,13 @@ public class ChangeImageDataCommand implements Serializable {
 
     public void setFile(CommonsMultipartFile file) {
         this.file = file;
+    }
+
+    public String getAltText() {
+        return altText;
+    }
+
+    public void setAltText(String altText) {
+        this.altText = altText;
     }
 }

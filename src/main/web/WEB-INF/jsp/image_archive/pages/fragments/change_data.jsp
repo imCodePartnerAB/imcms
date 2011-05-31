@@ -180,3 +180,12 @@
         <form:errors path="publishEndDt" cssClass="red"/>
     </div>
 </div>
+<div class="minH30 clearboth clearfix">
+    <label for="altText" class="left" style="width:130px;">
+        <spring:message code="archive.changeData.altText" htmlEscape="true"/>
+    </label>
+    <div class="left">
+        <form:input id="altText" path="altText" maxlength="10" cssStyle="width:100px;" htmlEscape="true"/>
+        <form:errors path="altText" cssClass="red"/>
+    </div>
+</div>

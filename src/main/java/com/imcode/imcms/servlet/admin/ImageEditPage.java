@@ -162,7 +162,7 @@ public class ImageEditPage extends OkCancelPage {
         String fileName = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME));
         String archiveImageIdStr = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID));
         String lang = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__I18N_CODE));
-        String altText = StringUtils.trimToNull(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT);
+        String altText = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT));
 
         ImageSource source = null;
         String urlPath = null;

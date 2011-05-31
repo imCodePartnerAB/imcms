@@ -27,7 +27,9 @@ import org.hibernate.SessionFactory;
 public class RoleService {
     @Autowired
     private SessionFactory factory;
-    
+
+    @Autowired
+    private Facade facade;
     
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public Roles findRoleById(int id) {
@@ -113,7 +115,7 @@ public class RoleService {
             roleIds.add(Roles.USERS_ID);
 
         } else {
-            roleIds = UserService.getRoleIdsWithPermission(user, permissions);
+            roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, permissions);
             if (roleIds.isEmpty()) {
                 return Collections.EMPTY_LIST;
             }
@@ -132,7 +134,7 @@ public class RoleService {
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public List<Integer> findCategoryIds(User user, RolePermissionDomainObject... permissions) {
 
-        List<Integer> roleIds = UserService.getRoleIdsWithPermission(user, permissions);
+        List<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, permissions);
         if (roleIds.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -157,7 +159,9 @@ public class RoleService {
             roleIds.add(Roles.USERS_ID);
 
         } else {
-            roleIds = UserService.getRoleIdsWithPermission(user, permissions);
+            List<Integer> categoryIds = new ArrayList<Integer>();
+            categoryIds.add(categoryId);
+            roleIds = facade.getUserService().getRoleIdsWithPermission(user, categoryIds, permissions);
             if (roleIds.isEmpty()) {
                 return false;
             }
@@ -184,7 +188,7 @@ public class RoleService {
             roleIds.add(Roles.USERS_ID);
 
         } else {
-            roleIds = UserService.getRoleIdsWithPermission(user, Roles.ALL_PERMISSIONS);
+            roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, Roles.ALL_PERMISSIONS);
             if (roleIds.isEmpty()) {
                 return Collections.EMPTY_LIST;
             }

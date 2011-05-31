@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.imcode.imcms.servlet.admin.ImageEditPage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,6 +80,7 @@ public class GeneralController {
         
         String imageName = facade.getImageService().findImageName(id);
         String fileName = facade.getFileService().transferImageToImcms(id);
+        String altText = facade.getImageService().findImageAltText(id);
         
         StringBuilder builder = new StringBuilder(returnTo);
         builder.append("&archive_img_id=");
@@ -87,6 +89,8 @@ public class GeneralController {
         builder.append(Utils.encodeUrl(imageName));
         builder.append("&archive_file_nm=");
         builder.append(Utils.encodeUrl(fileName));
+        builder.append("&" + ImageEditPage.REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT + "=");
+        builder.append(Utils.encodeUrl(altText));
         
         try {
             response.sendRedirect(builder.toString());

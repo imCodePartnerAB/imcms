@@ -113,12 +113,12 @@ public class PreferencesController {
         CategoryType imagesCategoryType = cms.getDocumentService().getCategoryType("Images");
         if(imagesCategoryType == null) {
             try {
-                imagesCategoryType = cms.getDocumentService().createNewCategoryType("Images", 1);
+                imagesCategoryType = cms.getDocumentService().createNewCategoryType("Images", 0);
             } catch (CategoryTypeAlreadyExistsException e) {
                 e.printStackTrace();
             }
         }
-        
+
         if (actionCommand.isCreateCategory()) {
             createCategoryCommand.setCreateCategoryType(imagesCategoryType.getId());
             processCreateCategory(createCategoryCommand, createCategoryResult);

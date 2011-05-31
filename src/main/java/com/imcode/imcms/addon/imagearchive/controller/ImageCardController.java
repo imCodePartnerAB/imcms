@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.imcode.imcms.addon.imagearchive.util.SessionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -106,6 +107,8 @@ public class ImageCardController {
         mav.addObject("image", image);
         mav.addObject("categories", getCategories(image));
         mav.addObject("keywords", getKeywords(image));
+        mav.addObject("canUseInImcms", SessionUtils.getImcmsReturnToUrl(request.getSession()) != null
+                && (facade.getImageService().canUseImage(user, imageId) || image.isCanChange()));
         
         return mav;
     }
@@ -274,7 +277,7 @@ public class ImageCardController {
     
     @RequestMapping("/archive/image/*/change")
     public ModelAndView changeHandler(
-            @ModelAttribute("changeData") ChangeImageDataCommand changeData, 
+            @ModelAttribute("changeData") ChangeImageDataCommand changeData,
             BindingResult result, 
             @ModelAttribute ImageCardChangeActionCommand action,  
             HttpServletRequest request, 
@@ -415,6 +418,12 @@ public class ImageCardController {
                 } else {
                     facade.getImageService().updateData(image, changeData.getCategoryIds(), imageKeywords);
                 }
+
+                /* refreshing categories since those are also set earlier, before update(in case of file upload) */
+                mav.getModel().remove("categories");
+                mav.getModel().remove("imageCategories");
+                mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
+                mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));
                 
                 facade.getFileService().copyTemporaryImageToCurrent(imageId);
                 

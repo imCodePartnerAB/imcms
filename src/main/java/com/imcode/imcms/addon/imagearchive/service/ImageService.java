@@ -1,5 +1,6 @@
 package com.imcode.imcms.addon.imagearchive.service;
 
+import com.imcode.imcms.api.Role;
 import imcode.server.user.RoleDomainObject;
 
 import java.io.File;
@@ -75,7 +76,12 @@ public class ImageService {
         } else if (user.isSuperAdmin() || image.getUsersId() == user.getId()) {
             image.setCanChange(true);
         } else {
-            List<Integer> roleIds = UserService.getRoleIdsWithPermission(user, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
+            List<Categories> imageCategories = image.getCategories();
+            List<Integer> categoryIds = new ArrayList<Integer>();
+            for(Categories c: imageCategories) {
+                categoryIds.add(c.getId());
+            }
+            List<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, categoryIds, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
 
             if (!roleIds.isEmpty()) {
                 long count = (Long) session.createQuery(
@@ -233,6 +239,7 @@ public class ImageService {
                 .setDate("archiveDt", image.getArchiveDt())
                 .setDate("publishEndDt", image.getPublishEndDt())
                 .setShort("statusActive", Images.STATUS_ACTIVE)
+                .setString("altText", image.getAltText())
                 .setLong("id", image.getId())
                 .executeUpdate();
 
@@ -276,6 +283,7 @@ public class ImageService {
                 .setDate("archiveDt", image.getArchiveDt())
                 .setDate("publishEndDt", image.getPublishEndDt())
                 .setShort("statusActive", Images.STATUS_ACTIVE)
+                .setString("altText", image.getAltText())
                 .setLong("id", image.getId())
                 .executeUpdate();
 
@@ -669,7 +677,7 @@ public class ImageService {
                     .list();
         }
 
-        List<Integer> roleIds = UserService.getRoleIdsWithPermission(user, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
+        List<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
         if (roleIds.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -688,7 +696,7 @@ public class ImageService {
             return true;
         }
 
-        List<Integer> roleIds = UserService.getRoleIdsWithPermission(user, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
+        List<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, categoryIds, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
         if (roleIds.isEmpty()) {
             return false;
         }
@@ -747,7 +755,7 @@ public class ImageService {
             return true;
         }
 
-        List<Integer> roleIds = UserService.getRoleIdsWithPermission(user, RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION);
+        List<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION);
         if (roleIds.isEmpty()) {
             return false;
         }
@@ -767,6 +775,15 @@ public class ImageService {
 
         return (String) factory.getCurrentSession()
                 .createQuery("SELECT im.imageNm FROM Images im WHERE im.id = :imageId")
+                .setLong("imageId", imageId)
+                .uniqueResult();
+    }
+
+    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    public String findImageAltText(long imageId) {
+
+        return (String) factory.getCurrentSession()
+                .createQuery("SELECT im.altText FROM Images im WHERE im.id = :imageId")
                 .setLong("imageId", imageId)
                 .uniqueResult();
     }

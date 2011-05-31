@@ -63,7 +63,7 @@
     <div style="clear:both;"></div>
     <div style="text-align:right;margin-bottom:20px;">
             <% pageContext.setAttribute("user", ContentManagementSystem.fromRequest(request).getCurrentUser()); %>
-            <c:if test="${not user.defaultUser and not image.archived}">
+            <c:if test="${canUseInImcms and not image.archived}">
                 <c:url var="useUrl" value="/web/archive/use">
                     <c:param name="id" value="${image.id}"/>
                 </c:url>
@@ -76,7 +76,7 @@
             <a href="${infoUrl}" style="margin-right:2px;" class="btnBlue">
                 <span><spring:message code="archive.imageCard.showImageInfo" htmlEscape="true"/></span>
             </a>
-            <c:if test="${not user.defaultUser and not image.archived}">
+            <c:if test="${image.canChange and not image.archived}">
                 <c:set var="disabled" value="${!image.canChange}"/>
                 <c:url var="changeUrl" value="/web/archive/image/${image.id}/change"/>
                 <a href="${changeUrl}" style="margin-right:2px;" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
@@ -87,7 +87,7 @@
             <a href="${exifUrl}" style="margin-right:2px;" class="btnBlue">
                 <span><spring:message code="archive.imageCard.showImageDataExif" htmlEscape="true"/></span>
             </a>
-            <c:if test="${not user.defaultUser and not image.archived}">
+            <c:if test="${image.canChange and not image.archived}">
                 <c:set var="disabled" value="${!image.canChange}"/>
                 <c:url var="eraseUrl" value="/web/archive/image/${image.id}/erase"/>
                 <a href="${eraseUrl}" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
@@ -95,7 +95,9 @@
                 </a>
             </c:if>
 
-            <input type="button" class="btnBlue modalInput" name="export" value="${exportText}" rel="#exportOverlay"/>
+            <c:if test="${canUseInImcms and not image.archived}">
+                <input type="button" class="btnBlue modalInput" name="export" value="Export" rel="#exportOverlay"/>
+            </c:if>
         </div>
 </div>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/footer.jsp" %>

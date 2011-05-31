@@ -117,7 +117,7 @@ public class Images implements Serializable {
     
     @Transient
     private boolean canChange;
-    
+
     
     public Images() {
     }
@@ -323,7 +323,7 @@ public class Images implements Serializable {
     public void setCanChange(boolean canChange) {
         this.canChange = canChange;
     }
-    
+
     
     @Override
     public boolean equals(Object obj) {
