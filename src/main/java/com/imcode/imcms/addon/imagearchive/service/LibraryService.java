@@ -1,15 +1,9 @@
 package com.imcode.imcms.addon.imagearchive.service;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import com.imcode.imcms.addon.imagearchive.util.Utils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
@@ -231,10 +225,22 @@ public class LibraryService {
                 .setInteger("libraryId", libraryId)
                 .executeUpdate();
 
+
+        /* applying the same permissions to this library's sub libraries */
+        Libraries library = findLibraryById(libraryId);
+        List<Libraries> allLibraries = findLibraries();
+
+        List<Integer> idsOfSubLibraries = Utils.getLibrarySubLibriesIds(library, allLibraries);
+        List<Integer> libraryTreeIds = new ArrayList<Integer>();
+        libraryTreeIds.add(library.getId());
+        for(Integer subLibId: idsOfSubLibraries) {
+            libraryTreeIds.add(subLibId);
+        }
+
         if (libraryRoles.isEmpty()) {
             session.createQuery(
-                    "DELETE FROM LibraryRoles lr WHERE lr.libraryId = :libraryId")
-                    .setInteger("libraryId", libraryId) 
+                    "DELETE FROM LibraryRoles lr WHERE lr.libraryId IN (:libraryIds)")
+                    .setParameterList("libraryIds", libraryTreeIds)
                     .executeUpdate();
 
             return;
@@ -246,13 +252,20 @@ public class LibraryService {
         }
 
         List<Integer> existingRoleIds = session.createQuery(
-                "SELECT lr.roleId FROM LibraryRoles lr WHERE lr.libraryId = :libraryId")
-                .setInteger("libraryId", libraryId)
+                "SELECT lr.roleId FROM LibraryRoles lr WHERE lr.libraryId IN (:libraryIds)")
+                .setParameterList("libraryIds", libraryTreeIds)
                 .list();
+
+        if(existingRoleIds == null) {
+            existingRoleIds = new ArrayList<Integer>();
+        }
+
+        /* removing role id duplicates */
+        Set<Integer> setOfExistingRoleIds = new LinkedHashSet<Integer>(existingRoleIds);
 
         List<Integer> toDelete = new ArrayList<Integer>();
         List<LibraryRolesDto> toUpdate = new ArrayList<LibraryRolesDto>();
-        for (Integer roleId : existingRoleIds) {
+        for (Integer roleId : setOfExistingRoleIds) {
             if (roleMap.containsKey(roleId)) {
                 toUpdate.add(roleMap.get(roleId));
                 roleMap.remove(roleId);
@@ -262,28 +275,30 @@ public class LibraryService {
         }
 
         if (!toDelete.isEmpty()) {
-            session.createQuery("DELETE FROM LibraryRoles lr WHERE lr.libraryId = :libraryId AND lr.roleId IN (:roleIds)")
-                    .setInteger("libraryId", libraryId)
+            session.createQuery("DELETE FROM LibraryRoles lr WHERE lr.libraryId IN (:libraryIds) AND lr.roleId IN (:roleIds)")
+                    .setParameterList("libraryIds", libraryTreeIds)
                     .setParameterList("roleIds", toDelete)
                     .executeUpdate();
         }
 
 
         Collection<LibraryRolesDto> toCreate = roleMap.values();
-        for (LibraryRolesDto libraryRoleDto : toCreate) {
-            LibraryRoles libraryRole = new LibraryRoles();
-            libraryRole.setLibraryId(libraryId);
-            libraryRole.setRoleId(libraryRoleDto.getRoleId());
-            libraryRole.setCanUse(libraryRoleDto.isCanUse());
-            libraryRole.setCanChange(libraryRoleDto.isCanChange());
+        for(Integer libId: libraryTreeIds) {
+            for (LibraryRolesDto libraryRoleDto : toCreate) {
+                LibraryRoles libraryRole = new LibraryRoles();
+                libraryRole.setLibraryId(libId);
+                libraryRole.setRoleId(libraryRoleDto.getRoleId());
+                libraryRole.setCanUse(libraryRoleDto.isCanUse());
+                libraryRole.setCanChange(libraryRoleDto.isCanChange());
 
-            session.persist(libraryRole);
+                session.persist(libraryRole);
+            }
         }
 
         Query updateQuery = session.createQuery(
                 "UPDATE LibraryRoles lr SET lr.canUse = :canUse, lr.canChange = :canChange, lr.updatedDt = current_timestamp() " +
-                "WHERE lr.libraryId = :libraryId AND lr.roleId = :roleId")
-                .setInteger("libraryId", libraryId);
+                "WHERE lr.libraryId IN (:libraryIds) AND lr.roleId = :roleId")
+                .setParameterList("libraryIds", libraryTreeIds);
         for (LibraryRolesDto libraryRoleDto : toUpdate) {
             updateQuery.setInteger("roleId", libraryRoleDto.getRoleId())
                     .setBoolean("canUse", libraryRoleDto.isCanUse())
@@ -349,22 +364,19 @@ public class LibraryService {
             return library;
         }
 
-        List<Integer> permissions = session.createQuery(
-                "SELECT DISTINCT lr.permissions FROM LibraryRoles lr WHERE lr.libraryId = :libraryId AND lr.roleId IN (:roleIds)")
+        boolean canUse = session.createQuery(
+                "SELECT DISTINCT lr.permissions FROM LibraryRoles lr WHERE lr.libraryId = :libraryId AND lr.roleId IN (:roleIds)" +
+                        " AND lr.canUse = 1 OR lr.canChange = 1")
                 .setInteger("libraryId", libraryId)
                 .setParameterList("roleIds", roleIds)
-                .list();
+                .list().size() > 0L;
 
-        boolean canUse = false;
-        boolean canChange = false;
-        for (int permission : permissions) {
-            if ((permission & LibraryRoles.PERMISSION_USE) == LibraryRoles.PERMISSION_USE) {
-                canUse = true;
-            }
-            if ((permission & LibraryRoles.PERMISSION_CHANGE) == LibraryRoles.PERMISSION_CHANGE) {
-                canChange = true;
-            }
-        }
+        boolean canChange = session.createQuery(
+                "SELECT DISTINCT lr.permissions FROM LibraryRoles lr WHERE lr.libraryId = :libraryId AND lr.roleId IN (:roleIds)" +
+                        " AND lr.canChange = 1")
+                .setInteger("libraryId", libraryId)
+                .setParameterList("roleIds", roleIds)
+                .list().size() > 0L;
 
         library.setCanUse(canUse);
         library.setCanChange(canChange);

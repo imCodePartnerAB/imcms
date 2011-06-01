@@ -1,15 +1,23 @@
 package com.imcode.imcms.addon.imagearchive.util;
 
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspWriter;
 
+import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
+import com.imcode.imcms.addon.imagearchive.entity.Libraries;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -90,6 +98,64 @@ public class Utils {
             log.warn(ex.getMessage(), ex);
         }
         
+        return null;
+    }
+
+    public static List<Integer> getLibrarySubLibriesIds(Libraries rootLibrary, List<Libraries> allLibraries) {
+        List<Integer> subLibrariesIds = new ArrayList<Integer>();
+
+        String path = rootLibrary.getFilepath();
+        if (path != null) {
+            File file = new File(path, rootLibrary.getFolderNm());
+            try {
+                getSubdirs(file, new FileFilter() {
+                    public boolean accept(File file) {
+                        String name = file.getName();
+
+                        return file.isDirectory() && name.length() <= 255;
+                    }
+                }, subLibrariesIds, allLibraries);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return subLibrariesIds;
+    }
+
+    private static void getSubdirs(File file, FileFilter filter, List<Integer> subLibIds, List<Libraries> allLibs) throws IOException {
+        if (file == null) {
+            return;
+        }
+
+        File[] subDirsTmp = file.listFiles(filter);
+        if (subDirsTmp == null) {
+            subDirsTmp = new File[0];
+        }
+
+        List<File> subdirs = Arrays.asList(subDirsTmp);
+        subdirs = new ArrayList<File>(subdirs);
+
+        for (File subdir : subdirs) {
+            Libraries subLib = matchPathToLibrary(subdir, allLibs);
+            if(subLib == null) {
+                return;
+            }
+            subLibIds.add(subLib.getId());
+            getSubdirs(subdir, filter, subLibIds, allLibs);
+        }
+    }
+
+    private static Libraries matchPathToLibrary(File path, List<Libraries> allLibraries) {
+        for(Libraries lib: allLibraries) {
+            if(lib.getFilepath() != null) {
+                File f = new File(lib.getFilepath(), lib.getFolderNm());
+                if(path.equals(f)) {
+                    return lib;
+                }
+            }
+        }
+
         return null;
     }
     
