@@ -168,7 +168,7 @@
    <field name="publication_end_datetime" type="date" indexed="true" stored="false" />
    <field name="archived_datetime" type="date" indexed="true" stored="false" />
    <field name="status" type="int" indexed="true" stored="false" />
-   <!-- add properties -->
+   <dynamicField name="imcms.document*" type="string" indexed="true" stored="false" multiValued="true" />
    <field name="template" type="string" indexed="true" stored="false" />
    <field name="nonstripped_text" type="string" indexed="true" stored="false" multiValued="true" />
    <field name="text" type="string" indexed="true" stored="false" multiValued="true" />
