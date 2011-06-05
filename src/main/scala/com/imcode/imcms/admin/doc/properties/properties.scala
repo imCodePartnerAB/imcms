@@ -6,16 +6,18 @@ import scala.collection.JavaConversions._
 
 import com.imcode.imcms.vaadin._
 import imcode.server.Imcms
-import api.CategoryType
 import imcode.server.document.{CategoryTypeDomainObject, DocumentDomainObject}
-import com.vaadin.ui._
 import admin.doc.{PublicationLyt, PermissionsEditor}
+import com.vaadin.ui._
+import javax.sound.sampled.ReverbType
+import api.{I18nMeta, I18nLanguage, Meta, CategoryType}
+
 
 //trait PropertiesDialog { this: OKDialog =>
 //  mainUI =
 //}
 
-class Properties(doc: DocumentDomainObject) {
+class Properties(doc: DocumentDomainObject) extends ImcmsServicesSupport {
 
   private var keywordsOpt = Option.empty[Keywords]
   private var categoriesOpt = Option.empty[Categories]
@@ -38,6 +40,7 @@ class Properties(doc: DocumentDomainObject) {
           ui.sp.setSecondComponent(new PublicationLyt)
 
         case "Appearence" =>
+          ui.sp.setSecondComponent(new Appearance(doc.getMeta, imcmsServices.getDocumentMapper.getI18nMetas(doc.getId).map(m => m.getLanguage -> m).toMap).ui)
 
         case "Keywords" =>
           if (keywordsOpt.isEmpty) keywordsOpt = Some(new Keywords(doc.getKeywords.toSeq))
@@ -179,4 +182,51 @@ class KeywordsUI extends GridLayout(3,2) with Spacing with UndefinedSize {
   addComponent(btnAdd, 1, 0)
   addComponent(btnRemove, 2, 0)
   addComponent(lstKeywords, 0, 1, 2, 1)
+}
+
+
+class Appearance(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extends ImcmsServicesSupport {
+  val ui = new AppearanceUI
+
+  ui.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
+  ui.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show in default language")
+
+  revert()
+
+  def revert() {
+    ui.cbShowMode.select(meta.getI18nShowSetting)
+
+    ui.tblI18nMetas.removeAllItems()
+    imcmsServices.getI18nSupport.getLanguages foreach { language =>
+      val i18nMeta = i18nMetas.get(language) getOrElse letret(new I18nMeta) { m =>
+        m.setHeadline("")
+        m.setMenuText("")
+        m.setMenuImageURL("")
+      }
+
+      ui.tblI18nMetas.addItem(
+        Array[AnyRef](language.getName, i18nMeta.getHeadline, i18nMeta.getMenuText, i18nMeta.getMenuImageURL, Boolean box meta.getLanguages.contains(language)),
+        language.getId
+      )
+    }
+  }
+}
+
+class AppearanceUI extends VerticalLayout with Spacing with UndefinedSize {
+  val tblI18nMetas = new Table with MultiSelect2[LanguageId] {
+    addContainerProperties(this,
+      ContainerProperty[String]("Language"),
+      ContainerProperty[String]("Headline"),
+      ContainerProperty[String]("Menu text"),
+      ContainerProperty[String]("Menu image"),
+      ContainerProperty[JBoolean]("Enabled"))
+  }
+
+  val cbShowMode = new ComboBox("When disabled") with SingleSelect2[Meta.DisabledLanguageShowSetting] with NoNullSelection
+
+//  val txtTitle = new TextField("Title")
+//  val txtMenuText = new TextField("Menu text")
+//  val embLinkImage = new TextField("Link image")
+
+  addComponents(this, tblI18nMetas, cbShowMode)
 }

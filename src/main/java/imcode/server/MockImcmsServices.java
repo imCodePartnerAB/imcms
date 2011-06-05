@@ -1,5 +1,6 @@
 package imcode.server;
 
+import com.imcode.imcms.api.I18nSupport;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -29,7 +30,9 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 
-public class MockImcmsServices implements ImcmsServices {
+public class
+
+        MockImcmsServices implements ImcmsServices {
 
     public Object getSpringBean(String beanName) {
 		// TODO Auto-generated method stub
@@ -234,7 +237,10 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
 	public WebApplicationContext getWebApplicationContext() {
-		// TODO Auto-generated method stub
 		return null;
 	}
+
+    public I18nSupport getI18nSupport() {
+        return null;
+    }
 }

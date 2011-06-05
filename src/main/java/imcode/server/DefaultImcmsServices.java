@@ -1,5 +1,6 @@
 package imcode.server;
 
+import com.imcode.imcms.api.I18nSupport;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.RebuildingDirectoryIndex;
@@ -101,6 +102,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
+    private I18nSupport i18nSupport;
+
+
+
     static {
         mainLog.info("Main log started.");
     }
@@ -781,5 +786,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
 	public void setDocumentMapper(DocumentMapper documentMapper) {
 		this.documentMapper = documentMapper;
-	}    
+	}
+
+    public I18nSupport getI18nSupport() {
+        return i18nSupport;
+    }
+
+    public void setI18nSupport(I18nSupport i18nSupport) {
+        this.i18nSupport = i18nSupport;
+    }
 }

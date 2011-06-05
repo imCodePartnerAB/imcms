@@ -164,7 +164,9 @@ public class Imcms {
         LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
 
         final CachingFileLoader fileLoader = new CachingFileLoader();
-        return new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+        DefaultImcmsServices services = new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+        services.setI18nSupport(getI18nSupport());
+        return services;
     }
 
     private static Database createDatabase(Properties serverprops) {
@@ -420,7 +422,7 @@ public class Imcms {
 			String languageCode = key.substring(prefixLength);
 			String value = (String)entry.getValue();
 
-    		logger.info("I18n configurtion: language code [" + languageCode + "] mapped to host(s) [" + value + "].");
+    		logger.info("I18n configuration: language code [" + languageCode + "] mapped to host(s) [" + value + "].");
 
 			I18nLanguage language = i18nSupport.getByCode(languageCode);
 

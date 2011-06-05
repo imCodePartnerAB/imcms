@@ -36,7 +36,7 @@ class PermissionsEditor(app: ImcmsApplication, meta: Meta, user: UserDomainObjec
 
     ui.miRolePermissionAdd setCommandHandler {
       app.initAndShow(new OkCancelDialog("Add role permission")) { dlg =>
-        let(dlg.setMainContent(new AddRolePermissionDialogContent)) { c =>
+        dlg.mainUI = letret(new AddRolePermissionDialogContent) { c =>
           c.ogPermission.setValue("Read")
           allButSuperadminRoleIds.filterNot(ui.tblRolesPermissions.itemIds contains) foreach { roleId =>
             c.lstRoles.addItem(roleId, roleMapper.getRole(roleId).getName)
@@ -127,21 +127,21 @@ class PermissionsEditorUI extends VerticalLayout with Spacing with UndefinedSize
   // label: Created by Super, Admin (admin)
 }
 
-class AddRolePermissionDialogContent extends FormLayout {
+class AddRolePermissionDialogContent extends FormLayout with UndefinedSize {
   val lstRoles = new ListSelect("Roles") with SingleSelect2[RoleId] with NoNullSelection
   val ogPermission = new OptionGroup("Permission", Array("Read", "Limited-1", "Limited-2", "Full").toList) //with ValueType[RoleId]
               
   addComponents(this, lstRoles, ogPermission)
 }
 
-class EditRolePermissionDialogContent extends FormLayout {
+class EditRolePermissionDialogContent extends FormLayout with UndefinedSize {
   val lstRoles = new ListSelect("Roles")
   val ogPermission = new OptionGroup("Permission", Array("Read", "Limited-1", "Limited-2", "Full").toList)
 
   addComponents(this, lstRoles, ogPermission)
 }
 
-class LimitedPermissionsDialogContent extends FormLayout {
+class LimitedPermissionsDialogContent extends FormLayout with UndefinedSize {
    //todo: What kind of meta?
   val chkEditMeta = new CheckBox("Permission to edit page meta data")
    //todo: What kind of roles/privilieges?
