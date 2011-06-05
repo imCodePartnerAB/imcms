@@ -89,7 +89,7 @@ class PermissionsEditor(app: ImcmsApplication, meta: Meta, user: UserDomainObjec
       // JUST INFO
       //<%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %>
 
-class PermissionsEditorUI extends VerticalLayout with Spacing {
+class PermissionsEditorUI extends VerticalLayout with Spacing with UndefinedSize {
   class CustomSettingsUI extends HorizontalLayout with Spacing with UndefinedSize {
     val btnEdit = new Button("Define") with LinkStyle
     val btnEditNew = new Button("Define for new document") with LinkStyle

@@ -9,8 +9,11 @@ package object imcms {
   type DocId = JInteger
   type UserId = JInteger
   type LanguageId = JInteger
+  type Keyword = String
+  type CategoryId = JInteger
 
-  implicit def stringAsBundleResourceId(string: String) = new {
+
+  implicit def stringAsResourceBundleKey(string: String) = new {
 
     private def getLocale() = ?(Imcms.getUser) match {
       case Some(user) => new Locale(user.getLanguageIso639_2)

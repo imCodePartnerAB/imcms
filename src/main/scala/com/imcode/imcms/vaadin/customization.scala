@@ -36,6 +36,10 @@ trait ValueType[A >: Null] extends Property {
 
 trait ItemIdType[A >: Null] extends Container {
   def itemIds = getItemIds.asInstanceOf[JCollection[A]]
+  def itemIds_=(ids: JCollection[A]) {
+    removeAllItems()
+    ids.foreach(addItem _)
+  }
   def item(id: A) = getItem(id)
 }
 
@@ -159,6 +163,10 @@ trait SingleSelect extends AbstractSelect {
   setMultiSelect(false)
 }
 
+trait StrictSelect[T >: Null] extends XSelect[T] {
+  def isSelected: Boolean
+}
+
 /** Select component eXtension. */
 trait XSelect[T >: Null] extends AbstractSelect with ItemIdType[T] {
   def addItem(id: T, caption: String): Item = letret(addItem(id)) { _ =>
@@ -166,7 +174,7 @@ trait XSelect[T >: Null] extends AbstractSelect with ItemIdType[T] {
   }
 }
 
-trait SingleSelect2[T >: Null] extends XSelect[T] with ValueType[T] {
+trait SingleSelect2[T >: Null] extends StrictSelect[T] with ValueType[T]  {
   setMultiSelect(false)
 
   def isSelected = value != null
@@ -177,7 +185,7 @@ trait SingleSelect2[T >: Null] extends XSelect[T] with ValueType[T] {
   }
 }
 
-trait MultiSelect2[T >: Null] extends XSelect[T] with ValueType[JCollection[T]] {
+trait MultiSelect2[T >: Null] extends StrictSelect[T] with ValueType[JCollection[T]] {
   setMultiSelect(true)
 
   override def setMultiSelect(multiSelect: Boolean) {

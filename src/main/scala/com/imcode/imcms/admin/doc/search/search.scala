@@ -1,6 +1,6 @@
 package com.imcode
 package imcms
-package admin.doc
+package admin.doc.search
 
 import scala.collection.JavaConversions._
 import com.imcode.imcms.vaadin._
@@ -20,11 +20,7 @@ import api.{LuceneParsedQuery, Document}
 import imcode.server.user.UserDomainObject
 import imcode.server.document.index.SimpleDocumentQuery
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
-import web.admin.DateRange
-import javax.management.remote.rmi._RMIConnection_Stub
-import org.omg.PortableInterceptor.NON_EXISTENT
 import com.vaadin.ui._
-import admin.doc.DocSearchRange
 import scala.Some
 
 //    // alias VIEW -> 1003
@@ -717,7 +713,7 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
   }
 
   val chkCategories = new CheckBox("doc.search.advanced.frm.fld.chk_categories".i) with Immediate
-  val tcsCategories = new TwinColSelect
+  val tcsCategories = new TwinColSelect with TCSDefaultI18n
 
   val chkRelationships = new CheckBox("doc.search.advanced.frm.fld.chk_relationships".i) with Immediate
   val lytRelationships = new HorizontalLayout with Spacing with UndefinedSize {

@@ -163,9 +163,6 @@ class UserSearchFormUI extends CustomLayout("admin/access/user/search/form") wit
     addComponents(this, btnReset, btnSearch)
   }
 
-  tcsRoles.setLeftColumnCaption("user.search.frm.fld.tcs_roles.caption.available".i)
-  tcsRoles.setRightColumnCaption("user.search.frm.fld.tcs_roles.caption.selected".i)
-
   addNamedComponents(this,
     "admin.access.user.search.frm.fld.chk_text" -> chkText,
     "admin.access.user.search.frm.fld.text" -> txtText,
