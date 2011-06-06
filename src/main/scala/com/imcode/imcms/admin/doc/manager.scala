@@ -7,9 +7,11 @@ import com.imcode.imcms.vaadin._
 import scala.collection.JavaConversions._
 import vaadin.{ImcmsApplication, FullSize}
 import com.vaadin.event.Action
-import com.vaadin.ui._
 import _root_.com.imcode.imcms.admin.doc.search.{DocSearch, AllDocsContainer, CustomDocsContainer}
 import _root_.com.imcode.imcms.admin.doc.properties.{Properties => DocProperties}
+import com.vaadin.ui._
+import imcode.server.document.{FileDocumentDomainObject, HtmlDocumentDomainObject}
+import imcode.server.document.textdocument.TextDocumentDomainObject
 
 object Actions {
   val IncludeToSelection = new Action("doc.action.include_to_selection".i)
@@ -43,6 +45,54 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       app.show(dlg, resizable = true)
     }
 
+    ui.miDocNewURL.setCommandHandler {
+      val dlg = new OKDialog("New URL Document") with CustomSizeDialog with BottomMarginDialog
+
+      val doc = new HtmlDocumentDomainObject
+      val properties = new DocProperties(doc)
+      val contentUI = new URLDocEditorUI
+
+      dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
+        ts.addTab(properties.ui, "Properties", null)
+        ts.addTab(contentUI, "Content", null)
+      }
+
+      dlg.setSize(500, 500)
+      app.show(dlg, resizable = true)
+    }
+
+    ui.miDocNewFile.setCommandHandler {
+      val dlg = new OKDialog("New File Document") with CustomSizeDialog with BottomMarginDialog
+
+      val doc = new FileDocumentDomainObject
+      val properties = new DocProperties(doc)
+      val contentUI = new FileDocEditor(app, doc, Seq.empty).ui
+
+      dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
+        ts.addTab(properties.ui, "Properties", null)
+        ts.addTab(contentUI, "Content", null)
+      }
+
+      dlg.setSize(500, 500)
+      app.show(dlg, resizable = true)
+    }
+
+    ui.miDocNewText.setCommandHandler {
+      val dlg = new OKDialog("New Text Document") with CustomSizeDialog with BottomMarginDialog
+
+      val doc = new TextDocumentDomainObject
+      val properties = new DocProperties(doc)
+      val contentUI = new NewTextDocumentFlowPage2UI
+
+      dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
+        ts.addTab(properties.ui, "Properties", null)
+        ts.addTab(contentUI, "Content", null)
+      }
+
+      dlg.setSize(500, 500)
+      app.show(dlg, resizable = true)
+    }
+
     search.docsUI.addActionHandler(new Action.Handler {
       import Actions._
 
@@ -64,6 +114,9 @@ class DocManagerUI(searchUI: Component) extends VerticalLayout with Spacing with
   val mb = new MenuBar
   val miDoc = mb.addItem("doc.mgr.mi.doc".i)
   val miDocNew = miDoc.addItem("doc.action.new".i)
+  val miDocNewFile = miDocNew.addItem("doc.action.new.file_doc".i)
+  val miDocNewURL = miDocNew.addItem("doc.action.new.url_doc".i)
+  val miDocNewText = miDocNew.addItem("doc.action.new.text_doc".i)
   val miDocEdit = miDoc.addItem("doc.action.edit".i)
   val miDocDelete = miDoc.addItem("doc.action.delete".i)
   val miView = mb.addItem("doc.mgr.mi.view".i)
@@ -76,6 +129,9 @@ class DocManagerUI(searchUI: Component) extends VerticalLayout with Spacing with
 
 
 
+/**
+ * Custom docs selection.
+ */
 class CustomDocs {
   val search = new DocSearch(new CustomDocsContainer)
   val ui = new CustomDocsUI(search.ui)

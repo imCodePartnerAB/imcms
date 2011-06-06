@@ -129,7 +129,7 @@ class URLDocEditorUI extends FormLayout {
  * If there is more than one file then one of them must be set as default.
  * Default file content is returned when an user clicks on a doc link in a browser. 
  */
-class FileDocEditorUI extends VerticalLayout {
+class FileDocEditorUI extends VerticalLayout with UndefinedSize {
   val menuBar = new MenuBar
   val miNew = menuBar.addItem("Add", null)
   val miEdit = menuBar.addItem("Edit", null)
@@ -150,13 +150,13 @@ class FileDocEditorUI extends VerticalLayout {
 }
 
 /** Add/Edit file doc's file */
-class FileDocFileDialogContent extends FormLayout {
+class FileDocFileDialogContent extends FormLayout with UndefinedSize {
   // model
   val uploadReceiver = new MemoryUploadReceiver
 
   // ui
   val sltMimeType = new Select("Mime type") with ValueType[String]
-  val lblUploadStatus = new Label
+  val lblUploadStatus = new Label with UndefinedSize
   val txtFileId = new TextField("File id")
   val upload = new Upload(null, uploadReceiver) with UploadEventHandler {
     setImmediate(true)
