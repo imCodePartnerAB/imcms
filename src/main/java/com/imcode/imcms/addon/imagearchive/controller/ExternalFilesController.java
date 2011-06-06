@@ -128,19 +128,19 @@ public class ExternalFilesController {
         
         return "redirect:/web/archive/external-files";
     }
-    
+
     @RequestMapping("/archive/external-files/sort")
     public String changeSortByHandler(
-            @RequestParam(required=false) String sortBy, 
-            HttpServletRequest request, 
+            @RequestParam(required=false) String sortBy,
+            HttpServletRequest request,
             HttpServletResponse response) {
         ArchiveSession session = ArchiveSession.getSession(request);
-        
+
         LibrarySort sort = null;
         if (sortBy != null && (sort = LibrarySort.findByName(sortBy)) != null) {
             session.put(SORT_KEY, sort);
         }
-        
+
         return "redirect:/web/archive/external-files";
     }
     
@@ -550,7 +550,8 @@ public class ExternalFilesController {
     private static LibrarySort getSortBy(ArchiveSession session) {
         LibrarySort sortBy = (LibrarySort) session.get(SORT_KEY);
         if (sortBy == null) {
-            sortBy = LibrarySort.DATE;
+            sortBy = LibrarySort.FILENAME;
+            sortBy.setDirection(LibrarySort.DIRECTION.ASC);
             session.put(SORT_KEY, sortBy);
         }
         

@@ -488,14 +488,26 @@ var initExternalFiles = function() {
             changeLibrary($(this).attr("data-library-id"));
         });
 
-        var currentSortBy = $("input:radio:checked").val();
-        $("input[name=sortBy]").click(function() {
-            var sortBy = $(this).val();
-            if (sortBy != currentSortBy) {
-                location.href = common.getRelativeUrl("/web/archive/external-files/sort", {
+        $("#fileNames").bind("sortEnd", function(){
+            $("#fileNames th").each(function(index, value){
+                if($(value).hasClass("headerSortUp")) {
+                    var sortBy = index + "-1";
+                    var url = common.getRelativeUrl("/web/archive/external-files/sort", {
                     sortBy: sortBy
-                });
-            }
+                    });
+
+                    $.get(url);
+                    return false;
+               } else if($(value).hasClass("headerSortDown")) {
+                    var sortBy = index + "-0";
+                    var url = common.getRelativeUrl("/web/archive/external-files/sort", {
+                    sortBy: sortBy
+                    });
+
+                    $.get(url);
+                    return false;
+               }
+            });
         });
         
         var showFilePreview = function(id, name) {

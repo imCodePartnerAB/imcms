@@ -98,20 +98,32 @@
                 event.stopPropagation();
                 $(" > ul", $(this).parent()).toggle();
                 toggleVisibility();
-            })
+            });
+
+            /* google dictionary extension on chrome seems to throw an exception.
+            *
+            * many lines instead of one to prevent tablesorter exception in case of empty table */
+            $("#fileNames").tablesorter({ headers: { 0 : {sorter:false}}});
+            if($("#fileNames td").length > 0) {
+                $("#fileNames").trigger("update");
+                $("#fileNames").trigger("sorton",[[[${sortBy.ordinal}, ${sortBy.direction.ordinal}]]]);
+            }
+
+            $(".fileName").each(function(){
+                var name = $(this).parent().find(":checkbox").val();
+                $(this).qtip({
+                  content: {
+                      url: '<%=cp%>/web/archive/external-files/preview-tooltip',
+                      data: { id : $("#libraryId").val(), name : name}
+                  },
+                    style: {
+                        width:300
+                    }
+                })
+            });
         });
 
     </script>
-                    <%--<select id="libraries" class="left" size="10" style="width:35%;">--%>
-                        <%--<option value="-1" ${currentLibrary.id eq -1 ? 'selected="selected"' : ''} >--%>
-                            <%--<spring:message code="archive.externalFiles.myPersonalFiles" htmlEscape="true"/>--%>
-                        <%--</option>--%>
-                        <%--<c:forEach var="library" items="${libraries}">--%>
-                            <%--<option value="${library.id}" ${currentLibrary.id eq library.id ? 'selected="selected"' : ''} >--%>
-                                <%--<c:out value="${library.libraryNm}"/>--%>
-                            <%--</option>--%>
-                        <%--</c:forEach>--%>
-                    <%--</select>--%>
                     <ul id="listOfLibraries">
                         <li data-library-id="-1" ${currentLibrary.id eq -1 ? 'class="currentLibrary"' : ''}>
                             <spring:message code="archive.externalFiles.myPersonalFiles" htmlEscape="true"/>
@@ -120,10 +132,7 @@
                             <archive:libraryChildren library="${library}" currentLibrary="${currentLibrary}" libraries="${allLibraries}"/>
                         </c:forEach>
                     </ul>
-                    <div class="left" style="width:29%;">
-                        <spring:message var="changeLibraryText" code="archive.externalFiles.changeLibrary" htmlEscape="true"/>
-                        <input id="changeLibrary" style="margin:0 auto;display:block;" type="button" class="btnBlue small" value="${changeLibraryText}"/>
-                    </div>
+
                     <div class="right" style="width:35%;">
                         <table id="fileNames" class="tablesorter">
                             <thead>
@@ -162,67 +171,9 @@
                                         <td>${fileSize}</td>
                                         <td>${lastModifiedText}</td>
                                     </tr>
-                                    <%--<option value="${fn:escapeXml(entry.fileName)}" title="${fileNameText}">--%>
-                                        <%--${fileNameText}--%>
-                                    <%--</option>--%>
                                 </c:forEach>
                             </tbody>
                         </table>
-                        <script type="text/javascript">
-                            $(document).ready(function()
-                                {
-                                    /* google dictionary extension on chrome seems to throw an exception */
-                                    $("#fileNames").tablesorter({
-                                        sortList: [[1, 0]]
-                                    });
-
-                                    $(".fileName").each(function(){
-                                        var name = $(this).parent().find(":checkbox").val();
-                                        $(this).qtip({
-                                          content: {
-                                              url: '<%=cp%>/web/archive/external-files/preview-tooltip',
-                                              data: { id : $("#libraryId").val(), name : name}
-                                          },
-                                            style: {
-                                                width:300
-                                            }
-                                        })
-                                    })
-                                }
-                            );
-                        </script>
-                        <%--<select id="fileNames" size="10" multiple="true" name="fileNames" style="width:100%;">--%>
-                            <%--<c:forEach var="entry" items="${libraryEntries}">--%>
-                                <%--<c:choose>--%>
-                                    <%--<c:when test="${entry.fileSizeMB}">--%>
-                                        <%--<spring:message var="fileSize" code="archive.fileSizeMB" arguments="${entry.fileSize div (1024.0 * 1024.0)}"/>--%>
-                                    <%--</c:when>--%>
-                                    <%--<c:otherwise>--%>
-                                        <%--<spring:message var="fileSize" code="archive.fileSizeKB" arguments="${entry.fileSize div 1024.0}"/>--%>
-                                    <%--</c:otherwise>--%>
-                                <%--</c:choose>--%>
-                                <%----%>
-                                <%--<spring:message var="lastModifiedText" code="archive.dateFormat" arguments="${entry.lastModifiedDate}"/>--%>
-
-                                <%--<archive:params var="fileNameArgs">--%>
-                                    <%--<archive:param value="${entry.fileName}"/>--%>
-                                    <%--<archive:param value="${lastModifiedText}  ${fileSize}"/>--%>
-                                <%--</archive:params>--%>
-
-                                <%--<spring:message var="fileNameText" code="archive.externalFiles.fileName" arguments="${fileNameArgs}" htmlEscape="true"/>--%>
-                                <%--<option value="${fn:escapeXml(entry.fileName)}" title="${fileNameText}">--%>
-                                    <%--${fileNameText}--%>
-                                <%--</option>--%>
-                            <%--</c:forEach>--%>
-                        <%--</select><br/>--%>
-
-                        <span style="display:block;" class="m10t">
-                            <label><spring:message code="archive.externalFiles.sortBy" htmlEscape="true"/></label>
-                            <input id="sortByFileName" type="radio" name="sortBy" value="fileName" ${sortBy.name eq 'fileName' ? 'checked="checked"' : ''} />
-                            <label for="sortByFileName"><spring:message code="archive.externalFiles.sortByFileName" htmlEscape="true"/></label>
-                            <input id="sortByDate" type="radio" name="sortBy" value="date" ${sortBy.name eq 'date' ? 'checked="checked"' : ''} />
-                            <label for="sortByDate"><spring:message code="archive.externalFiles.sortByDate" htmlEscape="true"/></label>
-                        </span>
                     </div>
                 </div>
 

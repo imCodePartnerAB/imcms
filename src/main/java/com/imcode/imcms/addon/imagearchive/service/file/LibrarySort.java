@@ -4,9 +4,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum LibrarySort {
-    FILENAME("fileName"), 
+    ARCHIVE("archive"),
+    FILENAME("fileName"),
+    SIZE("size"),
     DATE("date");
-    
+
+    public enum DIRECTION {
+        ASC, DESC;
+
+        public int getOrdinal() {
+            return ordinal();
+        }
+    }
+
+    private DIRECTION direction;
+
+
+    public DIRECTION getDirection() {
+        return direction;
+    }
+
+    public void setDirection(DIRECTION direction) {
+        this.direction = direction;
+    }
+
     private static final Map<String, LibrarySort> nameEnumMap = 
             new HashMap<String, LibrarySort>(LibrarySort.values().length);
     
@@ -17,7 +38,11 @@ public enum LibrarySort {
     }
     
     public static final LibrarySort findByName(String name) {
-        return nameEnumMap.get(name);
+        String[] parts = name.split("-");
+        LibrarySort sortOrder = values()[Integer.parseInt(parts[0])];
+        sortOrder.setDirection(DIRECTION.values()[Integer.parseInt(parts[1])]);
+
+        return sortOrder;
     }
     
     private final String name;
@@ -28,5 +53,9 @@ public enum LibrarySort {
 
     public String getName() {
         return name;
+    }
+
+    public int getOrdinal() {
+        return this.ordinal();
     }
 }
