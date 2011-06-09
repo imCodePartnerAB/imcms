@@ -76,11 +76,15 @@ trait ExposeFireClick extends Button {
 }
 
 trait ExposeValueChange extends AbstractField {
-  override def fireValueChange(repaintIsNotNeeded: Boolean) = super.fireValueChange(repaintIsNotNeeded)
+  override def fireValueChange(repaintIsNotNeeded: Boolean = true) = super.fireValueChange(repaintIsNotNeeded)
 }
 
 trait Margin { this: Layout =>
   setMargin(true)
+}
+
+trait NoMargin { this: Layout =>
+  setMargin(false)
 }
 
 trait BottomMarginDialog extends Dialog {
@@ -205,7 +209,7 @@ trait TCSDefaultI18n extends TwinColSelect {
 /**
  * Type check <code>value<code> property always returns a collection.
  */
-trait MultiSelectBehavior[A >: Null <: AnyRef] extends XSelect[A] {
+trait MultiSelectBehavior[A >: Null <: AnyRef] extends StrictSelect[A] {
 
   /**
    * @return seq of selected items or empty collection if there is no selected item(s).

@@ -30,8 +30,6 @@ class FlowPage(val ui: () => ComponentContainer, val validator: () => Option[Str
 class Flow[T](commit: () => Either[String, T], firstPage: FlowPage, restPages: FlowPage*) {
   val pages = firstPage +: restPages
 
-  //require(pages.size > 0, "Flow must have at least one page.")
-
   private var pageNoRef = new AtomicReference(0) // current page no ref
   private val lastPageNo = pages.length - 1;     // last page no
 

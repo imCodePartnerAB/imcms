@@ -5,13 +5,10 @@ package admin.doc.properties
 import scala.collection.JavaConversions._
 
 import com.imcode.imcms.vaadin._
-import imcode.server.Imcms
 import imcode.server.document.{CategoryTypeDomainObject, DocumentDomainObject}
-import admin.doc.{PublicationLyt, PermissionsEditor}
-import com.vaadin.ui._
-import javax.sound.sampled.ReverbType
 import api.{I18nMeta, I18nLanguage, Meta, CategoryType}
-
+import com.vaadin.ui._
+import admin.doc.{PublicationLyt, PermissionsEditor}
 
 //trait PropertiesDialog { this: OKDialog =>
 //  mainUI =
@@ -19,7 +16,7 @@ import api.{I18nMeta, I18nLanguage, Meta, CategoryType}
 
 class Properties(doc: DocumentDomainObject) extends ImcmsServicesSupport {
 
-  private var keywordsOpt = Option.empty[Keywords]
+  private var searchPropertiesOpt = Option.empty[SearchProperties]
   private var categoriesOpt = Option.empty[Categories]
 
   val ui = letret(new PropertiesUI) { ui =>
@@ -27,33 +24,33 @@ class Properties(doc: DocumentDomainObject) extends ImcmsServicesSupport {
     ui.menu.addItem("Appearence")
     ui.menu.addItem("Lifecycle")
     ui.menu.addItem("Permissions")
-    ui.menu.addItem("Keywords")
+    ui.menu.addItem("Search")
     ui.menu.addItem("Categories")
     // Access, Publication, Status ...
 
     ui.menu.addValueChangeHandler {
       ui.menu.getValue match {
         case "Permissions" =>
-          ui.sp.setSecondComponent(new PermissionsEditor(ui.getApplication.asInstanceOf[ImcmsApplication], doc.getMeta, ui.getApplication.asInstanceOf[ImcmsApplication].user).ui)
+          ui.property.setContent(new PermissionsEditor(ui.getApplication.asInstanceOf[ImcmsApplication], doc.getMeta, ui.getApplication.asInstanceOf[ImcmsApplication].user).ui)
 
         case "Lifecycle" =>
-          ui.sp.setSecondComponent(new PublicationLyt)
+          ui.property.setContent(new PublicationLyt)
 
         case "Appearence" =>
-          ui.sp.setSecondComponent(new Appearance(doc.getMeta, imcmsServices.getDocumentMapper.getI18nMetas(doc.getId).map(m => m.getLanguage -> m).toMap).ui)
+          ui.property.setContent(new Appearance(doc.getMeta, imcmsServices.getDocumentMapper.getI18nMetas(doc.getId).map(m => m.getLanguage -> m).toMap).ui)
 
-        case "Keywords" =>
-          if (keywordsOpt.isEmpty) keywordsOpt = Some(new Keywords(doc.getKeywords.toSeq))
+        case "Search" =>
+          if (searchPropertiesOpt.isEmpty) searchPropertiesOpt = Some(new SearchProperties(doc.getMeta))
 
-          ui.sp.setSecondComponent(keywordsOpt.get.ui)
+          ui.property.setContent(searchPropertiesOpt.get.ui)
 
         case "Categories" =>
-          if (categoriesOpt.isEmpty) categoriesOpt = Some(new Categories(doc.getCategoryIds.toSet))
+          if (categoriesOpt.isEmpty) categoriesOpt = Some(new Categories(doc.getMeta))
 
-          ui.sp.setSecondComponent(categoriesOpt.get.ui)
+          ui.property.setContent(categoriesOpt.get.ui)
 
         case _ =>
-          ui.sp.setSecondComponent(new Label("n/a"))
+          ui.property.setContent(new VerticalLayout with UndefinedSize { addComponent(new Label("n/a") with UndefinedSize) })
           // select Info; todo: no null selection, info selected by default
       }
     }
@@ -61,127 +58,154 @@ class Properties(doc: DocumentDomainObject) extends ImcmsServicesSupport {
 }
 
 
-class PropertiesUI extends VerticalLayout with FullSize {
+class PropertiesUI extends VerticalLayout with FullSize with NoMargin {
   val sp = new HorizontalSplitPanel with FullSize
   val menu = new Tree with Immediate
+  val property = new Panel with LightStyle with FullSize
 
+  sp.setSecondComponent(property)
   sp.setFirstComponent(menu)
   addComponent(sp)
 }
 
 
-class Categories(categoriesIds: Set[CategoryId] = Set.empty) extends ImcmsServicesSupport {
-  private var typeCategoriesUIs: Seq[(CheckBox with DataType[CategoryTypeDomainObject], StrictSelect[CategoryId])] = _
+class Categories(meta: Meta) extends ImcmsServicesSupport {
+  case class State(categoriesIds: Set[CategoryId])
 
-  val ui = new CategoriesUI
+  private val initialState = State(meta.getCategoryIds.toSet)
+
+  private val typeCategoriesUIs: Seq[(CheckBox with ExposeValueChange, MultiSelectBehavior[CategoryId])] =
+    for {
+      cType <- imcmsServices.getCategoryMapper.getAllCategoryTypes.toSeq
+      categories = imcmsServices.getCategoryMapper.getAllCategoriesOfType(cType)
+      if categories.nonEmpty
+    } yield {
+      val chkCType = new CheckBox(cType.getName) with ExposeValueChange with Immediate
+      val sltCategories =
+        if (cType.isMultiselect) new TwinColSelect with MultiSelectBehavior[CategoryId]
+        else new ComboBox with MultiSelectBehavior[CategoryId] with NoNullSelection
+
+      categories foreach { category =>
+        sltCategories.addItem(category.getId, category.getName)
+      }
+
+      chkCType.addValueChangeHandler {
+        sltCategories.setVisible(chkCType.isChecked)
+      }
+
+      chkCType -> sltCategories
+    }
+
+  val ui = letret(new GridLayout(2, 1) with Spacing) { ui =>
+    for ((chkCType, sltCategories) <- typeCategoriesUIs) {
+      addComponents(ui, chkCType, sltCategories)
+    }
+  }
 
   revert()
 
   def revert() {
-    typeCategoriesUIs =
-      for {
-        cType <- imcmsServices.getCategoryMapper.getAllCategoryTypes.toSeq // .sortBy(_.getName)
-        categories = imcmsServices.getCategoryMapper.getAllCategoriesOfType(cType)
-        if categories.nonEmpty
-      } yield {
-        val chkCType = new CheckBox(cType.getName) with DataType[CategoryTypeDomainObject] with Immediate with ExposeValueChange
-        val sltCategories =
-          if (cType.isMultiselect) new TwinColSelect with MultiSelect2[CategoryId]
-          else new ComboBox with SingleSelect2[CategoryId]
+    for ((chkCType, sltCategories) <- typeCategoriesUIs) {
+      chkCType.uncheck
+      sltCategories.value = Nil
 
-        chkCType.data = cType
-
-        categories foreach { category =>
-          val id = category.getId
-
-          sltCategories.addItem(id, category.getName)
-          if (categoriesIds(id)) sltCategories.select(id)
-        }
-
-        chkCType.checked = sltCategories.isSelected
-        chkCType.addValueChangeHandler {
-          sltCategories.setVisible(chkCType.isChecked)
-        }
-        chkCType.fireValueChange(true)
-
-        chkCType -> sltCategories
+      for (categoryId <- sltCategories.itemIds if initialState.categoriesIds(categoryId)) {
+        sltCategories.select(categoryId)
+        chkCType.check
       }
 
-    ui setContent letret(new GridLayout(2, typeCategoriesUIs.size) with Spacing) { lyt =>
-      for ((chkCType, sltCategories) <- typeCategoriesUIs) {
-        addComponents(lyt, chkCType, sltCategories)
-      }
+      chkCType.fireValueChange()
     }
   }
 
-  def modified: Boolean = ???
-}
+  def state = State(
+    typeCategoriesUIs.collect {
+      case (chkCType, sltCategories) if chkCType.isChecked => sltCategories.value
+    }.flatten.toSet
+  )
 
-class CategoriesUI extends Panel with LightStyle with FullSize
+  def isModified = state != initialState
+}
 
 
 // param: editable = true/false ???
-class Keywords(keywords: Seq[Keyword] = Nil) {
+class SearchProperties(meta: Meta) {
+  case class State(keywords: Set[Keyword], isExcludeFromInnerSearch: Boolean)
 
-  val ui = new KeywordsUI
+  private val initialState = State(meta.getKeywords.map(_.toLowerCase).toSet, false)
 
-  ui.btnAdd.addClickHandler {
-    ui.txtKeyword.trim.toLowerCase match {
-      case value if value.length > 0 && ui.lstKeywords.getItem(value) == null =>
-        setKeywords(value +: ui.lstKeywords.itemIds.toSeq)
+  val ui = letret(new SearchPropertiesUI) { ui =>
+    import ui.lytKeywords.{btnAdd, btnRemove, txtKeyword, lstKeywords}
 
-      case _ =>
+    btnAdd.addClickHandler {
+      txtKeyword.trim.toLowerCase match {
+        case value if value.length > 0 && lstKeywords.getItem(value) == null =>
+          setKeywords(lstKeywords.itemIds.toSet + value)
+
+        case _ =>
+      }
+
+      txtKeyword.value = ""
     }
 
-    ui.txtKeyword.value = ""
-  }
-
-  ui.btnRemove.addClickHandler {
-    whenSelected(ui.lstKeywords) { _ foreach (ui.lstKeywords removeItem _) }
-  }
-
-  ui.lstKeywords.addValueChangeHandler {
-    ui.lstKeywords.value.toSeq match {
-      case Seq(value) => ui.txtKeyword.value = value
-      case Seq(_, _, _*) => ui.txtKeyword.value = ""
-      case _ =>
+    btnRemove.addClickHandler {
+      whenSelected(lstKeywords) { _ foreach (lstKeywords removeItem _) }
     }
-  }
+
+    lstKeywords.addValueChangeHandler {
+      lstKeywords.value.toSeq match {
+        case Seq(value) => txtKeyword.value = value
+        case Seq(_, _, _*) => txtKeyword.value = ""
+        case _ =>
+      }
+    }
+  } // ui
 
   revert()
 
 
+  private def setKeywords(keywords: Set[Keyword]) {
+    ui.lytKeywords.lstKeywords.itemIds = keywords.map(_.toLowerCase).toSeq.sorted
+  }
+
+
   def revert() {
-    setKeywords(keywords)
+    setKeywords(initialState.keywords)
+    ui.chkExcludeFromInternalSearch.checked = initialState.isExcludeFromInnerSearch
   }
 
-  def setKeywords(keywords: Seq[Keyword]) {
-    ui.lstKeywords.itemIds = keywords.map(_.toLowerCase).sorted
-  }
+  def state = State(ui.lytKeywords.lstKeywords.itemIds.toSet, ui.chkExcludeFromInternalSearch.isChecked)
 
-  def validate() = ???
-  def sync() = ???
-  def modified: Boolean = ???
+  def isModified = state != initialState
+
+  //def validate() = ???
+  //def sync() = ???
 }
 
 
-class KeywordsUI extends GridLayout(3,2) with Spacing with UndefinedSize {
+class SearchPropertiesUI extends FormLayout with UndefinedSize {
 
-  val lstKeywords = new ListSelect with MultiSelect2[Keyword] with Immediate {
-    setRows(10)
-    setColumns(10)
+  val chkExcludeFromInternalSearch = new CheckBox("Exclude this page from internal search")
+  val lytKeywords = new GridLayout(3,2) with UndefinedSize {
+    setCaption("Keywords")
+
+    val lstKeywords = new ListSelect with MultiSelect2[Keyword] with Immediate {
+      setRows(10)
+      setColumns(10)
+    }
+    val btnAdd = new Button("+")
+    val btnRemove = new Button("-")
+    val txtKeyword = new TextField {
+      setInputPrompt("New keyword")
+    }
+
+    addComponent(txtKeyword, 0, 0)
+    addComponent(btnAdd, 1, 0)
+    addComponent(btnRemove, 2, 0)
+    addComponent(lstKeywords, 0, 1, 2, 1)
   }
 
-  val btnAdd = new Button("+")
-  val btnRemove = new Button("-")
-  val txtKeyword = new TextField {
-    setInputPrompt("New keyword")
-  }
-
-  addComponent(txtKeyword, 0, 0)
-  addComponent(btnAdd, 1, 0)
-  addComponent(btnRemove, 2, 0)
-  addComponent(lstKeywords, 0, 1, 2, 1)
+  addComponents(this, lytKeywords, chkExcludeFromInternalSearch)
 }
 
 

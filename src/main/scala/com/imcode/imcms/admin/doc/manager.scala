@@ -36,7 +36,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     }
 
     ui.miProperties.setCommandHandler {
-      val dlg = new OKDialog("Doc properties") with CustomSizeDialog
+      val dlg = new OKDialog("Doc properties") with CustomSizeDialog with BottomMarginDialog
       val properties = new DocProperties(imcmsServices.getDocumentMapper.getWorkingDocument(search.docsUI.first.get.intValue))
 
       dlg.mainUI = properties.ui
