@@ -1,5 +1,5 @@
 package com.imcode
-package imcms.admin.doc
+package imcms.admin.doc.meta.permissions
 
 import imcms.mapping.DocumentSaver
 import scala.collection.JavaConversions._
@@ -89,7 +89,9 @@ class PermissionsEditor(app: ImcmsApplication, meta: Meta, user: UserDomainObjec
       // JUST INFO
       //<%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %>
 
-class PermissionsEditorUI extends VerticalLayout with Spacing with UndefinedSize {
+class PermissionsEditorUI extends VerticalLayout with Spacing with FullWidth {
+  setMargin(true, true, false, true)
+
   class CustomSettingsUI extends HorizontalLayout with Spacing with UndefinedSize {
     val btnEdit = new Button("Define") with LinkStyle
     val btnEditNew = new Button("Define for new document") with LinkStyle
@@ -106,10 +108,21 @@ class PermissionsEditorUI extends VerticalLayout with Spacing with UndefinedSize
   val miRolePermissionAdd = mbRolesPermissions.addItem("Add", null)
   val miRolePermissionEdit = mbRolesPermissions.addItem("Edit", null)
   val miRolePermissionDelete = mbRolesPermissions.addItem("Delete", null)
-  val tblRolesPermissions = new Table with ValueType[RoleId] with ItemIdType[RoleId] with SingleSelect with Immediate with Reloadable
+  val tblRolesPermissions = new Table with ValueType[RoleId] with ItemIdType[RoleId] with SingleSelect with Immediate with Reloadable with FullWidth {
+    setPageLength(7)
+  }
 //  val lytRoles = new VerticalLayout with Spacing {
 //    addComponents(this, mbRole, tblRolesPermissions)
 //  }
+
+  val frmExtraSettings = new Form with FullWidth {
+    setCaption("Extra settings")
+
+    val chkShowToUnauthorizedUser = new CheckBox("Unauthorized user can see link(s) to this document")
+    val chkShareWithOtherAdmins = new CheckBox("Share the document with other administrators")
+
+    addComponents(getLayout, chkShowToUnauthorizedUser, chkShareWithOtherAdmins)
+  }
 
   addContainerProperties(tblRolesPermissions,
     ContainerProperty[String]("Role"),
@@ -118,13 +131,7 @@ class PermissionsEditorUI extends VerticalLayout with Spacing with UndefinedSize
     ContainerProperty[String]("Limited-2"),
     ContainerProperty[String]("Full"))
 
-  addComponents(this, mbRolesPermissions, tblRolesPermissions, customSettings1, customSettings2)
-
-  // share
-  //Share
-	// chk Show link to unauthorized users
-	// chk Share the document with other administrators
-  // label: Created by Super, Admin (admin)
+  addComponents(this, mbRolesPermissions, tblRolesPermissions, customSettings1, customSettings2, frmExtraSettings)
 }
 
 class AddRolePermissionDialogContent extends FormLayout with UndefinedSize {

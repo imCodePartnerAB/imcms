@@ -1,5 +1,9 @@
 @import "../reindeer/styles.css";
 
+.v-select-optiongroup-horizontalgroup .v-select-option {
+    display: inline-block;
+}
+
 .max-width {
     width: 100%;
 }

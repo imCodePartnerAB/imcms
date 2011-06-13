@@ -20,6 +20,8 @@ import java.util.{EnumSet}
 import imcms.mapping.DocumentMapper.SaveDirectives
 import imcms.mapping.{DocumentMapper, DocumentSaver}
 
+import meta._
+
 //todo: type Component = UI ??
 
 case class MimeType(name: String, displayName: String)

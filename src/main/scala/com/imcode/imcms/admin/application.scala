@@ -2,7 +2,7 @@ package com.imcode
 package imcms.admin
 
 
-import doc.PermissionsEditor
+
 import scala.collection.JavaConversions._
 import com.imcode._
 import com.vaadin.ui._
@@ -84,7 +84,6 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       object Profiles
       object Links
       object Structure
-      object Edit
     }
     object Permissions {
       object Users
@@ -110,7 +109,6 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       object Profiles extends MenuItem(this)
       object Links extends MenuItem(this)
       object Structure extends MenuItem(this)
-      object Edit extends MenuItem(this)
     }
     object Permissions extends MenuItem(this) {
       object Users extends MenuItem(this, Some(Done16))
@@ -252,7 +250,6 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
           case Menu.System.Files => filesystem
           case Menu.Documents.Templates => templates
           case Menu.Documents.Structure => docStructure
-          case Menu.Documents.Edit => docadmin
           case Menu.System.Monitor.Cache => systemCacheView
 
           case other => NA(other)
@@ -283,137 +280,137 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
 
   // doadmin prototype
-  def docadmin = {
-    import com.imcode.imcms.admin.doc.{MetaEditor, EditorsFactory, MetaModel}
-
-    val dm = Imcms.getServices.getDocumentMapper
-    val btnNewTextDoc = new Button("New text doc")
-    val btnNewFileDoc = new Button("New file doc")
-    val btnNewUrlDoc = new Button("New url doc")
-    val btnDocInfo = new Button("Doc info")
-    val btnDocPermissions = new Button("Doc Permissions")
-    val btnEdit = new Button("Edit doc") // edit content
-    val btnReload = new Button("RELOAD") with LinkStyle
-
-    val docAdmin = new EditorsFactory(app, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
-
-    val tblDocs = new Table with ValueType[JInteger] with Selectable with Immediate {
-      addContainerProperties(this,
-        ContainerProperty[JInteger]("Id"),
-        ContainerProperty[String]("Type"),
-        ContainerProperty[Date]("Created date"),
-        ContainerProperty[Date]("Modified date"),
-        ContainerProperty[String]("Default version no"))
-    }
-
-    val lytBar = new HorizontalLayout with Spacing {
-      addComponents(this, btnNewTextDoc, btnNewFileDoc, btnNewUrlDoc, btnDocInfo, btnEdit, btnDocPermissions, btnReload)
-    }
-
-    btnReload addClickHandler { reload _ }
-
-    btnNewTextDoc addClickHandler {
-      app.initAndShow(new Dialog("New text document") with BottomMarginDialog) { dlg =>
-        val parentDoc = dm.getDocument(1001)
-        val onCommit = { doc: TextDocumentDomainObject =>
-          getMainWindow.showNotification("Text document [id = %d] has been created" format doc.getId, Notification.TYPE_HUMANIZED_MESSAGE)
-          dlg.close
-          reload()
-        }
-
-        val flow = docAdmin.newTextDocFlow(parentDoc)
-        val flowUI = flow.ui
-
-        flow.commitListeners += onCommit
-
-        dlg.setMainContent(flowUI)
-
-        flowUI.setWidth("600px")
-        flowUI.setHeight("800px")
-      }
-    }
-
-    btnDocPermissions addClickHandler {
-
-      whenSelected(tblDocs) { id =>
-        val model = MetaModel(id)
-        val editor = new PermissionsEditor(app, model.meta, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
-
-
-
-        app.initAndShow(new OkCancelDialog) { dlg =>
-          dlg.setMainContent(editor.ui)
-        }
-      }
-    }
-    
-    btnDocInfo addClickHandler {
-      whenSelected(tblDocs) { id =>
-        val model = MetaModel(id)
-        val editor = new MetaEditor(app, model)
-
-        app.initAndShow(new OkCancelDialog) { d =>
-          d.setMainContent(editor.ui)
-        }        
-      }
-    }
-
-    btnNewUrlDoc addClickHandler {
-      app.initAndShow(new Dialog("New url document")) { dlg =>
-        val parentDoc = dm.getDocument(1001)
-        val flow = docAdmin.newURLDocFlow(parentDoc)
-        dlg.setMainContent(flow.ui)
-        dlg.setWidth("600px")
-        dlg.setHeight("800px")
-      }
-    }
-
-    btnNewFileDoc addClickHandler {
-      app.initAndShow(new Dialog("New file document")) { dlg =>
-        val parentDoc = dm.getDocument(1001)
-        val onCommit = { doc: FileDocumentDomainObject =>
-          getMainWindow.showNotification("File document [id = %d] has been created" format doc.getId, Notification.TYPE_HUMANIZED_MESSAGE)
-          dlg.close
-          reload()
-        }
-
-        val flow = docAdmin.newFileDocFlow(parentDoc)
-        val flowUI = flow.ui
-
-        flow.commitListeners += onCommit
-
-        flowUI.bar.btnCancel addClickHandler {
-          dlg.close
-        }
-        
-        dlg.mainUI = flowUI
-
-        dlg.setWidth("600px")
-        dlg.setHeight("800px")
-      }
-    }
-
-    btnEdit addClickHandler {
-      whenSelected(tblDocs) { id =>
-        // show edit meta dialog
-      }
-    }
-
-    def reload() {
-      tblDocs.removeAllItems
-      for {
-        id <- dm.getAllDocumentIds
-        meta = dm.getDocumentLoaderCachingProxy.getMeta(id)
-      } {
-        addItem(tblDocs, id, id, meta.getDocumentTypeId, meta.getCreatedDatetime, meta.getModifiedDatetime, meta.getDefaultVersionNo.toString)
-      }
-    }
-
-    new VerticalLayout with Margin with Spacing {
-      addComponents(this, lytBar, tblDocs)
-      reload()
-    }
-  }
+//  def docadmin = {
+//    import com.imcode.imcms.admin.doc.{MetaEditor, EditorsFactory, MetaModel}
+//
+//    val dm = Imcms.getServices.getDocumentMapper
+//    val btnNewTextDoc = new Button("New text doc")
+//    val btnNewFileDoc = new Button("New file doc")
+//    val btnNewUrlDoc = new Button("New url doc")
+//    val btnDocInfo = new Button("Doc info")
+//    val btnDocPermissions = new Button("Doc Permissions")
+//    val btnEdit = new Button("Edit doc") // edit content
+//    val btnReload = new Button("RELOAD") with LinkStyle
+//
+//    val docAdmin = new EditorsFactory(app, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
+//
+//    val tblDocs = new Table with ValueType[JInteger] with Selectable with Immediate {
+//      addContainerProperties(this,
+//        ContainerProperty[JInteger]("Id"),
+//        ContainerProperty[String]("Type"),
+//        ContainerProperty[Date]("Created date"),
+//        ContainerProperty[Date]("Modified date"),
+//        ContainerProperty[String]("Default version no"))
+//    }
+//
+//    val lytBar = new HorizontalLayout with Spacing {
+//      addComponents(this, btnNewTextDoc, btnNewFileDoc, btnNewUrlDoc, btnDocInfo, btnEdit, btnDocPermissions, btnReload)
+//    }
+//
+//    btnReload addClickHandler { reload _ }
+//
+//    btnNewTextDoc addClickHandler {
+//      app.initAndShow(new Dialog("New text document") with BottomMarginDialog) { dlg =>
+//        val parentDoc = dm.getDocument(1001)
+//        val onCommit = { doc: TextDocumentDomainObject =>
+//          getMainWindow.showNotification("Text document [id = %d] has been created" format doc.getId, Notification.TYPE_HUMANIZED_MESSAGE)
+//          dlg.close
+//          reload()
+//        }
+//
+//        val flow = docAdmin.newTextDocFlow(parentDoc)
+//        val flowUI = flow.ui
+//
+//        flow.commitListeners += onCommit
+//
+//        dlg.setMainContent(flowUI)
+//
+//        flowUI.setWidth("600px")
+//        flowUI.setHeight("800px")
+//      }
+//    }
+//
+//    btnDocPermissions addClickHandler {
+//
+//      whenSelected(tblDocs) { id =>
+//        val model = MetaModel(id)
+//        val editor = new PermissionsEditor(app, model.meta, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
+//
+//
+//
+//        app.initAndShow(new OkCancelDialog) { dlg =>
+//          dlg.setMainContent(editor.ui)
+//        }
+//      }
+//    }
+//
+//    btnDocInfo addClickHandler {
+//      whenSelected(tblDocs) { id =>
+//        val model = MetaModel(id)
+//        val editor = new MetaEditor(app, model)
+//
+//        app.initAndShow(new OkCancelDialog) { d =>
+//          d.setMainContent(editor.ui)
+//        }
+//      }
+//    }
+//
+//    btnNewUrlDoc addClickHandler {
+//      app.initAndShow(new Dialog("New url document")) { dlg =>
+//        val parentDoc = dm.getDocument(1001)
+//        val flow = docAdmin.newURLDocFlow(parentDoc)
+//        dlg.setMainContent(flow.ui)
+//        dlg.setWidth("600px")
+//        dlg.setHeight("800px")
+//      }
+//    }
+//
+//    btnNewFileDoc addClickHandler {
+//      app.initAndShow(new Dialog("New file document")) { dlg =>
+//        val parentDoc = dm.getDocument(1001)
+//        val onCommit = { doc: FileDocumentDomainObject =>
+//          getMainWindow.showNotification("File document [id = %d] has been created" format doc.getId, Notification.TYPE_HUMANIZED_MESSAGE)
+//          dlg.close
+//          reload()
+//        }
+//
+//        val flow = docAdmin.newFileDocFlow(parentDoc)
+//        val flowUI = flow.ui
+//
+//        flow.commitListeners += onCommit
+//
+//        flowUI.bar.btnCancel addClickHandler {
+//          dlg.close
+//        }
+//
+//        dlg.mainUI = flowUI
+//
+//        dlg.setWidth("600px")
+//        dlg.setHeight("800px")
+//      }
+//    }
+//
+//    btnEdit addClickHandler {
+//      whenSelected(tblDocs) { id =>
+//        // show edit meta dialog
+//      }
+//    }
+//
+//    def reload() {
+//      tblDocs.removeAllItems
+//      for {
+//        id <- dm.getAllDocumentIds
+//        meta = dm.getDocumentLoaderCachingProxy.getMeta(id)
+//      } {
+//        addItem(tblDocs, id, id, meta.getDocumentTypeId, meta.getCreatedDatetime, meta.getModifiedDatetime, meta.getDefaultVersionNo.toString)
+//      }
+//    }
+//
+//    new VerticalLayout with Margin with Spacing {
+//      addComponents(this, lytBar, tblDocs)
+//      reload()
+//    }
+//  } // docadmin
 
 //  def systemCacheView = {
 //    import com.imcode.imcms.sysadmin.cache.View

@@ -8,7 +8,7 @@ import scala.collection.JavaConversions._
 import vaadin.{ImcmsApplication, FullSize}
 import com.vaadin.event.Action
 import _root_.com.imcode.imcms.admin.doc.search.{DocSearch, AllDocsContainer, CustomDocsContainer}
-import _root_.com.imcode.imcms.admin.doc.properties.{Properties => DocProperties}
+import _root_.com.imcode.imcms.admin.doc.meta.{Properties => DocProperties}
 import com.vaadin.ui._
 import imcode.server.document.{FileDocumentDomainObject, HtmlDocumentDomainObject}
 import imcode.server.document.textdocument.TextDocumentDomainObject
