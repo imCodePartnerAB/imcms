@@ -88,7 +88,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
 
             validationError foreach { msg =>
               app.getMainWindow.showNotification(msg, Notification.TYPE_WARNING_MESSAGE)
-              error(msg)
+              sys.error(msg)
             }
 
             app.privileged(permission) {

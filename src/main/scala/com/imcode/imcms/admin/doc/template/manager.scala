@@ -36,13 +36,13 @@ class TemplateManager(app: ImcmsApplication) {
                 case 0 => reload() // ok
                 case -1 =>
                   app.showErrorNotification("Template with such name allready exists")
-                  error("File exists")
+                  sys.error("File exists")
                 case -2 =>
                   app.showErrorNotification("Internal error")
-                  error("IO error")
+                  sys.error("IO error")
                 case n =>
                   app.showErrorNotification("Internal error")
-                  error("Unknown error")
+                  sys.error("Unknown error")
               }
             }
           }

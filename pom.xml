@@ -309,7 +309,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin</artifactId>
-            <version>6.5.3</version>
+            <version>6.6.1</version>
         </dependency>
 
         <dependency>
@@ -665,65 +665,65 @@
         <!-- ================ -->
         <!-- Custom languages -->
         <!-- ================ -->
-        <!--<dependency>-->
-            <!--<groupId>org.scala-lang</groupId>-->
-            <!--<artifactId>scala-compiler</artifactId>-->
-            <!--<version>2.9.0</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.scala-lang</groupId>-->
-            <!--<artifactId>scala-library</artifactId>-->
-            <!--<version>2.9.0</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.scalatest</groupId>-->
-            <!--<artifactId>scalatest_2.9.0</artifactId>-->
-            <!--<version>1.4.1</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.scala-tools.testing</groupId>-->
-            <!--<artifactId>scalacheck_2.9.0</artifactId>-->
-            <!--<version>1.9</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>2.9.0-1</version>
+        </dependency>
 
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.8.1</version>
+            <version>2.9.0-1</version>
         </dependency>
 
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest</artifactId>
-            <version>1.2</version>
+            <artifactId>scalatest_2.9.0</artifactId>
+            <version>1.4.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.scala-tools.testing</groupId>
-            <artifactId>scalacheck_2.8.1</artifactId>
-            <version>1.8</version>
+            <artifactId>scalacheck_2.9.0-1</artifactId>
+            <version>1.9</version>
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-compiler</artifactId>
-            <version>2.8.1</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.scala-lang</groupId>-->
+            <!--<artifactId>scala-library</artifactId>-->
+            <!--<version>2.8.1</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-           <artifactId>solr-solrj</artifactId>
-           <groupId>org.apache.solr</groupId>
-           <version>1.4.0</version>
-           <type>jar</type>
-           <scope>compile</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.scalatest</groupId>-->
+            <!--<artifactId>scalatest</artifactId>-->
+            <!--<version>1.2</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.scala-tools.testing</groupId>-->
+            <!--<artifactId>scalacheck_2.8.1</artifactId>-->
+            <!--<version>1.8</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.scala-lang</groupId>-->
+            <!--<artifactId>scala-compiler</artifactId>-->
+            <!--<version>2.8.1</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+           <!--<artifactId>solr-solrj</artifactId>-->
+           <!--<groupId>org.apache.solr</groupId>-->
+           <!--<version>1.4.0</version>-->
+           <!--<type>jar</type>-->
+           <!--<scope>compile</scope>-->
+        <!--</dependency>-->
 
         <dependency>
            <artifactId>solr-core</artifactId>
@@ -731,6 +731,12 @@
            <version>1.4.0</version>
            <type>jar</type>
            <scope>compile</scope>
+           <exclusions>
+               <exclusion>
+                   <artifactId>wstx-asl</artifactId>
+                   <groupId>woodstox</groupId>
+               </exclusion>
+           </exclusions>
         </dependency>
 
         <!--<dependency>-->
@@ -868,8 +874,7 @@
                 <artifactId>maven-scala-plugin</artifactId>
                 <version>2.15.2</version>
                 <configuration>
-                    <!--<scalaVersion>2.9.0</scalaVersion>-->
-                    <scalaVersion>2.8.1</scalaVersion>
+                    <scalaVersion>2.9.0-1</scalaVersion>
                     <jvmArgs>
                         <!-- ...-Xss64m...-->
                         <jvmArg>-Xms64m</jvmArg>
@@ -880,17 +885,32 @@
                         <arg>-deprecation</arg>
                         <arg>-explaintypes</arg>
                     </args>
+                    <excludes>
+                         <exclude>**/test/**</exclude>
+                    </excludes>
+                    <verbose>true</verbose>
                 </configuration>
 
                 <executions>
+                    <!--<execution>-->
+                        <!--<id>compile</id>-->
+                        <!--<goals>-->
+                            <!--<goal>compile</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>compile</phase>-->
+                    <!--</execution>-->
                     <execution>
-                        <id>compile</id>
+                        <id>cc</id>
                         <goals>
-                            <goal>compile</goal>
+                            <goal>cc</goal>
                         </goals>
                         <phase>compile</phase>
+                        <configuration>
+                            <useFsc>true</useFsc>
+                            <once>true</once>
+                            <verbose>true</verbose>
+                        </configuration>
                     </execution>
-
 
                     <execution>
                         <id>test-compile</id>

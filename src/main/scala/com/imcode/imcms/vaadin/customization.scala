@@ -284,7 +284,7 @@ trait Reloadable extends Table {
   //type Value <: AnyRef
 
   var itemsProvider: () => Seq[(AnyRef, Seq[AnyRef])] =
-    () => error("itemsProvider is not set.")
+    () => sys.error("itemsProvider is not set.")
 
   def reload() {
     removeAllItems

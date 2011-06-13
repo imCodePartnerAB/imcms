@@ -282,7 +282,7 @@ class MetaDao extends SpringHibernateTemplate {
   }
 
   @Transactional
-  def getEnabledLanguages(docId: JInteger) = error("Not implemented")
+  def getEnabledLanguages(docId: JInteger) = sys.error("Not implemented")
 }
 
 

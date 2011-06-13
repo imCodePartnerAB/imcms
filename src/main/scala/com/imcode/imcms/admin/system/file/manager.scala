@@ -38,14 +38,14 @@ class FileManager(app: ImcmsApplication) {
                 val msg = "file.mgr.dlg.illegal.item.name.msg".f(forbiddenChars)
                 dlgUI.lblMsg.value = msg
                 dlgUI.lblMsg.setComponentError(new UserError(msg))
-                error(msg)
+                sys.error(msg)
 
               case name => new File(dir, name) match {
                 case file if file.exists =>
                   val msg = "file.mgr.dlg.transfer.item.exist.msg".f(name, dir.getName)
                   dlgUI.lblMsg.value = msg
                   dlgUI.lblMsg.setComponentError(new UserError(msg))
-                  error(msg)
+                  sys.error(msg)
 
                 case file => item.renameTo(file)
               }
@@ -100,7 +100,7 @@ class FileManager(app: ImcmsApplication) {
             } {
               if (file.exists && !dlg.upload.isOverwrite) {
                 app.show(new MsgDialog("file.mgr.dlg.upload.item.exist.title".i, "file.mgr.dlg.upload.item.exist.msg".i))
-                error("File %s allready exists" format file.getCanonicalPath)
+                sys.error("File %s allready exists" format file.getCanonicalPath)
               } else {
                 FileUtils.writeByteArrayToFile(file, content)
                 browser.reloadLocationItems()
@@ -137,7 +137,7 @@ class FileManager(app: ImcmsApplication) {
                 val msg = "file.mgr.dlg.illegal.item.name.msg".f(forbiddenChars)
                 lblMsg.value = msg
                 lblMsg.setComponentError(new UserError(msg))
-                error(msg)
+                sys.error(msg)
 
               case name =>
                 FileUtils.forceMkdir(new File(selection.dir, txtName.value))

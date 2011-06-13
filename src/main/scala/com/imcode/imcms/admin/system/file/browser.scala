@@ -26,7 +26,7 @@ class LocationTreeContainer(root: File) extends FilesystemContainer(root) {
 
   override def rootItemIds() = root |> singleton[File] |> unmodifiableCollection[File]
 
-  override def addRoot(root: File) = error("Operation is not allowed.")
+  override def addRoot(root: File) = sys.error("Operation is not allowed.")
 }
 
 

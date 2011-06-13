@@ -30,7 +30,7 @@ trait ImcmsApplication extends Application {
       case PermissionGranted => action
       case PermissionDenied(reason) =>
         this.showErrorNotification(reason)
-        error(reason)
+        sys.error(reason)
     }
   }
 }

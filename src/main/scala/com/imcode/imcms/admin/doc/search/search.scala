@@ -94,14 +94,14 @@ class DocSearch(val docsContainer: DocsContainer) {
         val start = condOpt(basicFormUI.lytRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
             case IntNumber(start) => start
-            case _ => error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
+            case _ => sys.error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
           }
         }
 
         val end = condOpt(basicFormUI.lytRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
             case IntNumber(end) => end
-            case _ => error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
+            case _ => sys.error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
           }
         }
 

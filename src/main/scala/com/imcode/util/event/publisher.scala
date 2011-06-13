@@ -10,5 +10,5 @@ trait Publisher[T] {
 
   def notifyListeners(ev: T) = for (l <- listeners) l(ev)
 
-  def notifyListeners(): Unit = error("Not implemented")
+  def notifyListeners(): Unit = sys.error("Not implemented")
 }

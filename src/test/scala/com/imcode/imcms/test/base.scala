@@ -86,7 +86,7 @@ class Project(dirPath: String = ".") {
     if (start) Imcms.start
   }
 
-  def loc = error("not implemented") // "java|jsp|htm|html|xml|properties|sql|clj|scala"
+  def loc = sys.error("not implemented") // "java|jsp|htm|html|xml|properties|sql|clj|scala"
 }
 
 

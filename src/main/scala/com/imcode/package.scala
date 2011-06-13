@@ -16,7 +16,7 @@ package object imcode {
   val EX = scala.util.control.Exception
 
   def ??? = let((new Exception).getStackTrace()(1)) { se =>
-    error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
+    sys.error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
   }
 
   //?? delete ??
@@ -82,7 +82,7 @@ package object imcode {
   }
 
   // should be removed after migration to 2.9
-  implicit def JIntegerToInt(ji: JInteger) = ji.intValue
+  //implicit def JIntegerToInt(ji: JInteger) = ji.intValue
 
   /**
    * Converts camel-case string into underscore.

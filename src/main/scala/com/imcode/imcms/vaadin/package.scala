@@ -44,7 +44,7 @@ package object vaadin {
 //  def whenSelected[A, B](property: Property)(fn: A => B): Option[B] = property.getValue match {
 //    case null => None
 //    case value: A => Some(fn(value))
-//    case other => error("Unexpected field value: %s." format other)
+//    case other => sys.error("Unexpected field value: %s." format other)
 //  }
 
   def whenSelected[A >: Null, B](property: ValueType[A] with AbstractSelect)(fn: A => B): Option[B] = property.value match {

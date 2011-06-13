@@ -77,7 +77,7 @@ class DB(ds: DataSource) extends Logger {
                        .format(unexpectedDbVersion, schema.version)
 
         logger error errorMsg
-        error(errorMsg)
+        sys.error(errorMsg)
     }
   }
 

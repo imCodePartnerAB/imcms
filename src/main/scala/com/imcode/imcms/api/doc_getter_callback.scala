@@ -31,7 +31,7 @@ object DocGetterCallbackUtil {
           case IntNumber(n) => n
           case _ =>
             ?(Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity)).getOrElse {
-              error("Document with identity %s does not exists." format docIdentity)
+              sys.error("Document with identity %s does not exists." format docIdentity)
             }
         }
 
