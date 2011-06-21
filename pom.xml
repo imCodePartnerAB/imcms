@@ -892,25 +892,25 @@
                 </configuration>
 
                 <executions>
-                    <!--<execution>-->
-                        <!--<id>compile</id>-->
-                        <!--<goals>-->
-                            <!--<goal>compile</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>compile</phase>-->
-                    <!--</execution>-->
                     <execution>
-                        <id>cc</id>
+                        <id>compile</id>
                         <goals>
-                            <goal>cc</goal>
+                            <goal>compile</goal>
                         </goals>
                         <phase>compile</phase>
-                        <configuration>
-                            <useFsc>true</useFsc>
-                            <once>true</once>
-                            <verbose>true</verbose>
-                        </configuration>
                     </execution>
+                    <!--<execution>-->
+                        <!--<id>cc</id>-->
+                        <!--<goals>-->
+                            <!--<goal>cc</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>compile</phase>-->
+                        <!--<configuration>-->
+                            <!--<useFsc>true</useFsc>-->
+                            <!--<once>true</once>-->
+                            <!--<verbose>true</verbose>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
 
                     <execution>
                         <id>test-compile</id>

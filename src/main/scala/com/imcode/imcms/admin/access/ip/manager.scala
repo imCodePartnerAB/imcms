@@ -11,6 +11,7 @@ import imcms.api.IPAccess
 import imcode.util.Utility.{ipLongToString, ipStringToLong}
 import com.vaadin.ui.Window.Notification
 import imcms.admin.access.user.UserSearchDialog
+import javax.persistence.{Id, Entity}
 
 // todo: ipv4; add/handle ipv6?
 // todo: Should select user from user select!!
