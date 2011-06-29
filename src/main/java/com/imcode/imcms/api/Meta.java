@@ -252,7 +252,7 @@ public class Meta implements Serializable, Cloneable {
 
     
     /**
-     * Limited 2 permission set's bits for new document.
+     * Limited 1 permission set's bits for a new (inherited) document.
      * Permission set id mapped to bits.
      */
     // For processing after load:

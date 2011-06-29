@@ -25,7 +25,8 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
     public RoleIdToDocumentPermissionSetTypeMappings clone() {
         try {
             RoleIdToDocumentPermissionSetTypeMappings clone = (RoleIdToDocumentPermissionSetTypeMappings) super.clone();
-            clone.map = (HashMap) map.clone() ;
+            clone.map = (HashMap<RoleId, DocumentPermissionSetTypeDomainObject>)map.clone();
+
             return clone;
         } catch ( CloneNotSupportedException e ) {
             throw new ShouldNotBeThrownException(e);

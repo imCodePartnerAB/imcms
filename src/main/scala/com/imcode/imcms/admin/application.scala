@@ -334,7 +334,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 //
 //      whenSelected(tblDocs) { id =>
 //        val model = MetaModel(id)
-//        val editor = new PermissionsEditor(app, model.meta, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
+//        val editor = new PermissionsSheet(app, model.meta, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
 //
 //
 //

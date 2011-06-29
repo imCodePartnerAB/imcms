@@ -872,7 +872,7 @@
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
-                <version>2.15.2</version>
+                <!--<version>2.15.2</version>-->
                 <configuration>
                     <scalaVersion>2.9.0-1</scalaVersion>
                     <jvmArgs>
@@ -885,9 +885,9 @@
                         <arg>-deprecation</arg>
                         <arg>-explaintypes</arg>
                     </args>
-                    <excludes>
-                         <exclude>**/test/**</exclude>
-                    </excludes>
+                    <!--<excludes>-->
+                         <!--<exclude>**/test/**</exclude>-->
+                    <!--</excludes>-->
                     <verbose>true</verbose>
                 </configuration>
 
@@ -895,6 +895,7 @@
                     <execution>
                         <id>compile</id>
                         <goals>
+                            <goal>add-source</goal>
                             <goal>compile</goal>
                         </goals>
                         <phase>compile</phase>
@@ -1143,7 +1144,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>7.0.0.RC6</version>
                 <configuration>
-                    <!--<scanIntervalSeconds>3</scanIntervalSeconds>-->
+                    <scanIntervalSeconds>3</scanIntervalSeconds>
                     <stopKey>${project.name}</stopKey>
                     <stopPort>9696</stopPort>
                     <!--<webAppSourceDirectory>${project.build.directory}/${project.build.finalName}</webAppSourceDirectory>-->

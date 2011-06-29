@@ -2,6 +2,9 @@ package imcode.server.document;
 
 import java.io.Serializable;
 
+/**
+ * Limited/Restricted (custom) permissions.
+ */
 public class DocumentPermissionSets implements Serializable, Cloneable {
 
     private DocumentPermissionSetDomainObject[] permissionSets = new DocumentPermissionSetDomainObject[] {

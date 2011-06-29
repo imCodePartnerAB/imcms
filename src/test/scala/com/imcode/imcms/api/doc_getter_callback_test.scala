@@ -6,13 +6,13 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import imcms.test.Base.{db}
+import _root_.com.imcode.imcms.test.fixtures.{LanguagesFX, UserFX}
+
 import imcode.server.user.UserDomainObject
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import javax.servlet.http.HttpServletRequest
 import imcode.server.{Imcms, ImcmsConstants}
-import imcms.test.fixtures.{LanguagesFX, UserFX}
 
 @RunWith(classOf[JUnitRunner])
 class DocGetterCallbackSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {

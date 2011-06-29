@@ -1,62 +1,20 @@
 package com.imcode
-package imcms.admin.doc.meta.permissions
+package imcms
+package admin.doc.meta.permissions
 
+import scala.collection.breakOut
 import imcms.mapping.DocumentSaver
 import scala.collection.JavaConversions._
-import com.vaadin.ui._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import com.imcode.imcms.api._
 import imcode.server.user._
-import imcode.server.{Imcms}
 import imcode.server.document._
-import com.imcode.imcms.vaadin._
+import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import imcms.ImcmsServicesSupport
+import com.vaadin.ui._
+import servlet.admin.SaveText
 
 //todo: check user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )
-class PermissionsEditor(app: ImcmsApplication, meta: Meta, user: UserDomainObject) {
-  import DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
-  
-  val ui = letret(new PermissionsEditorUI) { ui =>
-    val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
-    val allButSuperadminRole = roleMapper.getAllRoles.filterNot(_.getId == RoleId.SUPERADMIN)
-    val allButSuperadminRoleIds = allButSuperadminRole map { _.getId } 
-    val roleIdToPermissionSetType = meta.getRoleIdToDocumentPermissionSetTypeMappings
-
-    ui.tblRolesPermissions.itemsProvider = () => {
-      val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
-
-      for {
-        mapping <- roleIdToPermissionSetType.getMappings.toSeq
-        roleId = mapping.getRoleId
-        role <- ?(roleMapper.getRole(roleId))
-        documentPermissionSetType = mapping.getDocumentPermissionSetType
-        if !(documentPermissionSetType == NONE || RoleId.SUPERADMIN == roleId)
-      } yield 
-          (roleId, role.getName :: types.map(t => if (t == documentPermissionSetType) "X" else ""))
-    }
-
-    ui.miRolePermissionAdd setCommandHandler {
-      app.initAndShow(new OkCancelDialog("Add role permission")) { dlg =>
-        dlg.mainUI = letret(new AddRolePermissionDialogContent) { c =>
-          c.ogPermission.setValue("Read")
-          allButSuperadminRoleIds.filterNot(ui.tblRolesPermissions.itemIds contains) foreach { roleId =>
-            c.lstRoles.addItem(roleId, roleMapper.getRole(roleId).getName)
-          }
-
-          dlg.wrapOkHandler {
-            roleIdToPermissionSetType.setPermissionSetTypeForRole(c.lstRoles.value, READ)
-            ui.tblRolesPermissions.reload()
-          }
-        }
-      }
-    }
-
-    ui.miRolePermissionEdit setCommandHandler {
-
-    }
-
-    ui.miRolePermissionDelete setCommandHandler {
-
-    }    
     // user role??
 
 //        if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )) {
@@ -65,9 +23,106 @@ class PermissionsEditor(app: ImcmsApplication, meta: Meta, user: UserDomainObjec
 //            return checked ? Html.hidden( name, value )+"X" : "O" ;
 //        }
 
-    ui.tblRolesPermissions.reload()
+
+
+class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject) extends ImcmsServicesSupport {
+  import DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
+
+  case class State(
+    rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone(),
+    limPermissionsSets: DocumentPermissionSets = meta.getPermissionSets.clone(),
+    limPermissionsSetsForNewDoc: DocumentPermissionSets = meta.getPermissionSetsForNewDocuments.clone(),
+    isLim1MorePrivilegedThanLim2: Boolean = meta.getRestrictedOneMorePrivilegedThanRestrictedTwo,
+    isLinkedForUnauthorizedUsers: Boolean = meta.getLinkedForUnauthorizedUsers,
+    isLinkableByOtherUsers: Boolean = meta.getLinkableByOtherUsers
+  )
+
+  private val initialState = State()
+  
+  val ui = letret(new PermissionsSheetUI) { ui =>
+    ui.rolesPermissionsUI.miAdd setCommandHandler {
+      app.initAndShow(new OkCancelDialog("Add role permission")) { dlg =>
+        dlg.mainUI = letret(new AddRolePermissionDialogContent) { c =>
+          c.ogPermission.setValue("Read")
+
+          val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
+          val selectedRolesIds = ui.rolesPermissionsUI.tblRolesPermissions.itemIds.toSet
+
+          for {
+            role <- roleMapper.getAllRolesExceptUsersRole
+            roleId = role.getId
+            if !(roleId == RoleId.SUPERADMIN || selectedRolesIds.contains(roleId))
+          } c.lstRoles.addItem(roleId, role.getName)
+
+          dlg.wrapOkHandler {
+            //roleIdToPermissionSetType.setPermissionSetTypeForRole(c.lstRoles.value, READ)
+            //ui.tblRolesPermissions.reload()
+          }
+        }
+      }
+    }
+
+    ui.rolesPermissionsUI.miEdit setCommandHandler {
+      whenSelected(ui.rolesPermissionsUI.tblRolesPermissions) { roleIds =>
+        val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
+        val roles = roleIds map roleMapper.getRole
+
+        app.initAndShow(new OkCancelDialog("Change permission for selected role(s)")) { dlg =>
+          dlg.mainUI = letret(new EditRolePermissionDialogContent) { c =>
+            roles foreach (role => c.lstRoles.addItem(role.getId, role.getName))
+
+            c.ogPermission.setValue("Read")
+
+            dlg.wrapOkHandler {
+
+              roles foreach { role =>
+
+              }
+
+              //ui.tblRolesPermissions.reload()
+            }
+          }
+        }
+      }
+    }
+
+    ui.rolesPermissionsUI.miDelete setCommandHandler {
+      whenSelected(ui.rolesPermissionsUI.tblRolesPermissions) { roleIds =>
+      }
+    }
   }
 
+  revert()
+
+
+  def revert() {
+    val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
+    val allButSuperadminRole = roleMapper.getAllRoles
+      .filterNot(_.getId == RoleId.SUPERADMIN)
+      .map(role => (role.getId, role))(breakOut) : Map[RoleId, RoleDomainObject]
+
+    val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
+
+    ui.rolesPermissionsUI.tblRolesPermissions.removeAllItems()
+
+    for {
+      mapping <- initialState.rolesPermissions.getMappings
+      roleId = mapping.getRoleId
+      role <- allButSuperadminRole.get(roleId)
+      documentPermissionSetType = mapping.getDocumentPermissionSetType
+      if documentPermissionSetType != NONE
+    } {
+      ui.rolesPermissionsUI.tblRolesPermissions.addItem(
+        (role.getName :: types.map(t => if (t == documentPermissionSetType) "X" else "")).toArray[AnyRef],
+        roleId
+      )
+    }
+
+    ui.frmExtraSettings.chkShareWithOtherAdmins.checked = initialState.isLinkableByOtherUsers
+    ui.frmExtraSettings.chkShowToUnauthorizedUser.checked = initialState.isLinkedForUnauthorizedUsers
+
+    ui.chkLim1IsMorePrivilegedThanLim2.checked = initialState.isLim1MorePrivilegedThanLim2
+  }
 }
 
       // if (user.canDefineRestrictedOneFor( document ))
@@ -89,31 +144,45 @@ class PermissionsEditor(app: ImcmsApplication, meta: Meta, user: UserDomainObjec
       // JUST INFO
       //<%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %>
 
-class PermissionsEditorUI extends VerticalLayout with Spacing with FullWidth {
+
+class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {
   setMargin(true, true, false, true)
 
-  class CustomSettingsUI extends HorizontalLayout with Spacing with UndefinedSize {
-    val btnEdit = new Button("Define") with LinkStyle
-    val btnEditNew = new Button("Define for new document") with LinkStyle
+  class LimitedPermissionSetUI(caption: String = "") extends HorizontalLayout with Spacing with UndefinedSize {
+    val btnEdit = new Button("Define".i) with LinkStyle
+    val btnEditNew = new Button("Define for new document".i) with LinkStyle
   }
 
-  val customSettings1 = new CustomSettingsUI
-  val customSettings2 = new CustomSettingsUI
+  class RolesPermissionsUI extends VerticalLayout with Spacing with FullWidth {
+    //val txtRole = new TextField("Role name")
+    //val twsPermissionSet = new TwinColSelect("")
 
-  // chk box Limited 1 is more privileged than limited 2.
+    val tblRolesPermissions = letret(new Table with MultiSelect2[RoleId] with Immediate with FullWidth with Selectable) { tbl =>
+      tbl.setPageLength(7)
+      addContainerProperties(tbl,
+        CP[String]("Role".i),
+        CP[String]("Read".i),
+        CP[String]("Limited-1"),
+        CP[String]("Limited-2"),
+        CP[String]("Full"))
+    }
+
+    val mb = new MenuBar
+    val miAdd = mb.addItem("Add")
+    val miEdit = mb.addItem("Edit")
+    val miDelete = mb.addItem("Delete")
+
+    addComponents(this, mb, tblRolesPermissions)
+  }
+
+  val lim1PermissionSet = new LimitedPermissionSetUI
+  val lim2PermissionSet = new LimitedPermissionSetUI
+  val chkLim1IsMorePrivilegedThanLim2 = new CheckBox("Limited 1 is more privileged than limited 2")
+  val rolesPermissionsUI = new RolesPermissionsUI
+
+  // -----------
   // lim: Default template for new pages - list
   //------------
-
-  val mbRolesPermissions = new MenuBar
-  val miRolePermissionAdd = mbRolesPermissions.addItem("Add", null)
-  val miRolePermissionEdit = mbRolesPermissions.addItem("Edit", null)
-  val miRolePermissionDelete = mbRolesPermissions.addItem("Delete", null)
-  val tblRolesPermissions = new Table with ValueType[RoleId] with ItemIdType[RoleId] with SingleSelect with Immediate with Reloadable with FullWidth {
-    setPageLength(7)
-  }
-//  val lytRoles = new VerticalLayout with Spacing {
-//    addComponents(this, mbRole, tblRolesPermissions)
-//  }
 
   val frmExtraSettings = new Form with FullWidth {
     setCaption("Extra settings")
@@ -124,15 +193,10 @@ class PermissionsEditorUI extends VerticalLayout with Spacing with FullWidth {
     addComponents(getLayout, chkShowToUnauthorizedUser, chkShareWithOtherAdmins)
   }
 
-  addContainerProperties(tblRolesPermissions,
-    ContainerProperty[String]("Role"),
-    ContainerProperty[String]("Read"),
-    ContainerProperty[String]("Limited-1"),
-    ContainerProperty[String]("Limited-2"),
-    ContainerProperty[String]("Full"))
 
-  addComponents(this, mbRolesPermissions, tblRolesPermissions, customSettings1, customSettings2, frmExtraSettings)
+  addComponents(this, rolesPermissionsUI, lim1PermissionSet, lim2PermissionSet, frmExtraSettings)
 }
+
 
 class AddRolePermissionDialogContent extends FormLayout with UndefinedSize {
   val lstRoles = new ListSelect("Roles") with SingleSelect2[RoleId] with NoNullSelection
@@ -141,8 +205,9 @@ class AddRolePermissionDialogContent extends FormLayout with UndefinedSize {
   addComponents(this, lstRoles, ogPermission)
 }
 
+
 class EditRolePermissionDialogContent extends FormLayout with UndefinedSize {
-  val lstRoles = new ListSelect("Roles")
+  val lstRoles = new ListSelect("Roles".i) with XSelect[RoleId] with ReadOnly
   val ogPermission = new OptionGroup("Permission", Array("Read", "Limited-1", "Limited-2", "Full").toList)
 
   addComponents(this, lstRoles, ogPermission)
@@ -167,7 +232,7 @@ class LimitedPermissionsDialogContent extends FormLayout with UndefinedSize {
 //
 //class LimitedPermissionsEditor {}
 //
-//class LimitedPermissionsEditorUI {}
+//class LimitedPermissionsSheetUI {}
 
 /**
     if not text doc ->

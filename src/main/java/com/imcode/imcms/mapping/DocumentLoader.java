@@ -19,26 +19,34 @@ import com.imcode.imcms.dao.DocumentVersionDao;
 
 /**
  * Loads documents from the database.
- *  
+ * <p/>
  * Instantiated by spring-framework and initialized in DocumentMapper constructor.
  */
 public class DocumentLoader {
-	
-    /** Permission to create child documents. */
+
+    /**
+     * Permission to create child documents.
+     */
     public final static int PERM_CREATE_DOCUMENT = 8;
 
-    /** Injected by spring. */
+    /**
+     * Injected by spring.
+     */
     private MetaDao metaDao;
 
-    /** Injected by spring. */
-    private DocumentVersionDao documentVersionDao;    
-        
-    /** Initializes document's fields. */
+    /**
+     * Injected by spring.
+     */
+    private DocumentVersionDao documentVersionDao;
+
+    /**
+     * Initializes document's fields.
+     */
     private DocumentInitializingVisitor documentInitializingVisitor;
 
     /**
      * Loads document's meta.
-     * 
+     *
      * @param docId document id.
      * @return
      */
@@ -53,7 +61,7 @@ public class DocumentLoader {
 
             initRoleIdToPermissionSetIdMap(meta);
             initDocumentsPermissionSets(meta);
-            initDocumentsPermissionSetsForNew(meta);            
+            initDocumentsPermissionSetsForNew(meta);
         }
 
         return meta;
@@ -61,7 +69,7 @@ public class DocumentLoader {
 
     /**
      * Loads and initializes document's fields.
-     * 
+     *
      * @param meta
      * @param version
      * @param language
@@ -69,10 +77,12 @@ public class DocumentLoader {
      */
     public DocumentDomainObject loadAndInitDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
         return initDocument(createDocument(meta, version, language));
-    }     
+    }
 
-    
-    /** Creates document instance. */
+
+    /**
+     * Creates document instance.
+     */
     private DocumentDomainObject createDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
         I18nMeta labels = metaDao.getI18nMeta(meta.getId(), language);
 
@@ -80,129 +90,129 @@ public class DocumentLoader {
             labels = Factory.createI18nMeta(meta.getId(), language);
         }
 
-		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+        DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
         document.setMeta(meta);
         document.setLanguage(language);
         document.setI18nMeta(labels);
-        
+
         document.setVersion(version);
-        
+
         return document;
     }
-    
+
     /**
      * Initializes document's fields.
-     * 
+     * <p/>
      * TODO: Refactor out AOP aspects creation and copy-paste.
      */
     private DocumentDomainObject initDocument(DocumentDomainObject document) {
-    	if (document == null) return null;
-    	
-    	/*
-    	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document); 
-    	aspectJProxyFactory.setProxyTargetClass(true);
-    	
-    	switch (document.loadMeta().getDocumentType()) {
-    	case DocumentTypeDomainObject.TEXT_ID:
+        if (document == null) return null;
+
+        /*
+        AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document);
+        aspectJProxyFactory.setProxyTargetClass(true);
+
+        switch (document.loadMeta().getDocumentType()) {
+        case DocumentTypeDomainObject.TEXT_ID:
             aspectJProxyFactory.addAspect(new TextDocumentLazyLoadingAspect(
-            		documentInitializingVisitor.getTextDocumentInitializer()));       
+                    documentInitializingVisitor.getTextDocumentInitializer()));
            break;
-            
-    	case DocumentTypeDomainObject.FILE_ID:
+
+        case DocumentTypeDomainObject.FILE_ID:
             aspectJProxyFactory.addAspect(new FileDocumentLazyLoadingAspect(documentInitializingVisitor));
             break;
-            
-    	case DocumentTypeDomainObject.URL_ID:
+
+        case DocumentTypeDomainObject.URL_ID:
             aspectJProxyFactory.addAspect(new UrlDocumentLazyLoadingAspect(documentInitializingVisitor));
-            break;    
-            
-    	case DocumentTypeDomainObject.HTML_ID:
+            break;
+
+        case DocumentTypeDomainObject.HTML_ID:
             aspectJProxyFactory.addAspect(new HtmlDocumentLazyLoadingAspect(documentInitializingVisitor));
-            break;            
-    		
+            break;
+
         default:
-        	throw new AssertionError("Unknown document type id: " + document.loadMeta().getDocumentType());
-    	}
+            throw new AssertionError("Unknown document type id: " + document.loadMeta().getDocumentType());
+        }
         
         return aspectJProxyFactory.getProxy();
         */
         document.accept(documentInitializingVisitor);
-        
+
         return document;
-    }  
-    
+    }
+
     private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
         Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
-        if ( Document.STATUS_PUBLICATION_APPROVED == publicationStatusInt ) {
+        if (Document.STATUS_PUBLICATION_APPROVED == publicationStatusInt) {
             publicationStatus = Document.PublicationStatus.APPROVED;
-        } else if ( Document.STATUS_PUBLICATION_DISAPPROVED == publicationStatusInt ) {
+        } else if (Document.STATUS_PUBLICATION_DISAPPROVED == publicationStatusInt) {
             publicationStatus = Document.PublicationStatus.DISAPPROVED;
         }
         return publicationStatus;
     }
-    
+
     // Moved from  DocumentInitializer.initDocuments
     private void initRoleIdToPermissionSetIdMap(Meta meta) {
-        RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings = 
-        	new RoleIdToDocumentPermissionSetTypeMappings();
-        
-        for (Map.Entry<Integer, Integer> roleIdToPermissionSetId: meta.getRoleIdToPermissionSetIdMap().entrySet()) {
-        	rolePermissionMappings.setPermissionSetTypeForRole(
-        			new RoleId(roleIdToPermissionSetId.getKey()),
-        			DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
+        RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
+                new RoleIdToDocumentPermissionSetTypeMappings();
+
+        for (Map.Entry<Integer, Integer> roleIdToPermissionSetId : meta.getRoleIdToPermissionSetIdMap().entrySet()) {
+            rolePermissionMappings.setPermissionSetTypeForRole(
+                    new RoleId(roleIdToPermissionSetId.getKey()),
+                    DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
         }
-        
-        meta.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);    	
+
+        meta.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);
     }
-    
+
     private void initDocumentsPermissionSets(Meta meta) {
-    	DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-    			meta.getPermissionSetBitsMap(), meta.getPermisionSetEx());
-    	
-    	meta.setPermissionSets(permissionSets);
+        DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
+                meta.getPermissionSetBitsMap(), meta.getPermisionSetEx());
+
+        meta.setPermissionSets(permissionSets);
     }
-    
-    
+
+
     private void initDocumentsPermissionSetsForNew(Meta meta) {
-    	DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-    			meta.getPermissionSetBitsForNewMap(), meta.getPermisionSetExForNew());
-    	
-    	meta.setPermissionSetsForNew(permissionSets);
+        DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
+                meta.getPermissionSetBitsForNewMap(), meta.getPermisionSetExForNew());
+
+        meta.setPermissionSetsForNew(permissionSets);
     }
-    
-    
+
+
     private DocumentPermissionSets createDocumentsPermissionSets(
-    		Map<Integer, Integer> permissionSetBitsMap,
-    		Set<Meta.PermisionSetEx> permissionSetEx) {
-    	
-    	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-    	
-    	for (Map.Entry<Integer, Integer> permissionSetBitsEntry: permissionSetBitsMap.entrySet()) {
-    		Integer setId = permissionSetBitsEntry.getKey();
-    		Integer permissionSetBits = permissionSetBitsEntry.getValue();
-    		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
-    		
+            Map<Integer, Integer> permissionSetBitsMap,
+            Set<Meta.PermisionSetEx> permissionSetEx) {
+
+        DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+
+        for (Map.Entry<Integer, Integer> permissionSetBitsEntry : permissionSetBitsMap.entrySet()) {
+            Integer setId = permissionSetBitsEntry.getKey();
+            Integer permissionSetBits = permissionSetBitsEntry.getValue();
+            DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+
             if (permissionSetBits != 0 && restricted.isEmpty()) {
                 restricted.setFromBits(permissionSetBits);
-            }    		    		
-    	}    	
-    	
-    	for (Meta.PermisionSetEx ex: permissionSetEx) {
-    		Integer setId = ex.getSetId();
-    		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
-    		        		
-            setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());        		
-    	}
-    	
-    	return permissionSets;
-    }    
-    
+            }
+        }
+
+        for (Meta.PermisionSetEx ex : permissionSetEx) {
+            Integer setId = ex.getSetId();
+            DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+
+            setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());
+        }
+
+        return permissionSets;
+    }
+
 
     private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {
         if (null != permissionId) {
-            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) permissionSet ;
-            switch(permissionId.intValue()) {
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) permissionSet;
+            switch (permissionId.intValue()) {
                 case PERM_CREATE_DOCUMENT:
                     textDocumentPermissionSet.addAllowedDocumentTypeId(permissionData.intValue());
                     break;
@@ -213,24 +223,24 @@ public class DocumentLoader {
             }
         }
     }
-    
 
-	public MetaDao getMetaDao() {
-		return metaDao;
-	}
 
-	public void setMetaDao(MetaDao metaDao) {
-		this.metaDao = metaDao;
-	}
+    public MetaDao getMetaDao() {
+        return metaDao;
+    }
 
-	public DocumentInitializingVisitor getDocumentInitializingVisitor() {
-		return documentInitializingVisitor;
-	}
+    public void setMetaDao(MetaDao metaDao) {
+        this.metaDao = metaDao;
+    }
 
-	public void setDocumentInitializingVisitor(
-			DocumentInitializingVisitor documentInitializingVisitor) {
-		this.documentInitializingVisitor = documentInitializingVisitor;
-	}
+    public DocumentInitializingVisitor getDocumentInitializingVisitor() {
+        return documentInitializingVisitor;
+    }
+
+    public void setDocumentInitializingVisitor(
+            DocumentInitializingVisitor documentInitializingVisitor) {
+        this.documentInitializingVisitor = documentInitializingVisitor;
+    }
 
     public DocumentVersionDao getDocumentVersionDao() {
         return documentVersionDao;

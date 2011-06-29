@@ -92,6 +92,9 @@ class ButtonWrapper(button: Button) {
   def addClickHandler(handler: => Unit) = addClickListener(_ => handler)
 }
 
+/**
+ * Ensures this button have no more than one click listener.
+ */
 trait SingleClickListener extends Button {
   private val clickListenerRef = new AtomicReference(Option.empty[Button.ClickListener])
 

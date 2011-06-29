@@ -1,5 +1,6 @@
-package com.imcode
-package imcms
+package com.imcode.imcms
+
+import com.imcode.EX
 
 package object test {
   def withLogFailure[T](block: => T) =

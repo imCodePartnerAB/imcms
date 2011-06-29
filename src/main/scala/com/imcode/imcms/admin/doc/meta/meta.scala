@@ -4,7 +4,7 @@ package admin.doc.meta
 
 import scala.collection.JavaConversions._
 
-import permissions.PermissionsEditor
+import permissions.PermissionsSheet
 import collection.mutable.{Map => MMap}
 import imcode.server.Imcms
 import imcode.server.user.UserDomainObject
@@ -21,24 +21,30 @@ import com.vaadin.ui._
 //  mainUI =
 //}
 
+// properties editor
+// properties editor UI???
+
+// MetaEditor
+
 class Properties(doc: DocumentDomainObject) extends ImcmsServicesSupport {
 
   private var searchSheepOpt = Option.empty[SearchSheet]
   private var categoriesSheetOpt = Option.empty[CategoriesSheet]
   private var appearanceSheetOpt = Option.empty[AppearanceSheet]
+  private var permissionsSheetOpt = Option.empty[PermissionsSheet]
+
 
   val ui = letret(new PropertiesUI) { ui =>
-    ui.menu.addItem("Main")
-    ui.menu.addItem("Appearance")
-    ui.menu.addItem("Permissions")
-    ui.menu.addItem("Search")
-    ui.menu.addItem("Categories")
-    // Access, Publication, Status ...
+    ui.sheets.addItem("Main")
+    ui.sheets.addItem("Appearance")
+    ui.sheets.addItem("Permissions")
+    ui.sheets.addItem("Search")
+    ui.sheets.addItem("Categories")
 
-    ui.menu.addValueChangeHandler {
-      ui.menu.getValue match {
+    ui.sheets.addValueChangeHandler {
+      ui.sheets.getValue match {
         case "Main" =>
-          ui.property.setContent(new MainSheetUI)
+          ui.sheet.setContent(new MainSheetUI)
 
         case "Appearance" =>
           if (appearanceSheetOpt.isEmpty)
@@ -48,37 +54,45 @@ class Properties(doc: DocumentDomainObject) extends ImcmsServicesSupport {
               )
             )
 
-          ui.property.setContent(appearanceSheetOpt.get.ui)
+          ui.sheet.setContent(appearanceSheetOpt.get.ui)
 
         case "Permissions" =>
-          ui.property.setContent(new PermissionsEditor(ui.getApplication.asInstanceOf[ImcmsApplication], doc.getMeta, ui.getApplication.asInstanceOf[ImcmsApplication].user).ui)
+          if (permissionsSheetOpt.isEmpty) permissionsSheetOpt =
+            Some(
+              new PermissionsSheet(ui.getApplication.asInstanceOf[ImcmsApplication],
+              doc.getMeta,
+              ui.getApplication.asInstanceOf[ImcmsApplication].user)
+            )
+
+          ui.sheet.setContent(permissionsSheetOpt.get.ui)
 
         case "Search" =>
           if (searchSheepOpt.isEmpty) searchSheepOpt = Some(new SearchSheet(doc.getMeta))
 
-          ui.property.setContent(searchSheepOpt.get.ui)
+          ui.sheet.setContent(searchSheepOpt.get.ui)
 
         case "Categories" =>
           if (categoriesSheetOpt.isEmpty) categoriesSheetOpt = Some(new CategoriesSheet(doc.getMeta))
 
-          ui.property.setContent(categoriesSheetOpt.get.ui)
+          ui.sheet.setContent(categoriesSheetOpt.get.ui)
 
         case _ =>
-          ui.property.setContent(new VerticalLayout with UndefinedSize { addComponent(new Label("n/a") with UndefinedSize) })
-          // select Info; todo: no null selection, info selected by default
       }
     }
   }
+
+  ui.sheets.select("Main")
 }
+
 
 
 class PropertiesUI extends VerticalLayout with FullSize with NoMargin {
   val sp = new HorizontalSplitPanel with FullSize
-  val menu = new Tree with Immediate
-  val property = new Panel with LightStyle with FullSize
+  val sheets = new Tree with Immediate
+  val sheet = new Panel with LightStyle with FullSize
 
-  sp.setSecondComponent(property)
-  sp.setFirstComponent(menu)
+  sp.setSecondComponent(sheet)
+  sp.setFirstComponent(sheets)
   addComponent(sp)
 }
 
