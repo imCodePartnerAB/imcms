@@ -3,16 +3,15 @@ package imcms
 package admin.doc.meta.permissions
 
 import scala.collection.breakOut
-import imcms.mapping.DocumentSaver
 import scala.collection.JavaConversions._
-import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import com.imcode.imcms.api._
 import imcode.server.user._
 import imcode.server.document._
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import imcms.ImcmsServicesSupport
 import com.vaadin.ui._
-import servlet.admin.SaveText
+
+import DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
 
 //todo: check user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )
     // user role??
@@ -24,9 +23,20 @@ import servlet.admin.SaveText
 //        }
 
 
+/// Change permission set vs Change Permssion set TYPE?????
 
+
+/**
+ * Doc's roles permissions settings.
+ *
+ * Document access is controlled at the (users) roles level.
+ * Each role can have exactly one set of permissions per document.
+ * -READ and FULL perm sets are non-customizable and always contain the same predefined permissions.
+ * -Lim1 and Lim2 perm sets can be customized - i.e. predefined permissions can be added/removed to/from those sets.
+ */
 class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject) extends ImcmsServicesSupport {
-  import DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
+
+  private val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
 
   case class State(
     rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone(),
@@ -38,56 +48,64 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
   )
 
   private val initialState = State()
-  
+  // WHY EXPECT USER ROLE ????
   val ui = letret(new PermissionsSheetUI) { ui =>
-    ui.rolesPermissionsUI.miAdd setCommandHandler {
-      app.initAndShow(new OkCancelDialog("Add role permission")) { dlg =>
-        dlg.mainUI = letret(new AddRolePermissionDialogContent) { c =>
-          c.ogPermission.setValue("Read")
-
-          val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
-          val selectedRolesIds = ui.rolesPermissionsUI.tblRolesPermissions.itemIds.toSet
-
-          for {
-            role <- roleMapper.getAllRolesExceptUsersRole
-            roleId = role.getId
-            if !(roleId == RoleId.SUPERADMIN || selectedRolesIds.contains(roleId))
-          } c.lstRoles.addItem(roleId, role.getName)
-
-          dlg.wrapOkHandler {
-            //roleIdToPermissionSetType.setPermissionSetTypeForRole(c.lstRoles.value, READ)
-            //ui.tblRolesPermissions.reload()
-          }
-        }
+    ui.rolesPermsSetTypeUI.miAddRole setCommandHandler {
+      val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
+      val existingRoles = ui.rolesPermsSetTypeUI.tblRolesPermsTypes.itemIds.toSet
+      val availableRoles = roleMapper.getAllRolesExceptUsersRole filterNot { role =>
+        role.getId == RoleId.SUPERADMIN || existingRoles.contains(role)
       }
-    }
 
-    ui.rolesPermissionsUI.miEdit setCommandHandler {
-      whenSelected(ui.rolesPermissionsUI.tblRolesPermissions) { roleIds =>
-        val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
-        val roles = roleIds map roleMapper.getRole
+      if (availableRoles.isEmpty) {
+        app.showWarningNotification("No roles available", "... or ...")
+      } else {
+        ui.getApplication.initAndShow(new OkCancelDialog("Add role")) { dlg =>
+          dlg.mainUI = letret(new AddRolePermsSetTypeDialogMainUI) { c =>
+            availableRoles foreach { role => c.cbRole.addItem(role, role.getName) }
 
-        app.initAndShow(new OkCancelDialog("Change permission for selected role(s)")) { dlg =>
-          dlg.mainUI = letret(new EditRolePermissionDialogContent) { c =>
-            roles foreach (role => c.lstRoles.addItem(role.getId, role.getName))
-
-            c.ogPermission.setValue("Read")
+            c.ogPermsSetType.value = READ
+            c.cbRole.value = availableRoles.head
 
             dlg.wrapOkHandler {
+              val role = c.cbRole.value
+              val setType = c.ogPermsSetType.value
 
-              roles foreach { role =>
-
-              }
-
-              //ui.tblRolesPermissions.reload()
+              ui.rolesPermsSetTypeUI.tblRolesPermsTypes.addItem(Array[AnyRef](RolePermsSetType(role, setType)), role)
             }
           }
         }
       }
     }
 
-    ui.rolesPermissionsUI.miDelete setCommandHandler {
-      whenSelected(ui.rolesPermissionsUI.tblRolesPermissions) { roleIds =>
+
+    ui.rolesPermsSetTypeUI.miChangeRolePermSetType setCommandHandler {
+      whenSelected(ui.rolesPermsSetTypeUI.tblRolesPermsTypes) { roles =>
+        app.initAndShow(new OkCancelDialog("Change slected role(s) permissions")) { dlg =>
+          dlg.mainUI = letret(new ChangeRolePermsSetTypeDialogMainUI) { c =>
+            roles foreach (role => c.lstRoles.addItem(role, role.getName))
+
+            c.ogPermsSetType.value = ui.rolesPermsSetTypeUI.tblRolesPermsTypes
+              .item(roles.head)
+              .getItemProperty(RolePermsSetTypePropertyId).getValue.asInstanceOf[RolePermsSetType].setType
+
+            dlg.wrapOkHandler {
+              val setType = c.ogPermsSetType.value
+
+              roles foreach { role =>
+                ui.rolesPermsSetTypeUI.tblRolesPermsTypes.item(role)
+                  .getItemProperty(RolePermsSetTypePropertyId)
+                  .setValue(RolePermsSetType(role, setType))
+              }
+            }
+          }
+        }
+      }
+    }
+
+    ui.rolesPermsSetTypeUI.miRemoveRole setCommandHandler {
+      whenSelected(ui.rolesPermsSetTypeUI.tblRolesPermsTypes) { roles =>
+        roles foreach (ui.rolesPermsSetTypeUI.tblRolesPermsTypes.removeItem)
       }
     }
   }
@@ -101,21 +119,16 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
       .filterNot(_.getId == RoleId.SUPERADMIN)
       .map(role => (role.getId, role))(breakOut) : Map[RoleId, RoleDomainObject]
 
-    val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
-
-    ui.rolesPermissionsUI.tblRolesPermissions.removeAllItems()
+    ui.rolesPermsSetTypeUI.tblRolesPermsTypes.removeAllItems()
 
     for {
       mapping <- initialState.rolesPermissions.getMappings
       roleId = mapping.getRoleId
       role <- allButSuperadminRole.get(roleId)
-      documentPermissionSetType = mapping.getDocumentPermissionSetType
-      if documentPermissionSetType != NONE
+      setType = mapping.getDocumentPermissionSetType
+      if setType != NONE
     } {
-      ui.rolesPermissionsUI.tblRolesPermissions.addItem(
-        (role.getName :: types.map(t => if (t == documentPermissionSetType) "X" else "")).toArray[AnyRef],
-        roleId
-      )
+      ui.rolesPermsSetTypeUI.tblRolesPermsTypes.addItem(Array[AnyRef](RolePermsSetType(role, setType)), role)
     }
 
     ui.frmExtraSettings.chkShareWithOtherAdmins.checked = initialState.isLinkableByOtherUsers
@@ -153,32 +166,35 @@ class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {
     val btnEditNew = new Button("Define for new document".i) with LinkStyle
   }
 
-  class RolesPermissionsUI extends VerticalLayout with Spacing with FullWidth {
-    //val txtRole = new TextField("Role name")
-    //val twsPermissionSet = new TwinColSelect("")
 
-    val tblRolesPermissions = letret(new Table with MultiSelect2[RoleId] with Immediate with FullWidth with Selectable) { tbl =>
+  class RolesPermsSetTypeUI extends VerticalLayout with Spacing with FullWidth {
+    val mb = new MenuBar
+    val miAddRole = mb.addItem("Add role")
+    val miRemoveRole = mb.addItem("Remove role")
+    val miChangeRolePermSetType = mb.addItem("Change permissions set")
+
+    val tblRolesPermsTypes = letret(new Table with MultiSelect2[RoleDomainObject] with Immediate with FullWidth with Selectable) { tbl =>
       tbl.setPageLength(7)
+
       addContainerProperties(tbl,
-        CP[String]("Role".i),
-        CP[String]("Read".i),
-        CP[String]("Limited-1"),
-        CP[String]("Limited-2"),
-        CP[String]("Full"))
+        CP[RolePermsSetType](RolePermsSetTypePropertyId))
+
+      tbl.setColumnHeader(RolePermsSetTypePropertyId, "Role")
+
+      for (setType <- Seq(READ, RESTRICTED_1, RESTRICTED_2, FULL)) {
+        tbl.addGeneratedColumn(setType, new RolePermsSetTypeTableColumnGenerator(setType))
+        tbl.setColumnHeader(setType, setType.toString)
+      }
     }
 
-    val mb = new MenuBar
-    val miAdd = mb.addItem("Add")
-    val miEdit = mb.addItem("Edit")
-    val miDelete = mb.addItem("Delete")
-
-    addComponents(this, mb, tblRolesPermissions)
+    addComponents(this, mb, tblRolesPermsTypes)
   }
 
   val lim1PermissionSet = new LimitedPermissionSetUI
   val lim2PermissionSet = new LimitedPermissionSetUI
+
   val chkLim1IsMorePrivilegedThanLim2 = new CheckBox("Limited 1 is more privileged than limited 2")
-  val rolesPermissionsUI = new RolesPermissionsUI
+  val rolesPermsSetTypeUI = new RolesPermsSetTypeUI
 
   // -----------
   // lim: Default template for new pages - list
@@ -194,26 +210,63 @@ class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {
   }
 
 
-  addComponents(this, rolesPermissionsUI, lim1PermissionSet, lim2PermissionSet, frmExtraSettings)
+  addComponents(this, rolesPermsSetTypeUI, lim1PermissionSet, lim2PermissionSet, frmExtraSettings)
 }
 
 
-class AddRolePermissionDialogContent extends FormLayout with UndefinedSize {
-  val lstRoles = new ListSelect("Roles") with SingleSelect2[RoleId] with NoNullSelection
-  val ogPermission = new OptionGroup("Permission", Array("Read", "Limited-1", "Limited-2", "Full").toList) //with ValueType[RoleId]
-              
-  addComponents(this, lstRoles, ogPermission)
+private object RolePermsSetTypePropertyId
+
+
+private case class RolePermsSetType(role: RoleDomainObject, setType: DocumentPermissionSetTypeDomainObject) {
+  override def toString = role.getName
 }
 
 
-class EditRolePermissionDialogContent extends FormLayout with UndefinedSize {
-  val lstRoles = new ListSelect("Roles".i) with XSelect[RoleId] with ReadOnly
-  val ogPermission = new OptionGroup("Permission", Array("Read", "Limited-1", "Limited-2", "Full").toList)
+/**
+ * Role permission type table column generator for properties ids of type DocumentPermissionSetTypeDomainObject.
+ * Vaddin (bug?) warning:
+ *   For some reasons when adding items to table, values are not available (assigned) immediately, hence
+ *   Property.getValue returns null.
+ */
+private class RolePermsSetTypeTableColumnGenerator(setType: DocumentPermissionSetTypeDomainObject) extends Table.ColumnGenerator {
+  def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = letret(new Label with UndefinedSize) {
+    val rolePermissionSetType = source.getItem(itemId)
+      .getItemProperty(RolePermsSetTypePropertyId)
+      .getValue.asInstanceOf[RolePermsSetType]
 
-  addComponents(this, lstRoles, ogPermission)
+    _.value = if (rolePermissionSetType != null && rolePermissionSetType.setType == setType) "X" else ""
+  }
 }
 
-class LimitedPermissionsDialogContent extends FormLayout with UndefinedSize {
+
+
+
+
+private class AddRolePermsSetTypeDialogMainUI extends FormLayout with UndefinedSize {
+  val cbRole = new ComboBox("Role") with SingleSelect2[RoleDomainObject] with NoNullSelection
+  val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect2[DocumentPermissionSetTypeDomainObject]
+
+  List(READ, RESTRICTED_1, RESTRICTED_2, FULL) foreach { setType =>
+    ogPermsSetType.addItem(setType, setType.toString.i)
+  }
+
+  addComponents(this, cbRole, ogPermsSetType)
+}
+
+
+private class ChangeRolePermsSetTypeDialogMainUI extends FormLayout with UndefinedSize {
+  val lstRoles = new ListSelect("Roles".i) with XSelect[RoleDomainObject] with ReadOnly
+  val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect2[DocumentPermissionSetTypeDomainObject]
+
+  List(READ, RESTRICTED_1, RESTRICTED_2, FULL) foreach { setType =>
+    ogPermsSetType.addItem(setType, setType.toString.i)
+  }
+
+  addComponents(this, lstRoles, ogPermsSetType)
+}
+
+
+private class EditLimPermsDialogMainUI extends FormLayout with UndefinedSize {
    //todo: What kind of meta?
   val chkEditMeta = new CheckBox("Permission to edit page meta data")
    //todo: What kind of roles/privilieges?
