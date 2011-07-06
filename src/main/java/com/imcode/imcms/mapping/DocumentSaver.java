@@ -24,13 +24,13 @@ import com.imcode.imcms.api.*;
 
 /**
  * Used internally by DocumentMapper. Must NOT be used directly.
- *
- * Instantiated and initialized using spring framework. 
+ * <p/>
+ * Instantiated and initialized using spring framework.
  */
 public class DocumentSaver {
 
     private DocumentMapper documentMapper;
-    
+
     private MetaDao metaDao;
 
     private DocumentVersionDao documentVersionDao;
@@ -42,12 +42,13 @@ public class DocumentSaver {
     private ImageDao imageDao;
 
     private MenuDao menuDao;
-    
+
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
 
     /**
      * Updates doc's last modified date time if it was not set explicitly.
+     *
      * @param doc
      */
     public void updateModifiedDtIfNotSetExplicitly(DocumentDomainObject doc) {
@@ -64,16 +65,15 @@ public class DocumentSaver {
      * Saves edited text-document text and non-saved enclosing content loop if any.
      * If text is enclosed into unsaved content loop then the loop must also exist in document.
      *
+     * @throws IllegalStateException if a text refers non-existing content loop.
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
-     *
-     * @throws IllegalStateException if a text refers non-existing content loop.
      */
-    @Transactional     
+    @Transactional
     public void saveText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         createEnclosingContentLoopIfNecessary(doc, text);
 
-    	new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(doc, text, user);
+        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(doc, text, user);
 
         metaDao.touch(doc, user);
     }
@@ -94,13 +94,12 @@ public class DocumentSaver {
      * Saves changed text-document image(s).
      * If an image is enclosed into unsaved content loop then this content loop is also saved.
      *
-     * @see com.imcode.imcms.servlet.admin.ChangeImage
-     * 
      * @param doc
      * @param images images with the same 'no' for every language.
      * @param user
      * @throws NoPermissionInternalException
      * @throws DocumentSaveException
+     * @see com.imcode.imcms.servlet.admin.ChangeImage
      */
     @Transactional
     public void saveImages(TextDocumentDomainObject doc, Collection<ImageDomainObject> images, UserDomainObject user)
@@ -108,8 +107,8 @@ public class DocumentSaver {
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
         createEnclosingContentLoopIfNecessary(doc, images.iterator().next());
-        
-        for (ImageDomainObject image: images) {
+
+        for (ImageDomainObject image : images) {
             storingVisitor.saveTextDocumentImage(doc, image, user);
         }
 
@@ -127,7 +126,7 @@ public class DocumentSaver {
 
         metaDao.touch(doc, user);
     }
-    
+
 
     /**
      * Creates content loop if item references non-saved enclosing content loop.
@@ -139,25 +138,25 @@ public class DocumentSaver {
     public ContentLoop createEnclosingContentLoopIfNecessary(TextDocumentDomainObject doc, DocContentLoopItem item) {
         ContentLoop loop = null;
         Integer loopNo = item.getContentLoopNo();
-        
+
         if (loopNo != null) {
             Integer contentNo = item.getContentNo();
 
             if (contentNo == null) {
                 throw new IllegalStateException(String.format(
-                        "Content loop's context no is not set. Doc id: %s, item :%s, content loop no: %s.",  doc.getId(), item, loopNo));
+                        "Content loop's context no is not set. Doc id: %s, item :%s, content loop no: %s.", doc.getId(), item, loopNo));
             }
 
             loop = doc.getContentLoop(loopNo);
 
             if (loop == null) {
                 throw new IllegalStateException(String.format(
-                        "Content loop does not exists. Doc id: %s, item :%s, content loop no: %s.",  doc.getId(), item, loopNo));                
+                        "Content loop does not exists. Doc id: %s, item :%s, content loop no: %s.", doc.getId(), item, loopNo));
             }
 
             if (!loop.contentExists(contentNo)) {
                 throw new IllegalStateException(String.format(
-                        "Content does not exists. Doc id: %s, item :%s, content loop no: %s.",  doc.getId(), item, loopNo));                                
+                        "Content does not exists. Doc id: %s, item :%s, content loop no: %s.", doc.getId(), item, loopNo));
             }
 
             loop = contentLoopDao.saveLoop(loop);
@@ -176,7 +175,7 @@ public class DocumentSaver {
             if (version == null) {
                 throw new IllegalStateException(
                         String.format("Can not change doc %d version. Version no %d does not exists.",
-                        docId, docVersionNo));
+                                docId, docVersionNo));
             }
 
             documentVersionDao.changeDefaultVersion(docId, version, publisher);
@@ -190,6 +189,7 @@ public class DocumentSaver {
      * @param user
      * @return
      * @throws NoPermissionToAddDocumentToMenuException
+     *
      * @throws DocumentSaveException
      */
     @Transactional
@@ -201,11 +201,11 @@ public class DocumentSaver {
         DocumentVersion nextVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
         DocumentSavingVisitor docSavingVisitor = new DocumentSavingVisitor(null, documentMapper.getImcmsServices(), user);
 
-        for (DocumentDomainObject doc: docs) {
+        for (DocumentDomainObject doc : docs) {
             doc.accept(new DocIdentityCleanerVisitor());
             doc.setMeta(meta);
             doc.setVersion(nextVersion);
-            
+
             docSavingVisitor.updateDocumentI18nMeta(doc, user);
         }
 
@@ -213,15 +213,15 @@ public class DocumentSaver {
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
             firstDoc.accept(docSavingVisitor);
         } else {
-            TextDocumentDomainObject textDoc = (TextDocumentDomainObject)firstDoc;
+            TextDocumentDomainObject textDoc = (TextDocumentDomainObject) firstDoc;
 
             docSavingVisitor.updateTextDocumentContentLoops(textDoc, user);
             docSavingVisitor.updateTextDocumentMenus(textDoc, user);
             docSavingVisitor.updateTextDocumentTemplateNames(textDoc, user);
             docSavingVisitor.updateTextDocumentIncludes(textDoc);
 
-            for (DocumentDomainObject doc: docs) {
-                textDoc = (TextDocumentDomainObject)doc;
+            for (DocumentDomainObject doc : docs) {
+                textDoc = (TextDocumentDomainObject) doc;
                 docSavingVisitor.updateTextDocumentTexts(textDoc, user);
                 docSavingVisitor.updateTextDocumentImages(textDoc, user);
             }
@@ -245,14 +245,14 @@ public class DocumentSaver {
 
         saveMeta(doc.getMeta());
 
-        for (I18nMeta i18nMeta: i18nMetas) {
+        for (I18nMeta i18nMeta : i18nMetas) {
             metaDao.saveI18nMeta(i18nMeta);
         }
 
         doc.accept(savingVisitor);
         updateModifiedDtIfNotSetExplicitly(doc);
         metaDao.touch(doc, doc.getModifiedDatetime(), user);
-    }    
+    }
 
 
     /**
@@ -260,6 +260,7 @@ public class DocumentSaver {
      * @param user
      * @return
      * @throws NoPermissionToAddDocumentToMenuException
+     *
      * @throws DocumentSaveException
      */
     @Transactional
@@ -281,7 +282,7 @@ public class DocumentSaver {
         meta.setId(null);
         Integer copyDocId = saveMeta(meta).getId();
         metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
-        for (DocumentDomainObject doc: docs) {
+        for (DocumentDomainObject doc : docs) {
             I18nMeta i18nMeta = doc.getI18nMeta();
 
             i18nMeta.setId(null);
@@ -293,7 +294,7 @@ public class DocumentSaver {
         DocumentVersion copyDocVersion = documentVersionDao.createVersion(copyDocId, user.getId());
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
-        for (DocumentDomainObject doc: docs) {
+        for (DocumentDomainObject doc : docs) {
             doc.setMeta(meta);
             doc.setVersion(copyDocVersion);
         }
@@ -302,15 +303,15 @@ public class DocumentSaver {
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
             firstDoc.accept(docCreatingVisitor);
         } else {
-            TextDocumentDomainObject textDoc = (TextDocumentDomainObject)firstDoc;
+            TextDocumentDomainObject textDoc = (TextDocumentDomainObject) firstDoc;
 
             docCreatingVisitor.updateTextDocumentContentLoops(textDoc, user);
             docCreatingVisitor.updateTextDocumentMenus(textDoc, user);
             docCreatingVisitor.updateTextDocumentTemplateNames(textDoc, user);
             docCreatingVisitor.updateTextDocumentIncludes(textDoc);
 
-            for (DocumentDomainObject doc: docs) {
-                textDoc = (TextDocumentDomainObject)doc;
+            for (DocumentDomainObject doc : docs) {
+                textDoc = (TextDocumentDomainObject) doc;
                 docCreatingVisitor.updateTextDocumentTexts(textDoc, user);
                 docCreatingVisitor.updateTextDocumentImages(textDoc, user);
             }
@@ -345,26 +346,26 @@ public class DocumentSaver {
         meta.setDocumentType(doc.getDocumentTypeId());
         Integer docId = saveMeta(meta).getId();
 
-        for (I18nMeta i18nMeta: i18nMetas) {
+        for (I18nMeta i18nMeta : i18nMetas) {
             i18nMeta.setId(null);
             i18nMeta.setDocId(docId);
 
             metaDao.saveI18nMeta(i18nMeta);
-        }        
+        }
 
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
 
         DocumentVersion version = documentVersionDao.createVersion(docId, user.getId());
         doc.setVersion(version);
-        
+
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
         doc.accept(docCreatingVisitor);
 
         // refactor
         if (doc instanceof TextDocumentDomainObject && directiveses.contains(DocumentMapper.SaveDirectives.CopyI18nMetaTextsIntoTextFields)) {
-            TextDocumentDomainObject textDoc = (TextDocumentDomainObject)doc;
-            for (I18nMeta i18nMeta: i18nMetas) {
+            TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
+            for (I18nMeta i18nMeta : i18nMetas) {
                 TextDomainObject text1 = new TextDomainObject(i18nMeta.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN);
                 TextDomainObject text2 = new TextDomainObject(i18nMeta.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN);
 
@@ -381,7 +382,7 @@ public class DocumentSaver {
         return docId;
     }
 
-    
+
     /**
      * @return saved document meta.
      */
@@ -389,18 +390,18 @@ public class DocumentSaver {
         meta.setPublicationStatusInt(meta.getPublicationStatus().asInt());
 
         if (meta.getId() == null) {
-    	    meta.setActivate(1);
+            meta.setActivate(1);
         }
 
         metaDao.saveMeta(meta);
 
-    	return meta;
+        return meta;
     }
-    
+
 
     /**
-     * Various non security checks. 
-     * 
+     * Various non security checks.
+     *
      * @param document
      * @throws NoPermissionInternalException
      * @throws DocumentSaveException
@@ -409,87 +410,84 @@ public class DocumentSaver {
         documentMapper.getCategoryMapper().checkMaxDocumentCategoriesOfType(document);
         checkIfAliasAlreadyExist(document);
     }
-    
-    
+
+
     /**
      * Update meta roles to permissions set mapping.
-     * Modified copy of legacy updateDocumentRolePermissions method.  
+     * Modified copy of legacy updateDocumentRolePermissions method.
      * NB! Compared to legacy this method does not update database.
      */
     private void newUpdateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
-            DocumentDomainObject oldDocument) {
+                                                  DocumentDomainObject oldDocument) {
 
-    	// Original (old) and modified or new document permission set type mapping.
-		RoleIdToDocumentPermissionSetTypeMappings mappings = new RoleIdToDocumentPermissionSetTypeMappings();
-		
-		// Copy original document' roles to mapping with NONE(4) permissions-set assigned
-		if (null != oldDocument) {
-			RoleIdToDocumentPermissionSetTypeMappings.Mapping[] oldDocumentMappings = oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings();
-			for ( int i = 0; i < oldDocumentMappings.length; i++ ) {
-				RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = oldDocumentMappings[i];
-				mappings.setPermissionSetTypeForRole(mapping.getRoleId(), DocumentPermissionSetTypeDomainObject.NONE);
-			}
-		}
-		
-		// Copy modified or new document' roles to mapping
-		RoleIdToDocumentPermissionSetTypeMappings.Mapping[] documentMappings = document.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings() ;
-		for ( int i = 0; i < documentMappings.length; i++ ) {
-			RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = documentMappings[i];
-			mappings.setPermissionSetTypeForRole(mapping.getRoleId(), mapping.getDocumentPermissionSetType());
-		}
-		
-		RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappingsArray = mappings.getMappings();
-		Map<Integer, Integer> roleIdToPermissionSetIdMap = document.getMeta().getRoleIdToPermissionSetIdMap();
-		
-		for ( int i = 0; i < mappingsArray.length; i++ ) {
-			RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = mappingsArray[i];
-			RoleId roleId = mapping.getRoleId();
-			DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
-			
-			if (null == oldDocument
-					|| user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
-				
-				// According to schema design NONE value can not be save into table 
-				if (documentPermissionSetType.equals(DocumentPermissionSetTypeDomainObject.NONE)) {
-					roleIdToPermissionSetIdMap.remove(roleId.intValue());
-				} else {
-					roleIdToPermissionSetIdMap.put(roleId.intValue(), documentPermissionSetType.getId());
-				}
-			}
-		}
-	}
+        // Original (old) and modified or new document permission set type mapping.
+        RoleIdToDocumentPermissionSetTypeMappings mappings = new RoleIdToDocumentPermissionSetTypeMappings();
 
-    private void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
-    	String alias = document.getAlias();
-    	
-    	if (alias != null) {
-    		DocumentProperty property = metaDao.getAliasProperty(alias);
-    		if (property != null) {
-    			Integer documentId = document.getId();
-    			
-    			if (!property.getDocId().equals(documentId)) {
-                    throw new AliasAlreadyExistsInternalException(
-                    		String.format("Alias %s is already in use by document %d.", alias, documentId));    				
-    			}			
-    		}
-    	}
+        // Copy original document' roles to mapping with NONE(4) permissions-set assigned
+        if (null != oldDocument) {
+            RoleIdToDocumentPermissionSetTypeMappings.Mapping[] oldDocumentMappings = oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings();
+            for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : oldDocumentMappings) {
+                mappings.setPermissionSetTypeForRole(mapping.getRoleId(), DocumentPermissionSetTypeDomainObject.NONE);
+            }
+        }
+
+        // Copy modified or new document' roles to mapping
+        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] documentMappings = document.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings();
+        for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : documentMappings) {
+            mappings.setPermissionSetTypeForRole(mapping.getRoleId(), mapping.getDocumentPermissionSetType());
+        }
+
+        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappingsArray = mappings.getMappings();
+        Map<Integer, Integer> roleIdToPermissionSetIdMap = document.getMeta().getRoleIdToPermissionSetIdMap();
+
+        for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappingsArray) {
+            RoleId roleId = mapping.getRoleId();
+            DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
+
+            if (null == oldDocument
+                    || user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
+
+                // According to schema design NONE value can not be save into the DB table
+                if (documentPermissionSetType.equals(DocumentPermissionSetTypeDomainObject.NONE)) {
+                    roleIdToPermissionSetIdMap.remove(roleId.intValue());
+                } else {
+                    roleIdToPermissionSetIdMap.put(roleId.intValue(), documentPermissionSetType.getId());
+                }
+            }
+        }
     }
 
-	public DocumentMapper getDocumentMapper() {
-		return documentMapper;
-	}
+    private void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
+        String alias = document.getAlias();
 
-	public void setDocumentMapper(DocumentMapper documentMapper) {
-		this.documentMapper = documentMapper;
-	}
+        if (alias != null) {
+            DocumentProperty property = metaDao.getAliasProperty(alias);
+            if (property != null) {
+                Integer documentId = document.getId();
 
-	public MetaDao getMetaDao() {
-		return metaDao;
-	}
+                if (!property.getDocId().equals(documentId)) {
+                    throw new AliasAlreadyExistsInternalException(
+                            String.format("Alias %s is already in use by document %d.", alias, documentId));
+                }
+            }
+        }
+    }
 
-	public void setMetaDao(MetaDao metaDao) {
-		this.metaDao = metaDao;
-	}
+    public DocumentMapper getDocumentMapper() {
+        return documentMapper;
+    }
+
+    public void setDocumentMapper(DocumentMapper documentMapper) {
+        this.documentMapper = documentMapper;
+    }
+
+    public MetaDao getMetaDao() {
+        return metaDao;
+    }
+
+    public void setMetaDao(MetaDao metaDao) {
+        this.metaDao = metaDao;
+    }
 
     public ContentLoopDao getContentLoopDao() {
         return contentLoopDao;
