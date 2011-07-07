@@ -20,11 +20,15 @@ import textdocument.TextDocumentDomainObject
 //        } else {
 //            return checked ? Html.hidden( name, value )+"X" : "O" ;
 //        }
+// -- Move properties management into document profile
+
 
 /// todo: Change permission set vs Change Permssion set TYPE?????  vs change permissions type
 /// todo: Move template management to "appearance" (or some other sheet)
 
-/// todo: <td class="imcmsAdmText" nowrap><? global/Created_by ?>&nbsp;<i><%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %></i></td>
+
+/// todo: remove / already present in main.
+//  <td class="imcmsAdmText" nowrap><? global/Created_by ?>&nbsp;<i><%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %></i></td>
 
 /**
  * Doc's roles permissions settings.
@@ -103,7 +107,7 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
 
     ui.rolesPermsSetTypeUI.miChangeRolePermSetType setCommandHandler {
       whenSingle(ui.rolesPermsSetTypeUI.tblRolesPermsTypes.value.toSeq) { role =>
-        types.filter(user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(_, roleId, doc)) match {
+        types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
           case Nil => app.showWarningNotification("You are not allowed to edit this role")
           case availableSetTypes =>
             app.initAndShow(new OkCancelDialog("Change role permissions type")) { dlg =>
@@ -177,9 +181,6 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
 
       // <% if (document.isLinkedForUnauthorizedUsers()) => Checked
       //<% if (document.isLinkableByOtherUsers()) {%>checked<% } %>> checked
-
-      // JUST INFO
-      //<%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %>
 
 
 class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {
