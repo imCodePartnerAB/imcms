@@ -11,6 +11,7 @@ package object imcms {
   type LanguageId = JInteger
   type Keyword = String
   type CategoryId = JInteger
+  type DocTypeId = JInteger
 
 
   implicit def stringAsResourceBundleKey(string: String) = new {

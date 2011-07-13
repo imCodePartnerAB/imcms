@@ -127,7 +127,7 @@ public class DocumentPermissionSetDomainObject implements Serializable, LazilyLo
         setPermission( EDIT_PERMISSIONS, editPermissions );
     }
 
-    // This method is newer invoked
+    // This method is newer invoked externally - make private?
     public void setFromBits(int permissionBits) {
         setEditDocumentInformation(0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ));
         setEditPermissions(0 != ( permissionBits & EDIT_PERMISSIONS_PERMISSION_ID ));

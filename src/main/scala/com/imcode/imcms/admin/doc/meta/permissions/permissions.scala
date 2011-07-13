@@ -307,9 +307,9 @@ private class ChangeRolePermsSetTypeDialogMainUI extends FormLayout with Undefin
 
 
 /**
- * Limited permissions, common.
+ * Doc's common limited permission set
  */
-trait CommonLimPermsDialogMainUI extends FormLayout with UndefinedSize {
+trait DocLimPermSetDialogMainUI extends FormLayout with UndefinedSize {
 
   // Decoration; always checked and read only
   val chkRead = new CheckBox("Permission to view content") with Checked with ReadOnly
@@ -320,10 +320,54 @@ trait CommonLimPermsDialogMainUI extends FormLayout with UndefinedSize {
 }
 
 
+class NonTextDocLimPermSetDialogMain(permSet: TextDocumentPermissionSetDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
+  val ui = letret(new NonTextDocLimPermSetDialogMainUI) { ui =>
+  }
+
+  def revert() {
+    ui.chkEditMeta.checked = permSet.getEditDocumentInformation
+    ui.chkEditRoles.checked = permSet.getEditPermissions
+    ui.chkEditContent.checked = permSet.getEdit
+  }
+}
+
+
+class TextDocLimPermSetDialogMain(permSet: TextDocumentPermissionSetDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
+
+  val ui = letret(new TextDocLimPermsDialogMainUI) { ui =>
+  }
+
+  def revert() {
+    // Authorized document types
+    val selectedTypeIds = permSet.getAllowedDocumentTypeIds
+    for ((typeId, typeName) <- imcmsServices.getDocumentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user)) {
+      ui.tcsDocTypes.addItem(typeId, typeName)
+      if (selectedTypeIds contains typeId) ui.tcsDocTypes.select(typeId)
+    }
+
+    // template groups
+    val selectedGroupIds = permSet.getAllowedTemplateGroupIds
+    for (group <- imcmsServices.getTemplateMapper.getAllTemplateGroups) {
+      ui.tcsTemplates.addItem(group.getName)
+      if (selectedGroupIds contains group.getId) ui.tcsTemplates.select(group.getName)
+    }
+
+    ui.chkEditMeta.checked = permSet.getEditDocumentInformation
+    ui.chkEditRoles.checked = permSet.getEditPermissions
+
+    ui.chkEditTemplates.checked = permSet.getEditTemplates
+    ui.chkEditTexts.checked = permSet.getEditTexts
+    ui.chkEditImages.checked = permSet.getEditImages
+    ui.chkEditMenus.checked = permSet.getEditMenus
+    ui.chkEditIncludes.checked = permSet.getEditIncludes
+  }
+}
+
+
 /**
  * Text doc limited permissions.
  */
-class TextDocLimPermsDialogMainUI extends CommonLimPermsDialogMainUI {
+class TextDocLimPermsDialogMainUI extends DocLimPermSetDialogMainUI {
 
   val chkEditTexts = new CheckBox("Permission to edit texts")
   val chkEditImages = new CheckBox("Permission to edit images")
@@ -332,54 +376,15 @@ class TextDocLimPermsDialogMainUI extends CommonLimPermsDialogMainUI {
   val chkEditTemplates = new CheckBox("Permission to edit templates")
 
   // add doc types in menus
-  val tcsDocTypes = new TwinColSelect("Authorized document types")
-  val tcsTemplates = new TwinColSelect("Authorized template groups")
+  val tcsDocTypes = new TwinColSelect("Authorized document types") with MultiSelect2[DocTypeId]
+  val tcsTemplates = new TwinColSelect("Authorized template groups") with MultiSelect2[String]
 }
-
-/**
- * Authorized document types:
-                <%
-    ImcmsServices services = Imcms.getServices();
-    Set allowedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds() ;
-                    Map allDocumentTypes = services.getDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user ) ;
-                    for ( Iterator iterator = allDocumentTypes.entrySet().iterator(); iterator.hasNext(); ) {
-                        Map.Entry entry = (Map.Entry)iterator.next();
-                        Integer documentTypeId = (Integer)entry.getKey();
-                        String documentTypeName = (String)entry.getValue();
-                        boolean allowedDocumentType = allowedDocumentTypeIds.contains(new Integer(documentTypeId.intValue())) ;
-                        %><option value="<%= documentTypeId %>" <% if( allowedDocumentType ) { %>selected<% } %>><%= StringEscapeUtils.escapeHtml( documentTypeName ) %></option><%
-                    }
-                %>
-
-
-        <select name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__ALLOWED_TEMPLATE_GROUP_IDS %>" size="6" multiple>
-            <%
-                TemplateGroupDomainObject[] allTemplateGroups = services.getTemplateMapper().getAllTemplateGroups() ;
-                Set allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds() ;
-                for ( int i = 0; i < allTemplateGroups.length; i++ ) {
-                    TemplateGroupDomainObject templateGroup = allTemplateGroups[i];
-                    boolean allowedTemplateGroup = allowedTemplateGroupIds.contains(new Integer(templateGroup.getId())) ;
-                    %><option value="<%= templateGroup.getId() %>" <% if( allowedTemplateGroup ) { %>selected<% } %>><%= templateGroup.getName() %></option><%
-                }
-            %>
-        </select></td>
-    </tr>
-
-
-    val defaultTemplateName =
-      if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1 ..)  textDocument.getDefaultTemplateNameForRestricted1()
-      else textDocument.getDefaultTemplateNameForRestricted2()
-
-    imcmsServices.getTemplateMapper.getAllTemplates foreach { ui.cbTemplate addItem _.getName }
-    ?(doc.getDefaultTemplateName) orElse ui.cbTemplate.itemIds.headOption foreach { ui.cbTemplate.value = _ }
-
- */
 
 
 /**
  * Non text doc limited permissions.
  */
-class NonTextDocLimPermsDialogMainUI extends CommonLimPermsDialogMainUI {
+class NonTextDocLimPermSetDialogMainUI extends DocLimPermSetDialogMainUI {
 
   val chkEditContent = new CheckBox("Edit content")
 }
