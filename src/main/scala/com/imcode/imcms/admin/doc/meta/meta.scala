@@ -2,9 +2,10 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
+import permissions.{PermissionsSheet}
+import profile.ProfileSheet
 import scala.collection.JavaConversions._
 
-import permissions.PermissionsSheet
 import collection.mutable.{Map => MMap}
 import imcode.server.Imcms
 import imcode.server.user.UserDomainObject
@@ -16,6 +17,7 @@ import api._
 import com.vaadin.terminal.ExternalResource
 import java.util.Calendar
 import com.vaadin.ui._
+import imcode.server.document.textdocument.TextDocumentDomainObject
 
 //trait PropertiesDialog { this: OKDialog =>
 //  mainUI =
@@ -26,12 +28,13 @@ import com.vaadin.ui._
 
 // MetaEditor
 
-class Properties(doc: DocumentDomainObject) extends ImcmsServicesSupport {
+class Properties(app: ImcmsApplication, doc: DocumentDomainObject) extends ImcmsServicesSupport {
 
   private var searchSheepOpt = Option.empty[SearchSheet]
   private var categoriesSheetOpt = Option.empty[CategoriesSheet]
   private var appearanceSheetOpt = Option.empty[AppearanceSheet]
   private var permissionsSheetOpt = Option.empty[PermissionsSheet]
+  private var profileSheetOpt = Option.empty[ProfileSheet]
 
 
   val ui = letret(new PropertiesUI) { ui =>
@@ -40,6 +43,9 @@ class Properties(doc: DocumentDomainObject) extends ImcmsServicesSupport {
     ui.sheets.addItem("Permissions")
     ui.sheets.addItem("Search")
     ui.sheets.addItem("Categories")
+
+    // According to v.4.x.x may be defined for text docs only
+    if (doc.isInstanceOf[TextDocumentDomainObject]) ui.sheets.addItem("Profile")
 
     ui.sheets.addValueChangeHandler {
       ui.sheets.getValue match {
@@ -75,6 +81,11 @@ class Properties(doc: DocumentDomainObject) extends ImcmsServicesSupport {
           if (categoriesSheetOpt.isEmpty) categoriesSheetOpt = Some(new CategoriesSheet(doc.getMeta))
 
           ui.sheet.setContent(categoriesSheetOpt.get.ui)
+
+        case "Profile" =>
+          if (profileSheetOpt.isEmpty) profileSheetOpt = Some(new ProfileSheet(doc.asInstanceOf[TextDocumentDomainObject], app.user))
+
+          ui.sheet.setContent(profileSheetOpt.get.ui)
 
         case _ =>
       }

@@ -321,6 +321,22 @@ public class DocumentSaver {
     }
 
 
+    /**
+     * Please note that custom (limited) permissions might be changed on save:
+     * -If saving user is a super-admin or have full perms on a doc, then all custom perms settings are merely inherited.
+     * -Otherwise custom (lim1 and lim2) perms are replaced with predefined set.
+     *
+     * If user is a super-admin or has full permissions on a new document then
+     *
+     * @param doc
+     * @param i18nMetas
+     * @param directiveses
+     * @param user
+     * @param <T>
+     * @return
+     * @throws NoPermissionToAddDocumentToMenuException
+     * @throws DocumentSaveException
+     */
     @Transactional
     public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, List<I18nMeta> i18nMetas, EnumSet<DocumentMapper.SaveDirectives> directiveses, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
@@ -331,9 +347,7 @@ public class DocumentSaver {
 
         documentMapper.setCreatedAndModifiedDatetimes(meta, new Date());
 
-        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(doc);
-
-        if (inheritRestrictedPermissions) {
+        if (!user.isSuperAdminOrHasFullPermissionOn(doc)) {
             meta.getPermissionSets().setRestricted1(meta.getPermissionSetsForNewDocuments().getRestricted1());
             meta.getPermissionSets().setRestricted2(meta.getPermissionSetsForNewDocuments().getRestricted2());
         }

@@ -9,10 +9,9 @@ import imcode.server.user._
 import imcode.server.document._
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import imcms.ImcmsServicesSupport
-import com.vaadin.ui._
-
 import DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
 import textdocument.TextDocumentDomainObject
+import com.vaadin.ui._
 
 // Discuss
 //        if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )) {
@@ -44,7 +43,7 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
 
   // Stub doc
   // Legacy API uses DocumentDomainObject to access Meta data
-  private val doc = letret(new TextDocumentDomainObject){_ setMeta meta}
+  private val doc: DocumentDomainObject = letret(new TextDocumentDomainObject){_ setMeta meta}
 
   case class State(
     rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone(),
@@ -56,7 +55,6 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
   )
 
   private val initialState = State()
-  // WHY EXPECT USER ROLE ????
   // Check if current user can change permission set for the role
   // if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document ))
   // This can be defined perd doc, so - change must be single select!!
@@ -75,7 +73,7 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
         } yield role -> setTypes)(breakOut)
 
       if (availableRolesWithPermsSetTypes.isEmpty) {
-        app.showWarningNotification("No (more) roles available")
+        app.showWarningNotification("No roles available")
       } else {
         ui.getApplication.initAndShow(new OkCancelDialog("Add role")) { dlg =>
           val availableRoles = availableRolesWithPermsSetTypes.keySet
@@ -97,7 +95,7 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
               val role = c.cbRole.value
               val setType = c.ogPermsSetType.value
 
-              ui.rolesPermsSetTypeUI.tblRolesPermsTypes.addItem(Array[AnyRef](RolePermsSetType(role, setType)), role)
+              addRolePermSetType(role, setType)
             }
           }
         }
@@ -121,9 +119,7 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
                 types foreach {setType => c.ogPermsSetType.setItemEnabled(setType, availableSetTypes contains setType)}
 
                 dlg.wrapOkHandler {
-                  ui.rolesPermsSetTypeUI.tblRolesPermsTypes.item(role)
-                    .getItemProperty(RolePermsSetTypePropertyId)
-                    .setValue(RolePermsSetType(role, c.ogPermsSetType.value))
+                  setRolePermSetType(role, c.ogPermsSetType.value)
                 }
               }
             }
@@ -156,13 +152,29 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
       setType = mapping.getDocumentPermissionSetType
       if setType != NONE
     } {
-      ui.rolesPermsSetTypeUI.tblRolesPermsTypes.addItem(Array[AnyRef](RolePermsSetType(role, setType)), role)
+      addRolePermSetType(role, setType)
     }
 
     ui.frmExtraSettings.chkShareWithOtherAdmins.checked = initialState.isLinkableByOtherUsers
     ui.frmExtraSettings.chkShowToUnauthorizedUser.checked = initialState.isLinkedForUnauthorizedUsers
 
     ui.chkLim1IsMorePrivilegedThanLim2.checked = initialState.isLim1MorePrivilegedThanLim2
+
+    doc match {
+      case textDoc: TextDocumentDomainObject =>
+      case _ =>
+    }
+  }
+
+
+  private def addRolePermSetType(role: RoleDomainObject, setType: DocumentPermissionSetTypeDomainObject) {
+    ui.rolesPermsSetTypeUI.tblRolesPermsTypes.addItem(Array[AnyRef](RolePermsSetType(role, setType)), role)
+  }
+
+  private def setRolePermSetType(role: RoleDomainObject, setType: DocumentPermissionSetTypeDomainObject) {
+    ui.rolesPermsSetTypeUI.tblRolesPermsTypes.item(role)
+      .getItemProperty(RolePermsSetTypePropertyId)
+      .setValue(RolePermsSetType(role, setType))
   }
 }
 
@@ -186,9 +198,10 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
 class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {
   setMargin(true, true, false, true)
 
-  class LimitedPermissionSetUI(caption: String = "") extends HorizontalLayout with Spacing with UndefinedSize {
-    val btnEdit = new Button("Define".i) with LinkStyle
-    val btnEditNew = new Button("Define for new document".i) with LinkStyle
+  class LimPermsSetUI(caption: String = "") extends HorizontalLayout with Spacing with UndefinedSize {
+    val btnEdit = new Button("Edit".i) with SmallStyle
+
+    addComponents(this, btnEdit)
   }
 
 
@@ -215,18 +228,15 @@ class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {
     addComponents(this, mb, tblRolesPermsTypes)
   }
 
-  //!NB@ if (user.canDefineRestrictedOneFor( document ))
+  //!NB@ Only if this is a text doc.
+  //     if (user.canDefineRestrictedOneFor( document ))
   //     if (user.canDefineRestrictedTwoFor(document))
-  val lim1PermissionSet = new LimitedPermissionSetUI
-  val lim2PermissionSet = new LimitedPermissionSetUI
+  val lim1PermissionSet = new LimPermsSetUI("Limited 1")
+  val lim2PermissionSet = new LimPermsSetUI("Linited 2")
 
   // NB@ if (user.isSuperAdminOrHasFullPermissionOn(document))
   val chkLim1IsMorePrivilegedThanLim2 = new CheckBox("Limited 1 is more privileged than limited 2")
   val rolesPermsSetTypeUI = new RolesPermsSetTypeUI
-
-  // -----------
-  // lim: Default template for new pages - list
-  //------------
 
   val frmExtraSettings = new Form with FullWidth {
     setCaption("Extra settings")
@@ -281,7 +291,9 @@ private class AddRolePermsSetTypeDialogMainUI extends FormLayout with UndefinedS
   addComponents(this, cbRole, ogPermsSetType)
 }
 
-
+/**
+ * Changes permission set type for a role.
+ */
 private class ChangeRolePermsSetTypeDialogMainUI extends FormLayout with UndefinedSize {
   val lblRole = letret(new Label with UndefinedSize){_ setCaption "Role"}
   val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect2[DocumentPermissionSetTypeDomainObject]
@@ -294,15 +306,102 @@ private class ChangeRolePermsSetTypeDialogMainUI extends FormLayout with Undefin
 }
 
 
-private class EditLimPermsDialogMainUI extends FormLayout with UndefinedSize {
-   //todo: What kind of meta?
-  val chkEditMeta = new CheckBox("Permission to edit page meta data")
-   //todo: What kind of roles/privilieges?
-  val chkEditRoles = new CheckBox("Permission to edit privileges (roles)")
+/**
+ * Limited permissions, common.
+ */
+trait CommonLimPermsDialogMainUI extends FormLayout with UndefinedSize {
+
+  // Decoration; always checked and read only
+  val chkRead = new CheckBox("Permission to view content") with Checked with ReadOnly
+
+  val chkEditMeta = new CheckBox("Permission to edit properties")
+
+  val chkEditRoles = new CheckBox("Permission to edit permissions")
+}
+
+
+/**
+ * Text doc limited permissions.
+ */
+class TextDocLimPermsDialogMainUI extends CommonLimPermsDialogMainUI {
+
   val chkEditTexts = new CheckBox("Permission to edit texts")
   val chkEditImages = new CheckBox("Permission to edit images")
   val chkEditIncludes = new CheckBox("Permission to edit includes")
+  val chkEditMenus = new CheckBox("Permission to edit menues")
+  val chkEditTemplates = new CheckBox("Permission to edit templates")
 
+  // add doc types in menus
+  val tcsDocTypes = new TwinColSelect("Authorized document types")
+  val tcsTemplates = new TwinColSelect("Authorized template groups")
+}
+
+/**
+ * Authorized document types:
+                <%
+    ImcmsServices services = Imcms.getServices();
+    Set allowedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds() ;
+                    Map allDocumentTypes = services.getDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user ) ;
+                    for ( Iterator iterator = allDocumentTypes.entrySet().iterator(); iterator.hasNext(); ) {
+                        Map.Entry entry = (Map.Entry)iterator.next();
+                        Integer documentTypeId = (Integer)entry.getKey();
+                        String documentTypeName = (String)entry.getValue();
+                        boolean allowedDocumentType = allowedDocumentTypeIds.contains(new Integer(documentTypeId.intValue())) ;
+                        %><option value="<%= documentTypeId %>" <% if( allowedDocumentType ) { %>selected<% } %>><%= StringEscapeUtils.escapeHtml( documentTypeName ) %></option><%
+                    }
+                %>
+
+
+        <select name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__ALLOWED_TEMPLATE_GROUP_IDS %>" size="6" multiple>
+            <%
+                TemplateGroupDomainObject[] allTemplateGroups = services.getTemplateMapper().getAllTemplateGroups() ;
+                Set allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds() ;
+                for ( int i = 0; i < allTemplateGroups.length; i++ ) {
+                    TemplateGroupDomainObject templateGroup = allTemplateGroups[i];
+                    boolean allowedTemplateGroup = allowedTemplateGroupIds.contains(new Integer(templateGroup.getId())) ;
+                    %><option value="<%= templateGroup.getId() %>" <% if( allowedTemplateGroup ) { %>selected<% } %>><%= templateGroup.getName() %></option><%
+                }
+            %>
+        </select></td>
+    </tr>
+
+
+    val defaultTemplateName =
+      if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1 ..)  textDocument.getDefaultTemplateNameForRestricted1()
+      else textDocument.getDefaultTemplateNameForRestricted2()
+
+    imcmsServices.getTemplateMapper.getAllTemplates foreach { ui.cbTemplate addItem _.getName }
+    ?(doc.getDefaultTemplateName) orElse ui.cbTemplate.itemIds.headOption foreach { ui.cbTemplate.value = _ }
+
+ */
+
+
+/**
+ * Non text doc limited permissions.
+ */
+class NonTextDocLimPermsDialogMainUI extends CommonLimPermsDialogMainUI {
+
+  val chkEditContent = new CheckBox("Edit content")
+}
+
+
+/**
+ * Limited permissions.
+ */
+class LimPermsDialogMainUI extends FormLayout with UndefinedSize {
+
+  // Decoration only
+  val chkRead = new CheckBox("Permission to view content") with Checked with ReadOnly
+
+  //todo: What kind of meta?
+  val chkEditMeta = new CheckBox("Permission to edit properties")
+   //todo: What kind of roles/privilieges?
+  val chkEditRoles = new CheckBox("Permission to edit permissions")
+
+  // Text doc only
+  val chkEditTexts = new CheckBox("Permission to edit texts")
+  val chkEditImages = new CheckBox("Permission to edit images")
+  val chkEditIncludes = new CheckBox("Permission to edit includes")
   val chkEditMenus = new CheckBox("Permission to edit menues")
   val chkEditTemplates = new CheckBox("Permission to edit templates")
 
@@ -310,6 +409,8 @@ private class EditLimPermsDialogMainUI extends FormLayout with UndefinedSize {
   val lstDocTypes = new ListSelect with MultiSelect //Authorized document types:
   val lstTemplates = new ListSelect with MultiSelect //Authorized template groups:
 }
+
+
 //
 //class LimitedPermissionsEditor {}
 //
@@ -317,9 +418,11 @@ private class EditLimPermsDialogMainUI extends FormLayout with UndefinedSize {
 
 /**
     if not text doc ->
-ermission to edit page meta data
+ no new?
+
+Permission to edit page meta data
 Permission to edit privileges (roles)
-Permission to edit content    <<<<<
+Permission to edit content
 
 else
 
@@ -335,3 +438,15 @@ else
     public static final String REQUEST_PARAMETER__EDIT_TEMPLATES = "editTemplates";
     public static final String REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID = "defaultTemplateId";
  */
+
+
+// - Edit - below of edit content
+private class TextDocPermsSetUI extends FormLayout {
+
+}
+
+
+
+
+
+

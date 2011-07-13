@@ -117,7 +117,7 @@ public class DocumentMapper implements DocumentGetter {
 
         DocumentDomainObject newDocument;
 
-        if (DocumentTypeDomainObject.TEXT_ID == documentTypeId) {
+        if (documentTypeId == DocumentTypeDomainObject.TEXT_ID) {
             newDocument = parentDoc.clone();
             TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject) newDocument;
             newTextDocument.removeAllTexts();
@@ -125,6 +125,7 @@ public class DocumentMapper implements DocumentGetter {
             newTextDocument.removeAllIncludes();
             newTextDocument.removeAllMenus();
             newTextDocument.removeAllContentLoops();
+
             setTemplateForNewTextDocument(newTextDocument, user, parentDoc);
         } else {
             newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
@@ -149,19 +150,29 @@ public class DocumentMapper implements DocumentGetter {
     }
 
 
+    /**
+     * Changes doc's template with template defined for either lim1 or lim2 role if a user is in one of those roles.
+     *
+     * @param newTextDocument
+     * @param user
+     * @param parent
+     */
     void setTemplateForNewTextDocument(TextDocumentDomainObject newTextDocument, UserDomainObject user,
                                        final DocumentDomainObject parent) {
         DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getDocumentPermissionSetTypeFor(parent);
         String templateName = null;
-        if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType)) {
+
+        if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1 == documentPermissionSetType) {
             templateName = newTextDocument.getDefaultTemplateNameForRestricted1();
-        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType)) {
+        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2 == documentPermissionSetType) {
             templateName = newTextDocument.getDefaultTemplateNameForRestricted2();
         }
-        if (null == templateName && parent instanceof TextDocumentDomainObject) {
+
+        if (templateName == null && parent instanceof TextDocumentDomainObject) {
             templateName = ((TextDocumentDomainObject) parent).getDefaultTemplateName();
         }
-        if (null != templateName) {
+
+        if (templateName != null) {
             newTextDocument.setTemplateName(templateName);
         }
     }

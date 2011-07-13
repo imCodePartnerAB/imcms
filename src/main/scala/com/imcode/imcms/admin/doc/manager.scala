@@ -37,7 +37,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
     ui.miProperties.setCommandHandler {
       val dlg = new OKDialog("Doc properties") with CustomSizeDialog with BottomMarginDialog
-      val properties = new DocProperties(imcmsServices.getDocumentMapper.getWorkingDocument(search.docsUI.first.get.intValue))
+      val properties = new DocProperties(app, imcmsServices.getDocumentMapper.getWorkingDocument(search.docsUI.first.get.intValue))
 
       dlg.mainUI = properties.ui
 
@@ -49,7 +49,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       val dlg = new OKDialog("New URL Document") with CustomSizeDialog with BottomMarginDialog
 
       val doc = new HtmlDocumentDomainObject
-      val properties = new DocProperties(doc)
+      val properties = new DocProperties(app, doc)
       val contentUI = new URLDocEditorUI
 
       dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
@@ -65,7 +65,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       val dlg = new OKDialog("New File Document") with CustomSizeDialog with BottomMarginDialog
 
       val doc = new FileDocumentDomainObject
-      val properties = new DocProperties(doc)
+      val properties = new DocProperties(app, doc)
       val contentUI = new FileDocEditor(app, doc, Seq.empty).ui
 
       dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
@@ -81,7 +81,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       val dlg = new OKDialog("New Text Document") with CustomSizeDialog with BottomMarginDialog
 
       val doc = new TextDocumentDomainObject
-      val properties = new DocProperties(doc)
+      val properties = new DocProperties(app, doc)
       val contentUI = new NewTextDocumentFlowPage2UI
 
       dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>

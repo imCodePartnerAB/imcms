@@ -51,11 +51,11 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     private TemplateGroupDomainObject templateGroup;
 
-    private boolean imcmsExternal ;
+    private boolean imcmsExternal;
 
     private HashSet phoneNumbers = new HashSet();
     
-    RoleIds roleIds = createRolesSetWithUserRole();
+    RoleIds roleIds = UserDomainObject.createRolesSetWithUserRole();
     protected RoleIds userAdminRoleIds = new RoleIds();
 
     /** Http session id.*/
@@ -63,27 +63,28 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     private boolean authenticatedByIp;
 
-    public UserDomainObject() {
-    }
+    public UserDomainObject() {}
 
     public UserDomainObject(int id) {
         this.id = id;
     }
 
-    private RoleIds createRolesSetWithUserRole() {
+    private static RoleIds createRolesSetWithUserRole() {
         RoleIds newRoleIds = new RoleIds();
-        newRoleIds.add( RoleId.USERS );
+        newRoleIds.add(RoleId.USERS);
+
         return newRoleIds;
     }
 
     public Object clone() {
         try {
-            UserDomainObject clone = (UserDomainObject) super.clone();
+            UserDomainObject clone = (UserDomainObject)super.clone();
             clone.roleIds = (RoleIds) roleIds.clone();
-            clone.userAdminRoleIds = (RoleIds) userAdminRoleIds.clone();
-            clone.phoneNumbers = (HashSet) phoneNumbers.clone();
+            clone.userAdminRoleIds = (RoleIds)userAdminRoleIds.clone();
+            clone.phoneNumbers = (HashSet)phoneNumbers.clone();
+
             return clone;
-        } catch ( CloneNotSupportedException e ) {
+        } catch (CloneNotSupportedException e) {
             throw new UnhandledException(e);
         }
     }
@@ -629,26 +630,43 @@ public class UserDomainObject implements Cloneable, Serializable {
         }
     }
 
-    public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeFor( DocumentDomainObject document ) {
-        if ( null == document ) {
+    /**
+     * Returns most privileged permission set for the provided doc.
+     *
+     * If doc is null returns {@link DocumentPermissionSetTypeDomainObject#NONE}
+     * If user is in a SUPER_ADMIN role returns {@link DocumentPermissionSetTypeDomainObject#FULL}
+     * Otherwise searches for most privileged perm set in the intersection of user roles and doc's roles.
+     *
+     * @param document
+     *
+     * @return most privileged permission set for the provided doc.
+     */
+    public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeFor(DocumentDomainObject document) {
+        if (null == document)
             return DocumentPermissionSetTypeDomainObject.NONE;
-        }
-        if ( isSuperAdmin() ) {
+
+        if (isSuperAdmin())
             return DocumentPermissionSetTypeDomainObject.FULL;
-        }
-        RoleIdToDocumentPermissionSetTypeMappings roleIdsMappedToDocumentPermissionSetTypes = document.getRoleIdsMappedToDocumentPermissionSetTypes() ;
-        RoleId[] usersRoleIds = getRoleIds();
-        DocumentPermissionSetTypeDomainObject mostPrivilegedPermissionSetIdFoundYet = DocumentPermissionSetTypeDomainObject.NONE;
-        for ( int i = 0; i < usersRoleIds.length; i++ ) {
-            RoleId roleId = usersRoleIds[i];
-            DocumentPermissionSetTypeDomainObject documentPermissionSetType = roleIdsMappedToDocumentPermissionSetTypes.getPermissionSetTypeForRole( roleId );
-            if ( documentPermissionSetType.isMorePrivilegedThan(mostPrivilegedPermissionSetIdFoundYet) ) {
-                mostPrivilegedPermissionSetIdFoundYet = documentPermissionSetType ;
-                if ( DocumentPermissionSetTypeDomainObject.FULL.equals(mostPrivilegedPermissionSetIdFoundYet) ) {
+
+        RoleIdToDocumentPermissionSetTypeMappings roleIdsMappedToDocumentPermissionSetTypes =
+                document.getRoleIdsMappedToDocumentPermissionSetTypes();
+
+        DocumentPermissionSetTypeDomainObject mostPrivilegedPermissionSetIdFoundYet =
+                DocumentPermissionSetTypeDomainObject.NONE;
+
+        for (RoleId roleId: getRoleIds()) {
+            DocumentPermissionSetTypeDomainObject documentPermissionSetType =
+                    roleIdsMappedToDocumentPermissionSetTypes.getPermissionSetTypeForRole(roleId);
+
+            if (documentPermissionSetType.isMorePrivilegedThan(mostPrivilegedPermissionSetIdFoundYet)) {
+                mostPrivilegedPermissionSetIdFoundYet = documentPermissionSetType;
+
+                if (mostPrivilegedPermissionSetIdFoundYet == DocumentPermissionSetTypeDomainObject.FULL) {
                     break;
                 }
             }
         }
+
         return mostPrivilegedPermissionSetIdFoundYet;
     }
 
