@@ -430,6 +430,10 @@ public class DocumentSaver {
      * Update meta roles to permissions set mapping.
      * Modified copy of legacy updateDocumentRolePermissions method.
      * NB! Compared to legacy this method does not update database.
+     *
+     * @param document document being saved
+     * @param user an authorized user
+     * @param oldDocument original doc when updating or null when inserting (a new doc)
      */
     private void newUpdateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
                                                   DocumentDomainObject oldDocument) {

@@ -3,7 +3,13 @@ package imcode.server.document;
 import java.io.Serializable;
 
 /**
- * Limited/Restricted (custom) permissions.
+ * Customizable permissions sets (restricted-1 and restricted-2) for doc and doc's profile.
+ *
+ * Note: Unfortunately the name of this class is a bit misleading.
+ *
+ * @see DocumentPermissionSetTypeDomainObject
+ * @see DocumentDomainObject#getPermissionSets()
+ * @see DocumentDomainObject#getPermissionSetsForNewDocuments()
  */
 public class DocumentPermissionSets implements Serializable, Cloneable {
 

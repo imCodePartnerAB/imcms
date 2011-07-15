@@ -151,7 +151,19 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * Changes doc's template with template defined for either lim1 or lim2 role if a user is in one of those roles.
+     * Sets text doc's template.
+     *
+     * By default if parent doc type is {@link TextDocumentDomainObject} its default template is used.
+     * It might be overridden however if most privileged permission set type for the current user is either
+     * {@link DocumentPermissionSetTypeDomainObject#RESTRICTED_1}
+     * or
+     * {@link DocumentPermissionSetTypeDomainObject#RESTRICTED_2}
+     * and there is a default template associated with that set type.
+     *
+     * Please note:
+     *   According to specification only doc of type {@link TextDocumentDomainObject}
+     *   can be used as parent (of a 'profile').
+     *   NB! for some (undocumented) reason a doc of any type might be used as a parent.
      *
      * @param newTextDocument
      * @param user
@@ -162,14 +174,14 @@ public class DocumentMapper implements DocumentGetter {
         DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getDocumentPermissionSetTypeFor(parent);
         String templateName = null;
 
-        if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1 == documentPermissionSetType) {
+        if (documentPermissionSetType == DocumentPermissionSetTypeDomainObject.RESTRICTED_1) {
             templateName = newTextDocument.getDefaultTemplateNameForRestricted1();
-        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2 == documentPermissionSetType) {
+        } else if (documentPermissionSetType == DocumentPermissionSetTypeDomainObject.RESTRICTED_2) {
             templateName = newTextDocument.getDefaultTemplateNameForRestricted2();
         }
 
         if (templateName == null && parent instanceof TextDocumentDomainObject) {
-            templateName = ((TextDocumentDomainObject) parent).getDefaultTemplateName();
+            templateName = ((TextDocumentDomainObject)parent).getDefaultTemplateName();
         }
 
         if (templateName != null) {

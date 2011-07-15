@@ -29,6 +29,18 @@ import com.vaadin.ui._
 /// todo: remove / already present in main.
 //  <td class="imcmsAdmText" nowrap><? global/Created_by ?>&nbsp;<i><%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %></i></td>
 
+// if (user.canDefineRestrictedOneFor( document ))
+      //   (document instanceof TextDocumentDomainObject)  FOR NEW
+
+      //if (user.canDefineRestrictedTwoFor(document))
+           //if (document instanceof TextDocumentDomainObject) FOR NEW
+
+      //if (user.isSuperAdminOrHasFullPermissionOn(document))
+        // checkbox privileged one over two
+
+      //if (document instanceof TextDocumentDomainObject)
+        // list templates
+
 /**
  * Doc's roles permissions settings.
  *
@@ -178,19 +190,6 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
   }
 }
 
-      // if (user.canDefineRestrictedOneFor( document ))
-      //   (document instanceof TextDocumentDomainObject)  FOR NEW
-
-      //if (user.canDefineRestrictedTwoFor(document))
-           //if (document instanceof TextDocumentDomainObject) FOR NEW
-
-      //if (user.isSuperAdminOrHasFullPermissionOn(document))
-        // checkbox privileged one over two
-
-      //if (document instanceof TextDocumentDomainObject)
-        // list templates
-
-
       // <% if (document.isLinkedForUnauthorizedUsers()) => Checked
       //<% if (document.isLinkableByOtherUsers()) {%>checked<% } %>> checked
 
@@ -309,7 +308,7 @@ private class ChangeRolePermsSetTypeDialogMainUI extends FormLayout with Undefin
 /**
  * Doc's common limited permission set
  */
-trait DocLimPermSetDialogMainUI extends FormLayout with UndefinedSize {
+trait DocLimPermSetEditorUI extends FormLayout with UndefinedSize {
 
   // Decoration; always checked and read only
   val chkRead = new CheckBox("Permission to view content") with Checked with ReadOnly
@@ -320,8 +319,8 @@ trait DocLimPermSetDialogMainUI extends FormLayout with UndefinedSize {
 }
 
 
-class NonTextDocLimPermSetDialogMain(permSet: TextDocumentPermissionSetDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
-  val ui = letret(new NonTextDocLimPermSetDialogMainUI) { ui =>
+class NonTextDocLimPermSetEditor(permSet: DocumentPermissionSetDomainObject) extends ImcmsServicesSupport {
+  val ui = letret(new NonTextDocLimPermSetEditorUI) { ui =>
   }
 
   def revert() {
@@ -332,9 +331,9 @@ class NonTextDocLimPermSetDialogMain(permSet: TextDocumentPermissionSetDomainObj
 }
 
 
-class TextDocLimPermSetDialogMain(permSet: TextDocumentPermissionSetDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
+class TextDocLimPermSetEditor(permSet: TextDocumentPermissionSetDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
 
-  val ui = letret(new TextDocLimPermsDialogMainUI) { ui =>
+  val ui = letret(new TextDocLimPermSetEditorUI) { ui =>
   }
 
   def revert() {
@@ -367,7 +366,7 @@ class TextDocLimPermSetDialogMain(permSet: TextDocumentPermissionSetDomainObject
 /**
  * Text doc limited permissions.
  */
-class TextDocLimPermsDialogMainUI extends DocLimPermSetDialogMainUI {
+class TextDocLimPermSetEditorUI extends DocLimPermSetEditorUI {
 
   val chkEditTexts = new CheckBox("Permission to edit texts")
   val chkEditImages = new CheckBox("Permission to edit images")
@@ -376,6 +375,7 @@ class TextDocLimPermsDialogMainUI extends DocLimPermSetDialogMainUI {
   val chkEditTemplates = new CheckBox("Permission to edit templates")
 
   // add doc types in menus
+  // item caption is a type name in a user language
   val tcsDocTypes = new TwinColSelect("Authorized document types") with MultiSelect2[DocTypeId]
   val tcsTemplates = new TwinColSelect("Authorized template groups") with MultiSelect2[String]
 }
@@ -384,70 +384,9 @@ class TextDocLimPermsDialogMainUI extends DocLimPermSetDialogMainUI {
 /**
  * Non text doc limited permissions.
  */
-class NonTextDocLimPermSetDialogMainUI extends DocLimPermSetDialogMainUI {
+class NonTextDocLimPermSetEditorUI extends DocLimPermSetEditorUI {
 
   val chkEditContent = new CheckBox("Edit content")
-}
-
-
-/**
- * Limited permissions.
- */
-class LimPermsDialogMainUI extends FormLayout with UndefinedSize {
-
-  // Decoration only
-  val chkRead = new CheckBox("Permission to view content") with Checked with ReadOnly
-
-  //todo: What kind of meta?
-  val chkEditMeta = new CheckBox("Permission to edit properties")
-   //todo: What kind of roles/privilieges?
-  val chkEditRoles = new CheckBox("Permission to edit permissions")
-
-  // Text doc only
-  val chkEditTexts = new CheckBox("Permission to edit texts")
-  val chkEditImages = new CheckBox("Permission to edit images")
-  val chkEditIncludes = new CheckBox("Permission to edit includes")
-  val chkEditMenus = new CheckBox("Permission to edit menues")
-  val chkEditTemplates = new CheckBox("Permission to edit templates")
-
-  // add doc types in menus
-  val lstDocTypes = new ListSelect with MultiSelect //Authorized document types:
-  val lstTemplates = new ListSelect with MultiSelect //Authorized template groups:
-}
-
-
-//
-//class LimitedPermissionsEditor {}
-//
-//class LimitedPermissionsSheetUI {}
-
-/**
-    if not text doc ->
- no new?
-
-Permission to edit page meta data
-Permission to edit privileges (roles)
-Permission to edit content
-
-else
-
-    public static final String REQUEST_PARAMETER__EDIT_PERMISSIONS = "editPermissions";
-    public static final String REQUEST_PARAMETER__EDIT = "edit";
-    public static final String REQUEST_PARAMETER__EDIT_DOCUMENT_INFORMATION = "editDocumentInformation";
-    public static final String REQUEST_PARAMETER__EDIT_TEXTS = "editTexts";
-    public static final String REQUEST_PARAMETER__EDIT_IMAGES = "editImages";
-    public static final String REQUEST_PARAMETER__EDIT_INCLUDES = "editIncludes";
-    public static final String REQUEST_PARAMETER__EDIT_MENUS = "editMenus";
-    public static final String REQUEST_PARAMETER__ALLOWED_DOCUMENT_TYPE_IDS = "allowedDocumentTypeIds";
-    public static final String REQUEST_PARAMETER__ALLOWED_TEMPLATE_GROUP_IDS = "allowedTemplateGroupIds";
-    public static final String REQUEST_PARAMETER__EDIT_TEMPLATES = "editTemplates";
-    public static final String REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID = "defaultTemplateId";
- */
-
-
-// - Edit - below of edit content
-private class TextDocPermsSetUI extends FormLayout {
-
 }
 
 

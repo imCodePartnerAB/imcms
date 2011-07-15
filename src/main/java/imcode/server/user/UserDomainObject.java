@@ -631,7 +631,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * Returns most privileged permission set for the provided doc.
+     * Returns most privileged permission set type for the provided doc.
      *
      * If doc is null returns {@link DocumentPermissionSetTypeDomainObject#NONE}
      * If user is in a SUPER_ADMIN role returns {@link DocumentPermissionSetTypeDomainObject#FULL}

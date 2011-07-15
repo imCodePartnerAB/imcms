@@ -10,8 +10,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Probably should be abstract - API uses only ONE concrete implementation:
- * TextDocumentPermissionSetDomainObject
+ * Unfortunate API design.
+ *
+ * The app instantiates and uses ONLY {@link TextDocumentPermissionSetDomainObject} for ANY doc type.
+ * However {@link #EDIT} permission is not applicable to a text but still is allowed to be set.
  */
 public class DocumentPermissionSetDomainObject implements Serializable, LazilyLoadedObject.Copyable, Cloneable {
 

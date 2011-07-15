@@ -8,8 +8,8 @@ import java.util.Set;
 
 public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject {
 
-    private HashSet allowedTemplateGroupIds = new HashSet();
-    private HashSet allowedDocumentTypeIds = new HashSet();
+    private HashSet<Integer> allowedTemplateGroupIds = new HashSet<Integer>();
+    private HashSet<Integer> allowedDocumentTypeIds = new HashSet<Integer>();
     public static final DocumentPermission EDIT_TEXTS = new DocumentPermission( "editTexts" );
     public static final DocumentPermission EDIT_MENUS = new DocumentPermission( "editMenus" );
     public static final DocumentPermission EDIT_TEMPLATE = new DocumentPermission( "editTemplates" );
@@ -78,34 +78,35 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
                          != ( permissionBits & EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID ));
     }
 
-    public void setAllowedTemplateGroupIds( Set allowedTemplateGroupIds ) {
-        this.allowedTemplateGroupIds = new HashSet(allowedTemplateGroupIds);
+    public void setAllowedTemplateGroupIds(Set<Integer> allowedTemplateGroupIds ) {
+        this.allowedTemplateGroupIds = new HashSet<Integer>(allowedTemplateGroupIds);
     }
 
-    public Set getAllowedTemplateGroupIds() {
+    public Set<Integer> getAllowedTemplateGroupIds() {
         return Collections.unmodifiableSet(allowedTemplateGroupIds);
     }
 
-    public void setAllowedDocumentTypeIds( Set allowedDocumentTypeIds ) {
-        this.allowedDocumentTypeIds = new HashSet(allowedDocumentTypeIds);
+    public void setAllowedDocumentTypeIds(Set<Integer> allowedDocumentTypeIds) {
+        this.allowedDocumentTypeIds = new HashSet<Integer>(allowedDocumentTypeIds);
     }
 
-    public Set getAllowedDocumentTypeIds() {
+    public Set<Integer> getAllowedDocumentTypeIds() {
         return Collections.unmodifiableSet(allowedDocumentTypeIds);
     }
 
     public void addAllowedTemplateGroupId(int templateGroupId) {
-        allowedTemplateGroupIds.add(new Integer(templateGroupId)) ;
+        allowedTemplateGroupIds.add(templateGroupId) ;
     }
 
     public void addAllowedDocumentTypeId(int documentTypeId) {
-        allowedDocumentTypeIds.add(new Integer(documentTypeId)) ;
+        allowedDocumentTypeIds.add(documentTypeId) ;
     }
 
+    // ??? class is not inherit from Cloneable ???
     protected Object clone() throws CloneNotSupportedException {
-        TextDocumentPermissionSetDomainObject clone = (TextDocumentPermissionSetDomainObject) super.clone();
-        clone.allowedDocumentTypeIds = (HashSet) allowedDocumentTypeIds.clone();
-        clone.allowedTemplateGroupIds = (HashSet) allowedTemplateGroupIds.clone() ;
+        TextDocumentPermissionSetDomainObject clone = (TextDocumentPermissionSetDomainObject)super.clone();
+        clone.allowedDocumentTypeIds = (HashSet<Integer>)allowedDocumentTypeIds.clone();
+        clone.allowedTemplateGroupIds = (HashSet<Integer>)allowedTemplateGroupIds.clone() ;
         return clone;
     }
 }

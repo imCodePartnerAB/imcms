@@ -11,32 +11,49 @@ import com.imcode.imcms.vaadin._
 import imcms.ImcmsServicesSupport
 import DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
 import textdocument.TextDocumentDomainObject
-import admin.doc.meta.permissions.LimPermsDialogMainUI
+import admin.doc.meta.permissions.{TextDocLimPermSetEditor}
 import com.vaadin.ui._
 
+// if (user.canDefineRestrictedOneFor( document ))
+      //   (document instanceof TextDocumentDomainObject)  FOR NEW
+
+      //if (user.canDefineRestrictedTwoFor(document))
+           //if (document instanceof TextDocumentDomainObject) FOR NEW
+
+      //if (user.isSuperAdminOrHasFullPermissionOn(document))
+        // checkbox privileged one over two
+
+      //if (document instanceof TextDocumentDomainObject)
+        // list templates
+
 /**
- * More clarifications needed.
+ * Profile for a TEXT document.
  *
  * According to latest version (v4.x.x)
- * Any text doc can be marked as a profile.
- * A profile defines lim1 and lim2 permissions
+ * any text doc can be used as a profile for a new document.
+ *
+ * A text document profile defines:
+ * -restricted permissions
+ * -default template
  */
 class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
 
-  val ui = letret(new ProfileSheetUI) { ui =>
-    ui.frmLimPermsSet.btnEditLim1 addClickHandler {
-      ui.getApplication.initAndShow(new OkCancelDialog("Edit limited 1 permission set for new document")) { dlg =>
-        dlg.mainUI = letret(new LimPermsDialogMainUI) { mainUI =>
+  private val restrictedOnePermSet = doc.getPermissionSetsForNewDocuments.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject]
+  private val restrictedTwoPermSet = doc.getPermissionSetsForNewDocuments.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject]
 
-        }
+  private val restrictedOnePermSetEditor = new TextDocLimPermSetEditor(restrictedOnePermSet, user)
+  private val restrictedTwoPermSetEditor = new TextDocLimPermSetEditor(restrictedTwoPermSet, user)
+
+  val ui = letret(new ProfileSheetUI) { ui =>
+    ui.btnEditRestrictedOnePermSet addClickHandler {
+      ui.getApplication.initAndShow(new OkCancelDialog("Edit limited 1 permission set for new document")) { dlg =>
+        dlg.mainUI = restrictedOnePermSetEditor.ui
       }
     }
 
-    ui.frmLimPermsSet.btnEditLim2 addClickHandler {
+    ui.btnEditRestrictedTwoPermSet addClickHandler {
       ui.getApplication.initAndShow(new OkCancelDialog("Edit limited 2 permission set for new document")) { dlg =>
-        dlg.mainUI = letret(new LimPermsDialogMainUI) { mainUI =>
-
-        }
+        dlg.mainUI = restrictedTwoPermSetEditor.ui
       }
     }
   }
@@ -44,34 +61,49 @@ class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extend
   revert()
 
   def revert() {
-    ui.cbTemplate.removeAllItems()
+    restrictedOnePermSetEditor.revert()
+    restrictedOnePermSetEditor.revert()
 
-    imcmsServices.getTemplateMapper.getAllTemplates foreach { ui.cbTemplate addItem _.getName }
-    ?(doc.getDefaultTemplateName) orElse ui.cbTemplate.itemIds.headOption foreach { ui.cbTemplate.value = _ }
+    revertTemplates()
 
     //ui.frmLimPermsSet.btnEditLim1.setEnabled(user.canDefineRestrictedOneFor(doc))
     //ui.frmLimPermsSet.btnEditLim2.setEnabled(user.canDefineRestrictedTwoFor(doc))
+  }
+
+  private def revertTemplates() {
+    val templatesNames = imcmsServices.getTemplateMapper.getAllTemplates map {_.getName}
+    val defaultTemplateNameOpt = templatesNames.headOption
+
+    def setTemplatesNamesAsComboBoxItems(cb: ComboBox with SingleSelect2[String], selectedTemplateName: String) {
+      cb.removeAllItems()
+      templatesNames foreach {cb addItem _}
+      defaultTemplateNameOpt orElse ?(selectedTemplateName) foreach cb.select
+    }
+
+    setTemplatesNamesAsComboBoxItems(ui.cbDefaultTemplate, doc.getDefaultTemplateName)
+    setTemplatesNamesAsComboBoxItems(ui.cbRestrictedOneDefaultTemplate, doc.getDefaultTemplateNameForRestricted1)
+    setTemplatesNamesAsComboBoxItems(ui.cbRestrictedTwoDefaultTemplate, doc.getDefaultTemplateNameForRestricted2)
   }
 }
 
 
 class ProfileSheetUI extends VerticalLayout with FullWidth {
-  private val frm = new Form {
-    setCaption("New document")
-  }
 
-  // NO NULL???
-  val cbTemplate = new ComboBox("Template") with SingleSelect2[String] with NoNullSelection
+  private val frm = new Form { setCaption("Text document profile") }
+  private val frmRestrictedPermSets = new Form { setCaption("Limited permissions") }
+  private val frmRestrictedDefaultTemplates = new Form { setCaption("Limited templates") }
 
-  //!NB@ Only if this is a text doc.
-  val frmLimPermsSet = new Form {
-    setCaption("Permissions")
+  val cbDefaultTemplate = new ComboBox("Default template") with SingleSelect2[String] with NoNullSelection
+  val cbRestrictedOneDefaultTemplate = new ComboBox("Limited-1") with SingleSelect2[String] with NoNullSelection
+  val cbRestrictedTwoDefaultTemplate = new ComboBox("Limited-2") with SingleSelect2[String] with NoNullSelection
 
-    val btnEditLim1 = new Button("Limited 1") with SmallStyle
-    val btnEditLim2 = new Button("Limited 2") with SmallStyle
-  }
+  val btnEditRestrictedOnePermSet = new Button("Limited 1") with SmallStyle
+  val btnEditRestrictedTwoPermSet = new Button("Limited 2") with SmallStyle
 
-  addComponents(frm.getLayout, cbTemplate, frmLimPermsSet)
+
+  addComponents(frm.getLayout, cbDefaultTemplate, frmRestrictedPermSets, frmRestrictedDefaultTemplates)
+  addComponents(frmRestrictedPermSets.getLayout, btnEditRestrictedOnePermSet, btnEditRestrictedTwoPermSet)
+  addComponents(frmRestrictedDefaultTemplates.getLayout, cbRestrictedOneDefaultTemplate, cbRestrictedTwoDefaultTemplate)
 
   addComponent(frm)
 }
