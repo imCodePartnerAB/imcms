@@ -19,27 +19,22 @@ import com.vaadin.ui._
 //        } else {
 //            return checked ? Html.hidden( name, value )+"X" : "O" ;
 //        }
-// -- Move properties management into document profile
+
+// if (user.canDefineRestrictedOneFor(document))
+// if (user.canDefineRestrictedTwoFor(document))
+
+// ?????????????????????????????????????????????????????
+// if (user.isSuperAdminOrHasFullPermissionOn(document))
+   // checkbox privileged one over two
 
 
 /// todo: Change permission set vs Change Permssion set TYPE?????  vs change permissions type
 /// todo: Move template management to "appearance" (or some other sheet)
 
 
-/// todo: remove / already present in main.
+/// todo: remove / already present in main???:
 //  <td class="imcmsAdmText" nowrap><? global/Created_by ?>&nbsp;<i><%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %></i></td>
 
-// if (user.canDefineRestrictedOneFor( document ))
-      //   (document instanceof TextDocumentDomainObject)  FOR NEW
-
-      //if (user.canDefineRestrictedTwoFor(document))
-           //if (document instanceof TextDocumentDomainObject) FOR NEW
-
-      //if (user.isSuperAdminOrHasFullPermissionOn(document))
-        // checkbox privileged one over two
-
-      //if (document instanceof TextDocumentDomainObject)
-        // list templates
 
 /**
  * Doc's roles permissions settings.
@@ -306,9 +301,9 @@ private class ChangeRolePermsSetTypeDialogMainUI extends FormLayout with Undefin
 
 
 /**
- * Doc's common limited permission set
+ * Doc's restricted permission set
  */
-trait DocLimPermSetEditorUI extends FormLayout with UndefinedSize {
+trait DocRestrictedPermSetEditorUI extends FormLayout with UndefinedSize {
 
   // Decoration; always checked and read only
   val chkRead = new CheckBox("Permission to view content") with Checked with ReadOnly
@@ -319,8 +314,11 @@ trait DocLimPermSetEditorUI extends FormLayout with UndefinedSize {
 }
 
 
-class NonTextDocLimPermSetEditor(permSet: DocumentPermissionSetDomainObject) extends ImcmsServicesSupport {
-  val ui = letret(new NonTextDocLimPermSetEditorUI) { ui =>
+/**
+ * Any but 'text doc' limited permission set editor.
+ */
+class NonTextDocRestrictedPermSetEditor(permSet: DocumentPermissionSetDomainObject) extends ImcmsServicesSupport {
+  val ui = letret(new NonTextDocRestrictedPermSetEditorUI) { ui =>
   }
 
   def revert() {
@@ -331,9 +329,12 @@ class NonTextDocLimPermSetEditor(permSet: DocumentPermissionSetDomainObject) ext
 }
 
 
-class TextDocLimPermSetEditor(permSet: TextDocumentPermissionSetDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
+/**
+ * Text doc limited permission set editor.
+ */
+class TextDocRestrictedPermSetEditor(permSet: TextDocumentPermissionSetDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
 
-  val ui = letret(new TextDocLimPermSetEditorUI) { ui =>
+  val ui = letret(new TextDocRestrictedPermSetEditorUI) { ui =>
   }
 
   def revert() {
@@ -363,10 +364,7 @@ class TextDocLimPermSetEditor(permSet: TextDocumentPermissionSetDomainObject, us
 }
 
 
-/**
- * Text doc limited permissions.
- */
-class TextDocLimPermSetEditorUI extends DocLimPermSetEditorUI {
+class TextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
 
   val chkEditTexts = new CheckBox("Permission to edit texts")
   val chkEditImages = new CheckBox("Permission to edit images")
@@ -384,7 +382,7 @@ class TextDocLimPermSetEditorUI extends DocLimPermSetEditorUI {
 /**
  * Non text doc limited permissions.
  */
-class NonTextDocLimPermSetEditorUI extends DocLimPermSetEditorUI {
+class NonTextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
 
   val chkEditContent = new CheckBox("Edit content")
 }
