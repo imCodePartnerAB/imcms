@@ -14,26 +14,35 @@ package object imcms {
   type DocTypeId = JInteger
 
 
-  implicit def stringAsResourceBundleKey(string: String) = new {
+  class ResourceBundleValue(key: String) {
+    private val localeAndValue: (Locale, String) = {
+      val locale = ?(Imcms.getUser) match {
+        case Some(user) => new Locale(user.getLanguageIso639_2)
+        case _ => Locale.getDefault
+      }
 
-    private def getLocale() = ?(Imcms.getUser) match {
-      case Some(user) => new Locale(user.getLanguageIso639_2)
-      case _ => Locale.getDefault
-    }
-
-    private def localize() = {
-      val locale = getLocale()
       val bundle = ResourceBundle.getBundle("ui", locale)
-      (EX.allCatch.opt(bundle.getString(string)) getOrElse "<#%s#>".format(string.split('.').last), locale)
+      (locale, EX.allCatch.opt(bundle.getString(key)) getOrElse "<#%s#>".format(key.split('.').last))
     }
 
 
-    def i = localize()._1
+    /** @return resource bundle i18n value corresponding to the key */
+    def i = localeAndValue._2
 
-    def f(arg: Any, args: Any*) = localize() match {
-      case (message, locale) => new MessageFormat(message, locale).format((arg +: args toArray).map(_.asInstanceOf[AnyRef]))
+
+    /**
+     * @param arg first format arg
+     * @param @args rest param args
+     * @return formatted resource bundle i18n value corresponding to the
+     */
+    def f(arg: Any, args: Any*) = localeAndValue match {
+      case (locale, value) => new MessageFormat(value, locale).format((arg +: args.toArray).map(_.asInstanceOf[AnyRef]))
     }
   }
+
+
+  implicit def stringToResourceBundleValue(string: String) = new ResourceBundleValue(string)
+
 
   trait ImcmsServicesSupport {
     def imcmsServices(implicit implicitImcmsServices: ImcmsServices = Imcms.getServices) = implicitImcmsServices

@@ -75,7 +75,7 @@ class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extend
 }
 
 
-private class ProfileSheetUI extends VerticalLayout with FullWidth {
+class ProfileSheetUI extends VerticalLayout with FullWidth {
 
   private val frm = new Form { setCaption("Text document profile") }
   private val frmRestrictedPermSets = new Form { setCaption("Limited permissions") }
