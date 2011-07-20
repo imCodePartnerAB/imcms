@@ -13,11 +13,17 @@ import textdocument.TextDocumentDomainObject
 import admin.doc.meta.permissions.{TextDocRestrictedPermSetEditor}
 import com.vaadin.ui._
 
+// todo: check: ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)
+// todo: discuss with Hillar/Crister:
+//   -Text doc can be used as a template for any doc type - current behavior
+//   -Non text doc can be used as a template for all but text docs/for the doc of the same type.
+//   -Shared permissions - i.e. saved elsewhere, but referenced by this doc and copied if necessary.
+
 /**
- * Text doc profile.
+ * Doc profile.
  *
  * According to latest version (v4.x.x)
- * any text doc can be used as a profile for a new document.
+ * any text doc can be used as a profile for a new doc but API can treat doc of any type as a profile.
  *
  * A text document profile defines:
  * -default template
@@ -33,13 +39,13 @@ class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extend
 
   val ui = letret(new ProfileSheetUI) { ui =>
     ui.btnEditRestrictedOnePermSet addClickHandler {
-      ui.getApplication.initAndShow(new OkCancelDialog("Edit limited 1 permission set for new document")) { dlg =>
+      ui.getApplication.initAndShow(new OkCancelDialog("Limited-1 permissions")) { dlg =>
         dlg.mainUI = restrictedOnePermSetEditor.ui
       }
     }
 
     ui.btnEditRestrictedTwoPermSet addClickHandler {
-      ui.getApplication.initAndShow(new OkCancelDialog("Edit limited 2 permission set for new document")) { dlg =>
+      ui.getApplication.initAndShow(new OkCancelDialog("Limited-2 permissions")) { dlg =>
         dlg.mainUI = restrictedTwoPermSetEditor.ui
       }
     }
@@ -75,22 +81,26 @@ class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extend
 }
 
 
-class ProfileSheetUI extends VerticalLayout with FullWidth {
+class ProfileSheetUI extends VerticalLayoutUI(margin = false) with FullWidth {
 
-  private val frm = new Form { setCaption("Text document profile") }
-  private val frmRestrictedPermSets = new Form { setCaption("Limited permissions") }
-  private val frmRestrictedDefaultTemplates = new Form { setCaption("Limited templates") }
+  private val frmDefault = new Form { setCaption("Default") }
+  private val frmCustom = new Form { setCaption("Custom") }
 
-  val cbDefaultTemplate = new ComboBox("Default template") with SingleSelect2[String] with NoNullSelection
-  val cbRestrictedOneDefaultTemplate = new ComboBox("Limited-1") with SingleSelect2[String] with NoNullSelection
-  val cbRestrictedTwoDefaultTemplate = new ComboBox("Limited-2") with SingleSelect2[String] with NoNullSelection
+  private val lytCustomOne = new HorizontalLayoutUI("Limited-1", defaultAlignment = Alignment.BOTTOM_LEFT)
+  private val lytCustomTwo = new HorizontalLayoutUI("Limited-2", defaultAlignment = Alignment.BOTTOM_LEFT)
 
-  val btnEditRestrictedOnePermSet = new Button("Limited 1") with SmallStyle
-  val btnEditRestrictedTwoPermSet = new Button("Limited 2") with SmallStyle
+  val cbDefaultTemplate = new ComboBox("Template") with SingleSelect2[String] with NoNullSelection // ??? NullSelection ???
+  val cbRestrictedOneDefaultTemplate = new ComboBox("Template") with SingleSelect2[String] with NullSelection
+  val cbRestrictedTwoDefaultTemplate = new ComboBox("Template") with SingleSelect2[String] with NullSelection
 
-  addComponents(frm.getLayout, cbDefaultTemplate, frmRestrictedPermSets, frmRestrictedDefaultTemplates)
-  addComponents(frmRestrictedPermSets.getLayout, btnEditRestrictedOnePermSet, btnEditRestrictedTwoPermSet)
-  addComponents(frmRestrictedDefaultTemplates.getLayout, cbRestrictedOneDefaultTemplate, cbRestrictedTwoDefaultTemplate)
+  val btnEditRestrictedOnePermSet = new Button("Permissions") with SmallStyle
+  val btnEditRestrictedTwoPermSet = new Button("Permissions") with SmallStyle
 
-  addComponent(frm)
+  addComponents(lytCustomOne, cbRestrictedOneDefaultTemplate, btnEditRestrictedOnePermSet)
+  addComponents(lytCustomTwo, cbRestrictedTwoDefaultTemplate, btnEditRestrictedTwoPermSet)
+
+  addComponents(frmDefault.getLayout, cbDefaultTemplate)
+  addComponents(frmCustom.getLayout, lytCustomOne, lytCustomTwo)
+
+  addComponents(this, frmDefault, frmCustom)
 }

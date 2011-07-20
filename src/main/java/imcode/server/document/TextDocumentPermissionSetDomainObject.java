@@ -9,13 +9,15 @@ import java.util.Set;
 public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject {
 
     private HashSet<Integer> allowedTemplateGroupIds = new HashSet<Integer>();
+
+    /** Types of docs a user may create. */
     private HashSet<Integer> allowedDocumentTypeIds = new HashSet<Integer>();
-    public static final DocumentPermission EDIT_TEXTS = new DocumentPermission( "editTexts" );
+    public static final DocumentPermission EDIT_TEXTS = DocumentPermissionSetDomainObject.EDIT;
     public static final DocumentPermission EDIT_MENUS = new DocumentPermission( "editMenus" );
     public static final DocumentPermission EDIT_TEMPLATE = new DocumentPermission( "editTemplates" );
     public static final DocumentPermission EDIT_INCLUDES = new DocumentPermission( "editIncludes" ) ;
     public static final DocumentPermission EDIT_IMAGES = new DocumentPermission( "editImages" );
-    public final static int EDIT_TEXT_DOCUMENT_TEXTS_PERMISSION_ID = EDIT_DOCUMENT_PERMISSION_ID;
+    public final static int EDIT_TEXT_DOCUMENT_TEXTS_PERMISSION_ID = DocumentPermissionSetDomainObject.EDIT_DOCUMENT_PERMISSION_ID;
     public final static int EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES;
     public final static int EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS;
     public final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
@@ -102,7 +104,7 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
         allowedDocumentTypeIds.add(documentTypeId) ;
     }
 
-    // ??? class is not inherit from Cloneable ???
+    // todo: check ??? class is not inherit from Cloneable ???
     protected Object clone() throws CloneNotSupportedException {
         TextDocumentPermissionSetDomainObject clone = (TextDocumentPermissionSetDomainObject)super.clone();
         clone.allowedDocumentTypeIds = (HashSet<Integer>)allowedDocumentTypeIds.clone();

@@ -663,7 +663,7 @@
         <!--<version>6.1.14</version>-->
         <!--</dependency>-->
         <!-- ================ -->
-        <!-- Custom languages -->
+        <!-- Scala -->
         <!-- ================ -->
         <dependency>
             <groupId>org.scala-lang</groupId>

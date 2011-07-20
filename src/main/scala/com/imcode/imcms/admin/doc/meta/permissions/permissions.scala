@@ -14,6 +14,9 @@ import textdocument.TextDocumentDomainObject
 import com.vaadin.ui._
 
 // Discuss
+//        Managed templates in groups:
+//          if checked??? is it used somewhere/somehow
+//
 //        if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )) {
 //            return Html.radio(name, value, checked ) ;
 //        } else {
@@ -301,16 +304,42 @@ private class ChangeRolePermsSetTypeDialogMainUI extends FormLayout with Undefin
 
 
 /**
- * Doc's restricted permission set
+ * Doc's common restricted permission set
  */
-trait DocRestrictedPermSetEditorUI extends FormLayout with UndefinedSize {
+trait DocRestrictedPermSetEditorUI extends VerticalLayout with Spacing with UndefinedSize {
 
   // Decoration; always checked and read only
   val chkRead = new CheckBox("Permission to view content") with Checked with ReadOnly
+  val chkEditMeta = new CheckBox("Permission to to edit properties")
+  val chkEditPermissions = new CheckBox("Permission to edit permissions")
+  val chkEditContent = new CheckBox("Permission to edit content")
+}
 
-  val chkEditMeta = new CheckBox("Permission to edit properties")
 
-  val chkEditRoles = new CheckBox("Permission to edit permissions")
+class TextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
+
+  val chkEditImages = new CheckBox("Permission to edit images")
+  val chkEditIncludes = new CheckBox("Permission to edit includes")
+  val chkEditMenus = new CheckBox("Permission to edit menues")
+  val chkEditTemplates = new CheckBox("Permission to edit templates")
+
+  // add doc types in menus
+  // item caption is a type name in a user language
+  val tcsCreateDocsOfTypes = new TwinColSelect("Permission to create") with MultiSelect2[DocTypeId] { setRows(5) }
+  val tcsTemplates = new TwinColSelect("Permission to edit template groups") with MultiSelect2[String] { setRows(5) }
+
+  chkEditContent.setCaption("Permission to edit texts")
+
+  addComponents(this, chkRead, chkEditMeta, chkEditPermissions, chkEditContent, chkEditIncludes, chkEditMenus, chkEditTemplates, tcsCreateDocsOfTypes, tcsTemplates)
+}
+
+
+/**
+ * Non text doc limited permissions.
+ */
+class NonTextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
+
+  addComponents(this, chkRead, chkEditMeta, chkEditPermissions, chkEditContent)
 }
 
 
@@ -323,14 +352,14 @@ class NonTextDocRestrictedPermSetEditor(permSet: DocumentPermissionSetDomainObje
 
   def revert() {
     ui.chkEditMeta.checked = permSet.getEditDocumentInformation
-    ui.chkEditRoles.checked = permSet.getEditPermissions
+    ui.chkEditPermissions.checked = permSet.getEditPermissions
     ui.chkEditContent.checked = permSet.getEdit
   }
 }
 
 
 /**
- * Text doc limited permission set editor.
+ * Text doc restricted permission set editor.
  */
 class TextDocRestrictedPermSetEditor(permSet: TextDocumentPermissionSetDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
 
@@ -341,8 +370,8 @@ class TextDocRestrictedPermSetEditor(permSet: TextDocumentPermissionSetDomainObj
     // Authorized document types
     val selectedTypeIds = permSet.getAllowedDocumentTypeIds
     for ((typeId, typeName) <- imcmsServices.getDocumentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user)) {
-      ui.tcsDocTypes.addItem(typeId, typeName)
-      if (selectedTypeIds contains typeId) ui.tcsDocTypes.select(typeId)
+      ui.tcsCreateDocsOfTypes.addItem(typeId, typeName)
+      if (selectedTypeIds contains typeId) ui.tcsCreateDocsOfTypes.select(typeId)
     }
 
     // template groups
@@ -353,10 +382,10 @@ class TextDocRestrictedPermSetEditor(permSet: TextDocumentPermissionSetDomainObj
     }
 
     ui.chkEditMeta.checked = permSet.getEditDocumentInformation
-    ui.chkEditRoles.checked = permSet.getEditPermissions
+    ui.chkEditPermissions.checked = permSet.getEditPermissions
+    ui.chkEditContent.checked = permSet.getEdit
 
     ui.chkEditTemplates.checked = permSet.getEditTemplates
-    ui.chkEditTexts.checked = permSet.getEditTexts
     ui.chkEditImages.checked = permSet.getEditImages
     ui.chkEditMenus.checked = permSet.getEditMenus
     ui.chkEditIncludes.checked = permSet.getEditIncludes
@@ -364,28 +393,7 @@ class TextDocRestrictedPermSetEditor(permSet: TextDocumentPermissionSetDomainObj
 }
 
 
-class TextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
 
-  val chkEditTexts = new CheckBox("Permission to edit texts")
-  val chkEditImages = new CheckBox("Permission to edit images")
-  val chkEditIncludes = new CheckBox("Permission to edit includes")
-  val chkEditMenus = new CheckBox("Permission to edit menues")
-  val chkEditTemplates = new CheckBox("Permission to edit templates")
-
-  // add doc types in menus
-  // item caption is a type name in a user language
-  val tcsDocTypes = new TwinColSelect("Authorized document types") with MultiSelect2[DocTypeId]
-  val tcsTemplates = new TwinColSelect("Authorized template groups") with MultiSelect2[String]
-}
-
-
-/**
- * Non text doc limited permissions.
- */
-class NonTextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
-
-  val chkEditContent = new CheckBox("Edit content")
-}
 
 
 

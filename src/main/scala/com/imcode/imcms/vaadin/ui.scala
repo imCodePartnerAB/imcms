@@ -16,6 +16,7 @@ import java.util.{Collection => JCollection}
 import com.vaadin.data.Container
 import com.vaadin.data.Container.ItemSetChangeListener
 import com.vaadin.data.Container.ItemSetChangeListener._
+import com.vaadin.ui.Layout.AlignmentHandler
 
 trait ImcmsApplication extends Application {
 
@@ -437,18 +438,37 @@ class TabSheetView extends VerticalLayout {
 }
 
 /** Vertical layout with margin, spacing and optional caption. */
-class VerticalLayoutUI(caption: String = "", spacing: Boolean=true, margin: Boolean=true) extends VerticalLayout {
+class VerticalLayoutUI(caption: String = null, spacing: Boolean=true, margin: Boolean=true) extends VerticalLayout {
   setCaption(caption)
   setMargin(margin)
   setSpacing(spacing)
 }
 
 /** Horizontal layout with optional margin, spacing and caption. */
-class HorizontalLayoutUI(caption: String = "", spacing: Boolean=true, margin: Boolean=false) extends HorizontalLayout {
+class HorizontalLayoutUI(caption: String = null, spacing: Boolean=true, margin: Boolean=false, defaultAlignment: Alignment=Alignment.TOP_LEFT) extends HorizontalLayout {
   setCaption(caption)
   setMargin(margin)
   setSpacing(spacing)
+
+  override def addComponent(c: Component) {
+    super.addComponent(c)
+    setComponentAlignment(c, defaultAlignment)
+  }
 }
+
+trait DefaultAlignment extends ComponentContainer with AlignmentHandler {
+  protected def defaultAlignment: Alignment
+
+  abstract override def addComponent(c: Component) {
+    super.addComponent(c)
+    setComponentAlignment(c, defaultAlignment)
+  }
+}
+
+trait LeftBottomAlignment extends DefaultAlignment {
+  protected def defaultAlignment = Alignment.BOTTOM_LEFT
+}
+
 
 
 class FileUploadReceiver(uploadDir: String) extends Upload.Receiver {

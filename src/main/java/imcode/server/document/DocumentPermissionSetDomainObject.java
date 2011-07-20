@@ -11,9 +11,8 @@ import java.util.Set;
 
 /**
  * Unfortunate API design.
- *
- * The app instantiates and uses ONLY {@link TextDocumentPermissionSetDomainObject} for ANY doc type.
- * However {@link #EDIT} permission is not applicable to a text but still is allowed to be set.
+ * The app instantiates and uses ONLY {@link TextDocumentPermissionSetDomainObject} for ALL doc types.
+ * The {@link #EDIT} permission is an alias for the {@link TextDocumentPermissionSetDomainObject#EDIT_TEXTS} permission.
  */
 public class DocumentPermissionSetDomainObject implements Serializable, LazilyLoadedObject.Copyable, Cloneable {
 
@@ -129,7 +128,11 @@ public class DocumentPermissionSetDomainObject implements Serializable, LazilyLo
         setPermission( EDIT_PERMISSIONS, editPermissions );
     }
 
-    // This method is newer invoked externally - make private?
+    /**
+     * todo: move to DocumentLoader - used only to initialize meta???
+     * @see com.imcode.imcms.mapping.DocumentLoader#loadMeta
+     * @param permissionBits
+     */
     public void setFromBits(int permissionBits) {
         setEditDocumentInformation(0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ));
         setEditPermissions(0 != ( permissionBits & EDIT_PERMISSIONS_PERMISSION_ID ));
