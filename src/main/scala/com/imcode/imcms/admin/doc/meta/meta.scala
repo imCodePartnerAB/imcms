@@ -65,9 +65,9 @@ class Properties(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
         case "Permissions" =>
           if (permissionsSheetOpt.isEmpty) permissionsSheetOpt =
             Some(
-              new PermissionsSheet(ui.getApplication.asInstanceOf[ImcmsApplication],
-              doc.getMeta,
-              ui.getApplication.asInstanceOf[ImcmsApplication].user)
+              new PermissionsSheet(ui.getApplication,
+              doc,
+              ui.getApplication.user)
             )
 
           ui.sheet.setContent(permissionsSheetOpt.get.ui)

@@ -42,6 +42,14 @@ public class DocumentPermissionSetDomainObject implements Serializable, LazilyLo
         }
     } ;
 
+    /**
+     * Permission to edit doc's content.
+     *
+     * Content is doc type depended:
+     * -text fields in Text docs
+     * -file references in File doc
+     * -etc.
+     */
     public static final DocumentPermission EDIT = new DocumentPermission( "edit" );
 
     private static final String PERMISSION_SET_NAME__FULL = "Full";

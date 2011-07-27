@@ -10,8 +10,8 @@ import imcode.server.document._
 import com.imcode.imcms.vaadin._
 import imcms.ImcmsServicesSupport
 import textdocument.TextDocumentDomainObject
-import admin.doc.meta.permissions.{TextDocRestrictedPermSetEditor}
 import com.vaadin.ui._
+import admin.doc.meta.permissions.{DocRestrictedPermSetEditor, TextDocRestrictedPermSetEditor}
 
 // todo: check: ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)
 // todo: discuss with Hillar/Crister:
@@ -34,8 +34,8 @@ class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extend
   private val restrictedOnePermSet = doc.getPermissionSetsForNewDocuments.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject]
   private val restrictedTwoPermSet = doc.getPermissionSetsForNewDocuments.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject]
 
-  private val restrictedOnePermSetEditor = new TextDocRestrictedPermSetEditor(restrictedOnePermSet, user)
-  private val restrictedTwoPermSetEditor = new TextDocRestrictedPermSetEditor(restrictedTwoPermSet, user)
+  private val restrictedOnePermSetEditor = new DocRestrictedPermSetEditor(restrictedOnePermSet, doc, user) with TextDocRestrictedPermSetEditor
+  private val restrictedTwoPermSetEditor = new DocRestrictedPermSetEditor(restrictedTwoPermSet, doc, user) with TextDocRestrictedPermSetEditor
 
   val ui = letret(new ProfileSheetUI) { ui =>
     ui.btnEditRestrictedOnePermSet addClickHandler {
@@ -54,8 +54,8 @@ class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extend
   revert()
 
   def revert() {
-    restrictedOnePermSetEditor.revert()
-    restrictedOnePermSetEditor.revert()
+    //restrictedOnePermSetEditor.revert()
+    //restrictedOnePermSetEditor.revert()
 
     revertTemplates()
 
@@ -86,18 +86,18 @@ class ProfileSheetUI extends VerticalLayoutUI(margin = false) with FullWidth {
   private val frmDefault = new Form { setCaption("Default") }
   private val frmCustom = new Form { setCaption("Custom") }
 
-  private val lytCustomOne = new HorizontalLayoutUI("Limited-1", defaultAlignment = Alignment.BOTTOM_LEFT)
-  private val lytCustomTwo = new HorizontalLayoutUI("Limited-2", defaultAlignment = Alignment.BOTTOM_LEFT)
+  private val lytCustomOne = new HorizontalLayoutUI("Limited-1", defaultAlignment = Alignment.MIDDLE_LEFT)
+  private val lytCustomTwo = new HorizontalLayoutUI("Limited-2", defaultAlignment = Alignment.MIDDLE_LEFT)
 
   val cbDefaultTemplate = new ComboBox("Template") with SingleSelect2[String] with NoNullSelection // ??? NullSelection ???
   val cbRestrictedOneDefaultTemplate = new ComboBox("Template") with SingleSelect2[String] with NullSelection
   val cbRestrictedTwoDefaultTemplate = new ComboBox("Template") with SingleSelect2[String] with NullSelection
 
-  val btnEditRestrictedOnePermSet = new Button("Permissions") with SmallStyle
-  val btnEditRestrictedTwoPermSet = new Button("Permissions") with SmallStyle
+  val btnEditRestrictedOnePermSet = new Button("permissions") with SmallStyle
+  val btnEditRestrictedTwoPermSet = new Button("permissions") with SmallStyle
 
-  addComponents(lytCustomOne, cbRestrictedOneDefaultTemplate, btnEditRestrictedOnePermSet)
-  addComponents(lytCustomTwo, cbRestrictedTwoDefaultTemplate, btnEditRestrictedTwoPermSet)
+  addComponents(lytCustomOne, btnEditRestrictedOnePermSet, cbRestrictedOneDefaultTemplate)
+  addComponents(lytCustomTwo, btnEditRestrictedTwoPermSet, cbRestrictedTwoDefaultTemplate)
 
   addComponents(frmDefault.getLayout, cbDefaultTemplate)
   addComponents(frmCustom.getLayout, lytCustomOne, lytCustomTwo)

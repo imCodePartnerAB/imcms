@@ -104,7 +104,6 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
         allowedDocumentTypeIds.add(documentTypeId) ;
     }
 
-    // todo: check ??? class is not inherit from Cloneable ???
     protected Object clone() throws CloneNotSupportedException {
         TextDocumentPermissionSetDomainObject clone = (TextDocumentPermissionSetDomainObject)super.clone();
         clone.allowedDocumentTypeIds = (HashSet<Integer>)allowedDocumentTypeIds.clone();

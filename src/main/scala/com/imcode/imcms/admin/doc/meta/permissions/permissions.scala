@@ -6,12 +6,14 @@ import scala.collection.breakOut
 import scala.collection.JavaConversions._
 import com.imcode.imcms.api._
 import imcode.server.user._
-import imcode.server.document._
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import imcms.ImcmsServicesSupport
-import DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
-import textdocument.TextDocumentDomainObject
+import imcode.server.document.DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
+import imcode.server.document.textdocument.TextDocumentDomainObject
+import com.vaadin.Application
 import com.vaadin.ui._
+import imcode.server.document._
+import java.util.HashSet
 
 // Discuss
 //        Managed templates in groups:
@@ -47,29 +49,71 @@ import com.vaadin.ui._
  * -READ and FULL perm sets are non-customizable and always contain the same predefined permissions.
  * -Lim1 and Lim2 perm sets can be customized - i.e. predefined permissions can be added/removed to/from those sets.
  */
-class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject) extends ImcmsServicesSupport {
+class PermissionsSheet(app: Application, doc: DocumentDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
 
+  private val meta = doc.getMeta.clone
   private val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
 
-  // Stub doc
-  // Legacy API uses DocumentDomainObject to access Meta data
-  private val doc: DocumentDomainObject = letret(new TextDocumentDomainObject){_ setMeta meta}
-
   case class State(
-    rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone(),
-    limPermissionsSets: DocumentPermissionSets = meta.getPermissionSets.clone(),
-    limPermissionsSetsForNewDoc: DocumentPermissionSets = meta.getPermissionSetsForNewDocuments.clone(),
-    isLim1MorePrivilegedThanLim2: Boolean = meta.getRestrictedOneMorePrivilegedThanRestrictedTwo,
+    rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone,
+    restrictedOnePermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject],
+    restrictedTwoPermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject],
+    isRestrictedOneMorePrivilegedThanRestricted2: Boolean = meta.getRestrictedOneMorePrivilegedThanRestrictedTwo,
     isLinkedForUnauthorizedUsers: Boolean = meta.getLinkedForUnauthorizedUsers,
     isLinkableByOtherUsers: Boolean = meta.getLinkableByOtherUsers
   )
 
   private val initialState = State()
+
+  // Initialized in revert()
+  // Might be edited in their own pop-up dialogs
+  private var restrictedOnePermSet: TextDocumentPermissionSetDomainObject = _
+  private var restrictedTwoPermSet: TextDocumentPermissionSetDomainObject = _
+
   // Check if current user can change permission set for the role
   // if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document ))
   // This can be defined perd doc, so - change must be single select!!
   // Check!! ??? Mapped roles might contain: if ( DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) || RoleId.SUPERADMIN.equals(roleId)
   val ui = letret(new PermissionsSheetUI) { ui =>
+    // security
+    ui.lytRestrictedPermSets.btnEditRestrictedOnePermSet setReadOnly !user.canDefineRestrictedOneFor(doc)
+    ui.lytRestrictedPermSets.btnEditRestrictedTwoPermSet setReadOnly !user.canDefineRestrictedTwoFor(doc)
+    ui.chkLim1IsMorePrivilegedThanLim2 setReadOnly !user.isSuperAdminOrHasFullPermissionOn(doc)
+
+    ui.lytRestrictedPermSets.btnEditRestrictedOnePermSet.addClickHandler {
+      ui.getApplication.initAndShow(new OkCancelDialog("Restriction one")) { dlg =>
+        val editor = doc match {
+          case _: TextDocumentDomainObject =>
+            new DocRestrictedPermSetEditor(restrictedOnePermSet, doc, user) with TextDocRestrictedPermSetEditor
+          case _ =>
+            new DocRestrictedPermSetEditor(restrictedOnePermSet, doc, user) with NonTextDocRestrictedPermSetEditor
+        }
+
+        dlg.wrapOkHandler {
+          restrictedOnePermSet = editor.state
+        }
+
+        dlg.mainUI = editor.ui
+      }
+    }
+
+    ui.lytRestrictedPermSets.btnEditRestrictedTwoPermSet.addClickHandler {
+      ui.getApplication.initAndShow(new OkCancelDialog("Restriction two")) { dlg =>
+        val editor = doc match {
+          case _: TextDocumentDomainObject =>
+            new DocRestrictedPermSetEditor(restrictedTwoPermSet, doc, user) with TextDocRestrictedPermSetEditor
+          case _ =>
+            new DocRestrictedPermSetEditor(restrictedTwoPermSet, doc, user) with NonTextDocRestrictedPermSetEditor
+        }
+
+        dlg.wrapOkHandler {
+          restrictedTwoPermSet = editor.state
+        }
+
+        dlg.mainUI = editor.ui
+      }
+    }
+
     ui.rolesPermsSetTypeUI.miAddRole setCommandHandler {
       val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
       val assignedRoles = ui.rolesPermsSetTypeUI.tblRolesPermsTypes.itemIds.toSet
@@ -146,8 +190,10 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
 
   revert()
 
-
   def revert() {
+    restrictedOnePermSet = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject]
+    restrictedTwoPermSet = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject]
+
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
     val allButSuperadminRole = roleMapper.getAllRoles
       .filterNot(_.getId == RoleId.SUPERADMIN)
@@ -168,7 +214,7 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
     ui.frmExtraSettings.chkShareWithOtherAdmins.checked = initialState.isLinkableByOtherUsers
     ui.frmExtraSettings.chkShowToUnauthorizedUser.checked = initialState.isLinkedForUnauthorizedUsers
 
-    ui.chkLim1IsMorePrivilegedThanLim2.checked = initialState.isLim1MorePrivilegedThanLim2
+    ui.chkLim1IsMorePrivilegedThanLim2.checked = initialState.isRestrictedOneMorePrivilegedThanRestricted2
 
     doc match {
       case textDoc: TextDocumentDomainObject =>
@@ -195,13 +241,6 @@ class PermissionsSheet(app: ImcmsApplication, meta: Meta, user: UserDomainObject
 class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {
   setMargin(true, true, false, true)
 
-  class LimPermsSetUI(caption: String = "") extends HorizontalLayout with Spacing with UndefinedSize {
-    val btnEdit = new Button("Edit".i) with SmallStyle
-
-    addComponents(this, btnEdit)
-  }
-
-
   class RolesPermsSetTypeUI extends VerticalLayout with Spacing with FullWidth {
     val mb = new MenuBar
     val miAddRole = mb.addItem("Add role")
@@ -225,13 +264,6 @@ class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {
     addComponents(this, mb, tblRolesPermsTypes)
   }
 
-  //!NB@ Only if this is a text doc.
-  //     if (user.canDefineRestrictedOneFor( document ))
-  //     if (user.canDefineRestrictedTwoFor(document))
-  val lim1PermissionSet = new LimPermsSetUI("Limited 1")
-  val lim2PermissionSet = new LimPermsSetUI("Linited 2")
-
-  // NB@ if (user.isSuperAdminOrHasFullPermissionOn(document))
   val chkLim1IsMorePrivilegedThanLim2 = new CheckBox("Limited 1 is more privileged than limited 2")
   val rolesPermsSetTypeUI = new RolesPermsSetTypeUI
 
@@ -244,8 +276,14 @@ class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {
     addComponents(getLayout, chkShowToUnauthorizedUser, chkShareWithOtherAdmins)
   }
 
+  val lytRestrictedPermSets = new GridLayout(2, 2) with Spacing with UndefinedSize with MiddleLeftAlignment {
+    val btnEditRestrictedOnePermSet = new Button("permissions".i) with SmallStyle
+    val btnEditRestrictedTwoPermSet = new Button("permissions".i) with SmallStyle
 
-  addComponents(this, rolesPermsSetTypeUI, lim1PermissionSet, lim2PermissionSet, frmExtraSettings)
+    addComponents(this, new Label("Limited-1"), btnEditRestrictedOnePermSet, new Label("Limited-2"), btnEditRestrictedTwoPermSet)
+  }
+
+  addComponents(this, rolesPermsSetTypeUI, lytRestrictedPermSets, frmExtraSettings)
 }
 
 
@@ -304,56 +342,38 @@ private class ChangeRolePermsSetTypeDialogMainUI extends FormLayout with Undefin
 
 
 /**
- * Doc's common restricted permission set
+ * State of this dialog is represented by {@link TextDocumentPermissionSetDomainObject}
  */
-trait DocRestrictedPermSetEditorUI extends VerticalLayout with Spacing with UndefinedSize {
+abstract class DocRestrictedPermSetEditor(
+      protected val permSet: TextDocumentPermissionSetDomainObject,
+      protected val doc: DocumentDomainObject,
+      protected val user: UserDomainObject
+    ) extends ImcmsServicesSupport {
 
-  // Decoration; always checked and read only
-  val chkRead = new CheckBox("Permission to view content") with Checked with ReadOnly
-  val chkEditMeta = new CheckBox("Permission to to edit properties")
-  val chkEditPermissions = new CheckBox("Permission to edit permissions")
-  val chkEditContent = new CheckBox("Permission to edit content")
-}
+  require(
+    Seq(RESTRICTED_1, RESTRICTED_2) contains permSet.getType,
+    "permSet type must be either RESTRICTED_1 or RESTRICTED_2 but was %s" format permSet.getTypeName)
 
+  val ui: DocRestrictedPermSetEditorUI
 
-class TextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
-
-  val chkEditImages = new CheckBox("Permission to edit images")
-  val chkEditIncludes = new CheckBox("Permission to edit includes")
-  val chkEditMenus = new CheckBox("Permission to edit menues")
-  val chkEditTemplates = new CheckBox("Permission to edit templates")
-
-  // add doc types in menus
-  // item caption is a type name in a user language
-  val tcsCreateDocsOfTypes = new TwinColSelect("Permission to create") with MultiSelect2[DocTypeId] { setRows(5) }
-  val tcsTemplates = new TwinColSelect("Permission to edit template groups") with MultiSelect2[String] { setRows(5) }
-
-  chkEditContent.setCaption("Permission to edit texts")
-
-  addComponents(this, chkRead, chkEditMeta, chkEditPermissions, chkEditContent, chkEditIncludes, chkEditMenus, chkEditTemplates, tcsCreateDocsOfTypes, tcsTemplates)
+  def state: TextDocumentPermissionSetDomainObject
 }
 
 
 /**
- * Non text doc limited permissions.
+ * Any but text-doc restricted permission set editor.
  */
-class NonTextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
-
-  addComponents(this, chkRead, chkEditMeta, chkEditPermissions, chkEditContent)
-}
-
-
-/**
- * Any but 'text doc' limited permission set editor.
- */
-class NonTextDocRestrictedPermSetEditor(permSet: DocumentPermissionSetDomainObject) extends ImcmsServicesSupport {
+trait NonTextDocRestrictedPermSetEditor { this: DocRestrictedPermSetEditor =>
   val ui = letret(new NonTextDocRestrictedPermSetEditorUI) { ui =>
-  }
-
-  def revert() {
     ui.chkEditMeta.checked = permSet.getEditDocumentInformation
     ui.chkEditPermissions.checked = permSet.getEditPermissions
     ui.chkEditContent.checked = permSet.getEdit
+  }
+
+  def state = letret(new TextDocumentPermissionSetDomainObject(permSet.getType)) { ps =>
+    ps.setEditDocumentInformation(ui.chkEditMeta.checked)
+    ps.setEditPermissions(ui.chkEditPermissions.checked)
+    ps.setEdit(ui.chkEditContent.checked)
   }
 }
 
@@ -361,12 +381,8 @@ class NonTextDocRestrictedPermSetEditor(permSet: DocumentPermissionSetDomainObje
 /**
  * Text doc restricted permission set editor.
  */
-class TextDocRestrictedPermSetEditor(permSet: TextDocumentPermissionSetDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
-
+trait TextDocRestrictedPermSetEditor { this: DocRestrictedPermSetEditor =>
   val ui = letret(new TextDocRestrictedPermSetEditorUI) { ui =>
-  }
-
-  def revert() {
     // Authorized document types
     val selectedTypeIds = permSet.getAllowedDocumentTypeIds
     for ((typeId, typeName) <- imcmsServices.getDocumentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user)) {
@@ -377,8 +393,8 @@ class TextDocRestrictedPermSetEditor(permSet: TextDocumentPermissionSetDomainObj
     // template groups
     val selectedGroupIds = permSet.getAllowedTemplateGroupIds
     for (group <- imcmsServices.getTemplateMapper.getAllTemplateGroups) {
-      ui.tcsTemplates.addItem(group.getName)
-      if (selectedGroupIds contains group.getId) ui.tcsTemplates.select(group.getName)
+      ui.tcsUseTemplatesFromTemplateGroups.addItem(group, group.getName)
+      if (selectedGroupIds contains group.getId) ui.tcsUseTemplatesFromTemplateGroups.select(group)
     }
 
     ui.chkEditMeta.checked = permSet.getEditDocumentInformation
@@ -390,13 +406,57 @@ class TextDocRestrictedPermSetEditor(permSet: TextDocumentPermissionSetDomainObj
     ui.chkEditMenus.checked = permSet.getEditMenus
     ui.chkEditIncludes.checked = permSet.getEditIncludes
   }
+
+  def state = letret(new TextDocumentPermissionSetDomainObject(permSet.getType)) { ps =>
+    ps.setEditDocumentInformation(ui.chkEditMeta.checked)
+    ps.setEditPermissions(ui.chkEditPermissions.checked)
+    ps.setEdit(ui.chkEditContent.checked)
+
+    ps.setEditTemplates(ui.chkEditTemplates.checked)
+    ps.setEditImages(ui.chkEditImages.checked)
+    ps.setEditMenus(ui.chkEditMenus.checked)
+    ps.setEditIncludes(ui.chkEditIncludes.checked)
+
+    ps.setAllowedDocumentTypeIds(new java.util.HashSet(ui.tcsCreateDocsOfTypes.itemIds))
+    ps.setAllowedTemplateGroupIds(new java.util.HashSet(ui.tcsUseTemplatesFromTemplateGroups.itemIds.map(Int box _.getId)))
+  }
 }
 
 
+/**
+ * Doc's common restricted permission set
+ */
+trait DocRestrictedPermSetEditorUI extends VerticalLayout with Spacing with UndefinedSize {
+
+  // Decoration; always checked and read only
+  val chkViewContent = new CheckBox("Permission to view content") with Checked with ReadOnly
+  val chkEditContent = new CheckBox("Permission to edit content")
+  val chkEditMeta = new CheckBox("Permission to to edit properties")
+  val chkEditPermissions = new CheckBox("Permission to edit permissions")
+}
 
 
+class TextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
+
+  val chkEditImages = new CheckBox("Permission to edit images")
+  val chkEditIncludes = new CheckBox("Permission to edit includes")
+  val chkEditMenus = new CheckBox("Permission to edit menues")
+  val chkEditTemplates = new CheckBox("Permission to change templates")
+
+  // item caption is a type name in a user language
+  val tcsCreateDocsOfTypes = new TwinColSelect("Permission to create documents") with MultiSelect2[DocTypeId] { setRows(5) }
+  val tcsUseTemplatesFromTemplateGroups = new TwinColSelect("Permission to use templates from groups") with MultiSelect2[TemplateGroupDomainObject] { setRows(5) }
+
+  chkEditContent.setCaption("Permission to edit content (texts)")
+
+  addComponents(this, chkViewContent, chkEditMeta, chkEditPermissions, chkEditContent, chkEditIncludes, chkEditMenus, chkEditTemplates, tcsCreateDocsOfTypes, tcsUseTemplatesFromTemplateGroups)
+}
 
 
+/**
+ * Non text doc limited permissions.
+ */
+class NonTextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
 
-
-
+  addComponents(this, chkViewContent, chkEditContent, chkEditMeta, chkEditPermissions)
+}

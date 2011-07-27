@@ -469,6 +469,10 @@ trait LeftBottomAlignment extends DefaultAlignment {
   protected def defaultAlignment = Alignment.BOTTOM_LEFT
 }
 
+trait MiddleLeftAlignment extends DefaultAlignment {
+  protected def defaultAlignment = Alignment.MIDDLE_LEFT
+}
+
 
 
 class FileUploadReceiver(uploadDir: String) extends Upload.Receiver {
