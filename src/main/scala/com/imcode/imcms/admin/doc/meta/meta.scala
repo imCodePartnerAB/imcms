@@ -20,29 +20,22 @@ import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.{TextDocumentPermissionSetDomainObject, DocumentDomainObject}
 
-//trait PropertiesDialog { this: OKDialog =>
-//  mainUI =
-//}
-
-// properties editor
-// properties editor UI???
-
-// MetaEditor
-
 /**
  * Doc's meta editor.
+ * <p/>
+ *
  * @param doc used as editor's initial state, never modified.
  */
-class Properties(app: ImcmsApplication, doc: DocumentDomainObject) extends ImcmsServicesSupport {
+class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends ImcmsServicesSupport {
 
-  private var searchSheepOpt = Option.empty[SearchSheet]
+  private var searchSheetOpt = Option.empty[SearchSheet]
   private var categoriesSheetOpt = Option.empty[CategoriesSheet]
   private var appearanceSheetOpt = Option.empty[AppearanceSheet]
   private var permissionsSheetOpt = Option.empty[PermissionsSheet]
   private var profileSheetOpt = Option.empty[ProfileSheet]
 
 
-  val ui = letret(new PropertiesUI) { ui =>
+  val ui = letret(new MetaEditorUI) { ui =>
     ui.sheets.addItem("Main")
     ui.sheets.addItem("Appearance")
     ui.sheets.addItem("Permissions")
@@ -78,9 +71,9 @@ class Properties(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
           ui.sheet.setContent(permissionsSheetOpt.get.ui)
 
         case "Search" =>
-          if (searchSheepOpt.isEmpty) searchSheepOpt = Some(new SearchSheet(doc.getMeta))
+          if (searchSheetOpt.isEmpty) searchSheetOpt = Some(new SearchSheet(doc.getMeta))
 
-          ui.sheet.setContent(searchSheepOpt.get.ui)
+          ui.sheet.setContent(searchSheetOpt.get.ui)
 
         case "Categories" =>
           if (categoriesSheetOpt.isEmpty) categoriesSheetOpt = Some(new CategoriesSheet(doc.getMeta))
@@ -104,7 +97,7 @@ class Properties(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
    * todo: ??? return (DocumentDomainObject, i18nMetas: Map[I18nLanguage, I18nMeta]) ???
    */
   def state: DocumentDomainObject = letret(doc.clone()) { dc =>
-    for (state <- searchSheepOpt.map(_.state)) {
+    for (state <- searchSheetOpt.map(_.state)) {
       dc.setKeywords(state.keywords)
       dc.setSearchDisabled(state.isExcludeFromInnerSearch)
     }
@@ -148,14 +141,20 @@ class Properties(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
 }
 
 
+/**
+ * Editor UI's main component is a horizontal split panel.
+ * -Left component - navigation tree.
+ * -Right component - scrollable panel.
+ */
+private class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
 
-class PropertiesUI extends VerticalLayout with FullSize with NoMargin {
   val sp = new HorizontalSplitPanel with FullSize
   val sheets = new Tree with Immediate
   val sheet = new Panel with LightStyle with FullSize
 
   sp.setSecondComponent(sheet)
   sp.setFirstComponent(sheets)
+
   addComponent(sp)
 }
 
@@ -413,144 +412,8 @@ class AppearanceSheetUI extends VerticalLayout with Spacing with FullWidth {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** Meta model */
-class MetaModel(val meta: Meta,
-                val defaultLanguage: I18nLanguage,
-                val languages: MMap[I18nLanguage, Boolean],
-                val i18nMetas: Map[I18nLanguage, I18nMeta],
-                val versionInfo: Option[DocumentVersionInfo] = Option.empty) {
-
-  val isNewDoc = versionInfo.isEmpty
-}
 
 
-object MetaModel {
-
-  /** Creates meta model for existing document. */
-  def apply(id: JInteger): MetaModel = {
-    val meta = Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy.getMeta(id).clone
-    val versionInfo = Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy.getDocVersionInfo(id)
-    val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
-    val languagesMap = MMap[I18nLanguage, Boolean]()
-
-    Imcms.getI18nSupport.getLanguages foreach { language =>
-      languagesMap.put(language, meta.getLanguages.contains(language))
-    }
-    languagesMap.put(defaultLanguage, true)
-
-    val i18nMetas = Imcms.getServices.getDocumentMapper.getI18nMetas(id) map { i18nMeta =>
-      i18nMeta.getLanguage -> i18nMeta
-    } toMap
-
-    new MetaModel(meta, defaultLanguage, languagesMap, i18nMetas, Some(versionInfo))
-  }
-
-  /** Creates meta model for new document. */
-  def apply(docType: Int, parentDoc: DocumentDomainObject): MetaModel = {
-    val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(docType, parentDoc, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(UserDomainObject.DEFAULT_USER_ID))
-    val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
-    val availableLanguages = Imcms.getI18nSupport.getLanguages
-    val languages = availableLanguages.zip(Stream.continually(false)).toMap.updated(defaultLanguage, true)
-    val i18nMetas = availableLanguages map { language =>
-      let(new I18nMeta) { i18nMeta =>
-        i18nMeta.setHeadline("")
-        i18nMeta.setMenuText("")
-        i18nMeta.setMenuImageURL("")
-        i18nMeta.setLanguage(language)
-
-        language -> i18nMeta
-      }
-    } toMap
-
-    new MetaModel(
-      doc.getMeta,
-      Imcms.getI18nSupport.getDefaultLanguage,
-      MMap(languages.toSeq : _*),
-      i18nMetas
-    )
-  }
-}
-
-class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
-
-  val ui = letret(new MetaUI) { ui =>
-    // affects model
-//    ui.lytPublication.btnChoosePublisher addClickHandler {
-//      application.initAndShow(new OkCancelDialog("Choose publisher") with UserSearchDialog) { dlg =>
-//        dlg.wrapOkHandler {
-//          dlg.search.selection match {
-//            case Seq(user) =>
-//              model.meta.setPublisherId(user.getId)
-//              ui.lytPublication.lblPublisherName.value = user.getLoginName
-//
-//            case _ =>
-//              model.meta.setPublisherId(null)
-//              ui.lytPublication.lblPublisherName.value = "No publisher selected"
-//          }
-//        }
-//      }
-//    }
-
-    // does NOT alter meta - only reads its values
-//    let(ui.lytPublication) { lyt =>
-//      lyt.chkEnd addClickHandler {
-//        lyt.chkEnd.booleanValue match {
-//          case true =>
-//            lyt.calEnd.setEnabled(true)
-//            lyt.calEnd.value = model.meta.getPublicationEndDatetime
-//          case false =>
-//            lyt.calEnd.value = null
-//            lyt.calEnd.setEnabled(false)
-//        }
-//      }
-//
-//      // fire event
-//      lyt.chkEnd.fireClick()
-//    }
-  }
-
-  /**
-   * Validates data and populates model with values.
-   * @returns Some(error) in case of a validation error or None.
-   */
-  def validate(): Option[String] = {
-//    ui.lytI18n.tsI18nMetas.getComponentIterator foreach {
-//      case i18nMetaUI: I18nMetaLyt with DataType[I18nLanguage] =>
-//        let(model.i18nMetas(i18nMetaUI.data)) { i18nMeta =>
-//          i18nMeta.setHeadline(i18nMetaUI.txtTitle.value)
-//          i18nMeta.setMenuText(i18nMetaUI.txtMenuText.value)
-//          i18nMeta.setMenuImageURL(i18nMetaUI.embLinkImage.value)
-//        }
-//    }
-
-    ui.lytIdentity.txtAlias.value.trim match {
-      case "" => model.meta.removeAlis
-      case alias =>
-        // todo: check alias
-        model.meta.setAlias(alias)
-    }
-
-    //model.meta.setPublicationStatus(ui.lytPublication.sltStatus.value)
-
-    let(model.meta.getLanguages) { metaLanguages =>
-      metaLanguages.clear
-      for ((language, enabled) <- model.languages if enabled) metaLanguages.add(language)
-    }
-
-//    model.meta.setPublicationStartDatetime(ui.lytPublication.calStart.value)
-//    model.meta.setPublicationEndDatetime(
-//      if (ui.lytPublication.chkEnd.booleanValue) ui.lytPublication.calEnd.value
-//      else null
-//    )
-//
-//    model.meta.setSearchDisabled(ui.lytSearch.chkExclude.value)
-//    model.meta.setLinkedForUnauthorizedUsers(ui.lytLink.chkShowToUnauthorizedUser.value)
-//    model.meta.setTarget(if (ui.lytLink.chkOpenInNewWindow.booleanValue) "_top" else "_self")
-
-    None
-  }
-}
 
 
 
@@ -716,60 +579,3 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
 class CategoriesDialogContent extends Panel(new FormLayout with UndefinedSize) with LightStyle with Scrollable with UndefinedSize
 
 
-/**
- * Meta (doc info) ui.
- */
-class MetaUI extends FormLayout /*with UndefinedSize*/ with Margin {
-
-  val lytIdentity = new HorizontalLayout with UndefinedSize with Spacing {
-    val txtId = new TextField("Document Id") with Disabled
-    val txtName = new TextField("Name")
-    val txtAlias = new TextField("Alias")
-
-    setCaption("Identity")
-    addComponents(this, txtId, txtName, txtAlias)
-  }
-
-  val lytI18n = new VerticalLayout {//with UndefinedSize {
-    val tsI18nMetas = new TabSheet// with UndefinedSize
-    val btnSettings = new Button("Configure...") with LinkStyle
-
-    setCaption("Appearence")
-    addComponents(this, tsI18nMetas, btnSettings)
-  }
-
-  val lytLink = new VerticalLayout with UndefinedSize with Spacing {
-    val chkOpenInNewWindow = new CheckBox("Open in new window")
-    val chkShowToUnauthorizedUser = new CheckBox("Show to unauthorized user")
-
-    setCaption("Link/menu item")
-    addComponents(this, chkOpenInNewWindow, chkShowToUnauthorizedUser)
-  }
-
-  val lytSearch = new VerticalLayout with UndefinedSize with Spacing {
-    val chkExclude = new CheckBox("Exclude this page from internal search")
-    val lytKeywords = new HorizontalLayout with Spacing {
-      val lblKeywords = new Label("Keywords")
-      val txtKeywords = new TextField with Disabled { setColumns(30) }
-      val btnEdit = new Button("Edit...") with LinkStyle
-
-      addComponents(this, lblKeywords, txtKeywords, btnEdit)
-    }
-
-    setCaption("Search")
-    addComponents(this, lytKeywords, chkExclude)
-  }
-
-  val lytCategories = new HorizontalLayout with UndefinedSize with Spacing {
-    val lblCategories = new Label("Categories")
-    val txtCategories = new TextField with Disabled { setColumns(30) }
-    val btnEdit = new Button("Edit...") with LinkStyle
-
-    addComponents(this, lblCategories, txtCategories, btnEdit)
-  }
-
-  forlet(lytIdentity, lytI18n, lytLink, lytSearch, lytCategories) { c =>
-    c.setMargin(true)
-    addComponent(c)
-  }
-}

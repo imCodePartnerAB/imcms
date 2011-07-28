@@ -2,22 +2,22 @@ package com.imcode
 package imcms
 package admin.doc
 
-import com.imcode.imcms.vaadin._
+import _root_.scala.collection.JavaConversions._
+import _root_.com.vaadin.event.Action
+import _root_.com.vaadin.ui._
 
-import scala.collection.JavaConversions._
-import vaadin.{ImcmsApplication, FullSize}
-import com.vaadin.event.Action
+import _root_.com.imcode.imcms.vaadin._
+import _root_.imcode.server.document.{FileDocumentDomainObject, HtmlDocumentDomainObject}
 import _root_.com.imcode.imcms.admin.doc.search.{DocSearch, AllDocsContainer, CustomDocsContainer}
-import _root_.com.imcode.imcms.admin.doc.meta.{Properties => DocProperties}
-import com.vaadin.ui._
-import imcode.server.document.{FileDocumentDomainObject, HtmlDocumentDomainObject}
-import imcode.server.document.textdocument.TextDocumentDomainObject
+import _root_.com.imcode.imcms.admin.doc.meta.MetaEditor
+import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+
 
 object Actions {
-  val IncludeToSelection = new Action("doc.action.include_to_selection".i)
-  val ExcludeFromSelection = new Action("doc.action.exclude_from_selection".i)
-  val Delete = new Action("doc.action.delete".i)
-  val ManageProperties = new Action("doc.action.manage_properties".i)
+  val IncludeToSelection = new Action("doc.mgr.action.include_to_selection".i)
+  val ExcludeFromSelection = new Action("doc.mgr.action.exclude_from_selection".i)
+  val Delete = new Action("doc.mgr.action.delete".i)
+  val EditMeta = new Action("doc.mgr.action.edit_meta".i)
 }
 
 
@@ -35,19 +35,19 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       app.show(docSelectionDlg, modal = false, resizable = true)
     }
 
-    ui.miProperties.setCommandHandler {
+    ui.miEditMeta.setCommandHandler {
       val dlg = new OKDialog("Doc properties") with CustomSizeDialog with BottomMarginDialog
       val doc = imcmsServices.getDocumentMapper.getWorkingDocument(search.docsUI.first.get.intValue)
-      val properties = new DocProperties(app, doc)
+      val metaEditor = new MetaEditor(app, doc)
 
-      dlg.mainUI = properties.ui
+      dlg.mainUI = metaEditor.ui
 
       dlg.wrapOkHandler {
         // 1.validate
         // 2.copy changes into doc:
         // 3.state: ValidationError Either Doc
         // properties.state
-        imcmsServices.getDocumentMapper.saveDocument(properties.state, app.user)
+        imcmsServices.getDocumentMapper.saveDocument(metaEditor.state, app.user)
       }
 
       dlg.setSize(500, 500)
@@ -58,7 +58,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       val dlg = new OKDialog("New URL Document") with CustomSizeDialog with BottomMarginDialog
 
       val doc = new HtmlDocumentDomainObject
-      val properties = new DocProperties(app, doc)
+      val properties = new MetaEditor(app, doc)
       val contentUI = new URLDocEditorUI
 
       dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
@@ -74,7 +74,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       val dlg = new OKDialog("New File Document") with CustomSizeDialog with BottomMarginDialog
 
       val doc = new FileDocumentDomainObject
-      val properties = new DocProperties(app, doc)
+      val properties = new MetaEditor(app, doc)
       val contentUI = new FileDocEditor(app, doc, Seq.empty).ui
 
       dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
@@ -90,7 +90,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       val dlg = new OKDialog("New Text Document") with CustomSizeDialog with BottomMarginDialog
 
       val doc = new TextDocumentDomainObject
-      val properties = new DocProperties(app, doc)
+      val properties = new MetaEditor(app, doc)
       val contentUI = new NewTextDocumentFlowPage2UI
 
       dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
@@ -122,15 +122,15 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 class DocManagerUI(searchUI: Component) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar
   val miDoc = mb.addItem("doc.mgr.mi.doc".i)
-  val miDocNew = miDoc.addItem("doc.action.new".i)
-  val miDocNewFile = miDocNew.addItem("doc.action.new.file_doc".i)
-  val miDocNewURL = miDocNew.addItem("doc.action.new.url_doc".i)
-  val miDocNewText = miDocNew.addItem("doc.action.new.text_doc".i)
-  val miDocEdit = miDoc.addItem("doc.action.edit".i)
-  val miDocDelete = miDoc.addItem("doc.action.delete".i)
+  val miDocNew = miDoc.addItem("doc.mgr.action.new".i)
+  val miDocNewFile = miDocNew.addItem("doc.mgr.action.new.file_doc".i)
+  val miDocNewURL = miDocNew.addItem("doc.mgr.action.new.url_doc".i)
+  val miDocNewText = miDocNew.addItem("doc.mgr.action.new.text_doc".i)
+  val miDocEdit = miDoc.addItem("doc.mgr.action.edit".i)
+  val miDocDelete = miDoc.addItem("doc.mgr.action.delete".i)
   val miView = mb.addItem("doc.mgr.mi.view".i)
-  val miShowSelection = miView.addItem("doc.action.show_selection".i)
-  val miProperties = mb.addItem("doc.action.manage_properties".i)
+  val miShowSelection = miView.addItem("doc.mgr.action.show_selection".i)
+  val miEditMeta = mb.addItem("doc.mgr.action.edit_meta".i)
 
   addComponents(this, mb, searchUI)
   setExpandRatio(searchUI, 1.0f)

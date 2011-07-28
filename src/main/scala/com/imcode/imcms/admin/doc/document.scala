@@ -20,7 +20,7 @@ import java.util.{EnumSet}
 import imcms.mapping.DocumentMapper.SaveDirectives
 import imcms.mapping.{DocumentMapper, DocumentSaver}
 
-import meta._
+import collection.mutable.Map
 
 ///////////////////////////////////////////////////////////
 // @deprecated
@@ -45,7 +45,7 @@ class EditorsFactory(app: ImcmsApplication, user: UserDomainObject) {
     val page0 = new FlowPage(() => docUI, docValidator)
 
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
-    val metaEditor = new MetaEditor(app, metaModel)
+    val metaEditor = new MetaEditorDepricated(app, metaModel)
     val metaValidator = () => Some("meta is invalid, please fix the following errors..")
     val page1 = new FlowPage(() => metaEditor.ui, metaValidator)
 
@@ -66,7 +66,7 @@ class EditorsFactory(app: ImcmsApplication, user: UserDomainObject) {
     val page0 = new FlowPage(() => docEditor.ui, docValidator)
 
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
-    val metaEditor = new MetaEditor(app, metaModel)
+    val metaEditor = new MetaEditorDepricated(app, metaModel)
     val metaValidator = () => Some("meta is invalid, please fix the following errors..")
     val page1 = new FlowPage(() => metaEditor.ui, metaValidator)
 
@@ -85,7 +85,7 @@ class EditorsFactory(app: ImcmsApplication, user: UserDomainObject) {
   def newTextDocFlow(parentDoc: DocumentDomainObject): Flow[TextDocumentDomainObject] = {
     val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, user).asInstanceOf[TextDocumentDomainObject]
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
-    val metaEditor = new MetaEditor(app, metaModel)
+    val metaEditor = new MetaEditorDepricated(app, metaModel)
 
     val copyTextEditor = new NewTextDocumentFlowPage2(metaModel)
     
@@ -333,5 +333,216 @@ class NewTextDocumentFlowPage2(metaModel: MetaModel) {
         t setEnabled false
       }
     }    
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+class MetaEditorDepricated(val application: ImcmsApplication, val model: MetaModel) {
+
+  val ui = letret(new MetaUI) { ui =>
+    // affects model
+//    ui.lytPublication.btnChoosePublisher addClickHandler {
+//      application.initAndShow(new OkCancelDialog("Choose publisher") with UserSearchDialog) { dlg =>
+//        dlg.wrapOkHandler {
+//          dlg.search.selection match {
+//            case Seq(user) =>
+//              model.meta.setPublisherId(user.getId)
+//              ui.lytPublication.lblPublisherName.value = user.getLoginName
+//
+//            case _ =>
+//              model.meta.setPublisherId(null)
+//              ui.lytPublication.lblPublisherName.value = "No publisher selected"
+//          }
+//        }
+//      }
+//    }
+
+    // does NOT alter meta - only reads its values
+//    let(ui.lytPublication) { lyt =>
+//      lyt.chkEnd addClickHandler {
+//        lyt.chkEnd.booleanValue match {
+//          case true =>
+//            lyt.calEnd.setEnabled(true)
+//            lyt.calEnd.value = model.meta.getPublicationEndDatetime
+//          case false =>
+//            lyt.calEnd.value = null
+//            lyt.calEnd.setEnabled(false)
+//        }
+//      }
+//
+//      // fire event
+//      lyt.chkEnd.fireClick()
+//    }
+  }
+
+  /**
+   * Validates data and populates model with values.
+   * @returns Some(error) in case of a validation error or None.
+   */
+  def validate(): Option[String] = {
+//    ui.lytI18n.tsI18nMetas.getComponentIterator foreach {
+//      case i18nMetaUI: I18nMetaLyt with DataType[I18nLanguage] =>
+//        let(model.i18nMetas(i18nMetaUI.data)) { i18nMeta =>
+//          i18nMeta.setHeadline(i18nMetaUI.txtTitle.value)
+//          i18nMeta.setMenuText(i18nMetaUI.txtMenuText.value)
+//          i18nMeta.setMenuImageURL(i18nMetaUI.embLinkImage.value)
+//        }
+//    }
+
+    ui.lytIdentity.txtAlias.value.trim match {
+      case "" => model.meta.removeAlis
+      case alias =>
+        // todo: check alias
+        model.meta.setAlias(alias)
+    }
+
+    //model.meta.setPublicationStatus(ui.lytPublication.sltStatus.value)
+
+    let(model.meta.getLanguages) { metaLanguages =>
+      metaLanguages.clear
+      for ((language, enabled) <- model.languages if enabled) metaLanguages.add(language)
+    }
+
+//    model.meta.setPublicationStartDatetime(ui.lytPublication.calStart.value)
+//    model.meta.setPublicationEndDatetime(
+//      if (ui.lytPublication.chkEnd.booleanValue) ui.lytPublication.calEnd.value
+//      else null
+//    )
+//
+//    model.meta.setSearchDisabled(ui.lytSearch.chkExclude.value)
+//    model.meta.setLinkedForUnauthorizedUsers(ui.lytLink.chkShowToUnauthorizedUser.value)
+//    model.meta.setTarget(if (ui.lytLink.chkOpenInNewWindow.booleanValue) "_top" else "_self")
+
+    None
+  }
+}
+
+
+
+/**
+ * Meta (doc info) ui.
+ */
+class MetaUI extends FormLayout /*with UndefinedSize*/ with Margin {
+
+  val lytIdentity = new HorizontalLayout with UndefinedSize with Spacing {
+    val txtId = new TextField("Document Id") with Disabled
+    val txtName = new TextField("Name")
+    val txtAlias = new TextField("Alias")
+
+    setCaption("Identity")
+    addComponents(this, txtId, txtName, txtAlias)
+  }
+
+  val lytI18n = new VerticalLayout {//with UndefinedSize {
+    val tsI18nMetas = new TabSheet// with UndefinedSize
+    val btnSettings = new Button("Configure...") with LinkStyle
+
+    setCaption("Appearence")
+    addComponents(this, tsI18nMetas, btnSettings)
+  }
+
+  val lytLink = new VerticalLayout with UndefinedSize with Spacing {
+    val chkOpenInNewWindow = new CheckBox("Open in new window")
+    val chkShowToUnauthorizedUser = new CheckBox("Show to unauthorized user")
+
+    setCaption("Link/menu item")
+    addComponents(this, chkOpenInNewWindow, chkShowToUnauthorizedUser)
+  }
+
+  val lytSearch = new VerticalLayout with UndefinedSize with Spacing {
+    val chkExclude = new CheckBox("Exclude this page from internal search")
+    val lytKeywords = new HorizontalLayout with Spacing {
+      val lblKeywords = new Label("Keywords")
+      val txtKeywords = new TextField with Disabled { setColumns(30) }
+      val btnEdit = new Button("Edit...") with LinkStyle
+
+      addComponents(this, lblKeywords, txtKeywords, btnEdit)
+    }
+
+    setCaption("Search")
+    addComponents(this, lytKeywords, chkExclude)
+  }
+
+  val lytCategories = new HorizontalLayout with UndefinedSize with Spacing {
+    val lblCategories = new Label("Categories")
+    val txtCategories = new TextField with Disabled { setColumns(30) }
+    val btnEdit = new Button("Edit...") with LinkStyle
+
+    addComponents(this, lblCategories, txtCategories, btnEdit)
+  }
+
+  forlet(lytIdentity, lytI18n, lytLink, lytSearch, lytCategories) { c =>
+    c.setMargin(true)
+    addComponent(c)
+  }
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** Meta model */
+class MetaModel(val meta: Meta,
+                val defaultLanguage: I18nLanguage,
+                val languages: MMap[I18nLanguage, Boolean],
+                val i18nMetas: Map[I18nLanguage, I18nMeta],
+                val versionInfo: Option[DocumentVersionInfo] = Option.empty) {
+
+  val isNewDoc = versionInfo.isEmpty
+}
+
+
+object MetaModel {
+
+  /** Creates meta model for existing document. */
+  def apply(id: JInteger): MetaModel = {
+    val meta = Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy.getMeta(id).clone
+    val versionInfo = Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy.getDocVersionInfo(id)
+    val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
+    val languagesMap = MMap[I18nLanguage, Boolean]()
+
+    Imcms.getI18nSupport.getLanguages foreach { language =>
+      languagesMap.put(language, meta.getLanguages.contains(language))
+    }
+    languagesMap.put(defaultLanguage, true)
+
+    val i18nMetas = Imcms.getServices.getDocumentMapper.getI18nMetas(id) map { i18nMeta =>
+      i18nMeta.getLanguage -> i18nMeta
+    } toMap
+
+    new MetaModel(meta, defaultLanguage, languagesMap, i18nMetas, Some(versionInfo))
+  }
+
+  /** Creates meta model for new document. */
+  def apply(docType: Int, parentDoc: DocumentDomainObject): MetaModel = {
+    val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(docType, parentDoc, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(UserDomainObject.DEFAULT_USER_ID))
+    val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
+    val availableLanguages = Imcms.getI18nSupport.getLanguages
+    val languages = availableLanguages.zip(Stream.continually(false)).toMap.updated(defaultLanguage, true)
+    val i18nMetas = availableLanguages map { language =>
+      let(new I18nMeta) { i18nMeta =>
+        i18nMeta.setHeadline("")
+        i18nMeta.setMenuText("")
+        i18nMeta.setMenuImageURL("")
+        i18nMeta.setLanguage(language)
+
+        language -> i18nMeta
+      }
+    } toMap
+
+    new MetaModel(
+      doc.getMeta,
+      Imcms.getI18nSupport.getDefaultLanguage,
+      MMap(languages.toSeq : _*),
+      i18nMetas
+    )
   }
 }
