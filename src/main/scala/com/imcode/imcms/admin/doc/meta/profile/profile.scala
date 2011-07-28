@@ -31,6 +31,14 @@ import admin.doc.meta.permissions.{DocRestrictedPermSetEditor, TextDocRestricted
  */
 class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
 
+  case class State(
+    defaultTemplate: String,
+    restrictedOnePermSet: TextDocumentPermissionSetDomainObject,
+    restrictedTwoPermSet: TextDocumentPermissionSetDomainObject,
+    restrictedOneTemplate: String,
+    restrictedTwoTemplate: String
+  )
+
   private val restrictedOnePermSet = doc.getPermissionSetsForNewDocuments.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject]
   private val restrictedTwoPermSet = doc.getPermissionSetsForNewDocuments.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject]
 
@@ -78,6 +86,15 @@ class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extend
     setTemplatesNamesAsComboBoxItems(ui.cbRestrictedOneDefaultTemplate, doc.getDefaultTemplateNameForRestricted1)
     setTemplatesNamesAsComboBoxItems(ui.cbRestrictedTwoDefaultTemplate, doc.getDefaultTemplateNameForRestricted2)
   }
+
+
+  def state = State(
+    ui.cbDefaultTemplate.value,
+    restrictedOnePermSet, // ??? clone
+    restrictedTwoPermSet, // ??? clone
+    ui.cbRestrictedOneDefaultTemplate.value,
+    ui.cbRestrictedTwoDefaultTemplate.value
+  )
 }
 
 

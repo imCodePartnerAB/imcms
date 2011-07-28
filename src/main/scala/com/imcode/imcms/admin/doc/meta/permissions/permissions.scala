@@ -232,10 +232,26 @@ class PermissionsSheet(app: Application, doc: DocumentDomainObject, user: UserDo
       .getItemProperty(RolePermsSetTypePropertyId)
       .setValue(RolePermsSetType(role, setType))
   }
+
+
+  def state = State(
+    letret(new RoleIdToDocumentPermissionSetTypeMappings) { rolesPermissions =>
+      import ui.rolesPermsSetTypeUI.tblRolesPermsTypes
+      tblRolesPermsTypes.itemIds foreach { role =>
+        rolesPermissions.setPermissionSetTypeForRole(
+          role.getId,
+          tblRolesPermsTypes.getContainerProperty(role, RolePermsSetTypePropertyId).getValue.asInstanceOf[RolePermsSetType].setType
+        )
+      }
+    },
+    restrictedOnePermSet, // clone ???
+    restrictedTwoPermSet, // clone ???
+    ui.chkLim1IsMorePrivilegedThanLim2.checked,
+    ui.frmExtraSettings.chkShowToUnauthorizedUser.checked,
+    ui.frmExtraSettings.chkShareWithOtherAdmins.checked
+  )
 }
 
-      // <% if (document.isLinkedForUnauthorizedUsers()) => Checked
-      //<% if (document.isLinkableByOtherUsers()) {%>checked<% } %>> checked
 
 
 class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {

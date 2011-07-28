@@ -86,7 +86,7 @@ public class I18nLanguage implements Serializable, Cloneable {
 	}
 
 	public String getNativeName() {
-		return nativeName;
+		return nativeName != null ? nativeName : name;
 	}
 	
 	public void setNativeName(String nativeName) {

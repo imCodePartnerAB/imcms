@@ -5,12 +5,12 @@ package admin.doc.meta
 import permissions.{PermissionsSheet}
 import profile.ProfileSheet
 import scala.collection.JavaConversions._
+import scala.collection.breakOut
 
 import collection.mutable.{Map => MMap}
 import imcode.server.Imcms
 import imcode.server.user.UserDomainObject
 
-import imcode.server.document.{DocumentDomainObject}
 import vaadin._
 import admin.access.user.UserSearchDialog
 import api._
@@ -18,6 +18,7 @@ import com.vaadin.terminal.ExternalResource
 import java.util.Calendar
 import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDocumentDomainObject
+import imcode.server.document.{TextDocumentPermissionSetDomainObject, DocumentDomainObject}
 
 //trait PropertiesDialog { this: OKDialog =>
 //  mainUI =
@@ -28,6 +29,10 @@ import imcode.server.document.textdocument.TextDocumentDomainObject
 
 // MetaEditor
 
+/**
+ * Doc's meta editor.
+ * @param doc used as editor's initial state, never modified.
+ */
 class Properties(app: ImcmsApplication, doc: DocumentDomainObject) extends ImcmsServicesSupport {
 
   private var searchSheepOpt = Option.empty[SearchSheet]
@@ -93,6 +98,53 @@ class Properties(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
   }
 
   ui.sheets.select("Main")
+
+  /**
+   * Clones the original doc, copies changes into that clone and returns it.
+   * todo: ??? return (DocumentDomainObject, i18nMetas: Map[I18nLanguage, I18nMeta]) ???
+   */
+  def state: DocumentDomainObject = letret(doc.clone()) { dc =>
+    for (state <- searchSheepOpt.map(_.state)) {
+      dc.setKeywords(state.keywords)
+      dc.setSearchDisabled(state.isExcludeFromInnerSearch)
+    }
+
+    for (state <- categoriesSheetOpt.map(_.state)) {
+      dc.setCategoryIds(state.categoriesIds)
+    }
+
+    for (state <- appearanceSheetOpt.map(_.state)) {
+      dc.getMeta.setLanguages(state.enabledLanguages)
+      dc.getMeta.setI18nShowMode(state.disabledLanguageShowSetting)
+      // todo: return i18nMetas
+    }
+
+    for (state <- permissionsSheetOpt.map(_.state)) {
+      dc.setRoleIdsMappedToDocumentPermissionSetTypes(state.rolesPermissions)
+      dc.getPermissionSets.setRestricted1(state.restrictedOnePermSet)
+      dc.getPermissionSets.setRestricted2(state.restrictedTwoPermSet)
+      dc.setRestrictedOneMorePrivilegedThanRestrictedTwo(state.isRestrictedOneMorePrivilegedThanRestricted2)
+      dc.setLinkedForUnauthorizedUsers(state.isLinkedForUnauthorizedUsers)
+      dc.setLinkableByOtherUsers(state.isLinkableByOtherUsers)
+    }
+
+//    ui.cbDefaultTemplate.value,
+//    restrictedOnePermSet, // ??? clone
+//    restrictedTwoPermSet, // ??? clone
+//    ui.cbRestrictedOneDefaultTemplate,
+//    ui.cbRestrictedTwoDefaultTemplate
+    dc match {
+      case tdc: TextDocumentDomainObject =>
+        for (state <- profileSheetOpt.map(_.state)) {
+          tdc.setDefaultTemplateId(state.defaultTemplate)
+          tdc.getPermissionSetsForNewDocuments.setRestricted1(state.restrictedOnePermSet)
+          tdc.getPermissionSetsForNewDocuments.setRestricted2(state.restrictedTwoPermSet)
+          tdc.setDefaultTemplateIdForRestricted1(state.restrictedOneTemplate)
+          tdc.setDefaultTemplateIdForRestricted2(state.restrictedTwoTemplate)
+        }
+      case _ =>
+    }
+  }
 }
 
 
@@ -108,6 +160,9 @@ class PropertiesUI extends VerticalLayout with FullSize with NoMargin {
 }
 
 
+/**
+ * Doc's categories (editor).
+ */
 class CategoriesSheet(meta: Meta) extends ImcmsServicesSupport {
   case class State(categoriesIds: Set[CategoryId])
 
@@ -167,7 +222,9 @@ class CategoriesSheet(meta: Meta) extends ImcmsServicesSupport {
 }
 
 
-// param: editable = true/false ???
+/**
+ * Doc's search settings (editor).
+ */
 class SearchSheet(meta: Meta) {
   case class State(keywords: Set[Keyword], isExcludeFromInnerSearch: Boolean)
 
@@ -248,11 +305,23 @@ class SearchSheetUI extends FormLayout with UndefinedSize {
 }
 
 
+/**
+ * Doc's appearance settings.
+ * Used to customizes doc's L&F in system predefined languages.
+ */
 class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extends ImcmsServicesSupport {
-  private val i18nMetasUIs: Seq[(CheckBox, I18nMetaEditorUI)] =
+
+  case class State(
+    i18nMetas: Map[I18nLanguage, I18nMeta],
+    enabledLanguages: Set[I18nLanguage],
+    disabledLanguageShowSetting: Meta.DisabledLanguageShowSetting
+    //, linkOpenSettings???
+  )
+
+  private val i18nMetasUIs: Seq[(I18nLanguage, CheckBox, I18nMetaEditorUI)] =
     for (language <- imcmsServices.getI18nSupport.getLanguages)
     yield {
-      val chkLanguage = new CheckBox(language.getName) with Immediate
+      val chkLanguage = new CheckBox(language.getNativeName) with Immediate
       val i18nMetaEditorUI = new I18nMetaEditorUI
 
       chkLanguage.addValueChangeHandler {
@@ -261,14 +330,14 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
 
       chkLanguage.setIcon(new ExternalResource("/imcms/images/icons/flags_iso_639_1/%s.gif" format language.getCode))
 
-      chkLanguage -> i18nMetaEditorUI
+      (language, chkLanguage, i18nMetaEditorUI)
     }
 
   val ui = letret(new AppearanceSheetUI) { ui =>
     ui.frmLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
     ui.frmLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
 
-    for ((chkLanguage, i18nMetaEditorUI) <- i18nMetasUIs)
+    for ((_, chkLanguage, i18nMetaEditorUI) <- i18nMetasUIs)
       addComponents(ui.frmLanguages.lytI18nMetas, chkLanguage, i18nMetaEditorUI)
   } // ui
 
@@ -277,7 +346,40 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
 
   def revert() {
     ui.frmLanguages.cbShowMode.select(meta.getI18nShowSetting)
+    for ((language, chkBox, i18nMetaEditorUI) <- i18nMetasUIs) {
+      chkBox.checked = meta.getLanguages.contains(language)
+
+      i18nMetas.get(language) match {
+        case Some(i18nMeta) =>
+          i18nMetaEditorUI.txtTitle.value = i18nMeta.getHeadline
+          i18nMetaEditorUI.taMenuText.value = i18nMeta.getMenuText
+          i18nMetaEditorUI.embLinkImage.value = i18nMeta.getMenuImageURL
+
+        case _ =>
+          i18nMetaEditorUI.txtTitle.value = ""
+          i18nMetaEditorUI.taMenuText.value = ""
+          i18nMetaEditorUI.embLinkImage.value = ""
+      }
+    }
+
+    //set target
+    //ui.frmLinkTarget.ogShowIn.select(meta.getTarget)
   }
+
+  def state = State(
+    i18nMetasUIs.map {
+      case (language, chkBox, i18nMetaEditorUI) =>
+        language -> letret(new I18nMeta) { i18nMeta =>
+          i18nMeta.setId(i18nMetas.get(language).map(_.getId).orNull)
+          i18nMeta.setDocId(meta.getId)
+          i18nMeta.setLanguage(language)
+          i18nMeta.setHeadline(i18nMetaEditorUI.txtTitle.trim)
+          i18nMeta.setMenuImageURL(i18nMetaEditorUI.embLinkImage.trim)
+        }
+    } (breakOut),
+    i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language }(breakOut),
+    ui.frmLanguages.cbShowMode.value
+  )
 }
 
 

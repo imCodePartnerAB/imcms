@@ -31,31 +31,37 @@ import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.imcode.imcms.vaadin.Theme.Icons._
 
 
-
-
-// Controller VS HANDLER?
 /*
-   A manager is associated with a set of tasks
-   For every task a user must have a permission...
+ todo: #ARCHITECTURE OVERVIEW#
 
- * Administration is performed using managers and editors.
- * -or-??
- *  Administration is performed using managers, editors and flows.
- *
- * A manager controls one or more editor.
- * Editor is intended to change and validate edited object (entity) model but not to perform physical changes - that a
+ Admin Application
+ |-manager1
+   |-action1
+   |-action2
+   |-actionN
+ |-manager2
+   |-...
+ |-managerN
+   |-...
+
+ FALSE STATEMENT, refactor: Administration is performed using managers and editors (sometimes combined into flows).
+ Every manager is associated with a set of actions/tasks
+ For each action a user must have a permission...
+
+ * Editor is intended to change (and validate edited object) model but not to perform physical changes - that a
  * manager's task (commits).
- *  
+ *
  * An editor can be viewed as a MVC where model is typically an administered object (such as document, text or image)
+ * or its
  * itself or in more sophisticated cases an instance of a separate class containing additional parameters and attributes.
  * A view or UI of an editor is represented by one or several standard vaadin components such as Layout, Panel or Window.
- * A controller is just set of routines and callbacks located inside or outside of UI and/or model classes. 
+ * A controller is just set of routines and callbacks located inside or outside of UI and/or model classes.
  * In some (mostly trivial) cases model and/or controller are embedded in a view component.
  *
  * A flow is also an editor which contains one or more editors which may have (partially) shared model and controller.
  * - commit???
  *
- * EDITOR UI, but NO EDITOR - explain
+ * In some trivial cases an editor might not have a separate UI class.
  */
 class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
@@ -99,7 +105,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       object Cache
     }
   }
-  
+
   object Menu extends MenuItem {
     object About extends MenuItem(this, Some(About16))
 
@@ -128,7 +134,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       }
       object Files extends MenuItem(this, Some(Done16))
     }
-  } 
+  }
 
   val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
 
@@ -148,7 +154,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       setStyleName(Button.STYLE_LINK)
       setIcon(new ThemeResource("icons/16/reload.png"))
     }
-    
+
     // todo - refactor into lytMenu
     val pnlHeader = new HorizontalLayout {
       setWidth("100%")
@@ -159,7 +165,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       setWidth("100%")
       setSpacing(true)
     }
-    
+
     val lytMenu = pnlHeader
 
     addComponents(lytHeader, lytMenu, btnReload)
@@ -170,7 +176,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
     reloadTableItems
     resetComponents
-    
+
     // Investigate: List[(AnyRef, Array[AnyRef])]
     def tableItems(): Seq[(AnyRef, Seq[AnyRef])] = List.empty
 
@@ -201,7 +207,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       }
 
       addComponent(new Label("""|Welcome to the imCMS new admin UI prototype -
-                     | please pick a task from the menu. Note that some views are not (yet) available. 
+                     | please pick a task from the menu. Note that some views are not (yet) available.
                      |""".stripMargin))
     })
   }
@@ -211,7 +217,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       setSplitPosition(15)
       setSizeFull
     }
-    
+
     val treeMenu = new Tree {
       setImmediate(true)
     }
@@ -275,7 +281,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     wndMain initMenu Menu
     Menu.items foreach { wndMain.treeMenu expandItemsRecursively _ }
     wndMain.treeMenu select Menu.About
-    this setMainWindow wndMain    
+    this setMainWindow wndMain
   }
 
 
@@ -429,7 +435,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
     addComponent(tabSheet)
   }
-  
+
 
   lazy val documents = new VerticalLayout with Margin with FullSize {
     val manager = new com.imcode.imcms.admin.doc.DocManager(app)
@@ -634,11 +640,11 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
                       addComponents(l, new Label(menuId.toString), new Label(menu.getMenuItems.map(_.getDocumentId).mkString(", ")))
                     }
                   }
-                })              
+                })
 
               case _ =>
                 app.show(new MsgDialog("Information", "Not a text document."))
-                
+
             }
           case _: String =>
             app.show(new MsgDialog("Information", "Document id must be integer."))

@@ -37,9 +37,18 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
     ui.miProperties.setCommandHandler {
       val dlg = new OKDialog("Doc properties") with CustomSizeDialog with BottomMarginDialog
-      val properties = new DocProperties(app, imcmsServices.getDocumentMapper.getWorkingDocument(search.docsUI.first.get.intValue))
+      val doc = imcmsServices.getDocumentMapper.getWorkingDocument(search.docsUI.first.get.intValue)
+      val properties = new DocProperties(app, doc)
 
       dlg.mainUI = properties.ui
+
+      dlg.wrapOkHandler {
+        // 1.validate
+        // 2.copy changes into doc:
+        // 3.state: ValidationError Either Doc
+        // properties.state
+        imcmsServices.getDocumentMapper.saveDocument(properties.state, app.user)
+      }
 
       dlg.setSize(500, 500)
       app.show(dlg, resizable = true)

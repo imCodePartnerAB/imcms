@@ -22,6 +22,11 @@ import imcms.mapping.{DocumentMapper, DocumentSaver}
 
 import meta._
 
+///////////////////////////////////////////////////////////
+// @deprecated
+///////////////////////////////////////////////////////////
+
+
 //todo: type Component = UI ??
 
 case class MimeType(name: String, displayName: String)
