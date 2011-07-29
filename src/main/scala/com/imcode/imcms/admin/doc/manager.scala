@@ -54,6 +54,22 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       app.show(dlg, resizable = true)
     }
 
+    ui.miDocNewText.setCommandHandler {
+      val dlg = new OKDialog("New Text Document") with CustomSizeDialog with BottomMarginDialog
+
+      val doc = new TextDocumentDomainObject
+      val properties = new MetaEditor(app, doc)
+      val contentUI = new NewTextDocumentFlowPage2UI
+
+      dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
+        ts.addTab(properties.ui, "Properties", null)
+        ts.addTab(contentUI, "Content", null)
+      }
+
+      dlg.setSize(500, 500)
+      app.show(dlg, resizable = true)
+    }
+
     ui.miDocNewURL.setCommandHandler {
       val dlg = new OKDialog("New URL Document") with CustomSizeDialog with BottomMarginDialog
 
@@ -86,21 +102,6 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       app.show(dlg, resizable = true)
     }
 
-    ui.miDocNewText.setCommandHandler {
-      val dlg = new OKDialog("New Text Document") with CustomSizeDialog with BottomMarginDialog
-
-      val doc = new TextDocumentDomainObject
-      val properties = new MetaEditor(app, doc)
-      val contentUI = new NewTextDocumentFlowPage2UI
-
-      dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
-        ts.addTab(properties.ui, "Properties", null)
-        ts.addTab(contentUI, "Content", null)
-      }
-
-      dlg.setSize(500, 500)
-      app.show(dlg, resizable = true)
-    }
 
     search.docsUI.addActionHandler(new Action.Handler {
       import Actions._
@@ -119,15 +120,16 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
   }
 }
 
+
 class DocManagerUI(searchUI: Component) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar
   val miDoc = mb.addItem("doc.mgr.mi.doc".i)
-  val miDocNew = miDoc.addItem("doc.mgr.action.new".i)
-  val miDocNewFile = miDocNew.addItem("doc.mgr.action.new.file_doc".i)
-  val miDocNewURL = miDocNew.addItem("doc.mgr.action.new.url_doc".i)
-  val miDocNewText = miDocNew.addItem("doc.mgr.action.new.text_doc".i)
-  val miDocEdit = miDoc.addItem("doc.mgr.action.edit".i)
-  val miDocDelete = miDoc.addItem("doc.mgr.action.delete".i)
+  val miDocNew = miDoc.addItem("doc.mgr.mi.doc.new".i)
+  val miDocNewFile = miDocNew.addItem("doc.mgr.action.doc.new.file_doc".i)
+  val miDocNewURL = miDocNew.addItem("doc.mgr.action.doc.new.url_doc".i)
+  val miDocNewText = miDocNew.addItem("doc.mgr.action.doc.new.text_doc".i)
+  val miDocEdit = miDoc.addItem("doc.mgr.action.doc.edit".i)
+  val miDocDelete = miDoc.addItem("doc.mgr.action.doc.delete".i)
   val miView = mb.addItem("doc.mgr.mi.view".i)
   val miShowSelection = miView.addItem("doc.mgr.action.show_selection".i)
   val miEditMeta = mb.addItem("doc.mgr.action.edit_meta".i)

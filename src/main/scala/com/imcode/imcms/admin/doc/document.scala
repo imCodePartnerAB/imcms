@@ -20,7 +20,8 @@ import java.util.{EnumSet}
 import imcms.mapping.DocumentMapper.SaveDirectives
 import imcms.mapping.{DocumentMapper, DocumentSaver}
 
-import collection.mutable.Map
+
+import collection.mutable.{Map => MMap}
 
 ///////////////////////////////////////////////////////////
 // @deprecated

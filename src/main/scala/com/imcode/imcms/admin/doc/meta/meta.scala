@@ -15,10 +15,10 @@ import vaadin._
 import admin.access.user.UserSearchDialog
 import api._
 import com.vaadin.terminal.ExternalResource
-import java.util.Calendar
 import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.{TextDocumentPermissionSetDomainObject, DocumentDomainObject}
+import java.util.{Date, Calendar}
 
 /**
  * Doc's meta editor.
@@ -28,6 +28,7 @@ import imcode.server.document.{TextDocumentPermissionSetDomainObject, DocumentDo
  */
 class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends ImcmsServicesSupport {
 
+  private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
   private var searchSheetOpt = Option.empty[SearchSheet]
   private var categoriesSheetOpt = Option.empty[CategoriesSheet]
   private var appearanceSheetOpt = Option.empty[AppearanceSheet]
@@ -36,19 +37,21 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
 
 
   val ui = letret(new MetaEditorUI) { ui =>
-    ui.sheets.addItem("Main")
-    ui.sheets.addItem("Appearance")
-    ui.sheets.addItem("Permissions")
-    ui.sheets.addItem("Search")
-    ui.sheets.addItem("Categories")
+    ui.treeMenu.addItem("Appearance")
+    ui.treeMenu.addItem("Life cycle")
+    ui.treeMenu.addItem("Permissions")
+    ui.treeMenu.addItem("Search")
+    ui.treeMenu.addItem("Categories")
 
     // According to v.4.x.x may be defined for text docs only
-    if (doc.isInstanceOf[TextDocumentDomainObject]) ui.sheets.addItem("Profile")
+    if (doc.isInstanceOf[TextDocumentDomainObject]) ui.treeMenu.addItem("Profile")
 
-    ui.sheets.addValueChangeHandler {
-      ui.sheets.getValue match {
-        case "Main" =>
-          ui.sheet.setContent(new MainSheetUI)
+    ui.treeMenu.addValueChangeHandler {
+      ui.treeMenu.getValue match {
+        case "Life cycle" =>
+          if (lifeCycleEditorOpt.isEmpty) lifeCycleEditorOpt = Some(new LifeCycleEditor(doc.getMeta))
+
+          ui.pnlMenuItem.setContent(lifeCycleEditorOpt.get.ui)
 
         case "Appearance" =>
           if (appearanceSheetOpt.isEmpty)
@@ -58,7 +61,7 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
               )
             )
 
-          ui.sheet.setContent(appearanceSheetOpt.get.ui)
+          ui.pnlMenuItem.setContent(appearanceSheetOpt.get.ui)
 
         case "Permissions" =>
           if (permissionsSheetOpt.isEmpty) permissionsSheetOpt =
@@ -68,29 +71,29 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
               ui.getApplication.user)
             )
 
-          ui.sheet.setContent(permissionsSheetOpt.get.ui)
+          ui.pnlMenuItem.setContent(permissionsSheetOpt.get.ui)
 
         case "Search" =>
           if (searchSheetOpt.isEmpty) searchSheetOpt = Some(new SearchSheet(doc.getMeta))
 
-          ui.sheet.setContent(searchSheetOpt.get.ui)
+          ui.pnlMenuItem.setContent(searchSheetOpt.get.ui)
 
         case "Categories" =>
           if (categoriesSheetOpt.isEmpty) categoriesSheetOpt = Some(new CategoriesSheet(doc.getMeta))
 
-          ui.sheet.setContent(categoriesSheetOpt.get.ui)
+          ui.pnlMenuItem.setContent(categoriesSheetOpt.get.ui)
 
         case "Profile" =>
           if (profileSheetOpt.isEmpty) profileSheetOpt = Some(new ProfileSheet(doc.asInstanceOf[TextDocumentDomainObject], app.user))
 
-          ui.sheet.setContent(profileSheetOpt.get.ui)
+          ui.pnlMenuItem.setContent(profileSheetOpt.get.ui)
 
         case _ =>
       }
     }
   }
 
-  ui.sheets.select("Main")
+  ui.treeMenu.select("Appearance")
 
   /**
    * Clones the original doc, copies changes into that clone and returns it.
@@ -140,23 +143,149 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
   }
 }
 
+//todo: move to ui/custom
+trait NoChildrenAllowed extends Tree {
+  override def addItem(itemId: AnyRef) = letret(super.addItem(itemId)) { _ =>
+    setChildrenAllowed(itemId, false)
+  }
+}
 
 /**
  * Editor UI's main component is a horizontal split panel.
  * -Left component - navigation tree.
  * -Right component - scrollable panel.
  */
-private class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
+class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
+
+  type MenuItemId = String
 
   val sp = new HorizontalSplitPanel with FullSize
-  val sheets = new Tree with Immediate
-  val sheet = new Panel with LightStyle with FullSize
+  val treeMenu = new Tree with SingleSelect2[MenuItemId] with NoChildrenAllowed with Immediate
+  val pnlMenuItem = new Panel with LightStyle with FullSize
 
-  sp.setSecondComponent(sheet)
-  sp.setFirstComponent(sheets)
+  sp.setFirstComponent(treeMenu)
+  sp.setSecondComponent(pnlMenuItem)
 
   addComponent(sp)
 }
+
+
+
+
+class LifeCycleEditor(meta: Meta) extends ImcmsServicesSupport {
+  case class State()
+
+  val ui = letret(new LifeCycleEditorUI) { ui =>
+    ui.frmPublication.lytDate.chkEnd.addValueChangeHandler {
+      ui.frmPublication.lytDate.calEnd.setReadOnly(!ui.frmPublication.lytDate.chkEnd.checked)
+    }
+  }
+
+  revert()
+
+  def revert() {
+    // version
+    val (versionsNos, defaultVersionNo) = meta.getId match {
+      case null =>
+        Seq(DocumentVersion.WORKING_VERSION_NO) -> DocumentVersion.WORKING_VERSION_NO
+
+      case id =>
+        val versionInfo = imcmsServices.getDocumentMapper.getDocumentVersionInfo(id)
+        versionInfo.getVersions.map(_.getNo) -> versionInfo.getDefaultVersion.getNo
+    }
+
+    ui.frmPublication.sltVersion.removeAllItems
+    versionsNos.foreach(no => ui.frmPublication.sltVersion.addItem(no, no.toString))
+    ui.frmPublication.sltVersion.setItemCaption(DocumentVersion.WORKING_VERSION_NO, "doc.version.working".i)
+    ui.frmPublication.sltVersion.select(defaultVersionNo)
+
+    // publication status
+    ui.frmPublication.sltStatus.select(meta.getPublicationStatus)
+
+    // dates
+    ui.frmPublication.lytDate.calStart.value = ?(meta.getPublicationStartDatetime) getOrElse new Date
+    ui.frmPublication.lytDate.calEnd.setReadOnly(false)
+    ui.frmPublication.lytDate.calEnd.value = meta.getPublicationEndDatetime
+    ui.frmPublication.lytDate.chkEnd.checked = meta.getPublicationEndDatetime != null
+    ui.frmPublication.lytDate.chkEnd.fireClick()
+  }
+}
+
+
+class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
+  setMargin(true, false, false, false)
+
+  val frmPublication = new Form with FullWidth {
+    setCaption("Publication")
+    getLayout.setMargin(false, true, true, true)
+
+    val sltStatus = new Select("Status") with XSelect[Document.PublicationStatus] with NoNullSelection {
+      addItem(Document.PublicationStatus.NEW, "New")
+      addItem(Document.PublicationStatus.APPROVED, "Approved")
+      addItem(Document.PublicationStatus.DISAPPROVED, "Disapproved")
+    }
+
+    val sltVersion = new Select("Version") with SingleSelect2[DocVersionNo] with NoNullSelection
+
+    val lytDate = new GridLayout(2, 2) with Spacing {
+      setCaption("Date")
+      val calStart = new PopupDateField with MinuteResolution with Now
+      val calEnd = new PopupDateField with MinuteResolution
+      val chkStart = new CheckBox("start") with Checked with ReadOnly // decoration, always read-only
+      val chkEnd = new CheckBox("end") with Immediate with ExposeFireClick
+
+      addComponents(this, chkStart, calStart, chkEnd, calEnd)
+    }
+
+    val lytPublisher = new HorizontalLayoutUI("Publisher", margin = false) with UndefinedSize {
+      val lblPublisherName = new Label("No publisher selected") with UndefinedSize
+      val btnChoosePublisher = new Button("...") with LinkStyle
+      addComponents(this, lblPublisherName, btnChoosePublisher)
+    }
+
+    addComponents(getLayout, sltStatus, sltVersion, lytDate, lytPublisher)
+  }
+
+  val frmAlias = new Form(new HorizontalLayoutUI with FullWidth) with FullWidth {
+    setCaption("Alias")
+    getLayout.setMargin(false, true, true, true)
+
+    val lblContextURL = new Label("http://host:port/") with UndefinedSize
+    val txtAlias = new TextField with FullWidth {
+      setInputPrompt("alternate page name")
+    }
+    val btnCheck = new Button("check") with SmallStyle
+
+    let(getLayout.asInstanceOf[HorizontalLayout]) { lyt =>
+      addComponents(lyt, lblContextURL, txtAlias, btnCheck)
+      lyt.setExpandRatio(txtAlias, 1.0f)
+      forlet(lblContextURL, btnCheck) {
+        lyt.setComponentAlignment(_, Alignment.MIDDLE_LEFT)
+      }
+    }
+  }
+
+  val frmMaintenance = new Form with FullSize {
+    setCaption("Maintenace")
+    getLayout.setMargin(false, true, false, true)
+
+    class DateUI(caption: String) extends HorizontalLayoutUI(caption, margin = false) {
+      val calDate = new PopupDateField with MinuteResolution with Now
+      val lblBy = new Label("by") with UndefinedSize
+      val btnChooseUser = new Button("...") with LinkStyle
+
+      addComponents(this, calDate, lblBy, btnChooseUser)
+    }
+
+    val dCreated = new DateUI("Created")
+    val dModified = new DateUI("Modified")
+
+    addComponents(getLayout, dCreated, dModified)
+  }
+
+  addComponents(this, frmAlias, frmPublication, frmMaintenance)
+}
+
 
 
 /**
@@ -434,83 +563,6 @@ class I18nMetaEditorUI extends FormLayout with FullWidth {
 }
 
 
-class MainSheetUI extends VerticalLayout with Spacing with FullWidth {
-  setMargin(true, false, false, false)
-
-  val frmPublication = new Form with FullWidth {
-    setCaption("Publication")
-    getLayout.setMargin(false, true, true, true)
-
-    val sltStatus = new Select("Status") with XSelect[Document.PublicationStatus] with NoNullSelection {
-      addItem(Document.PublicationStatus.NEW, "New")
-      addItem(Document.PublicationStatus.APPROVED, "Approved")
-      addItem(Document.PublicationStatus.DISAPPROVED, "Disapproved")
-      select(Document.PublicationStatus.DISAPPROVED)
-    }
-
-    val sltVersion = new Select("Version") with NoNullSelection {
-      addItem("Working")
-      select("Working")
-    }
-
-    val lytDate = new GridLayout(2, 2) with Spacing {
-      setCaption("Date")
-      val calStart = new PopupDateField with MinuteResolution with Now
-      val calEnd = new PopupDateField with MinuteResolution
-      val chkStart = new CheckBox("start") with Checked with ReadOnly // decoration, always read-only
-      val chkEnd = new CheckBox("end") with Immediate with ExposeFireClick
-
-      addComponents(this, chkStart, calStart, chkEnd, calEnd)
-    }
-
-    val lytPublisher = new HorizontalLayoutUI("Publisher", margin = false) with UndefinedSize {
-      val lblPublisherName = new Label("No publisher selected") with UndefinedSize
-      val btnChoosePublisher = new Button("...") with LinkStyle
-      addComponents(this, lblPublisherName, btnChoosePublisher)
-    }
-
-    addComponents(getLayout, sltStatus, sltVersion, lytDate, lytPublisher)
-  }
-
-  val frmAlias = new Form(new HorizontalLayoutUI with FullWidth) with FullWidth {
-    setCaption("Alias")
-    getLayout.setMargin(false, true, true, true)
-
-    val lblContextURL = new Label("http://host:port/") with UndefinedSize
-    val txtAlias = new TextField with FullWidth {
-      setInputPrompt("alternate page name")
-    }
-    val btnCheck = new Button("check") with SmallStyle
-
-    let(getLayout.asInstanceOf[HorizontalLayout]) { lyt =>
-      addComponents(lyt, lblContextURL, txtAlias, btnCheck)
-      lyt.setExpandRatio(txtAlias, 1.0f)
-      forlet(lblContextURL, btnCheck) {
-        lyt.setComponentAlignment(_, Alignment.MIDDLE_LEFT)
-      }
-    }
-  }
-
-  val frmMaintenance = new Form with FullSize {
-    setCaption("Maintenace")
-    getLayout.setMargin(false, true, false, true)
-
-    class DateUI(caption: String) extends HorizontalLayoutUI(caption, margin = false) {
-      val calDate = new PopupDateField with MinuteResolution with Now
-      val lblBy = new Label("by") with UndefinedSize
-      val btnChooseUser = new Button("...") with LinkStyle
-
-      addComponents(this, calDate, lblBy, btnChooseUser)
-    }
-
-    val dCreated = new DateUI("Created")
-    val dModified = new DateUI("Modified")
-
-    addComponents(getLayout, dCreated, dModified)
-  }
-
-  addComponents(this, frmAlias, frmPublication, frmMaintenance)
-}
 
 
 /**

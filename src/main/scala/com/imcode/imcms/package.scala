@@ -6,12 +6,13 @@ import imcode.server.{ImcmsServices, Imcms}
 
 package object imcms {
 
-  type DocId = JInteger
   type UserId = JInteger
+  type DocId = JInteger
+  type DocTypeId = JInteger
+  type DocVersionNo = JInteger
   type LanguageId = JInteger
   type Keyword = String
   type CategoryId = JInteger
-  type DocTypeId = JInteger
 
 
   class ResourceBundleValue(key: String) {
