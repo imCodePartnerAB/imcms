@@ -10,7 +10,16 @@ import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
-import scala.Some
+
+
+trait UserSingleSelectDialog { this: OkCancelDialog =>
+  val select = new UserSearch(false)
+
+  mainUI = select.ui
+
+  select.listen { btnOk setEnabled _.nonEmpty }
+  select.notifyListeners()
+}
 
 
 trait UserSearchDialog { this: OkCancelDialog =>
@@ -23,6 +32,9 @@ trait UserSearchDialog { this: OkCancelDialog =>
 }
 
 
+/**
+ * todo: rename to user select; search is confusing name.
+ */
 class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainObject]] with ImcmsServicesSupport {
   private val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
   private val selectionRef = new AtomicReference[Seq[UserDomainObject]](Seq.empty)
@@ -97,6 +109,9 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
                              userId)
   }
 
+  /**
+   * Selected users.
+   */
   def selection = selectionRef.get
 
   override def notifyListeners() = notifyListeners(selection)

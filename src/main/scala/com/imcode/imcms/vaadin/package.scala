@@ -71,7 +71,7 @@ package object vaadin {
   implicit def wrapTextArea(textArea: TextArea) = new TextArea(textArea) with ValueType[String]
 
   /** Label value type is always String */
-  implicit def wrapLabel(label: Label) = new Label(label) with ValueType[String]  
+  implicit def wrapLabel(label: Label) = new Label(label) with ValueType[String]
 
   trait Checkable extends CheckBox {
     def isChecked = checked

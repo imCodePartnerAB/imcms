@@ -12,13 +12,13 @@ import imcode.server.Imcms
 import imcode.server.user.UserDomainObject
 
 import vaadin._
-import admin.access.user.UserSearchDialog
 import api._
 import com.vaadin.terminal.ExternalResource
 import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.{TextDocumentPermissionSetDomainObject, DocumentDomainObject}
 import java.util.{Date, Calendar}
+import admin.access.user.{UserSingleSelectDialog, UserSearchDialog}
 
 /**
  * Doc's meta editor.
@@ -177,7 +177,18 @@ class LifeCycleEditor(meta: Meta) extends ImcmsServicesSupport {
 
   val ui = letret(new LifeCycleEditorUI) { ui =>
     ui.frmPublication.lytDate.chkEnd.addValueChangeHandler {
-      ui.frmPublication.lytDate.calEnd.setReadOnly(!ui.frmPublication.lytDate.chkEnd.checked)
+      ui.frmPublication.lytDate.calEnd.setEnabled(ui.frmPublication.lytDate.chkEnd.checked)
+    }
+
+    ui.frmPublication.lytPublisher.btnChoosePublisher.addClickHandler {
+      ui.getApplication.initAndShow(new OkCancelDialog("Choose publisher") with UserSingleSelectDialog) { dlg =>
+        dlg.wrapOkHandler {
+          for (user <- dlg.select.selection.headOption) {
+            // todo: store user
+            ui.frmPublication.lytPublisher.lblPublisherName.value = user.getLoginName
+          }
+        }
+      }
     }
   }
 
@@ -204,10 +215,12 @@ class LifeCycleEditor(meta: Meta) extends ImcmsServicesSupport {
 
     // dates
     ui.frmPublication.lytDate.calStart.value = ?(meta.getPublicationStartDatetime) getOrElse new Date
-    ui.frmPublication.lytDate.calEnd.setReadOnly(false)
+    //ui.frmPublication.lytDate.calEnd.setReadOnly(false)
     ui.frmPublication.lytDate.calEnd.value = meta.getPublicationEndDatetime
     ui.frmPublication.lytDate.chkEnd.checked = meta.getPublicationEndDatetime != null
-    ui.frmPublication.lytDate.chkEnd.fireClick()
+
+    // todo: ??? remember lytDate.chkEnd date when uncheked???
+
   }
 }
 
@@ -232,13 +245,13 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
       val calStart = new PopupDateField with MinuteResolution with Now
       val calEnd = new PopupDateField with MinuteResolution
       val chkStart = new CheckBox("start") with Checked with ReadOnly // decoration, always read-only
-      val chkEnd = new CheckBox("end") with Immediate with ExposeFireClick
+      val chkEnd = new CheckBox("end") with Immediate with AlwaysFireValueChange
 
       addComponents(this, chkStart, calStart, chkEnd, calEnd)
     }
 
     val lytPublisher = new HorizontalLayoutUI("Publisher", margin = false) with UndefinedSize {
-      val lblPublisherName = new Label("No publisher selected") with UndefinedSize
+      val lblPublisherName = new Label("no publisher selected") with UndefinedSize
       val btnChoosePublisher = new Button("...") with LinkStyle
       addComponents(this, lblPublisherName, btnChoosePublisher)
     }

@@ -79,6 +79,16 @@ trait ExposeValueChange extends AbstractField {
   override def fireValueChange(repaintIsNotNeeded: Boolean = true) = super.fireValueChange(repaintIsNotNeeded)
 }
 
+/**
+ * Always fires value change event on value change even if new and old values are equal.
+ */
+trait AlwaysFireValueChange extends AbstractField {
+  override def setValue(value: AnyRef) {
+    if (getValue == value) super.fireValueChange(true)
+    else super.setValue(value)
+  }
+}
+
 trait Margin { this: Layout =>
   setMargin(true)
 }
