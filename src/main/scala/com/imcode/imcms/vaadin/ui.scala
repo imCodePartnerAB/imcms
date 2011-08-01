@@ -42,6 +42,8 @@ class ApplicationWrapper(app: Application) {
 
   def session = content.getHttpSession
 
+  def servletContext = session.getServletContext
+
   def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
     init(window)
     window setModal modal

@@ -18,7 +18,13 @@ import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.{TextDocumentPermissionSetDomainObject, DocumentDomainObject}
 import java.util.{Date, Calendar}
-import admin.access.user.{UserSingleSelectDialog, UserSearchDialog}
+import admin.access.user.{UserSingleSelectDialog, UserSelectDialog}
+import collection.immutable.ListMap
+import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
+
+//todo:
+// discuss what to do with custom -link target: remove?
+// workaround: if custom link target is exists? - show as a part of drop down???
 
 /**
  * Doc's meta editor.
@@ -112,7 +118,8 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
     for (state <- appearanceSheetOpt.map(_.state)) {
       dc.getMeta.setLanguages(state.enabledLanguages)
       dc.getMeta.setI18nShowMode(state.disabledLanguageShowSetting)
-      // todo: return i18nMetas
+      dc.getMeta.setAlias(state.alias.orNull)
+      dc.getMeta.setTarget(state.target)
     }
 
     for (state <- permissionsSheetOpt.map(_.state)) {
@@ -259,25 +266,6 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
     addComponents(getLayout, sltStatus, sltVersion, lytDate, lytPublisher)
   }
 
-  val frmAlias = new Form(new HorizontalLayoutUI with FullWidth) with FullWidth {
-    setCaption("Alias")
-    getLayout.setMargin(false, true, true, true)
-
-    val lblContextURL = new Label("http://host:port/") with UndefinedSize
-    val txtAlias = new TextField with FullWidth {
-      setInputPrompt("alternate page name")
-    }
-    val btnCheck = new Button("check") with SmallStyle
-
-    let(getLayout.asInstanceOf[HorizontalLayout]) { lyt =>
-      addComponents(lyt, lblContextURL, txtAlias, btnCheck)
-      lyt.setExpandRatio(txtAlias, 1.0f)
-      forlet(lblContextURL, btnCheck) {
-        lyt.setComponentAlignment(_, Alignment.MIDDLE_LEFT)
-      }
-    }
-  }
-
   val frmMaintenance = new Form with FullSize {
     setCaption("Maintenace")
     getLayout.setMargin(false, true, false, true)
@@ -296,7 +284,7 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
     addComponents(getLayout, dCreated, dModified)
   }
 
-  addComponents(this, frmAlias, frmPublication, frmMaintenance)
+  addComponents(this, frmPublication, frmMaintenance)
 }
 
 
@@ -448,21 +436,37 @@ class SearchSheetUI extends FormLayout with UndefinedSize {
 
 /**
  * Doc's appearance settings.
- * Used to customizes doc's L&F in system predefined languages.
+ *
+ * Used to customizes doc's L&F:
+ * -enabled languages
+ * -i18n metas in enabled languages
+ * -disabled language show setting {@link Meta.DisabledLanguageShowSetting}
+ *
+ * -alias
+ * -link target (JavaScript window open target: self | _top)
  */
 class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extends ImcmsServicesSupport {
 
   case class State(
     i18nMetas: Map[I18nLanguage, I18nMeta],
     enabledLanguages: Set[I18nLanguage],
-    disabledLanguageShowSetting: Meta.DisabledLanguageShowSetting
-    //, linkOpenSettings???
+    disabledLanguageShowSetting: Meta.DisabledLanguageShowSetting,
+    alias: Option[String],
+    target: String
   )
 
-  private val i18nMetasUIs: Seq[(I18nLanguage, CheckBox, I18nMetaEditorUI)] =
-    for (language <- imcmsServices.getI18nSupport.getLanguages)
+  // i18nMetas sorted by language default (always first) and native name
+  private val i18nMetasUIs: Seq[(I18nLanguage, CheckBox, I18nMetaEditorUI)] = locally {
+    val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage
+    val languages = imcmsServices.getI18nSupport.getLanguages.sortWith {
+      case (l1, _) if l1 == defaultLanguage => true
+      case (_, l2) if l2 == defaultLanguage => false
+      case (l1, l2) => l1.getNativeName < l2.getNativeName
+    }
+
+    for (language <- languages)
     yield {
-      val chkLanguage = new CheckBox(language.getNativeName) with Immediate
+      val chkLanguage = new CheckBox(language.getNativeName) with Immediate with AlwaysFireValueChange
       val i18nMetaEditorUI = new I18nMetaEditorUI
 
       chkLanguage.addValueChangeHandler {
@@ -473,22 +477,35 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
 
       (language, chkLanguage, i18nMetaEditorUI)
     }
+  }
 
-  val ui = letret(new AppearanceSheetUI) { ui =>
+  val ui = new AppearanceSheetUI { ui =>
     ui.frmLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
     ui.frmLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
 
-    for ((_, chkLanguage, i18nMetaEditorUI) <- i18nMetasUIs)
+    for ((_, chkLanguage, i18nMetaEditorUI) <- i18nMetasUIs) {
       addComponents(ui.frmLanguages.lytI18nMetas, chkLanguage, i18nMetaEditorUI)
+    }
+
+    override def attach() {
+      super.attach()
+      revert()
+    }
   } // ui
 
 
-  revert()
-
+  /**
+   * Default language checkbox is always checked (hence its associated i18n meta form is always visible)
+   */
   def revert() {
-    ui.frmLanguages.cbShowMode.select(meta.getI18nShowSetting)
+    val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage
+
     for ((language, chkBox, i18nMetaEditorUI) <- i18nMetasUIs) {
-      chkBox.checked = meta.getLanguages.contains(language)
+      val isDefaultLanguage = language == defaultLanguage
+
+      chkBox.setReadOnly(false)
+      chkBox.checked = isDefaultLanguage || meta.getLanguages.contains(language)
+      chkBox.setReadOnly(isDefaultLanguage)
 
       i18nMetas.get(language) match {
         case Some(i18nMeta) =>
@@ -497,14 +514,34 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
           i18nMetaEditorUI.embLinkImage.value = i18nMeta.getMenuImageURL
 
         case _ =>
-          i18nMetaEditorUI.txtTitle.value = ""
-          i18nMetaEditorUI.taMenuText.value = ""
-          i18nMetaEditorUI.embLinkImage.value = ""
+          i18nMetaEditorUI.txtTitle.clear
+          i18nMetaEditorUI.taMenuText.clear
+          i18nMetaEditorUI.embLinkImage.clear
       }
     }
 
-    //set target
-    //ui.frmLinkTarget.ogShowIn.select(meta.getTarget)
+    ui.frmAlias.txtAlias.setInputPrompt(?(meta.getAlias).orElse(?(meta.getId).map(_.toString)).orNull)
+    ui.frmLanguages.cbShowMode.select(meta.getI18nShowSetting)
+
+    for ((target, targetCaption) <- ListMap("_self" -> "Same frame", "_blank" -> "New window", "_top" -> "Replace all")) {
+      ui.frmLinkTarget.cbTarget.addItem(target, targetCaption)
+    }
+
+    // todo:?? add custom case class Target(id: String, boolean: Custom), so can check on override
+    // legacy target support: up to v 6.x it was possible to define custom target for a doc
+    // if this doc has custom target, then adds this target to the targets combo-box as a last item
+    val target = meta.getTarget match {
+      case null => ui.frmLinkTarget.cbTarget.firstItemIdOpt.get
+      case target =>
+        ui.frmLinkTarget.cbTarget.itemIds.find(_ == target.toLowerCase) match {
+          case Some(predefinedTarget) => predefinedTarget
+          case _ =>
+            ui.frmLinkTarget.cbTarget.addItem(target, "Other frame: %s".format(target))
+            target
+        }
+    }
+
+    ui.frmLinkTarget.cbTarget.select(target)
   }
 
   def state = State(
@@ -519,7 +556,9 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
         }
     } (breakOut),
     i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language }(breakOut),
-    ui.frmLanguages.cbShowMode.value
+    ui.frmLanguages.cbShowMode.value,
+    ui.frmAlias.txtAlias.trimOpt,
+    ui.frmLinkTarget.cbTarget.value
   )
 }
 
@@ -541,15 +580,31 @@ class AppearanceSheetUI extends VerticalLayout with Spacing with FullWidth {
     setCaption("Link action")
     getLayout.setMargin(true)
 
-    val ogShowIn = new OptionGroup(null, Seq("Same frame", "New window", "Replace all", "Other frame:")) {
-      addStyleName("horizontalgroup")
-    }
-    val txtFrameName = new TextField
+    val cbTarget = new ComboBox("Open new document in") with SingleSelect2[String] with NoNullSelection
 
-    addComponents(getLayout, ogShowIn, txtFrameName)
+    getLayout.addComponent(cbTarget)
   }
 
-  addComponents(this, frmLanguages, frmLinkTarget)
+  val frmAlias = new Form(new HorizontalLayoutUI with FullWidth) with FullWidth {
+    setCaption("Alias")
+    getLayout.setMargin(false, true, true, true)
+
+    val lblContextURL = new Label("http://host/") with UndefinedSize
+    val txtAlias = new TextField with FullWidth {
+      setInputPrompt("alternate page name")
+    }
+    val btnCheck = new Button("check") with SmallStyle
+
+    let(getLayout.asInstanceOf[HorizontalLayout]) { lyt =>
+      addComponents(lyt, lblContextURL, txtAlias, btnCheck)
+      lyt.setExpandRatio(txtAlias, 1.0f)
+      forlet(lblContextURL, btnCheck) {
+        lyt.setComponentAlignment(_, Alignment.MIDDLE_LEFT)
+      }
+    }
+  }
+
+  addComponents(this, frmLanguages, frmLinkTarget, frmAlias)
 }
 
 

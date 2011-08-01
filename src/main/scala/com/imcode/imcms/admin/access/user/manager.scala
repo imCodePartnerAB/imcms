@@ -11,7 +11,7 @@ import scala.collection.JavaConversions._
 
 // todo add security check, add editAndSave, add external UI
 class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
-  private val search = new UserSearch
+  private val search = new UserSelect
 
   val ui = letret(new UserManagerUI(search.ui)) { ui =>
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper

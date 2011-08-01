@@ -10,7 +10,7 @@ import imcms.dao.IPAccessDao
 import imcms.api.IPAccess
 import imcode.util.Utility.{ipLongToString, ipStringToLong}
 import com.vaadin.ui.Window.Notification
-import imcms.admin.access.user.UserSearchDialog
+import imcms.admin.access.user.UserSelectDialog
 import javax.persistence.{Id, Entity}
 
 // todo: ipv4; add/handle ipv6?
@@ -77,9 +77,9 @@ class IPAccessManager(app: ImcmsApplication) {
         c.txtFrom.value = ?(vo.getStart) map toDDN getOrElse ""
         c.txtTo.value = ?(vo.getEnd) map toDDN getOrElse ""
         c.userPickerUI.btnChoose addClickHandler {
-          app.initAndShow(new OkCancelDialog("Choose user") with UserSearchDialog) { userSelectDlg =>
+          app.initAndShow(new OkCancelDialog("Choose user") with UserSelectDialog) { userSelectDlg =>
             userSelectDlg.wrapOkHandler {
-              c.userPickerUI.txtLoginName.value = userSelectDlg.search.selection.head.getLoginName
+              c.userPickerUI.txtLoginName.value = userSelectDlg.select.selection.head.getLoginName
             }
           }
         }

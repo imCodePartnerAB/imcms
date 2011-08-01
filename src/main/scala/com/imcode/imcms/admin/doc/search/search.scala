@@ -14,7 +14,7 @@ import java.lang.Class
 import collection.immutable.{SortedSet, ListMap}
 import imcode.server.document.{DocumentTypeDomainObject, DocumentDomainObject}
 import PartialFunction.condOpt
-import admin.access.user.UserSearchDialog
+import admin.access.user.UserSelectDialog
 import java.util.{Calendar, Date}
 import api.{LuceneParsedQuery, Document}
 import imcode.server.user.UserDomainObject
@@ -769,9 +769,9 @@ trait UserListUISetup { this: UserListUI =>
   }
 
   btnAdd.addClickHandler {
-    getApplication.initAndShow(new OkCancelDialog(searchDialogCaption) with UserSearchDialog) { dlg =>
+    getApplication.initAndShow(new OkCancelDialog(searchDialogCaption) with UserSelectDialog) { dlg =>
       dlg.wrapOkHandler {
-        for (user <- dlg.search.selection) lstUsers.addItem(Int box user.getId, "#" + user.getLoginName)
+        for (user <- dlg.select.selection) lstUsers.addItem(Int box user.getId, "#" + user.getLoginName)
       }
     }
   }

@@ -28,8 +28,14 @@ case class ContainerProperty[A >: Null : Manifest](id: AnyRef, defaultValue: Any
 trait ValueType[A >: Null] extends Property {
   def value = getValue.asInstanceOf[A]
   def value_=(v: A) = setValue(v)
+  def valueOpt: Option[A] = Option(value) // multiselect?
 
-  def trim(implicit ev: A =:= String) = value.trim
+  def clear(implicit ev: A =:= String) { setValue("") }
+  def trim(implicit ev: A =:= String): String = value.trim
+  def trimOpt(implicit ev: A =:= String): Option[String] = trim match {
+    case "" => None
+    case v => Some(v)
+  }
   def isBlank(implicit ev: A =:= String) = trim.isEmpty
   def notBlank(implicit ev: A =:= String) = !isBlank
 }
@@ -186,6 +192,10 @@ trait XSelect[T >: Null] extends AbstractSelect with ItemIdType[T] {
   def addItem(id: T, caption: String): Item = letret(addItem(id)) { _ =>
     setItemCaption(id, caption)
   }
+
+  //def firstItemId = itemIds.head
+
+  def firstItemIdOpt = itemIds.headOption
 }
 
 trait SingleSelect2[T >: Null] extends StrictSelect[T] with ValueType[T]  {

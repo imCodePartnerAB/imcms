@@ -13,7 +13,7 @@ import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 
 
 trait UserSingleSelectDialog { this: OkCancelDialog =>
-  val select = new UserSearch(false)
+  val select = new UserSelect(multiSelect = false)
 
   mainUI = select.ui
 
@@ -22,24 +22,21 @@ trait UserSingleSelectDialog { this: OkCancelDialog =>
 }
 
 
-trait UserSearchDialog { this: OkCancelDialog =>
-  val search = new UserSearch
+trait UserSelectDialog { this: OkCancelDialog =>
+  val select = new UserSelect
 
-  mainUI = search.ui
+  mainUI = select.ui
 
-  search.listen { btnOk setEnabled _.nonEmpty }
-  search.notifyListeners()
+  select.listen { btnOk setEnabled _.nonEmpty }
+  select.notifyListeners()
 }
 
 
-/**
- * todo: rename to user select; search is confusing name.
- */
-class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainObject]] with ImcmsServicesSupport {
+class UserSelect(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainObject]] with ImcmsServicesSupport {
   private val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
   private val selectionRef = new AtomicReference[Seq[UserDomainObject]](Seq.empty)
 
-  private val form = new UserSearchForm
+  private val searchForm = new UserSearchForm
   private val usersUI = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable {
     addContainerProperties(this,
       CP[UserId]("user.tbl.col.id"),
@@ -55,7 +52,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
   }
 
   val ui = letret(new GridLayout(1, 2)) { ui =>
-    addComponents(ui, form.ui, usersUI)
+    addComponents(ui, searchForm.ui, usersUI)
   }
 
   usersUI.addValueChangeHandler {
@@ -63,20 +60,20 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
     notifyListeners()
   }
 
-  form.ui.lytButtons.btnSearch.addClickHandler { search() }
-  form.ui.lytButtons.btnReset.addClickHandler { reset() }
+  searchForm.ui.lytButtons.btnSearch.addClickHandler { search() }
+  searchForm.ui.lytButtons.btnReset.addClickHandler { reset() }
   // todo: move to parent?
   reset()
 
   def reset() {
-    form.reset()
+    searchForm.reset()
     search()
   }
 
 
   def search() {
     val matchesAlways = Function.const(true)_
-    val state = form.getState()
+    val state = searchForm.getState()
 
     val matchesText: UserDomainObject => Boolean =
       state.text match {
@@ -86,7 +83,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
 
     val matchesRoles: UserDomainObject => Boolean =
       state.roles match {
-        case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(form.ui.tcsRoles.value.toSeq).nonEmpty }
+        case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(searchForm.ui.tcsRoles.value.toSeq).nonEmpty }
         case _ => matchesAlways
       }
 
@@ -112,7 +109,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
   /**
    * Selected users.
    */
-  def selection = selectionRef.get
+  def selection: Seq[UserDomainObject] = selectionRef.get
 
   override def notifyListeners() = notifyListeners(selection)
 }

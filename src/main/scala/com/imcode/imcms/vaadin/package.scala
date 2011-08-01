@@ -7,6 +7,7 @@ import com.vaadin.Application
 import com.vaadin.data.Property.{ValueChangeNotifier, ValueChangeEvent, ValueChangeListener}
 import com.vaadin.terminal.Sizeable
 import com.vaadin.event.ItemClickEvent
+import java.math.MathContext
 
 package object vaadin {
 
@@ -58,22 +59,8 @@ package object vaadin {
     case _ => None
   }
 
-  @deprecated("prototype code")
-  def addItem(table: Table, id: AnyRef, data: AnyRef*) = table.addItem(data.toArray[AnyRef], id)
-
-  /** Text field value type is always String */
-  implicit def wrapTextField(textField: TextField) = new TextField(textField) with ValueType[String]
-
-  /** Password field value type is always String */
-  implicit def wrapPasswordField(field: PasswordField) = new PasswordField(field) with ValueType[String]
-
-  /** Text area field value type is always String */
-  implicit def wrapTextArea(textArea: TextArea) = new TextArea(textArea) with ValueType[String]
-
-  /** Label value type is always String */
-  implicit def wrapLabel(label: Label) = new Label(label) with ValueType[String]
-
-  trait Checkable extends CheckBox {
+  /** Convenient extension */
+  trait CheckBoxOps { this: CheckBox =>
     def isChecked = checked
     def isUnchecked = !isChecked
 
@@ -84,8 +71,32 @@ package object vaadin {
     def uncheck { checked = false }
   }
 
+  /** Ensures setValue is called directly on wrapped property, and not on wrapper itself. */
+  trait WrappedPropertyValueSetterDelegate extends Property with Property.Viewer {
+    abstract override def setValue(value: AnyRef) = getPropertyDataSource match {
+      case null => super.setValue(value)
+      case property => property.setValue(value)
+    }
+  }
+
+  @deprecated("prototype code")
+  def addItem(table: Table, id: AnyRef, data: AnyRef*) = table.addItem(data.toArray[AnyRef], id)
+
+  /** Text field value type is always String */
+  implicit def wrapTextField(textField: TextField) = new TextField(textField) with ValueType[String] with WrappedPropertyValueSetterDelegate
+
+  /** Password field value type is always String */
+  implicit def wrapPasswordField(field: PasswordField) = new PasswordField(field) with ValueType[String] with WrappedPropertyValueSetterDelegate
+
+  /** Text area field value type is always String */
+  implicit def wrapTextArea(textArea: TextArea) = new TextArea(textArea) with ValueType[String] with WrappedPropertyValueSetterDelegate
+
+  /** Label value type is always String */
+  implicit def wrapLabel(label: Label) = new Label(label) with ValueType[String] with WrappedPropertyValueSetterDelegate
+
+
   /** Checkbox value type is always JBoolean */
-  implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBox("", checkBox) with Checkable with ValueType[JBoolean]
+  implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBox("", checkBox) with CheckBoxOps with ValueType[JBoolean] with WrappedPropertyValueSetterDelegate
 
   /** Date field value type is always Date */
   implicit def wrapDateField(dateField: DateField) = new DateField(dateField) with ValueType[java.util.Date]
@@ -132,10 +143,22 @@ package object vaadin {
     }
   }
 
-  def updateDisabled(component: Component)(f: Component => Unit) {
+  def updateDisabled[A <: Component](component: A)(f: A => Unit) {
     component.setEnabled(true)
-    f(component)
-    component.setEnabled(false)
+    try {
+      f(component)
+    } finally {
+      component.setEnabled(false)
+    }
+  }
+
+  def updateReadOnly[A <: Component](component: A)(f: A => Unit) {
+    component.setReadOnly(false)
+    try {
+      f(component)
+    } finally {
+      component.setReadOnly(true)
+    }
   }
 
   object SearchFormUtil {
