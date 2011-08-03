@@ -37,9 +37,9 @@ import scala.Some
 class DocSearch(val docsContainer: DocsContainer) {
   val basicSearchForm = new DocBasicSearchForm
   val advancedSearchForm = new DocAdvancedSearchForm
-  val docsUI = new DocsUI(docsContainer) with FullSize
+  val searchResultUI = new DocsUI(docsContainer) with FullSize
 
-  val ui = letret(new DocSearchUI(basicSearchForm.ui, advancedSearchForm.ui, docsUI)) { ui =>
+  val ui = new DocSearchUI(basicSearchForm.ui, advancedSearchForm.ui, searchResultUI) { ui =>
     val basicFormUI = basicSearchForm.ui
 
     basicFormUI.lytAdvanced.btnCustomize.addClickHandler { ui.toggleAdvancedSearchForm() }
@@ -49,6 +49,11 @@ class DocSearch(val docsContainer: DocsContainer) {
 
     basicFormUI.lytButtons.btnSearch.addClickHandler { search() }
     basicFormUI.lytButtons.btnReset.addClickHandler { reset() }
+
+    override def attach() {
+      super.attach()
+      reset()
+    }
   }
 
 
@@ -72,7 +77,7 @@ class DocSearch(val docsContainer: DocsContainer) {
         println("Doc search query: " + solrQueryOpt)
 
         ui.removeComponent(0, 1)
-        ui.addComponent(docsUI, 0, 1)
+        ui.addComponent(searchResultUI, 0, 1)
 
         docsContainer.search(solrQueryOpt, ui.getApplication.user)
     }
@@ -771,7 +776,7 @@ trait UserListUISetup { this: UserListUI =>
   btnAdd.addClickHandler {
     getApplication.initAndShow(new OkCancelDialog(searchDialogCaption) with UserSelectDialog) { dlg =>
       dlg.wrapOkHandler {
-        for (user <- dlg.select.selection) lstUsers.addItem(Int box user.getId, "#" + user.getLoginName)
+        for (user <- dlg.search.selection) lstUsers.addItem(Int box user.getId, "#" + user.getLoginName)
       }
     }
   }

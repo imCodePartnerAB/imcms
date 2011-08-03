@@ -595,6 +595,13 @@ trait UploadEventHandler extends Upload.SucceededListener with Upload.FailedList
 //}
 
 
+trait NoChildrenAllowed extends Tree {
+  override def addItem(itemId: AnyRef) = letret(super.addItem(itemId)) { _ =>
+    setChildrenAllowed(itemId, false)
+  }
+}
+
+
 @deprecated("prototype code")
 class TableView extends VerticalLayout {
 

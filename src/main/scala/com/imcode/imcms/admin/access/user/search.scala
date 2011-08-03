@@ -6,38 +6,75 @@ import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 
 import imcode.server.user._
-import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
-import com.vaadin.ui._
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.vaadin.ui._
+import java.util.concurrent.atomic.AtomicReference
 
 
 trait UserSingleSelectDialog { this: OkCancelDialog =>
-  val select = new UserSelect(multiSelect = false)
+  val search = new UserSearch(multiSelect = false)
 
-  mainUI = select.ui
+  mainUI = search.ui
 
-  select.listen { btnOk setEnabled _.nonEmpty }
-  select.notifyListeners()
+  search.listen { btnOk setEnabled _.nonEmpty }
+  search.notifyListeners()
 }
 
 
 trait UserSelectDialog { this: OkCancelDialog =>
-  val select = new UserSelect
+  val search = new UserSearch
 
-  mainUI = select.ui
+  mainUI = search.ui
 
-  select.listen { btnOk setEnabled _.nonEmpty }
-  select.notifyListeners()
+  search.listen { btnOk setEnabled _.nonEmpty }
+  search.notifyListeners()
 }
 
 
-class UserSelect(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainObject]] with ImcmsServicesSupport {
+class UserSingleSelect {
+  private val selectionRef = new AtomicReference(Option.empty[UserDomainObject])
+  val ui = letret(new UserSingleSelectUI) { ui =>
+    ui.btnSelect.addClickHandler {
+      ui.getApplication.initAndShow(new OkCancelDialog("Select user") with UserSingleSelectDialog) { dlg =>
+        dlg.wrapOkHandler {
+          selection = dlg.search.selection.headOption
+        }
+      }
+    }
+
+    ui.btnClear.addClickHandler { selection = None }
+  }
+
+  def selection = selectionRef.get
+  def selection_=(userOpt: Option[UserDomainObject]) {
+    ui.btnClear.setEnabled(userOpt.isDefined)
+    ui.lblName.value = userOpt match {
+      case Some(user) => "[ %s ]" format user.getLoginName
+      case _ => "[ not selected ]"
+    }
+
+    selectionRef.set(userOpt)
+  }
+
+  selection = None
+}
+
+class UserSingleSelectUI extends HorizontalLayout with Spacing with UndefinedSize{
+  val lblName = new Label with UndefinedSize
+  val btnSelect = new Button("select") with SmallStyle
+  val btnClear = new Button("clear") with SmallStyle
+
+  addComponents(this, lblName, btnSelect, btnClear)
+}
+
+
+class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainObject]] with ImcmsServicesSupport {
   private val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
-  private val selectionRef = new AtomicReference[Seq[UserDomainObject]](Seq.empty)
+  private val selectionRef = new AtomicReference(Seq.empty[UserDomainObject])
 
   private val searchForm = new UserSearchForm
-  private val usersUI = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable {
+  private val searchResult = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable {
     addContainerProperties(this,
       CP[UserId]("user.tbl.col.id"),
       CP[String]("user.tbl.col.login"),
@@ -52,11 +89,11 @@ class UserSelect(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
   }
 
   val ui = letret(new GridLayout(1, 2)) { ui =>
-    addComponents(ui, searchForm.ui, usersUI)
+    addComponents(ui, searchForm.ui, searchResult)
   }
 
-  usersUI.addValueChangeHandler {
-    selectionRef.set(usersUI.value map { roleMapper getUser _.intValue })
+  searchResult.addValueChangeHandler {
+    selectionRef.set(searchResult.value map { roleMapper getUser _.intValue })
     notifyListeners()
   }
 
@@ -92,11 +129,11 @@ class UserSelect(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
 
     val matchesAll = (user: UserDomainObject) => List(matchesText, matchesRoles, matchesShowInactive) forall (_ apply user)
 
-    usersUI.removeAllItems
+    searchResult.removeAllItems
     for {
       user <- roleMapper.getAllUsers.toList if !user.isDefaultUser && matchesAll(user)
       userId = Int box user.getId
-    } usersUI.addItem(Array[AnyRef](
+    } searchResult.addItem(Array[AnyRef](
                                userId,
                                user.getLoginName,
                                user.getFirstName,
@@ -106,9 +143,7 @@ class UserSelect(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
                              userId)
   }
 
-  /**
-   * Selected users.
-   */
+  /** Search result selected users */
   def selection: Seq[UserDomainObject] = selectionRef.get
 
   override def notifyListeners() = notifyListeners(selection)

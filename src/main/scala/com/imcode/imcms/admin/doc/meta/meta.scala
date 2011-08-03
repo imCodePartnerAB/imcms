@@ -12,19 +12,15 @@ import imcode.server.Imcms
 import imcode.server.user.UserDomainObject
 
 import vaadin._
-import api._
-import com.vaadin.terminal.ExternalResource
-import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.{TextDocumentPermissionSetDomainObject, DocumentDomainObject}
 import java.util.{Date, Calendar}
-import admin.access.user.{UserSingleSelectDialog, UserSelectDialog}
 import collection.immutable.ListMap
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
-
-//todo:
-// discuss what to do with custom -link target: remove?
-// workaround: if custom link target is exists? - show as a part of drop down???
+import com.vaadin.ui._
+import com.vaadin.terminal.{Sizeable, ExternalResource}
+import admin.access.user.{UserSingleSelectUI, UserSingleSelect, UserSingleSelectDialog, UserSelectDialog}
+import api._
 
 /**
  * Doc's meta editor.
@@ -34,11 +30,11 @@ import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachLi
  */
 class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends ImcmsServicesSupport {
 
+  private var appearanceSheetOpt = Option.empty[AppearanceSheet]
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
+  private var permissionsSheetOpt = Option.empty[PermissionsSheet]
   private var searchSheetOpt = Option.empty[SearchSheet]
   private var categoriesSheetOpt = Option.empty[CategoriesSheet]
-  private var appearanceSheetOpt = Option.empty[AppearanceSheet]
-  private var permissionsSheetOpt = Option.empty[PermissionsSheet]
   private var profileSheetOpt = Option.empty[ProfileSheet]
 
 
@@ -54,11 +50,6 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
 
     ui.treeMenu.addValueChangeHandler {
       ui.treeMenu.getValue match {
-        case "Life cycle" =>
-          if (lifeCycleEditorOpt.isEmpty) lifeCycleEditorOpt = Some(new LifeCycleEditor(doc.getMeta))
-
-          ui.pnlMenuItem.setContent(lifeCycleEditorOpt.get.ui)
-
         case "Appearance" =>
           if (appearanceSheetOpt.isEmpty)
             appearanceSheetOpt = Some(
@@ -68,6 +59,11 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
             )
 
           ui.pnlMenuItem.setContent(appearanceSheetOpt.get.ui)
+
+        case "Life cycle" =>
+          if (lifeCycleEditorOpt.isEmpty) lifeCycleEditorOpt = Some(new LifeCycleEditor(doc.getMeta))
+
+          ui.pnlMenuItem.setContent(lifeCycleEditorOpt.get.ui)
 
         case "Permissions" =>
           if (permissionsSheetOpt.isEmpty) permissionsSheetOpt =
@@ -99,6 +95,7 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
     }
   }
 
+  ui.sp.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE)
   ui.treeMenu.select("Appearance")
 
   /**
@@ -106,20 +103,24 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
    * todo: ??? return (DocumentDomainObject, i18nMetas: Map[I18nLanguage, I18nMeta]) ???
    */
   def state: DocumentDomainObject = letret(doc.clone()) { dc =>
-    for (state <- searchSheetOpt.map(_.state)) {
-      dc.setKeywords(state.keywords)
-      dc.setSearchDisabled(state.isExcludeFromInnerSearch)
-    }
-
-    for (state <- categoriesSheetOpt.map(_.state)) {
-      dc.setCategoryIds(state.categoriesIds)
-    }
-
     for (state <- appearanceSheetOpt.map(_.state)) {
       dc.getMeta.setLanguages(state.enabledLanguages)
       dc.getMeta.setI18nShowMode(state.disabledLanguageShowSetting)
       dc.getMeta.setAlias(state.alias.orNull)
       dc.getMeta.setTarget(state.target)
+    }
+
+    for (state <- lifeCycleEditorOpt.map(_.state)) {
+      dc.getMeta.setPublicationStatus(state.publicationStatus)
+      dc.getMeta.setPublicationStartDatetime(state.publicationStart)
+      dc.getMeta.setPublicationEndDatetime(state.publicationEnd.orNull)
+      dc.getMeta.setPublicationEndDatetime(state.publicationEnd.orNull)
+      dc.getMeta.setPublisherId(state.publisher.map(p => Int box p.getId).orNull)
+      //???dc.setVersion(new DocumentVersion() state.versionNo)
+      dc.getMeta.setCreatedDatetime(state.created)
+      dc.getMeta.setModifiedDatetime(state.modified)
+      dc.getMeta.setCreatorId(state.creator.map(c => Int box c.getId).orNull)
+      //???dc.getMeta.setModifierId
     }
 
     for (state <- permissionsSheetOpt.map(_.state)) {
@@ -130,6 +131,16 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
       dc.setLinkedForUnauthorizedUsers(state.isLinkedForUnauthorizedUsers)
       dc.setLinkableByOtherUsers(state.isLinkableByOtherUsers)
     }
+
+    for (state <- searchSheetOpt.map(_.state)) {
+      dc.setKeywords(state.keywords)
+      dc.setSearchDisabled(state.isExcludeFromInnerSearch)
+    }
+
+    for (state <- categoriesSheetOpt.map(_.state)) {
+      dc.setCategoryIds(state.categoriesIds)
+    }
+
 
 //    ui.cbDefaultTemplate.value,
 //    restrictedOnePermSet, // ??? clone
@@ -150,12 +161,6 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
   }
 }
 
-//todo: move to ui/custom
-trait NoChildrenAllowed extends Tree {
-  override def addItem(itemId: AnyRef) = letret(super.addItem(itemId)) { _ =>
-    setChildrenAllowed(itemId, false)
-  }
-}
 
 /**
  * Editor UI's main component is a horizontal split panel.
@@ -163,8 +168,6 @@ trait NoChildrenAllowed extends Tree {
  * -Right component - scrollable panel.
  */
 class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
-
-  type MenuItemId = String
 
   val sp = new HorizontalSplitPanel with FullSize
   val treeMenu = new Tree with SingleSelect2[MenuItemId] with NoChildrenAllowed with Immediate
@@ -180,22 +183,21 @@ class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
 
 
 class LifeCycleEditor(meta: Meta) extends ImcmsServicesSupport {
-  case class State()
+  case class State(
+    publicationStatus: Document.PublicationStatus,
+    publicationStart: Date,
+    publicationEnd: Option[Date],
+    publisher: Option[UserDomainObject],
+    versionNo: Int,
+    created: Date,
+    modified: Date,
+    creator: Option[UserDomainObject],
+    modifier: Option[UserDomainObject]
+  )
 
   val ui = letret(new LifeCycleEditorUI) { ui =>
     ui.frmPublication.lytDate.chkEnd.addValueChangeHandler {
       ui.frmPublication.lytDate.calEnd.setEnabled(ui.frmPublication.lytDate.chkEnd.checked)
-    }
-
-    ui.frmPublication.lytPublisher.btnChoosePublisher.addClickHandler {
-      ui.getApplication.initAndShow(new OkCancelDialog("Choose publisher") with UserSingleSelectDialog) { dlg =>
-        dlg.wrapOkHandler {
-          for (user <- dlg.select.selection.headOption) {
-            // todo: store user
-            ui.frmPublication.lytPublisher.lblPublisherName.value = user.getLoginName
-          }
-        }
-      }
     }
   }
 
@@ -212,6 +214,10 @@ class LifeCycleEditor(meta: Meta) extends ImcmsServicesSupport {
         versionInfo.getVersions.map(_.getNo) -> versionInfo.getDefaultVersion.getNo
     }
 
+    ui.ussCreator.selection = ?(meta.getCreatorId).map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
+    ui.ussPublisher.selection = ?(meta.getPublisherId).map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
+    ui.ussModifier.selection = None
+
     ui.frmPublication.sltVersion.removeAllItems
     versionsNos.foreach(no => ui.frmPublication.sltVersion.addItem(no, no.toString))
     ui.frmPublication.sltVersion.setItemCaption(DocumentVersion.WORKING_VERSION_NO, "doc.version.working".i)
@@ -227,19 +233,34 @@ class LifeCycleEditor(meta: Meta) extends ImcmsServicesSupport {
     ui.frmPublication.lytDate.chkEnd.checked = meta.getPublicationEndDatetime != null
 
     // todo: ??? remember lytDate.chkEnd date when uncheked???
-
   }
+
+  def state = State(
+    ui.frmPublication.sltStatus.value,
+    ui.frmPublication.lytDate.calStart.value,
+    ui.frmPublication.lytDate.calEnd.valueOpt,
+    ui.ussCreator.selection,
+    ui.frmPublication.sltVersion.value.intValue,
+    ui.frmMaintenance.dCreated.calDate.value,
+    ui.frmMaintenance.dModified.calDate.value,
+    ui.ussCreator.selection,
+    ui.ussModifier.selection
+  )
 }
 
 
 class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
   setMargin(true, false, false, false)
 
+  val ussPublisher = new UserSingleSelect
+  val ussCreator = new UserSingleSelect
+  val ussModifier = new UserSingleSelect
+
   val frmPublication = new Form with FullWidth {
     setCaption("Publication")
     getLayout.setMargin(false, true, true, true)
 
-    val sltStatus = new Select("Status") with XSelect[Document.PublicationStatus] with NoNullSelection {
+    val sltStatus = new Select("Status") with SingleSelect2[Document.PublicationStatus] with NoNullSelection {
       addItem(Document.PublicationStatus.NEW, "New")
       addItem(Document.PublicationStatus.APPROVED, "Approved")
       addItem(Document.PublicationStatus.DISAPPROVED, "Disapproved")
@@ -257,29 +278,24 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
       addComponents(this, chkStart, calStart, chkEnd, calEnd)
     }
 
-    val lytPublisher = new HorizontalLayoutUI("Publisher", margin = false) with UndefinedSize {
-      val lblPublisherName = new Label("no publisher selected") with UndefinedSize
-      val btnChoosePublisher = new Button("...") with LinkStyle
-      addComponents(this, lblPublisherName, btnChoosePublisher)
-    }
+    ussPublisher.ui.setCaption("Publisher")
 
-    addComponents(getLayout, sltStatus, sltVersion, lytDate, lytPublisher)
+    addComponents(getLayout, sltStatus, sltVersion, lytDate, ussPublisher.ui)
   }
 
   val frmMaintenance = new Form with FullSize {
     setCaption("Maintenace")
     getLayout.setMargin(false, true, false, true)
 
-    class DateUI(caption: String) extends HorizontalLayoutUI(caption, margin = false) {
+    class DateUI(caption: String, ussUI: UserSingleSelectUI) extends HorizontalLayoutUI(caption, margin = false) {
       val calDate = new PopupDateField with MinuteResolution with Now
       val lblBy = new Label("by") with UndefinedSize
-      val btnChooseUser = new Button("...") with LinkStyle
 
-      addComponents(this, calDate, lblBy, btnChooseUser)
+      addComponents(this, calDate, lblBy, ussUI)
     }
 
-    val dCreated = new DateUI("Created")
-    val dModified = new DateUI("Modified")
+    val dCreated = new DateUI("Created", ussCreator.ui)
+    val dModified = new DateUI("Modified", ussModifier.ui)
 
     addComponents(getLayout, dCreated, dModified)
   }
@@ -443,7 +459,7 @@ class SearchSheetUI extends FormLayout with UndefinedSize {
  * -disabled language show setting {@link Meta.DisabledLanguageShowSetting}
  *
  * -alias
- * -link target (JavaScript window open target: self | _top)
+ * -link target (_self | _top | _blank)
  */
 class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extends ImcmsServicesSupport {
 
@@ -520,7 +536,9 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
       }
     }
 
-    ui.frmAlias.txtAlias.setInputPrompt(?(meta.getAlias).orElse(?(meta.getId).map(_.toString)).orNull)
+    val alias = ?(meta.getAlias)
+    ui.frmAlias.txtAlias.setInputPrompt(?(meta.getId).map(_.toString).orNull)
+    ui.frmAlias.txtAlias.value = alias.getOrElse("")
     ui.frmLanguages.cbShowMode.select(meta.getI18nShowSetting)
 
     for ((target, targetCaption) <- ListMap("_self" -> "Same frame", "_blank" -> "New window", "_top" -> "Replace all")) {
@@ -570,9 +588,12 @@ class AppearanceSheetUI extends VerticalLayout with Spacing with FullWidth {
     getLayout.setMargin(true)
 
     val lytI18nMetas = new VerticalLayout with Spacing with FullWidth
-    val cbShowMode = new ComboBox("When requested language is inactive") with SingleSelect2[Meta.DisabledLanguageShowSetting] with NoNullSelection
+    val cbShowMode = new ComboBox("When language is disabled") with SingleSelect2[Meta.DisabledLanguageShowSetting] with NoNullSelection
 
-    addComponents(getLayout, lytI18nMetas, cbShowMode)
+    private val lytShowMode = new FormLayout with FullWidth
+    lytShowMode.addComponent(cbShowMode)
+
+    addComponents(getLayout, lytI18nMetas, lytShowMode)
   }
 
 
@@ -580,7 +601,7 @@ class AppearanceSheetUI extends VerticalLayout with Spacing with FullWidth {
     setCaption("Link action")
     getLayout.setMargin(true)
 
-    val cbTarget = new ComboBox("Open new document in") with SingleSelect2[String] with NoNullSelection
+    val cbTarget = new ComboBox("Show in") with SingleSelect2[String] with NoNullSelection
 
     getLayout.addComponent(cbTarget)
   }

@@ -113,8 +113,8 @@ class ProfileSheetUI extends VerticalLayoutUI(margin = false) with FullWidth {
   val btnEditRestrictedOnePermSet = new Button("permissions") with SmallStyle
   val btnEditRestrictedTwoPermSet = new Button("permissions") with SmallStyle
 
-  addComponents(lytCustomOne, btnEditRestrictedOnePermSet, cbRestrictedOneDefaultTemplate)
-  addComponents(lytCustomTwo, btnEditRestrictedTwoPermSet, cbRestrictedTwoDefaultTemplate)
+  addComponents(lytCustomOne, cbRestrictedOneDefaultTemplate, btnEditRestrictedOnePermSet)
+  addComponents(lytCustomTwo, cbRestrictedTwoDefaultTemplate, btnEditRestrictedTwoPermSet)
 
   addComponents(frmDefault.getLayout, cbDefaultTemplate)
   addComponents(frmCustom.getLayout, lytCustomOne, lytCustomTwo)

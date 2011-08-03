@@ -36,8 +36,8 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     }
 
     ui.miEditMeta.setCommandHandler {
-      val dlg = new OKDialog("Doc properties") with CustomSizeDialog with BottomMarginDialog
-      val doc = imcmsServices.getDocumentMapper.getWorkingDocument(search.docsUI.first.get.intValue)
+      val dlg = new OkCancelDialog("Doc properties") with CustomSizeDialog with BottomMarginDialog
+      val doc = imcmsServices.getDocumentMapper.getWorkingDocument(search.searchResultUI.first.get.intValue)
       val metaEditor = new MetaEditor(app, doc)
 
       dlg.mainUI = metaEditor.ui
@@ -55,7 +55,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     }
 
     ui.miDocNewText.setCommandHandler {
-      val dlg = new OKDialog("New Text Document") with CustomSizeDialog with BottomMarginDialog
+      val dlg = new OkCancelDialog("New Text Document") with CustomSizeDialog with BottomMarginDialog
 
       val doc = new TextDocumentDomainObject
       val properties = new MetaEditor(app, doc)
@@ -71,7 +71,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     }
 
     ui.miDocNewURL.setCommandHandler {
-      val dlg = new OKDialog("New URL Document") with CustomSizeDialog with BottomMarginDialog
+      val dlg = new OkCancelDialog("New URL Document") with CustomSizeDialog with BottomMarginDialog
 
       val doc = new HtmlDocumentDomainObject
       val properties = new MetaEditor(app, doc)
@@ -87,7 +87,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     }
 
     ui.miDocNewFile.setCommandHandler {
-      val dlg = new OKDialog("New File Document") with CustomSizeDialog with BottomMarginDialog
+      val dlg = new OkCancelDialog("New File Document") with CustomSizeDialog with BottomMarginDialog
 
       val doc = new FileDocumentDomainObject
       val properties = new MetaEditor(app, doc)
@@ -103,7 +103,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     }
 
 
-    search.docsUI.addActionHandler(new Action.Handler {
+    search.searchResultUI.addActionHandler(new Action.Handler {
       import Actions._
 
       def getActions(target: AnyRef, sender: AnyRef) = Array(IncludeToSelection, Delete)
@@ -147,7 +147,7 @@ class CustomDocs {
   val search = new DocSearch(new CustomDocsContainer)
   val ui = new CustomDocsUI(search.ui)
 
-  search.docsUI.addActionHandler(new Action.Handler {
+  search.searchResultUI.addActionHandler(new Action.Handler {
     import Actions._
 
     def getActions(target: AnyRef, sender: AnyRef) = Array(ExcludeFromSelection, Delete)

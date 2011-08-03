@@ -79,7 +79,7 @@ class IPAccessManager(app: ImcmsApplication) {
         c.userPickerUI.btnChoose addClickHandler {
           app.initAndShow(new OkCancelDialog("Choose user") with UserSelectDialog) { userSelectDlg =>
             userSelectDlg.wrapOkHandler {
-              c.userPickerUI.txtLoginName.value = userSelectDlg.select.selection.head.getLoginName
+              c.userPickerUI.txtLoginName.value = userSelectDlg.search.selection.head.getLoginName
             }
           }
         }

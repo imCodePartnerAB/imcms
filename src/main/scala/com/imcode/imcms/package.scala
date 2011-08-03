@@ -13,6 +13,7 @@ package object imcms {
   type LanguageId = JInteger
   type Keyword = String
   type CategoryId = JInteger
+  type MenuItemId = String
 
 
   class ResourceBundleValue(key: String) {
