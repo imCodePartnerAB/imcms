@@ -50,13 +50,13 @@ class ImageDao extends SpringHibernateTemplate {
       language <- languageDao.getAllLanguages
       image <- PartialFunction.condOpt(getImage(language.getId, docId, docVersionNo, no, loopNo, contentNo)) {
         case image if image != null => image
-        case _ if createImageIfNotExists => new ImageDomainObject {
-          setDocId(docId)
-          setName(no.toString)
+        case _ if createImageIfNotExists => letret(new ImageDomainObject) { img =>
+          img.setDocId(docId)
+          img.setName(no.toString)
 
-          setLanguage(language)
-          setContentLoopNo(loopNo)
-          setContentNo(contentNo)
+          img.setLanguage(language)
+          img.setContentLoopNo(loopNo)
+          img.setContentNo(contentNo)
         }
       }
     } yield image
