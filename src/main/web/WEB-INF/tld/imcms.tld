@@ -275,7 +275,7 @@
     <tag>
         <name>imageArchive</name>
         <tag-class>com.imcode.imcms.addon.imagearchive.tag.ImageArchiveTag</tag-class>
-        <body-content>empty</body-content>
+        <body-content>scriptless</body-content>
         <attribute>
             <name>styleClass</name>
             <required>false</required>

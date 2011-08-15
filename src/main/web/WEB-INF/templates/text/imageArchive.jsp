@@ -9,6 +9,10 @@
             width: 80%;
             height: 700px;
         }
+
+        #containerTop {
+            background: green !important;
+        }
     </style>
 </head>
 <body>
@@ -36,6 +40,6 @@
         </ul>
     </imcms:menu>
 </div>
-<imcms:imageArchive styleClass="imageArchive"/>
+<imcms:imageArchive styleClass="imageArchive"><link href="${contextPath}/css/tag_image_archive.css" rel="stylesheet" type="text/css" /></imcms:imageArchive>
 </body>
 </html>

@@ -14,6 +14,91 @@
     <script type="text/javascript">
         initExternalFiles();
     </script>
+    <script type="text/javascript">
+
+        var folded = $('<img src="${pageContext.servletContext.contextPath}/css/tree/folded.png"/>');
+        var unfolded = $('<img src="${pageContext.servletContext.contextPath}/css/tree/unfolded.png"/>');
+        var blank = $('<img class="blank" src="${pageContext.servletContext.contextPath}/css/tree/blank.png"/>');
+
+        function toggleVisibility() {
+            $("#listOfLibraries li:not(:has(ul))").each(function() {
+                var indicator = $(this).find(" > img");
+                if (!indicator.length) {
+                    $(this).prepend(blank.clone());
+                }
+            });
+
+            $("#listOfLibraries li ul:hidden").each(function() {
+                var parent = $(this).parent();
+                var indicator = parent.find(" > img");
+                if (indicator.length) {
+                    indicator.attr("src", folded.attr("src"));
+                } else {
+                    parent.prepend(folded.clone());
+                }
+            });
+
+            $("#listOfLibraries li ul:visible").each(function() {
+                var parent = $(this).parent();
+                var indicator = parent.find(" > img");
+                if (indicator.length) {
+                    indicator.attr("src", unfolded.attr("src"));
+                } else {
+                    parent.prepend(unfolded.clone());
+                }
+            })
+        }
+
+        $(document).ready(function() {
+            toggleVisibility();
+
+            $("#listOfLibraries li img[class != 'blank']").click(function(event) {
+                event.stopPropagation();
+                $(" > ul", $(this).parent()).toggle();
+                toggleVisibility();
+            })
+
+            /* google dictionary extension on chrome seems to throw an exception.
+            *
+            * many lines instead of one to prevent tablesorter exception in case of an empty table */
+            $("#fileNames").tablesorter({ headers: { 0 : {sorter:false}}});
+            if($("#fileNames td").length > 0) {
+                $("#fileNames").trigger("update");
+                $("#fileNames").trigger("sorton",[[[${sortBy.ordinal}, ${sortBy.direction.ordinal}]]]);
+            }
+
+            $(".fileName").each(function(){
+                var name = $(this).parent().find(":checkbox").val();
+                $(this).qtip({
+                  content: {
+                      text: function(api) {
+                        return '';
+                        },
+                      ajax: {
+                        url: '${pageContext.servletContext.contextPath}/web/archive/external-files/preview-tooltip',
+                        type: 'GET',
+                        data: { id : $("#libraryId").val(), name : name}
+                      }
+                  },
+                show: {
+                    effect: false,
+                    solo: true
+                },
+                    position: {
+                    my: 'top left',
+                    at: 'center center',
+                    effect: false
+                }
+
+
+                });
+            });
+        });
+
+    </script>
+</c:set>
+<c:set var="css">
+    <link href="${contextPath}/js/jquery.uploadify-v2.1.4/uploadify.css" rel="stylesheet" type="text/css" />
 </c:set>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/header.jsp" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/top.jsp" %>

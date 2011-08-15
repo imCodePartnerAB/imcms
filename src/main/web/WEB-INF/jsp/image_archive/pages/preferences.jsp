@@ -1,56 +1,104 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <spring:message var="title" code="archive.title.preferences" htmlEscape="true"/>
 <spring:message var="pageHeading" code="archive.pageHeading.preferences" htmlEscape="true"/>
+<spring:message var="editCategoryBtnText" code="archive.preferences.category.edit" htmlEscape="true"/>
+<spring:message var="saveCategoryBtnText" code="archive.preferences.category.save" htmlEscape="true"/>
+<spring:message var="deleteCategoryBtnText" code="archive.preferences.category.delete" htmlEscape="true"/>
+<spring:message var="cancelCategoryBtnText" code="archive.preferences.category.cancel" htmlEscape="true"/>
 <c:set var="currentPage" value="preferences"/>
+
 <c:set var="javascript">
     <script type="text/javascript">
         initPreferences();
+
+        $(document).ready(function() {
+            var contentToHide = $(".contentToHide");
+            <c:if test="${editingCategories}">
+                contentToHide = contentToHide.not($("#contentToHideCategories"));
+            </c:if>
+            <c:if test="${editingRoles}">
+                contentToHide = contentToHide.not($("#contentToHideRoles"));
+            </c:if>
+            <c:if test="${editingLibraries}">
+                contentToHide = contentToHide.not($("#contentToHideLibraries"));
+            </c:if>
+            contentToHide.hide();
+
+            $(".colapsableLabel").click(function() {
+                var parent = $(this).parent();
+                $(".contentToHide").not(parent.find(".contentToHide")).hide();
+
+                if(parent.find(".contentToHide:hidden").length > 0) {
+                    parent.find(".contentToHide").show();
+                    $(this).removeClass("folded");
+                    $(this).addClass("unfolded");
+                } else {
+                    parent.find(".contentToHide").hide();
+                    $(this).removeClass("folded");
+                    $(this).addClass("unfolded");
+                }
+            });
+
+
+            var editBtn = $('<button class="btnBlue inBtnGroup" type="button" name="edit">${editCategoryBtnText}</button>');
+            var saveBtn = $('<button class="btnBlue inBtnGroup" type="submit" name="saveCategoryAction">${saveCategoryBtnText}</button>');
+            var deleteBtn = $('<button class="btnBlue inBtnGroup" type="submit" name="removeCategoryAction">${deleteCategoryBtnText}</button>');
+            var cancelBtn = $('<button class="btnBlue inBtnGroup" type="button" name="cancel">${cancelCategoryBtnText}</button>');
+            var categoryOldName;
+            var editCategoryId;
+
+            function cancelEditing(row) {
+                // presence of any of save/delete/cancel buttons means editing
+                if (row.find("button[name=cancel]").length > 0) {
+                    var categoryName = row.find("input[type=text]");
+                    categoryName.attr("disabled", "disabled");
+                    categoryName.val(categoryOldName);
+                    var controls = row.find(".controls");
+                    controls.empty();
+                    controls.append(editBtn.clone(true));
+                }
+            }
+
+            editBtn.click(function() {
+                var thisRow = $(this).parent().parent();
+                // cancel editing on all rows
+                thisRow.parent().find("tr").each(function() {
+                    cancelEditing($(this));
+                });
+
+                var categoryName = thisRow.find("input[type=text]");
+                editCategoryId.val(categoryName.attr("data-categoryId"));
+                categoryName.removeAttr("disabled");
+                categoryOldName = categoryName.val();
+                var controls = $(this).parent();
+                controls.empty();
+                controls.append(saveBtn.clone(true), deleteBtn.clone(true), cancelBtn.clone(true));
+            });
+
+            cancelBtn.click(function() {
+                var thisRow = $(this).parent().parent();
+                cancelEditing(thisRow);
+            });
+
+            $(".controls").append(editBtn.clone(true));
+            editCategoryId = $("#editCategoryId");
+        });
     </script>
 </c:set>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/header.jsp" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/top.jsp" %>
 
 <div id="containerContent">
-<script type="text/javascript">
-    $(document).ready(function() {
-        var contentToHide = $(".contentToHide");
-        <c:if test="${editingCategories}">
-            contentToHide = contentToHide.not($("#contentToHideCategories"));
-        </c:if>
-        <c:if test="${editingRoles}">
-            contentToHide = contentToHide.not($("#contentToHideRoles"));
-        </c:if>
-        <c:if test="${editingLibraries}">
-            contentToHide = contentToHide.not($("#contentToHideLibraries"));
-        </c:if>
-        contentToHide.hide();
-        
-        $(".colapsableLabel").click(function() {
-            var parent = $(this).parent();
-
-            $(".contentToHide").not(parent.find(".contentToHide")).hide();
-
-            if(parent.find(".contentToHide:hidden").length > 0) {
-                parent.find(".contentToHide").show();
-                $(this).removeClass("folded");
-                $(this).addClass("unfolded");
-            } else {
-                parent.find(".contentToHide").hide();
-                $(this).removeClass("folded");
-                $(this).addClass("unfolded");
-            }
-        });
-    });
-</script>
 <div>
-    <h3 class="colapsableLabel">Categories</h3>
+    <h4 class="colapsableLabel section"><spring:message code="archive.preferences.categories" htmlEscape="true"/></h4>
 
     <div class="contentToHide" id="contentToHideCategories">
         <h4>
             <spring:message code="archive.preferences.createNewCategory" htmlEscape="true"/>
         </h4>
 
-        <div class="hr"></div>
         <c:url var="preferencesUrl" value="/web/archive/preferences"/>
 
         <form:form action="${preferencesUrl}" commandName="createCategory" method="post" cssClass="m15t clearfix">
@@ -64,8 +112,7 @@
                     <form:input path="createCategoryName" id="createCategoryName" maxlength="128"
                                 cssStyle="width:180px;"/>
                     <spring:message var="createText" code="archive.preferences.create" htmlEscape="true"/>
-                    <input type="submit" name="createCategoryAction" value="${createText}" class="btnBlue right"
-                           style="margin-top:9px;"/>
+                    <input type="submit" name="createCategoryAction" value="${createText}" class="btnBlue right"/>
                     <br/>
                     <form:errors path="createCategoryName" cssClass="red"/>
                 </div>
@@ -76,65 +123,12 @@
             <spring:message code="archive.preferences.editCategory" htmlEscape="true"/>
         </h4>
 
-        <div class="hr"></div>
         <c:url var="preferencesUrl" value="/web/archive/preferences"/>
 
         <form:form action="${preferencesUrl}" commandName="editCategory" method="post" cssClass="m15t clearfix">
             <input type="hidden" name="editCategoryId" id="editCategoryId"/>
 
             <div class="minH30 clearfix">
-                <style type="text/css">
-                    .editCategoryTable input[disabled] {
-                        border: none;
-                    }
-                </style>
-                <script type="text/javascript">
-                    var editBtn = $('<button type="button" name="edit">Edit</button>');
-                    var saveBtn = $('<button type="submit" name="saveCategoryAction">Save</button>');
-                    var deleteBtn = $('<button type="submit" name="removeCategoryAction">Delete</button>');
-                    var cancelBtn = $('<button type="button" name="cancel">Cancel</button>');
-                    var categoryOldName;
-                    var editCategoryId;
-
-                    function cancelEditing(row) {
-                        // presence of any of save/delete/cancel buttons means editing
-                        if (row.find("button[name=cancel]").length > 0) {
-                            var categoryName = row.find("input[type=text]");
-                            categoryName.attr("disabled", "disabled");
-                            categoryName.val(categoryOldName);
-                            var controls = row.find(".controls");
-                            controls.empty();
-                            controls.append(editBtn.clone(true));
-                        }
-                    }
-
-                    editBtn.click(function() {
-                        var thisRow = $(this).parent().parent();
-                        // cancel editing on all rows
-                        thisRow.parent().find("tr").each(function() {
-                            cancelEditing($(this));
-                        });
-
-                        var categoryName = thisRow.find("input[type=text]");
-                        editCategoryId.val(categoryName.attr("data-categoryId"));
-                        categoryName.removeAttr("disabled");
-                        categoryOldName = categoryName.val();
-                        var controls = $(this).parent();
-                        controls.empty();
-                        controls.append(saveBtn.clone(true), deleteBtn.clone(true), cancelBtn.clone(true));
-                    });
-
-                    cancelBtn.click(function() {
-                        var thisRow = $(this).parent().parent();
-                        cancelEditing(thisRow);
-                    });
-
-
-                    $(document).ready(function() {
-                        $(".controls").append(editBtn.clone(true));
-                        editCategoryId = $("#editCategoryId");
-                    });
-                </script>
                 <table class="editCategoryTable">
                     <c:forEach var="category" items="${categories}">
                         <tr>
@@ -153,14 +147,12 @@
 </div>
 
 <div>
-    <h3 class="colapsableLabel">Roles</h3>
-
+    <h4 class="colapsableLabel section"><spring:message code="archive.preferences.categories.roles" htmlEscape="true"/></h4>
     <div class="contentToHide" id="contentToHideRoles">
         <h4 class="m15t">
             <spring:message code="archive.preferences.changeRole" htmlEscape="true"/>
         </h4>
 
-        <div class="hr"></div>
         <c:url var="saveCategoriesUrl" value="/web/archive/preferences"/>
         <form:form action="${saveCategoriesUrl}" commandName="saveCategories" method="post" cssClass="m15t clearfix">
             <input type="hidden" id="categoryIds" name="categoryIds" value=""/>
@@ -179,19 +171,13 @@
                 </select>
             </div>
 
-
             <div>
                 <div class="left">
-                    <style type="text/css">
-                        .roleTable th, .roleTable td {
-                            padding: 5px;
-                        }
-                    </style>
                     <table class="roleTable">
                         <tr>
-                            <th>Category</th>
-                            <th>Use images</th>
-                            <th>Edit/add images</th>
+                            <th><spring:message code="archive.preferences.category" htmlEscape="true"/></th>
+                            <th><spring:message code="archive.preferences.useImages" htmlEscape="true"/></th>
+                            <th><spring:message code="archive.preferences.editAddImages" htmlEscape="true"/></th>
                         </tr>
                         <tr>
                             <td></td>
@@ -239,7 +225,8 @@
 
                 <div class="clearboth m10t" style="text-align:left;">
                     <c:url var="addNewRoleButtonURL" value="/servlet/AdminRoles"/>
-                    <a href="${addNewRoleButtonURL}" target="blank">Add new role</a>
+                    <a href="${addNewRoleButtonURL}" target="blank">
+                        <spring:message code="archive.preferences.libraries.addNewRole" htmlEscape="true"/></a>
                 </div>
             </div>
         </form:form>
@@ -247,14 +234,13 @@
 </div>
 
 <div>
-    <h3 class="colapsableLabel">Libraries</h3>
-    
+    <h4 class="colapsableLabel section"><spring:message code="archive.preferences.libraries.roles" htmlEscape="true"/></h4>
+
     <div class="contentToHide" id="contentToHideLibraries">
         <h4 class="m15t">
             <spring:message code="archive.preferences.libraries.changeLibraryRoles" htmlEscape="true"/>
         </h4>
 
-        <div class="hr"></div>
         <c:url var="saveLibraryUrl" value="/web/archive/preferences"/>
         <form:form action="${saveLibraryUrl}" commandName="saveLibraryRoles" method="post" cssClass="m15t clearfix">
             <c:choose>
@@ -289,13 +275,6 @@
                     <br/><br/>
 
                     <div class="left">
-                        <style type="text/css">
-                            .libraryCategoriesTable th, .libraryCategoriesTable td {
-                                padding: 5px;
-                                text-align: left;
-                            }
-                        </style>
-
                         <table class="libraryCategoriesTable">
                             <tr>
                                 <th>Role</th>

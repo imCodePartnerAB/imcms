@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.addon.imagearchive.util.SessionUtils;
+import com.imcode.imcms.addon.imagearchive.util.exif.Flash;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -74,7 +76,7 @@ public class ImageCardController {
         User user = cms.getCurrentUser();
         
         Long imageId = getImageId(request);
-        Images image = null;
+        Images image;
         
         if (imageId == null || (image = facade.getImageService().findById(imageId, user)) == null) {
             return new ModelAndView("redirect:/web/archive/");
@@ -109,6 +111,7 @@ public class ImageCardController {
         mav.addObject("keywords", getKeywords(image));
         mav.addObject("canUseInImcms", SessionUtils.getImcmsReturnToUrl(request.getSession()) != null
                 && (facade.getImageService().canUseImage(user, imageId) || image.isCanChange()));
+        mav.addObject("canExport", (facade.getImageService().canUseImage(user, imageId) || image.isCanChange()));
         
         return mav;
     }
@@ -220,7 +223,7 @@ public class ImageCardController {
         User user = cms.getCurrentUser();
         
         Long imageId = getImageId(request);
-        Images image = null;
+        Images image;
         if (imageId == null || (image = facade.getImageService().findById(imageId, user)) == null) {
             return new ModelAndView("redirect:/web/archive");
         }
@@ -234,6 +237,24 @@ public class ImageCardController {
         
         
         return mav;
+    }
+
+    @RequestMapping("/archive/image/*/unarchive")
+    public ModelAndView unarchiveHandler(HttpServletRequest request, HttpServletResponse response) {
+        ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
+        User user = cms.getCurrentUser();
+
+        Long imageId = getImageId(request);
+        Images image = null;
+        if (imageId == null || (image = facade.getImageService().findById(imageId, user)) == null) {
+            return new ModelAndView("redirect:/web/archive");
+        }
+
+        if(user.isSuperAdmin()) {
+            facade.getImageService().unarchiveImage(imageId);
+        }
+
+        return new ModelAndView("redirect:/web/archive/image/" + imageId);
     }
     
     @RequestMapping("/archive/image/*/erase")
@@ -251,7 +272,7 @@ public class ImageCardController {
         }
         
         Long imageId = getImageId(request);
-        Images image = null;
+        Images image;
         if (imageId == null || (image = facade.getImageService().findById(imageId, user)) == null) {
             return new ModelAndView("redirect:/web/archive/");
         } else if (image.isArchived() || !image.isCanChange()) {
@@ -350,6 +371,10 @@ public class ImageCardController {
             if (action.isUpload()) {
                 ImageUploadValidator validator = new ImageUploadValidator(facade);
                 ValidationUtils.invokeValidator(validator, changeData.getFile(), result);
+
+                if(validator.isZipFile()) {
+                    result.reject("file", "archive.addImage.invalidImageError");
+                }
                 
                 File tempFile = validator.getTempFile();
                 if (result.hasErrors()) {
@@ -359,14 +384,46 @@ public class ImageCardController {
                 String copyright = "";
                 String description = "";
                 String artist = "";
-                int resolution = 0;
-                
+                String manufacturer = null;
+                String model = null;
+                String compression = null;
+                Double exposure = null;
+                String exposureProgram = null;
+                Float fStop = null;
+                Date dateOriginal = null;
+                Date dateDigitized = null;
+                Flash flash = null;
+                Float focalLength = null;
+                String colorSpace = null;
+                Integer xResolution = null;
+                Integer yResolution = null;
+                Integer resolutionUnit = null;
+                Integer pixelXDimension = null;
+                Integer pixelYDimension = null;
+                Integer ISO = null;
+
                 ExifData data = ExifUtils.getExifData(tempFile);
                 if (data != null) {
                     copyright = StringUtils.substring(data.getCopyright(), 0, 255);
                     description = StringUtils.substring(data.getDescription(), 0, 255);
                     artist = StringUtils.substring(data.getArtist(), 0, 255);
-                    resolution = data.getResolution();
+                    xResolution = data.getxResolution();
+                    yResolution = data.getyResolution();
+                    manufacturer = data.getManufacturer();
+                    model = data.getModel();
+                    compression = data.getCompression();
+                    exposure = data.getExposure() != null ? data.getExposure().doubleValue() : null;
+                    exposureProgram = data.getExposureProgram();
+                    fStop = data.getfStop().floatValue();
+                    flash = data.getFlash();
+                    focalLength = data.getFocalLength().floatValue();
+                    colorSpace = data.getColorSpace();
+                    resolutionUnit = data.getResolutionUnit();
+                    pixelXDimension = data.getPixelXDimension();
+                    pixelYDimension = data.getPixelYDimension();
+                    ISO = data.getISO();
+                    dateOriginal = data.getDateOriginal();
+                    dateDigitized = data.getDateDigitized();
                 }
                 int fileSize = (int) tempFile.length();
                 
@@ -378,8 +435,12 @@ public class ImageCardController {
                 
                 image.setFileSize(fileSize);
                 
-                Exif changedExif = new Exif(resolution, description, artist, copyright, Exif.TYPE_CHANGED);
-                Exif originalExif = new Exif(resolution, description, artist, copyright, Exif.TYPE_ORIGINAL);
+                Exif changedExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_CHANGED,
+                        manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                        resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
+                Exif originalExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_ORIGINAL,
+                        manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                        resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
                 image.setChangedExif(changedExif);
                 image.setOriginalExif(originalExif);
                 image.setImageNm(StringUtils.substring(validator.getImageName(), 0, 255));

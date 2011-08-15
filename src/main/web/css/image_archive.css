@@ -11,6 +11,7 @@ body {
     font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
     font-size: 62.5%;
     color: #222;
+    height: 100%;
 }
 input, select, th, td {
     font-size: 1em;
@@ -105,7 +106,7 @@ div.hr {
     overflow: hidden;
 }
 
-a.btnBlue span, input.btnBlue {
+a.btnBlue span, input.btnBlue, button.btnBlue {
     font-family: Tahoma, Arial, sans-serif;
     font-size: 1em;
     color: #fff;
@@ -114,6 +115,10 @@ a.btnBlue span, input.btnBlue {
     border-color: #466D96 #333333 #333333 #466D96;
     padding: 2px 6px;
     cursor: pointer;
+}
+
+.inBtnGroup {
+    margin-right: 5px;
 }
 
 a.btnBlue {
@@ -228,4 +233,36 @@ li.sel a {
 	min-width: 60px;
 	width: auto !important;
 	width: 60px;
+}
+
+.detailedTooltipThumb {
+    border:1px solid #888;
+    width:160px;
+    margin-right:10px;
+    padding:5px 0;
+}
+
+.roleTable th, .roleTable td {
+    padding: 5px;
+}
+
+.libraryCategoriesTable th, .libraryCategoriesTable td {
+    padding: 5px;
+    text-align: left;
+}
+
+.editCategoryTable input[disabled] {
+    border: none;
+}
+
+#freetext.placeholder {
+    color: gray;
+    font-style: italic;
+}
+
+.section {
+    background: #add8e6;
+    padding:3px;
+    border:1px solid white;
+    margin:10px 0 5px 0;
 }

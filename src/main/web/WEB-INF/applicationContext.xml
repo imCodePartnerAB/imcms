@@ -42,7 +42,7 @@
     p:configLocation="WEB-INF/classes/hibernate.cfg.xml"
     p:dataSource-ref="dataSource"/>
   
-  <bean id="localeResolver" class="com.imcode.imcms.web.util.ImcmsLocaleResolver"/>
+  <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
   
   <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
     <property name="basenames">

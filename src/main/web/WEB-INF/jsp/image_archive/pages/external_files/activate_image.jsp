@@ -13,7 +13,6 @@
         <h4>
             <spring:message code="archive.addImage.changeImageData" htmlEscape="true"/>
         </h4>
-        <div class="hr"></div>
         <div style="width:45%;float:left;">
             <c:url var="thumbUrl" value="/web/archive/thumb">
                 <c:param name="id" value="${image.id}"/>

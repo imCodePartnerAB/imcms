@@ -9,6 +9,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.imcode.imcms.addon.imagearchive.json.UploadResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.IOUtils;
@@ -18,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -117,7 +119,7 @@ public class ExternalFilesController {
         }
         
         if (id != null) {
-            LibrariesDto library = null;
+            LibrariesDto library;
             if (id == LibrariesDto.USER_LIBRARY_ID) {
                 library = LibrariesDto.userLibrary(user);
             } else {
@@ -132,11 +134,10 @@ public class ExternalFilesController {
     @RequestMapping("/archive/external-files/sort")
     public String changeSortByHandler(
             @RequestParam(required=false) String sortBy,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+            HttpServletRequest request) {
         ArchiveSession session = ArchiveSession.getSession(request);
 
-        LibrarySort sort = null;
+        LibrarySort sort;
         if (sortBy != null && (sort = LibrarySort.findByName(sortBy)) != null) {
             session.put(SORT_KEY, sort);
         }
@@ -146,8 +147,7 @@ public class ExternalFilesController {
     
     @RequestMapping("/archive/external-files/process")
     public ModelAndView processHandler(
-            @ModelAttribute("externalFiles") ExternalFilesCommand command, 
-            BindingResult result, 
+            @ModelAttribute("externalFiles") ExternalFilesCommand command,
             HttpServletRequest request, 
             HttpServletResponse response) {
         ArchiveSession session = ArchiveSession.getSession(request);
@@ -201,7 +201,7 @@ public class ExternalFilesController {
                 for (String fileName : fileNames) {
                     try {
                         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
-                        ImageInfo imageInfo = null;
+                        ImageInfo imageInfo;
                         if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null) {
                             continue;
                         }
@@ -220,61 +220,78 @@ public class ExternalFilesController {
             }
             
             return mav;
-        } else if (command.getErase() != null) {
+        } else if (command.getErase() != null && library.isUserLibrary()) {
             String[] fileNames = command.getFileNames();
             if (library.isCanChange() && fileNames != null) {
                 for (String fileName : fileNames) {
                     facade.getFileService().deleteFileFromLibrary(library, fileName);
                 }
             }
-        } else if (command.getUpload() != null) {
-            if (!library.isCanChange()) {
-                return new ModelAndView("redirect:/web/archive/external-files");
-            }
-            
-            ExternalFilesValidator validator = new ExternalFilesValidator(facade);
-            ValidationUtils.invokeValidator(validator, command, result);
-            
-            ModelAndView mav = new ModelAndView("image_archive/pages/external_files/external_files");
-            
-            List<LibrariesDto> libraries = facade.getLibraryService().findLibraries(user);
-            LibrarySort sortBy = getSortBy(session);
-            List<LibraryEntryDto> libraryEntries = facade.getFileService().listLibraryEntries(library, sortBy);
+        }
+        
+        return new ModelAndView("redirect:/web/archive/external-files");
+    }
 
-            mav.addObject("currentLibrary", library);
-            mav.addObject("libraries", libraries);
-            mav.addObject("libraryEntries", libraryEntries);
-            mav.addObject("sortBy", sortBy);
-            
-            if (result.hasErrors()) {
-                if (validator.getTempFile() != null) {
-                    validator.getTempFile().delete();
-                }
-                
-                return mav;
-            }
-            
-            
-            boolean success = false;
+    @RequestMapping("/archive/external-files/upload")
+    public void uploadHandler(ExternalFilesCommand externalFilesUpload,
+            BindingResult result,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
+        ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
+        User user = cms.getCurrentUser();
+        UploadResponse status = new UploadResponse();
+
+        if (user.isDefaultUser()) {
+            status.setRedirect(request.getContextPath() + "/login/");
+            Utils.writeJSON(status, response);
+            return;
+        }
+
+        LibrariesDto library = LibrariesDto.userLibrary(user);
+        session.put(LIBRARY_KEY, library);
+        if (library == null || !library.isCanChange()) {
+            status.setRedirect("/web/archive/external-files");
+            Utils.writeJSON(status, response);
+            return;
+        }
+
+        ExternalFilesValidator validator = new ExternalFilesValidator(facade);
+        ValidationUtils.invokeValidator(validator, externalFilesUpload, result);
+
+        if (!result.hasErrors()) {
+            boolean success;
             if (!validator.isZipFile()) {
                 success = facade.getFileService().storeImageToLibrary(library, validator.getTempFile(), validator.getFileName());
             } else {
                 success = facade.getFileService().storeZipToLibrary(library, validator.getTempFile());
             }
-            
-            validator.getTempFile().delete();
-            
+
             if (!success) {
-                return mav;
+                result.rejectValue("file", "archive.externalFiles.fileError");
             }
         }
+
+        if (validator.getTempFile() != null) {
+            validator.getTempFile().delete();
+        }
+
+        List<String> errors = new ArrayList<String>();
+        if(result.hasErrors()) {
+            for(FieldError error: result.getFieldErrors()) {
+                errors.add(facade.getCommonService().getMessage(error.getCode(), request.getLocale(), error.getArguments()));
+            }
+            status.setErrors(errors);
+        } else {
+            status.setRedirectOnAllComplete("/web/archive/external-files");
+        }
         
-        return new ModelAndView("redirect:/web/archive/external-files");
+        Utils.writeJSON(status, response);
     }
     
     private Images activateImage(LibrariesDto library, String fileName, User user) {
         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
-        ImageInfo imageInfo = null;
+        ImageInfo imageInfo;
         if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null) {
             return null;
         }
@@ -389,8 +406,7 @@ public class ExternalFilesController {
     public ModelAndView previewHandler(
             @RequestParam(required=false) Integer id, 
             @RequestParam(required=false) String name, 
-            HttpServletRequest request, 
-            HttpServletResponse response) {
+            HttpServletRequest request) {
         
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();

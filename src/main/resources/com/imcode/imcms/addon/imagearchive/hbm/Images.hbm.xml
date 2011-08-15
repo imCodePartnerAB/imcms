@@ -68,8 +68,24 @@
           e.artist = :artist, 
           e.description = :description, 
           e.copyright = :copyright, 
-          e.resolution = :resolution, 
-          e.updatedDt = current_timestamp() 
+          e.xResolution = :xResolution,
+           e.yResolution = :yResolution,
+           e.manufacturer = :manufacturer,
+           e.model = :model,
+           e.compression = :compression,
+           e.exposure = :exposure,
+           e.exposureProgram = :exposureProgram,
+           e.fStop = :fStop,
+           e.flash = :flash,
+           e.focalLength = :focalLength,
+           e.colorSpace = :colorSpace,
+           e.resolutionUnit = :resolutionUnit,
+           e.pixelXDimension = :pixelXDimension,
+           e.pixelYDimension = :pixelYDimension,
+           e.dateOriginal = :dateOriginal,
+           e.dateDigitized = :dateDigitized,
+           e.ISO = :ISO,
+          e.updatedDt = current_timestamp()
         WHERE 
               e.imageId = :imageId 
           AND e.type = :exifType

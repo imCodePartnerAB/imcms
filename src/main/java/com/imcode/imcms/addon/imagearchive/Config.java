@@ -1,6 +1,7 @@
 package com.imcode.imcms.addon.imagearchive;
 
 import imcode.util.io.FileUtility;
+import org.apache.commons.collections.BidiMap;
 
 import java.io.File;
 
@@ -12,6 +13,7 @@ public class Config {
     private File librariesPath;
     private String usersLibraryFolder;
     private File[] oldLibraryPaths;
+    private BidiMap languages;
     
     private long maxImageUploadSize;
     private long maxZipUploadSize;
@@ -91,5 +93,13 @@ public class Config {
 
     public void setImageMagickPath(File imageMagickPath) {
         this.imageMagickPath = imageMagickPath;
+    }
+
+    public BidiMap getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(BidiMap languages) {
+        this.languages = languages;
     }
 }

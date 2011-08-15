@@ -1,6 +1,7 @@
 package com.imcode.imcms.addon.imagearchive.service;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.*;
 
 import com.imcode.imcms.addon.imagearchive.util.Utils;
@@ -108,7 +109,18 @@ public class LibraryService {
         Session session = factory.getCurrentSession();
 
         File[] oldLibraryFiles = facade.getConfig().getOldLibraryPaths();
-        Set<File> files = new HashSet<File>(oldLibraryFiles.length);
+        Set<File> files = new HashSet<File>();
+        for(File f: oldLibraryFiles) {
+            List<File> tmp = facade.getFileService().getSubdirs(f, new FileFilter() {
+                public boolean accept(File file) {
+                    String name = file.getName();
+
+                    return file.isDirectory() && name.length() <= 255;
+                }
+            });
+
+            files.addAll(tmp);
+        }
         
         CollectionUtils.addAll(files, oldLibraryFiles);
 

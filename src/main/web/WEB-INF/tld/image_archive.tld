@@ -25,6 +25,11 @@
         <function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
         <function-signature>boolean isInArchive(com.imcode.imcms.addon.imagearchive.dto.LibraryEntryDto, javax.servlet.jsp.PageContext)</function-signature>
     </function>
+    <function>
+        <name>doubleToFractionsString</name>
+        <function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
+        <function-signature>java.lang.String doubleToFractionsString(java.lang.Double)</function-signature>
+    </function>
 
 
    <tag>

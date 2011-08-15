@@ -42,7 +42,11 @@ public class FileService {
         "ai", "bmp", "eps", "gif", 
         "jpeg", "jpg", "pct", "pdf", "pic", "pict", 
         "png", "ps", "psd", "svg", 
-        "tif", "tiff", "xcf"
+        "tif", "tiff", "xcf",
+        "AI", "BMP", "EPC", "GIF",
+        "JPEG", "JPG", "PCT", "PDF", "PIC", "PICT",
+        "PNG", "PS", "PSD", "SVG",
+        "TIF", "TIFF", "XCF",
     };
     public static final Set<String> IMAGE_EXTENSIONS_SET = new HashSet<String>(Arrays.asList(IMAGE_EXTENSIONS));
     
@@ -279,7 +283,7 @@ public class FileService {
         return filename;
     }
 
-    private List<File> getSubdirs(File file, FileFilter filter) {
+    public List<File> getSubdirs(File file, FileFilter filter) {
         if(file == null) {
             return Collections.emptyList();
         }
@@ -303,7 +307,9 @@ public class FileService {
 
     public List<File> listFirstLevelLibraryFolders() {
         final String usersFolder = config.getUsersLibraryFolder();
+        List<File> firstLevelLibraryFolder = new ArrayList<File>();
 
+        File[] oldLibrariesPaths = config.getOldLibraryPaths();
         File[] files = config.getLibrariesPath().listFiles(new FileFilter() {
             public boolean accept(File file) {
                 String name = file.getName();
@@ -312,11 +318,16 @@ public class FileService {
             }
         });
 
-        if (files == null) {
-        	return Collections.emptyList();
+        if(oldLibrariesPaths != null) {
+            firstLevelLibraryFolder.addAll(Arrays.asList(oldLibrariesPaths));
         }
 
-        return Arrays.asList(files);
+        if(files != null) {
+            firstLevelLibraryFolder.addAll(Arrays.asList(files));
+        }
+
+
+        return firstLevelLibraryFolder;
     }
 
     public List<File> listLibraryFolders() {
@@ -339,7 +350,7 @@ public class FileService {
 
     @SuppressWarnings("unchecked")
     public List<LibraryEntryDto> listLibraryEntries(LibrariesDto library, LibrarySort sortBy) {
-        File libraryFile = null;
+        File libraryFile;
 
         if (library.isUserLibrary()) {
             String libraryComponent = String.format("%s/%s", config.getUsersLibraryFolder(), library.getFolderNm());
@@ -389,7 +400,7 @@ public class FileService {
     }
 
     public boolean storeZipToLibrary(LibrariesDto library, File tempFile) {
-        File parent = null;
+        File parent;
         
         if (library.isUserLibrary()) {
             parent = new File(config.getLibrariesPath(), config.getUsersLibraryFolder());
@@ -473,7 +484,7 @@ public class FileService {
     }
 
     private File getLibraryFile(LibrariesDto library, String fileName) {
-        File parent = null;
+        File parent;
         
         if (library.isUserLibrary()) {
             parent = new File(config.getLibrariesPath(), config.getUsersLibraryFolder());

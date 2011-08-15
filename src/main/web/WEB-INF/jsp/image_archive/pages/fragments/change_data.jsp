@@ -93,10 +93,24 @@
 </div>
 <div class="minH30 clearboth">
     <label class="left" style="width:130px;">
-        <spring:message code="archive.changeData.resolution" htmlEscape="true"/>
+        <spring:message code="archive.changeData.xResolution" htmlEscape="true"/>
     </label>
     <span class="left">
-        <spring:message code="archive.changeData.dpi" arguments="${image.changedExif.resolution}" htmlEscape="true"/>
+        <c:choose>
+            <c:when test="${not empty image.changedExif.xResolution}">
+                <c:choose>
+                    <c:when test="${3 eq image.changedExif.resolutionUnit}">
+                        <spring:message code="archive.changeData.dpcm" arguments="${image.changedExif.xResolution}" htmlEscape="true"/>
+                    </c:when>
+                    <c:otherwise>
+                        <spring:message code="archive.changeData.dpi" arguments="${image.changedExif.xResolution}" htmlEscape="true"/>
+                    </c:otherwise>
+                </c:choose>
+            </c:when>
+            <c:otherwise>
+                <c:out value="${notAvailable}"/>
+            </c:otherwise>
+        </c:choose>
     </span>
 </div>
 <div class="minH30 clearboth">

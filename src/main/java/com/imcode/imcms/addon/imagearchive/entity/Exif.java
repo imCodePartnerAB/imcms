@@ -1,14 +1,10 @@
 package com.imcode.imcms.addon.imagearchive.entity;
 
+import com.imcode.imcms.addon.imagearchive.util.exif.Flash;
+
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 @Entity
 @Table(name="archive_exif")
@@ -27,8 +23,11 @@ public class Exif implements Serializable {
     @Column(name="exif_type", nullable=false)
     private short type = TYPE_ORIGINAL;
     
-    @Column(name="resolution", nullable=false)
-    private int resolution;
+    @Column(name="x_resolution")
+    private Integer xResolution;
+
+    @Column(name="y_resolution")
+    private Integer yResolution;
     
     @Column(name="description", length=255, nullable=false)
     private String description = "";
@@ -47,16 +46,83 @@ public class Exif implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDt = new Date();
 
+    @Column(name="manufacturer")
+    private String manufacturer;
+
+    @Column(name="model")
+    private String model;
+
+    @Column(name="compression")
+    private String compression;
+
+    @Column(name = "exposure")
+    private Double exposure;
+
+    @Column(name = "exposure_program")
+    private String exposureProgram;
+
+    @Column(name = "fstop")
+    private Float fStop;
+
+    @Column(name = "flash")
+    @Enumerated(EnumType.ORDINAL)
+    private Flash flash;
+
+    @Column(name = "focal_length")
+    private Float focalLength;
+
+    @Column(name = "color_space")
+    private String colorSpace;
+
+    @Column(name = "resolution_unit")
+    private Integer resolutionUnit;
+
+    @Column(name = "pixel_x_dimension")
+    private Integer pixelXDimension;
+
+    @Column(name = "pixel_y_dimension")
+    private Integer pixelYDimension;
+
+    @Column(name = "date_original")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateOriginal;
+
+    @Column(name = "date_digitized")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateDigitized;
+
+    @Column(name = "ISO")
+    private Integer ISO;
+    
     
     public Exif() {
     }
     
-    public Exif(int resolution, String description, String artist, String copyright, short type) {
-        this.resolution = resolution;
+    public Exif(Integer xResolution, Integer yResolution, String description, String artist, String copyright, short type,
+                String manufacturer, String model, String compression, Double exposure, String exposureProgram, Float fStop,
+                Flash flash, Float focalLength, String colorSpace, Integer resolutionUnit,
+                Integer pixelXDimension, Integer pixelYDimension, Date dateOriginal, Date dateDigitized, Integer ISO) {
+        this.xResolution = xResolution;
+        this.yResolution = yResolution;
         this.description = description;
         this.artist = artist;
         this.copyright = copyright;
         this.type = type;
+        this.manufacturer = manufacturer;
+        this.model = model;
+        this.compression = compression;
+        this.exposure = exposure;
+        this.exposureProgram = exposureProgram;
+        this.fStop = fStop;
+        this.flash = flash;
+        this.focalLength = focalLength;
+        this.colorSpace = colorSpace;
+        this.resolutionUnit = resolutionUnit;
+        this.pixelXDimension = pixelXDimension;
+        this.pixelYDimension = pixelYDimension;
+        this.dateOriginal = dateOriginal;
+        this.dateDigitized = dateDigitized;
+        this.ISO = ISO;
     }
 
     
@@ -100,12 +166,116 @@ public class Exif implements Serializable {
         this.imageId = imageId;
     }
 
-    public int getResolution() {
-        return resolution;
+    public Integer getxResolution() {
+        return xResolution;
     }
 
-    public void setResolution(int resolution) {
-        this.resolution = resolution;
+    public void setxResolution(Integer xResolution) {
+        this.xResolution = xResolution;
+    }
+
+    public Integer getyResolution() {
+        return yResolution;
+    }
+
+    public void setyResolution(Integer yResolution) {
+        this.yResolution = yResolution;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getCompression() {
+        return compression;
+    }
+
+    public void setCompression(String compression) {
+        this.compression = compression;
+    }
+
+    public Double getExposure() {
+        return exposure;
+    }
+
+    public void setExposure(Double exposure) {
+        this.exposure = exposure;
+    }
+
+    public String getExposureProgram() {
+        return exposureProgram;
+    }
+
+    public void setExposureProgram(String exposureProgram) {
+        this.exposureProgram = exposureProgram;
+    }
+
+    public Float getfStop() {
+        return fStop;
+    }
+
+    public void setfStop(Float fStop) {
+        this.fStop = fStop;
+    }
+
+    public Flash getFlash() {
+        return flash;
+    }
+
+    public void setFlash(Flash flash) {
+        this.flash = flash;
+    }
+
+    public Float getFocalLength() {
+        return focalLength;
+    }
+
+    public void setFocalLength(Float focalLength) {
+        this.focalLength = focalLength;
+    }
+
+    public String getColorSpace() {
+        return colorSpace;
+    }
+
+    public void setColorSpace(String colorSpace) {
+        this.colorSpace = colorSpace;
+    }
+
+    public Integer getResolutionUnit() {
+        return resolutionUnit;
+    }
+
+    public void setResolutionUnit(Integer resolutionUnit) {
+        this.resolutionUnit = resolutionUnit;
+    }
+
+    public Integer getPixelXDimension() {
+        return pixelXDimension;
+    }
+
+    public void setPixelXDimension(Integer pixelXDimension) {
+        this.pixelXDimension = pixelXDimension;
+    }
+
+    public Integer getPixelYDimension() {
+        return pixelYDimension;
+    }
+
+    public void setPixelYDimension(Integer pixelYDimension) {
+        this.pixelYDimension = pixelYDimension;
     }
 
     public short getType() {
@@ -124,7 +294,30 @@ public class Exif implements Serializable {
         this.updatedDt = updatedDt;
     }
 
-    
+    public Date getDateOriginal() {
+        return dateOriginal;
+    }
+
+    public void setDateOriginal(Date dateOriginal) {
+        this.dateOriginal = dateOriginal;
+    }
+
+    public Date getDateDigitized() {
+        return dateDigitized;
+    }
+
+    public void setDateDigitized(Date dateDigitized) {
+        this.dateDigitized = dateDigitized;
+    }
+
+    public Integer getISO() {
+        return ISO;
+    }
+
+    public void setISO(Integer ISO) {
+        this.ISO = ISO;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

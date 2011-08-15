@@ -24,6 +24,7 @@ import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
 import com.imcode.imcms.web.util.ImcmsLocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Controller
 public class GeneralController {
@@ -32,20 +33,21 @@ public class GeneralController {
     @Autowired
     private Facade facade;
     
-    @Autowired
-    private ImcmsLocaleResolver localeResolver;
-    
     @RequestMapping("/archive/language")
     public ModelAndView languageChangeHandler(
             @RequestParam(required=false) String lang, 
             @RequestParam(required=false) String redir, 
-            HttpServletRequest request, 
-            HttpServletResponse response) {
+            HttpServletResponse response,
+            HttpSession session) {
         lang = StringUtils.trimToNull(lang);
         redir = StringUtils.trimToNull(redir);
         
-        localeResolver.setLocale(request, response, new Locale(lang));
-        
+        if (lang != null && facade.getConfig().getLanguages().containsValue(lang)) {
+            Locale locale = new Locale(lang);
+            session.setAttribute(SessionConstants.LOCALE, locale);
+            session.setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
+        }
+
         if (redir != null) {
             try {
                 response.sendRedirect(response.encodeRedirectURL(redir));
@@ -53,7 +55,7 @@ public class GeneralController {
                 log.warn(ex.getMessage(), ex);
             }
         } else {
-            return new ModelAndView("redirect:/web/archive");
+            return new ModelAndView("redirect:/archive");
         }
         
         return null;
@@ -80,7 +82,7 @@ public class GeneralController {
         
         String imageName = facade.getImageService().findImageName(id);
         String fileName = facade.getFileService().transferImageToImcms(id);
-        String altText = facade.getImageService().findImageAltText(id);
+        String altText = StringUtils.defaultString(facade.getImageService().findImageAltText(id));
         
         StringBuilder builder = new StringBuilder(returnTo);
         builder.append("&archive_img_id=");
@@ -89,8 +91,10 @@ public class GeneralController {
         builder.append(Utils.encodeUrl(imageName));
         builder.append("&archive_file_nm=");
         builder.append(Utils.encodeUrl(fileName));
-        builder.append("&" + ImageEditPage.REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT + "=");
-        builder.append(Utils.encodeUrl(altText));
+        if(!"".equals(altText)) {
+            builder.append("&" + ImageEditPage.REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT + "=");
+            builder.append(Utils.encodeUrl(altText));
+        }
         
         try {
             response.sendRedirect(builder.toString());

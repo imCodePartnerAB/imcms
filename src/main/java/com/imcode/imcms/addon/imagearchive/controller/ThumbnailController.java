@@ -6,8 +6,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.imcode.imcms.addon.imagearchive.entity.Images;
+import com.imcode.imcms.api.ContentManagementSystem;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +99,28 @@ public class ThumbnailController {
         model.put("temporary", tmp);
         
         return "image_archive/pages/preview";
+    }
+
+    @RequestMapping("/archive/detailed_thumb")
+    public String detailedThumbnail(
+            @RequestParam(required=true) Long id,
+            HttpServletResponse response,
+            HttpServletRequest request,
+            Map<String, Object> model
+    ) {
+        if (id == null) {
+            Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
+
+            return null;
+        }
+
+        ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
+        Images image = facade.getImageService().findById(id, cms.getCurrentUser());
+
+        model.put("image", image);
+        model.put("imageSize", ThumbSize.MEDIUM.getName());
+
+        return "image_archive/pages/detailed_thumb";
     }
     
     @RequestMapping("/archive/preview_img")

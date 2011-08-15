@@ -1,16 +1,36 @@
 package com.imcode.imcms.addon.imagearchive.util.exif;
 
+import org.apache.sanselan.common.RationalNumber;
+
 import java.io.Serializable;
+import java.util.Date;
 
 public class ExifData implements Serializable {
     private static final long serialVersionUID = 7305457706061909142L;
-    
+
+    private String manufacturer = "";
+    private String model = "";
+    private String compression = "";
+    private RationalNumber exposure;
+    private String exposureProgram = "";
+    private RationalNumber fStop;
+    private Date dateOriginal;
+    private Date dateDigitized;
     private String description = "";
     private String artist = "";
     private String copyright = "";
-    private int resolution;
-    
-    
+    private Flash flash;
+    private RationalNumber focalLength;
+    private String colorSpace;
+    private int xResolution;
+    private int yResolution;
+    /* 2 = dpi, 3 = dpcm*/
+    private Integer resolutionUnit;
+    private int pixelXDimension;
+    private int pixelYDimension;
+    private int ISO;
+
+
     public ExifData() {
     }
 
@@ -39,11 +59,139 @@ public class ExifData implements Serializable {
         this.description = description;
     }
 
-    public int getResolution() {
-        return resolution;
+    public String getManufacturer() {
+        return manufacturer;
     }
 
-    public void setResolution(int resolution) {
-        this.resolution = resolution;
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getCompression() {
+        return compression;
+    }
+
+    public void setCompression(String compression) {
+        this.compression = compression;
+    }
+
+    public RationalNumber getExposure() {
+        return exposure;
+    }
+
+    public void setExposure(RationalNumber exposure) {
+        this.exposure = exposure;
+    }
+
+    public String getExposureProgram() {
+        return exposureProgram;
+    }
+
+    public void setExposureProgram(String exposureProgram) {
+        this.exposureProgram = exposureProgram;
+    }
+
+    public RationalNumber getfStop() {
+        return fStop;
+    }
+
+    public void setfStop(RationalNumber fStop) {
+        this.fStop = fStop;
+    }
+
+    public Date getDateOriginal() {
+        return dateOriginal;
+    }
+
+    public void setDateOriginal(Date dateOriginal) {
+        this.dateOriginal = dateOriginal;
+    }
+
+    public Date getDateDigitized() {
+        return dateDigitized;
+    }
+
+    public void setDateDigitized(Date dateDigitized) {
+        this.dateDigitized = dateDigitized;
+    }
+
+    public Flash getFlash() {
+        return flash;
+    }
+
+    public void setFlash(Flash flash) {
+        this.flash = flash;
+    }
+
+    public RationalNumber getFocalLength() {
+        return focalLength;
+    }
+
+    public void setFocalLength(RationalNumber focalLength) {
+        this.focalLength = focalLength;
+    }
+
+    public String getColorSpace() {
+        return colorSpace;
+    }
+
+    public void setColorSpace(String colorSpace) {
+        this.colorSpace = colorSpace;
+    }
+
+    public int getxResolution() {
+        return xResolution;
+    }
+
+    public void setxResolution(int xResolution) {
+        this.xResolution = xResolution;
+    }
+
+    public int getyResolution() {
+        return yResolution;
+    }
+
+    public void setyResolution(int yResolution) {
+        this.yResolution = yResolution;
+    }
+
+    public Integer getResolutionUnit() {
+        return resolutionUnit;
+    }
+
+    public void setResolutionUnit(Integer resolutionUnit) {
+        this.resolutionUnit = resolutionUnit;
+    }
+
+    public int getPixelXDimension() {
+        return pixelXDimension;
+    }
+
+    public void setPixelXDimension(int pixelXDimension) {
+        this.pixelXDimension = pixelXDimension;
+    }
+
+    public int getPixelYDimension() {
+        return pixelYDimension;
+    }
+
+    public void setPixelYDimension(int pixelYDimension) {
+        this.pixelYDimension = pixelYDimension;
+    }
+
+    public int getISO() {
+        return ISO;
+    }
+
+    public void setISO(int ISO) {
+        this.ISO = ISO;
     }
 }

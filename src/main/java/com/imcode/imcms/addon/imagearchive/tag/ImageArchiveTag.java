@@ -6,13 +6,16 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 
 
-public class ImageArchiveTag extends TagSupport {
+public class ImageArchiveTag extends BodyTagSupport {
+    public static final String FROM_IMAGE_ARCHIVE_TAG = "FROM_IMAGE_ARCHIVE_TAG";
+    public static final String CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG = "CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG";
 
     @Override
     public int doStartTag() throws JspException {
@@ -20,6 +23,8 @@ public class ImageArchiveTag extends TagSupport {
         try {
             UserDomainObject user = Utility.getLoggedOnUser((HttpServletRequest) pageContext.getRequest());
             HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+            HttpSession session = request.getSession();
+            session.setAttribute(FROM_IMAGE_ARCHIVE_TAG, true);
             ParserParameters parserParameters = ParserParameters.fromRequest(request);
             TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
 
@@ -37,6 +42,19 @@ public class ImageArchiveTag extends TagSupport {
             e.printStackTrace();
         } catch (Exception e) {
             throw new JspException(e);
+        }
+
+        return EVAL_BODY_BUFFERED;
+    }
+
+    public int doAfterBody() {
+        HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+        HttpSession session = request.getSession();
+        if(getBodyContent() != null) {
+            String body = getBodyContent().getString().trim();
+            body = body.replace("\"", "\\\"");
+            body = body.replace("'", "\'");
+            session.setAttribute(CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG, body);
         }
 
         return SKIP_BODY;

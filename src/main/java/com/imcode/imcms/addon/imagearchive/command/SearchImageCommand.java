@@ -9,16 +9,20 @@ public class SearchImageCommand implements Serializable {
     public static final short SHOW_ALL = 0;
     public static final short SHOW_NEW = 1;
     public static final short SHOW_ERASED = 2;
+    public static final short SHOW_WITH_VALID_LICENCE = 3;
     
     public static final int CATEGORY_ALL = -1;
     public static final int CATEGORY_NO_CATEGORY = -2;
     public static final long KEYWORD_ALL = -1;
     
     public static final short SORT_BY_ARTIST = 0;
-    public static final short SORT_BY_FREETEXT = 1;
+    public static final short SORT_BY_ALPHABET = 1;
     public static final short SORT_BY_ENTRY_DATE = 2;
+
+    public static final short SORT_ASCENDING = 0;
+    public static final short SORT_DESCENDING = 1;
     
-    public static final int DEFAULT_PAGE_SIZE = 8;
+    public static final int DEFAULT_PAGE_SIZE = 10;
     
     private short show = SHOW_ALL;
     private int categoryId = CATEGORY_ALL;
@@ -31,12 +35,16 @@ public class SearchImageCommand implements Serializable {
     private String activeEndDt;
     private int resultsPerPage = DEFAULT_PAGE_SIZE;
     private short sortBy = SORT_BY_ARTIST;
+    private short sortOrder = SORT_ASCENDING;
     private String clearAction;
     
     private Date licenseDate;
     private Date licenseEndDate;
     private Date activeDate;
     private Date activeEndDate;
+
+    private boolean fileNamesOnly;
+    private boolean isUnfolded;
 
     
     public SearchImageCommand() {
@@ -55,11 +63,14 @@ public class SearchImageCommand implements Serializable {
         this.activeEndDt = command.getActiveEndDt();
         this.resultsPerPage = command.getResultsPerPage();
         this.sortBy = command.getSortBy();
+        this.sortOrder = command.getSortOrder();
         
         this.licenseDate = command.getLicenseDate();
         this.licenseEndDate = command.getLicenseEndDate();
         this.activeDate = command.getActiveDate();
         this.activeEndDate = command.getActiveEndDate();
+        this.fileNamesOnly = command.isFileNamesOnly();
+        this.isUnfolded = command.isUnfolded();
     }
     
     
@@ -194,4 +205,29 @@ public class SearchImageCommand implements Serializable {
     public void setClearAction(String clearAction) {
         this.clearAction = clearAction;
     }
+
+    public boolean isFileNamesOnly() {
+        return fileNamesOnly;
+    }
+
+    public void setFileNamesOnly(boolean fileNamesOnly) {
+        this.fileNamesOnly = fileNamesOnly;
+    }
+
+    public boolean isUnfolded() {
+        return isUnfolded;
+    }
+
+    public void setUnfolded(boolean unfolded) {
+        isUnfolded = unfolded;
+    }
+
+    public short getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(short sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
 }

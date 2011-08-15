@@ -16,6 +16,8 @@ import com.imcode.imcms.addon.imagearchive.util.Pagination;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
 import org.apache.commons.lang.StringUtils;
+import org.apache.sanselan.common.RationalNumber;
+import org.apache.sanselan.common.RationalNumberUtilities;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -81,5 +83,14 @@ public class Functions {
         }
 
         return false;
+    }
+
+    public static String doubleToFractionsString(Double number) {
+        if(number == null) {
+            return null;
+        }
+
+        RationalNumber rationalNumber = RationalNumberUtilities.getRationalNumber(number);
+        return rationalNumber.numerator + "/" + rationalNumber.divisor;
     }
 }

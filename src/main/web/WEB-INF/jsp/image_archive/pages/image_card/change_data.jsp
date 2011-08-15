@@ -14,7 +14,6 @@
         </div>
     </div>
     <%@ include file="/WEB-INF/jsp/image_archive/pages/fragments/change_data.jsp" %>
-    <div class="hr m10t"></div>
     <div style="margin-top: 20px;text-align:center;">
         <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
         <input id="save" type="submit" name="saveAction" value="${saveText}" class="btnBlue"/>

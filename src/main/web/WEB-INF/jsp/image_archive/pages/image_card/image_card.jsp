@@ -15,9 +15,6 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/top.jsp" %>
 
 <div id="containerContent">
-    <h4>
-        <spring:message code="archive.imageCard.image" htmlEscape="true"/>
-    </h4><div class="hr"></div>
     <c:url var="thumbUrl" value="/web/archive/thumb">
         <c:param name="id" value="${image.id}"/>
         <c:param name="size" value="medium"/>
@@ -56,7 +53,6 @@
             </c:when>
             <c:otherwise>
                 <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/info.jsp" %>
-                <div class="hr m10t"></div>
             </c:otherwise>
         </c:choose>
     </div>
@@ -94,8 +90,14 @@
                     <span><spring:message code="archive.imageCard.erase" htmlEscape="true"/></span>
                 </a>
             </c:if>
+            <c:if test="${user.superAdmin and image.archived}">
+                <c:url var="unarchiveUrl" value="/web/archive/image/${image.id}/unarchive"/>
+                <a href="${unarchiveUrl}" class="btnBlue">
+                    <span><spring:message code="archive.imageCard.unarchive" htmlEscape="true"/></span>
+                </a>
+            </c:if>
 
-            <c:if test="${canUseInImcms and not image.archived}">
+            <c:if test="${canExport and not image.archived}">
                 <input type="button" class="btnBlue modalInput" name="export" value="Export" rel="#exportOverlay"/>
             </c:if>
         </div>

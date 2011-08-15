@@ -18,10 +18,15 @@ import javax.servlet.jsp.JspWriter;
 
 import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
 import com.imcode.imcms.addon.imagearchive.entity.Libraries;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.imcode.imcms.addon.imagearchive.service.Facade;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.validation.FieldError;
 
 public class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
@@ -157,6 +162,19 @@ public class Utils {
         }
 
         return null;
+    }
+
+    public static void writeJSON(Object object, HttpServletResponse response) {
+        MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
+        MediaType jsonMimeType = MediaType.parseMediaType("application/json");
+
+        if(jsonConverter.canWrite(object.getClass(), jsonMimeType)) {
+            try {
+                jsonConverter.write(object, jsonMimeType, new ServletServerHttpResponse(response));
+            } catch (IOException e) {
+                log.fatal(e.getMessage(), e);
+            }
+        }
     }
     
     private Utils() {

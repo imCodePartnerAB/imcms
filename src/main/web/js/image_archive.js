@@ -234,11 +234,65 @@ var setupChangeData = function() {
         form.append("<input type='hidden' name='rotateRight' value='r'/>");
         form.submit();
     });
+
     $("#rotateLeft").click(function() {
         var form = $("#changeData");
         
         form.append("<input type='hidden' name='rotateLeft' value='l'/>");
         form.submit();
+    });
+
+    $('#uploadButton').click(function() {
+        $('#uploadify').uploadifyUpload();
+        return false;
+    });
+
+    var redirectOnAllComplete;
+    $('#uploadify').uploadify({
+        'uploader': common.getRelativeUrl('/js/jquery.uploadify-v2.1.4/uploadify.swf'),
+        onAllComplete: function(event, data) {
+            if(redirectOnAllComplete.length > 0) {
+                window.location.replace(redirectOnAllComplete);
+            }
+        },
+        onComplete: function(a, b, c, resp, info){
+            var data = $.parseJSON(resp);
+            if(data) {
+                if(data.redirect) {
+                    window.location.replace(data.redirect);
+                }
+
+                if(data.redirectOnAllComplete) {
+                    redirectOnAllComplete = data.redirectOnAllComplete;
+                }
+
+                if(data.errors) {
+                    var errorMessage = "";
+                    for(var error in data.errors) {
+                        errorMessage += " " + data.errors[error] + "\n";
+                    }
+                    $("#uploadify" + b).find('.percentage').text(" - " + errorMessage);
+                    $("#uploadify" + b).find('.uploadifyProgress').hide();
+                    $("#uploadify" + b).addClass('uploadifyError');
+                } else {
+                    $("#uploadify" + b).fadeOut(250,function() {jQuery(this).remove()});
+                }
+            }
+
+            return false;
+        },
+        'script': common.getRelativeUrl($('#uploadify').parents('form:first').attr('action')),
+        'multi': true,
+        'auto' : false,
+        'fileDataName': 'file',
+        'width': 64,
+        'height': 20,
+        'queueID': 'uploadifyQueue',
+        'buttonImg': common.getRelativeUrl('/js/jquery.uploadify-v2.1.4/browse.png'),
+        'cancelImg': common.getRelativeUrl('/js/jquery.uploadify-v2.1.4/cancel.png'),
+        'onSelectOnce' : function(event, data) {
+            $('#uploadify').uploadifySettings("scriptData", { 'fileCount' : data.fileCount })
+        }
     });
 };
 
@@ -263,6 +317,49 @@ var initSearchImage = function() {
         
         $("a[id$=DtBtn]").click(function() {
             $(this).blur();
+        });
+
+
+        $(".detailedTooltipThumb").each(function(){
+            var imageId = $(this).attr("data-image-id");
+
+              $(this).qtip({
+                prerender: true,
+                content: {
+                    text: 'Loading...',
+                    ajax: false
+                },
+                position: {
+                    my: 'center center',
+                    at: 'center center',
+                    effect: false,
+                    viewport: $("#searchResults"),
+                    target: false
+                },
+                show: {
+                    effect: false,
+                    solo: true
+                },
+                hide: {
+                    fixed: true
+                },
+                style: {
+                    classes: 'ui-tooltip-light ui-tooltip-shadow'
+                },
+                events: {
+                    render: function(event, api) {
+                        $.ajax({
+                            url: common.getRelativeUrl('/web/archive/detailed_thumb'),
+                            type: 'GET',
+                            data: { id : imageId },
+                            dataType: 'html',
+                            success: function(data) {
+                                api.set('content.text', data);
+                            }
+                        });
+                    }
+                }
+            });
         });
     });
 };
@@ -521,7 +618,7 @@ var initExternalFiles = function() {
         };
         
         $("#show").click(function() {
-            var selected = $("#fileNames :checked");
+            var selected = $("#fileNames :checked:first");
             if (selected.length) {
                 showFilePreview(libraryId, selected.val());
             }

@@ -23,7 +23,7 @@ public class UserService {
     private SessionFactory factory;
 
 
-    /* categories = null means permissions for any category */
+    /* categoryIds restrist the search to the given ids. CategoryIds = null means permissions for any category */
     public List<Integer> getRoleIdsWithPermission(User user, List<Integer> categoryIds, RolePermissionDomainObject... permissions) {
         List<Integer> roleIds = new ArrayList<Integer>();
         Session session = factory.getCurrentSession();

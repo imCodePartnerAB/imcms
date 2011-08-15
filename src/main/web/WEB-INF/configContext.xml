@@ -26,5 +26,15 @@
         <property name="usersLibraryFolder" value="${ImageArchiveUsersLibraryFolder}"/>
         <property name="maxImageUploadSize" value="${ImageArchiveMaxImageUploadSize}"/>
         <property name="maxZipUploadSize" value="${ImageArchiveMaxZipUploadSize}"/>
+        <property name="languages">
+            <bean class="org.apache.commons.collections.bidimap.DualHashBidiMap">
+                <constructor-arg index="0" type="java.util.Map">
+                    <map key-type="java.lang.String" value-type="java.lang.String">
+                        <entry key="eng" value="en"/>
+                        <entry key="swe" value="sv"/>
+                    </map>
+                </constructor-arg>
+            </bean>
+        </property>
     </bean>
 </beans>

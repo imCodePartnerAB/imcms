@@ -1,7 +1,7 @@
 package com.imcode.imcms.addon.imagearchive.validator;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,6 +20,7 @@ public class ImageUploadValidator implements Validator {
     private File tempFile;
     private ImageInfo imageInfo;
     private String imageName;
+    private boolean zipFile;
 
     
     public ImageUploadValidator(Facade facade) {
@@ -34,32 +35,62 @@ public class ImageUploadValidator implements Validator {
 
     public void validate(Object target, Errors errors) {
         CommonsMultipartFile file = (CommonsMultipartFile) target;
-        long maxImageUploadSize = facade.getConfig().getMaxImageUploadSize();
-        
+
         if (file == null || file.isEmpty()) {
             errors.rejectValue("file", "archive.addImage.invalidImageError");
-        } else if (file.getSize() > maxImageUploadSize) {
-            file.getFileItem().delete();
-            double megabytes = maxImageUploadSize / (1024.0 * 1024.0);
-            
-            errors.rejectValue("file", "archive.addImage.sizeError", new Object[] {megabytes}, "???");
-        } else {
+
+            return;
+        }
+
+        try {
             imageName = file.getOriginalFilename();
             tempFile = facade.getFileService().createTemporaryFile("img_upload");
+            file.transferTo(tempFile);
+
+            ZipFile zip = null;
             try {
-                file.transferTo(tempFile);
-                
+                zip = new ZipFile(tempFile, ZipFile.OPEN_READ);
+                zipFile = true;
+            } catch (Exception ex) {
+            } finally {
+                if (zip != null) {
+                    zip.close();
+                }
+            }
+
+            long maxZipUploadSize = facade.getConfig().getMaxZipUploadSize();
+            long maxImageUploadSize = facade.getConfig().getMaxImageUploadSize();
+            long fileLength = tempFile.length();
+            double size = 0.0;
+            boolean sizeError = false;
+
+            if (zipFile && fileLength > maxZipUploadSize) {
+                sizeError = true;
+                size = maxZipUploadSize;
+            } else if (!zipFile && fileLength > maxImageUploadSize) {
+                sizeError = true;
+                size = maxImageUploadSize;
+            }
+
+            if (sizeError) {
+                size /= (1024.0 * 1024.0);
+                errors.rejectValue("file", "archive.addImage.sizeError", new Object[] {size}, "???");
+
+                return;
+            }
+
+            if (!zipFile) {
                 imageInfo = ImageOp.getImageInfo(tempFile);
-                if (imageInfo == null || imageInfo.getFormat() == null 
+                if (imageInfo == null || imageInfo.getFormat() == null
                         || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1) {
                     errors.rejectValue("file", "archive.addImage.invalidImageError");
                     tempFile.delete();
                 }
-            } catch (IOException ex) {
-                log.fatal(ex.getMessage(), ex);
-            } finally {
-                file.getFileItem().delete();
             }
+        } catch (Exception ex) {
+            errors.rejectValue("file", "archive.addImage.invalidImageError");
+        } finally {
+            file.getFileItem().delete();
         }
     }
     
@@ -74,5 +105,9 @@ public class ImageUploadValidator implements Validator {
     
     public String getImageName() {
         return imageName;
+    }
+
+    public boolean isZipFile() {
+        return zipFile;
     }
 }

@@ -48,9 +48,7 @@ public class SearchImageController {
             @ModelAttribute("search") SearchImageCommand command, 
             BindingResult result, 
             @RequestParam(required=false) String returnTo, 
-            @RequestParam(required=false) String artist, 
-            HttpServletRequest request, 
-            HttpServletResponse response, 
+            HttpServletRequest request,
             HttpSession session) {
         returnTo = StringUtils.trimToNull(returnTo);
         if (returnTo != null) {
@@ -113,7 +111,7 @@ public class SearchImageController {
     }
     
     @RequestMapping("/archive/page/*")
-    public ModelAndView pageHandler(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView pageHandler(HttpServletRequest request) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
@@ -147,7 +145,7 @@ public class SearchImageController {
         List<Images> images = facade.getImageService().searchImages(command, pag, categoryIds, user);
         
         mav.addObject("images", images);
-        
+
         return mav;
     }
     

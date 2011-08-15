@@ -33,7 +33,7 @@ public class SearchImageValidator implements Validator {
         SearchImageCommand command = (SearchImageCommand) target;
         
         short show = command.getShow();
-        if (show < SearchImageCommand.SHOW_ALL || show > SearchImageCommand.SHOW_ERASED) {
+        if (show < SearchImageCommand.SHOW_ALL || show > SearchImageCommand.SHOW_WITH_VALID_LICENCE) {
             command.setShow(SearchImageCommand.SHOW_ALL);
         }
         
@@ -96,8 +96,8 @@ public class SearchImageValidator implements Validator {
         command.setActiveEndDate(activeEndDate);
         
         int resultsPerPage = command.getResultsPerPage();
-        if (resultsPerPage < 8 || resultsPerPage > 40) {
-            command.setResultsPerPage(8);
+        if (resultsPerPage < 10 || resultsPerPage > 40) {
+            command.setResultsPerPage(SearchImageCommand.DEFAULT_PAGE_SIZE);
         }
         
         short sortBy = command.getSortBy();

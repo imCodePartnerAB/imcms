@@ -1,24 +1,27 @@
 package com.imcode.imcms.addon.imagearchive.service;
 
-import com.imcode.imcms.api.Role;
+import com.imcode.imcms.addon.imagearchive.service.file.FileService;
+import com.imcode.imcms.addon.imagearchive.util.exif.Flash;
 import imcode.server.user.RoleDomainObject;
 
-import java.io.File;
+import java.io.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import imcode.util.image.ImageOp;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
+import org.hibernate.type.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,6 +47,7 @@ import org.hibernate.SessionFactory;
 @Transactional
 public class ImageService {
     private static final Pattern LIKE_SPECIAL_PATTERN = Pattern.compile("([%_|])");
+    private static final Log log = LogFactory.getLog(ImageService.class);
     
     @Autowired
     private Facade facade;
@@ -70,6 +74,7 @@ public class ImageService {
 
         Exif exif = (Exif) session.get(Exif.class, new ExifPK(imageId, Exif.TYPE_CHANGED));
         image.setChangedExif(exif);
+        setImageMetaIds(image);
 
         if (user.isDefaultUser()) {
             return image;
@@ -103,24 +108,210 @@ public class ImageService {
                 .get(Exif.class, new ExifPK(imageId, type));
     }
 
+
+    public boolean createImagesFromZip(File tempFile, User user) {
+        ZipFile zip = null;
+        try {
+            zip = new ZipFile(tempFile, ZipFile.OPEN_READ);
+
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+
+                String fileName = entry.getName();
+                Matcher matcher = FileService.FILENAME_PATTERN.matcher(fileName);
+
+                if (!matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
+                    continue;
+                }
+
+                String extension = StringUtils.substringAfterLast(fileName, ".").toLowerCase();
+                if (!FileService.IMAGE_EXTENSIONS_SET.contains(extension)) {
+                    continue;
+                }
+
+                File entryFile = facade.getFileService().createTemporaryFile("zipEntryTmp");
+
+                InputStream inputStream = null;
+                OutputStream outputStream = null;
+                try {
+                    inputStream = zip.getInputStream(entry);
+                    outputStream = new BufferedOutputStream(FileUtils.openOutputStream(entryFile));
+
+                    IOUtils.copy(inputStream, outputStream);
+                    ImageInfo imageInfo = ImageOp.getImageInfo(entryFile);
+                    if (imageInfo == null || imageInfo.getFormat() == null
+                        || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1) {
+                        continue;
+                    }
+                    this.createImageActivated(entryFile, imageInfo, fileName, user);
+                } catch (Exception ex) {
+                    log.warn(ex.getMessage(), ex);
+                    entryFile.delete();
+                } finally {
+                    IOUtils.closeQuietly(outputStream);
+                    IOUtils.closeQuietly(inputStream);
+                    entryFile.delete();
+                }
+            }
+
+            return true;
+        } catch (Exception ex) {
+            log.warn(ex.getMessage(), ex);
+        } finally {
+            if (zip != null) {
+                try {
+                    zip.close();
+                } catch (IOException ex) {
+                    log.warn(ex.getMessage(), ex);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public Images createImageActivated(File tempFile, ImageInfo imageInfo, String imageName, User user) {
+        Images image = new Images();
+
+        String copyright = "";
+        String description = "";
+        String artist = "";
+        String manufacturer = null;
+        String model = null;
+        String compression = null;
+        Double exposure = null;
+        String exposureProgram = null;
+        Float fStop = null;
+        Date dateOriginal = null;
+        Date dateDigitized = null;
+        Flash flash = null;
+        Float focalLength = null;
+        String colorSpace = null;
+        Integer xResolution = null;
+        Integer yResolution = null;
+        Integer resolutionUnit = null;
+        Integer pixelXDimension = null;
+        Integer pixelYDimension = null;
+        Integer ISO = null;
+
+        ExifData data = ExifUtils.getExifData(tempFile);
+        if (data != null) {
+            copyright = StringUtils.substring(data.getCopyright(), 0, 255);
+            description = StringUtils.substring(data.getDescription(), 0, 255);
+            artist = StringUtils.substring(data.getArtist(), 0, 255);
+            xResolution = data.getxResolution();
+            yResolution = data.getyResolution();
+            manufacturer = data.getManufacturer();
+            model = data.getModel();
+            compression = data.getCompression();
+            exposure = data.getExposure() != null ? data.getExposure().doubleValue() : null;
+            exposureProgram = data.getExposureProgram();
+            fStop = data.getfStop().floatValue();
+            flash = data.getFlash();
+            focalLength = data.getFocalLength().floatValue();
+            colorSpace = data.getColorSpace();
+            resolutionUnit = data.getResolutionUnit();
+            pixelXDimension = data.getPixelXDimension();
+            pixelYDimension = data.getPixelYDimension();
+            ISO = data.getISO();
+            dateOriginal = data.getDateOriginal();
+            dateDigitized = data.getDateDigitized();
+        }
+
+        Exif changedExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_CHANGED,
+                    manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                    resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
+        Exif originalExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_ORIGINAL,
+                manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
+
+
+        String uploadedBy = String.format("%s %s", user.getFirstName(), user.getLastName()).trim();
+        image.setUploadedBy(uploadedBy);
+        image.setUsersId(user.getId());
+
+        image.setImageNm(StringUtils.substring(imageName, 0, 255));
+        image.setFormat(imageInfo.getFormat().getOrdinal());
+        image.setFileSize((int) tempFile.length());
+        image.setWidth(imageInfo.getWidth());
+        image.setHeight(imageInfo.getHeight());
+        image.setStatus(Images.STATUS_ACTIVE);
+
+        Session session = factory.getCurrentSession();
+        session.persist(image);
+
+        originalExif.setImageId(image.getId());
+        changedExif.setImageId(image.getId());
+        session.persist(originalExif);
+        session.persist(changedExif);
+
+        session.flush();
+        image.setChangedExif(changedExif);
+
+        if (!facade.getFileService().storeImage(tempFile, image.getId(), false)) {
+            txManager.rollback(txManager.getTransaction(null));
+
+            return null;
+        }
+
+        return image;
+    }
+
     public Images createImage(File tempFile, ImageInfo imageInfo, String imageName, User user) {
         Images image = new Images();
         
         String copyright = "";
         String description = "";
         String artist = "";
-        int resolution = 0;
-        
+        String manufacturer = null;
+        String model = null;
+        String compression = null;
+        Double exposure = null;
+        String exposureProgram = null;
+        Float fStop = null;
+        Date dateOriginal = null;
+        Date dateDigitized = null;
+        Flash flash = null;
+        Float focalLength = null;
+        String colorSpace = null;
+        Integer xResolution = null;
+        Integer yResolution = null;
+        Integer resolutionUnit = null;
+        Integer pixelXDimension = null;
+        Integer pixelYDimension = null;
+        Integer ISO = null;
+
         ExifData data = ExifUtils.getExifData(tempFile);
         if (data != null) {
             copyright = StringUtils.substring(data.getCopyright(), 0, 255);
             description = StringUtils.substring(data.getDescription(), 0, 255);
             artist = StringUtils.substring(data.getArtist(), 0, 255);
-            resolution = data.getResolution();
+            xResolution = data.getxResolution();
+            yResolution = data.getyResolution();
+            manufacturer = data.getManufacturer();
+            model = data.getModel();
+            compression = data.getCompression();
+            exposure = data.getExposure() != null ? data.getExposure().doubleValue() : null;
+            exposureProgram = data.getExposureProgram();
+            fStop = data.getfStop().floatValue();
+            flash = data.getFlash();
+            focalLength = data.getFocalLength().floatValue();
+            colorSpace = data.getColorSpace();
+            resolutionUnit = data.getResolutionUnit();
+            pixelXDimension = data.getPixelXDimension();
+            pixelYDimension = data.getPixelYDimension();
+            dateOriginal = data.getDateOriginal();
+            dateDigitized = data.getDateDigitized();
+            ISO = data.getISO();
         }
-        
-        Exif originalExif = new Exif(resolution, description, artist, copyright, Exif.TYPE_ORIGINAL);
-        Exif changedExif = new Exif(resolution, description, artist, copyright, Exif.TYPE_CHANGED);
+
+        Exif changedExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_CHANGED,
+                    manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                    resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
+        Exif originalExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_ORIGINAL,
+                manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
         
         String uploadedBy = String.format("%s %s", user.getFirstName(), user.getLastName()).trim();
         image.setUploadedBy(uploadedBy);
@@ -163,18 +354,54 @@ public class ImageService {
             String copyright = "";
             String description = "";
             String artist = "";
-            int resolution = 0;
+            String manufacturer = null;
+            String model = null;
+            String compression = null;
+            Double exposure = null;
+            String exposureProgram = null;
+            Float fStop = null;
+            Date dateOriginal = null;
+            Date dateDigitized = null;
+            Flash flash = null;
+            Float focalLength = null;
+            String colorSpace = null;
+            Integer xResolution = null;
+            Integer yResolution = null;
+            Integer resolutionUnit = null;
+            Integer pixelXDimension = null;
+            Integer pixelYDimension = null;
+            Integer ISO = null;
 
             ExifData data = ExifUtils.getExifData(tempFile);
             if (data != null) {
                 copyright = StringUtils.substring(data.getCopyright(), 0, 255);
                 description = StringUtils.substring(data.getDescription(), 0, 255);
                 artist = StringUtils.substring(data.getArtist(), 0, 255);
-                resolution = data.getResolution();
+                xResolution = data.getxResolution();
+                yResolution = data.getyResolution();
+                manufacturer = data.getManufacturer();
+                model = data.getModel();
+                compression = data.getCompression();
+                exposure = data.getExposure() != null ? data.getExposure().doubleValue() : null;
+                exposureProgram = data.getExposureProgram();
+                fStop = data.getfStop().floatValue();
+                flash = data.getFlash();
+                focalLength = data.getFocalLength().floatValue();
+                colorSpace = data.getColorSpace();
+                resolutionUnit = data.getResolutionUnit();
+                pixelXDimension = data.getPixelXDimension();
+                pixelYDimension = data.getPixelYDimension();
+                ISO = data.getISO();
+                dateOriginal = data.getDateOriginal();
+                dateDigitized = data.getDateDigitized();
             }
             
-            Exif originalExif = new Exif(resolution, description, artist, copyright, Exif.TYPE_ORIGINAL);
-            Exif changedExif = new Exif(resolution, description, artist, copyright, Exif.TYPE_CHANGED);
+            Exif changedExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_CHANGED,
+                        manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                        resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
+            Exif originalExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_ORIGINAL,
+                    manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                    resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
             
             Images image = new Images();
             String uploadedBy = String.format("%s %s", user.getFirstName(), user.getLastName()).trim();
@@ -246,24 +473,64 @@ public class ImageService {
         image.setStatus(Images.STATUS_ACTIVE);
 
         Exif changedExif = image.getChangedExif();
-        session.getNamedQuery("updateImageExifFull")
-                .setString("artist", changedExif.getArtist())
-                .setString("description", changedExif.getDescription())
-                .setString("copyright", changedExif.getCopyright())
-                .setInteger("resolution", changedExif.getResolution())
-                .setLong("imageId", image.getId())
-                .setShort("exifType", Exif.TYPE_CHANGED)
-                .executeUpdate();
+        Query query = session.getNamedQuery("updateImageExifFull");
+        query.setString("artist", changedExif.getArtist());
+        query.setString("description", changedExif.getDescription());
+        query.setString("copyright", changedExif.getCopyright());
+        query.setParameter("xResolution", changedExif.getxResolution(), new IntegerType());
+        query.setParameter("yResolution", changedExif.getyResolution(), new IntegerType());
+        query.setParameter("manufacturer", changedExif.getManufacturer(), new StringType());
+        query.setParameter("model", changedExif.getModel(), new StringType());
+        query.setParameter("compression", changedExif.getCompression(), new StringType());
+        query.setParameter("exposure", changedExif.getExposure(), new DoubleType());
+        query.setParameter("exposureProgram", changedExif.getExposureProgram(), new StringType());
+        query.setParameter("fStop", changedExif.getfStop(), new FloatType());
+        if(changedExif.getFlash() != null) {
+            query.setParameter("flash", changedExif.getFlash());   
+        } else {
+            query.setParameter("flash", null, new IntegerType());
+        }        
+        query.setParameter("focalLength", changedExif.getFocalLength(), new FloatType());
+        query.setParameter("colorSpace", changedExif.getColorSpace(), new StringType());
+        query.setParameter("resolutionUnit", changedExif.getResolutionUnit(), new IntegerType());
+        query.setParameter("pixelXDimension", changedExif.getPixelXDimension(), new IntegerType());
+        query.setParameter("pixelYDimension", changedExif.getPixelYDimension(), new IntegerType());
+        query.setParameter("dateOriginal", changedExif.getDateOriginal(), new TimestampType());
+        query.setParameter("dateDigitized", changedExif.getDateDigitized(), new TimestampType());
+        query.setParameter("ISO", changedExif.getISO(), new IntegerType());
+        query.setLong("imageId", image.getId());
+        query.setShort("exifType", Exif.TYPE_CHANGED);
+        query.executeUpdate();
 
         Exif originalExif = image.getOriginalExif();
-        session.getNamedQuery("updateImageExifFull")
-                .setString("artist", originalExif.getArtist())
-                .setString("description", originalExif.getDescription())
-                .setString("copyright", originalExif.getCopyright())
-                .setInteger("resolution", originalExif.getResolution())
-                .setLong("imageId", image.getId())
-                .setShort("exifType", Exif.TYPE_ORIGINAL)
-                .executeUpdate();
+        query = session.getNamedQuery("updateImageExifFull");
+        query.setString("artist", originalExif.getArtist());
+        query.setString("description", originalExif.getDescription());
+        query.setString("copyright", originalExif.getCopyright());
+        query.setParameter("xResolution", originalExif.getxResolution(), new IntegerType());
+        query.setParameter("yResolution", originalExif.getyResolution(), new IntegerType());
+        query.setParameter("manufacturer", originalExif.getManufacturer(), new StringType());
+        query.setParameter("model", originalExif.getModel(), new StringType());
+        query.setParameter("compression", originalExif.getCompression(), new StringType());
+        query.setParameter("exposure", originalExif.getExposure(), new DoubleType());
+        query.setParameter("exposureProgram", originalExif.getExposureProgram(), new StringType());
+        query.setParameter("fStop", originalExif.getfStop(), new FloatType());
+        if(originalExif.getFlash() != null) {
+            query.setParameter("flash", originalExif.getFlash());   
+        } else {
+            query.setParameter("flash", null, new IntegerType());
+        }        
+        query.setParameter("focalLength", originalExif.getFocalLength(), new FloatType());
+        query.setParameter("colorSpace", originalExif.getColorSpace(), new StringType());
+        query.setParameter("resolutionUnit", originalExif.getResolutionUnit(), new IntegerType());
+        query.setParameter("pixelXDimension", originalExif.getPixelXDimension(), new IntegerType());
+        query.setParameter("pixelYDimension", originalExif.getPixelYDimension(), new IntegerType());
+        query.setParameter("dateOriginal", originalExif.getDateOriginal(), new TimestampType());
+        query.setParameter("dateDigitized", originalExif.getDateDigitized(), new TimestampType());
+        query.setParameter("ISO", originalExif.getISO(), new IntegerType());
+        query.setLong("imageId", image.getId());
+        query.setShort("exifType", Exif.TYPE_ORIGINAL);
+        query.executeUpdate();
 
         updateImageCategories(session, image, categoryIds);
         updateImageKeywords(session, image, imageKeywords);
@@ -410,6 +677,16 @@ public class ImageService {
                 .executeUpdate();
 
     }
+
+    public void unarchiveImage(long imageId) {
+
+        factory.getCurrentSession()
+                .createQuery("UPDATE Images im SET im.status = :statusArchived WHERE im.id = :id")
+                .setShort("statusArchived", Images.STATUS_ACTIVE)
+                .setLong("id", imageId)
+                .executeUpdate();
+
+    }
     
     private Query buildSearchImagesQuery(SearchImageCommand command, boolean count, 
             List<Integer> categoryIds, User user) {
@@ -434,6 +711,8 @@ public class ImageService {
                 builder.append("LEFT OUTER JOIN im.categories c ");
             } else if (categoryId != SearchImageCommand.CATEGORY_ALL) {
                 builder.append("INNER JOIN im.categories c ");
+            } else {
+                builder.append("LEFT OUTER JOIN im.categories c ");
             }
         } else if (categoryId == SearchImageCommand.CATEGORY_NO_CATEGORY || categoryId == SearchImageCommand.CATEGORY_ALL) {
             if (user.isDefaultUser()) {
@@ -448,6 +727,8 @@ public class ImageService {
         long keywordId = command.getKeywordId();
         if (keywordId != SearchImageCommand.KEYWORD_ALL) {
             builder.append("INNER JOIN im.keywords k ");
+        } else {
+            builder.append("LEFT OUTER JOIN im.keywords k ");
         }
         
         builder.append(", Exif e WHERE e.imageId = im.id AND e.type = :changedType ");
@@ -457,7 +738,7 @@ public class ImageService {
             builder.append("AND lower(e.artist) = :artist ");
         }
         
-        Short status = null;
+        Short status;
         switch (command.getShow()) {
             case SearchImageCommand.SHOW_ERASED:
                 builder.append("AND im.status = :status ");
@@ -465,6 +746,8 @@ public class ImageService {
                 break;
             case SearchImageCommand.SHOW_NEW:
                 builder.append("AND im.createdDt >= current_date() ");
+            case SearchImageCommand.SHOW_WITH_VALID_LICENCE:
+                builder.append("AND (im.licenseEndDt <= current_date() OR im.licenseEndDt IS NULL OR im.licenseEndDt = '') ");
             default:
                 builder.append("AND im.status = :status ");
                 status = Images.STATUS_ACTIVE;
@@ -507,7 +790,15 @@ public class ImageService {
         String freetext = command.getFreetext();
         if (freetext != null) {
             freetext = LIKE_SPECIAL_PATTERN.matcher(freetext).replaceAll("|$1");
-            builder.append("AND (lower(im.imageNm) LIKE :freetext ESCAPE '|' OR lower(e.description) LIKE :freetext ESCAPE '|') ");
+            if(command.isFileNamesOnly()) {
+                builder.append("AND (lower(im.imageNm) LIKE :freetext ESCAPE '|') ");
+            } else {
+                builder.append("AND (lower(im.imageNm) LIKE :freetext ESCAPE '|' " +
+                        "OR lower(e.description) LIKE :freetext ESCAPE '|' " +
+                        "OR lower(e.artist) LIKE :freetext ESCAPE '|' " +
+                        "OR lower(c.name) LIKE :freetext ESCAPE '|' " +
+                        "OR lower(k.keywordNm) LIKE :freetext ESCAPE '|') ");
+            }
         }
         
         Date licenseDt = command.getLicenseDate();
@@ -545,14 +836,23 @@ public class ImageService {
         if (!count) {
             builder.append("ORDER BY ");
             switch (command.getSortBy()) {
-                case SearchImageCommand.SORT_BY_FREETEXT:
-                    builder.append("im.imageNm, e.description ");
+                case SearchImageCommand.SORT_BY_ALPHABET:
+                    builder.append("im.imageNm ");
                     break;
                 case SearchImageCommand.SORT_BY_ENTRY_DATE:
-                    builder.append("im.createdDt DESC ");
+                    builder.append("im.createdDt ");
                     break;
                 default:
                     builder.append("e.artist ");
+                    break;
+            }
+
+            switch(command.getSortOrder()) {
+                case SearchImageCommand.SORT_DESCENDING:
+                    builder.append("DESC ");
+                    break;
+                default:
+                    builder.append("ASC ");
                     break;
             }
         }
@@ -793,7 +1093,7 @@ public class ImageService {
 
         List<Integer> metaIds = factory.getCurrentSession()
                 .createSQLQuery(
-                "SELECT DISTINCT i.meta_id FROM images i WHERE i.archive_image_id = :imageId ORDER BY i.meta_id")
+                "SELECT DISTINCT i.doc_id FROM imcms_text_doc_images i WHERE i.archive_image_id = :imageId ORDER BY i.doc_id")
                 .setLong("imageId", image.getId())
                 .list();
 
