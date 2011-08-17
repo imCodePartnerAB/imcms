@@ -281,7 +281,8 @@ var setupChangeData = function() {
 
             return false;
         },
-        'script': common.getRelativeUrl($('#uploadify').parents('form:first').attr('action')),
+        /* using getUrl() cos the context path is added by c:url in the view */
+        'script': common.getUrl($('#uploadify').parents('form:first').attr('action')),
         'multi': true,
         'auto' : false,
         'fileDataName': 'file',

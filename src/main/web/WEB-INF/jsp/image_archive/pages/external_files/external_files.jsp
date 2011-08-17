@@ -98,7 +98,7 @@
     </script>
 </c:set>
 <c:set var="css">
-    <link href="${contextPath}/js/jquery.uploadify-v2.1.4/uploadify.css" rel="stylesheet" type="text/css" />
+    <link href="${pageContext.servletContext.contextPath}/js/jquery.uploadify-v2.1.4/uploadify.css" rel="stylesheet" type="text/css" />
 </c:set>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/header.jsp" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/top.jsp" %>

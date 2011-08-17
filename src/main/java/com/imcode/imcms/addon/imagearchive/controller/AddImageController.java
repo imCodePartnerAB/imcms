@@ -100,9 +100,10 @@ public class AddImageController {
         User user = cms.getCurrentUser();
         UploadResponse status = new UploadResponse();
         boolean isEditing = session.get(IMAGE_KEY) != null;
+        String contextPath = request.getContextPath();
         
         if (user.isDefaultUser()) {
-            status.setRedirect(request.getContextPath() + "/login/");
+            status.setRedirect(contextPath + "/login/");
             Utils.writeJSON(status, response);
             return;
         }
@@ -133,7 +134,7 @@ public class AddImageController {
                     } else {
                         if(command.getFileCount() == 1) {
                             session.put(IMAGE_KEY, image);
-                            status.setRedirect("/web/archive/add-image");
+                            status.setRedirect(contextPath + "/web/archive/add-image");
                         }
                     }
                 }

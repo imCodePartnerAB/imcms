@@ -1,6 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <div>
-    <c:url var="thumbSrc" value="${pageContext.servletContext.contextPath}/web/archive/thumb">
+    <c:url var="thumbSrc" value="/web/archive/thumb">
         <c:param name="id" value="${image.id}"/>
         <c:param name="size" value="${imageSize}"/>
     </c:url>

@@ -4,6 +4,7 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <spring:message var="title" code="archive.title.addImage" htmlEscape="true"/>
 <spring:message var="pageHeading" code="archive.pageHeading.addImage" htmlEscape="true"/>
+<c:url var="latestUploadsUrl" value="/web/archive?show=1&sortBy=2&sortOrder=1"/>
 <c:set var="currentPage" value="addImage"/>
 <c:set var="css">
     <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/imcms/jscalendar/skins/aqua/theme.css.jsp"/>
@@ -15,7 +16,7 @@
     </script>
 </c:set>
 <c:set var="css">
-    <link href="${contextPath}/js/jquery.uploadify-v2.1.4/uploadify.css" rel="stylesheet" type="text/css" />
+    <link href="${pageContext.servletContext.contextPath}/js/jquery.uploadify-v2.1.4/uploadify.css" rel="stylesheet" type="text/css" />
 </c:set>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/header.jsp" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/top.jsp" %>
@@ -31,7 +32,6 @@
             <a href="${latestUploadsUrl}">Latest uploads</a>
             <h4 class="section"><spring:message code="archive.addImage.selectedImages" htmlEscape="true"/></h4>
             <div id="uploadifyQueue" class="uploadifyQueue"></div>
-            <c:url var="latestUploadsUrl" value="/web/archive?show=1&sortBy=2&sortOrder=1"/>
     </form:form>
     
     <c:if test="${image ne null}">
@@ -44,7 +44,7 @@
                 <c:param name="id" value="${image.id}"/>
             </c:url>
             <a href="${previewUrl}" onclick="showPreview(${image.id}, ${image.width}, ${image.height});return false;" target="_blank">
-                <img src="${thumbUrl}" width="300" height="225" alt="${image.filename}"/>
+                <img src="${thumbUrl}" width="300" height="225" alt="${image.imageNm}"/>
             </a><br/>
 
             <form action="/" style="margin-top:5px;">
