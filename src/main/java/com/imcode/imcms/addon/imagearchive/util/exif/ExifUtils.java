@@ -339,15 +339,27 @@ public class ExifUtils {
     public static Flash getTiffFlash(Integer flashValue) {
         Flash flash;
 
-        if(flashValue == TiffConstants.FLASH_VALUE_FIRED
+        if(null == flashValue) {
+            flash = Flash.NOT_FIRED;
+        } else if(flashValue == TiffConstants.FLASH_VALUE_FIRED
                 || flashValue == TiffConstants.FLASH_VALUE_FIRED_RETURN_NOT_DETECTED
-                || flashValue == TiffConstants.FLASH_VALUE_FIRED_RETURN_DETECTED) {
+                || flashValue == TiffConstants.FLASH_VALUE_FIRED_RETURN_DETECTED
+                || flashValue == TiffConstants.FLASH_VALUE_ON
+                || flashValue == TiffConstants.FLASH_VALUE_ON_RETURN_NOT_DETECTED
+                || flashValue == TiffConstants.FLASH_VALUE_ON_RETURN_DETECTED
+                || flashValue == TiffConstants.FLASH_VALUE_AUTO_FIRED
+                || flashValue == TiffConstants.FLASH_VALUE_AUTO_FIRED_RETURN_NOT_DETECTED
+                || flashValue == TiffConstants.FLASH_VALUE_AUTO_FIRED_RETURN_DETECTED) {
             flash = Flash.FIRED;
         } else if(flashValue == TiffConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION
                 || flashValue == TiffConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION_RETURN_DETECTED
+                || flashValue == TiffConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION_RETURN_NOT_DETECTED
                 || flashValue == TiffConstants.FLASH_VALUE_AUTO_FIRED_RED_EYE_REDUCTION
                 || flashValue == TiffConstants.FLASH_VALUE_AUTO_FIRED_RED_EYE_REDUCTION_RETURN_NOT_DETECTED
-                || flashValue == TiffConstants.FLASH_VALUE_AUTO_FIRED_RED_EYE_REDUCTION_RETURN_DETECTED) {
+                || flashValue == TiffConstants.FLASH_VALUE_AUTO_FIRED_RED_EYE_REDUCTION_RETURN_DETECTED
+                || flashValue == TiffConstants.FLASH_VALUE_ON_RED_EYE_REDUCTION
+                || flashValue == TiffConstants.FLASH_VALUE_ON_RED_EYE_REDUCTION_RETURN_NOT_DETECTED
+                || flashValue == TiffConstants.FLASH_VALUE_ON_RED_EYE_REDUCTION_RETURN_DETECTED) {
             flash = Flash.FIRED_WITH_RED_EYES_REDUCTION;
         } else {
             flash = Flash.NOT_FIRED;
@@ -500,7 +512,9 @@ public class ExifUtils {
         Flash flash;
 
         /* strobe counts as flash here, can differenciate if needed. */
-        if(flashValue == ExifTagConstants.FLASH_VALUE_FIRED
+        if(null == flashValue) {
+            flash = Flash.NOT_FIRED;
+        } else if(flashValue == ExifTagConstants.FLASH_VALUE_FIRED
                 || flashValue == ExifTagConstants.FLASH_VALUE_FIRED_RETURN_NOT_DETECTED
                 || flashValue == ExifTagConstants.FLASH_VALUE_FIRED_RETURN_DETECTED
                 || flashValue == ExifTagConstants.FLASH_VALUE_ON
