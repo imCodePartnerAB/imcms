@@ -752,6 +752,12 @@
         <!--<version>7.0.0.RC6</version>-->
         <!--<scope>test</scope>-->
         <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.8.1</version>
+        </dependency>
     </dependencies>
 
     <repositories>
