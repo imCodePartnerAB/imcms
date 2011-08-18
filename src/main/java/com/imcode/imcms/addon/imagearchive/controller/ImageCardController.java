@@ -412,11 +412,11 @@ public class ImageCardController {
                     manufacturer = data.getManufacturer();
                     model = data.getModel();
                     compression = data.getCompression();
-                    exposure = data.getExposure() != null ? data.getExposure().doubleValue() : null;
+                    exposure = data.getExposure();
                     exposureProgram = data.getExposureProgram();
-                    fStop = data.getfStop().floatValue();
+                    fStop = data.getfStop();
                     flash = data.getFlash();
-                    focalLength = data.getFocalLength().floatValue();
+                    focalLength = data.getFocalLength();
                     colorSpace = data.getColorSpace();
                     resolutionUnit = data.getResolutionUnit();
                     pixelXDimension = data.getPixelXDimension();

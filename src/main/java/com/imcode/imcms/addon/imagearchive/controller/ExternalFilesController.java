@@ -241,6 +241,7 @@ public class ExternalFilesController {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         UploadResponse status = new UploadResponse();
+        String contextPath = request.getContextPath();
 
         if (user.isDefaultUser()) {
             status.setRedirect(request.getContextPath() + "/login/");
@@ -251,7 +252,7 @@ public class ExternalFilesController {
         LibrariesDto library = LibrariesDto.userLibrary(user);
         session.put(LIBRARY_KEY, library);
         if (library == null || !library.isCanChange()) {
-            status.setRedirect("/web/archive/external-files");
+            status.setRedirect(contextPath + "/web/archive/external-files");
             Utils.writeJSON(status, response);
             return;
         }
@@ -283,7 +284,7 @@ public class ExternalFilesController {
             }
             status.setErrors(errors);
         } else {
-            status.setRedirectOnAllComplete("/web/archive/external-files");
+            status.setRedirectOnAllComplete(contextPath + "/web/archive/external-files");
         }
         
         Utils.writeJSON(status, response);

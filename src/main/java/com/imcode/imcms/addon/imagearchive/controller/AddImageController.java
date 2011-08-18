@@ -1,6 +1,5 @@
 package com.imcode.imcms.addon.imagearchive.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,16 +10,12 @@ import com.imcode.imcms.addon.imagearchive.json.UploadResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
-import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.imcode.imcms.addon.imagearchive.command.AddImageActionCommand;
@@ -99,7 +94,6 @@ public class AddImageController {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         UploadResponse status = new UploadResponse();
-        boolean isEditing = session.get(IMAGE_KEY) != null;
         String contextPath = request.getContextPath();
         
         if (user.isDefaultUser()) {
@@ -110,10 +104,6 @@ public class AddImageController {
         
         ImageUploadValidator validator = new ImageUploadValidator(facade);
         ValidationUtils.invokeValidator(validator, command.getFile(), result);
-
-        if(isEditing && validator.isZipFile()) {
-            result.rejectValue("file", "archive.addImage.invalidImageError");
-        }
 
         if (!result.hasErrors()) {
             try {

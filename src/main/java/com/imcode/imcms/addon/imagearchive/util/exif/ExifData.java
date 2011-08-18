@@ -22,13 +22,13 @@ public class ExifData implements Serializable {
     private Flash flash;
     private RationalNumber focalLength;
     private String colorSpace;
-    private int xResolution;
-    private int yResolution;
+    private Integer xResolution;
+    private Integer yResolution;
     /* 2 = dpi, 3 = dpcm*/
     private Integer resolutionUnit;
-    private int pixelXDimension;
-    private int pixelYDimension;
-    private int ISO;
+    private Integer pixelXDimension;
+    private Integer pixelYDimension;
+    private Integer ISO;
 
 
     public ExifData() {
@@ -83,8 +83,8 @@ public class ExifData implements Serializable {
         this.compression = compression;
     }
 
-    public RationalNumber getExposure() {
-        return exposure;
+    public Double getExposure() {
+        return exposure != null ? exposure.doubleValue() : null;
     }
 
     public void setExposure(RationalNumber exposure) {
@@ -99,8 +99,8 @@ public class ExifData implements Serializable {
         this.exposureProgram = exposureProgram;
     }
 
-    public RationalNumber getfStop() {
-        return fStop;
+    public Float getfStop() {
+        return fStop != null ? fStop.floatValue() : null;
     }
 
     public void setfStop(RationalNumber fStop) {
@@ -131,8 +131,8 @@ public class ExifData implements Serializable {
         this.flash = flash;
     }
 
-    public RationalNumber getFocalLength() {
-        return focalLength;
+    public Float getFocalLength() {
+        return focalLength != null ? focalLength.floatValue() : null;
     }
 
     public void setFocalLength(RationalNumber focalLength) {
@@ -147,19 +147,19 @@ public class ExifData implements Serializable {
         this.colorSpace = colorSpace;
     }
 
-    public int getxResolution() {
+    public Integer getxResolution() {
         return xResolution;
     }
 
-    public void setxResolution(int xResolution) {
+    public void setxResolution(Integer xResolution) {
         this.xResolution = xResolution;
     }
 
-    public int getyResolution() {
+    public Integer getyResolution() {
         return yResolution;
     }
 
-    public void setyResolution(int yResolution) {
+    public void setyResolution(Integer yResolution) {
         this.yResolution = yResolution;
     }
 
@@ -171,27 +171,27 @@ public class ExifData implements Serializable {
         this.resolutionUnit = resolutionUnit;
     }
 
-    public int getPixelXDimension() {
+    public Integer getPixelXDimension() {
         return pixelXDimension;
     }
 
-    public void setPixelXDimension(int pixelXDimension) {
+    public void setPixelXDimension(Integer pixelXDimension) {
         this.pixelXDimension = pixelXDimension;
     }
 
-    public int getPixelYDimension() {
+    public Integer getPixelYDimension() {
         return pixelYDimension;
     }
 
-    public void setPixelYDimension(int pixelYDimension) {
+    public void setPixelYDimension(Integer pixelYDimension) {
         this.pixelYDimension = pixelYDimension;
     }
 
-    public int getISO() {
+    public Integer getISO() {
         return ISO;
     }
 
-    public void setISO(int ISO) {
+    public void setISO(Integer ISO) {
         this.ISO = ISO;
     }
 }
