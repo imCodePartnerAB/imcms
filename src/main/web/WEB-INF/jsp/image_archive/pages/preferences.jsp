@@ -277,9 +277,9 @@
                     <div class="left">
                         <table class="libraryCategoriesTable">
                             <tr>
-                                <th>Role</th>
-                                <th>Use images</th>
-                                <th>Edit/add images</th>
+                                <th><spring:message code="archive.preferences.roleColumn" htmlEscape="true"/></th>
+                                <th><spring:message code="archive.preferences.useImages" htmlEscape="true"/></th>
+                                <th><spring:message code="archive.preferences.editAddImages" htmlEscape="true"/></th>
                             </tr>
                             <tr>
                                 <td></td>
