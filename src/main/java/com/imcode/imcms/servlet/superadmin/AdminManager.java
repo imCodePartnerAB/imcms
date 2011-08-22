@@ -67,107 +67,107 @@ public class AdminManager extends HttpServlet {
     public static final String REQUEST_PARAMETER__ACTION__COPY = "copy";
 
     public static final String PAGE_SEARCH = "search";
-    private static final LocalizedMessage ERROR_MESSAGE__NO_CREATE_PERMISSION = new LocalizedMessage( "error/servlet/AdminManager/no_create_permission" );
-    private static final LocalizedMessage ERROR_MESSAGE__NO_PARENT_ID = new LocalizedMessage( "error/servlet/AdminManager/no_parent_id" );
-    private static final LocalizedMessage ERROR_MESSAGE__PARENT_MUST_BE_TEXT_DOCUMENT = new LocalizedMessage( "error/servlet/AdminManager/parent_must_be_text_document" );
+    private static final LocalizedMessage ERROR_MESSAGE__NO_CREATE_PERMISSION = new LocalizedMessage("error/servlet/AdminManager/no_create_permission");
+    private static final LocalizedMessage ERROR_MESSAGE__NO_PARENT_ID = new LocalizedMessage("error/servlet/AdminManager/no_parent_id");
+    private static final LocalizedMessage ERROR_MESSAGE__PARENT_MUST_BE_TEXT_DOCUMENT = new LocalizedMessage("error/servlet/AdminManager/parent_must_be_text_document");
 
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        this.doPost( req, res );
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        this.doPost(req, res);
     }
 
-    public void doPost( HttpServletRequest request, HttpServletResponse response )
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         ImcmsServices service = Imcms.getServices();
-        UserDomainObject user = Utility.getLoggedOnUser( request );
-        Utility.setDefaultHtmlContentType( response );
+        UserDomainObject user = Utility.getLoggedOnUser(request);
+        Utility.setDefaultHtmlContentType(response);
 
-        String whichButton = request.getParameter( "AdminTask" );
-        if ( null != whichButton ) {
+        String whichButton = request.getParameter("AdminTask");
+        if (null != whichButton) {
 
-            String url = getAdminTaskUrl( whichButton, request );
-            if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
-                Utility.forwardToLogin( request, response );
+            String url = getAdminTaskUrl(whichButton, request);
+            if (!user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole()) {
+                Utility.forwardToLogin(request, response);
                 return;
             }
 
-            if ( StringUtils.isNotBlank( url ) ) {
-                response.sendRedirect( url );
+            if (StringUtils.isNotBlank(url)) {
+                response.sendRedirect(url);
                 return;
             }
         }
 
-        if ( !user.canAccessAdminPages() ) {
-            Utility.forwardToLogin( request, response );
+        if (!user.canAccessAdminPages()) {
+            Utility.forwardToLogin(request, response);
             return;
         }
 
         final DocumentMapper documentMapper = service.getDocumentMapper();
-        if ( Utility.parameterIsSet( request, REQUEST_PARAMETER__CREATE_NEW_DOCUMENT ) ) {
-        String parentPageId =  request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID );
+        if (Utility.parameterIsSet(request, REQUEST_PARAMETER__CREATE_NEW_DOCUMENT)) {
+            String parentPageId = request.getParameter(REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID);
             try {
                 DocumentDomainObject parentDocument = documentMapper.getDocument(parentPageId.toLowerCase().trim());
-                String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
-                if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) && parentDocument != null ) {
-                    documentMapper.copyDocument( parentDocument, user );
-                    createAndShowAdminManagerPage( request, response, null, PARAMETER_VALUE__SHOW_RECENT);
+                String createDocumentAction = request.getParameter(REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION);
+                if (REQUEST_PARAMETER__ACTION__COPY.equals(createDocumentAction) && parentDocument != null) {
+                    documentMapper.copyDocument(parentDocument, user);
+                    createAndShowAdminManagerPage(request, response, null, PARAMETER_VALUE__SHOW_RECENT);
                 } else {
                     if (!(parentDocument instanceof TextDocumentDomainObject)) {
-                        createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__PARENT_MUST_BE_TEXT_DOCUMENT, PARAMETER_VALUE__SHOW_CREATE);
-                        return ;
+                        createAndShowAdminManagerPage(request, response, ERROR_MESSAGE__PARENT_MUST_BE_TEXT_DOCUMENT, PARAMETER_VALUE__SHOW_CREATE);
+                        return;
                     }
-                    int documentTypeId = Integer.parseInt( createDocumentAction );
+                    int documentTypeId = Integer.parseInt(createDocumentAction);
 
                     DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new SaveNewDocumentCommand();
                     DispatchCommand returnCommand = new ShowRecentChangesPageCommand();
 
-                    DocumentCreator documentCreator = new DocumentCreator( saveNewDocumentCommand, returnCommand, getServletContext() );
-                    documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
+                    DocumentCreator documentCreator = new DocumentCreator(saveNewDocumentCommand, returnCommand, getServletContext());
+                    documentCreator.createDocumentAndDispatchToCreatePageFlow(documentTypeId, parentDocument, request, response);
                 }
-            } catch ( NumberFormatException nfe ) {
-                createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_PARENT_ID, PARAMETER_VALUE__SHOW_CREATE);
-            } catch ( NoPermissionToCreateDocumentException ex ) {
-                createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_CREATE_PERMISSION, PARAMETER_VALUE__SHOW_CREATE);
-            } catch ( NoPermissionToAddDocumentToMenuException e ) {
+            } catch (NumberFormatException nfe) {
+                createAndShowAdminManagerPage(request, response, ERROR_MESSAGE__NO_PARENT_ID, PARAMETER_VALUE__SHOW_CREATE);
+            } catch (NoPermissionToCreateDocumentException ex) {
+                createAndShowAdminManagerPage(request, response, ERROR_MESSAGE__NO_CREATE_PERMISSION, PARAMETER_VALUE__SHOW_CREATE);
+            } catch (NoPermissionToAddDocumentToMenuException e) {
                 throw new UnhandledException(e);
             } catch (DocumentSaveException e) {
                 throw new ShouldNotBeThrownException(e);
             }
         } else {
-            createAndShowAdminManagerPage( request, response, null);
+            createAndShowAdminManagerPage(request, response, null);
         }
     }
 
-    private void createAndShowAdminManagerPage( HttpServletRequest request, HttpServletResponse response,
-                                                LocalizedMessage errorMessage ) throws IOException, ServletException {
+    private void createAndShowAdminManagerPage(HttpServletRequest request, HttpServletResponse response,
+                                               LocalizedMessage errorMessage) throws IOException, ServletException {
 
-        String tabToShow = null != request.getParameter( REQUEST_PARAMETER__SHOW )
-                           ? request.getParameter( REQUEST_PARAMETER__SHOW ) : PARAMETER_VALUE__SHOW_CREATE;
+        String tabToShow = null != request.getParameter(REQUEST_PARAMETER__SHOW)
+                ? request.getParameter(REQUEST_PARAMETER__SHOW) : PARAMETER_VALUE__SHOW_CREATE;
 
         createAndShowAdminManagerPage(request, response, errorMessage, tabToShow);
     }
 
     private void createAndShowAdminManagerPage(HttpServletRequest request, HttpServletResponse response, LocalizedMessage errorMessage, String tabToShow) throws IOException, ServletException {
-        UserDomainObject loggedOnUser = Utility.getLoggedOnUser( request );
+        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
         ImcmsServices service = Imcms.getServices();
         final DocumentMapper documentMapper = service.getDocumentMapper();
 
         String html_admin_part = "";
 
-        if ( loggedOnUser.isSuperAdmin() ) {
-            html_admin_part = service.getAdminTemplate( HTML_ADMINTASK, loggedOnUser, null ); // if superadmin
-        } else if ( loggedOnUser.isUserAdminAndCanEditAtLeastOneRole() ) { //if user is useradmin
-            html_admin_part = service.getAdminTemplate( HTML_USERADMINTASK, loggedOnUser, null ); //if useradmin
+        if (loggedOnUser.isSuperAdmin()) {
+            html_admin_part = service.getAdminTemplate(HTML_ADMINTASK, loggedOnUser, null); // if superadmin
+        } else if (loggedOnUser.isUserAdminAndCanEditAtLeastOneRole()) { //if user is useradmin
+            html_admin_part = service.getAdminTemplate(HTML_USERADMINTASK, loggedOnUser, null); //if useradmin
         }
 
         DocumentIndex index = documentMapper.getDocumentIndex();
 
-        Query query = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + "" ) );
+        Query query = new TermQuery(new Term(DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + ""));
 
         List documentsFound = Collections.EMPTY_LIST;
-        if ( tabToShow.equals( PARAMETER_VALUE__SHOW_RECENT ) || tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS)
-             || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
-            documentsFound = index.search( new SimpleDocumentQuery(query), loggedOnUser );
+        if (tabToShow.equals(PARAMETER_VALUE__SHOW_RECENT) || tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS)
+                || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY)) {
+            documentsFound = index.search(new SimpleDocumentQuery(query), loggedOnUser);
         }
 
         AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();
@@ -177,266 +177,266 @@ public class AdminManager extends HttpServlet {
         AdminManagerSubreport documentsUnmodifiedForSixMonthsSubreport = new AdminManagerSubreport();
 
 
-        if ( tabToShow.equals(PARAMETER_VALUE__SHOW_RECENT) || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
-            newDocumentsSubreport = createNewDocumentsSubreport( documentsFound );
+        if (tabToShow.equals(PARAMETER_VALUE__SHOW_RECENT) || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY)) {
+            newDocumentsSubreport = createNewDocumentsSubreport(documentsFound);
             sortAndSetExpandedSubreport(newDocumentsSubreport, request);
 
-            modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documentsFound );
+            modifiedDocumentsSubreport = createModifiedDocumentsSubreport(documentsFound);
             sortAndSetExpandedSubreport(modifiedDocumentsSubreport, request);
         }
 
-        if ( tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS) || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
-            documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documentsFound );
+        if (tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS) || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY)) {
+            documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport(documentsFound);
             sortAndSetExpandedSubreport(documentsArchivedWithinOneWeekSubreport, request);
 
-            documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documentsFound );
+            documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport(documentsFound);
             sortAndSetExpandedSubreport(documentsUnpublishedWithinOneWeekSubreport, request);
 
-            documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documentsFound );
+            documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport(documentsFound);
             sortAndSetExpandedSubreport(documentsUnmodifiedForSixMonthsSubreport, request);
         }
 
         AdminManagerPage adminManagerPage = null;
-        if ( tabToShow.equals( PARAMETER_VALUE__SHOW_CREATE ) ) {
+        if (tabToShow.equals(PARAMETER_VALUE__SHOW_CREATE)) {
             AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
-            newDocumentsAdminManagerPage.setTabName( PARAMETER_VALUE__SHOW_CREATE );
-            newDocumentsAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0" ) );
+            newDocumentsAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_CREATE);
+            newDocumentsAdminManagerPage.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0"));
             adminManagerPage = newDocumentsAdminManagerPage;
 
-        } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_RECENT ) ) {
+        } else if (tabToShow.equals(PARAMETER_VALUE__SHOW_RECENT)) {
 
-            newDocumentsSubreport.setMaxDocumentCount( 10 );
+            newDocumentsSubreport.setMaxDocumentCount(10);
 
             AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
-            newDocumentsAdminManagerPage.setTabName( PARAMETER_VALUE__SHOW_RECENT );
-            newDocumentsAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1" ) );
+            newDocumentsAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_RECENT);
+            newDocumentsAdminManagerPage.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1"));
 
-            newDocumentsAdminManagerPage.addSubreport( newDocumentsSubreport );
+            newDocumentsAdminManagerPage.addSubreport(newDocumentsSubreport);
 
-            modifiedDocumentsSubreport.setMaxDocumentCount( 10 );
-            newDocumentsAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
+            modifiedDocumentsSubreport.setMaxDocumentCount(10);
+            newDocumentsAdminManagerPage.addSubreport(modifiedDocumentsSubreport);
 
             adminManagerPage = newDocumentsAdminManagerPage;
 
-        } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_REMINDERS ) ) {
+        } else if (tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS)) {
 
             AdminManagerPage reminderAdminManagerPage = new AdminManagerPage();
-            reminderAdminManagerPage.setTabName( PARAMETER_VALUE__SHOW_REMINDERS );
-            reminderAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2" ) );
+            reminderAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_REMINDERS);
+            reminderAdminManagerPage.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2"));
 
-            documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount( 10 );
-            reminderAdminManagerPage.addSubreport( documentsArchivedWithinOneWeekSubreport );
+            documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount(10);
+            reminderAdminManagerPage.addSubreport(documentsArchivedWithinOneWeekSubreport);
 
-            documentsUnpublishedWithinOneWeekSubreport.setMaxDocumentCount( 10 );
-            reminderAdminManagerPage.addSubreport( documentsUnpublishedWithinOneWeekSubreport );
+            documentsUnpublishedWithinOneWeekSubreport.setMaxDocumentCount(10);
+            reminderAdminManagerPage.addSubreport(documentsUnpublishedWithinOneWeekSubreport);
 
-            documentsUnmodifiedForSixMonthsSubreport.setMaxDocumentCount( 10 );
-            reminderAdminManagerPage.addSubreport( documentsUnmodifiedForSixMonthsSubreport );
+            documentsUnmodifiedForSixMonthsSubreport.setMaxDocumentCount(10);
+            reminderAdminManagerPage.addSubreport(documentsUnmodifiedForSixMonthsSubreport);
 
             adminManagerPage = reminderAdminManagerPage;
 
-        } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SUMMARY ) ) {
+        } else if (tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY)) {
 
             AdminManagerPage summaryAdminManagerPage = new AdminManagerPage();
-            summaryAdminManagerPage.setTabName( PARAMETER_VALUE__SHOW_SUMMARY );
-            summaryAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/3" ) );
+            summaryAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_SUMMARY);
+            summaryAdminManagerPage.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/3"));
 
-            summaryAdminManagerPage.addSubreport( newDocumentsSubreport );
+            summaryAdminManagerPage.addSubreport(newDocumentsSubreport);
 
-            summaryAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
+            summaryAdminManagerPage.addSubreport(modifiedDocumentsSubreport);
 
-            summaryAdminManagerPage.addSubreport( documentsArchivedWithinOneWeekSubreport );
+            summaryAdminManagerPage.addSubreport(documentsArchivedWithinOneWeekSubreport);
 
-            summaryAdminManagerPage.addSubreport( documentsUnpublishedWithinOneWeekSubreport );
+            summaryAdminManagerPage.addSubreport(documentsUnpublishedWithinOneWeekSubreport);
 
-            summaryAdminManagerPage.addSubreport( documentsUnmodifiedForSixMonthsSubreport );
+            summaryAdminManagerPage.addSubreport(documentsUnmodifiedForSixMonthsSubreport);
             adminManagerPage = summaryAdminManagerPage;
 
-        } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SEARCH ) ) {
+        } else if (tabToShow.equals(PARAMETER_VALUE__SHOW_SEARCH)) {
 
             AdminManagerPage searchAdminManagerPage = new AdminManagerPage() {
-                public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
-                    AdminManagerSearchPage page = new AdminManagerSearchPage( this );
-                    DocumentFinder documentFinder = new DocumentFinder( page );
-                    documentFinder.setDocumentComparator( getComparator( null ) );
-                    page.updateFromRequest( request );
-                    documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
-                    documentFinder.forward( request, response );
+                public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
+                    AdminManagerSearchPage page = new AdminManagerSearchPage(this);
+                    DocumentFinder documentFinder = new DocumentFinder(page);
+                    documentFinder.setDocumentComparator(getComparator(null));
+                    page.updateFromRequest(request);
+                    documentFinder.addExtraSearchResultColumn(new DatesSummarySearchResultColumn());
+                    documentFinder.forward(request, response);
                 }
             };
-            searchAdminManagerPage.setTabName( PARAMETER_VALUE__SHOW_SEARCH );
-            searchAdminManagerPage.setHeading( new LocalizedMessage( "global/Search" ) );
+            searchAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_SEARCH);
+            searchAdminManagerPage.setHeading(new LocalizedMessage("global/Search"));
             adminManagerPage = searchAdminManagerPage;
         }
         if (null != adminManagerPage) {
-            adminManagerPage.setErrorMessage( errorMessage  );
-            adminManagerPage.setHtmlAdminPart( "".equals( html_admin_part ) ? null : html_admin_part );
-            adminManagerPage.forward( request, response, loggedOnUser );
+            adminManagerPage.setErrorMessage(errorMessage);
+            adminManagerPage.setHtmlAdminPart("".equals(html_admin_part) ? null : html_admin_part);
+            adminManagerPage.forward(request, response, loggedOnUser);
         }
     }
 
-    private void sortAndSetExpandedSubreport (AdminManagerSubreport subreport, HttpServletRequest request ) {
+    private void sortAndSetExpandedSubreport(AdminManagerSubreport subreport, HttpServletRequest request) {
 
-            String newSortOrder = request.getParameter( subreport.getName() + "_sortorder" );
-            if ( null != newSortOrder ) {
-                subreport.setSortorder( newSortOrder );
-            }
-            Collections.sort( subreport.getDocuments(), getComparator( subreport.getSortorder() ) );
-            boolean expanded = Utility.parameterIsSet( request, subreport.getName() + "_expand" )
-                               && !Utility.parameterIsSet( request, subreport.getName() + "_unexpand" );
-            subreport.setExpanded( expanded );
+        String newSortOrder = request.getParameter(subreport.getName() + "_sortorder");
+        if (null != newSortOrder) {
+            subreport.setSortorder(newSortOrder);
+        }
+        Collections.sort(subreport.getDocuments(), getComparator(subreport.getSortorder()));
+        boolean expanded = Utility.parameterIsSet(request, subreport.getName() + "_expand")
+                && !Utility.parameterIsSet(request, subreport.getName() + "_unexpand");
+        subreport.setExpanded(expanded);
 
 
     }
 
-    private AdminManagerSubreport createModifiedDocumentsSubreport( List documentsFound ) {
+    private AdminManagerSubreport createModifiedDocumentsSubreport(List documentsFound) {
         List modifiedDocuments = new ArrayList();
         Date oneWeekAgo = getDateOneWeekAgo();
-        for ( Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
+        for (Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
             DocumentDomainObject document = (DocumentDomainObject) iterator.next();
-            boolean createdInPastWeek = !document.getCreatedDatetime().before( oneWeekAgo );
-            boolean modifiedInPastWeek = !document.getModifiedDatetime().before( oneWeekAgo );
-            if ( modifiedInPastWeek && !createdInPastWeek ) {
-                modifiedDocuments.add( document );
+            boolean createdInPastWeek = !document.getCreatedDatetime().before(oneWeekAgo);
+            boolean modifiedInPastWeek = !document.getModifiedDatetime().before(oneWeekAgo);
+            if (modifiedInPastWeek && !createdInPastWeek) {
+                modifiedDocuments.add(document);
             }
         }
 
         AdminManagerSubreport modifiedDocumentsSubreport = new AdminManagerSubreport();
-        modifiedDocumentsSubreport.setName( "modified" );
-        modifiedDocumentsSubreport.setDocuments( modifiedDocuments );
-        modifiedDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5" ) );
-        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__MODIFIED, oneWeekAgo, null, null );
-        modifiedDocumentsSubreport.setSearchQueryString( dateSearchQueryString );
+        modifiedDocumentsSubreport.setName("modified");
+        modifiedDocumentsSubreport.setDocuments(modifiedDocuments);
+        modifiedDocumentsSubreport.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5"));
+        String dateSearchQueryString = createDateSearchQueryString(SearchDocumentsPage.DATE_TYPE__MODIFIED, oneWeekAgo, null, null);
+        modifiedDocumentsSubreport.setSearchQueryString(dateSearchQueryString);
         return modifiedDocumentsSubreport;
     }
 
-    private AdminManagerSubreport createNewDocumentsSubreport( List documentsFound ) {
+    private AdminManagerSubreport createNewDocumentsSubreport(List documentsFound) {
         List newDocuments = new ArrayList();
 
         Date oneWeekAgo = getDateOneWeekAgo();
-        for ( Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
+        for (Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
             DocumentDomainObject document = (DocumentDomainObject) iterator.next();
-            boolean createdInPastWeek = !document.getCreatedDatetime().before( oneWeekAgo );
-            if ( createdInPastWeek ) {
-                newDocuments.add( document );
+            boolean createdInPastWeek = !document.getCreatedDatetime().before(oneWeekAgo);
+            if (createdInPastWeek) {
+                newDocuments.add(document);
             }
         }
 
         AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();
-        newDocumentsSubreport.setName( "new" );
-        newDocumentsSubreport.setDocuments( newDocuments );
-        newDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1" ) );
-        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__CREATED, oneWeekAgo, null, null );
-        newDocumentsSubreport.setSearchQueryString( dateSearchQueryString );
+        newDocumentsSubreport.setName("new");
+        newDocumentsSubreport.setDocuments(newDocuments);
+        newDocumentsSubreport.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1"));
+        String dateSearchQueryString = createDateSearchQueryString(SearchDocumentsPage.DATE_TYPE__CREATED, oneWeekAgo, null, null);
+        newDocumentsSubreport.setSearchQueryString(dateSearchQueryString);
         return newDocumentsSubreport;
     }
 
     private AdminManagerSubreport createDocumentsUnmodifiedForSixMonthsSubreport(
-            List documentsFound ) {
+            List documentsFound) {
         LifeCyclePhase[] phases = new LifeCyclePhase[]{
-            LifeCyclePhase.APPROVED, LifeCyclePhase.NEW,
-            LifeCyclePhase.PUBLISHED, LifeCyclePhase.ARCHIVED,
+                LifeCyclePhase.APPROVED, LifeCyclePhase.NEW,
+                LifeCyclePhase.PUBLISHED, LifeCyclePhase.ARCHIVED,
         };
         Date sixMonthsAgo = getDateSixMonthsAgo();
         List documentsUnchangedForSixMonths = new ArrayList();
 
-        for ( Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
+        for (Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
             DocumentDomainObject document = (DocumentDomainObject) iterator.next();
             LifeCyclePhase phase = document.getLifeCyclePhase();
-            if ( ArrayUtils.contains( phases, phase ) && document.getModifiedDatetime().before( sixMonthsAgo ) ) {
-                documentsUnchangedForSixMonths.add( document );
+            if (ArrayUtils.contains(phases, phase) && document.getModifiedDatetime().before(sixMonthsAgo)) {
+                documentsUnchangedForSixMonths.add(document);
             }
         }
 
         AdminManagerSubreport documentsUnchangedForSixMonthsSubreport = new AdminManagerSubreport();
-        documentsUnchangedForSixMonthsSubreport.setName( "unchangedForSixMonths" );
-        documentsUnchangedForSixMonthsSubreport.setDocuments( documentsUnchangedForSixMonths );
-        documentsUnchangedForSixMonthsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4" ) );
-        documentsUnchangedForSixMonthsSubreport.setSortorder( "MODR" );
-        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__MODIFIED, null, sixMonthsAgo, phases );
-        documentsUnchangedForSixMonthsSubreport.setSearchQueryString( dateSearchQueryString );
+        documentsUnchangedForSixMonthsSubreport.setName("unchangedForSixMonths");
+        documentsUnchangedForSixMonthsSubreport.setDocuments(documentsUnchangedForSixMonths);
+        documentsUnchangedForSixMonthsSubreport.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4"));
+        documentsUnchangedForSixMonthsSubreport.setSortorder("MODR");
+        String dateSearchQueryString = createDateSearchQueryString(SearchDocumentsPage.DATE_TYPE__MODIFIED, null, sixMonthsAgo, phases);
+        documentsUnchangedForSixMonthsSubreport.setSearchQueryString(dateSearchQueryString);
         return documentsUnchangedForSixMonthsSubreport;
     }
 
-    private AdminManagerSubreport createDocumentsArchivedWithinOneWeekSubreport( List documentsFound ) {
+    private AdminManagerSubreport createDocumentsArchivedWithinOneWeekSubreport(List documentsFound) {
         LifeCyclePhase[] phases = new LifeCyclePhase[]{
-            LifeCyclePhase.APPROVED,
-            LifeCyclePhase.PUBLISHED
+                LifeCyclePhase.APPROVED,
+                LifeCyclePhase.PUBLISHED
         };
         List documentsArchivedWithinOneWeek = new ArrayList();
         Date lastMidnight = getDateLastMidnight();
         Date oneWeekAhead = getDateOneWeekAhead();
-        for ( Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
+        for (Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
             DocumentDomainObject document = (DocumentDomainObject) iterator.next();
             LifeCyclePhase phase = document.getLifeCyclePhase();
             Date archivedDatetime = document.getArchivedDatetime();
-            if ( ArrayUtils.contains( phases, phase ) && null != archivedDatetime
-                 && !archivedDatetime.before( lastMidnight )
-                 && archivedDatetime.before( oneWeekAhead ) ) {
-                documentsArchivedWithinOneWeek.add( document );
+            if (ArrayUtils.contains(phases, phase) && null != archivedDatetime
+                    && !archivedDatetime.before(lastMidnight)
+                    && archivedDatetime.before(oneWeekAhead)) {
+                documentsArchivedWithinOneWeek.add(document);
             }
         }
         AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = new AdminManagerSubreport();
-        documentsArchivedWithinOneWeekSubreport.setName( "archivedWithinOneWeek" );
-        documentsArchivedWithinOneWeekSubreport.setDocuments( documentsArchivedWithinOneWeek );
-        documentsArchivedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2" ) );
-        documentsArchivedWithinOneWeekSubreport.setSortorder( "ARCR" );
-        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__ARCHIVED, lastMidnight, oneWeekAhead, phases );
-        documentsArchivedWithinOneWeekSubreport.setSearchQueryString( dateSearchQueryString );
+        documentsArchivedWithinOneWeekSubreport.setName("archivedWithinOneWeek");
+        documentsArchivedWithinOneWeekSubreport.setDocuments(documentsArchivedWithinOneWeek);
+        documentsArchivedWithinOneWeekSubreport.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2"));
+        documentsArchivedWithinOneWeekSubreport.setSortorder("ARCR");
+        String dateSearchQueryString = createDateSearchQueryString(SearchDocumentsPage.DATE_TYPE__ARCHIVED, lastMidnight, oneWeekAhead, phases);
+        documentsArchivedWithinOneWeekSubreport.setSearchQueryString(dateSearchQueryString);
         return documentsArchivedWithinOneWeekSubreport;
     }
 
     private AdminManagerSubreport createDocumentsUnpublishedWithinOneWeekSubreport(
-            List documentsFound ) {
+            List documentsFound) {
         LifeCyclePhase[] phases = new LifeCyclePhase[]{
-            LifeCyclePhase.APPROVED,
-            LifeCyclePhase.ARCHIVED, LifeCyclePhase.PUBLISHED
+                LifeCyclePhase.APPROVED,
+                LifeCyclePhase.ARCHIVED, LifeCyclePhase.PUBLISHED
         };
         Date lastMidnight = getDateLastMidnight();
         Date oneWeekAhead = getDateOneWeekAhead();
         List documentsUnpublishedWithinOneWeek = new ArrayList();
-        for ( Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
+        for (Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
             DocumentDomainObject document = (DocumentDomainObject) iterator.next();
             LifeCyclePhase phase = document.getLifeCyclePhase();
             Date publicationEndDatetime = document.getPublicationEndDatetime();
-            if ( ArrayUtils.contains( phases, phase ) && null != publicationEndDatetime
-                 && !publicationEndDatetime.before( lastMidnight )
-                 && publicationEndDatetime.before( oneWeekAhead ) ) {
-                documentsUnpublishedWithinOneWeek.add( document );
+            if (ArrayUtils.contains(phases, phase) && null != publicationEndDatetime
+                    && !publicationEndDatetime.before(lastMidnight)
+                    && publicationEndDatetime.before(oneWeekAhead)) {
+                documentsUnpublishedWithinOneWeek.add(document);
             }
         }
 
         AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = new AdminManagerSubreport();
-        documentsUnpublishedWithinOneWeekSubreport.setName( "unpublishedWithinOneWeek" );
-        documentsUnpublishedWithinOneWeekSubreport.setDocuments( documentsUnpublishedWithinOneWeek );
-        documentsUnpublishedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3" ) );
-        documentsUnpublishedWithinOneWeekSubreport.setSortorder( "PUBER" );
-        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__PUBLICATION_END, lastMidnight, oneWeekAhead, phases );
-        documentsUnpublishedWithinOneWeekSubreport.setSearchQueryString( dateSearchQueryString );
+        documentsUnpublishedWithinOneWeekSubreport.setName("unpublishedWithinOneWeek");
+        documentsUnpublishedWithinOneWeekSubreport.setDocuments(documentsUnpublishedWithinOneWeek);
+        documentsUnpublishedWithinOneWeekSubreport.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3"));
+        documentsUnpublishedWithinOneWeekSubreport.setSortorder("PUBER");
+        String dateSearchQueryString = createDateSearchQueryString(SearchDocumentsPage.DATE_TYPE__PUBLICATION_END, lastMidnight, oneWeekAhead, phases);
+        documentsUnpublishedWithinOneWeekSubreport.setSearchQueryString(dateSearchQueryString);
         return documentsUnpublishedWithinOneWeekSubreport;
     }
 
-    private String createDateSearchQueryString( String dateType, Date startDate, Date endDate,
-                                                LifeCyclePhase[] lifeCyclePhases ) {
+    private String createDateSearchQueryString(String dateType, Date startDate, Date endDate,
+                                               LifeCyclePhase[] lifeCyclePhases) {
         String result = SearchDocumentsPage.REQUEST_PARAMETER__DATE_TYPE + "="
-                        + dateType;
+                + dateType;
 
-        result += "&"+SearchDocumentsPage.REQUEST_PARAMETER__USER_RESTRICTION+"="+SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER ;
+        result += "&" + SearchDocumentsPage.REQUEST_PARAMETER__USER_RESTRICTION + "=" + SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER;
 
-        if ( null != startDate ) {
+        if (null != startDate) {
             result += "&"
-                      + SearchDocumentsPage.REQUEST_PARAMETER__START_DATE
-                      + "="
-                      + Utility.formatDate( startDate );
+                    + SearchDocumentsPage.REQUEST_PARAMETER__START_DATE
+                    + "="
+                    + Utility.formatDate(startDate);
         }
 
-        if ( null != endDate ) {
+        if (null != endDate) {
             result += "&"
-                      + SearchDocumentsPage.REQUEST_PARAMETER__END_DATE
-                      + "=" + Utility.formatDate( endDate );
+                    + SearchDocumentsPage.REQUEST_PARAMETER__END_DATE
+                    + "=" + Utility.formatDate(endDate);
         }
-        if ( null != lifeCyclePhases ) {
-            for ( int i = 0; i < lifeCyclePhases.length; i++ ) {
+        if (null != lifeCyclePhases) {
+            for (int i = 0; i < lifeCyclePhases.length; i++) {
                 LifeCyclePhase phase = lifeCyclePhases[i];
                 result += "&" + SearchDocumentsPage.REQUEST_PARAMETER__PHASE + "=" + phase;
             }
@@ -447,19 +447,19 @@ public class AdminManager extends HttpServlet {
 
     public static class DatesSummarySearchResultColumn implements DocumentFinder.SearchResultColumn {
 
-        public String render( DocumentDomainObject document, HttpServletRequest request,
-                              HttpServletResponse response ) throws IOException, ServletException {
-            UserDomainObject user = Utility.getLoggedOnUser( request );
+        public String render(DocumentDomainObject document, HttpServletRequest request,
+                             HttpServletResponse response) throws IOException, ServletException {
+            UserDomainObject user = Utility.getLoggedOnUser(request);
             AdminManagerExpandableDatesBean expandableDatesBean = new AdminManagerExpandableDatesBean();
-            expandableDatesBean.setExpanded( true );
-            expandableDatesBean.setDocument( document );
-            request.setAttribute( "expandableDatesBean", expandableDatesBean );
-            return Utility.getContents( "/imcms/" + user.getLanguageIso639_2()
-                                        + "/jsp/admin/admin_manager_expandable_dates.jsp", request, response );
+            expandableDatesBean.setExpanded(true);
+            expandableDatesBean.setDocument(document);
+            request.setAttribute("expandableDatesBean", expandableDatesBean);
+            return Utility.getContents("/imcms/" + user.getLanguageIso639_2()
+                    + "/jsp/admin/admin_manager_expandable_dates.jsp", request, response);
         }
 
         public LocalizedMessage getName() {
-            return new LocalizedMessage( "global/Dates" );
+            return new LocalizedMessage("global/Dates");
         }
     }
 
@@ -477,7 +477,7 @@ public class AdminManager extends HttpServlet {
             return heading;
         }
 
-        public void setHeading( LocalizedMessage heading ) {
+        public void setHeading(LocalizedMessage heading) {
             this.heading = heading;
         }
 
@@ -489,96 +489,96 @@ public class AdminManager extends HttpServlet {
             return tabName;
         }
 
-        public void setTabName( String tabName ) {
+        public void setTabName(String tabName) {
             this.tabName = tabName;
         }
 
-        public void addSubreport( AdminManagerSubreport newDocumentsSubreport ) {
-            subreports.add( newDocumentsSubreport );
+        public void addSubreport(AdminManagerSubreport newDocumentsSubreport) {
+            subreports.add(newDocumentsSubreport);
         }
 
         public String getHtmlAdminPart() {
             return htmlAdminPart;
         }
 
-        public void setHtmlAdminPart( String htmlAdminPart ) {
+        public void setHtmlAdminPart(String htmlAdminPart) {
             this.htmlAdminPart = htmlAdminPart;
         }
 
-        public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
-            putInRequest( request );
+        public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
+            putInRequest(request);
             String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/admin/admin_manager.jsp";
-            request.getRequestDispatcher( forwardPath ).forward( request, response );
+            request.getRequestDispatcher(forwardPath).forward(request, response);
         }
 
-        public void putInRequest( HttpServletRequest request ) {
-            request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+        public void putInRequest(HttpServletRequest request) {
+            request.setAttribute(REQUEST_ATTRIBUTE__PAGE, this);
         }
 
         public LocalizedMessage getErrorMessage() {
             return errorMessage;
         }
 
-        public void setErrorMessage( LocalizedMessage errorMessage ) {
+        public void setErrorMessage(LocalizedMessage errorMessage) {
             this.errorMessage = errorMessage;
         }
 
         public JSCalendar getJSCalendar(HttpServletRequest request) {
-            return new JSCalendar( Utility.getLoggedOnUser(request).getLanguageIso639_2(), request ) ;
+            return new JSCalendar(Utility.getLoggedOnUser(request).getLanguageIso639_2(), request);
         }
 
     }
 
-    private Date getDateTruncated( int days ) {
+    private Date getDateTruncated(int days) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add( Calendar.DATE, days );
-        calendar.set( Calendar.HOUR_OF_DAY, 0 );
-        calendar.set( Calendar.MINUTE, 0 );
-        calendar.set( Calendar.SECOND, 0 );
-        calendar.set( Calendar.MILLISECOND, 0 );
+        calendar.add(Calendar.DATE, days);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         return calendar.getTime();
     }
 
     private Date getDateLastMidnight() {
-        return getDateTruncated( 0 );
+        return getDateTruncated(0);
     }
 
     private Date getDateSixMonthsAgo() {
-        return getDateTruncated( -182 );
+        return getDateTruncated(-182);
     }
 
     private Date getDateOneWeekAhead() {
-        return getDateTruncated( +7 );
+        return getDateTruncated(+7);
     }
 
     private Date getDateOneWeekAgo() {
-        return getDateTruncated( -7 );
+        return getDateTruncated(-7);
     }
 
-    public static ChainableReversibleNullComparator getComparator( String sortorder ) {
+    public static ChainableReversibleNullComparator getComparator(String sortorder) {
 
         ChainableReversibleNullComparator comparator = DocumentComparator.MODIFIED_DATETIME.reversed();
-        if ( "MODR".equals( sortorder ) ) {
+        if ("MODR".equals(sortorder)) {
             comparator = DocumentComparator.MODIFIED_DATETIME;
-        } else if ( "PUBS".equals( sortorder ) ) {
+        } else if ("PUBS".equals(sortorder)) {
             comparator = DocumentComparator.PUBLICATION_START_DATETIME.reversed();
-        } else if ( "PUBSR".equals( sortorder ) ) {
+        } else if ("PUBSR".equals(sortorder)) {
             comparator = DocumentComparator.PUBLICATION_START_DATETIME;
-        } else if ( "PUBE".equals( sortorder ) ) {
+        } else if ("PUBE".equals(sortorder)) {
             comparator = DocumentComparator.PUBLICATION_END_DATETIME.reversed().nullsLast();
-        } else if ( "PUBER".equals( sortorder ) ) {
+        } else if ("PUBER".equals(sortorder)) {
             comparator = DocumentComparator.PUBLICATION_END_DATETIME.nullsLast();
-        } else if ( "ARC".equals( sortorder ) ) {
+        } else if ("ARC".equals(sortorder)) {
             comparator = DocumentComparator.ARCHIVED_DATETIME.reversed().nullsLast();
-        } else if ( "ARCR".equals( sortorder ) ) {
+        } else if ("ARCR".equals(sortorder)) {
             comparator = DocumentComparator.ARCHIVED_DATETIME.nullsLast();
-        } else if ( "HEADL".equals( sortorder ) ) {
+        } else if ("HEADL".equals(sortorder)) {
             comparator = DocumentComparator.HEADLINE;
-        } else if ( "HEADLR".equals( sortorder ) ) {
+        } else if ("HEADLR".equals(sortorder)) {
             comparator = DocumentComparator.HEADLINE.reversed();
-        } else if ( "ID".equals( sortorder ) ) {
+        } else if ("ID".equals(sortorder)) {
             comparator = DocumentComparator.ID;
-        } else if ( "IDR".equals( sortorder ) ) {
+        } else if ("IDR".equals(sortorder)) {
             comparator = DocumentComparator.ID.reversed();
         }
         return comparator;
@@ -586,32 +586,32 @@ public class AdminManager extends HttpServlet {
 
     private String getAdminTaskUrl(String whichButton, HttpServletRequest request) {
         String url = "";
-        if ( whichButton.equalsIgnoreCase( "UserStart" ) ) {
+        if (whichButton.equalsIgnoreCase("UserStart")) {
             url += "AdminUser";
-        } else if ( whichButton.equalsIgnoreCase( "CounterStart" ) ) {
+        } else if (whichButton.equalsIgnoreCase("CounterStart")) {
             url += "AdminCounter";
-        } else if ( whichButton.equalsIgnoreCase( "AdminSearchTerms" ) ) {
+        } else if (whichButton.equalsIgnoreCase("AdminSearchTerms")) {
             url += "AdminSearchTerms";
-        } else if ( whichButton.equalsIgnoreCase( "AddTemplates" ) ) {
+        } else if (whichButton.equalsIgnoreCase("AddTemplates")) {
             url += "TemplateAdmin";
-        } else if ( whichButton.equalsIgnoreCase( "DeleteDocs" ) ) {
+        } else if (whichButton.equalsIgnoreCase("DeleteDocs")) {
             url += "AdminDeleteDoc";
-        } else if ( whichButton.equalsIgnoreCase( "IP-access" ) ) {
+        } else if (whichButton.equalsIgnoreCase("IP-access")) {
             url += "AdminIpAccess";
-        } else if ( whichButton.equalsIgnoreCase( "SystemMessage" ) ) {
+        } else if (whichButton.equalsIgnoreCase("SystemMessage")) {
             url += "AdminSystemInfo";
-        } else if ( whichButton.equalsIgnoreCase( "AdminRoles" ) ) {
+        } else if (whichButton.equalsIgnoreCase("AdminRoles")) {
             url += "AdminRoles";
-        } else if ( whichButton.equalsIgnoreCase( "LinkCheck" ) ) {
+        } else if (whichButton.equalsIgnoreCase("LinkCheck")) {
             url += "LinkCheck";
-        } else if ( whichButton.equalsIgnoreCase( "ListDocuments" ) ) {
+        } else if (whichButton.equalsIgnoreCase("ListDocuments")) {
             url += "ListDocuments";
-        } else if ( whichButton.equalsIgnoreCase( "FileAdmin" ) ) {
+        } else if (whichButton.equalsIgnoreCase("FileAdmin")) {
             url += "FileAdmin";
-        } else if ( whichButton.equalsIgnoreCase( "AdminCategories" ) ) {
+        } else if (whichButton.equalsIgnoreCase("AdminCategories")) {
             url += "AdminCategories";
-        } else if ( whichButton.equals( "AdminProfiles" ) ) {
-            url = request.getContextPath()+"/imcms/admin/profile/list";
+        } else if (whichButton.equals("AdminProfiles")) {
+            url = request.getContextPath() + "/imcms/admin/profile/list";
         }
         return url;
 
@@ -620,21 +620,21 @@ public class AdminManager extends HttpServlet {
     private static class SaveNewDocumentCommand extends DocumentPageFlow.SaveDocumentCommand {
 
         @Override
-        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().saveNewDocument( document, user);
+        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+            Imcms.getServices().getDocumentMapper().saveNewDocument(document, user);
         }
 
         @Override
         public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<DocumentMapper.SaveDirectives> directiveses, UserDomainObject user)
-               throws NoPermissionInternalException, DocumentSaveException {
+                throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveNewDocument(document, labelsMap, directiveses, user);
-        }        
+        }
     }
 
     private class ShowRecentChangesPageCommand implements DispatchCommand {
 
-        public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-            createAndShowAdminManagerPage( request, response, null, PARAMETER_VALUE__SHOW_RECENT );
+        public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+            createAndShowAdminManagerPage(request, response, null, PARAMETER_VALUE__SHOW_RECENT);
         }
     }
 } // End of class

@@ -4,14 +4,14 @@ package admin.doc
 
 import _root_.scala.collection.JavaConversions._
 import _root_.com.vaadin.event.Action
-import _root_.com.vaadin.ui._
-
 import _root_.com.imcode.imcms.vaadin._
-import _root_.imcode.server.document.{FileDocumentDomainObject, HtmlDocumentDomainObject}
 import _root_.com.imcode.imcms.admin.doc.search.{DocSearch, AllDocsContainer, CustomDocsContainer}
 import _root_.com.imcode.imcms.admin.doc.meta.MetaEditor
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
-
+import _root_.imcode.server.document.{DocumentDomainObject, FileDocumentDomainObject, HtmlDocumentDomainObject}
+import com.vaadin.ui._
+import mapping.ProfileMapper
+import mapping.ProfileMapper.SimpleProfile
 
 object Actions {
   val IncludeToSelection = new Action("doc.mgr.action.include_to_selection".i)
@@ -54,6 +54,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       app.show(dlg, resizable = true)
     }
 
+    // todo: parent doc or profile must be selected
     ui.miDocNewText.setCommandHandler {
       val dlg = new OkCancelDialog("New Text Document") with CustomSizeDialog with BottomMarginDialog
 
@@ -102,6 +103,46 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       app.show(dlg, resizable = true)
     }
 
+    // todo: in current SuperAdmin there is no profile name check
+    // i.e. multiple docs can have the same name and name can be any value
+    ui.miProfileEditName.setCommandHandler {
+      whenSingle(search.searchResultUI.value) { docId =>
+        val docIdStr = docId.toString
+        val profileMapper = new ProfileMapper(imcmsServices.getDatabase)
+        val profileOpt = profileMapper.getAll.find(_.getDocumentName == docIdStr)
+
+        app.initAndShow(new OkCancelDialog("Edit profile name")) { dlg =>
+          val mainUI = new EditProfileNameUI
+          mainUI.txtName.value = profileOpt.map(_.getName).getOrElse("")
+
+          dlg.mainUI = mainUI
+
+          dlg.wrapOkHandler {
+            mainUI.txtName.trimOpt match {
+              case Some(name) =>
+                // check name is not taken by a profile with other id
+
+                profileOpt match {
+                  case Some(profile: ProfileMapper.SimpleProfile) =>
+                    profileMapper.update(new ProfileMapper.SimpleProfile(profile.getId.toString, name, profile.getDocumentName))
+                    app.showInfoNotification("Profile name is updated")
+
+                  case _ =>
+                    profileMapper.create(new ProfileMapper.SimpleProfile(null, name, docIdStr))
+                    app.showInfoNotification("Profile name is assigned")
+                }
+
+              case _ =>
+                for (profile <- profileOpt) {
+                  profileMapper.delete(profile.getId)
+                  app.showInfoNotification("Profile name is removed")
+                }
+            }
+          }
+        }
+      }
+    }
+
 
     search.searchResultUI.addActionHandler(new Action.Handler {
       import Actions._
@@ -125,14 +166,18 @@ class DocManagerUI(searchUI: Component) extends VerticalLayout with Spacing with
   val mb = new MenuBar
   val miDoc = mb.addItem("doc.mgr.mi.doc".i)
   val miDocNew = miDoc.addItem("doc.mgr.mi.doc.new".i)
-  val miDocNewFile = miDocNew.addItem("doc.mgr.action.doc.new.file_doc".i)
-  val miDocNewURL = miDocNew.addItem("doc.mgr.action.doc.new.url_doc".i)
-  val miDocNewText = miDocNew.addItem("doc.mgr.action.doc.new.text_doc".i)
+  val miDocNewText = miDocNew.addItem("doc.mgr.action.doc.new_text_doc".i)
+  val miDocNewFile = miDocNew.addItem("doc.mgr.action.doc.new_file_doc".i)
+  val miDocNewHTML = miDocNew.addItem("doc.mgr.action.doc.new_html_doc".i)
+  val miDocNewURL = miDocNew.addItem("doc.mgr.action.doc.new_url_doc".i)
+  val miDocCopy = miDoc.addItem("doc.mgr.mi.doc.copy".i)
   val miDocEdit = miDoc.addItem("doc.mgr.action.doc.edit".i)
   val miDocDelete = miDoc.addItem("doc.mgr.action.doc.delete".i)
   val miView = mb.addItem("doc.mgr.mi.view".i)
   val miShowSelection = miView.addItem("doc.mgr.action.show_selection".i)
   val miEditMeta = mb.addItem("doc.mgr.action.edit_meta".i)
+  val miProfile = mb.addItem("doc.mgr.mi.profile".i)
+  val miProfileEditName = miProfile.addItem("doc.mgr.mi.profile.edit_name".i)
 
   addComponents(this, mb, searchUI)
   setExpandRatio(searchUI, 1.0f)
@@ -167,4 +212,50 @@ class CustomDocsUI(searchUI: Component) extends VerticalLayout with Spacing with
 
   addComponents(this, mb, searchUI)
   setExpandRatio(searchUI, 1.0f)
+}
+
+
+// New doc flow's first page
+// dialog???
+
+/**
+ * Creates and returns document which inherits parent doc.
+ */
+class NewDocFactory(parentDoc: Option[DocumentDomainObject]) extends ImcmsServicesSupport {
+
+  val ui = letret(new NewDocFactoryUI) { ui =>
+
+  }
+
+  //def doc = /*if copy*/ if (true) imcmsServices.getDocumentMapper.copyDocument(parentDoc)
+}
+
+class NewDocFactoryUI extends GridLayout(3, 3) with UndefinedSize {
+
+  // copy, profile, iinheritance
+//  val btnSelectProfile = new Button("...")
+//  val btnSelectNamedProfile = new Button("...")
+//  val btnSelectForCopy = new Button("...")
+  val txtProfileDoc = new TextField
+  val cbNamedProfileDoc = new TextField
+  val txtCopyDoc = new TextField
+
+
+  val ogProfile = new OptionGroup()
+  val ogNamedProfile = new OptionGroup()
+  val ogCopy = new OptionGroup()
+
+  val cbDocTypeType = new ComboBox()
+  val cbNamedProfileType = new ComboBox()
+  val cbCopyType = new ComboBox()
+
+//  addComponents(this,
+//    ogProfile, txtParentDoc, cb)
+}
+
+
+class EditProfileNameUI extends FormLayout with UndefinedSize {
+  val txtName = new TextField("Name")
+
+  addComponent(txtName)
 }

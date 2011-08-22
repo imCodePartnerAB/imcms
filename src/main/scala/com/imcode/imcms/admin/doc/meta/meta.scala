@@ -26,7 +26,7 @@ import api._
  * Doc's meta editor.
  * <p/>
  *
- * @param doc used as editor's initial state, never modified.
+ * @param doc used to as editor's initial state, never modified.
  */
 class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends ImcmsServicesSupport {
 
@@ -51,12 +51,18 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
     ui.treeMenu.addValueChangeHandler {
       ui.treeMenu.getValue match {
         case "Appearance" =>
-          if (appearanceSheetOpt.isEmpty)
+          if (appearanceSheetOpt.isEmpty) {
+            val i18nMetas: Map[I18nLanguage, I18nMeta] = ?(doc.getIdValue) match {
+              case Some(id) =>
+                imcmsServices.getDocumentMapper.getI18nMetas(id).map(m => m.getLanguage -> m).toMap
+              case _ =>
+                Map.empty
+            }
+
             appearanceSheetOpt = Some(
-              new AppearanceSheet(
-                doc.getMeta, imcmsServices.getDocumentMapper.getI18nMetas(doc.getId).map(m => m.getLanguage -> m).toMap
-              )
+              new AppearanceSheet(doc.getMeta, i18nMetas)
             )
+          }
 
           ui.pnlMenuItem.setContent(appearanceSheetOpt.get.ui)
 
@@ -460,6 +466,9 @@ class SearchSheetUI extends FormLayout with UndefinedSize {
  *
  * -alias
  * -link target (_self | _top | _blank)
+ *
+ * @param meta doc's Meta
+ * @param i18nMetas doc's i18nMeta-s
  */
 class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extends ImcmsServicesSupport {
 
@@ -471,7 +480,7 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
     target: String
   )
 
-  // i18nMetas sorted by language default (always first) and native name
+  // i18nMetas sorted by language (default always first) and native name
   private val i18nMetasUIs: Seq[(I18nLanguage, CheckBox, I18nMetaEditorUI)] = locally {
     val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage
     val languages = imcmsServices.getI18nSupport.getLanguages.sortWith {
@@ -511,7 +520,7 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
 
 
   /**
-   * Default language checkbox is always checked (hence its associated i18n meta form is always visible)
+   * Default language checkbox is always checked (hence its i18n meta form is always visible)
    */
   def revert() {
     val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage

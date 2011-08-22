@@ -582,6 +582,7 @@ case class DocBasicSearchFormState(
   range: Option[DocSearchRange] = Some(DocSearchRange(None, None)),
   text: Option[String] = Some(""),
   docType: Option[Set[DocumentTypeDomainObject]] = Some(Set.empty),
+  profile: Boolean = false, // Set[String]
   advanced: Option[String] = None // value in drop-down
 )
 
@@ -604,8 +605,10 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
     val chkText = new CheckBox("doc.search.basic.frm.fld.chk_type_text".i)
     val chkFile = new CheckBox("doc.search.basic.frm.fld.chk_type_file".i)
     val chkHtml = new CheckBox("doc.search.basic.frm.fld.chk_type_html".i)
+    val chkURL = new CheckBox("doc.search.basic.frm.fld.chk_type_url".i)
+    val chkProfile = new CheckBox("doc.search.basic.frm.fld.chk_type_profile".i)
 
-    addComponents(this, chkText, chkFile, chkHtml)
+    addComponents(this, chkText, chkFile, chkHtml, chkURL, new Label(" | ") with UndefinedSize,  chkProfile)
   }
 
   val chkAdvanced = new CheckBox("doc.search.basic.frm.fld.chk_advanced".i) with Immediate with ExposeValueChange

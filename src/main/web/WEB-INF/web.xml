@@ -28,6 +28,7 @@
     <filter>
         <description>
             Restricts access to mapped resources to users who are in the superadmin role.
+            Currently API samples only.
         </description>
 
         <filter-name>SuperAdminFilter</filter-name>
