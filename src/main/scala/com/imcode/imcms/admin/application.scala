@@ -78,33 +78,30 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
 
   // Main menu items IDS
-  object NewMenu {
-    object About
-    object Settings {
-      object Languages
-      object Properties
-    }
-    object Documents {
-      object Categories
-      object Templates
-      object Profiles
-      object Links
-      object Structure
-    }
-    object Permissions {
-      object Users
-      object Roles
-      object IP_Access
-    }
-    object Statistics {
-      object SearchTerms
-      object SessionCounter
-    }
-    object Filesystem
-    object System {
-      object Cache
-    }
-  }
+//  object NewMenu {
+//    object About
+//    object Settings {
+//      object Languages
+//      object Properties
+//    }
+//    object Documents {
+//      object Categories
+//      object Templates
+//    }
+//    object Permissions {
+//      object Users
+//      object Roles
+//      object IP_Access
+//    }
+//    object Statistics {
+//      object SearchTerms
+//      object SessionCounter
+//    }
+//    object Filesystem
+//    object System {
+//      object Cache
+//    }
+//  }
 
   object Menu extends MenuItem {
     object About extends MenuItem(this, Some(About16))
@@ -112,9 +109,6 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     object Documents extends MenuItem(this) {
       object Categories extends MenuItem(this, Some(Done16))
       object Templates extends MenuItem(this, Some(Done16))
-      object Profiles extends MenuItem(this)
-      object Links extends MenuItem(this)
-      object Structure extends MenuItem(this)
     }
     object Permissions extends MenuItem(this) {
       object Users extends MenuItem(this, Some(Done16))
@@ -131,6 +125,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
         object SearchTerms extends MenuItem(this)
         object Session extends MenuItem(this, Some(Done16))
         object Cache extends MenuItem(this)
+        object LinkValidator extends MenuItem(this)
       }
       object Files extends MenuItem(this, Some(Done16))
     }
@@ -255,7 +250,6 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
           case Menu.Permissions.IP_Access => ipAccess
           case Menu.System.Files => filesystem
           case Menu.Documents.Templates => templates
-          case Menu.Documents.Structure => docStructure
           case Menu.System.Monitor.Cache => systemCacheView
 
           case other => NA(other)
@@ -591,67 +585,4 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
 
 
-  def docStructure = new TabSheetView {
-    addTab(new VerticalLayoutUI("Document structure outline") {
-      val lytMenu = new HorizontalLayout {
-        setSpacing(true)
-        val txtId = new TextField("Text doc (meta) id")
-        val btnShow = new Button("Show")
-
-        addComponents(this, txtId, btnShow)
-      }
-      val lytStructure = new VerticalLayout {
-        setSpacing(true)
-      }
-
-      lytMenu.btnShow addClickHandler {
-        lytMenu.txtId.getValue match {
-          case IntNumber(id) =>
-            Imcms.getServices.getDocumentMapper.getDocument(id) match {
-              case null =>
-                app.show(new MsgDialog("Information", "No document with id ["+id+"]."))
-              case doc: TextDocumentDomainObject =>
-                lytStructure.removeAllComponents
-                lytStructure.addComponent(new Form(new GridLayout(2,1)) {
-                  setSpacing(true)
-                  setCaption("Texts")
-                  let(getLayout.asInstanceOf[GridLayout]) { l =>
-                    for ((textId, text) <- doc.getTexts) {
-                      addComponents(l, new Label(textId.toString), new Label(text.getText))
-                    }
-                  }
-                })
-
-               lytStructure.addComponent(new Form(new GridLayout(2,1)) {
-                  setSpacing(true)
-                  setCaption("Images")
-                  let(getLayout.asInstanceOf[GridLayout]) { l =>
-                    for ((imageId, image) <- doc.getImages) {
-                      addComponents(l, new Label(imageId.toString), new Label(image.getImageUrl))
-                    }
-                  }
-                })
-
-               lytStructure.addComponent(new Form(new GridLayout(2,1)) {
-                  setSpacing(true)
-                  setCaption("Menus")
-                  let(getLayout.asInstanceOf[GridLayout]) { l =>
-                    for ((menuId, menu) <- doc.getMenus) {
-                      addComponents(l, new Label(menuId.toString), new Label(menu.getMenuItems.map(_.getDocumentId).mkString(", ")))
-                    }
-                  }
-                })
-
-              case _ =>
-                app.show(new MsgDialog("Information", "Not a text document."))
-
-            }
-          case _: String =>
-            app.show(new MsgDialog("Information", "Document id must be integer."))
-        }
-      }
-
-      addComponents(this, lytMenu, lytStructure)
-    })
-  }
 }

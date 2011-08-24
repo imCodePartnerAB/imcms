@@ -103,8 +103,6 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       app.show(dlg, resizable = true)
     }
 
-    // todo: in current SuperAdmin there is no profile name check
-    // i.e. multiple docs can have the same name and name can be any value
     ui.miProfileEditName.setCommandHandler {
       whenSingle(search.searchResultUI.value) { docId =>
         val docIdStr = docId.toString
@@ -112,7 +110,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         val profileOpt = profileMapper.getAll.find(_.getDocumentName == docIdStr)
 
         app.initAndShow(new OkCancelDialog("Edit profile name")) { dlg =>
-          val mainUI = new EditProfileNameUI
+          val mainUI = new DocProfileNameEditorUI
           mainUI.txtName.value = profileOpt.map(_.getName).getOrElse("")
 
           dlg.mainUI = mainUI
@@ -143,6 +141,15 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       }
     }
 
+    ui.miDocCopy.setCommandHandler {
+      whenSingle(search.searchResultUI.value) { docId =>
+        // todo copy selected document VERSION, not working???
+        // dialog with drop down???? -> version select
+        imcmsServices.getDocumentMapper.copyDocument(imcmsServices.getDocumentMapper.getWorkingDocument(docId), app.user)
+        search.search()
+        app.showInfoNotification("Document has been copied")
+      }
+    }
 
     search.searchResultUI.addActionHandler(new Action.Handler {
       import Actions._
@@ -166,10 +173,11 @@ class DocManagerUI(searchUI: Component) extends VerticalLayout with Spacing with
   val mb = new MenuBar
   val miDoc = mb.addItem("doc.mgr.mi.doc".i)
   val miDocNew = miDoc.addItem("doc.mgr.mi.doc.new".i)
-  val miDocNewText = miDocNew.addItem("doc.mgr.action.doc.new_text_doc".i)
-  val miDocNewFile = miDocNew.addItem("doc.mgr.action.doc.new_file_doc".i)
-  val miDocNewHTML = miDocNew.addItem("doc.mgr.action.doc.new_html_doc".i)
-  val miDocNewURL = miDocNew.addItem("doc.mgr.action.doc.new_url_doc".i)
+  val miDocNewText = miDocNew.addItem("doc.mgr.action.doc.new.text_doc".i)
+  val miDocNewFile = miDocNew.addItem("doc.mgr.action.doc.new.file_doc".i)
+  val miDocNewHTML = miDocNew.addItem("doc.mgr.action.doc.new.html_doc".i)
+  val miDocNewURL = miDocNew.addItem("doc.mgr.action.doc.new.url_doc".i)
+  val miDocOutline = miDoc.addItem("doc.mgr.action.doc.outline".i)
   val miDocCopy = miDoc.addItem("doc.mgr.mi.doc.copy".i)
   val miDocEdit = miDoc.addItem("doc.mgr.action.doc.edit".i)
   val miDocDelete = miDoc.addItem("doc.mgr.action.doc.delete".i)
@@ -254,8 +262,76 @@ class NewDocFactoryUI extends GridLayout(3, 3) with UndefinedSize {
 }
 
 
-class EditProfileNameUI extends FormLayout with UndefinedSize {
+class DocProfileNameEditorUI extends FormLayout with UndefinedSize {
   val txtName = new TextField("Name")
 
   addComponent(txtName)
 }
+
+
+// DOC STRUCTURE OUTLINE
+
+//def docStructure = new TabSheetView {
+//  addTab(new VerticalLayoutUI("Document structure outline") {
+//    val lytMenu = new HorizontalLayout {
+//      setSpacing(true)
+//      val txtId = new TextField("Text doc (meta) id")
+//      val btnShow = new Button("Show")
+//
+//      addComponents(this, txtId, btnShow)
+//    }
+//    val lytStructure = new VerticalLayout {
+//      setSpacing(true)
+//    }
+//
+//    lytMenu.btnShow addClickHandler {
+//      lytMenu.txtId.getValue match {
+//        case IntNumber(id) =>
+//          Imcms.getServices.getDocumentMapper.getDocument(id) match {
+//            case null =>
+//              app.show(new MsgDialog("Information", "No document with id ["+id+"]."))
+//            case doc: TextDocumentDomainObject =>
+//              lytStructure.removeAllComponents
+//              lytStructure.addComponent(new Form(new GridLayout(2,1)) {
+//                setSpacing(true)
+//                setCaption("Texts")
+//                let(getLayout.asInstanceOf[GridLayout]) { l =>
+//                  for ((textId, text) <- doc.getTexts) {
+//                    addComponents(l, new Label(textId.toString), new Label(text.getText))
+//                  }
+//                }
+//              })
+//
+//             lytStructure.addComponent(new Form(new GridLayout(2,1)) {
+//                setSpacing(true)
+//                setCaption("Images")
+//                let(getLayout.asInstanceOf[GridLayout]) { l =>
+//                  for ((imageId, image) <- doc.getImages) {
+//                    addComponents(l, new Label(imageId.toString), new Label(image.getImageUrl))
+//                  }
+//                }
+//              })
+//
+//             lytStructure.addComponent(new Form(new GridLayout(2,1)) {
+//                setSpacing(true)
+//                setCaption("Menus")
+//                let(getLayout.asInstanceOf[GridLayout]) { l =>
+//                  for ((menuId, menu) <- doc.getMenus) {
+//                    addComponents(l, new Label(menuId.toString), new Label(menu.getMenuItems.map(_.getDocumentId).mkString(", ")))
+//                  }
+//                }
+//              })
+//
+//            case _ =>
+//              app.show(new MsgDialog("Information", "Not a text document."))
+//
+//          }
+//        case _: String =>
+//          app.show(new MsgDialog("Information", "Document id must be integer."))
+//      }
+//    }
+//
+//    addComponents(this, lytMenu, lytStructure)
+//  })
+//}
+

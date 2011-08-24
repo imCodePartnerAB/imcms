@@ -221,14 +221,15 @@ trait OKButton extends Dialog {
   wrapOkHandler {}
 
   /**
-   * Adds Ok button listener which invokes a handler and closes dialog if there is no exception.
+   * Wraps Ok handler: invokes original handler and closes dialog if there is no exception.
    */
   def wrapOkHandler(handler: => Unit) {
-    btnOk addClickHandler {
+    setOkHandler {
       EX.allCatch.either(handler) match {
         case Right(_) => close()
         case Left(ex) => using(new java.io.StringWriter) { w =>
           ex.printStackTrace(new java.io.PrintWriter(w))
+          getApplication.showErrorNotification("Unexpected error: %s".format(ex.getMessage), w.toString)
           throw ex
         }
       }
@@ -236,6 +237,23 @@ trait OKButton extends Dialog {
   }
 
   def setOkHandler(handler: => Unit) = btnOk.addClickHandler(handler)
+
+  // todo: ??? setOKEitherHandler
+  //
+  //  def setOkEitherHandler(handler: => Either[Option[String], Option[String]]) {
+  //    handler match {
+  //      case Left
+  //    }
+  //  }
+  // Left, Right: Option[Info|Warning|Error]
+  // if one of them - show notification/ or msg dialog
+  // close if close is set to true:
+  // sealed trait HandlerStatus {
+  //
+  // }
+  // case class StatusInfo(autoClose: Boolean = true, show: notification | dialog)
+  // case class StatusWarning(autoClose: Boolean = false)
+  // case class StatusError(autoClose: Boolean = false)
 }
 
 
