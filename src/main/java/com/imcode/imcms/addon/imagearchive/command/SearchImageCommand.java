@@ -34,8 +34,8 @@ public class SearchImageCommand implements Serializable {
     private String activeDt;
     private String activeEndDt;
     private int resultsPerPage = DEFAULT_PAGE_SIZE;
-    private short sortBy = SORT_BY_ARTIST;
-    private short sortOrder = SORT_ASCENDING;
+    private short sortBy = SORT_BY_ENTRY_DATE;
+    private short sortOrder = SORT_DESCENDING;
     private String clearAction;
     
     private Date licenseDate;
