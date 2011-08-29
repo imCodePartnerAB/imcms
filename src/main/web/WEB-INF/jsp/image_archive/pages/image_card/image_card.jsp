@@ -1,3 +1,4 @@
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <%@ page import="com.imcode.imcms.api.*" %>
 <spring:message var="title" code="archive.title.imageCard" htmlEscape="true"/>

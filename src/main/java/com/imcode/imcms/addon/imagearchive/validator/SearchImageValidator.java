@@ -96,7 +96,7 @@ public class SearchImageValidator implements Validator {
         command.setActiveEndDate(activeEndDate);
         
         int resultsPerPage = command.getResultsPerPage();
-        if (resultsPerPage < 10 || resultsPerPage > 40) {
+        if (resultsPerPage < 10 || resultsPerPage > 100) {
             command.setResultsPerPage(SearchImageCommand.DEFAULT_PAGE_SIZE);
         }
         

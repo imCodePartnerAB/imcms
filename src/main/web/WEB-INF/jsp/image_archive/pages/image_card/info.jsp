@@ -1,5 +1,3 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <%@ page import="com.imcode.imcms.api.*" %>
 <% pageContext.setAttribute("user", ContentManagementSystem.fromRequest(request).getCurrentUser()); %>

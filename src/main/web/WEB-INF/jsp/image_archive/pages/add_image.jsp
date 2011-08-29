@@ -1,6 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <spring:message var="title" code="archive.title.addImage" htmlEscape="true"/>
 <spring:message var="pageHeading" code="archive.pageHeading.addImage" htmlEscape="true"/>

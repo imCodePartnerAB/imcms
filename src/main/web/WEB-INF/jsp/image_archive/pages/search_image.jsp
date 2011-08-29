@@ -1,6 +1,4 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <spring:message var="title" code="archive.title.searchImage" htmlEscape="true"/>
 <spring:message var="pageHeading" code="archive.pageHeading.searchImage" htmlEscape="true"/>
@@ -176,10 +174,9 @@
                             <label for="resultsPerPage"><spring:message code="archive.searchImage.resultsPerPage" htmlEscape="true"/></label>
                             <form:select id="resultsPerPage" path="resultsPerPage" cssStyle="width:50px;">
                                 <form:option value="10" label="10"/>
-                                <form:option value="15" label="15"/>
                                 <form:option value="20" label="20"/>
-                                <form:option value="25" label="25"/>
-                                <form:option value="40" label="40"/>
+                                <form:option value="50" label="50"/>
+                                <form:option value="100" label="100"/>
                             </form:select>
                         </span>
                     </div>

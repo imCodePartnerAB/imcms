@@ -1,3 +1,4 @@
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <archive:params var="titleArgs">
     <archive:param value="${name}"/>

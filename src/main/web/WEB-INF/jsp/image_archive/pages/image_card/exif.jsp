@@ -1,3 +1,4 @@
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <h4><spring:message code="archive.imageCard.originalExif" htmlEscape="true"/></h4>
 <spring:message var="notAvailable" code="archive.changeData.notAvailable"/>

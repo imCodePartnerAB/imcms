@@ -1,3 +1,4 @@
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <c:url var="eraseUrl" value="/web/archive/image/${image.id}/erase"/>
 <form action="${eraseUrl}" method="post" style="text-align:center;margin-top:40px;">

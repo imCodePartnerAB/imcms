@@ -1,3 +1,4 @@
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <spring:message var="title" code="archive.title.externalFiles" htmlEscape="true"/>
 <spring:message var="pageHeading" code="archive.pageHeading.externalFiles" htmlEscape="true"/>
