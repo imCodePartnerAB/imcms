@@ -5,13 +5,15 @@ package admin.doc
 import _root_.scala.collection.JavaConversions._
 import _root_.com.vaadin.event.Action
 import _root_.com.imcode.imcms.vaadin._
-import _root_.com.imcode.imcms.admin.doc.search.{DocSearch, AllDocsContainer, CustomDocsContainer}
 import _root_.com.imcode.imcms.admin.doc.meta.MetaEditor
+import _root_.com.vaadin.ui._
+import _root_.com.imcode.imcms.mapping.ProfileMapper
+import _root_.com.imcode.imcms.admin.doc.content._
+import _root_.com.imcode.imcms.admin.doc.search.{DocSearchUI, DocSearch, AllDocsContainer, CustomDocsContainer}
+import _root_.imcode.server.document.{UrlDocumentDomainObject, DocumentDomainObject, FileDocumentDomainObject, HtmlDocumentDomainObject}
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
-import _root_.imcode.server.document.{DocumentDomainObject, FileDocumentDomainObject, HtmlDocumentDomainObject}
-import com.vaadin.ui._
-import mapping.ProfileMapper
-import mapping.ProfileMapper.SimpleProfile
+
+// import _root_.com.imcode.imcms.mapping.ProfileMapper.SimpleProfile
 
 object Actions {
   val IncludeToSelection = new Action("doc.mgr.action.include_to_selection".i)
@@ -22,8 +24,8 @@ object Actions {
 
 
 class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
-  val customDocs = new CustomDocs
   val search = new DocSearch(new AllDocsContainer)
+  val customDocs = new CustomDocs
 
   val docSelectionDlg = letret(new OKDialog("doc.dlg_selection.caption".i) with CustomSizeDialog) { dlg =>
     dlg.mainUI = customDocs.ui
@@ -31,76 +33,70 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
   }
 
   val ui = letret(new DocManagerUI(search.ui)) { ui =>
-    ui.miShowSelection.setCommandHandler {
+    ui.miSelectionShow.setCommandHandler {
       app.show(docSelectionDlg, modal = false, resizable = true)
     }
 
-    ui.miEditMeta.setCommandHandler {
-      val dlg = new OkCancelDialog("Doc properties") with CustomSizeDialog with BottomMarginDialog
-      val doc = imcmsServices.getDocumentMapper.getWorkingDocument(search.searchResultUI.first.get.intValue)
-      val metaEditor = new MetaEditor(app, doc)
+    // todo: a doc must be selected
+    // todo: allow change several at once???
+    // todo: permissions
+    ui.miEdit.setCommandHandler {
+      whenSingle(search.searchResultUI.value) { docId =>
+        val dlg = new OkCancelDialog("Edit document") with CustomSizeDialog with BottomMarginDialog
+        val doc = imcmsServices.getDocumentMapper.getWorkingDocument(search.searchResultUI.first.get.intValue)
+        val metaEditor = new MetaEditor(app, doc)
+        val contentEditor: DocEditor = (doc: @unchecked) match {
+          case doc: TextDocumentDomainObject => new TextDocEditor(doc)
+          case doc: FileDocumentDomainObject => new FileDocEditor(app, doc, Nil)
+          case doc: UrlDocumentDomainObject => new URLDocEditor(doc)
+          case doc: HtmlDocumentDomainObject => new HtmlDocEditor(doc)
+          // case BrowserDocumentDomainObject ???? or exclude this type from list???
+        }
 
-      dlg.mainUI = metaEditor.ui
+        dlg.mainUI = letret(new TabSheet with FullSize) { ts =>
+          ts.addTab(metaEditor.ui, "Properties", null)
+          ts.addTab(contentEditor.ui, "Content", null)
+        }
 
-      dlg.wrapOkHandler {
-        // 1.validate
-        // 2.copy changes into doc:
-        // 3.state: ValidationError Either Doc
-        // properties.state
-        imcmsServices.getDocumentMapper.saveDocument(metaEditor.state, app.user)
+        dlg.wrapOkHandler {
+          // todo:
+          // 1.validate
+          // 2.copy changes into doc:
+          // 3.state: ValidationError Either Doc
+          // properties.state
+          // merge editor and content editor states
+          imcmsServices.getDocumentMapper.saveDocument(metaEditor.state, app.user)
+        }
+
+        dlg.setSize(500, 500)
+        app.show(dlg, resizable = true)
       }
-
-      dlg.setSize(500, 500)
-      app.show(dlg, resizable = true)
     }
 
     // todo: parent doc or profile must be selected
-    ui.miDocNewText.setCommandHandler {
-      val dlg = new OkCancelDialog("New Text Document") with CustomSizeDialog with BottomMarginDialog
+    // todo: parent doc type MUST be `text`
+    val newDocCommandListener: MenuBar#MenuItem => Unit = { mi =>
+      val (contentEditor, dlgCaption) = (mi: @unchecked) match {
+        case ui.miNewTextDoc => (new TextDocEditor(new TextDocumentDomainObject), "New text document")
+        case ui.miNewFileDoc => (new FileDocEditor(app, new FileDocumentDomainObject, Nil), "New file document")
+        case ui.miNewURLDoc => (new URLDocEditor(new UrlDocumentDomainObject), "New URL document")
+        case ui.miNewHTMLDoc => (new HtmlDocEditor(new HtmlDocumentDomainObject), "New HTML document")
+      }
 
-      val doc = new TextDocumentDomainObject
-      val properties = new MetaEditor(app, doc)
-      val contentUI = new NewTextDocumentFlowPage2UI
+      val dlg = new OkCancelDialog(dlgCaption) with CustomSizeDialog with BottomMarginDialog
+      val metaEditor = new MetaEditor(app, contentEditor.doc)
 
-      dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
-        ts.addTab(properties.ui, "Properties", null)
-        ts.addTab(contentUI, "Content", null)
+      dlg.mainUI = letret(new TabSheet with FullSize) { ts =>
+        ts.addTab(metaEditor.ui, "Properties", null)
+        ts.addTab(contentEditor.ui, "Content", null)
       }
 
       dlg.setSize(500, 500)
       app.show(dlg, resizable = true)
     }
 
-    ui.miDocNewURL.setCommandHandler {
-      val dlg = new OkCancelDialog("New URL Document") with CustomSizeDialog with BottomMarginDialog
-
-      val doc = new HtmlDocumentDomainObject
-      val properties = new MetaEditor(app, doc)
-      val contentUI = new URLDocEditorUI
-
-      dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
-        ts.addTab(properties.ui, "Properties", null)
-        ts.addTab(contentUI, "Content", null)
-      }
-
-      dlg.setSize(500, 500)
-      app.show(dlg, resizable = true)
-    }
-
-    ui.miDocNewFile.setCommandHandler {
-      val dlg = new OkCancelDialog("New File Document") with CustomSizeDialog with BottomMarginDialog
-
-      val doc = new FileDocumentDomainObject
-      val properties = new MetaEditor(app, doc)
-      val contentUI = new FileDocEditor(app, doc, Seq.empty).ui
-
-      dlg.mainUI = letret(new com.vaadin.ui.TabSheet with FullSize) { ts =>
-        ts.addTab(properties.ui, "Properties", null)
-        ts.addTab(contentUI, "Content", null)
-      }
-
-      dlg.setSize(500, 500)
-      app.show(dlg, resizable = true)
+    forlet(ui.miNewTextDoc, ui.miNewFileDoc, ui.miNewURLDoc, ui.miNewHTMLDoc) {
+      _ setCommandListener newDocCommandListener
     }
 
     ui.miProfileEditName.setCommandHandler {
@@ -141,7 +137,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       }
     }
 
-    ui.miDocCopy.setCommandHandler {
+    ui.miCopy.setCommandHandler {
       whenSingle(search.searchResultUI.value) { docId =>
         // todo copy selected document VERSION, not working???
         // dialog with drop down???? -> version select
@@ -169,22 +165,26 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 }
 
 
-class DocManagerUI(searchUI: Component) extends VerticalLayout with Spacing with FullSize {
+class DocManagerUI(searchUI: DocSearchUI) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar
-  val miDoc = mb.addItem("doc.mgr.mi.doc".i)
-  val miDocNew = miDoc.addItem("doc.mgr.mi.doc.new".i)
-  val miDocNewText = miDocNew.addItem("doc.mgr.action.doc.new.text_doc".i)
-  val miDocNewFile = miDocNew.addItem("doc.mgr.action.doc.new.file_doc".i)
-  val miDocNewHTML = miDocNew.addItem("doc.mgr.action.doc.new.html_doc".i)
-  val miDocNewURL = miDocNew.addItem("doc.mgr.action.doc.new.url_doc".i)
-  val miDocOutline = miDoc.addItem("doc.mgr.action.doc.outline".i)
-  val miDocCopy = miDoc.addItem("doc.mgr.mi.doc.copy".i)
-  val miDocEdit = miDoc.addItem("doc.mgr.action.doc.edit".i)
-  val miDocDelete = miDoc.addItem("doc.mgr.action.doc.delete".i)
+  val miNew = mb.addItem("doc.mgr.mi.new".i)
+  val miNewTextDoc = miNew.addItem("doc.mgr.mi.new.text_doc".i)
+  val miNewFileDoc = miNew.addItem("doc.mgr.mi.new.file_doc".i)
+  val miNewHTMLDoc = miNew.addItem("doc.mgr.mi.new.html_doc".i)
+  val miNewURLDoc = miNew.addItem("doc.mgr.mi.new.url_doc".i)
+
+  val miCopy = mb.addItem("doc.mgr.mi.copy".i)
+  val miEdit = mb.addItem("doc.mgr.action.edit".i)
+  val miDelete = mb.addItem("doc.mgr.action.delete".i)
+
   val miView = mb.addItem("doc.mgr.mi.view".i)
-  val miShowSelection = miView.addItem("doc.mgr.action.show_selection".i)
-  val miEditMeta = mb.addItem("doc.mgr.action.edit_meta".i)
+  val miViewContent = miView.addItem("doc.mgr.mi.view.content".i)
+  val miViewStructure = miView.addItem("doc.mgr.mi.view.structure".i)
+
+  val miSelection = mb.addItem("doc.mgr.mi.selection".i)
+  val miSelectionShow = miSelection.addItem("doc.mgr.mi.selection.show".i)
   val miProfile = mb.addItem("doc.mgr.mi.profile".i)
+
   val miProfileEditName = miProfile.addItem("doc.mgr.mi.profile.edit_name".i)
 
   addComponents(this, mb, searchUI)

@@ -7,8 +7,6 @@ import profile.ProfileSheet
 import scala.collection.JavaConversions._
 import scala.collection.breakOut
 
-import collection.mutable.{Map => MMap}
-import imcode.server.Imcms
 import imcode.server.user.UserDomainObject
 
 import vaadin._
@@ -28,8 +26,7 @@ import api._
  *
  * @param doc used to as editor's initial state, never modified.
  */
-class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends ImcmsServicesSupport {
-
+class MetaEditor[A <: DocumentDomainObject](app: ImcmsApplication, doc: A) extends ImcmsServicesSupport {
   private var appearanceSheetOpt = Option.empty[AppearanceSheet]
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
   private var permissionsSheetOpt = Option.empty[PermissionsSheet]
