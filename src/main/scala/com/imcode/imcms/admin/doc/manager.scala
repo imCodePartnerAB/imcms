@@ -12,6 +12,8 @@ import _root_.com.imcode.imcms.admin.doc.content._
 import _root_.com.imcode.imcms.admin.doc.search.{DocSearchUI, DocSearch, AllDocsContainer, CustomDocsContainer}
 import _root_.imcode.server.document.{UrlDocumentDomainObject, DocumentDomainObject, FileDocumentDomainObject, HtmlDocumentDomainObject}
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+import java.net.URL
+import com.vaadin.terminal.ExternalResource
 
 // import _root_.com.imcode.imcms.mapping.ProfileMapper.SimpleProfile
 
@@ -35,6 +37,25 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
   val ui = letret(new DocManagerUI(search.ui)) { ui =>
     ui.miSelectionShow.setCommandHandler {
       app.show(docSelectionDlg, modal = false, resizable = true)
+    }
+
+    // todo: check select single doc
+    // todo: add embedded/popu view???
+    // todo: remove buttons
+    ui.miView.setCommandHandler {
+      whenSingle(search.searchResultUI.value) { docId =>
+        val appURL = app.getURL
+        val docURL = new URL(appURL.getProtocol, appURL.getHost, appURL.getPort, "/%d" format docId)
+
+        app.initAndShow(new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog, resizable = true) { dlg =>
+          dlg.mainUI = letret(new Embedded with FullSize) { browser =>
+            browser.setType(Embedded.TYPE_BROWSER)
+            browser.setSource(new ExternalResource(docURL))
+          }
+
+          dlg.setSize(600, 600)
+        }
+      }
     }
 
     // todo: a doc must be selected
@@ -178,8 +199,8 @@ class DocManagerUI(searchUI: DocSearchUI) extends VerticalLayout with Spacing wi
   val miDelete = mb.addItem("doc.mgr.action.delete".i)
 
   val miView = mb.addItem("doc.mgr.mi.view".i)
-  val miViewContent = miView.addItem("doc.mgr.mi.view.content".i)
-  val miViewStructure = miView.addItem("doc.mgr.mi.view.structure".i)
+  //val miViewContent = miView.addItem("doc.mgr.mi.view.content".i)
+  //val miViewStructure = miView.addItem("doc.mgr.mi.view.structure".i)
 
   val miSelection = mb.addItem("doc.mgr.mi.selection".i)
   val miSelectionShow = miSelection.addItem("doc.mgr.mi.selection.show".i)
