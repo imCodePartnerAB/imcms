@@ -13,7 +13,12 @@
         <div class="left">
             <c:set var="disabled" value="${not currentLibrary.canChange}"/>
             <spring:message var="uploadText" code="archive.addImage.upload" htmlEscape="true"/>
+            <div class="UploadifyButtonWrapper">
+            <button type="button" class="btnBlue"><spring:message code="archive.addImage.browse" htmlEscape="true"/></button>
+            <div class="UploadifyObjectWrapper">
             <input type="file" id="uploadify" name="file" ${disabled ? 'disabled="disabled"' : ''} />
+                 </div>
+        </div>
             <input type="button" id="uploadButton" name="upload" value="${uploadText}" class="btnBlue ${disabled ? 'disabled' : ''}"
                     onclick="${disabled ? 'return false;' : ''}" ${disabled ? 'disabled="disabled"' : ''}/>
             <div id="uploadifyQueue" class="uploadifyQueue"></div>

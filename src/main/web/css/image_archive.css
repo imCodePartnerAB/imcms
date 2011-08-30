@@ -266,3 +266,33 @@ li.sel a {
     border:1px solid white;
     margin:10px 0 5px 0;
 }
+
+
+/* uploadify button */
+div.UploadifyButtonWrapper{
+    position:relative;
+    float: left;
+    margin-right: 5px;
+}
+
+/* fake button */
+div.UploadifyButtonWrapper button {
+    position:absolute; /* relative to UploadifyButtonWrapper */
+    top:0;
+    left:0;
+    z-index:0;
+    display:block;
+    float:left;
+}
+
+/* pass hover effects to button */
+div.UploadifyButtonWrapper a.Hover {
+    background:orange;
+    color:white;
+}
+
+/* position flash button above css button */
+div.UploadifyObjectWrapper {
+    position:relative;
+    z-index:10;
+}

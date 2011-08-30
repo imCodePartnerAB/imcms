@@ -80,6 +80,24 @@ var setupCalendar = function(prefix) {
         ifFormat: "%Y-%m-%d"
     });
 };
+
+/* used together with css to put html button underneath uploadify's flash for css styling */
+var resizeUplodifyButtons = function() {
+    var buttonWrapper = $(".UploadifyButtonWrapper");
+    var objectWrapper = $(".UploadifyObjectWrapper");
+    var object = $("object", buttonWrapper);
+    var fakeButton = $("button", buttonWrapper);
+    var width = fakeButton.outerWidth();
+    var height = fakeButton.outerHeight();
+    object.attr("width", width).attr("height", height);
+    buttonWrapper.css("width", width + "px").css("height", height + "px");
+    objectWrapper.hover(function() {
+        $("button", this).addClass("Hover");
+    }, function() {
+        $("button", this).removeClass("Hover");
+    });
+};
+
 var setupChangeData = function() {
     var categoryIds = [];
     var keywords = [];
@@ -286,14 +304,14 @@ var setupChangeData = function() {
         'multi': true,
         'auto' : false,
         'fileDataName': 'file',
-        'width': 64,
-        'height': 20,
         'queueID': 'uploadifyQueue',
-        'buttonImg': common.getRelativeUrl('/js/jquery.uploadify-v2.1.4/browse.png'),
+        'hideButton': true,
+        'wmode':'transparent',
         'cancelImg': common.getRelativeUrl('/js/jquery.uploadify-v2.1.4/cancel.png'),
         'onSelectOnce' : function(event, data) {
             $('#uploadify').uploadifySettings("scriptData", { 'fileCount' : data.fileCount })
-        }
+        },
+        'onSWFReady': resizeUplodifyButtons
     });
 };
 

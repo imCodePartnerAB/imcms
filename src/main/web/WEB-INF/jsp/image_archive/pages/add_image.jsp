@@ -2,7 +2,6 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <spring:message var="title" code="archive.title.addImage" htmlEscape="true"/>
 <spring:message var="pageHeading" code="archive.pageHeading.addImage" htmlEscape="true"/>
-<c:url var="latestUploadsUrl" value="/web/archive?show=1&sortBy=2&sortOrder=1"/>
 <c:set var="currentPage" value="addImage"/>
 <c:set var="css">
     <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/imcms/jscalendar/skins/aqua/theme.css.jsp"/>
@@ -10,7 +9,9 @@
 <c:set var="javascript">
     <%@ include file="/WEB-INF/jsp/image_archive/pages/fragments/jscalendar.jsp" %>
     <script type="text/javascript">
-        initAddImage();
+        $(document).ready(function(){
+            initAddImage();
+        });
     </script>
 </c:set>
 <c:set var="css">
@@ -21,13 +22,17 @@
 <div id="containerContent">
     <c:url var="uploadUrl" value="/web/archive/add-image/upload"/>
     <form:form commandName="upload" action="${uploadUrl}" method="post" enctype="multipart/form-data" cssClass="m15t clearfix">
-        <label for="uploadify" style="margin-right:10px;">
+        <label for="uploadify" class="left" style="margin:3px 20px 3px 0;">
             <spring:message code="archive.addImage.selectImage" htmlEscape="true"/>
         </label>
-            <input id="uploadify" type="file" name="file"/>
+        <div class="UploadifyButtonWrapper">
+            <button type="button" class="btnBlue"><spring:message code="archive.addImage.browse" htmlEscape="true"/></button>
+            <div class="UploadifyObjectWrapper">
+                <input id="uploadify" type="file" name="file"/>
+            </div>
+        </div>
             <spring:message var="uploadText" code="archive.addImage.upload" htmlEscape="true"/>
             <input id="uploadButton" type="button" value="${uploadText}" class="btnBlue"/>
-            <a href="${latestUploadsUrl}">Latest uploads</a>
             <h4 class="section"><spring:message code="archive.addImage.selectedImages" htmlEscape="true"/></h4>
             <div id="uploadifyQueue" class="uploadifyQueue"></div>
     </form:form>

@@ -13,7 +13,9 @@
         <%@ include file="/WEB-INF/jsp/image_archive/pages/fragments/jscalendar.jsp" %>
     </c:if>
     <script type="text/javascript">
-        initExternalFiles();
+        $(document).ready(function(){
+            initExternalFiles();
+        });
     </script>
     <script type="text/javascript">
 
