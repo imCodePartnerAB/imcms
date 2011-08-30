@@ -278,51 +278,6 @@
     </span>
 </div>
 <div class="minH20">
-    <span class="left even" style="width:130px;">
-        <spring:message code="archive.changeData.publish" htmlEscape="true"/>
-    </span>
-    <span>
-        <c:choose>
-            <c:when test="${image.publishDt ne null}">
-                <spring:message code="archive.dateFormat" arguments="${image.publishDt}" htmlEscape="true"/>
-            </c:when>
-            <c:otherwise>
-                <c:out value="${notAvailable}"/>
-            </c:otherwise>
-        </c:choose>
-    </span>
-</div>
-<div class="minH20">
-    <span class="left odd" style="width:130px;">
-        <spring:message code="archive.changeData.archive" htmlEscape="true"/>
-    </span>
-    <span>
-        <c:choose>
-            <c:when test="${image.archiveDt ne null}">
-                <spring:message code="archive.dateFormat" arguments="${image.archiveDt}" htmlEscape="true"/>
-            </c:when>
-            <c:otherwise>
-                <c:out value="${notAvailable}"/>
-            </c:otherwise>
-        </c:choose>
-    </span>
-</div>
-<div class="minH20">
-    <span class="left even" style="width:130px;">
-        <spring:message code="archive.changeData.publishEnd" htmlEscape="true"/>
-    </span>
-    <span>
-        <c:choose>
-            <c:when test="${image.publishEndDt ne null}">
-                <spring:message code="archive.dateFormat" arguments="${image.publishEndDt}" htmlEscape="true"/>
-            </c:when>
-            <c:otherwise>
-                <c:out value="${notAvailable}"/>
-            </c:otherwise>
-        </c:choose>
-    </span>
-</div>
-<div class="minH20">
     <span class="left odd" style="width:130px;">
         <spring:message code="archive.changeData.altText" htmlEscape="true"/>
     </span>

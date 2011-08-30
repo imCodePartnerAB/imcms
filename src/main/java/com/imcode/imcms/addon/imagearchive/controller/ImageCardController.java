@@ -62,9 +62,6 @@ public class ImageCardController {
     @Autowired
     private Facade facade;
     
-    @Autowired
-    private Config config;
-    
     
     @RequestMapping({"/archive/image/*", "/archive/image/*/"})
     public ModelAndView indexHandler(

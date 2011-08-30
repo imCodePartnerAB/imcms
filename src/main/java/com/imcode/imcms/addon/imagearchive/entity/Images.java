@@ -69,18 +69,6 @@ public class Images implements Serializable {
     @Column(name="license_end_dt")
     @Temporal(TemporalType.DATE)
     private Date licenseEndDt;
-    
-    @Column(name="publish_dt")
-    @Temporal(TemporalType.DATE)
-    private Date publishDt;
-    
-    @Column(name="archive_dt")
-    @Temporal(TemporalType.DATE)
-    private Date archiveDt;
-    
-    @Column(name="publish_end_dt")
-    @Temporal(TemporalType.DATE)
-    private Date publishEndDt;
 
     @Column(name="alt_text")
     private String altText;
@@ -121,15 +109,6 @@ public class Images implements Serializable {
     
     public Images() {
     }
-    
-    
-    public Date getArchiveDt() {
-        return archiveDt;
-    }
-
-    public void setArchiveDt(Date archiveDt) {
-        this.archiveDt = archiveDt;
-    }
 
     public int getFileSize() {
         return fileSize;
@@ -169,22 +148,6 @@ public class Images implements Serializable {
 
     public void setCreatedDt(Date createdDt) {
         this.createdDt = createdDt;
-    }
-
-    public Date getPublishDt() {
-        return publishDt;
-    }
-
-    public void setPublishDt(Date publishDt) {
-        this.publishDt = publishDt;
-    }
-
-    public Date getPublishEndDt() {
-        return publishEndDt;
-    }
-
-    public void setPublishEndDt(Date publishEndDt) {
-        this.publishEndDt = publishEndDt;
     }
 
     public String getAltText() {

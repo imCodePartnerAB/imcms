@@ -462,9 +462,6 @@ public class ImageService {
                 .setString("uploadedBy", image.getUploadedBy())
                 .setDate("licenseDt", image.getLicenseDt())
                 .setDate("licenseEndDt", image.getLicenseEndDt())
-                .setDate("publishDt", image.getPublishDt())
-                .setDate("archiveDt", image.getArchiveDt())
-                .setDate("publishEndDt", image.getPublishEndDt())
                 .setShort("statusActive", Images.STATUS_ACTIVE)
                 .setString("altText", image.getAltText())
                 .setLong("id", image.getId())
@@ -546,9 +543,6 @@ public class ImageService {
                 .setString("uploadedBy", image.getUploadedBy())
                 .setDate("licenseDt", image.getLicenseDt())
                 .setDate("licenseEndDt", image.getLicenseEndDt())
-                .setDate("publishDt", image.getPublishDt())
-                .setDate("archiveDt", image.getArchiveDt())
-                .setDate("publishEndDt", image.getPublishEndDt())
                 .setShort("statusActive", Images.STATUS_ACTIVE)
                 .setString("altText", image.getAltText())
                 .setLong("id", image.getId())
@@ -816,23 +810,10 @@ public class ImageService {
         } else if (licenseEndDt != null) {
             builder.append("AND im.licenseEndDt <= :licenseEndDt ");
         }
-        
+
         Date activeDt = command.getActiveDate();
         Date activeEndDt = command.getActiveEndDate();
-        if (activeDt != null && activeEndDt != null) { 
-            Date min = Utils.min(activeDt, activeEndDt);
-            Date max = Utils.max(activeDt, activeEndDt);
-            
-            activeDt = min;
-            activeEndDt = max;
-            
-            builder.append("AND im.publishDt <= :activeDt AND im.publishEndDt >= :activeEndDt ");
-        } else if (activeDt != null) {
-            builder.append("AND im.publishDt >= :activeDt ");
-        } else if (activeEndDt != null) {
-            builder.append("AND im.publishEndDt <= :activeEndDt ");
-        }
-        
+
         if (!count) {
             builder.append("ORDER BY ");
             switch (command.getSortBy()) {

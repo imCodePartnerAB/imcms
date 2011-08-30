@@ -60,32 +60,5 @@ public class ChangeImageDataValidator implements Validator {
                 errors.rejectValue("licenseEndDt", "archive.invalidEndDateError");
             }
         }
-        
-        String publishDt = StringUtils.trimToNull(command.getPublishDt());
-        if (publishDt != null) {
-            try {
-                command.setPublishDate(df.parse(publishDt));
-            } catch (ParseException ex) {
-                errors.rejectValue("publishDt", "archive.invalidDateError");
-            }
-        }
-        
-        String archiveDt = StringUtils.trimToNull(command.getArchiveDt());
-        if (archiveDt != null) {
-            try {
-                command.setArchiveDate(df.parse(archiveDt));
-            } catch (ParseException ex) {
-                errors.rejectValue("archiveDt", "archive.invalidDateError");
-            }
-        }
-        
-        String publishEndDt = StringUtils.trimToNull(command.getPublishEndDt());
-        if (publishEndDt != null) {
-            try {
-                command.setPublishEndDate(df.parse(publishEndDt));
-            } catch (ParseException ex) {
-                errors.rejectValue("publishEndDt", "archive.invalidDateError");
-            }
-        }
     }
 }

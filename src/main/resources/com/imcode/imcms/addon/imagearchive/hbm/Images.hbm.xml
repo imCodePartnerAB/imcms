@@ -12,10 +12,7 @@
           im.imageNm = :imageNm, 
           im.uploadedBy = :uploadedBy, 
           im.licenseDt = :licenseDt, 
-          im.licenseEndDt = :licenseEndDt, 
-          im.publishDt = :publishDt, 
-          im.archiveDt = :archiveDt, 
-          im.publishEndDt = :publishEndDt, 
+          im.licenseEndDt = :licenseEndDt,
           im.status = :statusActive, 
           im.updatedDt = current_timestamp(),
           im.altText = :altText
@@ -35,10 +32,7 @@
           im.format = :format, 
           im.uploadedBy = :uploadedBy, 
           im.licenseDt = :licenseDt, 
-          im.licenseEndDt = :licenseEndDt, 
-          im.publishDt = :publishDt, 
-          im.archiveDt = :archiveDt, 
-          im.publishEndDt = :publishEndDt, 
+          im.licenseEndDt = :licenseEndDt,
           im.status = :statusActive, 
           im.updatedDt = current_timestamp() ,
           im.altText = :altText

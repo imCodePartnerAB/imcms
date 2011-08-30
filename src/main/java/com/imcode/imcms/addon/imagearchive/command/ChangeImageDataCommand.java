@@ -25,18 +25,12 @@ public class ChangeImageDataCommand implements Serializable {
     private String copyright;
     private String licenseDt;
     private String licenseEndDt;
-    private String publishDt;
-    private String archiveDt;
-    private String publishEndDt;
     
     private boolean changedFile;
     private CommonsMultipartFile file;
     
     private Date licenseDate;
     private Date licenseEndDate;
-    private Date publishDate;
-    private Date archiveDate;
-    private Date publishEndDate;
     private String altText;
     
     private List<Integer> categoryIds = new ArrayList<Integer>();
@@ -67,18 +61,6 @@ public class ChangeImageDataCommand implements Serializable {
         if (image.getLicenseEndDt() != null) {
             this.licenseEndDt = df.format(image.getLicenseEndDt());
         }
-        
-        if (image.getPublishDt() != null) {
-            this.publishDt = df.format(image.getPublishDt());
-        }
-        
-        if (image.getArchiveDt() != null) {
-            this.archiveDt = df.format(image.getArchiveDt());
-        }
-        
-        if (image.getPublishEndDt() != null) {
-            this.publishEndDt = df.format(image.getPublishEndDt());
-        }
     }
     
     public void toImage(Images image) {
@@ -91,18 +73,7 @@ public class ChangeImageDataCommand implements Serializable {
         image.setUploadedBy(StringUtils.trimToEmpty(uploadedBy));
         image.setLicenseDt(licenseDate);
         image.setLicenseEndDt(licenseEndDate);
-        image.setPublishDt(publishDate);
-        image.setArchiveDt(archiveDate);
-        image.setPublishEndDt(publishEndDate);
         image.setAltText(altText);
-    }
-    
-    public String getArchiveDt() {
-        return archiveDt;
-    }
-
-    public void setArchiveDt(String archiveDt) {
-        this.archiveDt = archiveDt;
     }
 
     public String getArtist() {
@@ -153,36 +124,12 @@ public class ChangeImageDataCommand implements Serializable {
         this.licenseEndDt = licenseEndDt;
     }
 
-    public String getPublishDt() {
-        return publishDt;
-    }
-
-    public void setPublishDt(String publishDt) {
-        this.publishDt = publishDt;
-    }
-
-    public String getPublishEndDt() {
-        return publishEndDt;
-    }
-
-    public void setPublishEndDt(String publishEndDt) {
-        this.publishEndDt = publishEndDt;
-    }
-
     public String getUploadedBy() {
         return uploadedBy;
     }
 
     public void setUploadedBy(String uploadedBy) {
         this.uploadedBy = uploadedBy;
-    }
-
-    public Date getArchiveDate() {
-        return archiveDate;
-    }
-
-    public void setArchiveDate(Date archiveDate) {
-        this.archiveDate = archiveDate;
     }
 
     public Date getLicenseDate() {
@@ -199,22 +146,6 @@ public class ChangeImageDataCommand implements Serializable {
 
     public void setLicenseEndDate(Date licenseEndDate) {
         this.licenseEndDate = licenseEndDate;
-    }
-
-    public Date getPublishDate() {
-        return publishDate;
-    }
-
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
-    }
-
-    public Date getPublishEndDate() {
-        return publishEndDate;
-    }
-
-    public void setPublishEndDate(Date publishEndDate) {
-        this.publishEndDate = publishEndDate;
     }
 
     public String getCategories() {

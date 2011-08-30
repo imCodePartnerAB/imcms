@@ -158,42 +158,6 @@
         <form:errors path="license*" cssClass="red"/>
     </div>
 </div>
-<div class="minH30 clearboth">
-    <label for="publishDt" class="left" style="width:130px;">
-        <spring:message code="archive.changeData.publish" htmlEscape="true"/>
-    </label>
-    <div class="left">
-        <form:input id="publishDt" path="publishDt" maxlength="10" cssStyle="width:100px;" htmlEscape="true"/>
-        <a href="#" id="publishDtBtn">
-            <img src="${pageContext.servletContext.contextPath}/imcms/jscalendar/images/img.gif" width="20" height="14"/>
-        </a><br/>
-        <form:errors path="publishDt" cssClass="red"/>
-    </div>
-</div>
-<div class="minH30 clearboth">
-    <label for="archiveDt" class="left" style="width:130px;">
-        <spring:message code="archive.changeData.archive" htmlEscape="true"/>
-    </label>
-    <div class="left">
-        <form:input id="archiveDt" path="archiveDt" maxlength="10" cssStyle="width:100px;" htmlEscape="true"/>
-        <a href="#" id="archiveDtBtn">
-            <img src="${pageContext.servletContext.contextPath}/imcms/jscalendar/images/img.gif" width="20" height="14"/>
-        </a><br/>
-        <form:errors path="archiveDt" cssClass="red"/>
-    </div>
-</div>
-<div class="minH30 clearboth clearfix">
-    <label for="publishEndDt" class="left" style="width:130px;">
-        <spring:message code="archive.changeData.publishEnd" htmlEscape="true"/>
-    </label>
-    <div class="left">
-        <form:input id="publishEndDt" path="publishEndDt" maxlength="10" cssStyle="width:100px;" htmlEscape="true"/>
-        <a href="#" id="publishEndDtBtn">
-            <img src="${pageContext.servletContext.contextPath}/imcms/jscalendar/images/img.gif" width="20" height="14"/>
-        </a><br/>
-        <form:errors path="publishEndDt" cssClass="red"/>
-    </div>
-</div>
 <div class="minH30 clearboth clearfix">
     <label for="altText" class="left" style="width:130px;">
         <spring:message code="archive.changeData.altText" htmlEscape="true"/>

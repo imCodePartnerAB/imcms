@@ -237,9 +237,6 @@ var setupChangeData = function() {
     if ($("#licenseDt").length) {
         setupCalendar("license");
         setupCalendar("licenseEnd");
-        setupCalendar("publish");
-        setupCalendar("archive");
-        setupCalendar("publishEnd");
         
         $("a[id$=DtBtn]").click(function() {
             $(this).blur();
