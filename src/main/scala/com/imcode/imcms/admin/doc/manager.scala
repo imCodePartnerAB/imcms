@@ -55,7 +55,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
           dlg.mainUI = letret(new VerticalLayout with FullSize) { lyt =>
             val mb = new MenuBar
-            val mi = mb.addItem("Sub")
+            val mi = mb.addItem("Menu")
             1 to 10 foreach { mi addItem _.toString }
 
             val emb = letret(new Embedded with FullSize) { browser =>
@@ -64,6 +64,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
             }
 
             addComponents(lyt, mb, emb)
+            lyt.setExpandRatio(emb, 1.0f)
           }
 
           dlg.setSize(600, 600)
