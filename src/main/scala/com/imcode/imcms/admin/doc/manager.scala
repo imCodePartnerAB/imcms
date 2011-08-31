@@ -6,7 +6,6 @@ import _root_.scala.collection.JavaConversions._
 import _root_.com.vaadin.event.Action
 import _root_.com.imcode.imcms.vaadin._
 import _root_.com.imcode.imcms.admin.doc.meta.MetaEditor
-import _root_.com.vaadin.ui._
 import _root_.com.imcode.imcms.mapping.ProfileMapper
 import _root_.com.imcode.imcms.admin.doc.content._
 import _root_.com.imcode.imcms.admin.doc.search.{DocSearchUI, DocSearch, AllDocsContainer, CustomDocsContainer}
@@ -14,6 +13,7 @@ import _root_.imcode.server.document.{UrlDocumentDomainObject, DocumentDomainObj
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import java.net.URL
 import com.vaadin.terminal.ExternalResource
+import com.vaadin.ui._
 
 // import _root_.com.imcode.imcms.mapping.ProfileMapper.SimpleProfile
 
@@ -48,9 +48,22 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         val docURL = new URL(appURL.getProtocol, appURL.getHost, appURL.getPort, "/%d" format docId)
 
         app.initAndShow(new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog, resizable = true) { dlg =>
-          dlg.mainUI = letret(new Embedded with FullSize) { browser =>
-            browser.setType(Embedded.TYPE_BROWSER)
-            browser.setSource(new ExternalResource(docURL))
+//          dlg.mainUI = letret(new Embedded with FullSize) { browser =>
+//            browser.setType(Embedded.TYPE_BROWSER)
+//            browser.setSource(new ExternalResource(new URL("/" + docId))) // docURL
+//          }
+
+          dlg.mainUI = letret(new VerticalLayout with FullSize) { lyt =>
+            val mb = new MenuBar
+            val mi = mb.addItem("Sub")
+            1 to 10 foreach { mi addItem _.toString }
+
+            val emb = letret(new Embedded with FullSize) { browser =>
+              browser.setType(Embedded.TYPE_BROWSER)
+              browser.setSource(new ExternalResource(docURL)) //
+            }
+
+            addComponents(lyt, mb, emb)
           }
 
           dlg.setSize(600, 600)
