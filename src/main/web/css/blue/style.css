@@ -8,7 +8,11 @@ table.tablesorter {
 table.tablesorter thead tr th, table.tablesorter tfoot tr th {
 	background-color: gray;
 	font-size: 8pt;
-	padding: 5px 20px 5px 5px;
+	padding: 5px 5px 5px 5px;
+}
+
+table.tablesorter thead tr th.header, table.tablesorter tfoot tr th.header {
+    padding: 5px 20px 5px 5px;
 }
 table.tablesorter thead tr .header {
 	background-image: url(bg.gif);
@@ -20,7 +24,7 @@ table.tablesorter tbody td {
 	color: #3D3D3D;
 	padding: 5px 20px 5px 5px;
 	background-color: #FFF;
-	vertical-align: top;
+	vertical-align: middle;
 }
 table.tablesorter tbody tr.odd td {
 	background-color:#F0F0F6;

@@ -7,9 +7,9 @@
     <title>${title}</title>
     <meta http-equiv="imagetoolbar" content="no" />
     <link rel="shortcut icon" href="${contextPath}/images/favicon.ico"/>
-    <link href="${contextPath}/css/image_archive.css" rel="stylesheet" type="text/css" />
     <link href="${contextPath}/css/blue/style.css" rel="stylesheet" type="text/css" />
     <link href="${contextPath}/css/jquery.qtip.css" rel="stylesheet" type="text/css" />
+    <link href="${contextPath}/css/image_archive.css" rel="stylesheet" type="text/css" />
     ${css}
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
@@ -26,7 +26,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             var customCss = '${customCss}';
-            if(self != top) {
+            if(self != top && !opener) {
                 if(customCss.length == 0) {
                     parent.location.reload();
                 } else {

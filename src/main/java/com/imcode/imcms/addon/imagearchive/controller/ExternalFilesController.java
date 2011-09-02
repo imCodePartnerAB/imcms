@@ -444,8 +444,7 @@ public class ExternalFilesController {
     public ModelAndView previewTooltipHandler(
             @RequestParam(required=false) Integer id,
             @RequestParam(required=false) String name,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+            HttpServletRequest request) {
 
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();

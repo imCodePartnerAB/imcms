@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum LibrarySort {
+    /* first two are usually not used */
+    SHOW_BUTTONS("showButtons"),
+    ACTION_CHECKBOX("actionCheckbox"),
     ARCHIVE("archive"),
     FILENAME("fileName"),
     SIZE("size"),
@@ -28,7 +31,7 @@ public enum LibrarySort {
         this.direction = direction;
     }
 
-    private static final Map<String, LibrarySort> nameEnumMap = 
+    private static final Map<String, LibrarySort> nameEnumMap =
             new HashMap<String, LibrarySort>(LibrarySort.values().length);
     
     static {

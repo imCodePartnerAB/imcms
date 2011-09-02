@@ -296,3 +296,38 @@ div.UploadifyObjectWrapper {
     position:relative;
     z-index:10;
 }
+
+
+/* external files libraries and file table */
+#listOfLibraries, #listOfLibraries ul {
+    list-style-type: none;
+}
+
+#listOfLibraries li {
+    cursor: pointer;
+    padding-top:2px;
+    padding-bottom:2px;
+}
+
+#listOfLibraries li img {
+    padding-right: 5px;
+}
+
+#listOfLibraries {
+    float:left;
+    border:1px solid gray;
+    padding:5px 5px 30px 5px;
+    width:250px;
+}
+
+#listOfLibraries ul {
+    padding-left:40px;
+}
+
+.fileTableWithControls {
+    margin-left: 280px;
+}
+
+.currentLibrary {
+    font-weight: bold;
+}

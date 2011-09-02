@@ -22,7 +22,11 @@ public class LibraryChildren extends TagSupport {
             try {
                 JspWriter out = pageContext.getOut();
                 LibrariesDto lib = getLibrary();
-                out.print("<li data-library-id='" + lib.getId() + "'>" + lib.getLibraryNm());
+                String currentLibraryClass = "";
+                if(getCurrentLibrary().getId() == lib.getId()) {
+                    currentLibraryClass = " class='currentLibrary'";
+                }
+                out.print("<li data-library-id='" + lib.getId() + "'>" + "<span" + currentLibraryClass + ">" + lib.getLibraryNm() + "</span>");
                 getSubdirs(lib, file, new FileFilter() {
                     public boolean accept(File file) {
                         String name = file.getName();
@@ -58,7 +62,11 @@ public class LibraryChildren extends TagSupport {
                 return;
             }
             output.print("<ul>");
-            output.print("<li data-library-id='" + subLib.getId() + "'>" + subdir.getName());
+            String currentLibraryClass = "";
+            if(getCurrentLibrary().getId() == subLib.getId()) {
+                currentLibraryClass = " class='currentLibrary'";
+            }
+            output.print("<li data-library-id='" + subLib.getId() + "'>" + "<span" + currentLibraryClass + ">" + subdir.getName() + "</span>");
             getSubdirs(lib, subdir, filter, output);
             output.print("</li>");
             output.print("</ul>");

@@ -633,20 +633,14 @@ var initExternalFiles = function() {
             window.open(url, "filepreview", attrs);
         };
         
-        $("#show").click(function() {
-            var selected = $("#fileNames :checked:first");
-            if (selected.length) {
-                showFilePreview(libraryId, selected.val());
-            }
-            
-            return false;
-        });
-        $("#fileNames option").dblclick(function() {
+        $(".show").click(function() {
             showFilePreview(libraryId, $(this).val());
+
+            return false;
         });
     });
 };
-
+ 
 var showPreview = function(id, width, height, temp) {
     var WINDOW_BORDERS = 40, 
         ERROR_MARGIN = 20;

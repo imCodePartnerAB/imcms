@@ -36,64 +36,38 @@
             <h3><spring:message code="archive.externalFiles.noLibraryAccess" htmlEscape="true"/></h3>
         </c:when>
         <c:otherwise>
-                    <style type="text/css">
-                        ul {
-                            list-style-type: none;
-                        }
-
-                        li {
-                            cursor: pointer;
-                            padding-top:2px;
-                            padding-bottom:2px;
-                        }
-
-                        li img {
-                            padding-right: 5px;
-                        }
-
-                        #listOfLibraries {
-                            float:left;
-                            border:1px solid gray;
-                            padding:5px 30px 30px 5px;
-                            margin-right:15px;
-                        }
-
-                        #listOfLibraries ul {
-                            padding-left:40px;
-                        }
-                    </style>
-                    <div style="text-align:right;">
-                        <spring:message var="activeImageText" code="archive.externalFiles.activateImage" htmlEscape="true"/>
-                        <input type="submit" name="activate" class="btnBlue small" value="${activeImageText}"/>
-
-                        <spring:message var="showImageText" code="archive.externalFiles.showImage" htmlEscape="true"/>
-                        <input type="button" name="show" id="show" class="btnBlue small" value="${showImageText}"/>
-
-                        <c:set var="disabled" value="${not currentLibrary.userLibrary }"/>
-                        <spring:message var="eraseImageText" code="archive.externalFiles.eraseImage" htmlEscape="true"/>
-                        <input type="submit" name="erase" class="btnBlue small ${disabled ? 'disabled' : ''}"
-                               onclick="${disabled ? 'return false;' : ''}" value="${eraseImageText}"/>
-                    </div>
                     <ul id="listOfLibraries">
-                        <li data-library-id="-1" ${currentLibrary.id eq -1 ? 'class="currentLibrary"' : ''}>
-                            <spring:message code="archive.externalFiles.myPersonalFiles" htmlEscape="true"/>
+                        <li data-library-id="-1">
+                            <span${currentLibrary.id eq -1 ? ' class="currentLibrary"' : ''}>
+                                <spring:message code="archive.externalFiles.myPersonalFiles" htmlEscape="true"/>
+                            </span>
                         </li>
                         <c:forEach var="library" items="${libraries}">
                             <archive:libraryChildren library="${library}" currentLibrary="${currentLibrary}" libraries="${allLibraries}"/>
                         </c:forEach>
                     </ul>
 
-                    <div class="left" style="width:45%;">
+                    <div class="fileTableWithControls">
+                        <div style="text-align:right;margin-bottom:5px;">
+                            <spring:message var="activeImageText" code="archive.externalFiles.activateImage" htmlEscape="true"/>
+                            <input type="submit" name="activate" class="btnBlue small" value="${activeImageText}"/>
+
+                            <c:set var="disabled" value="${not currentLibrary.userLibrary }"/>
+                            <spring:message var="eraseImageText" code="archive.externalFiles.eraseImage" htmlEscape="true"/>
+                            <input type="submit" name="erase" class="btnBlue small ${disabled ? 'disabled' : ''}"
+                                   onclick="${disabled ? 'return false;' : ''}" value="${eraseImageText}"/>
+                        </div>
                         <table id="fileNames" class="tablesorter">
                             <thead>
-                                <th><spring:message code="archive.externalFiles.useDeleteOrShow" htmlEscape="true"/></th>
+                                <th></th>
+                                <th></th>
+                                <th><spring:message code="archive.externalFiles.sortByInArchive" htmlEscape="true"/></th>
                                 <th><spring:message code="archive.externalFiles.fileName" htmlEscape="true"/></th>
                                 <th><spring:message code="archive.externalFiles.fileSize" htmlEscape="true"/></th>
                                 <th><spring:message code="archive.externalFiles.lastModified" htmlEscape="true"/></th>
                             </thead>
                             <tbody>
                                 <c:forEach var="entry" items="${libraryEntries}" varStatus="status">
-                                    <c:set var="odd" value="${status.count % 2 != 0}"/>
                                     <c:choose>
                                         <c:when test="${entry.fileSizeMB}">
                                             <spring:message var="fileSize" code="archive.fileSizeMB" arguments="${entry.fileSize div (1024.0 * 1024.0)}"/>
@@ -105,12 +79,17 @@
 
                                     <spring:message var="lastModifiedText" code="archive.dateFormat" arguments="${entry.lastModifiedDate}"/>
 
-                                    <tr class="${odd ? 'odd' : ''}">
+                                    <tr>
+                                        <td>
+                                            <button class="show btnBlue" value="${fn:escapeXml(entry.fileName)}">Show</button>
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" name="fileNames" value="${fn:escapeXml(entry.fileName)}"/>
+                                        </td>
                                         <td>
                                             <c:if test="${archive:isInArchive(entry, pageContext)}">
                                                 <span style="font-weight:bold;font-size:20px;color:green;">&#10003;</span>
                                             </c:if>
-                                            <input type="checkbox" name="fileNames" value="${fn:escapeXml(entry.fileName)}"/>
                                         </td>
                                         <td class="fileName">${entry.fileName}</td>
                                         <td>${fileSize}</td>
@@ -119,6 +98,15 @@
                                 </c:forEach>
                             </tbody>
                         </table>
+                        <div style="text-align:right;margin-top:5px;">
+                            <spring:message var="activeImageText" code="archive.externalFiles.activateImage" htmlEscape="true"/>
+                            <input type="submit" name="activate" class="btnBlue small" value="${activeImageText}"/>
+
+                            <c:set var="disabled" value="${not currentLibrary.userLibrary }"/>
+                            <spring:message var="eraseImageText" code="archive.externalFiles.eraseImage" htmlEscape="true"/>
+                            <input type="submit" name="erase" class="btnBlue small ${disabled ? 'disabled' : ''}"
+                                   onclick="${disabled ? 'return false;' : ''}" value="${eraseImageText}"/>
+                        </div>
                     </div>
         </c:otherwise>
     </c:choose>
