@@ -13,16 +13,9 @@
         </div>
     </div>
     <%@ include file="/WEB-INF/jsp/image_archive/pages/fragments/change_data.jsp" %>
-    <div style="margin-top: 20px;text-align:center;">
+    <div style="margin-top: 20px;text-align:right;">
         <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
         <input id="save" type="submit" name="saveAction" value="${saveText}" class="btnBlue"/>
-
-        <spring:message var="saveUseText" code="archive.saveUseInImcms" htmlEscape="true"/>
-        <c:set var="disabled" value="${sessionScope.returnToImcms eq null}"/>
-        <input id="saveUse" type="submit" name="useAction" value="${saveUseText}" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}"/>
-
-        <spring:message var="saveReturnText" code="archive.saveReturnImageCard" htmlEscape="true"/>
-        <input id="saveImageCard" type="submit" name="imageCardAction" value="${saveReturnText}" class="btnBlue"/>
 
         <spring:message var="cancelText" code="archive.cancel" htmlEscape="true"/>
         <input id="cancel" type="submit" name="cancelAction" value="${cancelText}" class="btnBlue"/>
