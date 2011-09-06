@@ -355,3 +355,18 @@ div.UploadifyObjectWrapper {
 table.tablesorter tr.odd td, .odd {
     background-color: rgb(211, 234, 255);
 }
+
+#externalFilesUpload {
+    margin-top:15px;
+    margin-bottom:15px;
+}
+
+#externalFiles {
+    margin-top:15px;
+}
+
+.hint {
+    color:gray;
+    font-style: italic;
+    font-weight: normal;
+}

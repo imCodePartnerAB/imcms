@@ -63,13 +63,13 @@
             if($("#fileNames td").length > 0) {
                 $("#fileNames").tablesorter({sortList : [[${sortBy.ordinal}, ${sortBy.direction.ordinal}]],
                 headers: { 0 : {sorter:false}, 1 : {sorter:false}}});
-                $("#fileNames").bind("sortEnd", function(){
-                    var even = $("#fileNames tr").removeClass("odd");
-                   var tableRow = $("#fileNames tr:odd");
-                    if(!tableRow.hasClass("odd")) {
-                        tableRow.addClass("odd");
-                    }
-                });
+//                $("#fileNames").bind("sortEnd", function(){
+//                    var even = $("#fileNames tr").removeClass("odd");
+//                   var tableRow = $("#fileNames tr:odd");
+//                    if(!tableRow.hasClass("odd")) {
+//                        tableRow.addClass("odd");
+//                    }
+//                });
             } else {
                 $("#fileNames").tablesorter({headers: { 0 : {sorter:false}, 1 : {sorter:false}}});
             }
