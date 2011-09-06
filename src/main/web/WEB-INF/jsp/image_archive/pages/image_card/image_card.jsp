@@ -16,9 +16,11 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/top.jsp" %>
 
 <div id="containerContent">
-    <a href="${pageContext.request.contextPath}/web/archive" class="btnBlue">
-        <span><spring:message code="archive.imageCard.backToSearchResults" htmlEscape="true"/></span>
-    </a>
+    <div style="margin-bottom: 10px;">
+        <a href="${pageContext.request.contextPath}/web/archive" class="btnBlue">
+            <span><spring:message code="archive.imageCard.backToSearchResults" htmlEscape="true"/></span>
+        </a>
+    </div>
     <h4 class="section">
         <spring:message code="archive.imageCard.imagePropertiesFor" arguments="${image.imageNm}" htmlEscape="true"/>
     </h4>
@@ -27,8 +29,9 @@
         <c:param name="size" value="medium"/>
         <c:param name="tmp" value="${action eq 'change'}"/>
     </c:url>
-    <div style="width:45%;float:left;">
-        <div style="margin:30px 0;text-align:center;">
+    <div class="clearfix">
+        <div style="float:left;">
+        <div style="text-align:center;">
             <c:url var="previewUrl" value="/web/archive/preview">
                 <c:param name="id" value="${image.id}"/>
                 <c:param name="tmp" value="${action eq 'change'}"/>
@@ -49,8 +52,7 @@
             </c:if>
         </div>
     </div>
-
-    <div style="width:50%;float:left;margin-left:20px;">
+        <div style="float:left;margin-left:20px;">
         <c:choose>
             <c:when test="${action eq 'change'}">
                 <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/change_data.jsp" %>
@@ -121,6 +123,6 @@
             </c:if>
         </div>
     </div>
-    <div style="clear:both;"></div>
+    </div>
 </div>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/footer.jsp" %>

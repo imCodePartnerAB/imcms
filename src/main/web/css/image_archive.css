@@ -39,21 +39,20 @@ input, select, th, td {
     overflow: hidden;
 }
 
+/* slightly enhanced, universal clearfix hack */
 .clearfix:after {
-    clear: both;
-    content: ".";
-    display: block;
-    height: 0;
-    visibility: hidden;
-}
-
-.clearfix {
-    display: inline-block;
-}
-
-.clearfix {
-    display: block;
-}
+     visibility: hidden;
+     display: block;
+     font-size: 0;
+     content: " ";
+     clear: both;
+     height: 0;
+     }
+.clearfix { display: inline-block; }
+/* start commented backslash hack \*/
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* close commented backslash hack */
 
 .m10t {
     margin-top: 10px !important;
@@ -223,10 +222,8 @@ li.sel a {
 	height: 30px;
 }
 
-.minH20 {
-	min-height: 20px;
-	height: auto !important;
-	height: 20px;
+.infoRow {
+	padding:3px 2px;
 }
 
 .minW60 {
@@ -264,7 +261,6 @@ li.sel a {
     background: #add8e6;
     padding:3px;
     border:1px solid white;
-    margin:10px 0 5px 0;
 }
 
 
@@ -330,4 +326,32 @@ div.UploadifyObjectWrapper {
 
 .currentLibrary {
     font-weight: bold;
+}
+
+/* export dialog */
+#exportOverlay {
+    background-color:#fff;
+    display:none;
+    border:1px solid black;
+}
+
+.fixedWidth {
+    width:80px;
+}
+
+.fixedWidthInput {
+    width:100px;margin-left:5px;
+}
+
+#exportImage {
+    padding:50px 45px 30px 45px;
+}
+
+.exportBtns {
+    text-align:right;
+    margin-top:25px;
+}
+
+table.tablesorter tr.odd td, .odd {
+    background-color: rgb(211, 234, 255);
 }
