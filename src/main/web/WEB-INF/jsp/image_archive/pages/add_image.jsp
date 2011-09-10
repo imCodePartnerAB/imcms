@@ -22,17 +22,19 @@
 <div id="containerContent">
     <c:url var="uploadUrl" value="/web/archive/add-image/upload"/>
     <form:form commandName="upload" action="${uploadUrl}" method="post" enctype="multipart/form-data" cssClass="m15t clearfix">
-        <label for="uploadify" class="left" style="margin:3px 20px 3px 0;">
-            <spring:message code="archive.addImage.selectImage" htmlEscape="true"/>
-        </label>
-        <div class="UploadifyButtonWrapper">
-            <button type="button" class="btnBlue"><spring:message code="archive.addImage.browse" htmlEscape="true"/></button>
-            <div class="UploadifyObjectWrapper">
-                <input id="uploadify" type="file" name="file"/>
+        <div class="addImageControls">
+            <label for="uploadify" class="left" style="margin:3px 20px 3px 0;">
+                <spring:message code="archive.addImage.selectImage" htmlEscape="true"/>
+            </label>
+            <div class="UploadifyButtonWrapper">
+                <button type="button" class="btnBlue"><spring:message code="archive.addImage.browse" htmlEscape="true"/></button>
+                <div class="UploadifyObjectWrapper">
+                    <input id="uploadify" type="file" name="file"/>
+                </div>
             </div>
-        </div>
             <spring:message var="uploadText" code="archive.addImage.upload" htmlEscape="true"/>
             <input id="uploadButton" type="button" value="${uploadText}" class="btnBlue"/>
+        </div>
             <h4 class="section"><spring:message code="archive.addImage.selectedImages" htmlEscape="true"/></h4>
             <div id="uploadifyQueue" class="uploadifyQueue"></div>
     </form:form>

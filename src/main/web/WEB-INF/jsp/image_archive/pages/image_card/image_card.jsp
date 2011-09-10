@@ -52,7 +52,7 @@
             </c:if>
         </div>
     </div>
-        <div style="float:left;margin-left:20px;">
+        <div style="float:left;margin-left:20px;width:440px;">
         <c:choose>
             <c:when test="${action eq 'change'}">
                 <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/change_data.jsp" %>
@@ -80,18 +80,18 @@
                     </a>
                 </c:if>
 
-                <c:if test="${'exif' eq action}">
-                    <c:url var="infoUrl" value="/web/archive/image/${image.id}"/>
-                    <a href="${infoUrl}" style="margin-right:2px;" class="btnBlue">
-                        <span><spring:message code="archive.imageCard.showImageInfo" htmlEscape="true"/></span>
-                    </a>
-                </c:if>
-
                 <c:if test="${image.canChange and not image.archived}">
                     <c:set var="disabled" value="${!image.canChange}"/>
                     <c:url var="changeUrl" value="/web/archive/image/${image.id}/change"/>
                     <a href="${changeUrl}" style="margin-right:2px;" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
                         <span><spring:message code="archive.imageCard.changeImageData" htmlEscape="true"/></span>
+                    </a>
+                </c:if>
+
+                <c:if test="${'exif' eq action}">
+                    <c:url var="infoUrl" value="/web/archive/image/${image.id}"/>
+                    <a href="${infoUrl}" style="margin-right:2px;" class="btnBlue">
+                        <span><spring:message code="archive.imageCard.showImageInfo" htmlEscape="true"/></span>
                     </a>
                 </c:if>
 
@@ -118,7 +118,8 @@
                 </c:if>
 
                 <c:if test="${canExport and not image.archived}">
-                    <input type="button" class="btnBlue modalInput" name="export" value="Export" rel="#exportOverlay"/>
+                    <spring:message var="exportBtnText" code="archive.imageCard.export" htmlEscape="true"/>
+                    <input type="button" class="btnBlue modalInput" name="export" value="${exportBtnText}" rel="#exportOverlay"/>
                 </c:if>
             </c:if>
         </div>

@@ -231,7 +231,7 @@ public class ImageCardController {
         ModelAndView mav = new ModelAndView("image_archive/pages/image_card/image_card");
         mav.addObject("action", "exif");
         mav.addObject("image", image);
-        
+        mav.addObject("canExport", (facade.getImageService().canUseImage(user, imageId) || image.isCanChange()));
         
         return mav;
     }

@@ -1,16 +1,18 @@
 <%@ page import="com.imcode.imcms.api.*,imcode.server.Imcms" %>
 <div id="containerTop">
-    <div class="clearfix" style="padding: 10px 0 13px 0;">
+    <div id="archive_banner" class="clearfix" style="padding: 10px 0 13px 0;">
         <span class="left pageHeading">${pageHeading}</span>
         <% String isoLang2 = Language.getLanguageByISO639_1(Imcms.getUser().getDocGetterCallback().getLanguage().getCode()).getIsoCode639_2(); %>
         <img class="right" src="${pageContext.servletContext.contextPath}/imcms/<%= isoLang2 %>/images/admin/logo_imcms_admin.gif" width="100" height="20"/>
     </div>
     
     <c:url var="backUrl" value="/web/archive/back"/>
-    <a href="${backUrl}" class="btnBlue btnBack small ${sessionScope.returnToImcms eq null ? 'disabled' : ''}" 
-       onclick="${sessionScope.returnToImcms eq null ? 'return false;' : ''}">
-        <span><spring:message code="archive.backToImcms" htmlEscape="true"/></span>
-    </a><br/><br/>
+    <div id="backButton" class="clearfix">
+        <a href="${backUrl}" class="btnBlue btnBack small ${sessionScope.returnToImcms eq null ? 'disabled' : ''}"
+           onclick="${sessionScope.returnToImcms eq null ? 'return false;' : ''}">
+            <span><spring:message code="archive.backToImcms" htmlEscape="true"/></span>
+        </a>
+    </div>
     
     <%
         User user = ContentManagementSystem.fromRequest(request).getCurrentUser();
@@ -47,7 +49,7 @@
                 </li>
             </c:if>
         </ul>
-        <span class="right">
+        <span id="languageSwitch" class="right">
             <c:url var="enUrl" value="/web/archive/language">
                 <c:param name="lang" value="en"/>
                 <c:param name="redir" value="${requestScope.requestUrl}"/>

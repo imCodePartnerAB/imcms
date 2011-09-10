@@ -174,6 +174,10 @@ a.btnBlue.disabled span, input.btnBlue.disabled {
     color: #fff;
 }
 
+#backButton {
+    margin-bottom: 15px;
+}
+
 ul.tabs {
     list-style-type:none;
     font-size: 0.7916em;
@@ -352,7 +356,7 @@ div.UploadifyObjectWrapper {
     margin-top:25px;
 }
 
-table.tablesorter tr.odd td, .odd {
+table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategoryTable tr.odd input.disabled {
     background-color: rgb(211, 234, 255);
 }
 
@@ -369,4 +373,24 @@ table.tablesorter tr.odd td, .odd {
     color:gray;
     font-style: italic;
     font-weight: normal;
+}
+
+.addImageControls {
+    margin-bottom: 15px;
+}
+
+.tablesorter .labelCell {
+    width:40%;
+}
+
+.tablesorter td.useCell, .tablesorter td.editCell {
+    text-align: center;
+}
+
+.preferencesSection {
+    margin-bottom: 15px;
+}
+
+.editCategoryTable td {
+    padding: 3px 2px;
 }

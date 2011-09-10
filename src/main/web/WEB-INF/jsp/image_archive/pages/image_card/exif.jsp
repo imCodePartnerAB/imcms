@@ -1,7 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <spring:message var="notAvailable" code="archive.changeData.notAvailable"/>
-<div class="m15t infoRow odd">
+<div class="m15t infoRow odd clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.manufacturer" htmlEscape="true"/>
     </span>
@@ -21,7 +21,7 @@
     </span>
     <span><c:out value="${image.originalExif.compression}" default="${notAvailable}"/></span>
 </div>
-<div class="infoRow">
+<div class="infoRow clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.xResolution" htmlEscape="true"/>
     </span>
@@ -29,7 +29,7 @@
         <c:out value="${image.originalExif.xResolution}" default="${notAvailable}"/>
     </span>
 </div>
-<div class="infoRow odd">
+<div class="infoRow odd clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.yResolution" htmlEscape="true"/>
     </span>
@@ -37,7 +37,7 @@
         <c:out value="${image.originalExif.yResolution}" default="${notAvailable}"/>
     </span>
 </div>
-<div class="infoRow">
+<div class="infoRow clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.resolutionUnits" htmlEscape="true"/>
     </span>
@@ -52,7 +52,7 @@
         </c:choose>
     </span>
 </div>
-<div class="infoRow odd">
+<div class="infoRow odd clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.exposure" htmlEscape="true"/>
     </span>
@@ -68,7 +68,7 @@
         </c:choose>
     </span>
 </div>
-<div class="infoRow">
+<div class="infoRow clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.fNumber" htmlEscape="true"/>
     </span>
@@ -83,7 +83,7 @@
         </c:choose>
     </span>
 </div>
-<div class="infoRow odd">
+<div class="infoRow odd clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.exposureProgram" htmlEscape="true"/>
     </span>
@@ -91,7 +91,7 @@
         <c:out value="${image.originalExif.exposureProgram}" default="${notAvailable}"/>
     </span>
 </div>
-<div class="infoRow">
+<div class="infoRow clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.datetimeDigitized" htmlEscape="true"/>
     </span>
@@ -106,7 +106,7 @@
         </c:choose>
     </span>
 </div>
-<div class="infoRow odd">
+<div class="infoRow odd clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.datetimeOriginal" htmlEscape="true"/>
     </span>
@@ -121,7 +121,7 @@
         </c:choose>
     </span>
 </div>
-<div class="infoRow">
+<div class="infoRow clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.flash" htmlEscape="true"/>
     </span>
@@ -142,7 +142,7 @@
         </c:choose>
     </span>
 </div>
-<div class="infoRow odd">
+<div class="infoRow odd clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.focalLength" htmlEscape="true"/>
     </span>
@@ -157,7 +157,7 @@
         </c:choose>
     </span>
 </div>
-<div class="infoRow">
+<div class="infoRow clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.colorSpace" htmlEscape="true"/>
     </span>
@@ -165,7 +165,7 @@
         <c:out value="${image.originalExif.colorSpace}" default="${notAvailable}"/>
     </span>
 </div>
-<div class="infoRow odd">
+<div class="infoRow odd clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.pixelXDimension" htmlEscape="true"/>
     </span>
@@ -173,7 +173,7 @@
         <c:out value="${image.originalExif.pixelXDimension}" default="${notAvailable}"/>
     </span>
 </div>
-<div class="infoRow">
+<div class="infoRow clearfix">
     <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.exif.pixelYDimension" htmlEscape="true"/>
     </span>
