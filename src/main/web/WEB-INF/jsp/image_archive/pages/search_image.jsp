@@ -22,8 +22,8 @@
         }
 
         $(document).ready(function(){
-            var lessCriteria = '<spring:message code="archive.searchImage.lessCriteria" htmlEscape="true"/>';
-            var moreCriteria = '<spring:message code="archive.searchImage.moreCriteria" htmlEscape="true"/>';
+            var lessCriteria = '<spring:message code="archive.searchImage.lessCriteria"/>';
+            var moreCriteria = '<spring:message code="archive.searchImage.moreCriteria"/>';
 
             $("#toggleMoreCriteriaBtn").click(function(){
                 $("#moreCriteria").toggle();
@@ -37,7 +37,7 @@
     <c:if test="${empty search.freetext}">
         <script type="text/javascript">
             $(document).ready(function(){
-                var defaultText = '<spring:message code="archive.searchImage.searchPhrase" htmlEscape="true"/>';
+                var defaultText = '<spring:message code="archive.searchImage.searchPhrase"/>';
                 var freetext = $('#freetext');
                 freetext.toggleClass('placeholder');
                 freetext.val(defaultText);

@@ -457,7 +457,7 @@ var initPreferences = function() {
                 }
             });
     
-            $(tableClassOrId + " .allCanEdit").click(function(){                
+            $(tableClassOrId + " .allCanEdit").click(function(){
                 if($(this).is(":checked")) {
                     $(tableClassOrId + " .edit").attr("checked", "checked");
                 } else {
@@ -465,6 +465,9 @@ var initPreferences = function() {
                 }
             });
         }
+
+        $(".roleTable").tablesorter({sortList: [[0,0]], headers:{ 1 : {sorter:false}, 2 : {sorter:false}}});
+        $(".libraryCategoriesTable").tablesorter({sortList: [[0,0]], headers:{ 1 : {sorter:false}, 2 : {sorter:false}}});
 
         setupBulkSelectionCheckboxes(".roleTable");
         setupBulkSelectionCheckboxes(".libraryCategoriesTable");

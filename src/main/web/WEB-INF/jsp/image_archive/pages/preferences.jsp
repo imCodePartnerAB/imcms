@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <spring:message var="title" code="archive.title.preferences" htmlEscape="true"/>
@@ -53,6 +54,7 @@
                 if (row.find("button[name=cancel]").length > 0) {
                     var categoryName = row.find("input[type=text]");
                     categoryName.attr("disabled", "disabled");
+                    categoryName.toggleClass("disabled");
                     categoryName.val(categoryOldName);
                     var controls = row.find(".controls");
                     controls.empty();
@@ -70,6 +72,7 @@
                 var categoryName = thisRow.find("input[type=text]");
                 editCategoryId.val(categoryName.attr("data-categoryId"));
                 categoryName.removeAttr("disabled");
+                categoryName.toggleClass("disabled");
                 categoryOldName = categoryName.val();
                 var controls = $(this).parent();
                 controls.empty();
@@ -90,11 +93,11 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/top.jsp" %>
 
 <div id="containerContent">
-<div>
+<div class="preferencesSection">
     <h4 class="colapsableLabel section"><spring:message code="archive.preferences.categories" htmlEscape="true"/></h4>
 
     <div class="contentToHide" id="contentToHideCategories">
-        <h4>
+        <h4 class="m15t">
             <spring:message code="archive.preferences.createNewCategory" htmlEscape="true"/>
         </h4>
 
@@ -104,7 +107,7 @@
             <div class="minH30 clearfix">
                     <span class="left" style="width:65px;">
                         <label for="createCategoryName"><spring:message code="archive.preferences.name"
-                                                                        htmlEscape="true"/>:</label>
+                                                                        htmlEscape="true"/></label>
                     </span>
 
                 <div class="left">
@@ -123,16 +126,15 @@
         </h4>
 
         <c:url var="preferencesUrl" value="/web/archive/preferences"/>
-
         <form:form action="${preferencesUrl}" commandName="editCategory" method="post" cssClass="m15t clearfix">
             <input type="hidden" name="editCategoryId" id="editCategoryId"/>
 
             <div class="minH30 clearfix">
-                <table class="editCategoryTable">
-                    <c:forEach var="category" items="${categories}">
-                        <tr>
+                <table class="editCategoryTable" cellpadding="0" cellspacing="0">
+                    <c:forEach var="category" items="${categories}" varStatus="categoryStatus">
+                        <tr ${categoryStatus.count % 2 == 0 ? 'class="odd"':''}>
                             <td>
-                                <input name="editCategoryName" data-categoryId="${category.id}" type="text"
+                                <input class="disabled" name="editCategoryName" data-categoryId="${category.id}" type="text"
                                        value="<c:out value="${category.name}"/>" disabled/>
                             </td>
                             <td class="controls">
@@ -145,7 +147,7 @@
     </div>
 </div>
 
-<div>
+<div class="preferencesSection">
     <h4 class="colapsableLabel section"><spring:message code="archive.preferences.categories.roles" htmlEscape="true"/></h4>
     <div class="contentToHide" id="contentToHideRoles">
         <h4 class="m15t">
@@ -171,68 +173,70 @@
             </div>
 
             <div>
-                <div class="left">
-                    <table class="roleTable">
-                        <tr>
-                            <th><spring:message code="archive.preferences.category" htmlEscape="true"/></th>
-                            <th><spring:message code="archive.preferences.useImages" htmlEscape="true"/></th>
-                            <th><spring:message code="archive.preferences.editAddImages" htmlEscape="true"/></th>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <input type="checkbox" class="allCanUse"/>
-                            </td>
-                            <td>
-                                <input type="checkbox" class="allCanEdit"/>
-                            </td>
-                        </tr>
-                        <c:forEach var="category" items="${allCategories}">
-                            <tr class="dataRow">
-                                <td>
-                                    <label for="catId${category.id}"><c:out value="${category.name}"/></label>
-                                    <input id="catId${category.id}" type="hidden" value="${category.id}" disabled/>
-                                </td>
-                                <td>
-                                    <c:set var="canUse" value="false"/>
-                                    <c:set var="canChange" value="false"/>
-                                    <c:forEach var="catRole" items="${categoryRoles}">
-                                        <c:if test="${catRole.categoryId eq category.id}">
-                                            <c:if test="${catRole.canUse}">
-                                                <c:set var="canUse" value="true"/>
-                                            </c:if>
-                                            <c:if test="${catRole.canChange}">
-                                                <c:set var="canChange" value="true"/>
-                                            </c:if>
-                                        </c:if>
-                                    </c:forEach>
-                                    <input class="use" type="checkbox" ${canUse ? "checked='checked'" : ""}/>
-                                </td>
-                                <td>
-                                    <input class="edit" type="checkbox" ${canChange ? "checked='checked'" : ""}/>
-                                </td>
+                <div class="left" style="width:500px;">
+                    <table class="roleTable tablesorter" cellpadding="0" cellspacing="1">
+                        <thead>
+                            <tr>
+                                <th class="labelCell">
+                                    <spring:message code="archive.preferences.category" htmlEscape="true"/>
+                                </th>
+                                <th>
+                                    <input type="checkbox" class="allCanUse"/>
+                                    <spring:message code="archive.preferences.useImages" htmlEscape="true"/>
+                                </th>
+                                <th>
+                                    <input type="checkbox" class="allCanEdit"/>
+                                    <spring:message code="archive.preferences.editAddImages" htmlEscape="true"/>
+                                </th>
                             </tr>
-                        </c:forEach>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="category" items="${allCategories}">
+                                <tr class="dataRow">
+                                    <td>
+                                        <label for="catId${category.id}"><c:out value="${category.name}"/></label>
+                                        <input id="catId${category.id}" type="hidden" value="${category.id}" disabled/>
+                                    </td>
+                                    <td class="useCell">
+                                        <c:set var="canUse" value="false"/>
+                                        <c:set var="canChange" value="false"/>
+                                        <c:forEach var="catRole" items="${categoryRoles}">
+                                            <c:if test="${catRole.categoryId eq category.id}">
+                                                <c:if test="${catRole.canUse}">
+                                                    <c:set var="canUse" value="true"/>
+                                                </c:if>
+                                                <c:if test="${catRole.canChange}">
+                                                    <c:set var="canChange" value="true"/>
+                                                </c:if>
+                                            </c:if>
+                                        </c:forEach>
+                                        <input class="use" type="checkbox" ${canUse ? "checked='checked'" : ""}/>
+                                    </td>
+                                    <td class="editCell">
+                                        <input class="edit" type="checkbox" ${canChange ? "checked='checked'" : ""}/>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
                     </table>
-                </div>
+                    <div class="clearboth m10t" style="text-align:right;">
+                        <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
+                        <input id="saveCategoriesBtn" type="submit" name="saveRoleCategoriesAction" value="${saveText}"
+                               class="btnBlue"/>
+                    </div>
 
-                <div class="clearboth m10t" style="text-align:center;">
-                    <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
-                    <input id="saveCategoriesBtn" type="submit" name="saveRoleCategoriesAction" value="${saveText}"
-                           class="btnBlue"/>
-                </div>
-
-                <div class="clearboth m10t" style="text-align:left;">
-                    <c:url var="addNewRoleButtonURL" value="/servlet/AdminRoles"/>
-                    <a href="${addNewRoleButtonURL}" target="blank">
-                        <spring:message code="archive.preferences.libraries.addNewRole" htmlEscape="true"/></a>
+                    <div class="clearboth m10t" style="text-align:left;">
+                        <c:url var="addNewRoleButtonURL" value="/servlet/AdminRoles"/>
+                        <a href="${addNewRoleButtonURL}" target="blank">
+                            <spring:message code="archive.preferences.libraries.addNewRole" htmlEscape="true"/></a>
+                    </div>
                 </div>
             </div>
         </form:form>
     </div>
 </div>
 
-<div>
+<div class="preferencesSection">
     <h4 class="colapsableLabel section"><spring:message code="archive.preferences.libraries.roles" htmlEscape="true"/></h4>
 
     <div class="contentToHide" id="contentToHideLibraries">
@@ -273,59 +277,59 @@
                     </div>
                     <br/><br/>
 
-                    <div class="left">
-                        <table class="libraryCategoriesTable">
-                            <tr>
-                                <th><spring:message code="archive.preferences.roleColumn" htmlEscape="true"/></th>
-                                <th><spring:message code="archive.preferences.useImages" htmlEscape="true"/></th>
-                                <th><spring:message code="archive.preferences.editAddImages" htmlEscape="true"/></th>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <input type="checkbox" class="allCanUse"/>
-                                </td>
-                                <td>
-                                    <input type="checkbox" class="allCanEdit"/>
-                                </td>
-                            </tr>
-                            <c:forEach var="role" items="${availableLibraryRoles}">
-                                <tr class="dataRow">
-                                    <td>
-                                        <label for="roleId${role.id}"><c:out value="${role.roleName}"/></label>
-                                        <input id="roleId${role.id}" value="${role.id}" type="hidden" disabled/>
-                                    </td>
-                                    <td>
-                                        <c:set var="canUse" value="false"/>
-                                        <c:set var="canChange" value="false"/>
-                                        <c:forEach var="libRole" items="${libraryRoles}">
-                                            <c:if test="${libRole.roleId eq role.id}">
-                                                <c:if test="${libRole.canUse}">
-                                                    <c:set var="canUse" value="true"/>
-                                                </c:if>
-                                                <c:if test="${libRole.canChange}">
-                                                    <c:set var="canChange" value="true"/>
-                                                </c:if>
-                                            </c:if>
-                                        </c:forEach>
-                                        <input class="use" type="checkbox" ${canUse ? "checked='checked'" : ""}/>
-                                    </td>
-                                    <td>
-                                        <input class="edit" type="checkbox" ${canChange ? "checked='checked'" : ""}/>
-                                    </td>
+                    <div class="left" style="width:500px;">
+                        <table class="libraryCategoriesTable tablesorter" cellpadding="0" cellspacing="1">
+                            <thead>
+                                <tr>
+                                    <th class="labelCell"><spring:message code="archive.preferences.role" htmlEscape="true"/></th>
+                                    <th>
+                                        <input type="checkbox" class="allCanUse"/>
+                                        <spring:message code="archive.preferences.useImages" htmlEscape="true"/>
+                                    </th>
+                                    <th>
+                                        <input type="checkbox" class="allCanEdit"/>
+                                        <spring:message code="archive.preferences.editAddImages" htmlEscape="true"/>
+                                    </th>
                                 </tr>
-                            </c:forEach>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="role" items="${availableLibraryRoles}">
+                                    <tr class="dataRow">
+                                        <td>
+                                            <label for="roleId${role.id}"><c:out value="${role.roleName}"/></label>
+                                            <input id="roleId${role.id}" value="${role.id}" type="hidden" disabled/>
+                                        </td>
+                                        <td class="useCell">
+                                            <c:set var="canUse" value="false"/>
+                                            <c:set var="canChange" value="false"/>
+                                            <c:forEach var="libRole" items="${libraryRoles}">
+                                                <c:if test="${libRole.roleId eq role.id}">
+                                                    <c:if test="${libRole.canUse}">
+                                                        <c:set var="canUse" value="true"/>
+                                                    </c:if>
+                                                    <c:if test="${libRole.canChange}">
+                                                        <c:set var="canChange" value="true"/>
+                                                    </c:if>
+                                                </c:if>
+                                            </c:forEach>
+                                            <input class="use" type="checkbox" ${canUse ? "checked='checked'" : ""}/>
+                                        </td>
+                                        <td class="editCell">
+                                            <input class="edit" type="checkbox" ${canChange ? "checked='checked'" : ""}/>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
                         </table>
-                    </div>
+                        <input type="hidden" id="libraryRolesStr" name="libraryRolesStr" value=""/>
+                        <spring:message var="deleteText" code="archive.preferences.libraries.delete" htmlEscape="true"/>
+                        <input type="hidden" id="deleteText" value="${deleteText}"/>
 
-                    <input type="hidden" id="libraryRolesStr" name="libraryRolesStr" value=""/>
-                    <spring:message var="deleteText" code="archive.preferences.libraries.delete" htmlEscape="true"/>
-                    <input type="hidden" id="deleteText" value="${deleteText}"/>
-
-                    <div class="clearboth m10t" style="text-align:center">
-                        <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
-                        <input id="saveLibraryRolesBtn" type="submit" name="saveLibraryRolesAction" value="${saveText}"
-                               class="btnBlue"/>
+                        <div class="clearboth m10t" style="text-align:right">
+                            <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
+                            <input id="saveLibraryRolesBtn" type="submit" name="saveLibraryRolesAction" value="${saveText}"
+                                   class="btnBlue"/>
+                        </div>
                     </div>
                 </c:otherwise>
             </c:choose>
