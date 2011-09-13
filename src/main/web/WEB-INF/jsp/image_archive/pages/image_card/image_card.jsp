@@ -66,11 +66,11 @@
 
 <div id="containerContent">
     <div style="margin-bottom: 10px;">
-        <a href="${pageContext.request.contextPath}/web/archive" class="btnBlue">
+        <a href="${pageContext.request.contextPath}/web/archive" class="imcmsFormBtn">
             <span><spring:message code="archive.imageCard.backToSearchResults" htmlEscape="true"/></span>
         </a>
     </div>
-    <h4 class="section">
+    <h4 class="imcmsAdmHeading">
         <spring:message code="archive.imageCard.imagePropertiesFor" arguments="${image.imageNm}" htmlEscape="true"/>
     </h4>
     <c:url var="thumbUrl" value="/web/archive/thumb">
@@ -93,10 +93,10 @@
                 <c:if test="${action eq 'change'}">
                     <form action="/" style="margin-top:10px;">
                         <spring:message var="rotateLeftText" code="archive.rotateLeft" htmlEscape="true"/>
-                        <input type="button" class="btnBlue small" id="rotateLeft" value="${rotateLeftText}"/>
+                        <input type="button" class="imcmsFormBtnSmall" id="rotateLeft" value="${rotateLeftText}"/>
 
                         <spring:message var="rotateRightText" code="archive.rotateRight" htmlEscape="true"/>
-                        <input type="button" class="btnBlue small" id="rotateRight" value="${rotateRightText}"/>
+                        <input type="button" class="imcmsFormBtnSmall" id="rotateRight" value="${rotateRightText}"/>
                     </form>
                 </c:if>
             </div>
@@ -126,7 +126,7 @@
                         <c:param name="id" value="${image.id}"/>
                     </c:url>
                     <c:set var="disabled" value="${sessionScope.returnToImcms eq null}"/>
-                    <a href="${useUrl}" style="margin-right:2px;" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
+                    <a href="${useUrl}" style="margin-right:2px;" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
                         <span><spring:message code="archive.useInImcms" htmlEscape="true"/></span>
                     </a>
                 </c:if>
@@ -134,21 +134,21 @@
                 <c:if test="${image.canChange and not image.archived}">
                     <c:set var="disabled" value="${!image.canChange}"/>
                     <c:url var="changeUrl" value="/web/archive/image/${image.id}/change"/>
-                    <a href="${changeUrl}" style="margin-right:2px;" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
+                    <a href="${changeUrl}" style="margin-right:2px;" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
                         <span><spring:message code="archive.imageCard.changeImageData" htmlEscape="true"/></span>
                     </a>
                 </c:if>
 
                 <c:if test="${'exif' eq action}">
                     <c:url var="infoUrl" value="/web/archive/image/${image.id}"/>
-                    <a href="${infoUrl}" style="margin-right:2px;" class="btnBlue">
+                    <a href="${infoUrl}" style="margin-right:2px;" class="imcmsFormBtn">
                         <span><spring:message code="archive.imageCard.showImageInfo" htmlEscape="true"/></span>
                     </a>
                 </c:if>
 
                 <c:if test="${'exif' ne action}">
                     <c:url var="exifUrl" value="/web/archive/image/${image.id}/exif"/>
-                    <a href="${exifUrl}" style="margin-right:2px;" class="btnBlue">
+                    <a href="${exifUrl}" style="margin-right:2px;" class="imcmsFormBtn">
                         <span><spring:message code="archive.imageCard.showImageDataExif" htmlEscape="true"/></span>
                     </a>
                 </c:if>
@@ -156,21 +156,21 @@
                 <c:if test="${image.canChange and not image.archived and 'exif' ne action}">
                     <c:set var="disabled" value="${!image.canChange}"/>
                     <c:url var="eraseUrl" value="/web/archive/image/${image.id}/erase"/>
-                    <a href="${eraseUrl}" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
+                    <a href="${eraseUrl}" style="margin-right:2px;" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
                         <span><spring:message code="archive.imageCard.erase" htmlEscape="true"/></span>
                     </a>
                 </c:if>
 
                 <c:if test="${user.superAdmin and image.archived}">
                     <c:url var="unarchiveUrl" value="/web/archive/image/${image.id}/unarchive"/>
-                    <a href="${unarchiveUrl}" class="btnBlue">
+                    <a href="${unarchiveUrl}" class="imcmsFormBtn">
                         <span><spring:message code="archive.imageCard.unarchive" htmlEscape="true"/></span>
                     </a>
                 </c:if>
 
                 <c:if test="${canExport and not image.archived}">
                     <spring:message var="exportBtnText" code="archive.imageCard.export" htmlEscape="true"/>
-                    <input type="button" class="btnBlue modalInput" name="export" value="${exportBtnText}" rel="#exportOverlay"/>
+                    <input type="button" class="imcmsFormBtn modalInput" name="export" value="${exportBtnText}" rel="#exportOverlay"/>
                 </c:if>
                 </div>
             </c:if>

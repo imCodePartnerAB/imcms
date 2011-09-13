@@ -42,10 +42,10 @@
             });
 
 
-            var editBtn = $('<button class="btnBlue inBtnGroup" type="button" name="edit">${editCategoryBtnText}</button>');
-            var saveBtn = $('<button class="btnBlue inBtnGroup" type="submit" name="saveCategoryAction">${saveCategoryBtnText}</button>');
-            var deleteBtn = $('<button class="btnBlue inBtnGroup" type="submit" name="removeCategoryAction">${deleteCategoryBtnText}</button>');
-            var cancelBtn = $('<button class="btnBlue inBtnGroup" type="button" name="cancel">${cancelCategoryBtnText}</button>');
+            var editBtn = $('<button class="imcmsFormBtn inBtnGroup" type="button" name="edit">${editCategoryBtnText}</button>');
+            var saveBtn = $('<button class="imcmsFormBtn inBtnGroup" type="submit" name="saveCategoryAction">${saveCategoryBtnText}</button>');
+            var deleteBtn = $('<button class="imcmsFormBtn inBtnGroup" type="submit" name="removeCategoryAction">${deleteCategoryBtnText}</button>');
+            var cancelBtn = $('<button class="imcmsFormBtn inBtnGroup" type="button" name="cancel">${cancelCategoryBtnText}</button>');
             var categoryOldName;
             var editCategoryId;
 
@@ -94,7 +94,7 @@
 
 <div id="containerContent">
 <div class="preferencesSection">
-    <h4 class="colapsableLabel section"><spring:message code="archive.preferences.categories" htmlEscape="true"/></h4>
+    <h4 class="colapsableLabel imcmsAdmHeading"><spring:message code="archive.preferences.categories" htmlEscape="true"/></h4>
 
     <div class="contentToHide" id="contentToHideCategories">
         <h4 class="m15t">
@@ -114,7 +114,7 @@
                     <form:input path="createCategoryName" id="createCategoryName" maxlength="128"
                                 cssStyle="width:180px;"/>
                     <spring:message var="createText" code="archive.preferences.create" htmlEscape="true"/>
-                    <input type="submit" name="createCategoryAction" value="${createText}" class="btnBlue right"/>
+                    <input type="submit" name="createCategoryAction" value="${createText}" class="imcmsFormBtn right"/>
                     <br/>
                     <form:errors path="createCategoryName" cssClass="red"/>
                 </div>
@@ -156,7 +156,7 @@
 </div>
 
 <div class="preferencesSection">
-    <h4 class="colapsableLabel section"><spring:message code="archive.preferences.categories.roles" htmlEscape="true"/></h4>
+    <h4 class="colapsableLabel imcmsAdmHeading"><spring:message code="archive.preferences.categories.roles" htmlEscape="true"/></h4>
     <div class="contentToHide" id="contentToHideRoles">
         <h4 class="m15t">
             <spring:message code="archive.preferences.changeRole" htmlEscape="true"/>
@@ -230,7 +230,7 @@
                     <div class="clearboth m10t" style="text-align:right;">
                         <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
                         <input id="saveCategoriesBtn" type="submit" name="saveRoleCategoriesAction" value="${saveText}"
-                               class="btnBlue"/>
+                               class="imcmsFormBtn"/>
                     </div>
 
                     <div class="clearboth m10t" style="text-align:left;">
@@ -245,7 +245,7 @@
 </div>
 
 <div class="preferencesSection">
-    <h4 class="colapsableLabel section"><spring:message code="archive.preferences.libraries.roles" htmlEscape="true"/></h4>
+    <h4 class="colapsableLabel imcmsAdmHeading"><spring:message code="archive.preferences.libraries.roles" htmlEscape="true"/></h4>
 
     <div class="contentToHide" id="contentToHideLibraries">
         <h4 class="m15t">
@@ -335,7 +335,7 @@
                         <div class="clearboth m10t" style="text-align:right">
                             <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
                             <input id="saveLibraryRolesBtn" type="submit" name="saveLibraryRolesAction" value="${saveText}"
-                                   class="btnBlue"/>
+                                   class="imcmsFormBtn"/>
                         </div>
                     </div>
                 </c:otherwise>

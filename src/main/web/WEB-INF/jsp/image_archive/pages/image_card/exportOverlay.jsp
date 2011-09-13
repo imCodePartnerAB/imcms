@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <c:if test="${not user.defaultUser and not image.archived}">
     <div class="modal" id="exportOverlay">
-        <h4 class="section"><spring:message code="archive.imageCard.export.exportImage" htmlEscape="true"/></h4>
+        <h4 class="imcmsAdmHeading"><spring:message code="archive.imageCard.export.exportImage" htmlEscape="true"/></h4>
         <c:url var="exportUrl" value="/web/archive/image/${image.id}"/>
         <form:form action="${exportUrl}" commandName="exportImage" method="post" cssClass="right">
             <div class="clearboth minH30">
@@ -65,8 +65,8 @@
             <div class="exportBtns">
                 <spring:message var="exportText" code="archive.imageCard.export.exportButton" htmlEscape="true"/>
                 <spring:message var="cancelText" code="archive.cancel" htmlEscape="true"/>
-                <input type="button" class="btnBlue" name="cancel" value="${cancelText}" id="exportDialogCloseBtn"/>
-                <input type="submit" class="btnBlue" name="export" value="${exportText}"/>
+                <input type="button" class="imcmsFormBtn" name="cancel" value="${cancelText}" id="exportDialogCloseBtn"/>
+                <input type="submit" class="imcmsFormBtn" name="export" value="${exportText}"/>
             </div>
         </form:form>
     </div>

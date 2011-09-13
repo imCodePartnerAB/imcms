@@ -27,15 +27,15 @@
                 <spring:message code="archive.addImage.selectImage" htmlEscape="true"/>
             </label>
             <div class="UploadifyButtonWrapper">
-                <button type="button" class="btnBlue"><spring:message code="archive.addImage.browse" htmlEscape="true"/></button>
+                <button type="button" class="imcmsFormBtn"><spring:message code="archive.addImage.browse" htmlEscape="true"/></button>
                 <div class="UploadifyObjectWrapper">
                     <input id="uploadify" type="file" name="file"/>
                 </div>
             </div>
             <spring:message var="uploadText" code="archive.addImage.upload" htmlEscape="true"/>
-            <input id="uploadButton" type="button" value="${uploadText}" class="btnBlue"/>
+            <input id="uploadButton" type="button" value="${uploadText}" class="imcmsFormBtn"/>
         </div>
-        <h4 class="section"><spring:message code="archive.addImage.selectedImages" htmlEscape="true"/></h4>
+        <h4 class="imcmsAdmHeading"><spring:message code="archive.addImage.selectedImages" htmlEscape="true"/></h4>
         <div id="uploadifyQueue" class="uploadifyQueue"></div>
     </form:form>
     
@@ -61,10 +61,10 @@
 
                         <div style="margin-top:10px;">
                             <spring:message var="rotateLeftText" code="archive.rotateLeft" htmlEscape="true"/>
-                            <input type="button" class="btnBlue small" id="rotateLeft" value="${rotateLeftText}"/>
+                            <input type="button" class="imcmsFormBtnSmall" id="rotateLeft" value="${rotateLeftText}"/>
 
                             <spring:message var="rotateRightText" code="archive.rotateRight" htmlEscape="true"/>
-                            <input type="button" class="btnBlue small" id="rotateRight" value="${rotateRightText}"/>
+                            <input type="button" class="imcmsFormBtnSmall" id="rotateRight" value="${rotateRightText}"/>
                         </div>
                     </div>
                 </div>
@@ -75,16 +75,16 @@
 
             <div style="margin-top: 20px;text-align:right;">
                 <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
-                <input id="save" type="submit" name="saveAction" value="${saveText}" class="btnBlue"/>
+                <input id="save" type="submit" name="saveAction" value="${saveText}" class="imcmsFormBtn"/>
                 <spring:message var="saveAddText" code="archive.addImage.saveAddNew" htmlEscape="true"/>
-                <input id="saveAdd" type="submit" name="addAction" value="${saveAddText}" class="btnBlue"/>
+                <input id="saveAdd" type="submit" name="addAction" value="${saveAddText}" class="imcmsFormBtn"/>
                 <spring:message var="saveUseText" code="archive.saveUseInImcms" htmlEscape="true"/>
                 <c:set var="disabled" value="${sessionScope.returnToImcms eq null}"/>
-                <input id="saveUse" type="submit" name="useAction" value="${saveUseText}" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}"/>
+                <input id="saveUse" type="submit" name="useAction" value="${saveUseText}" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}"/>
                 <spring:message var="saveReturnText" code="archive.saveReturnImageCard" htmlEscape="true"/>
-                <input id="saveImageCard" type="submit" name="imageCardAction" value="${saveReturnText}" class="btnBlue"/>
+                <input id="saveImageCard" type="submit" name="imageCardAction" value="${saveReturnText}" class="imcmsFormBtn"/>
                 <spring:message var="discontinueText" code="archive.addImage.discontinue" htmlEscape="true"/>
-                <input id="discontinue" type="submit" name="discontinueAction" value="${discontinueText}" class="btnBlue"/>
+                <input id="discontinue" type="submit" name="discontinueAction" value="${discontinueText}" class="imcmsFormBtn"/>
             </div>
                 </div>
         </form:form>

@@ -30,8 +30,8 @@
         <div class="left" style="padding:15px 5px;">
             <spring:message var="rightText" code="archive.moveRight" htmlEscape="true"/>
             <spring:message var="leftText" code="archive.moveLeft" htmlEscape="true"/>
-            <input id="addCategory" type="button" value="${rightText}" class="btnBlue small" style="width:30px;"/><br/><br/>
-            <input id="deleteCategory" type="button" value="${leftText}" class="btnBlue small" style="width:30px;"/>
+            <input id="addCategory" type="button" value="${rightText}" class="imcmsFormBtnSmall" style="width:30px;"/><br/><br/>
+            <input id="deleteCategory" type="button" value="${leftText}" class="imcmsFormBtn small" style="width:30px;"/>
         </div>
         <select id="imageCategories" multiple="multiple" size="5" class="left" style="width:132px;">
             <c:forEach var="category" items="${imageCategories}">
@@ -56,8 +56,8 @@
         <div class="left" style="padding:15px 5px;">
             <spring:message var="rightText" code="archive.moveRight" htmlEscape="true"/>
             <spring:message var="leftText" code="archive.moveLeft" htmlEscape="true"/>
-            <input id="addKeyword" type="button" value="${rightText}" class="btnBlue small" style="width:30px;"/><br/><br/>
-            <input id="deleteKeyword" type="button" value="${leftText}" class="btnBlue small" style="width:30px;"/>
+            <input id="addKeyword" type="button" value="${rightText}" class="imcmsFormBtnSmall" style="width:30px;"/><br/><br/>
+            <input id="deleteKeyword" type="button" value="${leftText}" class="imcmsFormBtnSmall" style="width:30px;"/>
         </div>
         <select id="assignedKeywords" multiple="multiple" size="5" class="left" style="width:132px;">
             <c:forEach var="keyword" items="${imageKeywords}">
@@ -73,7 +73,7 @@
     <div class="left">
         <input type="text" id="keyword" value="" maxlength="50" style="width:170px;"/>
         <spring:message var="addText" code="archive.changeData.add" htmlEscape="true"/>
-        <input type="button" id="createKeyword" value="${addText}" class="btnBlue small"/>
+        <input type="button" id="createKeyword" value="${addText}" class="imcmsFormBtnSmall"/>
     </div>
 </div>
 <div class="minH30 clearboth">

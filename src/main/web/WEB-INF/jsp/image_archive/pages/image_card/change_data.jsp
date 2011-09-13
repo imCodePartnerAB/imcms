@@ -8,16 +8,16 @@
         <div class="left">
             <input type="file" id="file" name="file"/>
             <spring:message var="uploadText" code="archive.addImage.upload" htmlEscape="true"/>
-            <input id="upload" class="btnBlue small" type="submit" name="uploadAction" value="${uploadText}"/><br/>
+            <input id="upload" class="imcmsFormBtnSmall" type="submit" name="uploadAction" value="${uploadText}"/><br/>
             <form:errors path="file" cssClass="red"/>
         </div>
     </div>
     <%@ include file="/WEB-INF/jsp/image_archive/pages/fragments/change_data.jsp" %>
     <div style="margin-top: 20px;text-align:right;">
         <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
-        <input id="save" type="submit" name="saveAction" value="${saveText}" class="btnBlue"/>
+        <input id="save" type="submit" name="saveAction" value="${saveText}" class="imcmsFormBtn"/>
 
         <spring:message var="cancelText" code="archive.cancel" htmlEscape="true"/>
-        <input id="cancel" type="submit" name="cancelAction" value="${cancelText}" class="btnBlue"/>
+        <input id="cancel" type="submit" name="cancelAction" value="${cancelText}" class="imcmsFormBtn"/>
     </div>
 </form:form>

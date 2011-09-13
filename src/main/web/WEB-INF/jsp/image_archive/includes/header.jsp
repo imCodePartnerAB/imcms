@@ -7,6 +7,7 @@
     <title>${title}</title>
     <meta http-equiv="imagetoolbar" content="no" />
     <link rel="shortcut icon" href="${contextPath}/images/favicon.ico"/>
+    <link href="${contextPath}/imcms/css/imcms_admin.css.jsp" rel="stylesheet" type="text/css" />
     <link href="${contextPath}/css/blue/style.css" rel="stylesheet" type="text/css" />
     <link href="${contextPath}/css/jquery.qtip.css" rel="stylesheet" type="text/css" />
     <link href="${contextPath}/css/image_archive.css" rel="stylesheet" type="text/css" />

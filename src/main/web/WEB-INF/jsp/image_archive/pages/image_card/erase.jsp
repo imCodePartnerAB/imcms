@@ -21,8 +21,8 @@
     
     <c:set var="noOnclick" value="$('#delete').val('no');"/>
     <spring:message var="noText" code="archive.imageCard.no" htmlEscape="true"/>
-    <input type="submit" value="${noText}" onclick="${fn:escapeXml(noOnclick)}" class="btnBlue small"/>
+    <input type="submit" value="${noText}" onclick="${fn:escapeXml(noOnclick)}" class="imcmsFormBtnSmall"/>
     <c:set var="yesOnclick" value="$('#delete').val('yes');"/>
     <spring:message var="yesText" code="archive.imageCard.yes" htmlEscape="true"/>
-    <input type="submit" value="${yesText}" onclick="${fn:escapeXml(yesOnclick)}" class="btnBlue small"/>
+    <input type="submit" value="${yesText}" onclick="${fn:escapeXml(yesOnclick)}" class="imcmsFormBtnSmall"/>
 </form>

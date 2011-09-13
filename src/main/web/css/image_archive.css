@@ -7,12 +7,6 @@ html {
     height: 100%;
 }
 
-body {
-    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-    font-size: 62.5%;
-    color: #222;
-    height: 100%;
-}
 input, select, th, td {
     font-size: 1em;
 }
@@ -95,50 +89,11 @@ h1 {
 	font-size: 1.583em;
 }
 
-div.hr {
-    width:100%;
-    margin-top: 5px;
-    background-color: #bbb;
-    clear: both !important;
-    font-size: 1px;
-    height: 1px;
-    overflow: hidden;
-}
-
-a.btnBlue span, input.btnBlue, button.btnBlue {
-    font-family: Tahoma, Arial, sans-serif;
-    font-size: 1em;
-    color: #fff;
-    background-color: #20568D;
-    border: 1px outset #668DB6;
-    border-color: #466D96 #333333 #333333 #466D96;
-    padding: 2px 6px;
-    cursor: pointer;
-}
-
 .inBtnGroup {
     margin-right: 5px;
 }
 
-a.btnBlue {
-    text-decoration: none;
-}
-
-/* fix for IE streched buttons */
-input.btnBlue {
-	width: 0;
-	overflow: visible;
-}
-input.btnBlue[class] { /* IE ignores this */
-	width:auto;
-}
-
-a.btnBlue.small span, input.btnBlue.small {
-    font-size: 0.916em;
-    padding: 1px 2px;
-}
-
-a.btnBlue.disabled span, input.btnBlue.disabled {
+a.imcmsFormBtnSmall.disabled, input.imcmsFormBtnSmall.disabled {
     background-color: #B8C6D5;
     border: 1px outset #DAE4EF;
     border-color: #DAE4EF #999999 #999999 #DAE4EF;
@@ -147,6 +102,11 @@ a.btnBlue.disabled span, input.btnBlue.disabled {
 .btnBack {
 	float: left !important;
 }
+
+.imcmsFormBtn, .imcmsFormBtnSmall {
+    text-decoration:none;
+}
+
 .btnBack span {
 	display: block;
 	text-align: center;
@@ -157,7 +117,6 @@ a.btnBlue.disabled span, input.btnBlue.disabled {
 }
 
 #containerTop, #containerContent {
-    width: 984px;
     margin: 0 auto !important;
     padding-right: 20px;
     padding-left: 20px;
@@ -167,6 +126,8 @@ a.btnBlue.disabled span, input.btnBlue.disabled {
 #containerContent {
     clear: both !important;
     padding-top: 10px;
+    padding-bottom: 20px;
+    width:850px;
 }
 
 #containerTop {
@@ -200,9 +161,9 @@ ul.tabs li {
     width: 80px;
 }
 ul.tabs li.sel {
-    background-color: #fff;
-    border: 1px solid #fff;
-    border-color: #fff #bababd #fff #fff;
+    background-color: #f5f5f7;
+    border: 1px solid #f5f5f7;
+    border-color: #f5f5f7 #bababd #f5f5f7 #f5f5f7;
     color: #4076ad;
     cursor: default;
 }
@@ -237,6 +198,7 @@ li.sel a {
 }
 
 .detailedTooltipThumb {
+    background: white;
     border:1px solid #888;
     width:160px;
     margin-right:10px;
@@ -261,10 +223,9 @@ li.sel a {
     font-style: italic;
 }
 
-.section {
-    background: #add8e6;
-    padding:3px;
-    border:1px solid white;
+.imcmsAdmHeading {
+    padding-bottom: 15px;
+    border-bottom:1px solid #20568D;
 }
 
 
@@ -315,7 +276,6 @@ div.UploadifyObjectWrapper {
 
 #listOfLibraries {
     float:left;
-    border:1px solid gray;
     padding:5px 5px 30px 5px;
     width:250px;
 }

@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
-<h4 class="section">
+<h4 class="imcmsAdmHeading">
     <spring:message code="archive.externalFiles.uploadImageZip" htmlEscape="true"/>
 </h4>
 <c:url var="processUrl" value="/web/archive/external-files/process"/>
@@ -14,22 +14,22 @@
             <c:set var="disabled" value="${not currentLibrary.canChange}"/>
             <spring:message var="uploadText" code="archive.addImage.upload" htmlEscape="true"/>
             <div class="UploadifyButtonWrapper">
-            <button type="button" class="btnBlue"><spring:message code="archive.addImage.browse" htmlEscape="true"/></button>
+            <button type="button" class="imcmsFormBtn"><spring:message code="archive.addImage.browse" htmlEscape="true"/></button>
             <div class="UploadifyObjectWrapper">
             <input type="file" id="uploadify" name="file" ${disabled ? 'disabled="disabled"' : ''} />
                  </div>
         </div>
-            <input type="button" id="uploadButton" name="upload" value="${uploadText}" class="btnBlue ${disabled ? 'disabled' : ''}"
+            <input type="button" id="uploadButton" name="upload" value="${uploadText}" class="imcmsFormBtn ${disabled ? 'disabled' : ''}"
                     onclick="${disabled ? 'return false;' : ''}" ${disabled ? 'disabled="disabled"' : ''}/>
             <div id="uploadifyQueue" class="uploadifyQueue"></div>
         </div>
     </div>
-    <h4 class="hint">
+    <h4 class="hint" style="margin-top:5px;">
         <spring:message code="archive.externalFiles.uploadedImagesGoIntoPersonalFolder" htmlEscape="true"/>
     </h4>
 </form:form>
 
-<h4 class="section"><spring:message code="archive.externalFiles.libraries" htmlEscape="true"/></h4>
+<h4 class="imcmsAdmHeading"><spring:message code="archive.externalFiles.libraries" htmlEscape="true"/></h4>
 <form:form commandName="externalFiles" action="${processUrl}" method="post" enctype="multipart/form-data" cssClass="m15t clearfix">
     <c:choose>
         <c:when test="${currentLibrary eq null}">
@@ -50,11 +50,11 @@
             <div class="fileTableWithControls">
                 <div style="text-align:right;margin-bottom:5px;">
                     <spring:message var="activeImageText" code="archive.externalFiles.activateImage" htmlEscape="true"/>
-                    <input type="submit" name="activate" class="btnBlue small" value="${activeImageText}"/>
+                    <input type="submit" name="activate" class="imcmsFormBtnSmall" value="${activeImageText}"/>
 
                     <c:set var="disabled" value="${not currentLibrary.userLibrary }"/>
                     <spring:message var="eraseImageText" code="archive.externalFiles.eraseImage" htmlEscape="true"/>
-                    <input type="submit" name="erase" class="btnBlue small ${disabled ? 'disabled' : ''}"
+                    <input type="submit" name="erase" class="imcmsFormBtnSmall ${disabled ? 'disabled' : ''}"
                            onclick="${disabled ? 'return false;' : ''}" value="${eraseImageText}"/>
                 </div>
                 <table id="fileNames" class="tablesorter" cellpadding="0" cellspacing="1">
@@ -81,7 +81,7 @@
 
                             <tr>
                                 <td>
-                                    <button class="show btnBlue" value="${fn:escapeXml(entry.fileName)}">Show</button>
+                                    <button class="show imcmsFormBtn" value="${fn:escapeXml(entry.fileName)}">Show</button>
                                 </td>
                                 <td>
                                     <input type="checkbox" name="fileNames" value="${fn:escapeXml(entry.fileName)}"/>
@@ -100,11 +100,11 @@
                 </table>
                 <div style="text-align:right;margin-top:5px;">
                     <spring:message var="activeImageText" code="archive.externalFiles.activateImage" htmlEscape="true"/>
-                    <input type="submit" name="activate" class="btnBlue small" value="${activeImageText}"/>
+                    <input type="submit" name="activate" class="imcmsFormBtnSmall" value="${activeImageText}"/>
 
                     <c:set var="disabled" value="${not currentLibrary.userLibrary }"/>
                     <spring:message var="eraseImageText" code="archive.externalFiles.eraseImage" htmlEscape="true"/>
-                    <input type="submit" name="erase" class="btnBlue small ${disabled ? 'disabled' : ''}"
+                    <input type="submit" name="erase" class="imcmsFormBtnSmall ${disabled ? 'disabled' : ''}"
                            onclick="${disabled ? 'return false;' : ''}" value="${eraseImageText}"/>
                 </div>
             </div>

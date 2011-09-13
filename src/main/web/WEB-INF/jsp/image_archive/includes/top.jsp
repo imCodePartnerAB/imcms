@@ -1,4 +1,8 @@
 <%@ page import="com.imcode.imcms.api.*,imcode.server.Imcms" %>
+<table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" style="margin-left:auto;margin-right:auto;">
+    <tbody>
+    <tr>
+    <td class="imcmsAdmTable" style="background:#f5f5f7;">
 <div id="containerTop">
     <div id="archive_banner" class="clearfix" style="padding: 10px 0 13px 0;">
         <span class="left pageHeading">${pageHeading}</span>
@@ -8,7 +12,7 @@
     
     <c:url var="backUrl" value="/web/archive/back"/>
     <div id="backButton" class="clearfix">
-        <a href="${backUrl}" class="btnBlue btnBack small ${sessionScope.returnToImcms eq null ? 'disabled' : ''}"
+        <a href="${backUrl}" class="imcmsFormBtnSmall btnBack ${sessionScope.returnToImcms eq null ? 'disabled' : ''}"
            onclick="${sessionScope.returnToImcms eq null ? 'return false;' : ''}">
             <span><spring:message code="archive.backToImcms" htmlEscape="true"/></span>
         </a>

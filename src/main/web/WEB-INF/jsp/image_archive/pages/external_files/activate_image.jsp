@@ -4,13 +4,13 @@
             <h3><spring:message code="archive.externalFiles.activate.cantActivate" htmlEscape="true"/></h3><br/><br/>
             
             <c:url var="backUrl" value="/web/archive/external-files"/>
-            <a href="${backUrl}" class="btnBlue">
+            <a href="${backUrl}" class="imcmsFormBtn">
                 <span><spring:message code="archive.back" htmlEscape="true"/></span>
             </a>
         </div>
     </c:when>
     <c:otherwise>
-        <h4 class="section">
+        <h4 class="imcmsAdmHeading">
             <spring:message code="archive.addImage.changeImageData" htmlEscape="true"/>
         </h4>
 
@@ -35,10 +35,10 @@
 
                         <div style="margin-top:10px;">
                             <spring:message var="rotateLeftText" code="archive.rotateLeft" htmlEscape="true"/>
-                            <input type="button" class="btnBlue small" id="rotateLeft" value="${rotateLeftText}"/>
+                            <input type="button" class="imcmsFormBtnSmall" id="rotateLeft" value="${rotateLeftText}"/>
 
                             <spring:message var="rotateRightText" code="archive.rotateRight" htmlEscape="true"/>
-                            <input type="button" class="btnBlue small" id="rotateRight" value="${rotateRightText}"/>
+                            <input type="button" class="imcmsFormBtnSmall" id="rotateRight" value="${rotateRightText}"/>
                         </div>
                     </div>
                 </div>
@@ -48,20 +48,20 @@
                     </div>
                 <div style="margin-top: 20px;text-align:right;">
                     <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
-                    <input type="submit" class="btnBlue" name="save" value="${saveText}"/>
+                    <input type="submit" class="imcmsFormBtn" name="save" value="${saveText}"/>
 
                     <spring:message var="saveActivateText" code="archive.externalFiles.activate.saveActivate" htmlEscape="true"/>
-                    <input type="submit" class="btnBlue" name="saveActivate" value="${saveActivateText}"/>
+                    <input type="submit" class="imcmsFormBtn" name="saveActivate" value="${saveActivateText}"/>
 
                     <c:set var="disabled" value="${sessionScope.returnToImcms eq null}"/>
                     <spring:message var="saveUseText" code="archive.saveUseInImcms" htmlEscape="true"/>
-                    <input type="submit" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}" name="saveUse" value="${saveUseText}"/>
+                    <input type="submit" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}" name="saveUse" value="${saveUseText}"/>
 
                     <spring:message var="saveImageCardText" code="archive.saveReturnImageCard" htmlEscape="true"/>
-                    <input type="submit" class="btnBlue" name="saveImageCard" value="${saveImageCardText}"/>
+                    <input type="submit" class="imcmsFormBtn" name="saveImageCard" value="${saveImageCardText}"/>
 
                     <spring:message var="cancelText" code="archive.cancel" htmlEscape="true"/>
-                    <input type="submit" class="btnBlue" name="cancel" value="${cancelText}"/>
+                    <input type="submit" class="imcmsFormBtn" name="cancel" value="${cancelText}"/>
                 </div>
 
             </div>
