@@ -35,40 +35,45 @@
             <spring:message var="uploadText" code="archive.addImage.upload" htmlEscape="true"/>
             <input id="uploadButton" type="button" value="${uploadText}" class="btnBlue"/>
         </div>
-            <h4 class="section"><spring:message code="archive.addImage.selectedImages" htmlEscape="true"/></h4>
-            <div id="uploadifyQueue" class="uploadifyQueue"></div>
+        <h4 class="section"><spring:message code="archive.addImage.selectedImages" htmlEscape="true"/></h4>
+        <div id="uploadifyQueue" class="uploadifyQueue"></div>
     </form:form>
     
     <c:if test="${image ne null}">
-        <c:url var="thumbUrl" value="/web/archive/thumb">
-            <c:param name="id" value="${image.id}"/>
-            <c:param name="size" value="medium"/>
-        </c:url>
-        <div style="margin:30px 0;text-align:center;">
-            <c:url var="previewUrl" value="/web/archive/preview">
-                <c:param name="id" value="${image.id}"/>
-            </c:url>
-            <a href="${previewUrl}" onclick="showPreview(${image.id}, ${image.width}, ${image.height});return false;" target="_blank">
-                <img src="${thumbUrl}" width="300" height="225" alt="${image.imageNm}"/>
-            </a><br/>
-
-            <form action="/" style="margin-top:5px;">
-                <spring:message var="rotateLeftText" code="archive.rotateLeft" htmlEscape="true"/>
-                <input type="button" class="btnBlue small" id="rotateLeft" value="${rotateLeftText}"/>
-                
-                <spring:message var="rotateRightText" code="archive.rotateRight" htmlEscape="true"/>
-                <input type="button" class="btnBlue small" id="rotateRight" value="${rotateRightText}"/>
-            </form>
-        </div>
-    
-        <h4>
-            <spring:message code="archive.addImage.changeImageData" htmlEscape="true"/>
-        </h4>
         <c:url var="changeDataUrl" value="/web/archive/add-image/change"/>
         <form:form commandName="changeData" action="${changeDataUrl}" method="post" cssClass="m15t">
-            <%@ include file="/WEB-INF/jsp/image_archive/pages/fragments/change_data.jsp" %>
-            <div class="clearboth m10t hr"></div>
-            <div style="margin-top: 20px;text-align:center;">
+            <div class="clearfix left">
+                <div class="clearfix">
+                <div style="float:left;">
+                    <c:url var="thumbUrl" value="/web/archive/thumb">
+                        <c:param name="id" value="${image.id}"/>
+                        <c:param name="size" value="medium"/>
+                    </c:url>
+                    <div style="text-align:center;">
+                        <c:url var="previewUrl" value="/web/archive/preview">
+                            <c:param name="id" value="${image.id}"/>
+                        </c:url>
+                        <a href="${previewUrl}" onclick="showPreview(${image.id}, ${image.width}, ${image.height});return false;" target="_blank">
+                            <img src="${thumbUrl}" width="300" height="225" alt="${image.imageNm}"/>
+                        </a><br/>
+
+                        <span class="hint"><spring:message code="archive.imageCard.clickToEnlarge" htmlEscape="true"/></span>
+
+                        <div style="margin-top:10px;">
+                            <spring:message var="rotateLeftText" code="archive.rotateLeft" htmlEscape="true"/>
+                            <input type="button" class="btnBlue small" id="rotateLeft" value="${rotateLeftText}"/>
+
+                            <spring:message var="rotateRightText" code="archive.rotateRight" htmlEscape="true"/>
+                            <input type="button" class="btnBlue small" id="rotateRight" value="${rotateRightText}"/>
+                        </div>
+                    </div>
+                </div>
+                <div style="float:left;margin-left:20px;width:450px;">
+                    <%@ include file="/WEB-INF/jsp/image_archive/pages/fragments/change_data.jsp" %>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;text-align:right;">
                 <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
                 <input id="save" type="submit" name="saveAction" value="${saveText}" class="btnBlue"/>
                 <spring:message var="saveAddText" code="archive.addImage.saveAddNew" htmlEscape="true"/>
@@ -81,6 +86,7 @@
                 <spring:message var="discontinueText" code="archive.addImage.discontinue" htmlEscape="true"/>
                 <input id="discontinue" type="submit" name="discontinueAction" value="${discontinueText}" class="btnBlue"/>
             </div>
+                </div>
         </form:form>
     </c:if>
 </div>

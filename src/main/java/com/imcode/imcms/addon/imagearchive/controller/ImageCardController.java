@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.imcode.imcms.addon.imagearchive.Config;
 import com.imcode.imcms.addon.imagearchive.command.ChangeImageDataCommand;
 import com.imcode.imcms.addon.imagearchive.command.ExportImageCommand;
 import com.imcode.imcms.addon.imagearchive.command.ImageCardChangeActionCommand;
@@ -215,7 +214,8 @@ public class ImageCardController {
     }
     
     @RequestMapping("/archive/image/*/exif")
-    public ModelAndView exifHandler(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView exifHandler(@ModelAttribute("exportImage") ExportImageCommand command,
+                                    HttpServletRequest request) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -224,7 +224,12 @@ public class ImageCardController {
         if (imageId == null || (image = facade.getImageService().findById(imageId, user)) == null) {
             return new ModelAndView("redirect:/web/archive");
         }
-        
+
+        Format format = Format.findFormat(image.getFormat());
+        if (format.isWritable()) {
+            command.setFileFormat(format.getOrdinal());
+        }
+
         Exif originalExif = facade.getImageService().findExifByPK(image.getId(), Exif.TYPE_ORIGINAL);
         image.setOriginalExif(originalExif);
         

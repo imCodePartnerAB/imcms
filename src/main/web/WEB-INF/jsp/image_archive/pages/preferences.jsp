@@ -129,10 +129,17 @@
         <form:form action="${preferencesUrl}" commandName="editCategory" method="post" cssClass="m15t clearfix">
             <input type="hidden" name="editCategoryId" id="editCategoryId"/>
 
-            <div class="minH30 clearfix">
-                <table class="editCategoryTable" cellpadding="0" cellspacing="0">
-                    <c:forEach var="category" items="${categories}" varStatus="categoryStatus">
-                        <tr ${categoryStatus.count % 2 == 0 ? 'class="odd"':''}>
+            <div class="minH30 clearfix" style="width:500px;">
+                <table class="editCategoryTable tablesorter" cellpadding="0" cellspacing="1">
+                    <thead>
+                        <tr>
+                            <th><spring:message code="archive.preferences.category" htmlEscape="true"/></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="category" items="${categories}" varStatus="categoryStatus">
+                        <tr>
                             <td>
                                 <input class="disabled" name="editCategoryName" data-categoryId="${category.id}" type="text"
                                        value="<c:out value="${category.name}"/>" disabled/>
@@ -140,7 +147,8 @@
                             <td class="controls">
                             </td>
                         </tr>
-                    </c:forEach>
+                        </c:forEach>
+                    </tbody>
                 </table>
             </div>
         </form:form>
@@ -275,9 +283,8 @@
                             <form:errors path="libraryNm" cssClass="red"/>
                         </div>
                     </div>
-                    <br/><br/>
 
-                    <div class="left" style="width:500px;">
+                    <div class="left" style="width:500px;margin-top:20px;">
                         <table class="libraryCategoriesTable tablesorter" cellpadding="0" cellspacing="1">
                             <thead>
                                 <tr>

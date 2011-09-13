@@ -394,3 +394,11 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
 .editCategoryTable td {
     padding: 3px 2px;
 }
+
+.editCategoryTable th.header {
+    width:320px;
+}
+
+.editCategoryTable input {
+    width:99%;
+}

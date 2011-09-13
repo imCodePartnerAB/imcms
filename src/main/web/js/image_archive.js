@@ -466,8 +466,29 @@ var initPreferences = function() {
             });
         }
 
-        $(".roleTable").tablesorter({sortList: [[0,0]], headers:{ 1 : {sorter:false}, 2 : {sorter:false}}});
-        $(".libraryCategoriesTable").tablesorter({sortList: [[0,0]], headers:{ 1 : {sorter:false}, 2 : {sorter:false}}});
+        if($(".editCategoryTable td").length > 0) {
+            $(".editCategoryTable").tablesorter({textExtraction: function(node) {
+                    if($(node).find("input").length > 0) {
+                        return $(node).find("input").val();
+                    }
+                    return node.innerHTML;
+                }, sortList: [[0,0]], headers:{ 1 : {sorter:false}}
+            });
+        } else {
+            $(".editCategoryTable").tablesorter({headers: { 0 : {sorter:false}, 1 : {sorter:false}}});
+        }
+
+        if($(".roleTable td").length > 0) {
+            $(".roleTable").tablesorter({sortList: [[0,0]], headers:{ 1 : {sorter:false}, 2 : {sorter:false}}});
+        } else {
+            $(".roleTable").tablesorter({headers: { 0 : {sorter:false}, 1 : {sorter:false}, 2 : {sorter:false}}});
+        }
+
+        if($(".libraryCategoriesTable td")) {
+            $(".libraryCategoriesTable").tablesorter({sortList: [[0,0]], headers:{ 1 : {sorter:false}, 2 : {sorter:false}}});
+        } else {
+            $(".libraryCategoriesTable").tablesorter({headers: { 0 : {sorter:false}, 1 : {sorter:false}, 2 : {sorter:false}}});
+        }
 
         setupBulkSelectionCheckboxes(".roleTable");
         setupBulkSelectionCheckboxes(".libraryCategoriesTable");
