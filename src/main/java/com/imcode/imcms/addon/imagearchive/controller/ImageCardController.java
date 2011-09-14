@@ -237,6 +237,8 @@ public class ImageCardController {
         mav.addObject("action", "exif");
         mav.addObject("image", image);
         mav.addObject("canExport", (facade.getImageService().canUseImage(user, imageId) || image.isCanChange()));
+        mav.addObject("canUseInImcms", SessionUtils.getImcmsReturnToUrl(request.getSession()) != null
+                && (facade.getImageService().canUseImage(user, imageId) || image.isCanChange()));
         
         return mav;
     }
