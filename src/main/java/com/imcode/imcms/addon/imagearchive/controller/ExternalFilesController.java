@@ -175,8 +175,9 @@ public class ExternalFilesController {
             mav.addObject("activate", true);
             
             if (fileNames.length == 1) {
-                Images image = activateImage(library, fileNames[0], user);
-                if (image == null) {
+                Images image;
+                if (Utils.isInArchive(facade.getFileService().getImageFileFromLibrary(library, fileNames[0]), facade, request)
+                        || (image = activateImage(library, fileNames[0], user)) == null) {
                     mav.addObject("activateError", true);
                     
                     return mav;
@@ -202,7 +203,7 @@ public class ExternalFilesController {
                     try {
                         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
                         ImageInfo imageInfo;
-                        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null) {
+                        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null || Utils.isInArchive(imageFile, facade, request)) {
                             continue;
                         }
                         

@@ -15,9 +15,17 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
 
+import com.imcode.imcms.addon.imagearchive.command.SearchImageCommand;
 import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
+import com.imcode.imcms.addon.imagearchive.dto.LibraryEntryDto;
+import com.imcode.imcms.addon.imagearchive.entity.Categories;
+import com.imcode.imcms.addon.imagearchive.entity.Images;
 import com.imcode.imcms.addon.imagearchive.entity.Libraries;
+import com.imcode.imcms.addon.imagearchive.entity.Roles;
+import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.User;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +35,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.validation.FieldError;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
@@ -175,6 +185,30 @@ public class Utils {
                 log.fatal(e.getMessage(), e);
             }
         }
+    }
+
+    public static boolean isInArchive(File img, Facade facade, HttpServletRequest request) {
+        SearchImageCommand searchImageCommand = new SearchImageCommand();
+        searchImageCommand.setCategoryId(SearchImageCommand.CATEGORY_ALL);
+        ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
+        User user = cms.getCurrentUser();
+        List<Categories> categories = facade.getRoleService().findCategories(user, Roles.ALL_PERMISSIONS);
+        List<Integer> categoryIds = new ArrayList<Integer>(categories.size());
+        for (Categories category : categories) {
+            categoryIds.add(category.getId());
+        }
+
+        int imageCount = facade.getImageService().searchImagesCount(searchImageCommand, categoryIds, user);
+        Pagination pag = new Pagination();
+        pag.setPageSize(imageCount);
+        List<Images> archiveImages = facade.getImageService().searchImages(searchImageCommand, pag, categoryIds, user);
+        for (Images image : archiveImages) {
+            if (img != null && image.getImageNm().equals(img.getName()) && image.getFileSize() == img.length()) {
+                return true;
+            }
+        }
+
+        return false;
     }
     
     private Utils() {
