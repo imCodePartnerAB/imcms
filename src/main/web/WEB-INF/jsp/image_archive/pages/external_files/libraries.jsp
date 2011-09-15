@@ -55,10 +55,7 @@
                 <tr>
                     <td class="listOfLibrariesCell">
                         <ul id="listOfLibraries">
-                            <li data-library-id="-1">
-                                <span${currentLibrary.id eq -1 ? ' class="currentLibrary"' : ''}>
-                                    <spring:message code="archive.externalFiles.myPersonalFiles" htmlEscape="true"/>
-                                </span>
+                            <li data-library-id="-1"><span${currentLibrary.id eq -1 ? ' class="currentLibrary"' : ''}><spring:message code="archive.externalFiles.myPersonalFiles" htmlEscape="true"/></span>
                             </li>
                             <c:forEach var="library" items="${libraries}">
                                 <archive:libraryChildren library="${library}" currentLibrary="${currentLibrary}" libraries="${allLibraries}"/>
@@ -91,7 +88,7 @@
 
                                     <tr>
                                         <td>
-                                            <button class="show imcmsFormBtn" value="${fn:escapeXml(entry.fileName)}">Show</button>
+                                            <button class="show imcmsFormBtn" value="${fn:escapeXml(entry.fileName)}"><spring:message code="archive.externalFiles.show" htmlEscape="true"/></button>
                                         </td>
                                         <td>
                                             <input type="checkbox" name="fileNames" value="${fn:escapeXml(entry.fileName)}"/>
