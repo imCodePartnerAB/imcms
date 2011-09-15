@@ -17,6 +17,8 @@
         var folded = $('<img src="${pageContext.servletContext.contextPath}/css/tree/folded.png"/>');
         var unfolded = $('<img src="${pageContext.servletContext.contextPath}/css/tree/unfolded.png"/>');
         var blank = $('<img class="blank" src="${pageContext.servletContext.contextPath}/css/tree/blank.png"/>');
+        /* using the same for all due to current design */
+        blank = unfolded;
 
         function toggleVisibility() {
             $("#listOfLibraries li:not(:has(ul))").each(function() {

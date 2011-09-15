@@ -1,14 +1,5 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
-<archive:params var="titleArgs">
-    <archive:param value="${name}"/>
-</archive:params>
-<spring:message var="title" code="archive.title.externalFiles.preview" arguments="${titleArgs}" htmlEscape="true"/>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<body>
 <form action="/" style="display:none;">
     <input type="hidden" id="contextPath" value="${contextPath}"/>
     <c:url var="dummyUrl" value="/"/>
@@ -36,8 +27,7 @@
             <c:param name="name" value="${name}"/>
         </c:url>
         <img src="${imageUrl}" width="100%" style="width:100%;"/>
-        <div>${name} ${size}</div>
+        <div style="margin-top:5px;">${name}</div>
+        <div style="margin-top:5px;"><spring:message code="archive.originalSizeKb" arguments="${size / 1024.0}"/></div>
     </c:otherwise>
 </c:choose>
-
-<%@ include file="/WEB-INF/jsp/image_archive/includes/footer.jsp" %>

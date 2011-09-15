@@ -1,3 +1,4 @@
+<%@ page contentType="text/css" pageEncoding="UTF-8" %>
 * {
     margin: 0;
     padding: 0;
@@ -120,7 +121,6 @@ a.imcmsFormBtnSmall.disabled, input.imcmsFormBtnSmall.disabled {
     margin: 0 auto !important;
     padding-right: 20px;
     padding-left: 20px;
-    font-size: 1.2em;
 }
 
 #containerContent {
@@ -275,17 +275,11 @@ div.UploadifyObjectWrapper {
 }
 
 #listOfLibraries {
-    float:left;
-    padding:5px 5px 30px 5px;
-    width:250px;
+    padding:0 5px 5px 5px;
 }
 
 #listOfLibraries ul {
     padding-left:40px;
-}
-
-.fileTableWithControls {
-    margin-left: 280px;
 }
 
 .currentLibrary {
@@ -327,6 +321,23 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
 
 #externalFiles {
     margin-top:15px;
+}
+
+.externalFilesLibrariesAndEntries {
+    width: 100%;
+}
+
+.externalFilesLibrariesAndEntries .tableSeparatorTop {
+    background: url(${pageContext.request.contextPath}/images/grayLine.png) 50% 150% no-repeat;width:20px;
+}
+
+.externalFilesLibrariesAndEntries .tableSeparatorMiddle {
+    background: url(${pageContext.request.contextPath}/images/grayDot.png) 50% 0 repeat-y;
+}
+
+.listOfLibrariesCell {
+    vertical-align:top;
+    width:230px;
 }
 
 .hint {

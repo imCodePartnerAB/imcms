@@ -10,7 +10,7 @@
     <link href="${contextPath}/imcms/css/imcms_admin.css.jsp" rel="stylesheet" type="text/css" />
     <link href="${contextPath}/css/blue/style.css" rel="stylesheet" type="text/css" />
     <link href="${contextPath}/css/jquery.qtip.css" rel="stylesheet" type="text/css" />
-    <link href="${contextPath}/css/image_archive.css" rel="stylesheet" type="text/css" />
+    <link href="${contextPath}/css/image_archive.css.jsp" rel="stylesheet" type="text/css" />
     ${css}
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>

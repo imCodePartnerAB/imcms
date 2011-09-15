@@ -15,7 +15,7 @@
         </h4>
 
         <c:url var="changeUrl" value="/web/archive/external-files/change"/>
-        <form:form commandName="changeData" action="${changeUrl}" method="post" cssClass="m15t">
+        <form:form commandName="changeData" action="${changeUrl}" method="post" cssClass="m15t clearfix">
             <div class="clearfix left">
                 <div class="clearfix">
                 <div style="float:left;">
