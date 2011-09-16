@@ -44,7 +44,6 @@ public class GeneralController {
         
         if (lang != null && facade.getConfig().getLanguages().containsValue(lang)) {
             Locale locale = new Locale(lang);
-            session.setAttribute(SessionConstants.LOCALE, locale);
             session.setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
         }
 

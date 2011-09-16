@@ -176,10 +176,12 @@ public class ExternalFilesController {
             
             if (fileNames.length == 1) {
                 Images image;
-                if (Utils.isInArchive(facade.getFileService().getImageFileFromLibrary(library, fileNames[0]), facade, request)
-                        || (image = activateImage(library, fileNames[0], user)) == null) {
+                boolean alreadyInArchive = Utils.isInArchive(facade.getFileService().getImageFileFromLibrary(library, fileNames[0]), facade, request);
+                if (alreadyInArchive || (image = activateImage(library, fileNames[0], user)) == null) {
                     mav.addObject("activateError", true);
-                    
+                    if(alreadyInArchive) {
+                        mav.addObject("alreadyInArchive", true);
+                    }
                     return mav;
                 }
                 session.put(IMAGE_KEY, image);
@@ -199,11 +201,18 @@ public class ExternalFilesController {
                 mav.addObject("image", image);
             } else {
                 List<Object[]> tuples = new ArrayList<Object[]>(fileNames.length);
+                boolean generalActivationErrorOccured = false;
+                boolean oneOfTheImageIsAlreadyInArchive = false;
+
                 for (String fileName : fileNames) {
                     try {
                         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
                         ImageInfo imageInfo;
-                        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null || Utils.isInArchive(imageFile, facade, request)) {
+                        boolean alreadyInArchive = Utils.isInArchive(imageFile, facade, request);
+                        oneOfTheImageIsAlreadyInArchive |= alreadyInArchive;
+                        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null
+                                || alreadyInArchive) {
+                            generalActivationErrorOccured |= true;
                             continue;
                         }
                         
@@ -216,7 +225,16 @@ public class ExternalFilesController {
                 if (!tuples.isEmpty()) {
                     facade.getImageService().createImages(tuples, user);
                 }
-                
+
+                if(generalActivationErrorOccured) {
+                    mav.addObject("activateError", true);
+                    if(oneOfTheImageIsAlreadyInArchive) {
+                        mav.addObject("alreadyInArchive", true);
+                    }
+
+                    return mav;
+                }
+
                 return new ModelAndView("redirect:/web/archive/external-files");
             }
             

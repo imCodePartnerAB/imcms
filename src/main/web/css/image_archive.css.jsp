@@ -79,17 +79,6 @@ img, table {
     border: 0 none;
 }
 
-h4 {
-    color: #444;
-    font-size: 1em;
-}
-h3 {
-	font-size: 1.25em;
-}
-h1 {
-	font-size: 1.583em;
-}
-
 .inBtnGroup {
     margin-right: 5px;
 }

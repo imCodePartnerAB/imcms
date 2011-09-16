@@ -1,8 +1,12 @@
 <c:choose>
     <c:when test="${activateError}">
         <div style="text-align:center;">
-            <h3><spring:message code="archive.externalFiles.activate.cantActivate" htmlEscape="true"/></h3><br/><br/>
-            
+            <div style="margin-bottom:10px;">
+                <h3><spring:message code="archive.externalFiles.activate.cantActivate" htmlEscape="true"/></h3>
+                <c:if test="${alreadyInArchive}">
+                    <h3><spring:message code="archive.externalFiles.activate.alreadyInArchive" htmlEscape="true"/></h3>
+                </c:if>
+            </div>
             <c:url var="backUrl" value="/web/archive/external-files"/>
             <a href="${backUrl}" class="imcmsFormBtn">
                 <span><spring:message code="archive.back" htmlEscape="true"/></span>
