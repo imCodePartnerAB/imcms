@@ -129,7 +129,7 @@
         <form:form action="${preferencesUrl}" commandName="editCategory" method="post" cssClass="m15t clearfix">
             <input type="hidden" name="editCategoryId" id="editCategoryId"/>
 
-            <div class="minH30 clearfix" style="width:500px;">
+            <div class="minH30 clearfix left">
                 <table class="editCategoryTable tablesorter" cellpadding="0" cellspacing="1">
                     <thead>
                         <tr>
@@ -181,7 +181,7 @@
             </div>
 
             <div>
-                <div class="left" style="width:500px;">
+                <div class="left">
                     <table class="roleTable tablesorter" cellpadding="0" cellspacing="1">
                         <thead>
                             <tr>
@@ -245,7 +245,7 @@
 </div>
 
 <div class="preferencesSection">
-    <h4 class="colapsableLabel imcmsAdmHeading"><spring:message code="archive.preferences.libraries.roles" htmlEscape="true"/></h4>
+    <h4 class="colapsableLabel imcmsAdmHeading"><spring:message code="archive.preferences.libraries.libraries" htmlEscape="true"/></h4>
 
     <div class="contentToHide" id="contentToHideLibraries">
         <h4 class="m15t">
@@ -284,7 +284,7 @@
                         </div>
                     </div>
 
-                    <div class="left" style="width:500px;margin-top:20px;">
+                    <div class="left" style="margin-top:20px;">
                         <table class="libraryCategoriesTable tablesorter" cellpadding="0" cellspacing="1">
                             <thead>
                                 <tr>
