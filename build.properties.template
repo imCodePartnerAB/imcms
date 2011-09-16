@@ -82,6 +82,21 @@ secondary-ldap-attribute-login-name = uid
 #secondary-ldap-user-object-class = user
 #secondary-ldap-attribute-login-name = sAMAccountName
 
+
+sso-enabled = false
+
+sso-use-local-jaas-config = true
+sso-jaas-config-name = Imcms
+sso-jaas-principal-name = 
+sso-jaas-principal-password = 
+
+sso-use-local-krb-config = true
+sso-krb-realm = 
+sso-krb-kdc = 
+
+sso-kerberos-debug = false
+
+
 # The smtp-server used for sending mails.
 
 smtp-server =

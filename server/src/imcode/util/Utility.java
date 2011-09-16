@@ -265,6 +265,10 @@ public class Utility {
     }
 
     public static void forwardToLogin( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+        forwardToLogin(request, response, HttpServletResponse.SC_FORBIDDEN);
+    }
+    
+    public static void forwardToLogin( HttpServletRequest request, HttpServletResponse response, int responseStatus ) throws ServletException, IOException {
         UserDomainObject user = getLoggedOnUser( request );
         StringBuffer loginTarget = request.getRequestURL() ;
         String queryString = request.getQueryString();
@@ -272,7 +276,7 @@ public class Utility {
             loginTarget.append( "?" ).append( queryString );
         }
 
-        response.setStatus( HttpServletResponse.SC_FORBIDDEN );
+        response.setStatus( responseStatus );
         request.setAttribute( VerifyUser.REQUEST_ATTRIBUTE__ERROR, ERROR__NO_PERMISSION );
         request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/login/index.jsp?"+VerifyUser.REQUEST_PARAMETER__NEXT_URL+"="+URLEncoder.encode( loginTarget.toString() ) ).forward( request,response );
     }

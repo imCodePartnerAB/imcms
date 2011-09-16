@@ -580,6 +580,21 @@
         <filter token="secondary-ldap-user-object-class" value="${secondary-ldap-user-object-class}"/>
         <filter token="secondary-ldap-attribute-login-name" value="${secondary-ldap-attribute-login-name}"/>
 
+
+        <filter token="sso-enabled" value="${sso-enabled}"/>
+        
+        <filter token="sso-jaas-config-name" value="${sso-jaas-config-name}"/>
+        <filter token="sso-use-local-jaas-config" value="${sso-use-local-jaas-config}"/>
+        <filter token="sso-jaas-principal-name" value="${sso-jaas-principal-name}"/>
+        <filter token="sso-jaas-principal-password" value="${sso-jaas-principal-password}"/>
+        
+        <filter token="sso-use-local-krb-config" value="${sso-use-local-krb-config}"/>
+        <filter token="sso-krb-realm" value="${sso-krb-realm}"/>
+        <filter token="sso-krb-kdc" value="${sso-krb-kdc}"/>
+        
+        <filter token="sso-kerberos-debug" value="${sso-kerberos-debug}"/>
+
+
         <filter token="smtp-server" value="${smtp-server}"/>
 
         <filter token="servermaster-name" value="${servermaster-name}"/>

@@ -14,6 +14,7 @@ import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import imcode.server.kerberos.KerberosLoginService;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -41,8 +42,13 @@ public class MockImcmsServices implements ImcmsServices {
     private RoleGetter roleGetter;
     private ProcedureExecutor procedureExecutor;
     private Config config = new Config();
+    private KerberosLoginService kerberosLoginService;
 
     public UserDomainObject verifyUser( String login, String password ) {
+        return null;
+    }
+    
+    public UserDomainObject verifyUser(String clientPrincipalName) {
         return null;
     }
 
@@ -184,6 +190,10 @@ public class MockImcmsServices implements ImcmsServices {
     public KeyStore getKeyStore() {
         return keyStore;
     }
+    
+    public KerberosLoginService getKerberosLoginService() {
+        return kerberosLoginService;
+    }
 
     public void setImcmsAuthenticatorAndUserAndRoleMapper(
             ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper ) {
@@ -224,5 +234,9 @@ public class MockImcmsServices implements ImcmsServices {
     
     public void setImageCacheMapper(ImageCacheMapper mapper) {
         this.imageCacheMapper = mapper;
+    }
+    
+    public void setKerberosLoginService(KerberosLoginService kerberosLoginService) {
+        this.kerberosLoginService = kerberosLoginService;
     }
 }

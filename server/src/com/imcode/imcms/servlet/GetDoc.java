@@ -4,6 +4,8 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.*;
 import imcode.server.document.*;
+import imcode.server.kerberos.KerberosLoginResult;
+import imcode.server.kerberos.KerberosLoginStatus;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -134,6 +136,16 @@ public class GetDoc extends HttpServlet {
         documentRequest.setRevisits(revisits);
 
         if ( !user.canAccess(document) ) {
+            if (imcref.getConfig().isSsoEnabled() && user.isDefaultUser()) {
+                KerberosLoginResult loginResult = imcref.getKerberosLoginService().login(req, res);
+                
+                if (loginResult.getStatus() == KerberosLoginStatus.SUCCESS) {
+                    privateGetDoc(document, res, req);
+                }
+                
+                return;
+            }
+            
             Utility.forwardToLogin(req, res);
             return;
         }
