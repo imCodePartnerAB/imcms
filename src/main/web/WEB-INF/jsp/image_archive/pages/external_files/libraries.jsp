@@ -67,7 +67,7 @@
                         <table id="fileNames" class="tablesorter" cellpadding="0" cellspacing="1">
                             <thead>
                                 <th></th>
-                                <th></th>
+                                <th><input type="checkbox" class="allCanUse" value="-1"/></th>
                                 <th><spring:message code="archive.externalFiles.sortByInArchive" htmlEscape="true"/></th>
                                 <th><spring:message code="archive.externalFiles.fileName" htmlEscape="true"/></th>
                                 <th><spring:message code="archive.externalFiles.fileSize" htmlEscape="true"/></th>
@@ -91,7 +91,7 @@
                                             <button class="show imcmsFormBtn" value="${fn:escapeXml(entry.fileName)}"><spring:message code="archive.externalFiles.show" htmlEscape="true"/></button>
                                         </td>
                                         <td>
-                                            <input type="checkbox" name="fileNames" value="${fn:escapeXml(entry.fileName)}"/>
+                                            <input class="use" type="checkbox" name="fileNames" value="${fn:escapeXml(entry.fileName)}"/>
                                         </td>
                                         <td>
                                             <c:if test="${archive:isInArchive(entry, pageContext)}">

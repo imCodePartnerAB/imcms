@@ -59,9 +59,6 @@ public class ExternalFilesController {
     @Autowired
     private Facade facade;
     
-    @Autowired
-    private Config config;
-    
     
     @RequestMapping("/archive/external-files")
     public ModelAndView indexHandler(
@@ -176,7 +173,7 @@ public class ExternalFilesController {
             
             if (fileNames.length == 1) {
                 Images image;
-                boolean alreadyInArchive = Utils.isInArchive(facade.getFileService().getImageFileFromLibrary(library, fileNames[0]), facade, request);
+                boolean alreadyInArchive = Utils.isInArchive(facade.getFileService().getImageFileFromLibrary(library, fileNames[0]), facade);
                 if (alreadyInArchive || (image = activateImage(library, fileNames[0], user)) == null) {
                     mav.addObject("activateError", true);
                     if(alreadyInArchive) {
@@ -208,7 +205,7 @@ public class ExternalFilesController {
                     try {
                         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
                         ImageInfo imageInfo;
-                        boolean alreadyInArchive = Utils.isInArchive(imageFile, facade, request);
+                        boolean alreadyInArchive = Utils.isInArchive(imageFile, facade);
                         oneOfTheImageIsAlreadyInArchive |= alreadyInArchive;
                         if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null
                                 || alreadyInArchive) {

@@ -61,21 +61,7 @@ public class Functions {
         WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(pageContext.getServletContext());
         Facade facade = context.getBean(com.imcode.imcms.addon.imagearchive.service.Facade.class);
 
-
-        SearchImageCommand searchImageCommand = new SearchImageCommand();
-        searchImageCommand.setCategoryId(SearchImageCommand.CATEGORY_ALL);
-        ContentManagementSystem cms = ContentManagementSystem.fromRequest(pageContext.getRequest());
-        User user = cms.getCurrentUser();
-        List<Categories> categories = facade.getRoleService().findCategories(user, Roles.ALL_PERMISSIONS);
-        List<Integer> categoryIds = new ArrayList<Integer>(categories.size());
-        for (Categories category : categories) {
-            categoryIds.add(category.getId());
-        }
-
-        int imageCount = facade.getImageService().searchImagesCount(searchImageCommand, categoryIds, user);
-        Pagination pag = new Pagination();
-        pag.setPageSize(imageCount);
-        List<Images> archiveImages = facade.getImageService().searchImages(searchImageCommand, pag, categoryIds, user);
+        List<Images> archiveImages = facade.getImageService().getAllImages();
         for (Images image : archiveImages) {
             if (img != null && image.getImageNm().equals(img.getFileName()) && image.getFileSize() == img.getFileSize()) {
                 return true;

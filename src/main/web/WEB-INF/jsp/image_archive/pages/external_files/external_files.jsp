@@ -85,13 +85,12 @@
                     effect: false,
                     solo: true
                 },
-                    position: {
+                position: {
                     my: 'top left',
                     at: 'center center',
-                    effect: false
+                    effect: false,
+                    viewport: $("#containerContent")
                 }
-
-
                 });
             });
         });

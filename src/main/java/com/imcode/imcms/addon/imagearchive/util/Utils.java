@@ -187,21 +187,8 @@ public class Utils {
         }
     }
 
-    public static boolean isInArchive(File img, Facade facade, HttpServletRequest request) {
-        SearchImageCommand searchImageCommand = new SearchImageCommand();
-        searchImageCommand.setCategoryId(SearchImageCommand.CATEGORY_ALL);
-        ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
-        User user = cms.getCurrentUser();
-        List<Categories> categories = facade.getRoleService().findCategories(user, Roles.ALL_PERMISSIONS);
-        List<Integer> categoryIds = new ArrayList<Integer>(categories.size());
-        for (Categories category : categories) {
-            categoryIds.add(category.getId());
-        }
-
-        int imageCount = facade.getImageService().searchImagesCount(searchImageCommand, categoryIds, user);
-        Pagination pag = new Pagination();
-        pag.setPageSize(imageCount);
-        List<Images> archiveImages = facade.getImageService().searchImages(searchImageCommand, pag, categoryIds, user);
+    public static boolean isInArchive(File img, Facade facade) {
+        List<Images> archiveImages = facade.getImageService().getAllImages();
         for (Images image : archiveImages) {
             if (img != null && image.getImageNm().equals(img.getName()) && image.getFileSize() == img.length()) {
                 return true;

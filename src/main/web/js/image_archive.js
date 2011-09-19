@@ -312,6 +312,30 @@ var setupChangeData = function() {
     });
 };
 
+function toggleBulkSelectionCheckboxes(tableClassOrId, selectOneClass, selectAllClass) {
+    if($(tableClassOrId + " " + selectOneClass).length == $(tableClassOrId + " " + selectOneClass + ":checked").length) {
+        $(tableClassOrId + " " + selectAllClass).attr("checked", "checked");
+    } else {
+        $(tableClassOrId + " " + selectAllClass).removeAttr("checked");
+    }
+}
+
+function setupBulkSelectionCheckboxes(tableClassOrId, selectOneClass, selectAllClass) {
+    $(tableClassOrId + " " + selectOneClass).click(function() {
+        toggleBulkSelectionCheckboxes(tableClassOrId, selectOneClass, selectAllClass);
+    });
+
+    toggleBulkSelectionCheckboxes(tableClassOrId, selectOneClass, selectAllClass);
+
+    $(tableClassOrId + " " + selectAllClass).click(function(){
+        if($(this).is(":checked")) {
+            $(tableClassOrId + " " + selectOneClass).attr("checked", "checked");
+        } else {
+            $(tableClassOrId + " " + selectOneClass).removeAttr("checked");
+        }
+    });
+}
+
 var initAddImage = function() {
     $(function() {
         setupChangeData();
@@ -422,50 +446,6 @@ var initPreferences = function() {
             return false;
         });
 
-
-        function toggleBulkSelectionCheckboxes(tableClassOrId) {
-            if($(tableClassOrId + " .use").length == $(tableClassOrId + " .use:checked").length) {
-                $(tableClassOrId + " .allCanUse").attr("checked", "checked");
-            } else {
-                $(tableClassOrId + " .allCanUse").removeAttr("checked");
-            }
-
-            if($(tableClassOrId + " .edit").length == $(tableClassOrId + " .edit:checked").length) {
-                $(tableClassOrId + " .allCanEdit").attr("checked", "checked");
-            } else {
-                $(tableClassOrId + " .allCanEdit").removeAttr("checked");
-            }
-        }
-
-        // sets click hanlders for bulk selection and  
-        function setupBulkSelectionCheckboxes(tableClassOrId) {
-            $(tableClassOrId + " .use").click(function() {
-                toggleBulkSelectionCheckboxes(tableClassOrId);
-            });
-
-            $(tableClassOrId + " .edit").click(function() {
-                toggleBulkSelectionCheckboxes(tableClassOrId);
-            });
-
-            toggleBulkSelectionCheckboxes(tableClassOrId);
-
-            $(tableClassOrId + " .allCanUse").click(function(){
-                if($(this).is(":checked")) {
-                    $(tableClassOrId + " .use").attr("checked", "checked");
-                } else {
-                    $(tableClassOrId + " .use").removeAttr("checked");
-                }
-            });
-    
-            $(tableClassOrId + " .allCanEdit").click(function(){
-                if($(this).is(":checked")) {
-                    $(tableClassOrId + " .edit").attr("checked", "checked");
-                } else {
-                    $(tableClassOrId + " .edit").removeAttr("checked");
-                }
-            });
-        }
-
         if($(".editCategoryTable td").length > 0) {
             $(".editCategoryTable").tablesorter({textExtraction: function(node) {
                     if($(node).find("input").length > 0) {
@@ -490,8 +470,10 @@ var initPreferences = function() {
             $(".libraryCategoriesTable").tablesorter({headers: { 0 : {sorter:false}, 1 : {sorter:false}, 2 : {sorter:false}}});
         }
 
-        setupBulkSelectionCheckboxes(".roleTable");
-        setupBulkSelectionCheckboxes(".libraryCategoriesTable");
+        setupBulkSelectionCheckboxes(".roleTable", ".use", ".allCanUse");
+        setupBulkSelectionCheckboxes(".roleTable", ".edit", ".allCanEdit");
+        setupBulkSelectionCheckboxes(".libraryCategoriesTable", ".use", ".allCanUse");
+        setupBulkSelectionCheckboxes(".libraryCategoriesTable", ".edit", ".allCanEdit");
 
         $("#saveCategoriesBtn").click(function() {
             var categoryRightStr = "";
@@ -599,6 +581,7 @@ var initPreferences = function() {
 var initExternalFiles = function() {
     $(function() {
         setupChangeData();
+        setupBulkSelectionCheckboxes("#fileNames", ".use", ".allCanUse");
         
         var libraryId = $("#libraryId").val();
         

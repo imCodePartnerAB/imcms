@@ -177,7 +177,7 @@
                 </form:select>
             </span>
         </div>
-            <div style="text-align:right;margin-right:10px;">
+            <div style="text-align:right;">
                 <input type="button" id="toggleMoreCriteriaBtn" value="More criteria" class="imcmsFormBtn"/>
 
                 <spring:message var="clearText" code="archive.searchImage.clear" htmlEscape="true"/>
