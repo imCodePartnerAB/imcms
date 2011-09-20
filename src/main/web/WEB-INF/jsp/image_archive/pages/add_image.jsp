@@ -41,7 +41,7 @@
     
     <c:if test="${image ne null}">
         <c:url var="changeDataUrl" value="/web/archive/add-image/change"/>
-        <form:form commandName="changeData" action="${changeDataUrl}" method="post" cssClass="m15t">
+        <form:form commandName="changeData" action="${changeDataUrl}" method="post" cssClass="m15t clearfix">
             <div class="clearfix left">
                 <div class="clearfix">
                 <div style="float:left;">
@@ -68,7 +68,7 @@
                         </div>
                     </div>
                 </div>
-                <div style="float:left;margin-left:20px;width:450px;">
+                <div style="float:left;margin-left:20px;">
                     <%@ include file="/WEB-INF/jsp/image_archive/pages/fragments/change_data.jsp" %>
                 </div>
             </div>

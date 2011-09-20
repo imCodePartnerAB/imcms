@@ -1,5 +1,5 @@
 <c:url var="changeDataUrl" value="/web/archive/image/${image.id}/change"/>
-<form:form commandName="changeData" action="${changeDataUrl}" method="post" cssClass="m15t" enctype="multipart/form-data">
+<form:form commandName="changeData" action="${changeDataUrl}" method="post" cssClass="m15t clearfix" enctype="multipart/form-data">
     <form:hidden path="changedFile"/>
     <div class="clearboth" style="min-height:30px;">
         <label for="file" class="left" style="width:130px;">

@@ -31,7 +31,7 @@
             <spring:message var="rightText" code="archive.moveRight" htmlEscape="true"/>
             <spring:message var="leftText" code="archive.moveLeft" htmlEscape="true"/>
             <input id="addCategory" type="button" value="${rightText}" class="imcmsFormBtnSmall" style="width:30px;"/><br/><br/>
-            <input id="deleteCategory" type="button" value="${leftText}" class="imcmsFormBtn small" style="width:30px;"/>
+            <input id="deleteCategory" type="button" value="${leftText}" class="imcmsFormBtnSmall" style="width:30px;"/>
         </div>
         <select id="imageCategories" multiple="multiple" size="5" class="left" style="width:132px;">
             <c:forEach var="category" items="${imageCategories}">
@@ -70,10 +70,20 @@
     <label for="keyword" class="left" style="width:130px;">
         <spring:message code="archive.changeData.addKeyword" htmlEscape="true"/>
     </label>
-    <div class="left">
-        <input type="text" id="keyword" value="" maxlength="50" style="width:170px;"/>
-        <spring:message var="addText" code="archive.changeData.add" htmlEscape="true"/>
-        <input type="button" id="createKeyword" value="${addText}" class="imcmsFormBtnSmall"/>
+    <div class="left" style="width:304px;">
+        <div class="clearfix">
+            <table style="width:100%;" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        <input type="text" id="keyword" value="" maxlength="50" style="width:95%;"/>
+                    </td>
+                    <td>
+                        <spring:message var="addText" code="archive.changeData.add" htmlEscape="true"/>
+                        <input type="button" id="createKeyword" value="${addText}" class="imcmsFormBtnSmall" style="width:100%;"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 <div class="minH30 clearboth">
@@ -163,7 +173,7 @@
         <spring:message code="archive.changeData.altText" htmlEscape="true"/>
     </label>
     <div class="left">
-        <form:input id="altText" path="altText" maxlength="10" cssStyle="width:100px;" htmlEscape="true"/>
+        <form:input id="altText" path="altText" maxlength="50" cssStyle="width:300px;" htmlEscape="true"/>
         <form:errors path="altText" cssClass="red"/>
     </div>
 </div>

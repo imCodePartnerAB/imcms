@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <spring:message var="notAvailable" code="archive.changeData.notAvailable"/>
 <div class="m15t infoRow odd clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.manufacturer" htmlEscape="true"/>
     </span>
     <span>
@@ -16,13 +16,13 @@
     <span><c:out value="${image.originalExif.model}" default="${notAvailable}"/></span>
 </div>
 <div class="clearfix infoRow odd">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.compression" htmlEscape="true"/>
     </span>
     <span><c:out value="${image.originalExif.compression}" default="${notAvailable}"/></span>
 </div>
 <div class="infoRow clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.xResolution" htmlEscape="true"/>
     </span>
     <span>
@@ -30,7 +30,7 @@
     </span>
 </div>
 <div class="infoRow odd clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.yResolution" htmlEscape="true"/>
     </span>
     <span>
@@ -38,7 +38,7 @@
     </span>
 </div>
 <div class="infoRow clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.resolutionUnits" htmlEscape="true"/>
     </span>
     <span>
@@ -53,7 +53,7 @@
     </span>
 </div>
 <div class="infoRow odd clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.exposure" htmlEscape="true"/>
     </span>
     <span>
@@ -69,7 +69,7 @@
     </span>
 </div>
 <div class="infoRow clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.fNumber" htmlEscape="true"/>
     </span>
     <span>
@@ -84,7 +84,7 @@
     </span>
 </div>
 <div class="infoRow odd clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.exposureProgram" htmlEscape="true"/>
     </span>
     <span>
@@ -92,7 +92,7 @@
     </span>
 </div>
 <div class="infoRow clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.datetimeDigitized" htmlEscape="true"/>
     </span>
     <span>
@@ -107,7 +107,7 @@
     </span>
 </div>
 <div class="infoRow odd clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.datetimeOriginal" htmlEscape="true"/>
     </span>
     <span>
@@ -122,7 +122,7 @@
     </span>
 </div>
 <div class="infoRow clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.flash" htmlEscape="true"/>
     </span>
     <span>
@@ -143,7 +143,7 @@
     </span>
 </div>
 <div class="infoRow odd clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.focalLength" htmlEscape="true"/>
     </span>
     <span>
@@ -158,7 +158,7 @@
     </span>
 </div>
 <div class="infoRow clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.colorSpace" htmlEscape="true"/>
     </span>
     <span>
@@ -166,7 +166,7 @@
     </span>
 </div>
 <div class="infoRow odd clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.pixelXDimension" htmlEscape="true"/>
     </span>
     <span>
@@ -174,7 +174,7 @@
     </span>
 </div>
 <div class="infoRow clearfix">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.pixelYDimension" htmlEscape="true"/>
     </span>
     <span>
@@ -182,7 +182,7 @@
     </span>
 </div>
 <div class="clearfix infoRow odd">
-    <span class="left" style="width:150px;">
+    <span>
         <spring:message code="archive.changeData.exif.ISO" htmlEscape="true"/>
     </span>
     <span><c:out value="${image.originalExif.ISO}" default="${notAvailable}"/></span>

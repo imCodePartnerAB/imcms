@@ -49,7 +49,7 @@
             $("#height").blur(fillOnAspectRatio);
 
             triggers = $(".modalInput").overlay({
-                mask: {color:'gray', opacity:1.0},
+                mask: {color:'gray', opacity:0.7},
                 top: '25%',
                 closeOnClick: false
             });
@@ -101,7 +101,7 @@
                 </c:if>
             </div>
         </div>
-        <div style="float:left;margin-left:20px;width:450px;">
+        <div style="float:left;margin-left:20px;">
         <c:choose>
             <c:when test="${action eq 'change'}">
                 <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/change_data.jsp" %>

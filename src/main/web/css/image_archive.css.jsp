@@ -362,3 +362,8 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
 .editCategoryTable input {
     width:99%;
 }
+
+.infoRow span {
+    width: 150px;
+    float:left;
+}
