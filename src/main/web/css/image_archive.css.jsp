@@ -280,6 +280,7 @@ div.UploadifyObjectWrapper {
     background-color:#fff;
     display:none;
     border:1px solid black;
+    padding-top:10px;
 }
 
 .fixedWidth {
