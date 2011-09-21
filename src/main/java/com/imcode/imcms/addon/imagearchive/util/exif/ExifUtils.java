@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.sanselan.ImageFormat;
@@ -175,7 +176,7 @@ public class ExifUtils {
                 data.setyResolution(xResolution.intValue());
             }
 
-            if(manufacturer != null) {
+            if(StringUtils.isNotBlank(manufacturer)) {
                 manufacturer = manufacturer.trim();
 
                 if(containsHtmlEntities(manufacturer)) {
@@ -185,7 +186,7 @@ public class ExifUtils {
                 data.setManufacturer(manufacturer);
             }
 
-            if(model != null) {
+            if(StringUtils.isNotBlank(model)) {
                 model = model.trim();
 
                 if(containsHtmlEntities(model)) {

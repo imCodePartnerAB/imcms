@@ -1,5 +1,5 @@
-<div class="minH30 clearboth">
-    <label for="imageNm" class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <label for="imageNm" class="left" style="width:150px;">
         <spring:message code="archive.changeData.imageName" htmlEscape="true"/>
     </label>
     <div class="left">
@@ -7,8 +7,8 @@
         <form:errors path="imageNm" cssClass="red"/>
     </div>
 </div>
-<div class="minH30 clearboth">
-    <label for="description" class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <label for="description" class="left" style="width:150px;">
         <spring:message code="archive.changeData.description" htmlEscape="true"/>
     </label>
     <div class="left">
@@ -17,8 +17,8 @@
     </div>
 </div>
 <input type="hidden" id="categories" name="categories" value=""/>
-<div class="minH30 clearboth clearfix" style="padding:10px 0;">
-    <label for="availableCategories" class="left" style="width:130px;">
+<div class="minH30 clearfix" style="padding:10px 0;">
+    <label for="availableCategories" class="left" style="width:150px;">
         <spring:message code="archive.changeData.category" htmlEscape="true"/>
     </label>
     <div class="left">
@@ -43,8 +43,8 @@
 </div>
 <input type="hidden" id="keywords" name="keywords"/>
 <input type="hidden" id="imageKeywords" name="imageKeywords"/>
-<div class="minH30 clearboth clearfix" style="padding:10px 0;">
-    <label for="availableKeywords" class="left" style="width:130px;">
+<div class="minH30 clearfix" style="padding:10px 0;">
+    <label for="availableKeywords" class="left" style="width:150px;">
         <spring:message code="archive.changeData.keywords" htmlEscape="true"/>
     </label>
     <div class="left">
@@ -66,28 +66,16 @@
         </select><br/>
     </div>
 </div>
-<div class="minH30 clearboth">
-    <label for="keyword" class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <label for="keyword" class="left" style="width:150px;">
         <spring:message code="archive.changeData.addKeyword" htmlEscape="true"/>
     </label>
-    <div class="left" style="width:304px;">
-        <div class="clearfix">
-            <table style="width:100%;" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td>
-                        <input type="text" id="keyword" value="" maxlength="50" style="width:95%;"/>
-                    </td>
-                    <td>
-                        <spring:message var="addText" code="archive.changeData.add" htmlEscape="true"/>
-                        <input type="button" id="createKeyword" value="${addText}" class="imcmsFormBtnSmall" style="width:100%;"/>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
+    <input type="text" id="keyword" value="" maxlength="50" style="width:55%;"/>
+    <spring:message var="addText" code="archive.changeData.add" htmlEscape="true"/>
+    <input type="button" id="createKeyword" value="${addText}" class="imcmsFormBtnSmall right"/>
 </div>
-<div class="minH30 clearboth">
-    <label for="artist" class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <label for="artist" class="left" style="width:150px;">
         <spring:message code="archive.changeData.photographer" htmlEscape="true"/>
     </label>
     <div class="left">
@@ -95,15 +83,15 @@
         <form:errors path="artist" cssClass="red"/>
     </div>
 </div>
-<div class="minH30 clearboth">
-    <label class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <label class="left" style="width:150px;">
         <spring:message code="archive.changeData.originalSizeWidth" htmlEscape="true"/>
     </label>
     <span class="left">${image.width}x${image.height}</span>
 </div>
-<div class="minH30 clearboth">
-    <label class="left" style="width:130px;">
-        <spring:message code="archive.changeData.xResolution" htmlEscape="true"/>
+<div class="minH30 clearfix">
+    <label class="left" style="width:150px;">
+        <spring:message code="archive.changeData.resolution" htmlEscape="true"/>
     </label>
     <span class="left">
         <c:choose>
@@ -123,29 +111,35 @@
         </c:choose>
     </span>
 </div>
-<div class="minH30 clearboth">
-    <label class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <label class="left" style="width:150px;">
         <spring:message code="archive.changeData.originalFileSize" htmlEscape="true"/>
     </label>
     <span class="left"><spring:message code="archive.originalSizeKb" arguments="${image.fileSize / 1024.0}"/></span>
 </div>
-<div class="minH30 clearboth">
-    <label class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <span class="left" style="width:150px;">
+        <spring:message code="archive.changeData.originalFileType" htmlEscape="true"/>
+    </span>
+    <span><c:out value="${format.format}"/></span>
+</div>
+<div class="minH30 clearfix">
+    <label class="left" style="width:150px;">
         <spring:message code="archive.changeData.id" htmlEscape="true"/>
     </label>
     <span class="left">${image.id}</span>
 </div>
-<div class="minH30 clearboth">
-    <label for="uploadedBy" class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <label for="uploadedBy" class="left" style="width:150px;">
         <spring:message code="archive.changeData.uploadedBy" htmlEscape="true"/>
     </label>
     <div class="left">
-        <form:input id="uploadedBy" path="uploadedBy" maxlength="130" cssStyle="width:300px;" htmlEscape="true"/><br/>
+        <form:input id="uploadedBy" path="uploadedBy" maxlength="150" cssStyle="width:300px;" htmlEscape="true"/><br/>
         <form:errors path="uploadedBy" cssClass="red"/>
     </div>
 </div>
-<div class="minH30 clearboth">
-    <label for="copyright" class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <label for="copyright" class="left" style="width:150px;">
         <spring:message code="archive.changeData.copyright" htmlEscape="true"/>
     </label>
     <div class="left">
@@ -153,8 +147,8 @@
         <form:errors path="copyright" cssClass="red"/>
     </div>
 </div>
-<div class="minH30 clearboth">
-    <label for="licenseDt" class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <label for="licenseDt" class="left" style="width:150px;">
         <spring:message code="archive.changeData.licensePeriod" htmlEscape="true"/>
     </label>
     <div class="left">
@@ -168,8 +162,8 @@
         <form:errors path="license*" cssClass="red"/>
     </div>
 </div>
-<div class="minH30 clearboth clearfix">
-    <label for="altText" class="left" style="width:130px;">
+<div class="minH30 clearfix">
+    <label for="altText" class="left" style="width:150px;">
         <spring:message code="archive.changeData.altText" htmlEscape="true"/>
     </label>
     <div class="left">

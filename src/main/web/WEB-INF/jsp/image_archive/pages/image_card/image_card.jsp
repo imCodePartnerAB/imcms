@@ -78,8 +78,8 @@
         <c:param name="size" value="medium"/>
         <c:param name="tmp" value="${action eq 'change'}"/>
     </c:url>
-    <div class="clearfix">
-        <div class="m15t" style="float:left;">
+    <div class="clearfix m15t">
+        <div style="float:left;">
             <div style="text-align:center;">
                 <c:url var="previewUrl" value="/web/archive/preview">
                     <c:param name="id" value="${image.id}"/>
@@ -101,7 +101,7 @@
                 </c:if>
             </div>
         </div>
-        <div style="float:left;margin-left:20px;">
+        <div style="width:530px;float:right;">
         <c:choose>
             <c:when test="${action eq 'change'}">
                 <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/change_data.jsp" %>

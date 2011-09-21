@@ -8,9 +8,9 @@ import java.util.Date;
 public class ExifData implements Serializable {
     private static final long serialVersionUID = 7305457706061909142L;
 
-    private String manufacturer = "";
-    private String model = "";
-    private String compression = "";
+    private String manufacturer;
+    private String model;
+    private String compression;
     private RationalNumber exposure;
     private String exposureProgram = "";
     private RationalNumber fStop;

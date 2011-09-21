@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.addon.imagearchive.json.UploadResponse;
+import imcode.util.image.Format;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,7 @@ public class AddImageController {
         List<String> imageKeywords = (List<String>) session.get(IMAGE_KEYWORDS_KEY);
         if (image != null) {
             mav.addObject("image", image);
+            mav.addObject("format", Format.findFormat(image.getFormat()));
             
             ChangeImageDataCommand changeData = new ChangeImageDataCommand();
             changeData.fromImage(image);
@@ -184,6 +186,7 @@ public class AddImageController {
         
         ModelAndView mav = new ModelAndView("image_archive/pages/add_image");
         mav.addObject("image", image);
+        mav.addObject("format", Format.findFormat(image.getFormat()));
         
         List<String> keywords = changeData.getKeywordNames();
         List<String> imageKeywords = changeData.getImageKeywordNames();

@@ -196,6 +196,7 @@ public class ExternalFilesController {
                 mav.addObject("keywords", keywords);
                 mav.addObject("imageKeywords", imageKeywords);
                 mav.addObject("image", image);
+                mav.addObject("format", Format.findFormat(image.getFormat()));
             } else {
                 List<Object[]> tuples = new ArrayList<Object[]>(fileNames.length);
                 boolean generalActivationErrorOccured = false;

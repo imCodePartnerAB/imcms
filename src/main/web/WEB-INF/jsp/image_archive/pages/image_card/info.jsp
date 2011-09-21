@@ -3,14 +3,14 @@
 <% pageContext.setAttribute("user", ContentManagementSystem.fromRequest(request).getCurrentUser()); %>
 <spring:message var="notAvailable" code="archive.changeData.notAvailable"/>
 
-<div class="m15t infoRow odd clearfix">
-    <span>
+<div class="infoRow odd clearfix">
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.imageName" htmlEscape="true"/>
     </span>
     <span><c:out value="${image.imageNm}"/></span>
 </div>
 <div class="infoRow clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.description" htmlEscape="true"/>
     </span>
     <p class="left">
@@ -25,7 +25,7 @@
     </p>
 </div>
 <div class="infoRow clearfix odd">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.category" htmlEscape="true"/>
     </span>
     <p class="left">
@@ -40,7 +40,7 @@
     </p>
 </div>
 <div class="infoRow clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.keywords" htmlEscape="true"/>
     </span>
     <p class="left">
@@ -55,7 +55,7 @@
     </p>
 </div>
 <div class="infoRow clearfix odd">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.photographer" htmlEscape="true"/>
     </span>
     <span>
@@ -70,7 +70,7 @@
     </span>
 </div>
 <div class="infoRow clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.originalSizeWidth" htmlEscape="true"/>
     </span>
     <span>
@@ -78,7 +78,7 @@
     </span>
 </div>
 <div class="infoRow odd clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.resolution" htmlEscape="true"/>
     </span>
     <span>
@@ -105,31 +105,31 @@
     </span>
 </div>
 <div class="infoRow clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.originalFileSize" htmlEscape="true"/>
     </span>
     <span><spring:message code="archive.originalSizeKb" arguments="${image.fileSize / 1024.0}"/></span>
 </div>
 <div class="infoRow odd clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.originalFileType" htmlEscape="true"/>
     </span>
     <span><c:out value="${format.format}"/></span>
 </div>
 <div class="infoRow clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.id" htmlEscape="true"/>
     </span>
     <span>${image.id}</span>
 </div>
 <div class="infoRow odd clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.usedInImcms" htmlEscape="true"/>
     </span>
     <span>${archive:join(image.metaIds, ', ')}</span>
 </div>
 <div class="infoRow clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.uploadedBy" htmlEscape="true"/>
     </span>
     <span>
@@ -138,7 +138,7 @@
     </span>
 </div>
 <div class="infoRow odd clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.copyright" htmlEscape="true"/>
     </span>
     <span>
@@ -153,7 +153,7 @@
     </span>
 </div>
 <div class="infoRow clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.licensePeriod" htmlEscape="true"/>
     </span>
     <span>
@@ -184,7 +184,7 @@
     </span>
 </div>
 <div class="infoRow odd clearfix">
-    <span>
+    <span class="left" style="width:150px;">
         <spring:message code="archive.changeData.altText" htmlEscape="true"/>
     </span>
     <span>

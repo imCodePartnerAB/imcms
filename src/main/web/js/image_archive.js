@@ -216,7 +216,7 @@ var setupChangeData = function() {
         return false;
     });
     
-    $("#categories").parent("form").submit(function() {
+    $("#changeData").submit(function() {
         $("#categories").val($.join(categoryIds, ","));
         
         var i, len, 

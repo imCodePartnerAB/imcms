@@ -338,6 +338,7 @@ public class ImageCardController {
             session.put(IMAGE_KEY, image);
             changeData.fromImage(image);
             mav.addObject("image", image);
+            mav.addObject("format", Format.findFormat(image.getFormat()));
             
             facade.getFileService().createTemporaryCopyOfCurrentImage(image.getId());
             
@@ -356,6 +357,7 @@ public class ImageCardController {
                 return new ModelAndView("redirect:/web/archive/image/" + imageId);
             }
             mav.addObject("image", image);
+            mav.addObject("format", Format.findFormat(image.getFormat()));
             
             if (action.isCancel()) {
                 session.remove(IMAGE_KEY);
