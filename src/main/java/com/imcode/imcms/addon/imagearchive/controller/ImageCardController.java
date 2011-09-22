@@ -70,6 +70,12 @@ public class ImageCardController {
             HttpServletResponse response) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
+
+        if (user.isDefaultUser()) {
+            Utils.redirectToLogin(request, response, facade);
+
+            return null;
+        }
         
         Long imageId = getImageId(request);
         Images image;
@@ -216,9 +222,15 @@ public class ImageCardController {
     
     @RequestMapping("/archive/image/*/exif")
     public ModelAndView exifHandler(@ModelAttribute("exportImage") ExportImageCommand command,
-                                    HttpServletRequest request) {
+                                    HttpServletRequest request, HttpServletResponse response) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
+
+        if (user.isDefaultUser()) {
+            Utils.redirectToLogin(request, response, facade);
+
+            return null;
+        }
         
         Long imageId = getImageId(request);
         Images image;
@@ -249,9 +261,14 @@ public class ImageCardController {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
 
+        if (user.isDefaultUser()) {
+            Utils.redirectToLogin(request, response, facade);
+
+            return null;
+        }
+
         Long imageId = getImageId(request);
-        Images image = null;
-        if (imageId == null || (image = facade.getImageService().findById(imageId, user)) == null) {
+        if (imageId == null || facade.getImageService().findById(imageId, user) == null) {
             return new ModelAndView("redirect:/web/archive");
         }
 

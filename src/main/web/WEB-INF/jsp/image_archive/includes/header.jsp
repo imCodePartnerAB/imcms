@@ -25,7 +25,19 @@
 
     <c:set var="customCss" value="${sessionScope.CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG}"/>
     <script type="text/javascript">
+        var sessionTimeOutMs = ${pageContext.session.maxInactiveInterval * 1000};
+        var oMessageDiv;
+
         $(document).ready(function(){
+            try {
+                oMessageDiv = $("#messageDiv");
+            } catch(e) {}
+
+            setTimeout(function(){
+                oMessageDiv.text('<spring:message code="archive.warning.sessionExpired" htmlEscape="true"/>');
+                oMessageDiv.css('display', "block");
+            },  sessionTimeOutMs);
+
             var customCss = '${customCss}';
             if(self != top && !opener) {
                 if(customCss.length == 0) {
@@ -43,3 +55,5 @@
     <c:url var="dummyUrl" value="<%=session.getId()%>"/>
     <input type="hidden" id="jsessionid" value=";jsessionid=${dummyUrl}" />
 </form>
+
+<div id="messageDiv" style="display:none;text-align:center;"></div>

@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +48,7 @@ public class SearchImageController {
             @ModelAttribute("search") SearchImageCommand command, 
             BindingResult result, 
             @RequestParam(required=false) String returnTo, 
-            HttpServletRequest request,
+            HttpServletRequest request, HttpServletResponse response,
             HttpSession session) {
         returnTo = StringUtils.trimToNull(returnTo);
         if (returnTo != null) {
@@ -57,6 +58,11 @@ public class SearchImageController {
         ArchiveSession archiveSession = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
+        if (user.isDefaultUser()) {
+            Utils.redirectToLogin(request, response, facade);
+
+            return null;
+        }
         
         ModelAndView mav = new ModelAndView("image_archive/pages/search_image");
         Pagination pag = getPagination(archiveSession);
