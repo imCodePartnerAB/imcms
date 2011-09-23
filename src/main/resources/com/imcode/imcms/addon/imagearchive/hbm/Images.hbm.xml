@@ -93,7 +93,7 @@
         FROM 
           Categories c 
         WHERE 
-              c.type.imageArchive IS TRUE 
+              c.type.name = 'Images'
           AND NOT EXISTS (FROM 
                             ImageCategories ic 
                           WHERE 
@@ -116,8 +116,8 @@
                             ImageCategories ic 
                           WHERE
                                 ic.imageId = :imageId 
-                            AND ic.categoryId = cr.categoryId)
-          AND c.type.imageArchive IS TRUE 
+                            AND ic.categoryId = cr.categoryId) 
+          AND c.type.name = 'Images'
         ]]>
     </query>
     <query name="availableKeywords">

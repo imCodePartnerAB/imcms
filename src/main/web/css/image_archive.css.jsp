@@ -205,6 +205,7 @@ li.sel a {
 
 .editCategoryTable input[disabled] {
     border: none;
+    background: white;
 }
 
 #freetext.placeholder {
@@ -305,7 +306,7 @@ div.UploadifyObjectWrapper {
 }
 
 table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategoryTable tr.odd input.disabled {
-    background-color: rgb(211, 234, 255);
+    background-color: white;
 }
 
 #externalFilesUpload {
@@ -345,7 +346,7 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
 }
 
 .tablesorter .labelCell {
-    width:40%;
+    width:60%;
 }
 
 .tablesorter td.useCell, .tablesorter td.editCell {

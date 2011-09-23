@@ -42,10 +42,10 @@
             });
 
 
-            var editBtn = $('<button class="imcmsFormBtn inBtnGroup" type="button" name="edit">${editCategoryBtnText}</button>');
-            var saveBtn = $('<button class="imcmsFormBtn inBtnGroup" type="submit" name="saveCategoryAction">${saveCategoryBtnText}</button>');
-            var deleteBtn = $('<button class="imcmsFormBtn inBtnGroup" type="submit" name="removeCategoryAction">${deleteCategoryBtnText}</button>');
-            var cancelBtn = $('<button class="imcmsFormBtn inBtnGroup" type="button" name="cancel">${cancelCategoryBtnText}</button>');
+            var editBtn = $('<button class="imcmsFormBtnSmall inBtnGroup" type="button" name="edit">${editCategoryBtnText}</button>');
+            var saveBtn = $('<button class="imcmsFormBtnSmall inBtnGroup" type="submit" name="saveCategoryAction">${saveCategoryBtnText}</button>');
+            var deleteBtn = $('<button class="imcmsFormBtnSmall inBtnGroup" type="submit" name="removeCategoryAction">${deleteCategoryBtnText}</button>');
+            var cancelBtn = $('<button class="imcmsFormBtnSmall inBtnGroup" type="button" name="cancel">${cancelCategoryBtnText}</button>');
             var categoryOldName;
             var editCategoryId;
 
@@ -105,16 +105,16 @@
 
         <form:form action="${preferencesUrl}" commandName="createCategory" method="post" cssClass="m15t clearfix">
             <div class="minH30 clearfix">
-                    <span class="left" style="width:65px;">
-                        <label for="createCategoryName"><spring:message code="archive.preferences.name"
-                                                                        htmlEscape="true"/></label>
-                    </span>
+                <span class="left" style="width:65px;">
+                    <label for="createCategoryName"><spring:message code="archive.preferences.name"
+                                                                    htmlEscape="true"/></label>
+                </span>
 
                 <div class="left">
                     <form:input path="createCategoryName" id="createCategoryName" maxlength="128"
                                 cssStyle="width:180px;"/>
                     <spring:message var="createText" code="archive.preferences.create" htmlEscape="true"/>
-                    <input type="submit" name="createCategoryAction" value="${createText}" class="imcmsFormBtn right"/>
+                    <input type="submit" name="createCategoryAction" value="${createText}" class="imcmsFormBtnSmall right"/>
                     <br/>
                     <form:errors path="createCategoryName" cssClass="red"/>
                 </div>
@@ -129,7 +129,7 @@
         <form:form action="${preferencesUrl}" commandName="editCategory" method="post" cssClass="m15t clearfix">
             <input type="hidden" name="editCategoryId" id="editCategoryId"/>
 
-            <div class="minH30 clearfix left">
+            <div class="clearfix left">
                 <table class="editCategoryTable tablesorter" cellpadding="0" cellspacing="1">
                     <thead>
                         <tr>
@@ -180,21 +180,21 @@
                 </select>
             </div>
 
-            <div>
-                <div class="left">
+            <div class="clearfix">
+                <div class="left" style="width:500px;">
                     <table class="roleTable tablesorter" cellpadding="0" cellspacing="1">
                         <thead>
                             <tr>
                                 <th class="labelCell">
                                     <spring:message code="archive.preferences.category" htmlEscape="true"/>
                                 </th>
-                                <th>
-                                    <input type="checkbox" class="allCanUse"/>
-                                    <spring:message code="archive.preferences.useImages" htmlEscape="true"/>
+                                <th style="text-align:center;">
+                                    <label for="allRolesCanUseCategory"><spring:message code="archive.preferences.useImages" htmlEscape="true"/></label>
+                                    <input type="checkbox" class="allCanUse" id="allRolesCanUseCategory"/>
                                 </th>
-                                <th>
-                                    <input type="checkbox" class="allCanEdit"/>
-                                    <spring:message code="archive.preferences.editAddImages" htmlEscape="true"/>
+                                <th style="text-align:center;">
+                                    <label for="allRolesCanEditCategory"><spring:message code="archive.preferences.editAddImages" htmlEscape="true"/></label>
+                                    <input type="checkbox" class="allCanEdit" id="allRolesCanEditCategory"/>
                                 </th>
                             </tr>
                         </thead>
@@ -284,18 +284,18 @@
                         </div>
                     </div>
 
-                    <div class="left" style="margin-top:20px;">
+                    <div class="left" style="width:500px;margin-top:20px;">
                         <table class="libraryCategoriesTable tablesorter" cellpadding="0" cellspacing="1">
                             <thead>
                                 <tr>
                                     <th class="labelCell"><spring:message code="archive.preferences.role" htmlEscape="true"/></th>
-                                    <th>
-                                        <input type="checkbox" class="allCanUse"/>
-                                        <spring:message code="archive.preferences.useImages" htmlEscape="true"/>
+                                    <th style="text-align:center;">
+                                        <label for="allCanUseLibrary"><spring:message code="archive.preferences.useImages" htmlEscape="true"/></label>
+                                        <input type="checkbox" class="allCanUse" id="allCanUseLibrary"/>
                                     </th>
-                                    <th>
-                                        <input type="checkbox" class="allCanEdit"/>
-                                        <spring:message code="archive.preferences.editAddImages" htmlEscape="true"/>
+                                    <th style="text-align:center;">
+                                        <label for="allCanEditLibrary"><spring:message code="archive.preferences.editAddImages" htmlEscape="true"/></label>
+                                        <input type="checkbox" class="allCanEdit" id="allCanEditLibrary"/>
                                     </th>
                                 </tr>
                             </thead>
