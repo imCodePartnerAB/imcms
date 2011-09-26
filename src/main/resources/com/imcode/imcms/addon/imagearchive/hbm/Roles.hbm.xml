@@ -19,7 +19,7 @@
           AND (ic.imageId = im.id OR im.usersId = :userId) 
           AND e.imageId = im.id 
           AND e.type = :changedType 
-          AND cr.category.type.imageArchive IS TRUE 
+          AND cr.category.type.name = 'Images'
           AND lower(e.artist) <> '' 
         ORDER BY 
           lower(e.artist) 

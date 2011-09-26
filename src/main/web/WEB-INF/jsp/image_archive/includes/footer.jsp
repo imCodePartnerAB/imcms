@@ -1,8 +1,8 @@
 </td>
-<td align="right" valign="top" background="/imcms/eng/images/admin/imcms_admin_shadow_right.gif">
+<td align="right" valign="top" background="/imcms/eng/images/admin/imcms_admin_shadow_right.gif" class="containerShadowRight">
 	<img src="/imcms/eng/images/admin/imcms_admin_shadow_right_top.gif" width="12" height="12" alt="" border="0"></td>
 </tr>
-<tr>
+<tr class="containerShadowBottom">
 	<td colspan="2">
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tbody><tr>

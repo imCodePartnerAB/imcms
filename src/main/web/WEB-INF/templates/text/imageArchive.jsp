@@ -40,6 +40,6 @@
         </ul>
     </imcms:menu>
 </div>
-<imcms:imageArchive styleClass="imageArchive"><link href="${contextPath}/css/tag_image_archive.css" rel="stylesheet" type="text/css" /></imcms:imageArchive>
+<imcms:imageArchive styleClass="imageArchive"><link href="${contextPath}/css/tag_image_archive.css.jsp" rel="stylesheet" type="text/css" /></imcms:imageArchive>
 </body>
 </html>

@@ -45,6 +45,15 @@
                 } else {
                     $('head').append(customCss);
                 }
+
+                var contentWidth = $(document).width();
+                var contentHeight = $(document).height();
+                
+                $(window.parent.document).find("iframe").each(function(iel, el) {
+                  if(el.contentWindow === window) {
+                    $(el).css('width',contentWidth+'px').css('height', contentHeight+'px');
+                  }
+                });
             }
         });
     </script>

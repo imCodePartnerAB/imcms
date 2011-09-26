@@ -66,7 +66,7 @@ public class CategoryService {
         Integer existingCategoryId = (Integer) factory.getCurrentSession()
                 .createQuery(
                 "SELECT c.id FROM Categories c " +
-                "WHERE c.name = :newName AND c.id <> :categoryId AND c.type.imageArchive IS TRUE")
+                "WHERE c.name = :newName AND c.id <> :categoryId AND c.type.name = 'Images'")
                 .setString("newName", newCategoryName)
                 .setInteger("categoryId", categoryId)
                 .setMaxResults(1)

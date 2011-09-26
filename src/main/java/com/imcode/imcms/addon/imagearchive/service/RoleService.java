@@ -50,7 +50,7 @@ public class RoleService {
 
         return factory.getCurrentSession()
                 .createQuery("SELECT c FROM CategoryRoles cr JOIN cr.category c WHERE " +
-                "cr.roleId = :roleId AND c.type.imageArchive IS TRUE ORDER BY c.name")
+                "cr.roleId = :roleId AND c.type.name = 'Images' ORDER BY c.name")
                 .setInteger("roleId", roleId)
                 .list();
     }
@@ -61,7 +61,7 @@ public class RoleService {
         return factory.getCurrentSession()
                 .createQuery("SELECT c FROM Categories c WHERE " +
                 "NOT EXISTS (FROM CategoryRoles cr WHERE cr.roleId = :roleId AND cr.categoryId = c.id) " +
-                "AND c.type.imageArchive IS TRUE ORDER BY c.name")
+                "AND c.type.name = 'Images' ORDER BY c.name")
                 .setInteger("roleId", roleId)
                 .list();
     }
@@ -106,7 +106,7 @@ public class RoleService {
         if (user.isSuperAdmin()) {
             return session.createQuery(
                     "SELECT DISTINCT c.id AS id, c.name AS name FROM Categories c " +
-                    "WHERE c.type.imageArchive IS TRUE ORDER BY c.name")
+                    "WHERE c.type.name = 'Images' ORDER BY c.name")
                     .setResultTransformer(Transformers.aliasToBean(Categories.class))
                     .list();
             
@@ -124,7 +124,7 @@ public class RoleService {
 
         return session.createQuery(
                 "SELECT DISTINCT c.id AS id, c.name AS name FROM CategoryRoles cr INNER JOIN cr.category c " +
-                "WHERE cr.roleId IN (:roleIds) AND c.type.imageArchive IS TRUE ORDER BY c.name")
+                "WHERE cr.roleId IN (:roleIds) AND c.type.name = 'Images' ORDER BY c.name")
                 .setParameterList("roleIds", roleIds)
                 .setResultTransformer(Transformers.aliasToBean(Categories.class))
                 .list();
@@ -141,7 +141,7 @@ public class RoleService {
 
         return factory.getCurrentSession()
                 .createQuery(
-                "SELECT cr.categoryId FROM CategoryRoles cr WHERE cr.roleId IN (:roleIds) AND cr.category.type.imageArchive IS TRUE ")
+                "SELECT cr.categoryId FROM CategoryRoles cr WHERE cr.roleId IN (:roleIds) AND cr.category.type.name = 'Images' ")
                 .setParameterList("roleIds", roleIds)
                 .list();
     }
@@ -171,7 +171,7 @@ public class RoleService {
         long count = (Long) factory.getCurrentSession()
                 .createQuery(
                 "SELECT count(cr.categoryId) FROM CategoryRoles cr " +
-                "WHERE cr.categoryId = :categoryId AND cr.roleId IN (:roleIds) AND cr.category.type.imageArchive IS TRUE")
+                "WHERE cr.categoryId = :categoryId AND cr.roleId IN (:roleIds) AND cr.category.type.name = 'Images'")
                 .setInteger("categoryId", categoryId)
                 .setParameterList("roleIds", roleIds)
                 .uniqueResult();

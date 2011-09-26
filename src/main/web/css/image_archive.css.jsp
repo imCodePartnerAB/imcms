@@ -309,6 +309,10 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
     background-color: white;
 }
 
+table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategoryTable tr.odd {
+    background-color: rgb(211, 234, 255);
+}
+
 #externalFilesUpload {
     margin-top:15px;
     margin-bottom:15px;

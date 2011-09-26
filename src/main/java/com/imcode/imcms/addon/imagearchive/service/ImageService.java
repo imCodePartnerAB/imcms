@@ -975,7 +975,7 @@ public class ImageService {
         return factory.getCurrentSession()
                 .createQuery(
                 "SELECT c.id AS id, c.name AS name FROM ImageCategories ic INNER JOIN ic.category c " +
-                "WHERE ic.imageId = :imageId AND c.type.imageArchive IS TRUE ORDER BY c.name ")
+                "WHERE ic.imageId = :imageId AND c.type.name = 'Images' ORDER BY c.name ")
                 .setLong("imageId", imageId)
                 .setResultTransformer(Transformers.aliasToBean(Categories.class))
                 .list();
