@@ -6,12 +6,6 @@
     <style type="text/css">
         .imageArchive {
             float: right;
-            width: 80%;
-            height: 700px;
-        }
-
-        #containerTop {
-            background: green !important;
         }
     </style>
 </head>
@@ -40,6 +34,6 @@
         </ul>
     </imcms:menu>
 </div>
-<imcms:imageArchive styleClass="imageArchive"><link href="${contextPath}/css/tag_image_archive.css.jsp" rel="stylesheet" type="text/css" /></imcms:imageArchive>
+<imcms:imageArchive styleClass="imageArchive" cssFileName="${contextPath}/css/tag_image_archive.css.jsp"/>
 </body>
 </html>

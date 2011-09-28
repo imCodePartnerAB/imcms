@@ -169,7 +169,7 @@
 
             <span class="right">
                 <label for="resultsPerPage"><spring:message code="archive.searchImage.resultsPerPage" htmlEscape="true"/></label>
-                <form:select id="resultsPerPage" path="resultsPerPage" cssStyle="width:50px;">
+                <form:select id="resultsPerPage" path="resultsPerPage">
                     <form:option value="10" label="10"/>
                     <form:option value="20" label="20"/>
                     <form:option value="50" label="50"/>

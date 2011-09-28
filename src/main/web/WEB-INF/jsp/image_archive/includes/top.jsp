@@ -1,5 +1,5 @@
 <%@ page import="com.imcode.imcms.api.*,imcode.server.Imcms" %>
-<table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" style="margin-left:auto;margin-right:auto;">
+<table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable mainTable">
     <tbody>
     <tr>
     <td class="imcmsAdmTable" style="background:#f5f5f7;">

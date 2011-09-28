@@ -1,3 +1,4 @@
+<%@ page import="com.imcode.imcms.addon.imagearchive.tag.ImageArchiveTag" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -23,7 +24,7 @@
     ${javascript}
 
 
-    <c:set var="customCss" value="${sessionScope.CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG}"/>
+    <c:set var="includedInCss" value="<%= session.getAttribute(ImageArchiveTag.CSS_INCLUDE_OVERRIDES_FILE_NAME) %>"/>
     <script type="text/javascript">
         var sessionTimeOutMs = ${pageContext.session.maxInactiveInterval * 1000};
         var oMessageDiv;
@@ -39,8 +40,9 @@
             },  sessionTimeOutMs);
 
             var customCss = '${customCss}';
+            var includedInCss = '${includedInCss}';
             if(self != top && !opener) {
-                if(customCss.length == 0) {
+                if(includedInCss.length == 0) {
                     parent.location.reload();
                 } else {
                     $('head').append(customCss);
@@ -48,7 +50,7 @@
 
                 var contentWidth = $(document).width();
                 var contentHeight = $(document).height();
-                
+
                 $(window.parent.document).find("iframe").each(function(iel, el) {
                   if(el.contentWindow === window) {
                     $(el).css('width',contentWidth+'px').css('height', contentHeight+'px');
