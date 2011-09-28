@@ -378,3 +378,18 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
 .editCategoryTable input {
     width:99%;
 }
+
+.colapsableLabel .indicator {
+    padding-left: 25px;
+    padding-right: 10px;
+    color: black;
+    font-weight: normal;
+}
+
+.colapsableLabel .indicator.folded {
+    background: url('${pageContext.request.contextPath}/images/show.png') center left no-repeat;
+}
+
+.colapsableLabel .indicator.unfolded {
+    background: url('${pageContext.request.contextPath}/images/hide.png') center left no-repeat;
+}

@@ -7,11 +7,34 @@
 <spring:message var="saveCategoryBtnText" code="archive.preferences.category.save" htmlEscape="true"/>
 <spring:message var="deleteCategoryBtnText" code="archive.preferences.category.delete" htmlEscape="true"/>
 <spring:message var="cancelCategoryBtnText" code="archive.preferences.category.cancel" htmlEscape="true"/>
+<spring:message var="show" code="archive.preferences.show"/>
+<spring:message var="hide" code="archive.preferences.hide"/>
 <c:set var="currentPage" value="preferences"/>
 
 <c:set var="javascript">
     <script type="text/javascript">
         initPreferences();
+
+        function toggleIndicators(colapsableLabel) {
+            var indicator = $(colapsableLabel).find(".indicator");
+
+            if(indicator.hasClass('unfolded')) {
+                indicator.removeClass('unfolded');
+                indicator.addClass('folded');
+                indicator.text('${show}');
+            } else {
+                indicator.removeClass('folded');
+                indicator.addClass('unfolded');
+                indicator.text('${hide}');
+            }
+
+            $(".colapsableLabel").not(colapsableLabel).each(function(){
+                var otherIndicator = $(this).find('.indicator');
+                otherIndicator.removeClass('unfolded');
+                otherIndicator.addClass('folded');
+                otherIndicator.text('${show}');
+            });
+        }
 
         $(document).ready(function() {
             var contentToHide = $(".contentToHide");
@@ -39,6 +62,8 @@
                     $(this).removeClass("folded");
                     $(this).addClass("unfolded");
                 }
+
+                toggleIndicators(this);
             });
 
 
@@ -94,7 +119,10 @@
 
 <div id="containerContent">
 <div class="preferencesSection">
-    <h4 class="colapsableLabel imcmsAdmHeading"><spring:message code="archive.preferences.categories" htmlEscape="true"/></h4>
+    <h4 class="colapsableLabel imcmsAdmHeading clearfix">
+        <span class="left"><spring:message code="archive.preferences.categories" htmlEscape="true"/></span>
+        <span class="right indicator ${editingCategories ? 'unfolded' : 'folded'}">${editingCategories ? hide : show}</span>
+    </h4>
 
     <div class="contentToHide" id="contentToHideCategories">
         <h4 class="m15t">
@@ -156,7 +184,10 @@
 </div>
 
 <div class="preferencesSection">
-    <h4 class="colapsableLabel imcmsAdmHeading"><spring:message code="archive.preferences.categories.roles" htmlEscape="true"/></h4>
+    <h4 class="colapsableLabel imcmsAdmHeading clearfix">
+        <span class="left"><spring:message code="archive.preferences.categories.roles" htmlEscape="true"/></span>
+        <span class="right indicator ${editingCategories ? 'unfolded' : 'folded'}">${editingRoles ? hide : show}</span>
+    </h4>
     <div class="contentToHide" id="contentToHideRoles">
         <h4 class="m15t">
             <spring:message code="archive.preferences.changeRole" htmlEscape="true"/>
@@ -245,7 +276,10 @@
 </div>
 
 <div class="preferencesSection">
-    <h4 class="colapsableLabel imcmsAdmHeading"><spring:message code="archive.preferences.libraries.libraries" htmlEscape="true"/></h4>
+    <h4 class="colapsableLabel imcmsAdmHeading clearfix">
+        <span class="left"><spring:message code="archive.preferences.libraries.libraries" htmlEscape="true"/></span>
+        <span class="right indicator ${editingCategories ? 'unfolded' : 'folded'}">${editingLibraries ? hide : show}</span>
+    </h4>
 
     <div class="contentToHide" id="contentToHideLibraries">
         <h4 class="m15t">
