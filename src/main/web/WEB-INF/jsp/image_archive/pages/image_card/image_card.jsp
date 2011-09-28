@@ -139,7 +139,7 @@
                     </a>
                 </c:if>
 
-                <c:if test="${'exif' eq action}">
+                <c:if test="${'exif' eq action or 'erase' eq action}">
                     <c:url var="infoUrl" value="/web/archive/image/${image.id}"/>
                     <a href="${infoUrl}" style="margin-right:2px;" class="imcmsFormBtn">
                         <span><spring:message code="archive.imageCard.showImageInfo" htmlEscape="true"/></span>
