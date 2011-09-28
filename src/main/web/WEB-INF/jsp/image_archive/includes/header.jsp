@@ -24,25 +24,20 @@
     ${javascript}
 
 
-    <c:set var="includedInCss" value="<%= session.getAttribute(ImageArchiveTag.CSS_INCLUDE_OVERRIDES_FILE_NAME) %>"/>
+    <c:set var="customCss" value="${sessionScope.CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG}"/>
     <script type="text/javascript">
-        var sessionTimeOutMs = ${pageContext.session.maxInactiveInterval * 1000};
+        var sessionTimeOutMs = ${pageContext.session.maxInactiveInterval * 1000+100};
         var oMessageDiv;
 
         $(document).ready(function(){
-            try {
-                oMessageDiv = $("#messageDiv");
-            } catch(e) {}
 
             setTimeout(function(){
-                oMessageDiv.text('<spring:message code="archive.warning.sessionExpired" htmlEscape="true"/>');
-                oMessageDiv.css('display', "block");
+                alert('<spring:message code="archive.warning.sessionExpired" htmlEscape="true"/>');
             },  sessionTimeOutMs);
 
             var customCss = '${customCss}';
-            var includedInCss = '${includedInCss}';
             if(self != top && !opener) {
-                if(includedInCss.length == 0) {
+                if(customCss.length == 0) {
                     parent.location.reload();
                 } else {
                     $('head').append(customCss);
@@ -66,5 +61,3 @@
     <c:url var="dummyUrl" value="<%=session.getId()%>"/>
     <input type="hidden" id="jsessionid" value=";jsessionid=${dummyUrl}" />
 </form>
-
-<div id="messageDiv" style="display:none;text-align:center;"></div>
