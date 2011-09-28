@@ -153,7 +153,7 @@
                     </a>
                 </c:if>
 
-                <c:if test="${image.canChange and not image.archived and 'exif' ne action}">
+                <c:if test="${image.canChange and not image.archived and 'erase' ne action}">
                     <c:set var="disabled" value="${!image.canChange}"/>
                     <c:url var="eraseUrl" value="/web/archive/image/${image.id}/erase"/>
                     <a href="${eraseUrl}" style="margin-right:2px;" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
@@ -170,7 +170,7 @@
 
                 <c:if test="${canExport and not image.archived}">
                     <spring:message var="exportBtnText" code="archive.imageCard.export" htmlEscape="true"/>
-                    <input type="button" class="imcmsFormBtn modalInput" name="export" value="${exportBtnText}" rel="#exportOverlay"/>
+                    <span class="imcmsFormBtn modalInput" type="button" rel="#exportOverlay">${exportBtnText}</span>
                 </c:if>
                 </div>
             </c:if>
