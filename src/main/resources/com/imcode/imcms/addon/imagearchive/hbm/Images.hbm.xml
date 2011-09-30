@@ -111,7 +111,7 @@
         INNER JOIN 
           cr.category c 
         WHERE 
-              cr.roleId IN (:roleIds) 
+              cr.roleId IN (:roleIds) AND cr.canChange = 1 
           AND NOT EXISTS (FROM
                             ImageCategories ic 
                           WHERE

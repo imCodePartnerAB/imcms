@@ -1,12 +1,9 @@
 package com.imcode.imcms.addon.imagearchive.service;
 
-import com.imcode.imcms.addon.imagearchive.entity.Categories;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RolePermissionDomainObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -24,13 +21,13 @@ public class UserService {
 
 
     /* categoryIds restrist the search to the given ids. CategoryIds = null means permissions for any category */
-    public List<Integer> getRoleIdsWithPermission(User user, List<Integer> categoryIds, RolePermissionDomainObject... permissions) {
-        List<Integer> roleIds = new ArrayList<Integer>();
+    public Set<Integer> getRoleIdsWithPermission(User user, List<Integer> categoryIds, RolePermissionDomainObject... permissions) {
+        Set<Integer> roleIds = new HashSet<Integer>();
         Session session = factory.getCurrentSession();
 
         for (Role role : user.getRoles()) {
             for (RolePermissionDomainObject permission : permissions) {
-                String queryStr = "select cr.roleId from CategoryRoles cr WHERE cr.roleId = :userRoleId";
+                String queryStr = "SELECT cr.roleId FROM CategoryRoles cr WHERE cr.roleId = :userRoleId";
                 if(categoryIds != null && categoryIds.size() > 0) {
                     queryStr += " and cr.categoryId IN (:categoryIds)";
                 }

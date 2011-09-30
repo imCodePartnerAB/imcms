@@ -38,7 +38,10 @@ public class SaveRoleCategoriesCommand implements Serializable {
                         categoryRight.setCategoryId(Integer.parseInt(catRightsPart[0], 10));
                         categoryRight.setCanUse("1".equals(catRightsPart[1]));
                         categoryRight.setCanEditOrAdd("1".equals(catRightsPart[2]));
-                        assignedCategoryIds.add(categoryRight);
+                        /* skipping ones without any */
+                        if(categoryRight.isCanUse() || categoryRight.isCanEditOrAdd()) {
+                            assignedCategoryIds.add(categoryRight);
+                        }
                     }
                 } catch (NumberFormatException ex) {
                 }

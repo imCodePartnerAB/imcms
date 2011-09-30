@@ -26,8 +26,7 @@
 
     <c:set var="customCss" value="${sessionScope.CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG}"/>
     <script type="text/javascript">
-        var sessionTimeOutMs = ${pageContext.session.maxInactiveInterval * 1000+100};
-        var oMessageDiv;
+        var sessionTimeOutMs = ${pageContext.session.maxInactiveInterval * 1000};
 
         $(document).ready(function(){
 
@@ -37,9 +36,7 @@
 
             var customCss = '${customCss}';
             if(self != top && !opener) {
-                if(customCss.length == 0) {
-                    parent.location.reload();
-                } else {
+                if(customCss.length > 0) {
                     $('head').append(customCss);
                 }
 

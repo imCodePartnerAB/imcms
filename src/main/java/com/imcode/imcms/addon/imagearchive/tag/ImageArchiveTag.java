@@ -25,7 +25,7 @@ public class ImageArchiveTag extends BodyTagSupport {
             ParserParameters parserParameters = ParserParameters.fromRequest(request);
             TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
 
-            if (user.canEdit(document)) {
+            if (user.canAccess(document)) {
                 String iframe = "<iframe src='" + getContextPath() + "/web/archive' ";
                 if (styleClass != null && !"".equals(styleClass)) {
                     iframe += "class='" + styleClass + "' ";

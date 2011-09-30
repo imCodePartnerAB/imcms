@@ -86,7 +86,7 @@ public class ImageService {
             for(Categories c: imageCategories) {
                 categoryIds.add(c.getId());
             }
-            List<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, categoryIds, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
+            Set<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, categoryIds, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
 
             if (!roleIds.isEmpty()) {
                 long count = (Long) session.createQuery(
@@ -993,7 +993,7 @@ public class ImageService {
                     .list();
         }
 
-        List<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
+        Set<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
         if (roleIds.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -1012,7 +1012,7 @@ public class ImageService {
             return true;
         }
 
-        List<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, categoryIds, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
+        Set<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, categoryIds, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
         if (roleIds.isEmpty()) {
             return false;
         }
@@ -1071,7 +1071,7 @@ public class ImageService {
             return true;
         }
 
-        List<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION);
+        Set<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION);
         if (roleIds.isEmpty()) {
             return false;
         }

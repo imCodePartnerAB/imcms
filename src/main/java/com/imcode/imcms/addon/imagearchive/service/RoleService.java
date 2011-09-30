@@ -101,7 +101,7 @@ public class RoleService {
     public List<Categories> findCategories(User user, RolePermissionDomainObject... permissions) {
 
         Session session = factory.getCurrentSession();
-        List<Integer> roleIds = null;
+        Set<Integer> roleIds;
 
         if (user.isSuperAdmin()) {
             return session.createQuery(
@@ -111,7 +111,7 @@ public class RoleService {
                     .list();
             
         } else if (user.isDefaultUser()) {
-            roleIds = new ArrayList<Integer>();
+            roleIds = new HashSet<Integer>();
             roleIds.add(Roles.USERS_ID);
 
         } else {
@@ -134,7 +134,7 @@ public class RoleService {
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public List<Integer> findCategoryIds(User user, RolePermissionDomainObject... permissions) {
 
-        List<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, permissions);
+        Set<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, null, permissions);
         if (roleIds.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -149,13 +149,13 @@ public class RoleService {
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public boolean hasAccessToCategory(User user, int categoryId, RolePermissionDomainObject... permissions) {
 
-        List<Integer> roleIds = null;
+        Set<Integer> roleIds = null;
 
         if (user.isSuperAdmin()) {
             return true;
 
         } else if (user.isDefaultUser()) {
-            roleIds = new ArrayList<Integer>(1);
+            roleIds = new HashSet<Integer>(1);
             roleIds.add(Roles.USERS_ID);
 
         } else {
@@ -182,9 +182,9 @@ public class RoleService {
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public List<String> findArtists(User user) {
 
-        List<Integer> roleIds = null;
+        Set<Integer> roleIds = null;
         if (user.isDefaultUser()) {
-            roleIds = new ArrayList<Integer>(1);
+            roleIds = new HashSet<Integer>(1);
             roleIds.add(Roles.USERS_ID);
 
         } else {
