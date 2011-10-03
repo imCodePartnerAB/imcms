@@ -322,14 +322,10 @@
                         <table class="libraryCategoriesTable tablesorter" cellpadding="0" cellspacing="1">
                             <thead>
                                 <tr>
-                                    <th class="labelCell"><spring:message code="archive.preferences.role" htmlEscape="true"/></th>
+                                    <th class="widerLabelCell"><spring:message code="archive.preferences.role" htmlEscape="true"/></th>
                                     <th style="text-align:center;">
                                         <label for="allCanUseLibrary"><spring:message code="archive.preferences.useImages" htmlEscape="true"/></label>
                                         <input type="checkbox" class="allCanUse" id="allCanUseLibrary"/>
-                                    </th>
-                                    <th style="text-align:center;">
-                                        <label for="allCanEditLibrary"><spring:message code="archive.preferences.editAddImages" htmlEscape="true"/></label>
-                                        <input type="checkbox" class="allCanEdit" id="allCanEditLibrary"/>
                                     </th>
                                 </tr>
                             </thead>
@@ -354,9 +350,6 @@
                                                 </c:if>
                                             </c:forEach>
                                             <input class="use" type="checkbox" ${canUse ? "checked='checked'" : ""}/>
-                                        </td>
-                                        <td class="editCell">
-                                            <input class="edit" type="checkbox" ${canChange ? "checked='checked'" : ""}/>
                                         </td>
                                     </tr>
                                 </c:forEach>

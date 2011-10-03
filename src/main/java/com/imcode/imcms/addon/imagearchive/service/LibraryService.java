@@ -314,7 +314,6 @@ public class LibraryService {
         for (LibraryRolesDto libraryRoleDto : toUpdate) {
             updateQuery.setInteger("roleId", libraryRoleDto.getRoleId())
                     .setBoolean("canUse", libraryRoleDto.isCanUse())
-                    .setBoolean("canChange", libraryRoleDto.isCanChange())
                     .executeUpdate();
         }
 
@@ -383,15 +382,8 @@ public class LibraryService {
                 .setParameterList("roleIds", roleIds)
                 .list().size() > 0L;
 
-        boolean canChange = session.createQuery(
-                "SELECT DISTINCT lr.permissions FROM LibraryRoles lr WHERE lr.libraryId = :libraryId AND lr.roleId IN (:roleIds)" +
-                        " AND lr.canChange = 1")
-                .setInteger("libraryId", libraryId)
-                .setParameterList("roleIds", roleIds)
-                .list().size() > 0L;
-
         library.setCanUse(canUse);
-        library.setCanChange(canChange);
+        library.setCanChange(false);
 
         return library;
     }

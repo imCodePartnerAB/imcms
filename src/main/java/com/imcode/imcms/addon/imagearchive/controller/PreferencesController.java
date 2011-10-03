@@ -249,26 +249,6 @@ public class PreferencesController {
                 log.warn(ex.getMessage(), ex);
             }
         }
-        
-//        List<LibraryRolesDto> libraryRoles = command.getLibraryRoles();
-//        List<LibraryRolesDto> assignedLibraryRoles = facade.getLibraryService().findLibraryRoles(library.getId());
-//        List<Roles> availableLibraryRoles = facade.getLibraryService().findAvailableRoles(library.getId());
-//
-//        for (LibraryRolesDto oldLibrary : assignedLibraryRoles) {
-//            if (!libraryRoles.contains(oldLibrary)) {
-//                Roles role = new Roles(oldLibrary.getRoleId());
-//                role.setRoleName(oldLibrary.getRoleName());
-//
-//                availableLibraryRoles.add(role);
-//            }
-//        }
-//
-//        for (LibraryRolesDto libraryRole : libraryRoles) {
-//            availableLibraryRoles.remove(new Roles(libraryRole.getRoleId()));
-//        }
-//
-//        model.put("libraryRoles", libraryRoles);
-//        model.put("availableLibraryRoles", availableLibraryRoles);
     }
     
     private void processSaveRoleCategories(SaveRoleCategoriesCommand command, Map<String, Object> model) {

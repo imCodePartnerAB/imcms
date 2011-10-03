@@ -359,6 +359,10 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
     width:60%;
 }
 
+.tablesorter .widerLabelCell {
+    width:80%;
+}
+
 .tablesorter td.useCell, .tablesorter td.editCell {
     text-align: center;
 }

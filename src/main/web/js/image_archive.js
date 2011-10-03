@@ -465,15 +465,14 @@ var initPreferences = function() {
         }
 
         if($(".libraryCategoriesTable td")) {
-            $(".libraryCategoriesTable").tablesorter({sortList: [[0,0]], headers:{ 1 : {sorter:false}, 2 : {sorter:false}}});
+            $(".libraryCategoriesTable").tablesorter({sortList: [[0,0]], headers:{ 1 : {sorter:false}}});
         } else {
-            $(".libraryCategoriesTable").tablesorter({headers: { 0 : {sorter:false}, 1 : {sorter:false}, 2 : {sorter:false}}});
+            $(".libraryCategoriesTable").tablesorter({headers: { 0 : {sorter:false}, 1 : {sorter:false}}});
         }
 
         setupBulkSelectionCheckboxes(".roleTable", ".use", ".allCanUse");
         setupBulkSelectionCheckboxes(".roleTable", ".edit", ".allCanEdit");
         setupBulkSelectionCheckboxes(".libraryCategoriesTable", ".use", ".allCanUse");
-        setupBulkSelectionCheckboxes(".libraryCategoriesTable", ".edit", ".allCanEdit");
 
         $("#saveCategoriesBtn").click(function() {
             var categoryRightStr = "";
@@ -562,12 +561,6 @@ var initPreferences = function() {
                 libraryRoles += $(this).find("input[type='hidden']").val();
                 libraryRoles += ",";
                if($(this).find(".use:checked").length) {
-                   libraryRoles += "1,";
-               } else {
-                   libraryRoles += "0,";
-               }
-
-               if($(this).find(".edit:checked").length) {
                    libraryRoles += "1-";
                } else {
                    libraryRoles += "0-";

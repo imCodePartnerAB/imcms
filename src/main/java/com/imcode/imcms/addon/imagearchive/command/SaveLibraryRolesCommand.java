@@ -51,18 +51,19 @@ public class SaveLibraryRolesCommand implements Serializable {
                 libraryRoles = new ArrayList<LibraryRolesDto>();
                 for (String part : parts) {
                     try {
-                        // roleId, canUse, canEdit
+                        // roleId, canUse
                         String[] catRightsPart = part.split(",");
-                        if (catRightsPart.length == 3) {
+                        if (catRightsPart.length == 2) {
                             LibraryRolesDto dto = new LibraryRolesDto();
                             dto.setRoleId(Integer.parseInt(catRightsPart[0]));
                             dto.setCanUse("1".equals(catRightsPart[1]));
-                            dto.setCanChange("1".equals(catRightsPart[2]));
 
-                            /* if not right is set, delete it */
-                            if(dto.isCanUse() || dto.isCanChange()) {
+                            if(dto.isCanUse()) {
                                 libraryRoles.add(dto);
                             }
+
+                            /* always to false, not used anymore */
+                            dto.setCanChange(false);
                         }
                     } catch (NumberFormatException ex) {
                     }
