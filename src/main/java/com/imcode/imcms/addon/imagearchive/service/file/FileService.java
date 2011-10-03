@@ -365,7 +365,7 @@ public class FileService {
 
         }
 
-        if (!(libraryFile.exists() || libraryFile.isDirectory())) {
+        if (!(libraryFile.exists() || libraryFile.isDirectory()) || !library.isCanUse()) {
             return Collections.emptyList();
         }
 
