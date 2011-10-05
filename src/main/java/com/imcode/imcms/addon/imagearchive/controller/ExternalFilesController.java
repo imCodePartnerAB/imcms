@@ -9,9 +9,12 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.imcode.imcms.addon.imagearchive.entity.Categories;
 import com.imcode.imcms.addon.imagearchive.json.UploadResponse;
+import com.imcode.imcms.addon.imagearchive.tag.func.Functions;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -173,7 +176,8 @@ public class ExternalFilesController {
             
             if (fileNames.length == 1) {
                 Images image;
-                boolean alreadyInArchive = Utils.isInArchive(facade.getFileService().getImageFileFromLibrary(library, fileNames[0]), facade);
+                boolean alreadyInArchive =
+                        Utils.isInArchive(facade.getFileService().getImageFileFromLibrary(library, fileNames[0]), facade).size() > 0;
                 if (alreadyInArchive || (image = activateImage(library, fileNames[0], user)) == null) {
                     mav.addObject("activateError", true);
                     if(alreadyInArchive) {
@@ -206,7 +210,7 @@ public class ExternalFilesController {
                     try {
                         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
                         ImageInfo imageInfo;
-                        boolean alreadyInArchive = Utils.isInArchive(imageFile, facade);
+                        boolean alreadyInArchive = Utils.isInArchive(imageFile, facade).size() > 0;
                         oneOfTheImageIsAlreadyInArchive |= alreadyInArchive;
                         if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null
                                 || alreadyInArchive) {
@@ -469,6 +473,8 @@ public class ExternalFilesController {
         LibrariesDto library = null;
         ImageInfo imageInfo = null;
         Integer fileSize = null;
+        String categoryNamesNeededToUse = "";
+        boolean noCategories = false;
         if (!user.isDefaultUser() && id != null) {
             if (id == LibrariesDto.USER_LIBRARY_ID) {
                 library = LibrariesDto.userLibrary(user);
@@ -480,6 +486,25 @@ public class ExternalFilesController {
 
             if (name != null) {
                 File imageFile = facade.getFileService().getImageFileFromLibrary(library, name);
+                List<Images> images = Utils.isInArchive(imageFile, facade);
+                if(images.size() > 0) {
+                    for(Images image: images) {
+                        /* we only need one case of missing categories */
+                        if(!noCategories){
+                            noCategories = image.getCategories() == null || image.getCategories().size() == 0;
+                        }
+
+                        Collection categoryNames = CollectionUtils.collect(Utils.getCategoriesRequiredToUse(image, facade, user),
+                                new Transformer() {
+                            public Object transform(Object o) {
+                                Categories cat = (Categories) o;
+                                return cat.getName();
+                            }
+                        });
+                        categoryNamesNeededToUse += Functions.join(categoryNames, ",");
+                    }
+                }
+
                 if (imageFile != null) {
                     fileSize = (int) imageFile.length();
                     imageInfo = ImageOp.getImageInfo(imageFile);
@@ -493,6 +518,8 @@ public class ExternalFilesController {
         model.put("imageInfo", imageInfo);
         model.put("name", name);
         model.put("size", fileSize);
+        model.put("categoryNamesNeededToUse", categoryNamesNeededToUse);
+        model.put("noCategories", noCategories);
 
         return new ModelAndView("image_archive/pages/external_files/preview-tooltip", model);
     }

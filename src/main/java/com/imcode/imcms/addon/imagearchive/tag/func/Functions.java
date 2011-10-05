@@ -1,20 +1,8 @@
 package com.imcode.imcms.addon.imagearchive.tag.func;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import com.imcode.imcms.addon.imagearchive.command.SearchImageCommand;
 import com.imcode.imcms.addon.imagearchive.dto.LibraryEntryDto;
-import com.imcode.imcms.addon.imagearchive.entity.Categories;
 import com.imcode.imcms.addon.imagearchive.entity.Images;
-import com.imcode.imcms.addon.imagearchive.entity.Roles;
 import com.imcode.imcms.addon.imagearchive.service.Facade;
-import com.imcode.imcms.addon.imagearchive.util.Pagination;
-import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.User;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sanselan.common.RationalNumber;
 import org.apache.sanselan.common.RationalNumberUtilities;
@@ -22,6 +10,10 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.jsp.PageContext;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class Functions {
     private static final Pattern NEWLINE_PATTERN = Pattern.compile("\r\n?");

@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <form action="/" style="display:none;">
@@ -29,5 +30,13 @@
         <img src="${imageUrl}" width="100%" style="width:100%;"/>
         <div style="margin-top:5px;">${name}</div>
         <div style="margin-top:5px;"><spring:message code="archive.originalSizeKb" arguments="${size / 1024.0}"/></div>
+        <div style="color:red;">
+            <c:if test="${noCategories}">
+                Image has no categories.
+            </c:if>
+            <c:if test="${not empty categoryNamesNeededToUse}">
+                You must have one of the following categories to see this image in archive: <c:out value="${categoryNamesNeededToUse}"/>
+            </c:if>
+        </div>
     </c:otherwise>
 </c:choose>

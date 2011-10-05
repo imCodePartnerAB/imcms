@@ -683,36 +683,11 @@ public class ImageService {
     }
 
     public List<Images> getAllImages() {
-        StringBuilder builder = new StringBuilder();
+        Session session = factory.getCurrentSession();
+        Query query = session.createQuery("FROM Images im WHERE im.status <> :statusUploaded")
+                .setShort("statusUploaded", Images.STATUS_UPLOADED);
 
-        builder.append("SELECT ");
-        builder.append("DISTINCT im.id AS id, im.imageNm AS imageNm, im.width AS width, im.height AS height, " +
-            		" e.artist AS artist, im.createdDt as createdDt, e.description, im.fileSize AS fileSize ");
-        builder.append("FROM Images im ");
-        builder.append("LEFT OUTER JOIN im.categories c ");
-        builder.append("LEFT OUTER JOIN im.keywords k ");
-        builder.append(", Exif e");
-        builder.append(" WHERE e.imageId = im.id AND e.type = :changedType");
-
-        
-        List<Map<String, Object>> result = factory.getCurrentSession()
-                .createQuery(builder.toString())
-                .setShort("changedType", Exif.TYPE_CHANGED)
-                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
-                .list();
-
-        List<Images> images = new ArrayList<Images>(result.size());
-        for (Map<String, Object> row : result) {
-            Images image = new Images();
-            image.setId((Long) row.get("id"));
-            image.setImageNm((String) row.get("imageNm"));
-            image.setWidth((Integer) row.get("width"));
-            image.setHeight((Integer) row.get("height"));
-            image.setArtist((String) row.get("artist"));
-            image.setFileSize((Integer) row.get("fileSize"));
-
-            images.add(image);
-        }
+        List<Images> images = query.list();
 
         return images;
     }

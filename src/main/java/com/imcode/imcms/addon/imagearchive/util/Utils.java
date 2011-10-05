@@ -7,10 +7,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +23,7 @@ import com.imcode.imcms.addon.imagearchive.entity.Libraries;
 import com.imcode.imcms.addon.imagearchive.entity.Roles;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -187,15 +185,37 @@ public class Utils {
         }
     }
 
-    public static boolean isInArchive(File img, Facade facade) {
+    public static List<Images> isInArchive(File img, Facade facade) {
+        List<Images> sameImages = new ArrayList<Images>();
         List<Images> archiveImages = facade.getImageService().getAllImages();
         for (Images image : archiveImages) {
             if (img != null && image.getImageNm().equals(img.getName()) && image.getFileSize() == img.length()) {
-                return true;
+                sameImages.add(image);
             }
         }
 
-        return false;
+        return sameImages;
+    }
+
+    public static List<Categories> getCategoriesRequiredToUse(Images img, Facade facade, User user) {
+        if(user.isSuperAdmin()) {
+            return Collections.emptyList();
+        }
+        
+        List<Categories> userCategories = facade.getRoleService().findCategories(user, Roles.ALL_PERMISSIONS);
+        List<Categories> imageCategories = img.getCategories();
+        List<Categories> categoriesesUserCantUse = Collections.emptyList();
+        if(imageCategories != null) {
+            categoriesesUserCantUse = (List<Categories>) CollectionUtils.subtract(imageCategories, userCategories);
+        }
+
+        /* Not an image uploaded by the user, return image's categories the user can't use or edit(so they know what to
+         get to be able to activate) */
+        if(img.getUsersId() != user.getId() && categoriesesUserCantUse.size() > 0){
+            return categoriesesUserCantUse;
+        }
+
+        return categoriesesUserCantUse;
     }
     
     private Utils() {
