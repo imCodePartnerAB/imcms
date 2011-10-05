@@ -88,7 +88,7 @@
 
                                     <tr>
                                         <td>
-                                            <button class="show imcmsFormBtnSmall" value="${fn:escapeXml(entry.fileName)}"><spring:message code="archive.externalFiles.show" htmlEscape="true"/></button>
+                                            <button onclick="showFilePreview($('#libraryId').val(), $(this).val(), ${entry.imageInfo.width}, ${entry.imageInfo.height}); return false;" class="show imcmsFormBtnSmall" value="${fn:escapeXml(entry.fileName)}"><spring:message code="archive.externalFiles.show" htmlEscape="true"/></button>
                                         </td>
                                         <td>
                                             <input class="use" type="checkbox" name="fileNames" value="${fn:escapeXml(entry.fileName)}"/>

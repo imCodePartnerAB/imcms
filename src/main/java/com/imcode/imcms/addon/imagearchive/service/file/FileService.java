@@ -377,6 +377,7 @@ public class FileService {
             entry.setFileName(file.getName());
             entry.setFileSize((int) file.length());
             entry.setLastModified(file.lastModified());
+            entry.setImageInfo(ImageOp.getImageInfo(file));
 
             entries.add(entry);
         }

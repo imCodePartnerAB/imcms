@@ -622,22 +622,6 @@ var initExternalFiles = function() {
                }
             });
         });
-        
-        var showFilePreview = function(id, name) {
-            var url = common.getRelativeUrl("/web/archive/external-files/preview", {
-                id: id, 
-                name: name
-            });
-            var attrs = "width=640,height=480,directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,toolbar=no";
-            
-            window.open(url, "filepreview", attrs);
-        };
-        
-        $(".show").click(function() {
-            showFilePreview(libraryId, $(this).val());
-
-            return false;
-        });
     });
 };
  

@@ -1,5 +1,7 @@
 package com.imcode.imcms.addon.imagearchive.dto;
 
+import imcode.util.image.ImageInfo;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,6 +11,7 @@ public class LibraryEntryDto implements Serializable {
     private String fileName;
     private int fileSize;
     private long lastModified;
+    private ImageInfo imageInfo;
 
     
     public LibraryEntryDto() {
@@ -47,7 +50,14 @@ public class LibraryEntryDto implements Serializable {
         return new Date(lastModified);
     }
 
-    
+    public ImageInfo getImageInfo() {
+        return imageInfo;
+    }
+
+    public void setImageInfo(ImageInfo imageInfo) {
+        this.imageInfo = imageInfo;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
