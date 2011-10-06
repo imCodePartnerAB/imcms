@@ -212,6 +212,9 @@ class MetaDao extends SpringHibernateTemplate {
      .uniqueResult().asInstanceOf[DocumentProperty]
   }
 
+  //@Transactional
+  def getDocIdByAlias(alias: String) = ?(getAliasProperty(alias)).map(_.getDocId.toInt)
+
 
   //@Transactional
   def deleteDocument(docId: JInteger) = withSession { session =>

@@ -1,8 +1,8 @@
 package com.imcode
-package imcms.admin.doc.content
+package imcms
+package admin.doc.content
 
 import scala.collection.JavaConversions._
-import com.vaadin.ui._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import com.imcode.imcms.api._
 import imcode.server.user._
@@ -18,11 +18,12 @@ import textdocument.TextDocumentDomainObject
 import java.util.{EnumSet}
 import imcms.mapping.DocumentMapper.SaveDirectives
 import imcms.mapping.{DocumentMapper, DocumentSaver}
+import com.vaadin.terminal.ExternalResource
+import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
+import com.vaadin.ui._
 
 
-
-// todo: rename to doc content editor ??? | extend editor with DocEditor ???
-trait DocEditor {
+trait DocContentEditor {
   def ui: Component
   def doc: DocumentDomainObject
 
@@ -30,16 +31,32 @@ trait DocEditor {
 }
 
 
-class URLDocEditor(val doc: UrlDocumentDomainObject) extends DocEditor {
-  val ui = new URLDocEditorUI
+
+class TextDocContentEditor(val doc: TextDocumentDomainObject) extends DocContentEditor {
+  val ui = letret(new TextDocContentEditorUI) { ui =>
+
+  }
 }
 
-class TextDocEditor(val doc: TextDocumentDomainObject) extends DocEditor {
-  val ui = new TextDocEditorUI
+
+class URLDocContentEditor(val doc: UrlDocumentDomainObject) extends DocContentEditor {
+  val ui = letret(new URLDocContentEditorUI) { ui =>
+    ui.txtURL.value = "http://"
+  }
 }
 
-class HtmlDocEditor(val doc: HtmlDocumentDomainObject) extends DocEditor {
-  val ui = new HTMLDocEditorUI
+
+class HtmlDocContentEditor(val doc: HtmlDocumentDomainObject) extends DocContentEditor {
+  val ui = letret(new HTMLDocContentEditorUI) { ui =>
+    ui.txaHTML.value = <html/>.toString
+  }
+}
+
+/**
+ * Used with deprecated docs such as Browser.
+ */
+class UnsupportedDocContentEditor(val doc: DocumentDomainObject) extends DocContentEditor {
+  val ui = new Label("N/A".i)
 }
 
 
@@ -50,20 +67,20 @@ case class MimeType(name: String, displayName: String)
 /**
  * URL document editor UI
  */
-// todo: escape URL text, validate???
-class URLDocEditorUI extends FormLayout {
-  val lblTodo = new Label("#TODO: SUPPORTED PROTOCOLS: HTTPS, FTP?; VALIDATE?")
-  val txtURL = new TextField("Content URL") with ValueType[String] {
-    setInternalValue("http://")
-  }
+class URLDocContentEditorUI extends FormLayout {
+  val txtURL = new TextField("URL/Link".i) with ValueType[String] with FullWidth
 
-  addComponents(this, lblTodo, txtURL)
+  addComponents(this, txtURL)
 }
 
-class HTMLDocEditorUI extends FormLayout {
-  val lblHTML = new Label("HTML")
 
-  addComponents(this, lblHTML)
+/**
+ * HTML document editor UI
+ */
+class HTMLDocContentEditorUI extends FormLayout {
+  val txaHTML = new TextArea("HTML".i) with FullSize
+
+  addComponents(this, txaHTML)
 }
 
 /**
@@ -72,7 +89,7 @@ class HTMLDocEditorUI extends FormLayout {
  * If there is more than one file then one of them must be set as default.
  * Default file content is returned when an user clicks on a doc link in a browser. 
  */
-class FileDocEditorUI extends VerticalLayout with UndefinedSize {
+class FileDocContentEditorUI extends VerticalLayout with UndefinedSize {
   val menuBar = new MenuBar
   val miNew = menuBar.addItem("Add", null)
   val miEdit = menuBar.addItem("Edit", null)
@@ -92,6 +109,7 @@ class FileDocEditorUI extends VerticalLayout with UndefinedSize {
   addComponents(this, menuBar, tblFiles)
 }
 
+//todo: rename
 /** Add/Edit file doc's file */
 class FileDocFileDialogContent extends FormLayout with UndefinedSize {
   // model
@@ -126,8 +144,8 @@ class FileDocFileDialogContent extends FormLayout with UndefinedSize {
   }
 }
 
-class FileDocEditor(app: ImcmsApplication, val doc: FileDocumentDomainObject, mimeTypes: Seq[MimeType]) extends DocEditor {
-  val ui = letret(new FileDocEditorUI) { ui =>
+class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObject, mimeTypes: Seq[MimeType]) extends DocContentEditor {
+  val ui = letret(new FileDocContentEditorUI) { ui =>
     ui.tblFiles.itemsProvider = () =>
       doc.getFiles.toSeq collect {
         case (fileId, fdf) =>
@@ -222,7 +240,7 @@ class FileDocEditor(app: ImcmsApplication, val doc: FileDocumentDomainObject, mi
 }
 
 
-class TextDocEditorUI extends VerticalLayout with FullSize with Spacing with Margin {
+class TextDocContentEditorUI extends VerticalLayout with FullSize with Spacing with Margin {
   // todo: show outline/redirect external doc editor
 }
 
@@ -232,7 +250,7 @@ class TextDocEditorUI extends VerticalLayout with FullSize with Spacing with Mar
  * User may choose whether copy link texts (filled in meta page) into the text fields no 1 and 2.
  * Every language's texts is shown in its tab.
  */
-class NewTextDocEditorUI extends VerticalLayout with FullSize with Spacing with Margin {
+class NewTextDocContentEditorUI extends VerticalLayout with FullSize with Spacing with Margin {
   class TextsUI extends FormLayout with FullSize {
     val txtText1 = new TextField("No 1")
     val txtText2 = new TextField("No 2")

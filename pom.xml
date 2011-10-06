@@ -9,6 +9,14 @@
     <version>6.0.0-alpha51-SNAPSHOT</version>
     <name>imCMS</name>
 
+    <properties>
+        <imcms.jetty.port>9090</imcms.jetty.port>
+        <imcms.jetty.stop.key>${project.name}</imcms.jetty.stop.key>
+        <imcms.jetty.stop.port>9696</imcms.jetty.stop.port>
+        <imcms.jetty.scanIntervalSeconds>3</imcms.jetty.scanIntervalSeconds>
+    </properties>
+
+
     <profiles>
         <profile>
             <id>local</id>
@@ -48,7 +56,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.7</version>
+            <version>4.9</version>
             <scope>test</scope>
         </dependency>
 
@@ -141,7 +149,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.3</version>
+            <version>1.4</version>
         </dependency>
 
         <dependency>
@@ -167,7 +175,7 @@
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
-            <version>3.2</version>
+            <version>3.2.1</version>
         </dependency>
 
         <dependency>
@@ -607,13 +615,6 @@
             <version>0.97-incubator</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
-        </dependency>
-
         <!-- PROVIDED -->
         <!--<dependency>-->
         <!--<groupId>checkstyle</groupId>-->
@@ -622,18 +623,18 @@
         <!--<scope>provided</scope>-->
         <!--</dependency>-->
 
-        <dependency>
-            <groupId>commons-el</groupId>
-            <artifactId>commons-el</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>commons-el</groupId>-->
+            <!--<artifactId>commons-el</artifactId>-->
+            <!--<version>1.0</version>-->
+            <!--<scope>provided</scope>-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>commons-logging</artifactId>-->
+                    <!--<groupId>commons-logging</groupId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>jakarta-regexp</groupId>
@@ -641,78 +642,58 @@
             <version>1.4</version>
         </dependency>
 
-        <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>2.0</version>
-            <scope>provided</scope>
-        </dependency>
-
+        <!-- ================== -->
+        <!-- Servlet, JSP, JSTL -->
+        <!-- ================== -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.mortbay.jetty</groupId>-->
-        <!--<artifactId>jsp-2.1</artifactId>-->
-        <!--<version>6.1.14</version>-->
-        <!--</dependency>-->
-        <!-- ================ -->
+
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Not provided with some J2EE web containers such as Tomcat 6.X -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <!-- ===== -->
         <!-- Scala -->
-        <!-- ================ -->
+        <!-- ===== -->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
-            <version>2.9.0-1</version>
+            <version>2.9.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.9.0-1</version>
+            <version>2.9.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.9.0</artifactId>
-            <version>1.4.1</version>
+            <artifactId>scalatest_2.9.1</artifactId>
+            <version>1.6.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.scala-tools.testing</groupId>
-            <artifactId>scalacheck_2.9.0-1</artifactId>
+            <artifactId>scalacheck_2.9.1</artifactId>
             <version>1.9</version>
             <scope>test</scope>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.scala-lang</groupId>-->
-            <!--<artifactId>scala-library</artifactId>-->
-            <!--<version>2.8.1</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.scalatest</groupId>-->
-            <!--<artifactId>scalatest</artifactId>-->
-            <!--<version>1.2</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.scala-tools.testing</groupId>-->
-            <!--<artifactId>scalacheck_2.8.1</artifactId>-->
-            <!--<version>1.8</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.scala-lang</groupId>-->
-            <!--<artifactId>scala-compiler</artifactId>-->
-            <!--<version>2.8.1</version>-->
-        <!--</dependency>-->
 
         <!--<dependency>-->
            <!--<artifactId>solr-solrj</artifactId>-->
@@ -1081,8 +1062,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
 
                     <excludes>
                         <exclude>**/Test*.java</exclude>
@@ -1147,13 +1128,13 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>7.0.0.RC6</version>
                 <configuration>
-                    <scanIntervalSeconds>3</scanIntervalSeconds>
-                    <stopKey>${project.name}</stopKey>
-                    <stopPort>9696</stopPort>
+                    <scanIntervalSeconds>${imcms.jetty.scanIntervalSeconds}</scanIntervalSeconds>
+                    <stopKey>${imcms.jetty.stop.key}</stopKey>
+                    <stopPort>${imcms.jetty.stop.port}</stopPort>
                     <!--<webAppSourceDirectory>${project.build.directory}/${project.build.finalName}</webAppSourceDirectory>-->
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>9090</port>
+                            <port>${imcms.jetty.port}</port>
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
                     </connectors>

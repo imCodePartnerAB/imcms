@@ -16,9 +16,14 @@ import java.util.{Date, Calendar}
 import collection.immutable.ListMap
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
 import com.vaadin.ui._
-import com.vaadin.terminal.{Sizeable, ExternalResource}
 import admin.access.user.{UserSingleSelectUI, UserSingleSelect, UserSingleSelectDialog, UserSelectDialog}
 import api._
+import dao.MetaDao
+import com.vaadin.terminal.{UserError, ErrorMessage, Sizeable, ExternalResource}
+import com.vaadin.data.Validator
+import java.util.concurrent.atomic.AtomicReference
+import com.vaadin.data.Validator.InvalidValueException
+import com.vaadin.ui.AbstractTextField.TextChangeEventMode
 
 /**
  * Doc's meta editor.
@@ -105,61 +110,95 @@ class MetaEditor[A <: DocumentDomainObject](app: ImcmsApplication, doc: A) exten
    * Clones the original doc, copies changes into that clone and returns it.
    * todo: ??? return (DocumentDomainObject, i18nMetas: Map[I18nLanguage, I18nMeta]) ???
    */
-  def state: DocumentDomainObject = letret(doc.clone()) { dc =>
-    for (state <- appearanceSheetOpt.map(_.state)) {
-      dc.getMeta.setLanguages(state.enabledLanguages)
-      dc.getMeta.setI18nShowMode(state.disabledLanguageShowSetting)
-      dc.getMeta.setAlias(state.alias.orNull)
-      dc.getMeta.setTarget(state.target)
-    }
+  def state(): Either[String, DocumentDomainObject] = {
+    val dc = doc.clone()
 
-    for (state <- lifeCycleEditorOpt.map(_.state)) {
-      dc.getMeta.setPublicationStatus(state.publicationStatus)
-      dc.getMeta.setPublicationStartDatetime(state.publicationStart)
-      dc.getMeta.setPublicationEndDatetime(state.publicationEnd.orNull)
-      dc.getMeta.setPublicationEndDatetime(state.publicationEnd.orNull)
-      dc.getMeta.setPublisherId(state.publisher.map(p => Int box p.getId).orNull)
-      //???dc.setVersion(new DocumentVersion() state.versionNo)
-      dc.getMeta.setCreatedDatetime(state.created)
-      dc.getMeta.setModifiedDatetime(state.modified)
-      dc.getMeta.setCreatorId(state.creator.map(c => Int box c.getId).orNull)
-      //???dc.getMeta.setModifierId
-    }
-
-    for (state <- permissionsSheetOpt.map(_.state)) {
-      dc.setRoleIdsMappedToDocumentPermissionSetTypes(state.rolesPermissions)
-      dc.getPermissionSets.setRestricted1(state.restrictedOnePermSet)
-      dc.getPermissionSets.setRestricted2(state.restrictedTwoPermSet)
-      dc.setRestrictedOneMorePrivilegedThanRestrictedTwo(state.isRestrictedOneMorePrivilegedThanRestricted2)
-      dc.setLinkedForUnauthorizedUsers(state.isLinkedForUnauthorizedUsers)
-      dc.setLinkableByOtherUsers(state.isLinkableByOtherUsers)
-    }
-
-    for (state <- searchSheetOpt.map(_.state)) {
-      dc.setKeywords(state.keywords)
-      dc.setSearchDisabled(state.isExcludeFromInnerSearch)
-    }
-
-    for (state <- categoriesSheetOpt.map(_.state)) {
-      dc.setCategoryIds(state.categoriesIds)
-    }
-
-
-//    ui.cbDefaultTemplate.value,
-//    restrictedOnePermSet, // ??? clone
-//    restrictedTwoPermSet, // ??? clone
-//    ui.cbRestrictedOneDefaultTemplate,
-//    ui.cbRestrictedTwoDefaultTemplate
-    dc match {
-      case tdc: TextDocumentDomainObject =>
-        for (state <- profileSheetOpt.map(_.state)) {
-          tdc.setDefaultTemplateId(state.defaultTemplate)
-          tdc.getPermissionSetsForNewDocuments.setRestricted1(state.restrictedOnePermSet)
-          tdc.getPermissionSetsForNewDocuments.setRestricted2(state.restrictedTwoPermSet)
-          tdc.setDefaultTemplateIdForRestricted1(state.restrictedOneTemplate)
-          tdc.setDefaultTemplateIdForRestricted2(state.restrictedTwoTemplate)
+    appearanceSheetOpt.map(_.state()) |> {
+      case None => Right(dc)
+      case Some(Left(errMsg)) => Left(errMsg)
+      case Some(Right(state)) =>
+        //eitherState.right.map { state =>
+        dc.getMeta.setLanguages(state.enabledLanguages)
+        dc.getMeta.setI18nShowMode(state.disabledLanguageShowSetting)
+        dc.getMeta.setAlias(state.alias.orNull)
+        dc.getMeta.setTarget(state.target)
+        Right(dc)
+      //}
+    } |> {
+      case eitherState if eitherState.isLeft => eitherState
+      case right @ Right(dc) =>
+        lifeCycleEditorOpt.map(_.state()) match {
+          case None => right
+          case Some(Left(errMsg)) => Left(errMsg)
+          case Some(Right(state)) =>
+            dc.getMeta.setPublicationStatus(state.publicationStatus)
+            dc.getMeta.setPublicationStartDatetime(state.publicationStart)
+            dc.getMeta.setPublicationEndDatetime(state.publicationEnd.orNull)
+            dc.getMeta.setPublicationEndDatetime(state.publicationEnd.orNull)
+            dc.getMeta.setPublisherId(state.publisher.map(p => Int box p.getId).orNull)
+            //???dc.setVersion(new DocumentVersion() state.versionNo)
+            dc.getMeta.setCreatedDatetime(state.created)
+            dc.getMeta.setModifiedDatetime(state.modified)
+            dc.getMeta.setCreatorId(state.creator.map(c => Int box c.getId).orNull)
+            //???dc.getMeta.setModifierId
+            Right(dc)
         }
-      case _ =>
+    } |> {
+      case eitherState if eitherState.isLeft => eitherState
+      case right @ Right(dc) =>
+        permissionsSheetOpt.map(_.state()) match {
+          case None => right
+          case Some(Left(errMsg)) => Left(errMsg)
+          case Some(Right(state)) =>
+            dc.setRoleIdsMappedToDocumentPermissionSetTypes(state.rolesPermissions)
+            dc.getPermissionSets.setRestricted1(state.restrictedOnePermSet)
+            dc.getPermissionSets.setRestricted2(state.restrictedTwoPermSet)
+            dc.setRestrictedOneMorePrivilegedThanRestrictedTwo(state.isRestrictedOneMorePrivilegedThanRestricted2)
+            dc.setLinkedForUnauthorizedUsers(state.isLinkedForUnauthorizedUsers)
+            dc.setLinkableByOtherUsers(state.isLinkableByOtherUsers)
+            Right(dc)
+        }
+    } |> {
+      case eitherState if eitherState.isLeft => eitherState
+      case right @ Right(dc) =>
+        searchSheetOpt.map(_.state()) match {
+          case None => right
+          case Some(Left(errMsg)) => Left(errMsg)
+          case Some(Right(state)) =>
+            dc.setKeywords(state.keywords)
+            dc.setSearchDisabled(state.isExcludeFromInnerSearch)
+            Right(dc)
+        }
+    } |> {
+      case eitherState if eitherState.isLeft => eitherState
+      case right @ Right(dc) =>
+        categoriesSheetOpt.map(_.state()) match {
+          case None => right
+          case Some(Left(errMsg)) => Left(errMsg)
+          case Some(Right(state)) =>
+            dc.setCategoryIds(state.categoriesIds)
+            Right(dc)
+        }
+    } |> {
+      //// ?????????????????????????????????????
+      ////    ui.cbDefaultTemplate.value,
+      ////    restrictedOnePermSet, // ??? clone
+      ////    restrictedTwoPermSet, // ??? clone
+      ////    ui.cbRestrictedOneDefaultTemplate,
+      ////    ui.cbRestrictedTwoDefaultTemplate
+      case eitherState if eitherState.isLeft => eitherState
+      case right @ Right(tdc: TextDocumentDomainObject) =>
+        profileSheetOpt.map(_.state()) match {
+          case None => right
+          case Some(Left(errMsg)) => Left(errMsg)
+          case Some(Right(state)) =>
+            tdc.setDefaultTemplateId(state.defaultTemplate)
+            tdc.getPermissionSetsForNewDocuments.setRestricted1(state.restrictedOnePermSet)
+            tdc.getPermissionSetsForNewDocuments.setRestricted2(state.restrictedTwoPermSet)
+            tdc.setDefaultTemplateIdForRestricted1(state.restrictedOneTemplate)
+            tdc.setDefaultTemplateIdForRestricted2(state.restrictedTwoTemplate)
+            Right(tdc)
+        }
     }
   }
 }
@@ -238,17 +277,21 @@ class LifeCycleEditor(meta: Meta) extends ImcmsServicesSupport {
     // todo: ??? remember lytDate.chkEnd date when uncheked???
   }
 
-  def state = State(
-    ui.frmPublication.sltStatus.value,
-    ui.frmPublication.lytDate.calStart.value,
-    ui.frmPublication.lytDate.calEnd.valueOpt,
-    ui.ussCreator.selection,
-    ui.frmPublication.sltVersion.value.intValue,
-    ui.frmMaintenance.dCreated.calDate.value,
-    ui.frmMaintenance.dModified.calDate.value,
-    ui.ussCreator.selection,
-    ui.ussModifier.selection
-  )
+  def state(): Either[String, State] = validate().toLeft {
+    State(
+      ui.frmPublication.sltStatus.value,
+      ui.frmPublication.lytDate.calStart.value,
+      ui.frmPublication.lytDate.calEnd.valueOpt,
+      ui.ussCreator.selection,
+      ui.frmPublication.sltVersion.value.intValue,
+      ui.frmMaintenance.dCreated.calDate.value,
+      ui.frmMaintenance.dModified.calDate.value,
+      ui.ussCreator.selection,
+      ui.ussModifier.selection
+    )
+  }
+
+  def validate(): Option[String] = None
 }
 
 
@@ -360,11 +403,15 @@ class CategoriesSheet(meta: Meta) extends ImcmsServicesSupport {
     }
   }
 
-  def state = State(
-    typeCategoriesUIs.collect {
-      case (chkCType, sltCategories) if chkCType.isChecked => sltCategories.value
-    }.flatten.toSet
-  )
+  def state(): Either[String, State] = validate().toLeft {
+    State(
+      typeCategoriesUIs.collect {
+        case (chkCType, sltCategories) if chkCType.isChecked => sltCategories.value
+      }.flatten.toSet
+    )
+  }
+
+  def validate(): Option[String] = None
 
   def isModified = state != initialState
 }
@@ -418,7 +465,11 @@ class SearchSheet(meta: Meta) {
     ui.chkExcludeFromInternalSearch.checked = initialState.isExcludeFromInnerSearch
   }
 
-  def state = State(ui.lytKeywords.lstKeywords.itemIds.toSet, ui.chkExcludeFromInternalSearch.isChecked)
+  def state(): Either[String, State] = validate().toLeft {
+    State(ui.lytKeywords.lstKeywords.itemIds.toSet, ui.chkExcludeFromInternalSearch.isChecked)
+  }
+
+  def validate(): Option[String] = None
 
   def isModified = state != initialState
 
@@ -509,10 +560,36 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
       addComponents(ui.frmLanguages.lytI18nMetas, chkLanguage, i18nMetaEditorUI)
     }
 
+    // todo: check once!!!
     override def attach() {
       super.attach()
       revert()
     }
+
+//    ui.frmAlias.txtAlias.setImmediate(true)
+//    ui.frmAlias.txtAlias.setTextChangeEventMode(TextChangeEventMode.TIMEOUT)
+    ui.frmAlias.txtAlias.addValidator(new Validator {
+      val errMsgOptRef = Atoms.OptRef[String]
+
+      def isValid(value: AnyRef) = {
+        val errMsgOpt = for {
+          alias <- ui.frmAlias.txtAlias.trimOpt
+          docId <- imcmsServices.getSpringBean("metaDao").asInstanceOf[MetaDao].getDocIdByAlias(alias)
+          if meta.getId != docId
+        } yield "alias allready exists"
+
+        errMsgOptRef.set(errMsgOpt)
+        errMsgOpt.isEmpty
+      }
+
+      def validate(value: AnyRef) {
+        if (!isValid(value)) {
+          for (errMsg <- errMsgOptRef.get) {
+            throw new InvalidValueException(errMsg)
+          }
+        }
+      }
+    })
   } // ui
 
 
@@ -532,12 +609,12 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
       i18nMetas.get(language) match {
         case Some(i18nMeta) =>
           i18nMetaEditorUI.txtTitle.value = i18nMeta.getHeadline
-          i18nMetaEditorUI.taMenuText.value = i18nMeta.getMenuText
+          i18nMetaEditorUI.txaMenuText.value = i18nMeta.getMenuText
           i18nMetaEditorUI.embLinkImage.value = i18nMeta.getMenuImageURL
 
         case _ =>
           i18nMetaEditorUI.txtTitle.clear
-          i18nMetaEditorUI.taMenuText.clear
+          i18nMetaEditorUI.txaMenuText.clear
           i18nMetaEditorUI.embLinkImage.clear
       }
     }
@@ -568,22 +645,28 @@ class AppearanceSheet(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extend
     ui.frmLinkTarget.cbTarget.select(target)
   }
 
-  def state = State(
-    i18nMetasUIs.map {
-      case (language, chkBox, i18nMetaEditorUI) =>
-        language -> letret(new I18nMeta) { i18nMeta =>
-          i18nMeta.setId(i18nMetas.get(language).map(_.getId).orNull)
-          i18nMeta.setDocId(meta.getId)
-          i18nMeta.setLanguage(language)
-          i18nMeta.setHeadline(i18nMetaEditorUI.txtTitle.trim)
-          i18nMeta.setMenuImageURL(i18nMetaEditorUI.embLinkImage.trim)
-        }
-    } (breakOut),
-    i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language }(breakOut),
-    ui.frmLanguages.cbShowMode.value,
-    ui.frmAlias.txtAlias.trimOpt,
-    ui.frmLinkTarget.cbTarget.value
-  )
+  def state(): Either[String, State] = validate().toLeft {
+    State(
+      i18nMetasUIs.map {
+        case (language, chkBox, i18nMetaEditorUI) =>
+          language -> letret(new I18nMeta) { i18nMeta =>
+            i18nMeta.setId(i18nMetas.get(language).map(_.getId).orNull)
+            i18nMeta.setDocId(meta.getId)
+            i18nMeta.setLanguage(language)
+            i18nMeta.setHeadline(i18nMetaEditorUI.txtTitle.trim)
+            i18nMeta.setMenuImageURL(i18nMetaEditorUI.embLinkImage.trim)
+          }
+      } (breakOut),
+      i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language }(breakOut),
+      ui.frmLanguages.cbShowMode.value,
+      ui.frmAlias.txtAlias.trimOpt,
+      ui.frmLinkTarget.cbTarget.value
+    )
+  }
+
+  def validate(): Option[String] = {
+    EX.allCatch.either(ui.frmAlias.txtAlias.validate()).left.toOption.map(_.getMessage)
+  }
 }
 
 
@@ -646,7 +729,7 @@ class AppearanceSheetUI extends VerticalLayout with Spacing with FullWidth {
  */
 class I18nMetaEditorUI extends FormLayout with FullWidth {
   val txtTitle = new TextField("Title") with FullWidth
-  val taMenuText = new TextArea("Menu text") with FullWidth {
+  val txaMenuText = new TextArea("Menu text") with FullWidth {
     setRows(3)
   }
 
@@ -654,7 +737,7 @@ class I18nMetaEditorUI extends FormLayout with FullWidth {
   // val chkEnabled ???
   // val flag, default???
 
-  addComponents(this, txtTitle, taMenuText, embLinkImage)
+  addComponents(this, txtTitle, txaMenuText, embLinkImage)
 }
 
 

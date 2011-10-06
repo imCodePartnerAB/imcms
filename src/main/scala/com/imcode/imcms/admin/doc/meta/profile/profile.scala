@@ -88,13 +88,17 @@ class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extend
   }
 
 
-  def state = State(
-    ui.cbDefaultTemplate.value,
-    restrictedOnePermSet, // ??? clone
-    restrictedTwoPermSet, // ??? clone
-    ui.cbRestrictedOneDefaultTemplate.value,
-    ui.cbRestrictedTwoDefaultTemplate.value
-  )
+  def state(): Either[String, State] = validate().toLeft {
+    State(
+      ui.cbDefaultTemplate.value,
+      restrictedOnePermSet, // ??? clone
+      restrictedTwoPermSet, // ??? clone
+      ui.cbRestrictedOneDefaultTemplate.value,
+      ui.cbRestrictedTwoDefaultTemplate.value
+    )
+  }
+
+  def validate(): Option[String] = None
 }
 
 

@@ -1,5 +1,7 @@
 package com
 
+import java.util.concurrent.atomic.AtomicReference
+
 package object imcode {
 
   type JClass[A >: Null] = java.lang.Class[A]
@@ -12,6 +14,13 @@ package object imcode {
   type JList[A >: Null] = java.util.List[A]
 
   implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
+
+  // methods overloading is not (yet) allowed in package objects
+  object Atoms {
+    def OptRef[A] = new AtomicReference(Option.empty[A])
+    def OptRef[A](value: A) = new AtomicReference(Option(value))
+  }
+
 
   val EX = scala.util.control.Exception
 

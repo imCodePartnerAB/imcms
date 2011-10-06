@@ -234,22 +234,26 @@ class PermissionsSheet(app: Application, doc: DocumentDomainObject, user: UserDo
   }
 
 
-  def state = State(
-    letret(new RoleIdToDocumentPermissionSetTypeMappings) { rolesPermissions =>
-      import ui.rolesPermsSetTypeUI.tblRolesPermsTypes
-      tblRolesPermsTypes.itemIds foreach { role =>
-        rolesPermissions.setPermissionSetTypeForRole(
-          role.getId,
-          tblRolesPermsTypes.getContainerProperty(role, RolePermsSetTypePropertyId).getValue.asInstanceOf[RolePermsSetType].setType
-        )
-      }
-    },
-    restrictedOnePermSet, // clone ???
-    restrictedTwoPermSet, // clone ???
-    ui.chkLim1IsMorePrivilegedThanLim2.checked,
-    ui.frmExtraSettings.chkShowToUnauthorizedUser.checked,
-    ui.frmExtraSettings.chkShareWithOtherAdmins.checked
-  )
+  def state(): Either[String, State] = validate().toLeft {
+    State(
+      letret(new RoleIdToDocumentPermissionSetTypeMappings) { rolesPermissions =>
+        import ui.rolesPermsSetTypeUI.tblRolesPermsTypes
+        tblRolesPermsTypes.itemIds foreach { role =>
+          rolesPermissions.setPermissionSetTypeForRole(
+            role.getId,
+            tblRolesPermsTypes.getContainerProperty(role, RolePermsSetTypePropertyId).getValue.asInstanceOf[RolePermsSetType].setType
+          )
+        }
+      },
+      restrictedOnePermSet, // clone ???
+      restrictedTwoPermSet, // clone ???
+      ui.chkLim1IsMorePrivilegedThanLim2.checked,
+      ui.frmExtraSettings.chkShowToUnauthorizedUser.checked,
+      ui.frmExtraSettings.chkShareWithOtherAdmins.checked
+    )
+  }
+
+  def validate(): Option[String] = None
 }
 
 

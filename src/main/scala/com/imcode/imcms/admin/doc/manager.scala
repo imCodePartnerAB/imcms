@@ -11,6 +11,7 @@ import _root_.com.imcode.imcms.admin.doc.content._
 import _root_.com.imcode.imcms.admin.doc.search.{DocSearchUI, DocSearch, AllDocsContainer, CustomDocsContainer}
 import _root_.imcode.server.document.{UrlDocumentDomainObject, DocumentDomainObject, FileDocumentDomainObject, HtmlDocumentDomainObject}
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+
 import java.net.URL
 import com.vaadin.terminal.ExternalResource
 import com.vaadin.ui._
@@ -80,12 +81,12 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         val dlg = new OkCancelDialog("Edit document") with CustomSizeDialog with BottomMarginDialog
         val doc = imcmsServices.getDocumentMapper.getWorkingDocument(search.searchResultUI.first.get.intValue)
         val metaEditor = new MetaEditor(app, doc)
-        val contentEditor: DocEditor = (doc: @unchecked) match {
-          case doc: TextDocumentDomainObject => new TextDocEditor(doc)
-          case doc: FileDocumentDomainObject => new FileDocEditor(app, doc, Nil)
-          case doc: UrlDocumentDomainObject => new URLDocEditor(doc)
-          case doc: HtmlDocumentDomainObject => new HtmlDocEditor(doc)
-          // case BrowserDocumentDomainObject ???? or exclude this type from list???
+        val contentEditor: DocContentEditor = doc match {
+          case doc: TextDocumentDomainObject => new TextDocContentEditor(doc)
+          case doc: FileDocumentDomainObject => new FileDocContentEditor(app, doc, Nil)
+          case doc: UrlDocumentDomainObject => new URLDocContentEditor(doc)
+          case doc: HtmlDocumentDomainObject => new HtmlDocContentEditor(doc)
+          case _ => new UnsupportedDocContentEditor(doc)
         }
 
         dlg.mainUI = letret(new TabSheet with FullSize) { ts =>
@@ -93,14 +94,19 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
           ts.addTab(contentEditor.ui, "Content", null)
         }
 
-        dlg.wrapOkHandler {
+        dlg.setOkHandler {
           // todo:
           // 1.validate
           // 2.copy changes into doc:
           // 3.state: ValidationError Either Doc
           // properties.state
           // merge editor and content editor states
-          imcmsServices.getDocumentMapper.saveDocument(metaEditor.state, app.user)
+          metaEditor.state() match {
+            case Left(errMsg) => app.showErrorNotification("Can't save", errMsg)
+            case Right(doc) =>
+              imcmsServices.getDocumentMapper.saveDocument(doc, app.user)
+              dlg.close()
+          }
         }
 
         dlg.setSize(500, 500)
@@ -112,10 +118,10 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     // todo: parent doc type MUST be `text`
     val newDocCommandListener: MenuBar#MenuItem => Unit = { mi =>
       val (contentEditor, dlgCaption) = (mi: @unchecked) match {
-        case ui.miNewTextDoc => (new TextDocEditor(new TextDocumentDomainObject), "New text document")
-        case ui.miNewFileDoc => (new FileDocEditor(app, new FileDocumentDomainObject, Nil), "New file document")
-        case ui.miNewURLDoc => (new URLDocEditor(new UrlDocumentDomainObject), "New URL document")
-        case ui.miNewHTMLDoc => (new HtmlDocEditor(new HtmlDocumentDomainObject), "New HTML document")
+        case ui.miNewTextDoc => (new TextDocContentEditor(new TextDocumentDomainObject), "New text document")
+        case ui.miNewFileDoc => (new FileDocContentEditor(app, new FileDocumentDomainObject, Nil), "New file document")
+        case ui.miNewURLDoc => (new URLDocContentEditor(new UrlDocumentDomainObject), "New URL document")
+        case ui.miNewHTMLDoc => (new HtmlDocContentEditor(new HtmlDocumentDomainObject), "New HTML document")
       }
 
       val dlg = new OkCancelDialog(dlgCaption) with CustomSizeDialog with BottomMarginDialog
@@ -284,13 +290,13 @@ class NewDocFactoryUI extends GridLayout(3, 3) with UndefinedSize {
   val txtCopyDoc = new TextField
 
 
-  val ogProfile = new OptionGroup()
-  val ogNamedProfile = new OptionGroup()
-  val ogCopy = new OptionGroup()
+  val ogProfile = new OptionGroup
+  val ogNamedProfile = new OptionGroup
+  val ogCopy = new OptionGroup
 
-  val cbDocTypeType = new ComboBox()
-  val cbNamedProfileType = new ComboBox()
-  val cbCopyType = new ComboBox()
+  val cbDocTypeType = new ComboBox
+  val cbNamedProfileType = new ComboBox
+  val cbCopyType = new ComboBox
 
 //  addComponents(this,
 //    ogProfile, txtParentDoc, cb)
