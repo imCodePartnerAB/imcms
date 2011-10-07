@@ -20,7 +20,7 @@ import admin.doc.meta.permissions.{DocRestrictedPermSetEditor, TextDocRestricted
 //   -Shared permissions - i.e. saved elsewhere, but referenced by this doc and copied if necessary.
 
 /**
- * Doc profile.
+ * Doc profile editor.
  *
  * According to latest version (v4.x.x)
  * any text doc can be used as a profile for a new doc but API can treat doc of any type as a profile.
@@ -29,7 +29,7 @@ import admin.doc.meta.permissions.{DocRestrictedPermSetEditor, TextDocRestricted
  * -default template
  * -restricted permissions and templates.
  */
-class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
+class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
 
   case class State(
     defaultTemplate: String,
@@ -45,7 +45,7 @@ class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extend
   private val restrictedOnePermSetEditor = new DocRestrictedPermSetEditor(restrictedOnePermSet, doc, user) with TextDocRestrictedPermSetEditor
   private val restrictedTwoPermSetEditor = new DocRestrictedPermSetEditor(restrictedTwoPermSet, doc, user) with TextDocRestrictedPermSetEditor
 
-  val ui = letret(new ProfileSheetUI) { ui =>
+  val ui = letret(new ProfileEditorUI) { ui =>
     ui.btnEditRestrictedOnePermSet addClickHandler {
       ui.getApplication.initAndShow(new OkCancelDialog("Limited-1 permissions")) { dlg =>
         dlg.mainUI = restrictedOnePermSetEditor.ui
@@ -102,7 +102,7 @@ class ProfileSheet(doc: TextDocumentDomainObject, user: UserDomainObject) extend
 }
 
 
-class ProfileSheetUI extends VerticalLayoutUI(margin = false) with FullWidth {
+class ProfileEditorUI extends VerticalLayoutUI(margin = false) with FullWidth {
 
   private val frmDefault = new Form { setCaption("Default") }
   private val frmCustom = new Form { setCaption("Custom") }

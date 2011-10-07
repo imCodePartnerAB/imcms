@@ -49,7 +49,7 @@ import java.util.HashSet
  * -READ and FULL perm sets are non-customizable and always contain the same predefined permissions.
  * -Lim1 and Lim2 perm sets can be customized - i.e. predefined permissions can be added/removed to/from those sets.
  */
-class PermissionsSheet(app: Application, doc: DocumentDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
+class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
 
   private val meta = doc.getMeta.clone
   private val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
@@ -74,7 +74,7 @@ class PermissionsSheet(app: Application, doc: DocumentDomainObject, user: UserDo
   // if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document ))
   // This can be defined perd doc, so - change must be single select!!
   // Check!! ??? Mapped roles might contain: if ( DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) || RoleId.SUPERADMIN.equals(roleId)
-  val ui = letret(new PermissionsSheetUI) { ui =>
+  val ui = letret(new PermissionsEditorUI) { ui =>
     // security
     ui.lytRestrictedPermSets.btnEditRestrictedOnePermSet setReadOnly !user.canDefineRestrictedOneFor(doc)
     ui.lytRestrictedPermSets.btnEditRestrictedTwoPermSet setReadOnly !user.canDefineRestrictedTwoFor(doc)
@@ -188,8 +188,6 @@ class PermissionsSheet(app: Application, doc: DocumentDomainObject, user: UserDo
     }
   }
 
-  revert()
-
   def revert() {
     restrictedOnePermSet = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject]
     restrictedTwoPermSet = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject]
@@ -234,7 +232,7 @@ class PermissionsSheet(app: Application, doc: DocumentDomainObject, user: UserDo
   }
 
 
-  def state(): Either[String, State] = validate().toLeft {
+  def state(): Either[ErrorMsg, State] = validate().toLeft {
     State(
       letret(new RoleIdToDocumentPermissionSetTypeMappings) { rolesPermissions =>
         import ui.rolesPermsSetTypeUI.tblRolesPermsTypes
@@ -253,12 +251,15 @@ class PermissionsSheet(app: Application, doc: DocumentDomainObject, user: UserDo
     )
   }
 
-  def validate(): Option[String] = None
+  def validate(): Option[ErrorMsg] = None
+
+  // init
+  revert()
 }
 
 
 
-class PermissionsSheetUI extends VerticalLayout with Spacing with FullWidth {
+class PermissionsEditorUI extends VerticalLayout with Spacing with FullWidth {
   setMargin(true, true, false, true)
 
   class RolesPermsSetTypeUI extends VerticalLayout with Spacing with FullWidth {

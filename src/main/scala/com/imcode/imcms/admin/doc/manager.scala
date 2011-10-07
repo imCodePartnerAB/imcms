@@ -3,6 +3,7 @@ package imcms
 package admin.doc
 
 import _root_.scala.collection.JavaConversions._
+//import _root_.scala.collection.JavaConverters._
 import _root_.com.vaadin.event.Action
 import _root_.com.imcode.imcms.vaadin._
 import _root_.com.imcode.imcms.admin.doc.meta.MetaEditor
@@ -103,8 +104,8 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
           // merge editor and content editor states
           metaEditor.state() match {
             case Left(errMsg) => app.showErrorNotification("Can't save", errMsg)
-            case Right(doc) =>
-              imcmsServices.getDocumentMapper.saveDocument(doc, app.user)
+            case Right((doc, i18nMetas)) =>
+              imcmsServices.getDocumentMapper.saveDocument(doc, i18nMetas, app.user)
               dlg.close()
           }
         }

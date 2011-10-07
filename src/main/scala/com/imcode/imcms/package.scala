@@ -15,6 +15,9 @@ package object imcms {
   type CategoryId = JInteger
   type MenuItemId = String
 
+  type ErrorMsg = String
+
+
 
   class ResourceBundleValue(key: String) {
     private val localeAndValue: (Locale, String) = {
