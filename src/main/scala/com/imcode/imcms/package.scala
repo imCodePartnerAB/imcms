@@ -14,6 +14,7 @@ package object imcms {
   type Keyword = String
   type CategoryId = JInteger
   type MenuItemId = String
+  type FileId = String
 
   type ErrorMsg = String
 

@@ -96,7 +96,6 @@ class FileDocContentEditorUI extends VerticalLayout with UndefinedSize {
   val miDelete = menuBar.addItem("Delete", null)
   val miSetDefault = menuBar.addItem("Set default", null)
 
-  type FileId = String
   val tblFiles = new Table with ValueType[FileId] with Selectable with Immediate with Reloadable {
     addContainerProperties(this,
       ContainerProperty[FileId]("File Id"),

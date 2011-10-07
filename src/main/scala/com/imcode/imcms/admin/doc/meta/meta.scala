@@ -118,7 +118,7 @@ class MetaEditor[A <: DocumentDomainObject](app: ImcmsApplication, doc: A) exten
         StateMapper(
           eitherState match {
             case _ if eitherState.isLeft => eitherState
-            case Right(state) => transformDataOpt match {
+            case Right(state) => dataOpt match {
               case None => Right(state)
               case Some(Left(errMsg)) => Left(errMsg)
               case Some(Right(data)) => Right(fn(state, data))
