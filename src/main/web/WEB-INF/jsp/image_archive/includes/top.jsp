@@ -25,7 +25,7 @@
     <div class="clearboth">
         <ul class="tabs">
             <c:url var="searchUrl" value="/web/archive"/>
-            <li class="${currentPage eq 'searchImage' ? 'sel' : ''}">
+            <li class="first ${currentPage eq 'searchImage' ? 'sel' : ''}">
                 <a href="${searchUrl}">
                     <spring:message code="archive.tab.searchImage" htmlEscape="true"/>
                 </a>

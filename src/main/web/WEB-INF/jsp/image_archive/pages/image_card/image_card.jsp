@@ -85,7 +85,7 @@
                     <c:param name="id" value="${image.id}"/>
                     <c:param name="tmp" value="${action eq 'change'}"/>
                 </c:url>
-                <a href="${previewUrl}" onclick="showPreview(${image.id}, ${image.width}, ${image.height}, ${action eq 'change'});return false;" target="_blank">
+                <a href="${previewUrl}" onclick="return showPreview(${image.id}, ${image.width}, ${image.height}, ${action eq 'change'});return false;" target="_blank">
                     <img src="${thumbUrl}" width="300" height="225" alt="${image.imageNm}"/>
                 </a><br/>
                 <span class="hint"><spring:message code="archive.imageCard.clickToEnlarge" htmlEscape="true"/></span>

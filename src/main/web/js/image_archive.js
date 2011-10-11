@@ -624,23 +624,81 @@ var initExternalFiles = function() {
         });
     });
 };
- 
+
+function setOverlayDimensions(width, height){
+    var o = $("#lightbox", top.document);
+    var maxWidth = $(top).width();
+    var maxHeight = $(top).height() - ($(top).height() * 0.2);
+    var ratio = 0;
+
+    if(width > maxWidth || height > maxHeight) {
+        if(width > maxWidth){
+            ratio = maxWidth / width;
+            o.css("width", maxWidth);
+            o.css("height", Math.round(height * ratio));
+            height = Math.round(height * ratio);
+        }
+
+        if(height > maxHeight){
+            ratio = maxHeight / height;
+            o.css("height", maxHeight);
+            o.css("width", Math.round(width * ratio));
+            width = Math.round(width * ratio);
+        }
+    } else {
+        o.css("width", width);
+        o.css("height", height);
+    }
+}
+
+function lightbox(ajaxContentUrl, width, height){
+
+    if($('#lightbox', top.document).size() == 0){
+        var theLightbox = $('<div id="lightbox"/>');
+        var theShadow = $('<div id="lightbox-shadow"/>');
+        $(theShadow).click(function(e){
+            closeLightbox();
+        });
+        $('body', top.document).append(theShadow);
+        $('body', top.document).append(theLightbox);
+    }
+
+    $('#lightbox', top.document).empty();
+
+    if(ajaxContentUrl != null){
+        $('#lightbox', top.document).append('<p class="loading">Loading...</p>');
+
+        $.ajax({
+            type: 'GET',
+            url: ajaxContentUrl,
+            success:function(data){
+                $('#lightbox', top.document).empty();
+                $('#lightbox', top.document).append(data);
+            },
+            error:function(){
+                alert('AJAX Failure!');
+            }
+        });
+    }
+
+    setOverlayDimensions(width, height);
+    $('#lightbox', top.document).css("left", Math.max(0, $(top).width() / 2 - $('#lightbox', top.document).width() / 2));
+    $('#lightbox', top.document).css('top', '10%');
+
+    $('#lightbox', top.document).show();
+    $('#lightbox-shadow', top.document).show();
+
+}
+
+function closeLightbox(){
+
+    $('#lightbox', top.document).hide();
+    $('#lightbox-shadow', top.document).hide();
+
+    $('#lightbox', top.document).empty();
+}
+
 var showPreview = function(id, width, height, temp) {
-    var WINDOW_BORDERS = 40, 
-        ERROR_MARGIN = 20;
-    
-    var imageWidth = Math.min(screen.availWidth - WINDOW_BORDERS, width);
-    var imageHeight = Math.min(screen.availHeight - WINDOW_BORDERS, height);
-    
-    var windowWidth = Math.min(screen.availWidth, imageWidth + ERROR_MARGIN);
-    var windowHeight = Math.min(screen.availHeight, imageHeight + ERROR_MARGIN);
-    
-    var left = Math.floor((screen.availWidth - windowWidth) * 0.5), 
-        top = Math.floor((screen.availHeight - windowHeight) * 0.5);
-    
-    left = Math.max(left, 0);
-    top = Math.max(top, 0);
-    
     var params = {
         id: id
     };
@@ -649,17 +707,6 @@ var showPreview = function(id, width, height, temp) {
     }
     
     var url = common.getRelativeUrl("/web/archive/preview", params);
-    var attrs = "left=" + left + ",top=" + top + ",width=" + windowWidth + ",height=" + windowHeight + ",directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,toolbar=no";
-    
-    window.imageNewWidth = imageWidth;
-    
-    window.open(url, "preview", attrs);
-};
-
-var initImagePreview = function() {
-    $(function() {
-        if (window.opener && window.opener.imageNewWidth) {
-            $("#image").css("width", window.opener.imageNewWidth + "px");
-        }
-    });
+    lightbox(url, width, height);
+    return false;
 };

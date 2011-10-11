@@ -49,29 +49,20 @@
             })
         }
 
-
-        function showFilePreview(id, name, width, height) {
-            var url = common.getRelativeUrl("/web/archive/external-files/preview", {
-                id: id,
-                name: name
-            });
-
-            width = Math.min(screen.availWidth, width);
-            height = Math.min(screen.availHeight, height);
-
-            var left = Math.floor((screen.availWidth - width) * 0.5),
-                top = Math.floor((screen.availHeight - height) * 0.5);
-
-            left = Math.max(left, 0);
-            top = Math.max(top, 0);
-
-            var attrs = "width=" + width + ",height=" + height + ",directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,toolbar=no,left=" + left +",top=" + top;
-
-            window.open(url, "filepreview", attrs);
-        };
-
         $(document).ready(function() {
             toggleVisibility();
+
+            $("a.show").click(function(event){
+                event.preventDefault();
+                var url = common.getRelativeUrl("/web/archive/external-files/preview", {
+                    name: $(this).attr("href"),
+                    id: $('#libraryId').val()
+                });
+                
+                var width = $(this).attr('data-width');
+                var height = $(this).attr('data-height');
+                lightbox(url, width, height);
+            });
 
             $("#listOfLibraries li img[class != 'blank']").click(function(event) {
                 event.stopPropagation();
@@ -126,7 +117,6 @@
 </c:set>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/header.jsp" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/top.jsp" %>
-
 <div id="containerContent">
     <c:choose>
         <c:when test="${activate}">

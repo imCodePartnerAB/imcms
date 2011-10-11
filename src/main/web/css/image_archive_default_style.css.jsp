@@ -397,3 +397,28 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
 .colapsableLabel .indicator.unfolded {
     background: url('${pageContext.request.contextPath}/images/hide.png') center left no-repeat;
 }
+
+#lightbox {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    width: 500px;
+    background: #fff;
+    z-index: 1001;
+    display: none;
+}
+
+#lightbox-shadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    filter: alpha(opacity=75);
+    -moz-opacity: 0.75;
+    -khtml-opacity: 0.75;
+    opacity: 0.75;
+    z-index: 1000;
+    display: none;
+}

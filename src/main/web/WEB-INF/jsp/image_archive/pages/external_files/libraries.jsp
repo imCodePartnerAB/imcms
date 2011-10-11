@@ -28,7 +28,6 @@
         <spring:message code="archive.externalFiles.uploadedImagesGoIntoPersonalFolder" htmlEscape="true"/>
     </h4>
 </form:form>
-
 <h4 class="imcmsAdmHeading"><spring:message code="archive.externalFiles.libraries" htmlEscape="true"/></h4>
 <form:form commandName="externalFiles" action="${processUrl}" method="post" enctype="multipart/form-data" cssClass="m15t clearfix">
     <c:choose>
@@ -88,7 +87,10 @@
 
                                     <tr>
                                         <td>
-                                            <button onclick="showFilePreview($('#libraryId').val(), $(this).val(), ${entry.imageInfo.width}, ${entry.imageInfo.height}); return false;" class="show imcmsFormBtnSmall" value="${fn:escapeXml(entry.fileName)}"><spring:message code="archive.externalFiles.show" htmlEscape="true"/></button>
+                                            <a class="show imcmsFormBtnSmall" data-width="${entry.imageInfo.width}" data-height="${entry.imageInfo.height}"
+                                               href="${fn:escapeXml(entry.fileName)}">
+                                                <spring:message code="archive.externalFiles.show" htmlEscape="true"/>
+                                            </a>
                                         </td>
                                         <td>
                                             <input class="use" type="checkbox" name="fileNames" value="${fn:escapeXml(entry.fileName)}"/>

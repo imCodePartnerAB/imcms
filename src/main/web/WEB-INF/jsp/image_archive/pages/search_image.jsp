@@ -122,10 +122,11 @@
                     <option value="-1"><spring:message code="archive.searchImage.selectAll" htmlEscape="true"/></option>
                     <form:options items="${keywords}" itemValue="id" itemLabel="keywordNm" htmlEscape="true"/>
                 </form:select>
-
-                <label for="artist"><spring:message code="archive.searchImage.photographer" htmlEscape="true"/></label>
+            </div>
+            <div class="minH30">
+                <label for="artist" class="left" style="width:130px;"><spring:message code="archive.searchImage.photographer" htmlEscape="true"/></label>
                 <form:select id="artist" path="artist" cssStyle="width:128px;">
-                    <option value=""><spring:message code="archive.searchImage.selectAll" htmlEscape="true"/></option>
+                    <option value=""><spring:message code="archive.searchImage.allNone" htmlEscape="true"/></option>
                     <form:options items="${artists}" htmlEscape="true"/>
                 </form:select>
             </div>
