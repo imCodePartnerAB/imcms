@@ -92,17 +92,17 @@ class FileManager(app: ImcmsApplication) {
 
     ui.miFileUpload setCommandHandler {
       for (LocationSelection(dir, _) <- browser.selection) {
-        app.initAndShow(new FileUploadDialog("file.upload.dlg.title".i)) { dlg =>
+        app.initAndShow(new FileUploaderDialog("file.upload.dlg.title".i)) { dlg =>
           dlg.wrapOkHandler {
             for {
-              UploadedData(_, _, content) <- dlg.upload.data
-              file = new File(dir, dlg.upload.saveAsName)
+              UploadedFile(_, _, file) <- dlg.uploader.uploadedFile
+              destFile = new File(dir, dlg.uploader.saveAsName)
             } {
-              if (file.exists && !dlg.upload.isOverwrite) {
+              if (destFile.exists && !dlg.uploader.isOverwrite) {
                 app.show(new MsgDialog("file.mgr.dlg.upload.item.exist.title".i, "file.mgr.dlg.upload.item.exist.msg".i))
-                sys.error("File %s allready exists" format file.getCanonicalPath)
+                sys.error("File %s allready exists" format destFile.getCanonicalPath)
               } else {
-                FileUtils.writeByteArrayToFile(file, content)
+                FileUtils.moveFile(file, destFile)
                 browser.reloadLocationItems()
               }
             }

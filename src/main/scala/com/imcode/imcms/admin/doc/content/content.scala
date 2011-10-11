@@ -12,8 +12,6 @@ import com.imcode.imcms.vaadin._
 
 import java.net.{MalformedURLException, URL}
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
-import imcode.util.io.InputStreamSource
-import java.io.ByteArrayInputStream
 import textdocument.TextDocumentDomainObject
 import java.util.{EnumSet}
 import imcms.mapping.DocumentMapper.SaveDirectives
@@ -21,6 +19,9 @@ import imcms.mapping.{DocumentMapper, DocumentSaver}
 import com.vaadin.terminal.ExternalResource
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 import com.vaadin.ui._
+import admin.system.file.FileUploaderDialog
+import java.io.{FileInputStream, ByteArrayInputStream}
+import imcode.util.io.{FileInputStreamSource, InputStreamSource}
 
 
 trait DocContentEditor {
@@ -108,41 +109,8 @@ class FileDocContentEditorUI extends VerticalLayout with UndefinedSize {
   addComponents(this, menuBar, tblFiles)
 }
 
-//todo: rename
-/** Add/Edit file doc's file */
-class FileDocFileDialogContent extends FormLayout with UndefinedSize {
-  // model
-  val uploadReceiver = new MemoryUploadReceiver
 
-  // ui
-  val sltMimeType = new Select("Mime type") with ValueType[String]
-  val lblUploadStatus = new Label with UndefinedSize
-  val txtFileId = new TextField("File id")
-  val upload = new Upload(null, uploadReceiver) with UploadEventHandler {
-    setImmediate(true)
-    setButtonCaption("Select")
-
-    def handleEvent(e: com.vaadin.ui.Component.Event) = e match {
-      case e: Upload.SucceededEvent =>
-        alterNameTextField()
-      case e: Upload.FailedEvent =>
-        uploadReceiver.uploadRef.set(None)
-        alterNameTextField()
-      case _ =>
-    }
-  }
-
-  addComponents(this, lblUploadStatus, upload, sltMimeType, txtFileId)
-  alterNameTextField()
-
-  def alterNameTextField() = let(uploadReceiver.uploadRef.get) { uploadOpt =>
-    lblUploadStatus setValue (uploadOpt match {
-      case Some(upload) => upload.filename
-      case _ => "No file selected"
-    })
-  }
-}
-
+// todo: mimetypes???, id???, filename???
 class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObject, mimeTypes: Seq[MimeType]) extends DocContentEditor {
   val ui = letret(new FileDocContentEditorUI) { ui =>
     ui.tblFiles.itemsProvider = () =>
@@ -154,71 +122,61 @@ class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObj
     ui.tblFiles.reload()
 
     ui.miNew setCommandHandler {
-      app.initAndShow(new OkCancelDialog("Add file")) { w =>
-        let(w setMainContent new FileDocFileDialogContent) { c =>
-          for (MimeType(name, displayName) <- mimeTypes) {
-            c.sltMimeType.addItem(name)  
-          }
+      app.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
+        dlg.wrapOkHandler {
+          dlg.uploader.uploadedFile match {
+            case Some(uploadedFile) =>
+              val fileDocFile = new FileDocumentFile
 
-          w wrapOkHandler {
-            c.uploadReceiver.uploadRef.get match {
-              case Some(upload) =>
-                val file = new FileDocumentFile
-                val source = new InputStreamSource {
-                  def getInputStream = new ByteArrayInputStream(upload.content)
-                  def getSize = upload.content.length
-                }
+              fileDocFile.setInputStreamSource(new FileInputStreamSource(uploadedFile.file))
+              fileDocFile.setFilename(uploadedFile.filename) // id???
+              fileDocFile.setMimeType(uploadedFile.mimeType)
 
-                file.setInputStreamSource(source)
-                file.setFilename(c.txtFileId.value)
-                file.setMimeType(c.sltMimeType.value)
-
-                doc.addFile(c.txtFileId.value, file)
-                ui.tblFiles.reload()
-              case _ =>
-            }
+              doc.addFile(uploadedFile.filename, fileDocFile)  // todo: filename -> id
+              ui.tblFiles.reload()
+            case _ =>
           }
         }
       }
     }
 
     // todo: replace old file - delete from storage
-    ui.miEdit setCommandHandler {
-      whenSelected(ui.tblFiles) { fileId =>
-        app.initAndShow(new OkCancelDialog("Edit file")) { dlg =>
-          let(dlg.setMainContent(new FileDocFileDialogContent)) { c =>
-            val fdf = doc.getFile(fileId)
-            
-            c.txtFileId.value = fileId
-            //c.sltMimeType.value = "" // todo: set
-            c.lblUploadStatus.value = fdf.getFilename
-
-            dlg wrapOkHandler {
-              c.uploadReceiver.uploadRef.get match {
-                case Some(upload) => // relace fdf
-                  val newFdf = new FileDocumentFile
-                  val source = new InputStreamSource {
-                    def getInputStream = new ByteArrayInputStream(upload.content)
-                    def getSize = upload.content.length
-                  }
-
-                  newFdf.setInputStreamSource(source)
-                  newFdf.setFilename(c.txtFileId.value)
-
-                  doc.addFile(c.txtFileId.value, newFdf)
-                  doc.removeFile(fileId)
-
-                case _ => // update fdf
-                  fdf.setId(c.txtFileId.value)
-                  // todo: fdf.setMimeType()
-              }
-
-              ui.tblFiles.reload()
-            }
-          }
-        }
-      }
-    }
+//    ui.miEdit setCommandHandler {
+//      whenSelected(ui.tblFiles) { fileId =>
+//        app.initAndShow(new OkCancelDialog("Edit file")) { dlg =>
+//          let(dlg.setMainContent(new FileDocFileDialogContent)) { c =>
+//            val fdf = doc.getFile(fileId)
+//
+//            c.txtFileId.value = fileId
+//            //c.sltMimeType.value = "" // todo: set
+//            c.lblUploadStatus.value = fdf.getFilename
+//
+//            dlg wrapOkHandler {
+//              c.uploadReceiver.uploadRef.get match {
+//                case Some(upload) => // relace fdf
+//                  val newFdf = new FileDocumentFile
+//                  val source = new InputStreamSource {
+//                    def getInputStream = new ByteArrayInputStream(upload.content)
+//                    def getSize = upload.content.length
+//                  }
+//
+//                  newFdf.setInputStreamSource(source)
+//                  newFdf.setFilename(c.txtFileId.value)
+//
+//                  doc.addFile(c.txtFileId.value, newFdf)
+//                  doc.removeFile(fileId)
+//
+//                case _ => // update fdf
+//                  fdf.setId(c.txtFileId.value)
+//                  // todo: fdf.setMimeType()
+//              }
+//
+//              ui.tblFiles.reload()
+//            }
+//          }
+//        }
+//      }
+//    }
 
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblFiles) { fileId =>

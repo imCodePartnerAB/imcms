@@ -99,18 +99,18 @@ class FileDialog(caption: String, browser: FileBrowser)
     }
 
     ui.miFileUpload setCommandHandler {
-      ui.getApplication.initAndShow(new FileUploadDialog("Upload file")) { dlg =>
+      ui.getApplication.initAndShow(new FileUploaderDialog("Upload file")) { dlg =>
         dlg.wrapOkHandler {
           for {
-            data <- dlg.upload.data
+            uploadedFile <- dlg.uploader.uploadedFile
             selection <- browser.selection
             dir = selection.dir
-            filename = dlg.upload.ui.txtSaveAsName.value // todo: check not empty
+            filename = dlg.uploader.ui.txtSaveAsName.value // todo: check not empty
             file = new File(dir, filename)
           } {
-            if (file.exists && !dlg.upload.ui.chkOverwrite.booleanValue) sys.error("File exists")
+            if (file.exists && !dlg.uploader.ui.chkOverwrite.booleanValue) sys.error("File exists")
             else {
-              FileUtils.writeByteArrayToFile(file, data.content)
+              FileUtils.moveFile(uploadedFile.file, file)
               browser.reloadLocationItems
             }
           }

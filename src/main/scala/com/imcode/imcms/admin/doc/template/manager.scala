@@ -9,8 +9,8 @@ import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import com.vaadin.ui.Window.Notification
 import imcms.admin.system.file._
 import org.apache.commons.io.FileUtils
-import java.io.{ByteArrayInputStream, File}
 import imcms.security.{PermissionDenied, PermissionGranted}
+import java.io.{FileInputStream, ByteArrayInputStream, File}
 
 //todo: common internal ex handler???
 //todo: add related docs handling
@@ -22,18 +22,20 @@ class TemplateManager(app: ImcmsApplication) {
   val ui = letret(new TemplateManagerUI) { ui =>
     ui.tblTemplates addValueChangeHandler { handleSelection() }
     ui.miUpload setCommandHandler {
-      app.initAndShow(new FileUploadDialog("Upload template file")) { dlg =>
+      app.initAndShow(new FileUploaderDialog("Upload template file")) { dlg =>
         // strips filename extension, trims and replaces spaces with underscores
-        dlg.upload.fileNameToSaveAsName = fileRE.unapplySeq(_:String).map(_.head.trim.replaceAll("""\s""", "_")).get
+        dlg.uploader.fileNameToSaveAsName = fileRE.unapplySeq(_:String).map(_.head.trim.replaceAll("""\s""", "_")).get
         dlg.wrapOkHandler {
           for {
-            data <- dlg.upload.data
-            name = dlg.upload.ui.txtSaveAsName.value // todo: check not empty
-            in = new ByteArrayInputStream(data.content)
+            uploadedFile <- dlg.uploader.uploadedFile
+            name = dlg.uploader.ui.txtSaveAsName.value // todo: check not empty
+            in = new FileInputStream(uploadedFile.file)
           } {
             app.privileged(permission) {
-              templateMapper.saveTemplate(name, data.filename, in, dlg.upload.ui.chkOverwrite.booleanValue) match {
-                case 0 => reload() // ok
+              templateMapper.saveTemplate(name, uploadedFile.filename, in, dlg.uploader.ui.chkOverwrite.booleanValue) match {
+                case 0 =>
+                  FileUtils.deleteQuietly(uploadedFile.file)
+                  reload() // ok
                 case -1 =>
                   app.showErrorNotification("Template with such name allready exists")
                   sys.error("File exists")
