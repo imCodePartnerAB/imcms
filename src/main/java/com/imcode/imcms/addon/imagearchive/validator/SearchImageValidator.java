@@ -2,8 +2,12 @@ package com.imcode.imcms.addon.imagearchive.validator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
+import com.imcode.imcms.addon.imagearchive.tag.func.Functions;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -37,13 +41,20 @@ public class SearchImageValidator implements Validator {
             command.setShow(SearchImageCommand.SHOW_ALL);
         }
         
-        int categoryId = command.getCategoryId();
+        List<Integer> categoryIds = command.getCategoryIds();
         
-        if (categoryId != SearchImageCommand.CATEGORY_ALL && categoryId != SearchImageCommand.CATEGORY_NO_CATEGORY
-                && !facade.getRoleService().hasAccessToCategory(user, categoryId, Roles.ALL_PERMISSIONS)) {
-            errors.rejectValue("categoryId", "archive.searchImage.categoryPermissionError");
-        } else if (user.isDefaultUser() && categoryId == SearchImageCommand.CATEGORY_NO_CATEGORY) {
-            command.setCategoryId(SearchImageCommand.CATEGORY_ALL);
+        if (!SearchImageCommand.CATEGORY_ALL.equals(categoryIds) && !SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryIds)) {
+            List<Integer> unavailableCategoryIds = new ArrayList<Integer>();
+            for(Integer categoryId: categoryIds) {
+                if(!facade.getRoleService().hasAccessToCategory(user, categoryId, Roles.ALL_PERMISSIONS)) {
+                    unavailableCategoryIds.add(categoryId);
+                }
+            }
+            if(unavailableCategoryIds.size() > 0) {
+                errors.rejectValue("categoryIds", "archive.searchImage.categoryPermissionError", new String[]{Functions.join(unavailableCategoryIds, ", ")}, null);
+            }
+        } else if (user.isDefaultUser() && SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryIds)) {
+            command.setCategoryIds(SearchImageCommand.CATEGORY_ALL);
         }
         
         ValidatorUtils.rejectValueIfLonger("freetext", 120, "archive.fieldLengthError", errors);

@@ -1,3 +1,4 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <spring:message var="title" code="archive.title.searchImage" htmlEscape="true"/>
@@ -5,9 +6,13 @@
 <c:set var="currentPage" value="searchImage"/>
 <c:set var="css">
     <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/imcms/jscalendar/skins/aqua/theme.css.jsp"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/css/custom-theme/jquery-ui-1.8.16.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/css/jquery.multiselect.css"/>
 </c:set>
 <c:set var="javascript">
     <%@ include file="/WEB-INF/jsp/image_archive/pages/fragments/jscalendar.jsp" %>
+    <script type="text/javascript" src="${pageContext.servletContext.contextPath}/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="${pageContext.servletContext.contextPath}/js/jquery.multiselect.min.js"></script>
     <script type="text/javascript">
         initSearchImage();
 
@@ -31,6 +36,26 @@
             });
 
             toggleTextAndFlag($("#toggleMoreCriteriaBtn"), lessCriteria, moreCriteria);
+
+            $("#category").multiselect({header:false, height: "auto", selectedText: function(nSelected, nTotal, checkedCheckboxes){
+                    return $.join($.map(checkedCheckboxes, function(val, i){
+                        return $(val).attr("title");
+                    }), ", ");
+                }
+            });
+            $("#category").bind("multiselectclick", function(event, ui){
+                if((ui.value == -1 || ui.value == -2) && ui.checked) {
+                    $("#category").multiselect("widget").find(":checked").not(":checkbox[value=" + ui.value + "]").each(function(){
+                       this.click();
+                    });
+                } else {
+                    if(ui.checked) {
+                        $("#category").multiselect("widget").find(":checkbox:checked[value=-1]", ":checkbox:checked[value=-2]").each(function(){
+                            this.click();
+                        })
+                    }
+                }
+            });
         });
     </script>
 
@@ -82,14 +107,14 @@
             </div>
             <div class="right">
                 <label for="category"><spring:message code="archive.searchImage.category" htmlEscape="true"/></label>
-                <form:select id="category" path="categoryId" cssStyle="width:128px;">
-                    <option value="-1"><spring:message code="archive.searchImage.selectAll" htmlEscape="true"/></option>
+                <form:select multiple="true" id="category" path="categoryIds" cssStyle="width:128px;">
+                    <form:option value="-1"><spring:message code="archive.searchImage.selectAll" htmlEscape="true"/></form:option>
                     <c:if test="${sessionScope.user ne null}">
-                        <option value="-2" ${search.categoryId eq -2 ? 'selected="selected"' : ''} ><spring:message code="archive.searchImage.noCategory" htmlEscape="true"/></option>
+                        <form:option value="-2"><spring:message code="archive.searchImage.noCategory" htmlEscape="true"/></form:option>
                     </c:if>
                     <form:options items="${categories}" itemValue="id" itemLabel="name" htmlEscape="true"/>
                 </form:select><br/>
-                <form:errors path="categoryId" cssClass="red"/>
+                <form:errors path="categoryIds" cssClass="red"/>
             </div>
         </div>
         <div class="clearfix" id="moreCriteria" style="margin-bottom:20px;${ search.unfolded ? '' : ' display:none;' }">

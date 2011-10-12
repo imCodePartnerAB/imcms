@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.imcode.imcms.addon.imagearchive.entity.Categories;
 import com.imcode.imcms.addon.imagearchive.json.UploadResponse;
 import com.imcode.imcms.addon.imagearchive.tag.func.Functions;
+import com.imcode.imcms.api.Category;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
@@ -493,13 +494,11 @@ public class ExternalFilesController {
                             noCategories = image.getCategories() == null || image.getCategories().size() == 0;
                         }
 
-                        Collection categoryNames = CollectionUtils.collect(Utils.getCategoriesRequiredToUse(image, facade, user),
-                                new Transformer() {
-                            public Object transform(Object o) {
-                                Categories cat = (Categories) o;
-                                return cat.getName();
-                            }
-                        });
+                        List<String> categoryNames = new ArrayList<String>();
+                        for(Categories cat: Utils.getCategoriesRequiredToUse(image, facade, user)) {
+                            categoryNames.add(cat.getName());
+                        }
+
                         categoryNamesNeededToUse += Functions.join(categoryNames, ",");
                     }
                 }

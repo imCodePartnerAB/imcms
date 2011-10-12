@@ -30,14 +30,14 @@ public class Functions {
         return StringUtils.abbreviate(value, maxLength);
     }
     
-    public static String join(Collection<Object> elements, String separator) {
+    public static <T> String join(Collection<T> elements, String separator) {
         if (elements == null || elements.isEmpty()) {
             return "";
         }
         
         StringBuilder builder = new StringBuilder();
         
-        Iterator<Object> it = elements.iterator();
+        Iterator<T> it = elements.iterator();
         while (it.hasNext()) {
             builder.append(it.next());
             

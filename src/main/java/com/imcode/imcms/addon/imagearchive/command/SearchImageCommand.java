@@ -1,7 +1,10 @@
 package com.imcode.imcms.addon.imagearchive.command;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class SearchImageCommand implements Serializable {
     private static final long serialVersionUID = 844191223450843364L;
@@ -11,8 +14,8 @@ public class SearchImageCommand implements Serializable {
     public static final short SHOW_ERASED = 2;
     public static final short SHOW_WITH_VALID_LICENCE = 3;
     
-    public static final int CATEGORY_ALL = -1;
-    public static final int CATEGORY_NO_CATEGORY = -2;
+    public static final List<Integer> CATEGORY_ALL = Arrays.asList(-1);
+    public static final List<Integer> CATEGORY_NO_CATEGORY = Arrays.asList(-2);
     public static final long KEYWORD_ALL = -1;
     
     public static final short SORT_BY_ARTIST = 0;
@@ -25,7 +28,7 @@ public class SearchImageCommand implements Serializable {
     public static final int DEFAULT_PAGE_SIZE = 10;
     
     private short show = SHOW_ALL;
-    private int categoryId = CATEGORY_ALL;
+    private List<Integer> categoryIds = CATEGORY_ALL;
     private long keywordId = KEYWORD_ALL;
     private String freetext;
     private String artist;
@@ -53,7 +56,7 @@ public class SearchImageCommand implements Serializable {
     
     public void copyFrom(SearchImageCommand command) {
         this.show = command.getShow();
-        this.categoryId = command.getCategoryId();
+        this.categoryIds = command.getCategoryIds();
         this.keywordId = command.getKeywordId();
         this.freetext = command.getFreetext();
         this.artist = command.getArtist();
@@ -174,12 +177,12 @@ public class SearchImageCommand implements Serializable {
         this.licenseEndDate = licenseEndDate;
     }
 
-    public int getCategoryId() {
-        return categoryId;
+    public List<Integer> getCategoryIds() {
+        return categoryIds;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public void setCategoryIds(List<Integer> categoryIds) {
+        this.categoryIds = categoryIds;
     }
 
     public long getKeywordId() {

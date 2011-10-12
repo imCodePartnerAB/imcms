@@ -709,16 +709,16 @@ public class ImageService {
         
         builder.append("FROM Images im ");
         
-        int categoryId = command.getCategoryId();
+        List<Integer> categoryId = command.getCategoryIds();
         if (user.isSuperAdmin()) {
-            if (categoryId == SearchImageCommand.CATEGORY_NO_CATEGORY) {
+            if (SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryId)) {
                 builder.append("LEFT OUTER JOIN im.categories c ");
-            } else if (categoryId != SearchImageCommand.CATEGORY_ALL) {
+            } else if (!SearchImageCommand.CATEGORY_ALL.equals(categoryId)) {
                 builder.append("INNER JOIN im.categories c ");
             } else {
                 builder.append("LEFT OUTER JOIN im.categories c ");
             }
-        } else if (categoryId == SearchImageCommand.CATEGORY_NO_CATEGORY || categoryId == SearchImageCommand.CATEGORY_ALL) {
+        } else if (SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryId) || SearchImageCommand.CATEGORY_ALL.equals(categoryId)) {
             if (user.isDefaultUser()) {
                 builder.append("INNER JOIN im.categories c ");
             } else {
@@ -760,12 +760,12 @@ public class ImageService {
         
         
         if (user.isSuperAdmin()) {
-            if (categoryId == SearchImageCommand.CATEGORY_NO_CATEGORY) {
+            if (SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryId)) {
                 builder.append("AND im.categories IS EMPTY ");
-            } else if (categoryId != SearchImageCommand.CATEGORY_ALL) {
-                builder.append("AND c.id = :categoryId ");
+            } else if (!SearchImageCommand.CATEGORY_ALL.equals(categoryId)) {
+                builder.append("AND c.id IN (:categoryId) ");
             }
-        } else if (categoryId == SearchImageCommand.CATEGORY_ALL) {
+        } else if (SearchImageCommand.CATEGORY_ALL.equals(categoryId)) {
             builder.append("AND (");
             
             if (!categoryIds.isEmpty()) {
@@ -781,10 +781,10 @@ public class ImageService {
             }
             
             builder.append(") ");
-        } else if (categoryId == SearchImageCommand.CATEGORY_NO_CATEGORY) {
+        } else if (SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryId)) {
             builder.append("AND im.categories IS EMPTY AND im.usersId = :usersId ");
         } else {
-            builder.append("AND c.id = :categoryId ");
+            builder.append("AND c.id IN (:categoryId) ");
         }
         
         if (keywordId != SearchImageCommand.KEYWORD_ALL) {
@@ -860,10 +860,10 @@ public class ImageService {
         }
         
         if (user.isSuperAdmin()) {
-            if (categoryId != SearchImageCommand.CATEGORY_NO_CATEGORY && categoryId != SearchImageCommand.CATEGORY_ALL) {
-                query.setInteger("categoryId", categoryId);
+            if (!SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryId) && !SearchImageCommand.CATEGORY_ALL.equals(categoryId)) {
+                query.setParameterList("categoryId", categoryId);
             }
-        } else if (categoryId == SearchImageCommand.CATEGORY_ALL) {
+        } else if (SearchImageCommand.CATEGORY_ALL.equals(categoryId)) {
             if (!categoryIds.isEmpty()) {
                 query.setParameterList("categoryIds", categoryIds);
             }
@@ -871,10 +871,10 @@ public class ImageService {
             if (!user.isDefaultUser()) {
                 query.setInteger("usersId", user.getId());
             }
-        } else if (categoryId == SearchImageCommand.CATEGORY_NO_CATEGORY) {
+        } else if (SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryId)) {
             query.setInteger("usersId", user.getId());
         } else {
-            query.setInteger("categoryId", categoryId);
+            query.setParameterList("categoryId", categoryId);
         }
         
         if (keywordId != SearchImageCommand.KEYWORD_ALL) {
