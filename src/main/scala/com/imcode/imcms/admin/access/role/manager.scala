@@ -129,7 +129,7 @@ class RoleManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val miEdit = mb.addItem("Edit", Edit16)
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
-  val tblRoles = new Table with SingleSelect2[RoleId] with Immediate
+  val tblRoles = new Table with SingleSelect[RoleId] with Immediate
   val rc = new ReloadableContentUI(tblRoles)
 
   addContainerProperties(tblRoles,

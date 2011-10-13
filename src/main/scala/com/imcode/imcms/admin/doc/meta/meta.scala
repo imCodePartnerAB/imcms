@@ -196,7 +196,7 @@ class MetaEditor[A <: DocumentDomainObject](app: ImcmsApplication, doc: A) exten
 class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
 
   val sp = new HorizontalSplitPanel with FullSize
-  val treeMenu = new Tree with SingleSelect2[MenuItemId] with NoChildrenAllowed with Immediate
+  val treeMenu = new Tree with SingleSelect[MenuItemId] with NoChildrenAllowed with Immediate
   val pnlMenuItem = new Panel with LightStyle with FullSize
 
   sp.setFirstComponent(treeMenu)
@@ -291,13 +291,13 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
     setCaption("Publication")
     getLayout.setMargin(false, true, true, true)
 
-    val sltStatus = new Select("Status") with SingleSelect2[Document.PublicationStatus] with NoNullSelection {
+    val sltStatus = new Select("Status") with SingleSelect[Document.PublicationStatus] with NoNullSelection {
       addItem(Document.PublicationStatus.NEW, "New")
       addItem(Document.PublicationStatus.APPROVED, "Approved")
       addItem(Document.PublicationStatus.DISAPPROVED, "Disapproved")
     }
 
-    val sltVersion = new Select("Version") with SingleSelect2[DocVersionNo] with NoNullSelection
+    val sltVersion = new Select("Version") with SingleSelect[DocVersionNo] with NoNullSelection
 
     val lytDate = new GridLayout(2, 2) with Spacing {
       setCaption("Date")
@@ -472,7 +472,7 @@ class SearchSettingsEditorUI extends FormLayout with UndefinedSize {
   val lytKeywords = new GridLayout(3,2) with UndefinedSize {
     setCaption("Keywords")
 
-    val lstKeywords = new ListSelect with MultiSelect2[Keyword] with Immediate {
+    val lstKeywords = new ListSelect with MultiSelect[Keyword] with Immediate {
       setRows(10)
       setColumns(10)
     }
@@ -668,7 +668,7 @@ class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
     getLayout.setMargin(true)
 
     val lytI18nMetas = new VerticalLayout with Spacing with FullWidth
-    val cbShowMode = new ComboBox("When language is disabled") with SingleSelect2[Meta.DisabledLanguageShowSetting] with NoNullSelection
+    val cbShowMode = new ComboBox("When language is disabled") with SingleSelect[Meta.DisabledLanguageShowSetting] with NoNullSelection
 
     private val lytShowMode = new FormLayout with FullWidth
     lytShowMode.addComponent(cbShowMode)
@@ -681,7 +681,7 @@ class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
     setCaption("Link action")
     getLayout.setMargin(true)
 
-    val cbTarget = new ComboBox("Show in") with SingleSelect2[String] with NoNullSelection
+    val cbTarget = new ComboBox("Show in") with SingleSelect[String] with NoNullSelection
 
     getLayout.addComponent(cbTarget)
   }

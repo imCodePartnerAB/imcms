@@ -47,11 +47,16 @@ class FileUploaderDialog(caption: String = "") extends OkCancelDialog(caption) {
 class FileUploader extends Publisher[UploadStatus] {
   private val uploadedFileOptRef = Atoms.OptRef[UploadedFile]
 
-  /** Creates file save as name from original filename. */
+  /**
+   * This function transforms uploaded file name to a save-as-name.
+   * For ex. can be used to remove file extension, replace spaces and/or non ASCII characters.
+   *
+   * By default returns unmodifed (original) filename.
+   */
   var fileNameToSaveAsName = identity[String]_
 
   val ui = letret(new FileUploaderUI) { ui =>
-    // File based receiver
+    // Temp file based receiver
     val receiver = new Upload.Receiver {
       val file = letret(File.createTempFile("imcms_upload", null)) {
         _.deleteOnExit()

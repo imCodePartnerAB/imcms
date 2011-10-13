@@ -124,7 +124,7 @@ class TemplateGroupManagerUI extends VerticalLayout with Spacing with UndefinedS
   val miEdit = mb.addItem("Edit", Edit16)
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
-  val tblGroups = new Table with SingleSelect2[TemplateGroupId] with Selectable with Immediate
+  val tblGroups = new Table with SingleSelect[TemplateGroupId] with Selectable with Immediate
   val rc = new ReloadableContentUI(tblGroups)
 
   addContainerProperties(tblGroups,

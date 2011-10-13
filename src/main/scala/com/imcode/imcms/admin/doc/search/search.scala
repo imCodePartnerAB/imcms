@@ -483,7 +483,7 @@ trait DocStatusItemIcon extends AbstractSelect {
   }
 }
 
-trait DocTableItemIcon extends AbstractSelect with XSelect[DocId] {
+trait DocTableItemIcon extends AbstractSelect with ItemIdType[DocId] {
   override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
     case docItem: DocsContainer#DocItem =>
       new ExternalResource("imcms/eng/images/admin/status/%s.gif" format docItem.doc.getLifeCyclePhase.toString)
@@ -614,7 +614,7 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
   val chkAdvanced = new CheckBox("doc.search.basic.frm.fld.chk_advanced".i) with Immediate with ExposeValueChange
 
   val lytAdvanced = new HorizontalLayout with UndefinedSize with Spacing {
-    val cbTypes = new ComboBox with NoNullSelection with SingleSelect2[String] with Immediate
+    val cbTypes = new ComboBox with NoNullSelection with SingleSelect[String] with Immediate
     val btnCustomize = new Button("...") with SmallStyle
     val btnSaveAs = new Button("doc.search.basic.frm.fld.btn_advanced_save_as".i) with SmallStyle with Disabled
     val btnDelete = new Button("doc.search.basic.frm.fld.btn_advanced_delete".i) with SmallStyle with Disabled
@@ -725,8 +725,8 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
 
   val chkRelationships = new CheckBox("doc.search.advanced.frm.fld.chk_relationships".i) with Immediate
   val lytRelationships = new HorizontalLayout with Spacing with UndefinedSize {
-    val cbParents = new ComboBox("doc.search.advanced.frm.fld.chk_relationships_parents".i) with SingleSelect2[String] with NoNullSelection
-    val cbChildren = new ComboBox("doc.search.advanced.frm.fld.chk_relationships_children".i) with SingleSelect2[String] with NoNullSelection
+    val cbParents = new ComboBox("doc.search.advanced.frm.fld.chk_relationships_parents".i) with SingleSelect[String] with NoNullSelection
+    val cbChildren = new ComboBox("doc.search.advanced.frm.fld.chk_relationships_children".i) with SingleSelect[String] with NoNullSelection
 
     Seq("doc.search.advanced.frm.fld.cb_relationships_parents.item.undefined",
         "doc.search.advanced.frm.fld.cb_relationships_parents.item.has_parents",

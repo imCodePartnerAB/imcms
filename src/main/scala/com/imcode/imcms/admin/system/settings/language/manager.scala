@@ -153,7 +153,7 @@ class LanguageManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val miDelete = mb.addItem("Delete", Delete16)
   val miSetDefault = mb.addItem("Set default", Delete16)
   val miHelp = mb.addItem("Help", Help16)
-  val tblLanguages = new Table with SingleSelect2[JInteger] with Immediate
+  val tblLanguages = new Table with SingleSelect[JInteger] with Immediate
   val rc = new ReloadableContentUI(tblLanguages)
 
   addContainerProperties(tblLanguages,

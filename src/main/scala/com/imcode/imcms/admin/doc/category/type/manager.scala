@@ -141,7 +141,7 @@ class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSi
   val miEdit = mb.addItem("Edit", Edit16)
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
-  val tblTypes = new Table with SingleSelect2[CategoryTypeId] with Immediate
+  val tblTypes = new Table with SingleSelect[CategoryTypeId] with Immediate
   val rc = new ReloadableContentUI(tblTypes)
 
   addContainerProperties(tblTypes,

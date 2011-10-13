@@ -45,7 +45,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     // todo: add embedded/popu view???
     // todo: remove buttons
     ui.miView.setCommandHandler {
-      whenSingle(search.searchResultUI.value) { docId =>
+      whenSingle(search.searchResultUI.selection) { docId =>
         val appURL = app.getURL
         val docURL = new URL(appURL.getProtocol, appURL.getHost, appURL.getPort, "/%d" format docId)
 
@@ -78,7 +78,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     // todo: allow change several at once???
     // todo: permissions
     ui.miEdit.setCommandHandler {
-      whenSingle(search.searchResultUI.value) { docId =>
+      whenSingle(search.searchResultUI.selection) { docId =>
         val dlg = new OkCancelDialog("Edit document") with CustomSizeDialog with BottomMarginDialog
         val doc = imcmsServices.getDocumentMapper.getWorkingDocument(search.searchResultUI.first.get.intValue)
         val metaEditor = new MetaEditor(app, doc)
@@ -142,7 +142,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     }
 
     ui.miProfileEditName.setCommandHandler {
-      whenSingle(search.searchResultUI.value) { docId =>
+      whenSingle(search.searchResultUI.selection) { docId =>
         val docIdStr = docId.toString
         val profileMapper = new ProfileMapper(imcmsServices.getDatabase)
         val profileOpt = profileMapper.getAll.find(_.getDocumentName == docIdStr)
@@ -180,7 +180,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     }
 
     ui.miCopy.setCommandHandler {
-      whenSingle(search.searchResultUI.value) { docId =>
+      whenSingle(search.searchResultUI.selection) { docId =>
         // todo copy selected document VERSION, not working???
         // dialog with drop down???? -> version select
         imcmsServices.getDocumentMapper.copyDocument(imcmsServices.getDocumentMapper.getWorkingDocument(docId), app.user)

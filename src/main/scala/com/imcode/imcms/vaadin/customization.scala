@@ -9,6 +9,11 @@ import com.vaadin.data.{Item, Container, Property}
 import com.vaadin.terminal.Sizeable
 import java.util.Collections
 
+trait TCSDefaultI18n extends TwinColSelect {
+  setLeftColumnCaption("tcs.col.available.caption".i)
+  setRightColumnCaption("tcs.col.selected.caption".i)
+}
+
 /**
  * A container property.
  *
@@ -46,8 +51,13 @@ trait ItemIdType[A >: Null] extends Container {
     removeAllItems()
     ids.foreach(addItem _)
   }
+
   def item(id: A) = getItem(id)
+
+  def firstItemIdOpt = itemIds.headOption
 }
+
+
 
 /**
  * Component data type.
@@ -173,32 +183,13 @@ trait NoNullSelection extends AbstractSelect {
   setNullSelectionAllowed(false)
 }
 
-@deprecated("Prototype, replace with MultiSelect2")
-trait MultiSelect extends AbstractSelect {
-  setMultiSelect(true)
-}
 
-@deprecated("Prototype, replace with SingleSelect2")
-trait SingleSelect extends AbstractSelect {
-  setMultiSelect(false)
-}
-
-trait StrictSelect[T >: Null] extends XSelect[T] {
+trait SelectionCheck extends AbstractSelect {
   def isSelected: Boolean
 }
 
-/** Select component eXtension. */
-trait XSelect[T >: Null] extends AbstractSelect with ItemIdType[T] {
-  def addItem(id: T, caption: String): Item = letret(addItem(id)) { _ =>
-    setItemCaption(id, caption)
-  }
 
-  //def firstItemId = itemIds.head
-
-  def firstItemIdOpt = itemIds.headOption
-}
-
-trait SingleSelect2[T >: Null] extends StrictSelect[T] with ValueType[T]  {
+trait SingleSelect[T >: Null] extends SelectionCheck with ItemIdType[T] with ValueType[T]  {
   setMultiSelect(false)
 
   def isSelected = value != null
@@ -209,7 +200,7 @@ trait SingleSelect2[T >: Null] extends StrictSelect[T] with ValueType[T]  {
   }
 }
 
-trait MultiSelect2[T >: Null] extends StrictSelect[T] with ValueType[JCollection[T]] {
+trait MultiSelect[T >: Null] extends SelectionCheck with ItemIdType[T] with ValueType[JCollection[T]] {
   setMultiSelect(true)
 
   override def setMultiSelect(multiSelect: Boolean) {
@@ -220,26 +211,19 @@ trait MultiSelect2[T >: Null] extends StrictSelect[T] with ValueType[JCollection
   def isSelected = value.nonEmpty
 }
 
-trait TCSDefaultI18n extends TwinColSelect {
-  setLeftColumnCaption("tcs.col.available.caption".i)
-  setRightColumnCaption("tcs.col.selected.caption".i)
-}
+
 
 
 /**
  * Type check <code>value<code> property always returns a collection.
  */
-trait MultiSelectBehavior[A >: Null <: AnyRef] extends StrictSelect[A] {
+trait MultiSelectBehavior[A >: Null <: AnyRef] extends SelectionCheck with ItemIdType[A] with ValueType[JCollection[A]] {
 
-  /**
-   * @return seq of selected items or empty collection if there is no selected item(s).
-   */
-  def value = getValue.asInstanceOf[JCollection[A]].toSeq
+  def selection = value.toSeq
 
-  /** Selects single item. */
-  def value_=(item: Option[A]) { setValue(item.orNull) }
+  def selection_=(v: Seq[A]) { value = v }
 
-  def value_=(seq: Seq[A]) { setValue(seq.asJavaCollection) }
+  def selection_=(v: Option[A]) { selection = v.toSeq }
 
   def first = value.headOption
 
@@ -256,11 +240,13 @@ trait MultiSelectBehavior[A >: Null <: AnyRef] extends StrictSelect[A] {
 
 
   final override def setValue(v: AnyRef) {
-    v match {
-      case null => super.setValue(if (isMultiSelect) Collections.emptyList[AnyRef] else null)
-      case coll: JCollection[_] => super.setValue(if (isMultiSelect) coll else coll.headOption.orNull)
-      case _ => super.setValue(if (isMultiSelect) Collections.singletonList(v) else v)
-    }
+    super.setValue(
+      v match {
+        case null => if (isMultiSelect) Collections.emptyList[AnyRef] else null
+        case coll: JCollection[_] => if (isMultiSelect) coll else coll.headOption.orNull
+        case _ => if (isMultiSelect) Collections.singletonList(v) else v
+      }
+    )
   }
 }
 
@@ -297,20 +283,6 @@ trait Required extends Field {
 //  setSpacing(true)
 //}
 
-
-@deprecated("Prototype")
-trait Reloadable extends Table {
-  //type ItemId <: AnyRef
-  //type Value <: AnyRef
-
-  var itemsProvider: () => Seq[(AnyRef, Seq[AnyRef])] =
-    () => sys.error("itemsProvider is not set.")
-
-  def reload() {
-    removeAllItems
-    for ((id, values) <- itemsProvider()) addItem(values.toArray, id)
-  }
-}
 
 object Checks {
   def assertFixedSize(c: Component) {

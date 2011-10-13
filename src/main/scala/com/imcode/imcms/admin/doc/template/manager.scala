@@ -148,7 +148,7 @@ class TemplateManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val miEditContent = mb.addItem("Edit content", EditContent16)
   val miDocuments = mb.addItem("Related documents", Documents16)
   val miHelp = mb.addItem("Help", Help16)
-  val tblTemplates = new Table with SingleSelect2[TemplateName] with Selectable with Immediate
+  val tblTemplates = new Table with SingleSelect[TemplateName] with Selectable with Immediate
   val rc = new ReloadableContentUI(tblTemplates)
 
   addContainerProperties(tblTemplates,

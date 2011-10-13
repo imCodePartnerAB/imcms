@@ -280,7 +280,7 @@ trait FSItemIcon extends AbstractSelect {
 
 
 class LocationTree(val root: File) {
-  val ui = new Tree with SingleSelect2[File] with Immediate with NoNullSelection with FSItemIcon
+  val ui = new Tree with SingleSelect[File] with Immediate with NoNullSelection with FSItemIcon
 
   def reload() {
     ui.setContainerDataSource(new LocationTreeContainer(root.getCanonicalFile))

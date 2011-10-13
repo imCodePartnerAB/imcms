@@ -143,7 +143,7 @@ class IPAccessManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val miEdit = mb.addItem("Edit", Edit16)
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
-  val tblIP = new Table with SingleSelect2[JInteger] with Immediate
+  val tblIP = new Table with SingleSelect[JInteger] with Immediate
   val rc = new ReloadableContentUI(tblIP)
 
   addContainerProperties(tblIP,

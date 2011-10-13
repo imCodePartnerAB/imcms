@@ -76,7 +76,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
     val templatesNames = imcmsServices.getTemplateMapper.getAllTemplates map {_.getName}
     val defaultTemplateNameOpt = templatesNames.headOption
 
-    def setTemplatesNamesAsComboBoxItems(cb: ComboBox with SingleSelect2[String], selectedTemplateName: String) {
+    def setTemplatesNamesAsComboBoxItems(cb: ComboBox with SingleSelect[String], selectedTemplateName: String) {
       cb.removeAllItems()
       templatesNames foreach {cb addItem _}
       defaultTemplateNameOpt orElse ?(selectedTemplateName) foreach cb.select
@@ -110,9 +110,9 @@ class ProfileEditorUI extends VerticalLayoutUI(margin = false) with FullWidth {
   private val lytCustomOne = new HorizontalLayoutUI("Limited-1", defaultAlignment = Alignment.MIDDLE_LEFT)
   private val lytCustomTwo = new HorizontalLayoutUI("Limited-2", defaultAlignment = Alignment.MIDDLE_LEFT)
 
-  val cbDefaultTemplate = new ComboBox("Template") with SingleSelect2[String] with NoNullSelection // ??? NullSelection ???
-  val cbRestrictedOneDefaultTemplate = new ComboBox("Template") with SingleSelect2[String] with NullSelection
-  val cbRestrictedTwoDefaultTemplate = new ComboBox("Template") with SingleSelect2[String] with NullSelection
+  val cbDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NoNullSelection // ??? NullSelection ???
+  val cbRestrictedOneDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NullSelection
+  val cbRestrictedTwoDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NullSelection
 
   val btnEditRestrictedOnePermSet = new Button("permissions") with SmallStyle
   val btnEditRestrictedTwoPermSet = new Button("permissions") with SmallStyle

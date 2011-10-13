@@ -268,7 +268,7 @@ class PermissionsEditorUI extends VerticalLayout with Spacing with FullWidth {
     val miRemoveRole = mb.addItem("Remove role")
     val miChangeRolePermSetType = mb.addItem("Change permissions set")
 
-    val tblRolesPermsTypes = letret(new Table with MultiSelect2[RoleDomainObject] with Immediate with FullWidth with Selectable) { tbl =>
+    val tblRolesPermsTypes = letret(new Table with MultiSelect[RoleDomainObject] with Immediate with FullWidth with Selectable) { tbl =>
       tbl.setPageLength(7)
 
       addContainerProperties(tbl,
@@ -337,8 +337,8 @@ private class RolePermsSetTypeTableColumnGenerator(setType: DocumentPermissionSe
 
 
 private class AddRolePermsSetTypeDialogMainUI extends FormLayout with UndefinedSize {
-  val cbRole = new ComboBox("Role") with SingleSelect2[RoleDomainObject] with NoNullSelection with Immediate
-  val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect2[DocumentPermissionSetTypeDomainObject]
+  val cbRole = new ComboBox("Role") with SingleSelect[RoleDomainObject] with NoNullSelection with Immediate
+  val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
   List(READ, RESTRICTED_1, RESTRICTED_2, FULL) foreach { setType =>
     ogPermsSetType.addItem(setType, setType.toString.i)
@@ -352,7 +352,7 @@ private class AddRolePermsSetTypeDialogMainUI extends FormLayout with UndefinedS
  */
 private class ChangeRolePermsSetTypeDialogMainUI extends FormLayout with UndefinedSize {
   val lblRole = letret(new Label with UndefinedSize){_ setCaption "Role"}
-  val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect2[DocumentPermissionSetTypeDomainObject]
+  val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
   List(READ, RESTRICTED_1, RESTRICTED_2, FULL) foreach { setType =>
     ogPermsSetType.addItem(setType, setType.toString.i)
@@ -465,8 +465,8 @@ class TextDocRestrictedPermSetEditorUI extends DocRestrictedPermSetEditorUI {
   val chkEditTemplates = new CheckBox("Permission to change templates")
 
   // item caption is a type name in a user language
-  val tcsCreateDocsOfTypes = new TwinColSelect("Permission to create documents") with MultiSelect2[DocTypeId] { setRows(5) }
-  val tcsUseTemplatesFromTemplateGroups = new TwinColSelect("Permission to use templates from groups") with MultiSelect2[TemplateGroupDomainObject] { setRows(5) }
+  val tcsCreateDocsOfTypes = new TwinColSelect("Permission to create documents") with MultiSelect[DocTypeId] { setRows(5) }
+  val tcsUseTemplatesFromTemplateGroups = new TwinColSelect("Permission to use templates from groups") with MultiSelect[TemplateGroupDomainObject] { setRows(5) }
 
   chkEditContent.setCaption("Permission to edit content (texts)")
 

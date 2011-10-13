@@ -63,9 +63,9 @@ package object imcode {
 
   def ?[A >: Null](nullable: A) = Option(nullable)
 
-  def let[B, T](expr: B)(fn: B => T): T = fn(expr)
+  def let[A, B](expr: A)(fn: A => B): B = fn(expr)
 
-  def letret[B](expr: B)(fn: B => Any): B = {
+  def letret[A](expr: A)(fn: A => Any): A = {
     fn(expr)
     expr
   }

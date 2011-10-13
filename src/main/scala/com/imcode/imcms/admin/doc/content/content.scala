@@ -84,44 +84,11 @@ class HTMLDocContentEditorUI extends FormLayout {
   addComponents(this, txaHTML)
 }
 
-/**
- * File document editor UI
- * File document is `container` which may contain one or more related or unrelated files.
- * If there is more than one file then one of them must be set as default.
- * Default file content is returned when an user clicks on a doc link in a browser. 
- */
-class FileDocContentEditorUI extends VerticalLayout with UndefinedSize {
-  val menuBar = new MenuBar
-  val miNew = menuBar.addItem("Add", null)
-  val miEdit = menuBar.addItem("Edit", null)
-  val miDelete = menuBar.addItem("Delete", null)
-  val miSetDefault = menuBar.addItem("Set default", null)
-
-  val tblFiles = new Table with ValueType[FileId] with Selectable with Immediate with Reloadable {
-    addContainerProperties(this,
-      ContainerProperty[FileId]("File Id"),
-      ContainerProperty[String]("File name"),
-      ContainerProperty[String]("Size"),
-      ContainerProperty[String]("Mime type"),
-      ContainerProperty[String]("Default"))
-  }
-
-  addComponents(this, menuBar, tblFiles)
-}
-
 
 // todo: mimetypes???, id???, filename???
 class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObject, mimeTypes: Seq[MimeType]) extends DocContentEditor {
   val ui = letret(new FileDocContentEditorUI) { ui =>
-    ui.tblFiles.itemsProvider = () =>
-      doc.getFiles.toSeq collect {
-        case (fileId, fdf) =>
-          fileId -> List(fileId, fdf.getId, fdf.getMimeType, fdf.getInputStreamSource.getSize.toString, (fileId == doc.getDefaultFileId).toString)
-      }
-
-    ui.tblFiles.reload()
-
-    ui.miNew setCommandHandler {
+    ui.miUpload setCommandHandler {
       app.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
         dlg.wrapOkHandler {
           dlg.uploader.uploadedFile match {
@@ -194,6 +161,44 @@ class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObj
       }
     }
   }
+
+  def reload() {
+    val defaultFileId = doc.getDefaultFileId
+
+    doc.getFiles.toSeq collect {
+      case (fileId, fdf) =>
+        fileId -> List(fileId, fdf.getId, fdf.getMimeType, fdf.getInputStreamSource.getSize.toString, (fileId == defaultFileId).toString)
+    }
+  }
+
+  // init
+  reload()
+}
+
+
+/**
+ * File document editor UI
+ * File document is `container` which may contain one or more related or unrelated files.
+ * If there is more than one file then one of them must be set as default.
+ * Default file content is returned when an user clicks on a doc link in a browser.
+ */
+class FileDocContentEditorUI extends VerticalLayout with UndefinedSize {
+  val mb = new MenuBar
+  val miUpload = mb.addItem("Upload", null)
+  val miEditProperties = mb.addItem("Edit properties", null)
+  val miDelete = mb.addItem("Delete", null)
+  val miSetDefault = mb.addItem("Set default", null)
+
+  val tblFiles = new Table with MultiSelect[FileId] with Selectable with Immediate {
+    addContainerProperties(this,
+      ContainerProperty[FileId]("Id"),
+      ContainerProperty[String]("Name"),
+      ContainerProperty[String]("Size"),
+      ContainerProperty[String]("Type"),
+      ContainerProperty[String]("Default"))
+  }
+
+  addComponents(this, mb, tblFiles)
 }
 
 

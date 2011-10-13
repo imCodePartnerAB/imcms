@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.access.user
 
+import scala.collection.breakOut
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 
@@ -93,7 +94,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
   }
 
   searchResult.addValueChangeHandler {
-    selectionRef.set(searchResult.value map { roleMapper getUser _.intValue })
+    selectionRef.set(searchResult.value.map(roleMapper getUser _.intValue)(breakOut))
     notifyListeners()
   }
 
@@ -201,7 +202,7 @@ class UserSearchFormUI extends CustomLayout("admin/access/user/search/form") wit
   }
 
   val chkRoles = new CheckBox("user.search.frm.fld.chk_roles".i) with ExposeValueChange with Immediate
-  val tcsRoles = new TwinColSelect with MultiSelect2[RoleId] with TCSDefaultI18n
+  val tcsRoles = new TwinColSelect with MultiSelect[RoleId] with TCSDefaultI18n
   val chkShowInactive = new CheckBox("user.search.frm.fld.chk_show_inactive".i) with ExposeValueChange with Immediate
   val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
     val btnReset = new Button("btn_reset".i) with SmallStyle

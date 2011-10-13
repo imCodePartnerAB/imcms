@@ -2,12 +2,12 @@ package com.imcode
 package imcms
 
 import com.vaadin.ui._
-import com.vaadin.data.{Container, Property}
 import com.vaadin.Application
 import com.vaadin.data.Property.{ValueChangeNotifier, ValueChangeEvent, ValueChangeListener}
 import com.vaadin.terminal.Sizeable
 import com.vaadin.event.ItemClickEvent
 import java.math.MathContext
+import com.vaadin.data.{Item, Container, Property}
 
 package object vaadin {
 
@@ -127,6 +127,16 @@ package object vaadin {
         def itemClick(event: ItemClickEvent) = listener(event)
       })
   }
+
+
+  class AbstractSelectWrapper[A >: Null](select: AbstractSelect with ItemIdType[A]) {
+    def addItem(id: A, caption: String): Item = letret(select.addItem(id)) { _ =>
+      select.setItemCaption(id, caption)
+    }
+  }
+
+  implicit def wrapAbstractSelect[A >: Null](select: AbstractSelect with ItemIdType[A]) =
+    new AbstractSelectWrapper(select)
 
 
 
