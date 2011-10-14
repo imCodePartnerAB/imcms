@@ -19,7 +19,7 @@ boolean hasRightToEditMenus = permSet.getEditMenusPermission() ;
 boolean isSuperAdmin        = currentUser.isSuperAdmin() ;
 
 
-boolean isOnStartpage     = (doc.getId() == 1002) ;
+boolean isOnStartpage     = (doc.getId() == 1039) ;
 
 boolean showPanel = false ;
 
@@ -42,7 +42,7 @@ if (showPanel) { %>
 		<span style="font: bold 11px Verdana,Geneva,sans-serif; color:#000000;">&nbsp;Admin:</span></td>
 		<td class="imcmsAdmBgCont" style="vertical-align:middle;" nowrap><%
 		if (hasRightToEditMenus) { %>
-		<button onclick="document.location='<%= cp %>/servlet/ChangeMenu?documentId=<%= 1002 %>&amp;menuIndex=<%= 1 %>'; return false"<%
+		<button onclick="document.location='<%= cp %>/servlet/ChangeMenu?documentId=<%= 1039 %>&amp;menuIndex=<%= 1 %>'; return false"<%
 			%> class="imcmsFormBtnPanel">Vänstermenyn</button>&nbsp;<%
 		} %></td>
 	</tr>

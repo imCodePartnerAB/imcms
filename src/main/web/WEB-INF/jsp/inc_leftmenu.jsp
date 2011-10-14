@@ -16,7 +16,7 @@ DocumentService documentService     = imcmsSystem.getDocumentService() ;
 
 TextDocumentViewing view = TextDocumentViewing.fromRequest(request) ;
 
-TextDocument dataDoc = documentService.getTextDocument(1002) ;
+TextDocument dataDoc = documentService.getTextDocument(1039) ;
 TextDocument thisDoc = (null != view) ? view.getTextDocument() : dataDoc ;
 
 
