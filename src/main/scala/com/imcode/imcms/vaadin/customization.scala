@@ -200,7 +200,7 @@ trait SingleSelect[T >: Null] extends SelectionCheck with ItemIdType[T] with Val
   }
 }
 
-trait MultiSelect[T >: Null] extends SelectionCheck with ItemIdType[T] with ValueType[JCollection[T]] {
+trait MultiSelect[A >: Null] extends SelectionCheck with ItemIdType[A] with ValueType[JCollection[A]] {
   setMultiSelect(true)
 
   override def setMultiSelect(multiSelect: Boolean) {
@@ -209,6 +209,14 @@ trait MultiSelect[T >: Null] extends SelectionCheck with ItemIdType[T] with Valu
   }
 
   def isSelected = value.nonEmpty
+
+  def selection = value.toSeq
+
+  def selection_=(v: Seq[A]) { value = v }
+
+  def selection_=(v: Option[A]) { selection = v.toSeq }
+
+  def first = value.headOption
 }
 
 

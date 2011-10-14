@@ -18,11 +18,10 @@ import imcms.mapping.DocumentMapper.SaveDirectives
 import imcms.mapping.{DocumentMapper, DocumentSaver}
 import com.vaadin.terminal.ExternalResource
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
-import com.vaadin.ui._
 import admin.system.file.FileUploaderDialog
 import java.io.{FileInputStream, ByteArrayInputStream}
 import imcode.util.io.{FileInputStreamSource, InputStreamSource}
-
+import com.vaadin.ui._
 
 trait DocContentEditor {
   def ui: Component
@@ -89,6 +88,7 @@ class HTMLDocContentEditorUI extends FormLayout {
 class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObject, mimeTypes: Seq[MimeType]) extends DocContentEditor {
   val ui = letret(new FileDocContentEditorUI) { ui =>
     ui.miUpload setCommandHandler {
+      //todo: handle replace if exists
       app.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
         dlg.wrapOkHandler {
           dlg.uploader.uploadedFile match {
@@ -100,64 +100,48 @@ class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObj
               fileDocFile.setMimeType(uploadedFile.mimeType)
 
               doc.addFile(uploadedFile.filename, fileDocFile)  // todo: filename -> id
-              ui.tblFiles.reload()
+              reload()
             case _ =>
           }
         }
       }
     }
 
-    // todo: replace old file - delete from storage
-//    ui.miEdit setCommandHandler {
-//      whenSelected(ui.tblFiles) { fileId =>
-//        app.initAndShow(new OkCancelDialog("Edit file")) { dlg =>
-//          let(dlg.setMainContent(new FileDocFileDialogContent)) { c =>
-//            val fdf = doc.getFile(fileId)
-//
-//            c.txtFileId.value = fileId
-//            //c.sltMimeType.value = "" // todo: set
-//            c.lblUploadStatus.value = fdf.getFilename
-//
-//            dlg wrapOkHandler {
-//              c.uploadReceiver.uploadRef.get match {
-//                case Some(upload) => // relace fdf
-//                  val newFdf = new FileDocumentFile
-//                  val source = new InputStreamSource {
-//                    def getInputStream = new ByteArrayInputStream(upload.content)
-//                    def getSize = upload.content.length
-//                  }
-//
-//                  newFdf.setInputStreamSource(source)
-//                  newFdf.setFilename(c.txtFileId.value)
-//
-//                  doc.addFile(c.txtFileId.value, newFdf)
-//                  doc.removeFile(fileId)
-//
-//                case _ => // update fdf
-//                  fdf.setId(c.txtFileId.value)
-//                  // todo: fdf.setMimeType()
-//              }
-//
-//              ui.tblFiles.reload()
-//            }
-//          }
-//        }
-//      }
-//    }
+    ui.miEditProperties.setCommandHandler {
+      whenSingle(ui.tblFiles.selection) { fileId =>
+        app.initAndShow(new OkCancelDialog("Edit file properties")) { dlg =>
+          val fdf = doc.getFile(fileId)
+          val editorUI = letret(new FileDocFilePropertiesEditorUI) { eui =>
+            eui.txtId.value = fdf.getId
+            eui.txtName.value = fdf.getFilename
+            //eui.cbType.value = ???
+          }
+
+          dlg.mainUI = editorUI
+          dlg.wrapOkHandler {
+            // validate
+            fdf.setId(editorUI.txtId.value)
+            fdf.setFilename(editorUI.txtName.value)
+            //fdf.setMimeType()
+
+          }
+        }
+      }
+    }
 
     ui.miDelete setCommandHandler {
-      whenSelected(ui.tblFiles) { fileId =>
-        doc.removeFile(fileId)
+      whenSelected(ui.tblFiles) { fileIds =>
+        fileIds foreach doc.removeFile
 
-        ui.tblFiles.reload()
+        reload()
       }
     }
 
     ui.miSetDefault setCommandHandler {
-      whenSelected(ui.tblFiles) { fileId =>
+      whenSingle(ui.tblFiles.selection) { fileId =>
         doc.setDefaultFileId(fileId)
 
-        ui.tblFiles.reload()
+        reload()
       }
     }
   }
@@ -199,6 +183,13 @@ class FileDocContentEditorUI extends VerticalLayout with UndefinedSize {
   }
 
   addComponents(this, mb, tblFiles)
+}
+
+
+class FileDocFilePropertiesEditorUI extends FormLayout with UndefinedSize {
+  val txtId = new TextField("Id")
+  val txtName = new TextField("Name")
+  val cbType = new ComboBox("Type") with SingleSelect[String]
 }
 
 

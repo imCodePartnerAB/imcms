@@ -6,14 +6,13 @@ import com.vaadin.Application
 import com.vaadin.data.Property.{ValueChangeNotifier, ValueChangeEvent, ValueChangeListener}
 import com.vaadin.terminal.Sizeable
 import com.vaadin.event.ItemClickEvent
-import java.math.MathContext
 import com.vaadin.data.{Item, Container, Property}
 
 package object vaadin {
 
   // Current IDEA plugin can not resolve certain types from vaadin package without the import line below.
-  // However, it is not required by scala compiler
-  // todo: remove when the plugin will become smarter
+  // However, it is not required by the scala compiler
+  // todo: remove when the plugin become smarter
   import vaadin._
 
   def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {

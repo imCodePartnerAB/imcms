@@ -144,7 +144,7 @@ class Dialog(caption: String = "") extends Window(caption) {
   def mainContent = content.getComponent(0, 0)
 
   /** By default rejects components with width and/or height in percentage. */
-  def mainUI_=(component: Component) = mainContent_=(component)
+  def mainUI_=[C <: Component](component: C): C = letret(component) { mainContent = _ }//(component: Component) = mainContent_=(component)
   def mainContent_=(component: Component) {
     mainUICheck(component)
 
@@ -164,8 +164,8 @@ class Dialog(caption: String = "") extends Window(caption) {
     content.setComponentAlignment(component, Alignment.TOP_CENTER)
   }
 
-  @deprecated("prototype")
-  def setMainContent[C <: Component](component: C): C = letret(component) { mainContent = _ }
+  //@deprecated("prototype")
+  //def setMainContent[C <: Component](component: C): C = letret(component) { mainContent = _ }
 
   /** Exposes close method. */
   override def close() = super.close()
