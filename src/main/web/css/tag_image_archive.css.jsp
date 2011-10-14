@@ -8,7 +8,7 @@ body {
 }
 
 .mainTable {
-    margin:none;
+    margin:0;
 }
 
 .containerShadowRight, .containerShadowBottom {
@@ -17,6 +17,8 @@ body {
 
 #containerTop, #containerContent {
     background: white;
+    padding-left:0;
+    padding-right:0;
 }
 
 #containerTop {
@@ -72,8 +74,7 @@ ul.tabs li.sel a {
     color: black;
 }
 
-a.imcmsFormBtn span, input.imcmsFormBtn, button.imcmsFormBtn, a.imcmsFormBtn.disabled span, input.imcmsFormBtn.disabled,
-a.imcmsFormBtnSmall span, input.imcmsFormBtnSmall, button.imcmsFormBtnSmall, a.imcmsFormBtnSmall.disabled span, input.imcmsFormBtnSmall.disabled{
+.imcmsFormBtn, .imcmsFormBtnSmall{
     background: #4E88AD url(${cp}/images/bg_btn.gif) 0 0 no-repeat;
     border: 1px solid #3E789D;
     font-family: Arial,Helvetica,sans-serif;
