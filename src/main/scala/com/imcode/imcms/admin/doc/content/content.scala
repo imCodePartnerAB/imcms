@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.content
 
+import scala.collection.breakOut
 import scala.collection.JavaConversions._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import com.imcode.imcms.api._
@@ -60,8 +61,7 @@ class UnsupportedDocContentEditor(val doc: DocumentDomainObject) extends DocCont
 }
 
 
-case class MimeType(name: String, displayName: String)
-
+//case class MimeType(name: String, displayName: String)
 
 
 /**
@@ -84,22 +84,28 @@ class HTMLDocContentEditorUI extends FormLayout {
 }
 
 
-// todo: mimetypes???, id???, filename???
-class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObject, mimeTypes: Seq[MimeType]) extends DocContentEditor {
+class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContentEditor with ImcmsServicesSupport {
+  type MimeType = String
+  type DisplayName = String
+
+  def mimeTypes: Map[MimeType, DisplayName] =
+    imcmsServices.getDocumentMapper.getAllMimeTypesWithDescriptions(ui.getApplication.user)
+    .map { case Array(mimeType, displayName) => mimeType -> displayName } (breakOut)
+
   val ui = letret(new FileDocContentEditorUI) { ui =>
     ui.miUpload setCommandHandler {
       //todo: handle replace if exists
-      app.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
+      ui.getApplication.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
         dlg.wrapOkHandler {
           dlg.uploader.uploadedFile match {
             case Some(uploadedFile) =>
-              val fileDocFile = new FileDocumentFile
+              val fdf = new FileDocumentFile
 
-              fileDocFile.setInputStreamSource(new FileInputStreamSource(uploadedFile.file))
-              fileDocFile.setFilename(uploadedFile.filename) // id???
-              fileDocFile.setMimeType(uploadedFile.mimeType)
+              fdf.setInputStreamSource(new FileInputStreamSource(uploadedFile.file))
+              fdf.setFilename(uploadedFile.name) // id???
+              fdf.setMimeType(uploadedFile.mimeType) // present??
 
-              doc.addFile(uploadedFile.filename, fileDocFile)  // todo: filename -> id
+              doc.addFile(uploadedFile.name, fdf)  // todo: filename -> id
               reload()
             case _ =>
           }
@@ -109,12 +115,13 @@ class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObj
 
     ui.miEditProperties.setCommandHandler {
       whenSingle(ui.tblFiles.selection) { fileId =>
-        app.initAndShow(new OkCancelDialog("Edit file properties")) { dlg =>
+        ui.getApplication.initAndShow(new OkCancelDialog("Edit file properties")) { dlg =>
           val fdf = doc.getFile(fileId)
           val editorUI = letret(new FileDocFilePropertiesEditorUI) { eui =>
             eui.txtId.value = fdf.getId
             eui.txtName.value = fdf.getFilename
-            //eui.cbType.value = ???
+
+            for ((mimeType, displayName) <- mimeTypes) eui.cbType.addItem(mimeType, displayName)
           }
 
           dlg.mainUI = editorUI
@@ -122,8 +129,9 @@ class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObj
             // validate
             fdf.setId(editorUI.txtId.value)
             fdf.setFilename(editorUI.txtName.value)
-            //fdf.setMimeType()
+            fdf.setMimeType(editorUI.cbType.value)
 
+            reload()
           }
         }
       }
@@ -147,11 +155,12 @@ class FileDocContentEditor(app: ImcmsApplication, val doc: FileDocumentDomainObj
   }
 
   def reload() {
+    ui.tblFiles.removeAllItems()
+
     val defaultFileId = doc.getDefaultFileId
 
-    doc.getFiles.toSeq collect {
-      case (fileId, fdf) =>
-        fileId -> List(fileId, fdf.getId, fdf.getMimeType, fdf.getInputStreamSource.getSize.toString, (fileId == defaultFileId).toString)
+    for ((fileId, fdf) <- doc.getFiles) {
+      ui.tblFiles.addItem(Array[AnyRef](fileId, fdf.getId, fdf.getMimeType, fdf.getInputStreamSource.getSize.toString, (fileId == defaultFileId).toString), fileId)
     }
   }
 
@@ -189,7 +198,9 @@ class FileDocContentEditorUI extends VerticalLayout with UndefinedSize {
 class FileDocFilePropertiesEditorUI extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id")
   val txtName = new TextField("Name")
-  val cbType = new ComboBox("Type") with SingleSelect[String]
+  val cbType = new ComboBox("Type") with SingleSelect[String] with NoTextInput with NoNullSelection
+
+  addComponents(this, txtId, txtName, cbType)
 }
 
 

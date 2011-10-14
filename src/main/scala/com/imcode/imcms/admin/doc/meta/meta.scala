@@ -2,28 +2,27 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
-import permissions.{PermissionsEditor}
-import profile.ProfileEditor
-import scala.collection.JavaConversions._
-import scala.collection.breakOut
+import _root_.com.imcode.imcms.admin.doc.meta.permissions.{PermissionsEditor}
+import _root_.com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
 
-import imcode.server.user.UserDomainObject
+import _root_.scala.collection.JavaConversions._
+import _root_.scala.collection.breakOut
 
-import vaadin._
-import imcode.server.document.textdocument.TextDocumentDomainObject
-import imcode.server.document.{TextDocumentPermissionSetDomainObject, DocumentDomainObject}
-import java.util.{Date, Calendar}
-import collection.immutable.ListMap
-import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
-import com.vaadin.ui._
-import admin.access.user.{UserSingleSelectUI, UserSingleSelect, UserSingleSelectDialog, UserSelectDialog}
-import api._
-import dao.MetaDao
-import com.vaadin.terminal.{UserError, ErrorMessage, Sizeable, ExternalResource}
-import com.vaadin.data.Validator
-import java.util.concurrent.atomic.AtomicReference
-import com.vaadin.data.Validator.InvalidValueException
-import com.vaadin.ui.AbstractTextField.TextChangeEventMode
+import _root_.imcode.server.user.UserDomainObject
+
+import _root_.com.imcode.imcms.vaadin._
+import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+import _root_.imcode.server.document.{TextDocumentPermissionSetDomainObject, DocumentDomainObject}
+import _root_.java.util.{Date, Calendar}
+import _root_.scala.collection.immutable.ListMap
+import _root_.com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
+import _root_.com.vaadin.ui._
+import _root_.com.imcode.imcms.admin.access.user.{UserSingleSelectUI, UserSingleSelect, UserSingleSelectDialog, UserSelectDialog}
+import _root_.com.imcode.imcms.api._
+import _root_.com.imcode.imcms.dao.MetaDao
+import _root_.com.vaadin.terminal.{UserError, ErrorMessage, Sizeable, ExternalResource}
+import _root_.com.vaadin.data.Validator
+import _root_.com.vaadin.data.Validator.InvalidValueException
 
 /**
  * Doc's meta editor.

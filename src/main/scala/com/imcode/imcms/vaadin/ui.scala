@@ -135,37 +135,28 @@ trait SingleClickListener extends Button {
 class Dialog(caption: String = "") extends Window(caption) {
   protected val mainUICheck: Component => Unit = Checks.assertFixedSize
   protected val buttonsBarUICheck: Component => Unit = Checks.assertFixedSize
-
-  protected [this] val content = new GridLayout(1, 2) with Spacing with Margin
+  protected val content = new GridLayout(1, 2) with Spacing with Margin
 
   setContent(content)
 
-  def mainUI = mainContent
-  def mainContent = content.getComponent(0, 0)
-
+  def mainUI = content.getComponent(0, 0)
   /** By default rejects components with width and/or height in percentage. */
-  def mainUI_=[C <: Component](component: C): C = letret(component) { mainContent = _ }//(component: Component) = mainContent_=(component)
-  def mainContent_=(component: Component) {
+  def mainUI_=[C <: Component](component: C): C = letret(component) { component =>
     mainUICheck(component)
 
     content.addComponent(component, 0, 0)
     content.setComponentAlignment(component, Alignment.TOP_LEFT)
   }
 
-  def buttonsBarUI = buttonsBarContent
-  def buttonsBarContent = content.getComponent(0, 1)
 
+  def buttonsBarUI = content.getComponent(0, 1)
   /** By default rejects components with width and/or height in percentage. */
-  def buttonsBarUI_=(component: Component) = buttonsBarContent = component
-  def buttonsBarContent_=(component: Component) {
+  def buttonsBarUI_=[C <: Component](component: C): C = letret(component) { component =>
     buttonsBarUICheck(component)
 
     content.addComponent(component, 0, 1)
     content.setComponentAlignment(component, Alignment.TOP_CENTER)
   }
-
-  //@deprecated("prototype")
-  //def setMainContent[C <: Component](component: C): C = letret(component) { mainContent = _ }
 
   /** Exposes close method. */
   override def close() = super.close()

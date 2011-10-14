@@ -10,7 +10,7 @@ import java.io._
 import org.apache.commons.io.FileUtils
 
 
-case class UploadedFile(filename: String, mimeType: String, file: File)
+case class UploadedFile(name: String, mimeType: String, file: File)
 
 
 sealed trait UploadStatus

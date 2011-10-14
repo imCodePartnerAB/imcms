@@ -128,18 +128,6 @@ package object vaadin {
   }
 
 
-  class AbstractSelectWrapper[A >: Null](select: AbstractSelect with ItemIdType[A]) {
-    def addItem(id: A, caption: String): Item = letret(select.addItem(id)) { _ =>
-      select.setItemCaption(id, caption)
-    }
-  }
-
-  implicit def wrapAbstractSelect[A >: Null](select: AbstractSelect with ItemIdType[A]) =
-    new AbstractSelectWrapper(select)
-
-
-
-
   implicit def wrapSizeable(sizeable: Sizeable) = new {
     def setSize(width: Float, height: Float, units: Int = Sizeable.UNITS_PIXELS) {
       sizeable.setWidth(width, units)

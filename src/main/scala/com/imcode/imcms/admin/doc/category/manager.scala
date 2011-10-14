@@ -81,7 +81,7 @@ class CategoryManager(app: ImcmsApplication) {
       } imagePicker.preview.set(new Embedded("", new FileResource(file, app)))
 
       app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-        dlg.mainContent = letret(new CategoryEditorUI(imagePicker.ui)) { c =>
+        dlg.mainUI = letret(new CategoryEditorUI(imagePicker.ui)) { c =>
           typesNames foreach { c.sltType addItem _ }
 
           c.txtId.value = if (isNew) "" else id.toString

@@ -189,7 +189,14 @@ trait SelectionCheck extends AbstractSelect {
 }
 
 
-trait SingleSelect[T >: Null] extends SelectionCheck with ItemIdType[T] with ValueType[T]  {
+trait SelectOps[A >: Null] extends AbstractSelect with ItemIdType[A] {
+  def addItem(id: A, caption: String): Item = letret(addItem(id)) { _ =>
+    setItemCaption(id, caption)
+  }
+}
+
+
+trait SingleSelect[A >: Null] extends SelectionCheck with SelectOps[A] with ValueType[A]  {
   setMultiSelect(false)
 
   def isSelected = value != null
@@ -200,7 +207,7 @@ trait SingleSelect[T >: Null] extends SelectionCheck with ItemIdType[T] with Val
   }
 }
 
-trait MultiSelect[A >: Null] extends SelectionCheck with ItemIdType[A] with ValueType[JCollection[A]] {
+trait MultiSelect[A >: Null] extends SelectionCheck with SelectOps[A] with ValueType[JCollection[A]] {
   setMultiSelect(true)
 
   override def setMultiSelect(multiSelect: Boolean) {
@@ -225,7 +232,7 @@ trait MultiSelect[A >: Null] extends SelectionCheck with ItemIdType[A] with Valu
 /**
  * Type check <code>value<code> property always returns a collection.
  */
-trait MultiSelectBehavior[A >: Null <: AnyRef] extends SelectionCheck with ItemIdType[A] with ValueType[JCollection[A]] {
+trait MultiSelectBehavior[A >: Null <: AnyRef] extends SelectionCheck with SelectOps[A] with ValueType[JCollection[A]] {
 
   def selection = value.toSeq
 
@@ -280,6 +287,10 @@ trait MinuteResolution extends DateField {
 
 trait Required extends Field {
   setRequired(true)
+}
+
+trait NoTextInput extends ComboBox {
+  setTextInputAllowed(false)
 }
 
 //trait UndefiedWidth { this: AbstractComponent =>

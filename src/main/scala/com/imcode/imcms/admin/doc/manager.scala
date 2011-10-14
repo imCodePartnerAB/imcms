@@ -84,7 +84,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         val metaEditor = new MetaEditor(app, doc)
         val contentEditor: DocContentEditor = doc match {
           case doc: TextDocumentDomainObject => new TextDocContentEditor(doc)
-          case doc: FileDocumentDomainObject => new FileDocContentEditor(app, doc, Nil)
+          case doc: FileDocumentDomainObject => new FileDocContentEditor(doc)
           case doc: UrlDocumentDomainObject => new URLDocContentEditor(doc)
           case doc: HtmlDocumentDomainObject => new HtmlDocContentEditor(doc)
           case _ => new UnsupportedDocContentEditor(doc)
@@ -120,7 +120,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     val newDocCommandListener: MenuBar#MenuItem => Unit = { mi =>
       val (contentEditor, dlgCaption) = (mi: @unchecked) match {
         case ui.miNewTextDoc => (new TextDocContentEditor(new TextDocumentDomainObject), "New text document")
-        case ui.miNewFileDoc => (new FileDocContentEditor(app, new FileDocumentDomainObject, Nil), "New file document")
+        case ui.miNewFileDoc => (new FileDocContentEditor(new FileDocumentDomainObject), "New file document")
         case ui.miNewURLDoc => (new URLDocContentEditor(new UrlDocumentDomainObject), "New URL document")
         case ui.miNewHTMLDoc => (new HtmlDocContentEditor(new HtmlDocumentDomainObject), "New HTML document")
       }

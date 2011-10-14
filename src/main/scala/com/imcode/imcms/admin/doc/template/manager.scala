@@ -32,7 +32,7 @@ class TemplateManager(app: ImcmsApplication) {
             in = new FileInputStream(uploadedFile.file)
           } {
             app.privileged(permission) {
-              templateMapper.saveTemplate(name, uploadedFile.filename, in, dlg.uploader.ui.chkOverwrite.booleanValue) match {
+              templateMapper.saveTemplate(name, uploadedFile.name, in, dlg.uploader.ui.chkOverwrite.booleanValue) match {
                 case 0 =>
                   FileUtils.deleteQuietly(uploadedFile.file)
                   reload() // ok
@@ -72,7 +72,7 @@ class TemplateManager(app: ImcmsApplication) {
     ui.miEditContent setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoMarginDialog) { dlg =>
-          dlg.mainContent = letret(new TemplateContentEditorUI) { c =>
+          dlg.mainUI = letret(new TemplateContentEditorUI) { c =>
             c.txtContent.value = templateMapper.getTemplateData(name)
           }
 
