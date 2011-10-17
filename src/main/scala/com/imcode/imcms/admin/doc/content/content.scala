@@ -17,11 +17,13 @@ import textdocument.TextDocumentDomainObject
 import java.util.{EnumSet}
 import imcms.mapping.DocumentMapper.SaveDirectives
 import imcms.mapping.{DocumentMapper, DocumentSaver}
-import com.vaadin.terminal.ExternalResource
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
-import admin.system.file.FileUploaderDialog
 import java.io.{FileInputStream, ByteArrayInputStream}
+import com.imcode.imcms.admin.system.file.{UploadedFile, FileUploaderDialog}
+import scala.collection.immutable.ListMap
 import imcode.util.io.{FileInputStreamSource, InputStreamSource}
+import com.vaadin.ui.Table.ColumnGenerator
+import com.vaadin.terminal.{ThemeResource, ExternalResource}
 import com.vaadin.ui._
 
 trait DocContentEditor {
@@ -88,30 +90,81 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
   type MimeType = String
   type DisplayName = String
 
-  def mimeTypes: Map[MimeType, DisplayName] =
+  def mimeTypes: ListMap[MimeType, DisplayName] =
     imcmsServices.getDocumentMapper.getAllMimeTypesWithDescriptions(ui.getApplication.user)
     .map { case Array(mimeType, displayName) => mimeType -> displayName } (breakOut)
 
   val ui = letret(new FileDocContentEditorUI) { ui =>
-    ui.miUpload setCommandHandler {
-      //todo: handle replace if exists
+    ui.tblFiles.addGeneratedColumn("Type", new ColumnGenerator {
+      def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef): String = {
+        val mimeType = doc.getFiles.get(itemId.asInstanceOf[FileId]).getMimeType
+        mimeTypes.get(mimeType) match {
+          case Some(displayName) => displayName
+          case _ => mimeType
+        }
+      }
+    })
+
+    ui.tblFiles.addGeneratedColumn("Size", new ColumnGenerator {
+      // todo: calculate size, add unit (kb, mb, etc)
+      def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef): String =
+        doc.getFiles.get(itemId.asInstanceOf[FileId]).getInputStreamSource.getSize.toString
+    })
+
+    ui.tblFiles.addGeneratedColumn("Default", new ColumnGenerator {
+      // todo: change icon
+      def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = letret(new CheckBox) { chk =>
+        if (itemId.asInstanceOf[FileId] == doc.getDefaultFileId) {
+          chk.check
+        }
+
+        chk.setReadOnly(true)
+      }
+    })
+
+    ui.tblFiles.setColumnAlignment("Default", Table.ALIGN_CENTER)
+
+    ui.miUpload.setCommandHandler {
       ui.getApplication.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
-        dlg.wrapOkHandler {
+        dlg.setOkHandler {
           dlg.uploader.uploadedFile match {
-            case Some(uploadedFile) =>
-              val fdf = new FileDocumentFile
+            case Some(UploadedFile(name, mimeType, file)) =>
+              doc.getFiles.collectFirst { case (_, fdf) if fdf.getFilename == name => fdf } |> {
+                case Some(fdf) if !dlg.uploader.isOverwrite => Left("File with such name allready exists")
 
-              fdf.setInputStreamSource(new FileInputStreamSource(uploadedFile.file))
-              fdf.setFilename(uploadedFile.name) // id???
-              fdf.setMimeType(uploadedFile.mimeType) // present??
+                case Some(fdf) => Right(fdf)
 
-              doc.addFile(uploadedFile.name, fdf)  // todo: filename -> id
-              reload()
+                case None => letret(Right(new FileDocumentFile)) {
+                  case Right(fdf) =>
+                    val id = (
+                      for ((IntNumber(id), _) <- doc.getFiles) yield id
+                    ) |> { ids =>
+                      if (ids.isEmpty) 1 else ids.max + 1
+                    } |> {
+                      _.toString
+                    }
+
+                    fdf.setId(id)
+                    fdf.setFilename(name)
+                }
+              } |> {
+                case Left(errMsg) =>
+                  ui.getApplication.showErrorNotification(errMsg)
+
+                case Right(fdf) =>
+                  fdf.setMimeType(mimeType)
+                  fdf.setInputStreamSource(new FileInputStreamSource(file))
+
+                  doc.addFile(fdf.getId, fdf)
+                  reload()
+                  dlg.close()
+              }
+
             case _ =>
           }
         }
       }
-    }
+    } // ui.miUpload.setCommandHandler
 
     ui.miEditProperties.setCommandHandler {
       whenSingle(ui.tblFiles.selection) { fileId =>
@@ -121,12 +174,22 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
             eui.txtId.value = fdf.getId
             eui.txtName.value = fdf.getFilename
 
-            for ((mimeType, displayName) <- mimeTypes) eui.cbType.addItem(mimeType, displayName)
+            for ((mimeType, displayName) <- mimeTypes) {
+              eui.cbType.addItem(mimeType, "%s (%s)".format(displayName, mimeType))
+            }
+
+            val mimeType = fdf.getMimeType
+
+            if (mimeTypes.get(mimeType).isEmpty) {
+              eui.cbType.addItem(mimeType, mimeType)
+            }
+
+            eui.cbType.value = mimeType
           }
 
           dlg.mainUI = editorUI
           dlg.wrapOkHandler {
-            // validate
+            // todo: validate
             fdf.setId(editorUI.txtId.value)
             fdf.setFilename(editorUI.txtName.value)
             fdf.setMimeType(editorUI.cbType.value)
@@ -160,7 +223,7 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
     val defaultFileId = doc.getDefaultFileId
 
     for ((fileId, fdf) <- doc.getFiles) {
-      ui.tblFiles.addItem(Array[AnyRef](fileId, fdf.getId, fdf.getMimeType, fdf.getInputStreamSource.getSize.toString, (fileId == defaultFileId).toString), fileId)
+      ui.tblFiles.addItem(Array[AnyRef](fileId, fdf.getFilename), fileId)
     }
   }
 
@@ -175,23 +238,21 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
  * If there is more than one file then one of them must be set as default.
  * Default file content is returned when an user clicks on a doc link in a browser.
  */
-class FileDocContentEditorUI extends VerticalLayout with UndefinedSize {
+class FileDocContentEditorUI extends VerticalLayout with Spacing with Margin with FullSize {
   val mb = new MenuBar
   val miUpload = mb.addItem("Upload", null)
   val miEditProperties = mb.addItem("Edit properties", null)
   val miDelete = mb.addItem("Delete", null)
   val miSetDefault = mb.addItem("Set default", null)
 
-  val tblFiles = new Table with MultiSelect[FileId] with Selectable with Immediate {
+  val tblFiles = new Table with MultiSelect[FileId] with Selectable with Immediate with FullSize {
     addContainerProperties(this,
       ContainerProperty[FileId]("Id"),
-      ContainerProperty[String]("Name"),
-      ContainerProperty[String]("Size"),
-      ContainerProperty[String]("Type"),
-      ContainerProperty[String]("Default"))
+      ContainerProperty[String]("Name"))
   }
 
   addComponents(this, mb, tblFiles)
+  setExpandRatio(tblFiles, 1.0f)
 }
 
 
