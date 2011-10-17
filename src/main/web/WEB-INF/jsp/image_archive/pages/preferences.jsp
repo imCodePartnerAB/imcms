@@ -268,6 +268,7 @@
                         <c:url var="addNewRoleButtonURL" value="/servlet/AdminRoles"/>
                         <a href="${addNewRoleButtonURL}" target="blank">
                             <spring:message code="archive.preferences.libraries.addNewRole" htmlEscape="true"/></a>
+                        <span> <spring:message code="archive.preferences.libraries.addNewRoleHint" htmlEscape="true"/></span>
                     </div>
                 </div>
             </div>
