@@ -4,9 +4,9 @@ package imcms
 import com.vaadin.ui._
 import com.vaadin.Application
 import com.vaadin.data.Property.{ValueChangeNotifier, ValueChangeEvent, ValueChangeListener}
-import com.vaadin.terminal.Sizeable
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.data.{Item, Container, Property}
+import com.vaadin.terminal.{UserError, Sizeable}
 
 package object vaadin {
 
@@ -165,4 +165,10 @@ package object vaadin {
       layout.addComponent(if (checkBox.checked) component else stub, name)
     }
   }
+
+  // avstract component ops
+  //implicit def wrapAbstractComponent(c: AbstractComponent) = new {
+  //  def set
+  //}
+  implicit def strToUserError(str: String) = new UserError(str)
 }

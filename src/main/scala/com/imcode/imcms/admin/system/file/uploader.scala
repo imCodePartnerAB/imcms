@@ -69,9 +69,10 @@ class FileUploader extends Publisher[UploadStatus] {
     ui.upload.addListener(new Upload.StartedListener {
       def uploadStarted(ev: Upload.StartedEvent) = {
         reset()
-        ui.txtSaveAsName.setEnabled(true)
-        ui.txtSaveAsName.value = fileNameToSaveAsName(ev.getFilename)
-        ui.txtSaveAsName.setEnabled(false)
+        updateDisabled(ui.txtSaveAsName) { txtSaveAsName =>
+          txtSaveAsName.value = fileNameToSaveAsName(ev.getFilename)
+          txtSaveAsName.setInputPrompt(ui.txtSaveAsName.value)
+        }
         ui.pgiBytesReceived.setEnabled(true)
         notifyListeners(UploadStarted(ev))
       }
@@ -86,6 +87,7 @@ class FileUploader extends Publisher[UploadStatus] {
       def uploadFailed(ev: Upload.FailedEvent) {
         ui.txtSaveAsName.setEnabled(true)
         ui.txtSaveAsName.value = ""
+        ui.txtSaveAsName.setInputPrompt(null)
         ui.txtSaveAsName.setEnabled(false)
         ui.pgiBytesReceived.setEnabled(false)
         FileUtils.deleteQuietly(receiver.file)
@@ -110,22 +112,22 @@ class FileUploader extends Publisher[UploadStatus] {
   //todo: delete uploaded file???
   def reset() {
     uploadedFileOptRef.set(None)
-    ui.chkOverwrite.setEnabled(true)
-    ui.chkOverwrite.value = false
-    ui.chkOverwrite.setEnabled(false)
-    ui.txtSaveAsName.setEnabled(true)
-    ui.txtSaveAsName.value = ""
-    ui.txtSaveAsName.setEnabled(false)
-    ui.pgiBytesReceived.setEnabled(true)
-    ui.pgiBytesReceived.setValue(0f)
-    ui.pgiBytesReceived.setPollingInterval(500)
-    ui.pgiBytesReceived.setEnabled(false)
+    updateDisabled(ui.chkOverwrite) { _.value = false }
+    updateDisabled(ui.txtSaveAsName) { saveAsName =>
+      ui.txtSaveAsName.value = ""
+      ui.txtSaveAsName.setInputPrompt(null)
+    }
+    updateDisabled(ui.pgiBytesReceived) { pgiBytesReceived =>
+      pgiBytesReceived.setValue(0f)
+      pgiBytesReceived.setPollingInterval(500)
+    }
+
     notifyListeners(UploadReseted)
   }
 
   def uploadedFile = uploadedFileOptRef.get
 
-  def saveAsName = ui.txtSaveAsName.value
+  def saveAsName = ui.txtSaveAsName.trim
 
   def isOverwrite = ui.chkOverwrite.booleanValue
 
@@ -136,10 +138,12 @@ class FileUploader extends Publisher[UploadStatus] {
 
 class FileUploaderUI extends FormLayout with UndefinedSize {
   val upload = new Upload("file.upload.dlg.frm.fld.select".i, null) with Immediate
-  val txtSaveAsName = new TextField("file.upload.dlg.frm.fld.save_as".i)
+  val txtSaveAsName = new TextField("file.upload.dlg.frm.fld.save_as".i) with Required
   val pgiBytesReceived = new ProgressIndicator; pgiBytesReceived.setCaption("file.upload.dlg.frm.fld.progress".i)
   val chkOverwrite = new CheckBox("file.upload.dlg.frm.fld.overwrite".i)
 
   upload.setButtonCaption("...")
   addComponents(this, upload, pgiBytesReceived, txtSaveAsName, chkOverwrite)
+
+  txtSaveAsName.setRequiredError("achtung")
 }

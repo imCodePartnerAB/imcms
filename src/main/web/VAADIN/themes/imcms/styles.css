@@ -1,5 +1,18 @@
 @import "../chameleon/styles.css";
 
+.v-loading-indicator,
+.v-loading-indicator-delay,
+.v-loading-indicator-wait {
+   width: 100%;
+   height: 100%;
+   margin: 0;
+   background-position: 50%;
+   background-color: gray;
+   opacity: .8;
+   -ms-filter: alpha(opacity=80);
+   filter: alpha(opacity=80);
+}
+
 .v-select-optiongroup-horizontalgroup .v-select-option {
     display: inline-block;
 }

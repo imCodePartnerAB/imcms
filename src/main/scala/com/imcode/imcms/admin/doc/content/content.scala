@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.content
 
+import scala.collection.mutable.{Map => MMap}
 import scala.collection.breakOut
 import scala.collection.JavaConversions._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
@@ -90,9 +91,17 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
   type MimeType = String
   type DisplayName = String
 
-  def mimeTypes: ListMap[MimeType, DisplayName] =
+  private def mimeTypes: ListMap[MimeType, DisplayName] =
     imcmsServices.getDocumentMapper.getAllMimeTypesWithDescriptions(ui.getApplication.user)
     .map { case Array(mimeType, displayName) => mimeType -> displayName } (breakOut)
+
+  private def findFDFByName(name: String, ignoreCase: Boolean = true): Option[FileDocumentFile] = {
+    val namePredicate: String => Boolean = if (ignoreCase) name.equalsIgnoreCase else (name ==)
+
+    doc.getFiles.collectFirst {
+      case (_, fdf) if namePredicate(fdf.getFilename) => fdf
+    }
+  }
 
   val ui = letret(new FileDocContentEditorUI) { ui =>
     ui.tblFiles.addGeneratedColumn("Type", new ColumnGenerator {
@@ -112,7 +121,6 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
     })
 
     ui.tblFiles.addGeneratedColumn("Default", new ColumnGenerator {
-      // todo: change icon
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = letret(new CheckBox) { chk =>
         if (itemId.asInstanceOf[FileId] == doc.getDefaultFileId) {
           chk.check
@@ -127,40 +135,42 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
     ui.miUpload.setCommandHandler {
       ui.getApplication.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
         dlg.setOkHandler {
-          dlg.uploader.uploadedFile match {
-            case Some(UploadedFile(name, mimeType, file)) =>
-              doc.getFiles.collectFirst { case (_, fdf) if fdf.getFilename == name => fdf } |> {
-                case Some(fdf) if !dlg.uploader.isOverwrite => Left("File with such name allready exists")
+          for (UploadedFile(_, mimeType, file) <- dlg.uploader.uploadedFile) {
+            val saveAsName = dlg.uploader.saveAsName
 
-                case Some(fdf) => Right(fdf)
+            findFDFByName(saveAsName) |> {
+              case _ if saveAsName.isEmpty => Left("Name is required")
 
-                case None => letret(Right(new FileDocumentFile)) {
-                  case Right(fdf) =>
-                    val id = (
-                      for ((IntNumber(id), _) <- doc.getFiles) yield id
-                    ) |> { ids =>
-                      if (ids.isEmpty) 1 else ids.max + 1
-                    } |> {
-                      _.toString
-                    }
+              case Some(fdf) if !dlg.uploader.isOverwrite => Left("File with such name allready exists")
 
-                    fdf.setId(id)
-                    fdf.setFilename(name)
-                }
-              } |> {
-                case Left(errMsg) =>
-                  ui.getApplication.showErrorNotification(errMsg)
+              case Some(fdf) => Right(fdf) // return new instance?
 
+              case None => letret(Right(new FileDocumentFile)) {
                 case Right(fdf) =>
-                  fdf.setMimeType(mimeType)
-                  fdf.setInputStreamSource(new FileInputStreamSource(file))
+                  val id = (
+                    for ((IntNumber(id), _) <- doc.getFiles) yield id
+                  ) |> { ids =>
+                    if (ids.isEmpty) 1 else ids.max + 1
+                  } |> {
+                    _.toString
+                  }
 
-                  doc.addFile(fdf.getId, fdf)
-                  reload()
-                  dlg.close()
+                  fdf.setId(id)
               }
+            } |> {
+              case Left(errMsg) =>
+                dlg.uploader.ui.txtSaveAsName.setComponentError(errMsg)
+                ui.getApplication.showErrorNotification(errMsg)
 
-            case _ =>
+              case Right(fdf) =>
+                fdf.setFilename(saveAsName)
+                fdf.setMimeType(mimeType)
+                fdf.setInputStreamSource(new FileInputStreamSource(file))
+
+                doc.addFile(fdf.getId, fdf)
+                reload()
+                dlg.close()
+            }
           }
         }
       }
@@ -188,13 +198,50 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
           }
 
           dlg.mainUI = editorUI
-          dlg.wrapOkHandler {
-            // todo: validate
-            fdf.setId(editorUI.txtId.value)
-            fdf.setFilename(editorUI.txtName.value)
-            fdf.setMimeType(editorUI.cbType.value)
+          dlg.setOkHandler {
+            val errors = MMap.empty[AbstractComponent, ErrorMsg]
 
-            reload()
+            editorUI.txtId.trimOpt match {
+              case None =>
+                errors += editorUI.txtId -> "id is required"
+
+              case Some(newId) if newId != fdf.getId =>
+                for (fdf2 <- ?(doc.getFile(newId))) {
+                  errors += editorUI.txtId -> "id is allready assigned to other file in this document"
+                }
+
+              case _ =>
+            }
+
+            editorUI.txtName.trimOpt match {
+              case None =>
+                errors += editorUI.txtName -> "name is required"
+
+              case Some(newName) if !newName.equalsIgnoreCase(fdf.getFilename) =>
+                for (fdf2 <- findFDFByName(newName)) {
+                  errors += editorUI.txtName -> "name is allready assigned to other file in this document"
+                }
+
+              case _ =>
+            }
+
+            editorUI.txtId.setComponentError(null)
+            editorUI.txtName.setComponentError(null)
+
+            if (errors.nonEmpty) {
+              for ((component, errMsg) <- errors) {
+                component.setComponentError(errMsg)
+              }
+            } else {
+              // if id has changed, update doc filemap
+
+              fdf.setId(editorUI.txtId.trim)
+              fdf.setFilename(editorUI.txtName.trim)
+              fdf.setMimeType(editorUI.cbType.value)
+
+              reload()
+              dlg.close()
+            }
           }
         }
       }
@@ -257,9 +304,9 @@ class FileDocContentEditorUI extends VerticalLayout with Spacing with Margin wit
 
 
 class FileDocFilePropertiesEditorUI extends FormLayout with UndefinedSize {
-  val txtId = new TextField("Id")
-  val txtName = new TextField("Name")
-  val cbType = new ComboBox("Type") with SingleSelect[String] with NoTextInput with NoNullSelection
+  val txtId = new TextField("Id") with Required
+  val txtName = new TextField("Name") with Required
+  val cbType = new ComboBox("Type") with Required with SingleSelect[String] with NoTextInput with NoNullSelection
 
   addComponents(this, txtId, txtName, cbType)
 }
