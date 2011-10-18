@@ -43,7 +43,7 @@ public class SearchImageValidator implements Validator {
         
         List<Integer> categoryIds = command.getCategoryIds();
         
-        if (!SearchImageCommand.CATEGORY_ALL.equals(categoryIds) && !SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryIds)) {
+        if (categoryIds != null && !SearchImageCommand.CATEGORY_ALL.equals(categoryIds) && !SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryIds)) {
             List<Integer> unavailableCategoryIds = new ArrayList<Integer>();
             for(Integer categoryId: categoryIds) {
                 if(!facade.getRoleService().hasAccessToCategory(user, categoryId, Roles.ALL_PERMISSIONS)) {

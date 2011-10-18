@@ -37,10 +37,24 @@
 
             toggleTextAndFlag($("#toggleMoreCriteriaBtn"), lessCriteria, moreCriteria);
 
-            $("#category").multiselect({header:false, height: "auto", selectedText: function(nSelected, nTotal, checkedCheckboxes){
-                    return $.join($.map(checkedCheckboxes, function(val, i){
+            $("#category").multiselect({
+                header: false,
+                height: "auto",
+                noneSelectedText: '<spring:message code="archive.searchImage.selectCategories"/>',
+                selectedText: function(nSelected, nTotal, checkedCheckboxes){
+                    var selectedCategoryNames = $.join($.map(checkedCheckboxes, function(val, i){
                         return $(val).attr("title");
                     }), ", ");
+
+                    var maxLength = 35;
+                    var ending = "...";
+
+                    if(selectedCategoryNames.length > maxLength) {
+                        selectedCategoryNames = selectedCategoryNames.substring(0, maxLength - ending.length);
+                        selectedCategoryNames += ending;
+                    }
+
+                    return selectedCategoryNames;
                 }
             });
             $("#category").bind("multiselectclick", function(event, ui){
