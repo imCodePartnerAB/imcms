@@ -33,30 +33,43 @@
 
             /* close commented backslash hack */
 
-        #lightbox {
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            width: 500px;
-            background: #fff;
-            z-index: 1001;
-            display: none;
-        }
+#lightbox {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 500px;
+    background: #fff;
+    z-index: 1001;
+    display: none;
+}
 
-        #lightbox-shadow {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            filter: alpha(opacity = 75);
-            -moz-opacity: 0.75;
-            -khtml-opacity: 0.75;
-            opacity: 0.75;
-            z-index: 1000;
-            display: none;
-        }
+#lightbox-shadow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    filter: alpha(opacity=75);
+    -moz-opacity: 0.75;
+    -khtml-opacity: 0.75;
+    opacity: 0.75;
+    z-index: 1000;
+    display: none;
+}
+
+#lightbox-close {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 35px;
+    height: 35px;
+    z-index: 1003;
+    display: none;
+    color: white;
+    background: url('${pageContext.request.contextPath}/images/close.png') top left no-repeat;
+    cursor: pointer;
+}
 
         .adminLinksTable {
             border: 1px solid #000;

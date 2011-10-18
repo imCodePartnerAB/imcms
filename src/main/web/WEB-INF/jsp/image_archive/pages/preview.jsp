@@ -5,4 +5,4 @@
     <c:param name="id" value="${imageId}"/>
     <c:param name="tmp" value="${temporary}"/>
 </c:url>
-<img id="image" src="${fn:escapeXml(imageUrl)}" alt="${title}"/>
+<img id="image" src="${fn:escapeXml(imageUrl)}" alt="${title}" style="width:100%;height:100%"/>

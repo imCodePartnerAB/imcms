@@ -628,7 +628,7 @@ var initExternalFiles = function() {
 function setOverlayDimensions(width, height){
     var o = $("#lightbox", top.document);
     var maxWidth = $(top).width();
-    var maxHeight = $(top).height() - ($(top).height() * 0.2);
+    var maxHeight = $(top).height();
     var ratio = 0;
 
     if(width > maxWidth || height > maxHeight) {
@@ -656,11 +656,18 @@ function lightbox(ajaxContentUrl, width, height){
     if($('#lightbox', top.document).size() == 0){
         var theLightbox = $('<div id="lightbox"/>');
         var theShadow = $('<div id="lightbox-shadow"/>');
+        var closeBtn = $('<div id="lightbox-close"/>');
         $(theShadow).click(function(e){
             closeLightbox();
         });
+
+        $(closeBtn).click(function(e){
+            closeLightbox();
+        });
+        
         $('body', top.document).append(theShadow);
         $('body', top.document).append(theLightbox);
+        $('body', top.document).append(closeBtn);
     }
 
     $('#lightbox', top.document).empty();
@@ -682,18 +689,22 @@ function lightbox(ajaxContentUrl, width, height){
     }
 
     setOverlayDimensions(width, height);
-    $('#lightbox', top.document).css("left", Math.max(0, $(top).width() / 2 - $('#lightbox', top.document).width() / 2));
-    $('#lightbox', top.document).css('top', '10%');
+    $('#lightbox', top.document).css('margin-left', (-$('#lightbox', top.document).width() / 2)+'px');
+    $('#lightbox', top.document).css('margin-top', (-$('#lightbox', top.document).height() / 2)+'px');
+    $('#lightbox-close', top.document).css('margin-left', (($('#lightbox', top.document).width() / 2) -
+        $('#lightbox-close', top.document).width()) + 'px');
+    $('#lightbox-close', top.document).css('margin-top', (-$('#lightbox', top.document).height() / 2)+'px');
 
     $('#lightbox', top.document).show();
     $('#lightbox-shadow', top.document).show();
-
+    $('#lightbox-close', top.document).show();
 }
 
 function closeLightbox(){
 
     $('#lightbox', top.document).hide();
     $('#lightbox-shadow', top.document).hide();
+    $('#lightbox-close', top.document).hide();
 
     $('#lightbox', top.document).empty();
 }

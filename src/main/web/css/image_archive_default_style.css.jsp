@@ -399,8 +399,8 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
 }
 
 #lightbox {
-    position: absolute;
-    top: 10%;
+    position: fixed;
+    top: 50%;
     left: 50%;
     width: 500px;
     background: #fff;
@@ -409,7 +409,7 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
 }
 
 #lightbox-shadow {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -421,4 +421,17 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
     opacity: 0.75;
     z-index: 1000;
     display: none;
+}
+
+#lightbox-close {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 35px;
+    height: 35px;
+    z-index: 1003;
+    display: none;
+    color: white;
+    background: url('${pageContext.request.contextPath}/images/close.png') top left no-repeat;
+    cursor: pointer;
 }
