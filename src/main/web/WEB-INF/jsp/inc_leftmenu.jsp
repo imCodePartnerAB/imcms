@@ -1,7 +1,7 @@
 <%@ page
 	
-	import="com.imcode.imcms.addon.treemenu.ImcmsTreeMenu,
-	        com.imcode.imcms.addon.treemenu.TreeMenuItem,
+	import="com.imcode.imcms.addon.imagearchive.util.treemenu.ImcmsTreeMenu,
+	        com.imcode.imcms.addon.imagearchive.util.treemenu.TreeMenuItem,
 	        java.util.List"
 	
 	contentType="text/html; charset=UTF-8"

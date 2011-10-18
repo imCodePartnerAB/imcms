@@ -1,4 +1,4 @@
-package com.imcode.imcms.addon.treemenu;
+package com.imcode.imcms.addon.imagearchive.util.treemenu;
 
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.api.Document;

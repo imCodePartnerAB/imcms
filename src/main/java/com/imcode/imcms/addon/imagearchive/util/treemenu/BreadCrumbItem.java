@@ -1,4 +1,4 @@
-package com.imcode.imcms.addon.treemenu;
+package com.imcode.imcms.addon.imagearchive.util.treemenu;
 
 /**
  * Created by IntelliJ IDEA.

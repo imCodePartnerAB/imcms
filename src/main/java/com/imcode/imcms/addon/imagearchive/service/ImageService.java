@@ -138,7 +138,11 @@ public class ImageService {
                     inputStream = zip.getInputStream(entry);
                     outputStream = new BufferedOutputStream(FileUtils.openOutputStream(entryFile));
 
+                    /* copy doesn't flush no closes the streams */
                     IOUtils.copy(inputStream, outputStream);
+                    outputStream.flush();
+                    IOUtils.closeQuietly(outputStream);
+                    IOUtils.closeQuietly(inputStream);
                     ImageInfo imageInfo = ImageOp.getImageInfo(entryFile);
                     if (imageInfo == null || imageInfo.getFormat() == null
                         || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1) {
