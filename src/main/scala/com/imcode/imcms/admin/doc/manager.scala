@@ -3,12 +3,14 @@ package imcms
 package admin.doc
 
 import _root_.scala.collection.JavaConversions._
+
 //import _root_.scala.collection.JavaConverters._
 import _root_.com.vaadin.event.Action
 import _root_.com.imcode.imcms.vaadin._
 import _root_.com.imcode.imcms.admin.doc.meta.MetaEditor
 import _root_.com.imcode.imcms.mapping.ProfileMapper
 import _root_.com.imcode.imcms.admin.doc.content._
+import _root_.com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
 import _root_.com.imcode.imcms.admin.doc.search.{DocSearchUI, DocSearch, AllDocsContainer, CustomDocsContainer}
 import _root_.imcode.server.document.{UrlDocumentDomainObject, DocumentDomainObject, FileDocumentDomainObject, HtmlDocumentDomainObject}
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
