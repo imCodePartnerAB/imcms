@@ -70,6 +70,10 @@
                 toggleVisibility();
             });
 
+            $("input[name='erase']").click(function(){
+                return confirm('<spring:message code="archive.externalFiles.eraseWarning"/>');
+            });
+
             /* google dictionary extension on chrome seems to throw an exception.
             *
             * many lines instead of one to prevent tablesorter exception in case of an empty table */

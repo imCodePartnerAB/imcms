@@ -47,7 +47,7 @@
                             <c:set var="disabled" value="${not currentLibrary.userLibrary }"/>
                             <spring:message var="eraseImageText" code="archive.externalFiles.eraseImage" htmlEscape="true"/>
                             <input type="submit" name="erase" class="imcmsFormBtnSmall ${disabled ? 'disabled' : ''}"
-                                   onclick="${disabled ? 'return false;' : ''}" value="${eraseImageText}"/>
+                                   onclick="${disabled ? 'return false;' : ''}" value="${eraseImageText}" ${disabled ? 'disabled' : ''}/>
                         </div>
                     </td>
                 </tr>
@@ -114,7 +114,7 @@
                             <c:set var="disabled" value="${not currentLibrary.userLibrary }"/>
                             <spring:message var="eraseImageText" code="archive.externalFiles.eraseImage" htmlEscape="true"/>
                             <input type="submit" name="erase" class="imcmsFormBtnSmall ${disabled ? 'disabled' : ''}"
-                                   onclick="${disabled ? 'return false;' : ''}" value="${eraseImageText}"/>
+                                   onclick="${disabled ? 'return false;' : ''}" value="${eraseImageText}" ${disabled ? 'disabled' : ''}/>
                         </div>
                     </td>
                 </tr>
