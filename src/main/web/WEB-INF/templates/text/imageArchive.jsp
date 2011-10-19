@@ -298,13 +298,15 @@
     <imcms:image no="1" label="<br/>Logo<br/>" style="logo"/>
     <imcms:text no="1" pre="<span>" post="</span>"/>
 </div>
-<div style="border:1px solid gray;padding: 20px 20px 0 20px" class="clearfix">
-    <div id="leftmenu" style="float:left;margin-top:40px;">
-            <jsp:include page="/WEB-INF/jsp/inc_leftmenu.jsp"/>
+<div class="clearfix">
+    <div style="border:1px solid #ccc;padding: 20px 20px 0 20px;float:left" class="clearfix">
+        <div id="leftmenu" style="float:left;margin-top:40px;">
+                <jsp:include page="/WEB-INF/jsp/inc_leftmenu.jsp"/>
+        </div>
+        <imcms:imageArchive styleClass="imageArchive">
+            <link href="${contextPath}/css/tag_image_archive.css.jsp" rel="stylesheet" type="text/css"/>
+        </imcms:imageArchive>
     </div>
-    <imcms:imageArchive styleClass="imageArchive">
-        <link href="${contextPath}/css/tag_image_archive.css.jsp" rel="stylesheet" type="text/css"/>
-    </imcms:imageArchive>
 </div>
 </body>
 </html>

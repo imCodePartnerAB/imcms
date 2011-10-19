@@ -142,7 +142,7 @@
                     <form:input path="createCategoryName" id="createCategoryName" maxlength="128"
                                 cssStyle="width:180px;"/>
                     <spring:message var="createText" code="archive.preferences.create" htmlEscape="true"/>
-                    <input type="submit" name="createCategoryAction" value="${createText}" style="margin-left:3px;" class="imcmsFormBtnSmall right"/>
+                    <input type="submit" name="createCategoryAction" value="${createText}" style="margin-left:3px;" class="imcmsSpecialButton"/>
                     <br/>
                     <form:errors path="createCategoryName" cssClass="red"/>
                 </div>

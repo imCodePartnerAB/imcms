@@ -74,7 +74,7 @@ ul.tabs li.sel a {
     color: black;
 }
 
-.imcmsFormBtn, .imcmsFormBtnSmall{
+.imcmsFormBtn, .imcmsFormBtnSmall, .imcmsSpecialButton{
     background: #4E88AD url(${cp}/images/bg_btn.gif) 0 0 no-repeat;
     border: 1px solid #3E789D;
     font-family: Arial,Helvetica,sans-serif;
@@ -83,7 +83,10 @@ ul.tabs li.sel a {
     padding: 0 2px;
 }
 
-.section {
+.imcmsAdmHeading {
     background: #BED6F8 url(${cp}/images/gradient.png) top left repeat-x;
     border: 1px solid #BED6F8;
+    padding: 3px 10px 4px 10px;
+    color: black;
+    font-weight:normal;
 }

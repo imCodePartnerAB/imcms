@@ -99,6 +99,24 @@ a.imcmsFormBtnSmall.disabled, input.imcmsFormBtnSmall.disabled {
 	float: left !important;
 }
 
+/* fixes input submit, button etc in firefox */
+input[type="button"].imcmsFormBtn::-moz-focus-inner, input[type="submit"].imcmsFormBtn::-moz-focus-inner, button.imcmsFormBtn::-moz-focus-inner,
+input[type="button"].imcmsFormBtnSmall::-moz-focus-inner, input[type="submit"].imcmsFormBtnSmall::-moz-focus-inner, button.imcmsFormBtnSmall::-moz-focus-inner
+{
+    border:0;
+}
+
+.imcmsSpecialButton {
+    background-color: #20568D;
+    border-color: #466D96 #333333 #333333 #466D96;
+    border-style: outset;
+    border-width: 1px;
+    color: #FFFFFF;
+    cursor: pointer;
+    font: 10px Tahoma,Arial,sans-serif;
+    padding: 1px 2px;
+}
+
 .imcmsFormBtn, .imcmsFormBtnSmall {
     text-decoration:none;
 }
