@@ -86,10 +86,20 @@ class HTMLDocContentEditorUI extends FormLayout {
   addComponents(this, txaHTML)
 }
 
-
+/**
+ * doc is used to create initial state.
+ */
 class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContentEditor with ImcmsServicesSupport {
   type MimeType = String
   type DisplayName = String
+
+  case class State(fdfs: Map[FileId, FileDocumentFile], defaultFdfId: Option[FileId])
+
+
+  private var state = State(
+    doc.getFiles.map { case (id, fdf) => id -> fdf.clone } (breakOut),
+    ?(doc.getDefaultFileId)
+  )
 
   private def mimeTypes: ListMap[MimeType, DisplayName] =
     imcmsServices.getDocumentMapper.getAllMimeTypesWithDescriptions(ui.getApplication.user)
@@ -98,7 +108,7 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
   private def findFDFByName(name: String, ignoreCase: Boolean = true): Option[FileDocumentFile] = {
     val namePredicate: String => Boolean = if (ignoreCase) name.equalsIgnoreCase else (name ==)
 
-    doc.getFiles.collectFirst {
+    state.fdfs.collectFirst {
       case (_, fdf) if namePredicate(fdf.getFilename) => fdf
     }
   }
@@ -106,7 +116,7 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
   val ui = letret(new FileDocContentEditorUI) { ui =>
     ui.tblFiles.addGeneratedColumn("Type", new ColumnGenerator {
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef): String = {
-        val mimeType = doc.getFiles.get(itemId.asInstanceOf[FileId]).getMimeType
+        val mimeType = state.fdfs(itemId.asInstanceOf[FileId]).getMimeType
         mimeTypes.get(mimeType) match {
           case Some(displayName) => displayName
           case _ => mimeType
@@ -117,12 +127,12 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
     ui.tblFiles.addGeneratedColumn("Size", new ColumnGenerator {
       // todo: calculate size, add unit (kb, mb, etc)
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef): String =
-        doc.getFiles.get(itemId.asInstanceOf[FileId]).getInputStreamSource.getSize.toString
+        state.fdfs(itemId.asInstanceOf[FileId]).getInputStreamSource.getSize.toString
     })
 
     ui.tblFiles.addGeneratedColumn("Default", new ColumnGenerator {
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = letret(new CheckBox) { chk =>
-        if (itemId.asInstanceOf[FileId] == doc.getDefaultFileId) {
+        for (id <- state.defaultFdfId if id == itemId.asInstanceOf[FileId]) {
           chk.check
         }
 
@@ -148,7 +158,7 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
               case None => letret(Right(new FileDocumentFile)) {
                 case Right(fdf) =>
                   val id = (
-                    for ((IntNumber(id), _) <- doc.getFiles) yield id
+                    for ((IntNumber(id), _) <- state.fdfs) yield id
                   ) |> { ids =>
                     if (ids.isEmpty) 1 else ids.max + 1
                   } |> {
@@ -167,7 +177,8 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
                 fdf.setMimeType(mimeType)
                 fdf.setInputStreamSource(new FileInputStreamSource(file))
 
-                doc.addFile(fdf.getId, fdf)
+                state = State(state.fdfs.updated(fdf.getId, fdf), state.defaultFdfId orElse Some(fdf.getId))
+
                 reload()
                 dlg.close()
             }
@@ -179,7 +190,7 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
     ui.miEditProperties.setCommandHandler {
       whenSingle(ui.tblFiles.selection) { fileId =>
         ui.getApplication.initAndShow(new OkCancelDialog("Edit file properties")) { dlg =>
-          val fdf = doc.getFile(fileId)
+          val fdf = state.fdfs(fileId)
           val editorUI = letret(new FileDocFilePropertiesEditorUI) { eui =>
             eui.txtId.value = fdf.getId
             eui.txtName.value = fdf.getFilename
@@ -206,7 +217,7 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
                 errors += editorUI.txtId -> "id is required"
 
               case Some(newId) if newId != fdf.getId =>
-                for (fdf2 <- ?(doc.getFile(newId))) {
+                for (fdf2 <- state.fdfs.get(newId)) {
                   errors += editorUI.txtId -> "id is allready assigned to other file in this document"
                 }
 
@@ -233,11 +244,20 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
                 component.setComponentError(errMsg)
               }
             } else {
+              // todo: mixin trait: so we can delete temp file??
               // if id has changed, update doc filemap
+              val newId = editorUI.txtId.trim
+              val fdfs = state.fdfs - fileId + (newId -> fdf)
+              val defaultFdfId = state.defaultFdfId.map {
+                case id if (fileId == id) && (fileId != newId) => newId
+                case id => id
+              }
 
-              fdf.setId(editorUI.txtId.trim)
+              fdf.setId(newId)
               fdf.setFilename(editorUI.txtName.trim)
               fdf.setMimeType(editorUI.cbType.value)
+
+              state = State(fdfs, defaultFdfId)
 
               reload()
               dlg.close()
@@ -249,7 +269,11 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
 
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblFiles) { fileIds =>
-        fileIds foreach doc.removeFile
+        val fdfs = state.fdfs filterKeys fileIds.toSet.andThen(!=)
+        val ids = fdfs.keySet
+        val defaultFdfId = ids.find(state.defaultFdfId.get ==) orElse ids.headOption
+
+        state = State(fdfs, defaultFdfId)
 
         reload()
       }
@@ -257,7 +281,7 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
 
     ui.miSetDefault setCommandHandler {
       whenSingle(ui.tblFiles.selection) { fileId =>
-        doc.setDefaultFileId(fileId)
+        state = state.copy(defaultFdfId = Some(fileId))
 
         reload()
       }
@@ -267,9 +291,7 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
   def reload() {
     ui.tblFiles.removeAllItems()
 
-    val defaultFileId = doc.getDefaultFileId
-
-    for ((fileId, fdf) <- doc.getFiles) {
+    for ((fileId, fdf) <- state.fdfs) {
       ui.tblFiles.addItem(Array[AnyRef](fileId, fdf.getFilename), fileId)
     }
   }

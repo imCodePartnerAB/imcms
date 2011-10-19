@@ -214,8 +214,8 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
             return id;
         }
 
-        protected Object clone() throws CloneNotSupportedException {
-            return super.clone();
+        public FileDocumentFile clone() throws CloneNotSupportedException {
+            return (FileDocumentFile)super.clone();
         }
     }
 }
