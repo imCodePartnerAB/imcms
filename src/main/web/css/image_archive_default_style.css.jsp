@@ -303,9 +303,14 @@ div.UploadifyObjectWrapper {
 /* export dialog */
 #exportOverlay {
     background-color:#fff;
-    display:none;
     border:1px solid black;
     padding-top:10px;
+    width: 360px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1001;
+    display: none;
 }
 
 #exportOverlay .imcmsAdmHeading {
@@ -426,7 +431,7 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
     display: none;
 }
 
-#lightbox-shadow {
+#lightbox-shadow, #overlay-shadow {
     position: fixed;
     top: 0;
     left: 0;

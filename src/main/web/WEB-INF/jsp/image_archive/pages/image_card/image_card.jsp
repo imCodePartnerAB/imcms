@@ -15,9 +15,9 @@
     var fillOnAspectRatio = function() {
         var initialWidth = ${image.width};
         var initialHeight = ${image.height};
-        var width = $("#width");
-        var height = $("#height");
-        var keepRatio = $("#keepAspectRatio");
+        var width = $("#width", $('#exportOverlay', top.document));
+        var height = $("#height", $('#exportOverlay', top.document));
+        var keepRatio = $("#keepAspectRatio", $('#exportOverlay', top.document));
         var numberRegEx = /^\d+$/;
 
         if(keepRatio.is(":checked")) {
@@ -42,23 +42,43 @@
         }
     };
 
-    var triggers;
-    $(document).ready(function(){
-        if($(".modal").length) {
-            $("#width").blur(fillOnAspectRatio);
-            $("#height").blur(fillOnAspectRatio);
-
-            triggers = $(".modalInput").overlay({
-                mask: {color:'gray', opacity:0.7},
-                top: '25%',
-                closeOnClick: false
-            });
-
-            $("#exportDialogCloseBtn").click(function(){
-               triggers.eq(0).overlay().close();
-            });
+        function closeExportOverlay(){
+            $('#exportOverlay', top.document).hide();
+            $('#overlay-shadow', top.document).hide();
         }
-    });
+
+        function exportOverlay() {
+            if($('#exportOverlay').length || $('#exportOverlay', top.document).length){
+                var theShadow = $('<div id="overlay-shadow"/>');
+                var overlay = $('#exportOverlay');
+                $(theShadow).click(function(){
+                    closeExportOverlay();
+                });
+
+                if($($('#overlay-shadow'), top.document).size() == 0){
+                    $('body', top.document).append(theShadow);
+                }
+
+                $("#width").blur(fillOnAspectRatio);
+                $("#height").blur(fillOnAspectRatio);
+                $('body', top.document).append(overlay);
+            }
+
+            $('#exportOverlay', top.document).css('margin-left', (-$('#exportOverlay', top.document).width() / 2)+'px');
+            $('#exportOverlay', top.document).css('margin-top', (-$('#exportOverlay', top.document).height() / 2)+'px');
+
+            $('#exportOverlay', top.document).show();
+            $('#overlay-shadow', top.document).show();
+        }
+
+        $(document).ready(function(){
+            $('#exportBtn').click(function(){
+                exportOverlay();
+            });
+            $("#exportDialogCloseBtn").click(function(){
+                closeExportOverlay();
+            });
+        });
     </script>
 </c:set>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/header.jsp" %>
@@ -170,7 +190,7 @@
 
                 <c:if test="${canExport and not image.archived}">
                     <spring:message var="exportBtnText" code="archive.imageCard.export" htmlEscape="true"/>
-                    <span class="imcmsFormBtn modalInput" type="button" rel="#exportOverlay">${exportBtnText}</span>
+                    <span class="imcmsFormBtn" id="exportBtn">${exportBtnText}</span>
                 </c:if>
                 </div>
             </c:if>

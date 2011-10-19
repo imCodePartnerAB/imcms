@@ -1,11 +1,11 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
 <c:if test="${not user.defaultUser and not image.archived}">
-    <div class="modal" id="exportOverlay">
+    <div class="imcmsAdmForm" id="exportOverlay">
         <h4 class="imcmsAdmHeading"><spring:message code="archive.imageCard.export.exportImage" htmlEscape="true"/></h4>
         <c:url var="exportUrl" value="/web/archive/image/${image.id}"/>
         <form:form action="${exportUrl}" commandName="exportImage" method="post" cssClass="right">
-            <div class="clearboth minH30">
+            <div class="clearfix minH30">
                 <label for="width" class="left fixedWidth">
                     <spring:message code="archive.imageCard.export.width" htmlEscape="true"/>
                 </label>
@@ -19,7 +19,7 @@
                 </div>
             </div>
 
-            <div class="clearboth minH30">
+            <div class="clearfix minH30">
                 <label for="height" class="left fixedWidth">
                     <spring:message code="archive.imageCard.export.height" htmlEscape="true"/>
                 </label>
@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            <div class="clearboth minH30">
+            <div class="clearfix minH30">
                 <div class="left fixedWidth">&nbsp;</div>
                 <div class="left">
                     <form:checkbox id="keepAspectRatio" path="keepAspectRatio"/>
@@ -38,7 +38,7 @@
                 </div>
             </div>
 
-            <div class="clearboth minH30">
+            <div class="clearfix minH30">
                 <label for="fileFormat" class="left fixedWidth">
                     <spring:message code="archive.imageCard.export.fileFormat" htmlEscape="true"/>
                 </label>
@@ -51,7 +51,7 @@
                 </select>
             </div>
 
-            <div class="clearboth minH30">
+            <div class="clearfix minH30">
                 <label for="quality" class="left fixedWidth">
                     <spring:message code="archive.imageCard.export.quality" htmlEscape="true"/>
                 </label>

@@ -909,6 +909,9 @@
                             <goal>testCompile</goal>
                         </goals>
                         <phase>test-compile</phase>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
                     </execution>
 
                     <execution>

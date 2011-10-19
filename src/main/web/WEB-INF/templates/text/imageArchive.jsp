@@ -1,12 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head><title>Simple jsp page</title>
     <style type="text/css">
         .imageArchive {
             float: left;
         }
+
+        .minH30 {
+	min-height: 30px;
+	height: auto !important;
+	height: 30px;
+}
 
             /* slightly enhanced, universal clearfix hack */
         .clearfix:after {
@@ -43,7 +50,7 @@
     display: none;
 }
 
-#lightbox-shadow {
+#lightbox-shadow, #overlay-shadow {
     position: fixed;
     top: 0;
     left: 0;
@@ -69,6 +76,65 @@
     color: white;
     background: url('${pageContext.request.contextPath}/images/close.png') top left no-repeat;
     cursor: pointer;
+}
+
+#exportOverlay {
+    background-color:#fff;
+    border:1px solid black;
+    width: 370px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1001;
+    display: none;
+}
+
+#exportOverlay .imcmsAdmHeading {
+    padding-left:10px;
+}
+
+.fixedWidth {
+    width:80px;
+}
+
+.fixedWidthInput {
+    width:100px;margin-left:5px;
+}
+
+#exportImage {
+    padding:50px 45px 30px 45px;
+}
+
+        .exportBtns {
+    text-align:right;
+    margin-top:25px;
+}
+
+.imcmsFormBtn, .imcmsFormBtnSmall, .imcmsSpecialButton{
+    background: #4E88AD url('${pageContext.request.contextPath}/images/bg_btn.gif') 0 0 no-repeat;
+    border: 1px solid #3E789D;
+    font-family: Arial,Helvetica,sans-serif;
+    color: white;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+        .left {
+            float:left;
+        }
+
+.imcmsAdmHeading {
+    background: #BED6F8 url('${pageContext.request.contextPath}/images/gradient.png') top left repeat-x;
+    border: 1px solid #BED6F8;
+    padding: 3px 10px 4px 10px;
+    color: black;
+    font-weight:normal;
+}
+
+        .imcmsAdmText, .imcmsAdmTable td, input, select, textarea, .imcmsAdmForm {
+font-size: 11px;
+font-family: Tahoma,Arial,sans-serif;
+color: black;
 }
 
         .adminLinksTable {
@@ -193,7 +259,7 @@
 #leftmenu A.act_page {
     width: 173px;
     border-right: 0;
-    background: #ecf5f9 url(/images/bg_leftmenu_act.gif) top right repeat-y;
+    background: #ecf5f9 url('${pageContext.request.contextPath}/images/bg_leftmenu_act.gif') top right repeat-y;
     color: #333;
 }
 #leftmenu A.disabled,
@@ -206,29 +272,29 @@
 }
 
 #leftmenu A.act_tree_lev1 SPAN {
-    background: transparent url(/images/menu_black_down.gif) 5px 9px no-repeat;
+    background: transparent url('${pageContext.request.contextPath}/images/menu_black_down.gif') 5px 9px no-repeat;
 }
 #leftmenu A.act_tree_lev2 SPAN {
-    background: transparent url(/images/menu_black_down.gif) 17px 9px no-repeat;
+    background: transparent url('${pageContext.request.contextPath}/images/menu_black_down.gif') 17px 9px no-repeat;
 }
 #leftmenu A.act_tree_lev3 SPAN {
-    background: transparent url(/images/menu_black_down.gif) 33px 9px no-repeat;
+    background: transparent url('${pageContext.request.contextPath}/images/menu_black_down.gif') 33px 9px no-repeat;
 }
 #leftmenu A.act_tree_lev4 SPAN {
-    background: transparent url(/images/menu_black_down.gif) 49px 9px no-repeat;
+    background: transparent url('${pageContext.request.contextPath}/images/menu_black_down.gif') 49px 9px no-repeat;
 }
 
 #leftmenu A.inact_tree_lev1 SPAN {
-    background: transparent url(/images/menu_black_right.gif) 4px 10px no-repeat;
+    background: transparent url('${pageContext.request.contextPath}/images/menu_black_right.gif') 4px 10px no-repeat;
 }
 #leftmenu A.inact_tree_lev2 SPAN {
-    background: transparent url(/images/menu_black_right.gif) 16px 10px no-repeat;
+    background: transparent url('${pageContext.request.contextPath}/images/menu_black_right.gif') 16px 10px no-repeat;
 }
 #leftmenu A.inact_tree_lev3 SPAN {
-    background: transparent url(/images/menu_black_right.gif) 32px 10px no-repeat;
+    background: transparent url('${pageContext.request.contextPath}/images/menu_black_right.gif') 32px 10px no-repeat;
 }
 #leftmenu A.inact_tree_lev4 SPAN {
-    background: transparent url(/images/menu_black_right.gif) 48px 10px no-repeat;
+    background: transparent url('${pageContext.request.contextPath}/images/menu_black_right.gif') 48px 10px no-repeat;
 }
 
 
