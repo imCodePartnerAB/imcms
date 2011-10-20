@@ -210,7 +210,7 @@ class FileDocContentEditor(val doc: FileDocumentDomainObject) extends DocContent
           ui.getApplication.showWarningNotification("Please select file(s)")
 
         case fileIds =>
-          val fdfs = state.fdfs filterKeys fileIds.toSet.andThen(!=)
+          val fdfs = state.fdfs filterKeys fileIds.toSet.andThen(!_)
           val ids = fdfs.keySet
           val defaultFdfId = ids.find(state.defaultFdfId.get ==) orElse ids.headOption
 
