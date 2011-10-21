@@ -26,18 +26,16 @@ import _root_.com.vaadin.data.Validator.InvalidValueException
 
 /**
  * Doc's meta editor.
- * <p/>
  *
  * @param doc used to as editor's initial state, never modified.
  */
-class MetaEditor[A <: DocumentDomainObject](app: ImcmsApplication, doc: A) extends ImcmsServicesSupport {
+class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends ImcmsServicesSupport {
   private var appearanceEditorOpt = Option.empty[AppearanceEditor]
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
   private var permissionsEditorOpt = Option.empty[PermissionsEditor]
   private var searchSettingsEditorOpt = Option.empty[SearchSettingsEditor]
   private var categoriesEditorOpt = Option.empty[CategoriesEditor]
   private var profileEditorOpt = Option.empty[ProfileEditor]
-
 
   val ui = letret(new MetaEditorUI) { ui =>
     ui.treeMenu.addItem("Appearance")
@@ -108,11 +106,11 @@ class MetaEditor[A <: DocumentDomainObject](app: ImcmsApplication, doc: A) exten
   /**
    * Clones the original doc, copies changes into that clone and returns it.
    */
-  type State = (A, Map[I18nLanguage, I18nMeta])
-  type ErrorEitherState = ErrorMsg Either State
+  type State = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
+  type ErrorMsgEitherState = ErrorMsg Either State
 
-  def state(): ErrorEitherState = {
-    case class StateMapper(eitherState: ErrorEitherState) {
+  def state(): ErrorMsgEitherState = {
+    case class StateMapper(eitherState: ErrorMsgEitherState) {
       def maybeMap[B](dataOpt: => Option[Either[ErrorMsg, B]])(fn: (State, B) => State): StateMapper =
         StateMapper(
           eitherState match {
@@ -126,7 +124,7 @@ class MetaEditor[A <: DocumentDomainObject](app: ImcmsApplication, doc: A) exten
         )
     }
 
-    StateMapper(Right(doc.clone.asInstanceOf[A], Map.empty[I18nLanguage, I18nMeta]))
+    StateMapper(Right(doc.clone, Map.empty[I18nLanguage, I18nMeta]))
       .maybeMap(appearanceEditorOpt.map(_.state())) {
         case ((dc, _), data) => letret(dc, data.i18nMetas) { _ =>
           dc.getMeta.setLanguages(data.enabledLanguages)

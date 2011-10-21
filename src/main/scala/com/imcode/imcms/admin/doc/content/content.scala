@@ -27,40 +27,46 @@ import com.vaadin.ui.Table.ColumnGenerator
 import com.vaadin.terminal.{ThemeResource, ExternalResource}
 import com.vaadin.ui._
 
-trait DocContentEditor {
+trait DocContentEditor[A <: DocumentDomainObject] {
   def ui: Component
-  def doc: DocumentDomainObject
-
-  // def validate: Left error/Right ok ???
+  def state(): Either[ErrorMsg, A]
 }
 
 
 
-class TextDocContentEditor(val doc: TextDocumentDomainObject) extends DocContentEditor {
+class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEditor[TextDocumentDomainObject] {
   val ui = letret(new TextDocContentEditorUI) { ui =>
 
   }
+
+  def state() = Right(doc)
 }
 
 
-class URLDocContentEditor(val doc: UrlDocumentDomainObject) extends DocContentEditor {
+class URLDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor[UrlDocumentDomainObject] {
   val ui = letret(new URLDocContentEditorUI) { ui =>
     ui.txtURL.value = "http://"
   }
+
+  def state() = Right(doc)
 }
 
 
-class HtmlDocContentEditor(val doc: HtmlDocumentDomainObject) extends DocContentEditor {
+class HTMLDocContentEditor(doc: HtmlDocumentDomainObject) extends DocContentEditor[HtmlDocumentDomainObject] {
   val ui = letret(new HTMLDocContentEditorUI) { ui =>
     ui.txaHTML.value = <html/>.toString
   }
+
+  def state() = Right(doc)
 }
 
 /**
  * Used with deprecated docs such as Browser.
  */
-class UnsupportedDocContentEditor(val doc: DocumentDomainObject) extends DocContentEditor {
+class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor[DocumentDomainObject] {
   val ui = new Label("N/A".i)
+
+  def state() = Right(doc)
 }
 
 

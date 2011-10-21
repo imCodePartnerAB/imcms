@@ -27,6 +27,7 @@ class FileUploaderDialog(caption: String = "") extends OkCancelDialog(caption) {
   mainUI = uploader.ui
 
   uploader.listen { btnOk setEnabled _.isInstanceOf[UploadSucceeded] }
+  uploader.reset()
 
   wrapCancelHandler {
     if (uploader.ui.upload.isUploading) {

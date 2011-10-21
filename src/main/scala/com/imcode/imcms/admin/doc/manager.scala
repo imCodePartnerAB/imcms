@@ -3,6 +3,7 @@ package imcms
 package admin.doc
 
 import _root_.scala.collection.JavaConversions._
+import imcode.server.document._
 
 //import _root_.scala.collection.JavaConverters._
 import _root_.com.vaadin.event.Action
@@ -12,7 +13,6 @@ import _root_.com.imcode.imcms.mapping.ProfileMapper
 import _root_.com.imcode.imcms.admin.doc.content._
 import _root_.com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
 import _root_.com.imcode.imcms.admin.doc.search.{DocSearchUI, DocSearch, AllDocsContainer, CustomDocsContainer}
-import _root_.imcode.server.document.{UrlDocumentDomainObject, DocumentDomainObject, FileDocumentDomainObject, HtmlDocumentDomainObject}
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 
 import java.net.URL
@@ -80,64 +80,102 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     // todo: allow change several at once???
     // todo: permissions
     ui.miEdit.setCommandHandler {
-      whenSingle(search.searchResultUI.selection) { docId =>
-        val dlg = new OkCancelDialog("Edit document") with CustomSizeDialog with BottomMarginDialog
-        val doc = imcmsServices.getDocumentMapper.getWorkingDocument(search.searchResultUI.first.get.intValue)
-        val metaEditor = new MetaEditor(app, doc)
-        val contentEditor: DocContentEditor = doc match {
-          case doc: TextDocumentDomainObject => new TextDocContentEditor(doc)
-          case doc: FileDocumentDomainObject => new FileDocContentEditor(doc)
-          case doc: UrlDocumentDomainObject => new URLDocContentEditor(doc)
-          case doc: HtmlDocumentDomainObject => new HtmlDocContentEditor(doc)
-          case _ => new UnsupportedDocContentEditor(doc)
-        }
 
-        dlg.mainUI = letret(new TabSheet with FullSize) { ts =>
-          ts.addTab(metaEditor.ui, "Properties", null)
-          ts.addTab(contentEditor.ui, "Content", null)
-        }
-
-        dlg.setOkHandler {
-          // todo:
-          // 1.validate
-          // 2.copy changes into doc:
-          // 3.state: ValidationError Either Doc
-          // properties.state
-          // merge editor and content editor states
-          metaEditor.state() match {
-            case Left(errMsg) => app.showErrorNotification("Can't save", errMsg)
-            case Right((doc, i18nMetas)) =>
-              imcmsServices.getDocumentMapper.saveDocument(doc, i18nMetas, app.user)
-              dlg.close()
-          }
-        }
-
-        dlg.setSize(500, 500)
-        app.show(dlg, resizable = true)
-      }
+//      whenSingle(search.searchResultUI.selection) { docId =>
+//        val dlg = new OkCancelDialog("Edit document") with CustomSizeDialog with BottomMarginDialog
+//        val doc = imcmsServices.getDocumentMapper.getWorkingDocument(search.searchResultUI.first.get.intValue)
+//        val metaEditor = new MetaEditor(app, doc)
+//        val contentEditor: DocContentEditor = doc match {
+//          case doc: TextDocumentDomainObject => new TextDocContentEditor(doc)
+//          case doc: FileDocumentDomainObject => new FileDocContentEditor(doc)
+//          case doc: UrlDocumentDomainObject => new URLDocContentEditor(doc)
+//          case doc: HtmlDocumentDomainObject => new HtmlDocContentEditor(doc)
+//          case _ => new UnsupportedDocContentEditor(doc)
+//        }
+//
+//        dlg.mainUI = letret(new TabSheet with FullSize) { ts =>
+//          ts.addTab(metaEditor.ui, "Properties", null)
+//          ts.addTab(contentEditor.ui, "Content", null)
+//        }
+//
+//        dlg.setOkHandler {
+//          // todo:
+//          // 1.validate
+//          // 2.copy changes into doc:
+//          // 3.state: ValidationError Either Doc
+//          // properties.state
+//          // merge editor and content editor states
+//          metaEditor.state() match {
+//            case Left(errMsg) => app.showErrorNotification("Can't save", errMsg)
+//            case Right((doc, i18nMetas)) =>
+//              imcmsServices.getDocumentMapper.saveDocument(doc, i18nMetas, app.user)
+//              dlg.close()
+//          }
+//        }
+//
+//        dlg.setSize(500, 500)
+//        app.show(dlg, resizable = true)
+//      }
     }
 
-    // todo: parent doc or profile must be selected
-    // todo: parent doc type MUST be `text`
     val newDocCommandListener: MenuBar#MenuItem => Unit = { mi =>
-      val (contentEditor, dlgCaption) = (mi: @unchecked) match {
-        case ui.miNewTextDoc => (new TextDocContentEditor(new TextDocumentDomainObject), "New text document")
-        case ui.miNewFileDoc => (new FileDocContentEditor(new FileDocumentDomainObject), "New file document")
-        case ui.miNewURLDoc => (new URLDocContentEditor(new UrlDocumentDomainObject), "New URL document")
-        case ui.miNewHTMLDoc => (new HtmlDocContentEditor(new HtmlDocumentDomainObject), "New HTML document")
+      search.searchResultUI.selection match {
+        case Seq() =>
+        case Seq(_, _, _*) =>
+        case Seq(docId) => imcmsServices.getDocumentMapper.getDocument(docId) match {
+          case null =>
+          case profileDoc if !profileDoc.isInstanceOf[TextDocumentDomainObject] =>
+
+          case profileDoc: TextDocumentDomainObject =>
+            def mk[A <: DocumentDomainObject](docType: Int, editorFactory: A => DocContentEditor[A], dialogTitle: String) = {
+              val newDoc = imcmsServices.getDocumentMapper
+                .createDocumentOfTypeFromParent(docType, profileDoc, ui.getApplication.user)
+                .asInstanceOf[A]
+
+              (newDoc, editorFactory(newDoc), dialogTitle)
+            }
+
+            val (newDoc, contentEditor, dlgCaption) = (mi: @unchecked) match {
+              case ui.miNewTextDoc =>
+                mk[TextDocumentDomainObject](DocumentTypeDomainObject.TEXT_ID, new TextDocContentEditor(_), "New text document")
+
+              case ui.miNewFileDoc =>
+                mk[FileDocumentDomainObject](DocumentTypeDomainObject.FILE_ID, new FileDocContentEditor(_), "New file document")
+
+              case ui.miNewURLDoc =>
+                mk[UrlDocumentDomainObject](DocumentTypeDomainObject.URL_ID, new URLDocContentEditor(_), "New URL document")
+
+              case ui.miNewHTMLDoc =>
+                mk[HtmlDocumentDomainObject](DocumentTypeDomainObject.HTML_ID, new HTMLDocContentEditor(_), "New HTML document")
+            }
+
+            val dlg = new OkCancelDialog(dlgCaption) with CustomSizeDialog with BottomMarginDialog
+            val metaEditor = new MetaEditor(app, newDoc)
+
+            dlg.mainUI = letret(new TabSheet with FullSize) { ts =>
+              ts.addTab(metaEditor.ui, "Properties", null)
+              ts.addTab(contentEditor.ui, "Content", null)
+            }
+
+            dlg.setOkHandler {
+              (metaEditor.state(), contentEditor.state()) match {
+                case (Left(errorMsg), _) =>
+                case (_, Left(errorMsg)) =>
+                case (Right((metaDoc, i18nMetas)), Right(doc)) =>
+                  doc.setMeta(metaDoc.getMeta)
+
+                  imcmsServices.getDocumentMapper.saveNewDocument(doc, i18nMetas, ui.getApplication.user)
+                  search.search()
+                  ui.getApplication.showInfoNotification("New document has been created")
+                  dlg.close()
+              }
+            }
+
+            dlg.setSize(500, 500)
+            app.show(dlg, resizable = true)
+        }
       }
-
-      val dlg = new OkCancelDialog(dlgCaption) with CustomSizeDialog with BottomMarginDialog
-      val metaEditor = new MetaEditor(app, contentEditor.doc)
-
-      dlg.mainUI = letret(new TabSheet with FullSize) { ts =>
-        ts.addTab(metaEditor.ui, "Properties", null)
-        ts.addTab(contentEditor.ui, "Content", null)
-      }
-
-      dlg.setSize(500, 500)
-      app.show(dlg, resizable = true)
-    }
+    } // newDocCommandListener
 
     forlet(ui.miNewTextDoc, ui.miNewFileDoc, ui.miNewURLDoc, ui.miNewHTMLDoc) {
       _ setCommandListener newDocCommandListener

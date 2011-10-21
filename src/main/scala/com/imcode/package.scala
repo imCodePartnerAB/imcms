@@ -19,6 +19,8 @@ package object imcode {
   object Atoms {
     def OptRef[A] = new AtomicReference(Option.empty[A])
     def OptRef[A](value: A) = new AtomicReference(Option(value))
+    def Ref[A <: AnyRef] = new AtomicReference[A]
+    def Ref[A <: AnyRef](value: A) = new AtomicReference(value)
   }
 
 
