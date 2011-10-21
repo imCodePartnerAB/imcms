@@ -44,7 +44,7 @@
                 }
             });
 
-            if($("#changedFile").val()) {
+            if($("#changedFile").val() == "true") {
                 formChanged = true;
             }
 
@@ -53,6 +53,7 @@
             }
 
             if(formChanged && confirm('<spring:message code="archive.changeData.unsavedDataWarning"/>')) {
+                $("#changeData").append($("<input type='hidden' name='redirectToImageCard' value='true'/>"));
                 $("#save").click();
             } else {
                 window.location.replace("${pageContext.servletContext.contextPath}/web/archive/image/${image.id}");

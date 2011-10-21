@@ -281,8 +281,7 @@ public class ImageCardController {
     
     @RequestMapping("/archive/image/*/erase")
     public ModelAndView eraseHandler(
-            @RequestParam(required=false) Boolean delete, 
-            HttpServletRequest request, 
+            HttpServletRequest request,
             HttpServletResponse response) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
@@ -300,22 +299,9 @@ public class ImageCardController {
         } else if (image.isArchived() || !image.isCanChange()) {
             return new ModelAndView("redirect:/web/archive/image/" + imageId);
         }
-        
-        if (delete == null) {
-            ModelAndView mav = new ModelAndView("image_archive/pages/image_card/image_card");
-            mav.addObject("action", "erase");
-            mav.addObject("image", image);
-            
-            facade.getImageService().setImageMetaIds(image);
-            
-            return mav;
-        } else if (delete.booleanValue()) {
-            facade.getImageService().archiveImage(imageId);
-            
-            return new ModelAndView("redirect:/web/archive/");
-        } else {
-            return new ModelAndView("redirect:/web/archive/image/" + imageId);
-        }
+
+        facade.getImageService().archiveImage(imageId);
+        return new ModelAndView("redirect:/web/archive/");
     }
     
     @RequestMapping("/archive/image/*/change")
@@ -324,7 +310,8 @@ public class ImageCardController {
             BindingResult result, 
             @ModelAttribute ImageCardChangeActionCommand action,  
             HttpServletRequest request, 
-            HttpServletResponse response) {
+            HttpServletResponse response,
+            @RequestParam(required=false) boolean redirectToImageCard) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
@@ -529,6 +516,11 @@ public class ImageCardController {
                     facade.getFileService().deleteTemporaryImage(image.getId());
                     session.remove(IMAGE_KEY);
                     
+                    return new ModelAndView("redirect:/web/archive/image/" + image.getId());
+                } else if(redirectToImageCard) {
+                    facade.getFileService().deleteTemporaryImage(image.getId());
+                    session.remove(IMAGE_KEY);
+
                     return new ModelAndView("redirect:/web/archive/image/" + image.getId());
                 }
             }

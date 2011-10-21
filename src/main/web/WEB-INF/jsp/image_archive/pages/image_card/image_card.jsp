@@ -126,9 +126,6 @@
             <c:when test="${action eq 'change'}">
                 <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/change_data.jsp" %>
             </c:when>
-            <c:when test="${action eq 'erase'}">
-                <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/erase.jsp" %>
-            </c:when>
             <c:when test="${action eq 'exif'}">
                 <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/exportOverlay.jsp" %>
                 <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/exif.jsp" %>
@@ -173,10 +170,27 @@
                     </a>
                 </c:if>
 
-                <c:if test="${image.canChange and not image.archived and 'erase' ne action}">
+                <c:if test="${image.canChange and not image.archived}">
+                    <spring:message var="eraseConfirm" code="archive.imageCard.eraseConfirm"/>
+                    <c:if test="${not empty image.metaIds}">
+                        <archive:params var="infoParams">
+                            <archive:param value="${archive:join(image.metaIds, ', ')}"/>
+                        </archive:params>
+
+                        <spring:message var="eraseConfirmInfo" code="archive.imageCard.eraseConfirmInfo" arguments="${infoParams}"/>
+                        <c:set var="eraseConfirm" value="${eraseConfirm} ${eraseConfirmInfo}"/>
+                    </c:if>
+                    <script type="text/javascript">
+                        $(document).ready(function(){
+                            var eraseWarningMessage = '${eraseConfirm}';
+                            $("#eraseBtn").click(function(){
+                                return confirm(eraseWarningMessage);
+                            });
+                        });
+                    </script>
                     <c:set var="disabled" value="${!image.canChange}"/>
                     <c:url var="eraseUrl" value="/web/archive/image/${image.id}/erase"/>
-                    <a href="${eraseUrl}" style="margin-right:2px;" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
+                    <a id="eraseBtn" href="${eraseUrl}" style="margin-right:2px;" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
                         <spring:message code="archive.imageCard.erase" htmlEscape="true"/>
                     </a>
                 </c:if>
