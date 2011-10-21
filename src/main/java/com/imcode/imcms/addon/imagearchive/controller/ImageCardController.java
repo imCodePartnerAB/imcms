@@ -489,9 +489,17 @@ public class ImageCardController {
             
             if (action.getRotateLeft() != null) {
                 facade.getFileService().rotateImage(image.getId(), -90, true);
+                changeData.setRotation(changeData.getRotation() - 90);
+                if(changeData.getRotation() <= -360) {
+                    changeData.setRotation(0);
+                }
                 
             } else if (action.getRotateRight() != null) {
                 facade.getFileService().rotateImage(image.getId(), 90, true);
+                changeData.setRotation(changeData.getRotation() + 90);
+                if(changeData.getRotation() >= 360) {
+                    changeData.setRotation(0);
+                }
                 
             } else if (!result.hasErrors()) {
                 changeData.toImage(image);

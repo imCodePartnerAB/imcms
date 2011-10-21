@@ -89,7 +89,7 @@ img, table {
     margin-right: 5px;
 }
 
-a.imcmsFormBtnSmall.disabled, input.imcmsFormBtnSmall.disabled {
+a.imcmsFormBtnSmall.disabled, input.imcmsFormBtnSmall.disabled, a.imcmsFormBtn.disabled, input.imcmsFormBtn.disabled {
     background-color: #B8C6D5;
     border: 1px outset #DAE4EF;
     border-color: #DAE4EF #999999 #999999 #DAE4EF;

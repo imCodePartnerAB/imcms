@@ -27,6 +27,7 @@ public class ChangeImageDataCommand implements Serializable {
     private String licenseEndDt;
     
     private boolean changedFile;
+    private int rotation = 0;
     private CommonsMultipartFile file;
     
     private Date licenseDate;
@@ -236,6 +237,14 @@ public class ChangeImageDataCommand implements Serializable {
 
     public void setChangedFile(boolean changedFile) {
         this.changedFile = changedFile;
+    }
+
+    public int getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(int rotation) {
+        this.rotation = rotation;
     }
 
     public CommonsMultipartFile getFile() {
