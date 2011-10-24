@@ -13,7 +13,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject
 import com.vaadin.Application
 import com.vaadin.ui._
 import imcode.server.document._
-import com.imcode.imcms.admin.doc.content.Editor
+
 
 // Discuss
 //        Managed templates in groups:
@@ -50,12 +50,12 @@ import com.imcode.imcms.admin.doc.content.Editor
  * -Lim1 and Lim2 perm sets can be customized - i.e. predefined permissions can be added/removed to/from those sets.
  */
 class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserDomainObject) extends Editor with ImcmsServicesSupport {
-  type StateType = Data
+  type DataType = Values
 
   private val meta = doc.getMeta.clone
   private val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
 
-  case class Data(
+  case class Values(
     rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone,
     restrictedOnePermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject],
     restrictedTwoPermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject],
@@ -64,7 +64,7 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
     isLinkableByOtherUsers: Boolean = meta.getLinkableByOtherUsers
   )
 
-  private val initialData = Data()
+  private val initialValues = Values()
 
   // Initialized in revert()
   // Might be edited in their own pop-up dialogs
@@ -201,7 +201,7 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
     ui.rolesPermsSetTypeUI.tblRolesPermsTypes.removeAllItems()
 
     for {
-      mapping <- initialData.rolesPermissions.getMappings
+      mapping <- initialValues.rolesPermissions.getMappings
       roleId = mapping.getRoleId
       role <- allButSuperadminRole.get(roleId)
       setType = mapping.getDocumentPermissionSetType
@@ -210,10 +210,10 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
       addRolePermSetType(role, setType)
     }
 
-    ui.frmExtraSettings.chkShareWithOtherAdmins.checked = initialData.isLinkableByOtherUsers
-    ui.frmExtraSettings.chkShowToUnauthorizedUser.checked = initialData.isLinkedForUnauthorizedUsers
+    ui.frmExtraSettings.chkShareWithOtherAdmins.checked = initialValues.isLinkableByOtherUsers
+    ui.frmExtraSettings.chkShowToUnauthorizedUser.checked = initialValues.isLinkedForUnauthorizedUsers
 
-    ui.chkLim1IsMorePrivilegedThanLim2.checked = initialData.isRestrictedOneMorePrivilegedThanRestricted2
+    ui.chkLim1IsMorePrivilegedThanLim2.checked = initialValues.isRestrictedOneMorePrivilegedThanRestricted2
 
     doc match {
       case textDoc: TextDocumentDomainObject =>
@@ -233,22 +233,24 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
   }
 
 
-  val state = new State {
-    protected def get = Data(
-      letret(new RoleIdToDocumentPermissionSetTypeMappings) { rolesPermissions =>
-        import ui.rolesPermsSetTypeUI.tblRolesPermsTypes
-        tblRolesPermsTypes.itemIds foreach { role =>
-          rolesPermissions.setPermissionSetTypeForRole(
-            role.getId,
-            tblRolesPermsTypes.getContainerProperty(role, RolePermsSetTypePropertyId).getValue.asInstanceOf[RolePermsSetType].setType
-          )
-        }
-      },
-      restrictedOnePermSet, // clone ???
-      restrictedTwoPermSet, // clone ???
-      ui.chkLim1IsMorePrivilegedThanLim2.checked,
-      ui.frmExtraSettings.chkShowToUnauthorizedUser.checked,
-      ui.frmExtraSettings.chkShareWithOtherAdmins.checked
+  val data = new Data {
+    def get() = Right(
+      Values(
+        letret(new RoleIdToDocumentPermissionSetTypeMappings) { rolesPermissions =>
+          import ui.rolesPermsSetTypeUI.tblRolesPermsTypes
+          tblRolesPermsTypes.itemIds foreach { role =>
+            rolesPermissions.setPermissionSetTypeForRole(
+              role.getId,
+              tblRolesPermsTypes.getContainerProperty(role, RolePermsSetTypePropertyId).getValue.asInstanceOf[RolePermsSetType].setType
+            )
+          }
+        },
+        restrictedOnePermSet, // clone ???
+        restrictedTwoPermSet, // clone ???
+        ui.chkLim1IsMorePrivilegedThanLim2.checked,
+        ui.frmExtraSettings.chkShowToUnauthorizedUser.checked,
+        ui.frmExtraSettings.chkShareWithOtherAdmins.checked
+      )
     )
   }
 

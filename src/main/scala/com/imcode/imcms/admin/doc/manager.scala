@@ -158,7 +158,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
             }
 
             dlg.setOkHandler {
-              (metaEditor.state(), contentEditor.state.validateAndGet()) match {
+              (metaEditor.data.get(), contentEditor.data.get()) match {
                 case (Left(errorMsgs), _) =>
                   ui.getApplication.showErrorNotification(errorMsgs.mkString(","))
 

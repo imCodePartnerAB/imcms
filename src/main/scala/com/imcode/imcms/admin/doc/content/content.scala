@@ -27,81 +27,60 @@ import com.vaadin.ui.Table.ColumnGenerator
 import com.vaadin.terminal.{ThemeResource, ExternalResource}
 import com.vaadin.ui._
 
-trait Editor {
-  type StateType
-
-  def ui: Component
-  def state: State
-
-  trait State {
-    //def clearValidationErrors(): Unit {}
-    //def revert(): Unit = {}
-
-    /** Validates editor's data. */
-    def validate(): Seq[ErrorMsg] = Nil
-    def validateAndGet(): Either[Seq[ErrorMsg], StateType] = validate() match {
-      case errorMsgs if errorMsgs.nonEmpty => Left(errorMsgs)
-      case _ => Right(get)
-    }
-
-    protected def get: StateType
-  }
-}
-
 
 trait DocContentEditor extends Editor {
-  type StateType <: DocumentDomainObject
+  type DataType <: DocumentDomainObject
 }
 
 
 class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEditor {
-  type StateType = TextDocumentDomainObject
+  type DataType = TextDocumentDomainObject
 
   val ui = letret(new TextDocContentEditorUI) { ui =>
-  }
+  } //ui
 
-  val state = new State {
-    protected def get = doc
-  }
+  val data = new Data {
+    def get() = Right(doc)
+  } //data
 }
 
 
 class URLDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor {
-  type StateType = UrlDocumentDomainObject
+  type DataType = UrlDocumentDomainObject
 
   val ui = letret(new URLDocContentEditorUI) { ui =>
     ui.txtURL.value = "http://"
-  }
+  } // ui
 
-  val state = new State {
-    protected def get = doc
-  }
+  val data = new Data {
+    def get() = Right(doc)
+  } // data
 }
 
 
 class HTMLDocContentEditor(doc: HtmlDocumentDomainObject) extends DocContentEditor {
-  type StateType = HtmlDocumentDomainObject
+  type DataType = HtmlDocumentDomainObject
 
   val ui = letret(new HTMLDocContentEditorUI) { ui =>
     ui.txaHTML.value = <html/>.toString
-  }
+  } // ui
 
-  val state = new State {
-    protected def get = doc
-  }
+  val data = new Data {
+    def get() = Right(doc)
+  } // data
 }
 
 /**
  * Used with deprecated docs such as Browser.
  */
 class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor {
-  type StateType = DocumentDomainObject
+  type DataType = DocumentDomainObject
 
-  val ui = new Label("N/StateType".i)
+  val ui = new Label("Not supported".i)
 
-  val state = new State {
-    protected def get = doc
-  }
+  val data = new Data {
+    def get() = Right(doc)
+  } // data
 }
 
 

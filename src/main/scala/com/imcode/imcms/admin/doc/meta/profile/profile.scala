@@ -12,7 +12,7 @@ import imcms.ImcmsServicesSupport
 import textdocument.TextDocumentDomainObject
 import com.vaadin.ui._
 import admin.doc.meta.permissions.{DocRestrictedPermSetEditor, TextDocRestrictedPermSetEditor}
-import com.imcode.imcms.admin.doc.content.Editor
+
 
 // todo: check: ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)
 // todo: discuss with Hillar/Crister:
@@ -32,9 +32,9 @@ import com.imcode.imcms.admin.doc.content.Editor
  */
 class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) extends Editor with ImcmsServicesSupport {
 
-  type StateType = Data
+  type DataType = Values
 
-  case class Data(
+  case class Values(
     defaultTemplate: String,
     restrictedOnePermSet: TextDocumentPermissionSetDomainObject,
     restrictedTwoPermSet: TextDocumentPermissionSetDomainObject,
@@ -60,9 +60,21 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
         dlg.mainUI = restrictedTwoPermSetEditor.ui
       }
     }
-  }
+  } // ui
 
-  revert()
+
+  val data = new Data {
+    def get() = Right(
+      Values(
+        ui.cbDefaultTemplate.value,
+        restrictedOnePermSet, // ??? clone
+        restrictedTwoPermSet, // ??? clone
+        ui.cbRestrictedOneDefaultTemplate.value,
+        ui.cbRestrictedTwoDefaultTemplate.value
+      )
+    )
+  } // data
+
 
   def revert() {
     //restrictedOnePermSetEditor.revert()
@@ -90,16 +102,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
     setTemplatesNamesAsComboBoxItems(ui.cbRestrictedTwoDefaultTemplate, doc.getDefaultTemplateNameForRestricted2)
   }
 
-
-  val state = new State {
-    protected def get = Data(
-      ui.cbDefaultTemplate.value,
-      restrictedOnePermSet, // ??? clone
-      restrictedTwoPermSet, // ??? clone
-      ui.cbRestrictedOneDefaultTemplate.value,
-      ui.cbRestrictedTwoDefaultTemplate.value
-    )
-  }
+  revert()
 }
 
 

@@ -10,10 +10,20 @@ import com.vaadin.terminal.{UserError, Sizeable}
 
 package object vaadin {
 
-  // Current IDEA plugin can not resolve certain types from vaadin package without the import line below.
-  // However, it is not required by the scala compiler
-  // todo: remove when the plugin become smarter
-  import vaadin._
+  trait Editor {
+
+    /** Edited data type */
+    type DataType
+    type ErrorMsgsEitherData = Seq[ErrorMsg] Either DataType
+
+    def ui: Component
+    def data: Data
+
+    trait Data {
+      def get(): ErrorMsgsEitherData
+    }
+  }
+
 
   def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {
     def menuSelected(mi: MenuBar#MenuItem) = handler(mi)
