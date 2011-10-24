@@ -13,7 +13,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject
 import com.vaadin.Application
 import com.vaadin.ui._
 import imcode.server.document._
-import java.util.HashSet
+import com.imcode.imcms.admin.doc.content.Editor
 
 // Discuss
 //        Managed templates in groups:
@@ -49,12 +49,13 @@ import java.util.HashSet
  * -READ and FULL perm sets are non-customizable and always contain the same predefined permissions.
  * -Lim1 and Lim2 perm sets can be customized - i.e. predefined permissions can be added/removed to/from those sets.
  */
-class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
+class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserDomainObject) extends Editor with ImcmsServicesSupport {
+  type StateType = Data
 
   private val meta = doc.getMeta.clone
   private val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
 
-  case class State(
+  case class Data(
     rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone,
     restrictedOnePermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject],
     restrictedTwoPermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject],
@@ -63,7 +64,7 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
     isLinkableByOtherUsers: Boolean = meta.getLinkableByOtherUsers
   )
 
-  private val initialState = State()
+  private val initialData = Data()
 
   // Initialized in revert()
   // Might be edited in their own pop-up dialogs
@@ -200,7 +201,7 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
     ui.rolesPermsSetTypeUI.tblRolesPermsTypes.removeAllItems()
 
     for {
-      mapping <- initialState.rolesPermissions.getMappings
+      mapping <- initialData.rolesPermissions.getMappings
       roleId = mapping.getRoleId
       role <- allButSuperadminRole.get(roleId)
       setType = mapping.getDocumentPermissionSetType
@@ -209,10 +210,10 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
       addRolePermSetType(role, setType)
     }
 
-    ui.frmExtraSettings.chkShareWithOtherAdmins.checked = initialState.isLinkableByOtherUsers
-    ui.frmExtraSettings.chkShowToUnauthorizedUser.checked = initialState.isLinkedForUnauthorizedUsers
+    ui.frmExtraSettings.chkShareWithOtherAdmins.checked = initialData.isLinkableByOtherUsers
+    ui.frmExtraSettings.chkShowToUnauthorizedUser.checked = initialData.isLinkedForUnauthorizedUsers
 
-    ui.chkLim1IsMorePrivilegedThanLim2.checked = initialState.isRestrictedOneMorePrivilegedThanRestricted2
+    ui.chkLim1IsMorePrivilegedThanLim2.checked = initialData.isRestrictedOneMorePrivilegedThanRestricted2
 
     doc match {
       case textDoc: TextDocumentDomainObject =>
@@ -232,8 +233,8 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
   }
 
 
-  def state(): Either[ErrorMsg, State] = validate().toLeft {
-    State(
+  val state = new State {
+    protected def get = Data(
       letret(new RoleIdToDocumentPermissionSetTypeMappings) { rolesPermissions =>
         import ui.rolesPermsSetTypeUI.tblRolesPermsTypes
         tblRolesPermsTypes.itemIds foreach { role =>
@@ -250,8 +251,6 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
       ui.frmExtraSettings.chkShareWithOtherAdmins.checked
     )
   }
-
-  def validate(): Option[ErrorMsg] = None
 
   // init
   revert()

@@ -23,13 +23,19 @@ import _root_.com.imcode.imcms.dao.MetaDao
 import _root_.com.vaadin.terminal.{UserError, ErrorMessage, Sizeable, ExternalResource}
 import _root_.com.vaadin.data.Validator
 import _root_.com.vaadin.data.Validator.InvalidValueException
+import com.imcode.imcms.admin.doc.content.Editor
 
 /**
  * Doc's meta editor.
  *
  * @param doc used to as editor's initial state, never modified.
  */
+//class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Editor with ImcmsServicesSupport {
+//  type StateType = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
 class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends ImcmsServicesSupport {
+  type State = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
+  type ErrorMsgsEitherState = Seq[ErrorMsg] Either State
+
   private var appearanceEditorOpt = Option.empty[AppearanceEditor]
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
   private var permissionsEditorOpt = Option.empty[PermissionsEditor]
@@ -103,15 +109,17 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
   ui.sp.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE)
   ui.treeMenu.select("Appearance")
 
+//  val state = new State {
+//    override def validate(): Seq[ErrorMsg] = Nil
+//    def get = null
+//  }
+
   /**
    * Clones the original doc, copies changes into that clone and returns it.
    */
-  type State = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
-  type ErrorMsgEitherState = ErrorMsg Either State
-
-  def state(): ErrorMsgEitherState = {
-    case class StateMapper(eitherState: ErrorMsgEitherState) {
-      def maybeMap[B](dataOpt: => Option[Either[ErrorMsg, B]])(fn: (State, B) => State): StateMapper =
+  def state(): ErrorMsgsEitherState = {
+    case class StateMapper(eitherState: ErrorMsgsEitherState) {
+      def maybeMap[B](dataOpt: => Option[Either[Seq[ErrorMsg], B]])(fn: (State, B) => State): StateMapper =
         StateMapper(
           eitherState match {
             case _ if eitherState.isLeft => eitherState
@@ -125,7 +133,7 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
     }
 
     StateMapper(Right(doc.clone, Map.empty[I18nLanguage, I18nMeta]))
-      .maybeMap(appearanceEditorOpt.map(_.state())) {
+      .maybeMap(appearanceEditorOpt.map(_.state.validateAndGet())) {
         case ((dc, _), data) => letret(dc, data.i18nMetas) { _ =>
           dc.getMeta.setLanguages(data.enabledLanguages)
           dc.getMeta.setI18nShowMode(data.disabledLanguageShowSetting)
@@ -133,7 +141,7 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
           dc.getMeta.setTarget(data.target)
         }
       }
-      .maybeMap(lifeCycleEditorOpt.map(_.state())) {
+      .maybeMap(lifeCycleEditorOpt.map(_.state.validateAndGet())) {
         case (state @ (dc, _), data) => letret(state) { _ =>
           dc.getMeta.setPublicationStatus(data.publicationStatus)
           dc.getMeta.setPublicationStartDatetime(data.publicationStart)
@@ -147,7 +155,7 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
           //???dc.getMeta.setModifierId
         }
       }
-      .maybeMap(permissionsEditorOpt.map(_.state())) {
+      .maybeMap(permissionsEditorOpt.map(_.state.validateAndGet())) {
         case (state @ (dc, _), data) => letret(state) { _ =>
           dc.setRoleIdsMappedToDocumentPermissionSetTypes(data.rolesPermissions)
           dc.getPermissionSets.setRestricted1(data.restrictedOnePermSet)
@@ -157,12 +165,12 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Imcms
           dc.setLinkableByOtherUsers(data.isLinkableByOtherUsers)
         }
       }
-      .maybeMap(categoriesEditorOpt.map(_.state())) {
+      .maybeMap(categoriesEditorOpt.map(_.state.validateAndGet())) {
         case (state @ (dc, _), data) => letret(state) { _ =>
           dc.setCategoryIds(data.categoriesIds)
         }
       }
-      .maybeMap(profileEditorOpt.map(_.state())) {
+      .maybeMap(profileEditorOpt.map(_.state.validateAndGet())) {
         case (state @ (tdc: TextDocumentDomainObject, _), data) => letret(state) { _ =>
           tdc.setDefaultTemplateId(data.defaultTemplate)
           tdc.getPermissionSetsForNewDocuments.setRestricted1(data.restrictedOnePermSet)
@@ -205,8 +213,10 @@ class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
 
 
 
-class LifeCycleEditor(meta: Meta) extends ImcmsServicesSupport {
-  case class State(
+class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
+  type StateType = Data
+
+  case class Data(
     publicationStatus: Document.PublicationStatus,
     publicationStart: Date,
     publicationEnd: Option[Date],
@@ -256,8 +266,8 @@ class LifeCycleEditor(meta: Meta) extends ImcmsServicesSupport {
     // todo: ??? remember lytDate.chkEnd date when uncheked???
   }
 
-  def state(): Either[ErrorMsg, State] = validate().toLeft {
-    State(
+  val state = new State {
+    protected def get = Data(
       ui.frmPublication.sltStatus.value,
       ui.frmPublication.lytDate.calStart.value,
       ui.frmPublication.lytDate.calEnd.valueOpt,
@@ -269,9 +279,6 @@ class LifeCycleEditor(meta: Meta) extends ImcmsServicesSupport {
       ui.ussModifier.selection
     )
   }
-
-  def validate(): Option[ErrorMsg] = None
-
   // init
   revert()
 }
@@ -340,11 +347,13 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
  * Single-choice categories appear in a Select component, multi-choice in TwinSelect component.
  * Components (Select and TwinSelect) captions is set to type name.
  */
-class CategoriesEditor(meta: Meta) extends ImcmsServicesSupport {
-  case class State(categoriesIds: Set[CategoryId])
+class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
+  type StateType = Data
+
+  case class Data(categoriesIds: Set[CategoryId])
 
   // todo: remove???
-  private val initialState = State(meta.getCategoryIds.toSet)
+  private val initialData = Data(meta.getCategoryIds.toSet)
 
   private val typeCategoriesUIs: Seq[(CheckBox with ExposeValueChange, MultiSelectBehavior[CategoryId])] =
     for {
@@ -379,7 +388,7 @@ class CategoriesEditor(meta: Meta) extends ImcmsServicesSupport {
       chkCType.uncheck
       sltCategories.value = Nil
 
-      for (categoryId <- sltCategories.itemIds if initialState.categoriesIds(categoryId)) {
+      for (categoryId <- sltCategories.itemIds if initialData.categoriesIds(categoryId)) {
         sltCategories.select(categoryId)
         chkCType.check
       }
@@ -388,17 +397,15 @@ class CategoriesEditor(meta: Meta) extends ImcmsServicesSupport {
     }
   }
 
-  def state(): Either[ErrorMsg, State] = validate().toLeft {
-    State(
+  val state = new State {
+    protected def get = Data(
       typeCategoriesUIs.collect {
         case (chkCType, sltCategories) if chkCType.isChecked => sltCategories.value
       }.flatten.toSet
     )
   }
 
-  def validate(): Option[ErrorMsg] = None
-
-  //def isModified = state != initialState
+  //def isModified = state != initialData
 
   // init
   revert()
@@ -408,10 +415,12 @@ class CategoriesEditor(meta: Meta) extends ImcmsServicesSupport {
 /**
  * Doc's search settings editor.
  */
-class SearchSettingsEditor(meta: Meta) {
-  case class State(keywords: Set[Keyword], isExcludeFromInnerSearch: Boolean)
+class SearchSettingsEditor(meta: Meta) extends Editor {
+  type StateType = Data
 
-  private val initialState = State(meta.getKeywords.map(_.toLowerCase).toSet, false)
+  case class Data(keywords: Set[Keyword], isExcludeFromInnerSearch: Boolean)
+
+  private val initialData = Data(meta.getKeywords.map(_.toLowerCase).toSet, false)
 
   val ui = letret(new SearchSettingsEditorUI) { ui =>
     import ui.lytKeywords.{btnAdd, btnRemove, txtKeyword, lstKeywords}
@@ -449,17 +458,15 @@ class SearchSettingsEditor(meta: Meta) {
 
 
   def revert() {
-    setKeywords(initialState.keywords)
-    ui.chkExcludeFromInternalSearch.checked = initialState.isExcludeFromInnerSearch
+    setKeywords(initialData.keywords)
+    ui.chkExcludeFromInternalSearch.checked = initialData.isExcludeFromInnerSearch
   }
 
-  def state(): Either[ErrorMsg, State] = validate().toLeft {
-    State(ui.lytKeywords.lstKeywords.itemIds.toSet, ui.chkExcludeFromInternalSearch.isChecked)
+  val state = new State {
+    protected def get = Data(ui.lytKeywords.lstKeywords.itemIds.toSet, ui.chkExcludeFromInternalSearch.isChecked)
   }
 
-  def validate(): Option[ErrorMsg] = None
-
-  //def isModified = state != initialState
+  //def isModified = state != initialData
 }
 
 
@@ -503,9 +510,11 @@ class SearchSettingsEditorUI extends FormLayout with UndefinedSize {
  * @param meta doc's Meta
  * @param i18nMetas doc's i18nMeta-s
  */
-class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extends ImcmsServicesSupport {
+class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extends Editor with ImcmsServicesSupport {
 
-  case class State(
+  type StateType = Data
+
+  case class Data(
     i18nMetas: Map[I18nLanguage, I18nMeta],
     enabledLanguages: Set[I18nLanguage],
     disabledLanguageShowSetting: Meta.DisabledLanguageShowSetting,
@@ -630,8 +639,12 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
     ui.frmLinkTarget.cbTarget.select(target)
   }
 
-  def state(): Either[ErrorMsg, State] = validate().toLeft {
-    State(
+  val state = new State {
+    override def validate(): Seq[ErrorMsg] = {
+      EX.allCatch.either(ui.frmAlias.txtAlias.validate()).left.toSeq.map(ex => ex.getMessage)
+    }
+
+    protected def get = Data(
       i18nMetasUIs.map {
         case (language, chkBox, i18nMetaEditorUI) =>
           language -> letret(new I18nMeta) { i18nMeta =>
@@ -648,10 +661,6 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
       ui.frmAlias.txtAlias.trimOpt,
       ui.frmLinkTarget.cbTarget.value
     )
-  }
-
-  def validate(): Option[ErrorMsg] = {
-    EX.allCatch.either(ui.frmAlias.txtAlias.validate()).left.toOption.map(_.getMessage)
   }
 
   revert()

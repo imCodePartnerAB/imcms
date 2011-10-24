@@ -27,46 +27,81 @@ import com.vaadin.ui.Table.ColumnGenerator
 import com.vaadin.terminal.{ThemeResource, ExternalResource}
 import com.vaadin.ui._
 
-trait DocContentEditor[A <: DocumentDomainObject] {
+trait Editor {
+  type StateType
+
   def ui: Component
-  def state(): Either[ErrorMsg, A]
+  def state: State
+
+  trait State {
+    //def clearValidationErrors(): Unit {}
+    //def revert(): Unit = {}
+
+    /** Validates editor's data. */
+    def validate(): Seq[ErrorMsg] = Nil
+    def validateAndGet(): Either[Seq[ErrorMsg], StateType] = validate() match {
+      case errorMsgs if errorMsgs.nonEmpty => Left(errorMsgs)
+      case _ => Right(get)
+    }
+
+    protected def get: StateType
+  }
 }
 
 
+trait DocContentEditor extends Editor {
+  type StateType <: DocumentDomainObject
+}
 
-class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEditor[TextDocumentDomainObject] {
+
+class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEditor {
+  type StateType = TextDocumentDomainObject
+
   val ui = letret(new TextDocContentEditorUI) { ui =>
-
   }
 
-  def state() = Right(doc)
+  val state = new State {
+    protected def get = doc
+  }
 }
 
 
-class URLDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor[UrlDocumentDomainObject] {
+class URLDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor {
+  type StateType = UrlDocumentDomainObject
+
   val ui = letret(new URLDocContentEditorUI) { ui =>
     ui.txtURL.value = "http://"
   }
 
-  def state() = Right(doc)
+  val state = new State {
+    protected def get = doc
+  }
 }
 
 
-class HTMLDocContentEditor(doc: HtmlDocumentDomainObject) extends DocContentEditor[HtmlDocumentDomainObject] {
+class HTMLDocContentEditor(doc: HtmlDocumentDomainObject) extends DocContentEditor {
+  type StateType = HtmlDocumentDomainObject
+
   val ui = letret(new HTMLDocContentEditorUI) { ui =>
     ui.txaHTML.value = <html/>.toString
   }
 
-  def state() = Right(doc)
+  val state = new State {
+    protected def get = doc
+  }
 }
 
 /**
  * Used with deprecated docs such as Browser.
  */
-class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor[DocumentDomainObject] {
-  val ui = new Label("N/A".i)
+class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor {
+  type StateType = DocumentDomainObject
 
-  def state() = Right(doc)
+  val ui = new Label("N/StateType".i)
+
+  val state = new State {
+    protected def get = doc
+  }
 }
 
 

@@ -12,6 +12,7 @@ import imcms.ImcmsServicesSupport
 import textdocument.TextDocumentDomainObject
 import com.vaadin.ui._
 import admin.doc.meta.permissions.{DocRestrictedPermSetEditor, TextDocRestrictedPermSetEditor}
+import com.imcode.imcms.admin.doc.content.Editor
 
 // todo: check: ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)
 // todo: discuss with Hillar/Crister:
@@ -29,9 +30,11 @@ import admin.doc.meta.permissions.{DocRestrictedPermSetEditor, TextDocRestricted
  * -default template
  * -restricted permissions and templates.
  */
-class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) extends ImcmsServicesSupport {
+class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) extends Editor with ImcmsServicesSupport {
 
-  case class State(
+  type StateType = Data
+
+  case class Data(
     defaultTemplate: String,
     restrictedOnePermSet: TextDocumentPermissionSetDomainObject,
     restrictedTwoPermSet: TextDocumentPermissionSetDomainObject,
@@ -88,8 +91,8 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
   }
 
 
-  def state(): Either[String, State] = validate().toLeft {
-    State(
+  val state = new State {
+    protected def get = Data(
       ui.cbDefaultTemplate.value,
       restrictedOnePermSet, // ??? clone
       restrictedTwoPermSet, // ??? clone
@@ -97,8 +100,6 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
       ui.cbRestrictedTwoDefaultTemplate.value
     )
   }
-
-  def validate(): Option[String] = None
 }
 
 

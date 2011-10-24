@@ -127,7 +127,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
           case profileDoc if !profileDoc.isInstanceOf[TextDocumentDomainObject] =>
 
           case profileDoc: TextDocumentDomainObject =>
-            def mk[A <: DocumentDomainObject](docType: Int, editorFactory: A => DocContentEditor[A], dialogTitle: String) = {
+            def mk[A <: DocumentDomainObject](docType: Int, editorFactory: A => DocContentEditor, dialogTitle: String) = {
               val newDoc = imcmsServices.getDocumentMapper
                 .createDocumentOfTypeFromParent(docType, profileDoc, ui.getApplication.user)
                 .asInstanceOf[A]
@@ -158,9 +158,13 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
             }
 
             dlg.setOkHandler {
-              (metaEditor.state(), contentEditor.state()) match {
-                case (Left(errorMsg), _) =>
-                case (_, Left(errorMsg)) =>
+              (metaEditor.state(), contentEditor.state.validateAndGet()) match {
+                case (Left(errorMsgs), _) =>
+                  ui.getApplication.showErrorNotification(errorMsgs.mkString(","))
+
+                case (_, Left(errorMsgs)) =>
+                  ui.getApplication.showErrorNotification(errorMsgs.mkString(","))
+
                 case (Right((metaDoc, i18nMetas)), Right(doc)) =>
                   doc.setMeta(metaDoc.getMeta)
 
