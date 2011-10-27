@@ -352,6 +352,7 @@ color: black;
         });
     });
 </script>
+<link type="text/css" rel="stylesheet" href="${contextPath}/css/jquery.qtip.css"/>
 </head>
 <body>
 <div class="printHidden" style="width:980px; margin: 0 auto; text-align:center;"

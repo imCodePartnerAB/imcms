@@ -32,7 +32,7 @@ public class ImageArchiveTag extends BodyTagSupport {
                 } else {
                     iframe += defaultStyle;
                 }
-                iframe += "seamless frameBorder='0' scrolling='no'></iframe>";
+                iframe += "seamless frameBorder='0' scrolling='no' id='imageArchive'></iframe>";
                 out.print(iframe);
             }
         } catch (IOException e) {

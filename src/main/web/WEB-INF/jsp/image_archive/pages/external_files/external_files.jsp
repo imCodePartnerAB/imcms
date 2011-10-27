@@ -84,6 +84,13 @@
                 $("#fileNames").tablesorter({headers: { 0 : {sorter:false}, 1 : {sorter:false}}});
             }
 
+            var xAdjustment = 0;
+            var yAdjustment = 0;
+            if($('#imageArchive', top.document).length) {
+                xAdjustment = $('#imageArchive', top.document).offset().left;
+                yAdjustment = $('#imageArchive', top.document).offset().top;
+            }
+
             $(".fileName").each(function(){
                 var name = $(this).parent().find(":checkbox").val();
                 $(this).qtip({
@@ -105,7 +112,12 @@
                     my: 'top left',
                     at: 'center center',
                     effect: false,
-                    viewport: $("#containerContent")
+                    container: $("body", top.document),
+                    viewport: $("body", top.document),
+                    adjust: {
+                        x: xAdjustment,
+                        y: yAdjustment
+                    }
                 }
                 });
             });
