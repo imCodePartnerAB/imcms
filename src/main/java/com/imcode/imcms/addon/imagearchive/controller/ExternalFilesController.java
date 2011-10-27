@@ -179,11 +179,12 @@ public class ExternalFilesController {
                 boolean alreadyInArchive =
                         Utils.isInArchive(facade.getFileService().getImageFileFromLibrary(library, fileNames[0]), facade).size() > 0;
                 if (alreadyInArchive || (image = activateImage(library, fileNames[0], user)) == null) {
-                    mav.addObject("activateError", true);
+                    ModelAndView tmp = new ModelAndView("redirect:/web/archive/external-files");
+                    tmp.addObject("activateError", true);
                     if(alreadyInArchive) {
-                        mav.addObject("alreadyInArchive", true);
+                        tmp.addObject("alreadyInArchive", true);
                     }
-                    return mav;
+                    return tmp;
                 }
                 session.put(IMAGE_KEY, image);
                 
@@ -229,12 +230,13 @@ public class ExternalFilesController {
                 }
 
                 if(generalActivationErrorOccured) {
-                    mav.addObject("activateError", true);
+                    ModelAndView tmp = new ModelAndView("redirect:/web/archive/external-files");
+                    tmp.addObject("activateError", true);
                     if(oneOfTheImageIsAlreadyInArchive) {
-                        mav.addObject("alreadyInArchive", true);
+                        tmp.addObject("alreadyInArchive", true);
                     }
 
-                    return mav;
+                    return tmp;
                 }
 
                 return new ModelAndView("redirect:/web/archive/external-files");

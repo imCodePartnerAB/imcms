@@ -1,4 +1,17 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
+<c:if test="${param.activateError}">
+    <spring:message var="cantActivate" code="archive.externalFiles.activate.cantActivate"/>
+    <c:if test="${param.alreadyInArchive}">
+        <spring:message var="alreadyInArchive" code="archive.externalFiles.activate.alreadyInArchive"/>
+        <c:set var="cantActivate" value="${cantActivate} ${alreadyInArchive}"/>
+    </c:if>
+    <script type="text/javascript">
+        $(window).load(function(){
+            var activationError = '${cantActivate}';
+            alert(activationError);
+        });
+    </script>
+</c:if>
 <h4 class="imcmsAdmHeading">
     <spring:message code="archive.externalFiles.uploadImageZip" htmlEscape="true"/>
 </h4>
