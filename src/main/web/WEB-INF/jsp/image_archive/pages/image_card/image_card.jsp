@@ -78,6 +78,12 @@
             $("#exportDialogCloseBtn").click(function(){
                 closeExportOverlay();
             });
+            $("#exportDialogSubmit").click(function(){
+                closeExportOverlay();
+            })
+            $("#exportImage").submit(function(){
+                closeExportOverlay();
+            });
         });
     </script>
 </c:set>

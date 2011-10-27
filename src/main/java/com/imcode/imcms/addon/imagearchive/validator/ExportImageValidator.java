@@ -19,7 +19,7 @@ public class ExportImageValidator implements Validator {
         
         Integer width = command.getWidth();
         if (width != null) {
-            int w = width.intValue();
+            int w = width;
             
             if (w < 1) {
                 width = 1;
@@ -31,7 +31,7 @@ public class ExportImageValidator implements Validator {
         
         Integer height = command.getHeight();
         if (height != null) {
-            int h = height.intValue();
+            int h = height;
             
             if (h < 1) {
                 height = 1;

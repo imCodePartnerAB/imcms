@@ -66,7 +66,7 @@
                 <spring:message var="exportText" code="archive.imageCard.export.exportButton" htmlEscape="true"/>
                 <spring:message var="cancelText" code="archive.cancel" htmlEscape="true"/>
                 <input type="button" class="imcmsFormBtn" name="cancel" value="${cancelText}" id="exportDialogCloseBtn"/>
-                <input type="submit" class="imcmsFormBtn" name="export" value="${exportText}"/>
+                <input type="submit" class="imcmsFormBtn" name="export" value="${exportText}" id="exportDialogSubmit"/>
             </div>
         </form:form>
     </div>
