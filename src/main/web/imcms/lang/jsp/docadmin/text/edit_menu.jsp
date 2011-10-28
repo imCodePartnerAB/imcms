@@ -13,5 +13,9 @@
     --%><%= label %> [<%= defaultUserCount %>/<%= userCount %>]&nbsp;<%-- 
     --%><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/red.gif" border="0" alt="edit menu <%= menuIndex%>" align="bottom"></a>
 <%= content %>
-    <a href="<%= request.getContextPath() %>/servlet/ChangeMenu?documentId=<%= document.getId() %>&menuIndex=<%= menuIndex %>"><%-- 
-    --%><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/ico_txt.gif" border="0" alt="edit menu <%= menuIndex%>"></a>
+    <%--<a href="<%= request.getContextPath() %>/servlet/ChangeMenu?documentId=<%= document.getId() %>&menuIndex=<%= menuIndex %>">&lt;%&ndash; --%>
+    <%--&ndash;%&gt;<img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/ico_txt.gif" border="0" alt="edit menu <%= menuIndex%>"></a>--%>
+
+    <a href="<%= request.getContextPath() %>/docadmin/edit_menu?doc_id=<%= document.getId() %>&menu_no=<%= menuIndex %>">
+      <img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/ico_txt.gif" border="0" alt="edit menu <%= menuIndex%>">
+    </a>

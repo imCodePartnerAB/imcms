@@ -95,6 +95,16 @@ trait ExposeValueChange extends AbstractField {
   override def fireValueChange(repaintIsNotNeeded: Boolean = true) = super.fireValueChange(repaintIsNotNeeded)
 }
 
+trait OnceOnlyAttachAction extends AbstractComponent {
+
+  var attachAction = Option.empty[this.type => Unit]
+
+  override def attach() {
+    attachAction foreach (_ apply this)
+    attachAction = None
+  }
+}
+
 /**
  * Always fires value change event on value change even if new and old values are equal.
  */

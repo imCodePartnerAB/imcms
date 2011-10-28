@@ -53,7 +53,7 @@ package object imcode {
 
   class Piper[A](a: A) { def |>[B](f: A => B) = f(a) }
 
-  implicit def pipe_everything[A](a: A) = new Piper(a)
+  implicit def any2Piper[A](a: A) = new Piper(a)
 
   def unfold[A, B](init: A)(f: A => Option[(B, A)]): List[B] = f(init) match {
     case None => Nil
@@ -61,7 +61,7 @@ package object imcode {
   }
 
   /** Creates zero arity fn from by-name parameter. */
-  def block(byName: => Unit) = byName _
+  def mkFn(byName: => Unit): () => Unit = byName _
 
   def ?[A >: Null](nullable: A) = Option(nullable)
 

@@ -29,8 +29,8 @@ import _root_.com.vaadin.data.Validator.InvalidValueException
  *
  * @param doc used to as editor's initial state, never modified.
  */
-class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Editor with ImcmsServicesSupport {
-  // type DataType = Values
+class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSupport {
+
   type DataType = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
 
   private var appearanceEditorOpt = Option.empty[AppearanceEditor]
@@ -48,6 +48,7 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Edito
     ui.treeMenu.addItem("Categories")
 
     // According to v.4.x.x may be defined for text docs only
+    // todo: disable profile tag =or= add lable =not supported/available =or= show empty page instead of editor
     if (doc.isInstanceOf[TextDocumentDomainObject]) ui.treeMenu.addItem("Profile")
 
     ui.treeMenu.addValueChangeHandler {
@@ -94,21 +95,21 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Edito
           ui.pnlMenuItem.setContent(categoriesEditorOpt.get.ui)
 
         case "Profile" =>
-          if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], app.user))
+          if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], ui.getApplication.user))
 
           ui.pnlMenuItem.setContent(profileEditorOpt.get.ui)
 
         case _ =>
       }
     }
-  }
 
-  ui.sp.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE)
-  ui.treeMenu.select("Appearance")
+    ui.sp.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE)
+    ui.treeMenu.select("Appearance")
+  } // ui
 
   val data = new Data {
     case class UberData(uberData: ErrorMsgsEitherData) {
-      def join[B](childDataOpt: => Option[Either[Seq[ErrorMsg], B]])(fn: (DataType, B) => DataType): UberData =
+      def merge[B](childDataOpt: => Option[Either[Seq[ErrorMsg], B]])(fn: (DataType, B) => DataType): UberData =
         childDataOpt match {
           case None => this
           case Some(Right(_)) if uberData.isLeft => this
@@ -121,14 +122,14 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Edito
     def get() = {
       UberData(
         Right(doc.clone, Map.empty[I18nLanguage, I18nMeta])
-      ).join(appearanceEditorOpt.map(_.data.get())) {
+      ).merge(appearanceEditorOpt.map(_.data.get())) {
           case ((dc, _), appearance) => letret(dc, appearance.i18nMetas) { _ =>
             dc.getMeta.setLanguages(appearance.enabledLanguages)
             dc.getMeta.setI18nShowMode(appearance.disabledLanguageShowSetting)
             dc.getMeta.setAlias(appearance.alias.orNull)
             dc.getMeta.setTarget(appearance.target)
           }
-      }.join(lifeCycleEditorOpt.map(_.data.get())) {
+      }.merge(lifeCycleEditorOpt.map(_.data.get())) {
           case (uberData @ (dc, _), lifeCycle) => letret(uberData) { _ =>
             dc.getMeta.setPublicationStatus(lifeCycle.publicationStatus)
             dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStart)
@@ -141,7 +142,7 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Edito
             dc.getMeta.setCreatorId(lifeCycle.creator.map(c => Int box c.getId).orNull)
             //???dc.getMeta.setModifierId
           }
-      }.join(permissionsEditorOpt.map(_.data.get())) {
+      }.merge(permissionsEditorOpt.map(_.data.get())) {
           case (uberData @ (dc, _), permissions) => letret(uberData) { _ =>
             dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
             dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)
@@ -150,11 +151,11 @@ class MetaEditor(app: ImcmsApplication, doc: DocumentDomainObject) extends Edito
             dc.setLinkedForUnauthorizedUsers(permissions.isLinkedForUnauthorizedUsers)
             dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
           }
-      }.join(categoriesEditorOpt.map(_.data.get())) {
+      }.merge(categoriesEditorOpt.map(_.data.get())) {
           case (uberData @ (dc, _), categories) => letret(uberData) { _ =>
             dc.setCategoryIds(categories.categoriesIds)
           }
-      }.join(profileEditorOpt.map(_.data.get())) {
+      }.merge(profileEditorOpt.map(_.data.get())) {
           case (uberData @ (tdc: TextDocumentDomainObject, _), profile) => letret(uberData) { _ =>
             tdc.setDefaultTemplateId(profile.defaultTemplate)
             tdc.getPermissionSetsForNewDocuments.setRestricted1(profile.restrictedOnePermSet)

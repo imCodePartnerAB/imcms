@@ -88,9 +88,6 @@ package object vaadin {
     }
   }
 
-  @deprecated("prototype code")
-  def addItem(table: Table, id: AnyRef, data: AnyRef*) = table.addItem(data.toArray[AnyRef], id)
-
   /** Text field value type is always String */
   implicit def wrapTextField(textField: TextField) = new TextField(textField) with ValueType[String] with WrappedPropertyValueSetterDelegate
 

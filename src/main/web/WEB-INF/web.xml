@@ -8,6 +8,12 @@
         id="imCMS"
         version="2.5">
 
+<context-param>
+ <description>Vaadin production mode</description>
+ <param-name>productionMode</param-name>
+ <param-value>true</param-value>
+</context-param>
+
     <display-name>imCMS</display-name>
 
     <listener>
@@ -77,6 +83,17 @@
         <init-param>
             <param-name>application</param-name>
             <param-value>com.imcode.imcms.admin.Application</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet>
+        <servlet-name>docadmin</servlet-name>
+        <servlet-class>
+            com.vaadin.terminal.gwt.server.ApplicationServlet
+        </servlet-class>
+        <init-param>
+            <param-name>application</param-name>
+            <param-value>com.imcode.imcms.docadmin.Application</param-value>
         </init-param>
     </servlet>
 
@@ -594,17 +611,18 @@
     <servlet-mapping>
         <servlet-name>admin-vaadin</servlet-name>
         <url-pattern>/vaadin/*</url-pattern>
+        <url-pattern>/VAADIN/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+    <servlet-name>docadmin</servlet-name>
+    <url-pattern>/docadmin/*</url-pattern>
     </servlet-mapping>
 
     <!--<servlet-mapping>-->
-    <!--<servlet-name>docadmin-vaadin</servlet-name>-->
-    <!--<url-pattern>/vaadin-docadmin/*</url-pattern>-->
+        <!--<servlet-name>admin-vaadin</servlet-name>-->
+        <!--<url-pattern>/VAADIN/*</url-pattern>-->
     <!--</servlet-mapping>-->
-
-    <servlet-mapping>
-        <servlet-name>admin-vaadin</servlet-name>
-        <url-pattern>/VAADIN/*</url-pattern>
-    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>

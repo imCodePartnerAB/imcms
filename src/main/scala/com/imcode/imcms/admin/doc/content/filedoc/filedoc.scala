@@ -32,7 +32,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     Option(doc.getDefaultFileId)
   )
 
-  private def mimeTypes: ListMap[MimeType, DisplayName] =
+  private lazy val mimeTypes: ListMap[MimeType, DisplayName] =
     imcmsServices.getDocumentMapper.getAllMimeTypesWithDescriptions(ui.getApplication.user)
     .map { case Array(mimeType, displayName) => mimeType -> displayName } (breakOut)
 
@@ -44,7 +44,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     }
   }
 
-  val ui = letret(new FileDocContentEditorUI) { ui =>
+  val ui = letret(new FileDocContentEditorUI with OnceOnlyAttachAction) { ui =>
     ui.tblFiles.addGeneratedColumn("Type", new ColumnGenerator {
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef): String = {
         val mimeType = values.fdfs(itemId.asInstanceOf[FileId]).getMimeType
@@ -236,6 +236,8 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
           ui.getApplication.showInfoNotification("File has been marked as default")
       }
     }
+
+    ui.attachAction = Some(_ => sync())
   } // ui
 
   val data = new Data {
@@ -266,8 +268,6 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
       ui.tblFiles.addItem(Array[AnyRef](fileId, fdf.getFilename), fileId)
     }
   }
-
-  sync()
 }
 
 
