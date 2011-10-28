@@ -33,18 +33,20 @@ public class GeneralController {
     @Autowired
     private Facade facade;
     
+    @Autowired
+    private SessionLocaleResolver localeResolver;
+
     @RequestMapping("/archive/language")
     public ModelAndView languageChangeHandler(
             @RequestParam(required=false) String lang, 
             @RequestParam(required=false) String redir, 
             HttpServletResponse response,
-            HttpSession session) {
+            HttpServletRequest request) {
         lang = StringUtils.trimToNull(lang);
         redir = StringUtils.trimToNull(redir);
         
         if (lang != null && facade.getConfig().getLanguages().containsValue(lang)) {
-            Locale locale = new Locale(lang);
-            session.setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
+            localeResolver.setLocale(request, response, new Locale(lang));
         }
 
         if (redir != null) {
