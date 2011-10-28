@@ -48,7 +48,7 @@
     <property name="basenames">
       <list>
         <value>/WEB-INF/locale/imcms</value>
-        <value>/WEB-INF/locale/image_archive</value>
+        <value>/WEB-INF/locale/imageArchive</value>
       </list>
     </property>
     
