@@ -264,7 +264,7 @@ var setupChangeData = function() {
 
     var redirectOnAllComplete;
     $('#uploadify').uploadify({
-        'uploader': common.getRelativeUrl('/js/jquery.uploadify-v2.1.4/uploadify.swf'),
+        'uploader': common.getRelativeUrl('/images/uploadify.swf'),
         onAllComplete: function(event, data) {
             if(redirectOnAllComplete.length > 0) {
                 window.location.replace(redirectOnAllComplete);

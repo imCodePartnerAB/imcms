@@ -39,6 +39,7 @@
         <property name="texttemplates" value="${webinf.templates.dir}/text"/>
         <property name="demotemplates" value="${texttemplates}/demo"/>
         <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
+        <property name="swfpattern" value="**/*.swf"/>
     	
         <property name="docs" value="${main.webapp.imcms.dir}/docs"/>
         <property name="apisamples" value="${docs}/apisamples"/>
@@ -74,7 +75,7 @@
     	</copy>    	   	
     	    		
         <copy todir="${main.webapp.dir}" filtering="true">
-            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
+            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern},${swfpattern}"/>
         </copy>
         
         <copy todir="${main.webapp.webinf.dir}/classes" filtering="true">
@@ -82,7 +83,7 @@
         </copy>
 
         <copy todir="${main.webapp.dir}">
-            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
+            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern},${swfpattern}"/>
         </copy>
         
         <copy todir="${webinf.solr.dir}">
