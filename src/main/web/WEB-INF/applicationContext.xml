@@ -42,7 +42,9 @@
     p:configLocation="WEB-INF/classes/hibernate.cfg.xml"
     p:dataSource-ref="dataSource"/>
   
-  <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+  <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+      <property name="defaultLocale" value="sv"/>
+  </bean>
   
   <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
     <property name="basenames">
@@ -52,7 +54,7 @@
       </list>
     </property>
     <property name="fallbackToSystemLocale" value="false"/>
-    <property name="useCodeAsDefaultMessage" value="true"/> 
+    <property name="useCodeAsDefaultMessage" value="true"/>
   </bean>
     
   <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
