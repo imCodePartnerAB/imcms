@@ -32,7 +32,7 @@
     p:password="${Password}"
     p:testOnBorrow="true"
     p:validationQuery="select 1"
-    p:defaultAutoCommit="false"
+    p:defaultAutoCommit="false" 
     p:maxActive="${MaxConnectionCount}"/>
   
   <bean id="dataSourceWithAutoCommit" parent="dataSource"
@@ -51,7 +51,7 @@
         <value>/WEB-INF/locale/image_archive</value>
       </list>
     </property>
-    
+    <property name="fallbackToSystemLocale" value="false"/>
     <property name="useCodeAsDefaultMessage" value="true"/> 
   </bean>
     
