@@ -1,8 +1,9 @@
 package com.imcode
 
-import java.util.{Locale, ResourceBundle}
 import java.text.MessageFormat
 import imcode.server.{ImcmsServices, Imcms}
+import org.apache.log4j.Logger
+import java.util.{ListResourceBundle, Locale, ResourceBundle}
 
 package object imcms {
 
@@ -27,7 +28,16 @@ package object imcms {
         case _ => Locale.getDefault
       }
 
-      val bundle = ResourceBundle.getBundle("ui", locale)
+      val bundle = try {
+        ResourceBundle.getBundle("ui", locale)
+      } catch {
+        case e =>
+          Logger.getLogger(getClass).error("Can't retrieve resource bundle for locale %s" format locale.getDisplayName, e)
+          new ListResourceBundle {
+            def getContents = Array(Array())
+          }
+      }
+
       (locale, EX.allCatch.opt(bundle.getString(key)) getOrElse "<#%s#>".format(key.split('.').last))
     }
 

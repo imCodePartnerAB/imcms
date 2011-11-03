@@ -7,9 +7,9 @@ import com.imcode.imcms.vaadin.ImcmsApplication
 import java.util.Locale
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import imcode.server.document.textdocument.{MenuDomainObject, TextDocumentDomainObject}
-import com.vaadin.ui._
 import imcode.server.{ImcmsConstants}
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener
+import com.vaadin.ui._
 
 class Application extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
 
@@ -34,9 +34,15 @@ class Application extends com.vaadin.Application with HttpServletRequestListener
       doc @ (si_900 : TextDocumentDomainObject) <- ?(imcmsServices.getDocumentMapper.getDocument(docId))
       menu <- ?(doc.getMenu(menuNo))
     } {
+      val pnlAdmin = new Panel
+      pnlAdmin.setSize(600, 600)
+
       val menuEditor = new MenuEditor(doc, menu)
-      wndMain.getContent.removeAllComponents()
-      wndMain.getContent.addComponent(menuEditor.ui)
+      let(wndMain.getContent.asInstanceOf[VerticalLayout]) { lyt =>
+        lyt.removeAllComponents()
+        lyt.addComponent(menuEditor.ui)
+        lyt.asInstanceOf[VerticalLayout].setComponentAlignment(menuEditor.ui, Alignment.MIDDLE_CENTER)
+      }
 
       //setLogoutURL("/test.jsp")
       //"AdminDoc?meta_id=" + parentDocument.getId + "&flags=" + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + parentMenuIndex

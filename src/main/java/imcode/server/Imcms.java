@@ -81,7 +81,7 @@ public class Imcms {
      *
      * @see com.imcode.imcms.servlet.ImcmsFilter
      */
-	private static InheritableThreadLocal<UserDomainObject> users;
+	private static InheritableThreadLocal<UserDomainObject> users = new InheritableThreadLocal<UserDomainObject>();
    
     /**
      * Internalization support.
