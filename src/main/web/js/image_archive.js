@@ -634,7 +634,8 @@ function setOverlayDimensions(width, height){
     if(width > maxWidth || height > maxHeight) {
         if(width > maxWidth){
             ratio = maxWidth / width;
-            o.css("width", maxWidth);
+            width = maxWidth;
+            o.css("width", width);
             o.css("height", Math.round(height * ratio));
             height = Math.round(height * ratio);
         }
