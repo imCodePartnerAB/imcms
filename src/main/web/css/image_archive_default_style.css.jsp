@@ -458,3 +458,7 @@ table.tablesorter tr.odd td, div.odd, .editCategoryTable tr.odd td, .editCategor
     background: url('${pageContext.request.contextPath}/images/close.png') top left no-repeat;
     cursor: pointer;
 }
+
+.backToSearchResultsBtn {
+    margin-bottom: -17px;
+}

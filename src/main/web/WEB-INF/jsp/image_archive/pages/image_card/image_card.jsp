@@ -62,6 +62,7 @@
                 $("#width").blur(fillOnAspectRatio);
                 $("#height").blur(fillOnAspectRatio);
                 $('body', top.document).append(overlay);
+                $("#keepAspectRatio", $('#exportOverlay', top.document)).click(fillOnAspectRatio);
             }
 
             $('#exportOverlay', top.document).css('margin-left', (-$('#exportOverlay', top.document).width() / 2)+'px');
@@ -91,12 +92,12 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/top.jsp" %>
 
 <div id="containerContent">
-    <div style="margin-bottom: 10px;">
+    <div class="backToSearchResultsBtn">
         <a href="${pageContext.request.contextPath}/web/archive" class="imcmsFormBtn">
             <spring:message code="archive.imageCard.backToSearchResults" htmlEscape="true"/>
         </a>
     </div>
-    <h4 class="imcmsAdmHeading">
+    <h4 class="imcmsAdmHeading" style="text-align:center;">
         <spring:message code="archive.imageCard.imagePropertiesFor" arguments="${image.imageNm}" htmlEscape="true"/>
     </h4>
     <c:url var="thumbUrl" value="/web/archive/thumb">

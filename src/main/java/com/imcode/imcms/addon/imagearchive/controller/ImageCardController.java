@@ -103,6 +103,9 @@ public class ImageCardController {
             if (format.isWritable()) {
                 command.setFileFormat(format.getOrdinal());
             }
+
+            command.setWidth(image.getWidth());
+            command.setHeight(image.getHeight());
         }
         
         facade.getImageService().setImageMetaIds(image);
@@ -242,6 +245,9 @@ public class ImageCardController {
         if (format.isWritable()) {
             command.setFileFormat(format.getOrdinal());
         }
+
+        command.setWidth(image.getWidth());
+        command.setHeight(image.getHeight());
 
         Exif originalExif = facade.getImageService().findExifByPK(image.getId(), Exif.TYPE_ORIGINAL);
         image.setOriginalExif(originalExif);

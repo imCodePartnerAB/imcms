@@ -90,3 +90,7 @@ ul.tabs li.sel a {
     color: black;
     font-weight:normal;
 }
+
+.backToSearchResultsBtn {
+    margin-left: 10px;
+}
