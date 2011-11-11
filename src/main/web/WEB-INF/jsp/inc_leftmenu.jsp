@@ -15,6 +15,10 @@ ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest(reques
 DocumentService documentService     = imcmsSystem.getDocumentService() ;
 
 TextDocumentViewing view = TextDocumentViewing.fromRequest(request) ;
+String thisDocId = "";
+    if(view != null){
+        thisDocId = "" + view.getTextDocument().getId();
+    }
 
 TextDocument dataDoc = documentService.getTextDocument(1039) ;
 TextDocument thisDoc = (null != view) ? view.getTextDocument() : dataDoc ;
@@ -34,7 +38,7 @@ ImcmsTreeMenu imcmsTreeMenu = new ImcmsTreeMenu(thisDoc, leftMenuItems) ;
 List<TreeMenuItem> visibleTreeMenuItems = imcmsTreeMenu.getVisibleTreeMenuItems() ;
 
 %>
-				<a href="<%= cp %>/" class="leftMenuHeadingBg"><span>Startsida</span></a><%
+				<a href="<%= cp %>/<%=thisDocId%>" class="leftMenuHeadingBg"><span>Startsida</span></a><%
 		if (null != visibleTreeMenuItems) {
 			int itemCount = 0 ;
 			for (TreeMenuItem treeMenuItem : visibleTreeMenuItems) {

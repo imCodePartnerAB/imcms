@@ -73,11 +73,7 @@ public class PreferencesController {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
-        if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
-        } else if (!user.isSuperAdmin()) {
+        if (!user.isSuperAdmin()) {
             return "redirect:/web/archive";
         }
         
@@ -264,23 +260,18 @@ public class PreferencesController {
     
     @RequestMapping("/archive/preferences/role")
     public String changeCurrentRoleHandler(
-            @RequestParam(required=false) Integer id, 
-            HttpServletRequest request, 
-            HttpServletResponse response) {
+            @RequestParam(required = false) Integer id,
+            HttpServletRequest request) {
         
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
-        if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
-        } else if (!user.isSuperAdmin()) {
+        if (!user.isSuperAdmin()) {
             return "redirect:/web/archive";
         }
         
-        Roles role = null;
+        Roles role;
         if (id != null && (role = facade.getRoleService().findRoleById(id)) != null) {
             session.put(ROLE_KEY, role);
         }
@@ -290,23 +281,18 @@ public class PreferencesController {
     
     @RequestMapping("/archive/preferences/library")
     public String changeCurrentLibraryHander(
-            @RequestParam(required=false) Integer id, 
-            HttpServletRequest request, 
-            HttpServletResponse response) {
+            @RequestParam(required = false) Integer id,
+            HttpServletRequest request) {
         
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
-        if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
-        } else if (!user.isSuperAdmin()) {
+        if (!user.isSuperAdmin()) {
             return "redirect:/web/archive";
         }
         
-        Libraries library = null;
+        Libraries library;
         if (id != null && (library = facade.getLibraryService().findLibraryById(id)) != null) {
             session.put(LIBRARY_KEY, library);
         }

@@ -22,7 +22,7 @@ body {
 }
 
 #containerTop {
-    padding-top: 40px;
+    padding-top: 30px;
 }
 
 #archive_banner {

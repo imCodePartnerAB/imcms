@@ -58,12 +58,7 @@ public class SearchImageController {
         ArchiveSession archiveSession = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
 
-            return null;
-        }
-        
         ModelAndView mav = new ModelAndView("image_archive/pages/search_image");
         Pagination pag = getPagination(archiveSession);
         

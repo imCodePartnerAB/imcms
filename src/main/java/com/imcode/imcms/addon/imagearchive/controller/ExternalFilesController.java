@@ -72,9 +72,7 @@ public class ExternalFilesController {
         User user = cms.getCurrentUser();
         
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
+            return new ModelAndView("redirect:/web/archive/");
         }
         
         ModelAndView mav = new ModelAndView("image_archive/pages/external_files/external_files");
@@ -113,9 +111,7 @@ public class ExternalFilesController {
         User user = cms.getCurrentUser();
         
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
+            return "redirect:/web/archive/";
         }
         
         if (id != null) {
@@ -155,9 +151,7 @@ public class ExternalFilesController {
         User user = cms.getCurrentUser();
         
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
+            return new ModelAndView("redirect:/web/archive/");
         }
         
         LibrariesDto library = getLibrary(session, user, null);
@@ -267,7 +261,7 @@ public class ExternalFilesController {
         String contextPath = request.getContextPath();
 
         if (user.isDefaultUser()) {
-            status.setRedirect(request.getContextPath() + "/login/");
+            status.setRedirect(request.getContextPath() + "/web/archive");
             Utils.writeJSON(status, response);
             return;
         }
@@ -342,9 +336,7 @@ public class ExternalFilesController {
         
         Images image = (Images) session.get(IMAGE_KEY);
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
+            return new ModelAndView("redirect:/web/archive/");
         } else if (image == null) {
             return new ModelAndView("redirect:/web/archive/external-files");
         }

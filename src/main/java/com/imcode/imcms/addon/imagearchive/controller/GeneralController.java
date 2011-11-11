@@ -74,9 +74,7 @@ public class GeneralController {
         String returnTo = SessionUtils.getImcmsReturnToUrl(session);
         
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
+            return "redirect:/web/archive";
         } else if (id == null || returnTo == null || !facade.getImageService().canUseImage(user, id)) {
             return "redirect:/web/archive";
         }

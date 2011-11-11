@@ -72,9 +72,7 @@ public class ImageCardController {
         User user = cms.getCurrentUser();
 
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-
-            return null;
+            return new ModelAndView("redirect:/web/archive/");
         }
         
         Long imageId = getImageId(request);
@@ -230,9 +228,7 @@ public class ImageCardController {
         User user = cms.getCurrentUser();
 
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-
-            return null;
+            return new ModelAndView("redirect:/web/archive/");
         }
         
         Long imageId = getImageId(request);
@@ -268,9 +264,7 @@ public class ImageCardController {
         User user = cms.getCurrentUser();
 
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-
-            return null;
+            return new ModelAndView("redirect:/web/archive/");
         }
 
         Long imageId = getImageId(request);
@@ -293,9 +287,7 @@ public class ImageCardController {
         User user = cms.getCurrentUser();
         
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
+            return new ModelAndView("redirect:/web/archive/");
         }
         
         Long imageId = getImageId(request);
@@ -313,19 +305,16 @@ public class ImageCardController {
     @RequestMapping("/archive/image/*/change")
     public ModelAndView changeHandler(
             @ModelAttribute("changeData") ChangeImageDataCommand changeData,
-            BindingResult result, 
-            @ModelAttribute ImageCardChangeActionCommand action,  
-            HttpServletRequest request, 
-            HttpServletResponse response,
-            @RequestParam(required=false) boolean redirectToImageCard) {
+            BindingResult result,
+            @ModelAttribute ImageCardChangeActionCommand action,
+            HttpServletRequest request,
+            @RequestParam(required = false) boolean redirectToImageCard) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
+            return new ModelAndView("redirect:/web/archive/");
         }
         
         Long imageId = getImageId(request);

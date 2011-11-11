@@ -47,7 +47,7 @@ public class ThumbnailController {
             return null;
         }
         
-        tmp = (tmp != null ? tmp.booleanValue() : false);
+        tmp = (tmp != null && tmp.booleanValue());
         
         InputStream inputStream = null;
         try {

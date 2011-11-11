@@ -51,9 +51,7 @@ public class AddImageController {
         User user = cms.getCurrentUser();
         
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
+            return new ModelAndView("redirect:/web/archive/");
         }
         
         ModelAndView mav = new ModelAndView("image_archive/pages/add_image");
@@ -99,7 +97,7 @@ public class AddImageController {
         String contextPath = request.getContextPath();
         
         if (user.isDefaultUser()) {
-            status.setRedirect(contextPath + "/login/");
+            status.setRedirect(contextPath + "/web/archive");
             Utils.writeJSON(status, response);
             return;
         }
@@ -162,9 +160,7 @@ public class AddImageController {
         User user = cms.getCurrentUser();
         
         if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
+            return new ModelAndView("redirect:/web/archive/");
         }
         
         Images image = (Images) session.get(IMAGE_KEY);

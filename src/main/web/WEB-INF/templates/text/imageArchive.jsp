@@ -6,7 +6,7 @@
 <head><title>Simple jsp page</title>
     <style type="text/css">
         .imageArchive {
-            float: left;
+            margin-top: -30px;
         }
 
         .minH30 {
@@ -366,13 +366,28 @@ color: black;
     <imcms:text no="1" pre="<span>" post="</span>"/>
 </div>
 <div class="clearfix">
-    <div style="border:1px solid #ccc;padding: 20px 20px 0 20px;float:left" class="clearfix">
-        <div id="leftmenu" style="float:left;margin-top:40px;">
-                <jsp:include page="/WEB-INF/jsp/inc_leftmenu.jsp"/>
+    <div style="border:1px solid #ccc;padding: 20px;float:left" class="clearfix">
+        <div class="clearfix">
+            <div style='float:left;width:172px;height:40px;padding:5px;'>
+                <imcms:text no="2" label="<br/>Text above<br/>"/>
+            </div>
+            <div style="float:right;">
+                <a href="${contextPath}/login">Login</a>
+            </div>
         </div>
-        <imcms:imageArchive styleClass="imageArchive">
-            <link href="${contextPath}/css/tag_image_archive.css.jsp" rel="stylesheet" type="text/css"/>
-        </imcms:imageArchive>
+        <div class="clearfix">
+            <div style="float:left;">
+                <div id="leftmenu">
+                    <jsp:include page="/WEB-INF/jsp/inc_leftmenu.jsp"/>
+                </div>
+                <imcms:text no="3" label="<br/>Text below<br/>" pre="<div style='width:172px;padding:5px;'>" post="</div>"/>
+            </div>
+            <div style="float:left;">
+            <imcms:imageArchive styleClass="imageArchive">
+                <link href="${contextPath}/css/tag_image_archive.css.jsp" rel="stylesheet" type="text/css"/>
+            </imcms:imageArchive>
+            </div>
+        </div>
     </div>
 </div>
 </body>
