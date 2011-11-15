@@ -22,7 +22,7 @@ body {
 }
 
 #containerTop {
-    padding-top: 30px;
+    <%--padding-top: 30px;--%>
 }
 
 #archive_banner {
@@ -39,7 +39,8 @@ body {
 }
 
 #languageSwitch {
-    margin-top: -50px;
+    <%--margin-top: -50px;--%>
+    display:none;
 }
 
 ul.tabs li {

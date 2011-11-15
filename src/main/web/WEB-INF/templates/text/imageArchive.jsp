@@ -2,11 +2,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="imcode.server.ImcmsConstants" %>
+<%@ page import="imcode.server.Imcms" %>
+<%@ page import="com.imcode.imcms.api.I18nLanguage" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head><title>Simple jsp page</title>
     <style type="text/css">
         .imageArchive {
-            margin-top: -30px;
+            /*margin-top: -30px;*/
         }
 
         .minH30 {
@@ -368,11 +371,49 @@ color: black;
 <div class="clearfix">
     <div style="border:1px solid #ccc;padding: 20px;float:left" class="clearfix">
         <div class="clearfix">
-            <div style='float:left;width:172px;height:40px;padding:5px;'>
+            <div style='float:left;height:40px;padding:5px;'>
                 <imcms:text no="2" label="<br/>Text above<br/>"/>
             </div>
+            <%
+                String lang = ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE;
+
+                // Refactor
+                String queryString = request.getQueryString();
+                StringBuffer baseURL = request.getRequestURL();
+
+                if (queryString == null) {
+                    baseURL.append("?").append(lang).append("=");
+                } else {
+                    // TODO 18n: refactor
+                    queryString = queryString.replaceFirst("&?"+lang+"=..", "");
+                    baseURL.append("?").append(queryString).append("&amp;").append(lang).append("=");
+                }
+
+                pageContext.setAttribute("baseURL", baseURL);
+            %>
             <div style="float:right;">
-                <a href="${contextPath}/login">Login</a>
+                <div>
+                    <%
+                        boolean loggedIn = !Imcms.getUser().isDefaultUser();
+                        pageContext.setAttribute("userLoggedIn", loggedIn);
+                    %>
+                    <imcms:text no="100" label="<br/>Log in<br/>" rows="1" formats="text" mode="write"/>
+                    <imcms:text no="101" label="<br/>Log out<br/>" rows="1" formats="text" mode="write"/>
+                    <a style="font: 11px Verdana, Geneva, sans-serif;text-decoration:none;" href="${contextPath}/${userLoggedIn ? "servlet/LogOut" : "login"}">
+                        <c:choose>
+                            <c:when test="${userLoggedIn}">
+                                <imcms:text no="101" label="<br/>Log out<br/>" rows="1" formats="text" mode="read"/>
+                            </c:when>
+                            <c:otherwise>
+                                <imcms:text no="100" label="<br/>Log in<br/>" rows="1" formats="text" mode="read"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </a>
+                </div>
+                <div style="text-align:right;" id="externalLanguageSwitch">
+                    <a href="${baseURL}en"><img src="${pageContext.request.contextPath}/imcms/images/icons/flags_iso_639_1/en.gif" alt="" style="border:0;margin-right:4px;" /></a>
+                    <a href="${baseURL}sv"><img src="${pageContext.request.contextPath}/imcms/images/icons/flags_iso_639_1/sv.gif" alt="" style="border:0;" /></a>
+                </div>
             </div>
         </div>
         <div class="clearfix">
