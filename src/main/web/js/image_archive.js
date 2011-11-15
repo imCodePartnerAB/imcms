@@ -373,7 +373,7 @@ var initSearchImage = function() {
                     my: 'center center',
                     at: 'center center',
                     effect: false,
-                    viewport: $("#searchResults"),
+                    viewport: $("body"),
                     target: false
                 },
                 show: {
