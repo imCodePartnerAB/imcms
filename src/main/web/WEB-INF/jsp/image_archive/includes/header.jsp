@@ -13,7 +13,7 @@
     <link href="${contextPath}/css/image_archive.css.jsp" rel="stylesheet" type="text/css" />
     ${css}
 
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    <script type="text/javascript" src="${contextPath}/js/jquery-1.6.4.min.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.uploadify-v2.1.4/jquery.uploadify.v2.1.4.min.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.uploadify-v2.1.4/swfobject.js"></script>

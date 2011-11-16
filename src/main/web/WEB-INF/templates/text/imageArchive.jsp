@@ -4,7 +4,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="imcode.server.ImcmsConstants" %>
 <%@ page import="imcode.server.Imcms" %>
-<%@ page import="com.imcode.imcms.api.I18nLanguage" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head><title>Simple jsp page</title>
     <style type="text/css">
@@ -333,25 +332,23 @@ color: black;
     padding: 5px 14px;
 }
     </style>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+<script type="text/javascript" src="${contextPath}/js/jquery-1.6.4.min.js"></script>
 <script type="text/javascript" src="${contextPath}/js/jquery.ba-resize.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-       var iframe = $('.imageArchive');
+       var iframe = $('#imageArchive');
 
        $(iframe).load(function () {
             $(iframe).width(iframe.contents().width());
+            $(iframe).height(iframe.contents().height());
 
             var iframe_content = $(this).contents().find('body');
             iframe_content.resize(function(){
                 var elem = $(this);
-                
-                iframe.css({ width: elem.outerWidth( true ) });
+
                 iframe.css({ height: elem.outerHeight( true ) });
             });
 
-           
-            iframe_content.resize();
         });
     });
 </script>
