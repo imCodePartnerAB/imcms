@@ -38,7 +38,7 @@ ImcmsTreeMenu imcmsTreeMenu = new ImcmsTreeMenu(thisDoc, leftMenuItems) ;
 List<TreeMenuItem> visibleTreeMenuItems = imcmsTreeMenu.getVisibleTreeMenuItems() ;
 
 %>
-				<a href="<%= cp %>/<%=thisDocId%>" class="leftMenuHeadingBg"><span>Startsida</span></a><%
+				<a href="<%= cp %>/<%=thisDocId%>?toArchiveSearchPage" class="leftMenuHeadingBg"><span>Startsida</span></a><%
 		if (null != visibleTreeMenuItems) {
 			int itemCount = 0 ;
 			for (TreeMenuItem treeMenuItem : visibleTreeMenuItems) {

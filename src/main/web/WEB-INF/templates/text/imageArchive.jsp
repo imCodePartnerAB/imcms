@@ -335,12 +335,42 @@ color: black;
 <script type="text/javascript" src="${contextPath}/js/jquery-1.6.4.min.js"></script>
 <script type="text/javascript" src="${contextPath}/js/jquery.ba-resize.js"></script>
 <script type="text/javascript">
+
+    function setWidthAndHeight(elem) {
+        var width = elem.contents().width();
+        var height = elem.contents().height();
+
+        if(width == 0 || height == 0) {
+            
+        }
+    }
+
     $(document).ready(function(){
        var iframe = $('#imageArchive');
 
        $(iframe).load(function () {
-            $(iframe).width(iframe.contents().width());
-            $(iframe).height(iframe.contents().height());
+            var width = iframe.contents().width();
+            var height = iframe.contents().height();
+
+            if(width == 0 || height == 0) {
+                (function tryGettingAgain() {
+                    setTimeout(function(){
+                        var tmpWidth = iframe.contents().width();
+                        var tmpHeight = iframe.contents().height();
+
+                        if(tmpWidth == 0 || tmpHeight == 0) {
+                            tryGettingAgain();
+                        } else {
+                            $(iframe).width(tmpWidth);
+                            $(iframe).height(tmpHeight);
+                        }
+                    }, 500);
+                })();
+            } else {
+                $(iframe).width(width);
+                $(iframe).height(height);
+            }
+
 
             var iframe_content = $(this).contents().find('body');
             iframe_content.resize(function(){
@@ -376,6 +406,9 @@ color: black;
 
                 // Refactor
                 String queryString = request.getQueryString();
+                if(queryString != null && queryString.contains("toArchiveSearchPage")) {
+                    queryString = queryString.replace("toArchiveSearchPage", "");
+                }
                 StringBuffer baseURL = request.getRequestURL();
 
                 if (queryString == null) {

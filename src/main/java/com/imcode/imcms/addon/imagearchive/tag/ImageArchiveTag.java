@@ -27,8 +27,12 @@ public class ImageArchiveTag extends BodyTagSupport {
             ParserParameters parserParameters = ParserParameters.fromRequest(request);
             TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
             String archiveUri = "/web/archive";
+            /* set by top.jsp, which is used only on major pages(aka not previews and overlays) to redirect to the last
+            * visited page inside iframe when switching languages using imcms lang switch(aka meta-id?imcms.document.language=lang)
+            * */
             String redirectTo = (String)request.getSession().getAttribute("imagearchive.visited.page.with.top");
-            if(redirectTo != null) {
+            boolean toTheSearchPage = request.getParameter("toArchiveSearchPage") != null;
+            if(redirectTo != null && !toTheSearchPage) {
                 archiveUri = redirectTo;
             }
 
