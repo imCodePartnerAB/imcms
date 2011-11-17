@@ -70,15 +70,12 @@ public class ImageCardController {
             HttpServletResponse response) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-
-        if (user.isDefaultUser()) {
-            return new ModelAndView("redirect:/web/archive/");
-        }
         
         Long imageId = getImageId(request);
         Images image;
         
-        if (imageId == null || (image = facade.getImageService().findById(imageId, user)) == null) {
+        if (imageId == null || (image = facade.getImageService().findById(imageId, user)) == null
+                || !(facade.getImageService().canUseImage(user, imageId) || image.isCanChange())) {
             return new ModelAndView("redirect:/web/archive/");
         }
         

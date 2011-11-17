@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.imcode.imcms.servlet.admin.ImageEditPage;
+import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -140,5 +141,22 @@ public class GeneralController {
     		
     		response.setStatus(HttpServletResponse.SC_OK);
     	}
+    }
+
+    @RequestMapping("/archive/logOut")
+    public void logOut(
+            @RequestParam(required = false) String redirectTo,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        Utility.makeUserLoggedOut(request);
+
+        if(redirectTo != null) {
+            try {
+                response.sendRedirect(redirectTo);
+            } catch (IOException e) {
+                log.warn(e.getMessage(), e);
+            }
+        }
     }
 }

@@ -4,6 +4,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="imcode.server.ImcmsConstants" %>
 <%@ page import="imcode.server.Imcms" %>
+<%@ page import="com.imcode.imcms.servlet.VerifyUser" %>
+<%@ page import="com.imcode.imcms.api.TextDocumentViewing" %>
+<%@ page import="com.imcode.imcms.api.Document" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head><title>Simple jsp page</title>
     <style type="text/css">
@@ -340,8 +343,8 @@ color: black;
        var iframe = $('#imageArchive');
 
        $(iframe).load(function () {
-            var width = 0;
-            var height = 0;
+            var width = iframe.contents().width();
+            var height = iframe.contents().height();
 
             if(width == 0 || height == 0) {
                 (function tryGettingAgain() {
@@ -415,12 +418,24 @@ color: black;
             <div style="float:right;">
                 <div>
                     <%
+                        String logInUrl = "login";
+                        String logOutUrl = "web/archive/logOut";
+                        TextDocumentViewing viewing = TextDocumentViewing.fromRequest(request);
+                        if(viewing != null) {
+                            Document thisDoc = viewing.getTextDocument();
+                            if(thisDoc != null) {
+                                logInUrl += "?" + VerifyUser.REQUEST_PARAMETER__NEXT_META + "=" + thisDoc.getId();
+                                logOutUrl += "?redirectTo=" + request.getContextPath() + "/" + thisDoc.getId();
+                            }
+                        }
                         boolean loggedIn = !Imcms.getUser().isDefaultUser();
                         pageContext.setAttribute("userLoggedIn", loggedIn);
+                        pageContext.setAttribute("logInUrl", logInUrl);
+                        pageContext.setAttribute("logOutUrl", logOutUrl);
                     %>
                     <imcms:text no="100" label="<br/>Log in<br/>" rows="1" formats="text" mode="write"/>
                     <imcms:text no="101" label="<br/>Log out<br/>" rows="1" formats="text" mode="write"/>
-                    <a style="font: 11px Verdana, Geneva, sans-serif;text-decoration:none;" href="${contextPath}/${userLoggedIn ? "servlet/LogOut" : "login"}">
+                    <a style="font: 11px Verdana, Geneva, sans-serif;text-decoration:none;" href="${contextPath}/${userLoggedIn ? logOutUrl : logInUrl}">
                         <c:choose>
                             <c:when test="${userLoggedIn}">
                                 <imcms:text no="101" label="<br/>Log out<br/>" rows="1" formats="text" mode="read"/>
