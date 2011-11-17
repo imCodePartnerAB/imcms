@@ -78,9 +78,11 @@
                 <input id="save" type="submit" name="saveAction" value="${saveText}" class="imcmsFormBtn"/>
                 <spring:message var="saveAddText" code="archive.addImage.saveAddNew" htmlEscape="true"/>
                 <input id="saveAdd" type="submit" name="addAction" value="${saveAddText}" class="imcmsFormBtn"/>
-                <spring:message var="saveUseText" code="archive.saveUseInImcms" htmlEscape="true"/>
                 <c:set var="disabled" value="${sessionScope.returnToImcms eq null}"/>
-                <input id="saveUse" type="submit" name="useAction" value="${saveUseText}" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}"/>
+                <c:if test="${not disabled}">
+                    <spring:message var="saveUseText" code="archive.saveUseInImcms" htmlEscape="true"/>
+                    <input id="saveUse" type="submit" name="useAction" value="${saveUseText}" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}"/>
+                </c:if>
                 <spring:message var="saveReturnText" code="archive.saveReturnImageCard" htmlEscape="true"/>
                 <input id="saveImageCard" type="submit" name="imageCardAction" value="${saveReturnText}" class="imcmsFormBtn"/>
                 <spring:message var="discontinueText" code="archive.addImage.discontinue" htmlEscape="true"/>

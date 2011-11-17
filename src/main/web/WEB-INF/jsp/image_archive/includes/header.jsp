@@ -36,6 +36,8 @@
             if(self != top && !opener) {
                 if(customCss.length > 0) {
                     $('head').append(customCss);
+                } else {
+                    top.location.reload();
                 }
             }
         });

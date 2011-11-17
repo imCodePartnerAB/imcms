@@ -336,21 +336,12 @@ color: black;
 <script type="text/javascript" src="${contextPath}/js/jquery.ba-resize.js"></script>
 <script type="text/javascript">
 
-    function setWidthAndHeight(elem) {
-        var width = elem.contents().width();
-        var height = elem.contents().height();
-
-        if(width == 0 || height == 0) {
-            
-        }
-    }
-
     $(document).ready(function(){
        var iframe = $('#imageArchive');
 
        $(iframe).load(function () {
-            var width = iframe.contents().width();
-            var height = iframe.contents().height();
+            var width = 0;
+            var height = 0;
 
             if(width == 0 || height == 0) {
                 (function tryGettingAgain() {
@@ -364,7 +355,7 @@ color: black;
                             $(iframe).width(tmpWidth);
                             $(iframe).height(tmpHeight);
                         }
-                    }, 500);
+                    }, 300);
                 })();
             } else {
                 $(iframe).width(width);
