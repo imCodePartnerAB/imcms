@@ -587,10 +587,6 @@ public class ExternalFilesController {
         if (library != null && !library.isUserLibrary()) {
             library = facade.getLibraryService().findLibraryById(user, library.getId());
         }
-        if (library == null && libraries != null && !libraries.isEmpty()) {
-            library = facade.getLibraryService().findLibraryById(user, libraries.get(0).getId());
-            session.put(LIBRARY_KEY, library);
-        }
         if (library == null) {
             library = LibrariesDto.userLibrary(user);
             session.put(LIBRARY_KEY, library);

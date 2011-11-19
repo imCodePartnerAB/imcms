@@ -84,6 +84,10 @@ ul.tabs li.sel a {
     padding: 0 2px;
 }
 
+a.imcmsFormBtnSmall.disabled, input.imcmsFormBtnSmall.disabled, a.imcmsFormBtn.disabled, input.imcmsFormBtn.disabled {
+    background-image:none;
+}
+
 .imcmsAdmHeading {
     background: #BED6F8 url(${cp}/images/gradient.png) top left repeat-x;
     border: 1px solid #BED6F8;
