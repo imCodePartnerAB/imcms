@@ -26,7 +26,7 @@ public class ImageArchiveTag extends BodyTagSupport {
             HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
             ParserParameters parserParameters = ParserParameters.fromRequest(request);
             TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
-            String archiveUri = "/web/archive";
+            String archiveUri = getContextPath() + "/web/archive";
             /* set by top.jsp, which is used only on major pages(aka not previews and overlays) to redirect to the last
             * visited page inside iframe when switching languages using imcms lang switch(aka meta-id?imcms.document.language=lang)
             * */
@@ -39,7 +39,7 @@ public class ImageArchiveTag extends BodyTagSupport {
             String currentLocale = Imcms.getUser().getDocGetterCallback().getParams().language().getCode();
             request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, new Locale(currentLocale));
             if (user.canAccess(document)) {
-                String iframe = "<iframe src='" + getContextPath() + archiveUri +"' ";
+                String iframe = "<iframe src='" + archiveUri +"' ";
                 if (styleClass != null && !"".equals(styleClass)) {
                     iframe += "class='" + styleClass + "' ";
                 } else {
