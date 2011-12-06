@@ -24,35 +24,17 @@
             var iframe = $('#imageArchive');
 
             $(iframe).load(function () {
-                var width = iframe.contents().width();
-                var height = iframe.contents().height();
-
-                if (width == 0 || height == 0) {
-                    (function tryGettingAgain() {
-                        setTimeout(function() {
-                            var tmpWidth = iframe.contents().width();
-                            var tmpHeight = iframe.contents().height();
-
-                            if (tmpWidth == 0 || tmpHeight == 0) {
-                                tryGettingAgain();
-                            } else {
-                                $(iframe).width(tmpWidth);
-                                $(iframe).height(tmpHeight);
-                            }
-                        }, 300);
-                    })();
-                } else {
-                    $(iframe).width(width);
-                    $(iframe).height(height);
-                }
-
+                iframe.css({ width : iframe.contents().width()});
 
                 var iframe_content = $(this).contents().find('body');
                 iframe_content.resize(function() {
-                    var elem = $(this);
-
-                    iframe.css({ height: elem.outerHeight(true) });
+                    var outerHeight = $(this).outerHeight();
+                    if(outerHeight != 0) {
+                        iframe.css({ height: outerHeight });
+                    }
                 });
+
+                iframe_content.resize();
 
             });
         });

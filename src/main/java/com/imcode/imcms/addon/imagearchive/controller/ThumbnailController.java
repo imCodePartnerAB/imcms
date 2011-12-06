@@ -1,15 +1,9 @@
 package com.imcode.imcms.addon.imagearchive.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.imcode.imcms.addon.imagearchive.entity.Images;
+import com.imcode.imcms.addon.imagearchive.service.Facade;
+import com.imcode.imcms.addon.imagearchive.service.file.ThumbSize;
+import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.api.ContentManagementSystem;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -18,20 +12,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.imcode.imcms.addon.imagearchive.Config;
-import com.imcode.imcms.addon.imagearchive.service.Facade;
-import com.imcode.imcms.addon.imagearchive.service.file.ThumbSize;
-import com.imcode.imcms.addon.imagearchive.util.Utils;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
 
 @Controller
 public class ThumbnailController {
     @Autowired
     private Facade facade;
-    
-    @Autowired
-    private Config config;
-    
-    
+
+
     @RequestMapping("/archive/thumb")
     public String thumbHandler(
             @RequestParam(required=false) Long id, 
@@ -39,7 +33,7 @@ public class ThumbnailController {
             @RequestParam(required=false) Boolean tmp, 
             HttpServletResponse response) {
         size = StringUtils.trimToNull(size);
-        ThumbSize thumbSize = null;
+        ThumbSize thumbSize;
         
         if (id == null || size == null || (thumbSize = ThumbSize.findByName(size)) == null) {
             Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
@@ -93,7 +87,7 @@ public class ThumbnailController {
             return null;
         }
         
-        tmp = (tmp != null ? tmp.booleanValue() : false);
+        tmp = (tmp != null ? tmp : false);
         
         model.put("imageId", id);
         model.put("temporary", tmp);
@@ -134,7 +128,7 @@ public class ThumbnailController {
             return null;
         }
         
-        tmp = (tmp != null ? tmp.booleanValue() : false);
+        tmp = (tmp != null ? tmp : false);
         
         InputStream inputStream = null;
         try {
