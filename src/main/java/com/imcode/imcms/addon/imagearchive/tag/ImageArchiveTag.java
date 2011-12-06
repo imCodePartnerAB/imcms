@@ -15,6 +15,13 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 import java.util.Locale;
 
+/*
+Prints out iframe with /web/archive as it's src attribute.
+Intercepts locale set in imcms and sets for use in image archive.
+Appends text found in body to image archive <head> tag(the main purpose for this is change of image archive looks),
+for example '<link href="${contextPath}/css/tag_image_archive.css.jsp" rel="stylesheet" type="text/css"/>'
+Note: Although there are full window previews of images and modal dialogs, they will work when used inside iframe too(will spread onto parent window).
+ */
 public class ImageArchiveTag extends BodyTagSupport {
     public static final String CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG = "CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG";
 

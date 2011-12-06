@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/*
+Prints out library sub-folders recursively as html list
+ */
 public class LibraryChildren extends TagSupport {
 
     @Override

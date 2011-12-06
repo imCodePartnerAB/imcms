@@ -1,21 +1,27 @@
 package com.imcode.imcms.addon.imagearchive.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.OutputStream;
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.imcode.imcms.addon.imagearchive.command.ChangeImageDataCommand;
+import com.imcode.imcms.addon.imagearchive.command.ExternalFilesCommand;
+import com.imcode.imcms.addon.imagearchive.command.ExternalFilesSaveImageCommand;
+import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
+import com.imcode.imcms.addon.imagearchive.dto.LibraryEntryDto;
 import com.imcode.imcms.addon.imagearchive.entity.Categories;
+import com.imcode.imcms.addon.imagearchive.entity.Images;
 import com.imcode.imcms.addon.imagearchive.json.UploadResponse;
+import com.imcode.imcms.addon.imagearchive.service.Facade;
+import com.imcode.imcms.addon.imagearchive.service.file.LibrarySort;
 import com.imcode.imcms.addon.imagearchive.tag.func.Functions;
-import com.imcode.imcms.api.Category;
+import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
+import com.imcode.imcms.addon.imagearchive.util.Utils;
+import com.imcode.imcms.addon.imagearchive.validator.ChangeImageDataValidator;
+import com.imcode.imcms.addon.imagearchive.validator.ExternalFilesValidator;
+import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.User;
+import imcode.util.image.Format;
+import imcode.util.image.ImageInfo;
+import imcode.util.image.ImageOp;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -30,23 +36,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.imcode.imcms.addon.imagearchive.command.ChangeImageDataCommand;
-import com.imcode.imcms.addon.imagearchive.command.ExternalFilesCommand;
-import com.imcode.imcms.addon.imagearchive.command.ExternalFilesSaveImageCommand;
-import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
-import com.imcode.imcms.addon.imagearchive.dto.LibraryEntryDto;
-import com.imcode.imcms.addon.imagearchive.entity.Images;
-import com.imcode.imcms.addon.imagearchive.service.Facade;
-import com.imcode.imcms.addon.imagearchive.service.file.LibrarySort;
-import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
-import com.imcode.imcms.addon.imagearchive.util.Utils;
-import com.imcode.imcms.addon.imagearchive.validator.ChangeImageDataValidator;
-import com.imcode.imcms.addon.imagearchive.validator.ExternalFilesValidator;
-import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.User;
-import imcode.util.image.Format;
-import imcode.util.image.ImageInfo;
-import imcode.util.image.ImageOp;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ExternalFilesController {

@@ -121,7 +121,7 @@ public class ImageService {
                 String fileName = entry.getName();
                 Matcher matcher = FileService.FILENAME_PATTERN.matcher(fileName);
 
-                if (!matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
+                if (fileName.startsWith("__MACOSX/") || !matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
                     continue;
                 }
 

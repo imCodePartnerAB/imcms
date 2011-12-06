@@ -5,6 +5,7 @@ body {
     background: white;
     margin:0;
     padding:0;
+    font: 11px Verdana, Geneva, sans-serif;
 }
 
 .mainTable {

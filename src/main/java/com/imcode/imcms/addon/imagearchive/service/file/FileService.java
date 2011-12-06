@@ -427,7 +427,8 @@ public class FileService {
                 String fileName = entry.getName();
                 Matcher matcher = FILENAME_PATTERN.matcher(fileName);
 
-                if (!matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
+                /* skipping OSX resource forks(__MAXOSC/) */
+                if (fileName.startsWith("__MACOSX/") ||!matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
                     continue;
                 }
 
