@@ -20,7 +20,10 @@ public class UserService {
     private SessionFactory factory;
 
 
-    /* categoryIds restrist the search to the given ids. CategoryIds = null means permissions for any category */
+    /*
+    Returns a set of role ids that have the given permissions(use/change/any)
+    categoryIds restrist the search to the given category ids. CategoryIds = null means permissions for any category
+    */
     public Set<Integer> getRoleIdsWithPermission(User user, List<Integer> categoryIds, RolePermissionDomainObject... permissions) {
         Set<Integer> roleIds = new HashSet<Integer>();
         Session session = factory.getCurrentSession();

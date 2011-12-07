@@ -24,6 +24,10 @@ Note: Although there are full window previews of images and modal dialogs, they 
  */
 public class ImageArchiveTag extends BodyTagSupport {
     public static final String CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG = "CSS_OVERRIDES_FROM_IMAGE_ARCHIVE_TAG";
+    /*
+    Used to redirect to the last page visited in image archive after switching languages with external(imcms) language switch(it reloads page)
+     */
+    public static final String IMAGE_ARCHIVE_LAST_VISITED_PAGE_URL = "imagearchive.visited.page.with.top";
 
     @Override
     public int doStartTag() throws JspException {
@@ -37,7 +41,7 @@ public class ImageArchiveTag extends BodyTagSupport {
             /* set by top.jsp, which is used only on major pages(aka not previews and overlays) to redirect to the last
             * visited page inside iframe when switching languages using imcms lang switch(aka meta-id?imcms.document.language=lang)
             * */
-            String redirectTo = (String)request.getSession().getAttribute("imagearchive.visited.page.with.top");
+            String redirectTo = (String)request.getSession().getAttribute(IMAGE_ARCHIVE_LAST_VISITED_PAGE_URL);
             boolean toTheSearchPage = request.getParameter("toArchiveSearchPage") != null;
             if(redirectTo != null && !toTheSearchPage) {
                 archiveUri = redirectTo;
@@ -47,10 +51,8 @@ public class ImageArchiveTag extends BodyTagSupport {
             request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, new Locale(currentLocale));
             if (user.canAccess(document)) {
                 String iframe = "<iframe src='" + archiveUri +"' ";
-                if (styleClass != null && !"".equals(styleClass)) {
+                if (getStyleClass() != null && !"".equals(getStyleClass())) {
                     iframe += "class='" + styleClass + "' ";
-                } else {
-                    iframe += defaultStyle;
                 }
                 iframe += "seamless frameBorder='0' scrolling='no' id='imageArchive'></iframe>";
                 out.print(iframe);
@@ -64,6 +66,8 @@ public class ImageArchiveTag extends BodyTagSupport {
         return EVAL_BODY_BUFFERED;
     }
 
+    /* Sets the overriding css attribute in session that's appended by javascript in header.jsp when image archive is
+     * inside iframe */
     public int doAfterBody() {
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
         HttpSession session = request.getSession();
@@ -75,6 +79,11 @@ public class ImageArchiveTag extends BodyTagSupport {
         }
 
         return SKIP_BODY;
+    }
+
+    /* Class name(s) set for the iframe produces */
+    public String getStyleClass(){
+        return this.styleClass;
     }
 
     public void setStyleClass(String styleClass) {
@@ -90,5 +99,4 @@ public class ImageArchiveTag extends BodyTagSupport {
     }
 
     protected String styleClass;
-    private final String defaultStyle = "width='100%' height='800px' style='border:none;' ";
 }

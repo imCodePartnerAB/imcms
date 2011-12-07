@@ -83,7 +83,10 @@ public class AddImageController {
         
         return mav;
     }
-    
+
+    /* Called by uploadify for multi-file upload(images, zips or both).
+     * Stores images and images from zip archives
+     * One request, one file */
     @RequestMapping("/archive/add-image/upload")
     public void uploadHandler(
             @ModelAttribute("upload") AddImageUploadCommand command, 
@@ -150,11 +153,10 @@ public class AddImageController {
     
     @RequestMapping("/archive/add-image/change")
     public ModelAndView changeDataHandler(
-            @ModelAttribute("changeData") ChangeImageDataCommand changeData, 
+            @ModelAttribute("changeData") ChangeImageDataCommand changeData,
             BindingResult result,
             @ModelAttribute AddImageActionCommand action,
-            HttpServletRequest request, 
-            HttpServletResponse response) {
+            HttpServletRequest request) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();

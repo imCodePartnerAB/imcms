@@ -45,10 +45,10 @@ public class SearchImageController {
     
     @RequestMapping({"/archive", "/archive/"})
     public ModelAndView indexHandler(
-            @ModelAttribute("search") SearchImageCommand command, 
-            BindingResult result, 
-            @RequestParam(required=false) String returnTo, 
-            HttpServletRequest request, HttpServletResponse response,
+            @ModelAttribute("search") SearchImageCommand command,
+            BindingResult result,
+            @RequestParam(required = false) String returnTo,
+            HttpServletRequest request,
             HttpSession session) {
         returnTo = StringUtils.trimToNull(returnTo);
         if (returnTo != null) {

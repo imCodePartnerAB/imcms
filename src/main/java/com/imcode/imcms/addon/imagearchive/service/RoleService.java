@@ -145,11 +145,12 @@ public class RoleService {
                 .setParameterList("roleIds", roleIds)
                 .list();
     }
-    
+
+    /* Checks whether a user has the provided permission(s), be it use/edit/any for the given category */
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public boolean hasAccessToCategory(User user, int categoryId, RolePermissionDomainObject... permissions) {
 
-        Set<Integer> roleIds = null;
+        Set<Integer> roleIds;
 
         if (user.isSuperAdmin()) {
             return true;
@@ -182,7 +183,7 @@ public class RoleService {
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public List<String> findArtists(User user) {
 
-        Set<Integer> roleIds = null;
+        Set<Integer> roleIds;
         if (user.isDefaultUser()) {
             roleIds = new HashSet<Integer>(1);
             roleIds.add(Roles.USERS_ID);

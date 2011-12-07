@@ -14,6 +14,7 @@ import java.util.List;
 
 /*
 Prints out library sub-folders recursively as html list
+Used in external files for library tree rendering
  */
 public class LibraryChildren extends TagSupport {
 
@@ -30,7 +31,7 @@ public class LibraryChildren extends TagSupport {
                     currentLibraryClass = " class='currentLibrary'";
                 }
                 out.print("<li data-library-id='" + lib.getId() + "'>" + "<span" + currentLibraryClass + ">" + lib.getLibraryNm() + "</span>");
-                getSubdirs(lib, file, new FileFilter() {
+                getSubdirs(file, new FileFilter() {
                     public boolean accept(File file) {
                         String name = file.getName();
 
@@ -46,7 +47,7 @@ public class LibraryChildren extends TagSupport {
         return SKIP_BODY;
     }
 
-    private void getSubdirs(LibrariesDto lib, File file, FileFilter filter, JspWriter output) throws IOException {
+    private void getSubdirs(File file, FileFilter filter, JspWriter output) throws IOException {
         if (file == null) {
             return;
         }
@@ -70,7 +71,7 @@ public class LibraryChildren extends TagSupport {
                 currentLibraryClass = " class='currentLibrary'";
             }
             output.print("<li data-library-id='" + subLib.getId() + "'>" + "<span" + currentLibraryClass + ">" + subdir.getName() + "</span>");
-            getSubdirs(lib, subdir, filter, output);
+            getSubdirs(subdir, filter, output);
             output.print("</li>");
             output.print("</ul>");
         }
@@ -90,6 +91,7 @@ public class LibraryChildren extends TagSupport {
     }
 
 
+    /* Library to output children for */
     public LibrariesDto getLibrary() {
         return library;
     }
@@ -98,6 +100,7 @@ public class LibraryChildren extends TagSupport {
         this.library = library;
     }
 
+    /* Current library */
     public LibrariesDto getCurrentLibrary() {
         return currentLibrary;
     }
@@ -105,7 +108,8 @@ public class LibraryChildren extends TagSupport {
     public void setCurrentLibrary(LibrariesDto currentLibrary) {
         this.currentLibrary = currentLibrary;
     }
-    
+
+    /* List of all libraries avaibale to the user */
     public List<LibrariesDto> getLibraries() {
         return libraries;
     }

@@ -52,6 +52,7 @@ public class FileService {
     
     
     public static final Pattern FILENAME_PATTERN = Pattern.compile("^.*?/?([^/\\:]+?)$");
+    public static final String OSX_RESOURCE_FORK_PREFIX = "__MACOSX/";
     
     private static final String IMAGE_ORIGINAL_INFIX = "orig";
     private static final String IMAGE_FULL_INFIX = "full";
@@ -387,6 +388,7 @@ public class FileService {
         return entries;
     }
 
+    /* Now used exclusively with user personal library */
     public boolean storeImageToLibrary(LibrariesDto library, File tempFile, String fileName) {
         File imageFile = getLibraryFile(library, fileName);
         try {
@@ -428,7 +430,7 @@ public class FileService {
                 Matcher matcher = FILENAME_PATTERN.matcher(fileName);
 
                 /* skipping OSX resource forks(__MAXOSC/) */
-                if (fileName.startsWith("__MACOSX/") ||!matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
+                if (fileName.startsWith(FileService.OSX_RESOURCE_FORK_PREFIX) ||!matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
                     continue;
                 }
 

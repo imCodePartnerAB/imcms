@@ -272,11 +272,11 @@ public class ImageCardController {
 
         return new ModelAndView("redirect:/web/archive/image/" + imageId);
     }
-    
+
+    /* Doesn't actually delete images, as marks them as erased(unavailable) */
     @RequestMapping("/archive/image/*/erase")
     public ModelAndView eraseHandler(
-            HttpServletRequest request,
-            HttpServletResponse response) {
+            HttpServletRequest request) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         

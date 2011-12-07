@@ -1,16 +1,8 @@
 package com.imcode.imcms.addon.imagearchive.entity;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 @Table(name="archive_library_roles")
@@ -116,6 +108,7 @@ public class LibraryRoles implements Serializable {
         this.updatedDt = updatedDt;
     }
 
+    /* 'use' implies see in the list(tree) on external files page and add to archive */
     public Boolean getCanUse() {
         return canUse;
     }
@@ -124,6 +117,9 @@ public class LibraryRoles implements Serializable {
         this.canUse = canUse;
     }
 
+    /* Ability to change(upload, delete) also gives permission to use.
+    * DEPRECATED: since users are only allowed to upload file to their own library, and other libraries are read-only,
+    * this property is not used anymore. */
     public Boolean getCanChange() {
         return canChange;
     }

@@ -1,16 +1,22 @@
 package com.imcode.imcms.addon.imagearchive.controller;
 
-import java.io.File;
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
-import com.imcode.imcms.addon.imagearchive.dto.RoleCategoriesDto;
-import com.imcode.imcms.addon.imagearchive.entity.*;
+import com.imcode.imcms.addon.imagearchive.command.*;
+import com.imcode.imcms.addon.imagearchive.dto.LibraryRolesDto;
+import com.imcode.imcms.addon.imagearchive.entity.Categories;
+import com.imcode.imcms.addon.imagearchive.entity.CategoryRoles;
+import com.imcode.imcms.addon.imagearchive.entity.Libraries;
+import com.imcode.imcms.addon.imagearchive.entity.Roles;
+import com.imcode.imcms.addon.imagearchive.service.Facade;
+import com.imcode.imcms.addon.imagearchive.service.exception.CategoryExistsException;
+import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
+import com.imcode.imcms.addon.imagearchive.util.Utils;
+import com.imcode.imcms.addon.imagearchive.validator.CreateCategoryValidator;
+import com.imcode.imcms.addon.imagearchive.validator.EditCategoryValidator;
+import com.imcode.imcms.addon.imagearchive.validator.SaveLibraryRolesValidator;
 import com.imcode.imcms.api.CategoryType;
 import com.imcode.imcms.api.CategoryTypeAlreadyExistsException;
+import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.User;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.logging.Log;
@@ -23,21 +29,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.imcode.imcms.addon.imagearchive.command.CreateCategoryCommand;
-import com.imcode.imcms.addon.imagearchive.command.EditCategoryCommand;
-import com.imcode.imcms.addon.imagearchive.command.PreferencesActionCommand;
-import com.imcode.imcms.addon.imagearchive.command.SaveLibraryRolesCommand;
-import com.imcode.imcms.addon.imagearchive.command.SaveRoleCategoriesCommand;
-import com.imcode.imcms.addon.imagearchive.dto.LibraryRolesDto;
-import com.imcode.imcms.addon.imagearchive.service.Facade;
-import com.imcode.imcms.addon.imagearchive.service.exception.CategoryExistsException;
-import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
-import com.imcode.imcms.addon.imagearchive.util.Utils;
-import com.imcode.imcms.addon.imagearchive.validator.CreateCategoryValidator;
-import com.imcode.imcms.addon.imagearchive.validator.EditCategoryValidator;
-import com.imcode.imcms.addon.imagearchive.validator.SaveLibraryRolesValidator;
-import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.User;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class PreferencesController {
@@ -52,21 +48,20 @@ public class PreferencesController {
     
     @RequestMapping("/archive/preferences")
     public String indexHandler(
-            @ModelAttribute PreferencesActionCommand actionCommand, 
-            
-            @ModelAttribute("createCategory") CreateCategoryCommand createCategoryCommand, 
+            @ModelAttribute PreferencesActionCommand actionCommand,
+
+            @ModelAttribute("createCategory") CreateCategoryCommand createCategoryCommand,
             BindingResult createCategoryResult,
-            
-            @ModelAttribute("editCategory") EditCategoryCommand editCategoryCommand, 
-            BindingResult editCategoryResult, 
-            
-            @ModelAttribute("saveLibraryRoles") SaveLibraryRolesCommand librariesCommand, 
+
+            @ModelAttribute("editCategory") EditCategoryCommand editCategoryCommand,
+            BindingResult editCategoryResult,
+
+            @ModelAttribute("saveLibraryRoles") SaveLibraryRolesCommand librariesCommand,
             BindingResult librariesResult,
-            
-            @ModelAttribute("saveCategories") SaveRoleCategoriesCommand roleCategoriesCommand, 
-            
-            HttpServletRequest request, 
-            HttpServletResponse response, 
+
+            @ModelAttribute("saveCategories") SaveRoleCategoriesCommand roleCategoriesCommand,
+
+            HttpServletRequest request,
             Map<String, Object> model) {
         
         ArchiveSession session = ArchiveSession.getSession(request);
@@ -88,7 +83,10 @@ public class PreferencesController {
         }
         session.put("previousRole", role);
         model.put("currentRole", role);
-        
+
+        /* First gets all libraries, then get first level folders(no subfolders) of libraries and match them with libraries,
+        getting first level libraries.
+        Subfolders inherit permissions from their first level folders */
         List<Libraries> libraries = facade.getLibraryService().findLibraries();
         final List<File> firstLevelLibraries = facade.getFileService().listFirstLevelLibraryFolders();
         CollectionUtils.filter(libraries, new Predicate() {

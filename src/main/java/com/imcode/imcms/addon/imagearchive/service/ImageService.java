@@ -121,7 +121,7 @@ public class ImageService {
                 String fileName = entry.getName();
                 Matcher matcher = FileService.FILENAME_PATTERN.matcher(fileName);
 
-                if (fileName.startsWith("__MACOSX/") || !matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
+                if (fileName.startsWith(FileService.OSX_RESOURCE_FORK_PREFIX) || !matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
                     continue;
                 }
 
@@ -959,7 +959,7 @@ public class ImageService {
                 .setResultTransformer(Transformers.aliasToBean(Categories.class))
                 .list();
     }
-    
+
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public List<Categories> findAvailableImageCategories(long imageId, User user) {
 
@@ -983,7 +983,8 @@ public class ImageService {
                 .setResultTransformer(Transformers.aliasToBean(Categories.class))
                 .list();
     }
-    
+
+    /* checks if the given user has 'use' permission to the categories with given ids */
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
     public boolean canUseCategories(User user, List<Integer> categoryIds) {
 

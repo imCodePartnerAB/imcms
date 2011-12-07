@@ -64,8 +64,7 @@ public class ExternalFilesController {
     
     @RequestMapping("/archive/external-files")
     public ModelAndView indexHandler(
-            HttpServletRequest request, 
-            HttpServletResponse response) {
+            HttpServletRequest request) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
@@ -86,7 +85,7 @@ public class ExternalFilesController {
         });
         List<LibrariesDto> allLibraries = facade.getLibraryService().findLibraries(user);
         
-        LibrariesDto library = getLibrary(session, user, libraries);
+        LibrariesDto library = getLibrary(session, user);
         LibrarySort sortBy = getSortBy(session);
         List<LibraryEntryDto> libraryEntries = facade.getFileService().listLibraryEntries(library, sortBy);
 
@@ -99,12 +98,12 @@ public class ExternalFilesController {
         
         return mav;
     }
-    
+
+    /* Switches current library */
     @RequestMapping("/archive/external-files/library")
     public String changeLibraryHandler(
-            @RequestParam(required=false) Integer id,
-            HttpServletRequest request, 
-            HttpServletResponse response) {
+            @RequestParam(required = false) Integer id,
+            HttpServletRequest request) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
@@ -126,6 +125,7 @@ public class ExternalFilesController {
         return "redirect:/web/archive/external-files";
     }
 
+    /* Changes sorting. Called each time sorting order is changed in library entry table(ajax) */
     @RequestMapping("/archive/external-files/sort")
     public String changeSortByHandler(
             @RequestParam(required=false) String sortBy,
@@ -139,12 +139,13 @@ public class ExternalFilesController {
 
         return "redirect:/web/archive/external-files";
     }
-    
+
+    /* Adds images from external files to archive if they are not there already(by file name, size criteria).
+     * Erazed files from archive */
     @RequestMapping("/archive/external-files/process")
     public ModelAndView processHandler(
             @ModelAttribute("externalFiles") ExternalFilesCommand command,
-            HttpServletRequest request, 
-            HttpServletResponse response) {
+            HttpServletRequest request) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
@@ -153,7 +154,7 @@ public class ExternalFilesController {
             return new ModelAndView("redirect:/web/archive/");
         }
         
-        LibrariesDto library = getLibrary(session, user, null);
+        LibrariesDto library = getLibrary(session, user);
         if (library == null) {
             return new ModelAndView("redirect:/web/archive/external-files");
         }
@@ -248,6 +249,12 @@ public class ExternalFilesController {
         return new ModelAndView("redirect:/web/archive/external-files");
     }
 
+    /* Called by uploadify for multi-file upload(images, zips or both).
+     * Stores images and images from zip archives
+     * One request, one file.
+     * User is only allowed to upload images to personal folder
+     * Single image upload redirects to a form where attributes can be changed, when multiple files are uploaded
+     * no form is shown*/
     @RequestMapping("/archive/external-files/upload")
     public void uploadHandler(ExternalFilesCommand externalFilesUpload,
             BindingResult result,
@@ -305,7 +312,7 @@ public class ExternalFilesController {
         
         Utils.writeJSON(status, response);
     }
-    
+
     private Images activateImage(LibrariesDto library, String fileName, User user) {
         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
         ImageInfo imageInfo;
@@ -321,14 +328,14 @@ public class ExternalFilesController {
         
         return null;
     }
-    
+
+    /* Used when adding images to archive(adding attributes, rotation etc) */
     @RequestMapping("/archive/external-files/change")
     public ModelAndView changeHandler(
-            @ModelAttribute("changeData") ChangeImageDataCommand changeData, 
-            BindingResult result, 
-            ExternalFilesSaveImageCommand saveCommand, 
-            HttpServletRequest request, 
-            HttpServletResponse response) {
+            @ModelAttribute("changeData") ChangeImageDataCommand changeData,
+            BindingResult result,
+            ExternalFilesSaveImageCommand saveCommand,
+            HttpServletRequest request) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
@@ -454,6 +461,7 @@ public class ExternalFilesController {
         return new ModelAndView("image_archive/pages/external_files/preview", model);
     }
 
+    /* Used by small tooltip when moving cursor over filenames in library entry list */
     @RequestMapping("/archive/external-files/preview-tooltip")
     public ModelAndView previewTooltipHandler(
             @RequestParam(required=false) Integer id,
@@ -530,7 +538,7 @@ public class ExternalFilesController {
             return null;
         }
         
-        LibrariesDto library = null;
+        LibrariesDto library;
         if (id == LibrariesDto.USER_LIBRARY_ID) {
             library = LibrariesDto.userLibrary(user);
         } else {
@@ -581,7 +589,7 @@ public class ExternalFilesController {
         return null;
     }
     
-    private LibrariesDto getLibrary(ArchiveSession session, User user, List<LibrariesDto> libraries) {
+    private LibrariesDto getLibrary(ArchiveSession session, User user) {
         LibrariesDto library = (LibrariesDto) session.get(LIBRARY_KEY);
         if (library != null && !library.isUserLibrary()) {
             library = facade.getLibraryService().findLibraryById(user, library.getId());

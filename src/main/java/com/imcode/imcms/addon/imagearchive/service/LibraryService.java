@@ -44,7 +44,8 @@ public class LibraryService {
                 .setResultTransformer(Transformers.aliasToBean(Libraries.class))
                 .uniqueResult();
     }
-    
+
+    /* Syncs libraries(their paths, name etc) in database with actual folders in filesystem(Library paths in build properties) */
     public void syncLibraryFolders() {
         Session session = factory.getCurrentSession();
 
