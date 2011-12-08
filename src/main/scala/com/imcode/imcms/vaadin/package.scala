@@ -1,12 +1,13 @@
 package com.imcode
 package imcms
 
-import com.vaadin.ui._
 import com.vaadin.Application
 import com.vaadin.data.Property.{ValueChangeNotifier, ValueChangeEvent, ValueChangeListener}
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.data.{Item, Container, Property}
 import com.vaadin.terminal.{UserError, Sizeable}
+import com.vaadin.ui.Table.CellStyleGenerator
+import com.vaadin.ui._
 
 package object vaadin {
 
@@ -46,10 +47,43 @@ package object vaadin {
       container.addContainerProperty(p.id, p.clazz, p.defaultValue)
     }
 
-  @deprecated("")
-  def addContainerProperties(table: Table, properties: (AnyRef, JClass[_], AnyRef)*) =
-    for ((propertyId, propertyType, defaultValue) <- properties)
-      table.addContainerProperty(propertyId, propertyType, defaultValue)
+
+  type ItemId = AnyRef
+  type PropertyId = AnyRef
+  type ColumnId = AnyRef
+
+  // table.properties = CP[Int]("id", "name") ~ CP[String]("id", "name") ~ ... ???
+
+  implicit def fnToTableCellStyleGenerator(fn: (ItemId,  PropertyId) => String ) =
+    new Table.CellStyleGenerator {
+      def getStyle(itemId: AnyRef, propertyId: AnyRef) = fn(itemId, propertyId)
+    }
+
+  implicit def fnToTableColumnGenerator(fn: (Table, ItemId, ColumnId) => AnyRef) =
+    new Table.ColumnGenerator {
+      def generateCell(source: Table, itemId: ItemId, columnId: AnyRef) = fn(source, itemId, columnId)
+    }
+
+  class TableOps[A <: ItemId](table: Table with ItemIdType[A]) {
+    def addRow(itemId: A, cells: AnyRef*): AnyRef = addTableRow(table, itemId, cells: _*)
+    def addRowWithAutoId(cell: AnyRef, cells: AnyRef*): AnyRef = addTableRow(table, null, (cell +: cells) : _*)
+
+    object generatedColumn {
+      def update(columnId: ColumnId, generator: (Table, A, ColumnId) => AnyRef) {
+        table.addGeneratedColumn(columnId, new Table.ColumnGenerator {
+          def generateCell(source: Table, itemId: ItemId, columnId: AnyRef) = generator(source, itemId.asInstanceOf[A], columnId)
+        })
+      }
+    }
+
+    def columnHeaders = table.getColumnHeaders.toList
+    def columnHeaders_=(headers: List[String]) { table setColumnHeaders headers.toArray }
+  }
+
+  implicit def tableOps[A <: ItemId](table: Table with ItemIdType[A]) = new TableOps[A](table)
+
+
+  def addTableRow(table: Table, itemId: AnyRef, cells: AnyRef*): AnyRef = table.addItem(cells.toArray[AnyRef], itemId)
 
 //  def whenSelected[A, B](property: Property)(fn: A => B): Option[B] = property.getValue match {
 //    case null => None
@@ -57,7 +91,7 @@ package object vaadin {
 //    case other => sys.error("Unexpected field value: %s." format other)
 //  }
 
-  def whenSelected[A >: Null, B](property: ValueType[A] with AbstractSelect)(fn: A => B): Option[B] = property.value match {
+  def whenSelected[A <: AnyRef, B](property: ValueType[A] with AbstractSelect)(fn: A => B): Option[B] = property.value match {
     case null => None
     case value: JCollection[_] if value.isEmpty => None
     case value => Some(fn(value))

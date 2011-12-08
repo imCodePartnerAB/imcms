@@ -38,5 +38,6 @@ public class TemplateGroup {
 
     public int hashCode() {
         return internalTemplateGroup.hashCode() ;
+
     }
 }

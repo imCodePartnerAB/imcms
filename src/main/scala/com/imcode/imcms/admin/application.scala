@@ -133,59 +133,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
   val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
 
-  abstract class TableViewTemplate extends VerticalLayout {
-    val tblItems = new Table {
-      setSelectable(true)
-      setImmediate(true)
-      setPageLength(10)
 
-      this.addValueChangeHandler { resetComponents }
-
-      tableProperties foreach (addContainerProperties(this, _))
-    }
-
-    val btnReload = new Button("Reload") {
-      this.addClickHandler { reloadTableItems }
-      setStyleName(Button.STYLE_LINK)
-      setIcon(new ThemeResource("icons/16/reload.png"))
-    }
-
-    // todo - refactor into lytMenu
-    val pnlHeader = new HorizontalLayout {
-      setWidth("100%")
-      setSpacing(true)
-    }
-
-    val lytHeader = new HorizontalLayout {
-      setWidth("100%")
-      setSpacing(true)
-    }
-
-    val lytMenu = pnlHeader
-
-    addComponents(lytHeader, lytMenu, btnReload)
-    lytHeader.setExpandRatio(lytMenu, 1.0f)
-
-    setSpacing(true)
-    addComponents(this, lytHeader, tblItems)
-
-    reloadTableItems
-    resetComponents
-
-    // Investigate: List[(AnyRef, Array[AnyRef])]
-    def tableItems(): Seq[(AnyRef, Seq[AnyRef])] = List.empty
-
-    def tableProperties: Seq[(AnyRef, JClass[_], AnyRef)] = List.empty
-
-    def reloadTableItems {
-      tblItems.removeAllItems
-
-      for((id, cells) <- tableItems()) tblItems.addItem(cells.toArray, id)
-      //for ((id:, cells:) <- tableItems()) tblItems.addItem(cells, id)
-    }
-
-    def resetComponents = {}
-  }
 
   def NA(id: Any) = new TabSheetView {
     addTab(new VerticalLayoutUI(id.toString) {
@@ -493,7 +441,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   lazy val searchTerms = new TabSheetView {
     addTab(new VerticalLayoutUI("Popular search terms") {
       val tblTerms = new Table {
-        addContainerProperties(this, ("Term", classOf[String], null), ("Count", classOf[String], null))
+        addContainerProperties(this, ContainerProperty[String]("Term"), ContainerProperty[String]("Count"))
         setPageLength(10)
       }
 

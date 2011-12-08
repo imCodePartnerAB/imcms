@@ -10,8 +10,8 @@ package object imcode {
   type JLong = java.lang.Long
   type JFloat = java.lang.Float
   type JDouble = java.lang.Double
-  type JCollection[A >: Null] = java.util.Collection[A]
-  type JList[A >: Null] = java.util.List[A]
+  type JCollection[A <: AnyRef] = java.util.Collection[A]
+  type JList[A <: AnyRef] = java.util.List[A]
 
   implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
 
@@ -63,7 +63,7 @@ package object imcode {
   /** Creates zero arity fn from by-name parameter. */
   def mkFn(byName: => Unit): () => Unit = byName _
 
-  def ?[A >: Null](nullable: A) = Option(nullable)
+  def ?[A <: AnyRef](nullable: A) = Option(nullable)
 
   def let[A, B](expr: A)(fn: A => B): B = fn(expr)
 

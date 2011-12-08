@@ -21,7 +21,7 @@ trait TCSDefaultI18n extends TwinColSelect {
  * @pram id container property id
  * @pram defaultValue container property default value
  */
-case class ContainerProperty[A >: Null : Manifest](id: AnyRef, defaultValue: AnyRef = null) {
+case class ContainerProperty[A <: AnyRef : Manifest](id: AnyRef, defaultValue: A = null) {
   val clazz = implicitly[Manifest[A]].erasure
 }
 
@@ -30,7 +30,7 @@ case class ContainerProperty[A >: Null : Manifest](id: AnyRef, defaultValue: Any
  *
  * Adds type-checked access to property value.
  */
-trait ValueType[A >: Null] extends Property {
+trait ValueType[A <: AnyRef] extends Property {
   def value = getValue.asInstanceOf[A]
   def value_=(v: A) = setValue(v)
   def valueOpt: Option[A] = Option(value) // multiselect?
@@ -45,7 +45,7 @@ trait ValueType[A >: Null] extends Property {
   def notBlank(implicit ev: A =:= String) = !isBlank
 }
 
-trait ItemIdType[A >: Null] extends Container {
+trait ItemIdType[A <: AnyRef] extends Container {
   def itemIds = getItemIds.asInstanceOf[JCollection[A]]
   def itemIds_=(ids: JCollection[A]) {
     removeAllItems()
@@ -64,7 +64,7 @@ trait ItemIdType[A >: Null] extends Container {
  *
  * Adds type-checked access to data.
  */
-trait DataType[A >: Null] extends AbstractComponent {
+trait DataType[A <: AnyRef] extends AbstractComponent {
   def data = getData.asInstanceOf[A]
   def data_=(d: A) = setData(d)
 }
@@ -199,14 +199,14 @@ trait SelectionCheck extends AbstractSelect {
 }
 
 
-trait SelectOps[A >: Null] extends AbstractSelect with ItemIdType[A] {
+trait SelectOps[A <: AnyRef] extends AbstractSelect with ItemIdType[A] {
   def addItem(id: A, caption: String): Item = letret(addItem(id)) { _ =>
     setItemCaption(id, caption)
   }
 }
 
 
-trait SingleSelect[A >: Null] extends SelectionCheck with SelectOps[A] with ValueType[A]  {
+trait SingleSelect[A <: AnyRef] extends SelectionCheck with SelectOps[A] with ValueType[A]  {
   setMultiSelect(false)
 
   def isSelected = value != null
@@ -217,7 +217,7 @@ trait SingleSelect[A >: Null] extends SelectionCheck with SelectOps[A] with Valu
   }
 }
 
-trait MultiSelect[A >: Null] extends SelectionCheck with SelectOps[A] with ValueType[JCollection[A]] {
+trait MultiSelect[A <: AnyRef] extends SelectionCheck with SelectOps[A] with ValueType[JCollection[A]] {
   setMultiSelect(true)
 
   override def setMultiSelect(multiSelect: Boolean) {
@@ -242,7 +242,7 @@ trait MultiSelect[A >: Null] extends SelectionCheck with SelectOps[A] with Value
 /**
  * Type check <code>value<code> property always returns a collection.
  */
-trait MultiSelectBehavior[A >: Null <: AnyRef] extends SelectionCheck with SelectOps[A] with ValueType[JCollection[A]] {
+trait MultiSelectBehavior[A <: AnyRef] extends SelectionCheck with SelectOps[A] with ValueType[JCollection[A]] {
 
   def selection = value.toSeq
 
@@ -334,3 +334,21 @@ case class FunctionProperty[A](valueFn: () => A)(implicit mf: Manifest[A]) exten
 
   override def toString = ?(getValue) map { _.toString } getOrElse ""
 }
+
+//case class ByNameProperty[A >: Null <: AnyRef](byName: => A)(implicit mf: Manifest[A]) extends Property {
+//
+//  def setReadOnly(newStatus: Boolean) = throw new UnsupportedOperationException
+//
+//  val isReadOnly = true
+//
+//  val getType = mf.erasure
+//
+//  def setValue(newValue: AnyRef) = throw new UnsupportedOperationException
+//
+//  def getValue = byName //.asInstanceOf[AnyRef]
+//
+//  override def toString = ?(getValue) map { _.toString } getOrElse ""
+//}
+
+// add memoized byNameProperty
+
