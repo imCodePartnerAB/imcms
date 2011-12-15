@@ -20,29 +20,32 @@
 <title><? templates/sv/AdminUserResp.htm/1 ?></title>
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
-<script language="javascript">
-<!--
+<script type="text/javascript">
+var $pw1, $pw2 ;
+
+jQ(document).ready(function($) {
+	$pw1 = $('input[name=password1]') ;
+	$pw2 = $('input[name=password2]') ;
+	window.setTimeout(function() {
+		$pw1.attr('autocomplete', 'off').focus().val('') ;<%-- FF has a bug. Ignores autocomplete=off sometimes --%>
+	}, 100) ;
+}) ;
+
 function evalPrepareAdd() {
-	// Lets check that those fields which are mandatory
-	var valFieldsOk = true;
-	if( document.forms[0].login_name.value == "" ) valFieldsOk = false
-
-	if(!valFieldsOk) {
-		var msg = "<? templates/sv/AdminUserResp.htm/2/1 ?>"
-		alert(msg)
-		return false
+	if ('' == jQ('input[name=login_name]').val()) {
+		alert("<? templates/sv/AdminUserResp.htm/2/1 ?>") ;
+		return false ;
 	}
-
-	if(document.forms[0].password1.value != document.forms[0].password2.value){
-		var msg = "<? templates/sv/AdminUserResp.htm/2/2 ?>"
-		document.forms[0].password1.value = ""
-		document.forms[0].password2.value = ""
-		document.forms[0].password1.focus()
-		alert(msg)
-		return false
+	var $pw1 = jQ('input[name=password1]') ;
+	var $pw2 = jQ('input[name=password2]') ;
+	if ($pw1.val() != $pw2.val()){
+		$pw1.val('') ;
+		$pw2.val('') ;
+		$pw1.focus() ;
+		alert("<? templates/sv/AdminUserResp.htm/2/2 ?>") ;
+		return false ;
 	}
-
-	return true
+	return true ;
 }
 
 function activateUseradmin_roles(){
@@ -56,8 +59,6 @@ function activateUseradmin_roles(){
 		}
 	}
 }
-
-//-->
 </script>
 
 </head>
