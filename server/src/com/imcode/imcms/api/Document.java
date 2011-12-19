@@ -187,6 +187,14 @@ public class Document implements Serializable {
         return contentManagementSystem.getUserService().getUser(creatorId) ;
     }
 
+    /**
+     * @return a user who modified document or null if there is no such data or user can not be found.
+     */
+    public User getModifier() {
+        Integer modifierId = internalDocument.getModifierId();
+        return modifierId == null ? null : contentManagementSystem.getUserService().getUser(modifierId);
+    }
+
     public void setCreator( User creator ) {
         internalDocument.setCreator( creator.getInternal() );
     }

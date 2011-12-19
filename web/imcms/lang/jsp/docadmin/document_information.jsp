@@ -30,6 +30,7 @@
             java.util.Date,
             java.util.Set,
             java.util.TreeSet"%>
+<%@ page import="org.apache.poi.util.StringUtil" %>
 
 <%@	taglib prefix="vel" uri="imcmsvelocity"%><%
 
@@ -595,7 +596,16 @@ function checkFocus() {
 			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_TIME %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= formatTime( document.getModifiedDatetime() ) %>"></td>
             <td><%= jsCalendar.getInstance(EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_DATE,
-			                               EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_TIME).getButton(calendarButtonTitle) %></td>
+			                               EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_TIME).getButton(calendarButtonTitle) %>
+                <%
+                    try {
+                        String modifiedBy = Utility.formatUser(userMapper.getUser(Integer.parseInt(document.getProperty(
+                                DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY))));
+
+                        %><? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?><%=modifiedBy%><%
+                    } catch (Exception ignore) {}
+                %>
+            </td>
 		</tr>
 		</table></td>
 	</tr><%

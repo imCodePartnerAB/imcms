@@ -6,10 +6,7 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.Document;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
@@ -47,6 +44,7 @@ class DocumentSaver {
             if (modifiedDatetimeUnchanged) {
                 document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
             }
+            document.setProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY, "" + user.getId());
 
             sqlUpdateMeta(document);
 

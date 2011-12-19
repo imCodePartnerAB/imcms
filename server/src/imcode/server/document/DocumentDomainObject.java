@@ -8,7 +8,6 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LazilyLoadedObject;
 import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -19,6 +18,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public static final int ID_NEW = 0;
     public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
+    public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY = "imcms.document.modified_by";
 
     protected Attributes attributes = new Attributes();
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
@@ -81,6 +81,17 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public int getCreatorId() {
         return attributes.creatorId;
+    }
+
+    /**
+     * @return a user's id who modified document or null if there is no such data.
+     */
+    public Integer getModifierId() {
+        try {
+            return Integer.valueOf(getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void setCreatorId( int creatorId ) {
