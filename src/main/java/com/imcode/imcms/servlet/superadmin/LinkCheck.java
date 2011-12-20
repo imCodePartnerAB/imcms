@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnection;
+import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -351,7 +351,7 @@ public class LinkCheck extends HttpServlet {
             } catch ( IllegalArgumentException e ) {
                 log.debug( "Error testing url " + url, e );
             } catch ( UnknownHostException e ) {
-            } catch ( HttpConnection.ConnectionTimeoutException e ) {
+            } catch ( ConnectTimeoutException e ) {
                 hostFound = true;
             } catch ( ConnectException e ) {
                 hostFound = true;

@@ -279,10 +279,10 @@ public class FileAdmin extends HttpServlet {
         if ( files != null && files.length == 1 ) {	//Has the user chosen just one file?
             File file = new File( dir, files[0] );
             try {
-                res.setContentType( "application/octet-stream" );
-                res.setHeader( "ContentLoop-Disposition", "attachment; filename=\"" + file.getName() + '\"' );
                 BufferedInputStream fin = new BufferedInputStream( new FileInputStream( file ) );
+                res.setContentType( "application/octet-stream" );
                 res.setContentLength( fin.available() );
+                res.setHeader( "Content-Disposition", "attachment; filename=\"" + file.getName() + '\"' );
                 byte[] buffer = new byte[BUFFER_SIZE];
                 ServletOutputStream out = res.getOutputStream();
                 for ( int bytes_read; ( bytes_read = fin.read( buffer ) ) != -1; ) {

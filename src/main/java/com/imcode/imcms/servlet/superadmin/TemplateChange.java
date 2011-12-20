@@ -234,7 +234,7 @@ public class TemplateChange extends HttpServlet {
         byte[] file = templateMapper.getTemplateData(template_id).getBytes();
         res.setContentType("application/octet-stream; name=\"" + filename + "\"");
         res.setContentLength(file.length);
-        res.setHeader("ContentLoop-Disposition", "attachment; filename=\"" + filename + "\";");
+        res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\";");
         ServletOutputStream out = res.getOutputStream();
         out.write(file);
         out.flush();
