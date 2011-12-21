@@ -602,7 +602,7 @@ function checkFocus() {
                         String modifiedBy = Utility.formatUser(userMapper.getUser(Integer.parseInt(document.getProperty(
                                 DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY))));
 
-                        %><? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?><%=modifiedBy%><%
+                        %><? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?>&nbsp;<%=modifiedBy%><%
                     } catch (Exception ignore) {}
                 %>
             </td>
