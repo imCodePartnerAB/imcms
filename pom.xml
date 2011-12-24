@@ -4,6 +4,8 @@
     todo: Exclude all transient dependencies ???
 
     todo: Check provided dependencies - move them to ant plugin ???
+
+    todo: write how-to notes for the team
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -21,6 +23,7 @@
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>3</jetty.scanIntervalSeconds>
+        <jetty.contextPath>/ok</jetty.contextPath>
 
         <generated.webapp.dir>${project.build.directory}/webapp</generated.webapp.dir>
     </properties>
@@ -445,6 +448,7 @@
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
         <sourceDirectory>${project.basedir}/server/src</sourceDirectory>
         <testSourceDirectory>${project.basedir}/server/src</testSourceDirectory>
         <plugins>
@@ -493,6 +497,7 @@
                 <version>2.1.1</version>
                 <configuration>
                     <archiveClasses>true</archiveClasses>
+                    <attachClasses>true</attachClasses>
                     <warSourceDirectory>${generated.webapp.dir}</warSourceDirectory>
                 </configuration>
             </plugin>
@@ -646,6 +651,29 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <!--
+                Plugin home: http://wiki.eclipse.org/Jetty/Feature/Jetty_Maven_Plugin
+                -->
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>7.5.2.v20111006</version>
+                <configuration>
+                    <scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>
+                    <stopKey>${jetty.stop.key}</stopKey>
+                    <stopPort>${jetty.stop.port}</stopPort>
+                    <webAppSourceDirectory>${generated.webapp.dir}</webAppSourceDirectory>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>${jetty.port}</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                    </connectors>
+                    <webAppConfig>
+                    <contextPath>${jetty.contextPath}</contextPath>
+                    </webAppConfig>
+                </configuration>
             </plugin>
         </plugins>
     </build>

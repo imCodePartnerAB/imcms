@@ -4,11 +4,14 @@
 
     <property file="build.properties"/>
 
-    <!-- version : imCMS version without suffix, only the number (e.g. "1.2.3") -->
+    <!-- version : imCMS artifact version (e.g. "1.2.3") -->
     <!-- todo: check is-set or fail -->
+    <!-- todo: add debug and production profiles -->
+    <!-- todo: add jsp compilation as pre-integration test -->
+    <!-- todo: commons NOP logger ??? -->
     <property name="version" value="SET BY MAVEN"/>
-    <property name="versionfilesuffix" value="-${version}"/>
-    <!-- webapp dir -->
+
+    <!-- generated webapp dir -->
     <property name="webroot" value="SET BY MAVEN"/>
     <property name="login" value="${webroot}/login"/>
     <property name="imcms" value="${webroot}/imcms"/>
@@ -34,7 +37,6 @@
     <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
 
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate"/>
-    <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles"/>
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>
 
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
@@ -45,14 +47,11 @@
         <!--<jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>-->
     <!--</target>-->
 
-    <!-- Sources -->
-    <!-- Checksum: md5 -->
-    <!--<target name="srcdist" depends="srcdist-zip,srcdist-tgz" description="Build all source distributions."/>-->
-
-    <!-- not in use, out directory is the same ?!? -->
+    <!-- not in use ?!? -->
     <target name="changes">
         <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
     </target>
+
 
     <target name="sql">
         <concat destfile="${sql}/ddl.xml">
@@ -77,6 +76,7 @@
             <fileset dir="sql/sprocs" includes="*.prc"/>
         </copy>
     </target>
+
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
@@ -133,8 +133,8 @@
         </copy>
 
         <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
-
     </target>
+
 
     <target name="web-lang" depends="init">
         <imtranslate bundle="web/WEB-INF/conf/imcms" bundlelanguage="${buildlanguage}"
