@@ -587,7 +587,7 @@
                     </execution>
 
                     <execution>
-                        <id>generate-webapp-content</id>
+                        <id>generate-webapp-directory-content</id>
                         <phase>generate-sources</phase>
                         <configuration>
                             <target>
@@ -620,7 +620,7 @@
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.8</version>
-                <!-- todo: ? -->
+                <!-- todo: check -->
                 <!--<include name="com/imcode/imcms/api/**"/>-->
                 <!--<include name="com/imcode/util/**"/>-->
                 <configuration>
@@ -677,6 +677,8 @@
                 </configuration>
             </plugin>
 
+            <!-- Used for testing purposes ONLY -->
+            <!-- The artifact must not contain pre-compiled JSP classes. -->
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-jspc-maven-plugin</artifactId>
@@ -684,7 +686,7 @@
                 <executions>
                     <execution>
                         <id>jspc</id>
-                        <phase>prepare-package</phase>
+                        <!--<phase>prepare-package</phase>-->
                         <goals>
                             <goal>jspc</goal>
                         </goals>
@@ -696,7 +698,8 @@
                         **/eng/jsp/category_admin_category.included.jsp,
                         **/swe/jsp/category_admin_category.included.jsp
                     </excludes>
-                    <verbose>true</verbose>
+                    <generatedClasses>${project.build.directory}/tmp/pre-compiled-jsp</generatedClasses>
+                    <mergeFragment>false</mergeFragment>
                 </configuration>
             </plugin>
         </plugins>
