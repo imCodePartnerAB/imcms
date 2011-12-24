@@ -13,7 +13,7 @@
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>4.0.17-SNAPSHOT</version>
+    <version>4.0.17-SNAPSHOT-1</version>
     <name>imCMS</name>
 
     <properties>
@@ -21,9 +21,26 @@
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>3</jetty.scanIntervalSeconds>
+
+        <generated.webapp.dir>${project.build.directory}/webapp</generated.webapp.dir>
     </properties>
 
     <dependencies>
+        <!--<dependency>-->
+        <!--<groupId>org.apache.tika</groupId>-->
+        <!--<artifactId>tika-parsers</artifactId>-->
+        <!--<version>1.0</version>-->
+        <!--&lt;!&ndash; todo: Check this exclusion &ndash;&gt;-->
+
+        <!--&lt;!&ndash; todo: Check conflicts &ndash;&gt;-->
+        <!--<exclusions>-->
+        <!--<exclusion>-->
+        <!--<artifactId>slf4j-api</artifactId>-->
+        <!--<groupId>org.slf4j</groupId>-->
+        <!--</exclusion>-->
+        <!--</exclusions>-->
+        <!--</dependency>-->
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -35,12 +52,28 @@
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.7.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>commons-betwixt</groupId>
             <artifactId>commons-betwixt</artifactId>
             <version>0.8</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-beanutils-core</artifactId>
+                    <groupId>commons-beanutils</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -59,6 +92,20 @@
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xercesImpl</artifactId>
+                    <groupId>xerces</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-collections</artifactId>
+                    <groupId>commons-collections</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xml-apis</artifactId>
+                    <groupId>xml-apis</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -71,12 +118,36 @@
             <groupId>commons-digester</groupId>
             <artifactId>commons-digester</artifactId>
             <version>1.7</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xml-apis</artifactId>
+                    <groupId>xml-apis</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>commons-email</groupId>
             <artifactId>commons-email</artifactId>
             <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mail</artifactId>
+                    <groupId>javax.mail</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>activation</artifactId>
+                    <groupId>javax.activation</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>dumbster</artifactId>
+                    <groupId>dumbster</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -89,6 +160,12 @@
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>2.0.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -114,6 +191,16 @@
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
             <version>1.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xercesImpl</artifactId>
+                    <groupId>xerces</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xml-apis</artifactId>
+                    <groupId>xml-apis</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- imCode Internal Repository dependencies -->
@@ -235,6 +322,12 @@
             <artifactId>poi</artifactId>
             <!-- RB-4 lib version: 3.0-alpha1 -->
             <version>3.0-FINAL</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -242,6 +335,12 @@
             <artifactId>poi-scratchpad</artifactId>
             <!-- RB-4 lib version: 3.0-alpha1 -->
             <version>3.1-FINAL</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -254,46 +353,52 @@
             <groupId>velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>1.4</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>velocity-dep</artifactId>
+                    <groupId>velocity</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Used by ant plugin & compiler -->
-        <dependency>
-            <groupId>ant-contrib</groupId>
-            <artifactId>ant-contrib</artifactId>
-            <!-- RB-4 lib/noinstall version: 0.6 -->
-            <version>1.0b3</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>ant-contrib</groupId>-->
+        <!--<artifactId>ant-contrib</artifactId>-->
+        <!--&lt;!&ndash; RB-4 lib/noinstall version: 0.6 &ndash;&gt;-->
+        <!--<version>1.0b3</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>antlr</groupId>
-            <artifactId>antlr</artifactId>
-            <version>2.7.5</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>antlr</groupId>-->
+        <!--<artifactId>antlr</artifactId>-->
+        <!--<version>2.7.5</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>tomcat</groupId>
-            <artifactId>catalina-ant</artifactId>
-            <version>4.1.31</version>
-            <!-- RB-4 lib/noinstall version: unspecified -->
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>tomcat</groupId>-->
+        <!--<artifactId>catalina-ant</artifactId>-->
+        <!--<version>4.1.31</version>-->
+        <!--&lt;!&ndash; RB-4 lib/noinstall version: unspecified &ndash;&gt;-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <!-- RB-4 lib/noinstall version: 4.3 -->
-            <version>5.5</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.puppycrawl.tools</groupId>-->
+        <!--<artifactId>checkstyle</artifactId>-->
+        <!--&lt;!&ndash; RB-4 lib/noinstall version: 4.3 &ndash;&gt;-->
+        <!--<version>5.5</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>commons-el</groupId>
-            <artifactId>commons-el</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>commons-el</groupId>-->
+        <!--<artifactId>commons-el</artifactId>-->
+        <!--<version>1.0</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>com.imcode.ant.tasks</groupId>
@@ -302,27 +407,27 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>jakarta-regexp</groupId>
-            <artifactId>jakarta-regexp</artifactId>
-            <!-- RB-4 lib/noinstall version: 1.3 -->
-            <version>1.4</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>jakarta-regexp</groupId>-->
+        <!--<artifactId>jakarta-regexp</artifactId>-->
+        <!--&lt;!&ndash; RB-4 lib/noinstall version: 1.3 &ndash;&gt;-->
+        <!--<version>1.4</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>tomcat</groupId>
-            <artifactId>jasper-compiler</artifactId>
-            <version>5.0.28</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>tomcat</groupId>-->
+        <!--<artifactId>jasper-compiler</artifactId>-->
+        <!--<version>5.0.28</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>tomcat</groupId>
-            <artifactId>jasper-runtime</artifactId>
-            <version>5.0.28</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>tomcat</groupId>-->
+        <!--<artifactId>jasper-runtime</artifactId>-->
+        <!--<version>5.0.28</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
@@ -340,19 +445,207 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>${project.basedir}/server/src</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/server/src</testSourceDirectory>
         <plugins>
             <plugin>
+                <!-- todo: check, remove debug, optimize, deprecated, junit from build.properties -->
+                <!--<classpath refid="libraries-with-commons-logging"/>-->
+                <!--not all files are UTF8 -->
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
-                    <encoding>UTF-8</encoding>
-                    <!-- todo: configure exclusion -->
-                    <!--<excludes>-->
-                        <!--<exclude>**/Test*.java</exclude>-->
-                        <!--<exclude>**/*TestCase.java</exclude>-->
-                    <!--</excludes>-->
+                    <encoding>iso-8859-1</encoding>
+                    <excludes>
+                        <exclude>**/Mock*.java</exclude>
+                        <exclude>**/Test*.java</exclude>
+                        <exclude>**/*Test.java</exclude>
+                        <exclude>**/*TestCase.java</exclude>
+                        <exclude>**/test/casual</exclude>
+                        <exclude>**/test/external</exclude>
+                    </excludes>
+
+                    <testIncludes>
+                        <include>**/Mock*.java</include>
+                        <include>**/Test*.java</include>
+                        <include>**/*Test.java</include>
+                        <include>**/*TestCase.java</include>
+                    </testIncludes>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.11</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*$*</exclude>
+                        <exclude>**/test/casual/*</exclude>
+                        <exclude>**/test/external/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <archiveClasses>true</archiveClasses>
+                    <warSourceDirectory>${generated.webapp.dir}</warSourceDirectory>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
+
+                        <exclusions>
+                            <exclusion>
+                                <groupId>ant</groupId>
+                                <artifactId>ant</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+
+                    <!--<dependency>-->
+                    <!--<groupId>org.apache.ant</groupId>-->
+                    <!--<artifactId>ant-trax</artifactId>-->
+                    <!--<version>1.7.1</version>-->
+                    <!--</dependency>-->
+
+                    <dependency>
+                        <groupId>com.imcode.ant.tasks</groupId>
+                        <artifactId>imcode-ant-tasks</artifactId>
+                        <version>1.3</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>com.imcode.util</groupId>
+                        <artifactId>imcode-util</artifactId>
+                        <version>2.0.1</version>
+                    </dependency>
+                </dependencies>
+
+                <executions>
+                    <execution>
+                        <id>clean</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <target>
+                                <delete dir="${generated.webapp.dir}" verbose="false"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <target>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+
+                                <if>
+                                    <not>
+                                        <available file="${basedir}/build.properties"/>
+                                    </not>
+                                    <then>
+                                        <copy file="${basedir}/build.properties.template"
+                                              tofile="${basedir}/build.properties"/>
+                                    </then>
+                                </if>
+
+                                <uptodate targetfile="${basedir}/build.properties"
+                                          property="build-properties-up-to-date">
+                                    <srcfiles dir="${basedir}" includes="build.properties.template"/>
+                                </uptodate>
+
+                                <fail unless="build-properties-up-to-date">
+                                    'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT
+                                    for details.)
+                                    Copy 'build.properties.template' content into 'build.properties' and edit it!
+                                </fail>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>generate-webapp-content</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <target>
+                                <ant antfile="${basedir}/pom-ant.xml" target="web">
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="webroot" value="${generated.webapp.dir}"/>
+                                </ant>
+
+                                <ant antfile="${basedir}/pom-ant.xml" target="sql">
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="webroot" value="${generated.webapp.dir}"/>
+                                </ant>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <configLocation>${basedir}/docs/checkstyle.xml</configLocation>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8</version>
+                <!-- todo: ? -->
+                <!--<include name="com/imcode/imcms/api/**"/>-->
+                <!--<include name="com/imcode/util/**"/>-->
+                <configuration>
+                    <encoding>iso-8859-1</encoding>
+                    <windowtitle>imCMS API ${project.version}</windowtitle>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                        <!-- todo: fix -->
+                        <configuration>
+                            <excludes>
+                                <exclude>**/Mock*.java</exclude>
+                                <exclude>**/Test*.java</exclude>
+                                <exclude>**/*Test.java</exclude>
+                                <exclude>**/*TestCase.java</exclude>
+                                <exclude>**/test/**/*.*</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -363,6 +656,19 @@
             <url>http://repo.imcode.com/maven2</url>
         </repository>
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>imcode</id>
+            <url>http://repo.imcode.com/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
 
     <distributionManagement>
         <repository>
