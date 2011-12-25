@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    todo: Exclude all transient dependencies ???
-
-    todo: Check provided dependencies - move them to ant plugin ???
-
-    todo: write how-to notes for the team
+    todo: write how-to notes for the team, non-standard directory layouts, etc
+    move jsp generation into profile, add test profile: log4j
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -26,23 +23,58 @@
         <jetty.contextPath>/</jetty.contextPath>
 
         <generated.webapp.dir>${project.build.directory}/webapp</generated.webapp.dir>
+
+        <slf4j.version>1.6.4</slf4j.version>
     </properties>
 
     <dependencies>
-        <!--<dependency>-->
-        <!--<groupId>org.apache.tika</groupId>-->
-        <!--<artifactId>tika-parsers</artifactId>-->
-        <!--<version>1.0</version>-->
-        <!--&lt;!&ndash; todo: Check this exclusion &ndash;&gt;-->
+        <!--
+            Logging engine configuration - forwards logging to log4j
 
-        <!--&lt;!&ndash; todo: Check conflicts &ndash;&gt;-->
-        <!--<exclusions>-->
-        <!--<exclusion>-->
-        <!--<artifactId>slf4j-api</artifactId>-->
-        <!--<groupId>org.slf4j</groupId>-->
-        <!--</exclusion>-->
-        <!--</exclusions>-->
-        <!--</dependency>-->
+            Tika uses slf4j
+            Most libraries use commons-logging
+            imCMS uses log4j directly
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <!-- RB-4 lib version: 1.2.12 -->
+            <version>1.2.16</version>
+        </dependency>
+        <!-- End of logging configuration -->
+
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -183,12 +215,13 @@
             <version>2.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging-api</artifactId>
-            <!-- RB-4 lib version: 1.0.5-alpha1 -->
-            <version>1.1</version>
-        </dependency>
+        <!-- Replaced with jcl-over-slf4j -->
+        <!--<dependency>-->
+            <!--<groupId>commons-logging</groupId>-->
+            <!--<artifactId>commons-logging-api</artifactId>-->
+            <!--&lt;!&ndash; RB-4 lib version: 1.0.5-alpha1 &ndash;&gt;-->
+            <!--<version>1.1</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>commons-pool</groupId>
@@ -244,14 +277,14 @@
             <version>1.0</version>
         </dependency>
 
-        <!-- todo: REPLACE WITH TIKA -->
-        <dependency>
-            <!-- RB-4 lib artifact: pdfbox-0.7.2-9462.jar -->
-            <groupId>imcode-pdfbox</groupId>
-            <artifactId>imcode-pdfbox</artifactId>
-            <version>0.7.2-9462</version>
-        </dependency>
-        <!-- imCode Internal Repository dependencies -->
+        <!-- Replaced with 1.0 parsers & dependencies -->
+        <!--<dependency>-->
+            <!--&lt;!&ndash; RB-4 lib artifact: pdfbox-0.7.2-9462.jar &ndash;&gt;-->
+            <!--<groupId>imcode-pdfbox</groupId>-->
+            <!--<artifactId>imcode-pdfbox</artifactId>-->
+            <!--<version>0.7.2-9462</version>-->
+        <!--</dependency>-->
+        <!-- End of imCode Internal Repository dependencies -->
 
         <dependency>
             <groupId>org.codehaus.guessencoding</groupId>
@@ -259,6 +292,7 @@
             <version>1.4</version>
         </dependency>
 
+        <!-- imCode Internal Repository dependencies -->
         <dependency>
             <groupId>com.imcode.db</groupId>
             <artifactId>imcode-db</artifactId>
@@ -275,7 +309,14 @@
             <groupId>com.imcode.util</groupId>
             <artifactId>imcode-util</artifactId>
             <version>2.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>activation</artifactId>
+                    <groupId>javax.activation</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <!-- End of imCode Internal Repository dependencies -->
 
         <dependency>
             <groupId>oro</groupId>
@@ -300,12 +341,6 @@
             <artifactId>jtds</artifactId>
             <!-- RB-4 lib version: 1.1 -->
             <version>1.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.12</version>
         </dependency>
 
         <dependency>
@@ -403,12 +438,12 @@
         <!--<scope>provided</scope>-->
         <!--</dependency>-->
 
-        <dependency>
-            <groupId>com.imcode.ant.tasks</groupId>
-            <artifactId>imcode-ant-tasks</artifactId>
-            <version>1.3</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.imcode.ant.tasks</groupId>-->
+            <!--<artifactId>imcode-ant-tasks</artifactId>-->
+            <!--<version>1.3</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
         <!--<dependency>-->
         <!--<groupId>jakarta-regexp</groupId>-->
@@ -510,7 +545,6 @@
                         <groupId>ant-contrib</groupId>
                         <artifactId>ant-contrib</artifactId>
                         <version>1.0b3</version>
-
                         <exclusions>
                             <exclusion>
                                 <groupId>ant</groupId>
@@ -518,12 +552,6 @@
                             </exclusion>
                         </exclusions>
                     </dependency>
-
-                    <!--<dependency>-->
-                    <!--<groupId>org.apache.ant</groupId>-->
-                    <!--<artifactId>ant-trax</artifactId>-->
-                    <!--<version>1.7.1</version>-->
-                    <!--</dependency>-->
 
                     <dependency>
                         <groupId>com.imcode.ant.tasks</groupId>
@@ -700,6 +728,7 @@
                     </excludes>
                     <generatedClasses>${project.build.directory}/tmp/pre-compiled-jsp</generatedClasses>
                     <mergeFragment>false</mergeFragment>
+                    <keepSources>true</keepSources>
                 </configuration>
             </plugin>
         </plugins>

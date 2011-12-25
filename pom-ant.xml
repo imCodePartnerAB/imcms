@@ -1,18 +1,24 @@
 <?xml version='1.0' encoding='iso-8859-1'?>
 
-<project name="imCMS">
+<!--
+  Contains tasks for maven-driven build - see pom.xml for more details.
+  Must not be used as a standalone ant build.
+-->
+<project name="pom-ant">
 
     <property file="build.properties"/>
 
-    <!-- version : imCMS artifact version (e.g. "1.2.3") -->
     <!-- todo: check is-set or fail -->
     <!-- todo: add debug and production profiles -->
     <!-- todo: add jsp compilation as pre-integration test -->
     <!-- todo: commons NOP logger ??? -->
+
+    <!-- Artifact version is written into WEB-INF/version.txt file-->
     <property name="version" value="SET BY MAVEN"/>
 
     <!-- generated webapp dir -->
     <property name="webroot" value="SET BY MAVEN"/>
+
     <property name="login" value="${webroot}/login"/>
     <property name="imcms" value="${webroot}/imcms"/>
     <property name="docs" value="${imcms}/docs"/>
@@ -40,6 +46,8 @@
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>
 
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+    <!--<setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>-->
 
     <!-- API??? -->
     <!--<target name="bindist-api-jar" depends="test">-->

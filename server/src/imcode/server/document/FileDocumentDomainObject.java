@@ -182,6 +182,15 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
             return super.clone();
         }
 
+        @Override
+        public String toString() {
+            return "FileDocumentFile{" +
+                    ", id='" + id + '\'' +
+                    ", filename='" + filename + '\'' +
+                    ", mimeType='" + mimeType + '\'' +
+                    ", createdAsImage=" + createdAsImage +
+                    '}';
+        }
     }
 
 }

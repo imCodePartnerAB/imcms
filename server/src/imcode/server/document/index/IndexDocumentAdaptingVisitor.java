@@ -1,5 +1,6 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.servlet.tags.MenuTag;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -9,11 +10,15 @@ import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.tika.Tika;
+import org.apache.tika.metadata.Metadata;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,9 +30,13 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
     private static final String MIME_TYPE__PDF = "application/pdf";
 
     Document indexDocument;
+    Tika tika;
 
-    IndexDocumentAdaptingVisitor(Document indexDocument) {
+    private final static Logger log = Logger.getLogger(IndexDocumentFactory.class.getName());
+
+    IndexDocumentAdaptingVisitor(Document indexDocument, Tika tika) {
         this.indexDocument = indexDocument;
+        this.tika = tika;
     }
 
     public void visitTextDocument(TextDocumentDomainObject textDocument) {
@@ -73,33 +82,46 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         indexFileContents(file);
     }
 
-    private final static Map EXTRACTORS = new HashMap(ArrayUtils.toMap(new Object[][] {
-            { MIME_TYPE__WORD, new MicrosoftWordTextExtractor() },
-            { MIME_TYPE__EXCEL, new MicrosoftExcelTextExtractor() },
-            { MIME_TYPE__POWERPOINT, new MicrosoftPowerPointTextExtractor() },
-            { MIME_TYPE__PDF, new PdfTextExtractor() },
-    }));
+//    private final static Map EXTRACTORS = new HashMap(ArrayUtils.toMap(new Object[][] {
+//            { MIME_TYPE__WORD, new MicrosoftWordTextExtractor() },
+//            { MIME_TYPE__EXCEL, new MicrosoftExcelTextExtractor() },
+//            { MIME_TYPE__POWERPOINT, new MicrosoftPowerPointTextExtractor() },
+//            { MIME_TYPE__PDF, new PdfTextExtractor() },
+//    }));
+
+//    private void indexFileContents(FileDocumentDomainObject.FileDocumentFile file) {
+//        String mimeType = file.getMimeType();
+//        StreamTextsExtractor extractor = (StreamTextsExtractor) EXTRACTORS.get(mimeType);
+//        if ( null == extractor ) {
+//            return;
+//        }
+//        String[] texts;
+//        InputStream in = null;
+//        try {
+//            in = file.getInputStreamSource().getInputStream();
+//
+//            texts = extractor.extractTexts(in);
+//        } catch ( IOException ioe ) {
+//            throw new RuntimeException(ioe);
+//        } finally {
+//            IOUtils.closeQuietly(in);
+//        }
+//
+//        for ( String text : texts ) {
+//            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, text));
+//        }
+//    }
 
     private void indexFileContents(FileDocumentDomainObject.FileDocumentFile file) {
-        String mimeType = file.getMimeType();
-        StreamTextsExtractor extractor = (StreamTextsExtractor) EXTRACTORS.get(mimeType);
-        if ( null == extractor ) {
-            return;
-        }
-        String[] texts;
-        InputStream in = null;
+        Metadata metadata = new Metadata();
+        metadata.set(Metadata.CONTENT_DISPOSITION, file.getFilename());
+        metadata.set(Metadata.CONTENT_TYPE, file.getMimeType());
+
         try {
-            in = file.getInputStreamSource().getInputStream();
-
-            texts = extractor.extractTexts(in);
-        } catch ( IOException ioe ) {
-            throw new RuntimeException(ioe);
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
-
-        for ( String text : texts ) {
-            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, text));
+            String content = tika.parseToString(file.getInputStreamSource().getInputStream());
+            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, content));
+        } catch (Exception e) {
+            log.error(String.format("Unable to index content of file-doc-file '%s'", file), e);
         }
     }
 

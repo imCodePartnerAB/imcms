@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.tika.Tika;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,12 +24,15 @@ import java.util.Map;
 
 public class IndexDocumentFactory {
 
-    private CategoryMapper categoryMapper ;
+    private CategoryMapper categoryMapper;
+    private Tika tika;
 
-    private final static Logger log = Logger.getLogger( IndexDocumentFactory.class.getName() );
+    private final static Logger log = Logger.getLogger(IndexDocumentFactory.class.getName());
 
     public IndexDocumentFactory(CategoryMapper categoryMapper) {
         this.categoryMapper = categoryMapper;
+        this.tika = new Tika();
+        tika.setMaxStringLength(-1);
     }
 
     public Document createIndexDocument( DocumentDomainObject document ) {
@@ -69,7 +73,7 @@ public class IndexDocumentFactory {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         try {
-            document.accept( new IndexDocumentAdaptingVisitor( indexDocument ) );
+            document.accept(new IndexDocumentAdaptingVisitor(indexDocument, tika));
         } catch (RuntimeException re) {
             log.error( "Error indexing document-type-specific data of document "+document.getId(), re) ;
         }
