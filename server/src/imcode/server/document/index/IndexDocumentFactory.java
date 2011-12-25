@@ -13,8 +13,14 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.taglibs.standard.tei.DeclareTEI;
 import org.apache.tika.Tika;
+import org.apache.tika.detect.Detector;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.html.HtmlParser;
 
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,14 +31,26 @@ import java.util.Map;
 public class IndexDocumentFactory {
 
     private CategoryMapper categoryMapper;
-    private Tika tika;
+    private Tika tikaAutodetect;
+    private Tika tikaHtml;
 
     private final static Logger log = Logger.getLogger(IndexDocumentFactory.class.getName());
 
     public IndexDocumentFactory(CategoryMapper categoryMapper) {
         this.categoryMapper = categoryMapper;
-        this.tika = new Tika();
-        tika.setMaxStringLength(-1);
+        this.tikaAutodetect = new Tika();
+        this.tikaAutodetect.setMaxStringLength(-1);
+
+        HtmlParser parser = new HtmlParser();
+        Detector detector = new Detector() {
+            MediaType mediaType = MediaType.parse("text/html");
+            public MediaType detect(InputStream input, Metadata metadata) {
+                return mediaType;
+            }
+        };
+
+        this.tikaHtml = new Tika(detector, parser);
+        this.tikaHtml.setMaxStringLength(-1);
     }
 
     public Document createIndexDocument( DocumentDomainObject document ) {
@@ -73,7 +91,7 @@ public class IndexDocumentFactory {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         try {
-            document.accept(new IndexDocumentAdaptingVisitor(indexDocument, tika));
+            document.accept(new IndexDocumentAdaptingVisitor(indexDocument, tikaAutodetect, tikaHtml));
         } catch (RuntimeException re) {
             log.error( "Error indexing document-type-specific data of document "+document.getId(), re) ;
         }

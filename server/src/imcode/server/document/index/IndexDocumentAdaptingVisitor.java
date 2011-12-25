@@ -24,19 +24,21 @@ import java.util.Map;
 
 class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 
-    private static final String MIME_TYPE__WORD = "application/msword";
-    private static final String MIME_TYPE__EXCEL = "application/vnd.ms-excel";
-    private static final String MIME_TYPE__POWERPOINT = "application/vnd.ms-powerpoint";
-    private static final String MIME_TYPE__PDF = "application/pdf";
+//    private static final String MIME_TYPE__WORD = "application/msword";
+//    private static final String MIME_TYPE__EXCEL = "application/vnd.ms-excel";
+//    private static final String MIME_TYPE__POWERPOINT = "application/vnd.ms-powerpoint";
+//    private static final String MIME_TYPE__PDF = "application/pdf";
 
     Document indexDocument;
-    Tika tika;
+    Tika tikaAutodetect;
+    Tika tikaHtml;
 
     private final static Logger log = Logger.getLogger(IndexDocumentFactory.class.getName());
 
-    IndexDocumentAdaptingVisitor(Document indexDocument, Tika tika) {
+    IndexDocumentAdaptingVisitor(Document indexDocument, Tika tikaAutodetect, Tika tikaHtml) {
         this.indexDocument = indexDocument;
-        this.tika = tika;
+        this.tikaAutodetect = tikaAutodetect;
+        this.tikaHtml = tikaHtml;
     }
 
     public void visitTextDocument(TextDocumentDomainObject textDocument) {
@@ -65,11 +67,27 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         }
     }
 
+//    private String stripHtml(TextDomainObject text) {
+//        String string = text.getText();
+//        if ( TextDomainObject.TEXT_TYPE_HTML == text.getType() ) {
+//            string = string.replaceAll("<[^>]+?>", "");
+//        }
+//        return string;
+//    }
+
     private String stripHtml(TextDomainObject text) {
         String string = text.getText();
-        if ( TextDomainObject.TEXT_TYPE_HTML == text.getType() ) {
-            string = string.replaceAll("<[^>]+?>", "");
+
+        if (text.getType() != TextDomainObject.TEXT_TYPE_HTML) {
+            try {
+                String stripped = tikaHtml.parseToString(IOUtils.toInputStream(string));
+                log.trace(String.format("Stripped html to plain text: '%s' -> '%s'", string, stripped));
+                string = stripped;
+            } catch (Exception e) {
+                log.error(String.format("Unable to strip html '%s'", string), e);
+            }
         }
+
         return string;
     }
 
@@ -118,7 +136,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         metadata.set(Metadata.CONTENT_TYPE, file.getMimeType());
 
         try {
-            String content = tika.parseToString(file.getInputStreamSource().getInputStream());
+            String content = tikaAutodetect.parseToString(file.getInputStreamSource().getInputStream());
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, content));
         } catch (Exception e) {
             log.error(String.format("Unable to index content of file-doc-file '%s'", file), e);
