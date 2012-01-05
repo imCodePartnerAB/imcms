@@ -4,21 +4,27 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.NameTooLongException;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
+/**
+ * In charge of user and role operations, such as look up, creation, deletion and saving as well as sending out password reminder
+ * emails.
+ */
 public class UserService {
 
     private ContentManagementSystem contentManagementSystem;
     
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    /**
+     * Returns UserService with given cms
+     * @param contentManagementSystem cms used by UserService
+     */
     public UserService( ContentManagementSystem contentManagementSystem ) {
         this.contentManagementSystem = contentManagementSystem;
     }
@@ -27,6 +33,12 @@ public class UserService {
         return contentManagementSystem.getInternal().getImcmsAuthenticatorAndUserAndRoleMapper() ;
     }
 
+    /**
+     * Returns all users in cms
+     * @return An array containing all users in cms
+     * @throws NoPermissionException
+     * @see NoPermissionException
+     */
     public User[] getAllUsers() throws NoPermissionException {
 
         UserDomainObject[] internalUsers = getMapper().getAllUsers();
@@ -38,13 +50,19 @@ public class UserService {
         return result;
     }
 
+    /**
+     * Returns a list of users with given role
+     * @param role that users in the returned list should have
+     * @return List of users with the given role.
+     */
     public List<User> getUsersWithRole(Role role) {
         User[] allUsersWithRole = getAllUsersWithRole(role) ;
         return new ArrayList<User>(Arrays.asList(allUsersWithRole)) ;
     }
 
     /**
-     @param userId
+     * Returns user by given id.
+     @param userId user id to look user by
      @return User with the specified id, or null if none.
      **/
     public User getUser( int userId ) {
@@ -59,7 +77,8 @@ public class UserService {
     }
 
     /**
-        @param userLoginName
+     * Returns user with given name
+        @param userLoginName name to look user by.
         @return User with the specified login name, or null if none.
     **/
      public User getUser( String userLoginName ) {
@@ -67,7 +86,9 @@ public class UserService {
     }
 
     /**
+     * Returns all users in the cms
      * @since 2.0
+     * @return An array of all roles in the cms
      */
     public Role[] getAllRoles() throws NoPermissionException {
         RoleDomainObject[] roleDOs = getMapper().getAllRoles();
@@ -79,7 +100,10 @@ public class UserService {
     }
 
     /**
+     * Returns role specified by given id.
+     * @param roleId role id to look role by
      * @since 2.0
+     * @return Role with given id or null if such role doesn't exist.
      */
     public Role getRole( int roleId ) {
         RoleDomainObject roleDO = getMapper().getRoleById( roleId );
@@ -87,7 +111,10 @@ public class UserService {
     }
 
     /**
+     * Returns role specified by given name
      * @since 2.0
+     * @return Role with given name or null if such role doesn't exist
+     * @param roleName role's name
      */
     public Role getRole( String roleName ) {
         RoleDomainObject roleDO = getMapper().getRoleByName( roleName );
@@ -95,14 +122,23 @@ public class UserService {
     }
 
     /**
+     * Deletes given role from cms
      * @since 2.0
+     * @param role to be deleted
+     * @throws NoPermissionException
+     * @see NoPermissionException
      */
     public void deleteRole( Role role ) throws NoPermissionException {
         getMapper().deleteRole( role.getInternal() );
     }
 
     /**
+     * Returns an array of users with given role.
      * @since 2.0
+     * @return Array of users with given role
+     * @param role that users should have to be included in the returned array
+     * @throws NoPermissionException
+     * @see NoPermissionException
      */
     public User[] getAllUsersWithRole( Role role ) throws NoPermissionException {
         UserDomainObject[] internalUsersWithRole = getMapper().getAllUsersWithRole( role.getInternal() );
@@ -117,13 +153,18 @@ public class UserService {
     }
 
     /**
+     * Creates new role with given name, returned role is not persisted by this method in cms.
      * @since 2.0
+     * @return new role
+     * @param roleName name given to new role
+     * @see UserService#saveRole(Role role)
      */
     public Role createNewRole( String roleName ) {
         return new Role( new RoleDomainObject( roleName ) );
     }
 
     /**
+     * Saves exisiting or a not yet persisted role in cms.
      * @throws NoPermissionException unless superadmin.
      * @throws AlreadyExistsException if another role with the same name exists.
      * @throws SaveException if the name is too long.
@@ -143,7 +184,7 @@ public class UserService {
     }
 
     /**
-     * Create a new user. Don't forget to call {@link #saveUser(User)}.
+     * Creates a new user. Don't forget to call {@link #saveUser(User)}.
      * @param loginName The user's login name
      * @param password The user's password
      * @return A new user
@@ -157,6 +198,12 @@ public class UserService {
         return new User( internalUser );
     }
 
+    /**
+     * Saves changes made to the given existing user or a new user, not yet persisted in cms
+     * @param user user to save
+     * @throws NoPermissionException
+     * @throws SaveException
+     */
     public void saveUser( User user ) throws NoPermissionException, SaveException {
         if (null == user) {
             return ;
@@ -174,10 +221,19 @@ public class UserService {
     }
 
 
+    /**
+     * Updates given user's session
+     * @param user whose session to update
+     */
     public void updateUserSession(User user) {
         getMapper().updateUserSessionId(user.getInternal());
     }
-    
+
+    /**
+     * Updates unique user code used in cookie set for the given user
+     * @param user whose cookie code to update
+     * @see imcode.util.Utility#setRememberCdCookie(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, String)
+     */
     public void updateUserRememberCd(UserDomainObject user) {
     	long rand = 0L;
     	
