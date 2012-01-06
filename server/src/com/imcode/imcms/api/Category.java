@@ -59,10 +59,18 @@ public class Category implements Comparable {
         return internalCategory.getId();
     }
 
+    /**
+     * Get image url. The url is not used internally anywhere in the cms, just stored as string.
+     * @return image url or an empty string if it's not set
+     */
     public String getImage(){
         return internalCategory.getImageUrl();
     }
 
+    /**
+     * Set image url
+     * @param imageUrl url, relative or absolute
+     */
     public void setImage( String imageUrl ) {
         internalCategory.setImageUrl( imageUrl );
     }

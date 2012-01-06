@@ -28,7 +28,7 @@ public class TextDocument extends Document {
 
     /**
      * @return A SortedMap that contains the textFileds index as keys, and instaces of TextFields as values. Only the
-     *         TextFields that contains any text is returned.
+     *         TextFields that contain any text are returned.
      */
     public SortedMap getTextFields() {
         Predicate predicate = new Predicate() {
@@ -53,7 +53,7 @@ public class TextDocument extends Document {
 
     /**
      * @return A SortedMap that contains the images index as keys, and instaces of Image as values. Only the
-     *         Image that has an url is returned.
+     *         Images that have an url are returned.
      */
     public SortedMap getImages() {
         Predicate predicate = new Predicate() {
@@ -79,7 +79,7 @@ public class TextDocument extends Document {
 
     /**
      * @return A SortedMap that contains the index of the include as keys, and instaces of Document as values. Only the
-     *         includes that has a document is returned.
+     *         includes that have a document are returned.
      */
     public SortedMap getIncludes() {
         Predicate predicate = new Predicate() {
@@ -118,6 +118,11 @@ public class TextDocument extends Document {
         return sortedMap;
     }
 
+    /**
+     * Returns a TextField with given index
+     * @param textFieldIndexInDocument text field index in this document
+     * @return TextField with given index or a empty string TextField if the document doesn't have a TextField with given index
+     */
     public TextField getTextField(int textFieldIndexInDocument) {
         TextDomainObject imcmsText = getInternalTextDocument().getText(textFieldIndexInDocument);
         if (null == imcmsText) {
@@ -144,6 +149,11 @@ public class TextDocument extends Document {
         getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
     }
 
+    /**
+     * Returns Image with given index in this document
+     * @param imageIndexInDocument image index
+     * @return Image or null if the document does contain any with given index
+     */
     public Image getImage(int imageIndexInDocument) {
         ImageDomainObject internalImage = getInternalTextDocument().getImage(imageIndexInDocument);
         if (null != internalImage) {
@@ -169,6 +179,12 @@ public class TextDocument extends Document {
         setTemplate(null, template);
     }
 
+    /**
+     * Returns included Document by the given index in the document
+     * @param includeIndexInDocument document include index
+     * @return included Document or null if no document include exists by the given index in this document
+     * or the included document doesn't exist anymore.
+     */
     public Document getInclude(int includeIndexInDocument) {
         Integer includedDocumentId = getInternalTextDocument().getIncludedDocumentId(includeIndexInDocument);
         if (null != includedDocumentId) {

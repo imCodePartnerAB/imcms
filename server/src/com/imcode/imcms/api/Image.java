@@ -3,12 +3,10 @@ package com.imcode.imcms.api;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.ImcmsImageUtils;
-
-import java.util.Properties;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringEscapeUtils;
+import java.util.Properties;
 
 public class Image {
 
@@ -138,11 +136,25 @@ public class Image {
     public String toHtmlUrl(String contextPath) {
         return StringEscapeUtils.escapeHtml(ImcmsImageUtils.getImageUrl(internalImage, contextPath));
     }
-    
+
+    /**
+     * Returns a string representing the image as html img tag, adds optional attributes like id, class, usemap and style.
+     * @param request a http request
+     * @param attributes Not null, optional attributes such as id, class, usemap and style.
+     * @param absolute true if the url in img src attribute should be absolute
+     * @return a string representing the image as html img tag
+     */
     public String toHtmlTag(HttpServletRequest request, Properties attributes, boolean absolute) {
         return ImcmsImageUtils.getImageHtmlTag(internalImage, request, attributes, absolute);
     }
-    
+
+    /**
+     * Returns a string representing the image as html img tag, adds optional attributes like id, class, usemap and style.
+     * The src attribute will have relative path
+     * @param request a http request
+     * @param attributes Not null, optional attributes such as id, class, usemap and style.
+     * @return a string representing the image as html img tag
+     */
     public String toHtmlTag(HttpServletRequest request, Properties attributes) {
         return toHtmlTag(request, attributes, false);
     }

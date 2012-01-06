@@ -45,6 +45,12 @@ public class FileDocument extends Document {
         return (FileDocumentFile[])files.toArray( new FileDocumentFile[files.size()] );
     }
 
+    /**
+     * Returns FileDocumentFile with given fileId or a default one if fileId is null or there is
+     * no FileDocumentFile with such fileId.
+     * @param fileId id of FileDocumentFile
+     * @return FileDocumentFile with given id or null if fileId is null or none found with given id.
+     */
     public FileDocumentFile getFileOrDefault( String fileId ) {
         return new FileDocumentFile( getInternalFileDocument().getFileOrDefault( fileId ) );
     }
@@ -57,6 +63,12 @@ public class FileDocument extends Document {
         return new FileDocumentFile( getInternalFileDocument().getDefaultFile() );
     }
 
+    /**
+     * Adds a file to the file document. t
+     * The added file becomes the default one if there's no default file.
+     * @param fileId id of the file to be added, not null
+     * @param file file to add
+     */
     public void addFile( String fileId, FileDocumentFile file) {
         getInternalFileDocument().addFile( fileId, file.getInternal() );
     }

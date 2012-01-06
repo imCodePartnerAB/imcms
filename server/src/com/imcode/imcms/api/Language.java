@@ -13,6 +13,12 @@ public class Language {
         this.isoCode639_2 = isoCode639_2 ;
     }
 
+    /**
+     * Returns Language by given ISO 639-2 code
+     * @param isoCode639_2 language code
+     * @return language mapped to the given code or null if the given code is not mapped to any language
+     * @see <a href="http://en.wikipedia.org/wiki/List_of_ISO_639-2_codes">List_of_ISO_639-2_codes</a>
+     */
     public static Language getLanguageByISO639_2( String isoCode639_2 ) {
         if (LanguageMapper.existsIsoCode639_2(isoCode639_2)) {
             return new Language( isoCode639_2 );
@@ -21,6 +27,12 @@ public class Language {
         }
     }
 
+    /**
+     * Returns Language by given ISO 639-1 code
+     * @param isoCode639_1 language code
+     * @return language mapped to the given code or null if the given code is not mapped to any language
+     * @see <a href="http://en.wikipedia.org/wiki/List_of_ISO_639-2_codes">List_of_ISO_639-2_codes</a>
+     */
     public static Language getLanguageByISO639_1( String isoCode639_1 ) {
         try {
             return getLanguageByISO639_2(LanguageMapper.convert639_1to639_2(isoCode639_1)) ;
