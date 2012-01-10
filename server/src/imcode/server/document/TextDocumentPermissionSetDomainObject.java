@@ -1,10 +1,10 @@
 package imcode.server.document;
 
+import imcode.server.ImcmsConstants;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import imcode.server.ImcmsConstants;
 
 public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject {
 
@@ -86,6 +86,11 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
         return Collections.unmodifiableSet(allowedTemplateGroupIds);
     }
 
+    /**
+     * Sets the document type ids(file, text, url etc) allowed to be created based on the text document possessing this
+     * permission set(parent document when creating new document).
+     * @param allowedDocumentTypeIds allowed document type ids
+     */
     public void setAllowedDocumentTypeIds( Set allowedDocumentTypeIds ) {
         this.allowedDocumentTypeIds = new HashSet(allowedDocumentTypeIds);
     }

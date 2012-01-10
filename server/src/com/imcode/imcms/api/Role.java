@@ -46,6 +46,10 @@ public class Role implements Comparable {
         return getName() ;
     }
 
+    /**
+     * Sets if the role owners are allowed to have their password sent out by email
+     * @param passwordMailPermission whether to allow password be sent out by email
+     */
     public void setPasswordMailPermission(boolean passwordMailPermission) {
         if (passwordMailPermission) {
             internalRole.addPermission( RoleDomainObject.PASSWORD_MAIL_PERMISSION );
