@@ -4,12 +4,12 @@ import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 
 /**
  * Describes a type of permission set.
- * Some types have a defined permisssion set, while other can have a permission set allowing or not certain actions.
+ * Some types have a defined permisssion set, while other can have a permission set giving or not certain privileges.
  */
 public class DocumentPermissionSetType {
 
     /**
-     * Grants a permission set allowing all actions.
+     * Permission set type giving full permission set
      */
     public final static DocumentPermissionSetType FULL = new DocumentPermissionSetType(DocumentPermissionSetTypeDomainObject.FULL);
 
@@ -24,12 +24,12 @@ public class DocumentPermissionSetType {
     public final static DocumentPermissionSetType RESTRICTED_2 = new DocumentPermissionSetType(DocumentPermissionSetTypeDomainObject.RESTRICTED_2);
 
     /**
-     * Grants read only permission set, not editing of anything is allowed.
+     * Permission set type giving read-only permission set
      */
     public final static DocumentPermissionSetType READ = new DocumentPermissionSetType(DocumentPermissionSetTypeDomainObject.READ);
 
     /**
-     * The permission set of this type doesn't allow nor editing for seeing.
+     * The permission set of this type doesn't allow nor editing for seeing the document.
      */
     public final static DocumentPermissionSetType NONE = new DocumentPermissionSetType(DocumentPermissionSetTypeDomainObject.NONE);
 

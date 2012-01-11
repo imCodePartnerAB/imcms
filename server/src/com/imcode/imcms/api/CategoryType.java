@@ -4,6 +4,8 @@ import imcode.server.document.CategoryTypeDomainObject;
 
 /**
  * @author kreiger
+ * Category types help distinguish between Categories with the same name.
+ * The also constrol if the categories belonging to them can be inherited or used in image archive.
  */
 public class CategoryType {
     private CategoryTypeDomainObject internalCategoryType;
@@ -16,14 +18,26 @@ public class CategoryType {
         return internalCategoryType;
     }
 
+    /**
+     * Returns string representation on this category type
+     * @return string representation on this category type
+     */
     public String toString() {
         return internalCategoryType.toString() ;
-    }  
+    }
 
+    /**
+     * Returns category type's name
+     * @return category type's name
+     */
     public String getName() {
         return internalCategoryType.getName() ;
     }
 
+    /**
+     * Returns category type's id
+     * @return category type's id
+     */
     public int getId() {
         return internalCategoryType.getId();
     }
