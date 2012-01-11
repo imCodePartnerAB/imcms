@@ -27,7 +27,8 @@ public class TextDocument extends Document {
     }
 
     /**
-     * @return A SortedMap that contains the textFileds index as keys, and instaces of TextFields as values. Only the
+     * Returns this document's TextFields that are not empty
+     * @return A SortedMap that contains the textFileds index as keys, and instances of TextFields as values. Only the
      *         TextFields that contain any text are returned.
      */
     public SortedMap getTextFields() {
@@ -52,6 +53,7 @@ public class TextDocument extends Document {
     }
 
     /**
+     * Returns this document's Images
      * @return A SortedMap that contains the images index as keys, and instaces of Image as values. Only the
      *         Images that have an url are returned.
      */
@@ -78,6 +80,7 @@ public class TextDocument extends Document {
     }
 
     /**
+     * Returns this document's includes
      * @return A SortedMap that contains the index of the include as keys, and instaces of Document as values. Only the
      *         includes that have a document are returned.
      */
@@ -136,14 +139,30 @@ public class TextDocument extends Document {
         return (TextDocumentDomainObject)getInternal();
     }
 
+    /**
+     * Sets the text of the TextField with the given index to the text provided in plain text format
+     * @param textFieldIndexInDocument index of a TextField in this document
+     * @param newText text do be set
+     */
     public void setPlainTextField(int textFieldIndexInDocument, String newText) {
         setTextField(textFieldIndexInDocument, newText, TextField.Format.PLAIN);
     }
 
+    /**
+     * Sets the text of the TextField with the given index to the text provided in html format
+     * @param textFieldIndexInDocument index of a TextField in this document
+     * @param newText text do be set
+     */
     public void setHtmlTextField(int textFieldIndexInDocument, String newText) {
         setTextField(textFieldIndexInDocument, newText, TextField.Format.HTML);
     }
 
+    /**
+     * Sets the text of the TextField with the given index to the text provided in the format provided
+     * @param textFieldIndexInDocument index of a TextField in this document
+     * @param newText text do be set
+     * @param format format to set the text in
+     */
     public void setTextField(int textFieldIndexInDocument, String newText, TextField.Format format) {
         TextDomainObject imcmsText = new TextDomainObject(newText, format.getType());
         getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
@@ -163,11 +182,20 @@ public class TextDocument extends Document {
         }
     }
 
+    /**
+     * Returns this text document's template
+     * @return the template used by this document
+     */
     public Template getTemplate() {
         String templateName = getInternalTextDocument().getTemplateName();
         return contentManagementSystem.getTemplateService().getTemplate(templateName) ;
     }
 
+    /**
+     * Sets template group and template to be used by this text document.
+     * @param templateGroup can be null. Template group, note that the template group doesn't have to have the template provided
+     * @param template Template to be used by this document
+     */
     public void setTemplate(TemplateGroup templateGroup, Template template) {
         getInternalTextDocument().setTemplateName(template.getInternal().getName());
         if (null != templateGroup) {
@@ -175,6 +203,10 @@ public class TextDocument extends Document {
         }
     }
 
+    /**
+     * Sets the template of this text document to the given one
+     * @param template to be set for this text document, null is used for template group
+     */
     public void setTemplate(Template template) {
         setTemplate(null, template);
     }
@@ -196,6 +228,11 @@ public class TextDocument extends Document {
         return null;
     }
 
+    /**
+     * Sets or removes the given document with the given index in this document
+     * @param includeIndexInDocument index of an inlcude in this document
+     * @param documentToBeIncluded TextDocument to be set or a null, if null is given, the include is removed.
+     */
     public void setInclude(int includeIndexInDocument, TextDocument documentToBeIncluded) {
         if (null == documentToBeIncluded) {
             getInternalTextDocument().removeInclude( includeIndexInDocument );
@@ -205,15 +242,18 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Get the menu with the given index in the owner.
-     *
-     * @param menuIndexInDocument the index of the menu in the owner.
-     * @return the menu with the given index in the owner.
+     * Get the menu with the given index in this document.
+     * @param menuIndexInDocument the index of the menu in the document.
+     * @return the menu with the given index in the document.
      */
     public Menu getMenu(int menuIndexInDocument) {
         return new Menu(this, menuIndexInDocument);
     }
 
+    /**
+     * Returns all menus in this document
+     * @return a SortedMap of menus in this document, with menu indices as keys and menus as values
+     */
     public SortedMap getMenus() {
         Map<Integer, MenuDomainObject> internalMenus = getInternalTextDocument().getMenus() ;
         SortedMap menus = new TreeMap();
@@ -223,6 +263,11 @@ public class TextDocument extends Document {
         return menus ;
     }
 
+    /**
+     * Sets an Image with the given index.
+     * @param imageIndex index in this document
+     * @param image Image to set, not null
+     */
     public void setImage( int imageIndex, Image image ) {
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getInternal() ;
         textDocument.setImage( imageIndex, image.getInternal());
