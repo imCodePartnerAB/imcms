@@ -17,8 +17,14 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
+/**
+ * Document that can contain texts, images, menus, includes.
+ */
 public class TextDocument extends Document {
 
+    /**
+     * TextDocument TYPE_ID
+     */
     public final static int TYPE_ID = DocumentTypeDomainObject.TEXT_ID;
 
     TextDocument( TextDocumentDomainObject textDocument,
@@ -204,8 +210,8 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Sets the template of this text document to the given one
-     * @param template to be set for this text document, null is used for template group
+     * Sets the {@link Template} of this text document to the given one
+     * @param template a template to be set for this text document, null is used for template group
      */
     public void setTemplate(Template template) {
         setTemplate(null, template);
@@ -244,7 +250,7 @@ public class TextDocument extends Document {
     /**
      * Get the menu with the given index in this document.
      * @param menuIndexInDocument the index of the menu in the document.
-     * @return the menu with the given index in the document.
+     * @return menu index in the document.
      */
     public Menu getMenu(int menuIndexInDocument) {
         return new Menu(this, menuIndexInDocument);
@@ -277,9 +283,15 @@ public class TextDocument extends Document {
         return contentManagementSystem;
     }
 
+    /**
+     * Class represents a text field inside TextDocument
+     */
     public static class TextField {
         private final TextDomainObject imcmsText;
 
+        /**
+         * Format in which the text inside TextField is set or returned
+         */
         public enum Format {
             PLAIN(TextDomainObject.TEXT_TYPE_PLAIN),
             HTML(TextDomainObject.TEXT_TYPE_HTML);
@@ -312,10 +324,18 @@ public class TextDocument extends Document {
             imcmsText.setType(TextDomainObject.TEXT_TYPE_PLAIN);
         }
 
+        /**
+         * Returns format set for this text field
+         * @return Format of this text field
+         */
         public Format getFormat() {
             return imcmsText.getType() == TextDomainObject.TEXT_TYPE_PLAIN ? Format.PLAIN : Format.HTML;
         }
 
+        /**
+         * Sets format of this text field
+         * @param format Format to use by this text field
+         */
         public void setFormat(Format format) {
             imcmsText.setType(format.getType());
         }
@@ -340,6 +360,9 @@ public class TextDocument extends Document {
         }
     }
 
+    /**
+     * Represents a menu item in a {@link Menu}.
+     */
     public static class MenuItem {
         MenuItemDomainObject internalMenuItem;
         Document child;
@@ -351,6 +374,10 @@ public class TextDocument extends Document {
             child = visitor.getDocument() ;
         }
 
+        /**
+         * Returns a document contained by this menu item.
+         * @return Document contained in the menu item
+         */
         public Document getDocument() {
             return child;
         }
@@ -367,33 +394,65 @@ public class TextDocument extends Document {
             return sortKey.intValue();
         }
 
+        /**
+         * Returns the manual sort key of this menu item
+         * @return integer representing sort of key of this menu item
+         */
         public Integer getSortKey() {
             return internalMenuItem.getSortKey();
         }
 
+        /**
+         * Sets the manual sort key of this menu item
+         * @param sortKey sort key
+         */
         public void setSortKey( Integer sortKey ) {
             internalMenuItem.setSortKey(sortKey);
         }
 
+        /**
+         * Returns the TreeKey of this menu item.
+         * @return a TreeKey, which can be empty if the menu item doesn't have any set.
+         */
         public TreeKey getTreeKey() {
             return new TreeKey(internalMenuItem.getTreeSortKey());
         }
 
+        /**
+         * Sets the tree key of this menu item to the given one
+         * @param treeKey {@link TreeKey} to be used for this menu item
+         */
         public void setTreeKey(TreeKey treeKey) {
             internalMenuItem.setTreeSortKey(treeKey.internalTreeSortKey);
         }
 
+        /**
+         * Represents hierarchical order key e.g. 1.3 is a child of 1
+         */
         public static class TreeKey {
             TreeSortKeyDomainObject internalTreeSortKey;
 
+            /**
+             * Constructs TreeKey with TreeSortKeyDomainObject backing it.
+             * @param internalTreeSortKey TreeSortKeyDomainObject to be used internally
+             */
             public TreeKey(TreeSortKeyDomainObject internalTreeSortKey) {
                 this.internalTreeSortKey = internalTreeSortKey;
             }
 
+            /**
+             * Constructs TreeKey from a String, any not digit character is treated as a separator, so
+             * 1.3 and 1,3 produce the same key.
+             * @param treeSortKey a String to construct TreeKey from
+             */
             public TreeKey(String treeSortKey) {
                 internalTreeSortKey = new TreeSortKeyDomainObject(treeSortKey);
             }
 
+            /**
+             * Returns the number of levels in this tree key.
+             * @return int, number of levels
+             */
             public int getLevelCount() {
                 return internalTreeSortKey.getLevelCount();
             }
@@ -407,12 +466,19 @@ public class TextDocument extends Document {
                 return internalTreeSortKey.getLevelKey(level - 1);
             }
 
+            /**
+             * Returns a string representation of this tree key in a form of numbers separated by periods('.')
+             * @return a String representing tree key in a form of numbers separated by periods('.')
+             */
             public String toString() {
                 return internalTreeSortKey.toString();
             }
         }
     }
 
+    /**
+     * Represents a menu in a {@link TextDocument}.
+     */
     public static class Menu {
         /**
          * Menu sorted by headline.
@@ -477,11 +543,16 @@ public class TextDocument extends Document {
             internalTextDocument.getMenu( menuIndex ).setSortOrder( sortOrder );
         }
 
+        /**
+         * Returns the sort order of this menu
+         * @return int value of on of the SORT_BY_* constants
+         */
         public int getSortOrder() {
             return internalTextDocument.getMenu( menuIndex ).getSortOrder();
         }
 
         /**
+         * Returns menu items that current user can see.
          * @return The visible menuitems in this menu.
          * @since 2.0
          */
@@ -496,6 +567,7 @@ public class TextDocument extends Document {
         }
 
         /**
+         * Returns documents the menu items hold in this menu that current user can see.
          * @return the documents returned by {@link #getVisibleMenuItems()}.
          * @since 2.0
          */
@@ -505,7 +577,9 @@ public class TextDocument extends Document {
         }
 
         /**
-         * @return The menuitems in this menu that the user can see or edit, excluding archived documents.
+         * Returns menu items in this menu that current user can see or edit, excluding archived documents.
+         * The menu items that have a missing document(due to deletion etc) are not returned.
+         * @return array of menuitems in this menu that the user can see or edit, excluding archived documents.
          */
         public MenuItem[] getMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
@@ -517,7 +591,8 @@ public class TextDocument extends Document {
         }
 
         /**
-         * @return The menuitems in this menu that the user can see or edit, including archived documents.
+         * Returns menu items in this menu that current user can see or edit, excluding archived documents.
+         * @return array of menuitems in this menu that the user can see or edit, including archived documents.
          */
         public MenuItem[] getPublishedMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
@@ -529,6 +604,7 @@ public class TextDocument extends Document {
         }
 
         /**
+         * Returns documents contained in menu items returned by {@link #getMenuItems()}.
          * @return the documents returned by {@link #getMenuItems()}.
          */
         public Document[] getDocuments() {

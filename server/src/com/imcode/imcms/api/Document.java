@@ -35,12 +35,18 @@ public class Document implements Serializable {
         return internalDocument;
     }
 
+    /**
+     * Returns the unique identifier of this document in imcms
+     * @return int, the id of this document
+     */
     public int getId() {
         return internalDocument.getId();
     }
 
     /**
-     * @return map of roles Role -> DocumentPermissionSet instances.
+     * Returns a map of roles mapped to their permission set for this document.
+     * For example Role "Users" has the READ permission set, and so on.
+     * @return map of roles {@link Role} -> {@link DocumentPermissionSet} instances.
      */
     public Map getRolesMappedToPermissions() {
         RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = internalDocument.getRoleIdsMappedToDocumentPermissionSetTypes();
@@ -83,17 +89,26 @@ public class Document implements Serializable {
         return result;
     }
 
-    /** Whether the document is archived. **/
+    /**
+     * Tests if the document is archived.
+     * @return true if the document is archived, false otherwise.
+     */
     public boolean isArchived() {
         return internalDocument.isArchived();
     }
 
-    /** Whether the document is published and not archived. **/
+    /**
+     * Tests if the document is published and not archived.
+     * @return true if the document is published and not archived, false otherwise.
+     */
     public boolean isActive() {
         return internalDocument.isActive();
     }
 
-    /** Whether the document is published. **/
+    /**
+     * Tests if the document is published.
+     * @return true if the document is published, false otherwise.
+     */
     public boolean isPublished() {
         return internalDocument.isPublished();
     }
