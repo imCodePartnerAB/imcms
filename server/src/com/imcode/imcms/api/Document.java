@@ -45,7 +45,8 @@ public class Document implements Serializable {
 
     /**
      * Returns a map of roles mapped to their permission set for this document.
-     * For example Role "Users" has the READ permission set, and so on.
+     * For example Role "Users" has a permission set of type{@link DocumentPermissionSetType#RESTRICTED_1}, and some
+     * privileges there.
      * @return map of roles {@link Role} -> {@link DocumentPermissionSet} instances.
      */
     public Map getRolesMappedToPermissions() {
@@ -113,18 +114,39 @@ public class Document implements Serializable {
         return internalDocument.isPublished();
     }
 
+    /**
+     * Tests if search is disabled for this document.
+     * Note that {@link DocumentService#getDocument(String)} will still find the document,
+     * however the {@link DocumentService#getDocuments(SearchQuery)} won't.
+     * @return true if search is disabled for this document, false otherwise.
+     */
     public boolean isSearchDisabled() {
         return internalDocument.isSearchDisabled();
     }
 
+    /**
+     * Sets whether search is disabled for this document.
+     * @param searchDisabled boolean, true to disable search, false to enable
+     */
     public void setSearchDisabled(boolean searchDisabled) {
         internalDocument.setSearchDisabled(searchDisabled);
     }
 
+    /**
+     * Returns the most privileged DocumentPermissionSet of this document for current user.
+     * The lowest priveled DocumentPermissionSet returned here is of type {@link DocumentPermissionSetType#NONE}
+     * @return the most privileged DocumentPermissionSet of this document for current user or {@link DocumentPermissionSetType#NONE}
+     */
     public DocumentPermissionSet getDocumentPermissionSetForUser() {
         return new DocumentPermissionSet( contentManagementSystem.getCurrentUser().getInternal().getPermissionSetFor( internalDocument ) );
     }
 
+    /**
+     * Checks whether this and the given Objects are the same.
+     * Uses id as a criteria of equality.
+     * @param o Object to compare with
+     * @return true if the parameter is of class Document or it's subclass and their id attributes are the same.
+     */
     public boolean equals( Object o ) {
         if ( this == o ) {
             return true;
@@ -139,14 +161,26 @@ public class Document implements Serializable {
 
     }
 
+    /**
+     * Returns the id of this document.
+     * @return id of this document
+     */
     public int hashCode() {
         return internalDocument.hashCode();
     }
 
+    /**
+     * Returns keywords of this document.
+     * @return a Set of keywords assigned to this document
+     */
     public Set getKeywords() {
         return internalDocument.getKeywords();
     }
 
+    /**
+     * Sets keywords for this document.
+     * @param keywords a Set of keywords for this document.
+     */
     public void setKeywords(Set keywords) {
         internalDocument.setKeywords(keywords);
     }
