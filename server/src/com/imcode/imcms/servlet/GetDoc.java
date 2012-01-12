@@ -9,6 +9,7 @@ import imcode.server.kerberos.KerberosLoginStatus;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
@@ -211,8 +212,14 @@ public class GetDoc extends HttpServlet {
                 return ;
             }
 
+            // Workaround for #11619 - Android device refuses to download a file from build-in browser.
+            // Might not help if user agent is changed manually and does not contain "android".
+            String browserId = req.getHeader("User-Agent");
+            boolean attachment = req.getParameter("download") != null
+                    || (browserId != null && browserId.toLowerCase().contains("android"));
+
             int len = fr.available();
-            String content_disposition = ( null != req.getParameter("download") ? "attachment" : "inline" )
+            String content_disposition = (attachment ? "attachment" : "inline")
                                          + "; filename=\""
                                          + filename
                                          + "\"";
@@ -229,7 +236,7 @@ public class GetDoc extends HttpServlet {
                 try {
                     IOUtils.copy(fr, out);
                 } catch ( SocketException ex ) {
-                    LOG.debug("Exception occured", ex);
+                    LOG.debug("Exception occurred", ex);
                 }
             } finally {
                 IOUtils.closeQuietly(fr);
