@@ -9,9 +9,9 @@ String cp = request.getContextPath() ;
 
 %>
 
-<jsp:include page="imcms_jquery_1.4.2.js" />
+<jsp:include page="imcms_jquery_1.7.1.js" />
 
-<jsp:include page="imcms_jquery-ui_1.8.5.js" />
+<jsp:include page="imcms_jquery-ui_1.8.16.js" />
 
 
 jQ(document).ready(function($) {

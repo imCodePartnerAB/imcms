@@ -7,6 +7,7 @@
 	
 %><%!
 
+boolean DEBUG_INIT = true ;
 boolean DEBUG_SAVE = false ;
 
 %><%
@@ -36,7 +37,10 @@ function getImcmsTextFieldFromString($, string) {
 	return null ;
 }
 
-function editablePluginActivate($) {
+function editablePluginActivate($) {<%
+	if (DEBUG_INIT) { %>
+	imLog('editablePluginActivate($) ;') ;<%
+	} %>
 	$('.imcmsInlineEditEditor').editable({
 		type:       'wysiwyg',
 		editBy:     'dblclick',
@@ -111,7 +115,10 @@ function editablePluginActivate($) {
 	}) ;
 }
 
-function editablePluginDestroy($) {
+function editablePluginDestroy($) {<%
+	if (DEBUG_INIT) { %>
+	imLog('editablePluginDestroy($) ;') ;<%
+	} %>
 	$('.imcmsInlineEditEditor').editable('destroy') ;
 	$('.imcmsInlineEditInput').editable('destroy') ;
 	$('.imcmsInlineEditTextarea').editable('destroy') ;

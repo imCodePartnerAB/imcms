@@ -241,7 +241,7 @@ imCMS version of jQuery UI CSS:
 
 <%--!
 
-// Make new imCMS version of jQuery UI CSS: https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/redmond/jquery-ui.css
+// Make new imCMS version of jQuery UI CSS: https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/redmond/jquery-ui.css
 
 
 private final static int CONNECTION_TIMEOUT_MILLIS = 3000 ;
@@ -272,7 +272,7 @@ public static String getURLcontent( String urlString, String encoding ) {
 
 if (true) {
 	try {
-		String jQueryUiCss = getURLcontent("https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/redmond/jquery-ui.css", Imcms.UTF_8_ENCODING) ;
+		String jQueryUiCss = getURLcontent("https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/redmond/jquery-ui.css", Imcms.UTF_8_ENCODING).replace("@VERSION", "1.8.16") ;
 		
 		out.print("\n\n\n\n" + jQueryUiCss.replaceAll("\\n.ui-", "\n.imcmsAdmin.ui-")) ;
 		

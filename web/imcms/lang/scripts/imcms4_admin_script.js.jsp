@@ -14,12 +14,13 @@
 	pageEncoding="UTF-8"
 	
 %><%@ taglib uri="imcmsvelocity" prefix="vel"
-%><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
+%><%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%!
 
 private final static int CONNECTION_TIMEOUT_MILLIS = 3000 ;
-private final static String USE_INLINE_EDITING     = "imcms_text_use_inline_editing" ;
-private final static String USE_WIDTH              = "imcms_text_use_width" ;
+private final static String USE_INLINE_EDITING           = "imcms_text_use_inline_editing" ;
+private final static String USE_INLINE_EDITING_FORMATTED = "imcms_text_use_inline_editing_formatted" ;
+private final static String USE_WIDTH                    = "imcms_text_use_width" ;
 
 public static String getURLcontent( String urlString, String encoding ) {
 		try {
@@ -54,16 +55,25 @@ String cp = request.getContextPath() ;
 
 if (loadJq) { %>
 
-<jsp:include page="imcms_jquery_1.4.2.js" />
+<jsp:include page="imcms_jquery_1.7.1.js" />
 
-<jsp:include page="imcms_jquery-ui_1.8.5.js" />
+<jsp:include page="imcms_jquery-ui_1.8.16.js" />
 
 jQ.fn.outerHTML = function() {
 		return $('<div>').append( this.eq(0).clone() ).html();
 };
 
-var private_USE_INLINE_EDITING = ('false' != imcmsGetCookie('<%= USE_INLINE_EDITING %>')) ;
-var private_USE_WIDTH          = ('false' != imcmsGetCookie('<%= USE_WIDTH %>')) ;
+function imLog(mess) {
+	try {
+		if (window && window.console) {
+			window.console.log(mess) ;
+		}
+	} catch (e) {}
+}
+
+var private_USE_INLINE_EDITING_FORMATTED = false;//('false' != imcmsGetCookie('<%= USE_INLINE_EDITING_FORMATTED %>')) ;
+var private_USE_INLINE_EDITING           = (!private_USE_INLINE_EDITING_FORMATTED && 'false' != imcmsGetCookie('<%= USE_INLINE_EDITING %>')) ;
+var private_USE_WIDTH                    = ('false' != imcmsGetCookie('<%= USE_WIDTH %>')) ;
 
 jQ(document).ready(function($) {
 	
@@ -108,8 +118,10 @@ jQ(document).ready(function($) {
         '	<li id="li_OPEN_INLINE_EDITING" class="' + (!private_USE_INLINE_EDITING ? 'disabled ' : '') + 'action"><a href="#OPEN_INLINE_EDITING"><fmt:message
 						key="scripts/imcms4_admin_script.js.jsp/context_menu/open_inline" /></a></li>\n' +
         '	<li class="action"><a href="#OPEN_NORMAL"><fmt:message
-						key="scripts/imcms4_admin_script.js.jsp/context_menu/open_normal" /></a></li>\n' +
-        '	<li id="li_USE_INLINE_EDITING" class="' + (private_USE_INLINE_EDITING ? 'active ' : '') + 'separator"><a href="#USE_INLINE_EDITING"><fmt:message
+						key="scripts/imcms4_admin_script.js.jsp/context_menu/open_normal" /></a></li>\n' +<%--
+        '	<li id="li_USE_INLINE_EDITING_FORMATTED" class="' + (private_USE_INLINE_EDITING_FORMATTED ? 'active ' : '') + 'separator"><a href="#USE_INLINE_EDITING_FORMATTED"><fmt:message
+						key="scripts/imcms4_admin_script.js.jsp/context_menu/use_inline_formatted" /></a></li>\n' +--%>
+        '	<li id="li_USE_INLINE_EDITING" class="' + (private_USE_INLINE_EDITING ? 'active' : '') + '"><a href="#USE_INLINE_EDITING"><fmt:message
 						key="scripts/imcms4_admin_script.js.jsp/context_menu/use_inline" /></a></li>\n' +
         '	<li id="li_USE_WIDTH"' + (private_USE_WIDTH ? ' class="active"' : '') + '><a href="#USE_WIDTH"><fmt:message
 						key="scripts/imcms4_admin_script.js.jsp/context_menu/use_width" /></a></li>\n' +
@@ -162,7 +174,23 @@ jQ(document).ready(function($) {
 							break ;
 						case 'OPEN_INLINE_EDITING':
 							$('#' + id + '_container').trigger('dblclick') ;
-							break ;
+							break ;<%--
+						case 'USE_INLINE_EDITING_FORMATTED':
+							private_USE_INLINE_EDITING_FORMATTED = !private_USE_INLINE_EDITING_FORMATTED ;
+							imcmsSetCookie('<%= USE_INLINE_EDITING_FORMATTED %>', private_USE_INLINE_EDITING_FORMATTED + '') ;
+							$('#li_USE_INLINE_EDITING_FORMATTED').removeClass('active') ;
+							if (private_USE_INLINE_EDITING_FORMATTED) {
+								$('#li_USE_INLINE_EDITING_FORMATTED').addClass('active') ;
+								if (private_USE_INLINE_EDITING) {
+									$('#li_USE_INLINE_EDITING').removeClass('active') ;
+									$('#li_OPEN_INLINE_EDITING').removeClass('disabled') ;
+									private_USE_INLINE_EDITING = false ;
+									imcmsSetCookie('<%= USE_INLINE_EDITING %>', private_USE_INLINE_EDITING + '') ;
+									$('#li_OPEN_INLINE_EDITING').addClass('disabled') ;
+									editablePluginDestroy($) ;
+								}
+							}
+							break ;--%>
 						case 'USE_INLINE_EDITING':
 							private_USE_INLINE_EDITING = !private_USE_INLINE_EDITING ;
 							imcmsSetCookie('<%= USE_INLINE_EDITING %>', private_USE_INLINE_EDITING + '') ;
@@ -171,6 +199,10 @@ jQ(document).ready(function($) {
 							if (private_USE_INLINE_EDITING) {
 								$('#li_USE_INLINE_EDITING').addClass('active') ;
 								editablePluginActivate($) ;
+								if (private_USE_INLINE_EDITING_FORMATTED) {
+									$('#li_USE_INLINE_EDITING_FORMATTED').removeClass('active') ;
+									private_USE_INLINE_EDITING_FORMATTED = false ;
+								}
 							} else {
 								$('#li_OPEN_INLINE_EDITING').addClass('disabled') ;
 								editablePluginDestroy($) ;
