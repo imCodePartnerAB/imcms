@@ -8,6 +8,9 @@ package com.imcode.imcms.api;
 
 import org.apache.lucene.queryParser.ParseException;
 
+/**
+ * Thrown when parse errors are encountered.
+ */
 public class BadQueryException extends Exception {
 
     public BadQueryException( String queryString, ParseException cause ) {
