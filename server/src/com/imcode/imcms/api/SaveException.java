@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 /**
+ * Base exception, thrown when saving failed.
  * @since 2.0
  */
 public class SaveException extends Exception {

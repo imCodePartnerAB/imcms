@@ -12,6 +12,13 @@ import org.apache.log4j.Logger;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * The base class for all document types, such as {@link TextDocument}, {@link UrlDocument}, {@link FileDocument} etc.
+ * In charge of document information such as headline, alias, publication status. Publication, archivation and setting as
+ * unpublished dates.
+ * Assignment of {@link Category}, {@link Section} and keywords.
+ * Holds informations about document creationg and modification, the dates and {@link User}.
+ */
 public class Document implements Serializable {
 
     private final DocumentDomainObject internalDocument;
@@ -605,8 +612,19 @@ public class Document implements Serializable {
         @since 3.0
      */
     public static class PublicationStatus implements Serializable {
+        /**
+         * New publication status
+         */
         public static final PublicationStatus NEW = new PublicationStatus(STATUS_NEW);
+
+        /**
+         * Approved publication status
+         */
         public static final PublicationStatus APPROVED = new PublicationStatus(STATUS_PUBLICATION_APPROVED);
+
+        /**
+         * Disapproved publication status
+         */
         public static final PublicationStatus DISAPPROVED = new PublicationStatus(STATUS_PUBLICATION_DISAPPROVED);
 
         private final int status;
@@ -615,10 +633,19 @@ public class Document implements Serializable {
             this.status = status;
         }
 
+        /**
+         * Int values of this status as a string
+         * @return Int values of this status as a string
+         */
         public String toString() {
             return ""+status ;
         }
 
+        /**
+         * Compares two statuses
+         * @param o Status to compare with
+         * @return true if this and the argument have the same status
+         */
         public boolean equals(Object o) {
             if ( this == o ) {
                 return true;
@@ -631,11 +658,21 @@ public class Document implements Serializable {
 
         }
 
+        /**
+         * Returns int value of status of this PublicationStatus
+         * @return status
+         */
         public int hashCode() {
             return status;
         }
     }
 
+    //TO-DO check how it's used and document
+
+    /**
+     * Prepresents document's life cycle phase
+     * @see <a href="http://doc.imcms.net/4.0/239" target="_blank">Page information</a>
+     */
     public static class LifeCyclePhase implements Serializable {
         public static final LifeCyclePhase NEW = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.NEW);
         public static final LifeCyclePhase DISAPPROVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.DISAPPROVED);
@@ -655,6 +692,10 @@ public class Document implements Serializable {
         }
     }
 
+    /**
+     * Abstract comparator with a number of static comparator by id, headline, date created, date modified,
+     * publication start date, publication end date and archivation date.
+     */
     public abstract static class Comparator extends ChainableReversibleNullComparator {
 
         public int compare( Object o1, Object o2 ) {
@@ -677,36 +718,54 @@ public class Document implements Serializable {
             }
         };
 
+        /**
+         * Case insensitive document headline comparator
+         */
         public final static Comparator HEADLINE = new Comparator() {
             protected int compareDocuments( Document d1, Document d2 ) {
                 return d1.getHeadline().compareToIgnoreCase( d2.getHeadline() );
             }
         };
 
+        /**
+         * Creation date comparator
+         */
         public final static Comparator CREATED_DATETIME = new Comparator() {
             protected int compareDocuments( Document d1, Document d2 ) {
                 return d1.getCreatedDatetime().compareTo( d2.getCreatedDatetime() );
             }
         };
 
+        /**
+         * Modification date comparator
+         */
         public final static Comparator MODIFIED_DATETIME = new Comparator() {
             protected int compareDocuments( Document d1, Document d2 ) {
                 return d1.getModifiedDatetime().compareTo( d2.getModifiedDatetime() );
             }
         };
 
+        /**
+         * Publication start date comparator
+         */
         public final static Comparator PUBLICATION_START_DATETIME = new Comparator() {
             protected int compareDocuments( Document document1, Document document2 ) {
                 return document1.getPublicationStartDatetime().compareTo( document2.getPublicationStartDatetime() );
             }
         };
 
+        /**
+         * Publication end date comparator
+         */
         public final static Comparator PUBLICATION_END_DATETIME = new Comparator() {
             protected int compareDocuments( Document document1, Document document2 ) {
                 return document1.getPublicationEndDatetime().compareTo( document2.getPublicationEndDatetime() );
             }
         };
 
+        /**
+         * Achivation date comparator
+         */
         public final static Comparator ARCHIVED_DATETIME = new Comparator() {
             protected int compareDocuments( Document document1, Document document2 ) {
                 return document1.getArchivedDatetime().compareTo( document2.getArchivedDatetime() );
