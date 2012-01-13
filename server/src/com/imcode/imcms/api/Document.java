@@ -185,58 +185,107 @@ public class Document implements Serializable {
         internalDocument.setKeywords(keywords);
     }
 
+    /**
+     * Returns this document's {@link DocumentPermissionSet} of type {@link DocumentPermissionSetType#RESTRICTED_1}
+     * @return can't be null, this document's {@link DocumentPermissionSet} of type {@link DocumentPermissionSetType#RESTRICTED_1}
+     */
     public DocumentPermissionSet getPermissionSetRestrictedOne() {
         DocumentPermissionSetDomainObject restrictedOne = internalDocument.getPermissionSets().getRestricted1() ;
         return new DocumentPermissionSet( restrictedOne );
     }
 
+    /**
+     * Returns this document's {@link DocumentPermissionSet} of type {@link DocumentPermissionSetType#RESTRICTED_2}
+     * @return can't be null, this document's {@link DocumentPermissionSet} of type {@link DocumentPermissionSetType#RESTRICTED_2}
+     */
     public DocumentPermissionSet getPermissionSetRestrictedTwo() {
         DocumentPermissionSetDomainObject restrictedTwo = internalDocument.getPermissionSets().getRestricted2() ;
         return new DocumentPermissionSet( restrictedTwo );
     }
 
+    /**
+     * Returns this document's headline.
+     * @return headline or an empty String
+     */
     public String getHeadline() {
         return internalDocument.getHeadline();
     }
 
+    /**
+     * Returns this document's menu text.
+     * @return menu text or an empty String
+     */
     public String getMenuText() {
         return internalDocument.getMenuText();
     }
 
+    /**
+     * Returns this document's alias.
+     * @return this document's alias or null if doesn't exist
+     */
     public String getAlias() {
         return  internalDocument.getAlias();
     }
 
+    /**
+     * Sets this document's alias
+     * @param alias new alias or null to remove
+     */
     public void setAlias(String alias) {
         internalDocument.setAlias(alias);
     }
 
+    /**
+     * Returns this document's alias if there's one, id otherwise.
+     * @return id or alias, if no alias then id
+     */
     public String getName() {
         return internalDocument.getName();
     }
 
+    /**
+     * Returns this document's menu image url
+     * @return this document's menu image url, or an empty String if doesn't exist
+     */
     public String getMenuImageURL() {
         return internalDocument.getMenuImage();
     }
 
+    /**
+     * Sets this document's headline.
+     * @param headline new headline
+     */
     public void setHeadline( String headline ) {
         internalDocument.setHeadline( headline );
     }
 
+    /**
+     * Sets this document's menu text
+     * @param menuText new menu text
+     */
     public void setMenuText( String menuText ) {
         internalDocument.setMenuText( menuText );
     }
 
+    /**
+     * Sets this document's menu image url
+     * @param imageUrl new menu image url
+     */
     public void setMenuImageURL( String imageUrl ) {
         internalDocument.setMenuImage( imageUrl );
     }
 
+    /**
+     * Returns the creator of this document
+     * @return User or null if doesn't exist
+     */
     public User getCreator() {
         int creatorId = internalDocument.getCreatorId();
         return contentManagementSystem.getUserService().getUser(creatorId) ;
     }
 
     /**
+     * Returns the last user who modified this document.
      * @return a user who modified document or null if there is no such data or user can not be found.
      */
     public User getModifier() {
@@ -244,24 +293,41 @@ public class Document implements Serializable {
         return modifierId == null ? null : contentManagementSystem.getUserService().getUser(modifierId);
     }
 
+    /**
+     * Sets the creator of this document.
+     * @param creator a User to be the new creator.
+     */
     public void setCreator( User creator ) {
         internalDocument.setCreator( creator.getInternal() );
     }
 
+    /**
+     * Returns the languages set for this document.
+     * @return {@link Language} set for this document
+     */
     public Language getLanguage() {
         return Language.getLanguageByISO639_2( internalDocument.getLanguageIso639_2() );
     }
 
+    /**
+     * Adds a {@link Category} to this document.
+     * @param category a category to add
+     */
     public void addCategory( Category category ) {
         internalDocument.addCategoryId( category.getId() );
     }
 
+    /**
+     * Removes a {@link Category} from this document.
+     * @param category a category to remove
+     */
     public void removeCategory( Category category ) {
         internalDocument.removeCategoryId( category.getId() );
     }
 
     /**
-     * @return An array of Categories, an empty if no one found.
+     * Returns categories assigned to this document.
+     * @return An array of Categories, an empty if none assigned.
      */
     public Category[] getCategories() {
         Set categories = contentManagementSystem.getInternal().getCategoryMapper().getCategories(internalDocument.getCategoryIds());
@@ -291,7 +357,10 @@ public class Document implements Serializable {
     }
 
     /**
-        @since 3.0
+     * Sets a {@link DocumentPermissionSetType} for a {@link Role} for this document
+     * @param role a Role
+     * @param documentPermissionSetType one of DocumentPermissionSetType constants
+     * @since 3.0
      */
     public void setPermissionSetTypeForRole( Role role, DocumentPermissionSetType documentPermissionSetType ) {
         internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), documentPermissionSetType.getInternal());
@@ -306,14 +375,17 @@ public class Document implements Serializable {
     }
 
     /**
-        @since 3.0
+     * Returns a {@link DocumentPermissionSetType} for the given {@link Role}
+     * @return {@link DocumentPermissionSetType} for the given {@link Role} or {@link DocumentPermissionSetType#NONE} if none exist
+     * @since 3.0
     */
     public DocumentPermissionSetType getPermissionSetTypeForRole( Role role ) {
         return new DocumentPermissionSetType(internalDocument.getDocumentPermissionSetTypeForRoleId(role.getInternal().getId())) ;
     }
 
     /**
-     * @param categoryType
+     * Returns categories of the provided type assigned to this document.
+     * @param categoryType CategoryType to get categories of
      * @return an array of Categories, empty array if no one found.
      */
     public Category[] getCategoriesOfType( CategoryType categoryType ) {
@@ -323,6 +395,10 @@ public class Document implements Serializable {
         return getCategoryArrayFromCategoryDomainObjectArray( categories );
     }
 
+    /**
+     * Returns the publisher of this document
+     * @return publisher User, or null if none
+     */
     public User getPublisher() {
         Integer publisherId = internalDocument.getPublisherId();
         if ( null != publisherId ) {
@@ -332,32 +408,57 @@ public class Document implements Serializable {
         }
     }
 
+    /**
+     * Returns a String represending html link target, such as '_blank' etc.
+     * @return String representing html link target attribute
+     */
     public String getTarget() {
         return internalDocument.getTarget();
     }
 
+    /**
+     * Returns the {@link java.util.Date} this document was published or the date it will be.
+     * @return publication Date for/of this document
+     */
     public Date getPublicationStartDatetime() {
         return internalDocument.getPublicationStartDatetime();
     }
 
+    /**
+     * Sets publication date for this document
+     * @param datetime new publication {@link java.util.Date} or null to remove
+     */
     public void setPublicationStartDatetime( Date datetime ) {
         internalDocument.setPublicationStartDatetime( datetime );
     }
 
+    /**
+     * Returns the archivation Date for this document.
+     * @return archivation Date or null if not set.
+     */
     public Date getArchivedDatetime() {
         return internalDocument.getArchivedDatetime();
     }
 
+    /**
+     * Sets archivation Date for this document.
+     * @param datetime new archivation date
+     */
     public void setArchivedDatetime( Date datetime ) {
         internalDocument.setArchivedDatetime( datetime );
     }
 
+    /**
+     * Sets this document's publisher
+     * @param user a User to be this document's publisher
+     */
     public void setPublisher( User user ) {
         internalDocument.setPublisher( user.getInternal() );
     }
 
     /**
-     * @return An array of Sections, an empty array if none found.
+     * Returns the sections assigned to this document
+     * @return An array of {@link Section}, an empty array if none found.
      */
     public Section[] getSections() {
         Set sectionIds = internalDocument.getSectionIds();
@@ -370,6 +471,10 @@ public class Document implements Serializable {
         return sections;
     }
 
+    /**
+     * Sets sections for this document.
+     * @param sections an array of {@link Section} for this document
+     */
     public void setSections( Section[] sections ) {
         Set sectionIds = new HashSet();
         for ( int i = 0; i < sections.length; i++ ) {
@@ -380,18 +485,34 @@ public class Document implements Serializable {
         internalDocument.setSectionIds( sectionIds );
     }
 
+    /**
+     * Returns the last {@link java.util.Date} this document was modified.
+     * @return the last date this document was modified
+     */
     public Date getModifiedDatetime() {
         return internalDocument.getModifiedDatetime();
     }
 
+    /**
+     * Sets a modification date for this document.
+     * @param date new modification date for this document
+     */
     public void setModifiedDatetime( Date date ) {
         internalDocument.setModifiedDatetime( date );
     }
 
+    /**
+     * Returns the creation date of this document.
+     * @return creation date
+     */
     public Date getCreatedDatetime() {
         return internalDocument.getCreatedDatetime();
     }
 
+    /**
+     * Adds a {@link Section} to this document
+     * @param section to add, can't be null
+     */
     public void addSection( Section section ) {
         internalDocument.addSectionId( section.getId() );
     }
@@ -401,14 +522,26 @@ public class Document implements Serializable {
         internalDocument.setPublicationStatus( new PublicationStatus(status) );
     }
 
+    /**
+     * Sets the language of this document
+     * @param language language for this document
+     */
     public void setLanguage( Language language ) {
         internalDocument.setLanguageIso639_2( language.getIsoCode639_2() );
     }
 
+    /**
+     * Sets publication end date for this document
+     * @param datetime publication end date
+     */
     public void setPublicationEndDatetime( Date datetime ) {
         internalDocument.setPublicationEndDatetime( datetime );
     }
 
+    /**
+     * Returns publication date of this document
+     * @return publication end date or null if not set
+     */
     public Date getPublicationEndDatetime() {
         return internalDocument.getPublicationEndDatetime();
     }
@@ -418,14 +551,23 @@ public class Document implements Serializable {
         return internalDocument.getPublicationStatus().status ;
     }
 
+    /**
+     * Sets whether this document's link is visible in menus
+     * @param visibleInMenusForUnauthorizedUsers true to allow unauthorized users see this document's link in menus, false not to
+     */
     public void setVisibleInMenusForUnauthorizedUsers( boolean visibleInMenusForUnauthorizedUsers ) {
         internalDocument.setLinkedForUnauthorizedUsers( visibleInMenusForUnauthorizedUsers );
     }
 
+    /**
+     * Tests if this document is visible in menus for anauthorized users
+     * @return document visibility in menus for unauthorized users
+     */
     public boolean isVisibleInMenusForUnauthorizedUsers() {
         return internalDocument.isLinkedForUnauthorizedUsers();
     }
 
+    
     public boolean isLinkableByOtherUsers() {
         return internalDocument.isLinkableByOtherUsers();
     }
