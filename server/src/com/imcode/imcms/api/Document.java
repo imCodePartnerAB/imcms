@@ -567,24 +567,41 @@ public class Document implements Serializable {
         return internalDocument.isLinkedForUnauthorizedUsers();
     }
 
-    
+    /**
+     * Tests whether other users can add this document to a menu.
+     * Note that if a user can edit this document, they can also add it to a menu.
+     * @return whether other users can add this document to a menu.
+     */
     public boolean isLinkableByOtherUsers() {
         return internalDocument.isLinkableByOtherUsers();
     }
 
+    /**
+     * Sets whether other users can add this document to a menu.
+     * @param linkableByOtherUsers true to allow, false not to
+     */
     public void setLinkableByOtherUsers(boolean linkableByOtherUsers) {
         internalDocument.setLinkableByOtherUsers(linkableByOtherUsers);
     }
 
+    /**
+     * Returns the {@link PublicationStatus} of this document.
+     * @return publication status of this document, defaults to {@link PublicationStatus#NEW}
+     */
     public PublicationStatus getPublicationStatus() {
         return internalDocument.getPublicationStatus();
     }
 
+    /**
+     * Sets {@link PublicationStatus} of this document.
+     * @param publicationStatus new publication status
+     */
     public void setPublicationStatus(PublicationStatus publicationStatus) {
         internalDocument.setPublicationStatus(publicationStatus) ;
     }
 
     /**
+     * Represents publication status of a {@link Document}
         @since 3.0
      */
     public static class PublicationStatus implements Serializable {
