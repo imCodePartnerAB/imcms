@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.LanguageMapper;
 
 /**
+ * Represents Language in imcms
  * @author kreiger
  */
 public class Language {
@@ -41,14 +42,26 @@ public class Language {
         }
     }
 
+    /**
+     * Returns a string representation of this object. In the form of "ISO 639-2: " + {@link Language#getIsoCode639_2()}
+     * @return a string representation of this Language
+     */
     public String toString() {
         return "ISO 639-2: "+isoCode639_2 ;
     }
 
+    /**
+     * Returns ISO 639-2 string of this Language
+     * @return ISO 639-2 string of this Language
+     */
     public String getIsoCode639_2() {
         return isoCode639_2;
     }
 
+    /**
+     * Returns ISO 639-1 code of this Language.
+     * @return ISO 639-1 code of this Language or null if not found.
+     */
     public String getIsoCode639_1() {
         try {
             return LanguageMapper.convert639_2to639_1(isoCode639_2) ;

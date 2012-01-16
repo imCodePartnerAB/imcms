@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * In charge of {@link Template} and {@link TemplateGroup} look up.
+ */
 public class TemplateService {
 
     private ContentManagementSystem contentManagementSystem;
@@ -84,11 +87,21 @@ public class TemplateService {
         return (Template[]) temp.toArray( new Template[temp.size()] );
     }
 
+    /**
+     * Returns a {@link Template} by name
+     * @param templateName name of a {@link Template}
+     * @return template with the given name or null if none found
+     */
     public Template getTemplate( String templateName ) {
         TemplateDomainObject template = getTemplateMapper().getTemplateByName( templateName );
         return null != template ? new Template( template ) : null;
     }
 
+    /**
+     * Returns a {@link TemplateGroup} by id
+     * @param templateGroupId template group id
+     * @return a {@link TemplateGroup} with the given id or null if none found.
+     */
     public TemplateGroup getTemplateGroupById( int templateGroupId ) {
         TemplateGroupDomainObject template = getTemplateMapper().getTemplateGroupById( templateGroupId );
         return null != template ? new TemplateGroup( template ) : null;

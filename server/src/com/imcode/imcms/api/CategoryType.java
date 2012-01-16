@@ -3,9 +3,9 @@ package com.imcode.imcms.api;
 import imcode.server.document.CategoryTypeDomainObject;
 
 /**
- * @author kreiger
  * Category types help distinguish between Categories with the same name.
  * The also constrol if the categories belonging to them can be inherited or used in image archive.
+ * @author kreiger
  */
 public class CategoryType {
     private CategoryTypeDomainObject internalCategoryType;
