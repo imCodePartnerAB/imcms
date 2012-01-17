@@ -4,10 +4,17 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Class giving access to the database connection used by {@link ContentManagementSystem}
+ */
 public class DatabaseService {
 
     private DataSource dataSource;
 
+    /**
+     * Constructs DatabaseService with the given DataSource
+     * @param dataSource DataSource to get connection from
+     */
     public DatabaseService(DataSource dataSource) {
         this.dataSource = dataSource;
     }
