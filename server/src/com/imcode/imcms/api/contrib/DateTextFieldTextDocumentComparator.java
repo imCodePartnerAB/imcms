@@ -20,10 +20,21 @@ public class DateTextFieldTextDocumentComparator extends Document.Comparator {
     private String datePattern = DateConstants.DATE_FORMAT_STRING;
     private int textFieldNumber;
 
+    /**
+     * Constructs DateTextFieldTextDocumentComparator using the given {@link com.imcode.imcms.api.TextDocument.TextField}
+     * index.
+     * @param textFieldNumber {@link com.imcode.imcms.api.TextDocument.TextField} index in a {@link TextDocument}
+     */
     public DateTextFieldTextDocumentComparator( int textFieldNumber ) {
         this.textFieldNumber = textFieldNumber;
     }
 
+    /**
+     * Constructs DateTextFieldTextDocumentComparator using the given {@link com.imcode.imcms.api.TextDocument.TextField}
+     * index and a string representing a pattern used for parsing dates.
+     * @param textFieldNumber {@link com.imcode.imcms.api.TextDocument.TextField} index in a {@link TextDocument}
+     * @param datePattern a String representing a pattern used for parsing dates.
+     */
     public DateTextFieldTextDocumentComparator( int textFieldNumber, String datePattern ) {
         this(textFieldNumber) ;
         this.datePattern = datePattern;
