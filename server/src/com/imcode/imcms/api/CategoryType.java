@@ -3,8 +3,8 @@ package com.imcode.imcms.api;
 import imcode.server.document.CategoryTypeDomainObject;
 
 /**
- * Category types help distinguish between Categories with the same name.
- * The also constrol if the categories belonging to them can be inherited or used in image archive.
+ * Represents a category type. Category types help distinguish between Categories with the same name.
+ * They also control if the categories belonging to them can be inherited or used in image archive.
  * @author kreiger
  */
 public class CategoryType {
@@ -19,7 +19,7 @@ public class CategoryType {
     }
 
     /**
-     * Returns string representation on this category type
+     * Returns string representation on this category type, calls {@link com.imcode.imcms.api.CategoryType#getName()}
      * @return string representation on this category type
      */
     public String toString() {
@@ -43,7 +43,7 @@ public class CategoryType {
     }
 
     /**
-     * Indicates whether the categories in this category type will be inherited by a new document when a document that
+     * Indicates whether the categories of this category type are inherited by new documents when a document that
      * has categories of this type is used as parent.
      * @return true if this category type's categories are inherited, false otherwise
      */

@@ -3,7 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.document.CategoryDomainObject;
 
 /**
- * Represents a category in imcms
+ * Represents a category in imcms.
  * @author kreiger
  */
 public class Category implements Comparable {

@@ -33,9 +33,9 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Returns this document's TextFields that are not empty
-     * @return A SortedMap that contains the textFileds index as keys, and instances of TextFields as values. Only the
-     *         TextFields that contain any text are returned.
+     * Returns this document's TextFields that are not empty.
+     * @return A SortedMap that has {@link TextField} indices as keys, and instances of TextFields as values. Only the
+     * TextFields that contain any text are mapped.
      */
     public SortedMap getTextFields() {
         Predicate predicate = new Predicate() {
@@ -60,8 +60,8 @@ public class TextDocument extends Document {
 
     /**
      * Returns this document's Images
-     * @return A SortedMap that contains the images index as keys, and instaces of Image as values. Only the
-     *         Images that have an url are returned.
+     * @return A SortedMap that contains {@link Image} indices as keys, and instaces of {@link Image} as values. Only the
+     * Images that have url(not empty) are returned.
      */
     public SortedMap getImages() {
         Predicate predicate = new Predicate() {
@@ -87,8 +87,8 @@ public class TextDocument extends Document {
 
     /**
      * Returns this document's includes
-     * @return A SortedMap that contains the index of the include as keys, and instaces of Document as values. Only the
-     *         includes that have a document are returned.
+     * @return A SortedMap that contains indices of the includes as keys, and instaces of {@link Document} as values. Only the
+     * includes that have a {@link Document} are returned.
      */
     public SortedMap getIncludes() {
         Predicate predicate = new Predicate() {
@@ -128,9 +128,9 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Returns a TextField with given index
+     * Returns a TextField with the given index.
      * @param textFieldIndexInDocument text field index in this document
-     * @return TextField with given index or a empty string TextField if the document doesn't have a TextField with given index
+     * @return TextField with the given index or an empty string TextField if the document doesn't have a TextField with the given index
      */
     public TextField getTextField(int textFieldIndexInDocument) {
         TextDomainObject imcmsText = getInternalTextDocument().getText(textFieldIndexInDocument);
@@ -146,7 +146,7 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Sets the text of the TextField with the given index to the text provided in plain text format
+     * Sets the text of the TextField with the given index to the text provided, in {@link com.imcode.imcms.api.TextDocument.TextField.Format#PLAIN} format
      * @param textFieldIndexInDocument index of a TextField in this document
      * @param newText text do be set
      */
@@ -155,7 +155,7 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Sets the text of the TextField with the given index to the text provided in html format
+     * Sets the text of the TextField with the given index to the text provided, in {@link com.imcode.imcms.api.TextDocument.TextField.Format#HTML} format
      * @param textFieldIndexInDocument index of a TextField in this document
      * @param newText text do be set
      */
@@ -164,10 +164,10 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Sets the text of the TextField with the given index to the text provided in the format provided
+     * Sets the text of the TextField with the given index to the provided {@link com.imcode.imcms.api.TextDocument.TextField.Format}
      * @param textFieldIndexInDocument index of a TextField in this document
      * @param newText text do be set
-     * @param format format to set the text in
+     * @param format {@link com.imcode.imcms.api.TextDocument.TextField.Format} to set the text in
      */
     public void setTextField(int textFieldIndexInDocument, String newText, TextField.Format format) {
         TextDomainObject imcmsText = new TextDomainObject(newText, format.getType());
@@ -175,9 +175,9 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Returns Image with given index in this document
-     * @param imageIndexInDocument image index
-     * @return Image or null if the document does contain any with given index
+     * Returns Image with the given index in this document.
+     * @param imageIndexInDocument image index in this document
+     * @return Image or null if the document does contain any with the given index
      */
     public Image getImage(int imageIndexInDocument) {
         ImageDomainObject internalImage = getInternalTextDocument().getImage(imageIndexInDocument);
@@ -190,7 +190,7 @@ public class TextDocument extends Document {
 
     /**
      * Returns this text document's template
-     * @return the template used by this document
+     * @return the template used by this document or null if the {@link Template} doesn't exist.
      */
     public Template getTemplate() {
         String templateName = getInternalTextDocument().getTemplateName();
