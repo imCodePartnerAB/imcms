@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Properties;
 
 /**
- * A representation of an image in imcms. Provides method of presentation as html <img/> tag along with a multitude of
+ * A representation of an image in imcms. Provides methods of presentation as html <img/> tag along with a multitude of
  * attributes.
  */
 public class Image {
@@ -53,7 +53,7 @@ public class Image {
     }
 
     /**
-     * Returns src url of the low resolution version of this image if there's one.
+     * Returns the url of the low resolution version of this image if there's one.
      * @return src url of the low resolution version of this image or an empty string.
      */
     public String getLowSrc() {
@@ -61,7 +61,7 @@ public class Image {
     }
 
     /**
-     * Sets src url of the low resolution version of this image.
+     * Sets the url of the low resolution version of this image.
      * @param low_src low resolution url.
      */
     public void setLowSrc( String low_src ) {
@@ -69,7 +69,7 @@ public class Image {
     }
 
     /**
-     * Returns the 'width' attribute of this image.
+     * Returns width attribute of this image.
      * @return image width
      */
     public int getWidth() {
@@ -103,7 +103,7 @@ public class Image {
 
     /**
      * Returns border width attribute of this image.
-     * @return border width
+     * @return border width in pixels
      */
     public int getBorder() {
         return internalImage.getBorder();
@@ -111,7 +111,7 @@ public class Image {
 
     /**
      * Sets this image's border width attribute.
-     * @param border border width attribute
+     * @param border border width in pixels
      */
     public void setBorder( int border ) {
         internalImage.setBorder( border );
@@ -190,15 +190,15 @@ public class Image {
     }
 
     /**
-     * Sets this image's
-     * @param link_href
+     * Sets the url of the link surrounding(if present) this image.
+     * @param link_href href attribute for a link.
      */
     public void setLinkHref( String link_href ) {
         internalImage.setLinkUrl( link_href );
     }
 
     /**
-     * Returns the 'target' attribute of this image.
+     * Returns the 'target' attribute of a link surrounding(if present) this image.
      * @return 'target' attribute
      */
     public String getLinkTarget() {  // use target_name if target = _other
@@ -206,7 +206,7 @@ public class Image {
     }
 
     /**
-     * Sets the 'target' attribute
+     * Sets the 'target' attribute of a link surrounding(if present) this image.
      * @param target new 'target' attribute value
      */
     public void setLinkTarget( String target ) {
@@ -253,9 +253,9 @@ public class Image {
     }
 
     /**
-     * Returns a string representing the image as html img tag
+     * Returns a string representing this image as html <img/> tag
      * @param contextPath context path for <img/> tag 'src' attribute's url.
-     * @return
+     * @return a string with html image tag produced from this image
      */
     public String toHtmlUrl(String contextPath) {
         return StringEscapeUtils.escapeHtml(ImcmsImageUtils.getImageUrl(internalImage, contextPath));
