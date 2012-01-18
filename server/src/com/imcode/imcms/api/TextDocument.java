@@ -164,10 +164,10 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Sets the text of the TextField with the given index to the provided {@link com.imcode.imcms.api.TextDocument.TextField.Format}
+     * Sets the TextField with the given index to the provided text and {@link com.imcode.imcms.api.TextDocument.TextField.Format}
      * @param textFieldIndexInDocument index of a TextField in this document
      * @param newText text do be set
-     * @param format {@link com.imcode.imcms.api.TextDocument.TextField.Format} to set the text in
+     * @param format {@link com.imcode.imcms.api.TextDocument.TextField.Format}
      */
     public void setTextField(int textFieldIndexInDocument, String newText, TextField.Format format) {
         TextDomainObject imcmsText = new TextDomainObject(newText, format.getType());
@@ -199,8 +199,8 @@ public class TextDocument extends Document {
 
     /**
      * Sets template group and template to be used by this text document.
-     * @param templateGroup can be null. Template group, note that the template group doesn't have to have the template provided
-     * @param template Template to be used by this document
+     * @param templateGroup can be null. {@link TemplateGroup}, note that the template group doesn't have to have the template provided
+     * @param template not null, template to be used by this document
      */
     public void setTemplate(TemplateGroup templateGroup, Template template) {
         getInternalTextDocument().setTemplateName(template.getInternal().getName());
@@ -210,7 +210,7 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Sets the {@link Template} of this text document to the given one
+     * Sets the {@link Template} of this text document to the given one.
      * @param template a template to be set for this text document, null is used for template group
      */
     public void setTemplate(Template template) {
@@ -218,8 +218,8 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Returns included Document by the given index in the document
-     * @param includeIndexInDocument document include index
+     * Returns included Document by the given index in the document.
+     * @param includeIndexInDocument index of an include in this document
      * @return included Document or null if no document include exists by the given index in this document
      * or the included document doesn't exist anymore.
      */
@@ -235,7 +235,7 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Sets or removes the given document with the given index in this document
+     * Sets or removes the given document with the given index in this document.
      * @param includeIndexInDocument index of an inlcude in this document
      * @param documentToBeIncluded TextDocument to be set or a null, if null is given, the include is removed.
      */
@@ -248,16 +248,16 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Get the menu with the given index in this document.
-     * @param menuIndexInDocument the index of the menu in the document.
-     * @return menu index in the document.
+     * Get the {@link Menu} with the given index in this document.
+     * @param menuIndexInDocument the index of the menu in this document.
+     * @return {@link Menu} with the given index in this document.
      */
     public Menu getMenu(int menuIndexInDocument) {
         return new Menu(this, menuIndexInDocument);
     }
 
     /**
-     * Returns all menus in this document
+     * Returns all menus in this document.
      * @return a SortedMap of menus in this document, with menu indices as keys and menus as values
      */
     public SortedMap getMenus() {
@@ -270,7 +270,7 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Sets an Image with the given index.
+     * Sets the given {@link Image} to the given index in this document.
      * @param imageIndex index in this document
      * @param image Image to set, not null
      */
@@ -290,7 +290,8 @@ public class TextDocument extends Document {
         private final TextDomainObject imcmsText;
 
         /**
-         * Format in which the text inside TextField is set or returned
+         * Format in which the text inside TextField is set or returned.
+         * When {@link Format#PLAIN} format is used, the reserved HTML characters are replaced with character entities.
          */
         public enum Format {
             PLAIN(TextDomainObject.TEXT_TYPE_PLAIN),
@@ -375,7 +376,7 @@ public class TextDocument extends Document {
         }
 
         /**
-         * Returns a document contained by this menu item.
+         * Returns a {@link Document} contained by this menu item.
          * @return Document contained in the menu item
          */
         public Document getDocument() {
@@ -411,7 +412,7 @@ public class TextDocument extends Document {
         }
 
         /**
-         * Returns the TreeKey of this menu item.
+         * Returns the {@link TreeKey} of this menu item.
          * @return a TreeKey, which can be empty if the menu item doesn't have any set.
          */
         public TreeKey getTreeKey() {
@@ -441,7 +442,7 @@ public class TextDocument extends Document {
             }
 
             /**
-             * Constructs TreeKey from a String, any not digit character is treated as a separator, so
+             * Constructs TreeKey from a String, not digit characters are treated as a separator, so
              * 1.3 and 1,3 produce the same key.
              * @param treeSortKey a String to construct TreeKey from
              */
@@ -481,28 +482,33 @@ public class TextDocument extends Document {
      */
     public static class Menu {
         /**
-         * Menu sorted by headline.
+         * Menu sort order by headline.
          */
         public final static int SORT_BY_HEADLINE = MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE;
+
         /**
-         * Menu sorted by 'manual' order.
+         * Menu sort order by 'manual' order.
          */
         public final static int SORT_BY_MANUAL_ORDER_DESCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED;
+
         /**
-         * Menu sorted by datetime.
+         * Menu sort order by datetime.
          */
         public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED;
+
         /**
-         * Menu sorted by tree sort order.
+         * Menu sort order by {@link com.imcode.imcms.api.TextDocument.MenuItem.TreeKey} order.
          * @deprecated Wrong name, use {@link #SORT_BY_TREE_ORDER_ASCENDING}.
          */
         public final static int SORT_BY_TREE_ORDER_DESCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
+
         /**
-         * Menu sorted by tree sort order.
+         * Menu sort order by {@link com.imcode.imcms.api.TextDocument.MenuItem.TreeKey} order. Ascending.
          */
         public final static int SORT_BY_TREE_ORDER_ASCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
+
         /**
-         * Menu sorted by tree sort order.
+         * Menu sort order by {@link com.imcode.imcms.api.Document#getPublicationStartDatetime()}. Descending.
          */
         public final static int SORT_BY_PUBLISHED_DATETIME_DESCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED;
 
@@ -544,8 +550,8 @@ public class TextDocument extends Document {
         }
 
         /**
-         * Returns the sort order of this menu
-         * @return int value of on of the SORT_BY_* constants
+         * Returns the sort order of this menu.
+         * @return sort order of this menu
          */
         public int getSortOrder() {
             return internalTextDocument.getMenu( menuIndex ).getSortOrder();
@@ -553,7 +559,7 @@ public class TextDocument extends Document {
 
         /**
          * Returns menu items that current user can see.
-         * @return The visible menuitems in this menu.
+         * @return array of visible {@link MenuItem} in this menu.
          * @since 2.0
          */
         public MenuItem[] getVisibleMenuItems() {
