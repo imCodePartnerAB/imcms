@@ -559,7 +559,7 @@ public class Document implements Serializable {
     }
 
     /**
-     * Sets whether this document's link is visible in menus
+     * Sets whether this document's link is visible in menus for anauthorized users
      * @param visibleInMenusForUnauthorizedUsers true to allow unauthorized users see this document's link in menus, false not to
      */
     public void setVisibleInMenusForUnauthorizedUsers( boolean visibleInMenusForUnauthorizedUsers ) {
@@ -585,6 +585,7 @@ public class Document implements Serializable {
 
     /**
      * Sets whether other users can add this document to a menu.
+     * Note that users that can edit this document can link it to a menu too too
      * @param linkableByOtherUsers true to allow, false not to
      */
     public void setLinkableByOtherUsers(boolean linkableByOtherUsers) {
@@ -667,18 +668,41 @@ public class Document implements Serializable {
         }
     }
 
-    //TO-DO check how it's used and document
 
     /**
-     * Prepresents document's life cycle phase
+     * Represents document's life cycle phase
      * @see <a href="http://doc.imcms.net/4.0/239" target="_blank">Page information</a>
      */
     public static class LifeCyclePhase implements Serializable {
+
+        /**
+         * New phase
+         */
         public static final LifeCyclePhase NEW = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.NEW);
+
+        /**
+         * Disapproved phase
+         */
         public static final LifeCyclePhase DISAPPROVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.DISAPPROVED);
+
+        /**
+         * Published phase
+         */
         public static final LifeCyclePhase PUBLISHED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.PUBLISHED);
+
+        /**
+         * Unpublished phase
+         */
         public static final LifeCyclePhase UNPUBLISHED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.UNPUBLISHED);
+
+        /**
+         * Archived phase
+         */
         public static final LifeCyclePhase ARCHIVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.ARCHIVED);
+
+        /**
+         * Approved phase
+         */
         public static final LifeCyclePhase APPROVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.APPROVED);
 
         private imcode.server.document.LifeCyclePhase phase ;
@@ -687,6 +711,10 @@ public class Document implements Serializable {
             this.phase = phase;
         }
 
+        /**
+         * Returns string representation of this life cycle phase
+         * @return string representation in form of internal life cycle phase name, e.g. "published"
+         */
         public String toString() {
             return phase.toString() ;
         }

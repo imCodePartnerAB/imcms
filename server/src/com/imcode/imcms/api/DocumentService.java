@@ -23,7 +23,7 @@ public class DocumentService {
     private final ContentManagementSystem contentManagementSystem;
 
     /**
-     * Returns DocumentService with given cms
+     * Returns DocumentService with the given cms
      * @param contentManagementSystem cms used by DocumentService
      */
     public DocumentService(ContentManagementSystem contentManagementSystem) {

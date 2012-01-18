@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Compares text-documents by a date in a textfield.
+ * Compares text documents by a date in a textfield.
  *
  * @author Anders Flodell, Vetenskapsrådet
  * @author Pontus Amberg, Vetenskapsrådet
