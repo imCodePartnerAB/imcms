@@ -68,8 +68,8 @@ public class FileDocument extends Document {
     }
 
     /**
-     * Returns FileDocumentFile with given fileId or a default one if fileId is null or there is
-     * no FileDocumentFile with such fileId.
+     * Returns FileDocumentFile with given id. The default FileDocumentFile is returned if the id is null or there is
+     * no FileDocumentFile with such id.
      * @param fileId id of FileDocumentFile
      * @return FileDocumentFile with given id or null if fileId is null or none found with given id.
      */
@@ -79,7 +79,7 @@ public class FileDocument extends Document {
 
     /**
      * Returns the default file id
-     * @return default file id
+     * @return default file id or null if there's no default file
      */
     public String getDefaultFileId() {
         return getInternalFileDocument().getDefaultFileId();
@@ -87,14 +87,14 @@ public class FileDocument extends Document {
 
     /**
      * Returns the default {@link FileDocumentFile} of this {@link FileDocument}
-     * @return the default {@link FileDocumentFile}
+     * @return the default {@link FileDocumentFile} or null if there's no default file
      */
     public FileDocumentFile getDefaultFile() {
         return new FileDocumentFile( getInternalFileDocument().getDefaultFile() );
     }
 
     /**
-     * Adds a file to the file document. t
+     * Adds a file to the file document
      * The added file becomes the default one if there's no default file.
      * @param fileId id of the file to be added, not null
      * @param file file to add
