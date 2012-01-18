@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * In charge of user and role operations, such as look up, creation, deletion and saving as well as sending out password reminder
+ * In charge of {@link User} and {@link Role} operations, such as look up, creation, deletion and saving as well as sending out password reminder
  * emails.
  */
 public class UserService {

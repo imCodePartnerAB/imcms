@@ -457,7 +457,7 @@ public class Document implements Serializable {
 
     /**
      * Sets this document's publisher
-     * @param user a User to be this document's publisher
+     * @param user a {@link User} to be this document's publisher
      */
     public void setPublisher( User user ) {
         internalDocument.setPublisher( user.getInternal() );
@@ -659,7 +659,7 @@ public class Document implements Serializable {
         }
 
         /**
-         * Returns int value of status of this PublicationStatus
+         * Returns int value of this PublicationStatus
          * @return status
          */
         public int hashCode() {
@@ -693,8 +693,8 @@ public class Document implements Serializable {
     }
 
     /**
-     * Abstract comparator with a number of static comparator by id, headline, date created, date modified,
-     * publication start date, publication end date and archivation date.
+     * Abstract class in charge of document comparison with a number of static comparators extending it for comparison by
+     * different document attributes.
      */
     public abstract static class Comparator extends ChainableReversibleNullComparator {
 
@@ -712,6 +712,9 @@ public class Document implements Serializable {
 
         protected abstract int compareDocuments( Document d1, Document d2 );
 
+        /**
+         * Document id comparator
+         */
         public final static Comparator ID = new Comparator() {
             protected int compareDocuments( Document d1, Document d2 ) {
                 return d1.getId() - d2.getId();
@@ -764,7 +767,7 @@ public class Document implements Serializable {
         };
 
         /**
-         * Achivation date comparator
+         * Archivation date comparator
          */
         public final static Comparator ARCHIVED_DATETIME = new Comparator() {
             protected int compareDocuments( Document document1, Document document2 ) {

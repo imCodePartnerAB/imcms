@@ -73,7 +73,7 @@ public abstract class ContentManagementSystem {
     }
 
     /**
-     * Try to login the current user with the given name and password. Returns ContentManagementSystem for that user
+     * Attempts to login the current user with the given name and password. Returns ContentManagementSystem for that user
      * if login is successful.
      *
      * @param request HttpServletRequest request

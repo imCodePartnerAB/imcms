@@ -19,6 +19,9 @@ import java.util.Map;
  */
 public class FileDocument extends Document {
 
+    /**
+     * FileDocument TYPE_ID
+     */
     public final static int TYPE_ID = DocumentTypeDomainObject.FILE_ID ;
 
     FileDocument( FileDocumentDomainObject document, ContentManagementSystem contentManagementSystem ) {
@@ -101,7 +104,7 @@ public class FileDocument extends Document {
     }
 
     /**
-     * Representing files contained in a {@link FileDocument}
+     * Class representing a file contained in a {@link FileDocument}
      */
     public static class FileDocumentFile implements DataSource {
 
