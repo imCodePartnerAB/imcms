@@ -36,8 +36,7 @@ public class UserService {
     /**
      * Returns all users in cms
      * @return An array containing all users in cms
-     * @throws NoPermissionException
-     * @see NoPermissionException
+     * @throws NoPermissionException see {@link NoPermissionException}
      */
     public User[] getAllUsers() throws NoPermissionException {
 
@@ -62,8 +61,8 @@ public class UserService {
 
     /**
      * Returns user by given id.
-     @param userId user id to look user by
-     @return User with the specified id, or null if none.
+     * @param userId user id to look user by
+     * @return User with the specified id, or null if none.
      **/
     public User getUser( int userId ) {
         return wrapUser(getMapper().getUser( userId ));
@@ -78,8 +77,8 @@ public class UserService {
 
     /**
      * Returns user with given name
-        @param userLoginName name to look user by.
-        @return User with the specified login name, or null if none.
+     * @param userLoginName name to look user by.
+     * @return User with the specified login name, or null if none.
     **/
      public User getUser( String userLoginName ) {
         return wrapUser(getMapper().getUser( userLoginName ));
@@ -125,8 +124,7 @@ public class UserService {
      * Deletes given role from cms
      * @since 2.0
      * @param role to be deleted
-     * @throws NoPermissionException
-     * @see NoPermissionException
+     * @throws NoPermissionException see {@link NoPermissionException}
      */
     public void deleteRole( Role role ) throws NoPermissionException {
         getMapper().deleteRole( role.getInternal() );
@@ -137,8 +135,7 @@ public class UserService {
      * @since 2.0
      * @return Array of users with given role
      * @param role that users should have to be included in the returned array
-     * @throws NoPermissionException
-     * @see NoPermissionException
+     * @throws NoPermissionException see {@link NoPermissionException}
      */
     public User[] getAllUsersWithRole( Role role ) throws NoPermissionException {
         UserDomainObject[] internalUsersWithRole = getMapper().getAllUsersWithRole( role.getInternal() );
@@ -184,7 +181,7 @@ public class UserService {
     }
 
     /**
-     * Creates a new user. Don't forget to call {@link #saveUser(User)}.
+     * Creates a new user.
      * @param loginName The user's login name
      * @param password The user's password
      * @return A new user
@@ -199,10 +196,10 @@ public class UserService {
     }
 
     /**
-     * Saves changes made to the given existing user or a new user, not yet persisted in cms
+     * Saves changes made to the given existing user or a new user.
      * @param user user to save
-     * @throws NoPermissionException
-     * @throws SaveException
+     * @throws NoPermissionException see {@link NoPermissionException}
+     * @throws SaveException if the user being saved has a login name that another user in the system already has
      */
     public void saveUser( User user ) throws NoPermissionException, SaveException {
         if (null == user) {
