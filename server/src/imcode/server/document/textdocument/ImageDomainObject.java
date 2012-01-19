@@ -509,6 +509,10 @@ public class ImageDomainObject implements Serializable {
             return ANGLE_MAP.get(angle);
         }
         
+        public boolean isDefault() {
+            return this == RotateDirection.NORTH;
+        }
+        
         public static RotateDirection getByAngleDefaultIfNull(int angle) {
             RotateDirection direction = getByAngle(angle);
             

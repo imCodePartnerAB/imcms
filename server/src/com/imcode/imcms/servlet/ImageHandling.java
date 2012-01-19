@@ -11,15 +11,10 @@ import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
+import imcode.util.io.FileInputStreamSource;
+import imcode.util.io.InputStreamSource;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +36,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-@Deprecated
+
 public class ImageHandling extends HttpServlet {
 	private static final long serialVersionUID = 6075455980496678862L;
 
@@ -118,10 +113,10 @@ public class ImageHandling extends HttpServlet {
 		File cacheFile = ImageCacheManager.getCacheFile(imageCache);
 
 		if (cacheFile != null) {
-            if (path != null) {
-                File imageFile = getLocalFile(path);
-
-                etag = ImcmsImageUtils.getImageETag(path, imageFile, format, width, height, cropRegion, rotateDirection);
+            SourceFile source = null;
+            
+            if (path != null && (source = getLocalFile(path)) != null) {
+                etag = ImcmsImageUtils.getImageETag(path, source.getSourceFile(), format, width, height, cropRegion, rotateDirection);
 
                 String ifNoneMatch = request.getHeader("If-None-Match");
                 if (etag.equals(ifNoneMatch)) {
@@ -130,45 +125,48 @@ public class ImageHandling extends HttpServlet {
                 }
             }
 			
-			writeImageToResponse(cacheId, cacheFile, format, desiredFilename, etag, response);
-			return;
+            if (source == null || source.getSourceFile().lastModified() <= cacheFile.lastModified()) {
+                writeImageToResponse(cacheId, cacheFile, format, desiredFilename, etag, response);
+                return;
+            }
 		}
 		
-		File imageFile = null;
-		boolean deleteFile = false;
+        SourceFile source;
 		if (path != null) {
-			imageFile = getLocalFile(path);
+            source = getLocalFile(path);
 		} else if (fileId > 0) {
-			imageFile = getFileDocument(fileId);
-			deleteFile = true;
+            source = getFileDocument(fileId);
 		} else {
-			imageFile = retrieveExternalFile(url);
-			deleteFile = true;
+            source = getExternalFile(url);
 		}
 		
-		if (imageFile == null) {
+		if (source == null) {
 			sendNotFound(response);
 			return;
 		}
 		
-		ImageInfo imageInfo = ImageOp.getImageInfo(Imcms.getServices().getConfig(), imageFile);
-		if (imageInfo == null || (format == null && !imageInfo.getFormat().isWritable())) {
-			if (deleteFile) {
-				imageFile.delete();
-			}
-			
-			sendNotFound(response);
-			return;
-		}
-		
-		cacheFile = ImageCacheManager.storeImage(imageCache, imageFile, deleteFile);
-		if (cacheFile == null) {
-			sendNotFound(response);
-			return;
-		}
-		
-		Format outputFormat = (format != null ? format : imageInfo.getFormat());
-		writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, etag, response);
+        try {
+            ImageInfo imageInfo = ImageOp.getImageInfo(Imcms.getServices().getConfig(), source.getSourceFile());
+            if (imageInfo == null || (format == null && !imageInfo.getFormat().isWritable())) {
+
+                sendNotFound(response);
+                return;
+            }
+
+            cacheFile = ImageCacheManager.storeImage(imageCache, source.getSourceFile());
+            if (cacheFile == null) {
+                sendNotFound(response);
+                return;
+            }
+
+            Format outputFormat = (format != null ? format : imageInfo.getFormat());
+            writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, etag, response);
+            
+        } finally {
+            if (source.isDeleteAfterUse()) {
+                source.getSourceFile().delete();
+            }
+        }
 	}
 	
 	private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename, String etag,
@@ -239,7 +237,7 @@ public class ImageHandling extends HttpServlet {
 	
 	
 	
-	static File getLocalFile(String filepath) {
+	static SourceFile getLocalFile(String filepath) {
 		File root = Imcms.getPath();
 		File localFile = new File(root, sanitiseFilepath(filepath));
 		
@@ -250,7 +248,7 @@ public class ImageHandling extends HttpServlet {
 		for (String allowedPath : ALLOWED_PATHS) {
 			try {
 				if (localFile.getCanonicalPath().startsWith(allowedPath)) {
-					return localFile;
+                    return new SourceFile(localFile, false);
 				}
 			} catch (IOException ex) {
 			}
@@ -259,7 +257,7 @@ public class ImageHandling extends HttpServlet {
 		return null;
 	}
 	
-	private static File retrieveExternalFile(String url) {
+	private static SourceFile getExternalFile(String url) {
 		GetMethod fileGet = new GetMethod(url);
 		fileGet.addRequestHeader("User-Agent", USER_AGENT);
 		
@@ -280,26 +278,33 @@ public class ImageHandling extends HttpServlet {
 				output = new BufferedOutputStream(new FileOutputStream(file));
 				
 				IOUtils.copy(input, output);
+                output.close();
 				
-				return file;
+                return new SourceFile(file, true);
+				
 			} catch (Exception ex) {
 				log.warn(ex.getMessage(), ex);
 				
 				file.delete();
+                
 			} finally {
 				IOUtils.closeQuietly(output);
 				IOUtils.closeQuietly(input);
+                
 			}
+            
 		} catch (Exception ex) {
 			log.warn(ex.getMessage(), ex);
+            
 		} finally {
 			fileGet.releaseConnection();
+            
 		}
 		
 		return null;
 	}
 	
-	static File getFileDocument(int metaId) {
+	static SourceFile getFileDocument(int metaId) {
 		DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(metaId);
 		
 		if (document == null || !(document instanceof FileDocumentDomainObject)) {
@@ -312,22 +317,33 @@ public class ImageHandling extends HttpServlet {
 			return null;
 		}
 		
-		File file = null;
+		File docFile = null;
+        boolean deleteAfterUse = false;
 		InputStream input = null;
 		OutputStream output = null;
+        
 		try {
-			file = File.createTempFile("doc_file", ".tmp");
-			output = new BufferedOutputStream(new FileOutputStream(file));
-			input = documentFile.getInputStreamSource().getInputStream();
+            InputStreamSource inputStreamSource = documentFile.getInputStreamSource();
+            
+            if (inputStreamSource instanceof FileInputStreamSource) {
+                docFile = ((FileInputStreamSource) inputStreamSource).getFile();
+            } else {
+                deleteAfterUse = true;
+                docFile = File.createTempFile("doc_file", ".tmp");
+                output = new BufferedOutputStream(new FileOutputStream(docFile));
+                input = inputStreamSource.getInputStream();
+
+                IOUtils.copy(input, output);
+                output.close();
+            }
+            
+			return new SourceFile(docFile, deleteAfterUse);
 			
-			IOUtils.copy(input, output);
-			
-			return file;
 		} catch (Exception ex) {
 			log.warn(ex.getMessage(), ex);
 			
-			if (file != null) {
-				file.delete();
+			if (deleteAfterUse && docFile != null) {
+				docFile.delete();
 			}
 		} finally {
 			IOUtils.closeQuietly(output);
@@ -341,7 +357,7 @@ public class ImageHandling extends HttpServlet {
 		try {
 			byte[] buffer = new byte[4 * 1024];
 			
-			while (input.read(buffer) > 0) { };
+			while (input.read(buffer) > -1) { }
 		} finally {
 			IOUtils.closeQuietly(input);
 		}
@@ -380,4 +396,26 @@ public class ImageHandling extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		handleRequest(request, response);
 	}
+    
+    
+    static class SourceFile implements Serializable {
+        private static final long serialVersionUID = 6075456980496678862L;
+        private final File sourceFile;
+        private final boolean deleteAfterUse;
+
+        
+        public SourceFile(File sourceFile, boolean deleteAfterUse) {
+            this.sourceFile = sourceFile;
+            this.deleteAfterUse = deleteAfterUse;
+        }
+
+        
+        public boolean isDeleteAfterUse() {
+            return deleteAfterUse;
+        }
+
+        public File getSourceFile() {
+            return sourceFile;
+        }
+    }
 }

@@ -76,19 +76,9 @@ public class ImagePreview extends HttpServlet {
         }
 
         int width = NumberUtils.toInt(request.getParameter("width"));
+        width = Math.max(width, 0);
 		int height = NumberUtils.toInt(request.getParameter("height"));
-
-        if (width < 0) {
-            log.error("Invalid width: " + width);
-            send404(response);
-
-            return;
-        } else if (height < 0) {
-            log.error("Invalid height: " + height);
-            send404(response);
-
-            return;
-        }
+        height = Math.max(height, 0);
 
         CropRegion cropRegion = getCropRegion(request);
 

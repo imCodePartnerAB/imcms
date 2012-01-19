@@ -24,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.servlet.ImageHandling.SourceFile;
 
 public class RebuildImageCache extends HttpServlet {
     private static final long LOG_PROGRESS_INTERVAL_MILLISECONDS = 1 * 60 * 1000;
@@ -177,39 +178,40 @@ class RebuildImageCacheThread extends Thread {
                 format, imageDomainObject.getWidth(), imageDomainObject.getHeight(), imageDomainObject.getCropRegion(), 
                 imageDomainObject.getRotateDirection());
         
-        File imageFile = null;
-        boolean deleteFile = false;
+        SourceFile source = null;
         
         if (path != null) {
-            imageFile = ImageHandling.getLocalFile(path);
+            source = ImageHandling.getLocalFile(path);
         } else if (fileId > 0) {
-            imageFile = ImageHandling.getFileDocument(fileId);
-            deleteFile = true;
+            source = ImageHandling.getFileDocument(fileId);
         }
         
-        if (imageFile == null) {
+        if (source == null) {
             return;
         }
         
-        ImageInfo imageInfo = ImageOp.getImageInfo(config, imageFile);
-        if (imageInfo == null) {
-            log.warn(String.format("Failed to create cache of image, meta_id: %d, image_index: %d. Not an image", metaId, imageIndex));
-            
-            if (deleteFile) {
-                imageFile.delete();
+        try {
+            ImageInfo imageInfo = ImageOp.getImageInfo(config, source.getSourceFile());
+            if (imageInfo == null) {
+                log.warn(String.format("Failed to create cache of image, meta_id: %d, image_index: %d. Not an image", metaId, imageIndex));
+
+                return;
+            }
+
+            if (format == null || !format.isWritable()) {
+                format = Format.PNG;
+            }
+
+            File cacheFile = ImageCacheManager.storeImage(imageCacheObject, source.getSourceFile());
+
+            if (cacheFile == null) {
+                log.warn(String.format("Failed to create cache of image, meta_id: %d, image_index: %d", metaId, imageIndex));
             }
             
-            return;
-        }
-        
-        if (format == null || !format.isWritable()) {
-            format = Format.PNG;
-        }
-        
-        File cacheFile = ImageCacheManager.storeImage(imageCacheObject, imageFile, deleteFile);
-        
-        if (cacheFile == null) {
-            log.warn(String.format("Failed to create cache of image, meta_id: %d, image_index: %d", metaId, imageIndex));
+        } finally {
+            if (source.isDeleteAfterUse()) {
+                source.getSourceFile().delete();
+            }
         }
     }
 

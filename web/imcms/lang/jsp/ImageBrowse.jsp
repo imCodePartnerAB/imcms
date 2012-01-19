@@ -7,6 +7,7 @@
 	        imcode.server.Imcms,
 	        com.imcode.imcms.util.l10n.LocalizedMessage,
 	        imcode.util.Utility,
+            com.imcode.util.ImageSize,
 	        java.io.File,
 	        imcode.util.io.FileUtility,
 	        java.util.List, java.awt.image.BufferedImage, javax.imageio.ImageIO, imcode.server.document.textdocument.ImageDomainObject, imcode.server.document.textdocument.ImagesPathRelativePathImageSource, imcode.util.ImcmsImageUtils"
@@ -115,30 +116,32 @@ if (null != imageBrowsePage.getLabel() ) { %>
 				//String pathAndFileName = "/images" + file.getPath().split("images")[1].replace("\\", "/");
 				String filePath = file.getPath() ;
 				String srcWithoutCp = "/images" + filePath.split("images")[1].replace("\\", "/");
-				int orgWidth ;
-				int orgHeight ;
 				String imgStyle = "width:" + THUMB_BOUNDARIES + "px; height:" + THUMB_BOUNDARIES + "px;" ;
 				String imgDimensions = "?" ;
 				ImageDomainObject iDO = new ImageDomainObject() ;
 				String path = filePath.replace(new File(imagesRoot, "/").toString(), "") ;
 				ImagesPathRelativePathImageSource imageSource = new ImagesPathRelativePathImageSource(path) ;
 				iDO.setSourceAndClearSize(imageSource) ;
-				String previewSrc = ImcmsImageUtils.getImagePreviewUrl(iDO, cp) ;
 				try {
-					BufferedImage bufImage = ImageIO.read(file) ;
-					orgWidth  = bufImage.getWidth() ;
-					orgHeight = bufImage.getHeight() ;
+                    ImageSize realSize = iDO.getRealImageSize();
+                    int orgWidth = realSize.getWidth();
+                    int orgHeight = realSize.getHeight();
 					if (orgWidth > 0 && orgHeight > 0) {
 						if (orgWidth < THUMB_BOUNDARIES && orgHeight < THUMB_BOUNDARIES) {
+                            iDO.setWidth(orgWidth);
+                            iDO.setHeight(orgHeight);
 							imgStyle = "width:" + orgWidth + "px; height:" + orgHeight + "px;" ;
 						} else if (orgWidth > orgHeight) {
+                            iDO.setWidth(THUMB_BOUNDARIES);
 							imgStyle = "width:" + THUMB_BOUNDARIES + "px;" ;
 						} else {
+                            iDO.setHeight(THUMB_BOUNDARIES);
 							imgStyle = "height:" + THUMB_BOUNDARIES + "px;" ;
 						}
 						imgDimensions = orgWidth + " x " + orgHeight + ", " + ImageBrowse.getSimpleFileSize(file.length()) ;
 					}
 				} catch (Exception ignore) {}
+                String previewSrc = ImcmsImageUtils.getImagePreviewUrl(iDO, cp) ;
 				String value = FileUtility.relativeFileToString(FileUtility.relativizeFile(imagesRoot, file)) ;
 				String src = cp + srcWithoutCp ;
 				String fileName = file.getName(); %>

@@ -12,7 +12,7 @@ import com.imcode.imcms.mapping.ImageCacheMapper;
 import imcode.util.ImcmsImageUtils;
 import java.util.Collection;
 
-@Deprecated
+
 public class ImageCacheManager {
 	private static final Log log = LogFactory.getLog(ImageCacheManager.class);
 	
@@ -39,7 +39,7 @@ public class ImageCacheManager {
 		return imageFile;
 	}
 	
-	public static File storeImage(ImageCacheDomainObject imageCache, File imageFile, boolean deleteFile) {
+	public static File storeImage(ImageCacheDomainObject imageCache, File imageFile) {
 		ImageCacheMapper imageCacheMapper = Imcms.getServices().getImageCacheMapper();
 		
         imageCache.setFrequency(1);
@@ -49,7 +49,7 @@ public class ImageCacheManager {
             imageCacheMapper.deleteTextImageCacheLFUEntries();
         }
 		
-		File cacheFile = processImage(imageCache, imageFile, deleteFile);
+		File cacheFile = processImage(imageCache, imageFile);
 		if (cacheFile == null) {
 			return null;
 		}
@@ -71,7 +71,7 @@ public class ImageCacheManager {
 		}
 	}
 	
-	private static File processImage(ImageCacheDomainObject imageCache, File imageFile, boolean deleteFile) {
+	private static File processImage(ImageCacheDomainObject imageCache, File imageFile) {
 		File bucketsRootFile = IMAGE_CACHE_PATH;
 		
 		int bucket = getBucket(imageCache.getId());
@@ -96,10 +96,6 @@ public class ImageCacheManager {
 			
 			if (cacheFile.exists()) {
 				cacheFile.delete();
-			}
-		} finally {
-			if (deleteFile) {
-				imageFile.delete();
 			}
 		}
 		

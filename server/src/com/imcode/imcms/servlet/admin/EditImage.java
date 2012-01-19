@@ -27,11 +27,6 @@ public class EditImage extends HttpServlet {
                                  HttpServletResponse response) throws IOException, ServletException {
                 ImageDomainObject image = imageCommand.getImage();
 
-                if (image != null) {
-                    image.generateFilename();
-                    ImcmsImageUtils.generateImage(image, false);
-                }
-
                 request.setAttribute(REQUEST_ATTRIBUTE__IMAGE, image);
                 request.getRequestDispatcher(returnPath).forward(request, response);
             }
