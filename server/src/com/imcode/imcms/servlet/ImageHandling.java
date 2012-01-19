@@ -102,7 +102,8 @@ public class ImageHandling extends HttpServlet {
         
         if (path != null) {
             fileId = 0;
-        } else if (fileId > 0) {
+        }
+        if (fileId > 0 && metaId == null) {
             metaId = fileId;
         }
         

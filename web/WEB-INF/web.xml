@@ -292,8 +292,8 @@
     </servlet>
     
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.RebuildImageCache</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.RebuildImageCache</servlet-class>
+        <servlet-name>com.imcode.imcms.servlet.ClearImageCache</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.ClearImageCache</servlet-class>
     </servlet>
 
     <servlet>
@@ -557,8 +557,8 @@
     </servlet-mapping>
     
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.RebuildImageCache</servlet-name>
-        <url-pattern>/servlet/RebuildImageCache</url-pattern>
+        <servlet-name>com.imcode.imcms.servlet.ClearImageCache</servlet-name>
+        <url-pattern>/servlet/ClearImageCache</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

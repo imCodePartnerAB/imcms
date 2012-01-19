@@ -396,6 +396,48 @@ public class DocumentService {
         UserDomainObject internalUser = contentManagementSystem.getCurrentUser().getInternal();
         getDocumentMapper().deleteDocument(document.getInternal(), internalUser);
     }
+    
+    /**
+     * Removes all image cache entries.
+     * 
+     */
+    public void clearImageCache() {
+        getDocumentMapper().clearImageCache();
+    }
+    
+    /**
+     * Removes all image cache entries that have been created for a document that is identified 
+     * with {@code metaId}.
+     * 
+     * If a document contains 3 image fields (1, 2, 3), then the cache entries for these 3 images will be removed.
+     * 
+     * @param metaId    the ID of a text document
+     */
+    public void clearImageCache(int metaId) {
+        getDocumentMapper().clearImageCache(metaId);
+    }
+    
+    /**
+     * Removes a specific image cache entry that is identified with a document ID ({@code metaId}) and an image field 
+     * number ({@code no}).
+     * 
+     * @param metaId    the ID of a text document
+     * @param no        the ID of an image field
+     */
+    public void clearImageCache(int metaId, int no) {
+        getDocumentMapper().clearImageCache(metaId, no);
+    }
+    
+    /**
+     * Removes a specific image cache entry that is identified with a document ID ({@code metaId}) and a 
+     * {@link FileDocument} file ID ({@code fileNo}).
+     * 
+     * @param metaId    the ID of a text document
+     * @param fileNo    the file ID of a {@link FileDocument}
+     */
+    public void clearImageCache(int metaId, String fileNo) {
+        getDocumentMapper().clearImageCache(metaId, fileNo);
+    }
 
     static class ApiWrappingDocumentVisitor extends DocumentVisitor {
 

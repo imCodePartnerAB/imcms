@@ -10,6 +10,7 @@ import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.servlet.ImageCacheManager;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -264,7 +265,9 @@ public class DocumentMapper implements DocumentGetter {
     	if (document instanceof TextDocumentDomainObject) {
     		TextDocumentDomainObject textDoc = (TextDocumentDomainObject) document;
     		
-    		imcmsServices.getImageCacheMapper().deleteDocumentImagesCache(document.getId(), textDoc.getImages());
+            for (int imageIndex : textDoc.getImages().keySet()) {
+                ImageCacheManager.clearCacheEntries(textDoc.getId(), imageIndex);
+            }
     	}
     	
         final String metaIdStr = "" + document.getId();
@@ -516,6 +519,48 @@ public class DocumentMapper implements DocumentGetter {
                 document.removeCategoryId(category.getId());
             }
         }
+    }
+    
+    /**
+     * Removes all image cache entries.
+     * 
+     */
+    public void clearImageCache() {
+        ImageCacheManager.clearAllCacheEntries();
+    }
+    
+    /**
+     * Removes all image cache entries that have been created for a document that is identified 
+     * with {@code metaId}.
+     * 
+     * If a document contains 3 image fields (1, 2, 3), then the cache entries for these 3 images will be removed.
+     * 
+     * @param metaId    the ID of a text document
+     */
+    public void clearImageCache(int metaId) {
+        ImageCacheManager.clearCacheEntries(metaId);
+    }
+    
+    /**
+     * Removes a specific image cache entry that is identified with a document ID ({@code metaId}) and an image field 
+     * number ({@code no}).
+     * 
+     * @param metaId    the ID of a text document
+     * @param no        the ID of an image field
+     */
+    public void clearImageCache(int metaId, int no) {
+        ImageCacheManager.clearCacheEntries(metaId, no);
+    }
+    
+    /**
+     * Removes a specific image cache entry that is identified with a document ID ({@code metaId}) and a 
+     * {@link FileDocument} file ID ({@code fileNo}).
+     * 
+     * @param metaId    the ID of a text document
+     * @param fileNo    the file ID of a {@link FileDocumentDomainObject}
+     */
+    public void clearImageCache(int metaId, String fileNo) {
+        ImageCacheManager.clearCacheEntries(metaId, fileNo);
     }
 
     public static class TextDocumentMenuIndexPair {
