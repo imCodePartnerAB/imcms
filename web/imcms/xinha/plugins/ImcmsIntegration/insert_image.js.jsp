@@ -61,9 +61,6 @@ Xinha.prototype._insertImage = function(image)
                     case "rangle":
                         rotateAngle = value;
                         break;
-                    case "gen_file":
-                        genFile = value;
-                        break;
                     default:
                         break;
                 }
@@ -88,10 +85,6 @@ Xinha.prototype._insertImage = function(image)
             '<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>'  : (image.style.marginRight || image.hspace || '').replace(/px/, ''),
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>'  : image.id || image.name
         };
-
-        if (genFile) {
-            outparam['<%= EditImage.REQUEST_PARAMETER__GENFILE %>'] = genFile;
-        }
     }
     var queryString = '';
     for ( var i in outparam )

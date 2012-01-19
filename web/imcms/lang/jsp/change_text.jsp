@@ -491,7 +491,10 @@ function initEditor($) {
 }
 
 function startCkEditor($) {
-	initCkEditor($, 'text', '<%= LanguageMapper.convert639_2to639_1(Utility.getLoggedOnUser(request).getLanguageIso639_2()) %>', '<%= (width > 0) ? (width+18) + "" : "" %>', 'imCMS_ALL') ;
+    var customConfig = {
+        imcmsMetaId: '<%= textEditPage.getDocumentId() %>'
+    };
+	initCkEditor($, 'text', '<%= LanguageMapper.convert639_2to639_1(Utility.getLoggedOnUser(request).getLanguageIso639_2()) %>', '<%= (width > 0) ? (width+18) + "" : "" %>', 'imCMS_ALL', customConfig) ;
 }
 
 function setTextAreaSize($) {

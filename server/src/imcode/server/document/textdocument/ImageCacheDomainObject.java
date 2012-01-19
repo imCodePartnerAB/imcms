@@ -3,6 +3,7 @@ package imcode.server.document.textdocument;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.util.image.Format;
+import imcode.util.image.Resize;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -21,12 +22,16 @@ public class ImageCacheDomainObject implements Serializable {
 	
 	private String id;
 	private String resource;
+    private Integer metaId;
+    private Integer no;
+    private String fileNo;
 	private short type;
 	private int fileSize;
 	private int frequency;
 	private Format format;
 	private int width;
 	private int height;
+    private Resize resize;
 	CropRegion cropRegion;
 	private RotateDirection rotateDirection;
     private Timestamp createdDate = new Timestamp(new Date().getTime());
@@ -36,7 +41,7 @@ public class ImageCacheDomainObject implements Serializable {
 	}
     
 	public ImageCacheDomainObject(String id, String resource,  
-			short type, int fileSize, int frequency, Format format, int width, int height, 
+			short type, int fileSize, int frequency, Format format, int width, int height, Resize resize, 
 			CropRegion cropRegion, RotateDirection rotateDirection, Timestamp createdDate) {
 		this.id = id;
 		this.resource = resource;
@@ -58,6 +63,10 @@ public class ImageCacheDomainObject implements Serializable {
 		builder.append((format != null ? format.getOrdinal() : null));
 		builder.append(width);
 		builder.append(height);
+        
+        if (resize != null) {
+            builder.append(resize.getOrdinal());
+        }
 		
 		if (cropRegion.isValid()) {
 			builder.append(cropRegion.getCropX1());
@@ -123,6 +132,14 @@ public class ImageCacheDomainObject implements Serializable {
 		this.height = height;
 	}
 
+    public Resize getResize() {
+        return resize;
+    }
+
+    public void setResize(Resize resize) {
+        this.resize = resize;
+    }
+
 	public CropRegion getCropRegion() {
 		return cropRegion;
 	}
@@ -161,6 +178,30 @@ public class ImageCacheDomainObject implements Serializable {
 
     public void setRotateDirection(RotateDirection rotateDirection) {
         this.rotateDirection = rotateDirection;
+    }
+
+    public String getFileNo() {
+        return fileNo;
+    }
+
+    public void setFileNo(String fileNo) {
+        this.fileNo = fileNo;
+    }
+
+    public Integer getMetaId() {
+        return metaId;
+    }
+
+    public void setMetaId(Integer metaId) {
+        this.metaId = metaId;
+    }
+
+    public Integer getNo() {
+        return no;
+    }
+
+    public void setNo(Integer no) {
+        this.no = no;
     }
 
     @Override

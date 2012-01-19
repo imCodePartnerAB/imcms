@@ -22,6 +22,7 @@ public class ImageDomainObject implements Serializable {
 
     private ImageSource source = new NullImageSource();
 
+    private Integer imageIndex;
     private String name = "";
     private int width;
     private int height;
@@ -77,6 +78,14 @@ public class ImageDomainObject implements Serializable {
     	}
     	
     	return null;
+    }
+
+    public Integer getImageIndex() {
+        return imageIndex;
+    }
+
+    public void setImageIndex(Integer imageIndex) {
+        this.imageIndex = imageIndex;
     }
 
     public int getWidth() {

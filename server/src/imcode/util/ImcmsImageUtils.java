@@ -48,19 +48,19 @@ public class ImcmsImageUtils {
     private ImcmsImageUtils() {
     }
 
-    public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
-        return getImageHtmlTag(image, request, attributes, false);
+    public static String getImageHtmlTag(Integer metaId, ImageDomainObject image, HttpServletRequest request, Properties attributes) {
+        return getImageHtmlTag(metaId, image, request, attributes, false);
     }
 
-    public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes, boolean absoluteUrl) {
-        return getImageHtmlTag(image, request, attributes, absoluteUrl, false);
+    public static String getImageHtmlTag(Integer metaId, ImageDomainObject image, HttpServletRequest request, Properties attributes, boolean absoluteUrl) {
+        return getImageHtmlTag(metaId, image, request, attributes, absoluteUrl, false);
     }
 
     public static String getImagePreviewHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
-        return getImageHtmlTag(image, request, attributes, false, true);
+        return getImageHtmlTag(null, image, request, attributes, false, true);
     }
     
-    private static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes,
+    private static String getImageHtmlTag(Integer metaId, ImageDomainObject image, HttpServletRequest request, Properties attributes,
             boolean absoluteUrl, boolean forPreview) {
         
         StringBuffer imageTagBuffer = new StringBuffer(96);
@@ -78,7 +78,7 @@ public class ImcmsImageUtils {
             if (forPreview) {
                 urlEscapedImageUrl = getImagePreviewUrl(image, request.getContextPath());
             } else {
-                urlEscapedImageUrl = getImageUrl(image, request.getContextPath());
+                urlEscapedImageUrl = getImageUrl(metaId, image, request.getContextPath());
             }
 
             if (absoluteUrl) {
@@ -155,15 +155,15 @@ public class ImcmsImageUtils {
         return imageTagBuffer.toString();
     }
     
-    public static String getImageUrl(ImageDomainObject image, String contextPath) {
-        return getImageUrl(image, contextPath, false);
+    public static String getImageUrl(Integer metaId, ImageDomainObject image, String contextPath) {
+        return getImageUrl(metaId, image, contextPath, false);
     }
     
-    public static String getImageUrl(ImageDomainObject image, String contextPath, boolean includeQueryParams) {
+    public static String getImageUrl(Integer metaId, ImageDomainObject image, String contextPath, boolean includeQueryParams) {
         String generatedFilename = image.getGeneratedFilename();
         
         if (generatedFilename == null) {
-            return getImageHandlingUrl(image, contextPath);
+            return getImageHandlingUrl(metaId, image, contextPath);
         }
         
         File generatedFile = image.getGeneratedFile();
@@ -179,32 +179,46 @@ public class ImcmsImageUtils {
         String url = image.getGeneratedUrlPath(contextPath);
 
         if (includeQueryParams) {
-            url += getImageQueryString(image, false);
+            url += getImageQueryString(metaId, image, false);
         }
 
         return url;
     }
 
-    public static String getImageHandlingUrl(ImageDomainObject image, String contextPath) {
+    public static String getImageHandlingUrl(Integer metaId, ImageDomainObject image, String contextPath) {
         
-        return contextPath + "/imagehandling" + getImageQueryString(image, false);
+        return contextPath + "/imagehandling" + getImageQueryString(metaId, image, false);
     }
 
     public static String getImagePreviewUrl(ImageDomainObject image, String contextPath) {
 
-        return contextPath + "/servlet/ImagePreview" + getImageQueryString(image, true);
+        return contextPath + "/servlet/ImagePreview" + getImageQueryString(null, image, true);
     }
     
-    private static String getImageQueryString(ImageDomainObject image, boolean forPreview) {
+    private static String getImageQueryString(Integer metaId, ImageDomainObject image, boolean forPreview) {
         StringBuilder builder = new StringBuilder("?");
         
         if (!forPreview && image.getSource() instanceof FileDocumentImageSource) {
             FileDocumentImageSource source = (FileDocumentImageSource) image.getSource();
+            FileDocumentDomainObject fileDocument = source.getFileDocument();
         	builder.append("file_id=");
-        	builder.append(source.getFileDocument().getId());
+        	builder.append(fileDocument.getId());
+            builder.append("&file_no=");
+            builder.append(fileDocument.getDefaultFileId());
         } else {
         	builder.append("path=");
         	builder.append(Utility.encodeUrl(image.getUrlPathRelativeToContextPath()));
+        }
+        
+        if (!forPreview) {
+            builder.append("&meta_id=");
+            builder.append(metaId);
+            
+            Integer imageIndex = image.getImageIndex();
+            if (imageIndex != null) {
+                builder.append("&no=");
+                builder.append(imageIndex);
+            }
         }
         
         if (image.getWidth() > 0) {
@@ -316,7 +330,7 @@ public class ImcmsImageUtils {
             }
             
 
-            generateImage(inputFile, genFile, image.getFormat(), image.getWidth(), image.getHeight(),
+            generateImage(inputFile, genFile, image.getFormat(), image.getWidth(), image.getHeight(), null, 
                     image.getCropRegion(), image.getRotateDirection());
 
         } catch (Exception ex) {
@@ -334,8 +348,8 @@ public class ImcmsImageUtils {
         }
     }
 
-    public static boolean generateImage(File imageFile, File destFile, Format format, int width, int height,
-            CropRegion cropRegion, RotateDirection rotateDir) {
+    public static boolean generateImage(File imageFile, File destFile, Format format, int width, int height, 
+            Resize resize, CropRegion cropRegion, RotateDirection rotateDir) {
 
         String destPath;
         try {
@@ -366,7 +380,10 @@ public class ImcmsImageUtils {
             if (width > 0 || height > 0) {
                 Integer w = (width > 0 ? width : null);
                 Integer h = (height > 0 ? height : null);
-                Resize resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
+                
+                if (resize == null) {
+                    resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
+                }
 
                 operation.filter(Filter.LANCZOS);
                 operation.resize(w, h, resize);
@@ -384,13 +401,16 @@ public class ImcmsImageUtils {
         }
     }
 
-    public static String getImageETag(String path, File imageFile, Format format, int width, int height,
-            CropRegion cropRegion, RotateDirection rotateDirection) {
+    public static String getImageETag(String path, File imageFile, String url, int fileId, String fileNo, 
+            Format format, int width, int height, CropRegion cropRegion, 
+            RotateDirection rotateDirection) {
 
         StringBuilder builder = new StringBuilder();
         builder.append(path);
-        builder.append(imageFile.length());
-        builder.append(imageFile.lastModified());
+        if (imageFile != null) {
+            builder.append(imageFile.length());
+            builder.append(imageFile.lastModified());
+        }
         builder.append(width);
         builder.append(height);
         builder.append(rotateDirection.name());
@@ -403,6 +423,16 @@ public class ImcmsImageUtils {
             builder.append(cropRegion.getCropY1());
             builder.append(cropRegion.getCropX2());
             builder.append(cropRegion.getCropY2());
+        }
+        
+        if (url != null) {
+            builder.append(url);
+        }
+        if (fileId > 0) {
+            builder.append(fileId);
+        }
+        if (fileNo != null) {
+            builder.append(fileNo);
         }
 
         return "W/\"" + DigestUtils.md5Hex(builder.toString()) + "\"";

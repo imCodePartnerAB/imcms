@@ -1,8 +1,7 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.mapping.DocumentStoringVisitor;
 import imcode.server.Imcms;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
@@ -11,8 +10,7 @@ import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
-import imcode.util.io.FileInputStreamSource;
-import imcode.util.io.InputStreamSource;
+import imcode.util.image.Resize;
 
 import java.io.*;
 import java.net.URLDecoder;
@@ -81,9 +79,37 @@ public class ImageHandling extends HttpServlet {
 		String path = StringUtils.trimToNull(request.getParameter("path"));
 		String url = StringUtils.trimToNull(request.getParameter("url"));
 		int fileId = NumberUtils.toInt(request.getParameter("file_id"));
+        String fileNo = StringUtils.trimToNull(request.getParameter("file_no"));
 		
+        if (fileId <= 0) {
+            fileNo = null;
+        }
+        if (fileNo != null && fileNo.length() > FileDocumentFile.ID_LENGTH) {
+            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+            return;
+        }
+        
+        Integer metaId = null;
+        Integer no = null;
+        try {
+            String metaIdStr = StringUtils.trimToNull(request.getParameter("meta_id"));
+            metaId = Integer.parseInt(metaIdStr);
+            
+            String noStr = StringUtils.trimToNull(request.getParameter("no"));
+            no = Integer.parseInt(noStr);
+        } catch (NumberFormatException ex) {
+        }
+        
+        if (path != null) {
+            fileId = 0;
+        } else if (fileId > 0) {
+            metaId = fileId;
+        }
+        
 		String formatParam = StringUtils.trimToEmpty(request.getParameter("format")).toLowerCase();
 		Format format = Format.findFormatByExtension(formatParam);
+        String resizeParam = StringUtils.trimToNull(request.getParameter("resize"));
+        Resize resize = Resize.getByName(resizeParam);
 		
 		int width = NumberUtils.toInt(request.getParameter("width"));
 		int height = NumberUtils.toInt(request.getParameter("height"));
@@ -104,38 +130,62 @@ public class ImageHandling extends HttpServlet {
 		
 		int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
 		RotateDirection rotateDirection = RotateDirection.getByAngleDefaultIfNull(rotateAngle);
-		 
-		ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, format, width,
-                height, cropRegion, rotateDirection);
+		
+		ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, fileNo, format, width,
+                height, resize, cropRegion, rotateDirection, metaId, no);
 		String cacheId = imageCache.getId();
 
-        String etag = null;
+        File localImageFile = null;
+        if (path != null || fileId > 0) {
+            // Special case for local image file, so we could check for file modification.
+            SourceFile source;
+            if (path != null) {
+                source = getLocalFile(path);
+            } else {
+                source = getFileDocument(fileId, fileNo);
+            }
+
+            if (source != null) {
+                localImageFile = source.getSourceFile();
+            }
+        }
+        
+        String etag = ImcmsImageUtils.getImageETag(path, localImageFile, url, fileId, fileNo, 
+                format, width, height, cropRegion, rotateDirection);
+        
+        // Try to reuse an existing cache file
 		File cacheFile = ImageCacheManager.getCacheFile(imageCache);
 
 		if (cacheFile != null) {
-            SourceFile source = null;
+            // No need to send the cache file contents if it hasn't changed 
+            // based on the Etag header that we send.
+            String ifNoneMatch = request.getHeader("If-None-Match");
+            if (etag.equals(ifNoneMatch)) {
+                response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                return;
+            }
             
-            if (path != null && (source = getLocalFile(path)) != null) {
-                etag = ImcmsImageUtils.getImageETag(path, source.getSourceFile(), format, width, height, cropRegion, rotateDirection);
-
-                String ifNoneMatch = request.getHeader("If-None-Match");
-                if (etag.equals(ifNoneMatch)) {
-                    response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-                    return;
+            boolean useCacheFile = true;
+            
+            if (path != null || fileId > 0) {
+                if (localImageFile == null || localImageFile.lastModified() > cacheFile.lastModified()) {
+                    // Don't use the cache file if the local image is missing or has been modified.
+                    useCacheFile = false;
                 }
             }
-			
-            if (source == null || source.getSourceFile().lastModified() <= cacheFile.lastModified()) {
+            
+            if (useCacheFile) {
                 writeImageToResponse(cacheId, cacheFile, format, desiredFilename, etag, response);
                 return;
             }
 		}
-		
+        
+		// The requested image hasn't been cached. Retrieve and generate a new cache file for it.
         SourceFile source;
 		if (path != null) {
             source = getLocalFile(path);
 		} else if (fileId > 0) {
-            source = getFileDocument(fileId);
+            source = getFileDocument(fileId, fileNo);
 		} else {
             source = getExternalFile(url);
 		}
@@ -146,21 +196,31 @@ public class ImageHandling extends HttpServlet {
 		}
 		
         try {
-            ImageInfo imageInfo = ImageOp.getImageInfo(Imcms.getServices().getConfig(), source.getSourceFile());
-            if (imageInfo == null || (format == null && !imageInfo.getFormat().isWritable())) {
-
-                sendNotFound(response);
-                return;
+            if (format == null) {
+                ImageInfo imageInfo = ImageOp.getImageInfo(Imcms.getServices().getConfig(), source.getSourceFile());
+                
+                if (imageInfo == null) {
+                    log.error("Failed to determine image info for file: " + source.getSourceFile());
+                    sendNotFound(response);
+                    return;
+                }
+                
+                format = imageInfo.getFormat();
+                
+                if (!format.isWritable()) {
+                    sendNotFound(response);
+                    return;
+                }
             }
-
+            
             cacheFile = ImageCacheManager.storeImage(imageCache, source.getSourceFile());
             if (cacheFile == null) {
+                log.error("Failed to generate/store cache file for image: " + source.getSourceFile());
                 sendNotFound(response);
                 return;
             }
 
-            Format outputFormat = (format != null ? format : imageInfo.getFormat());
-            writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, etag, response);
+            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, etag, response);
             
         } finally {
             if (source.isDeleteAfterUse()) {
@@ -208,15 +268,20 @@ public class ImageHandling extends HttpServlet {
 		}
 	}
 	
-	static ImageCacheDomainObject createImageCacheObject(String path, String url, int fileId, 
-			Format format, int width, int height, CropRegion cropRegion, RotateDirection rotateDirection) {
+	static ImageCacheDomainObject createImageCacheObject(String path, String url, int fileId, String fileNo, 
+			Format format, int width, int height, Resize resize, CropRegion cropRegion, RotateDirection rotateDirection, 
+            Integer metaId, Integer no) {
 		ImageCacheDomainObject imageCache = new ImageCacheDomainObject();
 		
 		if (path != null) {
 			imageCache.setResource(path);
 			imageCache.setType(ImageCacheDomainObject.TYPE_PATH);
 		} else if (fileId > 0) {
-			imageCache.setResource(Integer.toString(fileId));
+            String res = Integer.toString(fileId);
+            if (fileNo != null) {
+                res += "/" + fileNo;
+            }
+			imageCache.setResource(res);
 			imageCache.setType(ImageCacheDomainObject.TYPE_FILE_DOCUMENT);
 		} else if (url != null) {
 			imageCache.setResource(url);
@@ -228,9 +293,14 @@ public class ImageHandling extends HttpServlet {
 		imageCache.setFormat(format);
 		imageCache.setWidth(width);
 		imageCache.setHeight(height);
+        imageCache.setResize(resize);
 		imageCache.setCropRegion(cropRegion);
 		imageCache.setRotateDirection(rotateDirection);
 		imageCache.generateId();
+        
+        imageCache.setMetaId(metaId);
+        imageCache.setNo(no);
+        imageCache.setFileNo(fileNo);
 		
 		return imageCache;
 	}
@@ -304,53 +374,13 @@ public class ImageHandling extends HttpServlet {
 		return null;
 	}
 	
-	static SourceFile getFileDocument(int metaId) {
-		DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(metaId);
-		
-		if (document == null || !(document instanceof FileDocumentDomainObject)) {
-			return null;
-		}
-		
-		FileDocumentDomainObject fileDocument = (FileDocumentDomainObject) document;
-		FileDocumentFile documentFile = fileDocument.getDefaultFile();
-		if (documentFile == null) {
-			return null;
-		}
-		
-		File docFile = null;
-        boolean deleteAfterUse = false;
-		InputStream input = null;
-		OutputStream output = null;
+	static SourceFile getFileDocument(int metaId, String fileNo) {
+        File file = DocumentStoringVisitor.getFileForFileDocumentFile(metaId, fileNo);
+        if (!file.exists()) {
+            return null;
+        }
         
-		try {
-            InputStreamSource inputStreamSource = documentFile.getInputStreamSource();
-            
-            if (inputStreamSource instanceof FileInputStreamSource) {
-                docFile = ((FileInputStreamSource) inputStreamSource).getFile();
-            } else {
-                deleteAfterUse = true;
-                docFile = File.createTempFile("doc_file", ".tmp");
-                output = new BufferedOutputStream(new FileOutputStream(docFile));
-                input = inputStreamSource.getInputStream();
-
-                IOUtils.copy(input, output);
-                output.close();
-            }
-            
-			return new SourceFile(docFile, deleteAfterUse);
-			
-		} catch (Exception ex) {
-			log.warn(ex.getMessage(), ex);
-			
-			if (deleteAfterUse && docFile != null) {
-				docFile.delete();
-			}
-		} finally {
-			IOUtils.closeQuietly(output);
-			IOUtils.closeQuietly(input);
-		}
-		
-		return null;
+        return new SourceFile(file, false);
 	}
 	
 	private static void drainInput(InputStream input) throws IOException {

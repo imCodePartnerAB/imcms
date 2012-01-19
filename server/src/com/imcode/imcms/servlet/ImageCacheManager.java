@@ -84,7 +84,8 @@ public class ImageCacheManager {
 		
 		try {
 			boolean result = ImcmsImageUtils.generateImage(imageFile, cacheFile, imageCache.getFormat(),
-                    imageCache.getWidth(), imageCache.getHeight(), imageCache.getCropRegion(), imageCache.getRotateDirection());
+                    imageCache.getWidth(), imageCache.getHeight(), imageCache.getResize(), 
+                    imageCache.getCropRegion(), imageCache.getRotateDirection());
 			
 			if (!result && cacheFile.exists()) {
                 cacheFile.delete();

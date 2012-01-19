@@ -75,7 +75,7 @@ public class TextDocument extends Document {
         Transformer fromDomainToAPITransformer = new Transformer() {
             public Object transform(Object o) {
                 ImageDomainObject tempImage = (ImageDomainObject) o;
-                return new Image(tempImage);
+                return new Image(tempImage, getInternalTextDocument().getId());
             }
         };
 
@@ -182,7 +182,7 @@ public class TextDocument extends Document {
     public Image getImage(int imageIndexInDocument) {
         ImageDomainObject internalImage = getInternalTextDocument().getImage(imageIndexInDocument);
         if (null != internalImage) {
-            return new Image(internalImage);
+            return new Image(internalImage, getInternalTextDocument().getId());
         } else {
             return null;
         }

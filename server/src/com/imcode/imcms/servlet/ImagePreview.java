@@ -85,7 +85,8 @@ public class ImagePreview extends HttpServlet {
         int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
         RotateDirection rotateDirection = RotateDirection.getByAngleDefaultIfNull(rotateAngle);
 
-        String etag = ImcmsImageUtils.getImageETag(path, imageFile, format, width, height, cropRegion, rotateDirection);
+        String etag = ImcmsImageUtils.getImageETag(path, imageFile, null, 0, null, 
+                format, width, height, cropRegion, rotateDirection);
         String ifNoneMatch = request.getHeader("If-None-Match");
 
         if (etag.equals(ifNoneMatch)) {
@@ -98,7 +99,7 @@ public class ImagePreview extends HttpServlet {
 
         try {
             boolean result = ImcmsImageUtils.generateImage(imageFile, tempFile, format,
-                    width, height, cropRegion, rotateDirection);
+                    width, height, null, cropRegion, rotateDirection);
 
             if (result) {
                 String contentType = (format != null ? format.getMimeType() : "application/octet-stream");

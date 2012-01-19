@@ -530,7 +530,7 @@ public class TagParser {
         if ( !( imageSource instanceof FileDocumentImageSource )
              || imageMode
              || user.canAccess(( (FileDocumentImageSource) imageSource ).getFileDocument()) ) {
-            imageTag = ImcmsImageUtils.getImageHtmlTag(image, httpServletRequest, attributes);
+            imageTag = ImcmsImageUtils.getImageHtmlTag(textDocumentToUse.getId(), image, httpServletRequest, attributes);
         }
 
         if ( imageMode && (textDocumentToUse.getId() == document.getId())) {

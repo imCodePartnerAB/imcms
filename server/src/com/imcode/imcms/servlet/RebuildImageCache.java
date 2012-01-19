@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.servlet.ImageHandling.SourceFile;
+import imcode.server.document.FileDocumentDomainObject;
 
 public class RebuildImageCache extends HttpServlet {
     private static final long LOG_PROGRESS_INTERVAL_MILLISECONDS = 1 * 60 * 1000;
@@ -164,26 +165,29 @@ class RebuildImageCacheThread extends Thread {
         ImageSource imageSource = imageDomainObject.getSource();
         
         int fileId = 0;
+        String fileNo = null;
         String path = null;
         
         if (imageSource instanceof FileDocumentImageSource) {
-            fileId = ((FileDocumentImageSource) imageSource).getFileDocument().getId();
+            FileDocumentDomainObject fileDocument = ((FileDocumentImageSource) imageSource).getFileDocument();
+            fileId = fileDocument.getId();
+            fileNo = fileDocument.getDefaultFileId();
         } else {
             path = imageDomainObject.getUrlPathRelativeToContextPath();
         }
         
         Format format = imageDomainObject.getFormat();
         
-        ImageCacheDomainObject imageCacheObject = ImageHandling.createImageCacheObject(path, null, fileId,  
-                format, imageDomainObject.getWidth(), imageDomainObject.getHeight(), imageDomainObject.getCropRegion(), 
-                imageDomainObject.getRotateDirection());
+        ImageCacheDomainObject imageCacheObject = ImageHandling.createImageCacheObject(path, null, fileId, fileNo,  
+                format, imageDomainObject.getWidth(), imageDomainObject.getHeight(), null, imageDomainObject.getCropRegion(), 
+                imageDomainObject.getRotateDirection(), null, null);
         
         SourceFile source = null;
         
         if (path != null) {
             source = ImageHandling.getLocalFile(path);
         } else if (fileId > 0) {
-            source = ImageHandling.getFileDocument(fileId);
+            source = ImageHandling.getFileDocument(fileId, fileNo);
         }
         
         if (source == null) {

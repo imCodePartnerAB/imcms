@@ -194,6 +194,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void setImage( int imageIndex, ImageDomainObject image ) {
+        image.setImageIndex(imageIndex);
         getImagesMap().put( new Integer( imageIndex ), image ) ;
     }
 

@@ -34,6 +34,7 @@ import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.servlet.ImageCacheManager;
 import imcode.server.DatabaseVendor;
+import imcode.util.image.Resize;
 
 public class ImageCacheMapper {
     private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
@@ -47,7 +48,7 @@ public class ImageCacheMapper {
 		this.database = database;
 	}
 	
-	public void deleteDocumentImagesCache(int metaId, Map<Integer, ImageDomainObject> images) {
+    public void deleteDocumentImagesCache(int metaId, Map<Integer, ImageDomainObject> images) {
 		Set<String> cacheIds = new HashSet<String>();
 		
 		for (int imageIndex : images.keySet()) {
@@ -319,6 +320,7 @@ public class ImageCacheMapper {
 	
 	private static Object[][] getColumnNamesAndValues(ImageCacheDomainObject cache) {
 		Format format = cache.getFormat();
+        Resize resize = cache.getResize();
 		
 		CropRegion region = cache.getCropRegion();
 		boolean valid = region.isValid();
@@ -332,12 +334,16 @@ public class ImageCacheMapper {
 				{ "format", (format != null ? format.getOrdinal() : 0) }, 
 				{ "width", cache.getWidth() }, 
 				{ "height", cache.getHeight() }, 
+                { "resize", (resize != null ? resize.getOrdinal() : null) },
 				{ "crop_x1", (valid ? region.getCropX1() : -1) }, 
 				{ "crop_y1", (valid ? region.getCropY1() : -1) }, 
 				{ "crop_x2", (valid ? region.getCropX2() : -1) }, 
 				{ "crop_y2", (valid ? region.getCropY2() : -1) }, 
 				{ "rotate_angle", cache.getRotateDirection().getAngle() }, 
-				{ "created_dt", cache.getCreatedDate() }
+				{ "created_dt", cache.getCreatedDate() }, 
+                { "meta_id", cache.getMetaId() }, 
+                { "no", cache.getNo() }, 
+                { "file_no", cache.getFileNo() }
 		};
 	}
 }

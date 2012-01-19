@@ -131,6 +131,8 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     public static class FileDocumentFile implements Cloneable, Serializable {
+        
+        public static final int ID_LENGTH = 100;
 
         private String id;
         private String filename;

@@ -10,16 +10,19 @@ import java.io.IOException;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import imcode.util.ImcmsImageUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 public class EditImage extends HttpServlet {
 
     private static final String REQUEST_ATTRIBUTE__IMAGE = EditImage.class+".image";
+    private static final String REQUEST_ATTRIBUTE__META_ID = EditImage.class + ".metaId";
     public static final String REQUEST_PARAMETER__RETURN = "return";
-    public static final String REQUEST_PARAMETER__GENFILE = "gen_file";
+    public static final String REQUEST_PARAMETER__META_ID = "meta_id";
 
     public void doGet(final HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
 
+        final int metaId = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__META_ID));
         final String returnPath = request.getParameter(REQUEST_PARAMETER__RETURN);
         final ImageRetrievalCommand imageCommand = new ImageRetrievalCommand();
         DispatchCommand returnCommand = new DispatchCommand() {
@@ -28,6 +31,10 @@ public class EditImage extends HttpServlet {
                 ImageDomainObject image = imageCommand.getImage();
 
                 request.setAttribute(REQUEST_ATTRIBUTE__IMAGE, image);
+                if (metaId > 0) {
+                    request.setAttribute(REQUEST_ATTRIBUTE__META_ID, metaId);
+                }
+                
                 request.getRequestDispatcher(returnPath).forward(request, response);
             }
         };
@@ -42,6 +49,10 @@ public class EditImage extends HttpServlet {
     
     public static ImageDomainObject getImage(HttpServletRequest request) {
         return (ImageDomainObject) request.getAttribute(REQUEST_ATTRIBUTE__IMAGE);
+    }
+    
+    public static Integer getMetaId(HttpServletRequest request) {
+        return (Integer) request.getAttribute(REQUEST_ATTRIBUTE__META_ID);
     }
 
     private static class ImageRetrievalCommand implements Handler<ImageDomainObject> {

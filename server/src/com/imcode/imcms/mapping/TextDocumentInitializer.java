@@ -196,6 +196,7 @@ public class TextDocumentInitializer {
                             Integer imageIndex = new Integer(rs.getInt(2));
                             ImageDomainObject image = new ImageDomainObject();
 
+                            image.setImageIndex(imageIndex);
                             image.setName(rs.getString(3));
                             String imageSource = rs.getString(4);
                             image.setWidth(rs.getInt(5));

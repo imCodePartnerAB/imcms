@@ -15,16 +15,36 @@ import java.util.Properties;
 public class Image {
 
     private ImageDomainObject internalImage;
+    private Integer metaId;
 
-    Image(ImageDomainObject internalImage) {
+    Image(ImageDomainObject internalImage, Integer metaId) {
         this.internalImage = internalImage;
+        this.metaId = metaId;
     }
 
     /**
      * Constructs an empty image.
      */
     public Image() {
-        this( new ImageDomainObject());
+        this( new ImageDomainObject(), null);
+    }
+
+    /**
+     * Returns the ID of a document that this image is part of.
+     * 
+     * @return ID of a document
+     */
+    public Integer getMetaId() {
+        return metaId;
+    }
+
+    /**
+     * Sets the ID of a document that this image is part of.
+     * 
+     * @param metaId ID of a document
+     */
+    public void setMetaId(Integer metaId) {
+        this.metaId = metaId;
     }
 
     /**
@@ -258,7 +278,7 @@ public class Image {
      * @return a string with html image tag produced from this image
      */
     public String toHtmlUrl(String contextPath) {
-        return StringEscapeUtils.escapeHtml(ImcmsImageUtils.getImageUrl(internalImage, contextPath));
+        return StringEscapeUtils.escapeHtml(ImcmsImageUtils.getImageUrl(metaId, internalImage, contextPath));
     }
 
     /**
@@ -269,7 +289,7 @@ public class Image {
      * @return a string representing the image as html img tag
      */
     public String toHtmlTag(HttpServletRequest request, Properties attributes, boolean absolute) {
-        return ImcmsImageUtils.getImageHtmlTag(internalImage, request, attributes, absolute);
+        return ImcmsImageUtils.getImageHtmlTag(metaId, internalImage, request, attributes, absolute);
     }
 
     /**

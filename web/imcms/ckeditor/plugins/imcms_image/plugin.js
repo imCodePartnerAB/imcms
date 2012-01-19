@@ -16,7 +16,7 @@
 			
 			if (image) {
 				var src = image.getAttribute('src') ;
-				var url, format, width, height, cropX1, cropY1, cropX2, cropY2, rotateAngle, queryIndex, genFile ;
+				var url, format, width, height, cropX1, cropY1, cropX2, cropY2, rotateAngle, queryIndex, genFile, metaId ;
 				
 				if (src && (queryIndex = src.indexOf('?')) != -1) {
 					var parts = src.substring(queryIndex + 1).split('&') ;
@@ -65,6 +65,9 @@
                             case 'gen_file':
                                 genFile = value;
                                 break;
+                            case 'meta_id':
+                                metaId = value;
+                                break;
 							default:
 								break ;
 						}
@@ -94,6 +97,14 @@
                 }
 			}
 			
+            if (metaId == null) {
+                metaId = editor.config.imcmsMetaId;
+            }
+            if (metaId != null) {
+                outparam = outparam || {};
+                outparam['meta_id'] = metaId;
+            }
+            
 			var queryString = '' ;
 			
 			for (var p in outparam) {

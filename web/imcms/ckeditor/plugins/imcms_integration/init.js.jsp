@@ -31,7 +31,7 @@ var CKEDITOR_otherLinkParams    = [ '<%= StringUtils.join(EditLink.OTHER_PARAMET
 var contextPath                 = '<%= cp %>' ;
 
 
-function initCkEditor($, id, lang, width, toolBarSet) {
+function initCkEditor($, id, lang, width, toolBarSet, customConfig) {
 	var isInlineEditing = (id.toLowerCase().indexOf('inline') != -1) ;
 	var oConfig = {
 		customConfig       : '<%= ckPluginImcmsPath + "imcms_config.js.jsp?" + System.currentTimeMillis() %>' + (isInlineEditing ? '&isInlineEditing=true' : ''),
@@ -43,6 +43,7 @@ function initCkEditor($, id, lang, width, toolBarSet) {
 		autoGrow_minHeight : 300,
 		autoGrow_maxHeight : maxH--%>
 	} ;
+    oConfig = $.extend({}, oConfig, customConfig);
 	if (isInlineEditing) {
 		var iOffset = (/.*SIMPLE_[12]/.test(toolBarSet)) ? 200 : 300 ;
 		var winH    = $(window).height() ;
