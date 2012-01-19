@@ -255,7 +255,8 @@ public class UserService {
      * @param subject The subject of the mail
      * @param body The body of the mail, containing a placeholder for the password
      * @param bodyPasswordPlaceHolderRegex Is replaced with the password in the body.
-     * @throws MailException
+     * @throws MailException if the email can't be sent due to unavailability of a mail server or invalid
+     * attributes in the {@link Mail} object, such as sender address, destination addresses, cc, bcc addresses etc.
      */
     public void sendPasswordReminderMail(User user, String fromAddress, String subject, String body, String bodyPasswordPlaceHolderRegex) throws MailException {
         UserDomainObject userDO = user.getInternal();
