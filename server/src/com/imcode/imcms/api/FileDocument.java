@@ -165,7 +165,7 @@ public class FileDocument extends Document {
 
         /**
          * Not supported.
-         * @throws UnsupportedOperationException
+         * @throws UnsupportedOperationException to signal that this is not supported
          */
         public OutputStream getOutputStream() throws IOException {
             throw new UnsupportedOperationException() ;
