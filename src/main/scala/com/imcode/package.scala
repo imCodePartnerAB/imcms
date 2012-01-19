@@ -40,7 +40,7 @@ package object imcode {
 
   /** extractor */
   object PosInt {
-    def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(0 >=)
+    def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(0 <=)
   }
 
 //

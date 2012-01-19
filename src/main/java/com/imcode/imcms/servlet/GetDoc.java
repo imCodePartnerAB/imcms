@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -196,27 +197,38 @@ public class GetDoc extends HttpServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return ;
             }
+
+            // Workaround for #11619 - Android device refuses to download a file from build-in browser.
+            // Might not help if user agent is changed manually and does not contain "android".
+            String browserId = req.getHeader("User-Agent");
+            boolean attachment = req.getParameter("download") != null
+                    || (browserId != null && browserId.toLowerCase().contains("android"));
+
             int len = fr.available();
-            ServletOutputStream out = res.getOutputStream();
-            res.setContentLength(len);
-            res.setContentType(mimetype);
-            String content_disposition = ( null != req.getParameter("download") ? "attachment" : "inline" )
+            String content_disposition = (attachment ? "attachment" : "inline")
                                          + "; filename=\""
                                          + filename
                                          + "\"";
-            res.setHeader("Content-Disposition", content_disposition);
+
+            ServletOutputStream out = null;
+
             try {
-                int bytes_read;
-                byte[] buffer = new byte[32768];
-                while ( -1 != ( bytes_read = fr.read(buffer) ) ) {
-                    out.write(buffer, 0, bytes_read);
+                out = res.getOutputStream();
+
+                res.setContentLength(len);
+                res.setContentType(mimetype);
+                res.setHeader("Content-Disposition", content_disposition);
+
+                try {
+                    IOUtils.copy(fr, out);
+                } catch ( SocketException ex ) {
+                    LOG.debug("Exception occurred", ex);
                 }
-            } catch ( SocketException ex ) {
-                LOG.debug("Exception occured", ex);
+            } finally {
+                IOUtils.closeQuietly(fr);
+                IOUtils.closeQuietly(out);
             }
-            fr.close();
-            out.flush();
-            out.close();
+
             // Log to accesslog
             TRACK_LOG.info(documentRequest);
         } else {

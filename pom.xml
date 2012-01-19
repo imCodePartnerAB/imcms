@@ -10,13 +10,14 @@
     <name>imCMS</name>
 
     <properties>
-        <imcms.jetty.port>9090</imcms.jetty.port>
-        <imcms.jetty.stop.key>${project.name}</imcms.jetty.stop.key>
-        <imcms.jetty.stop.port>9696</imcms.jetty.stop.port>
-        <imcms.jetty.scanIntervalSeconds>3</imcms.jetty.scanIntervalSeconds>
+        <jetty.port>9090</jetty.port>
+        <jetty.stop.key>${project.name}</jetty.stop.key>
+        <jetty.stop.port>9696</jetty.stop.port>
+        <jetty.scanIntervalSeconds>3</jetty.scanIntervalSeconds>
 
         <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
         <org.springframework.version>3.1.0.RELEASE</org.springframework.version>
+        <scala.version>2.9.1</scala.version>
     </properties>
 
 
@@ -204,7 +205,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
 
         <dependency>
             <groupId>commons-dbutils</groupId>
@@ -480,7 +480,7 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.15</version>
+            <version>1.2.16</version>
 
             <exclusions>
                 <exclusion>
@@ -683,25 +683,25 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
-            <version>2.9.1</version>
+            <version>${scala.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.9.1</version>
+            <version>${scala.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.9.1</artifactId>
+            <artifactId>scalatest_${scala.version}</artifactId>
             <version>1.6.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.scala-tools.testing</groupId>
-            <artifactId>scalacheck_2.9.1</artifactId>
+            <artifactId>scalacheck_${scala.version}</artifactId>
             <version>1.9</version>
             <scope>test</scope>
         </dependency>
@@ -883,7 +883,6 @@
                 <artifactId>maven-scala-plugin</artifactId>
                 <version>2.15.3-SNAPSHOT</version>
                 <configuration>
-                    <!--<scalaVersion>2.9.1</scalaVersion>-->
                     <jvmArgs>
                         <!-- ...-Xss64m...-->
                         <jvmArg>-Xms64m</jvmArg>
@@ -956,7 +955,7 @@
 
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.5</version>
+                <version>2.8</version>
                 <configuration>
                     <configLocation>${basedir}/docs/checkstyle.xml</configLocation>
                 </configuration>
@@ -1148,13 +1147,13 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>7.0.0.RC6</version>
                 <configuration>
-                    <scanIntervalSeconds>${imcms.jetty.scanIntervalSeconds}</scanIntervalSeconds>
-                    <stopKey>${imcms.jetty.stop.key}</stopKey>
-                    <stopPort>${imcms.jetty.stop.port}</stopPort>
+                    <scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>
+                    <stopKey>${jetty.stop.key}</stopKey>
+                    <stopPort>${jetty.stop.port}</stopPort>
                     <!--<webAppSourceDirectory>${project.build.directory}/${project.build.finalName}</webAppSourceDirectory>-->
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>${imcms.jetty.port}</port>
+                            <port>${jetty.port}</port>
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
                     </connectors>
@@ -1224,7 +1223,7 @@
         <repository>
             <id>imcode</id>
             <name>imCode Internal Repository</name>
-            <url>scp://garm.imcode.com:/srv/www/apache/sites/repo.imcode.com/maven2</url>
+            <url>scp://ymer.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
         </repository>
     </distributionManagement>
 

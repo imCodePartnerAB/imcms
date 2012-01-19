@@ -6,33 +6,33 @@
     Creates webapp sources.
     -->
 
-    <property name="version" value="SET BY MAVEN"/>    
+    <property name="version" value="SET BY MAVEN"/>
 
     <property file="build.properties"/>
-		
-	<property name="main.resources-conf.dir" value="src/main/resources-conf"/>	
-	<property name="main.webapp.dir" value="src/main/webapp"/>	
-	<property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
-    <property name="main.webapp.imcms.dir" value="${main.webapp.dir}/imcms"/>	    
-	<property name="main.webapp.webinf.dir" value="${main.webapp.dir}/WEB-INF"/>
-	
+
+    <property name="main.resources-conf.dir" value="src/main/resources-conf"/>
+    <property name="main.webapp.dir" value="src/main/webapp"/>
+    <property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
+    <property name="main.webapp.imcms.dir" value="${main.webapp.dir}/imcms"/>
+    <property name="main.webapp.webinf.dir" value="${main.webapp.dir}/WEB-INF"/>
+
     <property name="versionfile" value="${main.webapp.webinf.dir}/version.txt"/>
 
     <property name="srcincludes" value="MANIFEST.TXT"/>
-		
+
     <property name="webinf.conf.dir" value="${main.webapp.webinf.dir}/conf"/>
     <property name="webinf.templates.dir" value="${main.webapp.webinf.dir}/templates"/>
     <property name="webinf.solr.dir" value="${main.webapp.webinf.dir}/solr"/>
 
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate"/>
-    <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>   
-	
+    <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>
+
     <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
     <target name="changes">
         <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
     </target>
-	
+
     <target name="process-webapp-sources" depends="init,changes"
             description="Translates and copies the webapp sources to webapp.">
 
@@ -40,7 +40,7 @@
         <property name="demotemplates" value="${texttemplates}/demo"/>
         <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
         <property name="swfpattern" value="**/*.swf"/>
-    	
+
         <property name="docs" value="${main.webapp.imcms.dir}/docs"/>
         <property name="apisamples" value="${docs}/apisamples"/>
         <property name="apidocs" value="${docs}/api"/>
@@ -48,8 +48,8 @@
         <dependset>
             <srcfileset file="build.properties"/>
             <targetfileset dir="${webinf.conf.dir}">
-            	<include name="imcms_*"/>
-            	<include name="server.properties"/>
+                <include name="imcms_*"/>
+                <include name="server.properties"/>
             </targetfileset>
         </dependset>
 
@@ -66,28 +66,30 @@
         <mkdir dir="${main.webapp.webinf.dir}/logs"/>
         <mkdir dir="${main.webapp.webinf.dir}/uploads"/>
         <mkdir dir="${main.webapp.webinf.dir}/classes"/>
-    	
-    	<echo message="${version}" file="${versionfile}"/>
-        
+
+        <echo message="${version}" file="${versionfile}"/>
+
         <!-- Copy and filter webinf, conf and classes resources to main webapp dir -->
-    	<copy todir="${webinf.conf.dir}" filtering="true">
-    		<fileset dir="${main.resources-conf.dir}"/>
-    	</copy>    	   	
-    	    		
-        <copy todir="${main.webapp.dir}" filtering="true">
-            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern},${swfpattern}"/>
+        <copy todir="${webinf.conf.dir}" filtering="true">
+            <fileset dir="${main.resources-conf.dir}"/>
         </copy>
-        
+
+        <copy todir="${main.webapp.dir}" filtering="true">
+            <fileset dir="src/main/web"
+                     excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern},${swfpattern}"/>
+        </copy>
+
         <copy todir="${main.webapp.webinf.dir}/classes" filtering="true">
             <fileset dir="src/main/resources" includes="hibernate.cfg.xml"/>
         </copy>
 
         <copy todir="${main.webapp.dir}">
-            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern},${swfpattern}"/>
+            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**"
+                     includes="${imagespattern},${swfpattern}"/>
         </copy>
-        
+
         <copy todir="${webinf.solr.dir}">
-            <fileset dir="src/main/solr" />
+            <fileset dir="src/main/solr"/>
         </copy>
 
         <antcall target="web-lang">
@@ -102,7 +104,7 @@
 
         <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable">
             <fileset dir="${apisamples}">
-               <include name="*.jsp"/>
+                <include name="*.jsp"/>
             </fileset>
             <mapper type="glob" from="*" to="*.txt"/>
         </copy>
@@ -112,17 +114,17 @@
         </copy>
     </target>
 
-	
+
     <target name="web-lang" depends="init">
         <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${webinf.templates.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${webinf.templates.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
             <fileset dir="src/main/web/WEB-INF/templates/lang"/>
         </imtranslate>
 
         <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
             <fileset dir="src/main/web/imcms/lang" excludes="${imagespattern}"/>
         </imtranslate>
 
@@ -131,21 +133,21 @@
         </copy>
     </target>
 
-	
-    <target name="init" depends="init-global-filters" 
-    		description="Handy target for everything else to depend on.">
-    	
+
+    <target name="init" depends="init-global-filters"
+            description="Handy target for everything else to depend on.">
+
         <record name="build.log"/>
 
         <tstamp/>
- 	
+
     </target>
 
-	
+
     <target name="init-global-filters">
-    	
-    	<filter token="defaultlanguage" value="${defaultlanguage}"/>
-        
+
+        <filter token="defaultlanguage" value="${defaultlanguage}"/>
+
         <filter token="documentationwebappurl" value="http://${documentation-host}/${version}"/>
         <filter token="documentationurl" value="http://${documentation-host}/${version}"/>
 
@@ -160,7 +162,7 @@
         <filter token="db-user" value="${db-user}"/>
         <filter token="db-pass" value="${db-pass}"/>
         <filter token="db-maxconnections" value="${db-maxconnections}"/>
-        
+
         <filter token="hibernate-dialect" value="${hibernate-dialect}"/>
 
         <filter token="external-authenticator" value="${external-authenticator}"/>
@@ -190,7 +192,7 @@
 
         <filter token="webmaster-name" value="${webmaster-name}"/>
         <filter token="webmaster-email" value="${webmaster-email}"/>
-        
+
         <filter token="image-magick-path" value="${image-magick-path}"/>
         <filter token="image-archive-storage-path" value="${image-archive-storage-path}"/>
         <filter token="image-archive-temp-path" value="${image-archive-temp-path}"/>
