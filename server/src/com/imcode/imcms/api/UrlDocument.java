@@ -8,6 +8,9 @@ import imcode.server.document.UrlDocumentDomainObject;
  */
 public class UrlDocument extends Document {
 
+    /**
+     * TYPE_ID of url document
+     */
     public final static int TYPE_ID = DocumentTypeDomainObject.URL_ID;
 
     UrlDocument(UrlDocumentDomainObject document, ContentManagementSystem contentManagementSystem) {

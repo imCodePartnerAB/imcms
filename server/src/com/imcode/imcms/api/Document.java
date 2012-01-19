@@ -721,7 +721,7 @@ public class Document implements Serializable {
     }
 
     /**
-     * Abstract class in charge of document comparison with a number of static comparators extending it for comparison by
+     * Abstract class in charge of {@link Document} comparison with a number of static comparators extending it for comparison by
      * different document attributes.
      */
     public abstract static class Comparator extends ChainableReversibleNullComparator {
