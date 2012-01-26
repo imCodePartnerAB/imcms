@@ -46,6 +46,7 @@ import com.imcode.db.SingleConnectionDatabase;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
+import imcode.util.image.Resize;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 	
@@ -195,7 +196,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void sqlInsertImageHistory(TextDocumentDomainObject textDocument, Integer imageIndex, UserDomainObject user) {
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
-        String[] columnNames = new String[] {"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "archive_image_id", "format", "crop_x1", "crop_y1", "crop_x2", "crop_y2", "rotate_angle", "gen_file", "meta_id", "name", "modified_datetime", "user_id" };
+        String[] columnNames = new String[] {"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "archive_image_id", "format", "crop_x1", "crop_y1", "crop_x2", "crop_y2", "rotate_angle", "gen_file", "resize", "meta_id", "name", "modified_datetime", "user_id" };
         ImageDomainObject image = textDocument.getImage(imageIndex.intValue());
         final Object[] parameters = getSqlImageParameters(image, textDocument.getId(), imageIndex.intValue());
         List <Object> param =  new ArrayList <Object>( Arrays.asList(parameters) ) ;
@@ -268,14 +269,15 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             + "crop_x2     		= ?, \n"
             + "crop_y2     		= ?, \n"
             + "rotate_angle     = ?, \n"
-            + "gen_file         = ?  \n"
+            + "gen_file         = ?, \n"
+            + "resize           = ?  \n"
             + "where meta_id = ? \n"
             + "and name = ? \n";
 
         int rowUpdateCount = sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
         if (0 == rowUpdateCount) {
-            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, archive_image_id, format, crop_x1, crop_y1, crop_x2, crop_y2, rotate_angle, gen_file, meta_id, name)"
-            	+ " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, archive_image_id, format, crop_x1, crop_y1, crop_x2, crop_y2, rotate_angle, gen_file, resize, meta_id, name)"
+            	+ " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
             sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
         }
@@ -290,6 +292,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         ImageSource imageSource = image.getSource();
 		Format format = image.getFormat();
         CropRegion region = image.getCropRegion();
+        Resize resize = image.getResize();
 
         return new Object[] {
             imageSource.toStorageString(),
@@ -313,6 +316,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             (region.isValid() ? region.getCropY2() : -1),
             image.getRotateDirection().getAngle(),
             image.getGeneratedFilename(),
+            (resize != null ? resize.getOrdinal() : 0), 
             meta_id,
             img_no,
         };

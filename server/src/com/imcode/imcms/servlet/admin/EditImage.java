@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 import com.imcode.imcms.flow.DispatchCommand;
-import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
 public class EditImage extends HttpServlet {
@@ -38,7 +37,7 @@ public class EditImage extends HttpServlet {
                 request.getRequestDispatcher(returnPath).forward(request, response);
             }
         };
-        ImageEditPage imageEditPage = new ImageEditPage(null, null, null, null, "", getServletContext(), imageCommand, returnCommand, false, 0, 0, null);
+        ImageEditPage imageEditPage = new ImageEditPage(null, null, null, null, "", getServletContext(), imageCommand, returnCommand, false, 0, 0, 0, 0, null);
         imageEditPage.updateFromRequest(request);
         imageEditPage.forward(request, response);
     }

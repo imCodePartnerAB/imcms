@@ -7,6 +7,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 import imcode.util.image.Format;
+import imcode.util.image.Resize;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -80,6 +81,8 @@ public class ImagePreview extends HttpServlet {
 		int height = NumberUtils.toInt(request.getParameter("height"));
         height = Math.max(height, 0);
 
+        Resize resize = Resize.getByName(request.getParameter("resize"));
+        
         CropRegion cropRegion = getCropRegion(request);
 
         int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
@@ -99,7 +102,7 @@ public class ImagePreview extends HttpServlet {
 
         try {
             boolean result = ImcmsImageUtils.generateImage(imageFile, tempFile, format,
-                    width, height, null, cropRegion, rotateDirection);
+                    width, height, resize, cropRegion, rotateDirection);
 
             if (result) {
                 String contentType = (format != null ? format.getMimeType() : "application/octet-stream");

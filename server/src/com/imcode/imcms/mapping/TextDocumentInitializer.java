@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.imcode.db.Database;
+import imcode.util.image.Resize;
 
 public class TextDocumentInitializer {
 
@@ -183,7 +184,8 @@ public class TextDocumentInitializer {
                 DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id,name,image_name,imgurl,"
                                                                                  + "width,height,border,v_space,h_space,"
                                                                                  + "target,align,alt_text,low_scr,linkurl,type,archive_image_id, "
-																				 + "format, crop_x1, crop_y1, crop_x2, crop_y2, rotate_angle, gen_file  "
+																				 + "format, crop_x1, crop_y1, crop_x2, crop_y2, rotate_angle, gen_file,"
+                                                                                 + "resize "
                                                                                  + "FROM images WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
@@ -218,6 +220,7 @@ public class TextDocumentInitializer {
                             
                             image.setRotateDirection(RotateDirection.getByAngleDefaultIfNull(rs.getShort(22)));
                             image.setGeneratedFilename(rs.getString(23));
+                            image.setResize(Resize.getByOrdinal(rs.getInt(24)));
 
                             if ( StringUtils.isNotBlank(imageSource) ) {
                                 if ( ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {

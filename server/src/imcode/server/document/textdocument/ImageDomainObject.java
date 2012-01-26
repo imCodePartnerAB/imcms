@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
+import imcode.util.image.Resize;
 import java.io.File;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class ImageDomainObject implements Serializable {
     private CropRegion cropRegion = new CropRegion();
     private RotateDirection rotateDirection = RotateDirection.NORTH;
     private String generatedFilename;
+    private Resize resize;
 
     public String getName() {
         return name;
@@ -287,6 +289,14 @@ public class ImageDomainObject implements Serializable {
         generatedFilename = filename + suffix;
     }
 
+    public Resize getResize() {
+        return resize;
+    }
+
+    public void setResize(Resize resize) {
+        this.resize = resize;
+    }
+
     public long getSize() {
         if ( isEmpty( ) ) {
             return 0;
@@ -337,6 +347,7 @@ public class ImageDomainObject implements Serializable {
                 .append(cropRegion.getCropX2(), otherCropRegion.getCropX2())
                 .append(cropRegion.getCropY2(), otherCropRegion.getCropY2())
                 .append(rotateDirection, o.getRotateDirection())
+                .append(resize, o.getResize())
                 .isEquals();
    }
 
@@ -350,6 +361,7 @@ public class ImageDomainObject implements Serializable {
                 .append(cropRegion.getCropX1()).append(cropRegion.getCropY1())
                 .append(cropRegion.getCropX2()).append(cropRegion.getCropY2())
                 .append(rotateDirection)
+                .append(resize)
                 .toHashCode();
     }
 

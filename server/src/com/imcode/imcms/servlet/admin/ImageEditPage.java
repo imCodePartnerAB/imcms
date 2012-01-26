@@ -65,6 +65,7 @@ import com.imcode.imcms.servlet.superadmin.AdminManager;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.util.HumanReadable;
 import com.imcode.util.ImageSize;
+import imcode.util.image.Resize;
 
 public class ImageEditPage extends OkCancelPage {
 
@@ -116,13 +117,15 @@ public class ImageEditPage extends OkCancelPage {
     private boolean linkable;
     private int forcedWidth;
     private int forcedHeight;
+    private int maxWidth;
+    private int maxHeight;
     private String returnUrl;
 
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image, Integer imageIndex, 
                          LocalizedMessage heading, String label, ServletContext servletContext,
                          Handler<ImageDomainObject> imageCommand,
                          DispatchCommand returnCommand, boolean linkable, 
-                         int forcedWidth, int forcedHeight, String returnUrl) {
+                         int forcedWidth, int forcedHeight, int maxWidth, int maxHeight, String returnUrl) {
         super(returnCommand, returnCommand);
         this.document = document;
         this.image = image;
@@ -134,8 +137,19 @@ public class ImageEditPage extends OkCancelPage {
         this.linkable = linkable ;
         this.forcedWidth = forcedWidth;
         this.forcedHeight = forcedHeight;
+        this.maxWidth = maxWidth;
+        this.maxHeight = maxHeight;
         this.returnUrl = returnUrl;
+        
+        if (forcedWidth > 0) {
+            this.maxWidth = 0;
+        }
+        if (forcedHeight > 0) {
+            this.maxHeight = 0;
+        }
+        
         forceWidthHeight();
+        restrictMaximumDimensions();
     }
     
     private void forceWidthHeight() {
@@ -147,6 +161,33 @@ public class ImageEditPage extends OkCancelPage {
         		image.setHeight(forcedHeight);
         	}
         }
+    }
+    
+    private void restrictMaximumDimensions() {
+        if (image == null) {
+            return;
+        }
+        
+        if (maxWidth > 0) {
+            int imgWidth = image.getWidth();
+            
+            if (imgWidth <= 0 || imgWidth > maxWidth) {
+                imgWidth = maxWidth;
+            }
+            
+            image.setWidth(imgWidth);
+        }
+        if (maxHeight > 0) {
+            int imgHeight = image.getHeight();
+            
+            if (imgHeight <= 0 || imgHeight > maxHeight) {
+                imgHeight = maxHeight;
+            }
+            
+            image.setHeight(imgHeight);
+        }
+        
+        image.setResize(getResize());
     }
 
     public ImageDomainObject getImage() {
@@ -226,6 +267,8 @@ public class ImageEditPage extends OkCancelPage {
         
         int rotateAngle = NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__ROTATE_ANGLE));
         image.setRotateDirection(RotateDirection.getByAngleDefaultIfNull(rotateAngle));
+        
+        image.setResize(getResize());
         
         CropRegion region = new CropRegion();
         region.setCropX1(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__CROP_X1), -1));
@@ -394,6 +437,7 @@ public class ImageEditPage extends OkCancelPage {
 			public void handle(CropRegion cropRegion) {
 				image.setCropRegion(cropRegion);
 				forceWidthHeight();
+                restrictMaximumDimensions();
 			}
 		};
 		
@@ -430,6 +474,7 @@ public class ImageEditPage extends OkCancelPage {
         image.setFormat(image.getImageInfo().getFormat());
         image.setCropRegion(new CropRegion());
         forceWidthHeight();
+        restrictMaximumDimensions();
         
         Format imageFormat = image.getImageInfo().getFormat();
         boolean allowed = false;
@@ -516,6 +561,22 @@ public class ImageEditPage extends OkCancelPage {
 	public void setForcedHeight(int forcedHeight) {
 		this.forcedHeight = forcedHeight;
 	}
+
+    public int getMaxHeight() {
+        return maxHeight;
+    }
+
+    public int getMaxWidth() {
+        return maxWidth;
+    }
+    
+    private Resize getResize() {
+        if (maxWidth > 0 || maxHeight > 0) {
+            return Resize.GREATER_THAN;
+        }
+        
+        return null;
+    }
 
 	public TextDocumentDomainObject getDocument() {
 		return document;

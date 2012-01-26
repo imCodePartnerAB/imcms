@@ -60,10 +60,58 @@ BODY {
 	margin: 30px 10px !important;
 	padding: 0 !important;
 }
+.dim {
+    width: 60px;
+}
 </style>
 
 <script type="text/javascript">
 <!--
+$(function() {
+    function limitDimension(dimName) {
+        var maxDim = $("#max_" + dimName).val();
+        maxDim = parseInt(maxDim, 10);
+        
+        if (!isFinite(maxDim) || maxDim <= 0) {
+            return;
+        }
+        
+        function restrict() {
+            var input = $(this), 
+                value = input.val();
+            
+            if (/[^0-9\s]/.test(value)) {
+                value = value.replace(/[^0-9]+/, "");
+                input.val(value);
+            }
+            value = parseInt(value, 10);
+            
+            if (!isFinite(value) || value <= 0) {
+                input.val("");
+                return;
+            }
+            
+            if (value > maxDim) {
+                input.val(maxDim);
+            }
+        }
+        
+        var input = $("#image_" + dimName);
+        
+        input.bind("change keyup", restrict)
+        input.bind("cut paste", function(e) {
+            var self = this;
+            
+            setTimeout(function() {
+                restrict.call(self);
+            }, 1);
+        });
+    }
+    
+    limitDimension("width");
+    limitDimension("height");
+});
+
 function addScrolling() {
 	if (window.opener) {
 		var obj = document.getElementById("outer_container") ;
@@ -188,6 +236,8 @@ function resetCrop() {
 <input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID %>" value="<%= image.getArchiveImageId() %>"/>
 <input type="hidden" id="forced_width" value="<%= imageEditPage.getForcedWidth() %>"/>
 <input type="hidden" id="forced_height" value="<%= imageEditPage.getForcedHeight() %>"/>
+<input type="hidden" id="max_width" value="<%= imageEditPage.getMaxWidth() %>"/>
+<input type="hidden" id="max_height" value="<%= imageEditPage.getMaxHeight() %>"/>
 <input type="hidden" id="h_crop_x1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X1 %>" value="<%= cropRegion.getCropX1() %>"/>
 <input type="hidden" id="h_crop_y1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 %>" value="<%= cropRegion.getCropY1() %>"/>
 <input type="hidden" id="h_crop_x2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 %>" value="<%= cropRegion.getCropX2() %>"/>
@@ -309,16 +359,28 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
 					<td>
 					<table border="0" cellspacing="0" cellpadding="0">
 					<tr>
-						<td><? templates/sv/change_img.html/17 ?></td>
+						<td><% 
+                        if (imageEditPage.getMaxWidth() > 0) {
+                            %><? templates/sv/change_img.html/4012 ?><%
+                        } else {
+                            %><? templates/sv/change_img.html/17 ?><%
+                        }
+                        %></td>
 						<td>&nbsp;</td>
-						<td><? templates/sv/change_img.html/18 ?></td>
+						<td><%
+                        if (imageEditPage.getMaxHeight() > 0) {
+                            %><? templates/sv/change_img.html/4013 ?><%
+                        } else {
+                            %><? templates/sv/change_img.html/18 ?><%
+                        }
+                        %></td>
 						<td>&nbsp;</td>
 						<td><? templates/sv/change_img.html/19 ?></td>
 						<td>&nbsp;</td>
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
-						<td><input type="text" <%
+						<td><input class="dim" type="text" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>" <%
 						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>" <%
 						%>size="4" maxlength="4" value="<%
@@ -326,7 +388,7 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
 							%><%= image.getWidth() %><%
 						} %>" <%= (imageEditPage.getForcedWidth() > 0 ? "readonly='readonly' class='imcmsDisabled'" : "") %> ></td>
 						<td>&nbsp;X&nbsp;</td>
-						<td><input type="text" <%
+						<td><input class="dim" type="text" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" <%
 						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" <%
 						%>size="4" maxlength="4" value="<%
@@ -334,7 +396,7 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
 							%><%= image.getHeight() %><%
 						} %>" <%= (imageEditPage.getForcedHeight() > 0 ? "readonly='readonly' class='imcmsDisabled'" : "") %> ></td>
 						<td>&nbsp;</td>
-						<td><input type="text" <%
+						<td><input class="dim" type="text" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
 						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
 						%>size="4" maxlength="4" value="<%= image.getBorder() %>"></td>

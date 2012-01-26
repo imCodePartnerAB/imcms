@@ -67,6 +67,8 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.SectionFromIdTransformer;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import com.imcode.util.CountingIterator;
+import java.util.regex.Matcher;
+import org.apache.oro.text.regex.*;
 
 public class TagParser {
 
@@ -78,7 +80,12 @@ public class TagParser {
     
     private static Pattern widthPattern;
     private static Pattern heightPattern;
+    private static Pattern maxWidthPattern;
+    private static Pattern maxHeightPattern;
 
+    private static final java.util.regex.Pattern REMOVE_ATTRS_PATTERN = java.util.regex.Pattern.compile(
+            "(?<!-)(?:max-width|max-height|width|height)\\s*:\\s*\\d+\\s*px\\s*;?", java.util.regex.Pattern.CASE_INSENSITIVE);
+    
     private final static Logger LOG = Logger.getLogger(TagParser.class.getName());
 
     static {
@@ -100,6 +107,11 @@ public class TagParser {
             widthPattern = patComp.compile("(?:^|[\\s;])width\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
             
             heightPattern = patComp.compile("(?:^|[\\s;])height\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
+            
+            maxWidthPattern = patComp.compile("(?:^|[\\s;])max-width\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
+            
+            maxHeightPattern = patComp.compile("(?:^|[\\s;])max-height\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
+            
         } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
             LOG.fatal("Danger, Will Robinson!", ignored);
@@ -527,9 +539,19 @@ public class TagParser {
         ImageDomainObject image = textDocumentToUse.getImage(imageIndex) ;
         ImageSource imageSource = image.getSource();
         String imageTag = "" ;
+        String style = (String) attributes.getProperty("style");
         if ( !( imageSource instanceof FileDocumentImageSource )
              || imageMode
              || user.canAccess(( (FileDocumentImageSource) imageSource ).getFileDocument()) ) {
+            
+            if (style != null) {
+                Matcher matcher = REMOVE_ATTRS_PATTERN.matcher(style);
+                
+                String cleanedStyle = matcher.replaceAll(" ");
+                
+                attributes.put("style", cleanedStyle);
+            }
+            
             imageTag = ImcmsImageUtils.getImageHtmlTag(textDocumentToUse.getId(), image, httpServletRequest, attributes);
         }
 
@@ -544,24 +566,37 @@ public class TagParser {
             
             String imageWidth = "0";
             String imageHeight = "0";
-            String style = (String) attributes.get("style");
+            String maxWidth = "0";
+            String maxHeight = "0";
+            
             if (style != null) {
             	PatternMatcher matcher = new Perl5Matcher();
-            	if (matcher.contains(style, widthPattern)) {
+                
+                if (matcher.contains(style, widthPattern)) {
             		imageWidth = matcher.getMatch().group(1);
             	}
             	if (matcher.contains(style, heightPattern)) {
             		imageHeight = matcher.getMatch().group(1);
             	}
+                if (matcher.contains(style, maxWidthPattern)) {
+                    maxWidth = matcher.getMatch().group(1);
+                }
+                if (matcher.contains(style, maxHeightPattern)) {
+                    maxHeight = matcher.getMatch().group(1);
+                }
             }
             
             
-            List<String> replaceTags = new ArrayList<String>(replace_tags.length + 4);
+            List<String> replaceTags = new ArrayList<String>(replace_tags.length + 8);
             CollectionUtils.addAll(replaceTags, replace_tags);
             replaceTags.add("#image_width#");
             replaceTags.add(imageWidth);
             replaceTags.add("#image_height#");
             replaceTags.add(imageHeight);
+            replaceTags.add("#max_width#");
+            replaceTags.add(maxWidth);
+            replaceTags.add("#max_height#");
+            replaceTags.add(maxHeight);
             
             imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
         }

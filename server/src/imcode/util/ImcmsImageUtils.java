@@ -114,18 +114,6 @@ public class ImcmsImageUtils {
 
             styleBuffer.append("border-width: ").append(image.getBorder()).append("px;");
 
-            int width = image.getWidth();
-            int height = image.getHeight();
-            
-            if ( 0 != width ) {
-                imageTagBuffer.append(" width=\"").append(width).append("\"");
-                styleBuffer.append(" width: ").append(width).append("px;");
-            }
-            if ( 0 != height ) {
-                imageTagBuffer.append(" height=\"").append(height).append("\"");
-                styleBuffer.append(" height: ").append(height).append("px;");
-            }
-
             styleBuffer.append(" margin: ")
                     .append(image.getVerticalSpace()).append("px ")
                     .append(image.getHorizontalSpace()).append("px;");
@@ -257,6 +245,11 @@ public class ImcmsImageUtils {
             builder.append("&gen_file=");
             builder.append(image.getGeneratedFilename());
         }
+        
+        if (image.getResize() != null) {
+            builder.append("&resize=");
+            builder.append(image.getResize().name().toLowerCase());
+        }
 
         return builder.toString();
     }
@@ -330,7 +323,7 @@ public class ImcmsImageUtils {
             }
             
 
-            generateImage(inputFile, genFile, image.getFormat(), image.getWidth(), image.getHeight(), null, 
+            generateImage(inputFile, genFile, image.getFormat(), image.getWidth(), image.getHeight(), image.getResize(), 
                     image.getCropRegion(), image.getRotateDirection());
 
         } catch (Exception ex) {

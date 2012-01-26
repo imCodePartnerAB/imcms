@@ -3,7 +3,7 @@
 # You shouldn't change any defaults unless you know what you are doing.
 
 # Database schema version.
-db-schema-version = 4.14
+db-schema-version = 4.15
 
 # The deployment directory (parent of the webapp directory).
 # Do *not* use back-slashes ('\'). Use forward-slashes ('/').
