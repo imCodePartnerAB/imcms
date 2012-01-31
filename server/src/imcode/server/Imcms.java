@@ -70,6 +70,7 @@ public class Imcms {
         DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(wantedDdl, new ImcmsDatabaseCreator(initScriptReader, localizedMessageProvider));
         upgrade.upgrade(database);
         sanityCheckDatabase(database, wantedDdl);
+        encryptUsersLoginPasswords();
         final CachingFileLoader fileLoader = new CachingFileLoader();
         return new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
     }
@@ -86,6 +87,11 @@ public class Imcms {
                 LOG.debug(problem.getDescription());
             }
         }
+    }
+
+    private static void encryptUsersLoginPasswords() {
+        // iterate over users table,
+        // encrypt each non-encrypted password
     }
 
     private static Database createDatabase(Properties serverprops) {

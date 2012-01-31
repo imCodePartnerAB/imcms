@@ -92,7 +92,8 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <!-- RB-4 lib version: 3.8.1 -->
+            <version>4.9</version>
             <scope>test</scope>
         </dependency>
 
@@ -491,7 +492,6 @@
     <build>
         <finalName>${project.artifactId}</finalName>
         <sourceDirectory>${project.basedir}/server/src</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/server/src</testSourceDirectory>
         <plugins>
             <plugin>
                 <!-- todo: check, remove debug, optimize, deprecated, junit from build.properties -->
@@ -503,21 +503,6 @@
                     <source>1.6</source>
                     <target>1.6</target>
                     <encoding>iso-8859-1</encoding>
-                    <excludes>
-                        <exclude>**/Mock*.java</exclude>
-                        <exclude>**/Test*.java</exclude>
-                        <exclude>**/*Test.java</exclude>
-                        <exclude>**/*TestCase.java</exclude>
-                        <exclude>**/test/casual</exclude>
-                        <exclude>**/test/external</exclude>
-                    </excludes>
-
-                    <testIncludes>
-                        <include>**/Mock*.java</include>
-                        <include>**/Test*.java</include>
-                        <include>**/*Test.java</include>
-                        <include>**/*TestCase.java</include>
-                    </testIncludes>
                 </configuration>
             </plugin>
 
@@ -587,7 +572,7 @@
                     </execution>
 
                     <execution>
-                        <id>validate</id>
+                        <id>validate-build-properties</id>
                         <phase>validate</phase>
                         <configuration>
                             <target>
@@ -622,7 +607,7 @@
 
                     <execution>
                         <id>generate-webapp-directory-content</id>
-                        <phase>generate-sources</phase>
+                        <phase>process-sources</phase>
                         <configuration>
                             <target>
                                 <ant antfile="${basedir}/pom-ant.xml" target="web">

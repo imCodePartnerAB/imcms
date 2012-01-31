@@ -11,7 +11,7 @@ public class TestSMTP extends TestCase {
 
     private String fromAddress;
     private String toAddress;
-    private static final String TEST_MAIL = "Testing swedish characters: ÅÄÖ\n" 
+    private static final String TEST_MAIL = "Testing swedish characters: Ã…Ã„Ã–\n" 
                                             + "There should be an empty line below\n" + "\n" +
                                             "There should be a single dot below\n" + ".\n";
     private SMTP smtp;
@@ -92,7 +92,7 @@ public class TestSMTP extends TestCase {
         SMTP.Mail mail = new SMTP.Mail( fromAddress );
         mail.setSubject("HTML "+TEST_SUBJECT);
         mail.setToAddresses(new String[]{toAddress});
-        mail.setHtmlBody("<html><body>This mail should have an <strong>HTML</strong> <em>alternative</em> and these swedish characters should be OK: ÅÄÖ.</body></html>");
+        mail.setHtmlBody("<html><body>This mail should have an <strong>HTML</strong> <em>alternative</em> and these swedish characters should be OK: Ã…Ã„Ã–.</body></html>");
         smtp.sendMail( mail );
     }
 }

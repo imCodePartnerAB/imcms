@@ -31,17 +31,17 @@ public class TestFileUtility extends TestCase {
 
     public void testUnescapeFilename() throws Exception {
         assertEquals("Space", " ",FileUtility.unescapeFilename( "_0020")) ;
-        assertEquals( "ÅÄÖåäö", "ÅÄÖåäö", FileUtility.unescapeFilename( "_00c5_00c4_00d6_00e5_00e4_00f6" ) );
+        assertEquals( "Ã…Ã„Ã–Ã¥Ã¤Ã¶", "Ã…Ã„Ã–Ã¥Ã¤Ã¶", FileUtility.unescapeFilename( "_00c5_00c4_00d6_00e5_00e4_00f6" ) );
     }
 
     public void testEscapeFilename() throws Exception {
         assertEquals( "Space", "_0020", FileUtility.escapeFilename( " " ) );
-        assertEquals( "ÅÄÖåäö", "_00c5_00c4_00d6_00e5_00e4_00f6", FileUtility.escapeFilename( "ÅÄÖåäö" ) );
+        assertEquals( "Ã…Ã„Ã–Ã¥Ã¤Ã¶", "_00c5_00c4_00d6_00e5_00e4_00f6", FileUtility.escapeFilename( "Ã…Ã„Ã–Ã¥Ã¤Ã¶" ) );
     }
 
     public void testEscapes() {
         assertEquals( "Space", " ", FileUtility.unescapeFilename( FileUtility.escapeFilename( " " ) ) );
-        assertEquals( "ÅÄÖ_åäö", "ÅÄÖ_åäö", FileUtility.unescapeFilename( FileUtility.escapeFilename( "ÅÄÖ_åäö" ) ) );
+        assertEquals( "Ã…Ã„Ã–_Ã¥Ã¤Ã¶", "Ã…Ã„Ã–_Ã¥Ã¤Ã¶", FileUtility.unescapeFilename( FileUtility.escapeFilename( "Ã…Ã„Ã–_Ã¥Ã¤Ã¶" ) ) );
     }
 
     public void testDirectoryIsAncestorOfOrEqualTo() throws IOException {

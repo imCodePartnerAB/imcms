@@ -142,5 +142,4 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
             log.error(String.format("Unable to index content of file-doc-file '%s'", file), e);
         }
     }
-
 }

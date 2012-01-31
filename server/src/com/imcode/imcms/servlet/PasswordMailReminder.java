@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,7 @@ public class PasswordMailReminder extends HttpServlet {
     private final static String RETURNING_DOCUMENT_INPUT = "password_submit.html";
 
     private final static int PASSWORD_PERMISSION_ID = 1;
+
 
     /**
      * showing input document whit out error

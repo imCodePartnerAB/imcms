@@ -12,8 +12,8 @@ import java.util.Date;
 /**
  * Compares text documents by a date in a textfield.
  *
- * @author Anders Flodell, Vetenskapsrådet
- * @author Pontus Amberg, Vetenskapsrådet
+ * @author Anders Flodell, VetenskapsrÃ¥det
+ * @author Pontus Amberg, VetenskapsrÃ¥det
  */
 public class DateTextFieldTextDocumentComparator extends Document.Comparator {
 
