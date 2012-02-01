@@ -5,6 +5,7 @@ import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
+import com.imcode.imcms.servlet.UserLoginPasswordManager;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
@@ -108,4 +109,15 @@ public interface ImcmsServices {
     LocalizedMessageProvider getLocalizedMessageProvider();
     
     KerberosLoginService getKerberosLoginService();
+
+    /**
+     * @since 4.0.17
+     */
+    UserLoginPasswordManager getUserLoginPasswordManager();
+
+    /**
+     * Encrypts users plain text login passwords.
+     * @since 4.0.17
+     */
+    void encryptUsersUnencryptedLoginPasswords();
 }

@@ -3,6 +3,7 @@ package imcode.server;
 import com.imcode.db.*;
 import com.imcode.db.Database;
 import com.imcode.imcms.db.*;
+import com.imcode.imcms.servlet.UserLoginPasswordManager;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
@@ -55,6 +56,9 @@ public class Imcms {
     public synchronized static void start() throws StartupException {
         try {
             services = createServices();
+//            if (encrypt-unencrypted-users-login-passwords-on-start) {
+//                services.encryptUsersUnencryptedLoginPasswords();
+//            }
         } catch (Exception e) {
             throw new StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
         }
@@ -70,9 +74,12 @@ public class Imcms {
         DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(wantedDdl, new ImcmsDatabaseCreator(initScriptReader, localizedMessageProvider));
         upgrade.upgrade(database);
         sanityCheckDatabase(database, wantedDdl);
-        encryptUsersLoginPasswords();
+
         final CachingFileLoader fileLoader = new CachingFileLoader();
-        return new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+        DefaultImcmsServices defaultImcmsServices = new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+        defaultImcmsServices.setUserLoginPasswordManager(createUserLoginPasswordManager(serverprops));
+
+        return defaultImcmsServices;
     }
 
     private static void sanityCheckDatabase(Database database, org.apache.ddlutils.model.Database wantedDdl) {
@@ -89,9 +96,11 @@ public class Imcms {
         }
     }
 
-    private static void encryptUsersLoginPasswords() {
-        // iterate over users table,
-        // encrypt each non-encrypted password
+
+    private static UserLoginPasswordManager createUserLoginPasswordManager(Properties serverprops) {
+        String sharedSaltValue = serverprops.getProperty("user-login-password-salt");
+        String sharedSalt = sharedSaltValue == null ? null : sharedSaltValue.trim();
+        return new UserLoginPasswordManager(sharedSalt);
     }
 
     private static Database createDatabase(Properties serverprops) {

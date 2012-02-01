@@ -594,8 +594,7 @@
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
-                                    'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT
-                                    for details.)
+                                    'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT for details.)
                                     Copy 'build.properties.template' content into 'build.properties' and edit it!
                                 </fail>
                             </target>

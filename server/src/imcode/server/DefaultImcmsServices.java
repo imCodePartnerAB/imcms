@@ -1,5 +1,6 @@
 package imcode.server;
 
+import com.imcode.imcms.servlet.UserLoginPasswordManager;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.IndexDocumentFactory;
@@ -100,6 +101,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
+    private UserLoginPasswordManager userLoginPasswordManager;
 
     static {
         mainLog.info("Main log started.");
@@ -809,4 +811,26 @@ final public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
+    public UserLoginPasswordManager getUserLoginPasswordManager() {
+        return userLoginPasswordManager;
+    }
+
+    public void setUserLoginPasswordManager(UserLoginPasswordManager userLoginPasswordManager) {
+        this.userLoginPasswordManager = userLoginPasswordManager;
+    }
+
+    @Override
+    public void encryptUsersUnencryptedLoginPasswords() {
+        // todo: handle LDAP and SSO users
+        for (UserDomainObject user: getImcmsAuthenticatorAndUserAndRoleMapper().getAllUsers()) {
+            if (!(user.isImcmsExternal() || user.isPasswordEncrypted())) {
+                // todo: check password is not empty ???
+                user.setPassword(getUserLoginPasswordManager().encryptPassword(user.getPassword()));
+                user.setPasswordEncrypted(true);
+                getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(user);
+            }
+            //user.getLoginName();
+
+        }
+    }
 }

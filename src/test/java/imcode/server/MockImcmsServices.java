@@ -7,6 +7,7 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 
+import com.imcode.imcms.servlet.UserLoginPasswordManager;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -43,6 +44,7 @@ public class MockImcmsServices implements ImcmsServices {
     private ProcedureExecutor procedureExecutor;
     private Config config = new Config();
     private KerberosLoginService kerberosLoginService;
+    private UserLoginPasswordManager userLoginPasswordManager;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -239,4 +241,16 @@ public class MockImcmsServices implements ImcmsServices {
     public void setKerberosLoginService(KerberosLoginService kerberosLoginService) {
         this.kerberosLoginService = kerberosLoginService;
     }
+
+    @Override
+    public UserLoginPasswordManager getUserLoginPasswordManager() {
+        return userLoginPasswordManager;
+    }
+
+    public void setUserLoginPasswordManager(UserLoginPasswordManager userLoginPasswordManager) {
+        this.userLoginPasswordManager = userLoginPasswordManager;
+    }
+
+    @Override
+    public void encryptUsersUnencryptedLoginPasswords() {}
 }

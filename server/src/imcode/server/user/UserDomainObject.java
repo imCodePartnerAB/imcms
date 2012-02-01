@@ -47,6 +47,8 @@ public class UserDomainObject implements Cloneable, Serializable {
     
     private String rememberCd;
 
+    private boolean passwordEncrypted;
+
     public UserDomainObject() {
     }
 
@@ -746,5 +748,13 @@ public class UserDomainObject implements Cloneable, Serializable {
             PhoneNumber phoneNumber = (PhoneNumber) object ;
             return phoneNumber.getType().equals(phoneNumberType) ;
         }
+    }
+
+    public boolean isPasswordEncrypted() {
+        return passwordEncrypted;
+    }
+
+    public void setPasswordEncrypted(boolean passwordEncrypted) {
+        this.passwordEncrypted = passwordEncrypted;
     }
 }

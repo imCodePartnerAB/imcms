@@ -9,6 +9,9 @@ import javax.crypto.spec.PBEKeySpec;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 
+/**
+ * Provides functionality for passwords encryption and validation.
+ */
 public class UserLoginPasswordManager {
 
     private static final int SALT_LENGTH = 16;
