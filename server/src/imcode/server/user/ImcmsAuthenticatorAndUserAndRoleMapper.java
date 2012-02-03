@@ -11,9 +11,11 @@ import com.imcode.imcms.db.StringArrayResultSetHandler;
 import imcode.server.ImcmsServices;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import java.text.DateFormat;
@@ -56,7 +58,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 + "title, company, address, city, zip, country, county_council, "
                + "email, language, active, "
                + "create_date, " + (DatabaseUtils.isDatabaseMSSql(services) ? "[external]" : "external")
-               + ", session_id, remember_cd FROM users";
+               + ", session_id, remember_cd"
+               + ", login_password_is_encrypted"
+               + ", login_password_reset_id"
+               + ", login_password_reset_ts" + " FROM users";
     }
 
     private static String sqlSelectUserById(ImcmsServices services) {
@@ -68,15 +73,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public boolean authenticate(String loginName, String password) {
-        boolean userExistsAndPasswordIsCorrect = false;
         UserDomainObject user = getUser(loginName);
-        if ( null != user ) {
-            String password_from_db = user.getPassword();
-
-            userExistsAndPasswordIsCorrect = password_from_db.equals(password) && user.isActive();
-        }
-
-        return userExistsAndPasswordIsCorrect;
+        return user != null && user.isActive() &&
+               (user.isPasswordEncrypted()
+                    ? services.getUserLoginPasswordManager().validatePassword(password, user.getPassword())
+                    : password.equals(user.getPassword()));
     }
 
     public UserDomainObject getUser(String loginName) {
@@ -124,6 +125,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         user.setImcmsExternal(0 != Integer.parseInt(sqlResult[16]));
         user.setSessionId(sqlResult[17]);
         user.setRememberCd(sqlResult[18]);
+
+        user.setPasswordEncrypted("1".equals(sqlResult[19]));
+        user.setPasswordResetId(sqlResult[20]);
+        user.setPasswordResetTs(NumberUtils.createLong(sqlResult[21]));
     }
 
     private RoleId[] getRoleReferencesForUser(UserDomainObject user) {
@@ -228,7 +233,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 user.isImcmsExternal() ? "1" : "0",
                 user.isActive() ? "1" : "0",
                 user.getLanguageIso639_2(),
-                "" + user.getId(),
+                user.isPasswordEncrypted() ? "1" : "0",
+                user.getPasswordResetId(),
+                user.getPasswordResetTs() == null ? null : user.getPasswordResetTs().toString(),
+                "" + user.getId()
         };
         try {
             String externalColumn = DatabaseUtils.isDatabaseMSSql(services) ? "[external]" : "external";
@@ -247,7 +255,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                                                                 + "email = ?,\n"
                                                                 + externalColumn + " = ?,\n"
                                                                 + "active = ?,\n"
-                                                                + "language = ?\n"
+                                                                + "language = ?,\n"
+                                                                + "login_password_is_encrypted = ?,\n"
+                                                                + "login_password_reset_id = ?,\n"
+                                                                + "login_password_reset_ts = ?\n"
                                                                 + "WHERE user_id = ?", params));
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
@@ -313,7 +324,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     { externalColumn, user.isImcmsExternal() ? "1" : "0" },
                     { "active", user.isActive() ? "1" : "0" },
                     { "language", user.getLanguageIso639_2() },
-                    { "create_date", Utility.makeSqlStringFromDate(new Date()) }
+                    { "create_date", Utility.makeSqlStringFromDate(new Date()) },
+
+                    { "login_password_is_encrypted", BooleanUtils.toString(user.isPasswordEncrypted(), "1", "0") },
+                    { "login_password_reset_id", user.getPasswordResetId() },
+                    { "login_password_reset_ts", user.getPasswordResetTs() == null ? null : user.getPasswordResetTs().toString() }
+
             }));
             int newIntUserId = newUserId.intValue();
             user.setId(newIntUserId);

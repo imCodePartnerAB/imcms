@@ -49,6 +49,10 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     private boolean passwordEncrypted;
 
+    private String passwordResetId;
+
+    private Long passwordResetTs;
+
     public UserDomainObject() {
     }
 
@@ -756,5 +760,21 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public void setPasswordEncrypted(boolean passwordEncrypted) {
         this.passwordEncrypted = passwordEncrypted;
+    }
+
+    public String getPasswordResetId() {
+        return passwordResetId;
+    }
+
+    public void setPasswordResetId(String passwordResetId) {
+        this.passwordResetId = passwordResetId;
+    }
+
+    public Long getPasswordResetTs() {
+        return passwordResetTs;
+    }
+
+    public void setPasswordResetTs(Long passwordResetTs) {
+        this.passwordResetTs = passwordResetTs;
     }
 }

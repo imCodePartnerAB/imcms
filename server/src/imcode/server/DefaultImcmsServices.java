@@ -69,6 +69,7 @@ import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.kerberos.KerberosLoginService;
+import ucar.unidata.util.StringUtil;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
@@ -819,18 +820,20 @@ final public class DefaultImcmsServices implements ImcmsServices {
         this.userLoginPasswordManager = userLoginPasswordManager;
     }
 
+    /**
+     * Encrypts every internal user's unencrypted non-blank login password.
+     */
     @Override
-    public void encryptUsersUnencryptedLoginPasswords() {
-        // todo: handle LDAP and SSO users
+    public void encryptUnencryptedUsersLoginPasswords() {
         for (UserDomainObject user: getImcmsAuthenticatorAndUserAndRoleMapper().getAllUsers()) {
-            if (!(user.isImcmsExternal() || user.isPasswordEncrypted())) {
-                // todo: check password is not empty ???
-                user.setPassword(getUserLoginPasswordManager().encryptPassword(user.getPassword()));
-                user.setPasswordEncrypted(true);
-                getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(user);
+            if (!user.isImcmsExternal() && !user.isPasswordEncrypted()) {
+                String password = user.getPassword();
+                if (StringUtils.isNotBlank(password)) {
+                    user.setPassword(getUserLoginPasswordManager().encryptPassword(password));
+                    user.setPasswordEncrypted(true);
+                    getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(user);
+                }
             }
-            //user.getLoginName();
-
         }
     }
 }

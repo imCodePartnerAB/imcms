@@ -56,9 +56,9 @@ public class Imcms {
     public synchronized static void start() throws StartupException {
         try {
             services = createServices();
-//            if (encrypt-unencrypted-users-login-passwords-on-start) {
-//                services.encryptUsersUnencryptedLoginPasswords();
-//            }
+            if ("true".equals(StringUtils.stripToNull(getServerProperties().getProperty("encrypt-unencrypted-users-login-passwords-on-start")))) {
+                services.encryptUnencryptedUsersLoginPasswords();
+            }
         } catch (Exception e) {
             throw new StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
         }

@@ -119,5 +119,5 @@ public interface ImcmsServices {
      * Encrypts users plain text login passwords.
      * @since 4.0.17
      */
-    void encryptUsersUnencryptedLoginPasswords();
+    void encryptUnencryptedUsersLoginPasswords();
 }

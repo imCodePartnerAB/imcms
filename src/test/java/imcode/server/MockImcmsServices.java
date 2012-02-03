@@ -252,5 +252,5 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     @Override
-    public void encryptUsersUnencryptedLoginPasswords() {}
+    public void encryptUnencryptedUsersLoginPasswords() {}
 }
