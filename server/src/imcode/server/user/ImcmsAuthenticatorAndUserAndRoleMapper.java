@@ -54,47 +54,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     private final ImcmsServices services;
 
-//    private static class UserDomainObjectFromDb extends UserDomainObject {
-//        private UserDomainObjectFromDb(int id) {
-//            super(id);
-//        }
-//
-//        /**
-//         * Any password set from outside considered as plain text, unencrypted password.
-//         * @param password plain text password.
-//         */
-//        @Override
-//        public void setPassword(String password) {
-//            setPassword(password, false);
-//        }
-//
-//        private void setPassword(String password, boolean encrypted) {
-//            super.setPassword(password);
-//            super.setPasswordEncrypted(true);
-//        }
-//
-//        /** Changes method visibility. */
-//        @Override
-//        public void setPasswordResetTs(Long passwordResetTs) {
-//            super.setPasswordResetTs(passwordResetTs);
-//        }
-//
-//        /** Changes method visibility. */
-//        @Override
-//        public void setPasswordResetId(String passwordResetId) {
-//            super.setPasswordResetId(passwordResetId);
-//        }
-//
-//        private void setPassword(String password, boolean encrypted) {
-//            super.setPassword(password);
-//            super.setPasswordEncrypted(true);
-//        }
-//
-//        private void setEncryptedPassword(String password) {
-//            setPassword(password, true);
-//        }
-//    }
-
     /**
      * @since 4.0.7
      */
@@ -765,7 +724,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      */
     public void encryptUnencryptedUsersLoginPasswords() {
         for (UserDomainObject user: getAllUsers()) {
-            if (!user.isImcmsExternal() && !user.isPasswordEncrypted()) {
+            if (!user.isImcmsExternal() && !user.isPasswordEncrypted() && StringUtils.isNotBlank(user.getPassword())) {
+                // todo: ? encryption is supported ?
                 saveUser(user);
 //                String password = user.getPassword();
 //                if (StringUtils.isNotBlank(password)) {
