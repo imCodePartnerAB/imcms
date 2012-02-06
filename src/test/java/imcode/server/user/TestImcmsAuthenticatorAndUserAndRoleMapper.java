@@ -1,6 +1,7 @@
 package imcode.server.user;
 
 import com.imcode.db.mock.MockDatabase;
+import com.imcode.imcms.servlet.UserLoginPasswordManager;
 import imcode.server.MockImcmsServices;
 import junit.framework.TestCase;
 
@@ -11,7 +12,8 @@ public class TestImcmsAuthenticatorAndUserAndRoleMapper extends TestCase {
         database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "Test"), new Integer(1));
         MockImcmsServices mockImcmsServices = new MockImcmsServices();
         mockImcmsServices.setDatabase(database);
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(mockImcmsServices);
+        UserLoginPasswordManager userLoginPasswordManager = new UserLoginPasswordManager();
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(mockImcmsServices, userLoginPasswordManager);
         UserDomainObject user = new UserDomainObject();
         user.setLoginName( "Test" );
         user.setImcmsExternal( true );

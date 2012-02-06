@@ -102,7 +102,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
-    private UserLoginPasswordManager userLoginPasswordManager;
 
     static {
         mainLog.info("Main log started.");
@@ -323,11 +322,17 @@ final public class DefaultImcmsServices implements ImcmsServices {
             externalUserAndRoleRegistry = chainedLdapUserAndRoleRegistry;
         }
 
-        imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(this);
+        imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(this, createUserLoginPasswordManager(props));
         externalizedImcmsAuthAndMapper =
                 new ExternalizedImcmsAuthenticatorAndUserRegistry(imcmsAuthenticatorAndUserAndRoleMapper, externalAuthenticator,
                                                                   externalUserAndRoleRegistry, getLanguageMapper().getDefaultLanguage());
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
+    }
+
+    private UserLoginPasswordManager createUserLoginPasswordManager(Properties serverprops) {
+        String sharedSaltValue = serverprops.getProperty("user-login-password-salt");
+        String sharedSalt = sharedSaltValue == null ? null : sharedSaltValue.trim();
+        return new UserLoginPasswordManager(sharedSalt);
     }
 
 
@@ -809,31 +814,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
         public Object convert(Class type, Object value) {
             return FileUtility.getFileFromWebappRelativePath((String) value);
-        }
-    }
-
-    public UserLoginPasswordManager getUserLoginPasswordManager() {
-        return userLoginPasswordManager;
-    }
-
-    public void setUserLoginPasswordManager(UserLoginPasswordManager userLoginPasswordManager) {
-        this.userLoginPasswordManager = userLoginPasswordManager;
-    }
-
-    /**
-     * Encrypts every internal user's unencrypted non-blank login password.
-     */
-    @Override
-    public void encryptUnencryptedUsersLoginPasswords() {
-        for (UserDomainObject user: getImcmsAuthenticatorAndUserAndRoleMapper().getAllUsers()) {
-            if (!user.isImcmsExternal() && !user.isPasswordEncrypted()) {
-                String password = user.getPassword();
-                if (StringUtils.isNotBlank(password)) {
-                    user.setPassword(getUserLoginPasswordManager().encryptPassword(password));
-                    user.setPasswordEncrypted(true);
-                    getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(user);
-                }
-            }
         }
     }
 }

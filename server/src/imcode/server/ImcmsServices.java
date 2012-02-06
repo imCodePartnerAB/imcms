@@ -109,15 +109,4 @@ public interface ImcmsServices {
     LocalizedMessageProvider getLocalizedMessageProvider();
     
     KerberosLoginService getKerberosLoginService();
-
-    /**
-     * @since 4.0.17
-     */
-    UserLoginPasswordManager getUserLoginPasswordManager();
-
-    /**
-     * Encrypts users plain text login passwords.
-     * @since 4.0.17
-     */
-    void encryptUnencryptedUsersLoginPasswords();
 }

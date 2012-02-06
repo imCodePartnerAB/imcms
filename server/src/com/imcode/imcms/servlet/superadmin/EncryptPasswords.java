@@ -23,6 +23,6 @@ public class EncryptPasswords extends HttpServlet {
             return;
         }
 
-        Imcms.getServices().encryptUnencryptedUsersLoginPasswords();
+        Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
     }
 }

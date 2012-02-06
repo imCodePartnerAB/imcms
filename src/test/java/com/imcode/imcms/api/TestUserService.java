@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.servlet.UserLoginPasswordManager;
 import imcode.server.LanguageMapper;
 import imcode.server.MockImcmsServices;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -35,7 +36,8 @@ public class TestUserService extends TestCase {
         mockImcmsServices.setDatabase( database );
         mockImcmsServices.setLanguageMapper(new LanguageMapper(database, "eng")) ;
         mockImcmsServices.setProcedureExecutor(new MockProcedureExecutor(database));
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( mockImcmsServices );
+        UserLoginPasswordManager userLoginPasswordManager = new UserLoginPasswordManager();
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( mockImcmsServices , userLoginPasswordManager);
         mockImcmsServices.setImcmsAuthenticatorAndUserAndRoleMapper( imcmsAuthenticatorAndUserAndRoleMapper );
         contentManagementSystem.setInternal(mockImcmsServices) ;
         mockImcmsServices.setRoleGetter(new MockRoleGetter());

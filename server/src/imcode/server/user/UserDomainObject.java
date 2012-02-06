@@ -112,20 +112,6 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * get password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * set password
-     */
-    public void setPassword( String password ) {
-        this.password = password;
-    }
-
-    /**
      * get full name
      */
     public String getFullName() {
@@ -758,23 +744,46 @@ public class UserDomainObject implements Cloneable, Serializable {
         return passwordEncrypted;
     }
 
-    public void setPasswordEncrypted(boolean passwordEncrypted) {
-        this.passwordEncrypted = passwordEncrypted;
-    }
-
     public String getPasswordResetId() {
         return passwordResetId;
-    }
-
-    public void setPasswordResetId(String passwordResetId) {
-        this.passwordResetId = passwordResetId;
     }
 
     public Long getPasswordResetTs() {
         return passwordResetTs;
     }
 
-    public void setPasswordResetTs(Long passwordResetTs) {
+    /**
+     * Returns password.
+     * The password might be a plain text or encrypted.
+     * Use {@link #isPasswordEncrypted()} to test if password is encrypted.
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Assign a new password to the user.
+     *
+     * A value set by this public setter considered as a plain text, unencrypted password.
+     * As a consequence resets {@link #isPasswordEncrypted()} property to false.
+     * @see #setPassword(String, boolean)
+     *
+     * @param password plain text password.
+     */
+    public void setPassword(String password) {
+        setPassword(password, false);
+    }
+
+    protected void setPassword(String password, boolean passwordEncrypted) {
+        this.password = password;
+        this.passwordEncrypted = passwordEncrypted;
+    }
+
+    protected void setPasswordResetId(String passwordResetId) {
+        this.passwordResetId = passwordResetId;
+    }
+
+    protected void setPasswordResetTs(Long passwordResetTs) {
         this.passwordResetTs = passwordResetTs;
     }
 }

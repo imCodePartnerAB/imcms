@@ -8,6 +8,7 @@ import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.servlet.UserLoginPasswordManager;
 import imcode.server.ImcmsServices;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
@@ -53,6 +54,52 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     private final ImcmsServices services;
 
+//    private static class UserDomainObjectFromDb extends UserDomainObject {
+//        private UserDomainObjectFromDb(int id) {
+//            super(id);
+//        }
+//
+//        /**
+//         * Any password set from outside considered as plain text, unencrypted password.
+//         * @param password plain text password.
+//         */
+//        @Override
+//        public void setPassword(String password) {
+//            setPassword(password, false);
+//        }
+//
+//        private void setPassword(String password, boolean encrypted) {
+//            super.setPassword(password);
+//            super.setPasswordEncrypted(true);
+//        }
+//
+//        /** Changes method visibility. */
+//        @Override
+//        public void setPasswordResetTs(Long passwordResetTs) {
+//            super.setPasswordResetTs(passwordResetTs);
+//        }
+//
+//        /** Changes method visibility. */
+//        @Override
+//        public void setPasswordResetId(String passwordResetId) {
+//            super.setPasswordResetId(passwordResetId);
+//        }
+//
+//        private void setPassword(String password, boolean encrypted) {
+//            super.setPassword(password);
+//            super.setPasswordEncrypted(true);
+//        }
+//
+//        private void setEncryptedPassword(String password) {
+//            setPassword(password, true);
+//        }
+//    }
+
+    /**
+     * @since 4.0.7
+     */
+    private UserLoginPasswordManager userLoginPasswordManager;
+
     private static String sqlSelectUsers(ImcmsServices services) {
         return "SELECT user_id, login_name, login_password, first_name, last_name, "
                 + "title, company, address, city, zip, country, county_council, "
@@ -68,15 +115,16 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         return sqlSelectUsers(services) + " WHERE user_id = ?";
     }
 
-    public ImcmsAuthenticatorAndUserAndRoleMapper(ImcmsServices services) {
+    public ImcmsAuthenticatorAndUserAndRoleMapper(ImcmsServices services, UserLoginPasswordManager userLoginPasswordManager) {
         this.services = services;
+        this.userLoginPasswordManager = userLoginPasswordManager;
     }
 
     public boolean authenticate(String loginName, String password) {
         UserDomainObject user = getUser(loginName);
         return user != null && user.isActive() &&
                (user.isPasswordEncrypted()
-                    ? services.getUserLoginPasswordManager().validatePassword(password, user.getPassword())
+                    ? userLoginPasswordManager.validatePassword(password, user.getPassword())
                     : password.equals(user.getPassword()));
     }
 
@@ -107,7 +155,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     void initUserFromSqlData(UserDomainObject user, String[] sqlResult) {
         user.setLoginName(sqlResult[1]);
-        user.setPassword(sqlResult[2].trim());
+        user.setPassword(sqlResult[2].trim(), "1".equals(sqlResult[19]));
         user.setFirstName(sqlResult[3]);
         user.setLastName(sqlResult[4]);
         user.setTitle(sqlResult[5]);
@@ -126,7 +174,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         user.setSessionId(sqlResult[17]);
         user.setRememberCd(sqlResult[18]);
 
-        user.setPasswordEncrypted("1".equals(sqlResult[19]));
         user.setPasswordResetId(sqlResult[20]);
         user.setPasswordResetTs(NumberUtils.createLong(sqlResult[21]));
     }
@@ -214,8 +261,26 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 Utility.SINGLE_STRING_HANDLER
         ));
     }
+
+    /**
+     * If user is external sets the password to blank.
+     * Otherwise encrypts the password if it was modified.
+     *
+     * @param user
+     */
+    private void modifyPasswordIfNecessary(UserDomainObject user) {
+        if (user.isImcmsExternal()) {
+            user.setPassword("");
+        } else if (!user.isPasswordEncrypted()) { // todo: ? if enc supported && !user.isPasswordEncrypted() ...?
+            String password = user.getPassword();
+            if (StringUtils.isNotBlank(password)) {
+                user.setPassword(userLoginPasswordManager.encryptPassword(password), true);
+            }
+        }
+    }
     
     public void saveUser(UserDomainObject user) {
+        modifyPasswordIfNecessary(user);
 
         String[] params = {
                 user.getLoginName(),
@@ -304,9 +369,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     "A user with the name \"" + user.getLoginName() + "\" already exists.");
         }
         try {
-            if ( user.isImcmsExternal() ) {
-                user.setPassword("");
-            }
+            modifyPasswordIfNecessary(user);
+
             String externalColumn = DatabaseUtils.isDatabaseMSSql(services) ? "[external]" : "external";
             Number newUserId = (Number) services.getDatabase().execute(new InsertIntoTableDatabaseCommand("users", new String[][] {
                     { "login_name", user.getLoginName() },
@@ -686,4 +750,29 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         return null;
     }
 
+
+    /**
+     * @since 4.0.17
+     */
+    public UserLoginPasswordManager getUserLoginPasswordManager() {
+        return userLoginPasswordManager;
+    }
+
+    /**
+     * Encrypts every internal user's unencrypted non-blank login password.
+     *
+     * @since 4.0.17
+     */
+    public void encryptUnencryptedUsersLoginPasswords() {
+        for (UserDomainObject user: getAllUsers()) {
+            if (!user.isImcmsExternal() && !user.isPasswordEncrypted()) {
+                saveUser(user);
+//                String password = user.getPassword();
+//                if (StringUtils.isNotBlank(password)) {
+//                    user.setPassword(userLoginPasswordManager.encryptPassword(password));
+//                    services.getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(user);
+//                }
+            }
+        }
+    }
 }
