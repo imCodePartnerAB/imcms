@@ -222,6 +222,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.ForgotPassword</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.ForgotPassword</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SaveInclude</servlet-class>
     </servlet>
@@ -469,6 +474,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.PasswordMailReminder</servlet-name>
         <url-pattern>/servlet/PasswordMailReminder</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.ForgotPassword</servlet-name>
+        <url-pattern>/servlet/ForgotPassword</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

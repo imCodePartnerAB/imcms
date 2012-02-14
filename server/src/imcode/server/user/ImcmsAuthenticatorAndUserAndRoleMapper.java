@@ -16,7 +16,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import java.text.DateFormat;
@@ -74,17 +73,63 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         return sqlSelectUsers(services) + " WHERE user_id = ?";
     }
 
+    private static String sqlSelectUserByPasswordResetId(ImcmsServices services) {
+        return sqlSelectUsers(services) + " WHERE login_password_reset_id = ?";
+    }
+
     public ImcmsAuthenticatorAndUserAndRoleMapper(ImcmsServices services, UserLoginPasswordManager userLoginPasswordManager) {
         this.services = services;
         this.userLoginPasswordManager = userLoginPasswordManager;
     }
 
+    /**
+     * Authenticates user.
+     * The user being authenticated must be internal and his account must be active.
+     *
+     * @param loginName user's login name
+     * @param password user's plain text or encrypted password
+     *
+     * @return if user has been authenticated.
+     */
     public boolean authenticate(String loginName, String password) {
         UserDomainObject user = getUser(loginName);
-        return user != null && user.isActive() &&
+        return user != null && user.isActive() && !user.isImcmsExternal() &&
                (user.isPasswordEncrypted()
                     ? userLoginPasswordManager.validatePassword(password, user.getPassword())
                     : password.equals(user.getPassword()));
+    }
+
+    /**
+     * todo: check expired
+     * @param resetId
+     * @return user or null if internal user does not exist, user's account is inactive or password-reset has been expired.
+     */
+    public UserDomainObject getUserByPasswordResetId(String resetId) {
+        UserDomainObject user = getUserFromSqlRow(sqlSelectUserByPasswordResetId(resetId));
+
+        return (user == null || !user.isActive()) // || user.getPasswordReset.isExpired() - is expired
+                ? null
+                : user;
+    }
+
+
+    /**
+     * Create and assign a new PasswordReset to the internal user.
+     * The user's account must be active.
+     *
+     * @param loginName internal user login name
+     *
+     * @return user or null if internal user does not exist or user's account is inactive
+     */
+    public UserDomainObject createPasswordReset(String loginName) {
+        UserDomainObject user = getUser(loginName);
+
+        if (user != null && !user.isImcmsExternal() && user.isActive()) {
+            user.setPasswordReset(userLoginPasswordManager.generateUniqueIdentifier(), new Date().getTime());
+            saveUser(user);
+        }
+
+        return user;
     }
 
     public UserDomainObject getUser(String loginName) {
@@ -114,7 +159,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     void initUserFromSqlData(UserDomainObject user, String[] sqlResult) {
         user.setLoginName(sqlResult[1]);
-        user.setPassword(sqlResult[2].trim(), "1".equals(sqlResult[19]));
+        user.setPassword(sqlResult[2].trim(), "1".equals(sqlResult[19])
+                ? UserDomainObject.PasswordType.ENCRYPTED
+                : UserDomainObject.PasswordType.UNENCRYPTED);
         user.setFirstName(sqlResult[3]);
         user.setLastName(sqlResult[4]);
         user.setTitle(sqlResult[5]);
@@ -133,9 +180,15 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         user.setSessionId(sqlResult[17]);
         user.setRememberCd(sqlResult[18]);
 
-        user.setPasswordResetId(sqlResult[20]);
-        user.setPasswordResetTs(NumberUtils.createLong(sqlResult[21]));
+        String passwordResetId = sqlResult[20];
+        String passwordResetTs = sqlResult[21];
+
+        if (passwordResetId != null && passwordResetTs != null) {
+            user.setPasswordReset(passwordResetId, Long.parseLong(passwordResetTs));
+        }
     }
+
+
 
     private RoleId[] getRoleReferencesForUser(UserDomainObject user) {
         try {
@@ -199,6 +252,15 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         }
     }
 
+    String[] sqlSelectUserByPasswordResetId(String resetId) {
+        try {
+            final Object[] parameters = new String[] { resetId };
+            return (String[]) services.getDatabase().execute(new SqlQueryCommand(sqlSelectUserByPasswordResetId(services), parameters, Utility.STRING_ARRAY_HANDLER));
+        } catch ( DatabaseException e ) {
+            throw new UnhandledException(e);
+        }
+    }
+
     public void saveUser(String loginName, UserDomainObject userToSave) {
         UserDomainObject imcmsUser = getUser(loginName);
         userToSave.setId(imcmsUser.getId());
@@ -233,7 +295,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         } else if (!user.isPasswordEncrypted()) { // todo: ? if enc supported && !user.isPasswordEncrypted() ...?
             String password = user.getPassword();
             if (StringUtils.isNotBlank(password)) {
-                user.setPassword(userLoginPasswordManager.encryptPassword(password), true);
+                user.setPassword(userLoginPasswordManager.encryptPassword(password), UserDomainObject.PasswordType.ENCRYPTED);
             }
         }
     }
@@ -258,8 +320,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 user.isActive() ? "1" : "0",
                 user.getLanguageIso639_2(),
                 user.isPasswordEncrypted() ? "1" : "0",
-                user.getPasswordResetId(),
-                user.getPasswordResetTs() == null ? null : user.getPasswordResetTs().toString(),
+                user.hasPasswordReset() ? user.getPasswordReset().getId() : null,
+                user.hasPasswordReset() ? Long.toString(user.getPasswordReset().getTimeStamp()) : null,
                 "" + user.getId()
         };
         try {
@@ -350,9 +412,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     { "create_date", Utility.makeSqlStringFromDate(new Date()) },
 
                     { "login_password_is_encrypted", BooleanUtils.toString(user.isPasswordEncrypted(), "1", "0") },
-                    { "login_password_reset_id", user.getPasswordResetId() },
-                    { "login_password_reset_ts", user.getPasswordResetTs() == null ? null : user.getPasswordResetTs().toString() }
-
+                    { "login_password_reset_id", user.hasPasswordReset() ? user.getPasswordReset().getId() : null },
+                    { "login_password_reset_ts", user.hasPasswordReset() ? Long.toString(user.getPasswordReset().getTimeStamp()) : null }
             }));
             int newIntUserId = newUserId.intValue();
             user.setId(newIntUserId);

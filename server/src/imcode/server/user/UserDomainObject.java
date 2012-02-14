@@ -10,7 +10,35 @@ import org.apache.commons.lang.UnhandledException;
 import java.io.Serializable;
 import java.util.*;
 
-public class UserDomainObject implements Cloneable, Serializable {
+public final class UserDomainObject implements Cloneable, Serializable {
+
+    /**
+     * @since 4.0.7
+     */
+    enum PasswordType {
+        UNENCRYPTED, ENCRYPTED
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public static final class PasswordReset {
+        private final String id;
+        private final long timeStamp;
+
+        private PasswordReset(String id, long timeStamp) {
+            this.id = id;
+            this.timeStamp = timeStamp;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public long getTimeStamp() {
+            return timeStamp;
+        }
+    }
 
     public static final int DEFAULT_USER_ID = 2;
 
@@ -47,11 +75,9 @@ public class UserDomainObject implements Cloneable, Serializable {
     
     private String rememberCd;
 
-    private boolean passwordEncrypted;
+    private PasswordType passwordType = PasswordType.UNENCRYPTED;
 
-    private String passwordResetId;
-
-    private Long passwordResetTs;
+    private PasswordReset passwordReset = null;
 
     public UserDomainObject() {
     }
@@ -741,15 +767,15 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean isPasswordEncrypted() {
-        return passwordEncrypted;
+        return passwordType == PasswordType.ENCRYPTED;
     }
 
-    public String getPasswordResetId() {
-        return passwordResetId;
+    public PasswordReset getPasswordReset() {
+        return passwordReset;
     }
 
-    public Long getPasswordResetTs() {
-        return passwordResetTs;
+    public boolean hasPasswordReset() {
+        return passwordReset != null;
     }
 
     /**
@@ -762,28 +788,33 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * Assign a new password to the user.
+     * Assign a new unencrypted password to the user and clears password reset (if present).
      *
-     * A value set by this public setter considered as a plain text, unencrypted password.
-     * As a consequence resets {@link #isPasswordEncrypted()} property to false.
-     * @see #setPassword(String, boolean)
+     * @see #setPassword(String, PasswordType)
      *
      * @param password plain text password.
      */
     public void setPassword(String password) {
-        setPassword(password, false);
+        setPassword(password, PasswordType.UNENCRYPTED);
+        this.passwordReset = null;
     }
 
-    protected void setPassword(String password, boolean passwordEncrypted) {
+    //------------------------------------------------------------------------------------------------------------------
+    // The following package private methods are used internally by ImcmsAuthenticatorAndUserAndRoleMapper
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @since 4.0.7
+     */
+    void setPassword(String password, PasswordType passwordType) {
         this.password = password;
-        this.passwordEncrypted = passwordEncrypted;
+        this.passwordType = passwordType;
     }
 
-    protected void setPasswordResetId(String passwordResetId) {
-        this.passwordResetId = passwordResetId;
-    }
-
-    protected void setPasswordResetTs(Long passwordResetTs) {
-        this.passwordResetTs = passwordResetTs;
+    /**
+     * @since 4.0.7
+     */
+    void setPasswordReset(String resetId, long resetTs) {
+        this.passwordReset = new PasswordReset(resetId, resetTs);
     }
 }

@@ -8,6 +8,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
+import java.util.UUID;
 
 /**
  * Provides functionality for passwords encryption and validation.
@@ -21,7 +22,7 @@ public class UserLoginPasswordManager {
     private byte[] sharedSalt;
 
     /**
-     * Creates new instance of UserLoginPasswordManager with no shared salt.
+     * Creates new instance of UserLoginPasswordManager without shared salt.
      */
     public UserLoginPasswordManager() {
         this(null);
@@ -82,5 +83,12 @@ public class UserLoginPasswordManager {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * @return unique identifier.
+     */
+    public String generateUniqueIdentifier() {
+        return UUID.randomUUID().toString();
     }
 }
