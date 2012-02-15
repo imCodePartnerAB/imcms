@@ -187,10 +187,31 @@
             </exclusions>
         </dependency>
 
+        <!--<dependency>-->
+            <!--<groupId>commons-email</groupId>-->
+            <!--<artifactId>commons-email</artifactId>-->
+            <!--<version>1.0</version>-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>mail</artifactId>-->
+                    <!--<groupId>javax.mail</groupId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>activation</artifactId>-->
+                    <!--<groupId>javax.activation</groupId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>dumbster</artifactId>-->
+                    <!--<groupId>dumbster</groupId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
+
+
         <dependency>
-            <groupId>commons-email</groupId>
+            <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
             <exclusions>
                 <exclusion>
                     <artifactId>mail</artifactId>

@@ -56,9 +56,6 @@ public class Imcms {
     public synchronized static void start() throws StartupException {
         try {
             services = createServices();
-            if ("true".equals(StringUtils.stripToNull(getServerProperties().getProperty("encrypt-unencrypted-users-login-passwords-on-start")))) {
-
-            }
         } catch (Exception e) {
             throw new StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
         }
@@ -77,6 +74,8 @@ public class Imcms {
 
         final CachingFileLoader fileLoader = new CachingFileLoader();
         DefaultImcmsServices defaultImcmsServices = new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+
+        defaultImcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
 
         return defaultImcmsServices;
     }

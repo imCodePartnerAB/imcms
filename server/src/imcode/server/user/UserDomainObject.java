@@ -24,19 +24,24 @@ public final class UserDomainObject implements Cloneable, Serializable {
      */
     public static final class PasswordReset {
         private final String id;
-        private final long timeStamp;
+        private final long time;
 
         private PasswordReset(String id, long timeStamp) {
             this.id = id;
-            this.timeStamp = timeStamp;
+            this.time = timeStamp;
         }
 
         public String getId() {
             return id;
         }
 
-        public long getTimeStamp() {
-            return timeStamp;
+        public long getTime() {
+            return time;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("User.PasswordReset(id=%s, time=%s)", id, time);
         }
     }
 

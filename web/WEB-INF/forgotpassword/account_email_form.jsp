@@ -1,6 +1,9 @@
 <%@ page import="com.imcode.imcms.servlet.ForgotPassword" %>
+<%@ page import="java.util.List" %>
 <html>
     <body>
+        <jsp:include page="inc_form_errors.jsp" flush="true"/>
+
         <h2>
         Password Assistance
         </h2>

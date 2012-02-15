@@ -51,6 +51,9 @@ public class Config {
     private boolean ssoUseLocalKrbConfig;
     private boolean ssoKerberosDebug;
 
+    private String userLoginPasswordSalt;
+    private boolean userLoginPasswordEncryptionEnabled;
+
     
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
@@ -373,4 +376,20 @@ public class Config {
         this.ssoUseLocalKrbConfig = ssoUseLocalKrbConfig;
     }
 
+
+    public boolean isUserLoginPasswordEncryptionEnabled() {
+        return userLoginPasswordEncryptionEnabled;
+    }
+
+    public void setUserLoginPasswordEncryptionEnabled(boolean userLoginPasswordEncryptionEnabled) {
+        this.userLoginPasswordEncryptionEnabled = userLoginPasswordEncryptionEnabled;
+    }
+
+    public String getUserLoginPasswordSalt() {
+        return userLoginPasswordSalt;
+    }
+
+    public void setUserLoginPasswordSalt(String userLoginPasswordSalt) {
+        this.userLoginPasswordSalt = userLoginPasswordSalt;
+    }
 }

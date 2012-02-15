@@ -242,7 +242,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         }
 		
         log.info("SessionCounter: " + sessionCounter);
-        log.info("SessionCounterDate: " + sessionCounterDate);        
+        log.info("SessionCounterDate: " + sessionCounterDate);
     }
 
     private Date getSessionCounterDateFromDb() {
@@ -322,17 +322,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
             externalUserAndRoleRegistry = chainedLdapUserAndRoleRegistry;
         }
 
-        imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(this, createUserLoginPasswordManager(props));
+        imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(
+                this,
+                new UserLoginPasswordManager(StringUtils.trimToNull(config.getUserLoginPasswordSalt())));
         externalizedImcmsAuthAndMapper =
                 new ExternalizedImcmsAuthenticatorAndUserRegistry(imcmsAuthenticatorAndUserAndRoleMapper, externalAuthenticator,
                                                                   externalUserAndRoleRegistry, getLanguageMapper().getDefaultLanguage());
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
-    }
-
-    private UserLoginPasswordManager createUserLoginPasswordManager(Properties serverprops) {
-        String sharedSaltValue = serverprops.getProperty("user-login-password-salt");
-        String sharedSalt = sharedSaltValue == null ? null : sharedSaltValue.trim();
-        return new UserLoginPasswordManager(sharedSalt);
     }
 
 
@@ -723,9 +719,31 @@ final public class DefaultImcmsServices implements ImcmsServices {
         String webMasterName = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 6", parameters1, Utility.SINGLE_STRING_HANDLER));
         sd.setWebMaster(webMasterName);
 
-        final Object[] parameters = new String[0];
-        String webMasterAddress = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 7", parameters, Utility.SINGLE_STRING_HANDLER));
+        final Object[] parameters7 = new String[0];
+        String webMasterAddress = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 7", parameters7, Utility.SINGLE_STRING_HANDLER));
         sd.setWebMasterAddress(webMasterAddress);
+
+        final Object[] parameter9 = new String[0];
+        String userLoginPasswordExpirationInterval = (String)getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 9", parameter9, Utility.SINGLE_STRING_HANDLER));
+        if (userLoginPasswordExpirationInterval == null) {
+            log.warn("System property userLoginPasswordResetExpirationInterval is not set; using default");
+        } else {
+            try {
+                int interval = Integer.parseInt(userLoginPasswordExpirationInterval);
+
+                if (interval > 0) {
+                    sd.setUserLoginPasswordResetExpirationInterval(interval);
+                } else {
+                    log.warn(String.format(
+                        "System property userLoginPasswordResetExpirationInterval must be  '> 0' but set to %d; using default.",
+                        interval));
+                }
+            } catch (Throwable t) {
+                log.warn(String.format(
+                    "System property userLoginPasswordResetExpirationInterval value must be positive integer but set to %s; using default.",
+                    userLoginPasswordExpirationInterval));
+            }
+        }
 
         return sd;
     }

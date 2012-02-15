@@ -239,6 +239,6 @@
         <filter token="image-cache-max-size" value="${image-cache-max-size}"/>
 
         <filter token="user-login-password-salt" value="${user-login-password-salt}"/>
-        <filter token="encrypt-unencrypted-users-login-passwords-on-start" value="${encrypt-unencrypted-users-login-passwords-on-start}"/>
+        <filter token="user-login-password-encryption-enabled" value="${user-login-password-encryption-enabled}"/>
     </target>
 </project>

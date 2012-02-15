@@ -3,7 +3,7 @@
 # You shouldn't change any defaults unless you know what you are doing.
 
 # Database schema version.
-db-schema-version = 4.15
+db-schema-version = 4.16
 
 # The deployment directory (parent of the webapp directory).
 # Do *not* use back-slashes ('\'). Use forward-slashes ('/').
@@ -206,13 +206,7 @@ user-login-password-encryption-enabled =
 # An additional, shared 'salt' used for all internal users' login passwords encryption.
 # WARNING!
 # Assigning a different value on a running system with enabled password encryption
-# will immediately lead to inability to login for any internal users whom passwords were already encrypted.
+# will immediately lead to inability to login for all internal users whom passwords were already encrypted.
 # See description of [user-login-password-encryption-enabled] property.
 # Since 4.0.7
 user-login-password-salt =
-
-# User password reset interval in hours, after rest link is sent by email
-# Type: positive int; optional; default: 24 (hours)
-# Since 4.0.7
-# todo: move this param to db?
-user-login-password-reset-interval =
