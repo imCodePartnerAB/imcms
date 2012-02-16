@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.SimpleEmail;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,6 +21,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ForgotPassword extends HttpServlet {
+
+    private static final Logger logger = org.apache.log4j.Logger.getLogger(ForgotPassword.class);
 
     // todo: add captcha?
     // todo: add logging
@@ -216,6 +219,7 @@ public class ForgotPassword extends HttpServlet {
 //                    email.send();
                     System.out.println("Sent!!");
                 } catch (Exception e) {
+                    logger.error("Failed to send password recovery email", e);
                     System.out.println("Mail sending error: " + e);
                 }
             }
