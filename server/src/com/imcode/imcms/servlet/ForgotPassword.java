@@ -1,7 +1,10 @@
 package com.imcode.imcms.servlet;
 
+import com.sun.xml.internal.fastinfoset.util.CharArray;
 import imcode.server.Imcms;
+import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
+import imcode.util.net.SMTP;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
@@ -11,14 +14,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ForgotPassword extends HttpServlet {
 
-    // todo: create fixed thread pool for sending emails
     // todo: add captcha?
+    // todo: add logging
 
     // Available commands.
     public enum Op {
@@ -47,6 +52,9 @@ public class ForgotPassword extends HttpServlet {
             email_sent_confirmation_view = "email_sent_confirmation.jsp",
             new_password_form_view = "password_reset_form.jsp",
             password_changed_confirmation_view = "password_changed_confirmation.jsp";
+
+
+    private ExecutorService emailSender = Executors.newFixedThreadPool(5);
 
 
     /**
@@ -99,30 +107,12 @@ public class ForgotPassword extends HttpServlet {
                 if (user != null) {
                     System.out.println(user.getPasswordReset());
 
-                    try {
-                        Email email = new SimpleEmail();
-                        email.setHostName("smtp.gmail.com");
-                        email.setSmtpPort(587);
-                        email.setDebug(true);
-                        email.setAuthenticator(new DefaultAuthenticator("xxxx@gmail.com", "xxxx"));
-                        email.setTLS(true);
-                        email.setFrom("imcode.se");
-                        email.setSubject("imcms.se Password Assistance");
-                        email.setMsg(String.format("%s?%s=%s&%s=%s",
-                                request.getRequestURL().toString(),
-                                REQUEST_PARAM_OP, Op.RESET, REQUEST_PARAM_RESET_ID, user.getPasswordReset().getId()));
-                        email.addTo("anton.josua@gmail.com");
-                        email.send();
-                    } catch (Exception e) {
-                        System.out.println("Mail sending error: " + e);
-                    }
+                    String url = String.format("%s?%s=%s&%s=%s",
+                            request.getRequestURL(),
+                            REQUEST_PARAM_OP, Op.RESET.toString().toLowerCase(),
+                            REQUEST_PARAM_RESET_ID, user.getPasswordReset().getId());
 
-                    // todo: check email format is valid and send out an email.
-                    //SystemData sysData = Imcms.getServices().getSystemData();
-                    //String eMailServerMaster = sysData.getServerMasterAddress();
-                    //SMTP smtp = Imcms.getServices().getSMTP();
-                    // imcode.util.Utility.isValidEmail(userEmail)
-                    //smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { user.getEmailAddress() }, "subject", "body"));
+                    asyncSendPasswordResetEMail(request, user, url);
                 }
 
                 view = email_sent_confirmation_view;
@@ -180,12 +170,63 @@ public class ForgotPassword extends HttpServlet {
     private void setValidationErrors(HttpServletRequest request, String first, String... rest) {
         List<String> errors = new LinkedList<String>();
 
-        errors.add("first");
+        errors.add(first);
 
         for (String error: rest) {
             errors.add(error);
         }
 
         request.setAttribute(REQUEST_ATTR_VALIDATION_ERRORS, errors);
+    }
+
+
+    private void asyncSendPasswordResetEMail(final HttpServletRequest request, final UserDomainObject receiver, final String url) {
+        emailSender.submit(new Runnable() {
+            public void run() {
+                try {
+                    InputStream in = request.getSession().getServletContext().getResourceAsStream("/WEB-INF/forgotpassword/email_template.en.txt");
+                    BufferedReader r = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = r.readLine()) != null) {
+                        sb.append(line);
+                    }
+
+                    in.close();
+
+                    String subject = "imcms.se Password Assistance -- DO NOT REPLAY --";
+                    String body = String.format(sb.toString(), url);
+
+            SystemData sysData = Imcms.getServices().getSystemData();
+            String eMailServerMaster = sysData.getServerMasterAddress();
+            SMTP smtp = Imcms.getServices().getSMTP();
+            // imcode.util.Utility.isValidEmail(userEmail)
+            smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
+
+//                    Email email = new SimpleEmail();
+//                    email.setHostName("smtp.gmail.com");
+//                    email.setSmtpPort(587);
+//                    email.setDebug(true);
+//                    email.setAuthenticator(new DefaultAuthenticator(xxx@gmail.com", "xxx"));
+//                    email.setTLS(true);
+//                    email.setFrom("admin@imcms.se");
+//                    email.setSubject(subject);
+//                    email.setMsg(body);
+//                    email.addTo("anton.josua@gmail.com");
+//                    email.setDebug(true);
+//                    email.send();
+                    System.out.println("Sent!!");
+                } catch (Exception e) {
+                    System.out.println("Mail sending error: " + e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        System.out.println("Shutting down!!");
+        emailSender.shutdownNow();
     }
 }

@@ -1,5 +1,5 @@
 <%@ page import="com.imcode.imcms.servlet.ForgotPassword" %>
-<%@ page import="java.util.List" %>
+
 <html>
     <body>
         <jsp:include page="inc_validation_errors.jsp" flush="true"/>
