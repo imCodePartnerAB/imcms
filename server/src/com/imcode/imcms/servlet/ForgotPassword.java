@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet;
 
-import com.sun.xml.internal.fastinfoset.util.CharArray;
 import imcode.server.Imcms;
 import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
