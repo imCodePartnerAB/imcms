@@ -2,6 +2,8 @@
 
 <html>
     <body>
+        <jsp:include page="inc_validation_errors.jsp" flush="true"/>
+
         <h2>
         Password Assistance
         </h2>
@@ -23,10 +25,11 @@
 
         <p>
         Secure password tips:
-        Use at least 8 characters, a combination of numbers and letters is best.
-        Do not use the same password you have used with us previously.
-        Do not use dictionary words, your name, e-mail address, or other personal information that can be easily obtained.
-        Do not use the same password for multiple online accounts.
-        </p>
+        <ul>
+            <li>Use at least 8 characters, a combination of numbers and letters is best.</li>
+            <li>Do not use the same password you have used with us previously.</li>
+            <li>Do not use dictionary words, your name, e-mail address, or other personal information that can be easily obtained.</li>
+            <li>Do not use the same password for multiple online accounts.</li>
+        </ul>
     </body>
 </html>

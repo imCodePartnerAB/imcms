@@ -212,20 +212,20 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
             <version>1.2</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>mail</artifactId>
-                    <groupId>javax.mail</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>activation</artifactId>
-                    <groupId>javax.activation</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>dumbster</artifactId>
-                    <groupId>dumbster</groupId>
-                </exclusion>
-            </exclusions>
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>mail</artifactId>-->
+                    <!--<groupId>javax.mail</groupId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>activation</artifactId>-->
+                    <!--<groupId>javax.activation</groupId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>dumbster</artifactId>-->
+                    <!--<groupId>dumbster</groupId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
         </dependency>
 
         <dependency>
@@ -300,17 +300,17 @@
             <version>1.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>gnu-mail</groupId>
-            <artifactId>gnu-mail</artifactId>
-            <version>1.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>gnu-mail</groupId>-->
+            <!--<artifactId>gnu-mail</artifactId>-->
+            <!--<version>1.0</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>gnu-mail-providers</groupId>
-            <artifactId>gnu-mail-providers</artifactId>
-            <version>1.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>gnu-mail-providers</groupId>-->
+            <!--<artifactId>gnu-mail-providers</artifactId>-->
+            <!--<version>1.0</version>-->
+        <!--</dependency>-->
 
         <!-- Replaced with 1.0 parsers & dependencies -->
         <!--<dependency>-->

@@ -2,7 +2,7 @@
 <%@ page import="java.util.List" %>
 <html>
     <body>
-        <jsp:include page="inc_form_errors.jsp" flush="true"/>
+        <jsp:include page="inc_validation_errors.jsp" flush="true"/>
 
         <h2>
         Password Assistance
