@@ -8,9 +8,6 @@
         You have successfully changed your password.
         </p>
 
-        <ul>
-            <li>?link: front page ?</li>
-            <li>?link: login      ?</li>
-        </ul>
+        <a href="<%=request.getContextPath()%>">Go to the start page</a> or <a href="<%=request.getContextPath()%>/login">Login</a>
     </body>
 </html>
