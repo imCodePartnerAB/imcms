@@ -1,5 +1,7 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.servlet.superadmin.UserEditorPage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
@@ -26,6 +28,10 @@ public class ForgotPassword extends HttpServlet {
 
     // todo: add captcha?
     // todo: add logging
+    // todo: add i18n mail error msg
+    // todo: add interval to system data editing
+    // todo: email unique + validation check on user editor page
+
 
     // Available commands.
     public enum Op {
@@ -62,8 +68,8 @@ public class ForgotPassword extends HttpServlet {
     /**
      * Forwards request to password reset or password edit view.
      *
-     * Password reset request does not require any additional parameters.
-     * Password edit request expects valid reset-id parameter.
+     * Password reset request does not expect any parameters.
+     * Password edit request required valid reset-id parameter.
      *
      * Forwards to 404 if request parameters do not met requirements.
      *
@@ -103,12 +109,14 @@ public class ForgotPassword extends HttpServlet {
                 setValidationErrors(request, "Missing email address");
                 view = account_email_form_view;
             } else {
-                // todo: only by email ???
                 UserDomainObject user = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().createPasswordReset(userEmail);
 
-                if (user != null) {
-                    System.out.println(user.getPasswordReset());
+                if (logger.isDebugEnabled()) {
+                    logger.debug(String.format("Requested password reset using email: '%s', created reset: '%s'",
+                            userEmail, user == null ? "no reset where created" : user.getPasswordReset()));
+                }
 
+                if (user != null) {
                     String url = String.format("%s?%s=%s&%s=%s",
                             request.getRequestURL(),
                             REQUEST_PARAM_OP, Op.RESET.toString().toLowerCase(),
@@ -126,9 +134,10 @@ public class ForgotPassword extends HttpServlet {
                 String password = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_PASSWORD));
                 String passwordCheck = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_PASSWORD_CHECK));
 
-                // todo: check password length and strength
-                if (password.isEmpty() || !password.equals(passwordCheck)) {
-                    setValidationErrors(request, "Password must not be empty and must be equal to reentered password.");
+                LocalizedMessage errorMsg = UserEditorPage.validatePassword(user.getLoginName(), password, passwordCheck);
+
+                if (errorMsg != null) {
+                    setValidationErrors(request, errorMsg.toLocalizedString(user));
                     view = new_password_form_view;
                 } else {
                     user.setPassword(password);
@@ -186,6 +195,10 @@ public class ForgotPassword extends HttpServlet {
         emailSender.submit(new Runnable() {
             public void run() {
                 try {
+                    logger.debug(String.format(
+                            "Sending password reset email. User login: %s, user email address: %s.",
+                            receiver.getLoginName(), receiver.getEmailAddress()));
+
                     InputStream in = request.getSession().getServletContext().getResourceAsStream("/WEB-INF/forgotpassword/email_template.en.txt");
                     BufferedReader r = new BufferedReader(new InputStreamReader(in));
                     StringBuilder sb = new StringBuilder();
@@ -217,19 +230,21 @@ public class ForgotPassword extends HttpServlet {
 //                    email.addTo("anton.josua@gmail.com");
 //                    email.setDebug(true);
 //                    email.send();
-                    System.out.println("Sent!!");
                 } catch (Exception e) {
-                    logger.error("Failed to send password recovery email", e);
-                    System.out.println("Mail sending error: " + e);
+                    logger.error(
+                            String.format(
+                                    "Failed to send password reset email. User login: %s User email address: %s.",
+                                    receiver.getLoginName(), receiver.getEmailAddress()),
+                            e);
                 }
             }
         });
     }
 
+
     @Override
     public void destroy() {
         super.destroy();
-        System.out.println("Shutting down!!");
         emailSender.shutdownNow();
     }
 }
