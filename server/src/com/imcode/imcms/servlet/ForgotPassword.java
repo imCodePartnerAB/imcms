@@ -28,10 +28,15 @@ public class ForgotPassword extends HttpServlet {
 
     // todo: add captcha?
     // todo: add logging
-    // todo: add i18n mail error msg
     // todo: add interval to system data editing
-    // todo: email unique + validation check on user editor page
 
+    // --
+    // -- description:
+    // -- SSL?
+    // -- check resources: marked 4.0.17
+    // -- verification only by email, user must know where mail is sent
+    // -- email is mandatory and must be unique - may cause DB update problem
+    // --
 
     // Available commands.
     public enum Op {

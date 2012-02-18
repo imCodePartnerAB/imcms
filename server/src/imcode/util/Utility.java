@@ -62,6 +62,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.validator.EmailValidator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.w3c.dom.Document;
@@ -154,7 +155,7 @@ public class Utility {
     }
 
     public static boolean isValidEmail( String email ) {
-        return Pattern.compile( "\\w+@\\w+" ).matcher( email ).find();
+        return EmailValidator.getInstance().isValid(email);
     }
 
     public static void removeNullValuesFromMap( Map map ) {

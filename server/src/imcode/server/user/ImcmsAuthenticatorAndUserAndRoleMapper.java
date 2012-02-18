@@ -110,6 +110,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
 
     /**
+     * @since 4.0.7
+     */
+    public UserDomainObject getUserByEmail(String email) {
+        return email == null ? null : getUserFromSqlRow(sqlSelectUserByEmail(email));
+    }
+
+    /**
      * Create and assign a new PasswordReset to the internal user.
      * The user's account must be active.
      *
@@ -118,7 +125,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      * @return user or null if internal user does not exist or user's account is inactive
      */
     public UserDomainObject createPasswordReset(String email) {
-        UserDomainObject user = getUserFromSqlRow(sqlSelectUserByEmail(email));
+        UserDomainObject user = getUserByEmail(email);
 
         if (user != null && user.isActive() && !user.isDefaultUser() && !user.isImcmsExternal()) {
             user.setPasswordReset(userLoginPasswordManager.generateUniqueIdentifier(), System.currentTimeMillis());

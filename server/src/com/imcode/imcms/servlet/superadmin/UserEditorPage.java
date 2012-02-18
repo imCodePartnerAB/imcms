@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.api.NoPermissionException;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -16,6 +15,7 @@ import imcode.util.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.bouncycastle.i18n.LocalizedException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -60,6 +60,10 @@ public class UserEditorPage extends OkCancelPage {
     private static final LocalizedMessage ERROR__PASSWORD_TOO_WEAK = new LocalizedMessage("error/password_too_weak");
     private static final LocalizedMessage ERROR__EDITED_USER_MUST_HAVE_AT_LEAST_ONE_ROLE = new LocalizedMessage("error/user_must_have_at_least_one_role");
 
+    private static final LocalizedMessage ERROR__EMAIL_IS_EMPTY = new LocalizedMessage("error/email_is_missing");
+    private static final LocalizedMessage ERROR__EMAIL_IS_INVALID = new LocalizedMessage("error/email_is_invalid");
+    private static final LocalizedMessage ERROR__EMAIL_IS_TAKEN = new LocalizedMessage("error/email_is_taken");
+
     private UserDomainObject editedUser;
     private UserDomainObject uneditedUser;
     private PhoneNumber currentPhoneNumber = new PhoneNumber("", PhoneNumberType.OTHER);
@@ -90,14 +94,39 @@ public class UserEditorPage extends OkCancelPage {
         editedUser.setZip(request.getParameter(REQUEST_PARAMETER__ZIP));
         editedUser.setCountry(request.getParameter(REQUEST_PARAMETER__COUNTRY));
         editedUser.setProvince(request.getParameter(REQUEST_PARAMETER__DISTRICT));
-        editedUser.setEmailAddress(request.getParameter(REQUEST_PARAMETER__EMAIL));
+        editedUser.setEmailAddress(StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAMETER__EMAIL)));
         editedUser.setLanguageIso639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE));
         editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
 
-        updateUserPasswordFromRequest(editedUser, request);
-
         updateUserRolesFromRequest(request);
         updateUserAdminRolesFromRequest(request);
+
+        updateUserPasswordFromRequest(editedUser, request);
+
+        if (getErrorMessage() == null) {
+            setErrorMessage(validateUserEmail());
+        }
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    private LocalizedMessage validateUserEmail() {
+        String email = editedUser.getEmailAddress();
+        LocalizedMessage msg = null;
+
+        if (email.isEmpty()) {
+            msg = ERROR__EMAIL_IS_EMPTY;
+        } else if (!Utility.isValidEmail(email)) {
+            msg = ERROR__EMAIL_IS_INVALID;
+        } else {
+            UserDomainObject user = getImcmsServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUserByEmail(email);
+            if (user != null && user.getId() != uneditedUser.getId()) {
+                msg = ERROR__EMAIL_IS_TAKEN;
+            }
+        }
+
+        return msg;
     }
 
     private void updateUserAdminRolesFromRequest(HttpServletRequest request) {
