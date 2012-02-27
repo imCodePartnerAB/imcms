@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.log4j.Logger;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -20,6 +21,8 @@ public class UserLoginPasswordManager {
     private static final String KEY_ALGORITHM = "PBKDF2WithHmacSHA1";
 
     private byte[] sharedSalt;
+
+    private static Logger logger = Logger.getLogger(UserLoginPasswordManager.class);
 
     /**
      * Creates new instance of UserLoginPasswordManager without shared salt.
@@ -60,7 +63,8 @@ public class UserLoginPasswordManager {
 
             return encryptPassword(password, randomSalt).equals(encryptedPassword);
         } catch (DecoderException e) {
-            throw new RuntimeException(e);
+            logger.error(e);
+            return false;
         }
     }
 
