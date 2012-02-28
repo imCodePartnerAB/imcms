@@ -10,6 +10,7 @@ import com.imcode.imcms.servlet.Version;
 import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.commons.io.IOUtils;
 
@@ -75,6 +76,7 @@ public class AdminSystemInfo extends HttpServlet {
         vm.put("WEB_MASTER_EMAIL", webMasterEmail);
         vm.put("SERVER_MASTER", serverMaster);
         vm.put("SERVER_MASTER_EMAIL", serverMasterEmail);
+        vm.put("PASSWORD_RESET_EXPIRATION_INTERVAL", "" + sysData.getUserLoginPasswordResetExpirationInterval());
 
         AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
     } // End doGet
@@ -181,6 +183,30 @@ public class AdminSystemInfo extends HttpServlet {
             doGet(req, res);
             return;
         }
+
+
+        if (req.getParameter("SetPasswordResetExpirationInterval") != null) {
+            String value = StringUtils.trimToEmpty(req.getParameter("PASSWORD_RESET_EXPIRATION_INTERVAL"));
+
+            if (!value.isEmpty()) {
+                try {
+                    int interval = Integer.parseInt(value);
+                    if (interval > 0) {
+                        imcode.server.SystemData sysData = imcref.getSystemData();
+                        sysData.setUserLoginPasswordResetExpirationInterval(interval);
+
+                        imcref.setSystemData(sysData);
+                    }
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
+            }
+
+            doGet(req, res);
+            return;
+        }
+
+
         if (req.getParameter("Cancel") != null) {
             res.sendRedirect("AdminManager");
         }

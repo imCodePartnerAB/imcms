@@ -12,7 +12,7 @@
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>4.0.17</version>
+    <version>4.0.18</version>
     <name>imCMS</name>
 
     <properties>
