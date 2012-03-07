@@ -192,11 +192,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.PasswordMailReminder</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.PasswordMailReminder</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.RebuildIndex</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.RebuildIndex</servlet-class>
     </servlet>
@@ -469,11 +464,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.PageDispatcher</servlet-name>
         <url-pattern>/servlet/PageDispatcher</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.PasswordMailReminder</servlet-name>
-        <url-pattern>/servlet/PasswordMailReminder</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
     todo: write how-to notes for the team, non-standard directory layouts, etc
     move jsp generation into profile, add test profile: log4j
@@ -12,7 +11,7 @@
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>4.0.18</version>
+    <version>4.0.19-SNAPSHOT</version>
     <name>imCMS</name>
 
     <properties>

@@ -1,10 +1,13 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
 import imcode.server.Imcms;
 import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import imcode.util.net.SMTP;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
@@ -26,10 +29,6 @@ public class ForgotPassword extends HttpServlet {
 
     private static final Logger logger = org.apache.log4j.Logger.getLogger(ForgotPassword.class);
 
-    // todo: add captcha?
-    // todo: add logging
-    // todo: add interval to system data editing
-
     // --
     // -- description:
     // -- SSL?
@@ -38,16 +37,17 @@ public class ForgotPassword extends HttpServlet {
     // -- email is mandatory and must be unique - may cause DB update problem
     // --
 
-    // Available commands.
+    // Ops
     public enum Op {
-        REQUEST_RESET,
+        REQUEST_RESET_URL,
         SEND_RESET_URL,
         RESET,
         SAVE_NEW_PASSWORD,
+        UNDEFINED
     }
 
 
-    // Request parameters associated with commands.
+    // Request parameters associated with ops.
     public static final String
             REQUEST_PARAM_OP = "op",
             REQUEST_PARAM_RESET_ID = "id",
@@ -56,7 +56,7 @@ public class ForgotPassword extends HttpServlet {
             REQUEST_PARAM_PASSWORD_CHECK = "password_check";
 
     // Attribute is bounded to List<String> of error messages.
-    public static final String REQUEST_ATTR_VALIDATION_ERRORS = "form_errors";
+    public static final String REQUEST_ATTR_VALIDATION_ERRORS = "validation_errors";
 
 
     // Views
@@ -68,6 +68,8 @@ public class ForgotPassword extends HttpServlet {
 
 
     private ExecutorService emailSender = Executors.newFixedThreadPool(5);
+
+    private final LocalizedMessage validationErrorNoEmail = new LocalizedMessage("forgotpassord.error.missing_email");
 
 
     /**
@@ -85,7 +87,7 @@ public class ForgotPassword extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Op op = getOp(request);
-        String view = op == Op.REQUEST_RESET
+        String view = op == Op.REQUEST_RESET_URL
                 ? account_email_form_view
                 : op == Op.RESET && getUserByPasswordResetId(request) != null
                     ? new_password_form_view
@@ -111,7 +113,7 @@ public class ForgotPassword extends HttpServlet {
             String userEmail = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_EMAIL));
 
             if (userEmail.isEmpty()) {
-                setValidationErrors(request, "Missing email address");
+                setValidationErrors(request, validationErrorNoEmail.toLocalizedString(request));
                 view = account_email_form_view;
             } else {
                 UserDomainObject user = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().createPasswordReset(userEmail);
@@ -175,10 +177,12 @@ public class ForgotPassword extends HttpServlet {
 
 
     private Op getOp(HttpServletRequest request) {
+        String opValue = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_OP)).toUpperCase();
+
         try {
-            return Op.valueOf(StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_OP)).toUpperCase());
+            return opValue.isEmpty() ? Op.REQUEST_RESET_URL : Op.valueOf(opValue);
         } catch (Exception e) {
-            return Op.REQUEST_RESET;
+            return Op.UNDEFINED;
         }
     }
 
@@ -199,48 +203,47 @@ public class ForgotPassword extends HttpServlet {
     private void asyncSendPasswordResetEMail(final HttpServletRequest request, final UserDomainObject receiver, final String url) {
         emailSender.submit(new Runnable() {
             public void run() {
-                try {
+                String emailAddress = receiver.getEmailAddress();
+
+                if (!Utility.isValidEmail(emailAddress)) {
                     logger.debug(String.format(
-                            "Sending password reset email. User login: %s, user email address: %s.",
-                            receiver.getLoginName(), receiver.getEmailAddress()));
+                            "Receiver (user login: %s) email address %s is invalid.",
+                            receiver.getLoginName(), emailAddress));
+                } else {
+                    try {
+                        logger.debug(String.format(
+                                "Sending password reset email. User login: %s, user email address: %s.",
+                                receiver.getLoginName(), emailAddress));
 
-                    InputStream in = request.getSession().getServletContext().getResourceAsStream("/WEB-INF/forgotpassword/email_template.en.txt");
-                    BufferedReader r = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) {
-                        sb.append(line);
+                        String serverName = request.getServerName();
+                        String subject = new LocalizedMessageFormat("forgotpassord.password_reset_email.subject", serverName).toLocalizedString(request);
+                        String body = new LocalizedMessageFormat("forgotpassord.password_reset_email.body", serverName, url).toLocalizedString(request);
+
+            //            SystemData sysData = Imcms.getServices().getSystemData();
+            //            String eMailServerMaster = sysData.getServerMasterAddress();
+            //            SMTP smtp = Imcms.getServices().getSMTP();
+            //            // imcode.util.Utility.isValidEmail(userEmail)
+            //            smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
+
+                        Email email = new SimpleEmail();
+                        email.setDebug(true);
+                        email.setHostName("smtp.gmail.com");
+                        email.setSmtpPort(587);
+                        email.setDebug(true);
+                        email.setAuthenticator(new DefaultAuthenticator("anton.josua@gmail.com", "uHAP3pMpdR"));
+                        email.setTLS(true);
+                        email.setFrom("admin@imcms.se");
+                        email.setSubject(subject);
+                        email.setMsg(body);
+                        email.addTo("anton.josua@gmail.com");
+                        email.send();
+                    } catch (Exception e) {
+                        logger.error(
+                                String.format(
+                                        "Failed to send password reset email. User login: %s User email address: %s.",
+                                        receiver.getLoginName(), receiver.getEmailAddress()),
+                                e);
                     }
-
-                    in.close();
-
-                    String subject = "imcms.se Password Assistance -- DO NOT REPLAY --";
-                    String body = String.format(sb.toString(), url);
-
-            SystemData sysData = Imcms.getServices().getSystemData();
-            String eMailServerMaster = sysData.getServerMasterAddress();
-            SMTP smtp = Imcms.getServices().getSMTP();
-            // imcode.util.Utility.isValidEmail(userEmail)
-            smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
-
-//                    Email email = new SimpleEmail();
-//                    email.setHostName("smtp.gmail.com");
-//                    email.setSmtpPort(587);
-//                    email.setDebug(true);
-//                    email.setAuthenticator(new DefaultAuthenticator(xxx@gmail.com", "xxx"));
-//                    email.setTLS(true);
-//                    email.setFrom("admin@imcms.se");
-//                    email.setSubject(subject);
-//                    email.setMsg(body);
-//                    email.addTo("anton.josua@gmail.com");
-//                    email.setDebug(true);
-//                    email.send();
-                } catch (Exception e) {
-                    logger.error(
-                            String.format(
-                                    "Failed to send password reset email. User login: %s User email address: %s.",
-                                    receiver.getLoginName(), receiver.getEmailAddress()),
-                            e);
                 }
             }
         });

@@ -1,13 +1,18 @@
+<%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
+
+<%!
+    static final LocalizedMessage confirmation = new LocalizedMessage("forgotpassord.confirmation.password_changed");
+    static final LocalizedMessage lnkStartPage = new LocalizedMessage("forgotpassord.link.start_page");
+%>
+
 <html>
     <body>
-        <h2>
-        Password Assistance
-        </h2>
+        <jsp:include page="inc_header.jsp" flush="true"/>
 
         <p>
-        You have successfully changed your password.
+            <%=confirmation.toLocalizedString(request)%>
         </p>
 
-        <a href="<%=request.getContextPath()%>">Go to the start page</a> or <a href="<%=request.getContextPath()%>/login">Login</a>
+        <a href="<%=request.getContextPath()%>"><%=lnkStartPage.toLocalizedString(request)%></a>
     </body>
 </html>

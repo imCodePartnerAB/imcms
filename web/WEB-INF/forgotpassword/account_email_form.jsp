@@ -1,24 +1,26 @@
 <%@ page import="com.imcode.imcms.servlet.ForgotPassword" %>
+<%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
+
+<%!
+    static final LocalizedMessage formInfo = new LocalizedMessage("forgotpassord.email_form_info");
+    static final LocalizedMessage formLabelEmail = new LocalizedMessage("forgotpassord.email_form.lbl_email");
+    static final LocalizedMessage formSubmit = new LocalizedMessage("forgotpassord.email_form.submit");
+%>
 
 <html>
     <body>
-        <jsp:include page="inc_validation_errors.jsp" flush="true"/>
-
-        <h2>
-        Password Assistance
-        </h2>
+        <jsp:include page="inc_header.jsp" flush="true"/>
 
         <p>
-        Enter the e-mail address associated with your account, then click Continue.
-        We'll email you a link to a page where you can easily create a new password.
+            <%=formInfo.toLocalizedString(request)%>
         </p>
 
         <form method="POST" action="/servlet/ForgotPassword">
             <input type="hidden" name="<%=ForgotPassword.REQUEST_PARAM_OP%>" value="<%=ForgotPassword.Op.SEND_RESET_URL%>"/>
 
-            Email address: <input type="text" name="<%=ForgotPassword.REQUEST_PARAM_EMAIL%>">
-            <%-- ?captcha? --%>
-            <input type="submit" value="Send" />
+            <%=formLabelEmail.toLocalizedString(request)%> <input type="text" name="<%=ForgotPassword.REQUEST_PARAM_EMAIL%>">
+
+            <input type="submit" value="<%=formSubmit.toLocalizedString(request)%>" />
         </form>
     </body>
 </html>

@@ -1,20 +1,18 @@
+<%@ page import="com.imcode.imcms.util.l10n.LocalizedMessageFormat" %>
 <%@ page import="com.imcode.imcms.servlet.ForgotPassword" %>
+<%@ page import="imcode.server.Imcms" %>
+
 <html>
     <body>
-        <h2>
-        Password Assistance
-        </h2>
+        <jsp:include page="inc_header.jsp" flush="true"/>
 
         <p>
-        Check your e-mail.
-        If the e-mail address you entered
-            <span style="font-weight: bold; color: #708090;">
-                <%=request.getParameter(ForgotPassword.REQUEST_PARAM_EMAIL)%>
-            </span>
-        is associated with a customer account in our records,
-        you will receive an e-mail from us with instructions for resetting your password.
-        If you don't receive this e-mail, please check your junk mail folder
-        or visit our Help pages to contact Customer Service for further assistance.
+            <%=
+                new LocalizedMessageFormat("forgotpassord.confirmation.email_sent",
+                        request.getParameter(ForgotPassword.REQUEST_PARAM_EMAIL),
+//                        Imcms.getServices().getSystemData().getServerMasterAddress()
+                        "XXXXYYYYZZZZ").toLocalizedString(request)
+            %>
         </p>
     </body>
 </html>
