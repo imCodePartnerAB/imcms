@@ -219,24 +219,24 @@ public class ForgotPassword extends HttpServlet {
                         String subject = new LocalizedMessageFormat("forgotpassord.password_reset_email.subject", serverName).toLocalizedString(request);
                         String body = new LocalizedMessageFormat("forgotpassord.password_reset_email.body", serverName, url).toLocalizedString(request);
 
-            //            SystemData sysData = Imcms.getServices().getSystemData();
-            //            String eMailServerMaster = sysData.getServerMasterAddress();
-            //            SMTP smtp = Imcms.getServices().getSMTP();
-            //            // imcode.util.Utility.isValidEmail(userEmail)
-            //            smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
+                        SystemData sysData = Imcms.getServices().getSystemData();
+                        String eMailServerMaster = sysData.getServerMasterAddress();
+                        SMTP smtp = Imcms.getServices().getSMTP();
 
-                        Email email = new SimpleEmail();
-                        email.setDebug(true);
-                        email.setHostName("smtp.gmail.com");
-                        email.setSmtpPort(587);
-                        email.setDebug(true);
-                        email.setAuthenticator(new DefaultAuthenticator("anton.josua@gmail.com", "uHAP3pMpdR"));
-                        email.setTLS(true);
-                        email.setFrom("admin@imcms.se");
-                        email.setSubject(subject);
-                        email.setMsg(body);
-                        email.addTo("anton.josua@gmail.com");
-                        email.send();
+                        smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
+
+//                        Email email = new SimpleEmail();
+//                        email.setDebug(true);
+//                        email.setHostName("smtp.gmail.com");
+//                        email.setSmtpPort(587);
+//                        email.setDebug(true);
+//                        email.setAuthenticator(new DefaultAuthenticator("xxx.yyy@gmail.com", "abc"));
+//                        email.setTLS(true);
+//                        email.setFrom("admin@imcms.se");
+//                        email.setSubject(subject);
+//                        email.setMsg(body);
+//                        email.addTo("anton.josua@gmail.com");
+//                        email.send();
                     } catch (Exception e) {
                         logger.error(
                                 String.format(
