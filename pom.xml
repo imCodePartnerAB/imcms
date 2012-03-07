@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
-    todo: write how-to notes for the team, non-standard directory layouts, etc
-    move jsp generation into profile, add test profile: log4j
+    Web sources generation is bound to the 'process-sources' phase.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -19,7 +19,7 @@
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
-        <jetty.scanIntervalSeconds>3</jetty.scanIntervalSeconds>
+        <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
         <jetty.contextPath>/</jetty.contextPath>
 
         <slf4j.version>1.6.4</slf4j.version>
