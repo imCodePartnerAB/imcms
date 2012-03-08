@@ -29,14 +29,6 @@ public class ForgotPassword extends HttpServlet {
 
     private static final Logger logger = org.apache.log4j.Logger.getLogger(ForgotPassword.class);
 
-    // --
-    // -- description:
-    // -- SSL?
-    // -- check resources: marked 4.0.17
-    // -- verification only by email, user must know where mail is sent
-    // -- email is mandatory and must be unique - may cause DB update problem
-    // --
-
     // Ops
     public enum Op {
         REQUEST_RESET_URL,
@@ -98,7 +90,7 @@ public class ForgotPassword extends HttpServlet {
 
 
     /**
-     * Handles email sending and new password saving.
+     * Handles password recovery email sending and new password saving.
      *
      * @param request
      * @param response
@@ -205,7 +197,7 @@ public class ForgotPassword extends HttpServlet {
             public void run() {
                 String emailAddress = receiver.getEmailAddress();
 
-                if (!Utility.isValidEmail(emailAddress)) {
+                if (receiver.isDefaultUser() || !Utility.isValidEmail(emailAddress)) {
                     logger.debug(String.format(
                             "Receiver (user login: %s) email address %s is invalid.",
                             receiver.getLoginName(), emailAddress));
@@ -219,24 +211,24 @@ public class ForgotPassword extends HttpServlet {
                         String subject = new LocalizedMessageFormat("forgotpassord.password_reset_email.subject", serverName).toLocalizedString(request);
                         String body = new LocalizedMessageFormat("forgotpassord.password_reset_email.body", serverName, url).toLocalizedString(request);
 
-//                        SystemData sysData = Imcms.getServices().getSystemData();
-//                        String eMailServerMaster = sysData.getServerMasterAddress();
-//                        SMTP smtp = Imcms.getServices().getSMTP();
+                        SystemData sysData = Imcms.getServices().getSystemData();
+                        String eMailServerMaster = sysData.getServerMasterAddress();
+                        SMTP smtp = Imcms.getServices().getSMTP();
 
-//                        smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
+                        smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
 
-                        Email email = new SimpleEmail();
-                        email.setDebug(true);
-                        email.setHostName("smtp.gmail.com");
-                        email.setSmtpPort(587);
-                        email.setDebug(true);
-                        email.setAuthenticator(new DefaultAuthenticator("anton.josua@gmail.com", "AN721TON856ALEX436"));
-                        email.setTLS(true);
-                        email.setFrom("admin@imcms.se");
-                        email.setSubject(subject);
-                        email.setMsg(body);
-                        email.addTo("anton.josua@gmail.com");
-                        email.send();
+//                        Email email = new SimpleEmail();
+//                        email.setDebug(true);
+//                        email.setHostName("smtp.gmail.com");
+//                        email.setSmtpPort(587);
+//                        email.setDebug(true);
+//                        email.setAuthenticator(new DefaultAuthenticator("a.b@gmail.com", "..."));
+//                        email.setTLS(true);
+//                        email.setFrom("admin@imcode.com");
+//                        email.setSubject(subject);
+//                        email.setMsg(body);
+//                        email.addTo("a.b@gmail.com");
+//                        email.send();
                     } catch (Exception e) {
                         logger.error(
                                 String.format(
