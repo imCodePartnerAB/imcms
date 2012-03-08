@@ -10,8 +10,7 @@
             <%=
                 new LocalizedMessageFormat("forgotpassord.confirmation.email_sent",
                         request.getParameter(ForgotPassword.REQUEST_PARAM_EMAIL),
-//                        Imcms.getServices().getSystemData().getServerMasterAddress()
-                        "XXXXYYYYZZZZ").toLocalizedString(request)
+                        Imcms.getServices().getSystemData().getServerMasterAddress()).toLocalizedString(request)
             %>
         </p>
     </body>
