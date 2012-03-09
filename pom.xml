@@ -89,7 +89,7 @@
             </exclusions>
         </dependency>
 
-        <!-- Since 4.0.7 -->
+        <!-- Since 4.0.17 -->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
