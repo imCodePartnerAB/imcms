@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.ContentManagementSystem;
+
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;

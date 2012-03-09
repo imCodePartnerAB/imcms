@@ -13,6 +13,6 @@
             <%=confirmation.toLocalizedString(request)%>
         </p>
 
-        <a href="/<%=request.getContextPath()%>/servlet/StartDoc"><%=lnkStartPage.toLocalizedString(request)%></a>
+        <a href="<%=request.getContextPath()%>/servlet/StartDoc"><%=lnkStartPage.toLocalizedString(request)%></a>
     </body>
 </html>
