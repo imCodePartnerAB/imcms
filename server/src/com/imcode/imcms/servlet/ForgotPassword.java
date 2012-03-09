@@ -108,20 +108,20 @@ public class ForgotPassword extends HttpServlet {
                 setValidationErrors(request, validationErrorNoEmail.toLocalizedString(request));
                 view = account_email_form_view;
             } else {
-                UserDomainObject user = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().createPasswordReset(userEmail);
+                UserDomainObject receiver = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().createPasswordReset(userEmail);
 
                 if (logger.isDebugEnabled()) {
                     logger.debug(String.format("Requested password reset using email: '%s', created reset: '%s'",
-                            userEmail, user == null ? "no reset where created" : user.getPasswordReset()));
+                            userEmail, receiver == null ? "no reset where created" : receiver.getPasswordReset()));
                 }
 
-                if (user != null) {
+                if (receiver != null) {
                     String url = String.format("%s?%s=%s&%s=%s",
                             request.getRequestURL(),
                             REQUEST_PARAM_OP, Op.RESET.toString().toLowerCase(),
-                            REQUEST_PARAM_RESET_ID, user.getPasswordReset().getId());
+                            REQUEST_PARAM_RESET_ID, receiver.getPasswordReset().getId());
 
-                    asyncSendPasswordResetEMail(request, user, url);
+                    asyncSendPasswordResetEMail(Utility.getLoggedOnUser(request), receiver, request.getServerName(), url);
                 }
 
                 view = email_sent_confirmation_view;
@@ -192,12 +192,12 @@ public class ForgotPassword extends HttpServlet {
     }
 
 
-    private void asyncSendPasswordResetEMail(final HttpServletRequest request, final UserDomainObject receiver, final String url) {
+    private void asyncSendPasswordResetEMail(final UserDomainObject user, final UserDomainObject receiver, final String serverName, final String url) {
         emailSender.submit(new Runnable() {
             public void run() {
                 String emailAddress = receiver.getEmailAddress();
 
-                if (receiver.isDefaultUser() || !Utility.isValidEmail(emailAddress)) {
+                if (!Utility.isValidEmail(emailAddress)) {
                     logger.debug(String.format(
                             "Receiver (user login: %s) email address %s is invalid.",
                             receiver.getLoginName(), emailAddress));
@@ -207,9 +207,8 @@ public class ForgotPassword extends HttpServlet {
                                 "Sending password reset email. User login: %s, user email address: %s.",
                                 receiver.getLoginName(), emailAddress));
 
-                        String serverName = request.getServerName();
-                        String subject = new LocalizedMessageFormat("forgotpassord.password_reset_email.subject", serverName).toLocalizedString(request);
-                        String body = new LocalizedMessageFormat("forgotpassord.password_reset_email.body", serverName, url).toLocalizedString(request);
+                        String subject = new LocalizedMessageFormat("forgotpassord.password_reset_email.subject", serverName).toLocalizedString(user);
+                        String body = new LocalizedMessageFormat("forgotpassord.password_reset_email.body", serverName, url).toLocalizedString(user);
 
                         SystemData sysData = Imcms.getServices().getSystemData();
                         String eMailServerMaster = sysData.getServerMasterAddress();
