@@ -207,8 +207,8 @@ public class ForgotPassword extends HttpServlet {
                                 "Sending password reset email. User login: %s, user email address: %s.",
                                 receiver.getLoginName(), emailAddress));
 
-                        String subject = new LocalizedMessageFormat("forgotpassord.password_reset_email.subject", serverName).toLocalizedString(user);
-                        String body = new LocalizedMessageFormat("forgotpassord.password_reset_email.body", serverName, url).toLocalizedString(user);
+                        String subject = new LocalizedMessageFormat("forgotpassord.password_reset_email.subject", serverName).toLocalizedString(receiver);
+                        String body = new LocalizedMessageFormat("forgotpassord.password_reset_email.body", serverName, url).toLocalizedString(receiver);
 
                         SystemData sysData = Imcms.getServices().getSystemData();
                         String eMailServerMaster = sysData.getServerMasterAddress();
@@ -221,12 +221,12 @@ public class ForgotPassword extends HttpServlet {
 //                        email.setHostName("smtp.gmail.com");
 //                        email.setSmtpPort(587);
 //                        email.setDebug(true);
-//                        email.setAuthenticator(new DefaultAuthenticator("a.b@gmail.com", "..."));
+//                        email.setAuthenticator(new DefaultAuthenticator("@gmail.com", ""));
 //                        email.setTLS(true);
 //                        email.setFrom("admin@imcode.com");
 //                        email.setSubject(subject);
 //                        email.setMsg(body);
-//                        email.addTo("a.b@gmail.com");
+//                        email.addTo("@gmail.com");
 //                        email.send();
                     } catch (Exception e) {
                         logger.error(
