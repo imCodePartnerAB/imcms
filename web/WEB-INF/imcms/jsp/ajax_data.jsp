@@ -129,7 +129,7 @@ if ("getHelpTextInlineEditing".equals(action)) {
 		ResultSet resultSet = null ;
 		try {
 			String sql =
-					"SELECT m.meta_id, (SELECT p.value FROM document_properties p WHERE p.meta_id = m.meta_id), m.meta_headline, t.text, m.date_created, m.date_modified, m.status\n" +
+					"SELECT m.meta_id, (SELECT p.value FROM document_properties p WHERE p.meta_id = m.meta_id AND p.key_name = 'imcms.document.alias'), m.meta_headline, t.text, m.date_created, m.date_modified, m.status\n" +
 					"FROM meta m\n" +
 					"RIGHT JOIN texts t ON m.meta_id = t.meta_id\n" +
 					"WHERE\n" +
