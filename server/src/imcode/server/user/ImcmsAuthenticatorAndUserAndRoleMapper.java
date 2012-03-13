@@ -143,7 +143,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public UserDomainObject getUserByPasswordResetId(String resetId) {
         UserDomainObject user = getUserFromSqlRow(sqlSelectUserByPasswordResetId(resetId));
 
-        return (user == null || !user.isActive() || isPasswordResetExpired(user.getPasswordReset().getTime()))
+        return (user == null || !user.isActive() || isPasswordResetExpired(user.getPasswordReset().getTime())
+                    || (user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed()))
                 ? null
                 : user;
     }
@@ -155,11 +156,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
 
     /**
-     * @param resetTs password reset timestamp
+     * @param time password reset time
      * @return if password reset has been expired.
      */
-    private boolean isPasswordResetExpired(long resetTs) {
-        int interval = Hours.hoursBetween(new DateTime(resetTs), new DateTime()).getHours();
+    private boolean isPasswordResetExpired(long time) {
+        int interval = Hours.hoursBetween(new DateTime(time), new DateTime()).getHours();
 
         return interval > services.getSystemData().getUserLoginPasswordResetExpirationInterval();
     }
