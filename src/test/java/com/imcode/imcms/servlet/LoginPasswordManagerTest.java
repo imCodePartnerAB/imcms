@@ -10,12 +10,12 @@ import java.util.Collection;
 import static org.junit.Assert.*;
 
 @RunWith(value=Parameterized.class)
-public class UserLoginPasswordManagerTest {
+public class LoginPasswordManagerTest {
 
-    private UserLoginPasswordManager manager;
+    private LoginPasswordManager manager;
 
-    public UserLoginPasswordManagerTest(String sharedSalt) {
-        manager = new UserLoginPasswordManager(sharedSalt);
+    public LoginPasswordManagerTest(String sharedSalt) {
+        manager = new LoginPasswordManager(sharedSalt);
     }
 
     @Parameterized.Parameters

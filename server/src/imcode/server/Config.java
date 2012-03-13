@@ -51,10 +51,10 @@ public class Config {
     private boolean ssoUseLocalKrbConfig;
     private boolean ssoKerberosDebug;
 
-    private String userLoginPasswordSalt;
-    private boolean userLoginPasswordEncryptionEnabled;
+    private String loginPasswordEncryptionSalt;
+    private boolean loginPasswordEncryptionEnabled;
+    private boolean superadminLoginPasswordResetAllowed;
 
-    
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
     }
@@ -377,19 +377,27 @@ public class Config {
     }
 
 
-    public boolean isUserLoginPasswordEncryptionEnabled() {
-        return userLoginPasswordEncryptionEnabled;
+    public boolean isLoginPasswordEncryptionEnabled() {
+        return loginPasswordEncryptionEnabled;
     }
 
-    public void setUserLoginPasswordEncryptionEnabled(boolean userLoginPasswordEncryptionEnabled) {
-        this.userLoginPasswordEncryptionEnabled = userLoginPasswordEncryptionEnabled;
+    public void setLoginPasswordEncryptionEnabled(boolean loginPasswordEncryptionEnabled) {
+        this.loginPasswordEncryptionEnabled = loginPasswordEncryptionEnabled;
     }
 
-    public String getUserLoginPasswordSalt() {
-        return userLoginPasswordSalt;
+    public String getLoginPasswordEncryptionSalt() {
+        return loginPasswordEncryptionSalt;
     }
 
-    public void setUserLoginPasswordSalt(String userLoginPasswordSalt) {
-        this.userLoginPasswordSalt = userLoginPasswordSalt;
+    public void setLoginPasswordEncryptionSalt(String loginPasswordEncryptionSalt) {
+        this.loginPasswordEncryptionSalt = loginPasswordEncryptionSalt;
+    }
+
+    public boolean isSuperadminLoginPasswordResetAllowed() {
+        return superadminLoginPasswordResetAllowed;
+    }
+
+    public void setSuperadminLoginPasswordResetAllowed(boolean superadminLoginPasswordResetAllowed) {
+        this.superadminLoginPasswordResetAllowed = superadminLoginPasswordResetAllowed;
     }
 }

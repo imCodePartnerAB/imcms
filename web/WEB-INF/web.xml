@@ -217,8 +217,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.ForgotPassword</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.ForgotPassword</servlet-class>
+        <servlet-name>com.imcode.imcms.servlet.PasswordReset</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.PasswordReset</servlet-class>
     </servlet>
 
     <servlet>
@@ -467,8 +467,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.ForgotPassword</servlet-name>
-        <url-pattern>/servlet/ForgotPassword</url-pattern>
+        <servlet-name>com.imcode.imcms.servlet.PasswordReset</servlet-name>
+        <url-pattern>/servlet/PasswordReset</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -1,6 +1,6 @@
 package imcode.server;
 
-import com.imcode.imcms.servlet.UserLoginPasswordManager;
+import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.IndexDocumentFactory;
@@ -69,7 +69,6 @@ import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.kerberos.KerberosLoginService;
-import ucar.unidata.util.StringUtil;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
@@ -324,7 +323,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
         imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(
                 this,
-                new UserLoginPasswordManager(StringUtils.trimToNull(config.getUserLoginPasswordSalt())));
+                new LoginPasswordManager(StringUtils.trimToNull(config.getLoginPasswordEncryptionSalt())));
         externalizedImcmsAuthAndMapper =
                 new ExternalizedImcmsAuthenticatorAndUserRegistry(imcmsAuthenticatorAndUserAndRoleMapper, externalAuthenticator,
                                                                   externalUserAndRoleRegistry, getLanguageMapper().getDefaultLanguage());

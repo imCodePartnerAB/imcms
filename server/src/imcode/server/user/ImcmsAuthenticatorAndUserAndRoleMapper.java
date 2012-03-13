@@ -8,7 +8,7 @@ import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
-import com.imcode.imcms.servlet.UserLoginPasswordManager;
+import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.ImcmsServices;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
@@ -58,7 +58,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     /**
      * @since 4.0.7
      */
-    private UserLoginPasswordManager userLoginPasswordManager;
+    private LoginPasswordManager loginPasswordManager;
 
     private static String sqlSelectUsers(ImcmsServices services) {
         return "SELECT user_id, login_name, login_password, first_name, last_name, "
@@ -84,9 +84,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
 
-    public ImcmsAuthenticatorAndUserAndRoleMapper(ImcmsServices services, UserLoginPasswordManager userLoginPasswordManager) {
+    public ImcmsAuthenticatorAndUserAndRoleMapper(ImcmsServices services, LoginPasswordManager userLoginPasswordManager) {
         this.services = services;
-        this.userLoginPasswordManager = userLoginPasswordManager;
+        this.loginPasswordManager = userLoginPasswordManager;
     }
 
 
@@ -104,7 +104,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
         return user != null && user.isActive() && !user.isImcmsExternal() &&
                (user.isPasswordEncrypted()
-                    ? userLoginPasswordManager.validatePassword(password, user.getPassword())
+                    ? loginPasswordManager.validatePassword(password, user.getPassword())
                     : password.equals(user.getPassword()));
     }
 
@@ -118,7 +118,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     /**
      * Create and assign a new PasswordReset to the internal user.
-     * The user's account must be active.
      *
      * @param email internal user's email.
      *
@@ -127,8 +126,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public UserDomainObject createPasswordReset(String email) {
         UserDomainObject user = getUserByEmail(email);
 
-        if (user != null && user.isActive() && !user.isDefaultUser() && !user.isImcmsExternal()) {
-            user.setPasswordReset(userLoginPasswordManager.generateUniqueIdentifier(), System.currentTimeMillis());
+        if (user != null && user.isActive() && !user.isImcmsExternal() && !user.isDefaultUser() &&
+                !(user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed())) {
+            user.setPasswordReset(loginPasswordManager.generateUniqueIdentifier(), System.currentTimeMillis());
             saveUser(user);
         }
 
@@ -328,10 +328,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private void modifyPasswordIfNecessary(UserDomainObject user) {
         if (user.isImcmsExternal()) {
             user.setPassword("");
-        } else if (!user.isPasswordEncrypted() && services.getConfig().isUserLoginPasswordEncryptionEnabled()) {
+        } else if (!user.isPasswordEncrypted() && services.getConfig().isLoginPasswordEncryptionEnabled()) {
             String password = user.getPassword();
             if (StringUtils.isNotBlank(password)) {
-                user.setPassword(userLoginPasswordManager.encryptPassword(password), UserDomainObject.PasswordType.ENCRYPTED);
+                user.setPassword(loginPasswordManager.encryptPassword(password), UserDomainObject.PasswordType.ENCRYPTED);
             }
         }
     }
@@ -810,8 +810,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     /**
      * @since 4.0.17
      */
-    public UserLoginPasswordManager getUserLoginPasswordManager() {
-        return userLoginPasswordManager;
+    public LoginPasswordManager getLoginPasswordManager() {
+        return loginPasswordManager;
     }
 
 
@@ -821,7 +821,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      * @since 4.0.17
      */
     public void encryptUnencryptedUsersLoginPasswords() {
-        if (services.getConfig().isUserLoginPasswordEncryptionEnabled()) {
+        if (services.getConfig().isLoginPasswordEncryptionEnabled()) {
             for (UserDomainObject user: getAllUsers()) {
                 if (!user.isImcmsExternal() && !user.isPasswordEncrypted() && StringUtils.isNotBlank(user.getPassword())) {
                     saveUser(user);

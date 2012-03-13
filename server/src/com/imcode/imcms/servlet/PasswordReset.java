@@ -10,9 +10,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.mail.DefaultAuthenticator;
-import org.apache.commons.mail.Email;
-import org.apache.commons.mail.SimpleEmail;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -25,9 +22,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ForgotPassword extends HttpServlet {
+public class PasswordReset extends HttpServlet {
 
-    private static final Logger logger = org.apache.log4j.Logger.getLogger(ForgotPassword.class);
+    private static final Logger logger = org.apache.log4j.Logger.getLogger(PasswordReset.class);
 
     // Ops
     public enum Op {

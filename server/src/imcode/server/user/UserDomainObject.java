@@ -26,9 +26,9 @@ public final class UserDomainObject implements Cloneable, Serializable {
         private final String id;
         private final long time;
 
-        private PasswordReset(String id, long timeStamp) {
+        private PasswordReset(String id, long time) {
             this.id = id;
-            this.time = timeStamp;
+            this.time = time;
         }
 
         public String getId() {
@@ -819,7 +819,7 @@ public final class UserDomainObject implements Cloneable, Serializable {
     /**
      * @since 4.0.7
      */
-    void setPasswordReset(String resetId, long resetTs) {
-        this.passwordReset = new PasswordReset(resetId, resetTs);
+    void setPasswordReset(String resetId, long time) {
+        this.passwordReset = new PasswordReset(resetId, time);
     }
 }

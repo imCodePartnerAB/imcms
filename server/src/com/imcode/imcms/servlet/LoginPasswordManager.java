@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Provides functionality for passwords encryption and validation.
  */
-public class UserLoginPasswordManager {
+public class LoginPasswordManager {
 
     private static final int SALT_LENGTH = 16;
 
@@ -22,19 +22,19 @@ public class UserLoginPasswordManager {
 
     private byte[] sharedSalt;
 
-    private static Logger logger = Logger.getLogger(UserLoginPasswordManager.class);
+    private static Logger logger = Logger.getLogger(LoginPasswordManager.class);
 
     /**
      * Creates new instance of UserLoginPasswordManager without shared salt.
      */
-    public UserLoginPasswordManager() {
+    public LoginPasswordManager() {
         this(null);
     }
 
     /**
      * @param sharedSalt a salt used in all passwords encryption additionally to random salt.
      */
-    public UserLoginPasswordManager(String sharedSalt) {
+    public LoginPasswordManager(String sharedSalt) {
         this.sharedSalt = sharedSalt == null ? new byte[0] : sharedSalt.getBytes();
     }
 

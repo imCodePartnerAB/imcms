@@ -238,7 +238,10 @@
         <filter token="image-magick-path" value="${image-magick-path}"/>
         <filter token="image-cache-max-size" value="${image-cache-max-size}"/>
 
-        <filter token="user-login-password-salt" value="${user-login-password-salt}"/>
-        <filter token="user-login-password-encryption-enabled" value="${user-login-password-encryption-enabled}"/>
+        <filter token="password-encryption-enabled" value="${password-encryption-salt}"/>
+        <filter token="password-encryption-salt" value="${password-encryption-salt}"/>
+
+        <filter token="password-reset-lifespan" value="${superadmin-password-reset-allowed}"/>
+        <filter token="superadmin-password-reset-allowed" value="${superadmin-password-reset-allowed}"/>
     </target>
 </project>

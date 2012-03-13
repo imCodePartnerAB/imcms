@@ -3,7 +3,6 @@ package imcode.server;
 import com.imcode.db.*;
 import com.imcode.db.Database;
 import com.imcode.imcms.db.*;
-import com.imcode.imcms.servlet.UserLoginPasswordManager;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;

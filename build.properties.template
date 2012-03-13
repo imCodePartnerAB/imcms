@@ -191,22 +191,32 @@ image-magick-path =
 # Maximum size in bytes of cache for images created in the text editor (xinha). By default 500 MB.
 image-cache-max-size = 524288000
 
-# Enables user login password encryption
-# Type: string boolean; optional; default: false
+# Enables login passwords encryption
+# Type: boolean; optional; default: false
 # Any non-true value or absence of value is treated as false.
 # When enabled
-# --new passwords are stored in encrypted form.
-# --any unencrypted (plain text) passwords will be encrypted on system start/restart.
-# Used to prevent unintended passwords encryption.
+# --passwords are stored in encrypted form.
+# --any unencrypted passwords will be encrypted on system start/restart.
 # Since 4.0.7
-user-login-password-encryption-enabled =
+login-password-encryption-enabled =
 
-# User login passwords shared salt.
+# Shared salt used in login passwords encryption.
 # Type: string; optional; default: blank
 # An additional, shared 'salt' used for all internal users' login passwords encryption.
 # WARNING!
 # Assigning a different value on a running system with enabled password encryption
-# will immediately lead to inability to login for all internal users whom passwords were already encrypted.
-# See description of [user-login-password-encryption-enabled] property.
+# will immediately lead to inability to login for all internal users whom passwords are already encrypted.
+# See description of [login-password-encryption-enabled] property.
 # Since 4.0.7
-user-login-password-salt =
+login-password-encryption-salt =
+
+# Password reset lifespan in hours, after rest link is created and sent by email
+# Type: positive int; optional; default: 24 (hours)
+# Since 4.0.7
+login-password-reset-lifespan = 1
+
+# Allows superadmins to reset their passwords.
+# Type: boolean; optional; default: false
+# Any non-true value or absence of value is treated as false.
+# Since 4.0.7
+superadmin-login-password-reset-allowed =

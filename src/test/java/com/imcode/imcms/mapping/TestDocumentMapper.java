@@ -2,7 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.db.mock.MockResultSet;
-import com.imcode.imcms.servlet.UserLoginPasswordManager;
+import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.MockImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
@@ -43,7 +43,7 @@ public class TestDocumentMapper extends TestCase {
         database = new MockDatabase();
         MockImcmsServices mockImcmsServices = new MockImcmsServices();
         mockImcmsServices.setDatabase(database);
-        UserLoginPasswordManager userLoginPasswordManager = new UserLoginPasswordManager();
+        LoginPasswordManager userLoginPasswordManager = new LoginPasswordManager();
         ImcmsAuthenticatorAndUserAndRoleMapper userRegistry = new ImcmsAuthenticatorAndUserAndRoleMapper(mockImcmsServices, userLoginPasswordManager) {
             public UserDomainObject getUser( int userId ) {
                 return user ;
