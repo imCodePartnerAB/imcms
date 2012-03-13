@@ -42,6 +42,8 @@ String otherParams = link.getOtherParams().trim() ;
 <head>
 <title><fmt:message key="install/htdocs/sv/jsp/docadmin/document_information.jsp/document_information_title"/></title>
 
+<base target="_self"/>
+
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
 <meta http-equiv="Cache-Control" content="must-revalidate">
