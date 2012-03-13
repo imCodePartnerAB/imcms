@@ -10,6 +10,9 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.SimpleEmail;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -28,7 +31,7 @@ public class PasswordReset extends HttpServlet {
 
     // Ops
     public enum Op {
-        REQUEST_RESET_URL,
+        REQUEST_RESET,
         SEND_RESET_URL,
         RESET,
         SAVE_NEW_PASSWORD,
@@ -76,7 +79,7 @@ public class PasswordReset extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Op op = getOp(request);
-        String view = op == Op.REQUEST_RESET_URL
+        String view = op == Op.REQUEST_RESET
                 ? account_email_form_view
                 : op == Op.RESET && getUserByPasswordResetId(request) != null
                     ? new_password_form_view
@@ -118,7 +121,7 @@ public class PasswordReset extends HttpServlet {
                             REQUEST_PARAM_OP, Op.RESET.toString().toLowerCase(),
                             REQUEST_PARAM_RESET_ID, receiver.getPasswordReset().getId());
 
-                    asyncSendPasswordResetEMail(Utility.getLoggedOnUser(request), receiver, request.getServerName(), url);
+                    asyncSendPasswordResetEMail(receiver, request.getServerName(), url);
                 }
 
                 view = email_sent_confirmation_view;
@@ -169,7 +172,7 @@ public class PasswordReset extends HttpServlet {
         String opValue = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_OP)).toUpperCase();
 
         try {
-            return opValue.isEmpty() ? Op.REQUEST_RESET_URL : Op.valueOf(opValue);
+            return opValue.isEmpty() ? Op.REQUEST_RESET : Op.valueOf(opValue);
         } catch (Exception e) {
             return Op.UNDEFINED;
         }
@@ -189,7 +192,7 @@ public class PasswordReset extends HttpServlet {
     }
 
 
-    private void asyncSendPasswordResetEMail(final UserDomainObject user, final UserDomainObject receiver, final String serverName, final String url) {
+    private void asyncSendPasswordResetEMail(final UserDomainObject receiver, final String serverName, final String url) {
         emailSender.submit(new Runnable() {
             public void run() {
                 String emailAddress = receiver.getEmailAddress();
@@ -211,20 +214,20 @@ public class PasswordReset extends HttpServlet {
                         String eMailServerMaster = sysData.getServerMasterAddress();
                         SMTP smtp = Imcms.getServices().getSMTP();
 
-                        smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
+//                        smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
 
-//                        Email email = new SimpleEmail();
-//                        email.setDebug(true);
-//                        email.setHostName("smtp.gmail.com");
-//                        email.setSmtpPort(587);
-//                        email.setDebug(true);
-//                        email.setAuthenticator(new DefaultAuthenticator("@gmail.com", ""));
-//                        email.setTLS(true);
-//                        email.setFrom("admin@imcode.com");
-//                        email.setSubject(subject);
-//                        email.setMsg(body);
-//                        email.addTo("@gmail.com");
-//                        email.send();
+                        Email email = new SimpleEmail();
+                        email.setDebug(true);
+                        email.setHostName("smtp.gmail.com");
+                        email.setSmtpPort(587);
+                        email.setDebug(true);
+                        email.setAuthenticator(new DefaultAuthenticator("anton.josua@gmail.com", "LEX144EL6377ENA15K"));
+                        email.setTLS(true);
+                        email.setFrom("admin@imcode.com");
+                        email.setSubject(subject);
+                        email.setMsg(body);
+                        email.addTo("anton.josua@gmail.com");
+                        email.send();
                     } catch (Exception e) {
                         logger.error(
                                 String.format(

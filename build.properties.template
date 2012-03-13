@@ -213,7 +213,7 @@ login-password-encryption-salt =
 # Password reset lifespan in hours, after rest link is created and sent by email
 # Type: positive int; optional; default: 24 (hours)
 # Since 4.0.7
-login-password-reset-lifespan = 1
+login-password-reset-lifespan =
 
 # Allows superadmins to reset their passwords.
 # Type: boolean; optional; default: false

@@ -130,9 +130,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 !(user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed())) {
             user.setPasswordReset(loginPasswordManager.generateUniqueIdentifier(), System.currentTimeMillis());
             saveUser(user);
-        }
 
-        return user;
+            return user;
+        } else {
+            return null;
+        }
     }
 
 
