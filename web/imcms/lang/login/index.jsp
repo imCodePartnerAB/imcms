@@ -25,7 +25,7 @@
 	<tr>
 		<td><input type="button" class="imcmsFormBtn" style="width:100" value="<? templates/login/index.html/2001 ?>" onClick="top.location='<%= request.getContextPath() %>/servlet/StartDoc';"></td>
 		<td>&nbsp;</td>
-        <td><input type="button" class="imcmsFormBtn" style="width:115" value="<? templates/login/index.html/2002 ?>" onClick="top.location='<%= request.getContextPath() %>/servlet/ResetPassword';"></td>
+        <td><input type="button" class="imcmsFormBtn" style="width:115" value="<? templates/login/index.html/2002 ?>" onClick="top.location='<%= request.getContextPath() %>/servlet/PasswordReset';"></td>
         <td>&nbsp;</td>
         <td><input type="button" value="<? templates/login/index.html/2003 ?>" title="<? templates/login/index.html/2004 ?>" class="imcmsFormBtn" onClick="openHelpW('LogIn')"></td>
 	</tr>

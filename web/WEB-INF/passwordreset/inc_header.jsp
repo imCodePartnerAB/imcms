@@ -1,25 +1,25 @@
-<%-- Validation errors and common heading --%>
+<%@ page
+	
+	import="com.imcode.imcms.servlet.PasswordReset,
+	        java.util.List"
+	
+  pageEncoding="UTF-8"
+	
+%><%@ taglib prefix="vel" uri="imcmsvelocity"
+%><%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%!
 
-<%@ page import="com.imcode.imcms.servlet.PasswordReset" %>
-<%@ page import="java.util.List" %>
-<%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
+/* Validation errors and common heading */
 
-<%!
-    static final LocalizedMessage title = new LocalizedMessage("passwordreset.title");
-    static final LocalizedMessage validationErrorsTitle = new LocalizedMessage("passwordreset.title.validation_errors");
-%>
+%><vel:velocity>
+#gui_start_of_page( "<fmt:message key="passwordreset.title" />" "$contextPath/login" "<fmt:message key="global/back" />" "" "" )
 
 <%
-    List<String> errors = (List<String>)request.getAttribute(PasswordReset.REQUEST_ATTR_VALIDATION_ERRORS);
+List<String> errors = (List<String>)request.getAttribute(PasswordReset.REQUEST_ATTR_VALIDATION_ERRORS);
 
-    if (errors != null) {
-        %>
-        <div style="border-style: solid; border-width: 1; border-color: red; background-color: #f5deb3; padding: 3px;">
-            <p><%=validationErrorsTitle.toLocalizedString(request)%></p>
-            <p><%=errors.get(0)%></p>
-        </div>
-        <%
-    }
-%>
-
-<h2><%=title.toLocalizedString(request)%></h2>
+if (errors != null) { %>
+	<div style="border: 1px solid red; background-color: #ffc; padding: 5px 10px;">
+		<p><fmt:message key="passwordreset.title.validation_errors" /></p>
+		<p><%= errors.get(0) %></p>
+	</div><%
+} %>
+</vel:velocity>
