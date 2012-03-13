@@ -2,9 +2,9 @@
 <%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
 
 <%!
-    static final LocalizedMessage formInfo = new LocalizedMessage("forgotpassord.email_form_info");
-    static final LocalizedMessage formLabelEmail = new LocalizedMessage("forgotpassord.email_form.lbl_email");
-    static final LocalizedMessage formSubmit = new LocalizedMessage("forgotpassord.email_form.submit");
+    static final LocalizedMessage formInfo = new LocalizedMessage("passwordreset.email_form_info");
+    static final LocalizedMessage formLabelEmail = new LocalizedMessage("passwordreset.email_form.lbl_email");
+    static final LocalizedMessage formSubmit = new LocalizedMessage("passwordreset.email_form.submit");
 %>
 
 <html>

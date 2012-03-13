@@ -8,7 +8,7 @@
 
         <p>
             <%=
-                new LocalizedMessageFormat("forgotpassord.confirmation.email_sent",
+                new LocalizedMessageFormat("passwordreset.confirmation.email_sent",
                         request.getParameter(PasswordReset.REQUEST_PARAM_EMAIL),
                         Imcms.getServices().getSystemData().getServerMasterAddress()).toLocalizedString(request)
             %>

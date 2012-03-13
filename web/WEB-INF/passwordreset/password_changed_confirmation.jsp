@@ -1,8 +1,8 @@
 <%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
 
 <%!
-    static final LocalizedMessage confirmation = new LocalizedMessage("forgotpassord.confirmation.password_changed");
-    static final LocalizedMessage lnkStartPage = new LocalizedMessage("forgotpassord.link.start_page");
+    static final LocalizedMessage confirmation = new LocalizedMessage("passwordreset.confirmation.password_changed");
+    static final LocalizedMessage lnkStartPage = new LocalizedMessage("passwordreset.link.start_page");
 %>
 
 <html>

@@ -5,8 +5,8 @@
 <%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
 
 <%!
-    static final LocalizedMessage title = new LocalizedMessage("forgotpassord.title");
-    static final LocalizedMessage validationErrorsTitle = new LocalizedMessage("forgotpassord.title.validation_errors");
+    static final LocalizedMessage title = new LocalizedMessage("passwordreset.title");
+    static final LocalizedMessage validationErrorsTitle = new LocalizedMessage("passwordreset.title.validation_errors");
 %>
 
 <%

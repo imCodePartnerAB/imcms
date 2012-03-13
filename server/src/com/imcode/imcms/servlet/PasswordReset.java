@@ -58,7 +58,7 @@ public class PasswordReset extends HttpServlet {
 
     private ExecutorService emailSender = Executors.newFixedThreadPool(5);
 
-    private final LocalizedMessage validationErrorNoEmail = new LocalizedMessage("forgotpassord.error.missing_email");
+    private final LocalizedMessage validationErrorNoEmail = new LocalizedMessage("passwordreset.error.missing_email");
 
 
     /**
@@ -204,8 +204,8 @@ public class PasswordReset extends HttpServlet {
                                 "Sending password reset email. User login: %s, user email address: %s.",
                                 receiver.getLoginName(), emailAddress));
 
-                        String subject = new LocalizedMessageFormat("forgotpassord.password_reset_email.subject", serverName).toLocalizedString(receiver);
-                        String body = new LocalizedMessageFormat("forgotpassord.password_reset_email.body", serverName, url).toLocalizedString(receiver);
+                        String subject = new LocalizedMessageFormat("passwordreset.password_reset_email.subject", serverName).toLocalizedString(receiver);
+                        String body = new LocalizedMessageFormat("passwordreset.password_reset_email.body", serverName, url).toLocalizedString(receiver);
 
                         SystemData sysData = Imcms.getServices().getSystemData();
                         String eMailServerMaster = sysData.getServerMasterAddress();

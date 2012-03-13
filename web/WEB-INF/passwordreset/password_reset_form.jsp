@@ -2,10 +2,10 @@
 <%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
 
 <%!
-    static final LocalizedMessage formInfo = new LocalizedMessage("forgotpassord.password_reset_form_info");
-    static final LocalizedMessage formLabelPassword = new LocalizedMessage("forgotpassord.password_reset_form.lbl_password");
-    static final LocalizedMessage formLabelPasswordCheck = new LocalizedMessage("forgotpassord.password_reset_form.lbl_password_check");
-    static final LocalizedMessage formSubmit = new LocalizedMessage("forgotpassord.password_reset_form.submit");
+    static final LocalizedMessage formInfo = new LocalizedMessage("passwordreset.password_reset_form_info");
+    static final LocalizedMessage formLabelPassword = new LocalizedMessage("passwordreset.password_reset_form.lbl_password");
+    static final LocalizedMessage formLabelPasswordCheck = new LocalizedMessage("passwordreset.password_reset_form.lbl_password_check");
+    static final LocalizedMessage formSubmit = new LocalizedMessage("passwordreset.password_reset_form.submit");
 %>
 
 <html>
