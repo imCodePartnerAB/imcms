@@ -119,16 +119,18 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     /**
      * Create and assign a new PasswordReset to the internal user.
      *
-     * @param email internal user's email.
+     * @param email user's email.
      *
      * @return user or null if internal user does not exist or user's account is inactive
+     *
+     * @since 4.0.7
      */
     public UserDomainObject createPasswordReset(String email) {
         UserDomainObject user = getUserByEmail(email);
 
         if (user != null && user.isActive() && !user.isImcmsExternal() && !user.isDefaultUser() &&
                 !(user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed())) {
-            user.setPasswordReset(loginPasswordManager.generateUniqueIdentifier(), System.currentTimeMillis());
+            user.setPasswordReset(UUID.randomUUID().toString(), System.currentTimeMillis());
             saveUser(user);
 
             return user;
@@ -141,6 +143,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     /**
      * @param resetId
      * @return user or null if internal user does not exist, user's account is inactive or password-reset has been expired.
+     * @since 4.0.7
      */
     public UserDomainObject getUserByPasswordResetId(String resetId) {
         UserDomainObject user = getUserFromSqlRow(sqlSelectUserByPasswordResetId(resetId));

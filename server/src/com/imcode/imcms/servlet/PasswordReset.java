@@ -214,20 +214,20 @@ public class PasswordReset extends HttpServlet {
                         String eMailServerMaster = sysData.getServerMasterAddress();
                         SMTP smtp = Imcms.getServices().getSMTP();
 
-//                        smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
+                        smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
 
-                        Email email = new SimpleEmail();
-                        email.setDebug(true);
-                        email.setHostName("smtp.gmail.com");
-                        email.setSmtpPort(587);
-                        email.setDebug(true);
-                        email.setAuthenticator(new DefaultAuthenticator("anton.josua@gmail.com", "LEX144EL6377ENA15K"));
-                        email.setTLS(true);
-                        email.setFrom("admin@imcode.com");
-                        email.setSubject(subject);
-                        email.setMsg(body);
-                        email.addTo("anton.josua@gmail.com");
-                        email.send();
+//                        Email email = new SimpleEmail();
+//                        email.setDebug(true);
+//                        email.setHostName("smtp.gmail.com");
+//                        email.setSmtpPort(587);
+//                        email.setDebug(true);
+//                        email.setAuthenticator(new DefaultAuthenticator("@gmail.com", ""));
+//                        email.setTLS(true);
+//                        email.setFrom("admin@imcode.com");
+//                        email.setSubject(subject);
+//                        email.setMsg(body);
+//                        email.addTo("@gmail.com");
+//                        email.send();
                     } catch (Exception e) {
                         logger.error(
                                 String.format(
