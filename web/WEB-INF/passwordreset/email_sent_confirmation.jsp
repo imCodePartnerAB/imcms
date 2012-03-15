@@ -1,3 +1,4 @@
+<%@ page pageEncoding="UTF-8"%>
 <%@ page import="com.imcode.imcms.util.l10n.LocalizedMessageFormat" %>
 <%@ page import="com.imcode.imcms.servlet.PasswordReset" %>
 <%@ page import="imcode.server.Imcms" %>

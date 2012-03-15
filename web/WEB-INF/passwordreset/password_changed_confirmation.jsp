@@ -1,7 +1,6 @@
 <%@ page
-	
-	import="com.imcode.imcms.util.l10n.LocalizedMessage"
-  
+        pageEncoding="UTF-8"
+        import="com.imcode.imcms.util.l10n.LocalizedMessage"
 %><%!
 
 static final LocalizedMessage confirmation = new LocalizedMessage("passwordreset.confirmation.password_changed");

@@ -4,7 +4,6 @@
 	        com.imcode.imcms.util.l10n.LocalizedMessage"
 	
   pageEncoding="UTF-8"
-  
 %><%!
 
 static final LocalizedMessage formInfo = new LocalizedMessage("passwordreset.email_form_info");
