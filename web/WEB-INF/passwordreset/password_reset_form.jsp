@@ -25,14 +25,15 @@ static final LocalizedMessage formSubmit = new LocalizedMessage("passwordreset.p
 	
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
-			<td width="20%"><%=formLabelPassword.toLocalizedString(request)%></td>
-			<td width="60%" style="padding: 0 10px;"><input type="password" name="<%=PasswordReset.REQUEST_PARAM_PASSWORD%>" style="width:100%;"></td>
-			<td width="20%"></td>
+			<td width="50%" style="white-space:nowrap;"><%=formLabelPassword.toLocalizedString(request)%></td>
+			<td width="50%" style="padding: 0 10px;"><input type="password" name="<%=PasswordReset.REQUEST_PARAM_PASSWORD%>" style="width:100%;"></td>
 		</tr>
 		<tr>
-			<td><%=formLabelPasswordCheck.toLocalizedString(request)%></td>
+			<td style="white-space:nowrap;"><%=formLabelPasswordCheck.toLocalizedString(request)%></td>
 			<td style="padding: 0 10px;"><input type="password" name="<%=PasswordReset.REQUEST_PARAM_PASSWORD_CHECK%>" style="width:100%;"></td>
-			<td align="right"><input type="submit" class="imcmsFormBtnSmall" value="<%=formSubmit.toLocalizedString(request)%>"/></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="right" style="padding-top:10px;"><input type="submit" class="imcmsFormBtnSmall" value="<%=formSubmit.toLocalizedString(request)%>"/></td>
 		</tr>
 		</table>
 	</form>
