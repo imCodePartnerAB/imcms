@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Web sources generation is bound to the 'process-sources' phase.
+    Web sources (lang jsps->eng/swe, configs processing) generation is bound to the 'process-sources' phase.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,7 +11,7 @@
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>4.0.19-SNAPSHOT</version>
+    <version>4.1.0</version>
     <name>imCMS</name>
 
     <properties>
