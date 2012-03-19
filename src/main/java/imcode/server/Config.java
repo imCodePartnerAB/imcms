@@ -52,6 +52,10 @@ public class Config {
     private String solrCoreName;
     private String solrHttpServerURL;
 
+    private String loginPasswordEncryptionSalt;
+    private boolean loginPasswordEncryptionEnabled;
+    private boolean superadminLoginPasswordResetAllowed;
+
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
     }
@@ -270,5 +274,47 @@ public class Config {
 
     public void setSolrHttpServerURL(String solrHttpServerURL) {
         this.solrHttpServerURL = solrHttpServerURL;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public boolean isLoginPasswordEncryptionEnabled() {
+        return loginPasswordEncryptionEnabled;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public void setLoginPasswordEncryptionEnabled(boolean loginPasswordEncryptionEnabled) {
+        this.loginPasswordEncryptionEnabled = loginPasswordEncryptionEnabled;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public String getLoginPasswordEncryptionSalt() {
+        return loginPasswordEncryptionSalt;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public void setLoginPasswordEncryptionSalt(String loginPasswordEncryptionSalt) {
+        this.loginPasswordEncryptionSalt = loginPasswordEncryptionSalt;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public boolean isSuperadminLoginPasswordResetAllowed() {
+        return superadminLoginPasswordResetAllowed;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public void setSuperadminLoginPasswordResetAllowed(boolean superadminLoginPasswordResetAllowed) {
+        this.superadminLoginPasswordResetAllowed = superadminLoginPasswordResetAllowed;
     }
 }

@@ -166,6 +166,7 @@ public class Imcms {
         final CachingFileLoader fileLoader = new CachingFileLoader();
         DefaultImcmsServices services = new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
         services.setI18nSupport(getI18nSupport());
+        services.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
         return services;
     }
 

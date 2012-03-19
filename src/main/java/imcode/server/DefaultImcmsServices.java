@@ -1,6 +1,7 @@
 package imcode.server;
 
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.RebuildingDirectoryIndex;
@@ -317,7 +318,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
             externalUserAndRoleRegistry = chainedLdapUserAndRoleRegistry;
         }
 
-        imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(this);
+        imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(
+                this,
+                new LoginPasswordManager(StringUtils.trimToNull(config.getLoginPasswordEncryptionSalt())));
         externalizedImcmsAuthAndMapper =
                 new ExternalizedImcmsAuthenticatorAndUserRegistry(imcmsAuthenticatorAndUserAndRoleMapper, externalAuthenticator,
                                                                   externalUserAndRoleRegistry, getLanguageMapper().getDefaultLanguage());
@@ -693,6 +696,28 @@ final public class DefaultImcmsServices implements ImcmsServices {
         final Object[] parameters = new String[0];
         String webMasterAddress = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 7", parameters, Utility.SINGLE_STRING_HANDLER));
         sd.setWebMasterAddress(webMasterAddress);
+
+        final Object[] parameter9 = new String[0];
+        String userLoginPasswordExpirationInterval = (String)getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 9", parameter9, Utility.SINGLE_STRING_HANDLER));
+        if (userLoginPasswordExpirationInterval == null) {
+            log.warn("System property userLoginPasswordResetExpirationInterval is not set; using default");
+        } else {
+            try {
+                int interval = Integer.parseInt(userLoginPasswordExpirationInterval);
+
+                if (interval > 0) {
+                    sd.setUserLoginPasswordResetExpirationInterval(interval);
+                } else {
+                    log.warn(String.format(
+                        "System property userLoginPasswordResetExpirationInterval must be  '> 0' but set to %d; using default.",
+                        interval));
+                }
+            } catch (Throwable t) {
+                log.warn(String.format(
+                    "System property userLoginPasswordResetExpirationInterval value must be positive integer but set to %s; using default.",
+                    userLoginPasswordExpirationInterval));
+            }
+        }
 
         return sd;
     }

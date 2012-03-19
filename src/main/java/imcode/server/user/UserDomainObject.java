@@ -28,6 +28,39 @@ import com.imcode.imcms.api.Meta;
 
 public class UserDomainObject implements Cloneable, Serializable {
 
+    /**
+     * @since 4.0.7
+     */
+    enum PasswordType {
+        UNENCRYPTED, ENCRYPTED
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public static final class PasswordReset {
+        private final String id;
+        private final long time;
+
+        private PasswordReset(String id, long time) {
+            this.id = id;
+            this.time = time;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public long getTime() {
+            return time;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("User.PasswordReset(id=%s, time=%s)", id, time);
+        }
+    }
+
     public static final int DEFAULT_USER_ID = 2;
 
     protected int id;
@@ -62,6 +95,16 @@ public class UserDomainObject implements Cloneable, Serializable {
     private String sessionId;
 
     private boolean authenticatedByIp;
+
+    /**
+     * @since 4.0.7
+     */
+    private PasswordType passwordType = PasswordType.UNENCRYPTED;
+
+    /**
+     * @since 4.0.7
+     */
+    private PasswordReset passwordReset = null;
 
     public UserDomainObject() {}
 
@@ -120,20 +163,6 @@ public class UserDomainObject implements Cloneable, Serializable {
      */
     public void setLoginName( String loginName ) {
         this.loginName = loginName;
-    }
-
-    /**
-     * get password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * set password
-     */
-    public void setPassword( String password ) {
-        this.password = password;
     }
 
     /**
@@ -813,5 +842,70 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public void setAuthenticatedByIp(boolean authenticatedByIp) {
         this.authenticatedByIp = authenticatedByIp;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public boolean isPasswordEncrypted() {
+        return passwordType == PasswordType.ENCRYPTED;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public PasswordReset getPasswordReset() {
+        return passwordReset;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public boolean hasPasswordReset() {
+        return passwordReset != null;
+    }
+
+    /**
+     * Returns password.
+     * The password might be a plain text or encrypted.
+     * Use {@link #isPasswordEncrypted()} to test if password is encrypted.
+     *
+     * @since 4.0.7
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Assign a new unencrypted password to the user and clears password reset (if present).
+     *
+     * @see #setPassword(String, PasswordType)
+     *
+     * @param password plain text password.
+     *
+     * @since 4.0.7
+     */
+    public void setPassword(String password) {
+        setPassword(password, PasswordType.UNENCRYPTED);
+        this.passwordReset = null;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // The following package private methods are used internally by ImcmsAuthenticatorAndUserAndRoleMapper
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @since 4.0.7
+     */
+    void setPassword(String password, PasswordType passwordType) {
+        this.password = password;
+        this.passwordType = passwordType;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    void setPasswordReset(String resetId, long time) {
+        this.passwordReset = new PasswordReset(resetId, time);
     }
 }

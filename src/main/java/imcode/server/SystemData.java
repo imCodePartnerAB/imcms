@@ -5,6 +5,11 @@ package imcode.server ;
  */
 public class SystemData implements java.io.Serializable {
 
+    /**
+     * 24h
+     */
+    private final static int DEFAULT_USER_LOGIN_PASSWORD_EXPIRATION_INTERVAL = 24;
+
     /** The startdocument **/
     private int startDocument ;
 
@@ -23,6 +28,10 @@ public class SystemData implements java.io.Serializable {
     /** The systemmessage */
     private String systemMessage;
 
+    /**
+     * User's login password reset expiration interval in hours.
+     */
+    private int userLoginPasswordResetExpirationInterval = DEFAULT_USER_LOGIN_PASSWORD_EXPIRATION_INTERVAL;
 
     /** Get the startdocument **/
     public int getStartDocument() {
@@ -81,5 +90,19 @@ public class SystemData implements java.io.Serializable {
     /** Get the systemmessage */
     public void setSystemMessage(String systemMessage) {
 	this.systemMessage = systemMessage ;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public int getUserLoginPasswordResetExpirationInterval() {
+        return userLoginPasswordResetExpirationInterval;
+    }
+
+    /**
+     * @since 4.0.7
+     */
+    public void setUserLoginPasswordResetExpirationInterval(int userLoginPasswordResetExpirationInterval) {
+        this.userLoginPasswordResetExpirationInterval = userLoginPasswordResetExpirationInterval;
     }
 }

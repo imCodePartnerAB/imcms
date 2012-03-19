@@ -157,3 +157,33 @@ solr-http-server-url =
 # See http://wiki.apache.org/solr/CoreAdmin and http://wiki.apache.org/solr/MultipleIndexes for details.
 solr-core-name =
 
+# Enables login passwords encryption
+# Type: boolean; optional; default: false
+# Any non-true value or absence of value is treated as false.
+# When enabled
+# --passwords are stored in encrypted form.
+# --any unencrypted passwords will be encrypted on system start/restart.
+# Since 4.0.7
+login-password-encryption-enabled =
+
+# Shared salt used in login passwords encryption.
+# Type: string; optional; default: blank
+# An additional, shared 'salt' used for all internal users' login passwords encryption.
+# WARNING!
+# Assigning a different value on a running system with enabled password encryption
+# will immediately lead to inability to login for all internal users whom passwords are already encrypted.
+# See description of [login-password-encryption-enabled] property.
+# Since 4.0.7
+login-password-encryption-salt =
+
+# Password reset lifespan in hours, after rest link is created and sent by email
+# Type: positive int; optional; default: 24 (hours)
+# Since 4.0.7
+login-password-reset-lifespan =
+
+# Allows superadmins to reset their passwords.
+# Type: boolean; optional; default: false
+# Any non-true value or absence of value is treated as false.
+# Since 4.0.7
+superadmin-login-password-reset-allowed =
+
