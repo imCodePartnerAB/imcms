@@ -373,7 +373,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                                                                 + "email = ?,\n"
                                                                 + "external = ?,\n"
                                                                 + "active = ?,\n"
-                                                                + "language = ?\n"
+                                                                + "language = ?,\n"
                                                                 + "login_password_is_encrypted = ?,\n"
                                                                 + "login_password_reset_id = ?,\n"
                                                                 + "login_password_reset_ts = ?\n"

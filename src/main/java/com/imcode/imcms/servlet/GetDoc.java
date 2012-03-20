@@ -37,6 +37,8 @@ import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.kerberos.KerberosLoginResult;
+import imcode.server.kerberos.KerberosLoginStatus;
 
 /**
  * Retrieves document by metaId.
@@ -162,6 +164,16 @@ public class GetDoc extends HttpServlet {
         documentRequest.setRevisits(revisits);
 
         if ( !user.canAccess(document) ) {
+            if (imcref.getConfig().isSsoEnabled() && user.isDefaultUser()) {
+                KerberosLoginResult loginResult = imcref.getKerberosLoginService().login(req, res);
+                
+                if (loginResult.getStatus() == KerberosLoginStatus.SUCCESS) {
+                    privateGetDoc(document, res, req);
+                }
+                
+                return;
+            }
+
             Utility.forwardToLogin(req, res);
             return;
         }

@@ -27,12 +27,15 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import imcode.server.kerberos.KerberosLoginService;
 
 public interface ImcmsServices {
 
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
-    UserDomainObject verifyUser(String login, String password)
-    ;
+    UserDomainObject verifyUser(String login, String password);
+    
+    // Verify a Intranet user based on a Kerberos client principal name.
+    UserDomainObject verifyUser(String clientPrincipalName);
 
     void parsePage(ParserParameters paramsToParse, Writer out) throws IOException ;
 
@@ -108,6 +111,8 @@ public interface ImcmsServices {
     UserDomainObject verifyUserByIpOrDefault(String remoteAddr);
 
     LocalizedMessageProvider getLocalizedMessageProvider();
+    
+    KerberosLoginService getKerberosLoginService();
     
     Object getSpringBean(String beanName);
 

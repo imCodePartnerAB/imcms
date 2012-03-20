@@ -29,6 +29,7 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import imcode.server.kerberos.KerberosLoginService;
 
 public class
 
@@ -51,8 +52,13 @@ public class
     private RoleGetter roleGetter;
     private ProcedureExecutor procedureExecutor;
     private Config config = new Config();
+    private KerberosLoginService kerberosLoginService;
 
     public UserDomainObject verifyUser( String login, String password ) {
+        return null;
+    }
+    
+    public UserDomainObject verifyUser(String clientPrincipalName) {
         return null;
     }
 
@@ -194,7 +200,11 @@ public class
     public KeyStore getKeyStore() {
         return keyStore;
     }
-
+    
+    public KerberosLoginService getKerberosLoginService() {
+        return kerberosLoginService;
+    }
+    
     public void setImcmsAuthenticatorAndUserAndRoleMapper(
             ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper ) {
         this.imcmsAuthenticatorAndUserAndRoleMapper = imcmsAuthenticatorAndUserAndRoleMapper;
@@ -236,6 +246,10 @@ public class
         this.imageCacheMapper = mapper;
     }
 
+    public void setKerberosLoginService(KerberosLoginService kerberosLoginService) {
+        this.kerberosLoginService = kerberosLoginService;
+    }
+    
 	public WebApplicationContext getWebApplicationContext() {
 		return null;
 	}

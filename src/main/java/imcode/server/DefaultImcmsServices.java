@@ -71,6 +71,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
+import imcode.server.kerberos.KerberosLoginService;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
@@ -98,6 +99,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private TemplateMapper templateMapper;
     private ImageCacheMapper imageCacheMapper;
     private KeyStore keyStore;
+    private KerberosLoginService kerberosLoginService;
 
     private Map velocityEngines = new TreeMap();
     private LanguageMapper languageMapper;
@@ -128,6 +130,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         this.fileLoader = fileLoader;
         setSolrHomeSystemPropertyIfNotAssignedExternally();
         initConfig(props);
+        initSso();
         initKeyStore();
         initSysData();
         initSessionCounter();
@@ -137,8 +140,32 @@ final public class DefaultImcmsServices implements ImcmsServices {
         initTemplateMapper();
         initImageCacheMapper();
         initTextDocParser();
+        
+        kerberosLoginService = new KerberosLoginService(config);
     }
 
+    private void initSso() {
+        if (!config.isSsoEnabled()) {
+            return;
+        }
+        
+        if (config.isSsoUseLocalJaasConfig()) {
+            File jaasConfigFile = new File(getRealContextPath(), "WEB-INF/conf/jaas.conf");
+
+            System.setProperty("java.security.auth.login.config", jaasConfigFile.getAbsolutePath());
+        }
+
+        if (config.isSsoUseLocalKrbConfig()) {
+            File krbConfigFile = new File(getRealContextPath(), "WEB-INF/conf/krb.conf");
+
+            System.setProperty("java.security.krb5.conf", krbConfigFile.getAbsolutePath());
+        }
+        
+        if (config.isSsoKerberosDebug()) {
+            System.setProperty("sun.security.krb5.debug", "true");
+        }
+    }
+    
     private void setSolrHomeSystemPropertyIfNotAssignedExternally() {
         String solrHome =  System.getProperty(SOLR_HOME_PROPERTY);
         if (solrHome != null) {
@@ -450,6 +477,28 @@ final public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
+    public UserDomainObject verifyUser(String clientPrincipalName) {
+        String login = clientPrincipalName.substring(0, clientPrincipalName.lastIndexOf('@'));
+        
+        NDC.push("verifyUser");
+        try {
+            UserDomainObject result = null;
+
+            UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
+            if ( null == user ) {
+                mainLog.info("->User '" + login + "' failed to log in: User not found.");
+            } else if ( !user.isActive() ) {
+                logUserDeactivated(user);
+            } else {
+                result = user;
+                logUserLoggedIn(user);
+            }
+            return result;
+        } finally {
+            NDC.pop();
+        }
+    }
+    
     private void logUserDeactivated(UserDomainObject user) {
         mainLog.info("->User '" + user.getLoginName() + "' failed to log in: User deactivated.");
     }
@@ -798,6 +847,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return procedureExecutor;
     }
 
+    public KerberosLoginService getKerberosLoginService() {
+        return kerberosLoginService;
+    }
+    
     private static class WebappRelativeFileConverter implements Converter {
 
         public Object convert(Class type, Object value) {
