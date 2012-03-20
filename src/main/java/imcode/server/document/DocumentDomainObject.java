@@ -37,9 +37,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     /**
      * Document's internal id assigned by an application developer.
-     * Intended to be used as a hardcoded identity to access documents through the API.
+     * Intended to be used as a private identity to access documents through the API.
      */
     public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_INTERNAL_ID = "imcms.document.internal.id";
+
+    /**
+     * Legacy, property based modifier support.
+     */
+    public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY = "imcms.document.modified_by";
 
     private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 
@@ -49,7 +54,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private I18nLanguage language;
 
-    // todo :remove version, leave only doc version no. ???
     private DocumentVersion version = new DocumentVersion();
 
 
@@ -180,6 +184,21 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public int getCreatorId() {
         return meta.getCreatorId();
+    }
+
+    /**
+     * Returns the last user who modified this document.
+     * @return the last user who modified this document or null is there is no associated user.
+     */
+    public Integer getModifierId() {
+        try {
+            Integer modifierId = version == null ? null : version.getModifiedBy();
+
+            // legacy property based modifier support
+            return modifierId != null ? modifierId : Integer.valueOf(getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void setCreatorId(int creatorId) {

@@ -207,6 +207,15 @@ public class Document implements Serializable {
         return contentManagementSystem.getUserService().getUser(creatorId) ;
     }
 
+    /**
+     * Returns the last user who modified this document.
+     * @return the last user who modified this document or null is there is no associated user.
+     */
+    public User getModifier() {
+        Integer modifierId = internalDocument.getModifierId();
+        return modifierId == null ? null : contentManagementSystem.getUserService().getUser(modifierId);
+    }
+
     public void setCreator( User creator ) {
         internalDocument.setCreator( creator.getInternal() );
     }
