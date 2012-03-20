@@ -768,8 +768,10 @@ var isChanged = false ;<%
 if (DEBUG_CHANGED_CONT) { %>
 var hasCheckedCompare = false ;<%
 } %>
+var isCheckingEditorChanged = false ;
 
-function checkEditorChanged($, editor) {<%
+function checkEditorChanged($, editor) {
+	isCheckingEditorChanged = true ;<%
 	if (DEBUG_CHANGED) { %>
 	if (console) console.log('function checkEditorChanged($, ' + (null != editor ? 'editor' : 'null') + ')') ;<%
 	} %>
@@ -839,6 +841,7 @@ function checkEditorChanged($, editor) {<%
 			$('#contentChangedDiv_' + isChanged).fadeIn('fast') ;
 		}) ;
 	}
+	isCheckingEditorChanged = false ;
 }
 
 function resetChangedContent($) {
@@ -887,7 +890,7 @@ function addEventsToNoEditor($) {<%
 	if (console) console.log('EXEC: setInterval(checkEditorChanged($, null))') ;<%
 	} %>
 	oTimerChangeCheckNoEditor = window.setInterval(function() {
-		checkEditorChanged($, null) ;
+		if (!isCheckingEditorChanged) checkEditorChanged($, null) ;
 	}, 2000) ;
 	$('#text,#text_1row').live('keyup mouseup blur paste', function() {
 		autoValidation($) ;
@@ -945,7 +948,7 @@ function addEventsToEditor($) {
 		if (console) console.log('EXEC: setInterval(checkEditorChanged($, editor))') ;<%
 		} %>
 		oTimerChangeCheckEditor = window.setInterval(function() {
-			checkEditorChanged($, editor) ;
+			if (!isCheckingEditorChanged) checkEditorChanged($, editor) ;
 			checkIframeScroll($, editor) ;
 		}, 2000) ;
 		
