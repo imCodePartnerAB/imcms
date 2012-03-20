@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
   <init version="4.11">
-    <script>imcms_rb4.sql</script>
+    <script>imcms_4.11.sql</script>
   </init>
 
   <diffs>
