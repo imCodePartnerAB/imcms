@@ -82,28 +82,9 @@
         <dependency>
             <groupId>org.dbunit</groupId>
             <artifactId>dbunit</artifactId>
-            <version>2.3.0</version>
+            <version>2.4.8</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-lang</artifactId>
-                    <groupId>commons-lang</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-collections</artifactId>
-                    <groupId>commons-collections</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
-
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -115,16 +96,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.6.4</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -154,13 +125,7 @@
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
-            <version>1.7.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
+            <version>1.8.3</version>
         </dependency>
 
         <dependency>
@@ -173,20 +138,6 @@
             <groupId>commons-betwixt</groupId>
             <artifactId>commons-betwixt</artifactId>
             <version>0.8</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-collections</artifactId>
-                    <groupId>commons-collections</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-digester</artifactId>
-                    <groupId>commons-digester</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -199,24 +150,12 @@
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <version>1.4</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-pool</artifactId>
-                    <groupId>commons-pool</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-core</artifactId>
             <version>2.3.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -229,18 +168,6 @@
             <groupId>commons-digester</groupId>
             <artifactId>commons-digester</artifactId>
             <version>1.8</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-email</artifactId>
-            <version>1.1</version>
         </dependency>
 
         <dependency>
@@ -253,16 +180,6 @@
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-codec</artifactId>
-                    <groupId>commons-codec</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -274,7 +191,7 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.4</version>
+            <version>2.6</version>
         </dependency>
 
         <dependency>
@@ -302,13 +219,13 @@
             <version>1.6.1</version>
         </dependency>
 
-        <!-- imCode Internal Repository dependencies -->
         <dependency>
-            <groupId>gnu-activation</groupId>
-            <artifactId>gnu-activation</artifactId>
-            <version>1.0</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+            <version>1.2</version>
         </dependency>
 
+        <!-- imCode Internal Repository dependencies -->
         <dependency>
             <groupId>gnu-crypto-javax-security</groupId>
             <artifactId>gnu-crypto-javax-security</artifactId>
@@ -326,24 +243,12 @@
             <artifactId>gnu-inetlib</artifactId>
             <version>1.1</version>
         </dependency>
-
-        <dependency>
-            <groupId>gnu-mail</groupId>
-            <artifactId>gnu-mail</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>gnu-mail-providers</groupId>
-            <artifactId>gnu-mail-providers</artifactId>
-            <version>1.0</version>
-        </dependency>
         <!-- imCode Internal Repository dependencies -->
 
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin</artifactId>
-            <version>6.7.2</version>
+            <version>6.7.6</version>
         </dependency>
 
         <dependency>
@@ -375,32 +280,12 @@
             <groupId>asm</groupId>
             <artifactId>asm-attrs</artifactId>
             <version>2.2.3</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>asm</artifactId>
-                    <groupId>asm</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>3.6.9.Final</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>antlr</artifactId>
-                    <groupId>antlr</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-collections</artifactId>
-                    <groupId>commons-collections</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -413,57 +298,12 @@
             <groupId>com.imcode.db</groupId>
             <artifactId>imcode-db</artifactId>
             <version>0.3</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-collections</artifactId>
-                    <groupId>commons-collections</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-lang</artifactId>
-                    <groupId>commons-lang</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-dbutils</artifactId>
-                    <groupId>commons-dbutils</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>com.imcode.util</groupId>
             <artifactId>imcode-util</artifactId>
             <version>2.0.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>activation</artifactId>
-                    <groupId>javax.activation</groupId>
-                </exclusion>
-                <!-- BUG/ISSUE: If this dependency (servlet-api 2.3) is excluded then client projects do not compile -->
-                <!--<exclusion>-->
-                <!--<artifactId>servlet-api</artifactId>-->
-                <!--<groupId>javax.servlet</groupId>-->
-                <!--</exclusion>-->
-                <exclusion>
-                    <artifactId>commons-lang</artifactId>
-                    <groupId>commons-lang</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-collections</artifactId>
-                    <groupId>commons-collections</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-fileupload</artifactId>
-                    <groupId>commons-fileupload</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>servlet-api</artifactId>
-                    <groupId>javax.servlet</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -544,32 +384,12 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>3.1-FINAL</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
             <version>3.1-FINAL</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!--<dependency>-->
@@ -737,14 +557,6 @@
                 <exclusion>
                     <artifactId>wstx-asl</artifactId>
                     <groupId>woodstox</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-codec</artifactId>
-                    <groupId>commons-codec</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

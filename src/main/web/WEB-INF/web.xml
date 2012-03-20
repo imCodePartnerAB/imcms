@@ -264,11 +264,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.PasswordMailReminder</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.PasswordMailReminder</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.RebuildIndex</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.RebuildIndex</servlet-class>
     </servlet>
@@ -529,8 +524,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.PasswordMailReminder</servlet-name>
-        <url-pattern>/servlet/PasswordMailReminder</url-pattern>
+        <servlet-name>com.imcode.imcms.servlet.PasswordReset</servlet-name>
+        <url-pattern>/servlet/PasswordReset</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -548,9 +543,24 @@
         <url-pattern>/servlet/Restart</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.EncryptPasswords</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.EncryptPasswords</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.PasswordReset</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.PasswordReset</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
         <url-pattern>/servlet/SaveInclude</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.EncryptPasswords</servlet-name>
+        <url-pattern>/servlet/EncryptPasswords</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

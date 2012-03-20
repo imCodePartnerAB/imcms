@@ -5,7 +5,7 @@
       <xs:complexType>
         <xs:sequence>
           <xs:element ref="init" minOccurs="1" maxOccurs="1"/>
-          <xs:element ref="diffs" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="diffs" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
 
         <xs:attribute name="version" type="xs:double" use="required"/>
@@ -26,7 +26,7 @@
     <xs:element name="diffs">
       <xs:complexType>
         <xs:sequence>
-          <xs:element ref="diff" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="diff" minOccurs="1" maxOccurs="unbounded"/>
         </xs:sequence>
       </xs:complexType>
     </xs:element>

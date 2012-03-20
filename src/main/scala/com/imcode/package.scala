@@ -4,12 +4,12 @@ import java.util.concurrent.atomic.AtomicReference
 
 package object imcode {
 
-  type JClass[A >: Null] = java.lang.Class[A]
   type JBoolean = java.lang.Boolean
   type JInteger = java.lang.Integer
   type JLong = java.lang.Long
   type JFloat = java.lang.Float
   type JDouble = java.lang.Double
+  type JClass[A >: Null] = java.lang.Class[A]
   type JCollection[A <: AnyRef] = java.util.Collection[A]
   type JList[A <: AnyRef] = java.util.List[A]
 
