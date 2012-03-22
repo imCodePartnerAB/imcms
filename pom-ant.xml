@@ -10,19 +10,20 @@
 
     <property file="build.properties"/>
 
-    <property name="main.resources-conf.dir" value="src/main/resources-conf"/>
-    <property name="main.webapp.dir" value="src/main/webapp"/>
-    <property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
-    <property name="main.webapp.imcms.dir" value="${main.webapp.dir}/imcms"/>
-    <property name="main.webapp.webinf.dir" value="${main.webapp.dir}/WEB-INF"/>
+    <property name="build.webapp.dir" value="SET BY MAVEN"/>
+    <property name="build.webapp.login.dir" value="${build.webapp.dir}/login"/>
+    <property name="build.webapp.imcms.dir" value="${build.webapp.dir}/imcms"/>
+    <property name="build.webapp.webinf.dir" value="${build.webapp.dir}/WEB-INF"/>
 
-    <property name="versionfile" value="${main.webapp.webinf.dir}/version.txt"/>
+    <property name="main.resources-conf.dir" value="src/main/resources-conf"/>
+
+    <property name="versionfile" value="${build.webapp.webinf.dir}/version.txt"/>
 
     <property name="srcincludes" value="MANIFEST.TXT"/>
 
-    <property name="webinf.conf.dir" value="${main.webapp.webinf.dir}/conf"/>
-    <property name="webinf.templates.dir" value="${main.webapp.webinf.dir}/templates"/>
-    <property name="webinf.solr.dir" value="${main.webapp.webinf.dir}/solr"/>
+    <property name="webinf.conf.dir" value="${build.webapp.webinf.dir}/conf"/>
+    <property name="webinf.templates.dir" value="${build.webapp.webinf.dir}/templates"/>
+    <property name="webinf.solr.dir" value="${build.webapp.webinf.dir}/solr"/>
 
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate"/>
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>
@@ -41,7 +42,7 @@
         <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
         <property name="swfpattern" value="**/*.swf"/>
 
-        <property name="docs" value="${main.webapp.imcms.dir}/docs"/>
+        <property name="docs" value="${build.webapp.imcms.dir}/docs"/>
         <property name="apisamples" value="${docs}/apisamples"/>
         <property name="apidocs" value="${docs}/api"/>
 
@@ -55,19 +56,19 @@
             </targetfileset>
         </dependset>
 
-        <mkdir dir="${main.webapp.imcms.dir}"/>
-        <mkdir dir="${main.webapp.login.dir}"/>
-        <mkdir dir="${main.webapp.dir}/css"/>
-        <mkdir dir="${main.webapp.dir}/images"/>
-        <mkdir dir="${main.webapp.dir}/javascript"/>
-        <mkdir dir="${main.webapp.dir}/jsp"/>
-        <mkdir dir="${main.webapp.dir}/user"/>
+        <mkdir dir="${build.webapp.imcms.dir}"/>
+        <mkdir dir="${build.webapp.login.dir}"/>
+        <mkdir dir="${build.webapp.dir}/css"/>
+        <mkdir dir="${build.webapp.dir}/images"/>
+        <mkdir dir="${build.webapp.dir}/javascript"/>
+        <mkdir dir="${build.webapp.dir}/jsp"/>
+        <mkdir dir="${build.webapp.dir}/user"/>
         <mkdir dir="${webinf.solr.dir}"/>
 
-        <mkdir dir="${main.webapp.webinf.dir}/includes"/>
-        <mkdir dir="${main.webapp.webinf.dir}/logs"/>
-        <mkdir dir="${main.webapp.webinf.dir}/uploads"/>
-        <mkdir dir="${main.webapp.webinf.dir}/classes"/>
+        <mkdir dir="${build.webapp.webinf.dir}/includes"/>
+        <mkdir dir="${build.webapp.webinf.dir}/logs"/>
+        <mkdir dir="${build.webapp.webinf.dir}/uploads"/>
+        <mkdir dir="${build.webapp.webinf.dir}/classes"/>
 
         <echo message="${version}" file="${versionfile}"/>
 
@@ -76,16 +77,16 @@
             <fileset dir="${main.resources-conf.dir}"/>
         </copy>
 
-        <copy todir="${main.webapp.dir}" filtering="true">
+        <copy todir="${build.webapp.dir}" filtering="true">
             <fileset dir="src/main/web"
                      excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern},${swfpattern}"/>
         </copy>
 
-        <copy todir="${main.webapp.webinf.dir}/classes" filtering="true">
+        <copy todir="${build.webapp.webinf.dir}/classes" filtering="true">
             <fileset dir="src/main/resources" includes="hibernate.cfg.xml"/>
         </copy>
 
-        <copy todir="${main.webapp.dir}">
+        <copy todir="${build.webapp.dir}">
             <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**"
                      includes="${imagespattern},${swfpattern}"/>
         </copy>
@@ -126,11 +127,11 @@
 
         <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
+                     todir="${build.webapp.imcms.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
             <fileset dir="src/main/web/imcms/lang" excludes="${imagespattern}"/>
         </imtranslate>
 
-        <copy todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="false">
+        <copy todir="${build.webapp.imcms.dir}/${buildlanguage}" filtering="false">
             <fileset dir="src/main/web/imcms/lang" includes="${imagespattern}"/>
         </copy>
     </target>

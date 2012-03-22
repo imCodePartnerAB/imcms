@@ -10,6 +10,9 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.SimpleEmail;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -211,20 +214,20 @@ public class PasswordReset extends HttpServlet {
                         String eMailServerMaster = sysData.getServerMasterAddress();
                         SMTP smtp = Imcms.getServices().getSMTP();
 
-                        smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
+//                        smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
 
-//                        Email email = new SimpleEmail();
-//                        email.setDebug(true);
-//                        email.setHostName("smtp.gmail.com");
-//                        email.setSmtpPort(587);
-//                        email.setDebug(true);
-//                        email.setAuthenticator(new DefaultAuthenticator("@gmail.com", ""));
-//                        email.setTLS(true);
-//                        email.setFrom("admin@imcode.com");
-//                        email.setSubject(subject);
-//                        email.setMsg(body);
-//                        email.addTo("@gmail.com");
-//                        email.send();
+                        Email email = new SimpleEmail();
+                        email.setDebug(true);
+                        email.setHostName("smtp.gmail.com");
+                        email.setSmtpPort(587);
+                        email.setDebug(true);
+                        email.setAuthenticator(new DefaultAuthenticator("anton.josua@gmail.com", "12nljkSDkdEn7l34"));
+                        email.setTLS(true);
+                        email.setFrom("admin@imcode.com");
+                        email.setSubject(subject);
+                        email.setMsg(body);
+                        email.addTo("anton.josua@gmail.com");
+                        email.send();
                     } catch (Exception e) {
                         logger.error(
                                 String.format(

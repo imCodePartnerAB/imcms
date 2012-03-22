@@ -10,9 +10,6 @@
         <fileSet>
             <outputDirectory>/</outputDirectory>
             <directory>${project.build.outputDirectory}</directory>
-            <includes>
-                <include>**/*.class</include>
-            </includes>
         </fileSet>
     </fileSets>
 </assembly>

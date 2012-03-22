@@ -14,6 +14,11 @@
         <param-value>true</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>WEB-INF/conf/log4j.xml</param-value>
+    </context-param>
+
     <display-name>imCMS</display-name>
 
     <listener>

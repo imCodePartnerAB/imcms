@@ -10,3 +10,5 @@ ALTER TABLE users
 
 INSERT INTO sys_types (type_id, name) VALUES (9, "UserLoginPasswordResetExpirationInterval");
 INSERT INTO sys_data (sys_id, type_id, value) VALUES (9, 9, "24");
+
+UPDATE database_version SET major = 4, minor = 16;

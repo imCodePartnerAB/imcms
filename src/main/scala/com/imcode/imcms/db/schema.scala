@@ -47,8 +47,8 @@ case class Version(major: Int, minor: Int) extends Ordered[Version] {
   require(major > 0, "'major' must be > 0 but was %d." format major)
   require(minor >= 0, "'minor' must be >= 0 but was %d." format minor)
 
-  def compare(that: Version) = this.major - that.major match {
-    case 0 => this.minor - that.minor
+  def compare(that: Version) = this.major compareTo that.major match {
+    case 0 => this.minor compareTo that.minor
     case i => i
   }
 }

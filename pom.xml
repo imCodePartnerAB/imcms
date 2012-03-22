@@ -10,17 +10,20 @@
     <name>imCMS</name>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <scala.version>2.9.1</scala.version>
+
+        <org.springframework.version>3.1.1.RELEASE</org.springframework.version>
+
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
-        <jetty.scanIntervalSeconds>3</jetty.scanIntervalSeconds>
-        <jetty.version>7.5.2.v20111006</jetty.version>
+        <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
+        <jetty.version>7.5.4.v20111024</jetty.version>
 
-        <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
-        <org.springframework.version>3.1.0.RELEASE</org.springframework.version>
-        <scala.version>2.9.1</scala.version>
+        <build.webapp.dir>${project.build.directory}/${project.build.finalName}</build.webapp.dir>
     </properties>
-
 
     <profiles>
         <profile>
@@ -54,7 +57,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.2.135</version>
+            <version>1.3.162</version>
             <scope>test</scope>
         </dependency>
 
@@ -75,7 +78,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.8.2</version>
+            <version>1.8.5</version>
             <scope>test</scope>
         </dependency>
 
@@ -107,7 +110,7 @@
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
-            <version>1.3.1</version>
+            <version>1.4.0</version>
         </dependency>
 
         <dependency>
@@ -167,13 +170,13 @@
         <dependency>
             <groupId>commons-digester</groupId>
             <artifactId>commons-digester</artifactId>
-            <version>1.8</version>
+            <version>2.1</version>
         </dependency>
 
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
         </dependency>
 
         <dependency>
@@ -185,7 +188,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>1.4</version>
+            <version>2.1</version>
         </dependency>
 
         <dependency>
@@ -209,7 +212,7 @@
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
-            <version>1.4</version>
+            <version>1.5.6</version>
         </dependency>
 
 
@@ -260,7 +263,7 @@
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>2.3.0</version>
+            <version>2.4.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -273,7 +276,7 @@
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
-            <version>3.2</version>
+            <version>3.3.1</version>
         </dependency>
 
         <dependency>
@@ -291,7 +294,7 @@
         <dependency>
             <groupId>javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.8.0.GA</version>
+            <version>3.12.1.GA</version>
         </dependency>
 
         <dependency>
@@ -327,7 +330,7 @@
         <dependency>
             <groupId>net.sourceforge.jtds</groupId>
             <artifactId>jtds</artifactId>
-            <version>1.2.2</version>
+            <version>1.2.4</version>
         </dependency>
 
         <dependency>
@@ -374,12 +377,6 @@
             <version>0.7.1</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>javax.persistence</groupId>-->
-        <!--<artifactId>persistence-api</artifactId>-->
-        <!--<version>1.0</version>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -392,29 +389,11 @@
             <version>3.1-FINAL</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring-core</artifactId>-->
-            <!--<version>${org.springframework.version}</version>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>${org.springframework.version}</version>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring-web</artifactId>-->
-            <!--<version>${org.springframework.version}</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring-aop</artifactId>-->
-            <!--<version>${org.springframework.version}</version>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>org.springframework</groupId>
@@ -425,13 +404,13 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.9</version>
         </dependency>
 
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.9</version>
         </dependency>
 
         <dependency>
@@ -561,19 +540,19 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>7.5.4.v20111024</version>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.jetty</groupId>-->
+        <!--<artifactId>jetty-server</artifactId>-->
+        <!--<version>${jetty.version}</version>-->
+        <!--<scope>test</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>7.5.4.v20111024</version>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.jetty</groupId>-->
+        <!--<artifactId>jetty-servlet</artifactId>-->
+        <!--<version>${jetty.version}</version>-->
+        <!--<scope>test</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
@@ -638,17 +617,11 @@
     </repositories>
 
     <pluginRepositories>
-        <pluginRepository>
-            <id>scala-tools.org</id>
-            <name>Scala-tools Maven2 Releases Repository</name>
-            <url>http://scala-tools.org/repo-releases</url>
-        </pluginRepository>
-
-        <pluginRepository>
-            <id>scala-tools.org.snapshots</id>
-            <name>Scala-tools Maven2 Snapshot Repository</name>
-            <url>http://scala-tools.org/repo-snapshots</url>
-        </pluginRepository>
+        <!--<pluginRepository>-->
+        <!--<id>scala-tools.org</id>-->
+        <!--<name>Scala-tools Maven2 Releases Repository</name>-->
+        <!--<url>http://scala-tools.org/repo-releases</url>-->
+        <!--</pluginRepository>-->
     </pluginRepositories>
 
 
@@ -670,39 +643,6 @@
         </testResources>
 
         <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>build-helper-maven-plugin</artifactId>-->
-                <!--<version>1.5</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>generate-sources</id>-->
-                        <!--<phase>generate-sources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>add-source</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<sources>-->
-                                <!--<source>src/main/scala</source>-->
-                            <!--</sources>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-
-                    <!--<execution>-->
-                        <!--<id>generate-test-sources</id>-->
-                        <!--<phase>generate-test-sources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>add-source</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<sources>-->
-                                <!--<source>src/test/scala</source>-->
-                            <!--</sources>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
@@ -728,7 +668,6 @@
                     <execution>
                         <id>compile</id>
                         <goals>
-                            <!--<goal>add-source</goal>-->
                             <goal>compile</goal>
                         </goals>
                         <phase>compile</phase>
@@ -768,7 +707,7 @@
 
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.7</version>
+                <version>2.8</version>
                 <configuration>
                     <show>private</show>
                     <nohelp>true</nohelp>
@@ -787,8 +726,35 @@
             </plugin>
 
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${build.webapp.dir}/WEB-INF/conf</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/resources-conf</directory>
+                                    <includes>
+                                        <include>log4j.xml</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.3</version>
+                <version>1.7</version>
                 <dependencies>
                     <dependency>
                         <groupId>ant-contrib</groupId>
@@ -806,7 +772,7 @@
                     <dependency>
                         <groupId>org.apache.ant</groupId>
                         <artifactId>ant-trax</artifactId>
-                        <version>1.7.1</version>
+                        <version>1.8.0</version>
                     </dependency>
 
                     <dependency>
@@ -824,23 +790,10 @@
 
                 <executions>
                     <execution>
-                        <id>clean</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <tasks>
-                                <delete dir="${basedir}/src/main/webapp" verbose="true"/>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-
-                    <execution>
-                        <id>validate</id>
+                        <id>validate-build-properties</id>
                         <phase>validate</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
                                 <if>
@@ -863,7 +816,7 @@
                                     for details.)
                                     Copy 'build.properties.template' content into 'build.properties' and edit it!
                                 </fail>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -871,14 +824,15 @@
                     </execution>
 
                     <execution>
-                        <id>generate-sources</id>
-                        <phase>generate-sources</phase>
+                        <id>process-webapp-sources</id>
+                        <phase>process-sources</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <ant antfile="${basedir}/pom-ant.xml" target="process-webapp-sources">
                                     <property name="version" value="${project.version}"/>
+                                    <property name="build.webapp.dir" value="${build.webapp.dir}"/>
                                 </ant>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -888,28 +842,29 @@
             </plugin>
 
             <!--<plugin>-->
-                <!--<groupId>org.mortbay.jetty</groupId>-->
-                <!--<artifactId>maven-jetty-jspc-plugin</artifactId>-->
-                <!--<version>6.1.22</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>jspc</id>-->
-                        <!--<goals>-->
-                            <!--<goal>jspc</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<excludes>-->
-                                <!--**/apisamples/*,-->
-                                <!--**/eng/jsp/category_admin_category.included.jsp, **/eng/jsp/text_restorer.jsp,-->
-                                <!--**/swe/jsp/category_admin_category.included.jsp, **/swe/jsp/text_restorer.jsp-->
-                            <!--</excludes>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <!--<groupId>org.mortbay.jetty</groupId>-->
+            <!--<artifactId>maven-jetty-jspc-plugin</artifactId>-->
+            <!--<version>6.1.22</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<id>jspc</id>-->
+            <!--<goals>-->
+            <!--<goal>jspc</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+            <!--<excludes>-->
+            <!--**/apisamples/*,-->
+            <!--**/eng/jsp/category_admin_category.included.jsp, **/eng/jsp/text_restorer.jsp,-->
+            <!--**/swe/jsp/category_admin_category.included.jsp, **/swe/jsp/text_restorer.jsp-->
+            <!--</excludes>-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--</executions>-->
             <!--</plugin>-->
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -923,7 +878,7 @@
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.7.1</version>
+                <version>2.9</version>
                 <configuration>
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <argLine>-Xms64m -Xmx1024m</argLine>
@@ -936,7 +891,7 @@
 
             <plugin>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.7.1</version>
+                <version>2.9</version>
             </plugin>
 
             <plugin>
@@ -944,8 +899,8 @@
                 <version>2.1.1</version>
                 <configuration>
                     <!--<attachClasses>true</attachClasses>
-                    <archiveClasses>true</archiveClasses>
                     -->
+                    <archiveClasses>true</archiveClasses>
 
                     <!--<webResources>-->
                     <!--<resource>-->
@@ -953,12 +908,13 @@
                     <!--<targetPath>WEB-INF/sql</targetPath>-->
                     <!--</resource>-->
                     <!--</webResources>-->
+                    <!--<warSourceDirectory>${generated.webapp.dir}</warSourceDirectory>-->
                 </configuration>
             </plugin>
 
             <plugin>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.3.1</version>
 
                 <configuration>
                     <!--
@@ -970,12 +926,12 @@
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>7.0.0.RC6</version>
+                <version>${jetty.version}</version>
                 <configuration>
                     <scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>
                     <stopKey>${jetty.stop.key}</stopKey>
                     <stopPort>${jetty.stop.port}</stopPort>
-                    <!--<webAppSourceDirectory>${project.build.directory}/${project.build.finalName}</webAppSourceDirectory>-->
+                    <webAppSourceDirectory>${build.webapp.dir}</webAppSourceDirectory>
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
                             <port>${jetty.port}</port>
@@ -988,27 +944,6 @@
                 </configuration>
             </plugin>
 
-            <!--
-           <plugin>
-             <groupId>org.codehaus.mojo</groupId>
-             <artifactId>exec-maven-plugin</artifactId>
-             <version>1.1</version>
-             <executions>
-               <execution>
-               <phase>process-sources</phase>
-               <goals>
-                 <goal>exec</goal>
-               </goals>
-               <configuration>
-                 <executable>ant</executable>
-                 <arguments>
-                   <argument>process-webapp-sources</argument>
-                 </arguments>
-               </configuration>
-             </execution>
-           </executions>
-         </plugin>
-          -->
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
@@ -1016,12 +951,9 @@
                 </configuration>
             </plugin>
 
-
-
-
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2.1</version>
+                <version>2.3</version>
                 <executions>
                     <execution>
                         <id>package</id>
@@ -1033,12 +965,12 @@
                 </executions>
                 <configuration>
                     <!--<formats>-->
-                        <!--<format>jar</format>-->
+                    <!--<format>jar</format>-->
                     <!--</formats>-->
 
-                  <descriptors>
-                    <descriptor>src/assemble/classes-assembly.xml</descriptor>
-                  </descriptors>
+                    <descriptors>
+                        <descriptor>src/assemble/classes-assembly.xml</descriptor>
+                    </descriptors>
                 </configuration>
             </plugin>
         </plugins>

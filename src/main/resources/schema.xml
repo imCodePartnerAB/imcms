@@ -7,6 +7,16 @@
   </init>
 
   <diffs>
+    <diff from="4.8" to="4.9">
+      <script>diff/diff-4.9-4.10-mysql.sql</script>
+    </diff>
+    <diff from="4.9" to="4.10">
+      <script>diff/diff-4.9-4.10-mysql.sql</script>
+    </diff>
+    <diff from="4.10" to="4.11">
+      <script>diff/diff-image_handling-mysql.sql"></script>
+      <script>diff/diff-image_archive_support_mysql.sql"></script>
+    </diff>
     <diff from="4.11" to="4.12">
       <script>diff/diff-image_handling-mysql-4.11-4.12.sql</script>
     </diff>
@@ -56,5 +66,4 @@
       <script>diff/mysql-schema-diff-6.11-6.12.sql</script>
     </diff>
   </diffs>
-    
 </schema>

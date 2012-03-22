@@ -15,5 +15,4 @@ alter table users
     modify county_council varchar(128),
     modify email          varchar(128);
 
-update database_version set major = 4, minor = 9;
-commit;    
+UPDATE database_version SET major = 4, minor = 9;
