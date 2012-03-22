@@ -163,6 +163,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     /**
      * @param time password reset time
      * @return if password reset has been expired.
+     * @since 4.0.7
      */
     private boolean isPasswordResetExpired(long time) {
         int interval = Hours.hoursBetween(new DateTime(time), new DateTime()).getHours();
@@ -330,6 +331,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      * Otherwise encrypts the password if it was modified.
      *
      * @param user
+     * @since 4.0.7
      */
     private void modifyPasswordIfNecessary(UserDomainObject user) {
         if (user.isImcmsExternal()) {

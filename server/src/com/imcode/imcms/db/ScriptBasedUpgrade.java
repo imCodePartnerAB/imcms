@@ -1,7 +1,5 @@
 package com.imcode.imcms.db;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.Platform;
@@ -16,14 +14,14 @@ import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import imcode.server.Imcms;
@@ -76,8 +74,27 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
 
+            xpath.setXPathFunctionResolver(new XPathFunctionResolver() {
+                final QName dbVersionCompareQName = new QName("imcms", "db-version-compare");
+                final XPathFunction dbVersionCompare = new XPathFunction() {
+                    @Override
+                    public Integer evaluate(List args) throws XPathFunctionException {
+                        String[] l = ((String)args.get(0)).split("\\.");
+                        String[] r = ((String)args.get(1)).split("\\.");
+
+                        return new DatabaseVersion(Integer.parseInt(l[0]), Integer.parseInt(l[1])).compareTo(
+                               new DatabaseVersion(Integer.parseInt(r[0]), Integer.parseInt(r[1])));
+                    }
+                };
+
+                @Override
+                public XPathFunction resolveFunction(QName qname, int arity) {
+                    return qname.equals(dbVersionCompareQName) && arity == 2 ? dbVersionCompare : null;
+                }
+            });
+
             final NodeList scriptList = (NodeList)xpath.evaluate(
-                    String.format("/schema-upgrade/diff[@version > %s]/vendor[@name = '%s']/script",
+                    String.format("/schema-upgrade/diff[imcms:db-version-compare(string(@version), '%s') > 0]/vendor[@name = '%s']/script",
                     currentVersion, vendorName), doc, XPathConstants.NODESET);
 
             final int updatesCount = scriptList.getLength();
@@ -128,7 +145,9 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
 
             LOG.info("Database upgraded to version " + currentVersion);
         } catch (Exception ex) {
-            LOG.fatal("Failed to run script based upgrade.", ex);
+            String errMsg = "Failed to run script based upgrade.";
+            LOG.fatal(errMsg, ex);
+            throw new DatabaseException(errMsg, ex);
         }
     }
 
