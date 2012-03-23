@@ -1,20 +1,19 @@
 -- Document's search keyword column
 
--- todo: implement
---  --  -- alter table classification modify code varchar(128);
---
--- -- User's data columns
--- alter table users
---     modify login_name     varchar(128),
---     modify first_name     varchar(64),
---     modify last_name      varchar(64),
---     modify title          varchar(64),
---     modify company        varchar(64),
---     modify address        varchar(128),
---     modify city           varchar(64),
---     modify zip            varchar(64),
---     modify country        varchar(64),
---     modify county_council varchar(128),
---     modify email          varchar(128);
---
--- UPDATE database_version SET major = 4, minor = 9;
+ALTER TABLE classification ALTER COLUMN code NVARCHAR(128);
+
+-- User's data columns
+ALTER TABLE users
+    ALTER COLUMN login_name     NVARCHAR(128),
+    ALTER COLUMN first_name     NVARCHAR(64),
+    ALTER COLUMN last_name      NVARCHAR(64),
+    ALTER COLUMN title          NVARCHAR(64),
+    ALTER COLUMN company        NVARCHAR(64),
+    ALTER COLUMN address        NVARCHAR(128),
+    ALTER COLUMN city           NVARCHAR(64),
+    ALTER COLUMN zip            NVARCHAR(64),
+    ALTER COLUMN country        NVARCHAR(64),
+    ALTER COLUMN county_council NVARCHAR(128),
+    ALTER COLUMN email          NVARCHAR(128);
+
+UPDATE database_version SET major = 4, minor = 9;
