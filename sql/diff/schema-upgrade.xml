@@ -3,17 +3,17 @@
     <vendor name="mysql">
       <script location="diff-4.8-4.9-mysql.sql"/>
     </vendor>
-    <!--<vendor name="mssql">-->
-      <!--<script location="diff-4.8-4.9-mssql.sql"/>-->
-    <!--</vendor>-->
+    <vendor name="mssql">
+      <script location="diff-4.8-4.9-mssql.sql"/>
+    </vendor>
   </diff>
   <diff version="4.10">
     <vendor name="mysql">
       <script location="diff-4.9-4.10-mysql.sql"/>
     </vendor>
-    <!--<vendor name="mssql">-->
-      <!--<script location="diff-4.9-4.10-mssql.sql"/>-->
-    <!--</vendor>-->
+    <vendor name="mssql">
+      <script location="diff-4.9-4.10-mssql.sql"/>
+    </vendor>
   </diff>
   <diff version="4.11">
     <vendor name="mysql">
@@ -61,8 +61,8 @@
     <vendor name="mysql">
       <script location="diff-4.15-4.16-mysql.sql"/>
     </vendor>
-    <!--<vendor name="mssql">-->
-      <!--<script location="diff-4.15-4.16-mssql.sql"/>-->
-    <!--</vendor>-->
+    <vendor name="mssql">
+      <script location="diff-4.15-4.16-mssql.sql"/>
+    </vendor>
   </diff>
 </schema-upgrade>

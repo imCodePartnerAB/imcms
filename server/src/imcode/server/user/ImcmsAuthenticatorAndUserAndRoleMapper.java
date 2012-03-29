@@ -6,6 +6,7 @@ import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.*;
 import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
+import com.imcode.imcms.api.Pair;
 import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.servlet.LoginPasswordManager;
@@ -20,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
+import java.awt.event.PaintEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -52,6 +54,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String SQL_SELECT_USER_SESSION = "select session_id from users where user_id = ?";
     
     private static final String SQL_UPDATE_USER_REMEMBER_CD = "UPDATE users SET remember_cd = ? WHERE user_id = ?";
+
+    private static final String SQL_SELECT_EMAILS_COUNT = "SELECT count(email) FROM users WHERE email = ?";
 
     private final ImcmsServices services;
 
@@ -110,30 +114,57 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
 
     /**
-     * @since 4.0.7
+     * @since 4.1.3
+     */
+    public boolean isLogin(String login) {
+        return getUser(login) != null;
+    }
+
+    /**
+     * @since 4.1.3
      */
     public UserDomainObject getUserByEmail(String email) {
-        return email == null ? null : getUserFromSqlRow(sqlSelectUserByEmail(email));
+        return StringUtils.isBlank(email) || ! isUniqueEmail(email)
+                ? null
+                : getUserFromSqlRow(sqlSelectUserByEmail(email));
     }
 
     /**
      * Create and assign a new PasswordReset to the internal user.
      *
-     * @param email user's email.
+     * @param loginOrEmail login or email.
      *
-     * @return user or null if internal user does not exist or user's account is inactive
+     * @return (user, email) or null if internal user does not exist or user's account is inactive
      *
-     * @since 4.0.7
+     * @since 4.1.3
      */
-    public UserDomainObject createPasswordReset(String email) {
-        UserDomainObject user = getUserByEmail(email);
+    public Pair<UserDomainObject, String> createPasswordReset(String loginOrEmail) {
+        UserDomainObject user = getUser(loginOrEmail);
+        String userEmail = user == null ? null : user.getEmailAddress();
+        String email = user == null
+                ? null
+                : Utility.isValidEmail(loginOrEmail)
+                    ? loginOrEmail
+                    : Utility.isValidEmail(userEmail) && isUniqueEmail(userEmail) && !isLogin(userEmail)
+                        ? userEmail
+                        : null;
 
-        if (user != null && user.isActive() && !user.isImcmsExternal() && !user.isDefaultUser() &&
+
+        if (user == null) {
+            user = getUserByEmail(loginOrEmail);
+            email = user == null
+                    ? null
+                    : Utility.isValidEmail(loginOrEmail)
+                        ? loginOrEmail
+                        : null;
+        }
+
+        if (email != null && user != null && user.isActive() && !user.isImcmsExternal() && !user.isDefaultUser() &&
                 !(user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed())) {
             user.setPasswordReset(UUID.randomUUID().toString(), System.currentTimeMillis());
             saveUser(user);
 
-            return user;
+            return Pair.of(user, email);
         } else {
             return null;
         }
@@ -156,7 +187,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
 
     public UserDomainObject getUser(String loginName) {
-        return getUserFromSqlRow(sqlSelectUserByName(loginName));
+        return loginName == null ? null : getUserFromSqlRow(sqlSelectUserByName(loginName));
     }
 
 
@@ -299,6 +330,24 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         try {
             final Object[] parameters = new String[] { email };
             return (String[]) services.getDatabase().execute(new SqlQueryCommand(sqlSelectUserByEmail(services), parameters, Utility.STRING_ARRAY_HANDLER));
+        } catch ( DatabaseException e ) {
+            throw new UnhandledException(e);
+        }
+    }
+
+    /**
+     * @since 4.1.3
+     */
+    public boolean isUniqueEmail(String email) {
+        if (StringUtils.isEmpty(email))
+            return false;
+
+        try {
+            final Object[] parameters = new String[] { email };
+            String emailsCount = (String)services.getDatabase().execute(
+                    new SqlQueryCommand(SQL_SELECT_EMAILS_COUNT, parameters, Utility.SINGLE_STRING_HANDLER));
+
+            return emailsCount.equals("1");
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
