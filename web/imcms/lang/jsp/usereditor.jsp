@@ -106,10 +106,6 @@ function activateUseradmin_roles(){
 	</table></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/36 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EMAIL %>" size="50" maxlength="50" value="<%= StringEscapeUtils.escapeHtml(editedUser.getEmailAddress())%>"></td>
-</tr>
-<tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/14 ?></td>
 	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__FIRST_NAME %>" size="25" maxlength="25" value="<%= StringEscapeUtils.escapeHtml(editedUser.getFirstName()) %>"></td>
 </tr>
@@ -187,7 +183,10 @@ function activateUseradmin_roles(){
 	</tr>
 	</table></td>
 </tr>
-
+<tr>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/36 ?></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EMAIL %>" size="50" maxlength="50" value="<%= StringEscapeUtils.escapeHtml(editedUser.getEmailAddress())%>"></td>
+</tr>
 <tr>
 	<td colspan="2">#gui_hr( "blue" )</td>
 </tr>

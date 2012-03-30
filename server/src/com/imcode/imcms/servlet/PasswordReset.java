@@ -50,18 +50,15 @@ public class PasswordReset extends HttpServlet {
 
     // Views
     private static final String
-            // todo: change jsp name
-            // todo: change jsp resources
-            user_id_form_view = "account_email_form.jsp",
+            identity_form_view = "identity_form.jsp",
             email_sent_confirmation_view = "email_sent_confirmation.jsp",
-            new_password_form_view = "password_reset_form.jsp",
+            password_reset_form_view = "password_reset_form.jsp",
             password_changed_confirmation_view = "password_changed_confirmation.jsp";
 
 
     private ExecutorService emailSender = Executors.newFixedThreadPool(5);
 
-    // todo: change resource
-    private final LocalizedMessage validationErrorMissingUserId = new LocalizedMessage("passwordreset.error.missing_email");
+    private final LocalizedMessage validationErrorMissingUserId = new LocalizedMessage("passwordreset.error.missing_identity");
 
 
     /**
@@ -80,9 +77,9 @@ public class PasswordReset extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Op op = getOp(request);
         String view = op == Op.REQUEST_RESET
-                ? user_id_form_view
+                ? identity_form_view
                 : op == Op.RESET && getUserByPasswordResetId(request) != null
-                    ? new_password_form_view
+                    ? password_reset_form_view
                     : null;
 
         render(request, response, view);
@@ -106,7 +103,7 @@ public class PasswordReset extends HttpServlet {
 
             if (identity.isEmpty()) {
                 setValidationErrors(request, validationErrorMissingUserId.toLocalizedString(request));
-                view = user_id_form_view;
+                view = identity_form_view;
             } else {
                 UserDomainObject user = createPasswordReset(identity);
                 String url = String.format("%s?%s=%s&%s=%s",
@@ -131,7 +128,7 @@ public class PasswordReset extends HttpServlet {
 
                 if (errorMsg != null) {
                     setValidationErrors(request, errorMsg.toLocalizedString(user));
-                    view = new_password_form_view;
+                    view = password_reset_form_view;
                 } else {
                     user.setPassword(password);
                     Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(user);

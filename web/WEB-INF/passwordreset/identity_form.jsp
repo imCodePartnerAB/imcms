@@ -6,9 +6,9 @@
   pageEncoding="UTF-8"
 %><%!
 
-static final LocalizedMessage formInfo = new LocalizedMessage("passwordreset.email_form_info");
-static final LocalizedMessage formLabelEmail = new LocalizedMessage("passwordreset.email_form.lbl_email");
-static final LocalizedMessage formSubmit = new LocalizedMessage("passwordreset.email_form.submit");
+static final LocalizedMessage formInfo = new LocalizedMessage("passwordreset.identity_form_info");
+static final LocalizedMessage formLabelEmail = new LocalizedMessage("passwordreset.identity_form.lbl_identity");
+static final LocalizedMessage formSubmit = new LocalizedMessage("passwordreset.identity_form.submit");
 
 %>
 <jsp:include page="inc_header.jsp" flush="true"/>
