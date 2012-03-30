@@ -37,6 +37,12 @@
         </layout>
     </appender>
 
+    <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c %x - %m%n"/>
+        </layout>
+    </appender>
+
     <!-- Set up accesslog with priority 'debug' -->
     <category name="com.imcode.imcms.log.access" additivity="false">
         <priority value="debug"/>
@@ -58,6 +64,7 @@
     <root>
         <priority value="trace"/>
         <appender-ref ref="ERROR"/>
+        <appender-ref ref="stdout"/>
     </root>
 
 </log4j:configuration>

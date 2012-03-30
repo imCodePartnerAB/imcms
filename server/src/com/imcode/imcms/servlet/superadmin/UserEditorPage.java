@@ -164,6 +164,24 @@ public class UserEditorPage extends OkCancelPage {
         }
     }
 
+    /**
+     * @param login
+     * @param password
+     * @param passwordCheck
+     * @since 4.0.7
+     *
+     * @return
+     */
+    public static LocalizedMessage validatePassword(String login, String password, String passwordCheck) {
+        return StringUtils.isBlank(password)
+                ? ERROR__PASSWORD_LENGTH
+                : !password.equals(passwordCheck)
+                    ? ERROR__PASSWORDS_DID_NOT_MATCH
+                    : login.equalsIgnoreCase(password)
+                        ? ERROR__PASSWORD_TOO_WEAK
+                        : null;
+    }
+
     private boolean passwordPassesLengthRequirements(String password1) {
         return password1.length() >= MINIMUM_PASSWORD_LENGTH
                && password1.length() <= MAXIMUM_PASSWORD_LENGTH;

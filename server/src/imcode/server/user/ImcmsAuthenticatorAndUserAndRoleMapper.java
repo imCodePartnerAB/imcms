@@ -284,7 +284,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private String[][] sqlSelectUsersByEmail(String email) {
         List<String> whereTests = new ArrayList<String>();
 
-        whereTests.add("email = " + email);
+        whereTests.add("email = '" + email + "'");
 
         String sqlStr = sqlSelectUsers(services);
         sqlStr += " WHERE " + StringUtils.join(whereTests.iterator(), " AND ");
