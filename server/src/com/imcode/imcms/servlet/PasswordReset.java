@@ -60,7 +60,7 @@ public class PasswordReset extends HttpServlet {
             password_changed_confirmation_view = "password_changed_confirmation.jsp";
 
 
-    private ExecutorService emailSender = Executors.newFixedThreadPool(5);
+    private ExecutorService emailSender = Executors.newSingleThreadExecutor();
 
     private final LocalizedMessage validationErrorMissingUserId = new LocalizedMessage("passwordreset.error.missing_identity");
 
@@ -227,7 +227,7 @@ public class PasswordReset extends HttpServlet {
         int usersCount = idToUser.size();
 
         if (usersCount == 0) {
-            logger.warn(String.format("Can't create password reset. No users with identity: '%s'. were found.", identity));
+            logger.warn(String.format("Can't create password reset. No user with identity '%s' were found or e-mail address is invalid.", identity));
         } else if (usersCount == 1) {
             P.P2<UserDomainObject, String> userAndEmail = idToUser.values().iterator().next();
             UserDomainObject user = userAndEmail._1();
@@ -235,7 +235,7 @@ public class PasswordReset extends HttpServlet {
             try {
                 result = P.of(urm.createPasswordReset(user.getId()), userAndEmail._2());
             } catch (Exception e) {
-                logger.error(String.format("Can't create password reset for user %s.", user), e);
+                logger.error(String.format("Failed to create password reset for user %s.", user), e);
             }
         } else {
             int usersToDisplay = Math.min(usersCount, 5);
@@ -286,20 +286,20 @@ public class PasswordReset extends HttpServlet {
                     String eMailServerMaster = sysData.getServerMasterAddress();
                     SMTP smtp = Imcms.getServices().getSMTP();
 
-//                        smtp.sendMail(new SMTP.Mail(eMailServerMaster, new String[] { emailAddress }, subject, body));
+                    smtp.sendMail(new SMTP.Mail(eMailServerMaster, new String[] { emailAddress }, subject, body));
 
-                        Email email = new SimpleEmail();
-                        email.setDebug(true);
-                        email.setHostName("smtp.gmail.com");
-                        email.setSmtpPort(587);
-                        email.setDebug(true);
-                        email.setAuthenticator(new DefaultAuthenticator("@gmail.com", ""));
-                        email.setTLS(true);
-                        email.setFrom("admin@imcode.com");
-                        email.setSubject(subject);
-                        email.setMsg(body);
-                        email.addTo("@gmail.com");
-                        email.send();
+//                        Email email = new SimpleEmail();
+//                        email.setDebug(true);
+//                        email.setHostName("smtp.gmail.com");
+//                        email.setSmtpPort(587);
+//                        email.setDebug(true);
+//                        email.setAuthenticator(new DefaultAuthenticator("@gmail.com", ""));
+//                        email.setTLS(true);
+//                        email.setFrom("admin@imcode.com");
+//                        email.setSubject(subject);
+//                        email.setMsg(body);
+//                        email.addTo("@gmail.com");
+//                        email.send();
                 } catch (Exception e) {
                     logger.error(String.format(
                                     "Failed to send password reset URL to the user %s, using e-mail address %s.",
