@@ -165,6 +165,16 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
 
     /**
+     * @param login
+     * @return user or null if user can not be found.
+     * @since 4.1.3
+     */
+    public UserDomainObject getUserByLoginIgnoreCase(String login) {
+        return StringUtils.isBlank(login) ? null : getUserFromSqlRow(sqlSelectUserByLoginIgnoreCase(login));
+    }
+
+
+    /**
      * @param time password reset time
      * @return if password reset has been expired.
      * @since 4.0.7
@@ -179,6 +189,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         final Object[] parameters = new String[] { loginName.trim() };
         return (String[]) services.getDatabase().execute(new SqlQueryCommand(sqlSelectUsers(services)
                                                                              + " WHERE login_name = ?", parameters, Utility.STRING_ARRAY_HANDLER));
+    }
+
+    private String[] sqlSelectUserByLoginIgnoreCase(String login) {
+        final Object[] parameters = new String[] { login.trim().toLowerCase() };
+        return (String[]) services.getDatabase().execute(
+                new SqlQueryCommand(
+                        sqlSelectUsers(services) + " WHERE LOWER(login_name) = ?", parameters, Utility.STRING_ARRAY_HANDLER));
     }
 
     private UserDomainObject getUserFromSqlRow(String[] sqlResult) {
@@ -284,7 +301,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private String[][] sqlSelectUsersByEmail(String email) {
         List<String> whereTests = new ArrayList<String>();
 
-        whereTests.add("email = '" + email + "'");
+        whereTests.add("LOWER(email) = '" + email.trim().toLowerCase() + "'");
 
         String sqlStr = sqlSelectUsers(services);
         sqlStr += " WHERE " + StringUtils.join(whereTests.iterator(), " AND ");
