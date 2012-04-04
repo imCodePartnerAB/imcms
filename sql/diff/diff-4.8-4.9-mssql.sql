@@ -1,5 +1,4 @@
 -- Document's search keyword column
-
 ALTER TABLE classification ALTER COLUMN code NVARCHAR(128);
 
 -- User's data columns

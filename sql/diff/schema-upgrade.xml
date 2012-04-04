@@ -17,20 +17,18 @@
   </diff>
   <diff version="4.11">
     <vendor name="mysql">
-      <script location="diff-image_handling-mysql.sql"/>
-      <script location="diff-image_archive_support_mysql.sql"/>
+      <script location="diff-4.10-4.11-mysql.sql"/>
     </vendor>
     <vendor name="mssql">
-      <script location="diff-image_handling-mssql.sql"/>
-      <script location="diff-image_archive_support_mssql.sql"/>
+      <script location="diff-4.10-4.11-mssql.sql"/>
     </vendor>
   </diff>
   <diff version="4.12">
     <vendor name="mysql">
-      <script location="diff-image_handling-mysql-4.11-4.12.sql"/>
+      <script location="diff-4.11-4.12-mysql.sql"/>
     </vendor>
     <vendor name="mssql">
-      <script location="diff-image_handling-mssql-4.11-4.12.sql"/>
+      <script location="diff-4.11-4.12-mssql.sql"/>
     </vendor>
   </diff>
   <diff version="4.13">
