@@ -55,14 +55,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Replaced with jcl-over-slf4j -->
-        <!--<dependency>-->
-            <!--<groupId>commons-logging</groupId>-->
-            <!--<artifactId>commons-logging-api</artifactId>-->
-            <!--&lt;!&ndash; RB-4 lib version: 1.0.5-alpha1 &ndash;&gt;-->
-            <!--<version>1.1</version>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
@@ -72,7 +64,6 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <!-- RB-4 lib version: 1.2.12 -->
             <version>1.2.16</version>
         </dependency>
         <!-- End of logging configuration -->
@@ -80,7 +71,7 @@
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -135,7 +126,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-             <!-- RB-4 lib version: 1.3; Tika depends-on 1.5 -->
+            <!-- RB-4 lib version: 1.3; Tika depends-on 1.5 -->
             <version>1.5</version>
         </dependency>
 
@@ -188,23 +179,23 @@
         </dependency>
 
         <!--<dependency>-->
-            <!--<groupId>commons-email</groupId>-->
-            <!--<artifactId>commons-email</artifactId>-->
-            <!--<version>1.0</version>-->
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>mail</artifactId>-->
-                    <!--<groupId>javax.mail</groupId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>activation</artifactId>-->
-                    <!--<groupId>javax.activation</groupId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>dumbster</artifactId>-->
-                    <!--<groupId>dumbster</groupId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
+        <!--<groupId>commons-email</groupId>-->
+        <!--<artifactId>commons-email</artifactId>-->
+        <!--<version>1.0</version>-->
+        <!--<exclusions>-->
+        <!--<exclusion>-->
+        <!--<artifactId>mail</artifactId>-->
+        <!--<groupId>javax.mail</groupId>-->
+        <!--</exclusion>-->
+        <!--<exclusion>-->
+        <!--<artifactId>activation</artifactId>-->
+        <!--<groupId>javax.activation</groupId>-->
+        <!--</exclusion>-->
+        <!--<exclusion>-->
+        <!--<artifactId>dumbster</artifactId>-->
+        <!--<groupId>dumbster</groupId>-->
+        <!--</exclusion>-->
+        <!--</exclusions>-->
         <!--</dependency>-->
 
         <!-- @since 4.0.7 -->
@@ -213,18 +204,18 @@
             <artifactId>commons-email</artifactId>
             <version>1.2</version>
             <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>mail</artifactId>-->
-                    <!--<groupId>javax.mail</groupId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>activation</artifactId>-->
-                    <!--<groupId>javax.activation</groupId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>dumbster</artifactId>-->
-                    <!--<groupId>dumbster</groupId>-->
-                <!--</exclusion>-->
+            <!--<exclusion>-->
+            <!--<artifactId>mail</artifactId>-->
+            <!--<groupId>javax.mail</groupId>-->
+            <!--</exclusion>-->
+            <!--<exclusion>-->
+            <!--<artifactId>activation</artifactId>-->
+            <!--<groupId>javax.activation</groupId>-->
+            <!--</exclusion>-->
+            <!--<exclusion>-->
+            <!--<artifactId>dumbster</artifactId>-->
+            <!--<groupId>dumbster</groupId>-->
+            <!--</exclusion>-->
             <!--</exclusions>-->
         </dependency>
 
@@ -313,29 +304,6 @@
             <version>1.1</version>
         </dependency>
 
-        <!-- @since 4.0.7 replace with commons emial 1.2 -->
-        <!--<dependency>-->
-            <!--<groupId>gnu-mail</groupId>-->
-            <!--<artifactId>gnu-mail</artifactId>-->
-            <!--<version>1.0</version>-->
-        <!--</dependency>-->
-
-        <!-- @since 4.0.7 replace with commons emial 1.2 -->
-        <!--<dependency>-->
-            <!--<groupId>gnu-mail-providers</groupId>-->
-            <!--<artifactId>gnu-mail-providers</artifactId>-->
-            <!--<version>1.0</version>-->
-        <!--</dependency>-->
-
-        <!-- Replaced with 1.0 parsers & dependencies -->
-        <!--<dependency>-->
-            <!--&lt;!&ndash; RB-4 lib artifact: pdfbox-0.7.2-9462.jar &ndash;&gt;-->
-            <!--<groupId>imcode-pdfbox</groupId>-->
-            <!--<artifactId>imcode-pdfbox</artifactId>-->
-            <!--<version>0.7.2-9462</version>-->
-        <!--</dependency>-->
-        <!-- End of imCode Internal Repository dependencies -->
-
         <dependency>
             <groupId>org.codehaus.guessencoding</groupId>
             <artifactId>guessencoding</artifactId>
@@ -406,32 +374,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <!-- RB-4 lib version: 3.0-alpha1; Tika depends-on 3.8-beta4 -->
-            <version>3.8-beta4</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-scratchpad</artifactId>
-            <!-- RB-4 lib version: 3.0-alpha1; depends-on 3.8-beta4  -->
-            <version>3.8-beta4</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>taglibs</groupId>
             <artifactId>standard</artifactId>
             <version>1.1.2</version>
@@ -489,10 +431,10 @@
         <!--</dependency>-->
 
         <!--<dependency>-->
-            <!--<groupId>com.imcode.ant.tasks</groupId>-->
-            <!--<artifactId>imcode-ant-tasks</artifactId>-->
-            <!--<version>1.3</version>-->
-            <!--<scope>provided</scope>-->
+        <!--<groupId>com.imcode.ant.tasks</groupId>-->
+        <!--<artifactId>imcode-ant-tasks</artifactId>-->
+        <!--<version>1.3</version>-->
+        <!--<scope>provided</scope>-->
         <!--</dependency>-->
 
         <!--<dependency>-->
@@ -637,7 +579,8 @@
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
-                                    'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT for details.)
+                                    'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT
+                                    for details.)
                                     Copy 'build.properties.template' content into 'build.properties' and edit it!
                                 </fail>
                             </target>
@@ -764,6 +707,16 @@
                     <keepSources>true</keepSources>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.2</version>
+                <configuration>
+                    <scmCommentPrefix>Issue 7753: Release.</scmCommentPrefix>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -794,4 +747,9 @@
             <url>scp://ymer.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
         </repository>
     </distributionManagement>
+
+    <scm>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</developerConnection>
+    </scm>
 </project>
