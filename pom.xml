@@ -9,7 +9,7 @@
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>4.1.5</version>
+    <version>4.1.6-SNAPSHOT</version>
     <name>imCMS</name>
 
     <properties>
@@ -747,7 +747,7 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/4.1.5</connection>
-        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/4.1.5</developerConnection>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</developerConnection>
     </scm>
 </project>
