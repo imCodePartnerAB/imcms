@@ -3,15 +3,13 @@
 <!--
     Web sources (lang jsps->eng/swe, configs processing) generation is bound to the 'process-sources' phase.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>4.1.4-SNAPSHOT</version>
+    <version>4.1.4</version>
     <name>imCMS</name>
 
     <properties>
@@ -480,7 +478,7 @@
         <plugins>
             <plugin>
                 <!-- todo: check, remove debug, optimize, deprecated, junit from build.properties -->
-                <!--<classpath refid="libraries-with-commons-logging"/>-->
+                <!--<classpath refid="libraries-with-commons-logging" />-->
                 <!--not all files are UTF8 -->
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
@@ -548,7 +546,7 @@
                         <phase>clean</phase>
                         <configuration>
                             <target>
-                                <delete dir="${generated.webapp.dir}" verbose="false"/>
+                                <delete dir="${generated.webapp.dir}" verbose="false" />
                             </target>
                         </configuration>
                         <goals>
@@ -561,21 +559,19 @@
                         <phase>validate</phase>
                         <configuration>
                             <target>
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
                                 <if>
                                     <not>
-                                        <available file="${basedir}/build.properties"/>
+                                        <available file="${basedir}/build.properties" />
                                     </not>
                                     <then>
-                                        <copy file="${basedir}/build.properties.template"
-                                              tofile="${basedir}/build.properties"/>
+                                        <copy file="${basedir}/build.properties.template" tofile="${basedir}/build.properties" />
                                     </then>
                                 </if>
 
-                                <uptodate targetfile="${basedir}/build.properties"
-                                          property="build-properties-up-to-date">
-                                    <srcfiles dir="${basedir}" includes="build.properties.template"/>
+                                <uptodate targetfile="${basedir}/build.properties" property="build-properties-up-to-date">
+                                    <srcfiles dir="${basedir}" includes="build.properties.template" />
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
@@ -596,13 +592,13 @@
                         <configuration>
                             <target>
                                 <ant antfile="${basedir}/pom-ant.xml" target="web">
-                                    <property name="version" value="${project.version}"/>
-                                    <property name="webroot" value="${generated.webapp.dir}"/>
+                                    <property name="version" value="${project.version}" />
+                                    <property name="webroot" value="${generated.webapp.dir}" />
                                 </ant>
 
                                 <ant antfile="${basedir}/pom-ant.xml" target="sql">
-                                    <property name="version" value="${project.version}"/>
-                                    <property name="webroot" value="${generated.webapp.dir}"/>
+                                    <property name="version" value="${project.version}" />
+                                    <property name="webroot" value="${generated.webapp.dir}" />
                                 </ant>
                             </target>
                         </configuration>
@@ -625,8 +621,8 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.8</version>
                 <!-- todo: check -->
-                <!--<include name="com/imcode/imcms/api/**"/>-->
-                <!--<include name="com/imcode/util/**"/>-->
+                <!--<include name="com/imcode/imcms/api/**" />-->
+                <!--<include name="com/imcode/util/**" />-->
                 <configuration>
                     <encoding>iso-8859-1</encoding>
                     <windowtitle>imCMS API ${project.version}</windowtitle>
@@ -749,7 +745,7 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</connection>
-        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</developerConnection>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/4.1.4</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/4.1.4</developerConnection>
     </scm>
 </project>
