@@ -713,7 +713,7 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.2.2</version>
                 <configuration>
-                    <scmCommentPrefix>Issue 7753: Release.</scmCommentPrefix>
+                    <scmCommentPrefix>Issue 7753: </scmCommentPrefix>
                     <tagNameFormat>@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
