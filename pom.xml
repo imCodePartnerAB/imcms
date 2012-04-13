@@ -1,9 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Web sources (lang jsps->eng/swe, configs processing) generation is bound to the 'process-sources' phase.
+    :: WAR plugin ignores empty dirs when builds a webapp (as a war file or an exploded directory form).
+       However a number of dirs (such as images, uploads, etc) must always present in the webapp.
+       Workaround: add empty README file into the dir that must be included into the webapp.
+
+    :: Webapp sources generation (lang jsps->eng/swe, configs processing) is bound to the 'process-sources' phase.
+
+    :: Webapp can be tested under pre-configured embedded Jetty and Tomcat and remote Tomcat.
+       Webapp's context path defaults to /imcms-${project.version}
+       ex: http://localhost:[port]/imcms-4.1.6-SNAPSHOT
+
+    :::: Embedded Jetty 7.x is configured to run on port 9090 using 'jetty:run' goal.
+    :::: Embedded Tomcat 6.x and 7.x is configured to run on port 8888 using 'tomcat6/7:run' goal.
+
+    :::: Remote Tomcat 6.x and 7.x is configured to use default tomcat address - http://localhost:8080.
+         Full list of available commands can be found on plugin's website:
+         http://tomcat.apache.org/maven-plugin-2/tomcat6-maven-plugin/plugin-info.html
+
+         To manage remote tomcat plugin uses tomcat manager - the application included into a tomcat distribution.
+         For security reasons access to the manager app is disabled.
+         To enable remote management from the plugins and browsers (http://localhost:8080/manager/html)
+         add the following line into your $CATALINA_HOMEconf/tomcat-users.xml file:
+         <user username="manager" password="manager" roles="manager-gui,manager-script"/>
+         The plugin provides a number of goals to deploy webapp to the remote server - deploy, deploy-only, exploded and inplace.
+         But only deploy goal is most safest and recommended.
+         Unlike other goals it invokes the execution of the lifecycle phase package prior to executing itself.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.imcode.imcms</groupId>
@@ -13,17 +38,22 @@
     <name>imCMS</name>
 
     <properties>
+        <slf4j.version>1.6.4</slf4j.version>
+        <generated.webapp.dir>${project.build.directory}/webapp</generated.webapp.dir>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- jetty plugin since version 7.5.3+ requires maven v3.x -->
         <jetty.version>7.5.2.v20111006</jetty.version>
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
-        <jetty.contextPath>/</jetty.contextPath>
+        <jetty.contextPath>/${project.artifactId}-${project.version}</jetty.contextPath>
 
-        <slf4j.version>1.6.4</slf4j.version>
-
-        <generated.webapp.dir>${project.build.directory}/webapp</generated.webapp.dir>
-        <maven.test.skip>true</maven.test.skip>
+        <tomcat.contextPath>/${project.artifactId}-${project.version}</tomcat.contextPath>
+        <tomcat.port>8888</tomcat.port>
+        <tomcat.username>manager</tomcat.username>
+        <tomcat.password>manager</tomcat.password>
     </properties>
 
     <dependencies>
@@ -88,7 +118,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <!-- RB-4 lib version: 3.8.1 -->
             <version>4.9</version>
             <scope>test</scope>
         </dependency>
@@ -124,7 +153,6 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <!-- RB-4 lib version: 1.3; Tika depends-on 1.5 -->
             <version>1.5</version>
         </dependency>
 
@@ -176,45 +204,11 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>commons-email</groupId>-->
-        <!--<artifactId>commons-email</artifactId>-->
-        <!--<version>1.0</version>-->
-        <!--<exclusions>-->
-        <!--<exclusion>-->
-        <!--<artifactId>mail</artifactId>-->
-        <!--<groupId>javax.mail</groupId>-->
-        <!--</exclusion>-->
-        <!--<exclusion>-->
-        <!--<artifactId>activation</artifactId>-->
-        <!--<groupId>javax.activation</groupId>-->
-        <!--</exclusion>-->
-        <!--<exclusion>-->
-        <!--<artifactId>dumbster</artifactId>-->
-        <!--<groupId>dumbster</groupId>-->
-        <!--</exclusion>-->
-        <!--</exclusions>-->
-        <!--</dependency>-->
-
         <!-- @since 4.0.7 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
             <version>1.2</version>
-            <!--<exclusions>-->
-            <!--<exclusion>-->
-            <!--<artifactId>mail</artifactId>-->
-            <!--<groupId>javax.mail</groupId>-->
-            <!--</exclusion>-->
-            <!--<exclusion>-->
-            <!--<artifactId>activation</artifactId>-->
-            <!--<groupId>javax.activation</groupId>-->
-            <!--</exclusion>-->
-            <!--<exclusion>-->
-            <!--<artifactId>dumbster</artifactId>-->
-            <!--<groupId>dumbster</groupId>-->
-            <!--</exclusion>-->
-            <!--</exclusions>-->
         </dependency>
 
         <!-- @since 4.0.7 -->
@@ -278,7 +272,6 @@
 
         <!-- imCode Internal Repository dependencies -->
         <dependency>
-            <!-- RB-4 lib artifact: ddlutils-imcms-svn20060906.jar -->
             <groupId>ddlutils-imcms</groupId>
             <artifactId>ddlutils-imcms</artifactId>
             <version>svn20060906</version>
@@ -355,7 +348,6 @@
         <dependency>
             <groupId>net.sourceforge.jtds</groupId>
             <artifactId>jtds</artifactId>
-            <!-- RB-4 lib version: 1.1 -->
             <version>1.2</version>
         </dependency>
 
@@ -389,74 +381,6 @@
             </exclusions>
         </dependency>
 
-        <!-- Used by ant plugin & compiler -->
-        <!--<dependency>-->
-        <!--<groupId>ant-contrib</groupId>-->
-        <!--<artifactId>ant-contrib</artifactId>-->
-        <!--&lt;!&ndash; RB-4 lib/noinstall version: 0.6 &ndash;&gt;-->
-        <!--<version>1.0b3</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>antlr</groupId>-->
-        <!--<artifactId>antlr</artifactId>-->
-        <!--<version>2.7.5</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>tomcat</groupId>-->
-        <!--<artifactId>catalina-ant</artifactId>-->
-        <!--<version>4.1.31</version>-->
-        <!--&lt;!&ndash; RB-4 lib/noinstall version: unspecified &ndash;&gt;-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>com.puppycrawl.tools</groupId>-->
-        <!--<artifactId>checkstyle</artifactId>-->
-        <!--&lt;!&ndash; RB-4 lib/noinstall version: 4.3 &ndash;&gt;-->
-        <!--<version>5.5</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>commons-el</groupId>-->
-        <!--<artifactId>commons-el</artifactId>-->
-        <!--<version>1.0</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>com.imcode.ant.tasks</groupId>-->
-        <!--<artifactId>imcode-ant-tasks</artifactId>-->
-        <!--<version>1.3</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>jakarta-regexp</groupId>-->
-        <!--<artifactId>jakarta-regexp</artifactId>-->
-        <!--&lt;!&ndash; RB-4 lib/noinstall version: 1.3 &ndash;&gt;-->
-        <!--<version>1.4</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>tomcat</groupId>-->
-        <!--<artifactId>jasper-compiler</artifactId>-->
-        <!--<version>5.0.28</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>tomcat</groupId>-->
-        <!--<artifactId>jasper-runtime</artifactId>-->
-        <!--<version>5.0.28</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
@@ -474,24 +398,49 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
-        <sourceDirectory>${project.basedir}/server/src</sourceDirectory>
+        <sourceDirectory>server/src</sourceDirectory>
         <plugins>
+            <!--<plugin>-->
+            <!--<groupId>org.codehaus.mojo</groupId>-->
+            <!--<artifactId>properties-maven-plugin</artifactId>-->
+            <!--<version>1.0-alpha-2</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<phase>initialize</phase>-->
+            <!--<configuration>-->
+            <!--<files>-->
+            <!--<file>build.properties</file>-->
+            <!--</files>-->
+            <!--</configuration>-->
+            <!--<goals>-->
+            <!--<goal>read-project-properties</goal>-->
+            <!--</goals>-->
+            <!--</execution>-->
+            <!--</executions>-->
+            <!--</plugin>-->
+
             <plugin>
                 <!-- todo: check, remove debug, optimize, deprecated, junit from build.properties -->
-                <!--<classpath refid="libraries-with-commons-logging" />-->
-                <!--not all files are UTF8 -->
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
-                    <encoding>iso-8859-1</encoding>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
 
+            <!--<plugin>-->
+                <!--<artifactId>maven-resources-plugin</artifactId>-->
+                <!--<version>2.5</version>-->
+                <!--<configuration>-->
+                    <!--<includeEmptyDirs>true</includeEmptyDirs>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.11</version>
+                <version>2.12</version>
                 <configuration>
                     <excludes>
                         <exclude>**/*$*</exclude>
@@ -503,7 +452,7 @@
 
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.1-beta-1</version>
+                <version>2.2</version>
                 <configuration>
                     <archiveClasses>true</archiveClasses>
                     <attachClasses>true</attachClasses>
@@ -542,11 +491,11 @@
 
                 <executions>
                     <execution>
-                        <id>clean</id>
+                        <id>clean-generated-webapp-dir</id>
                         <phase>clean</phase>
                         <configuration>
                             <target>
-                                <delete dir="${generated.webapp.dir}" verbose="false" />
+                                <delete dir="${generated.webapp.dir}" verbose="false"/>
                             </target>
                         </configuration>
                         <goals>
@@ -559,19 +508,21 @@
                         <phase>validate</phase>
                         <configuration>
                             <target>
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
                                 <if>
                                     <not>
-                                        <available file="${basedir}/build.properties" />
+                                        <available file="${basedir}/build.properties"/>
                                     </not>
                                     <then>
-                                        <copy file="${basedir}/build.properties.template" tofile="${basedir}/build.properties" />
+                                        <copy file="${basedir}/build.properties.template"
+                                              tofile="${basedir}/build.properties"/>
                                     </then>
                                 </if>
 
-                                <uptodate targetfile="${basedir}/build.properties" property="build-properties-up-to-date">
-                                    <srcfiles dir="${basedir}" includes="build.properties.template" />
+                                <uptodate targetfile="${basedir}/build.properties"
+                                          property="build-properties-up-to-date">
+                                    <srcfiles dir="${basedir}" includes="build.properties.template"/>
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
@@ -592,13 +543,13 @@
                         <configuration>
                             <target>
                                 <ant antfile="${basedir}/pom-ant.xml" target="web">
-                                    <property name="version" value="${project.version}" />
-                                    <property name="webroot" value="${generated.webapp.dir}" />
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="webroot" value="${generated.webapp.dir}"/>
                                 </ant>
 
                                 <ant antfile="${basedir}/pom-ant.xml" target="sql">
-                                    <property name="version" value="${project.version}" />
-                                    <property name="webroot" value="${generated.webapp.dir}" />
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="webroot" value="${generated.webapp.dir}"/>
                                 </ant>
                             </target>
                         </configuration>
@@ -611,7 +562,7 @@
 
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.8</version>
+                <version>2.9.1</version>
                 <configuration>
                     <configLocation>${basedir}/docs/checkstyle.xml</configLocation>
                 </configuration>
@@ -619,7 +570,7 @@
 
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8</version>
+                <version>2.8.1</version>
                 <!-- todo: check -->
                 <!--<include name="com/imcode/imcms/api/**" />-->
                 <!--<include name="com/imcode/util/**" />-->
@@ -715,6 +666,37 @@
                     <goals>deploy</goals>
                 </configuration>
             </plugin>
+
+            <!-- http://tomcat.apache.org/maven-plugin-2/ -->
+            <!--<user username="manager" password="manager" roles="manager-gui,manager-script"/>-->
+
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat6-maven-plugin</artifactId>
+                <version>2.0-beta-1</version>
+                <configuration>
+                    <warSourceDirectory>${generated.webapp.dir}</warSourceDirectory>
+                    <port>${tomcat.port}</port>
+                    <path>${tomcat.contextPath}</path>
+                    <username>${tomcat.username}</username>
+                    <password>${tomcat.password}</password>
+                    <update>true</update>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.0-beta-1</version>
+                <configuration>
+                    <warSourceDirectory>${generated.webapp.dir}</warSourceDirectory>
+                    <port>${tomcat.port}</port>
+                    <path>${tomcat.contextPath}</path>
+                    <username>${tomcat.username}</username>
+                    <password>${tomcat.password}</password>
+                    <update>true</update>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -749,5 +731,42 @@
     <scm>
         <connection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</connection>
         <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</developerConnection>
+        <url></url>
     </scm>
 </project>
+
+<!--
+todo: check non utf-files:
+docs/_test__iso_8859-1.txt -> iso-8859-1
+docs/changes.xml -> iso-8859-1
+server/src/com/imcode/imcms/test/external/imcms-init-3.0.sql -> iso-8859-1
+sql/data/init.sql -> iso-8859-1
+sql/diff/version3.0/diff-1.10.2-1.11.sql -> iso-8859-1
+sql/diff/version3.0/diff-1.11-2.0.sql -> iso-8859-1
+sql/diff/version3.0/diff-1.7.0.sql -> iso-8859-1
+sql/diff/version3.0/diff-1.7.3-1.7.4.sql -> iso-8859-1
+sql/diff/version3.0/diff-1.7.5-1.8.0.sql -> iso-8859-1
+sql/diff/version3.0/diff-1.8.1-1.8.2.sql -> iso-8859-1
+sql/diff/version3.0/diff-1.8.2-1.8.3.sql -> iso-8859-1
+sql/diff/version3.0/diff-1.8.4-1.9.0.sql -> iso-8859-1
+sql/diff/version3.0/diff-2-2a.sql -> iso-8859-1
+sql/diff/version3.0/diff-2-3.sql -> iso-8859-1
+sql/diff/version3.0/diff-2a-3.sql -> iso-8859-1
+sql/diff/version3.0/diff_update.sql -> iso-8859-1
+tools/sql/DEUmla_tbl_meta.sql -> iso-8859-1
+web/css/style.css -> iso-8859-1
+web/imcms/lang/htmleditor/css/default_word.css -> iso-8859-1
+web/imcms/lang/htmleditor/editor.jsp -> iso-8859-1
+web/imcms/lang/htmleditor/scripts/editor_config.js.jsp -> iso-8859-1
+web/imcms/lang/htmleditor/scripts/editor_config.vbs.jsp -> iso-8859-1
+web/imcms/lang/htmleditor/scripts/editor_functions.js -> iso-8859-1
+web/imcms/lang/htmleditor/scripts/editor_functions.vbs -> iso-8859-1
+web/imcms/lang/htmleditor/scripts/editor_functions_wordsupport.js -> iso-8859-1
+web/imcms/xinha/htmlarea.js -> iso-8859-1
+web/imcms/xinha/lang/lv.js -> iso-8859-1
+web/imcms/xinha/plugins/ExtendedFileManager/assets/editor.js -> iso-8859-1
+web/imcms/xinha/plugins/ExtendedFileManager/assets/EditorContent.js -> iso-8859-1
+web/imcms/xinha/plugins/ImageManager/assets/editor.js -> iso-8859-1
+web/imcms/xinha/plugins/ImageManager/assets/EditorContent.js -> iso-8859-1
+web/imcms/xinha/plugins/LangMarks/lang-marks.css -> iso-8859-1
+-->

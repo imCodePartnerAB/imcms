@@ -5,22 +5,6 @@
 # Database schema version.
 db-schema-version = 4.16
 
-# The deployment directory (parent of the webapp directory).
-# Do *not* use back-slashes ('\'). Use forward-slashes ('/').
-# You only need this if you want to use "ant install" and "ant install-war".
-
-deployroot =
-
-
-# The name of the webapp. Used for filenames and URIs.
-
-webappname = imcms
-
-
-# The deployed web application diretory
-
-webapproot = ${deployroot}/${webappname}
-
 # Denies multiple login for same user. To enable this option change property value to true. 
 deny-multiple-user-login = false
 
@@ -120,11 +104,6 @@ webmaster-email = ${servermaster-email}
 defaultlanguage = eng
 
 
-# The root-URI of the webapp, relative to the server root-URI (/).
-
-rooturl = /${webappname}
-
-
 # The imCMS documents is usually on the imCMS public site, http://doc.imcms.net/
 # If you want to install a local server for handling (modifying) the documents
 # change this:
@@ -132,41 +111,10 @@ rooturl = /${webappname}
 documentation-host = doc.imcms.net
 
 
-# Whether the build should be optimized or not.
-
-optimize = on
-
-
-# Whether to leave debug info in or not.
-
-debug = on
-
-
-# Whether to compile with deprecation warnings on or not.
-
-deprecation = on
-
-
-# For JUnit-tests to work, you need to add junit.jar to the classpath of ant.
-# If this is impossible, uncomment the following property.
-# Note that this will prevent tests from running.
-
-#no-junit-task-available
-
-
 # Which log4j-config-file to use.
 # You might want to change this to log4j-debug.xml to turn on debug-logs.
 
 log4j-config = log4j-nodebug.xml
-
-
-# Tomcat settings for quick deployment during development
-
-tomcat-admin-username = admin
-tomcat-admin-password =
-tomcat-webapp-manager-url = http://localhost:8080/manager
-tomcat-deployroot-local-directory =
-
 
 # URL to the separate image archive application, as seen by the clients browser.
 # For example: test.com/image-archive/archive

@@ -13,13 +13,11 @@
     <!-- todo: add jsp compilation as pre-integration test -->
     <!-- todo: commons NOP logger ??? -->
 
-    <!-- Artifact version is written into WEB-INF/version.txt file-->
+    <!-- Artifact version is written into the WEB-INF/version.txt file-->
     <property name="version" value="SET BY MAVEN"/>
 
     <!-- generated webapp dir -->
     <property name="webroot" value="SET BY MAVEN"/>
-
-    <property name="login" value="${webroot}/login"/>
     <property name="imcms" value="${webroot}/imcms"/>
     <property name="docs" value="${imcms}/docs"/>
     <property name="apisamples" value="${docs}/apisamples"/>
@@ -28,7 +26,6 @@
     <property name="versionfile" value="${WEB-INF}/version.txt"/>
 
     <property name="conf" value="${WEB-INF}/conf"/>
-    <property name="lib" value="${WEB-INF}/lib"/>
     <property name="templates" value="${WEB-INF}/templates"/>
     <property name="sql" value="${WEB-INF}/sql"/>
     <property name="sql-diff" value="${sql}/diff"/>
@@ -36,16 +33,13 @@
 
     <!-- Paths for other templates -->
     <property name="texttemplates" value="${templates}/text"/>
-    <property name="demotemplates" value="${texttemplates}/demo"/>
-
-    <property name="imcmsurl" value="${rooturl}/imcms"/>
 
     <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
 
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate"/>
-    <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>
+    <!--<taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>-->
 
-    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+    <!--<taskdef resource="net/sf/antcontrib/antlib.xml"/>-->
 
     <!--<setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>-->
 
@@ -96,19 +90,6 @@
             <targetfileset dir="${conf}"/>
         </dependset>
 
-        <mkdir dir="${imcms}"/>
-        <mkdir dir="${login}"/>
-        <mkdir dir="${webroot}/css"/>
-        <mkdir dir="${webroot}/images"/>
-        <mkdir dir="${webroot}/javascript"/>
-        <mkdir dir="${webroot}/jsp"/>
-        <mkdir dir="${webroot}/user"/>
-
-        <mkdir dir="${lib}"/>
-        <mkdir dir="${WEB-INF}/includes"/>
-        <mkdir dir="${WEB-INF}/logs"/>
-        <mkdir dir="${WEB-INF}/uploads"/>
-
         <echo message="${version}" file="${versionfile}"/>
 
         <copy todir="${webroot}" filtering="true">
@@ -126,8 +107,6 @@
         <antcall target="web-lang">
             <param name="buildlanguage" value="eng"/>
         </antcall>
-
-        <mkdir dir="${demotemplates}"/>
 
         <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable">
             <fileset dir="${apisamples}">
