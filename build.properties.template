@@ -111,11 +111,6 @@ defaultlanguage = eng
 documentation-host = doc.imcms.net
 
 
-# Which log4j-config-file to use.
-# You might want to change this to log4j-debug.xml to turn on debug-logs.
-
-log4j-config = log4j-nodebug.xml
-
 # URL to the separate image archive application, as seen by the clients browser.
 # For example: test.com/image-archive/archive
 # 

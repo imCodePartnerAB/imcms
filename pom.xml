@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
+    :: Build Profiles
+       Activating debug profile
+       :: forces java compiler to show all warnings.
+       :: selects log4j-debug.xml as a log4j engine configuration file.
+
     :: WAR plugin ignores empty dirs when builds a webapp (as a war file or an exploded directory form).
        However a number of dirs (such as images, uploads, etc) must always present in the webapp.
        Workaround: add empty README file into the dir that must be included into the webapp.
@@ -11,10 +16,10 @@
        Webapp's context path defaults to /imcms-${project.version}
        ex: http://localhost:[port]/imcms-4.1.6-SNAPSHOT
 
-    :::: Embedded Jetty 7.x is configured to run on port 9090 using 'jetty:run' goal.
-    :::: Embedded Tomcat 6.x and 7.x is configured to run on port 8888 using 'tomcat6/7:run' goal.
+      :: Embedded Jetty 7.x is configured to run on port 9090 using 'jetty:run' goal.
+      :: Embedded Tomcat 6.x and 7.x is configured to run on port 8888 using 'tomcat6/7:run' goal.
 
-    :::: Remote Tomcat 6.x and 7.x is configured to use default tomcat address - http://localhost:8080.
+      :: Remote Tomcat 6.x and 7.x is configured to use default tomcat address - http://localhost:8080.
          Full list of available commands can be found on plugin's website:
          http://tomcat.apache.org/maven-plugin-2/tomcat6-maven-plugin/plugin-info.html
 
@@ -38,9 +43,17 @@
     <name>imCMS</name>
 
     <properties>
-        <slf4j.version>1.6.4</slf4j.version>
         <generated.webapp.dir>${project.build.directory}/webapp</generated.webapp.dir>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <javac.deprecation>false</javac.deprecation>
+        <javac.args></javac.args>
+
+        <log4j-conf.file>log4j-nodebug.xml</log4j-conf.file>
+
+        <slf4j.version>1.6.4</slf4j.version>
 
         <!-- jetty plugin since version 7.5.3+ requires maven v3.x -->
         <jetty.version>7.5.2.v20111006</jetty.version>
@@ -50,11 +63,22 @@
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
         <jetty.contextPath>/${project.artifactId}-${project.version}</jetty.contextPath>
 
-        <tomcat.contextPath>/${project.artifactId}-${project.version}</tomcat.contextPath>
         <tomcat.port>8888</tomcat.port>
+        <tomcat.contextPath>/${project.artifactId}-${project.version}</tomcat.contextPath>
         <tomcat.username>manager</tomcat.username>
         <tomcat.password>manager</tomcat.password>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>debug</id>
+            <properties>
+                <javac.args>-Xlint</javac.args>
+                <javac.deprecation>true</javac.deprecation>
+                <log4j-conf.file>log4j-debug.xml</log4j-conf.file>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!--
@@ -426,7 +450,9 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
-                    <encoding>UTF-8</encoding>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>${javac.deprecation}</showDeprecation>
+                    <compilerArgument>${javac.args}</compilerArgument>
                 </configuration>
             </plugin>
 
@@ -545,11 +571,13 @@
                                 <ant antfile="${basedir}/pom-ant.xml" target="web">
                                     <property name="version" value="${project.version}"/>
                                     <property name="webroot" value="${generated.webapp.dir}"/>
+                                    <property name="log4j-conf.file" value="${log4j-conf.file}"/>
                                 </ant>
 
                                 <ant antfile="${basedir}/pom-ant.xml" target="sql">
                                     <property name="version" value="${project.version}"/>
                                     <property name="webroot" value="${generated.webapp.dir}"/>
+                                    <property name="log4j-conf.file" value="${log4j-conf.file}"/>
                                 </ant>
                             </target>
                         </configuration>
@@ -575,7 +603,6 @@
                 <!--<include name="com/imcode/imcms/api/**" />-->
                 <!--<include name="com/imcode/util/**" />-->
                 <configuration>
-                    <encoding>iso-8859-1</encoding>
                     <windowtitle>imCMS API ${project.version}</windowtitle>
                 </configuration>
             </plugin>

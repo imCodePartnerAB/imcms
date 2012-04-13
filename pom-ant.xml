@@ -1,23 +1,20 @@
-<?xml version='1.0' encoding='iso-8859-1'?>
+<?xml version='1.0' encoding='utf-8'?>
 
 <!--
-  Contains tasks for maven-driven build - see pom.xml for more details.
-  Must not be used as a standalone ant build.
+    Contains tasks for maven-driven build - see pom.xml for more details.
+    Not intended to be used as a standalone ant build.
 -->
 <project name="pom-ant">
 
     <property file="build.properties"/>
 
-    <!-- todo: check is-set or fail -->
-    <!-- todo: add debug and production profiles -->
     <!-- todo: add jsp compilation as pre-integration test -->
     <!-- todo: commons NOP logger ??? -->
 
-    <!-- Artifact version is written into the WEB-INF/version.txt file-->
-    <property name="version" value="SET BY MAVEN"/>
+    <property name="version" value="" description="Artifact version is written into the WEB-INF/version.txt file. Set from Maven build."/>
+    <property name="webroot" value="" description="Generated webapp dir. Set from Maven build."/>
+    <property name="log4j-conf.file" value="" description="Log4j configuration file to use. Set from Maven build."/>
 
-    <!-- generated webapp dir -->
-    <property name="webroot" value="SET BY MAVEN"/>
     <property name="imcms" value="${webroot}/imcms"/>
     <property name="docs" value="${imcms}/docs"/>
     <property name="apisamples" value="${docs}/apisamples"/>
@@ -37,25 +34,20 @@
     <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
 
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate"/>
-    <!--<taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>-->
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
 
-    <!--<taskdef resource="net/sf/antcontrib/antlib.xml"/>-->
-
-    <!--<setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>-->
-
-    <!-- API??? -->
+    <!-- todo: API??? -->
     <!--<target name="bindist-api-jar" depends="test">-->
-        <!--<mkdir dir="${dist}"/>-->
-        <!--<jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>-->
+    <!--<mkdir dir="${dist}"/>-->
+    <!--<jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>-->
     <!--</target>-->
 
-    <!-- not in use ?!? -->
-    <target name="changes">
+    <!-- todo: not in use ?!? -->
+    <target name="changes" depends="init">
         <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
     </target>
 
-
-    <target name="sql">
+    <target name="sql" depends="init">
         <concat destfile="${sql}/ddl.xml">
             <header>&lt;database defaultIdMethod="native" name="imcms"&gt;${line.separator}</header>
             <fileset dir="sql/tables" includes="*.tab"/>
@@ -119,7 +111,7 @@
             <fileset dir="${basedir}/docs"/>
         </copy>
 
-        <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
+        <copy file="${conf}/${log4j-conf.file}" tofile="${conf}/log4j.xml" overwrite="true"/>
     </target>
 
 
@@ -149,11 +141,29 @@
         <record name="${basedir}/build.log"/>
 
         <tstamp/>
+
+        <if>
+            <equals arg1="${version}" arg2=""/>
+            <then>
+                <fail message="version property is not set"/>
+            </then>
+        </if>
+        <if>
+            <equals arg1="${webroot}" arg2=""/>
+            <then>
+                <fail message="webroot property is not set"/>
+            </then>
+        </if>
+        <if>
+            <equals arg1="${log4j-conf.file}" arg2=""/>
+            <then>
+                <fail message="log4j-conf.file property is not set"/>
+            </then>
+        </if>
     </target>
 
 
     <target name="init-global-filters">
-
         <filter token="defaultlanguage" value="${defaultlanguage}"/>
 
         <filter token="documentationwebappurl" value="http://${documentation-host}/${version}"/>
