@@ -518,7 +518,7 @@
                 <executions>
                     <execution>
                         <id>clean-generated-webapp-dir</id>
-                        <phase>clean</phase>
+                        <phase>pre-clean</phase>
                         <configuration>
                             <target>
                                 <delete dir="${generated.webapp.dir}" verbose="false"/>
