@@ -43,7 +43,7 @@
     <name>imCMS</name>
 
     <properties>
-        <generated.webapp.dir>${project.build.directory}/webapp</generated.webapp.dir>
+        <generated.webapp.dir>${project.build.directory}/${project.build.finalName}</generated.webapp.dir>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
