@@ -16,21 +16,25 @@
        Webapp's context path defaults to /imcms-${project.version}
        ex: http://localhost:[port]/imcms-4.1.6-SNAPSHOT
 
-      :: Embedded Jetty 7.x is configured to run on port 9090 using 'jetty:run' goal.
-      :: Embedded Tomcat 6.x and 7.x is configured to run on port 8888 using 'tomcat6/7:run' goal.
+      :: Embedded Jetty 7.x is configured to listen on port 9090.
+         goal 'jetty:run'.
+      :: Embedded Tomcat 6.x and 7.x is configured to listen on port 8888.
+         goal 'tomcat6/7:run'.
 
       :: Remote Tomcat 6.x and 7.x is configured to use default tomcat address - http://localhost:8080.
-         Full list of available commands can be found on plugin's website:
+         Full list of available goals with examples can be found on plugin's website:
          http://tomcat.apache.org/maven-plugin-2/tomcat6-maven-plugin/plugin-info.html
 
-         To manage remote tomcat plugin uses tomcat manager - the application included into a tomcat distribution.
+         To manage remote tomcat plugin uses tomcat manager - the application included with a tomcat distribution.
          For security reasons access to the manager app is disabled.
+
          To enable remote management from the plugins and browsers (http://localhost:8080/manager/html)
-         add the following line into your $CATALINA_HOMEconf/tomcat-users.xml file:
+         add the following line into your $CATALINA_HOME/conf/tomcat-users.xml file:
          <user username="manager" password="manager" roles="manager-gui,manager-script"/>
+
          The plugin provides a number of goals to deploy webapp to the remote server - deploy, deploy-only, exploded and inplace.
          But only deploy goal is most safest and recommended.
-         Unlike other goals it invokes the execution of the lifecycle phase package prior to executing itself.
+         Unlike other goals it invokes the execution of the lifecycle phase 'package' prior to executing itself.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
