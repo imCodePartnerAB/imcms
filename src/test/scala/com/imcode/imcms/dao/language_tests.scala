@@ -74,7 +74,8 @@ class LanguageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll
       assertNotNull("Language with code %s is exists." format code, language)
       assertEquals("Language code is correct.", code, language.getCode)
     }
-    let("xx") { undefinedCode =>
+
+    "xx" |> { undefinedCode =>
       assertNull("Language with code %s does not exists." format undefinedCode, languageDao.getByCode(undefinedCode))
     }
   }

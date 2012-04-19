@@ -60,7 +60,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.validator.EmailValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.w3c.dom.Document;

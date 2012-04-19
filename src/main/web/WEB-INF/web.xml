@@ -373,6 +373,16 @@
         <servlet-class>com.imcode.imcms.servlet.AdminPanelServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.EncryptPasswords</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.EncryptPasswords</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.PasswordReset</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.PasswordReset</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>web</servlet-name>
         <url-pattern>/web/*</url-pattern>
@@ -548,15 +558,7 @@
         <url-pattern>/servlet/Restart</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.EncryptPasswords</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.EncryptPasswords</servlet-class>
-    </servlet>
 
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.PasswordReset</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.PasswordReset</servlet-class>
-    </servlet>
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>

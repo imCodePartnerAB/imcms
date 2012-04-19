@@ -19,7 +19,7 @@ class LocationTreeContainer(root: File) extends FilesystemContainer(root) {
   import java.util.Collections._
 
   setFilter(new FilenameFilter {
-    def accept(file: File, name: String) = let(new File(file, name)) { fsNode =>
+    def accept(file: File, name: String) = new File(file, name) |> { fsNode =>
       fsNode.isDirectory && !fsNode.isHidden
     }
   })
@@ -68,7 +68,7 @@ case class LocationSelection(dir: File, items: Seq[File]) {
 object ImcmsFileBrowser {
 
   def addLocation(captionResourceId: String, conf: LocationConf, image: Option[Resource])(browser: FileBrowser) =
-    letret(browser) { _ => browser.addLocation(captionResourceId.i, conf, image) }
+    doto(browser) { _ => browser.addLocation(captionResourceId.i, conf, image) }
 
   val addHomeLocation = addLocation("file.browser.location.home", LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))_
 
@@ -110,7 +110,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   /** Selection in a current location */
   private val selectionRef = new AtomicReference(Option.empty[LocationSelection])
 
-  val ui = letret(new FileBrowserUI) { ui =>
+  val ui = doto(new FileBrowserUI) { ui =>
     ui.accLocationTrees.addListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
         val locationOpt = tabsToLocations.get(e.getTabSheet.getSelectedTab)
@@ -133,7 +133,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       ?(locationTree.ui.value) match {
         case Some(dir) =>
           locationItems.reload(dir)
-          let(Some(LocationSelection(dir, Nil))) { selection =>
+          Some(LocationSelection(dir, Nil)) |> { selection =>
             selectionRef.set(selection)
             notifyListeners(selection)
           }
@@ -141,7 +141,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
         case _ =>
           locationItems.ui.removeAllItems()
 
-          let(None) { selection =>
+          None |> { selection =>
             selectionRef.set(selection)
             notifyListeners(selection)
           }
@@ -169,13 +169,13 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   private def updateSelection(locationTree: LocationTree, locationItems: LocationItems) {
     ?(locationTree.ui.value) match {
       case Some(dir) =>
-        let(Some(LocationSelection(dir, locationItems.selection))) { selection =>
+        Some(LocationSelection(dir, locationItems.selection)) |> { selection =>
           selectionRef.set(selection)
           notifyListeners(selection)
         }
 
       case _ =>
-        let(None) { selection =>
+        None |> { selection =>
           selectionRef.set(selection)
           notifyListeners(selection)
         }
@@ -288,7 +288,7 @@ class LocationTree(val root: File) {
     selection = root
   }
 
-  def selection_=(dir: File) = let(dir.getCanonicalFile) { dir =>
+  def selection_=(dir: File) = dir.getCanonicalFile |> { dir =>
     ui.select(dir)
     ui.expandItem(if (dir == root) dir else dir.getParentFile)
   }

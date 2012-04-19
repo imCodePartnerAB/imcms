@@ -15,10 +15,10 @@ import imcode.server.document.textdocument.ImageSource
 object ImageUtil {
 
   /** Inits Text docs images sources. */
-  def initImagesSources(images: JList[ImageDomainObject]) = letret(images) { _ foreach initImageSource }
+  def initImagesSources(images: JList[ImageDomainObject]) = images |< { _ foreach initImageSource }
 
   /** Inits Text doc's image source. */
-  def initImageSource(image: ImageDomainObject) = letret(image) { _ =>
+  def initImageSource(image: ImageDomainObject) = image |< { _ =>
     for (url <- ?(image) map (_.getImageUrl) map (_.trim)) {
       image.setSource(
         image.getType.intValue match {
@@ -50,7 +50,7 @@ class ImageDao extends SpringHibernateTemplate {
       language <- languageDao.getAllLanguages
       image <- PartialFunction.condOpt(getImage(language.getId, docId, docVersionNo, no, loopNo, contentNo)) {
         case image if image != null => image
-        case _ if createImageIfNotExists => letret(new ImageDomainObject) { img =>
+        case _ if createImageIfNotExists => new ImageDomainObject |< { img =>
           img.setDocId(docId)
           img.setName(no.toString)
 
@@ -72,7 +72,7 @@ class ImageDao extends SpringHibernateTemplate {
       "select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no and i.language.id = :languageId AND i.contentLoopNo = :contentLoopNo AND i.contentNo = :contentNo";
 
     withSession { session =>
-      let(session.createQuery(queryStr)) { query =>
+      session.createQuery(queryStr) |> { query =>
         query.setParameter("docId", docId)
           .setParameter("docVersionNo", docVersionNo)
           .setParameter("no", "" + no)
@@ -88,9 +88,7 @@ class ImageDao extends SpringHibernateTemplate {
   }
 
   @Transactional
-  def saveImage(image: ImageDomainObject) = letret(image) {
-    hibernateTemplate.saveOrUpdate(_)
-  }
+  def saveImage(image: ImageDomainObject) = image |< hibernateTemplate.saveOrUpdate
 
   @Transactional
   def saveImageHistory(imageHistory: ImageHistory) = hibernateTemplate.save(imageHistory)

@@ -1,7 +1,5 @@
 package com
 
-import java.util.concurrent.atomic.AtomicReference
-
 package object imcode {
 
   type JBoolean = java.lang.Boolean
@@ -13,10 +11,12 @@ package object imcode {
   type JCollection[A <: AnyRef] = java.util.Collection[A]
   type JList[A <: AnyRef] = java.util.List[A]
 
-  implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
+  //implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
 
-  // methods overloading is not (yet) allowed in package objects
+  // bug: package methods overloading does not work
   object Atoms {
+    import java.util.concurrent.atomic.AtomicReference
+
     def OptRef[A] = new AtomicReference(Option.empty[A])
     def OptRef[A](value: A) = new AtomicReference(Option(value))
     def Ref[A <: AnyRef] = new AtomicReference[A]
@@ -26,12 +26,12 @@ package object imcode {
 
   val EX = scala.util.control.Exception
 
-  def ??? = let((new Exception).getStackTrace()(1)) { se =>
+  def ??? = new Exception().getStackTrace()(1) |> { se =>
     sys.error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
   }
 
   //?? delete ??
-  def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
+  //def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
 
   /** extractor */
   object IntNumber {
@@ -43,15 +43,17 @@ package object imcode {
     def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(0 <=)
   }
 
-//
-//  object NegInt {
-//    def unapply(s: String): Boolean = s match {
-//      case Int(n) => n < 0
-//      case _ => false
-//    }
-//  }
+  /** extractor */
+  object NegInt {
+    def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(0 >)
+  }
 
-  class Piper[A](a: A) { def |>[B](f: A => B) = f(a) }
+  class Piper[A](a: A) {
+    def |>[B](f: A => B): B = f(a)
+
+    def |<(f: A => Any): A = { f(a); a }
+    def |<(f1: A => Any, f2: A => Any, fs: (A => Any)*): A = { f1 +: f2 +: fs foreach (_ apply a); a }
+  }
 
   implicit def any2Piper[A](a: A) = new Piper(a)
 
@@ -61,27 +63,50 @@ package object imcode {
   }
 
   /** Creates zero arity fn from by-name parameter. */
-  def mkFn(byName: => Unit): () => Unit = byName _
+  //def mkFn(byName: => Unit): () => Unit = byName _
 
+  // import Option.{apply => ?}
   def ?[A <: AnyRef](nullable: A) = Option(nullable)
 
-  def let[A, B](expr: A)(fn: A => B): B = fn(expr)
+  def when[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
 
-  def letret[A](expr: A)(fn: A => Any): A = {
-    fn(expr)
-    expr
+  def doto[A](exp: A)(f: A => Any): A = {
+    f(exp)
+    exp
   }
 
-  def whenOpt[A](expr: Boolean)(byName: => A) = PartialFunction.condOpt(expr) { case true => byName }
+//
+//  def doto[A](exp: A)(f1: A => Any, f2: A => Any, fs: (A => Any)*): A = {
+//    f1 +: f2 +: fs foreach (_ apply exp)
+//    exp
+//  }
 
-  //def whenNonEmpty[A](xs:Seq[A])(f: Seq[A] => Unit) = if (xs.nonEmpty) f(xs)
+  def doall[A](exp: A, exps: A*)(f: A => Any) {
+    exp +: exps foreach f
+  }
 
-  def forlet[T](exprs: T*)(fn: T => Unit): Unit = exprs foreach fn
+  trait CloseableResource[R] {
+    def close(resource: R)
+  }
 
-  def using[R <: {def close(): Unit}, T](resource: R)(fn: R => T): T = try {
+  object CloseableResource {
+    implicit def stCloseableResource[R <: { def close() }](r: R) = new CloseableResource[R] {
+      def close(resource: R) { resource.close() }
+      override def toString = "Resource[_ <: def close()]"
+    }
+
+    implicit def ioCloseableResource[R <: java.io.Closeable] = new CloseableResource[R] {
+      def close(resource: R) { resource.close() }
+      override def toString = "Resource[_ <: java.io.Closeable]"
+    }
+  }
+
+  def using[R: CloseableResource, T](resource: R)(fn: R => T): T = try {
     fn(resource)
   } finally {
-    resource.close()
+    if (resource != null) {
+      EX.allCatch(implicitly[CloseableResource[R]].close(resource))
+    }
   }
 
   def bmap[T](test: => Boolean)(fn: => T): List[T] = {

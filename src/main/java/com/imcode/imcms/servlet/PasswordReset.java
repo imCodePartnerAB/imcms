@@ -1,11 +1,13 @@
 package com.imcode.imcms.servlet;
 
 
+import com.imcode.imcms.api.P;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
 import imcode.server.Imcms;
 import imcode.server.SystemData;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
@@ -19,15 +21,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class PasswordReset extends HttpServlet {
 
-    private static final Logger logger = Logger.getLogger(PasswordReset.class);
+    private static final Logger logger = org.apache.log4j.Logger.getLogger(PasswordReset.class);
 
     // Ops
     public enum Op {
@@ -43,7 +44,7 @@ public class PasswordReset extends HttpServlet {
     public static final String
             REQUEST_PARAM_OP = "op",
             REQUEST_PARAM_RESET_ID = "id",
-            REQUEST_PARAM_EMAIL = "email",
+            REQUEST_USER_IDENTITY = "uid",
             REQUEST_PARAM_PASSWORD = "password",
             REQUEST_PARAM_PASSWORD_CHECK = "password_check";
 
@@ -53,15 +54,15 @@ public class PasswordReset extends HttpServlet {
 
     // Views
     private static final String
-            account_email_form_view = "account_email_form.jsp",
+            identity_form_view = "identity_form.jsp",
             email_sent_confirmation_view = "email_sent_confirmation.jsp",
-            new_password_form_view = "password_reset_form.jsp",
+            password_reset_form_view = "password_reset_form.jsp",
             password_changed_confirmation_view = "password_changed_confirmation.jsp";
 
 
-    private ExecutorService emailSender = Executors.newFixedThreadPool(5);
+    private ExecutorService emailSender = Executors.newSingleThreadExecutor();
 
-    private final LocalizedMessage validationErrorNoEmail = new LocalizedMessage("passwordreset.error.missing_email");
+    private final LocalizedMessage validationErrorMissingUserId = new LocalizedMessage("passwordreset.error.missing_identity");
 
 
     /**
@@ -74,15 +75,15 @@ public class PasswordReset extends HttpServlet {
      *
      * @param request
      * @param response
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
+     * @throws ServletException
+     * @throws IOException
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Op op = getOp(request);
         String view = op == Op.REQUEST_RESET
-                ? account_email_form_view
+                ? identity_form_view
                 : op == Op.RESET && getUserByPasswordResetId(request) != null
-                    ? new_password_form_view
+                    ? password_reset_form_view
                     : null;
 
         render(request, response, view);
@@ -94,34 +95,28 @@ public class PasswordReset extends HttpServlet {
      *
      * @param request
      * @param response
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
+     * @throws ServletException
+     * @throws IOException
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Op op = getOp(request);
         String view = null;
 
         if (op == Op.SEND_RESET_URL) {
-            String userEmail = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_EMAIL));
+            String identity = StringUtils.trimToEmpty(request.getParameter(REQUEST_USER_IDENTITY));
 
-            if (userEmail.isEmpty()) {
-                setValidationErrors(request, validationErrorNoEmail.toLocalizedString(request));
-                view = account_email_form_view;
+            if (identity.isEmpty()) {
+                setValidationErrors(request, validationErrorMissingUserId.toLocalizedString(request));
+                view = identity_form_view;
             } else {
-                UserDomainObject receiver = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().createPasswordReset(userEmail);
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug(String.format("Requested password reset using email: '%s', created reset: '%s'",
-                            userEmail, receiver == null ? "no reset where created" : receiver.getPasswordReset()));
-                }
-
-                if (receiver != null) {
+                P.P2<UserDomainObject, String> userAndEmail = createPasswordReset(identity);
+                if (userAndEmail != null) {
                     String url = String.format("%s?%s=%s&%s=%s",
                             request.getRequestURL(),
                             REQUEST_PARAM_OP, Op.RESET.toString().toLowerCase(),
-                            REQUEST_PARAM_RESET_ID, receiver.getPasswordReset().getId());
+                            REQUEST_PARAM_RESET_ID, userAndEmail._1().getPasswordReset().getId());
 
-                    asyncSendPasswordResetEMail(receiver, request.getServerName(), url);
+                    asyncSendPasswordResetURL(userAndEmail, request.getServerName(), url);
                 }
 
                 view = email_sent_confirmation_view;
@@ -137,7 +132,7 @@ public class PasswordReset extends HttpServlet {
 
                 if (errorMsg != null) {
                     setValidationErrors(request, errorMsg.toLocalizedString(user));
-                    view = new_password_form_view;
+                    view = password_reset_form_view;
                 } else {
                     user.setPassword(password);
                     Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(user);
@@ -192,49 +187,124 @@ public class PasswordReset extends HttpServlet {
     }
 
 
-    private void asyncSendPasswordResetEMail(final UserDomainObject receiver, final String serverName, final String url) {
+    private P.P2<UserDomainObject, String> createPasswordReset(String identity) {
+        P.P2<UserDomainObject, String> result = null;
+        ImcmsAuthenticatorAndUserAndRoleMapper urm = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+        Map<Integer, P.P2<UserDomainObject, String>> idToUser = new HashMap<Integer, P.P2<UserDomainObject, String>>();
+        boolean identityIsValidEmail = Utility.isValidEmail(identity);
+        UserDomainObject userByLogin = identityIsValidEmail
+                ? urm.getUserByLoginIgnoreCase(identity)
+                : urm.getUser(identity);
+
+        if (userByLogin != null) {
+            if (identityIsValidEmail) {
+                idToUser.put(userByLogin.getId(), P.of(userByLogin, identity));
+            } else {
+                String email = userByLogin.getEmailAddress().trim();
+                if (Utility.isValidEmail(email)) {
+                    idToUser.put(userByLogin.getId(), P.of(userByLogin, email));
+                    // check if user's e-mail is valid and unique
+                    // i.e not used by different user as a login or an e-mail.
+                    UserDomainObject userByLogin2 = urm.getUserByLoginIgnoreCase(email);
+                    if (userByLogin2 != null) {
+                        idToUser.put(userByLogin2.getId(), P.of(userByLogin2, email));
+                    }
+
+                    for (UserDomainObject user: urm.getUsersByEmail(email)) {
+                        idToUser.put(user.getId(), P.of(user, email));
+                    }
+                }
+            }
+        }
+
+        if (identityIsValidEmail) {
+            // find all users who use the same e-mail
+            for (UserDomainObject user: urm.getUsersByEmail(identity)) {
+                idToUser.put(user.getId(), P.of(user, identity));
+            }
+        }
+
+        int usersCount = idToUser.size();
+
+        if (usersCount == 0) {
+            logger.warn(String.format("Can't create password reset. No user with identity '%s' were found or e-mail address is invalid.", identity));
+        } else if (usersCount == 1) {
+            P.P2<UserDomainObject, String> userAndEmail = idToUser.values().iterator().next();
+            UserDomainObject user = userAndEmail._1();
+
+            try {
+                result = P.of(urm.createPasswordReset(user.getId()), userAndEmail._2());
+            } catch (Exception e) {
+                logger.error(String.format("Failed to create password reset for user %s.", user), e);
+            }
+        } else {
+            int usersToDisplay = Math.min(usersCount, 5);
+            int index = 1;
+            StringBuilder sb = new StringBuilder("[");
+
+            for (P.P2<UserDomainObject, String> userAndEmail: idToUser.values()) {
+                 UserDomainObject user = userAndEmail._1();
+                sb.append(String.format("User(login: '%s', email: '%s')", user.getLoginName(), user.getEmailAddress()));
+
+                if (index < usersToDisplay) {
+                    sb.append(", ");
+                } else {
+                    if (usersToDisplay < usersCount) {
+                        sb.append(", ...");
+                    }
+
+                    sb.append("]");
+                    break;
+                }
+
+                index += 1;
+            }
+
+            logger.warn(String.format(
+                    "Can't create password reset. More than one (%s) user with identity '%s' were found: %s.",
+                    usersCount, identity, sb));
+        }
+
+        return result;
+    }
+
+
+    private void asyncSendPasswordResetURL(final P.P2<UserDomainObject, String> userAndEmail, final String serverName, final String url) {
         emailSender.submit(new Runnable() {
             public void run() {
-                String emailAddress = receiver.getEmailAddress();
+                UserDomainObject user = userAndEmail._1();
+                String emailAddress = userAndEmail._2();
 
-                if (!Utility.isValidEmail(emailAddress)) {
+                try {
                     logger.debug(String.format(
-                            "Receiver (user login: %s) email address %s is invalid.",
-                            receiver.getLoginName(), emailAddress));
-                } else {
-                    try {
-                        logger.debug(String.format(
-                                "Sending password reset email. User login: %s, user email address: %s.",
-                                receiver.getLoginName(), emailAddress));
+                            "Sending password reset URL to the user %s, using e-mail address %s.", user, emailAddress));
 
-                        String subject = new LocalizedMessageFormat("passwordreset.password_reset_email.subject", serverName).toLocalizedString(receiver);
-                        String body = new LocalizedMessageFormat("passwordreset.password_reset_email.body", serverName, url).toLocalizedString(receiver);
+                    String subject = new LocalizedMessageFormat("passwordreset.password_reset_email.subject", serverName).toLocalizedString(user);
+                    String body = new LocalizedMessageFormat("passwordreset.password_reset_email.body", serverName, url).toLocalizedString(user);
 
-                        SystemData sysData = Imcms.getServices().getSystemData();
-                        String eMailServerMaster = sysData.getServerMasterAddress();
-                        SMTP smtp = Imcms.getServices().getSMTP();
+                    SystemData sysData = Imcms.getServices().getSystemData();
+                    String eMailServerMaster = sysData.getServerMasterAddress();
+                    SMTP smtp = Imcms.getServices().getSMTP();
 
-//                        smtp.sendMail(new SMTP.Mail( eMailServerMaster, new String[] { receiver.getEmailAddress() }, subject, body));
+                    smtp.sendMail(new SMTP.Mail(eMailServerMaster, new String[] { emailAddress }, subject, body));
 
-                        Email email = new SimpleEmail();
-                        email.setDebug(true);
-                        email.setHostName("smtp.gmail.com");
-                        email.setSmtpPort(587);
-                        email.setDebug(true);
-                        email.setAuthenticator(new DefaultAuthenticator("anton.josua@gmail.com", "12nljkSDkdEn7l34"));
-                        email.setTLS(true);
-                        email.setFrom("admin@imcode.com");
-                        email.setSubject(subject);
-                        email.setMsg(body);
-                        email.addTo("anton.josua@gmail.com");
-                        email.send();
-                    } catch (Exception e) {
-                        logger.error(
-                                String.format(
-                                        "Failed to send password reset email. User login: %s User email address: %s.",
-                                        receiver.getLoginName(), receiver.getEmailAddress()),
+//                        Email email = new SimpleEmail();
+//                        email.setDebug(true);
+//                        email.setHostName("smtp.gmail.com");
+//                        email.setSmtpPort(587);
+//                        email.setDebug(true);
+//                        email.setAuthenticator(new DefaultAuthenticator("@gmail.com", ""));
+//                        email.setTLS(true);
+//                        email.setFrom("admin@imcode.com");
+//                        email.setSubject(subject);
+//                        email.setMsg(body);
+//                        email.addTo("@gmail.com");
+//                        email.send();
+                } catch (Exception e) {
+                    logger.error(String.format(
+                                    "Failed to send password reset URL to the user %s, using e-mail address %s.",
+                                    user, emailAddress),
                                 e);
-                    }
                 }
             }
         });

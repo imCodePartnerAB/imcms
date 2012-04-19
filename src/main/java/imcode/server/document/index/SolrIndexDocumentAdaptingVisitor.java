@@ -92,10 +92,10 @@ class SolrIndexDocumentAdaptingVisitor extends DocumentVisitor {
     }
 
     private final static Map EXTRACTORS = new HashMap(ArrayUtils.toMap(new Object[][] {
-            { MIME_TYPE__WORD, new MicrosoftWordTextExtractor() },
-            { MIME_TYPE__EXCEL, new MicrosoftExcelTextExtractor() },
-            { MIME_TYPE__POWERPOINT, new MicrosoftPowerPointTextExtractor() },
-            { MIME_TYPE__PDF, new PdfTextExtractor() },
+//            { MIME_TYPE__WORD, new MicrosoftWordTextExtractor() },
+//            { MIME_TYPE__EXCEL, new MicrosoftExcelTextExtractor() },
+//            { MIME_TYPE__POWERPOINT, new MicrosoftPowerPointTextExtractor() },
+//            { MIME_TYPE__PDF, new PdfTextExtractor() },
     }));
 
     private void indexFileContents(FileDocumentDomainObject.FileDocumentFile file) {

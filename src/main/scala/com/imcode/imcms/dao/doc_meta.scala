@@ -63,7 +63,7 @@ class MetaDao extends SpringHibernateTemplate {
        .setParameter("docId", docId)
        .setParameter("languageId", language.getId())
        .uniqueResult().asInstanceOf[I18nMeta]
-    }) getOrElse letret(new I18nMeta) { i18nMeta =>
+    }) getOrElse doto(new I18nMeta) { i18nMeta =>
       i18nMeta.setDocId(docId);
       i18nMeta.setLanguage(language);
       i18nMeta.setHeadline("");
@@ -86,7 +86,7 @@ class MetaDao extends SpringHibernateTemplate {
   }
 
   //@Transactional
-  def saveI18nMeta(i18nMeta: I18nMeta) = letret(i18nMeta) { _ =>
+  def saveI18nMeta(i18nMeta: I18nMeta) = doto(i18nMeta) { _ =>
     val headline = i18nMeta.getHeadline
     val text = i18nMeta.getMenuText
 
@@ -106,7 +106,7 @@ class MetaDao extends SpringHibernateTemplate {
        .setParameter("docId", docId)
        .setParameter("name", name)
        .uniqueResult().asInstanceOf[DocumentProperty]
-    }) getOrElse letret(new DocumentProperty) { property =>
+    }) getOrElse doto(new DocumentProperty) { property =>
       property.setDocId(docId)
       property.setName(name)
     } match {
@@ -162,7 +162,7 @@ class MetaDao extends SpringHibernateTemplate {
       Array[AnyRef](docId, docVersionNo)).asInstanceOf[JList[FileReference]]
 
   //@Transactional
-  def saveFileReference(fileRef: FileReference) = letret(fileRef) {
+  def saveFileReference(fileRef: FileReference) = doto(fileRef) {
     hibernateTemplate.saveOrUpdate
   }
 
@@ -183,7 +183,7 @@ class MetaDao extends SpringHibernateTemplate {
   }
 
   //@Transactional
-  def saveHtmlReference(reference: HtmlReference) = letret(reference) {
+  def saveHtmlReference(reference: HtmlReference) = doto(reference) {
     hibernateTemplate.saveOrUpdate
   }
 

@@ -106,45 +106,65 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     /**
-     * Create and assign a new PasswordReset to the internal user.
+     * Create and assign a new PasswordReset to the existing user.
+     * User must exist and must not be default, external or superadmin when password reset is not allowed for superadmins.
      *
-     * @param email user's email.
-     *
-     * @return user or null if internal user does not exist or user's account is inactive
-     *
-     * @since 4.0.7
+     * @param id existing user's id.
+     * @return user with assigned PasswordReset
+     * @throws IllegalStateException if PasswordReset can not be created.
+     * @since 4.1.3
      */
-    public UserDomainObject createPasswordReset(String email) {
-        UserDomainObject user = getUserByEmail(email);
+    public UserDomainObject createPasswordReset(int id) {
+        UserDomainObject user = getUser(id);
 
-        if (user != null && user.isActive() && !user.isImcmsExternal() && !user.isDefaultUser() &&
-                !(user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed())) {
-            user.setPasswordReset(UUID.randomUUID().toString(), System.currentTimeMillis());
-            saveUser(user);
+        if (user == null)
+            throw new IllegalStateException(String.format("User with id %s does not exist.", id));
 
-            return user;
-        } else {
-            return null;
-        }
+        String illegalState = user.isDefaultUser()
+                ? "default"
+                : user.isImcmsExternal()
+                    ? "external"
+                    : user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed()
+                        ? "superuser"
+                        : null;
+
+        if (illegalState != null)
+            throw new IllegalStateException(String.format(
+                    "Can't create password reset for [%s] user %s. User must not be default, external or superadmin when password reset is not allowed for superadmins.",
+                    illegalState, user));
+
+        user.setPasswordReset(UUID.randomUUID().toString(), System.currentTimeMillis());
+        saveUser(user);
+
+        return user;
     }
 
 
     /**
-     * @param resetId
-     * @return user or null if internal user does not exist, user's account is inactive or password-reset has been expired.
-     * @since 4.0.7
+     * @param resetId password reset id
+     * @return user or null if user can not be found, password-reset has been expired, or user is superadmin when password reset is not allowed for superadmins.
+     * @since 4.1.3
      */
     public UserDomainObject getUserByPasswordResetId(String resetId) {
         UserDomainObject user = getUserFromSqlRow(sqlSelectUserByPasswordResetId(resetId));
 
-        return (user == null || !user.isActive() || isPasswordResetExpired(user.getPasswordReset().getTime())
-                    || (user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed()))
+        return (user == null || isPasswordResetExpired(user.getPasswordReset().getTime())
+                             || (user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed()))
                 ? null
                 : user;
     }
 
     public UserDomainObject getUser(String loginName) {
-        return getUserFromSqlRow(sqlSelectUserByName(loginName));
+        return StringUtils.isBlank(loginName) ? null : getUserFromSqlRow(sqlSelectUserByName(loginName));
+    }
+
+    /**
+     * @param login
+     * @return user or null if user can not be found.
+     * @since 4.1.3
+     */
+    public UserDomainObject getUserByLoginIgnoreCase(String login) {
+        return StringUtils.isBlank(login) ? null : getUserFromSqlRow(sqlSelectUserByLoginIgnoreCase(login));
     }
 
     /**
@@ -162,6 +182,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         final Object[] parameters = new String[] { loginName.trim() };
         return (String[]) services.getDatabase().execute(new SqlQueryCommand(SQL_SELECT_USERS
                                                                              + " WHERE login_name = ?", parameters, Utility.STRING_ARRAY_HANDLER));
+    }
+
+    private String[] sqlSelectUserByLoginIgnoreCase(String login) {
+        final Object[] parameters = new String[] { login.trim().toLowerCase() };
+        return (String[]) services.getDatabase().execute(
+                new SqlQueryCommand(SQL_SELECT_USERS + " WHERE LOWER(login_name) = ?", parameters, Utility.STRING_ARRAY_HANDLER));
     }
 
     private UserDomainObject getUserFromSqlRow(String[] sqlResult) {
@@ -249,6 +275,22 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         if ( whereTests.size() > 0 ) {
             sqlStr += " WHERE " + StringUtils.join(whereTests.iterator(), " AND ");
         }
+        try {
+            final Object[] parameters = new String[0];
+            return (String[][]) services.getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        } catch ( DatabaseException e ) {
+            throw new UnhandledException(e);
+        }
+    }
+
+    private String[][] sqlSelectUsersByEmail(String email) {
+        List<String> whereTests = new ArrayList<String>();
+
+        whereTests.add("LOWER(email) = '" + email.trim().toLowerCase() + "'");
+
+        String sqlStr = SQL_SELECT_USERS;
+        sqlStr += " WHERE " + StringUtils.join(whereTests.iterator(), " AND ");
+
         try {
             final Object[] parameters = new String[0];
             return (String[][]) services.getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
@@ -523,6 +565,15 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public UserDomainObject[] getUsers(boolean includeUserExtern, boolean includeInactiveUsers) {
         String[][] allUsersSqlResult = sqlSelectAllUsers(includeUserExtern, includeInactiveUsers);
         return getUsersFromSqlRows(allUsersSqlResult);
+    }
+
+    /**
+     * @since 4.1.3
+     */
+    public UserDomainObject[] getUsersByEmail(String email) {
+        return StringUtils.isBlank(email)
+                ? new UserDomainObject[] {}
+                : getUsersFromSqlRows(sqlSelectUsersByEmail(email));
     }
 
     public UserDomainObject[] getAllUsersWithRole(RoleDomainObject role) {

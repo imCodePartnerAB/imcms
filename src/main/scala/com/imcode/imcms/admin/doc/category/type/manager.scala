@@ -16,7 +16,7 @@ import imcms.security.{PermissionDenied, PermissionGranted}
 class CategoryTypeManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
-  val ui = letret(new CategoryTypeManagerUI) { ui =>
+  val ui = doto(new CategoryTypeManagerUI) { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblTypes addValueChangeHandler { handleSelection() }
 
@@ -63,7 +63,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
     val dialogTitle = if(isNew) "Create new category type" else "Edit category type"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      dlg.mainUI = letret(new CategoryTypeEditorUI) { c =>
+      dlg.mainUI = doto(new CategoryTypeEditorUI) { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = ?(vo.getName) getOrElse ""
         c.chkImageArchive.value = Boolean box vo.isImageArchive
@@ -71,7 +71,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
         c.chkMultiSelect.value = Boolean box vo.isMultiselect
 
         dlg wrapOkHandler {
-          let(vo.clone()) { voc =>
+          vo.clone() |> { voc =>
             voc setName c.txtName.value.trim
             voc setInherited c.chkInherited.booleanValue
             voc setImageArchive c.chkImageArchive.booleanValue
@@ -98,7 +98,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
                   app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
                   throw ex
                 case _ =>
-                  let(if (isNew) "New category type has been created" else "Category type has been updated") { msg =>
+                  (if (isNew) "New category type has been created" else "Category type has been updated") |> { msg =>
                     app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
                   }
 
@@ -118,17 +118,17 @@ class CategoryTypeManager(app: ImcmsApplication) {
       id = Int box vo.getId
     } ui.tblTypes.addItem(Array[AnyRef](id, vo.getName, Boolean box vo.isMultiselect, Boolean box vo.isInherited, Boolean box vo.isImageArchive), id)
 
-    let(canManage) { canManage =>
-      ui.tblTypes.setSelectable(canManage)
-      forlet[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage } //ui.mb,
+    canManage |> { value =>
+      ui.tblTypes.setSelectable(value)
+      doall[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value } //ui.mb,
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    let(canManage && ui.tblTypes.isSelected) { enabled =>
-      forlet(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+    (canManage && ui.tblTypes.isSelected) |> { enabled =>
+      doall(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 }

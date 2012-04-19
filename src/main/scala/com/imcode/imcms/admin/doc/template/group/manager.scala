@@ -17,7 +17,7 @@ import imcms.security.{PermissionDenied, PermissionGranted}
 class TemplateGroupManager(app: ImcmsApplication) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
 
-  val ui = letret(new TemplateGroupManagerUI) { ui =>
+  val ui = doto(new TemplateGroupManagerUI) { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblGroups addValueChangeHandler { handleSelection() }
 
@@ -64,7 +64,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
     val dialogTitle = if(isNew) "Create new template group" else "Edit template group"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      dlg.mainUI = letret(new TemplateGroupEditorUI) { c =>
+      dlg.mainUI = doto(new TemplateGroupEditorUI) { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = ?(vo.getName) getOrElse ""
         templateMapper.getTemplatesInGroup(vo) foreach (c.twsTemplates addChosenItem _.getName)
@@ -75,7 +75,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
             val voc = if (isNew) {
               templateMapper.createTemplateGroup(c.txtName.value)
               templateMapper.getTemplateGroupByName(c.txtName.value)
-            } else letret(vo.clone()) { voc =>
+            } else doto(vo.clone()) { voc =>
               templateMapper.renameTemplateGroup(voc, c.txtName.value)
             }
 
@@ -100,17 +100,17 @@ class TemplateGroupManager(app: ImcmsApplication) {
       id = Int box vo.getId
     } ui.tblGroups.addItem(Array[AnyRef](id, vo.getName, Int box templateMapper.getTemplatesInGroup(vo).length), id)
 
-    let(canManage) { canManage =>
-      ui.tblGroups.setSelectable(canManage)
-      forlet[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage }   //ui.mb,
+    canManage |> { value =>
+      ui.tblGroups.setSelectable(value)
+      doall[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }   //ui.mb,
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    let(canManage && ui.tblGroups.isSelected) { enabled =>
-      forlet(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+    (canManage && ui.tblGroups.isSelected) |> { enabled =>
+      doall(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 }

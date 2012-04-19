@@ -143,7 +143,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
   val labelAbout = new VerticalLayoutUI {
     addComponent(new Panel("About") {
-      let(getContent) {
+      getContent |> {
         case c: VerticalLayout =>
           c.setMargin(true)
           c.setSpacing(true)

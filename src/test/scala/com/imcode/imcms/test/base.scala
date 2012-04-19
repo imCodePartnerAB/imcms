@@ -22,13 +22,13 @@ class Project(dirPath: String = ".") {
 
   private val buildPropertiesFileWatcher = Util.createFileWatcher(fileFn("build.properties")) { file =>
     using(new FileReader(file)) { reader =>
-      letret(new Properties) { _ load reader }
+      new Properties |< { _ load reader }
     }
   }
 
  private val testPropertiesFileWatcher = Util.createFileWatcher(fileFn("src/test/resources/server.properties")) { file =>
     using(new FileReader(file)) { reader =>
-      letret(new Properties) { _ load reader }
+      new Properties |< { _ load reader }
     }
   }
 
@@ -75,7 +75,7 @@ class Project(dirPath: String = ".") {
   }
 
   def initImcms(start: Boolean = false, prepareDBOnStart: Boolean = false) {
-    let(subDir("src/test/resources")) { path =>
+    subDir("src/test/resources") |> { path =>
       Imcms.setPath(path, path)
     }
 
@@ -95,7 +95,7 @@ class DB(project: Project) {
   import com.imcode.imcms.db.{DB => DBAccess, Schema}
 
   def createDataSource(withDBName: Boolean = true, autocommit: Boolean = false) =
-    letret(new BasicDataSource) { ds =>
+    new BasicDataSource |< { ds =>
       ds.setUsername(project.testProperty("User"))
       ds.setPassword(project.testProperty("Password"))
       ds.setDriverClassName(project.testProperty("JdbcDriver"))
@@ -106,7 +106,7 @@ class DB(project: Project) {
     }
 
   def recreate() {
-    let(new DBAccess(createDataSource(withDBName=false))) { access =>
+    new DBAccess(createDataSource(withDBName=false)) |> { access =>
       access.template.update("DROP DATABASE IF EXISTS %s" format project.testProperty("DBName"))
       access.template.update("CREATE DATABASE %s" format project.testProperty("DBName"))
     }
@@ -117,7 +117,7 @@ class DB(project: Project) {
     createHibernateSessionFactory(annotatedClasses.toSeq)
 
   def createHibernateSessionFactory(annotatedClasses: Seq[Class[_]], xmlFiles: String*) =
-    let(new AnnotationConfiguration) { c =>
+    new AnnotationConfiguration |> { c =>
       for ((name, value) <- hibernateProperties) c.setProperty(name, value)
       annotatedClasses foreach { c addAnnotatedClass _}
       xmlFiles foreach { c addFile _ }
@@ -139,7 +139,7 @@ class DB(project: Project) {
   )
 
   def runScripts(script: String, scripts: String*) {
-    let(new DBAccess(createDataSource(autocommit=true))) { access =>
+    new DBAccess(createDataSource(autocommit=true)) |> { access =>
       access.runScripts(script +: scripts map { project path _ })
     }
   }
@@ -150,7 +150,7 @@ class DB(project: Project) {
     val scriptsDir = project.path("src/main/webapp/WEB-INF/sql")
     val schema = Schema.load(project.file("src/main/resources/schema.xml")).changeScriptsDir(scriptsDir)
 
-    let(new DBAccess(createDataSource())) { _ prepare schema }
+    new DBAccess(createDataSource()) |> { _ prepare schema }
   }
 }
 
@@ -171,7 +171,7 @@ object Util {
           if lastAccessNano + poolIntervalNano < now || fileFn().lastModified == lastModified =>
             state.copy(lastAccessNano = now)
 
-        case _ => let(fileFn()) { file =>
+        case _ => fileFn() |> { file =>
           State(now, file.lastModified, handler(file))
         }
       }

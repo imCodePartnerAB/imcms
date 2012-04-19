@@ -24,7 +24,7 @@ class IPAccessManager(app: ImcmsApplication) {
   private val toDDN = ((_:String).toLong) andThen ipLongToString
   private val fromDDN = ipStringToLong(_:String).toString
 
-  val ui = letret(new IPAccessManagerUI) { ui =>
+  val ui = doto(new IPAccessManagerUI) { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblIP addValueChangeHandler { handleSelection() }
 
@@ -70,7 +70,7 @@ class IPAccessManager(app: ImcmsApplication) {
     val dialogTitle = if(isNew) "Create new IP access" else "Edit IP access"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      dlg.mainUI = letret(new IPAccessEditorUI) { c =>
+      dlg.mainUI = doto(new IPAccessEditorUI) { c =>
 
         c.txtId.value = if (isNew) "" else id.toString
         c.userPickerUI.txtLoginName.value = (?(vo.getUserId) map { roleMapper getUser _.intValue } map { _.getLoginName } getOrElse "")
@@ -85,7 +85,7 @@ class IPAccessManager(app: ImcmsApplication) {
         }
 
         dlg wrapOkHandler {
-          let(vo.clone) { voc =>
+          vo.clone |> { voc =>
             // todo: validate
             voc.setUserId(Int box (roleMapper getUser c.userPickerUI.txtLoginName.value getId))
             voc.setStart(fromDDN(c.txtFrom.value))
@@ -98,7 +98,7 @@ class IPAccessManager(app: ImcmsApplication) {
                   app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
                   throw ex
                 case _ =>
-                  let(if (isNew) "New IP access has been created" else "IP access has been updated") { msg =>
+                  (if (isNew) "New IP access has been created" else "IP access has been updated") |> { msg =>
                     app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
                   }
 
@@ -120,17 +120,17 @@ class IPAccessManager(app: ImcmsApplication) {
       user = roleMapper getUser vo.getUserId.intValue
     } ui.tblIP.addItem(Array[AnyRef](id, user.getLoginName, toDDN(vo.getStart), toDDN(vo.getEnd)), id)
 
-    let(canManage) { canManage =>
-      ui.tblIP.setSelectable(canManage)
-      forlet(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage }
+    canManage |> { value =>
+      ui.tblIP.setSelectable(value)
+      doall(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    let(canManage && ui.tblIP.isSelected) { enabled =>
-      forlet(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+    (canManage && ui.tblIP.isSelected) |> { enabled =>
+      doall(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 } // class IPAccessManager

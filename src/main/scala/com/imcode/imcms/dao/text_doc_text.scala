@@ -12,7 +12,7 @@ class TextDao extends SpringHibernateTemplate {
 
   /** Inserts or updates text. */
   @Transactional
-  def saveText(text: TextDomainObject) = letret(text) { hibernateTemplate.saveOrUpdate }
+  def saveText(text: TextDomainObject) = doto(text) { hibernateTemplate.saveOrUpdate }
 
 
   @Transactional

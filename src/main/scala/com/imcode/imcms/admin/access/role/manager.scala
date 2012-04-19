@@ -13,7 +13,7 @@ import imcode.server.user.{RoleId, RoleDomainObject}
 class RoleManager(app: ImcmsApplication) {
   private def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
-  val ui = letret(new RoleManagerUI) { ui =>
+  val ui = doto(new RoleManagerUI) { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblRoles addValueChangeHandler { handleSelection() }
 
@@ -60,7 +60,7 @@ class RoleManager(app: ImcmsApplication) {
     val dialogTitle = if(isNew) "Create new role" else "Edit role"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      dlg.mainUI = letret(new RoleEditorUI) { c =>
+      dlg.mainUI = doto(new RoleEditorUI) { c =>
         val permsToChkBoxes = Map(
             RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> c.chkPermChangeImagesInArchive,
             RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION -> c.chkPermUseImagesFromArchive,
@@ -72,7 +72,7 @@ class RoleManager(app: ImcmsApplication) {
         for ((permission, chkBox) <- permsToChkBoxes) chkBox.value = vo.getPermissions.contains(permission)
 
         dlg wrapOkHandler {
-          let(vo.clone) { voc =>
+          vo.clone |> { voc =>
             // todo: validate
             voc.setName(c.txtName.value)
             voc.removeAllPermissions
@@ -85,7 +85,7 @@ class RoleManager(app: ImcmsApplication) {
                   app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
                   throw ex
                 case _ =>
-                  let(if (isNew) "New role has been created" else "Role has been updated") { msg =>
+                  (if (isNew) "New role has been created" else "Role has been updated") |> { msg =>
                     app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
                   }
 
@@ -106,17 +106,17 @@ class RoleManager(app: ImcmsApplication) {
       id = vo.getId
     } ui.tblRoles.addItem(Array[AnyRef](Int box id.intValue, vo.getName), id)
 
-    let(canManage) { canManage =>
-      ui.tblRoles.setSelectable(canManage)
-      forlet(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage }
+    canManage |> { value =>
+      ui.tblRoles.setSelectable(value)
+      doall(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    let(canManage && ui.tblRoles.isSelected) { enabled =>
-      forlet(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+    (canManage && ui.tblRoles.isSelected) |> { enabled =>
+      doall(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 } // class RoleManager

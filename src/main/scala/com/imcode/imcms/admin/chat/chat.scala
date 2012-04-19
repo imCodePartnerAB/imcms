@@ -50,7 +50,7 @@ class MessagesPanel extends Panel(new VerticalLayout{setSpacing(true)}) {
   setSizeFull
 
   def addMessage(msg: MessageView) = synchronized {
-    let(getComponentIterator.toList) {components =>
+    getComponentIterator.toList |> { components =>
       if (components.length > 3) removeComponent(components.head)
     }
 

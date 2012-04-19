@@ -48,7 +48,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
   private val restrictedOnePermSetEditor = new DocRestrictedPermSetEditor(restrictedOnePermSet, doc, user) with TextDocRestrictedPermSetEditor
   private val restrictedTwoPermSetEditor = new DocRestrictedPermSetEditor(restrictedTwoPermSet, doc, user) with TextDocRestrictedPermSetEditor
 
-  val ui = letret(new ProfileEditorUI) { ui =>
+  val ui = doto(new ProfileEditorUI) { ui =>
     ui.btnEditRestrictedOnePermSet addClickHandler {
       ui.getApplication.initAndShow(new OkCancelDialog("Limited-1 permissions")) { dlg =>
         dlg.mainUI = restrictedOnePermSetEditor.ui

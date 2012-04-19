@@ -833,7 +833,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     /**
      * @return if this user was authenticated by IP.
      *
-     * @see imcode.server.Config#isDenyMultipleUserSessions()
+     * @see imcode.server.Config#isDenyMultipleUserLogin()
      * @see com.imcode.imcms.servlet.ImcmsFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
     public boolean isAuthenticatedByIp() {

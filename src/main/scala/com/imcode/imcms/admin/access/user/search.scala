@@ -35,7 +35,7 @@ trait UserSelectDialog { this: OkCancelDialog =>
 
 class UserSingleSelect {
   private val selectionRef = new AtomicReference(Option.empty[UserDomainObject])
-  val ui = letret(new UserSingleSelectUI) { ui =>
+  val ui = doto(new UserSingleSelectUI) { ui =>
     ui.btnSelect.addClickHandler {
       ui.getApplication.initAndShow(new OkCancelDialog("Select user") with UserSingleSelectDialog) { dlg =>
         dlg.wrapOkHandler {
@@ -89,7 +89,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
     setColumnHeaders(getContainerPropertyIds.map(_.toString.i).toArray)
   }
 
-  val ui = letret(new GridLayout(1, 2)) { ui =>
+  val ui = doto(new GridLayout(1, 2)) { ui =>
     addComponents(ui, searchForm.ui, searchResult)
   }
 
@@ -158,7 +158,7 @@ case class UserSearchFormState(
 )
 
 class UserSearchForm extends ImcmsServicesSupport {
-  val ui: UserSearchFormUI = letret(new UserSearchFormUI) { ui =>
+  val ui: UserSearchFormUI = doto(new UserSearchFormUI) { ui =>
     ui.chkText.addValueChangeHandler {
       SearchFormUtil.toggle(ui, "admin.access.user.search.frm.fld.text", ui.chkText, ui.txtText)
     }
@@ -175,7 +175,7 @@ class UserSearchForm extends ImcmsServicesSupport {
     ui.chkRoles.checked = state.roles.isDefined
     ui.chkShowInactive.checked = state.isShowInactive
 
-    forlet(ui.chkText, ui.chkRoles, ui.chkShowInactive)(_ fireValueChange true)
+    doall(ui.chkText, ui.chkRoles, ui.chkShowInactive)(_ fireValueChange true)
 
     ui.txtText.value = state.text.getOrElse("")
     ui.tcsRoles.removeAllItems
@@ -187,8 +187,8 @@ class UserSearchForm extends ImcmsServicesSupport {
   }
   
   def getState() = UserSearchFormState(
-    whenOpt(ui.chkText.checked)(ui.txtText.trim),
-    whenOpt(ui.chkRoles.checked)(ui.tcsRoles.value.toSet),
+    when(ui.chkText.checked)(ui.txtText.trim),
+    when(ui.chkRoles.checked)(ui.tcsRoles.value.toSet),
     ui.chkShowInactive.checked
   )  
 }

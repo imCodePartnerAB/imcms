@@ -19,7 +19,7 @@ class TemplateManager(app: ImcmsApplication) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
   private val fileRE = """(?i)(.+?)(?:\.(\w+))?""".r // filename, (optional extension)
 
-  val ui = letret(new TemplateManagerUI) { ui =>
+  val ui = doto(new TemplateManagerUI) { ui =>
     ui.tblTemplates addValueChangeHandler { handleSelection() }
     ui.miUpload setCommandHandler {
       app.initAndShow(new FileUploaderDialog("Upload template file")) { dlg =>
@@ -54,7 +54,7 @@ class TemplateManager(app: ImcmsApplication) {
     ui.miRename setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new OkCancelDialog("Rename template")) { dlg =>
-          val fileRenameUI = letret(new TemplateRenameUI) { c =>
+          val fileRenameUI = doto(new TemplateRenameUI) { c =>
             c.txtName.value = name
           }
 
@@ -72,7 +72,7 @@ class TemplateManager(app: ImcmsApplication) {
     ui.miEditContent setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoMarginDialog) { dlg =>
-          dlg.mainUI = letret(new TemplateContentEditorUI) { c =>
+          dlg.mainUI = doto(new TemplateContentEditorUI) { c =>
             c.txtContent.value = templateMapper.getTemplateData(name)
           }
 
@@ -116,10 +116,10 @@ class TemplateManager(app: ImcmsApplication) {
       fileRE(_, ext) = vo.getFileName
     } ui.tblTemplates.addItem(Array[AnyRef](name, ext, Int box templateMapper.getCountOfDocumentsUsingTemplate(vo)), name)
 
-    let(canManage) { canManage =>
+    canManage |> { value =>
       import ui._
-      tblTemplates.setSelectable(canManage)
-      forlet[{def setEnabled(e: Boolean)}](miUpload, miDownload, miRename, miDelete, miEditContent) { _ setEnabled canManage }   //ui.mb,
+      tblTemplates.setSelectable(value)
+      doall[{def setEnabled(e: Boolean)}](miUpload, miDownload, miRename, miDelete, miEditContent) { _ setEnabled value }   //ui.mb,
     }
 
     handleSelection()
@@ -127,8 +127,8 @@ class TemplateManager(app: ImcmsApplication) {
 
   private def handleSelection() {
     import ui._
-    let(canManage && tblTemplates.isSelected) { enabled =>
-      forlet(miDownload, miRename, miEditContent, miDelete) { _ setEnabled enabled }
+    (canManage && tblTemplates.isSelected) |> { enabled =>
+      doall(miDownload, miRename, miEditContent, miDelete) { _ setEnabled enabled }
     }
 
     miDocuments.setEnabled(?(tblTemplates.value) map { name =>

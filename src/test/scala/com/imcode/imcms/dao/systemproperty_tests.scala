@@ -26,7 +26,7 @@ class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAft
     systemDao.setSessionFactory(sf)
   }
 
-  def getExistingProperty(name: String) = letret(systemDao.getProperty(name)) { property =>
+  def getExistingProperty(name: String) = doto(systemDao.getProperty(name)) { property =>
     property must not be (null)
   }
 

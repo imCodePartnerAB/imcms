@@ -72,7 +72,7 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
 	}
 
   test("create empty content loop") {
-    let(new ContentLoop) { loop =>
+    new ContentLoop |> { loop =>
       loop.setDocId(1001);
       loop.setDocVersionNo(0);
       loop.setNo(getNextLoopNo())
@@ -138,7 +138,7 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
 	def getLoop(no: Int): ContentLoop = getLoop(no, false)
 
-	def getLoop(no: Int, assertLoopNotNull: Boolean) = letret(contentLoopDao.getLoop(1001, 0, no)) { loop =>
+	def getLoop(no: Int, assertLoopNotNull: Boolean) = doto(contentLoopDao.getLoop(1001, 0, no)) { loop =>
     if (assertLoopNotNull)
       assertNotNull("Loop exists - docId: %s, docVersionNo: %s, no: %s.".format(1001, 0, no), loop)
   }

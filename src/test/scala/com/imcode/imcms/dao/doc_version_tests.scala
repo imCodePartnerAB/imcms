@@ -49,10 +49,10 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
   }
 
   def createVersion(docId: JInteger = 1001, userId: JInteger = admin.getId) =
-    let(versionDao.createVersion(docId, userId)) { savedVO =>
+    versionDao.createVersion(docId, userId) |> { savedVO =>
       savedVO.getId must not be (null)
 
-      letret(getVersion(docId, savedVO.getNo)) { loadedVO =>
+      doto(getVersion(docId, savedVO.getNo)) { loadedVO =>
         loadedVO must have (
           'docId (docId),
           'createdBy (userId),
@@ -62,7 +62,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
     }
 
   def getVersion(docId: JInteger = 1001, no: JInteger = 0, assertExists: Boolean = true) =
-    letret(versionDao.getVersion(docId, no)) { version =>
+    doto(versionDao.getVersion(docId, no)) { version =>
       if (assertExists) assert(version != null, "Version docId: %s, no: %s".format(docId, no))
     }
 
@@ -99,7 +99,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
           val version0 = getVersion(1001, 0)
           val version1 = getVersion(1001, 1)
 
-          let(versionDao.getDefaultVersion(1001)) { defaultVersion =>
+          versionDao.getDefaultVersion(1001) |> { defaultVersion =>
             defaultVersion must not be (null)
             assert(version0 === defaultVersion)
           }
@@ -108,7 +108,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
           versionDao.changeDefaultVersion(1001, 1, 0)
 
           then("default version should eq [version 1]")
-          let(versionDao.getDefaultVersion(1001)) { defaultVersion =>
+          versionDao.getDefaultVersion(1001) |> { defaultVersion =>
             defaultVersion must not be (null)
             assert(version1 === defaultVersion)
           }

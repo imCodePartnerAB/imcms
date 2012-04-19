@@ -56,10 +56,10 @@ class FileUploader extends Publisher[UploadStatus] {
    */
   var fileNameToSaveAsName = identity[String]_
 
-  val ui = letret(new FileUploaderUI) { ui =>
+  val ui = doto(new FileUploaderUI) { ui =>
     // Temp file based receiver
     val receiver = new Upload.Receiver {
-      val file = letret(File.createTempFile("imcms_upload", null)) {
+      val file = doto(File.createTempFile("imcms_upload", null)) {
         _.deleteOnExit()
       }
 
@@ -102,7 +102,7 @@ class FileUploader extends Publisher[UploadStatus] {
         ui.chkOverwrite.setEnabled(true)
         ui.pgiBytesReceived.setValue(1f)
 
-        let(UploadedFile(ev.getFilename, ev.getMIMEType, receiver.file)) { uploadedFile =>
+        UploadedFile(ev.getFilename, ev.getMIMEType, receiver.file) |> { uploadedFile =>
           uploadedFileOptRef.set(Some(uploadedFile))
           notifyListeners(UploadSucceeded(ev, uploadedFile))
         }

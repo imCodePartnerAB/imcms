@@ -6,7 +6,7 @@
 
 <div style="width:310px;">
 	<%= new LocalizedMessageFormat("passwordreset.confirmation.email_sent",
-					request.getParameter(PasswordReset.REQUEST_PARAM_EMAIL),
+					request.getParameter(PasswordReset.REQUEST_USER_IDENTITY),
 					Imcms.getServices().getSystemData().getServerMasterAddress()).toLocalizedString(request)
 	%>
 </div>

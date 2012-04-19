@@ -51,7 +51,7 @@ class ContentLoopDao extends SpringHibernateTemplate {
    * @return saved content loop.
    */
   @Transactional
-  def saveLoop(loop: ContentLoop) = letret(loop.clone) { loopClone =>
+  def saveLoop(loop: ContentLoop) = doto(loop.clone) { loopClone =>
     withSession { session =>
       session.saveOrUpdate(loopClone)
       session.flush

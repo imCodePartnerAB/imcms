@@ -14,12 +14,12 @@ import imcode.server.{SystemData, Imcms}
 
 class PropertyManagerManager(app: ImcmsApplication) {
 
-  val ui = letret(new PropertyManagerUI) { ui =>
+  val ui = doto(new PropertyManagerUI) { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.miEdit setCommandHandler {
       app.initAndShow(new OkCancelDialog("Edit system properties")) { dlg =>
-        dlg.mainUI = letret(new PropertyEditorUI) { eui =>
-          let(Imcms.getServices.getSystemData) { d =>
+        dlg.mainUI = doto(new PropertyEditorUI) { eui =>
+          Imcms.getServices.getSystemData |> { d =>
             eui.txtStartPageNumber.value = d.getStartDocument.toString
             eui.txtSystemMessage.value = d.getSystemMessage
             eui.webMasterUI.txtName.value = d.getWebMaster
@@ -30,7 +30,7 @@ class PropertyManagerManager(app: ImcmsApplication) {
 
           dlg.wrapOkHandler {
             app.privileged(permission) {
-              val systemData = letret(Imcms.getServices.getSystemData) { d =>
+              val systemData = doto(Imcms.getServices.getSystemData) { d =>
                 d setStartDocument eui.txtStartPageNumber.value.toInt
                 d setSystemMessage eui.txtSystemMessage.value
                 d setWebMaster eui.webMasterUI.txtName.value
@@ -63,8 +63,8 @@ class PropertyManagerManager(app: ImcmsApplication) {
   def reload() {
     import ui.dataUI._
 
-    forlet(txtStartPageNumber, txtSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly false}
-    let(Imcms.getServices.getSystemData) { d =>
+    doall(txtStartPageNumber, txtSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly false}
+    Imcms.getServices.getSystemData |> { d =>
       txtStartPageNumber.value = d.getStartDocument.toString
       txtSystemMessage.value = d.getSystemMessage
       webMasterUI.txtName.value = d.getWebMaster
@@ -72,9 +72,9 @@ class PropertyManagerManager(app: ImcmsApplication) {
       serverMasterUI.txtName.value = d.getServerMaster
       serverMasterUI.txtEmail.value = d.getServerMasterAddress
     }
-    forlet(txtStartPageNumber, txtSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly true}
+    doall(txtStartPageNumber, txtSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly true}
 
-    forlet(ui.miEdit) { _ setEnabled canManage }
+    doall(ui.miEdit) { _ setEnabled canManage }
   }
 } // class PropertyManager
 

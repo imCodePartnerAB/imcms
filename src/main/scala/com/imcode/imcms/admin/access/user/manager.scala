@@ -13,17 +13,17 @@ import scala.collection.JavaConversions._
 class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
   private val search = new UserSearch
 
-  val ui = letret(new UserManagerUI(search.ui)) { ui =>
+  val ui = doto(new UserManagerUI(search.ui)) { ui =>
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     ui.miNew setCommandHandler {
       app.initAndShow(new OkCancelDialog("user.dlg.new.caption".i)) { dlg =>
-        dlg.mainUI = letret(new UserEditorUI) { c =>
+        dlg.mainUI = doto(new UserEditorUI) { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
             c.tcsRoles.addItem(role.getId, role.getName)
           }
 
-          let(imcmsServices.getLanguageMapper.getDefaultLanguage) { l =>
+          imcmsServices.getLanguageMapper.getDefaultLanguage |> { l =>
             c.sltUILanguage.addItem(l)
             c.sltUILanguage.select(l)
           }
@@ -31,7 +31,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
           c.chkActivated.setValue(true)
 
           dlg wrapOkHandler {
-            let(new UserDomainObject) { u =>
+            new UserDomainObject |> { u =>
               u setActive c.chkActivated.booleanValue
               u setFirstName c.txtFirstName.value
               u setLastName c.txtLastName.value
@@ -51,7 +51,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     ui.miEdit setCommandHandler {
       whenSingle(search.selection) { user =>
         app.initAndShow(new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName))) { dlg =>
-          dlg.mainUI = letret(new UserEditorUI) { c =>
+          dlg.mainUI = doto(new UserEditorUI) { c =>
             c.chkActivated setValue user.isActive
             c.txtFirstName setValue user.getFirstName
             c.txtLastName setValue user.getLastName
@@ -64,7 +64,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
             c.tcsRoles.value = user.getRoleIds.filterNot(RoleId.USERS ==).toSeq
 
-            let(imcmsServices.getLanguageMapper.getDefaultLanguage) { l =>
+            imcmsServices.getLanguageMapper.getDefaultLanguage |> { l =>
               c.sltUILanguage.addItem(l)
             }
 
@@ -140,7 +140,7 @@ class UserEditorUI extends FormLayout with UndefinedSize {
     addComponent(btnEditContacts)
   }
 
-  forlet(txtLogin, txtPassword, txtVerifyPassword, txtEmail) { _ setRequired true }
+  doall(txtLogin, txtPassword, txtVerifyPassword, txtEmail) { _ setRequired true }
 
   addComponents(this, lytLogin, lytPassword, lytName, txtEmail, sltUILanguage, tcsRoles, lytContacts)
 }

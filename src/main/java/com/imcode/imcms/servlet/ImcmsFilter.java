@@ -47,7 +47,6 @@ public class ImcmsFilter implements Filter {
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 
     private final Logger logger = Logger.getLogger(getClass());
-    
 
     /** Sends service unavailable. */
     private Filter maintenanceModeFilter = new Filter() {

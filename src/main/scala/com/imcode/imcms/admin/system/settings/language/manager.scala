@@ -15,7 +15,7 @@ class LanguageManager(app: ImcmsApplication) {
   private val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
   private val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
 
-  val ui = letret(new LanguageManagerUI) { ui =>
+  val ui = doto(new LanguageManagerUI) { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblLanguages addValueChangeHandler { handleSelection() }
 
@@ -84,7 +84,7 @@ class LanguageManager(app: ImcmsApplication) {
     val dialogTitle = if(isNew) "Create new language" else "edit Language"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      dlg.mainUI = letret(new LanguageEditorUI) { c =>
+      dlg.mainUI = doto(new LanguageEditorUI) { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtCode.value = ?(vo.getCode) getOrElse ""
         c.txtName.value = ?(vo.getName) getOrElse ""
@@ -92,7 +92,7 @@ class LanguageManager(app: ImcmsApplication) {
         c.chkEnabled.value = ?(vo.isEnabled) getOrElse (Boolean box false)
 
         dlg wrapOkHandler {
-          let(vo.clone) { voc =>
+          vo.clone |> { voc =>
             // todo: validate
             voc.setCode(c.txtCode.value)
             voc.setName(c.txtName.value)
@@ -106,7 +106,7 @@ class LanguageManager(app: ImcmsApplication) {
                   app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
                   throw ex
                 case _ =>
-                  let(if (isNew) "New language access has been created" else "Language access has been updated") { msg =>
+                  (if (isNew) "New language access has been created" else "Language access has been updated") |> { msg =>
                     app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
                   }
 
@@ -129,17 +129,17 @@ class LanguageManager(app: ImcmsApplication) {
       isDefault = Boolean box (default == id.intValue)
     } ui.tblLanguages.addItem(Array[AnyRef](id, vo.getCode, vo.getName, vo.getNativeName, vo.isEnabled, isDefault), id)
 
-    let(canManage) { canManage =>
-      ui.tblLanguages.setSelectable(canManage)
-      forlet(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage }
+    canManage |> { value =>
+      ui.tblLanguages.setSelectable(value)
+      doall(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    let(canManage && ui.tblLanguages.isSelected) { enabled =>
-      forlet(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+    (canManage && ui.tblLanguages.isSelected) |> { enabled =>
+      doall(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 } // class LanguageManager

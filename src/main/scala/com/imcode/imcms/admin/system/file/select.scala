@@ -38,7 +38,7 @@ object FileOps {
   def download(app: Application, file: File) =
     app.getMainWindow.open(
       new FileResource(file, app) {
-        override def getStream() = letret(super.getStream) { ds =>
+        override def getStream() = doto(super.getStream) { ds =>
           ds.setParameter("Content-Disposition", """attachment; filename="%s"""" format file.getName)
         }
       }
@@ -93,7 +93,7 @@ class FileDialog(caption: String, browser: FileBrowser)
 extends OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
   val preview = new FilePreview(browser)
 
-  mainUI = letret(new FileDialogUI(browser.ui, preview.ui)) { ui =>
+  mainUI = doto(new FileDialogUI(browser.ui, preview.ui)) { ui =>
     ui.miViewPreview setCommandHandler {
       preview.enabled = !preview.enabled
     }
@@ -204,7 +204,7 @@ class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) w
   val btnAction = new Button with SingleClickListener with LinkStyle
   addComponents(this, previewUI, btnAction)
 
-  forlet(previewUI, btnAction) { c => setComponentAlignment(c, Alignment.MIDDLE_CENTER) }
+  doall(previewUI, btnAction) { c => setComponentAlignment(c, Alignment.MIDDLE_CENTER) }
 }
 
 /**
@@ -215,7 +215,7 @@ class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) w
  */
 class ImagePicker(app: Application, browser: FileBrowser) {
   val preview = new EmbeddedPreview; preview.stubUI.value = "No Icon"
-  val fileDialog = letret(new FileDialog("Pick an image", browser)) { dlg =>
+  val fileDialog = doto(new FileDialog("Pick an image", browser)) { dlg =>
     dlg.preview.enabled = true
     dlg.wrapOkHandler {
       for (selection <- browser.selection; file <- selection.firstItem)
@@ -223,7 +223,7 @@ class ImagePicker(app: Application, browser: FileBrowser) {
     }
   }
 
-  val ui = letret(new ImagePickerUI(preview.ui)) { ui =>
+  val ui = doto(new ImagePickerUI(preview.ui)) { ui =>
     ui.btnRemove addClickHandler {
       preview.clear()
     }
@@ -268,12 +268,12 @@ class EmbeddedPreview[A <: Component](val stubUI: A = new Label with UndefinedSi
 
   def get = if (isEmpty) None else Some(ui.content.getComponent(0).asInstanceOf[Embedded])
   def isEmpty = getPreviewComponent eq stubUI
-  override def notifyListeners() = let(get) { notifyListeners _ }
+  override def notifyListeners() = notifyListeners(get)
 
   private def getPreviewComponent = ui.content.getComponent(0)
   private def setPreviewComponent(component: Component) {
-    let(ui.content) { content =>
-      content.removeAllComponents
+    ui.content |> { content =>
+      content.removeAllComponents()
       content.addComponent(component)
       content.setComponentAlignment(component, Alignment.MIDDLE_CENTER)
     }

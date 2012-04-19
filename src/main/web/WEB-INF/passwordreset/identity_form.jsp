@@ -6,9 +6,9 @@
   pageEncoding="UTF-8"
 %><%!
 
-static final LocalizedMessage formInfo = new LocalizedMessage("passwordreset.email_form_info");
-static final LocalizedMessage formLabelEmail = new LocalizedMessage("passwordreset.email_form.lbl_email");
-static final LocalizedMessage formSubmit = new LocalizedMessage("passwordreset.email_form.submit");
+static final LocalizedMessage formInfo = new LocalizedMessage("passwordreset.identity_form_info");
+static final LocalizedMessage formLabelEmail = new LocalizedMessage("passwordreset.identity_form.lbl_identity");
+static final LocalizedMessage formSubmit = new LocalizedMessage("passwordreset.identity_form.submit");
 
 %>
 <jsp:include page="inc_header.jsp" flush="true"/>
@@ -24,7 +24,7 @@ static final LocalizedMessage formSubmit = new LocalizedMessage("passwordreset.e
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
 			<td width="20%"><%=formLabelEmail.toLocalizedString(request)%></td>
-			<td width="60%" style="padding: 0 10px;"><input type="text" name="<%=PasswordReset.REQUEST_PARAM_EMAIL%>" style="width:100%;"></td>
+			<td width="60%" style="padding: 0 10px;"><input type="text" name="<%=PasswordReset.REQUEST_USER_IDENTITY%>" style="width:100%;"></td>
 			<td width="20%" align="right"><input type="submit" class="imcmsFormBtnSmall" value="<%=formSubmit.toLocalizedString(request)%>" /></td>
 		</tr>
 		</table>

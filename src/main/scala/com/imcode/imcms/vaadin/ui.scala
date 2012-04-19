@@ -141,7 +141,7 @@ class Dialog(caption: String = "") extends Window(caption) {
 
   def mainUI = content.getComponent(0, 0)
   /** By default rejects components with width and/or height in percentage. */
-  def mainUI_=[C <: Component](component: C): C = letret(component) { component =>
+  def mainUI_=[C <: Component](component: C): C = doto(component) { component =>
     mainUICheck(component)
 
     content.addComponent(component, 0, 0)
@@ -151,7 +151,7 @@ class Dialog(caption: String = "") extends Window(caption) {
 
   def buttonsBarUI = content.getComponent(0, 1)
   /** By default rejects components with width and/or height in percentage. */
-  def buttonsBarUI_=[C <: Component](component: C): C = letret(component) { component =>
+  def buttonsBarUI_=[C <: Component](component: C): C = doto(component) { component =>
     buttonsBarUICheck(component)
 
     content.addComponent(component, 0, 1)
@@ -387,7 +387,7 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
   addComponents(this, lstChosen, lytButtons, lstAvailable)
   setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
 
-  forlet(lstAvailable, lstChosen) { l =>
+  doall(lstAvailable, lstChosen) { l =>
     l setMultiSelect true
     l setImmediate true
     l setColumns 10
@@ -409,11 +409,11 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
   }
 
   private [this] def move(src: ListSelect with ValueType[JCollection[T]], dest: ListSelect with ValueType[JCollection[T]]) = src.value foreach { itemId =>
-    let (src getItemCaption itemId) { itemCaption =>
+    src.getItemCaption(itemId) |> { itemCaption =>
       addItem(dest, itemId, itemCaption)
     }
 
-    src removeItem itemId
+    src.removeItem(itemId)
   }
 
   def availableItemIds = lstAvailable.getItemIds.asInstanceOf[JCollection[T]].toList
@@ -432,8 +432,8 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
     listSelect.setItemCaption(itemId, caption)    
   }                                                
 
-  def setListRows(count: Int) = forlet(lstAvailable, lstChosen) { _ setRows count }
-  def setListColumns(count: Int) = forlet(lstAvailable, lstChosen) { _ setColumns count }
+  def setListRows(count: Int) = doall(lstAvailable, lstChosen) { _ setRows count }
+  def setListColumns(count: Int) = doall(lstAvailable, lstChosen) { _ setColumns count }
 }
 
 /** Vertical layout containing tab sheet. */
@@ -486,7 +486,7 @@ trait MiddleLeftAlignment extends DefaultAlignment {
 
 
 trait NoChildrenAllowed extends Tree {
-  override def addItem(itemId: AnyRef) = letret(super.addItem(itemId)) { _ =>
+  override def addItem(itemId: AnyRef) = doto(super.addItem(itemId)) { _ =>
     setChildrenAllowed(itemId, false)
   }
 }

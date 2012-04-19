@@ -40,7 +40,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
   private var categoriesEditorOpt = Option.empty[CategoriesEditor]
   private var profileEditorOpt = Option.empty[ProfileEditor]
 
-  val ui = letret(new MetaEditorUI) { ui =>
+  val ui = doto(new MetaEditorUI) { ui =>
     ui.treeMenu.addItem("Appearance")
     ui.treeMenu.addItem("Life cycle")
     ui.treeMenu.addItem("Permissions")
@@ -123,14 +123,14 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
       UberData(
         Right(doc.clone, Map.empty[I18nLanguage, I18nMeta])
       ).merge(appearanceEditorOpt.map(_.data.get())) {
-          case ((dc, _), appearance) => letret(dc, appearance.i18nMetas) { _ =>
+          case ((dc, _), appearance) => doto(dc, appearance.i18nMetas) { _ =>
             dc.getMeta.setLanguages(appearance.enabledLanguages)
             dc.getMeta.setI18nShowMode(appearance.disabledLanguageShowSetting)
             dc.getMeta.setAlias(appearance.alias.orNull)
             dc.getMeta.setTarget(appearance.target)
           }
       }.merge(lifeCycleEditorOpt.map(_.data.get())) {
-          case (uberData @ (dc, _), lifeCycle) => letret(uberData) { _ =>
+          case (uberData @ (dc, _), lifeCycle) => doto(uberData) { _ =>
             dc.getMeta.setPublicationStatus(lifeCycle.publicationStatus)
             dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStart)
             dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
@@ -143,7 +143,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
             //???dc.getMeta.setModifierId
           }
       }.merge(permissionsEditorOpt.map(_.data.get())) {
-          case (uberData @ (dc, _), permissions) => letret(uberData) { _ =>
+          case (uberData @ (dc, _), permissions) => doto(uberData) { _ =>
             dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
             dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)
             dc.getPermissionSets.setRestricted2(permissions.restrictedTwoPermSet)
@@ -152,11 +152,11 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
             dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
           }
       }.merge(categoriesEditorOpt.map(_.data.get())) {
-          case (uberData @ (dc, _), categories) => letret(uberData) { _ =>
+          case (uberData @ (dc, _), categories) => doto(uberData) { _ =>
             dc.setCategoryIds(categories.categoriesIds)
           }
       }.merge(profileEditorOpt.map(_.data.get())) {
-          case (uberData @ (tdc: TextDocumentDomainObject, _), profile) => letret(uberData) { _ =>
+          case (uberData @ (tdc: TextDocumentDomainObject, _), profile) => doto(uberData) { _ =>
             tdc.setDefaultTemplateId(profile.defaultTemplate)
             tdc.getPermissionSetsForNewDocuments.setRestricted1(profile.restrictedOnePermSet)
             tdc.getPermissionSetsForNewDocuments.setRestricted2(profile.restrictedTwoPermSet)
@@ -212,7 +212,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     modifier: Option[UserDomainObject]
   )
 
-  val ui = letret(new LifeCycleEditorUI) { ui =>
+  val ui = doto(new LifeCycleEditorUI) { ui =>
     ui.frmPublication.lytDate.chkEnd.addValueChangeHandler {
       ui.frmPublication.lytDate.calEnd.setEnabled(ui.frmPublication.lytDate.chkEnd.checked)
     }
@@ -364,7 +364,7 @@ class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
       chkCType -> sltCategories
     }
 
-  val ui = letret(new GridLayout(2, 1) with Spacing) { ui =>
+  val ui = doto(new GridLayout(2, 1) with Spacing) { ui =>
     for ((chkCType, sltCategories) <- typeCategoriesUIs) {
       addComponents(ui, chkCType, sltCategories)
     }
@@ -411,7 +411,7 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
 
   private val initialValues = Values(meta.getKeywords.map(_.toLowerCase).toSet, false)
 
-  val ui = letret(new SearchSettingsEditorUI) { ui =>
+  val ui = doto(new SearchSettingsEditorUI) { ui =>
     import ui.lytKeywords.{btnAdd, btnRemove, txtKeyword, lstKeywords}
 
     btnAdd.addClickHandler {
@@ -582,7 +582,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
       Values(
         i18nMetasUIs.map {
           case (language, chkBox, i18nMetaEditorUI) =>
-            language -> letret(new I18nMeta) { i18nMeta =>
+            language -> doto(new I18nMeta) { i18nMeta =>
               i18nMeta.setId(i18nMetas.get(language).map(_.getId).orNull)
               i18nMeta.setDocId(meta.getId)
               i18nMeta.setLanguage(language)
@@ -691,10 +691,10 @@ class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
     }
     val btnCheck = new Button("check") with SmallStyle
 
-    let(getLayout.asInstanceOf[HorizontalLayout]) { lyt =>
+    getLayout.asInstanceOf[HorizontalLayout] |> { lyt =>
       addComponents(lyt, lblContextURL, txtAlias, btnCheck)
       lyt.setExpandRatio(txtAlias, 1.0f)
-      forlet(lblContextURL, btnCheck) {
+      doall(lblContextURL, btnCheck) {
         lyt.setComponentAlignment(_, Alignment.MIDDLE_LEFT)
       }
     }

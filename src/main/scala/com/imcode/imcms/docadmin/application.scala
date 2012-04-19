@@ -38,7 +38,7 @@ class Application extends com.vaadin.Application with HttpServletRequestListener
       pnlAdmin.setSize(600, 600)
 
       val menuEditor = new MenuEditor(doc, menu)
-      let(wndMain.getContent.asInstanceOf[VerticalLayout]) { lyt =>
+      wndMain.getContent.asInstanceOf[VerticalLayout] |> { lyt =>
         lyt.removeAllComponents()
         lyt.addComponent(menuEditor.ui)
         lyt.asInstanceOf[VerticalLayout].setComponentAlignment(menuEditor.ui, Alignment.MIDDLE_CENTER)
@@ -56,7 +56,7 @@ class Application extends com.vaadin.Application with HttpServletRequestListener
 
 
 class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) {
-  val ui = letret(new MenuEditorUI) { ui =>
+  val ui = new MenuEditorUI |< { ui =>
     menu.getMenuItems foreach { ui.treeMenu.addItem(_) }
   }
 }

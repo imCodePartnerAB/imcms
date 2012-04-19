@@ -110,7 +110,7 @@ class DocSearch(val docsContainer: DocsContainer) {
           }
         }
 
-        whenOpt(start.isDefined || end.isDefined) {
+        when(start.isDefined || end.isDefined) {
           DocSearchRange(start, end)
         }
       }
@@ -280,14 +280,14 @@ abstract class DocsContainer extends Container
         () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
           case Nil => null
           case pair :: Nil =>
-            letret(new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon) { tree =>
+            doto(new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon) { tree =>
               val parentDoc = pair.getDocument
               tree.addItem(parentDoc)
               tree.setChildrenAllowed(parentDoc, false)
               tree.setItemCaption(parentDoc, "%s - %s" format (parentDoc.getId, parentDoc.getHeadline))
             }
 
-          case pairs => letret(new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon) { tree =>
+          case pairs => doto(new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon) { tree =>
             val root = new {}
             tree.addItem(root)
             tree.setItemCaption(root, pairs.size.toString)
@@ -306,13 +306,13 @@ abstract class DocsContainer extends Container
             imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).toList match {
               case List() => null
               case List(childDoc) =>
-                letret(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable) { tree =>
+                doto(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable) { tree =>
                   tree.addItem(childDoc)
                   tree.setChildrenAllowed(childDoc, false)
                   tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
                 }
 
-              case childDocs =>letret(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable) { tree =>
+              case childDocs =>doto(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable) { tree =>
                 val root = new {}
                 tree.addItem(root)
                 tree.setItemCaption(root, childDocs.size.toString)
@@ -381,7 +381,7 @@ abstract class DocsContainer extends Container
   def firstItemId = itemIds.headOption.orNull
 
   // extremely ineffective prototype
-  def prevItemId(itemId: AnyRef) = let(itemIds.toIndexedSeq) { seq =>
+  def prevItemId(itemId: AnyRef) = itemIds.toIndexedSeq |> { seq =>
     seq.indexOf(itemId.asInstanceOf[DocId]) match {
       case index if index > 0 => seq(index - 1)
       case _ => null
@@ -389,7 +389,7 @@ abstract class DocsContainer extends Container
   }
 
   // extremely ineffective prototype
-  def nextItemId(itemId: AnyRef) = let(itemIds.toIndexedSeq) { seq =>
+  def nextItemId(itemId: AnyRef) = itemIds.toIndexedSeq |> { seq =>
     seq.indexOf(itemId.asInstanceOf[DocId]) match {
       case index if index < (size - 1) => seq(index + 1)
       case _ => null
@@ -423,7 +423,7 @@ class AllDocsContainer extends DocsContainer {
 
   def removeAllItems() = throw new UnsupportedOperationException
 
-  def range = let(docMapper.getDocumentIdRange) { idsRange =>
+  def range = docMapper.getDocumentIdRange |> { idsRange =>
     Some(Int box idsRange.getMinimumInteger, Int box idsRange.getMaximumInteger)
   }
 
@@ -448,11 +448,11 @@ class CustomDocsContainer extends DocsContainer {
 
   def removeItem(itemId: AnyRef) = docIds.remove(itemId.asInstanceOf[DocId])
 
-  def addItem(itemId: AnyRef) = letret(new DocItem(itemId.asInstanceOf[DocId])) { docItem =>
+  def addItem(itemId: AnyRef) = doto(new DocItem(itemId.asInstanceOf[DocId])) { docItem =>
     docIds :+= docItem.docId
   }
 
-  def removeAllItems() = letret(true) { _ =>
+  def removeAllItems() = doto(true) { _ =>
     docIds = Seq.empty
     notifyItemSetChanged()
   }
@@ -495,7 +495,7 @@ trait DocTableItemIcon extends AbstractSelect with ItemIdType[DocId] {
 
 class DocBasicSearchForm {
 
-  val ui: DocBasicFormSearchUI = letret(new DocBasicFormSearchUI) { ui =>
+  val ui: DocBasicFormSearchUI = doto(new DocBasicFormSearchUI) { ui =>
     ui.chkRange.addValueChangeHandler {
        SearchFormUtil.toggle(ui, "doc.search.basic.frm.fld.range", ui.chkRange, ui.lytRange,
                              new Label("%s - %s".format(?(ui.lytRange.txtStart.getInputPrompt).getOrElse(""), ?(ui.lytRange.txtEnd.getInputPrompt).getOrElse(""))))
@@ -515,7 +515,7 @@ class DocBasicSearchForm {
   }
 
   def setRangeInputPrompt(range: Option[(DocId, DocId)]) {
-    let(range map { case (start, end) => (start.toString, end.toString) } getOrElse ("", "")) {
+    range.map { case (start, end) => (start.toString, end.toString) }.getOrElse ("", "") |> {
       case (start, end) =>
         ui.lytRange.txtStart.setInputPrompt(start)
         ui.lytRange.txtEnd.setInputPrompt(end)
@@ -530,7 +530,7 @@ class DocBasicSearchForm {
     ui.chkText.checked = state.text.isDefined
     ui.chkType.checked = state.docType.isDefined
     ui.chkAdvanced.checked = state.advanced.isDefined
-    forlet(ui.chkRange, ui.chkText, ui.chkType, ui.chkAdvanced)(_ fireValueChange true)
+    doall(ui.chkRange, ui.chkText, ui.chkType, ui.chkAdvanced)(_ fireValueChange true)
 
     ui.txtText.value = state.text.getOrElse("")
 
@@ -554,24 +554,24 @@ class DocBasicSearchForm {
 
   // todo: return Error Either State
   def getState() = DocBasicSearchFormState(
-    range = whenOpt(ui.chkRange.isChecked) {
+    range = when(ui.chkRange.isChecked) {
       DocSearchRange(
         condOpt(ui.lytRange.txtStart.trim) { case value if value.nonEmpty => value.toInt },
         condOpt(ui.lytRange.txtEnd.trim) { case value if value.nonEmpty => value.toInt }
       )
     },
 
-    text = whenOpt(ui.chkText.isChecked)(ui.txtText.trim),
+    text = when(ui.chkText.isChecked)(ui.txtText.trim),
 
-    docType = whenOpt(ui.chkType.isChecked) {
+    docType = when(ui.chkType.isChecked) {
       Set(
-        whenOpt(ui.lytType.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
-        whenOpt(ui.lytType.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
-        whenOpt(ui.lytType.chkHtml.isChecked) { DocumentTypeDomainObject.HTML }
+        when(ui.lytType.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
+        when(ui.lytType.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
+        when(ui.lytType.chkHtml.isChecked) { DocumentTypeDomainObject.HTML }
       ).flatten
     },
 
-    advanced = whenOpt(ui.chkAdvanced.isChecked)(ui.lytAdvanced.cbTypes.value)
+    advanced = when(ui.chkAdvanced.isChecked)(ui.lytAdvanced.cbTypes.value)
   )
 }
 
@@ -619,7 +619,7 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
     val btnSaveAs = new Button("doc.search.basic.frm.fld.btn_advanced_save_as".i) with SmallStyle with Disabled
     val btnDelete = new Button("doc.search.basic.frm.fld.btn_advanced_delete".i) with SmallStyle with Disabled
 
-    forlet(cbTypes, btnCustomize, btnSaveAs, btnDelete) { component =>
+    doall(cbTypes, btnCustomize, btnSaveAs, btnDelete) { component =>
       addComponent(component)
       setComponentAlignment(component, Alignment.MIDDLE_LEFT)
     }
@@ -657,14 +657,14 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
   ui.chkStatus.addValueChangeHandler { toggleStatus() }
 
   def reset() {
-    forlet(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers, ui.chkStatus)(_.uncheck)
-    forlet(ui.lytStatus.chkNew, ui.lytStatus.chkPublished, ui.lytStatus.chkUnpublished, ui.lytStatus.chkApproved, ui.lytStatus.chkDisapproved, ui.lytStatus.chkExpired)(_.uncheck)
+    doall(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers, ui.chkStatus)(_.uncheck)
+    doall(ui.lytStatus.chkNew, ui.lytStatus.chkPublished, ui.lytStatus.chkUnpublished, ui.lytStatus.chkApproved, ui.lytStatus.chkDisapproved, ui.lytStatus.chkExpired)(_.uncheck)
 
-    forlet(ui.lytDates.drCreated, ui.lytDates.drModified, ui.lytDates.drPublished, ui.lytDates.drExpired) { dr =>
+    doall(ui.lytDates.drCreated, ui.lytDates.drModified, ui.lytDates.drPublished, ui.lytDates.drExpired) { dr =>
       dr.cbRangeType.value = DocRangeType.Undefined
     }
 
-    forlet(ui.lytMaintainers.ulCreators, ui.lytMaintainers.ulPublishers) { ul =>
+    doall(ui.lytMaintainers.ulCreators, ui.lytMaintainers.ulPublishers) { ul =>
       ul.chkEnabled.check
       ul.chkEnabled.fireValueChange(true)
       ul.lstUsers.removeAllItems
@@ -773,7 +773,7 @@ trait UserListUISetup { this: UserListUI =>
   val searchDialogCaption: String
 
   chkEnabled.addValueChangeHandler {
-    forlet(lstUsers, lytButtons)(_ setEnabled chkEnabled.booleanValue)
+    doall(lstUsers, lytButtons)(_ setEnabled chkEnabled.booleanValue)
   }
 
   btnAdd.addClickHandler {
@@ -838,7 +838,7 @@ trait DocDateRangeUISetup { this: DocDateRangeUI =>
   import DocRangeType._
 
   cbRangeType.addValueChangeHandler {
-    forlet(dtFrom, dtTo) { _ setEnabled false }
+    doall(dtFrom, dtTo) { _ setEnabled false }
     val now = new Date
     val calendar = Calendar.getInstance
 
@@ -848,7 +848,7 @@ trait DocDateRangeUISetup { this: DocDateRangeUI =>
         dtTo.setValue(null)
 
       case Custom =>
-        forlet(dtFrom, dtTo) { dt => dt setEnabled true; dt.value = now }
+        doall(dtFrom, dtTo) { dt => dt setEnabled true; dt.value = now }
 
       case Day =>
         calendar.add(Calendar.DAY_OF_MONTH, -1)

@@ -24,12 +24,12 @@ object SessionCounter {
 }
 
 class SessionCounterManager(app: ImcmsApplication) {
-  val ui = letret(new SessionCounterManagerUI) { ui =>
+  val ui = doto(new SessionCounterManagerUI) { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.miEdit setCommandHandler {
       app.initAndShow(new OkCancelDialog("Edit session counter")) { dlg =>
-        dlg.mainUI = letret(new SessionCounterEditorUI) { c =>
-          let(SessionCounter.get) { sc =>
+        dlg.mainUI = doto(new SessionCounterEditorUI) { c =>
+          SessionCounter.get |> { sc =>
             c.txtValue.value = sc.value.toString
             c.calStart.value = sc.date
           }
@@ -74,7 +74,7 @@ class SessionCounterManager(app: ImcmsApplication) {
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage session counter")
 
   def reload() {
-    let(SessionCounter.get) { sc =>
+    SessionCounter.get |> { sc =>
       ui.dataUI.txtValue.setReadOnly(false)
       ui.dataUI.calStart.setReadOnly(false)
 
@@ -85,7 +85,7 @@ class SessionCounterManager(app: ImcmsApplication) {
       ui.dataUI.calStart.setReadOnly(true)
     }
 
-    forlet(ui.miEdit, ui.miReset) { _ setEnabled canManage }
+    doall(ui.miEdit, ui.miReset) { _ setEnabled canManage }
   }
 } // class SessionCounterManager
 

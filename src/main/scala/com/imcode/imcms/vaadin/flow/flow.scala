@@ -35,7 +35,7 @@ class Flow[T](commit: () => Either[String, T], firstPage: FlowPage, restPages: F
 
   val commitListeners = ListBuffer.empty[T => Unit]
 
-  val ui = letret(new FlowUI) { ui =>
+  val ui = doto(new FlowUI) { ui =>
     ui.bar.btnPrev addClickHandler {
       maybeGoPrev match {
         case Some(page) => ui.setContent(page.ui())
@@ -73,11 +73,11 @@ class Flow[T](commit: () => Either[String, T], firstPage: FlowPage, restPages: F
    * Otherwise if current page is the last page in the flow returns None. If there are more pages,
    * next page become current and returned in Some.
    */
-  def maybeGoNext(): Either[String, Option[FlowPage]] = let(pageNoRef.get) { pageNo =>
+  def maybeGoNext(): Either[String, Option[FlowPage]] = pageNoRef.get |> { pageNo =>
     pages(pageNo).validator() match {
       case Some(ex) => Left(ex)
       case _ if pageNo == lastPageNo => Right(None)
-      case _ => let(pageNo + 1) { newPageNo =>
+      case _ => pageNo + 1 |> { newPageNo =>
         pageNoRef.set(newPageNo)
         Right(Some(pages(newPageNo)))
       }
@@ -90,7 +90,7 @@ class Flow[T](commit: () => Either[String, T], firstPage: FlowPage, restPages: F
    */
   def maybeGoPrev(): Option[FlowPage] = pageNoRef.get match {
     case 0 => None
-    case pageNo => let(pageNo - 1) { newPageNo =>
+    case pageNo => pageNo - 1 |> { newPageNo =>
       pageNoRef.set(newPageNo)
       Some(pages(newPageNo))
     }

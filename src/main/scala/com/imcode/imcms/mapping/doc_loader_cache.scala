@@ -15,7 +15,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
 
   case class DocCacheKey(docId: DocId, languageId: LanguageId)
 
-  def cacheConfiguration(name: String) = letret(new CacheConfiguration) { cc =>
+  def cacheConfiguration(name: String) = doto(new CacheConfiguration) { cc =>
     cc.setMaxElementsInMemory(size)
     cc.setOverflowToDisk(false)
     cc.setEternal(true)
@@ -55,7 +55,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
    * @return doc's id or null if doc does not exists or alias is not set
    */
   def getDocId(docAlias: String) = aliasesToIds.getOrLoad(docAlias) {
-    letret(docLoader.getMetaDao.getDocumentIdByAlias(docAlias)) {
+    doto(docLoader.getMetaDao.getDocumentIdByAlias(docAlias)) {
       case null =>
       case docId => idsToAliases.put(docId, docAlias)
     }
@@ -131,7 +131,7 @@ case class CacheWrapper[K >: Null, V >: Null](cache: Cache) {
   def remove(key: K) = cache.remove(key)
 
   def getOrLoad(key: K)(loader: => V) = get(key) match {
-    case null => letret(loader) {
+    case null => doto(loader) {
       case null =>
       case value => put(key, value)
     }

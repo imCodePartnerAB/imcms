@@ -22,7 +22,7 @@ import imcms.security.{PermissionGranted, PermissionDenied}
 class CategoryManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
-  val ui: CategoryManagerUI = letret(new CategoryManagerUI) { ui =>
+  val ui: CategoryManagerUI = doto(new CategoryManagerUI) { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblCategories addValueChangeHandler { handleSelection() }
 
@@ -81,7 +81,7 @@ class CategoryManager(app: ImcmsApplication) {
       } imagePicker.preview.set(new Embedded("", new FileResource(file, app)))
 
       app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-        dlg.mainUI = letret(new CategoryEditorUI(imagePicker.ui)) { c =>
+        dlg.mainUI = doto(new CategoryEditorUI(imagePicker.ui)) { c =>
           typesNames foreach { c.sltType addItem _ }
 
           c.txtId.value = if (isNew) "" else id.toString
@@ -90,7 +90,7 @@ class CategoryManager(app: ImcmsApplication) {
           c.sltType.value = if (isNew) typesNames.head else vo.getType.getName
 
           dlg wrapOkHandler {
-            let(vo.clone()) { voc =>
+            vo.clone() |> { voc =>
               voc setName c.txtName.value.trim
               voc setDescription c.txtDescription.value.trim
               voc setImageUrl (if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.get.get.getSource.asInstanceOf[FileResource].getFilename)
@@ -116,7 +116,7 @@ class CategoryManager(app: ImcmsApplication) {
                     app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
                     throw ex
                   case _ =>
-                    let(if (isNew) "New category type has been created" else "Category type has been updated") { msg =>
+                    (if (isNew) "New category type has been created" else "Category type has been updated") |> { msg =>
                       app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
                     }
 
@@ -137,17 +137,17 @@ class CategoryManager(app: ImcmsApplication) {
       id = Int box vo.getId
     } ui.tblCategories.addItem(Array[AnyRef](id, vo.getName, vo.getDescription, vo.getImageUrl, vo.getType.getName), id)
 
-    let(canManage) { canManage =>
-      ui.tblCategories.setSelectable(canManage)
-      forlet[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage } //ui.mb,
+    canManage |> { value =>
+      ui.tblCategories.setSelectable(value)
+      doall[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value } //ui.mb,
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    let(canManage && ui.tblCategories.isSelected) { enabled =>
-      forlet(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+    (canManage && ui.tblCategories.isSelected) |> { enabled =>
+      doall(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 } // class CategoryManager

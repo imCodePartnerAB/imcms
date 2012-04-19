@@ -200,7 +200,7 @@ trait SelectionCheck extends AbstractSelect {
 
 
 trait SelectOps[A <: AnyRef] extends AbstractSelect with ItemIdType[A] {
-  def addItem(id: A, caption: String): Item = letret(addItem(id)) { _ =>
+  def addItem(id: A, caption: String): Item = doto(addItem(id)) { _ =>
     setItemCaption(id, caption)
   }
 }
@@ -257,7 +257,7 @@ trait MultiSelectBehavior[A <: AnyRef] extends SelectionCheck with SelectOps[A] 
   /**
    * @return collection of selected items or empty collection if there is no selected item(s).
    */
-  final override def getValue() = let(super.getValue) { v => if (isMultiSelect) v else ?(v).toSeq.asJavaCollection }
+  final override def getValue() = super.getValue |> { v => if (isMultiSelect) v else ?(v).toSeq.asJavaCollection }
 
   final override def setMultiSelect(multiSelect: Boolean) =
     if (value.isEmpty) super.setMultiSelect(multiSelect)

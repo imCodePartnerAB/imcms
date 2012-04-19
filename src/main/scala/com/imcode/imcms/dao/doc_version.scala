@@ -22,7 +22,7 @@ class DocumentVersionDao extends SpringHibernateTemplate {
       case version => version.getNo.intValue + 1
     }
 
-    letret(new DocumentVersion(docId, no, userId, new Date)) { hibernateTemplate.save }
+    doto(new DocumentVersion(docId, no, userId, new Date)) { hibernateTemplate.save }
   }
 
   @Transactional
@@ -57,7 +57,7 @@ class DocumentVersionDao extends SpringHibernateTemplate {
 
   @Transactional
   def changeDefaultVersion(docId: JInteger, no: JInteger, publisherId: JInteger) =
-    let(getVersion(docId, no)) { version =>
+    getVersion(docId, no) |> { version =>
       require(version != null, "Version must exists")
 
       withSession {

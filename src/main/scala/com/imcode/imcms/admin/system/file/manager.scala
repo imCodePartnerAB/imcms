@@ -15,11 +15,11 @@ import com.vaadin.terminal.{UserError, FileResource}
 class FileManager(app: ImcmsApplication) {
   val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))
 
-  val preview = letret(new FilePreview(browser)) { preview =>
+  val preview = doto(new FilePreview(browser)) { preview =>
     preview.ui.previewUI.setSize(256, 256)
   }
 
-  val ui = letret(new FileManagerUI(browser.ui, preview.ui)) { ui =>
+  val ui = doto(new FileManagerUI(browser.ui, preview.ui)) { ui =>
 
     ui.miEditRename setCommandHandler {
       for (LocationSelection(dir, Seq(item)) <- browser.selection; if item.isFile) {
@@ -33,7 +33,7 @@ class FileManager(app: ImcmsApplication) {
           dlg.wrapOkHandler {
             val forbiddenChars = """?"\/:;%*|<>"""
             val forbiddenCharsSet = forbiddenChars.toSet
-            let(dlgUI.txtName.value.trim) {
+            dlgUI.txtName.value.trim |> {
               case name if name.isEmpty || name.head == '.' || name.exists(forbiddenCharsSet(_)) =>
                 val msg = "file.mgr.dlg.illegal.item.name.msg".f(forbiddenChars)
                 dlgUI.lblMsg.value = msg
@@ -229,7 +229,7 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
 
             case itemsState @ ItemsState(remaining @ (item :: _), _) =>
               app.synchronized {
-                let (items.size.asInstanceOf[Float]) { max =>
+                items.size.asInstanceOf[Float] |> { max =>
                   dlgUI.pi.setValue((max - remaining.size) / max)
                 }
 
@@ -380,7 +380,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
               app.synchronized {
                 dlgUI.lblMsg.value = "file.mgr.dlg.copy.progress.msg".f(item.getName, destDir.getName)
 
-                let (items.size.asInstanceOf[Float]) { max =>
+                items.size.asInstanceOf[Float] |> { max =>
                   dlgUI.pi.setValue((max - remaining.size) / max)
                 }
               }
@@ -425,7 +425,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
   private def asyncCopyItem(stateHandler: Actor, destDir: File, itemsState: ItemsState) = itemsState match {
     case ItemsState(item :: remaining, processed) =>
       // allows item renaming
-      def copyItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
+      def copyItem(destItemName: String): Unit = new File(destDir, destItemName) |> { destItem =>
         if (!destItem.exists) {
           try {
             if (item.isFile) FileUtils.copyFile(item, destItem)
@@ -446,7 +446,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
         } else {
           app.synchronized {
             app.initAndShow(new YesNoCancelDialog("file.mgr.dlg.copy.item.issue.title".i)) { dlg =>
-              val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
+              val dlgUI = doto(new ItemRenameDialogUI) { dlgUI =>
                 dlgUI.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
                 dlgUI.txtName.value = destItemName
               }
@@ -517,7 +517,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
               app.synchronized {
                 dlgUI.lblMsg.value = "file.mgr.dlg.move.progress.msg".f(item.getName, destDir.getName)
 
-                let (items.size.asInstanceOf[Float]) { max =>
+                items.size.asInstanceOf[Float] |> { max =>
                   dlgUI.pi.setValue((max - remaining.size) / max)
                 }
               }
@@ -562,7 +562,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
   private def asyncMoveItem(stateHandler: Actor, destDir: File, itemsState: ItemsState) = itemsState match {
     case ItemsState(item :: remaining, processed) =>
       // allows item renaming
-      def moveItem(destItemName: String): Unit = let(new File(destDir, destItemName)) { destItem =>
+      def moveItem(destItemName: String): Unit = new File(destDir, destItemName) |> { destItem =>
         if (!destItem.exists) {
           try {
             if (item.isFile) FileUtils.moveFile(item, destItem)
@@ -580,7 +580,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
         } else {
           app.synchronized {
             app.initAndShow(new YesNoCancelDialog("file.mgr.dlg.move.item.issue.title".i)) { dlg =>
-              val dlgUI = letret(new ItemRenameDialogUI) { dlgUI =>
+              val dlgUI = doto(new ItemRenameDialogUI) { dlgUI =>
                 dlgUI.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
                 dlgUI.txtName.value = destItemName
               }

@@ -41,7 +41,7 @@ object DocManager {
         case _ => new UnsupportedDocContentEditor(doc)
       }
 
-      mainUI = letret(new TabSheet with FullSize) { ts =>
+      mainUI = doto(new TabSheet with FullSize) { ts =>
         ts.addTab(metaEditor.ui, "Properties", null)
         ts.addTab(contentEditor.ui, "Content", null)
       }
@@ -55,12 +55,12 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
   val search = new DocSearch(new AllDocsContainer)
   val customDocs = new CustomDocs
 
-  val docSelectionDlg = letret(new OKDialog("doc.dlg_selection.caption".i) with CustomSizeDialog) { dlg =>
+  val docSelectionDlg = doto(new OKDialog("doc.dlg_selection.caption".i) with CustomSizeDialog) { dlg =>
     dlg.mainUI = customDocs.ui
     dlg.setSize(500, 500)
   }
 
-  val ui = letret(new DocManagerUI(search.ui)) { ui =>
+  val ui = doto(new DocManagerUI(search.ui)) { ui =>
     ui.miSelectionShow.setCommandHandler {
       app.show(docSelectionDlg, modal = false, resizable = true)
     }
@@ -74,17 +74,17 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         val docURL = new URL(appURL.getProtocol, appURL.getHost, appURL.getPort, "/%d" format docId)
 
         app.initAndShow(new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog, resizable = true) { dlg =>
-//          dlg.mainUI = letret(new Embedded with FullSize) { browser =>
+//          dlg.mainUI = doto(new Embedded with FullSize) { browser =>
 //            browser.setType(Embedded.TYPE_BROWSER)
 //            browser.setSource(new ExternalResource(new URL("/" + docId))) // docURL
 //          }
 
-          dlg.mainUI = letret(new VerticalLayout with FullSize) { lyt =>
+          dlg.mainUI = doto(new VerticalLayout with FullSize) { lyt =>
             val mb = new MenuBar
             val mi = mb.addItem("Menu")
             1 to 10 foreach { mi addItem _.toString }
 
-            val emb = letret(new Embedded with FullSize) { browser =>
+            val emb = doto(new Embedded with FullSize) { browser =>
               browser.setType(Embedded.TYPE_BROWSER)
               browser.setSource(new ExternalResource(docURL)) //
             }
@@ -173,7 +173,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       }
     } // val newDocCommandListener
 
-    forlet(ui.miNewTextDoc, ui.miNewFileDoc, ui.miNewURLDoc, ui.miNewHTMLDoc) {
+    doall(ui.miNewTextDoc, ui.miNewFileDoc, ui.miNewURLDoc, ui.miNewHTMLDoc) {
       _ setCommandListener newDocCommandListener
     }
 
@@ -309,7 +309,7 @@ class CustomDocsUI(searchUI: Component) extends VerticalLayout with Spacing with
  */
 class NewDocFactory(parentDoc: Option[DocumentDomainObject]) extends ImcmsServicesSupport {
 
-  val ui = letret(new NewDocFactoryUI) { ui =>
+  val ui = doto(new NewDocFactoryUI) { ui =>
 
   }
 

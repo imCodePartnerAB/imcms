@@ -31,12 +31,12 @@ class MenuDao extends SpringHibernateTemplate {
     for ((_, menuItem) <- menu.getItemsMap)
       menuItem.setTreeSortIndex(menuItem.getTreeSortKey.toString)
 
-    letret(menu) { hibernateTemplate.saveOrUpdate }
+    doto(menu) { hibernateTemplate.saveOrUpdate }
   }
 
 
   @Transactional
-  def saveMenuHistory(menuHistory: MenuHistory) = letret(menuHistory) { hibernateTemplate.save }
+  def saveMenuHistory(menuHistory: MenuHistory) = doto(menuHistory) { hibernateTemplate.save }
 
   @Transactional
   def deleteMenus(docId: JInteger, docVersionNo: JInteger) = withSession { session =>

@@ -61,7 +61,7 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
       text: String = Default.text,
       language: I18nLanguage) =
 
-    letret(Factory.createText(docId, docVersionNo, no, language)) { vo =>
+    doto(Factory.createText(docId, docVersionNo, no, language)) { vo =>
       for (ContentInfo(loopNo, contentNo) <- contentInfo) {
         vo.setContentLoopNo(loopNo)
         vo.setContentNo(contentNo)

@@ -12,6 +12,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <slf4j.version>1.6.4</slf4j.version>
+
         <scala.version>2.9.1</scala.version>
 
         <org.springframework.version>3.1.1.RELEASE</org.springframework.version>
@@ -54,6 +56,45 @@
     </profiles>
 
     <dependencies>
+        <!--
+            Logging configuration - forwards logging to log4j
+
+            Tika uses slf4j
+              -added slf4j-log4j12
+
+            Most libraries depends on commons-logging:
+              -replaced common-logging with jcl-over-slf4j
+
+            imCMS uses both commons-logging and log4j directly
+              -updated log4j
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <!--<scope>runtime</scope>-->
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
+        </dependency>
+        <!-- End of logging configuration -->
+
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -90,15 +131,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.6.4</version>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -372,21 +413,27 @@
         </dependency>
 
         <dependency>
-            <groupId>pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-            <version>0.7.1</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.1-FINAL</version>
+            <version>3.8-beta5</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
-            <version>3.1-FINAL</version>
+            <version>3.8-beta5</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.8-beta5</version>
         </dependency>
 
         <dependency>
@@ -945,9 +992,12 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.2</version>
                 <configuration>
-                    <scmCommentPrefix>Issue 10485: Release.</scmCommentPrefix>
+                    <scmCommentPrefix>Issue 7753: </scmCommentPrefix>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
 
@@ -973,6 +1023,7 @@
                     </descriptors>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
@@ -994,10 +1045,12 @@
         </plugins>
     </reporting>
 
+
+
     <scm>
-        <connection>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</connection>
-        <developerConnection>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</developerConnection>
-        <url>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</url>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</developerConnection>
+        <url></url>
     </scm>
 
 </project>

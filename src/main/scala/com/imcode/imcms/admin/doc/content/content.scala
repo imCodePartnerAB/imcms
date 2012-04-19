@@ -36,7 +36,7 @@ trait DocContentEditor extends Editor {
 class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEditor {
   type DataType = TextDocumentDomainObject
 
-  val ui = letret(new TextDocContentEditorUI) { ui =>
+  val ui = doto(new TextDocContentEditorUI) { ui =>
   } //ui
 
   val data = new Data {
@@ -48,7 +48,7 @@ class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEdit
 class URLDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor {
   type DataType = UrlDocumentDomainObject
 
-  val ui = letret(new URLDocContentEditorUI) { ui =>
+  val ui = doto(new URLDocContentEditorUI) { ui =>
     ui.txtURL.value = "http://"
   } // ui
 
@@ -61,7 +61,7 @@ class URLDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor
 class HTMLDocContentEditor(doc: HtmlDocumentDomainObject) extends DocContentEditor {
   type DataType = HtmlDocumentDomainObject
 
-  val ui = letret(new HTMLDocContentEditorUI) { ui =>
+  val ui = doto(new HTMLDocContentEditorUI) { ui =>
     ui.txaHTML.value = <html/>.toString
   } // ui
 

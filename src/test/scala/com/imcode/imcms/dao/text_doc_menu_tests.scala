@@ -34,7 +34,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
   }
 
   def menu(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, no: JInteger = DocItemFX.defaultNo, assertExists: Boolean = true) =
-    letret(menuDao.getMenu(docId, docVersionNo, no)) { menu =>
+    doto(menuDao.getMenu(docId, docVersionNo, no)) { menu =>
       if (assertExists) {
         menu must not be (null)
         menu must have (
@@ -47,7 +47,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
 
 
   def menus(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, assertNotEmpty: Boolean = true) =
-    letret(menuDao.getMenus(docId, docVersionNo)) { menus =>
+    doto(menuDao.getMenus(docId, docVersionNo)) { menus =>
       if (assertNotEmpty) {
         menus must not be ('empty)
         menus foreach { menu =>
@@ -108,7 +108,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
   }
 
   test("delete existing menu") {
-    let(defaultMenu()) { menu =>
+    defaultMenu() |> { menu =>
       menuDao.deleteMenu(menu)
     }
 
@@ -119,7 +119,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
   test("delete all menus") {
     menuDao.deleteMenus(DocFX.defaultId, VersionFX.defaultNo)
 
-    let(menus(assertNotEmpty = false)) { menus =>
+    menus(assertNotEmpty = false) |> { menus =>
       menus must be ('empty)
     }
   }
