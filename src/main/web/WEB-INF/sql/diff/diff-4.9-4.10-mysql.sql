@@ -1,4 +1,3 @@
-alter table users add column session_id varchar(128) null;
+ALTER TABLE users ADD session_id NVARCHAR(128);
 
-update database_version set major = 4, minor = 10;
-commit;
+UPDATE database_version SET major = 4, minor = 10;
