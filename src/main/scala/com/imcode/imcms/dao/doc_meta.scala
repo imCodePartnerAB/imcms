@@ -11,59 +11,52 @@ import imcode.server.user.UserDomainObject
 import java.util.Date
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
-class MetaDao extends SpringHibernateTemplate {
+class MetaDao extends HibernateSupport {
 
   private val META_HEADLINE_MAX_LENGTH = 255
   private val META_TEXT_MAX_LENGTH = 1000
 
-  //@Transactional
-  def getMeta(docId: JInteger) = hibernateTemplate.get(classOf[Meta], docId)
+  def getMeta(docId: JInteger) = hibernate.get[Meta](docId)
 
   /**  Updates doc's access and modified date-time. */
-  //@Transactional
   def touch(doc: DocumentDomainObject, user: UserDomainObject): Unit = touch(doc, new Date, user)
 
-  //@Transactional
   def touch(doc: DocumentDomainObject, dt:Date, user: UserDomainObject): Unit =
     touch(doc.getIdValue, doc.getVersionNo, doc.getModifiedDatetime, user.getId)
 
-  //@Transactional
   def touch(docId: JInteger, docVersionNo: JInteger, userId: JInteger): Unit =
     touch(docId, docVersionNo, new Date, userId)
 
-  //@Transactional
-  def touch(docId: JInteger, docVersionNo: JInteger, dt: Date, userId: JInteger) = withSession { session =>
-    session.createQuery("UPDATE Meta m SET m.modifiedDatetime = :modifiedDt WHERE m.id = :docId")
-      .setParameter("modifiedDt", dt)
-      .setParameter("docId", docId)
-      .executeUpdate()
+  def touch(docId: JInteger, docVersionNo: JInteger, dt: Date, userId: JInteger) {
+    hibernate.bulkUpdateByNamedParams(
+      "UPDATE Meta m SET m.modifiedDatetime = :modifiedDt WHERE m.id = :docId",
 
-    session.createQuery(
+      "modifiedDt" -> dt,
+      "docId" -> docId
+    )
+
+    hibernate.bulkUpdateByNamedParams(
       """UPDATE DocumentVersion v SET v.modifiedDt = :modifiedDt, v.modifiedBy = :modifiedBy
-         WHERE v.docId = :docId AND v.no = :docVersionNo""")
-      .setParameter("modifiedDt", dt)
-      .setParameter("modifiedBy", userId)
-      .setParameter("docId", docId)
-      .setParameter("docVersionNo", docVersionNo)
-      .executeUpdate()
+         WHERE v.docId = :docId AND v.no = :docVersionNo""",
+
+      "modifiedDt" -> dt,
+      "modifiedBy" -> userId,
+      "docId" -> docId,
+      "docVersionNo" -> docVersionNo
+    )
   }
 
-  //@Transactional
-  def getDocumentIdByAlias(alias: String) = withSession {
-    _.getNamedQuery("DocumentProperty.getDocumentIdByAlias")
-     .setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
-     .setParameter("value", alias.toLowerCase())
-     .uniqueResult().asInstanceOf[JInteger]
-  }
+  def getDocumentIdByAlias(alias: String) = hibernate.findByNamedQueryAndNamedParams[JInteger](
+    "DocumentProperty.getDocumentIdByAlias",
 
-  //@Transactional
+    "name" -> DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
+    "value" -> alias.toLowerCase
+  )
+
   def getI18nMeta(docId: JInteger, language: I18nLanguage) =
-    ?(withSession {
-      _.getNamedQuery("I18nMeta.getByDocIdAndLanguageId")
-       .setParameter("docId", docId)
-       .setParameter("languageId", language.getId())
-       .uniqueResult().asInstanceOf[I18nMeta]
-    }) getOrElse doto(new I18nMeta) { i18nMeta =>
+    hibernate.findByNamedQueryAndNamedParams[I18nMeta](
+      "I18nMeta.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
+    ) |> ? getOrElse new I18nMeta |< { i18nMeta =>
       i18nMeta.setDocId(docId);
       i18nMeta.setLanguage(language);
       i18nMeta.setHeadline("");
@@ -72,21 +65,15 @@ class MetaDao extends SpringHibernateTemplate {
     }
 
 
-  //@Transactional
-  def getI18nMetas(docId: JInteger) =
-    hibernateTemplate.findByNamedQueryAndNamedParam("I18nMeta.getByDocId", "docId", docId).asInstanceOf[JList[I18nMeta]]
+  def getI18nMetas(docId: JInteger): JList[I18nMeta] = hibernate.listByNamedQueryAndNamedParams[I18nMeta](
+    "I18nMeta.getByDocId", "docId" -> docId
+  )
 
+  def deleteI18nMeta(docId: JInteger, languageId: JInteger) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
+    "I18nMeta.deleteByDocIdAndLanguageId", "docId" -> docId, "languageId" -> languageId
+  )
 
-  //@Transactional
-  def deleteI18nMeta(docId: JInteger, languageId: JInteger) = withSession {
-    _.getNamedQuery("I18nMeta.deleteByDocIdAndLanguageId")
-     .setParameter("docId", docId)
-     .setParameter("languageId", languageId)
-     .executeUpdate()
-  }
-
-  //@Transactional
-  def saveI18nMeta(i18nMeta: I18nMeta) = doto(i18nMeta) { _ =>
+  def saveI18nMeta(i18nMeta: I18nMeta): I18nMeta = {
     val headline = i18nMeta.getHeadline
     val text = i18nMeta.getMenuText
 
@@ -96,128 +83,111 @@ class MetaDao extends SpringHibernateTemplate {
     i18nMeta.setHeadline(headlineThatFitsInDB)
     i18nMeta.setMenuText(textThatFitsInDB)
 
-    hibernateTemplate.saveOrUpdate(i18nMeta)
+    hibernate.saveOrUpdate(i18nMeta)
   }
 
-  //@Transactional
-  def insertPropertyIfNotExists(docId: JInteger, name: String, value: String) =
-    ?(withSession {
-      _.getNamedQuery("DocumentProperty.getProperty")
-       .setParameter("docId", docId)
-       .setParameter("name", name)
-       .uniqueResult().asInstanceOf[DocumentProperty]
-    }) getOrElse doto(new DocumentProperty) { property =>
+
+  def insertPropertyIfNotExists(docId: JInteger, name: String, value: String): Boolean =
+    hibernate.findByNamedQueryAndNamedParams[DocumentProperty](
+      "DocumentProperty.getProperty", "docId" -> docId, "name" -> name
+    ) |> ? getOrElse new DocumentProperty |< { property =>
       property.setDocId(docId)
       property.setName(name)
     } match {
       case property if StringUtils.isBlank(property.getValue) =>
         property.setValue(value)
-        hibernateTemplate.saveOrUpdate(property)
+        hibernate.saveOrUpdate(property)
         true
 
       case _ => false
     }
 
-  //@Transactional
-  def saveMeta(meta: Meta) = hibernateTemplate.saveOrUpdate(meta)
 
-  //@Transactional
-  def deleteIncludes(docId: JInteger) =
-    hibernateTemplate.bulkUpdate("delete from Include i where i.metaId = ?", docId)
-
-  //@Transactional
-  def saveInclude(include: Include) = hibernateTemplate.saveOrUpdate(include)
-
-  //@Transactional
-  def deleteHtmlReference(docId: JInteger, docVersionNo: JInteger) = hibernateTemplate.
-    bulkUpdate("delete from HtmlReference r where r.docId = ? AND r.docVersionNo = ?", docId, docVersionNo)
+  def saveMeta(meta: Meta) = hibernate.saveOrUpdate(meta)
 
 
-  //@Transactional
-  def deleteUrlReference(docId: JInteger, docVersionNo: JInteger) = hibernateTemplate.
-    bulkUpdate("delete from UrlReference r where r.docId = ? AND r.docVersionNo = ?", docId, docVersionNo)
+  def deleteIncludes(docId: JInteger) = hibernate.bulkUpdate("delete from Include i where i.metaId = ?", docId)
 
 
-  //@Transactional
-  def saveTemplateNames(templateNames: TemplateNames) = hibernateTemplate.merge(templateNames)
-
-  //@Transactional
-  def getIncludes(docId: JInteger) = hibernateTemplate.find("select i from Include i where i.metaId = ?", docId).
-    asInstanceOf[JList[Include]]
-
-  //@Transactional
-  def getTemplateNames(docId: JInteger) = hibernateTemplate.get(classOf[TemplateNames], docId)
-
-  //@Transactional
-  def deleteTemplateNames(docId: JInteger) = withSession {
-    _.createQuery("DELETE FROM TemplateNames n WHERE n.docId = :docId")
-     .setParameter("docId", docId)
-     .executeUpdate()
-  }
-
-  //@Transactional
-  def getFileReferences(docId: JInteger, docVersionNo: JInteger) =
-    hibernateTemplate.findByNamedQueryAndNamedParam("FileDoc.getReferences",
-      Array("docId", "docVersionNo"),
-      Array[AnyRef](docId, docVersionNo)).asInstanceOf[JList[FileReference]]
-
-  //@Transactional
-  def saveFileReference(fileRef: FileReference) = doto(fileRef) {
-    hibernateTemplate.saveOrUpdate
-  }
-
-  //@Transactional
-  def deleteFileReferences(docId: JInteger, docVersionNo: JInteger) = withSession {
-    _.getNamedQuery("FileDoc.deleteAllReferences")
-     .setParameter("docId", docId)
-     .setParameter("docVersionNo", docVersionNo)
-     .executeUpdate()
-  }
-
-  //@Transactional
-  def getHtmlReference(docId: JInteger, docVersionNo: JInteger) = withSession {
-    _.getNamedQuery("HtmlDoc.getReference")
-     .setParameter("docId", docId)
-     .setParameter("docVersionNo", docVersionNo)
-     .uniqueResult().asInstanceOf[HtmlReference]
-  }
-
-  //@Transactional
-  def saveHtmlReference(reference: HtmlReference) = doto(reference) {
-    hibernateTemplate.saveOrUpdate
-  }
-
-  //@Transactional
-  def getUrlReference(docId: JInteger, docVersionNo: JInteger) = withSession {
-    _.getNamedQuery("UrlDoc.getReference")
-     .setParameter("docId", docId)
-     .setParameter("docVersionNo", docVersionNo)
-     .uniqueResult().asInstanceOf[UrlReference]
-  }
-
-  //@Transactional
-  def saveUrlReference(reference: UrlReference) = hibernateTemplate.merge(reference)
-
-  //@Transactional
-  def getAllAliases() = hibernateTemplate.findByNamedQueryAndNamedParam(
-    "DocumentProperty.getAllAliases", "name",
-    DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS).asInstanceOf[JList[String]]
+  def saveInclude(include: Include) = hibernate.saveOrUpdate(include)
 
 
-  //@Transactional
-  def getAliasProperty(alias: String) = withSession {
-    _.getNamedQuery("DocumentProperty.getAliasProperty")
-     .setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
-     .setParameter("value", alias)
-     .uniqueResult().asInstanceOf[DocumentProperty]
-  }
-
-  //@Transactional
-  def getDocIdByAlias(alias: String) = ?(getAliasProperty(alias)).map(_.getDocId.toInt)
+  def deleteHtmlReference(docId: JInteger, docVersionNo: JInteger) = hibernate.bulkUpdate(
+    "delete from HtmlReference r where r.docId = ? AND r.docVersionNo = ?", docId, docVersionNo
+  )
 
 
-  //@Transactional
-  def deleteDocument(docId: JInteger) = withSession { session =>
+
+  def deleteUrlReference(docId: JInteger, docVersionNo: JInteger) = hibernate.bulkUpdate(
+    "delete from UrlReference r where r.docId = ? AND r.docVersionNo = ?", docId, docVersionNo
+  )
+
+
+
+  def saveTemplateNames(templateNames: TemplateNames) = hibernate.merge(templateNames)
+
+
+  def getIncludes(docId: JInteger): JList[Include] =
+    hibernate.list[Include]("select i from Include i where i.metaId = ?", docId)
+
+
+  def getTemplateNames(docId: JInteger) = hibernate.get[TemplateNames](docId)
+
+
+  def deleteTemplateNames(docId: JInteger) = hibernate.bulkUpdateByNamedParams(
+    "DELETE FROM TemplateNames n WHERE n.docId = :docId", "docId" -> docId
+  )
+
+
+  def getFileReferences(docId: JInteger, docVersionNo: JInteger) = hibernate.listByNamedQueryAndNamedParams[FileReference](
+    "FileDoc.getReferences", "docId" -> docId, "docVersionNo" -> docVersionNo
+  )
+
+
+  def saveFileReference(fileRef: FileReference) = hibernate.saveOrUpdate(fileRef)
+
+
+  def deleteFileReferences(docId: JInteger, docVersionNo: JInteger) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
+    "FileDoc.deleteAllReferences", "docId" -> docId, "docVersionNo" -> docVersionNo
+  )
+
+
+  def getHtmlReference(docId: JInteger, docVersionNo: JInteger) = hibernate.findByNamedQueryAndNamedParams[HtmlReference](
+    "HtmlDoc.getReference", "docId" -> docId, "docVersionNo" -> docVersionNo
+  )
+
+
+  def saveHtmlReference(reference: HtmlReference) = hibernate.saveOrUpdate(reference)
+
+
+  def getUrlReference(docId: JInteger, docVersionNo: JInteger) = hibernate.findByNamedQueryAndNamedParams[UrlReference](
+    "UrlDoc.getReference", "docId" -> docId, "docVersionNo" -> docVersionNo
+  )
+
+
+  def saveUrlReference(reference: UrlReference) = hibernate.merge(reference)
+
+
+  def getAllAliases() = hibernate.listByNamedQueryAndNamedParams[String](
+    "DocumentProperty.getAllAliases",
+
+    "name" -> DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS
+  )
+
+
+
+  def getAliasProperty(alias: String) = hibernate.findByNamedQueryAndNamedParams[DocumentProperty](
+    "DocumentProperty.getAliasProperty",
+
+    "name" -> DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
+    "value" -> alias
+  )
+
+
+  def getDocIdByAliasOpt(alias: String) = getAliasProperty(alias) |> ? map(_.getDocId.toInt)
+
+
+  def deleteDocument(docId: JInteger): Unit = hibernate.withSession { session =>
     List(
       "DELETE FROM document_categories WHERE meta_id = ?",
       "DELETE FROM imcms_text_doc_menu_items WHERE to_doc_id = ?",
@@ -253,39 +223,27 @@ class MetaDao extends SpringHibernateTemplate {
     ) foreach { session.createSQLQuery(_).setParameter(0, docId).executeUpdate() }
   }
 
-  //@Transactional
-  def getAllDocumentIds() = withSession{
-    _.getNamedQuery("Meta.getAllDocumentIds").list.asInstanceOf[JList[JInteger]]
-  }
 
-  //@Transactional
-  def getDocumentIdsInRange(min: JInteger, max: JInteger) = withSession {
-    _.getNamedQuery("Meta.getDocumentIdsInRange")
-     .setParameter("min", min)
-     .setParameter("max", max)
-     .list.asInstanceOf[JList[JInteger]]
-  }
+  def getAllDocumentIds() = hibernate.listByNamedQuery[JInteger]("Meta.getAllDocumentIds")
 
-  //@Transactional
-  def getMaxDocumentId() = withSession {
-    _.getNamedQuery("Meta.getMaxDocumentId").uniqueResult().asInstanceOf[JInteger]
-  }
 
-  //@Transactional
-  def getMinDocumentId() = withSession {
-    _.getNamedQuery("Meta.getMinDocumentId").uniqueResult().asInstanceOf[JInteger]
-  }
+  def getDocumentIdsInRange(min: JInteger, max: JInteger) = hibernate.listByNamedQueryAndNamedParams[JInteger](
+    "Meta.getDocumentIdsInRange", "min" -> min, "max" -> max
+  )
 
-  //@Transactional
-  def getMinMaxDocumentIds() = withSession {
-    _.getNamedQuery("Meta.getMinMaxDocumentIds")
-     .uniqueResult()
-     .asInstanceOf[Array[AnyRef]]
-  } map {
-    _.asInstanceOf[JInteger]
-  }
 
-  //@Transactional
+  def getMaxDocumentId() = hibernate.findByNamedQuery[JInteger]("Meta.getMaxDocumentId")
+
+
+  def getMinDocumentId() = hibernate.findByNamedQuery[JInteger]("Meta.getMinDocumentId")
+
+
+  // todo: check
+  def getMinMaxDocumentIds() =
+    hibernate.findByNamedQuery[Array[JInteger]]("Meta.getMinMaxDocumentIds")
+    //???hibernate.findByNamedQueryAndNamedParams[Array[AnyRef]]("Meta.getMinMaxDocumentIds")().map(_.asInstanceOf[JInteger])
+
+
   def getEnabledLanguages(docId: JInteger) = sys.error("Not implemented")
 }
 
@@ -565,7 +523,7 @@ public class MetaDao extends HibernateTemplate {
 	@Transactional
 	public List<Integer> getAllDocumentIds() {
 		return (List<Integer>)getSession().getNamedQuery("Meta.getAllDocumentIds")
-			.list();
+			.listByNamedParams();
 	}
 
 	@Transactional
@@ -573,7 +531,7 @@ public class MetaDao extends HibernateTemplate {
 		return (List<Integer>)getSession().getNamedQuery("Meta.getDocumentIdsInRange")
 			.setParameter("min", min)
 			.setParameter("max", max)
-			.list();
+			.listByNamedParams();
 	}
 
 	@Transactional

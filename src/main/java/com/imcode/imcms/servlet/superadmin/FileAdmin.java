@@ -562,7 +562,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     /**
-     * Takes a list of files that are supposed to share a common parent, and returns them in an array.
+     * Takes a listByNamedParams of files that are supposed to share a common parent, and returns them in an array.
      */
     private File[] makeAbsoluteFileList( File parent, File[] files ) {
         if ( files == null || parent == null ) {
@@ -579,7 +579,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     /**
-     * Takes a list of files that share a common parent, orphans them, and returns them in an array.
+     * Takes a listByNamedParams of files that share a common parent, orphans them, and returns them in an array.
      */
     private File[] makeRelativeFileList( File relativeParentDir, File[] files ) throws IOException {
         if ( files == null || relativeParentDir == null ) {
@@ -593,7 +593,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     /**
-     * Takes a list of files and dirs in one dir, and recursively adds the files of the subdirs.
+     * Takes a listByNamedParams of files and dirs in one dir, and recursively adds the files of the subdirs.
      */
     private File[] makeFileTreeList( File[] files, boolean dirfirst ) {
         if ( files == null ) {

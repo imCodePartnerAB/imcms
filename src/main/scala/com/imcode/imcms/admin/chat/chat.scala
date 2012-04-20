@@ -5,7 +5,6 @@ import scala.collection.JavaConversions._
 
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.terminal.gwt.server.WebApplicationContext
-import com.vaadin.ui._
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
@@ -21,7 +20,9 @@ import java.util.{Date, Collection => JCollection}
 import com.vaadin.ui.Layout.MarginInfo
 import java.io.{OutputStream, FileOutputStream, File}
 import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
-import com.imcode.imcms.vaadin._;
+import com.imcode.imcms.vaadin._
+import com.vaadin.ui._
+;
 
 class MessageView(sender: String, message: String) extends VerticalLayout {
   val lytHeader = new HorizontalLayout {
@@ -61,12 +62,12 @@ class MessagesPanel extends Panel(new VerticalLayout{setSpacing(true)}) {
 
 class Chat extends VerticalLayout {
   val pnlMessages = new MessagesPanel
-  val txtText = new TextField{setRows(3); setSizeFull}
-  val btnSend = new Button("Send") {setHeight("100%")}
+  val txaText = new TextArea() |< { t => t.setRows(3); t.setSizeFull }
+  val btnSend = new Button("Send") { setHeight("100%") }
 
   val lytMessage = new HorizontalLayout {
-    addComponents(this, txtText, btnSend)
-    setExpandRatio(txtText, 1.0f)
+    addComponents(this, txaText, btnSend)
+    setExpandRatio(txaText, 1.0f)
     setWidth("100%")
     setHeight("50px")
   }

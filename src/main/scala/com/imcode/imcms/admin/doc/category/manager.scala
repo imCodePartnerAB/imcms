@@ -81,18 +81,18 @@ class CategoryManager(app: ImcmsApplication) {
       } imagePicker.preview.set(new Embedded("", new FileResource(file, app)))
 
       app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-        dlg.mainUI = doto(new CategoryEditorUI(imagePicker.ui)) { c =>
+        dlg.mainUI = new CategoryEditorUI(imagePicker.ui) |< { c =>
           typesNames foreach { c.sltType addItem _ }
 
           c.txtId.value = if (isNew) "" else id.toString
           c.txtName.value = ?(vo.getName) getOrElse ""
-          c.txtDescription.value = ?(vo.getDescription) getOrElse ""
+          c.txaDescription.value = ?(vo.getDescription) getOrElse ""
           c.sltType.value = if (isNew) typesNames.head else vo.getType.getName
 
           dlg wrapOkHandler {
             vo.clone() |> { voc =>
               voc setName c.txtName.value.trim
-              voc setDescription c.txtDescription.value.trim
+              voc setDescription c.txaDescription.value.trim
               voc setImageUrl (if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.get.get.getSource.asInstanceOf[FileResource].getFilename)
               voc setType categoryMapper.getCategoryTypeByName(c.sltType.value)
               // todo: move validate into separate fn
@@ -180,13 +180,13 @@ class CategoryEditorUI(val imagePickerUI: ImagePickerUI) extends FormLayout with
     setColumns(11)
   }
   val txtName = new TextField("Name") with Required
-  val txtDescription = new TextField("Description") {
-    setRows(5)
-    setColumns(11)
+  val txaDescription = new TextArea("Description") |< { t =>
+    t.setRows(5)
+    t.setColumns(11)
   }
 
   val sltType = new Select("Type") with ValueType[String] with Required with NoNullSelection
 
-  addComponents(this, txtId, txtName, sltType, imagePickerUI, txtDescription)
+  addComponents(this, txtId, txtName, sltType, imagePickerUI, txaDescription)
   imagePickerUI.setCaption("Icon")
 }

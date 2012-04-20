@@ -13,7 +13,7 @@ import java.util.Properties;
  */
 public class Prefs {
 
-    private final static Map<File, Properties> CACHE = Collections.synchronizedMap(new HashMap());
+    private final static Map<File, Properties> CACHE = Collections.synchronizedMap(new HashMap<File, Properties>());
     private static File configPath;
 
     private Prefs() {

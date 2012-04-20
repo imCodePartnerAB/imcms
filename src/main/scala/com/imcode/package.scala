@@ -10,6 +10,7 @@ package object imcode {
   type JClass[A >: Null] = java.lang.Class[A]
   type JCollection[A <: AnyRef] = java.util.Collection[A]
   type JList[A <: AnyRef] = java.util.List[A]
+  type JMap[A <: AnyRef, B <: AnyRef] = java.util.Map[A, B]
 
   //implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
 
@@ -52,7 +53,8 @@ package object imcode {
     def |>[B](f: A => B): B = f(a)
 
     def |<(f: A => Any): A = { f(a); a }
-    def |<(f1: A => Any, f2: A => Any, fs: (A => Any)*): A = { f1 +: f2 +: fs foreach (_ apply a); a }
+
+    def |<<(byName: => Any): A = { byName; a }
   }
 
   implicit def any2Piper[A](a: A) = new Piper(a)

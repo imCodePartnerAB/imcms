@@ -321,7 +321,7 @@ abstract class DocsContainer extends Container
                   tree.setChildrenAllowed(childDoc, false)
                   tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
                   tree.setParent(childDoc, root)
-                  // >>> link to list documents
+                  // >>> link to listByNamedParams documents
                 }
               }
             }
@@ -791,7 +791,7 @@ trait UserListUISetup { this: UserListUI =>
 
 
 /**
- * Component for managing list of users.
+ * Component for managing listByNamedParams of users.
  */
 class UserListUI(caption: String = "") extends GridLayout(2, 2) {
   val chkEnabled = new CheckBox(caption) with Immediate with ExposeValueChange

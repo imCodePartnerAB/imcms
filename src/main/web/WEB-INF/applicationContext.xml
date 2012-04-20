@@ -1,118 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans
-  xmlns="http://www.springframework.org/schema/beans"
-  xmlns:p="http://www.springframework.org/schema/p"  
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:aop="http://www.springframework.org/schema/aop"
-  xmlns:tx="http://www.springframework.org/schema/tx"
-  xmlns:context="http://www.springframework.org/schema/context"
-  xsi:schemaLocation="
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springframework.org/schema/context
-    http://www.springframework.org/schema/context/spring-context-2.5.xsd" >
+    http://www.springframework.org/schema/context/spring-context-2.5.xsd">
     <!--default-lazy-init="true"  -->
-  <import resource="./configContext.xml"/>
-  <import resource="./beansContext.xml"/>
+    <import resource="./configContext.xml"/>
+    <import resource="./beansContext.xml"/>
 
-  <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
+    <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
 
-  <context:component-scan base-package="com.imcode.imcms.addon.imagearchive"/>
-  <context:annotation-config/>
-  
-  <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
-  
-  <context:property-placeholder location="**/conf/server.properties"/>
-	 
-  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
-    p:driverClassName="${JdbcDriver}"
-    p:url="${JdbcUrl}"
-    p:username="${User}"
-    p:password="${Password}"
-    p:testOnBorrow="true"
-    p:validationQuery="select 1"
-    p:defaultAutoCommit="false" 
-    p:maxActive="${MaxConnectionCount}"/>
-  
-  <bean id="dataSourceWithAutoCommit" parent="dataSource"
-    p:defaultAutoCommit="true"/>
-  
-  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
-    p:configLocation="WEB-INF/classes/hibernate.cfg.xml"
-    p:dataSource-ref="dataSource"/>
-  
-  <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
-      <property name="defaultLocale" value="sv"/>
-  </bean>
-  
-  <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-    <property name="basenames">
-      <list>
-        <value>/WEB-INF/locale/imcms</value>
-        <value>/WEB-INF/locale/image_archive</value>
-      </list>
-    </property>
-    <property name="fallbackToSystemLocale" value="false"/>
-    <property name="useCodeAsDefaultMessage" value="true"/>
-  </bean>
-    
-  <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>  
-  
-  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
+    <context:component-scan base-package="com.imcode.imcms.addon.imagearchive"/>
+    <context:annotation-config/>
 
-  <bean id="dao" abstract="true" class="com.imcode.imcms.dao.SpringHibernateTemplate"
-    p:hibernateTemplate-ref="hibernateTemplate"/>
+    <!--<bean class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" />-->
 
-  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao" parent="dao"
-    p:languageDao-ref="languageDao"/>
+    <context:property-placeholder location="**/conf/server.properties"/>
 
-  <bean id="textDao" class="com.imcode.imcms.dao.TextDao" parent="dao"/>
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+          p:driverClassName="${JdbcDriver}"
+          p:url="${JdbcUrl}"
+          p:username="${User}"
+          p:password="${Password}"
+          p:testOnBorrow="true"
+          p:validationQuery="select 1"
+          p:defaultAutoCommit="false"
+          p:maxActive="${MaxConnectionCount}"/>
 
-  <bean id="menuDao" class="com.imcode.imcms.dao.MenuDao" parent="dao"/>
+    <bean id="dataSourceWithAutoCommit" parent="dataSource"
+          p:defaultAutoCommit="true"/>
 
-  <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao" parent="dao"/>
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
+          p:configLocation="classpath:hibernate.cfg.xml"
+          p:dataSource-ref="dataSource"/>
 
-  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao" parent="dao"/>
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+        <property name="defaultLocale" value="sv"/>
+    </bean>
 
-  <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocumentVersionDao" parent="dao"/>
-  
-  <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDao">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>/WEB-INF/locale/imcms</value>
+                <value>/WEB-INF/locale/image_archive</value>
+            </list>
+        </property>
+        <property name="fallbackToSystemLocale" value="false"/>
+        <property name="useCodeAsDefaultMessage" value="true"/>
+    </bean>
 
-  <bean id="categoryMapper" class="com.imcode.imcms.mapping.CategoryMapper">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
+    <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
 
-  <bean id="ipAccessDao" class="com.imcode.imcms.dao.IPAccessDao">
-    <constructor-arg ref="sessionFactory"/>
-  </bean>
-    
-  <bean id="nativeQueriesDao" class="com.imcode.imcms.dao.NativeQueriesDao">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>         
-  
-  <bean id="systemDao" class="com.imcode.imcms.dao.SystemDao">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
+    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
 
-  <bean id="imageCacheMapper" class="com.imcode.imcms.mapping.ImageCacheMapper"/>
-  
-  <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver"
-        p:metaDao-ref="metaDao"
-        p:contentLoopDao-ref="contentLoopDao"
-        p:documentVersionDao-ref="documentVersionDao"
-        p:textDao-ref="textDao"
-        p:imageDao-ref="imageDao"
-        p:menuDao-ref="menuDao"/>
+    <bean id="dao" abstract="true" class="com.imcode.imcms.dao.HibernateSupport"
+          p:hibernateTemplate-ref="hibernateTemplate"/>
+
+    <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao" parent="dao"
+          p:languageDao-ref="languageDao" p:sessionFactory-ref="sessionFactory"/>
+
+    <bean id="textDao" class="com.imcode.imcms.dao.TextDao" parent="dao"/>
+
+    <bean id="menuDao" class="com.imcode.imcms.dao.MenuDao" parent="dao"/>
+
+    <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao" parent="dao"/>
+
+    <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao" parent="dao"/>
+
+    <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocumentVersionDao" parent="dao"/>
+
+    <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="categoryMapper" class="com.imcode.imcms.mapping.CategoryMapper">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="ipAccessDao" class="com.imcode.imcms.dao.IPAccessDao">
+        <constructor-arg ref="sessionFactory"/>
+    </bean>
+
+    <bean id="nativeQueriesDao" class="com.imcode.imcms.dao.NativeQueriesDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="systemDao" class="com.imcode.imcms.dao.SystemDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="imageCacheMapper" class="com.imcode.imcms.mapping.ImageCacheMapper"/>
+
+    <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver"
+          p:metaDao-ref="metaDao"
+          p:contentLoopDao-ref="contentLoopDao"
+          p:documentVersionDao-ref="documentVersionDao"
+          p:textDao-ref="textDao"
+          p:imageDao-ref="imageDao"
+          p:menuDao-ref="menuDao"/>
 
 
-  <bean id="textDocumentInitializer" class="com.imcode.imcms.mapping.TextDocumentInitializer"
+    <bean id="textDocumentInitializer" class="com.imcode.imcms.mapping.TextDocumentInitializer"
           p:metaDao-ref="metaDao"
           p:textDao-ref="textDao"
           p:imageDao-ref="imageDao"
@@ -121,13 +121,13 @@
 
 
     <bean id="documentLoader" class="com.imcode.imcms.mapping.DocumentLoader"
-      p:metaDao-ref="metaDao"
-      p:documentVersionDao-ref="documentVersionDao"
-      p:documentInitializingVisitor-ref="documentInitializingVisitor"/>
+          p:metaDao-ref="metaDao"
+          p:documentVersionDao-ref="documentVersionDao"
+          p:documentInitializingVisitor-ref="documentInitializingVisitor"/>
 
-    
+
     <bean id="documentInitializingVisitor" class="com.imcode.imcms.mapping.DocumentInitializingVisitor"
-      p:metaDao-ref="metaDao"
-      p:textDocumentInitializer-ref="textDocumentInitializer"/>
-    
+          p:metaDao-ref="metaDao"
+          p:textDocumentInitializer-ref="textDocumentInitializer"/>
+
 </beans>

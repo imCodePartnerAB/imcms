@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /*
-Prints out library sub-folders recursively as html list
+Prints out library sub-folders recursively as html listByNamedParams
 Used in external files for library tree rendering
  */
 public class LibraryChildren extends TagSupport {

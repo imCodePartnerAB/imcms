@@ -117,7 +117,7 @@ public class AdminRoles extends HttpServlet {
                 return;
             } else if ( req.getParameter("VIEW_ADD_NEW_ROLE") != null ) {
 
-                // lets adjust the list to fit method cal
+                // lets adjust the listByNamedParams to fit method cal
                 RolePermissionDomainObject[] allRolePermissions = RoleDomainObject.getAllRolePermissions();
                 String[][] permissionList = new String[allRolePermissions.length][];
 
@@ -165,7 +165,7 @@ public class AdminRoles extends HttpServlet {
                     return;
                 }
 
-                // dont list superadmin permissions
+                // dont listByNamedParams superadmin permissions
                 if ( roleIdStr.equals("0") ) {
                     LOG.debug("Error in checking roles: Trying to look att superadmin permissions");
                     printErrorMessage(req, res, "Error in AdminRoles, edit role", "<BR>");

@@ -108,7 +108,7 @@ public class LibraryRoles implements Serializable {
         this.updatedDt = updatedDt;
     }
 
-    /* 'use' implies see in the list(tree) on external files page and add to archive */
+    /* 'use' implies see in the listByNamedParams(tree) on external files page and add to archive */
     public Boolean getCanUse() {
         return canUse;
     }

@@ -32,7 +32,7 @@ public class DocumentVersionInfo implements Serializable {
 	private DocumentVersion defaultVersion;
 	
 	/**
-	 * Version list sorted ascending.
+	 * Version listByNamedParams sorted ascending.
 	 */
 	private List<DocumentVersion> versions;
 	
@@ -46,7 +46,7 @@ public class DocumentVersionInfo implements Serializable {
 	 * 
 	 * @param metaId documentId.
 	 * 
-	 * @param versions document versions list.
+	 * @param versions document versions listByNamedParams.
 	 */
 	public DocumentVersionInfo(Integer metaId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
 		versionsMap = new TreeMap<Integer, DocumentVersion>();
@@ -118,7 +118,7 @@ public class DocumentVersionInfo implements Serializable {
 	 * Return unmodifiable map of document's version 
 	 * sorted by number in ascending order.
 	 *  
-	 * @return unmodifiable list of document's versions.
+	 * @return unmodifiable listByNamedParams of document's versions.
 	 */
 	public List<DocumentVersion> getVersions() {
 		return versions;

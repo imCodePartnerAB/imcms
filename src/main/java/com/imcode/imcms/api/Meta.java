@@ -213,11 +213,11 @@ public class Meta implements Serializable, Cloneable {
     private Date publicationEndDatetime;
 
     // These fields were lazy loaded in previous version:
-    @org.hibernate.annotations.CollectionOfElements(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER)
     @JoinTable(
             name = "document_properties",
             joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
-    @org.hibernate.annotations.MapKey(columns = @Column(name = "key_name"))
+    @MapKeyColumn(name = "key_name")
     @Column(name = "value", nullable = false)
     private Map<String, String> properties = new HashMap<String, String>();
 
@@ -236,7 +236,7 @@ public class Meta implements Serializable, Cloneable {
     @JoinTable(
             name = "roles_rights",
             joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
-    @org.hibernate.annotations.MapKey(columns = @Column(name = "role_id"))
+    @MapKeyColumn(name = "role_id")
     @Column(name = "set_id")
     private Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<Integer, Integer>();
 
@@ -251,7 +251,7 @@ public class Meta implements Serializable, Cloneable {
     @JoinTable(
             name = "doc_permission_sets",
             joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
-    @org.hibernate.annotations.MapKey(columns = @Column(name = "set_id"))
+    @MapKeyColumn(name = "set_id")
     @Column(name = "permission_id")
     private Map<Integer, Integer> permissionSetBitsMap = new HashMap<Integer, Integer>();
 
@@ -266,7 +266,7 @@ public class Meta implements Serializable, Cloneable {
     @JoinTable(
             name = "new_doc_permission_sets",
             joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
-    @org.hibernate.annotations.MapKey(columns = @Column(name = "set_id"))
+    @MapKeyColumn(name = "set_id")
     @Column(name = "permission_id")
     private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<Integer, Integer>();
 
@@ -301,7 +301,7 @@ public class Meta implements Serializable, Cloneable {
     private Set<I18nLanguage> languages = new HashSet<I18nLanguage>();
 
 
-    @org.hibernate.annotations.CollectionOfElements(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER)
     @javax.persistence.JoinTable(
             name = "imcms_doc_keywords",
             joinColumns = {

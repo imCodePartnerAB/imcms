@@ -21,7 +21,7 @@ class PropertyManagerManager(app: ImcmsApplication) {
         dlg.mainUI = doto(new PropertyEditorUI) { eui =>
           Imcms.getServices.getSystemData |> { d =>
             eui.txtStartPageNumber.value = d.getStartDocument.toString
-            eui.txtSystemMessage.value = d.getSystemMessage
+            eui.txaSystemMessage.value = d.getSystemMessage
             eui.webMasterUI.txtName.value = d.getWebMaster
             eui.webMasterUI.txtEmail.value = d.getWebMasterAddress
             eui.serverMasterUI.txtName.value = d.getServerMaster
@@ -32,7 +32,7 @@ class PropertyManagerManager(app: ImcmsApplication) {
             app.privileged(permission) {
               val systemData = doto(Imcms.getServices.getSystemData) { d =>
                 d setStartDocument eui.txtStartPageNumber.value.toInt
-                d setSystemMessage eui.txtSystemMessage.value
+                d setSystemMessage eui.txaSystemMessage.value
                 d setWebMaster eui.webMasterUI.txtName.value
                 d setWebMasterAddress eui.webMasterUI.txtEmail.value
                 d setServerMaster eui.serverMasterUI.txtName.value
@@ -63,16 +63,16 @@ class PropertyManagerManager(app: ImcmsApplication) {
   def reload() {
     import ui.dataUI._
 
-    doall(txtStartPageNumber, txtSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly false}
+    doall(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly false}
     Imcms.getServices.getSystemData |> { d =>
       txtStartPageNumber.value = d.getStartDocument.toString
-      txtSystemMessage.value = d.getSystemMessage
+      txaSystemMessage.value = d.getSystemMessage
       webMasterUI.txtName.value = d.getWebMaster
       webMasterUI.txtEmail.value = d.getWebMasterAddress
       serverMasterUI.txtName.value = d.getServerMaster
       serverMasterUI.txtEmail.value = d.getServerMasterAddress
     }
-    doall(txtStartPageNumber, txtSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly true}
+    doall(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly true}
 
     doall(ui.miEdit) { _ setEnabled canManage }
   }
@@ -103,9 +103,9 @@ class PropertyEditorUI extends FormLayout with UndefinedSize {
   }
 
   val txtStartPageNumber = new TextField("Start page number")
-  val txtSystemMessage = new TextField("System message") { setRows(5) }
+  val txaSystemMessage = new TextArea("System message") |< { _.setRows(5) }
   val serverMasterUI = new ContactUI("Server master")
   val webMasterUI = new ContactUI("Web master")
 
-  addComponents(this, txtStartPageNumber, txtSystemMessage, serverMasterUI, webMasterUI)
+  addComponents(this, txtStartPageNumber, txaSystemMessage, serverMasterUI, webMasterUI)
 }

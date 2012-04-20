@@ -7,7 +7,8 @@ import com.imcode.imcms.api.DocumentVersion;
 
 import java.util.Date;
 
-class DocumentVersionDao extends SpringHibernateTemplate {
+@Transactional(rollbackFor = Array(classOf[Throwable]))
+class DocumentVersionDao extends HibernateSupport {
 
   /**
    * Creates and returns a new version of a document.
@@ -15,23 +16,20 @@ class DocumentVersionDao extends SpringHibernateTemplate {
    *
    * @return new document version.
    */
-  @Transactional
-  def createVersion(docId: JInteger, userId: JInteger) = synchronized {
+  //@Transactional
+  def createVersion(docId: JInteger, userId: JInteger): DocumentVersion = synchronized {
     val no = getLatestVersion(docId) match {
       case null => 0
       case version => version.getNo.intValue + 1
     }
 
-    doto(new DocumentVersion(docId, no, userId, new Date)) { hibernateTemplate.save }
+    hibernate.save(new DocumentVersion(docId, no, userId, new Date))
   }
 
-  @Transactional
-  def getLatestVersion(docId: JInteger) = withSession {
-    _.getNamedQuery("DocumentVersion.getLatestVersion")
-     .setParameter("docId", docId)
-     .uniqueResult().asInstanceOf[DocumentVersion]
-  }
-
+  //@Transactional
+  def getLatestVersion(docId: JInteger) = hibernate.findByNamedQueryAndNamedParams[DocumentVersion](
+    "DocumentVersion.getLatestVersion", "docId" -> docId
+  )
 
   /**
    * Returns all versions for the document.
@@ -39,41 +37,37 @@ class DocumentVersionDao extends SpringHibernateTemplate {
    * @param docId meta id.
    * @return available versions for the document.
    */
-  @Transactional
-  def getAllVersions (docId: JInteger) = hibernateTemplate
-    .findByNamedQueryAndNamedParam("DocumentVersion.getByDocId", "docId", docId).asInstanceOf[JList[DocumentVersion]]
+  //@Transactional
+  def getAllVersions (docId: JInteger) = hibernate.listByNamedQueryAndNamedParams[DocumentVersion](
+    "DocumentVersion.getByDocId", "docId" -> docId
+  )
 
 
-  @Transactional
-  def getDefaultVersion(docId: JInteger) = withSession {
-    _.getNamedQuery("DocumentVersion.getDefaultVersion")
-     .setParameter("docId", docId)
-     .uniqueResult().asInstanceOf[DocumentVersion]
-  }
+  //@Transactional
+  def getDefaultVersion(docId: JInteger) = hibernate.findByNamedQuery[DocumentVersion](
+    "DocumentVersion.getDefaultVersion", "docId", docId
+  )
 
-  @Transactional
+  //@Transactional
   def changeDefaultVersion(docId: JInteger, version: DocumentVersion, publisher: UserDomainObject): Int =
     changeDefaultVersion(docId, version.getNo, publisher.getId)
 
-  @Transactional
+  //@Transactional
   def changeDefaultVersion(docId: JInteger, no: JInteger, publisherId: JInteger) =
     getVersion(docId, no) |> { version =>
       require(version != null, "Version must exists")
 
-      withSession {
-        _.getNamedQuery("DocumentVersion.changeDefaultVersion")
-         .setParameter("defaultVersionNo", no)
-         .setParameter("publisherId", publisherId)
-         .setParameter("docId", docId)
-         .executeUpdate()
-      }
+      hibernate.bulkUpdateByNamedQuery(
+        "DocumentVersion.changeDefaultVersion",
+
+        "defaultVersionNo" -> no,
+        "publisherId" -> publisherId,
+        "docId", docId
+      )
     }
 
-  @Transactional
-  def getVersion(docId: JInteger, no: JInteger) = withSession {
-    _.getNamedQuery("DocumentVersion.getByDocIdAndNo")
-     .setParameter("docId", docId)
-     .setParameter("no", no)
-     .uniqueResult().asInstanceOf[DocumentVersion]
-  }
+  //@Transactional
+  def getVersion(docId: JInteger, no: JInteger) = hibernate.findByNamedQueryAndNamedParams[DocumentVersion](
+    "DocumentVersion.getByDocIdAndNo", "docId" -> docId
+  )
 }

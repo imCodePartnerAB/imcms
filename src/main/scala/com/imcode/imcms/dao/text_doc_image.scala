@@ -35,7 +35,8 @@ object ImageUtil {
   }
 }
 
-class ImageDao extends SpringHibernateTemplate {
+@Transactional(rollbackFor = Array(classOf[Throwable]))
+class ImageDao extends HibernateSupport {
 
   @scala.reflect.BeanProperty
   var languageDao: LanguageDao = _
@@ -43,11 +44,11 @@ class ImageDao extends SpringHibernateTemplate {
   /**
    * Please note that createImageIfNotExists merely creates an instance of ImageDomainObject not a database entry.
    */
-  @Transactional
+  //@Transactional
   def getImagesByIndex(docId: JInteger, docVersionNo: JInteger, no: Int, loopNo: JInteger, contentNo: JInteger,
                        createImageIfNotExists: Boolean): JList[ImageDomainObject] =
     for {
-      language <- languageDao.getAllLanguages
+      language <- languageDao.getAllLanguages()
       image <- PartialFunction.condOpt(getImage(language.getId, docId, docVersionNo, no, loopNo, contentNo)) {
         case image if image != null => image
         case _ if createImageIfNotExists => new ImageDomainObject |< { img =>
@@ -62,7 +63,7 @@ class ImageDao extends SpringHibernateTemplate {
     } yield image
 
 
-  @Transactional
+  //@Transactional
   def getImage(languageId: JInteger, docId: JInteger, docVersionNo: JInteger, no: Int, loopNo: JInteger,
                contentNo: JInteger) = {
 
@@ -71,7 +72,7 @@ class ImageDao extends SpringHibernateTemplate {
     else
       "select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no and i.language.id = :languageId AND i.contentLoopNo = :contentLoopNo AND i.contentNo = :contentNo";
 
-    withSession { session =>
+    hibernate.withSession { session =>
       session.createQuery(queryStr) |> { query =>
         query.setParameter("docId", docId)
           .setParameter("docVersionNo", docVersionNo)
@@ -87,37 +88,28 @@ class ImageDao extends SpringHibernateTemplate {
     }
   }
 
-  @Transactional
-  def saveImage(image: ImageDomainObject) = image |< hibernateTemplate.saveOrUpdate
+  //@Transactional
+  def saveImage(image: ImageDomainObject) = hibernate.saveOrUpdate(image)
 
-  @Transactional
-  def saveImageHistory(imageHistory: ImageHistory) = hibernateTemplate.save(imageHistory)
+  //@Transactional
+  def saveImageHistory(imageHistory: ImageHistory) = hibernate.save(imageHistory)
 
-  @Transactional
-  def getImages(docId: JInteger, docVersionNo: JInteger) = {
-    val images = hibernateTemplate.findByNamedQueryAndNamedParam("Image.getByDocIdAndDocVersionNo",
-      Array("docId", "docVersionNo"),
-      Array[AnyRef](docId, docVersionNo)).asInstanceOf[JList[ImageDomainObject]]
+  //@Transactional
+  def getImages(docId: JInteger, docVersionNo: JInteger) =
+    hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
+      "Image.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
+    ) |> ImageUtil.initImagesSources
 
-    ImageUtil.initImagesSources(images)
-  }
-
-  @Transactional
-  def getImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) = {
-    val images = hibernateTemplate.findByNamedQueryAndNamedParam("Image.getByDocIdAndDocVersionNoAndLanguageId",
-      Array("docId", "docVersionNo", "languageId"),
-      Array[AnyRef](docId, docVersionNo, languageId)).asInstanceOf[JList[ImageDomainObject]]
-
-    ImageUtil.initImagesSources(images)
-  }
+  //@Transactional
+  def getImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) =
+     hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
+       "Image.getByDocIdAndDocVersionNoAndLanguageId",
+       "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
+     ) |>  ImageUtil.initImagesSources
 
 
-  @Transactional
-  def deleteImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) = withSession {
-    _.getNamedQuery("Image.deleteImages")
-     .setParameter("docId", docId)
-     .setParameter("docVersionNo", docVersionNo)
-     .setParameter("languageId", languageId)
-     .executeUpdate()
-  }
+  //@Transactional
+  def deleteImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
+    "Image.deleteImages", "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
+  )
 }

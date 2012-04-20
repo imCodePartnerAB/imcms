@@ -6,11 +6,11 @@ import org.springframework.transaction.annotation.Transactional
 
 import com.imcode.imcms.api.ContentLoop
 
+@Transactional(rollbackFor = Array(classOf[Throwable]))
+class ContentLoopDao extends HibernateSupport {
 
-class ContentLoopDao extends SpringHibernateTemplate {
-
-  @Transactional
-  def getLoop(loopId: JLong) = hibernateTemplate.get(classOf[ContentLoop], loopId)
+  //@Transactional
+  def getLoop(loopId: JLong) = hibernate.get[ContentLoop](loopId)
 
   /**
    * Returns loop or null if loop can not be found.
@@ -20,14 +20,13 @@ class ContentLoopDao extends SpringHibernateTemplate {
    *
    * @return loop or null if loop can not be found.
    */
-  @Transactional
-  def getLoop(docId: JInteger, docVersionNo: JInteger, no: JInteger) = withSession {
-    _.getNamedQuery("ContentLoop.getByDocIdAndDocVersionNoAndNo")
-      .setParameter("docId", docId)
-      .setParameter("docVersionNo", docVersionNo)
-      .setParameter("no", no)
-      .uniqueResult().asInstanceOf[ContentLoop]
-  }
+  //@Transactional
+  def getLoop(docId: JInteger, docVersionNo: JInteger, no: JInteger) = hibernate.findByNamedQueryAndNamedParams[ContentLoop](
+    "ContentLoop.getByDocIdAndDocVersionNoAndNo",
+    "docId" -> docId,
+    "docVersionNo" -> docVersionNo,
+    "no" -> no
+  )
 
 
   /**
@@ -37,11 +36,10 @@ class ContentLoopDao extends SpringHibernateTemplate {
    *
    * @return document content loops.
    */
-  @Transactional
-  def getLoops(docId: JInteger, docVersionNo: JInteger) =
-    hibernateTemplate.findByNamedQueryAndNamedParam("ContentLoop.getByDocIdAndDocVersionNo",
-      Array("docId", "docVersionNo"),
-      Array[AnyRef](docId, docVersionNo)).asInstanceOf[JList[ContentLoop]]
+  //@Transactional
+  def getLoops(docId: JInteger, docVersionNo: JInteger) = hibernate.listByNamedQueryAndNamedParams[ContentLoop](
+    "ContentLoop.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
+  )
 
 
   /**
@@ -50,25 +48,23 @@ class ContentLoopDao extends SpringHibernateTemplate {
    * @param loop content loop.
    * @return saved content loop.
    */
-  @Transactional
-  def saveLoop(loop: ContentLoop) = doto(loop.clone) { loopClone =>
-    withSession { session =>
-      session.saveOrUpdate(loopClone)
-      session.flush
-    }
+  //@Transactional
+  def saveLoop(loop: ContentLoop) = loop.clone() |< { loopClone =>
+    hibernate.saveOrUpdate(loopClone)
+    hibernate.flush()
   }
 
 
-  @Transactional
+  //@Transactional
   def deleteLoops(docId: JInteger, docVersionNo: JInteger) =
-    getLoops(docId, docVersionNo).map(hibernateTemplate.delete).size
+    getLoops(docId, docVersionNo).map(hibernate.delete).size
 
 
-  @Transactional
+  //@Transactional
   def deleteLoop(loopId: JLong) = getLoop(loopId) match {
     case null => false
     case loop =>
-      hibernateTemplate.delete(loop)
+      hibernate.delete(loop)
       true
   }
 }

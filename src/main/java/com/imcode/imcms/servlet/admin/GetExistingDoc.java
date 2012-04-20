@@ -137,7 +137,7 @@ public class GetExistingDoc extends HttpServlet {
             // Lets get the language prefix
             String langPrefix = user.getLanguageIso639_2();
 
-            // Lets fix the sortby list, first get the displaytexts from the database
+            // Lets fix the sortby listByNamedParams, first get the displaytexts from the database
             Set sortOrderSet = SORT_ORDERS_MAP.keySet() ;
             if ( !sortOrderSet.contains( sortBy ) ) {
                 sortBy = "meta_id";

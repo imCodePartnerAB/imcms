@@ -8,34 +8,32 @@ import imcode.server.document.textdocument.TextDomainObject
 
 import org.springframework.transaction.annotation.Transactional
 
-class TextDao extends SpringHibernateTemplate {
+@Transactional(rollbackFor = Array(classOf[Throwable]))
+class TextDao extends HibernateSupport {
 
   /** Inserts or updates text. */
-  @Transactional
-  def saveText(text: TextDomainObject) = doto(text) { hibernateTemplate.saveOrUpdate }
+  //@Transactional
+  def saveText(text: TextDomainObject) = hibernate.saveOrUpdate(text)
 
 
-  @Transactional
-  def getTextById(id: JLong) = hibernateTemplate.get(classOf[TextDomainObject], id)
+  //@Transactional
+  def getTextById(id: JLong) = hibernate.get[TextDomainObject](id)
 
 
-  @Transactional
+  //@Transactional
   def deleteTexts(docId: JInteger, docVersionNo: JInteger, language: I18nLanguage): Int =
     deleteTexts(docId, docVersionNo, language.getId)
 
 
-  @Transactional
-  def deleteTexts(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) = withSession {
-    _.getNamedQuery("Text.deleteTexts")
-      .setParameter("docId", docId)
-      .setParameter("docVersionNo", docVersionNo)
-      .setParameter("languageId", languageId)
-      .executeUpdate()
-  }
+  //@Transactional
+  def deleteTexts(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
+    "Text.deleteTexts",
+    "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
+  )
 
 
-  @Transactional
-  def saveTextHistory(textHistory: TextHistory) = hibernateTemplate.save(textHistory)
+  //@Transactional
+  def saveTextHistory(textHistory: TextHistory) = hibernate.save(textHistory)
 
 
   /**
@@ -44,27 +42,25 @@ class TextDao extends SpringHibernateTemplate {
    *
    * @return all texts in a doc.
    */
-  @Transactional
-  def getTexts(docId: JInteger, docVersionNo: JInteger) =
-    hibernateTemplate.findByNamedQueryAndNamedParam("Text.getByDocIdAndDocVersionNo",
-      Array("docId", "docVersionNo"),
-      Array[AnyRef](docId, docVersionNo)).asInstanceOf[JList[TextDomainObject]]
-
+  //@Transactional
+  def getTexts(docId: JInteger, docVersionNo: JInteger) = hibernate.listByNamedQueryAndNamedParams[TextDomainObject](
+    "Text.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
+  )
 
   /**
    * Returns text fields for the same doc, version and language.
    */
-  @Transactional
-  def getTexts(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) =
-    hibernateTemplate.findByNamedQueryAndNamedParam("Text.getByDocIdAndDocVersionNoAndLanguageId",
-      Array("docId", "docVersionNo", "languageId"),
-      Array[AnyRef](docId, docVersionNo, languageId)).asInstanceOf[JList[TextDomainObject]]
-
+  //@Transactional
+  def getTexts(docId: JInteger, docVersionNo: JInteger, languageId: JInteger): JList[TextDomainObject] =
+    hibernate.listByNamedQueryAndNamedParams[TextDomainObject](
+      "Text.getByDocIdAndDocVersionNoAndLanguageId",
+      "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
+    )
 
   /**
    * Returns text fields for the same doc, version and language.
    */
-  @Transactional
+  //@Transactional
   def getTexts(docId: JInteger, docVersionNo: JInteger, language: I18nLanguage): JList[TextDomainObject] =
     getTexts(docId, docVersionNo, language.getId)
 }

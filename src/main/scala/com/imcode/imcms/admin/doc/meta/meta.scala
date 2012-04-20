@@ -559,7 +559,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
       def isValid(value: AnyRef) = {
         val errMsgOpt = for {
           alias <- ui.frmAlias.txtAlias.trimOpt
-          docId <- imcmsServices.getSpringBean("metaDao").asInstanceOf[MetaDao].getDocIdByAlias(alias)
+          docId <- imcmsServices.getSpringBean("metaDao").asInstanceOf[MetaDao].getDocIdByAliasOpt(alias)
           if meta.getId != docId
         } yield "alias allready exists"
 

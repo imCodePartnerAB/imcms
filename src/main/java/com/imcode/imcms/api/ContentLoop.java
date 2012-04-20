@@ -2,7 +2,6 @@ package com.imcode.imcms.api;
 
 import imcode.server.document.textdocument.DocVersionItem;
 import imcode.server.document.textdocument.DocOrderedItem;
-import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
 
 import java.io.Serializable;
@@ -30,7 +29,6 @@ public class ContentLoop implements Serializable, Cloneable, DocVersionItem, Doc
     @Column(name="doc_version_no")
     private Integer docVersionNo;
 
-    //@CollectionOfElements(fetch = FetchType.EAGER)
     @ElementCollection(fetch = FetchType.EAGER)
     @JoinTable(
         name = "imcms_text_doc_contents",

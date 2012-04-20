@@ -133,7 +133,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
             String parameterName = bodyParametersMatcher.group( 1 );
             Integer parameterIndex = (Integer)parameterNameToIndexMap.get( parameterName );
             if (null == parameterIndex) {
-                throw new IllegalArgumentException( "No parameter @"+parameterName+" in parameter list of procedure "+procedureName);
+                throw new IllegalArgumentException( "No parameter @"+parameterName+" in parameter listByNamedParams of procedure "+procedureName);
             }
             parameterIndices.add( parameterIndex );
         }

@@ -73,7 +73,7 @@ class TemplateManager(app: ImcmsApplication) {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoMarginDialog) { dlg =>
           dlg.mainUI = doto(new TemplateContentEditorUI) { c =>
-            c.txtContent.value = templateMapper.getTemplateData(name)
+            c.txaContent.value = templateMapper.getTemplateData(name)
           }
 
           dlg setWidth "600px"
@@ -167,7 +167,9 @@ class TemplateRenameUI extends FormLayout with UndefinedSize {
 }
 
 class TemplateContentEditorUI extends VerticalLayout with FullSize {
-  val txtContent = new TextField with FullSize {setRows(20)}
+  val txaContent = new TextArea with FullSize |< {
+    _.setRows(20)
+  }
 
-  addComponent(txtContent)
+  addComponent(txaContent)
 }

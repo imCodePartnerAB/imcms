@@ -288,7 +288,7 @@ public class TextDocumentParser {
             temptags.add( "#getTemplatesInGroup#" );
             temptags.add( templatesHtmlOptionList );
 
-            // Put templateadmintemplate in list of files to load.
+            // Put templateadmintemplate in listByNamedParams of files to load.
             changeTemplateUi = service.getAdminTemplate( "textdoc/inPage_admin.html", user, temptags );
         }  // if (templatemode)
         return changeTemplateUi;

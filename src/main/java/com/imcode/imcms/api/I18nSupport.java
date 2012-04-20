@@ -19,7 +19,7 @@ public class I18nSupport {
 	private I18nLanguage defaultLanguage;
 	
 	/**
-	 * Available languages list. 
+	 * Available languages listByNamedParams.
 	 */
 	private List<I18nLanguage> languages;
 	

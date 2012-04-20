@@ -5,13 +5,13 @@ package imcms.admin
 
 import scala.collection.JavaConversions._
 import com.imcode._
-import com.vaadin.ui._
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcms.api._
 import imcms.servlet.superadmin.AdminSearchTerms
 import java.util.{Locale, Date}
+import com.vaadin.ui._
 
 //import imcms.admin.chat.{MessageView, Chat}
 
@@ -208,10 +208,10 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     content setFirstComponent treeMenu
     //this setContent content
 
-    val splitView = new SplitPanel {
-      setFirstComponent(content)
-      setSecondComponent(chat)
-      setSplitPosition(85)
+    val splitView = new VerticalSplitPanel |< { p =>
+      p.setFirstComponent(content)
+      p.setSecondComponent(chat)
+      p.setSplitPosition(85)
     }
 
     this setContent splitView

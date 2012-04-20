@@ -18,7 +18,7 @@ public class TemplateService {
     }
 
     /**
-     * Get a list of all template groups the calling user has right to see for this document
+     * Get a listByNamedParams of all template groups the calling user has right to see for this document
      *
      * @param textDocument The textDocument for witch we would like to see the possible groups.
      * @return Only the templategroups that the current logged in user has the permissions to see
@@ -56,7 +56,7 @@ public class TemplateService {
      *
      * @param templateGroup The wanted TemplateGroup
      * @return An array of all the Templates in the given TemplateGroup
-     * @throws NoPermissionException If the current user doesn't have permission to list the templates in the templategroup.
+     * @throws NoPermissionException If the current user doesn't have permission to listByNamedParams the templates in the templategroup.
      */
     public Template[] getTemplates( TemplateGroup templateGroup ) throws NoPermissionException {
         List<TemplateDomainObject> templates = getTemplateMapper().getTemplatesInGroup( templateGroup.getInternal() );

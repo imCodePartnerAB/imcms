@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.{ConnectionCallback, RowMapper}
 import java.io.FileReader
 import com.imcode._
 
-class DB(ds: DataSource) extends Logger {
+class DB(ds: DataSource) extends Slf4jLoggerSupport {
   
   val template = new JdbcTemplate(ds)
 

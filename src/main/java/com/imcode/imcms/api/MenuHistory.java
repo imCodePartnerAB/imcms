@@ -64,14 +64,12 @@ public class MenuHistory implements Serializable {
 	private Integer docVersionNo;
 
 
-	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+	@ElementCollection(fetch=FetchType.EAGER)
 	@JoinTable(
 	    name = "imcms_text_doc_menu_items_history",
 	    joinColumns = {@JoinColumn(name="menu_id", referencedColumnName = "menu_id")}
 	)
-	@org.hibernate.annotations.MapKey(
-	   columns = @Column(name="to_doc_id")
-	)
+	@MapKeyColumn(name="to_doc_id")
     private Map<Integer, MenuItemHistory> menuItems = new HashMap<Integer, MenuItemHistory>();
 
 

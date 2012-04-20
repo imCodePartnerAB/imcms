@@ -8,8 +8,8 @@ import org.springframework.context.support.FileSystemXmlApplicationContext
 import org.springframework.context.ApplicationContext
 import imcode.server.Imcms
 import org.apache.commons.dbcp.BasicDataSource
-import org.hibernate.cfg.AnnotationConfiguration
 import org.hibernate.SessionFactory
+import org.hibernate.cfg.{Configuration, AnnotationConfiguration}
 
 object Base {
   val project = new Project
@@ -117,7 +117,7 @@ class DB(project: Project) {
     createHibernateSessionFactory(annotatedClasses.toSeq)
 
   def createHibernateSessionFactory(annotatedClasses: Seq[Class[_]], xmlFiles: String*) =
-    new AnnotationConfiguration |> { c =>
+    new Configuration |> { c =>
       for ((name, value) <- hibernateProperties) c.setProperty(name, value)
       annotatedClasses foreach { c addAnnotatedClass _}
       xmlFiles foreach { c addFile _ }

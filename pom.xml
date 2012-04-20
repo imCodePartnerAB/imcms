@@ -11,46 +11,47 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <slf4j.version>1.6.4</slf4j.version>
-
         <scala.version>2.9.1</scala.version>
-
         <org.springframework.version>3.1.1.RELEASE</org.springframework.version>
 
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
-        <jetty.version>7.5.4.v20111024</jetty.version>
+        <jetty.version>8.1.2.v20120308</jetty.version>
+        <jetty.contextPath>/${project.artifactId}-${project.version}</jetty.contextPath>
 
         <build.webapp.dir>${project.build.directory}/${project.build.finalName}</build.webapp.dir>
+
+        <javac.deprecation>false</javac.deprecation>
+        <javac.args></javac.args>
+
+        <build.log4j.level>info</build.log4j.level>
+        <build.log4j.hibernalte.level>error</build.log4j.hibernalte.level>
     </properties>
 
     <profiles>
         <profile>
-            <id>local</id>
+            <id>trace</id>
             <properties>
                 <build.log4j.level>all</build.log4j.level>
                 <build.log4j.hibernalte.level>all</build.log4j.hibernalte.level>
+
+                <javac.args>-Xlint</javac.args>
+                <javac.deprecation>true</javac.deprecation>
             </properties>
         </profile>
 
         <profile>
-            <id>dev</id>
+            <id>debug</id>
             <properties>
                 <build.log4j.level>debug</build.log4j.level>
                 <build.log4j.hibernalte.level>info</build.log4j.hibernalte.level>
-            </properties>
-        </profile>
-        <profile>
-            <id>prod</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <build.log4j.level>info</build.log4j.level>
-                <build.log4j.hibernalte.level>error</build.log4j.hibernalte.level>
+
+                <javac.deprecation>true</javac.deprecation>
             </properties>
         </profile>
     </profiles>
@@ -133,7 +134,7 @@
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -329,7 +330,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>3.6.9.Final</version>
+            <version>4.1.2.Final</version>
         </dependency>
 
         <dependency>
@@ -587,20 +588,6 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.eclipse.jetty</groupId>-->
-        <!--<artifactId>jetty-server</artifactId>-->
-        <!--<version>${jetty.version}</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>org.eclipse.jetty</groupId>-->
-        <!--<artifactId>jetty-servlet</artifactId>-->
-        <!--<version>${jetty.version}</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
@@ -754,7 +741,7 @@
 
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8</version>
+                <version>2.8.1</version>
                 <configuration>
                     <show>private</show>
                     <nohelp>true</nohelp>
@@ -766,7 +753,7 @@
 
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.8</version>
+                <version>2.9.1</version>
                 <configuration>
                     <configLocation>${basedir}/docs/checkstyle.xml</configLocation>
                 </configuration>
@@ -915,11 +902,13 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
-                    <encoding>UTF-8</encoding>
                     <excludes>
                         <exclude>**/Test*.java</exclude>
                         <exclude>**/*TestCase.java</exclude>
                     </excludes>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>${javac.deprecation}</showDeprecation>
+                    <compilerArgument>${javac.args}</compilerArgument>
                 </configuration>
             </plugin>
 
@@ -985,9 +974,9 @@
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
                     </connectors>
-                    <!--<webAppConfig>-->
-                    <!--<contextPath></contextPath>-->
-                    <!--</webAppConfig>-->
+                    <webAppConfig>
+                        <contextPath>${jetty.contextPath}</contextPath>
+                    </webAppConfig>
                 </configuration>
             </plugin>
 
@@ -1027,14 +1016,6 @@
         </plugins>
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>imcode</id>
-            <name>imCode Internal Repository</name>
-            <url>scp://ymer.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
-        </repository>
-    </distributionManagement>
-
     <reporting>
         <plugins>
             <plugin>
@@ -1045,7 +1026,13 @@
         </plugins>
     </reporting>
 
-
+    <distributionManagement>
+        <repository>
+            <id>imcode</id>
+            <name>imCode Internal Repository</name>
+            <url>scp://ymer.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
+        </repository>
+    </distributionManagement>
 
     <scm>
         <connection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</connection>

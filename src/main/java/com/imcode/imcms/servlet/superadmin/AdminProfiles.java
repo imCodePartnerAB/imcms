@@ -56,7 +56,7 @@ public class AdminProfiles extends HttpServlet {
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
-        if ("/list".equals(pathInfo)) {
+        if ("/listByNamedParams".equals(pathInfo)) {
             list(request,response);
         } else if ("/edit".equals(pathInfo)) {
             edit(request, response, new ProfileMapper.SimpleProfile("", "", ""));
@@ -67,7 +67,7 @@ public class AdminProfiles extends HttpServlet {
                           HttpServletResponse response) throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
         ProfileMapper profileMapper = getProfileMapper();
-        if ("/list".equals(pathInfo)) {
+        if ("/listByNamedParams".equals(pathInfo)) {
             if (Parameter.BACK.in(request)) {
                 response.sendRedirect(request.getContextPath()+"/servlet/AdminManager");
                 return;
@@ -88,7 +88,7 @@ public class AdminProfiles extends HttpServlet {
             list(request, response);
         } else if ("/edit".equals(pathInfo)) {
             if (Parameter.BACK.in(request)) {
-                response.sendRedirect(request.getContextPath()+"/imcms/admin/profile/list");
+                response.sendRedirect(request.getContextPath()+"/imcms/admin/profile/listByNamedParams");
                 return;
             }
             String id = Parameter.PROFILE_ID.from(request);
@@ -118,7 +118,7 @@ public class AdminProfiles extends HttpServlet {
     private void list(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         List profiles = getProfileMapper().getAll();
         request.setAttribute("profiles", profiles);
-        request.getRequestDispatcher("/WEB-INF/jsp/imcms/profile/list.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/imcms/profile/listByNamedParams.jsp").forward(request, response);
     }
 
     private ProfileMapper getProfileMapper() {

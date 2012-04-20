@@ -321,8 +321,8 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /**
      * Get the users workphone
-     * @deprecated
      */
+    @Deprecated
     public String getWorkPhone() {
         return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.WORK);
     }

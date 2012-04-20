@@ -461,7 +461,7 @@ public class ExternalFilesController {
         return new ModelAndView("image_archive/pages/external_files/preview", model);
     }
 
-    /* Used by small tooltip when moving cursor over filenames in library entry list */
+    /* Used by small tooltip when moving cursor over filenames in library entry listByNamedParams */
     @RequestMapping("/archive/external-files/preview-tooltip")
     public ModelAndView previewTooltipHandler(
             @RequestParam(required=false) Integer id,

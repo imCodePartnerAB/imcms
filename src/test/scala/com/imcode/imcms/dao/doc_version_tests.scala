@@ -166,7 +166,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
       }
 
       "has *no* existing versions" should {
-        "return an empty list" in {
+        "return an empty listByNamedParams" in {
           versionDao.getAllVersions(1002) must be ('empty)
         }
       }
