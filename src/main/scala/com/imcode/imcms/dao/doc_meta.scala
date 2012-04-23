@@ -128,7 +128,7 @@ class MetaDao extends HibernateSupport {
 
 
   def getIncludes(docId: JInteger): JList[Include] =
-    hibernate.list[Include]("select i from Include i where i.metaId = ?", docId)
+    hibernate.listByQuery[Include]("select i from Include i where i.metaId = ?", docId)
 
 
   def getTemplateNames(docId: JInteger) = hibernate.get[TemplateNames](docId)

@@ -2,9 +2,6 @@ package com.imcode
 package imcms.dao
 
 import org.hibernate.{SQLQuery, Query, SessionFactory, Session}
-import java.lang.String
-import org.hibernate.transform.ResultTransformer
-
 
 trait HibernateSupport {
 
@@ -16,7 +13,7 @@ trait HibernateSupport {
 
   object hibernate {
 
-    import HibernateSupport.ResultTransformerFactory
+    import HibernateSupport.HibernateResultTransformer
 
     type NamedParam = (String, Any)
 
@@ -69,10 +66,10 @@ trait HibernateSupport {
       _.createCriteria(classManifest[A].erasure).list().asInstanceOf[JList[A]]
     }
 
-    def list[A <: AnyRef](queryString: String, ps: Any*): JList[A] =
+    def listByQuery[A <: AnyRef](queryString: String, ps: Any*): JList[A] =
       runQuery(queryString, ps: _*)(_.list().asInstanceOf[JList[A]])
 
-    def listByNamedParams[A <: AnyRef](queryString: String, namedParam: NamedParam, namedParams: NamedParam*): JList[A] =
+    def listByQueryAndNamedParams[A <: AnyRef](queryString: String, namedParam: NamedParam, namedParams: NamedParam*): JList[A] =
       runQueryWithNamedParams(queryString, namedParam, namedParams: _*)(_.list().asInstanceOf[JList[A]])
 
     def listByNamedQuery[A <: AnyRef](queryName: String, ps: Any*): JList[A] =
@@ -81,10 +78,9 @@ trait HibernateSupport {
     def listByNamedQueryAndNamedParams[A <: AnyRef](queryName: String, namedParam: NamedParam, namedParams: NamedParam*): JList[A] =
       runNamedQueryWithNamedParams(queryName, namedParam, namedParams: _*)(_.list().asInstanceOf[JList[A]])
 
-    def listBySqlQuery[A <: AnyRef : ResultTransformerFactory](queryString: String, ps: Any*): JList[A] =
+    def listBySqlQuery[A <: AnyRef : HibernateResultTransformer](queryString: String, ps: Any*): JList[A] =
       runSqlQuery(queryString, ps: _*) { query =>
-        println(">>>>>RSF>>>>> " + implicitly[ResultTransformerFactory[A]])
-        query.setResultTransformer(implicitly[ResultTransformerFactory[A]].transformer)
+        query.setResultTransformer(implicitly[HibernateResultTransformer[A]].transformer)
         query.list().asInstanceOf[JList[A]]
       }
 
@@ -124,10 +120,12 @@ trait HibernateSupport {
 
 object HibernateSupport {
 
-  abstract class ResultTransformerFactory[+A <: AnyRef : ClassManifest] {
+  import org.hibernate.transform.ResultTransformer
+
+  abstract class HibernateResultTransformer[+A <: AnyRef : ClassManifest] {
     def transformer: ResultTransformer
 
-    override def toString = "ResultTransformerFactory[%s]" format classManifest[A].erasure
+    override def toString = "HibernateResultTransformer[%s]" format classManifest[A].erasure
   }
 
 
@@ -136,7 +134,7 @@ object HibernateSupport {
   }
 
 
-  class ArrayResultTransformerFactory[E <: AnyRef : ClassManifest] extends ResultTransformerFactory[Array[E]] {
+  class HibernateArrayResultTransformer[E <: AnyRef : ClassManifest] extends HibernateResultTransformer[Array[E]] {
     def transformer = new ResultTransformer with ResultTransformerBase {
       def transformTuple(tuple: Array[AnyRef], aliases: Array[String]) = Array.ofDim[E](tuple.size) |< { arr =>
         for ((n, i) <- tuple.zipWithIndex) arr(i) = n.asInstanceOf[E]
@@ -145,34 +143,36 @@ object HibernateSupport {
   }
 
 
-  class SingleValueTransformerFactory[A <: AnyRef : ClassManifest] extends ResultTransformerFactory[A] {
+  class HibernateSingleColumnTransformer[A <: AnyRef : ClassManifest] extends HibernateResultTransformer[A] {
     def transformer = new ResultTransformer with ResultTransformerBase {
       def transformTuple(tuple: Array[AnyRef], aliases: Array[String]) = tuple(0)
     }
   }
 
 
-  object ResultTransformerFactory extends LowLevelResultTransformerFactoryImplicits {
-    implicit object anyRefArrayResultTransformerFactory extends ArrayResultTransformerFactory[AnyRef]
+  object HibernateResultTransformer extends LowLevelHibernateResultTransformerImplicits {
+    implicit object defaultResultTransformerFactory extends HibernateResultTransformer[Array[AnyRef]] {
+      def transformer = null;
+    }
   }
 
 
-  class LowLevelResultTransformerFactoryImplicits {
-    implicit object anyRefSingleValueTransformerFactory extends SingleValueTransformerFactory[AnyRef]
-    implicit object stringSingleValueTransformerFactory extends SingleValueTransformerFactory[String]
-    implicit object jIntegerSingleValueTransformerFactory extends SingleValueTransformerFactory[JInteger]
-    implicit object jDoubleSingleValueTransformerFactory extends SingleValueTransformerFactory[JDouble]
-    implicit object jFloatSingleValueTransformerFactory extends SingleValueTransformerFactory[JFloat]
-    implicit object jBooleanSingleValueTransformerFactory extends SingleValueTransformerFactory[JBoolean]
-    implicit object jCharacterSingleValueTransformerFactory extends SingleValueTransformerFactory[JCharacter]
-    implicit object jByteSingleValueTransformerFactory extends SingleValueTransformerFactory[JByte]
+  class LowLevelHibernateResultTransformerImplicits {
+    implicit object anyRefSingleColumnTransformer extends HibernateSingleColumnTransformer[AnyRef]
+    implicit object stringSingleColumnTransformer extends HibernateSingleColumnTransformer[String]
+    implicit object jIntegerSingleColumnTransformer extends HibernateSingleColumnTransformer[JInteger]
+    implicit object jDoubleSingleColumnTransformer extends HibernateSingleColumnTransformer[JDouble]
+    implicit object jFloatSingleColumnTransformer extends HibernateSingleColumnTransformer[JFloat]
+    implicit object jBooleanSingleColumnTransformer extends HibernateSingleColumnTransformer[JBoolean]
+    implicit object jCharacterSingleColumnTransformer extends HibernateSingleColumnTransformer[JCharacter]
+    implicit object jByteSingleColumnTransformer extends HibernateSingleColumnTransformer[JByte]
 
-    implicit object stringArrayResultTransformerFactory extends ArrayResultTransformerFactory[String]
-    implicit object jIntegerArrayResultTransformerFactory extends ArrayResultTransformerFactory[JInteger]
-    implicit object jDoubleArrayResultTransformerFactory extends ArrayResultTransformerFactory[JDouble]
-    implicit object jFloatArrayResultTransformerFactory extends ArrayResultTransformerFactory[JFloat]
-    implicit object jBooleanArrayResultTransformerFactory extends ArrayResultTransformerFactory[JBoolean]
-    implicit object jCharacterArrayResultTransformerFactory extends ArrayResultTransformerFactory[JCharacter]
-    implicit object jByteArrayResultTransformerFactory extends ArrayResultTransformerFactory[JByte]
+    implicit object stringArrayResultTransformer extends HibernateArrayResultTransformer[String]
+    implicit object jIntegerArrayResultTransformer extends HibernateArrayResultTransformer[JInteger]
+    implicit object jDoubleArrayResultTransformer extends HibernateArrayResultTransformer[JDouble]
+    implicit object jFloatArrayResultTransformer extends HibernateArrayResultTransformer[JFloat]
+    implicit object jBooleanArrayResultTransformer extends HibernateArrayResultTransformer[JBoolean]
+    implicit object jCharacterArrayResultTransformer extends HibernateArrayResultTransformer[JCharacter]
+    implicit object jByteArrayResultTransformer extends HibernateArrayResultTransformer[JByte]
   }
 }

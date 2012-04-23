@@ -24,7 +24,7 @@ class NativeQueriesDao extends HibernateSupport {
 
   def getParentDocumentAndMenuIdsForDocument(documentId: JInteger): JList[Array[JInteger]] =
     hibernate.listBySqlQuery(
-      """SELECT doc_id, no FROM imcms_text_doc_menu_items childs, imcms_text_doc_menus menus " +
+      """SELECT doc_id, no FROM imcms_text_doc_menu_items childs, imcms_text_doc_menus menus
          WHERE menus.id = childs.menu_id AND to_doc_id = ?""", documentId
     )
 
@@ -47,8 +47,8 @@ class NativeQueriesDao extends HibernateSupport {
 
   def getDocumentMenuPairsContainingDocument(documentId: JInteger): JList[Array[JInteger]] =
     hibernate.listBySqlQuery(
-      """SELECT doc_id, no FROM imcms_text_doc_menus menus, imcms_text_doc_menu_items childs " +
-          WHERE menus.id = childs.menu_id AND childs.to_doc_id = ? ORDER BY doc_id, no""",
+      """SELECT doc_id, no FROM imcms_text_doc_menus menus, imcms_text_doc_menu_items childs
+         WHERE menus.id = childs.menu_id AND childs.to_doc_id = ? ORDER BY doc_id, no""",
       documentId
     )
 }
