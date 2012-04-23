@@ -20,8 +20,7 @@ class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll w
     val sf = db.createHibernateSessionFactory(classOf[Include])
     db.runScripts("src/test/resources/sql/include_dao.sql")
 
-    metaDao = new MetaDao
-    metaDao.hibernateTemplate = new HibernateTemplate(sf)
+    metaDao = new MetaDao |< { _.sessionFactory = sf }
   }
 
 

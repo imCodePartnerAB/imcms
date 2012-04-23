@@ -21,7 +21,7 @@ class ContentLoopDao extends HibernateSupport {
    * @return loop or null if loop can not be found.
    */
   //@Transactional
-  def getLoop(docId: JInteger, docVersionNo: JInteger, no: JInteger) = hibernate.findByNamedQueryAndNamedParams[ContentLoop](
+  def getLoop(docId: JInteger, docVersionNo: JInteger, no: JInteger) = hibernate.getByNamedQueryAndNamedParams[ContentLoop](
     "ContentLoop.getByDocIdAndDocVersionNoAndNo",
     "docId" -> docId,
     "docVersionNo" -> docVersionNo,

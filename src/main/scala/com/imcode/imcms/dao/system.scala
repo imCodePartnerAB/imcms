@@ -10,7 +10,7 @@ class SystemDao extends HibernateSupport {
 
   def getProperties() = hibernate.listAll[SystemProperty]()
 
-  def getProperty(name: String) = hibernate.find[SystemProperty](
+  def getProperty(name: String) = hibernate.getByQuery[SystemProperty](
     "SELECT p FROM SystemProperty p WHERE p.name = ?", name)
 
   def saveProperty(property: SystemProperty) = hibernate.saveOrUpdate(property)
@@ -39,10 +39,10 @@ class LanguageDao extends HibernateSupport {
   def getAllLanguages() = hibernate.listAll[I18nLanguage]()
 
   //@Transactional
-  def getById(id: JInteger) = hibernate.findByNamedQueryAndNamedParams[I18nLanguage]("I18nLanguage.getById", "id" -> id)
+  def getById(id: JInteger) = hibernate.getByNamedQueryAndNamedParams[I18nLanguage]("I18nLanguage.getById", "id" -> id)
 
   //@Transactional
-  def getByCode(code: String) = hibernate.findByNamedQueryAndNamedParams[I18nLanguage]("I18nLanguage.getByCode", "code" -> code)
+  def getByCode(code: String) = hibernate.getByNamedQueryAndNamedParams[I18nLanguage]("I18nLanguage.getByCode", "code" -> code)
 
   //@Transactional
   def saveLanguage(language: I18nLanguage) = hibernate.saveOrUpdate(language.clone())

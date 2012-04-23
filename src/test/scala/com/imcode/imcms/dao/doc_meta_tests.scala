@@ -22,9 +22,6 @@ class MetaDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
     val sf = db.createHibernateSessionFactory(Seq(classOf[MetaDao]),
                "src/main/resources/com/imcode/imcms/hbm/Document.hbm.xml")
 
-    metaDao = new MetaDao
-    metaDao.hibernateTemplate = new HibernateTemplate(sf)
-    versionDao.hibernateTemplate = new HibernateTemplate(sf)
     //db.runScripts()
   }
 

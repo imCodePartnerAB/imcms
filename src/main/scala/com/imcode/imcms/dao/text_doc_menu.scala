@@ -13,7 +13,7 @@ import imcode.server.document.textdocument.MenuDomainObject
 class MenuDao extends HibernateSupport {
 
   //@Transactional
-  def getMenu(docId: JInteger, docVersionNo: JInteger, no: JInteger) = hibernate.findByNamedQuery[MenuDomainObject](
+  def getMenu(docId: JInteger, docVersionNo: JInteger, no: JInteger) = hibernate.getByNamedQuery[MenuDomainObject](
     "Menu.getMenu", "docId" -> docId, "docVersionNo" -> docVersionNo, "no", no
   )
 

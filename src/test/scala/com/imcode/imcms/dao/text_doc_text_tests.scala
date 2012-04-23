@@ -34,8 +34,7 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
                "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
                "src/main/resources/com/imcode/imcms/hbm/Text.hbm.xml")
 
-    textDao = new TextDao
-    textDao.hibernateTemplate = new HibernateTemplate(sf)
+    textDao = new TextDao |< { _.sessionFactory = sf }
 
     db.runScripts("src/test/resources/sql/text_dao.sql")
   }

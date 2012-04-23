@@ -439,20 +439,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<Integer[]> getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
-        List<Object[]> tuples = nativeQueriesDao.getParentDocumentAndMenuIdsForDocument(document.getId());
-
-        List<Integer[]> result = new ArrayList<Integer[]>(tuples.size());
-
-        for (Object[] tuple : tuples) {
-            Integer[] pair = new Integer[]{
-                    (Integer) tuple[0],
-                    (Integer) tuple[1]
-            };
-
-            result.add(pair);
-        }
-
-        return result;
+        return nativeQueriesDao.getParentDocumentAndMenuIdsForDocument(document.getId());
     }
 
     public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {

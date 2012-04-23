@@ -31,8 +31,7 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val sf = db.createHibernateSessionFactory(Seq(classOf[ContentLoop]),
                "src/main/resources/com/imcode/imcms/hbm/ContentLoop.hbm.xml")
 
-    contentLoopDao = new ContentLoopDao
-    contentLoopDao.hibernateTemplate = new HibernateTemplate(sf)
+    contentLoopDao = new ContentLoopDao |< { _.sessionFactory = sf }
 
     db.runScripts("src/test/resources/sql/content_loop_dao.sql")
   }
@@ -144,10 +143,9 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
   }
 
 
-  def getNextLoopNo(): JInteger = contentLoopDao.withSession {
-    _.createQuery("select max(l.no) from ContentLoop l where l.docId = 1001 and l.docVersionNo = 0")
-    .uniqueResult().asInstanceOf[JInteger]
-  } match {
+  def getNextLoopNo(): JInteger = contentLoopDao.hibernate.getByQuery[JInteger](
+    "select max(l.no) from ContentLoop l where l.docId = 1001 and l.docVersionNo = 0"
+  ) match {
     case null => 0
     case n => n.intValue + 1
   }

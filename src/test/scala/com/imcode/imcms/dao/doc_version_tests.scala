@@ -42,8 +42,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
         classOf[I18nLanguage]),
       "src/main/resources/com/imcode/imcms/hbm/Document.hbm.xml")
 
-    versionDao = new DocumentVersionDao
-    versionDao.hibernateTemplate = new HibernateTemplate(sf)
+    versionDao = new DocumentVersionDao |< { _.sessionFactory = sf }
 
     db.runScripts("src/test/resources/sql/doc_version.sql")
   }

@@ -27,7 +27,7 @@ class DocumentVersionDao extends HibernateSupport {
   }
 
   //@Transactional
-  def getLatestVersion(docId: JInteger) = hibernate.findByNamedQueryAndNamedParams[DocumentVersion](
+  def getLatestVersion(docId: JInteger) = hibernate.getByNamedQueryAndNamedParams[DocumentVersion](
     "DocumentVersion.getLatestVersion", "docId" -> docId
   )
 
@@ -44,7 +44,7 @@ class DocumentVersionDao extends HibernateSupport {
 
 
   //@Transactional
-  def getDefaultVersion(docId: JInteger) = hibernate.findByNamedQuery[DocumentVersion](
+  def getDefaultVersion(docId: JInteger) = hibernate.getByNamedQuery[DocumentVersion](
     "DocumentVersion.getDefaultVersion", "docId", docId
   )
 
@@ -67,7 +67,7 @@ class DocumentVersionDao extends HibernateSupport {
     }
 
   //@Transactional
-  def getVersion(docId: JInteger, no: JInteger) = hibernate.findByNamedQueryAndNamedParams[DocumentVersion](
+  def getVersion(docId: JInteger, no: JInteger) = hibernate.getByNamedQueryAndNamedParams[DocumentVersion](
     "DocumentVersion.getByDocIdAndNo", "docId" -> docId
   )
 }

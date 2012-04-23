@@ -31,8 +31,7 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
                "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
                "src/main/resources/com/imcode/imcms/hbm/Image.hbm.xml")
 
-    imageDao = new ImageDao
-    imageDao.hibernateTemplate = new HibernateTemplate(sf)
+    imageDao = new ImageDao |< { _.sessionFactory = sf }
 
     languageDao = new LanguageDao
     languageDao.setSessionFactory(sf)

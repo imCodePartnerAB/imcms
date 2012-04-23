@@ -27,8 +27,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
     val sf = db.createHibernateSessionFactory(Seq(classOf[MenuDomainObject], classOf[MenuHistory]),
                "src/main/resources/com/imcode/imcms/hbm/Menu.hbm.xml")
 
-    menuDao = new MenuDao
-    menuDao.hibernateTemplate = new HibernateTemplate(sf)
+    menuDao = new MenuDao |< { _.sessionFactory = sf }
 
     db.runScripts("src/test/resources/sql/text_doc_menu_dao.sql")
   }

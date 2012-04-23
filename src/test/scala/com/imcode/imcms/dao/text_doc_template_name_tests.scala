@@ -23,8 +23,7 @@ class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAft
 
     db.runScripts("src/test/resources/sql/template_names_dao.sql")
 
-    metaDao = new MetaDao
-    metaDao.hibernateTemplate = new HibernateTemplate(sf)
+    metaDao = new MetaDao |< { _.sessionFactory = sf }
   }
 
 

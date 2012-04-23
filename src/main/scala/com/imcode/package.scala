@@ -3,6 +3,8 @@ package com
 package object imcode {
 
   type JBoolean = java.lang.Boolean
+  type JByte = java.lang.Byte
+  type JCharacter = java.lang.Character
   type JInteger = java.lang.Integer
   type JLong = java.lang.Long
   type JFloat = java.lang.Float
@@ -52,6 +54,9 @@ package object imcode {
   class Piper[A](a: A) {
     def |>[B](f: A => B): B = f(a)
 
+    // partial fn
+    // def ?>[B](f: Option[A] => B): B = f(Option(a))
+
     def |<(f: A => Any): A = { f(a); a }
 
     def |<<(byName: => Any): A = { byName; a }
@@ -65,9 +70,20 @@ package object imcode {
   }
 
   /** Creates zero arity fn from by-name parameter. */
-  //def mkFn(byName: => Unit): () => Unit = byName _
+  //def toF[A](byName: => A): () => A = byName _
 
   // import Option.{apply => ?}
+  // bug?,
+  //  scala> {
+  //       | import Option.apply
+  //       | import Option.{apply => ?}
+  //       |
+  //       | val r1 = apply('ok) // Option[Symbol]
+  //       | val f1 = apply _    // Nothing => Option[Nothing]
+  //       |
+  //       | val r2 = ?('ok)     // Option[Symbol]
+  //       | val f2 = ? _        // error: value ? is not a member of object Option
+  //       | }
   def ?[A <: AnyRef](nullable: A) = Option(nullable)
 
   def when[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }

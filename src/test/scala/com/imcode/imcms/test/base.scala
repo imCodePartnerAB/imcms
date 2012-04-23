@@ -135,7 +135,8 @@ class DB(project: Project) {
     "hibernate.connection.autocommit" -> "true",
     "hibernate.cache.provider_class" -> "org.hibernate.cache.HashtableCacheProvider",
     "hibernate.hbm2ddl.auto" -> "create-drop",
-    "hibernate.show_sql" -> "true"
+    "hibernate.show_sql" -> "true",
+    "hibernate.current_session_context_class" -> "thread"
   )
 
   def runScripts(script: String, scripts: String*) {
@@ -147,7 +148,7 @@ class DB(project: Project) {
   def prepare(recreateBeforePrepare: Boolean = false) {
     if (recreateBeforePrepare) recreate()
 
-    val scriptsDir = project.path("src/main/webapp/WEB-INF/sql")
+    val scriptsDir = project.path("src/main/web/WEB-INF/sql")
     val schema = Schema.load(project.file("src/main/resources/schema.xml")).changeScriptsDir(scriptsDir)
 
     new DBAccess(createDataSource()) |> { _ prepare schema }

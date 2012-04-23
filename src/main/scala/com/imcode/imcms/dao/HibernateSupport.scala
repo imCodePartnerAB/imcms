@@ -2,6 +2,8 @@ package com.imcode
 package imcms.dao
 
 import org.hibernate.{SQLQuery, Query, SessionFactory, Session}
+import java.lang.String
+import org.hibernate.transform.ResultTransformer
 
 
 trait HibernateSupport {
@@ -14,6 +16,8 @@ trait HibernateSupport {
 
   object hibernate {
 
+    import HibernateSupport.ResultTransformerFactory
+
     type NamedParam = (String, Any)
 
     def withSession[T](f: Session => T) =  f(sessionFactory.getCurrentSession)
@@ -21,11 +25,11 @@ trait HibernateSupport {
     def flush() = withSession { _.flush() }
 
 
-    private def setParams(ps: Any*)(query: Query) = query |<< {
+    private def setParams[Q <: Query](ps: Any*)(query: Q) = query |<< {
       for ((param, position) <- ps.zipWithIndex) query.setParameter(position, param.asInstanceOf[AnyRef])
     }
 
-    private def setNamedParams(namedParam: NamedParam, namedParams: NamedParam*)(query: Query) = query |<< {
+    private def setNamedParams[Q <: Query](namedParam: NamedParam, namedParams: NamedParam*)(query: Q) = query |<< {
       for ((name, value) <- namedParam +: namedParams) query.setParameter(name, value.asInstanceOf[AnyRef])
     }
 
@@ -51,13 +55,13 @@ trait HibernateSupport {
     }
 
 
-    def find[A](queryString: String, ps: Any*): A =
+    def getByQuery[A](queryString: String, ps: Any*): A =
       runQuery(queryString, ps: _*)(_.uniqueResult().asInstanceOf[A])
 
-    def findByNamedQuery[A](queryName: String, ps: Any*): A =
+    def getByNamedQuery[A](queryName: String, ps: Any*): A =
       runNamedQuery(queryName, ps: _*)(_.uniqueResult().asInstanceOf[A])
 
-    def findByNamedQueryAndNamedParams[A](queryName: String, namedParam: NamedParam, namedParams: NamedParam*): A =
+    def getByNamedQueryAndNamedParams[A](queryName: String, namedParam: NamedParam, namedParams: NamedParam*): A =
       runNamedQueryWithNamedParams(queryName, namedParam, namedParams: _*)(_.uniqueResult().asInstanceOf[A])
 
 
@@ -77,10 +81,12 @@ trait HibernateSupport {
     def listByNamedQueryAndNamedParams[A <: AnyRef](queryName: String, namedParam: NamedParam, namedParams: NamedParam*): JList[A] =
       runNamedQueryWithNamedParams(queryName, namedParam, namedParams: _*)(_.list().asInstanceOf[JList[A]])
 
-
-    def listBySqlQuery[A <: AnyRef](queryString: String, ps: Any*): JList[A] =
-      runSqlQuery(queryName, ps: _*)(_.list().asInstanceOf[JList[A]])
-
+    def listBySqlQuery[A <: AnyRef : ResultTransformerFactory](queryString: String, ps: Any*): JList[A] =
+      runSqlQuery(queryString, ps: _*) { query =>
+        println(">>>>>RSF>>>>> " + implicitly[ResultTransformerFactory[A]])
+        query.setResultTransformer(implicitly[ResultTransformerFactory[A]].transformer)
+        query.list().asInstanceOf[JList[A]]
+      }
 
     def bulkUpdate(queryString: String, ps: Any*): Int =
       runQuery(queryString, ps: _*)(_.executeUpdate())
@@ -112,5 +118,61 @@ trait HibernateSupport {
     def delete[A <: AnyRef](obj: A): Unit = withSession { _.delete(obj) }
 
     def merge[A <: AnyRef](obj: A): A = withSession { _.merge(obj).asInstanceOf[A] }
+  }
+}
+
+
+object HibernateSupport {
+
+  abstract class ResultTransformerFactory[+A <: AnyRef : ClassManifest] {
+    def transformer: ResultTransformer
+
+    override def toString = "ResultTransformerFactory[%s]" format classManifest[A].erasure
+  }
+
+
+  trait ResultTransformerBase { this: ResultTransformer =>
+    def transformList(collection: JList[_]) = collection
+  }
+
+
+  class ArrayResultTransformerFactory[E <: AnyRef : ClassManifest] extends ResultTransformerFactory[Array[E]] {
+    def transformer = new ResultTransformer with ResultTransformerBase {
+      def transformTuple(tuple: Array[AnyRef], aliases: Array[String]) = Array.ofDim[E](tuple.size) |< { arr =>
+        for ((n, i) <- tuple.zipWithIndex) arr(i) = n.asInstanceOf[E]
+      }
+    }
+  }
+
+
+  class SingleValueTransformerFactory[A <: AnyRef : ClassManifest] extends ResultTransformerFactory[A] {
+    def transformer = new ResultTransformer with ResultTransformerBase {
+      def transformTuple(tuple: Array[AnyRef], aliases: Array[String]) = tuple(0)
+    }
+  }
+
+
+  object ResultTransformerFactory extends LowLevelResultTransformerFactoryImplicits {
+    implicit object anyRefArrayResultTransformerFactory extends ArrayResultTransformerFactory[AnyRef]
+  }
+
+
+  class LowLevelResultTransformerFactoryImplicits {
+    implicit object anyRefSingleValueTransformerFactory extends SingleValueTransformerFactory[AnyRef]
+    implicit object stringSingleValueTransformerFactory extends SingleValueTransformerFactory[String]
+    implicit object jIntegerSingleValueTransformerFactory extends SingleValueTransformerFactory[JInteger]
+    implicit object jDoubleSingleValueTransformerFactory extends SingleValueTransformerFactory[JDouble]
+    implicit object jFloatSingleValueTransformerFactory extends SingleValueTransformerFactory[JFloat]
+    implicit object jBooleanSingleValueTransformerFactory extends SingleValueTransformerFactory[JBoolean]
+    implicit object jCharacterSingleValueTransformerFactory extends SingleValueTransformerFactory[JCharacter]
+    implicit object jByteSingleValueTransformerFactory extends SingleValueTransformerFactory[JByte]
+
+    implicit object stringArrayResultTransformerFactory extends ArrayResultTransformerFactory[String]
+    implicit object jIntegerArrayResultTransformerFactory extends ArrayResultTransformerFactory[JInteger]
+    implicit object jDoubleArrayResultTransformerFactory extends ArrayResultTransformerFactory[JDouble]
+    implicit object jFloatArrayResultTransformerFactory extends ArrayResultTransformerFactory[JFloat]
+    implicit object jBooleanArrayResultTransformerFactory extends ArrayResultTransformerFactory[JBoolean]
+    implicit object jCharacterArrayResultTransformerFactory extends ArrayResultTransformerFactory[JCharacter]
+    implicit object jByteArrayResultTransformerFactory extends ArrayResultTransformerFactory[JByte]
   }
 }
