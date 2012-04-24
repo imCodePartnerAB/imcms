@@ -7,7 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import imcms.test.fixtures.UserFX.{admin}
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import imcms.test.Base.{db}
+import imcms.test.Project.{db}
 import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])

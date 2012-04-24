@@ -61,12 +61,8 @@
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
-    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
     <bean id="dao" abstract="true" class="com.imcode.imcms.dao.HibernateSupport"
-          p:hibernateTemplate-ref="hibernateTemplate"/>
+          p:sessionFactory-ref="sessionFactory"/>
 
     <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao" parent="dao"
           p:languageDao-ref="languageDao" p:sessionFactory-ref="sessionFactory"/>
@@ -81,25 +77,15 @@
 
     <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocumentVersionDao" parent="dao"/>
 
-    <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDao">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDao" parent="dao"/>
 
-    <bean id="categoryMapper" class="com.imcode.imcms.mapping.CategoryMapper">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="categoryMapper" class="com.imcode.imcms.mapping.CategoryMapper" parent="dao"/>
 
-    <bean id="ipAccessDao" class="com.imcode.imcms.dao.IPAccessDao">
-        <constructor-arg ref="sessionFactory"/>
-    </bean>
+    <bean id="ipAccessDao" class="com.imcode.imcms.dao.IPAccessDao" parent="dao"/>
 
-    <bean id="nativeQueriesDao" class="com.imcode.imcms.dao.NativeQueriesDao">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="nativeQueriesDao" class="com.imcode.imcms.dao.NativeQueriesDao" parent="dao"/>
 
-    <bean id="systemDao" class="com.imcode.imcms.dao.SystemDao">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="systemDao" class="com.imcode.imcms.dao.SystemDao" parent="dao"/>
 
     <bean id="imageCacheMapper" class="com.imcode.imcms.mapping.ImageCacheMapper"/>
 

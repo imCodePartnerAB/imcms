@@ -8,9 +8,9 @@ import com.imcode.imcms.api.{I18nLanguage, SystemProperty, IPAccess}
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class SystemDao extends HibernateSupport {
 
-  def getProperties() = hibernate.listAll[SystemProperty]()
+  def getProperties(): JList[SystemProperty] = hibernate.listAll()
 
-  def getProperty(name: String) = hibernate.getByQuery[SystemProperty](
+  def getProperty(name: String): SystemProperty = hibernate.getByQuery(
     "SELECT p FROM SystemProperty p WHERE p.name = ?", name)
 
   def saveProperty(property: SystemProperty) = hibernate.saveOrUpdate(property)
@@ -20,7 +20,7 @@ class SystemDao extends HibernateSupport {
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class IPAccessDao extends HibernateSupport {
 
-    def getAll() = hibernate.listAll[IPAccess]()
+    def getAll(): JList[IPAccess] = hibernate.listAll()
 
     def delete(id: JInteger) = hibernate.bulkUpdateByNamedParams(
         "DELETE FROM IPAccess i WHERE i.id = :id", "id" -> id
@@ -28,7 +28,7 @@ class IPAccessDao extends HibernateSupport {
 
     def save(ipAccess: IPAccess ) = hibernate.saveOrUpdate(ipAccess)
 
-    def get(id: JInteger) = hibernate.get[IPAccess](id)
+    def get(id: JInteger): IPAccess = hibernate.get(id)
 }
 
 
@@ -36,13 +36,13 @@ class IPAccessDao extends HibernateSupport {
 class LanguageDao extends HibernateSupport {
 
   // @Transactional
-  def getAllLanguages() = hibernate.listAll[I18nLanguage]()
+  def getAllLanguages(): JList[I18nLanguage] = hibernate.listAll()
 
   //@Transactional
-  def getById(id: JInteger) = hibernate.getByNamedQueryAndNamedParams[I18nLanguage]("I18nLanguage.getById", "id" -> id)
+  def getById(id: JInteger): I18nLanguage = hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getById", "id" -> id)
 
   //@Transactional
-  def getByCode(code: String) = hibernate.getByNamedQueryAndNamedParams[I18nLanguage]("I18nLanguage.getByCode", "code" -> code)
+  def getByCode(code: String): I18nLanguage = hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getByCode", "code" -> code)
 
   //@Transactional
   def saveLanguage(language: I18nLanguage) = hibernate.saveOrUpdate(language.clone())

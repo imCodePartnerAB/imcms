@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import imcms.test._
-import imcms.test.Base._
+import imcms.test.Project._
 import imcms.test.fixtures.UserFX.{admin}
 import org.springframework.orm.hibernate3.HibernateTemplate
 import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}

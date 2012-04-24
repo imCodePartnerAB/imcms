@@ -15,7 +15,7 @@ import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test._
 import fixtures.LanguagesFX
-import imcms.test.Base.{project, db}
+import imcms.test.Project
 import imcode.server.document._
 import java.util.EnumSet
 import imcms.mapping.{DocumentSaver, DocumentStoringVisitor, DocumentMapper}
@@ -34,8 +34,8 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
   var i18nSupport: I18nSupport = _
 
   override def beforeAll() = withLogFailure {
-    db.recreate()
-    project.initImcms(true, true)
+    Project.db.recreate()
+    Project.initImcms(true, true)
 
     i18nSupport = Imcms.getI18nSupport
     docMapper = Imcms.getServices().getDocumentMapper

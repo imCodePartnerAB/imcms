@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import imcms.test.Base.{db}
+import imcms.test.Project.{db}
 import imcms.api.{SystemProperty}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

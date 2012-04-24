@@ -6,7 +6,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{WordSpec, BeforeAndAfterEach, BeforeAndAfterAll}
 import org.scalatest.matchers.MustMatchers
-import imcms.test.Base.{db}
+import imcms.test.Project.{db}
 import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])

@@ -10,7 +10,7 @@ import com.imcode.imcms.api.ContentLoop
 class ContentLoopDao extends HibernateSupport {
 
   //@Transactional
-  def getLoop(loopId: JLong) = hibernate.get[ContentLoop](loopId)
+  def getLoop(loopId: JLong): ContentLoop = hibernate.get(loopId)
 
   /**
    * Returns loop or null if loop can not be found.
@@ -21,12 +21,10 @@ class ContentLoopDao extends HibernateSupport {
    * @return loop or null if loop can not be found.
    */
   //@Transactional
-  def getLoop(docId: JInteger, docVersionNo: JInteger, no: JInteger) = hibernate.getByNamedQueryAndNamedParams[ContentLoop](
-    "ContentLoop.getByDocIdAndDocVersionNoAndNo",
-    "docId" -> docId,
-    "docVersionNo" -> docVersionNo,
-    "no" -> no
-  )
+  def getLoop(docId: JInteger, docVersionNo: JInteger, no: JInteger): ContentLoop =
+    hibernate.getByNamedQueryAndNamedParams(
+      "ContentLoop.getByDocIdAndDocVersionNoAndNo", "docId" -> docId, "docVersionNo" -> docVersionNo, "no" -> no
+    )
 
 
   /**
@@ -37,7 +35,7 @@ class ContentLoopDao extends HibernateSupport {
    * @return document content loops.
    */
   //@Transactional
-  def getLoops(docId: JInteger, docVersionNo: JInteger) = hibernate.listByNamedQueryAndNamedParams[ContentLoop](
+  def getLoops(docId: JInteger, docVersionNo: JInteger): JList[ContentLoop] = hibernate.listByNamedQueryAndNamedParams(
     "ContentLoop.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
   )
 

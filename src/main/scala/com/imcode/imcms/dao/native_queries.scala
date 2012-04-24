@@ -17,6 +17,7 @@ class NativeQueriesDao extends HibernateSupport {
     "SELECT mime FROM mime_types WHERE mime_id > 0 ORDER BY mime_id"
   )
 
+
   def getAllMimeTypesWithDescriptions(languageIso639_2: String): JList[Array[String]] = hibernate.listBySqlQuery(
     "SELECT mime, mime_name FROM mime_types WHERE lang_prefix = ? AND mime_id > 0 ORDER BY mime_id", languageIso639_2
   )

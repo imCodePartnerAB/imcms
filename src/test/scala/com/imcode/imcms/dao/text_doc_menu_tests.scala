@@ -11,7 +11,7 @@ import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test._
 import fixtures.{DocItemFX, DocFX, VersionFX}
 import imcms.test.fixtures.UserFX.{admin}
-import imcms.test.Base.{db}
+import imcms.test.Project.{db}
 import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])

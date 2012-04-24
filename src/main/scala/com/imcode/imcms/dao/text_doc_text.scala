@@ -17,7 +17,7 @@ class TextDao extends HibernateSupport {
 
 
   //@Transactional
-  def getTextById(id: JLong) = hibernate.get[TextDomainObject](id)
+  def getTextById(id: JLong): TextDomainObject = hibernate.get(id)
 
 
   //@Transactional
@@ -26,10 +26,11 @@ class TextDao extends HibernateSupport {
 
 
   //@Transactional
-  def deleteTexts(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
-    "Text.deleteTexts",
-    "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
-  )
+  def deleteTexts(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) =
+    hibernate.bulkUpdateByNamedQueryAndNamedParams(
+      "Text.deleteTexts",
+      "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
+    )
 
 
   //@Transactional
@@ -43,16 +44,17 @@ class TextDao extends HibernateSupport {
    * @return all texts in a doc.
    */
   //@Transactional
-  def getTexts(docId: JInteger, docVersionNo: JInteger) = hibernate.listByNamedQueryAndNamedParams[TextDomainObject](
-    "Text.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
-  )
+  def getTexts(docId: JInteger, docVersionNo: JInteger): JList[TextDomainObject] =
+    hibernate.listByNamedQueryAndNamedParams(
+      "Text.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
+    )
 
   /**
    * Returns text fields for the same doc, version and language.
    */
   //@Transactional
   def getTexts(docId: JInteger, docVersionNo: JInteger, languageId: JInteger): JList[TextDomainObject] =
-    hibernate.listByNamedQueryAndNamedParams[TextDomainObject](
+    hibernate.listByNamedQueryAndNamedParams(
       "Text.getByDocIdAndDocVersionNoAndLanguageId",
       "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
     )

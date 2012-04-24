@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import imcms.test.Base.{db}
+import imcms.test.Project.{db}
 
 @RunWith(classOf[JUnitRunner])
 class LanguageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {

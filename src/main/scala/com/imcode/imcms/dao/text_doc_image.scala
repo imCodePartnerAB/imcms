@@ -95,13 +95,13 @@ class ImageDao extends HibernateSupport {
   def saveImageHistory(imageHistory: ImageHistory) = hibernate.save(imageHistory)
 
   //@Transactional
-  def getImages(docId: JInteger, docVersionNo: JInteger) =
+  def getImages(docId: JInteger, docVersionNo: JInteger): JList[ImageDomainObject] =
     hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
       "Image.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
     ) |> ImageUtil.initImagesSources
 
   //@Transactional
-  def getImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) =
+  def getImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger): JList[ImageDomainObject] =
      hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
        "Image.getByDocIdAndDocVersionNoAndLanguageId",
        "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
@@ -109,7 +109,8 @@ class ImageDao extends HibernateSupport {
 
 
   //@Transactional
-  def deleteImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
-    "Image.deleteImages", "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
-  )
+  def deleteImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) =
+    hibernate.bulkUpdateByNamedQueryAndNamedParams(
+      "Image.deleteImages", "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
+    )
 }

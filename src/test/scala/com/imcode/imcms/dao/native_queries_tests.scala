@@ -4,7 +4,7 @@ package imcms.dao
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test.withLogFailure
-import imcms.test.Base.{db}
+import imcms.test.Project.{db}
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuite}
 import scala.collection.JavaConversions._
 

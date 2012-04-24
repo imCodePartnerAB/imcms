@@ -16,7 +16,7 @@ class MetaDao extends HibernateSupport {
   private val META_HEADLINE_MAX_LENGTH = 255
   private val META_TEXT_MAX_LENGTH = 1000
 
-  def getMeta(docId: JInteger) = hibernate.get[Meta](docId)
+  def getMeta(docId: JInteger): Meta = hibernate.get(docId)
 
   /**  Updates doc's access and modified date-time. */
   def touch(doc: DocumentDomainObject, user: UserDomainObject): Unit = touch(doc, new Date, user)
@@ -46,14 +46,14 @@ class MetaDao extends HibernateSupport {
     )
   }
 
-  def getDocumentIdByAlias(alias: String) = hibernate.getByNamedQueryAndNamedParams[JInteger](
+  def getDocumentIdByAlias(alias: String): JInteger = hibernate.getByNamedQueryAndNamedParams(
     "DocumentProperty.getDocumentIdByAlias",
 
     "name" -> DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
     "value" -> alias.toLowerCase
   )
 
-  def getI18nMeta(docId: JInteger, language: I18nLanguage) =
+  def getI18nMeta(docId: JInteger, language: I18nLanguage): I18nMeta =
     hibernate.getByNamedQueryAndNamedParams[I18nMeta](
       "I18nMeta.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
     ) |> ? getOrElse new I18nMeta |< { i18nMeta =>
@@ -65,7 +65,7 @@ class MetaDao extends HibernateSupport {
     }
 
 
-  def getI18nMetas(docId: JInteger): JList[I18nMeta] = hibernate.listByNamedQueryAndNamedParams[I18nMeta](
+  def getI18nMetas(docId: JInteger): JList[I18nMeta] = hibernate.listByNamedQueryAndNamedParams(
     "I18nMeta.getByDocId", "docId" -> docId
   )
 
@@ -128,10 +128,10 @@ class MetaDao extends HibernateSupport {
 
 
   def getIncludes(docId: JInteger): JList[Include] =
-    hibernate.listByQuery[Include]("select i from Include i where i.metaId = ?", docId)
+    hibernate.listByQuery("select i from Include i where i.metaId = ?", docId)
 
 
-  def getTemplateNames(docId: JInteger) = hibernate.get[TemplateNames](docId)
+  def getTemplateNames(docId: JInteger): TemplateNames = hibernate.get(docId)
 
 
   def deleteTemplateNames(docId: JInteger) = hibernate.bulkUpdateByNamedParams(
@@ -139,9 +139,10 @@ class MetaDao extends HibernateSupport {
   )
 
 
-  def getFileReferences(docId: JInteger, docVersionNo: JInteger) = hibernate.listByNamedQueryAndNamedParams[FileReference](
-    "FileDoc.getReferences", "docId" -> docId, "docVersionNo" -> docVersionNo
-  )
+  def getFileReferences(docId: JInteger, docVersionNo: JInteger): JList[FileReference] =
+    hibernate.listByNamedQueryAndNamedParams(
+      "FileDoc.getReferences", "docId" -> docId, "docVersionNo" -> docVersionNo
+    )
 
 
   def saveFileReference(fileRef: FileReference) = hibernate.saveOrUpdate(fileRef)
@@ -152,7 +153,7 @@ class MetaDao extends HibernateSupport {
   )
 
 
-  def getHtmlReference(docId: JInteger, docVersionNo: JInteger) = hibernate.getByNamedQueryAndNamedParams[HtmlReference](
+  def getHtmlReference(docId: JInteger, docVersionNo: JInteger): HtmlReference = hibernate.getByNamedQueryAndNamedParams(
     "HtmlDoc.getReference", "docId" -> docId, "docVersionNo" -> docVersionNo
   )
 
@@ -160,7 +161,7 @@ class MetaDao extends HibernateSupport {
   def saveHtmlReference(reference: HtmlReference) = hibernate.saveOrUpdate(reference)
 
 
-  def getUrlReference(docId: JInteger, docVersionNo: JInteger) = hibernate.getByNamedQueryAndNamedParams[UrlReference](
+  def getUrlReference(docId: JInteger, docVersionNo: JInteger): UrlReference = hibernate.getByNamedQueryAndNamedParams(
     "UrlDoc.getReference", "docId" -> docId, "docVersionNo" -> docVersionNo
   )
 
@@ -168,7 +169,7 @@ class MetaDao extends HibernateSupport {
   def saveUrlReference(reference: UrlReference) = hibernate.merge(reference)
 
 
-  def getAllAliases() = hibernate.listByNamedQueryAndNamedParams[String](
+  def getAllAliases(): JList[String] = hibernate.listByNamedQueryAndNamedParams(
     "DocumentProperty.getAllAliases",
 
     "name" -> DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS
@@ -176,7 +177,7 @@ class MetaDao extends HibernateSupport {
 
 
 
-  def getAliasProperty(alias: String) = hibernate.getByNamedQueryAndNamedParams[DocumentProperty](
+  def getAliasProperty(alias: String): DocumentProperty  = hibernate.getByNamedQueryAndNamedParams(
     "DocumentProperty.getAliasProperty",
 
     "name" -> DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
@@ -224,24 +225,23 @@ class MetaDao extends HibernateSupport {
   }
 
 
-  def getAllDocumentIds() = hibernate.listByNamedQuery[JInteger]("Meta.getAllDocumentIds")
+  def getAllDocumentIds(): JList[JInteger] = hibernate.listByNamedQuery("Meta.getAllDocumentIds")
 
 
-  def getDocumentIdsInRange(min: JInteger, max: JInteger) = hibernate.listByNamedQueryAndNamedParams[JInteger](
+  def getDocumentIdsInRange(min: JInteger, max: JInteger): JList[JInteger] = hibernate.listByNamedQueryAndNamedParams(
     "Meta.getDocumentIdsInRange", "min" -> min, "max" -> max
   )
 
 
-  def getMaxDocumentId() = hibernate.getByNamedQuery[JInteger]("Meta.getMaxDocumentId")
+  def getMaxDocumentId(): JInteger = hibernate.getByNamedQuery("Meta.getMaxDocumentId")
 
 
-  def getMinDocumentId() = hibernate.getByNamedQuery[JInteger]("Meta.getMinDocumentId")
+  def getMinDocumentId(): JInteger = hibernate.getByNamedQuery("Meta.getMinDocumentId")
 
 
   // todo: check
-  def getMinMaxDocumentIds() =
-    hibernate.getByNamedQuery[Array[JInteger]]("Meta.getMinMaxDocumentIds")
-    //???hibernate.getByNamedQueryAndNamedParams[Array[AnyRef]]("Meta.getMinMaxDocumentIds")().map(_.asInstanceOf[JInteger])
+  def getMinMaxDocumentIds(): Array[JInteger] =
+    hibernate.getByNamedQuery("Meta.getMinMaxDocumentIds")
 
 
   def getEnabledLanguages(docId: JInteger) = sys.error("Not implemented")

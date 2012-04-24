@@ -13,14 +13,15 @@ import imcode.server.document.textdocument.MenuDomainObject
 class MenuDao extends HibernateSupport {
 
   //@Transactional
-  def getMenu(docId: JInteger, docVersionNo: JInteger, no: JInteger) = hibernate.getByNamedQuery[MenuDomainObject](
+  def getMenu(docId: JInteger, docVersionNo: JInteger, no: JInteger): MenuDomainObject = hibernate.getByNamedQuery(
     "Menu.getMenu", "docId" -> docId, "docVersionNo" -> docVersionNo, "no", no
   )
 
   //@Transactional
-  def getMenus(docId: JInteger, docVersionNo: JInteger) = hibernate.listByNamedQueryAndNamedParams[MenuDomainObject](
-    "Menu.getMenus", "docId" -> docId, "docVersionNo" -> docVersionNo
-  )
+  def getMenus(docId: JInteger, docVersionNo: JInteger): JList[MenuDomainObject] =
+    hibernate.listByNamedQueryAndNamedParams(
+      "Menu.getMenus", "docId" -> docId, "docVersionNo" -> docVersionNo
+    )
 
   //@Transactional
   def saveMenu(menu: MenuDomainObject): MenuDomainObject = {
@@ -44,7 +45,7 @@ class MenuDao extends HibernateSupport {
 
     var count = 0
     while (scroll.next) {
-      session.delete(scroll.get(0)) //get(0).asInstanceOf[MenuDomainObject])
+      session.delete(scroll.get(0))
       count += 1
       if (count % 25 == 0) {
         session.flush
