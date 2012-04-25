@@ -10,17 +10,17 @@ import _root_.com.imcode.imcms.test.fixtures.{LanguagesFX, UserFX}
 
 import imcode.server.user.UserDomainObject
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import javax.servlet.http.HttpServletRequest
 import imcode.server.{Imcms, ImcmsConstants}
+import org.scalatest.mock.MockitoSugar
 
 @RunWith(classOf[JUnitRunner])
-class DocGetterCallbackSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class DocGetterCallbackSuite extends FunSuite {
 
   Imcms.setI18nSupport(LanguagesFX.i18nSupport)
 
   test("default user - no params") {
-    val request = mock(classOf[HttpServletRequest])
+    val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.user
 
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
@@ -32,7 +32,7 @@ class DocGetterCallbackSuite extends FunSuite with MustMatchers with BeforeAndAf
   }
 
   test("default user changing language through request param") {
-    val request = mock(classOf[HttpServletRequest])
+    val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.user
 
     Imcms.getI18nSupport.setDefaultLanguage(LanguagesFX.english)
@@ -48,7 +48,7 @@ class DocGetterCallbackSuite extends FunSuite with MustMatchers with BeforeAndAf
   }
 
   test("default user requesting working version") {
-    val request = mock(classOf[HttpServletRequest])
+    val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.user
 
     Imcms.getI18nSupport.setDefaultLanguage(LanguagesFX.english)
@@ -62,7 +62,7 @@ class DocGetterCallbackSuite extends FunSuite with MustMatchers with BeforeAndAf
   }
 
   test("default user requesting custom version") {
-    val request = mock(classOf[HttpServletRequest])
+    val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.user
 
     Imcms.getI18nSupport.setDefaultLanguage(LanguagesFX.english)
@@ -76,7 +76,7 @@ class DocGetterCallbackSuite extends FunSuite with MustMatchers with BeforeAndAf
   }
 
   test("power user requesting working version") {
-    val request = mock(classOf[HttpServletRequest])
+    val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.admin
 
     Imcms.getI18nSupport.setDefaultLanguage(LanguagesFX.english)
@@ -94,7 +94,7 @@ class DocGetterCallbackSuite extends FunSuite with MustMatchers with BeforeAndAf
   }
 
   test("power user requesting custom version") {
-    val request = mock(classOf[HttpServletRequest])
+    val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.admin
 
     Imcms.getI18nSupport.setDefaultLanguage(LanguagesFX.english)

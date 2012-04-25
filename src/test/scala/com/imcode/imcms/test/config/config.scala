@@ -52,20 +52,22 @@ class BasicConfig {
 @Configuration
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 @Import(Array(classOf[BasicConfig]))
-class HibernateConfig {
+class AbstractHibernateConfig {
 
   @Autowired
-  private var dataSource: DataSource = _
+  var dataSource: DataSource = _
+
+  @Autowired
+  var hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration = _
 
   @Bean(autowire = Autowire.BY_TYPE)
   def txManager = new org.springframework.orm.hibernate4.HibernateTransactionManager
 
-  @Bean(autowire = Autowire.BY_TYPE)
-  def sessionFactory = sessionFactoryBuilder.buildSessionFactory()
-
-  @Bean
-  def sessionFactoryBuilder = new LocalSessionFactoryBuilder(dataSource)
-
   @Bean
   def exTranslator = new HibernateExceptionTranslator
+
+  @Bean
+  def sessionFactory = new LocalSessionFactoryBuilder(dataSource) |> hibernatePropertiesConfigurator |> {
+    _.buildSessionFactory()
+  }
 }

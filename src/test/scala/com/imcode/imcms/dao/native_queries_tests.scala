@@ -6,9 +6,9 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuite}
 import scala.collection.JavaConversions._
 import org.springframework.beans.factory.annotation.Autowire
-import org.springframework.context.annotation.{Bean, Import}
 import com.imcode.imcms.test.{Project, withLogFailure}
-import com.imcode.imcms.test.config.HibernateConfig
+import org.springframework.context.annotation.{Bean, Import}
+import com.imcode.imcms.test.config.{AbstractHibernateConfig}
 
 
 @RunWith(classOf[JUnitRunner])
@@ -22,9 +22,9 @@ class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfte
     Project.testDB.recreate()
     Project.testDB.runScripts("src/test/resources/sql/native_queries_dao.sql")
 
-    val ctx = Project.spring.createCtx(classOf[NativeQueriesConfig], Project.hibernate.configurators.Basic)
-
-    nativeQueriesDao = ctx.getBean(classOf[NativeQueriesDao])
+    nativeQueriesDao = Project.spring.createCtx(classOf[NativeQueriesSuiteConfig]) |> {
+      _.getBean(classOf[NativeQueriesDao])
+    }
   }
 
 
@@ -75,9 +75,13 @@ class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfte
 }
 
 
-@Import(Array(classOf[HibernateConfig]))
-class NativeQueriesConfig {
+@Import(Array(classOf[AbstractHibernateConfig]))
+class NativeQueriesSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
   def nativeQueriesDao = new NativeQueriesDao
+
+  @Bean
+  def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
+    Project.hibernate.configurators.BasicWithSql
 }

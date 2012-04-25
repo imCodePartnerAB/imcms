@@ -9,27 +9,24 @@ import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
-import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test.Project.{testDB}
 import imcms.test.fixtures.LanguagesFX.{english, swedish, languages}
 import imcode.server.user.{RoleId, RoleDomainObject, UserDomainObject}
 import org.scalatest.fixture.FixtureFunSuite
-import org.springframework.orm.hibernate3.HibernateTemplate
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 
 @RunWith(classOf[JUnitRunner])
-class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
 
   type FixtureParam = I18nLanguage
 
 	var textDao: TextDao = _
 
-  val admin = new UserDomainObject(0) {
-    addRoleId(RoleId.SUPERADMIN)
-  }
+  val admin = new UserDomainObject(0) |< { _.addRoleId(RoleId.SUPERADMIN) }
 
   override def beforeAll() = testDB.recreate()
 
-  override def beforeEach() {
+  def before {
     val sf = testDB.createHibernateSessionFactory(Seq(classOf[I18nLanguage], classOf[TextDomainObject], classOf[TextHistory]),
                "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
                "src/main/resources/com/imcode/imcms/hbm/Text.hbm.xml")
@@ -174,11 +171,11 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
 
       expect(nos.size * contentInfos.size) { texts.size }
 
-      expect(nos.size, "Texts count outsude of content loop") {
+      expect(nos.size, "Texts count outsude content loop") {
         texts filter { text => text.getContentLoopNo == null && text.getContentNo == null} size
       }
 
-      expect(nos.size, "Texts count inside of content loop") {
+      expect(nos.size, "Texts count inside content loop") {
         texts filter { text =>
           text.getContentLoopNo == contentInfo.loopNo &&
           text.getContentNo == contentInfo.contentNo

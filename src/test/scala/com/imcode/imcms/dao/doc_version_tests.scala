@@ -9,14 +9,17 @@ import org.scalatest.matchers.MustMatchers
 import imcms.test._
 import imcms.test.Project.{testDB}
 import imcms.test.fixtures.UserFX.{admin}
-import org.springframework.orm.hibernate3.HibernateTemplate
 import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 import imcms.api._
 import org.scalatest._
+import com.imcode.imcms.test.config.AbstractHibernateConfig
+import org.springframework.context.annotation.{Bean, Import}
+import org.springframework.beans.factory.annotation.Autowire
 
 @RunWith(classOf[JUnitRunner])
-class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach with GivenWhenThen {
+class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll with BeforeAndAfter with GivenWhenThen {
+
   implicit object DocumentVersion extends Ordering[DocumentVersion] {
     def compare(v1: DocumentVersion, v2: DocumentVersion) = v1.getNo.intValue - v2.getNo.intValue
   }
@@ -27,22 +30,10 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
 
   override def beforeAll() = testDB.recreate()
 
-  override def beforeEach() = withLogFailure {
-    val sf = testDB.createHibernateSessionFactory(
-      Seq(
-        classOf[Meta],
-        classOf[I18nMeta],
-        classOf[FileReference],
-        classOf[UrlReference],
-        classOf[HtmlReference],
-        classOf[CategoryDomainObject],
-        classOf[CategoryTypeDomainObject],
-        classOf[DocumentProperty],
-        classOf[DocumentVersion],
-        classOf[I18nLanguage]),
-      "src/main/resources/com/imcode/imcms/hbm/Document.hbm.xml")
+  before {
+    val ctx = Project.spring.createCtx(classOf[DocVersionDaoSuiteConfig])
 
-    versionDao = new DocumentVersionDao |< { _.sessionFactory = sf }
+    versionDao = ctx.getBean(classOf[DocumentVersionDao])
 
     testDB.runScripts("src/test/resources/sql/doc_version.sql")
   }
@@ -51,7 +42,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
     versionDao.createVersion(docId, userId) |> { savedVO =>
       savedVO.getId must not be (null)
 
-      doto(getVersion(docId, savedVO.getNo)) { loadedVO =>
+      getVersion(docId, savedVO.getNo) |< { loadedVO =>
         loadedVO must have (
           'docId (docId),
           'createdBy (userId),
@@ -61,7 +52,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
     }
 
   def getVersion(docId: JInteger = 1001, no: JInteger = 0, assertExists: Boolean = true) =
-    doto(versionDao.getVersion(docId, no)) { version =>
+    versionDao.getVersion(docId, no) |< { version =>
       if (assertExists) assert(version != null, "Version docId: %s, no: %s".format(docId, no))
     }
 
@@ -171,4 +162,32 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
       }
     }
   }
+}
+
+
+@Import(Array(classOf[AbstractHibernateConfig]))
+class DocVersionDaoSuiteConfig {
+
+  @Bean(autowire = Autowire.BY_TYPE)
+  def versionDao = new DocumentVersionDao
+
+  @Bean
+  def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
+    Function.chain(Seq(
+      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Project.hibernate.configurators.BasicWithSql,
+      Project.hibernate.configurators.addAnnotatedClasses(
+        classOf[Meta],
+        classOf[I18nMeta],
+        classOf[FileReference],
+        classOf[UrlReference],
+        classOf[HtmlReference],
+        classOf[CategoryDomainObject],
+        classOf[CategoryTypeDomainObject],
+        classOf[DocumentProperty],
+        classOf[DocumentVersion],
+        classOf[I18nLanguage]
+      ),
+      Project.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
+    ))
 }

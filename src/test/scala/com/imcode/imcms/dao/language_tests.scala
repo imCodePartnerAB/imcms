@@ -5,14 +5,12 @@ import imcms.api.{SystemProperty, I18nLanguage}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.MustMatchers
 import imcms.test.Project.{testDB}
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
-import com.imcode.imcms.test.config.HibernateConfig
-import com.imcode.imcms.test.{SpringUtils, Project}
+import com.imcode.imcms.test.config.{AbstractHibernateConfig}
+import com.imcode.imcms.test.{Project}
 import org.springframework.context.annotation.{Bean, Import}
-import org.springframework.context.annotation.Bean._
-import org.springframework.beans.factory.annotation.Autowire
+import org.springframework.beans.factory.annotation.{Autowire}
 
 @RunWith(classOf[JUnitRunner])
 class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
@@ -23,16 +21,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
   override def beforeAll() = testDB.recreate()
 
   before {
-    val ctx = Project.spring.createCtx(classOf[LanguageConfig],
-      Project.hibernate.configurators.Basic
-        andThen Project.hibernate.configurators.Hbm2ddlAutoCreateDrop
-        andThen Project.hibernate.configurators.XmlFiles(
-          "com/imcode/imcms/hbm/I18nLanguage.hbm.xml"
-        )
-        andThen Project.hibernate.configurators.AnnotatedClasses(
-          classOf[SystemProperty], classOf[I18nLanguage]
-        )
-    )
+    val ctx = Project.spring.createCtx(classOf[LanguageDaoSuiteConfig])
 
     systemDao = ctx.getBean(classOf[SystemDao])
     languageDao = ctx.getBean(classOf[LanguageDao])
@@ -110,12 +99,21 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
 }
 
 
-@Import(Array(classOf[HibernateConfig]))
-class LanguageConfig {
+@Import(Array(classOf[AbstractHibernateConfig]))
+class LanguageDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
   def languageDao = new LanguageDao
 
   @Bean(autowire = Autowire.BY_TYPE)
   def systemDao = new SystemDao
+
+  @Bean
+  def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
+    Function.chain(Seq(
+      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Project.hibernate.configurators.BasicWithSql,
+      Project.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty], classOf[I18nLanguage]),
+      Project.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/I18nLanguage.hbm.xml")
+    ))
 }

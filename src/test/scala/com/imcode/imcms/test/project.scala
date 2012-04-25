@@ -8,12 +8,10 @@ import org.hibernate.SessionFactory
 import org.hibernate.cfg.{Configuration}
 import java.util.concurrent.atomic.AtomicReference
 import org.springframework.core.env.Environment
-import org.springframework.orm.hibernate4.{LocalSessionFactoryBuilder}
 import org.springframework.context.annotation._
-import org.springframework.beans.factory.config.{BeanPostProcessor}
 import java.lang.{Class, String}
-import com.imcode.imcms.test.config.ProjectConfig
 import org.springframework.context.ApplicationContext
+import com.imcode.imcms.test.config.{ProjectConfig}
 
 object Project extends Project
 
@@ -29,14 +27,21 @@ class Project extends ProjectTestDB {
 
   val env = spring.ctx.getBean(classOf[Environment])
 
+  object spring {
+    val ctx = createCtx(classOf[ProjectConfig])
+
+    def createCtx(annotatedClass: Class[_]) = new AnnotationConfigApplicationContext(annotatedClass)
+  }
+
+
   object hibernate {
     type Configurator = Configuration => Configuration
 
     object configurators {
-      val Production: Configurator = _.configure()
       val Dialect: Configurator = _.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect")
       val Cache: Configurator =  _.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.HashtableCacheProvider")
       val Hbm2ddlAutoCreateDrop: Configurator = _.setProperty("hibernate.hbm2ddl.auto", "create-drop")
+      val Production: Configurator = _.configure()
       val Sql: Configurator =
         _.setProperty("hibernate.use_sql_comments", "true")
          .setProperty("hibernate.show_sql", "true")
@@ -45,39 +50,16 @@ class Project extends ProjectTestDB {
       val Basic: Configurator = Dialect andThen Cache
       val BasicWithSql: Configurator = Basic andThen Sql
 
-      def AnnotatedClasses(annotatedClasses: Class[_]*)(configuration: Configuration) = configuration |<< {
+      def addAnnotatedClasses(annotatedClasses: Class[_]*)(configuration: Configuration) = configuration |<< {
         annotatedClasses foreach configuration.addAnnotatedClass
       }
 
-      def XmlFiles(xmlFiles: String*)(configuration: Configuration) = configuration |<< {
+      def addXmlFiles(xmlFiles: String*)(configuration: Configuration) = configuration |<< {
         xmlFiles foreach { xmlFile => ClassLoader.getSystemResource(xmlFile).getFile |> configuration.addFile }
       }
     }
   }
 
-  object spring {
-    val ctx = createCtx(classOf[ProjectConfig])
-
-    def createCtx(annotatedClass: Class[_]) = new AnnotationConfigApplicationContext(annotatedClass)
-
-    def createCtx(annotatedClass: Class[_], hibernateConfigurator: hibernate.Configurator) =
-      new AnnotationConfigApplicationContext() |< { c =>
-        c.getBeanFactory.addBeanPostProcessor(new BeanPostProcessor {
-          def postProcessAfterInitialization(bean: AnyRef, beanName: String) = {
-            if (bean.isInstanceOf[LocalSessionFactoryBuilder]) {
-              hibernateConfigurator(bean.asInstanceOf[LocalSessionFactoryBuilder])
-            }
-
-            bean
-          }
-
-          def postProcessBeforeInitialization(bean: AnyRef, beanName: String)  = bean
-        })
-
-        c.register(annotatedClass)
-        c.refresh()
-      }
-  }
 
   def path(relativePath: String) = new File(basedir, relativePath).getCanonicalPath
 
@@ -170,6 +152,7 @@ trait ProjectTestDB { project: Project =>
 
         c.buildSessionFactory
       }
+
 
     def hibernateProperties = Map()
   }

@@ -1,17 +1,20 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.api.ContentLoop
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
-import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import imcms.test.Project.{testDB}
-import org.springframework.orm.hibernate3.{HibernateTemplate}
+import com.imcode.imcms.test.Project
+import com.imcode.imcms.test.config.AbstractHibernateConfig
+import org.springframework.context.annotation.{Bean, Import}
+import org.springframework.beans.factory.annotation.Autowire
+import com.imcode.imcms.api.{ContentLoop}
 
 @RunWith(classOf[JUnitRunner])
-class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
 
   // loops predefined in src/test/resources/dbunit-content_loop.xml: loop_<contents-count>_[sort-order]_id
   val loop_0_id = 0
@@ -27,11 +30,10 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
   override def beforeAll() = testDB.recreate()
 
-  override def beforeEach() {
-    val sf = testDB.createHibernateSessionFactory(Seq(classOf[ContentLoop]),
-               "src/main/resources/com/imcode/imcms/hbm/ContentLoop.hbm.xml")
+  before {
+    val ctx = Project.spring.createCtx(classOf[ContentLoopDaoSuiteConfig])
 
-    contentLoopDao = new ContentLoopDao |< { _.sessionFactory = sf }
+    contentLoopDao = ctx.getBean(classOf[ContentLoopDao])
 
     testDB.runScripts("src/test/resources/sql/content_loop_dao.sql")
   }
@@ -149,4 +151,20 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
     case null => 0
     case n => n.intValue + 1
   }
+}
+
+@Import(Array(classOf[AbstractHibernateConfig]))
+class ContentLoopDaoSuiteConfig {
+
+  @Bean(autowire = Autowire.BY_TYPE)
+  def contentLoopDao = new ContentLoopDao
+
+  @Bean
+  def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
+    Function.chain(Seq(
+      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Project.hibernate.configurators.BasicWithSql,
+      Project.hibernate.configurators.addAnnotatedClasses(classOf[ContentLoop]),
+      Project.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/ContentLoop.hbm.xml")
+    ))
 }
