@@ -1,23 +1,19 @@
 package com.imcode
 package imcms.test
 
-import java.io.{FileReader, File}
+import java.io.{File}
 import imcode.server.Imcms
 import org.apache.commons.dbcp.BasicDataSource
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.{Configuration}
 import java.util.concurrent.atomic.AtomicReference
-import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.core.env.Environment
-import org.springframework.beans.factory.annotation.{Autowire, Autowired}
-import org.springframework.orm.hibernate4.{HibernateExceptionTranslator, LocalSessionFactoryBuilder}
-import javax.sql.DataSource
+import org.springframework.orm.hibernate4.{LocalSessionFactoryBuilder}
 import org.springframework.context.annotation._
-import org.slf4j.Logger
-import org.springframework.beans.factory.config.{InstantiationAwareBeanPostProcessor, BeanPostProcessor}
-import org.springframework.beans.PropertyValues
-import java.beans.PropertyDescriptor
+import org.springframework.beans.factory.config.{BeanPostProcessor}
 import java.lang.{Class, String}
+import com.imcode.imcms.test.config.ProjectConfig
+import org.springframework.context.ApplicationContext
 
 object Project extends Project
 
@@ -46,7 +42,16 @@ class Project extends ProjectTestDB {
          .setProperty("hibernate.show_sql", "true")
          .setProperty("hibernate.format_sql", "true")
 
-      val Basic: Configurator = Dialect andThen Cache andThen Sql
+      val Basic: Configurator = Dialect andThen Cache
+      val BasicWithSql: Configurator = Basic andThen Sql
+
+      def AnnotatedClasses(annotatedClasses: Class[_]*)(configuration: Configuration) = configuration |<< {
+        annotatedClasses foreach configuration.addAnnotatedClass
+      }
+
+      def XmlFiles(xmlFiles: String*)(configuration: Configuration) = configuration |<< {
+        xmlFiles foreach { xmlFile => ClassLoader.getSystemResource(xmlFile).getFile |> configuration.addFile }
+      }
     }
   }
 
@@ -196,63 +201,7 @@ object FileWatcher {
   }
 }
 
-@org.springframework.context.annotation.Configuration
-@PropertySource(Array("classpath:test-server.properties"))
-class ProjectConfig {
 
-  @Autowired
-  var env: Environment = _
-
-  @Scope("prototype")
-  @Bean(destroyMethod = "close")
-  def dataSource = new org.apache.commons.dbcp.BasicDataSource |< { ds =>
-    ds.setDriverClassName(env.getRequiredProperty("JdbcDriver"))
-    ds.setUsername(env.getRequiredProperty("Username"))
-    ds.setPassword(env.getRequiredProperty("Password"))
-    ds.setTestOnBorrow(true)
-    ds.setValidationQuery("select 1")
-    ds.setMaxActive(1)
-  }
-}
-
-
-@org.springframework.context.annotation.Configuration
-@PropertySource(Array("classpath:test-server.properties"))
-class BasicConfig {
-
-  @Autowired
-  var env: Environment = _
-
-  @Bean(destroyMethod = "close")
-  def dataSource = new org.apache.commons.dbcp.BasicDataSource |< { ds =>
-    ds.setDriverClassName(env.getRequiredProperty("JdbcDriver"))
-    ds.setUrl(env.getRequiredProperty("JdbcUrl"))
-    ds.setUsername(env.getRequiredProperty("Username"))
-    ds.setPassword(env.getRequiredProperty("Password"))
-    ds.setTestOnBorrow(true)
-    ds.setValidationQuery("select 1")
-    ds.setMaxActive(1)
-  }
-}
-
-
-@org.springframework.context.annotation.Configuration
-@EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
-@Import(Array(classOf[BasicConfig]))
-class HibernateConfig {
-
-  @Autowired
-  private var dataSource: DataSource = _
-
-  @Bean(autowire = Autowire.BY_TYPE)
-  def txManager = new org.springframework.orm.hibernate4.HibernateTransactionManager
-
-  @Bean(autowire = Autowire.BY_TYPE)
-  def sessionFactory = sessionFactoryBuilder.buildSessionFactory()
-
-  @Bean
-  def sessionFactoryBuilder = new LocalSessionFactoryBuilder(dataSource)
-
-  @Bean
-  def exTranslator = new HibernateExceptionTranslator
+object SpringUtils {
+  def bean[A:ClassManifest](ctx: ApplicationContext): A = ctx.getBean(classManifest[A].erasure.asInstanceOf[Class[A]])
 }

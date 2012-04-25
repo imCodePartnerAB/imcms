@@ -7,7 +7,8 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuite}
 import scala.collection.JavaConversions._
 import org.springframework.beans.factory.annotation.Autowire
 import org.springframework.context.annotation.{Bean, Import}
-import com.imcode.imcms.test.{HibernateConfig, Project, withLogFailure}
+import com.imcode.imcms.test.{Project, withLogFailure}
+import com.imcode.imcms.test.config.HibernateConfig
 
 
 @RunWith(classOf[JUnitRunner])
@@ -21,7 +22,7 @@ class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfte
     Project.testDB.recreate()
     Project.testDB.runScripts("src/test/resources/sql/native_queries_dao.sql")
 
-    val ctx = Project.spring.createCtx(classOf[NativeQueriesConfig])
+    val ctx = Project.spring.createCtx(classOf[NativeQueriesConfig], Project.hibernate.configurators.Basic)
 
     nativeQueriesDao = ctx.getBean(classOf[NativeQueriesDao])
   }

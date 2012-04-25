@@ -8,6 +8,11 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import imcms.test.Project.{testDB}
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
+import com.imcode.imcms.test.config.HibernateConfig
+import com.imcode.imcms.test.{SpringUtils, Project}
+import org.springframework.context.annotation.{Bean, Import}
+import org.springframework.context.annotation.Bean._
+import org.springframework.beans.factory.annotation.Autowire
 
 @RunWith(classOf[JUnitRunner])
 class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
@@ -18,17 +23,23 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
   override def beforeAll() = testDB.recreate()
 
   before {
+    val ctx = Project.spring.createCtx(classOf[LanguageConfig],
+      Project.hibernate.configurators.Basic
+        andThen Project.hibernate.configurators.Hbm2ddlAutoCreateDrop
+        andThen Project.hibernate.configurators.XmlFiles(
+          "com/imcode/imcms/hbm/I18nLanguage.hbm.xml"
+        )
+        andThen Project.hibernate.configurators.AnnotatedClasses(
+          classOf[SystemProperty], classOf[I18nLanguage]
+        )
+    )
+
+    systemDao = ctx.getBean(classOf[SystemDao])
+    languageDao = ctx.getBean(classOf[LanguageDao])
+
     testDB.runScripts("src/test/resources/sql/language_dao.sql")
-
-    testDB.createHibernateSessionFactory(Seq(classOf[SystemProperty], classOf[I18nLanguage]),
-        "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml") |> { sf =>
-
-      systemDao = new SystemDao
-      languageDao = new LanguageDao
-      languageDao.setSessionFactory(sf)
-      systemDao.setSessionFactory(sf)
-    }
   }
+
 
   test("get all [2] languages") {
     val languages = languageDao.getAllLanguages
@@ -96,4 +107,15 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     val language = languageDao.getById(systemDao.getProperty("DefaultLanguageId").getValueAsInteger)
     assertEquals("Language id is correct.", language.getId, 2)
   }
+}
+
+
+@Import(Array(classOf[HibernateConfig]))
+class LanguageConfig {
+
+  @Bean(autowire = Autowire.BY_TYPE)
+  def languageDao = new LanguageDao
+
+  @Bean(autowire = Autowire.BY_TYPE)
+  def systemDao = new SystemDao
 }
