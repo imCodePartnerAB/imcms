@@ -16,7 +16,6 @@ class DocumentVersionDao extends HibernateSupport {
    *
    * @return new document version.
    */
-  //@Transactional
   def createVersion(docId: JInteger, userId: JInteger): DocumentVersion = synchronized {
     val no = getLatestVersion(docId) match {
       case null => 0
@@ -26,7 +25,7 @@ class DocumentVersionDao extends HibernateSupport {
     hibernate.save(new DocumentVersion(docId, no, userId, new Date))
   }
 
-  //@Transactional
+
   def getLatestVersion(docId: JInteger): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
     "DocumentVersion.getLatestVersion", "docId" -> docId
   )
@@ -37,22 +36,21 @@ class DocumentVersionDao extends HibernateSupport {
    * @param docId meta id.
    * @return available versions for the document.
    */
-  //@Transactional
   def getAllVersions (docId: JInteger): JList[DocumentVersion] = hibernate.listByNamedQueryAndNamedParams(
     "DocumentVersion.getByDocId", "docId" -> docId
   )
 
 
-  //@Transactional
+
   def getDefaultVersion(docId: JInteger): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
     "DocumentVersion.getDefaultVersion", "docId" -> docId
   )
 
-  //@Transactional
+
   def changeDefaultVersion(docId: JInteger, version: DocumentVersion, publisher: UserDomainObject): Int =
     changeDefaultVersion(docId, version.getNo, publisher.getId)
 
-  //@Transactional
+
   def changeDefaultVersion(docId: JInteger, no: JInteger, publisherId: JInteger) =
     getVersion(docId, no) |> { version =>
       require(version != null, "Version must exists")
@@ -66,7 +64,7 @@ class DocumentVersionDao extends HibernateSupport {
       )
     }
 
-  //@Transactional
+
   def getVersion(docId: JInteger, no: JInteger): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
     "DocumentVersion.getByDocIdAndNo", "docId" -> docId
   )

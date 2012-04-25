@@ -34,7 +34,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
   var i18nSupport: I18nSupport = _
 
   override def beforeAll() = withLogFailure {
-    Project.db.recreate()
+    Project.testDB.recreate()
     Project.initImcms(true, true)
 
     i18nSupport = Imcms.getI18nSupport

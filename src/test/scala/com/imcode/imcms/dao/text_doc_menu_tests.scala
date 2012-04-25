@@ -11,7 +11,7 @@ import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test._
 import fixtures.{DocItemFX, DocFX, VersionFX}
 import imcms.test.fixtures.UserFX.{admin}
-import imcms.test.Project.{db}
+import imcms.test.Project.{testDB}
 import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])
@@ -21,15 +21,15 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
 
   val menuNos = 1 to 4
 
-  override def beforeAll() = withLogFailure { db.recreate() }
+  override def beforeAll() = withLogFailure { testDB.recreate() }
 
   override def beforeEach() = withLogFailure {
-    val sf = db.createHibernateSessionFactory(Seq(classOf[MenuDomainObject], classOf[MenuHistory]),
+    val sf = testDB.createHibernateSessionFactory(Seq(classOf[MenuDomainObject], classOf[MenuHistory]),
                "src/main/resources/com/imcode/imcms/hbm/Menu.hbm.xml")
 
     menuDao = new MenuDao |< { _.sessionFactory = sf }
 
-    db.runScripts("src/test/resources/sql/text_doc_menu_dao.sql")
+    testDB.runScripts("src/test/resources/sql/text_doc_menu_dao.sql")
   }
 
   def menu(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, no: JInteger = DocItemFX.defaultNo, assertExists: Boolean = true) =

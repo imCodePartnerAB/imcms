@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import imcms.test.Project.{db}
+import imcms.test.Project.{testDB}
 import imcms.test.fixtures.LanguagesFX.{english, swedish, languages}
 import imcode.server.user.{RoleId, RoleDomainObject, UserDomainObject}
 import org.scalatest.fixture.FixtureFunSuite
@@ -27,16 +27,16 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
     addRoleId(RoleId.SUPERADMIN)
   }
 
-  override def beforeAll() = db.recreate()
+  override def beforeAll() = testDB.recreate()
 
   override def beforeEach() {
-    val sf = db.createHibernateSessionFactory(Seq(classOf[I18nLanguage], classOf[TextDomainObject], classOf[TextHistory]),
+    val sf = testDB.createHibernateSessionFactory(Seq(classOf[I18nLanguage], classOf[TextDomainObject], classOf[TextHistory]),
                "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
                "src/main/resources/com/imcode/imcms/hbm/Text.hbm.xml")
 
     textDao = new TextDao |< { _.sessionFactory = sf }
 
-    db.runScripts("src/test/resources/sql/text_dao.sql")
+    testDB.runScripts("src/test/resources/sql/text_dao.sql")
   }
 
   def withFixture(test: OneArgTest) {

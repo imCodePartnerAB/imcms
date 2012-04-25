@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import imcms.test.Project.{db}
+import imcms.test.Project.{testDB}
 import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])
@@ -24,10 +24,10 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
 
   val admin = new UserDomainObject(0)
 
-  override def beforeAll() = db.recreate()
+  override def beforeAll() = testDB.recreate()
 
   override def beforeEach() {
-    val sf = db.createHibernateSessionFactory(Seq(classOf[I18nLanguage], classOf[ImageDomainObject], classOf[ImageHistory]),
+    val sf = testDB.createHibernateSessionFactory(Seq(classOf[I18nLanguage], classOf[ImageDomainObject], classOf[ImageHistory]),
                "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
                "src/main/resources/com/imcode/imcms/hbm/Image.hbm.xml")
 
@@ -38,7 +38,7 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
 
     imageDao.languageDao = languageDao
 
-    db.runScripts("src/test/resources/sql/image_dao.sql")
+    testDB.runScripts("src/test/resources/sql/image_dao.sql")
   }
 
   test("get text doc's images by no") {

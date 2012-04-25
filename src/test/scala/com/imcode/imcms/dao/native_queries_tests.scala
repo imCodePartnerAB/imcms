@@ -3,10 +3,12 @@ package imcms.dao
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import imcms.test.withLogFailure
-import imcms.test.Project.{db}
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuite}
 import scala.collection.JavaConversions._
+import org.springframework.beans.factory.annotation.Autowire
+import org.springframework.context.annotation.{Bean, Import}
+import com.imcode.imcms.test.{HibernateConfig, Project, withLogFailure}
+
 
 @RunWith(classOf[JUnitRunner])
 class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfterAll {
@@ -15,22 +17,13 @@ class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfte
 
   var nativeQueriesDao: NativeQueriesDao = _
 
-
   override def beforeAll() = withLogFailure {
-    db.recreate()
-    db.runScripts("src/test/resources/sql/native_queries_dao.sql")
-  }
+    Project.testDB.recreate()
+    Project.testDB.runScripts("src/test/resources/sql/native_queries_dao.sql")
 
+    val ctx = Project.spring.createCtx(classOf[NativeQueriesConfig])
 
-  before {
-    val sf = db.createHibernateSessionFactory()
-    nativeQueriesDao = new NativeQueriesDao |< { _.sessionFactory = sf }
-    nativeQueriesDao.hibernate.withSession(_.beginTransaction())
-  }
-
-
-  after {
-    nativeQueriesDao.hibernate.withSession(_.getTransaction.commit())
+    nativeQueriesDao = ctx.getBean(classOf[NativeQueriesDao])
   }
 
 
@@ -78,4 +71,12 @@ class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfte
   test("getDocumentMenuPairsContainingDocument") {
     nativeQueriesDao.getDocumentMenuPairsContainingDocument(1001)
   }
+}
+
+
+@Import(Array(classOf[HibernateConfig]))
+class NativeQueriesConfig {
+
+  @Bean(autowire = Autowire.BY_TYPE)
+  def nativeQueriesDao = new NativeQueriesDao
 }

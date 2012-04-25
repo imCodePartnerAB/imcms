@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import imcms.test.Project.{db}
+import imcms.test.Project.{testDB}
 import org.springframework.orm.hibernate3.{HibernateTemplate}
 
 @RunWith(classOf[JUnitRunner])
@@ -25,15 +25,15 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
   var contentLoopDao: ContentLoopDao = _
 
-  override def beforeAll() = db.recreate()
+  override def beforeAll() = testDB.recreate()
 
   override def beforeEach() {
-    val sf = db.createHibernateSessionFactory(Seq(classOf[ContentLoop]),
+    val sf = testDB.createHibernateSessionFactory(Seq(classOf[ContentLoop]),
                "src/main/resources/com/imcode/imcms/hbm/ContentLoop.hbm.xml")
 
     contentLoopDao = new ContentLoopDao |< { _.sessionFactory = sf }
 
-    db.runScripts("src/test/resources/sql/content_loop_dao.sql")
+    testDB.runScripts("src/test/resources/sql/content_loop_dao.sql")
   }
 
 

@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import imcms.test.Project.{db}
+import imcms.test.Project.{testDB}
 import imcms.api.{SystemProperty}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -16,11 +16,11 @@ class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAft
   val DEFAULT_LANGUAGE_ID = "DefaultLanguageId"
   val START_DOC = "startDocument"
 
-  override def beforeAll() = db.recreate()
+  override def beforeAll() = testDB.recreate()
 
   override def beforeEach() {
-    val sf = db.createHibernateSessionFactory(classOf[SystemProperty])
-    db.runScripts("src/test/resources/sql/system_property_dao.sql")
+    val sf = testDB.createHibernateSessionFactory(classOf[SystemProperty])
+    testDB.runScripts("src/test/resources/sql/system_property_dao.sql")
 
     systemDao = new SystemDao()
     systemDao.setSessionFactory(sf)

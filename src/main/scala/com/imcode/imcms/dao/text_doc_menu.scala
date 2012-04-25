@@ -12,18 +12,17 @@ import imcode.server.document.textdocument.MenuDomainObject
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class MenuDao extends HibernateSupport {
 
-  //@Transactional
   def getMenu(docId: JInteger, docVersionNo: JInteger, no: JInteger): MenuDomainObject = hibernate.getByNamedQuery(
     "Menu.getMenu", "docId" -> docId, "docVersionNo" -> docVersionNo, "no", no
   )
 
-  //@Transactional
+  
   def getMenus(docId: JInteger, docVersionNo: JInteger): JList[MenuDomainObject] =
     hibernate.listByNamedQueryAndNamedParams(
       "Menu.getMenus", "docId" -> docId, "docVersionNo" -> docVersionNo
     )
 
-  //@Transactional
+  
   def saveMenu(menu: MenuDomainObject): MenuDomainObject = {
     for ((_, menuItem) <- menu.getItemsMap)
       menuItem.setTreeSortIndex(menuItem.getTreeSortKey.toString)
@@ -31,11 +30,10 @@ class MenuDao extends HibernateSupport {
     hibernate.saveOrUpdate(menu)
   }
 
-
-  //@Transactional
+  
   def saveMenuHistory(menuHistory: MenuHistory) = hibernate.save(menuHistory)
 
-  //@Transactional
+  
   def deleteMenus(docId: JInteger, docVersionNo: JInteger) = hibernate.withSession { session =>
     val scroll = session.getNamedQuery("Menu.getMenus")
       .setParameter("docId", docId)
@@ -48,17 +46,16 @@ class MenuDao extends HibernateSupport {
       session.delete(scroll.get(0))
       count += 1
       if (count % 25 == 0) {
-        session.flush
-        session.clear
+        session.flush()
+        session.clear()
       }
     }
 
-    session.flush
+    session.flush()
 
     count
   }
 
-
-  //@Transactional
+  
   def deleteMenu(menu: MenuDomainObject) = hibernate.delete(menu)
 }

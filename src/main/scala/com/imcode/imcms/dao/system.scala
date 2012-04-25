@@ -35,18 +35,20 @@ class IPAccessDao extends HibernateSupport {
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class LanguageDao extends HibernateSupport {
 
-  // @Transactional
+
   def getAllLanguages(): JList[I18nLanguage] = hibernate.listAll()
 
-  //@Transactional
+
   def getById(id: JInteger): I18nLanguage = hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getById", "id" -> id)
 
-  //@Transactional
-  def getByCode(code: String): I18nLanguage = hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getByCode", "code" -> code)
 
-  //@Transactional
+  def getByCode(code: String): I18nLanguage =
+    hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getByCode", "code" -> code)
+
+
   def saveLanguage(language: I18nLanguage) = hibernate.saveOrUpdate(language.clone())
 
-  //@Transactional
-  def deleteLanguage(id: JInteger) = hibernate.bulkUpdateByNamedParams("DELETE FROM I18nLanguage l WHERE l.id = :id", "id" -> id)
+
+  def deleteLanguage(id: JInteger) =
+    hibernate.bulkUpdateByNamedParams("DELETE FROM I18nLanguage l WHERE l.id = :id", "id" -> id)
 }

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-configuration PUBLIC
-		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 
     <session-factory>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
 
         <mapping class="com.imcode.imcms.api.Meta"/>
-        
-        <mapping class="com.imcode.imcms.mapping.orm.TemplateNames"/> 
+
+        <mapping class="com.imcode.imcms.mapping.orm.TemplateNames"/>
         <mapping class="com.imcode.imcms.mapping.orm.Include"/>
         <mapping class="com.imcode.imcms.mapping.orm.FileReference"/>
         <mapping class="com.imcode.imcms.mapping.orm.HtmlReference"/>
@@ -27,15 +27,15 @@
         <mapping class="com.imcode.imcms.api.DocumentVersion"/>
         <mapping class="com.imcode.imcms.api.DocumentProperty"/>
         <mapping class="com.imcode.imcms.api.ContentLoop"/>
-        
+
         <mapping class="imcode.server.document.textdocument.ImageDomainObject"/>
         <mapping class="imcode.server.document.textdocument.TextDomainObject"/>
         <mapping class="imcode.server.document.textdocument.MenuDomainObject"/>
         <mapping class="imcode.server.document.textdocument.ImageCacheDomainObject"/>
-        
+
         <mapping class="imcode.server.document.CategoryTypeDomainObject"/>
         <mapping class="imcode.server.document.CategoryDomainObject"/>
-        
+
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.Images"/>
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.ExifPK"/>
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.Exif"/>
@@ -52,7 +52,7 @@
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.Libraries"/>
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.LibraryRolesPK"/>
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.LibraryRoles"/>
-        
+
         <!-- Named queries -->
         <mapping resource="com/imcode/imcms/hbm/Document.hbm.xml"/>
         <mapping resource="com/imcode/imcms/hbm/ContentLoop.hbm.xml"/>
@@ -61,10 +61,10 @@
         <mapping resource="com/imcode/imcms/hbm/I18nLanguage.hbm.xml"/>
         <mapping resource="com/imcode/imcms/hbm/Menu.hbm.xml"/>
         <mapping resource="com/imcode/imcms/hbm/ImageCache.hbm.xml"/>
-        
+
         <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Images.hbm.xml"/>
         <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Roles.hbm.xml"/>
         <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Libraries.hbm.xml"/>
     </session-factory>
-    
+
 </hibernate-configuration>

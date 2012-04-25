@@ -93,7 +93,7 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
   def runScripts(scripts: Seq[String]): Unit = synchronized {
     template execute new ConnectionCallback[Unit] {
       def doInConnection(connection: Connection) {
-        val scriptRunner = new ScriptRunner(ds.getConnection, false, true)
+        val scriptRunner = new ScriptRunner(connection, false, true)
 
         scripts foreach { script =>
           logger.debug("Running script %s." format script)

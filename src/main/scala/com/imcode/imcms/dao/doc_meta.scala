@@ -239,7 +239,6 @@ class MetaDao extends HibernateSupport {
   def getMinDocumentId(): JInteger = hibernate.getByNamedQuery("Meta.getMinDocumentId")
 
 
-  // todo: check
   def getMinMaxDocumentIds(): Array[JInteger] =
     hibernate.getByNamedQuery("Meta.getMinMaxDocumentIds")
 

@@ -6,27 +6,28 @@ import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
-import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import imcms.test.Project.{db}
+import imcms.test.Project.{testDB}
+import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 
 @RunWith(classOf[JUnitRunner])
-class LanguageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
   var systemDao: SystemDao = _
   var languageDao: LanguageDao = _
 
-  override def beforeAll() = db.recreate()
+  override def beforeAll() = testDB.recreate()
 
-  override def beforeEach() {
-    val sf = db.createHibernateSessionFactory(Seq(classOf[SystemProperty], classOf[I18nLanguage]),
-               "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml")
+  before {
+    testDB.runScripts("src/test/resources/sql/language_dao.sql")
 
-    db.runScripts("src/test/resources/sql/language_dao.sql")
+    testDB.createHibernateSessionFactory(Seq(classOf[SystemProperty], classOf[I18nLanguage]),
+        "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml") |> { sf =>
 
-    systemDao = new SystemDao
-    languageDao = new LanguageDao
-    systemDao.setSessionFactory(sf)
-    languageDao.setSessionFactory(sf)
+      systemDao = new SystemDao
+      languageDao = new LanguageDao
+      languageDao.setSessionFactory(sf)
+      systemDao.setSessionFactory(sf)
+    }
   }
 
   test("get all [2] languages") {

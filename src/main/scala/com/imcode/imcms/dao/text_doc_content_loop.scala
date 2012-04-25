@@ -9,7 +9,6 @@ import com.imcode.imcms.api.ContentLoop
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class ContentLoopDao extends HibernateSupport {
 
-  //@Transactional
   def getLoop(loopId: JLong): ContentLoop = hibernate.get(loopId)
 
   /**
@@ -20,7 +19,6 @@ class ContentLoopDao extends HibernateSupport {
    *
    * @return loop or null if loop can not be found.
    */
-  //@Transactional
   def getLoop(docId: JInteger, docVersionNo: JInteger, no: JInteger): ContentLoop =
     hibernate.getByNamedQueryAndNamedParams(
       "ContentLoop.getByDocIdAndDocVersionNoAndNo", "docId" -> docId, "docVersionNo" -> docVersionNo, "no" -> no
@@ -34,7 +32,6 @@ class ContentLoopDao extends HibernateSupport {
    *
    * @return document content loops.
    */
-  //@Transactional
   def getLoops(docId: JInteger, docVersionNo: JInteger): JList[ContentLoop] = hibernate.listByNamedQueryAndNamedParams(
     "ContentLoop.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
   )
@@ -46,19 +43,16 @@ class ContentLoopDao extends HibernateSupport {
    * @param loop content loop.
    * @return saved content loop.
    */
-  //@Transactional
   def saveLoop(loop: ContentLoop) = loop.clone() |< { loopClone =>
     hibernate.saveOrUpdate(loopClone)
     hibernate.flush()
   }
 
 
-  //@Transactional
   def deleteLoops(docId: JInteger, docVersionNo: JInteger) =
     getLoops(docId, docVersionNo).map(hibernate.delete).size
 
 
-  //@Transactional
   def deleteLoop(loopId: JLong) = getLoop(loopId) match {
     case null => false
     case loop =>

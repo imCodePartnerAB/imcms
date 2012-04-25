@@ -44,7 +44,6 @@ class ImageDao extends HibernateSupport {
   /**
    * Please note that createImageIfNotExists merely creates an instance of ImageDomainObject not a database entry.
    */
-  //@Transactional
   def getImagesByIndex(docId: JInteger, docVersionNo: JInteger, no: Int, loopNo: JInteger, contentNo: JInteger,
                        createImageIfNotExists: Boolean): JList[ImageDomainObject] =
     for {
@@ -63,14 +62,16 @@ class ImageDao extends HibernateSupport {
     } yield image
 
 
-  //@Transactional
+
   def getImage(languageId: JInteger, docId: JInteger, docVersionNo: JInteger, no: Int, loopNo: JInteger,
                contentNo: JInteger) = {
 
     val queryStr = if (loopNo == null)
-      "select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no and i.language.id = :languageId AND i.contentLoopNo IS NULL AND i.contentNo IS NULL"
+      """select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no
+         and i.language.id = :languageId AND i.contentLoopNo IS NULL AND i.contentNo IS NULL"""
     else
-      "select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no and i.language.id = :languageId AND i.contentLoopNo = :contentLoopNo AND i.contentNo = :contentNo";
+      """select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no
+         and i.language.id = :languageId AND i.contentLoopNo = :contentLoopNo AND i.contentNo = :contentNo"""
 
     hibernate.withSession { session =>
       session.createQuery(queryStr) |> { query =>
@@ -88,19 +89,19 @@ class ImageDao extends HibernateSupport {
     }
   }
 
-  //@Transactional
+
   def saveImage(image: ImageDomainObject) = hibernate.saveOrUpdate(image)
 
-  //@Transactional
+
   def saveImageHistory(imageHistory: ImageHistory) = hibernate.save(imageHistory)
 
-  //@Transactional
+
   def getImages(docId: JInteger, docVersionNo: JInteger): JList[ImageDomainObject] =
     hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
       "Image.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
     ) |> ImageUtil.initImagesSources
 
-  //@Transactional
+
   def getImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger): JList[ImageDomainObject] =
      hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
        "Image.getByDocIdAndDocVersionNoAndLanguageId",
@@ -108,7 +109,7 @@ class ImageDao extends HibernateSupport {
      ) |>  ImageUtil.initImagesSources
 
 
-  //@Transactional
+
   def deleteImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) =
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
       "Image.deleteImages", "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId

@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import imcms.test.Project.{db}
+import imcms.test.Project.{testDB}
 import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])
@@ -16,12 +16,12 @@ class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAft
 
 	var metaDao: MetaDao = _
 
-  override def beforeAll() = db.recreate()
+  override def beforeAll() = testDB.recreate()
 
   override def beforeEach() {
-    val sf = db.createHibernateSessionFactory(classOf[TemplateNames])
+    val sf = testDB.createHibernateSessionFactory(classOf[TemplateNames])
 
-    db.runScripts("src/test/resources/sql/template_names_dao.sql")
+    testDB.runScripts("src/test/resources/sql/template_names_dao.sql")
 
     metaDao = new MetaDao |< { _.sessionFactory = sf }
   }

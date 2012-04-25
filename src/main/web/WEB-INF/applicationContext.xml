@@ -16,14 +16,30 @@
     <import resource="./configContext.xml"/>
     <import resource="./beansContext.xml"/>
 
+    <context:annotation-config/>
+    <context:component-scan base-package="com.imcode.imcms.addon.imagearchive"/>
+    <context:property-placeholder location="**/conf/server.properties"/>
+
     <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
 
-    <context:component-scan base-package="com.imcode.imcms.addon.imagearchive"/>
-    <context:annotation-config/>
+    <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
 
-    <!--<bean class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" />-->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+        <property name="defaultLocale" value="sv"/>
+    </bean>
 
-    <context:property-placeholder location="**/conf/server.properties"/>
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>/WEB-INF/locale/imcms</value>
+                <value>/WEB-INF/locale/image_archive</value>
+            </list>
+        </property>
+        <property name="fallbackToSystemLocale" value="false"/>
+        <property name="useCodeAsDefaultMessage" value="true"/>
+    </bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
           p:driverClassName="${JdbcDriver}"
@@ -41,25 +57,6 @@
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
           p:configLocation="classpath:hibernate.cfg.xml"
           p:dataSource-ref="dataSource"/>
-
-    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
-        <property name="defaultLocale" value="sv"/>
-    </bean>
-
-    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-        <property name="basenames">
-            <list>
-                <value>/WEB-INF/locale/imcms</value>
-                <value>/WEB-INF/locale/image_archive</value>
-            </list>
-        </property>
-        <property name="fallbackToSystemLocale" value="false"/>
-        <property name="useCodeAsDefaultMessage" value="true"/>
-    </bean>
-
-    <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
 
     <bean id="dao" abstract="true" class="com.imcode.imcms.dao.HibernateSupport"
           p:sessionFactory-ref="sessionFactory"/>

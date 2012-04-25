@@ -6,7 +6,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{WordSpec, BeforeAndAfterEach, BeforeAndAfterAll}
 import org.scalatest.matchers.MustMatchers
-import imcms.test.Project.{db}
+import imcms.test.Project.{testDB}
 import org.springframework.orm.hibernate3.HibernateTemplate
 
 @RunWith(classOf[JUnitRunner])
@@ -14,11 +14,11 @@ class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll w
 
 	var metaDao: MetaDao = _
 
-  override def beforeAll() = db.recreate()
+  override def beforeAll() = testDB.recreate()
 
   override def beforeEach() {
-    val sf = db.createHibernateSessionFactory(classOf[Include])
-    db.runScripts("src/test/resources/sql/include_dao.sql")
+    val sf = testDB.createHibernateSessionFactory(classOf[Include])
+    testDB.runScripts("src/test/resources/sql/include_dao.sql")
 
     metaDao = new MetaDao |< { _.sessionFactory = sf }
   }

@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import imcms.test._
-import imcms.test.Project._
+import imcms.test.Project.{testDB}
 import imcms.test.fixtures.UserFX.{admin}
 import org.springframework.orm.hibernate3.HibernateTemplate
 import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
@@ -25,10 +25,10 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
 
   var versionDao: DocumentVersionDao = _
 
-  override def beforeAll() = db.recreate()
+  override def beforeAll() = testDB.recreate()
 
   override def beforeEach() = withLogFailure {
-    val sf = db.createHibernateSessionFactory(
+    val sf = testDB.createHibernateSessionFactory(
       Seq(
         classOf[Meta],
         classOf[I18nMeta],
@@ -44,7 +44,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
 
     versionDao = new DocumentVersionDao |< { _.sessionFactory = sf }
 
-    db.runScripts("src/test/resources/sql/doc_version.sql")
+    testDB.runScripts("src/test/resources/sql/doc_version.sql")
   }
 
   def createVersion(docId: JInteger = 1001, userId: JInteger = admin.getId) =
@@ -75,7 +75,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
       getVersion(1002, 0, assertExists = false) must be (null)
     }
 
-    "return latest version when it exists" in {
+    "return latest version when exists" in {
       val maxVersion = versionDao.getAllVersions(1001).max
       val latestVersion = versionDao.getLatestVersion(1001)
 
@@ -91,7 +91,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
   }
 
   "A DocVersionDao" when {
-    "changing default version" that {
+    "changing default version" which {
       "exists" should {
         "change it" in {
           given("default version eq [version 0]")
@@ -123,7 +123,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
       }
     }
 
-    "getting default version" that {
+    "getting default version" which {
       "does *not* exist" should {
         "return [null]" in {
           versionDao.getDefaultVersion(1002) must be (null)
@@ -153,7 +153,7 @@ class DocVersionDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAl
       }
     }
 
-    "getting all versions for doc" that {
+    "getting all versions for doc" which {
       "has existing versions" should {
         "return all [3] of them" in {
           versionDao.getAllVersions(1001) must have size (3)
