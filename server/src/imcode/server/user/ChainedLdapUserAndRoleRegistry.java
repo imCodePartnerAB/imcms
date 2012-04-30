@@ -3,13 +3,6 @@ package imcode.server.user;
 import java.util.Collection;
 import java.util.LinkedList;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Anton
- * Date: 8.11.2007
- * Time: 14:53:53
- * To change this template use File | Settings | File Templates.
- */
 public class ChainedLdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegistry {
 
     public static final String[] DEFAULT_ROLES = {LdapUserAndRoleRegistry.DEFAULT_LDAP_ROLE};

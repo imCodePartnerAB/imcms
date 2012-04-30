@@ -15,6 +15,7 @@ import imcode.server.user.LdapUserAndRoleRegistry;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserAndRoleRegistry;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.ldap.XMLConfig;
 import imcode.util.CachingFileLoader;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
@@ -107,7 +108,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /** Contructs an DefaultImcmsServices object. */
-    public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
+    public DefaultImcmsServices(XMLConfig xmlConfig, Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -119,7 +120,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         initSysData();
         initSessionCounter();
         languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
-        initAuthenticatorsAndUserAndRoleMappers(props);
+        initAuthenticatorsAndUserAndRoleMappers(xmlConfig, props);
         initDocumentMapper();
         initTemplateMapper();
         initImageCacheMapper();
@@ -274,7 +275,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     	imageCacheMapper = new ImageCacheMapper(database);
     }
 
-    private void initAuthenticatorsAndUserAndRoleMappers(Properties props) {
+    private void initAuthenticatorsAndUserAndRoleMappers(XMLConfig xmlConfig, Properties props) {
         String externalAuthenticatorName = props.getProperty("ExternalAuthenticator");
         String externalUserAndRoleMapperName = props.getProperty("ExternalUserAndRoleMapper");
 
@@ -287,9 +288,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
             log.info("ExternalAuthenticator: " + externalAuthenticatorName);
             log.info("ExternalUserAndRoleMapper: " + externalUserAndRoleMapperName);
             externalAuthenticator =
-                    initExternalAuthenticator(externalAuthenticatorName, props);
+                    initExternalAuthenticator(xmlConfig, externalAuthenticatorName, props);
             externalUserAndRoleRegistry =
-                    initExternalUserAndRoleMapper(externalUserAndRoleMapperName, props);
+                    initExternalUserAndRoleMapper(xmlConfig, externalUserAndRoleMapperName, props);
             if ( null == externalAuthenticator || null == externalUserAndRoleRegistry ) {
                 log.error("Failed to initialize both authenticator and user-and-role-documentMapper, using default implementations.");
                 externalAuthenticator = null;
@@ -314,7 +315,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
                     = new ChainedLdapUserAndRoleRegistry(externalAuthenticator, externalUserAndRoleRegistry);
 
 
-            initAndAddSecondaryLdapUserAndRoleRegistry(chainedLdapUserAndRoleRegistry,
+            initAndAddSecondaryLdapUserAndRoleRegistry(
+                    xmlConfig,
+                    chainedLdapUserAndRoleRegistry,
                     props);
 
             externalAuthenticator = chainedLdapUserAndRoleRegistry;
@@ -338,6 +341,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * @param props configuration properties
      */
     private void initAndAddSecondaryLdapUserAndRoleRegistry(
+            XMLConfig xmlConfig,
             ChainedLdapUserAndRoleRegistry chainedLdapUserAndRoleRegistry,
             Properties props) {   
 
@@ -384,9 +388,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 log.info("SecondaryExternalAuthenticator: " + externalAuthenticatorName);
                 log.info("SecondaryExternalUserAndRoleMapper: " + externalUserAndRoleMapperName);
                 externalAuthenticator =
-                        initExternalAuthenticator(externalAuthenticatorName, secondaryLdapProperties);
+                        initExternalAuthenticator(xmlConfig, externalAuthenticatorName, secondaryLdapProperties);
                 externalUserAndRoleRegistry =
-                        initExternalUserAndRoleMapper(externalUserAndRoleMapperName, secondaryLdapProperties);
+                        initExternalUserAndRoleMapper(xmlConfig, externalUserAndRoleMapperName, secondaryLdapProperties);
 
                 if ( null == externalAuthenticator || null == externalUserAndRoleRegistry ) {
                     log.error("Secondary LDAP configuration ignored. Failed to initialize both authenticator and user-and-role-documentMapper.");
@@ -489,14 +493,14 @@ final public class DefaultImcmsServices implements ImcmsServices {
         getDatabase().execute(new SqlUpdateCommand("UPDATE sys_data SET value = value + 1 WHERE type_id = 1", new Object[] {}));
     }
 
-    private UserAndRoleRegistry initExternalUserAndRoleMapper(String externalUserAndRoleMapperName,
+    private UserAndRoleRegistry initExternalUserAndRoleMapper(XMLConfig xmlConfig, String externalUserAndRoleMapperName,
                                                               Properties userAndRoleMapperPropertiesSubset) {
         UserAndRoleRegistry externalUserAndRoleRegistry = null;
         if ( null == externalUserAndRoleMapperName ) {
             externalUserAndRoleRegistry = null;
         } else if ( EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase(externalUserAndRoleMapperName) ) {
             try {
-                externalUserAndRoleRegistry = new LdapUserAndRoleRegistry(userAndRoleMapperPropertiesSubset);
+                externalUserAndRoleRegistry = new LdapUserAndRoleRegistry(userAndRoleMapperPropertiesSubset, xmlConfig.getLdapMappedRoles());
             } catch ( LdapClientException e ) {
                 log.error("LdapUserAndRoleRegistry could not be created, using default user and role documentMapper.",
                           e);
@@ -507,7 +511,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return externalUserAndRoleRegistry;
     }
 
-    private Authenticator initExternalAuthenticator(String externalAuthenticatorName,
+    private Authenticator initExternalAuthenticator(XMLConfig xmlConfig, String externalAuthenticatorName,
                                                     Properties authenticatorPropertiesSubset) {
         Authenticator externalAuthenticator = null;
         try {
@@ -515,7 +519,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 externalAuthenticator = null;
             } else if ( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase(externalAuthenticatorName) ) {
                 try {
-                    externalAuthenticator = new LdapUserAndRoleRegistry(authenticatorPropertiesSubset);
+                    externalAuthenticator = new LdapUserAndRoleRegistry(authenticatorPropertiesSubset, xmlConfig.getLdapMappedRoles());
                 } catch ( LdapClientException e ) {
                     log.error("LdapUserAndRoleRegistry could not be created, using default user and role documentMapper.",
                               e);

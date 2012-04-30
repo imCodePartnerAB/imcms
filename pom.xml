@@ -143,6 +143,13 @@
             <version>2.0</version>
         </dependency>
 
+        <!-- Since 4.1.16 -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>11.0.2</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -337,9 +344,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.imcode.ldap</groupId>
+            <groupId>com.imcode.net.ldap</groupId>
             <artifactId>imcode-ldap</artifactId>
-            <version>0.1</version>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>

@@ -1,11 +1,18 @@
 package imcode.server.user;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.imcode.imcms.api.P;
+import imcode.server.user.ldap.MappedRole;
+import imcode.server.user.ldap.MappedRoles;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.ExtendedProperties;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.logging.Log;
 import org.apache.log4j.Logger;
 
 import javax.naming.CommunicationException;
@@ -28,7 +35,7 @@ import com.imcode.net.ldap.LdapClientException;
 
 public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegistry {
 
-    private final static Logger LOG = Logger.getLogger( LdapUserAndRoleRegistry.class );
+    private final static Logger LOG = Logger.getLogger(LdapUserAndRoleRegistry.class);
 
     public static final String DEFAULT_LDAP_ROLE = "LDAP";
 
@@ -62,227 +69,288 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     private static final String INETORGPERSON_ORGANIZATION = "o";
     static final String INETORGPERSON_USER_IDENTITY = "uid";
 
-    private final LdapClient ldapClient ;
-    private LdapConnection ldapConnection ;
+    private final LdapClient ldapClient;
+    private LdapConnection ldapConnection;
 
-    private final String ldapUserObjectClass ;
+    private final String ldapUserObjectClass;
     private final String[] ldapAttributesAutoMappedToRoles;
+    private MappedRoles mappedRoles;
 
     private Properties userPropertyNameToLdapAttributeNameMap = new Properties();
 
-    private final static Map DEFAULT_USER_PROPERTY_NAME_TO_LDAP_ATTRIBUTE_NAME_MAP = ArrayUtils.toMap( new String[][]{
-        {"LoginName", INETORGPERSON_USER_IDENTITY},
-        {"FirstName", INETORGPERSON_GIVEN_NAME},
-        {"LastName", PERSON_SURNAME},
-        {"Title", ORGANIZATIONALPERSON_TITLE},
-        {"Company", INETORGPERSON_ORGANIZATION},
-        {"Address", ORGANIZATIONALPERSON_STREET_ADRESS},
-        {"City", INETORGPERSON_LOCALITY_NAME},
-        {"Zip", ORGANIZATIONALPERSON_POSTAL_CODE},
-        {"Province", ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME},
-        {"EmailAddress", INETORGPERSON_MAIL},
-        {"WorkPhone", PERSON_TELEPHONE_NUMBER},
-        {"MobilePhone", INETORGPERSON_MOBILE},
-        {"HomePhone", INETORGPERSON_HOME_PHONE},
-    } );
-    
+    private final static Map DEFAULT_USER_PROPERTY_NAME_TO_LDAP_ATTRIBUTE_NAME_MAP = ArrayUtils.toMap(new String[][]{
+            {"LoginName", INETORGPERSON_USER_IDENTITY},
+            {"FirstName", INETORGPERSON_GIVEN_NAME},
+            {"LastName", PERSON_SURNAME},
+            {"Title", ORGANIZATIONALPERSON_TITLE},
+            {"Company", INETORGPERSON_ORGANIZATION},
+            {"Address", ORGANIZATIONALPERSON_STREET_ADRESS},
+            {"City", INETORGPERSON_LOCALITY_NAME},
+            {"Zip", ORGANIZATIONALPERSON_POSTAL_CODE},
+            {"Province", ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME},
+            {"EmailAddress", INETORGPERSON_MAIL},
+            {"WorkPhone", PERSON_TELEPHONE_NUMBER},
+            {"MobilePhone", INETORGPERSON_MOBILE},
+            {"HomePhone", INETORGPERSON_HOME_PHONE},
+    });
+
     private String ldapUsername;
     private String ldapPassword;
 
     private static final String LDAP_USER_OBJECTCLASS__INETORGPERSON = "inetOrgPerson";
     private static final String LDAP_USER_OBJECTCLASS_DEFAULT = LDAP_USER_OBJECTCLASS__INETORGPERSON;
 
-    public LdapUserAndRoleRegistry( Properties ldapConfig ) throws LdapClientException {
-        this( ldapConfig.getProperty( "LdapUrl", "ldap://localhost/" ),
-              ldapConfig.getProperty( "LdapUserObjectClass", LDAP_USER_OBJECTCLASS_DEFAULT ),
-              ldapConfig.getProperty( "LdapBindDn", "" ),
-              ldapConfig.getProperty( "LdapPassword", "" ),
-              buildAttributesMappedToRoles(ldapConfig),
-              buildUserAttributes(ldapConfig) );
+    public LdapUserAndRoleRegistry(Properties ldapConfig, MappedRoles mappedRoles) throws LdapClientException {
+        this(ldapConfig.getProperty("LdapUrl", "ldap://localhost/"),
+                ldapConfig.getProperty("LdapUserObjectClass", LDAP_USER_OBJECTCLASS_DEFAULT),
+                ldapConfig.getProperty("LdapBindDn", ""),
+                ldapConfig.getProperty("LdapPassword", ""),
+                buildAttributesMappedToRoles(ldapConfig),
+                buildUserAttributes(ldapConfig), mappedRoles);
     }
 
     private static String[] buildAttributesMappedToRoles(Properties ldapConfig) {
-        String ldapStringOfAttributesMappedToRoles = ldapConfig.getProperty( "LdapAttributesMappedToRoles", "" );
-        return splitStringOnCommasAndSpaces( ldapStringOfAttributesMappedToRoles );
+        String ldapStringOfAttributesMappedToRoles = ldapConfig.getProperty("LdapAttributesMappedToRoles", "");
+        return splitStringOnCommasAndSpaces(ldapStringOfAttributesMappedToRoles);
     }
 
     private static Properties buildUserAttributes(Properties ldapConfig) {
         Properties ldapUserAttributes = new Properties();
-        ExtendedProperties ldapUserAttributesSubset = ExtendedProperties.convertProperties( ldapConfig ).subset( "LdapUserAttribute" );
-        if ( null != ldapUserAttributesSubset ) {
-            ldapUserAttributes.putAll( ldapUserAttributesSubset );
+        ExtendedProperties ldapUserAttributesSubset = ExtendedProperties.convertProperties(ldapConfig).subset("LdapUserAttribute");
+        if (null != ldapUserAttributesSubset) {
+            ldapUserAttributes.putAll(ldapUserAttributesSubset);
         }
         return ldapUserAttributes;
     }
 
     /**
      * @param ldapUserAttributes
-     * @param ldapUrl                The full path to where the ldap-service is located _and_ the node where to start the searches, e.g.  "ldap://computername:389/CN=Users,DC=companyName,DC=com"
-     * @param ldapUserName           A name that is used to log in (bind) to the ldap server
-     * @param ldapPassword           A password that i used to log in (bind) to the ldap server
+     * @param ldapUrl            The full path to where the ldap-service is located _and_ the node where to start the searches, e.g.  "ldap://computername:389/CN=Users,DC=companyName,DC=com"
+     * @param ldapUserName       A name that is used to log in (bind) to the ldap server
+     * @param ldapPassword       A password that i used to log in (bind) to the ldap server
      */
 
     public LdapUserAndRoleRegistry(String ldapUrl,
                                    String ldapUserObjectClass,
                                    String ldapUserName,
                                    String ldapPassword,
-                                   String[] ldapAttributesMappedToRoles, Properties ldapUserAttributes) throws LdapClientException {
+                                   String[] ldapAttributesMappedToRoles,
+                                   Properties ldapUserAttributes,
+                                   MappedRoles mappedRoles
+                                   ) throws LdapClientException {
         ldapAttributesAutoMappedToRoles = ldapAttributesMappedToRoles;
-        initLdapUserAttributesMap( ldapUserAttributes );
+        initLdapUserAttributesMap(ldapUserAttributes);
 
         this.ldapUserObjectClass = ldapUserObjectClass;
         ldapClient = new LdapClient(ldapUrl);
-        
+
         this.ldapUsername = ldapUserName;
-        this.ldapPassword = ldapPassword;        
-        
+        this.ldapPassword = ldapPassword;
+
+        this.mappedRoles = mappedRoles;
+
         createLdapConnection();
     }
-    
-    private void createLdapConnection() 
-    throws LdapClientException {
-    	ldapConnection = ldapClient.bind(ldapUsername, ldapPassword);    	
+
+    private void createLdapConnection()
+            throws LdapClientException {
+        ldapConnection = ldapClient.bind(ldapUsername, ldapPassword);
     }
 
     public String[] getAllRoleNames() {
         return new String[]{DEFAULT_LDAP_ROLE};
     }
 
-    private void initLdapUserAttributesMap( Properties ldapUserAttributes ) throws LdapClientException {
-        userPropertyNameToLdapAttributeNameMap.putAll( DEFAULT_USER_PROPERTY_NAME_TO_LDAP_ATTRIBUTE_NAME_MAP );
-        userPropertyNameToLdapAttributeNameMap.putAll( ldapUserAttributes );
-        Set badUserAttributes = new TreeSet( userPropertyNameToLdapAttributeNameMap.keySet() );
-        String[] capitalizedSettableUserPropertyNames = getCapitalizedSettableBeanPropertyNames( UserDomainObject.class );
-        badUserAttributes.removeAll( Arrays.asList( capitalizedSettableUserPropertyNames ) );
-        if ( !badUserAttributes.isEmpty() ) {
-            throw new LdapClientException( "Unrecognized LdapUserAttributes: "
-                                           + StringUtils.join( badUserAttributes.iterator(), ", " ) );
+    private void initLdapUserAttributesMap(Properties ldapUserAttributes) throws LdapClientException {
+        userPropertyNameToLdapAttributeNameMap.putAll(DEFAULT_USER_PROPERTY_NAME_TO_LDAP_ATTRIBUTE_NAME_MAP);
+        userPropertyNameToLdapAttributeNameMap.putAll(ldapUserAttributes);
+        Set badUserAttributes = new TreeSet(userPropertyNameToLdapAttributeNameMap.keySet());
+        String[] capitalizedSettableUserPropertyNames = getCapitalizedSettableBeanPropertyNames(UserDomainObject.class);
+        badUserAttributes.removeAll(Arrays.asList(capitalizedSettableUserPropertyNames));
+        if (!badUserAttributes.isEmpty()) {
+            throw new LdapClientException("Unrecognized LdapUserAttributes: "
+                    + StringUtils.join(badUserAttributes.iterator(), ", "));
         }
     }
 
-    public boolean authenticate( String loginName, String password ) {
+    public boolean authenticate(String loginName, String password) {
         try {
-            Map userAttributes = searchForUserAttributes( loginName,
-                                                          new String[]{LdapConnection.DISTINGUISHED_NAME } );
-            if ( null != userAttributes ) {
-                String userDistinguishedName = (String)userAttributes.get( LdapConnection.DISTINGUISHED_NAME );
+            Map userAttributes = searchForUserAttributes(loginName,
+                    new String[]{LdapConnection.DISTINGUISHED_NAME});
+            if (null != userAttributes) {
+                String userDistinguishedName = (String) userAttributes.get(LdapConnection.DISTINGUISHED_NAME);
                 return ldapClient.canBind(userDistinguishedName, password);
             }
-        } catch ( LdapClientException ex ) {
-            LOG.warn( "Failed to get ldap context.", ex );
+        } catch (LdapClientException ex) {
+            LOG.warn("Failed to get ldap context.", ex);
         }
         return false;
     }
 
-    public UserDomainObject getUser( String loginName ) {
+    public UserDomainObject getUser(String loginName) {
         UserDomainObject result = null;
 
-        Map<String,String> attributeMap = searchForUserAttributes( loginName, null );
+        Map<String, String> attributeMap = searchForUserAttributes(loginName, null);
 
-        if ( null != attributeMap ) {
-            result = createUserFromLdapAttributes( attributeMap );
+        if (null != attributeMap) {
+            result = createUserFromLdapAttributes(attributeMap);
 
-            result.setLoginName( loginName );
-            result.setActive( true );
+            result.setLoginName(loginName);
+            result.setActive(true);
         }
         return result;
     }
 
-    private UserDomainObject createUserFromLdapAttributes( Map<String,String> ldapAttributeValues ) {
+    private UserDomainObject createUserFromLdapAttributes(Map<String, String> ldapAttributeValues) {
         UserDomainObject newlyFoundLdapUser = new UserDomainObject();
 
-        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors( newlyFoundLdapUser );
+        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(newlyFoundLdapUser);
         try {
-            for ( PropertyDescriptor propertyDescriptor : propertyDescriptors ) {
-                if ( null == propertyDescriptor.getWriteMethod() ) {
+            for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+                if (null == propertyDescriptor.getWriteMethod()) {
                     continue;
                 }
                 String uncapitalizedPropertyName = propertyDescriptor.getName();
                 String capitalizedPropertyName = StringUtils.capitalize(uncapitalizedPropertyName);
                 String ldapAttributeName = userPropertyNameToLdapAttributeNameMap.getProperty(capitalizedPropertyName);
-                if ( null != ldapAttributeName ) {
+                if (null != ldapAttributeName) {
                     String ldapAttributeValue = ldapAttributeValues.get(ldapAttributeName);
-                    if ( null != ldapAttributeValue ) {
+                    if (null != ldapAttributeValue) {
                         BeanUtils.setProperty(newlyFoundLdapUser, uncapitalizedPropertyName, ldapAttributeValue);
                     }
                 }
             }
-        } catch ( IllegalAccessException e ) {
-            throw new UnhandledException( e );
-        } catch ( InvocationTargetException e ) {
-            throw new UnhandledException( e );
+        } catch (IllegalAccessException e) {
+            throw new UnhandledException(e);
+        } catch (InvocationTargetException e) {
+            throw new UnhandledException(e);
         }
 
         return newlyFoundLdapUser;
     }
 
-    public String[] getRoleNames( UserDomainObject user ) {
+    public String[] getRoleNames(UserDomainObject user) {
         String loginName = user.getLoginName();
 
-        Map attributeMappedRoles = searchForUserAttributes( loginName, ldapAttributesAutoMappedToRoles );
-        Set<String> roles = new HashSet( attributeMappedRoles.values() );
+        Map attributeMappedRoles = searchForUserAttributes(loginName, ldapAttributesAutoMappedToRoles);
+        Set<String> roles = new HashSet<String>(attributeMappedRoles.values());
         roles.add(DEFAULT_LDAP_ROLE);
+
+        Set<String> mappedRolesNames = getMappedRoleNames(loginName);
+        if (mappedRolesNames.size() == 0) {
+            LOG.debug(String.format("User %s does not have LDAP attributes mapped to roles.", loginName));
+        } else {
+            LOG.debug(String.format("User %s have %d LDAP roles mapped to attributes: %s.", loginName,
+                    mappedRolesNames.size(), Joiner.on(", ").join(mappedRolesNames)));
+        }
+
+        for (String roleName: mappedRolesNames) {
+            roles.add(roleName);
+        }
+
         return roles.toArray(new String[roles.size()]);
     }
 
-    private Map<String,String> searchForUserAttributes( String loginName, String[] attributesToReturn ) {
-        Map<String,String> attributeMap = null;
+
+    /**
+     * @since 4.1.16
+     */
+    public Set<String> getMappedRoleNames(String loginName) {
+        Map<String, Set<String>> mappedAttributes = searchForUserMultiAttributes(
+                loginName, mappedRoles.getAttributesNames().toArray(new String[]{})
+        );
+        List<P.P2<String, String>> keys = Lists.newLinkedList();
+
+        for (Map.Entry<String, Set<String>> mappedAttribute: mappedAttributes.entrySet()) {
+            String attributeName = mappedAttribute.getKey();
+            for (String attributeValue : mappedAttribute.getValue()) {
+                keys.add(P.of(attributeName, attributeValue));
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(String.format("Found %s LDAP role mapping attributes for user %s: %s.",
+                    keys.size(), loginName, Joiner.on(", ").join(keys)));
+        }
+
+        return mappedRoles.getRolesNames(keys);
+    }
+
+
+    private Map<String, String> searchForUserAttributes(String loginName, String[] attributesToReturn) {
+        Map<String, String> attributeMap = null;
 
         try {
-            String ldapUserIdentifyingAttribute = userPropertyNameToLdapAttributeNameMap.getProperty( "LoginName" );
+            String ldapUserIdentifyingAttribute = userPropertyNameToLdapAttributeNameMap.getProperty("LoginName");
 
             SearchControls searchControls = new SearchControls();
-            searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
-            searchControls.setReturningAttributes( attributesToReturn );
-            searchControls.setReturningObjFlag( true );
+            searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            searchControls.setReturningAttributes(attributesToReturn);
+            searchControls.setReturningObjFlag(true);
+            Iterator<Map<String, String>> searchResult = ldapConnection.search("(&(objectClass={0})({1}={2}))",
+                    new Object[]{ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName},
+                    searchControls);
 
-            // Quick fix:
-            try {
-            	attributeMap = ldapConnection.search("(&(objectClass={0})({1}={2}))",
-            			new Object[] { ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName },
-                    		searchControls);
-            } catch (LdapClientException e) {
-            	// in case of communication exception recreate connection and retry last operation.
-            	if (e.getCause() instanceof CommunicationException) {
-            		createLdapConnection();
-                	attributeMap = ldapConnection.search("(&(objectClass={0})({1}={2}))",
-                            new Object[] { ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName },
-                            searchControls);            		
-            	} else {
-            		throw e;
-            	}
-            }
-        } catch ( LdapClientException e ) {
-            LOG.warn( "Could not find user " + loginName, e );
+            if (searchResult.hasNext()) attributeMap = searchResult.next();
+        } catch (LdapClientException e) {
+            LOG.warn("Could not find user " + loginName, e);
         }
         return attributeMap;
     }
 
-    private static String[] splitStringOnCommasAndSpaces( String stringToSplit ) {
-        StringTokenizer attributesTokenizer = new StringTokenizer( stringToSplit, ", " );
+
+    /**
+     * @since 4.1.16
+     */
+    private Map<String, Set<String>> searchForUserMultiAttributes(String loginName, String[] attributesToReturn) {
+        Map<String, Set<String>> attributeMap = null;
+
+        try {
+            String ldapUserIdentifyingAttribute = userPropertyNameToLdapAttributeNameMap.getProperty("LoginName");
+
+            SearchControls searchControls = new SearchControls();
+            searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            searchControls.setReturningAttributes(attributesToReturn);
+            searchControls.setReturningObjFlag(true);
+
+            Iterator<Map<String, Set<String>>> searchResult = ldapConnection.searchMultivalues("(&(objectClass={0})({1}={2}))",
+                    new Object[]{ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName},
+                    searchControls);
+
+            if (searchResult.hasNext()) attributeMap = searchResult.next();
+        } catch (LdapClientException e) {
+            LOG.warn("Could not find user " + loginName, e);
+        }
+
+        return attributeMap;
+    }
+
+
+    private static String[] splitStringOnCommasAndSpaces(String stringToSplit) {
+        StringTokenizer attributesTokenizer = new StringTokenizer(stringToSplit, ", ");
         String[] tokens = new String[attributesTokenizer.countTokens()];
-        for ( int i = 0; i < tokens.length; ++i ) {
+        for (int i = 0; i < tokens.length; ++i) {
             tokens[i] = attributesTokenizer.nextToken();
         }
         return tokens;
     }
 
-    private static String[] getCapitalizedSettableBeanPropertyNames( Class beanClass ) {
-        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors( beanClass );
+    private static String[] getCapitalizedSettableBeanPropertyNames(Class beanClass) {
+        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(beanClass);
         List settableBeanPropertyNames = new ArrayList();
-        for ( PropertyDescriptor propertyDescriptor : propertyDescriptors ) {
-            if ( null == propertyDescriptor.getWriteMethod() ) {
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            if (null == propertyDescriptor.getWriteMethod()) {
                 continue;
             }
             String uncapitalizedPropertyName = propertyDescriptor.getName();
             String capitalizedPropertyName = StringUtils.capitalize(uncapitalizedPropertyName);
             settableBeanPropertyNames.add(capitalizedPropertyName);
         }
-        return (String[])settableBeanPropertyNames.toArray( new String[settableBeanPropertyNames.size()] );
+        return (String[]) settableBeanPropertyNames.toArray(new String[settableBeanPropertyNames.size()]);
     }
 
-    public void setUserPropertyLdapAttribute( String userPropertyName, String ldapAttribute ) {
-        userPropertyNameToLdapAttributeNameMap.put( userPropertyName, ldapAttribute ) ;
+    public void setUserPropertyLdapAttribute(String userPropertyName, String ldapAttribute) {
+        userPropertyNameToLdapAttributeNameMap.put(userPropertyName, ldapAttribute);
     }
 
 }

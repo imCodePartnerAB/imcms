@@ -6,6 +6,7 @@ import com.imcode.imcms.db.*;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import imcode.server.user.ldap.XMLConfig;
 import imcode.util.Prefs;
 import imcode.util.CachingFileLoader;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -72,7 +73,8 @@ public class Imcms {
         sanityCheckDatabase(database, wantedDdl);
 
         final CachingFileLoader fileLoader = new CachingFileLoader();
-        DefaultImcmsServices defaultImcmsServices = new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+        XMLConfig xmlConfig = new XMLConfig(new File(getPath(), "WEB-INF/conf/server.xml").getCanonicalPath());
+        DefaultImcmsServices defaultImcmsServices = new DefaultImcmsServices(xmlConfig, database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
 
         defaultImcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
 
