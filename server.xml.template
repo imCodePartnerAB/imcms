@@ -4,7 +4,7 @@
             <role
                     name="LDAP-ROLE-1"
                     attribute-name="isMemberOf"
-                    attribute-value="role-1"/>
+                    attribute-value="role-2"/>
 
 
             <role

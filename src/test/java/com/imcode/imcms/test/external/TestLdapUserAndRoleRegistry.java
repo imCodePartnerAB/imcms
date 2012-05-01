@@ -2,6 +2,7 @@ package com.imcode.imcms.test.external;
 
 import imcode.server.user.LdapUserAndRoleRegistry;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.ldap.XMLConfig;
 import junit.framework.TestCase;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -46,7 +47,8 @@ public class TestLdapUserAndRoleRegistry extends TestCase {
 
         LdapUserAndRoleRegistry ldapUserAndRoleRegistry = new LdapUserAndRoleRegistry( ldapUrl,
                                                                                        ldapUserObjectClass,
-                                                                                       ldapBindDN, ldapPassword, ldapAttributesMappedToRoles, new Properties());
+                                                                                       ldapBindDN, ldapPassword, ldapAttributesMappedToRoles, new Properties(),
+                new XMLConfig("server.xml").getLdapMappedRoles());
         ldapUserAndRoleRegistry.setUserPropertyLdapAttribute("LoginName", ldapAttributeLoginName) ;
         return ldapUserAndRoleRegistry;
     }
