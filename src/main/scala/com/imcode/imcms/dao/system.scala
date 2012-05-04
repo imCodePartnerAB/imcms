@@ -28,7 +28,7 @@ class IPAccessDao extends HibernateSupport {
 
     def save(ipAccess: IPAccess ) = hibernate.saveOrUpdate(ipAccess)
 
-    def get(id: JInteger): IPAccess = hibernate.get(id)
+    def get(id: JInteger) = hibernate.get[IPAccess](id)
 }
 
 

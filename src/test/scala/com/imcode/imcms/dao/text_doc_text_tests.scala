@@ -3,7 +3,6 @@ package imcms.dao
 
 import scala.collection.JavaConversions._
 import imcms.util.Factory
-import imcms.api.{I18nLanguage, TextHistory}
 import imcode.server.document.textdocument.TextDomainObject
 import org.junit.Assert._
 import org.junit.runner.RunWith
@@ -14,6 +13,12 @@ import imcms.test.fixtures.LanguagesFX.{english, swedish, languages}
 import imcode.server.user.{RoleId, RoleDomainObject, UserDomainObject}
 import org.scalatest.fixture.FixtureFunSuite
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import com.imcode.imcms.test.config.AbstractHibernateConfig
+import org.springframework.context.annotation.{Bean, Import}
+import org.springframework.context.annotation.Bean._
+import org.springframework.beans.factory.annotation.Autowire
+import com.imcode.imcms.test.Project
+import com.imcode.imcms.api.{SystemProperty, I18nLanguage, TextHistory}
 
 @RunWith(classOf[JUnitRunner])
 class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
@@ -26,12 +31,10 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
 
   override def beforeAll() = testDB.recreate()
 
-  def before {
-    val sf = testDB.createHibernateSessionFactory(Seq(classOf[I18nLanguage], classOf[TextDomainObject], classOf[TextHistory]),
-               "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
-               "src/main/resources/com/imcode/imcms/hbm/Text.hbm.xml")
+  before {
+    val ctx = Project.spring.createCtx(classOf[TextDaoSuiteConfig])
 
-    textDao = new TextDao |< { _.sessionFactory = sf }
+    textDao = ctx.getBean(classOf[TextDao])
 
     testDB.runScripts("src/test/resources/sql/text_dao.sql")
   }
@@ -183,4 +186,30 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
       }
     }
   }
+}
+
+
+
+
+@Import(Array(classOf[AbstractHibernateConfig]))
+class TextDaoSuiteConfig {
+
+  @Bean(autowire = Autowire.BY_TYPE)
+  def textDao = new TextDao
+
+  @Bean
+  def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
+    Function.chain(Seq(
+      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Project.hibernate.configurators.BasicWithSql,
+      Project.hibernate.configurators.addAnnotatedClasses(
+        classOf[I18nLanguage],
+        classOf[TextDomainObject],
+        classOf[TextHistory]
+      ),
+      Project.hibernate.configurators.addXmlFiles(
+        "com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
+        "com/imcode/imcms/hbm/Text.hbm.xml"
+      )
+    ))
 }

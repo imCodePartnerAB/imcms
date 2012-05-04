@@ -4,7 +4,7 @@ import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.SystemDao;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
-import imcode.server.document.index.SolrFactory;
+import imcode.server.document.index.SolrServerFactory;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
@@ -237,7 +237,7 @@ public class Imcms {
 
         Prefs.flush();
 
-        SolrFactory solrFactory = SolrFactory.getInstance(services.getConfig());
+        SolrServerFactory solrFactory = SolrServerFactory.getInstance(services.getConfig());
         if (solrFactory != null) {
             logger.debug("Destroying Solr server.");
             solrFactory.destroy();

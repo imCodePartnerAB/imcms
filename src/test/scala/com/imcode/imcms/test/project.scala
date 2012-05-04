@@ -12,6 +12,7 @@ import org.springframework.context.annotation._
 import java.lang.{Class, String}
 import org.springframework.context.ApplicationContext
 import com.imcode.imcms.test.config.{ProjectConfig}
+import org.springframework.context.support.{FileSystemXmlApplicationContext, ClassPathXmlApplicationContext}
 
 object Project extends Project
 
@@ -22,6 +23,7 @@ class Project extends ProjectTestDB {
     case url => new File(url.getFile).getParentFile.getParentFile.getParentFile.getCanonicalPath
   }
 
+  System.setProperty("com.imcode.imcms.project.basedir", basedir)
   System.setProperty("log4j.configuration", "test-log4j.xml")
   System.setProperty("solr.solr.home", path("src/main/solr"))
 
@@ -72,15 +74,15 @@ class Project extends ProjectTestDB {
   def subDirFn(relativePath: String) = () => subDir(relativePath)
 
   def initImcms(start: Boolean = false, prepareDBOnStart: Boolean = false) {
-//    root.subDir("src/test/resources") |> { path =>
-//      Imcms.setPath(path, path)
-//    }
-//
-//    Imcms.setSQLScriptsPath(root.path("src/main/webapp/WEB-INF/sql"))
-//    Imcms.setApplicationContext(spring.context())
-//    Imcms.setPrepareDatabaseOnStart(prepareDBOnStart)
-//
-//    if (start) Imcms.start
+    subDir("src/test/resources") |> { path =>
+      Imcms.setPath(path, path)
+    }
+
+    Imcms.setSQLScriptsPath(path("src/main/web/WEB-INF/sql"))
+    Imcms.setApplicationContext(new FileSystemXmlApplicationContext("file:" + path("src/test/resources/test-applicationContext.xml")))
+    Imcms.setPrepareDatabaseOnStart(prepareDBOnStart)
+
+    if (start) Imcms.start
   }
 }
 

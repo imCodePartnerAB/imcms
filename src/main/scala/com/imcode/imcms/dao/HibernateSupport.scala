@@ -1,7 +1,8 @@
 package com.imcode
 package imcms.dao
 
-import org.hibernate.{SQLQuery, Query, SessionFactory, Session}
+import org.hibernate._
+
 
 trait HibernateSupport {
 
@@ -17,7 +18,23 @@ trait HibernateSupport {
 
     type NamedParam = (String, Any)
 
-    def withSession[T](f: Session => T) =  f(sessionFactory.getCurrentSession)
+    def withSession[A](f: Session => A) =  f(sessionFactory.getCurrentSession)
+
+    def withNewSession[A](f: Session => A) =  f(sessionFactory.openSession())
+
+    def withTransaction[A](f: Transaction => A): A = withSession { session =>
+      val transaction = session.beginTransaction()
+      try {
+        f(transaction) |<< {
+          transaction.commit()
+        }
+      } catch {
+        case e =>
+          transaction.rollback()
+          throw e
+      }
+    }
+
 
     def flush() = withSession { _.flush() }
 

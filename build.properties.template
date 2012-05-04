@@ -145,31 +145,10 @@ image-archive-max-zip-upload-size = 262144000
 # Maximum size in bytes of cache for images. By default 500 MB.
 image-cache-max-size = 524288000
 
-########################################################################################################################
-# Document indexing (SOLr) configuration.
-########################################################################################################################
-# Mandatory(?)
-# Specifies SolrServer factory class. Must(?) be one of the following types:
-# 1) Embedded:
-#    imcode.server.document.index.EmbeddedSolrFactory - this is default value for Solr factory.
-#    This factory returns basic implementation of solr server for embedded usage that replaces standard HTTP solr server.
-#    See http://wiki.apache.org/solr/Solrj#EmbeddedSolrServer for details
-# 2) External:
-#    imcode.server.document.index.HttpSolrFactory - this factory returns standard HTTP solr server.
-#    See http://wiki.apache.org/solr/Solrj#CommonsHttpSolrServer for details
-solr-factory = imcode.server.document.index.EmbeddedSolrFactory
-
-# Mandatory configuration parameter for external SOLr.
-# Specifies URL for Solr http server that will be used by the given application. Required only when
-# solr-factory is imcode.server.document.index.HttpSolrServerFactory
-solr-http-server-url =
-
-# Optional extra configuration parameter for external SOLr.
-# Specifies Solr Core name for the given application.
-# Multiple cores allow to run several separately configured indexes on a single Solr instance.
-# Thus one instance can serve different applications.
-# See http://wiki.apache.org/solr/CoreAdmin and http://wiki.apache.org/solr/MultipleIndexes for details.
-solr-core-name =
+# Remote SOLr server URL
+# Type: URL; optional
+# Unless specified imCMS uses embedded SOLr server.
+solr-server-url=
 
 # Enables login passwords encryption
 # Type: boolean; optional; default: false

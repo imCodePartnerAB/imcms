@@ -2,32 +2,33 @@ package com.imcode
 package imcms.dao
 
 import scala.collection.JavaConversions._
-import imcms.api.MenuHistory
 import imcode.server.document.textdocument.{TreeSortKeyDomainObject, MenuItemDomainObject, MenuDomainObject}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
-import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import imcms.test._
 import fixtures.{DocItemFX, DocFX, VersionFX}
 import imcms.test.fixtures.UserFX.{admin}
 import imcms.test.Project.{testDB}
-import org.springframework.orm.hibernate3.HibernateTemplate
+import com.imcode.imcms.test.config.AbstractHibernateConfig
+import org.springframework.context.annotation.{Bean, Import}
+import org.springframework.beans.factory.annotation.Autowire
+import com.imcode.imcms.api.{MenuHistory}
 
 @RunWith(classOf[JUnitRunner])
-class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
 
 	var menuDao: MenuDao = _
 
   val menuNos = 1 to 4
 
-  override def beforeAll() = withLogFailure { testDB.recreate() }
+  override def beforeAll() = testDB.recreate()
 
-  override def beforeEach() = withLogFailure {
-    val sf = testDB.createHibernateSessionFactory(Seq(classOf[MenuDomainObject], classOf[MenuHistory]),
-               "src/main/resources/com/imcode/imcms/hbm/Menu.hbm.xml")
+  before {
+    val ctx = Project.spring.createCtx(classOf[MenuDaoSuiteConfig])
 
-    menuDao = new MenuDao |< { _.sessionFactory = sf }
+    menuDao = ctx.getBean(classOf[MenuDao])
 
     testDB.runScripts("src/test/resources/sql/text_doc_menu_dao.sql")
   }
@@ -122,4 +123,21 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
       menus must be ('empty)
     }
   }
+}
+
+
+@Import(Array(classOf[AbstractHibernateConfig]))
+class MenuDaoSuiteConfig {
+
+  @Bean(autowire = Autowire.BY_TYPE)
+  def menuDao = new MenuDao
+
+  @Bean
+  def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
+    Function.chain(Seq(
+      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Project.hibernate.configurators.BasicWithSql,
+      Project.hibernate.configurators.addAnnotatedClasses(classOf[MenuDomainObject], classOf[MenuHistory]),
+      Project.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Menu.hbm.xml")
+    ))
 }

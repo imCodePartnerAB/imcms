@@ -4,17 +4,20 @@ package imcms.dao
 import imcode.server.user.UserDomainObject
 import imcms.util.Factory
 import imcode.server.document.textdocument.ImageDomainObject
-import imcms.api.{ImageHistory, I18nLanguage}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
-import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import imcms.test.Project.{testDB}
-import org.springframework.orm.hibernate3.HibernateTemplate
+import com.imcode.imcms.test.config.AbstractHibernateConfig
+import org.springframework.context.annotation.{Bean, Import}
+import org.springframework.beans.factory.annotation.Autowire
+import com.imcode.imcms.test.Project
+import com.imcode.imcms.api.{ImageHistory, I18nLanguage}
 
 @RunWith(classOf[JUnitRunner])
-class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
 
   var imageDao: ImageDao = _
   var languageDao: LanguageDao = _
@@ -26,17 +29,11 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
 
   override def beforeAll() = testDB.recreate()
 
-  override def beforeEach() {
-    val sf = testDB.createHibernateSessionFactory(Seq(classOf[I18nLanguage], classOf[ImageDomainObject], classOf[ImageHistory]),
-               "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
-               "src/main/resources/com/imcode/imcms/hbm/Image.hbm.xml")
+  before {
+    val ctx = Project.spring.createCtx(classOf[ImageDaoSuiteConfig])
 
-    imageDao = new ImageDao |< { _.sessionFactory = sf }
-
-    languageDao = new LanguageDao
-    languageDao.setSessionFactory(sf)
-
-    imageDao.languageDao = languageDao
+    imageDao = ctx.getBean(classOf[ImageDao])
+    languageDao = ctx.getBean(classOf[LanguageDao])
 
     testDB.runScripts("src/test/resources/sql/image_dao.sql")
   }
@@ -83,4 +80,31 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
 
     imageDao.saveImageHistory(imageHistory)
 	}
+}
+
+
+@Import(Array(classOf[AbstractHibernateConfig]))
+class ImageDaoSuiteConfig {
+
+  @Bean(autowire = Autowire.BY_TYPE)
+  def languageDao = new LanguageDao
+
+  @Bean(autowire = Autowire.BY_TYPE)
+  def imageDao = new ImageDao
+
+  @Bean
+  def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
+    Function.chain(Seq(
+      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Project.hibernate.configurators.BasicWithSql,
+      Project.hibernate.configurators.addAnnotatedClasses(
+        classOf[I18nLanguage],
+        classOf[ImageDomainObject],
+        classOf[ImageHistory]
+      ),
+      Project.hibernate.configurators.addXmlFiles(
+        "com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
+        "com/imcode/imcms/hbm/Image.hbm.xml"
+      )
+    ))
 }

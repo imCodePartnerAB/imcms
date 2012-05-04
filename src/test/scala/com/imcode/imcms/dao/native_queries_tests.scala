@@ -3,16 +3,16 @@ package imcms.dao
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuite}
 import scala.collection.JavaConversions._
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.{Project, withLogFailure}
 import org.springframework.context.annotation.{Bean, Import}
 import com.imcode.imcms.test.config.{AbstractHibernateConfig}
+import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll, FunSuite}
 
 
 @RunWith(classOf[JUnitRunner])
-class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfterAll {
+class NativeQueriesSuite extends WordSpec with BeforeAndAfter with BeforeAndAfterAll {
 
   val MimeTypeCountInEveryLanguage = 17
 
@@ -28,7 +28,7 @@ class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfte
   }
 
 
-  test("getAllMimeTypes") {
+  "getAllMimeTypes" in {
     val mimeTypes = nativeQueriesDao.getAllMimeTypes()
 
     expect(MimeTypeCountInEveryLanguage * 2, "Mime type count") {
@@ -37,7 +37,7 @@ class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfte
   }
 
 
-  test("getAllMimeTypesWithDescriptions") {
+  "getAllMimeTypesWithDescriptions" in {
     for (language <- Seq("eng", "swe")) {
       val names = for (Array(name, description) <- nativeQueriesDao.getAllMimeTypesWithDescriptions(language)) yield name
       assert(names.size === MimeTypeCountInEveryLanguage, "Mime type count in %s".format(language))
@@ -45,7 +45,7 @@ class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfte
   }
 
 
-  test("getParentDocumentAndMenuIdsForDocument") {
+  "getParentDocumentAndMenuIdsForDocument" in {
     val menusItems = nativeQueriesDao.getParentDocumentAndMenuIdsForDocument(1001)
     val docMenus = menusItems.foldLeft(Map.empty[Int, Seq[Int]].withDefaultValue(Seq.empty)) {
       case (map, Array(docId, menuId)) => docId.toInt |> { id =>
@@ -57,19 +57,19 @@ class NativeQueriesSuite extends FunSuite with BeforeAndAfter with BeforeAndAfte
   }
 
 
-  test("getDocumentsWithPermissionsForRole") {
+  "getDocumentsWithPermissionsForRole" in {
     expect(1001) {
-      nativeQueriesDao.getDocumentsWithPermissionsForRole(2)
+      nativeQueriesDao.getDocumentsWithPermissionsForRole(2).head
     }
   }
 
 
-  test("getAllDocumentTypeIdsAndNamesInUsersLanguage") {
+  "getAllDocumentTypeIdsAndNamesInUsersLanguage" in {
     nativeQueriesDao.getAllDocumentTypeIdsAndNamesInUsersLanguage("eng")
   }
 
-
-  test("getDocumentMenuPairsContainingDocument") {
+              ˜
+  "getDocumentMenuPairsContainingDocument" in {
     nativeQueriesDao.getDocumentMenuPairsContainingDocument(1001)
   }
 }

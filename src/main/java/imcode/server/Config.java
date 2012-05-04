@@ -47,10 +47,7 @@ public class Config {
     private boolean denyMultipleUserLogin;
     private File imageArchiveImagesPath;
 
-    /* Solr-specific attributes*/
-    private String solrServerFactoryClass;
-    private String solrCoreName;
-    private String solrHttpServerURL;
+    private String solrUrl;
 
     private String loginPasswordEncryptionSalt;
     private boolean loginPasswordEncryptionEnabled;
@@ -260,28 +257,12 @@ public class Config {
         this.imageMagickPath = imageMagickPath;
     }
 
-    public String getSolrServerFactoryClass() {
-        return solrServerFactoryClass;
+    public String getSolrUrl() {
+        return solrUrl;
     }
 
-    public void setSolrServerFactoryClass(String solrServerFactoryClass) {
-        this.solrServerFactoryClass = solrServerFactoryClass;
-    }
-
-    public String getSolrCoreName() {
-        return solrCoreName;
-    }
-
-    public void setSolrCoreName(String solrCoreName) {
-        this.solrCoreName = solrCoreName;
-    }
-
-    public String getSolrHttpServerURL() {
-        return solrHttpServerURL;
-    }
-
-    public void setSolrHttpServerURL(String solrHttpServerURL) {
-        this.solrHttpServerURL = solrHttpServerURL;
+    public void setSolrUrl(String solrUrl) {
+        this.solrUrl = StringUtils.trimToNull(solrUrl);
     }
 
     /**

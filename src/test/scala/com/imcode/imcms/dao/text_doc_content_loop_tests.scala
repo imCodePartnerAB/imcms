@@ -12,9 +12,10 @@ import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.api.{ContentLoop}
+import org.springframework.orm.hibernate4.HibernateTransactionManager
 
 @RunWith(classOf[JUnitRunner])
-class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
+class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
   // loops predefined in src/test/resources/dbunit-content_loop.xml: loop_<contents-count>_[sort-order]_id
   val loop_0_id = 0
@@ -40,7 +41,7 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
 
   test("get all [4] text doc's content loops") {
-    contentLoopDao.getLoops(1001, 0) must have size (4)
+    assertEquals("loops count", 4, contentLoopDao.getLoops(1001, 0))
   }
 
 
@@ -63,12 +64,12 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val descSortedContens = getLoop(loop_3_desc_id, true).getContents
 
     for (i <- 0 to 2) {
-      assertEquals("Content order no.", new JInteger(i), ascSortedContens.get(i).getNo)
+      assertEquals("Content order no.", i, ascSortedContens.get(i).getNo)
     }
 
 
-    for (i <- 2 to (0, -1)) {
-      assertEquals("Content order no.", new JInteger(i), descSortedContens.get(i).getNo)
+    for ((no, i) <- 2 to (0, -1) zipWithIndex) {
+      assertEquals("Content order no.", no, descSortedContens.get(i).getNo)
     }
 	}
 
@@ -76,7 +77,7 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
     new ContentLoop |> { loop =>
       loop.setDocId(1001);
       loop.setDocVersionNo(0);
-      loop.setNo(getNextLoopNo())
+      loop.setNo(contentLoopDao.getNextLoopNo(1001, 0))
 
       contentLoopDao.saveLoop(loop)
     }
@@ -111,7 +112,7 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
     var loop = new ContentLoop
     loop.setDocId(1001)
     loop.setDocVersionNo(0)
-    loop.setNo(getNextLoopNo())
+    loop.setNo(contentLoopDao.getNextLoopNo(1001, 0))
 
     val contentsCount = 5
 
@@ -139,17 +140,9 @@ class ContentLoopDaoSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
 	def getLoop(no: Int): ContentLoop = getLoop(no, false)
 
-	def getLoop(no: Int, assertLoopNotNull: Boolean) = doto(contentLoopDao.getLoop(1001, 0, no)) { loop =>
+	def getLoop(no: Int, assertLoopNotNull: Boolean) = contentLoopDao.getLoop(1001, 0, no) |< { loop =>
     if (assertLoopNotNull)
       assertNotNull("Loop exists - docId: %s, docVersionNo: %s, no: %s.".format(1001, 0, no), loop)
-  }
-
-
-  def getNextLoopNo(): JInteger = contentLoopDao.hibernate.getByQuery[JInteger](
-    "select max(l.no) from ContentLoop l where l.docId = 1001 and l.docVersionNo = 0"
-  ) match {
-    case null => 0
-    case n => n.intValue + 1
   }
 }
 

@@ -12,7 +12,7 @@ import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
-import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import imcms.test._
 import fixtures.LanguagesFX
 import imcms.test.Project
@@ -26,7 +26,7 @@ import imcms.util.Factory
 import imcms.mapping.DocumentMapper.SaveDirectives
 
 @RunWith(classOf[JUnitRunner])
-class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
 
   var docMapper: DocumentMapper = _
   var admin: UserDomainObject = _

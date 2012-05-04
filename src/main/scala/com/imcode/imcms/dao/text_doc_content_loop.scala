@@ -9,7 +9,7 @@ import com.imcode.imcms.api.ContentLoop
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class ContentLoopDao extends HibernateSupport {
 
-  def getLoop(loopId: JLong): ContentLoop = hibernate.get(loopId)
+  def getLoop(loopId: Long) = hibernate.get[ContentLoop](loopId)
 
   /**
    * Returns loop or null if loop can not be found.
@@ -19,7 +19,7 @@ class ContentLoopDao extends HibernateSupport {
    *
    * @return loop or null if loop can not be found.
    */
-  def getLoop(docId: JInteger, docVersionNo: JInteger, no: JInteger): ContentLoop =
+  def getLoop(docId: Int, docVersionNo: Int, no: Int): ContentLoop =
     hibernate.getByNamedQueryAndNamedParams(
       "ContentLoop.getByDocIdAndDocVersionNoAndNo", "docId" -> docId, "docVersionNo" -> docVersionNo, "no" -> no
     )
@@ -32,9 +32,17 @@ class ContentLoopDao extends HibernateSupport {
    *
    * @return document content loops.
    */
-  def getLoops(docId: JInteger, docVersionNo: JInteger): JList[ContentLoop] = hibernate.listByNamedQueryAndNamedParams(
+  def getLoops(docId: Int, docVersionNo: Int): JList[ContentLoop] = hibernate.listByNamedQueryAndNamedParams(
     "ContentLoop.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
   )
+
+
+  def getNextLoopNo(docId: Int, docVersionNo: Int): Int = hibernate.getByQuery[JInteger](
+      "select max(l.no) from ContentLoop l where l.docId = ? and l.docVersionNo = ?", docId, docVersionNo
+    ) match {
+      case null => 0
+      case n => n.intValue + 1
+    }
 
 
   /**
@@ -49,11 +57,11 @@ class ContentLoopDao extends HibernateSupport {
   }
 
 
-  def deleteLoops(docId: JInteger, docVersionNo: JInteger) =
+  def deleteLoops(docId: Int, docVersionNo: Int) =
     getLoops(docId, docVersionNo).map(hibernate.delete).size
 
 
-  def deleteLoop(loopId: JLong) = getLoop(loopId) match {
+  def deleteLoop(loopId: Long) = getLoop(loopId) match {
     case null => false
     case loop =>
       hibernate.delete(loop)

@@ -16,7 +16,7 @@ class MetaDao extends HibernateSupport {
   private val META_HEADLINE_MAX_LENGTH = 255
   private val META_TEXT_MAX_LENGTH = 1000
 
-  def getMeta(docId: JInteger): Meta = hibernate.get(docId)
+  def getMeta(docId: JInteger) = hibernate.get[Meta](docId)
 
   /**  Updates doc's access and modified date-time. */
   def touch(doc: DocumentDomainObject, user: UserDomainObject): Unit = touch(doc, new Date, user)
@@ -131,7 +131,7 @@ class MetaDao extends HibernateSupport {
     hibernate.listByQuery("select i from Include i where i.metaId = ?", docId)
 
 
-  def getTemplateNames(docId: JInteger): TemplateNames = hibernate.get(docId)
+  def getTemplateNames(docId: JInteger) = hibernate.get[TemplateNames](docId)
 
 
   def deleteTemplateNames(docId: JInteger) = hibernate.bulkUpdateByNamedParams(

@@ -15,7 +15,7 @@ class TextDao extends HibernateSupport {
   def saveText(text: TextDomainObject) = hibernate.saveOrUpdate(text)
 
 
-  def getTextById(id: JLong): TextDomainObject = hibernate.get(id)
+  def getTextById(id: JLong) = hibernate.get[TextDomainObject](id)
 
 
   def deleteTexts(docId: JInteger, docVersionNo: JInteger, language: I18nLanguage): Int =

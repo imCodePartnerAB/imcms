@@ -55,17 +55,17 @@ class DocumentVersionDao extends HibernateSupport {
     getVersion(docId, no) |> { version =>
       require(version != null, "Version must exists")
 
-      hibernate.bulkUpdateByNamedQuery(
+      hibernate.bulkUpdateByNamedQueryAndNamedParams(
         "DocumentVersion.changeDefaultVersion",
 
         "defaultVersionNo" -> no,
         "publisherId" -> publisherId,
-        "docId", docId
+        "docId" -> docId
       )
     }
 
 
   def getVersion(docId: JInteger, no: JInteger): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
-    "DocumentVersion.getByDocIdAndNo", "docId" -> docId
+    "DocumentVersion.getByDocIdAndNo", "docId" -> docId, "no" -> no
   )
 }

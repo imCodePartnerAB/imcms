@@ -6,7 +6,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.document.index.SolrIndexDocumentFactory;
-import imcode.server.document.index.SolrFactory;
+import imcode.server.document.index.SolrServerFactory;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.Authenticator;
@@ -280,7 +280,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initDocumentMapper() {
-        SolrFactory solrFactory = SolrFactory.getInstance(getConfig());
+        SolrServerFactory solrFactory = SolrServerFactory.getInstance(getConfig());
         SolrServer solrServer = solrFactory.createServer();
         documentMapper = new DocumentMapper(this, this.getDatabase());
         documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,

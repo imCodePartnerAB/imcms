@@ -6,24 +6,27 @@ import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
-import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import imcms.test.Project.{testDB}
-import org.springframework.orm.hibernate3.HibernateTemplate
+import com.imcode.imcms.test.Project
+import com.imcode.imcms.test.config.AbstractHibernateConfig
+import org.springframework.context.annotation.{Bean, Import}
+import org.springframework.beans.factory.annotation.Autowire
 
 @RunWith(classOf[JUnitRunner])
 //todo: Test named queries
-class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
 
 	var metaDao: MetaDao = _
 
   override def beforeAll() = testDB.recreate()
 
-  override def beforeEach() {
-    val sf = testDB.createHibernateSessionFactory(classOf[TemplateNames])
+  before {
+    val ctx = Project.spring.createCtx(classOf[TemplateNamesDaoSuiteConfig])
+
+    metaDao = ctx.getBean(classOf[MetaDao])
 
     testDB.runScripts("src/test/resources/sql/template_names_dao.sql")
-
-    metaDao = new MetaDao |< { _.sessionFactory = sf }
   }
 
 
@@ -73,4 +76,19 @@ class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAft
     tns = metaDao.getTemplateNames(1001)
     assertNotNull(tns)
   }
+}
+
+@Import(Array(classOf[AbstractHibernateConfig]))
+class TemplateNamesDaoSuiteConfig {
+
+  @Bean(autowire = Autowire.BY_TYPE)
+  def metaDao = new MetaDao
+
+  @Bean
+  def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
+    Function.chain(Seq(
+      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Project.hibernate.configurators.BasicWithSql,
+      Project.hibernate.configurators.addAnnotatedClasses(classOf[TemplateNames])
+    ))
 }
