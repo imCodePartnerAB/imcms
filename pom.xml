@@ -30,20 +30,19 @@
 
          To enable remote management from the plugins and browsers (http://localhost:8080/manager/html)
          add the following line into your $CATALINA_HOME/conf/tomcat-users.xml file:
-         <user username="manager" password="manager" roles="manager-gui,manager-script"/>
+         <user username="manager" password="manager" roles="manager-gui,manager-script" />
 
          The plugin provides a number of goals to deploy webapp to the remote server - deploy, deploy-only, exploded and inplace.
          But only deploy goal is most safest and recommended.
          Unlike other goals it invokes the execution of the lifecycle phase 'package' prior to executing itself.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>4.1.6-SNAPSHOT</version>
+    <version>4.1.6</version>
     <name>imCMS</name>
 
     <properties>
@@ -53,7 +52,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <javac.deprecation>false</javac.deprecation>
-        <javac.args></javac.args>
+        <javac.args />
 
         <log4j-conf.file>log4j-nodebug.xml</log4j-conf.file>
 
@@ -532,7 +531,7 @@
                         <phase>pre-clean</phase>
                         <configuration>
                             <target>
-                                <delete dir="${generated.webapp.dir}" verbose="false"/>
+                                <delete dir="${generated.webapp.dir}" verbose="false" />
                             </target>
                         </configuration>
                         <goals>
@@ -545,36 +544,32 @@
                         <phase>validate</phase>
                         <configuration>
                             <target>
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
                                 <if>
                                     <not>
-                                        <available file="${basedir}/build.properties"/>
+                                        <available file="${basedir}/build.properties" />
                                     </not>
                                     <then>
-                                        <copy file="${basedir}/build.properties.template"
-                                              tofile="${basedir}/build.properties"/>
+                                        <copy file="${basedir}/build.properties.template" tofile="${basedir}/build.properties" />
                                     </then>
                                 </if>
 
                                 <if>
                                     <not>
-                                        <available file="${basedir}/server.xml"/>
+                                        <available file="${basedir}/server.xml" />
                                     </not>
                                     <then>
-                                        <copy file="${basedir}/server.xml.template"
-                                              tofile="${basedir}/server.xml"/>
+                                        <copy file="${basedir}/server.xml.template" tofile="${basedir}/server.xml" />
                                     </then>
                                 </if>
 
-                                <uptodate targetfile="${basedir}/build.properties"
-                                          property="build-properties-up-to-date">
-                                    <srcfiles dir="${basedir}" includes="build.properties.template"/>
+                                <uptodate targetfile="${basedir}/build.properties" property="build-properties-up-to-date">
+                                    <srcfiles dir="${basedir}" includes="build.properties.template" />
                                 </uptodate>
 
-                                <uptodate targetfile="${basedir}/server.xml"
-                                          property="server-properties-up-to-date">
-                                    <srcfiles dir="${basedir}" includes="server.xml.template"/>
+                                <uptodate targetfile="${basedir}/server.xml" property="server-properties-up-to-date">
+                                    <srcfiles dir="${basedir}" includes="server.xml.template" />
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
@@ -601,15 +596,15 @@
                         <configuration>
                             <target>
                                 <ant antfile="${basedir}/pom-ant.xml" target="web">
-                                    <property name="version" value="${project.version}"/>
-                                    <property name="webroot" value="${generated.webapp.dir}"/>
-                                    <property name="log4j-conf.file" value="${log4j-conf.file}"/>
+                                    <property name="version" value="${project.version}" />
+                                    <property name="webroot" value="${generated.webapp.dir}" />
+                                    <property name="log4j-conf.file" value="${log4j-conf.file}" />
                                 </ant>
 
                                 <ant antfile="${basedir}/pom-ant.xml" target="sql">
-                                    <property name="version" value="${project.version}"/>
-                                    <property name="webroot" value="${generated.webapp.dir}"/>
-                                    <property name="log4j-conf.file" value="${log4j-conf.file}"/>
+                                    <property name="version" value="${project.version}" />
+                                    <property name="webroot" value="${generated.webapp.dir}" />
+                                    <property name="log4j-conf.file" value="${log4j-conf.file}" />
                                 </ant>
                             </target>
                         </configuration>
@@ -727,7 +722,7 @@
             </plugin>
 
             <!-- http://tomcat.apache.org/maven-plugin-2/ -->
-            <!--<user username="manager" password="manager" roles="manager-gui,manager-script"/>-->
+            <!--<user username="manager" password="manager" roles="manager-gui,manager-script" />-->
 
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
@@ -788,9 +783,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</connection>
-        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</developerConnection>
-        <url></url>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/4.1.6</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/4.1.6</developerConnection>
+        <url>/tags/4.1.6</url>
     </scm>
 </project>
 
