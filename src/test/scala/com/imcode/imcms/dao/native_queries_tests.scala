@@ -68,7 +68,7 @@ class NativeQueriesSuite extends WordSpec with BeforeAndAfter with BeforeAndAfte
     nativeQueriesDao.getAllDocumentTypeIdsAndNamesInUsersLanguage("eng")
   }
 
-              ˜
+
   "getDocumentMenuPairsContainingDocument" in {
     nativeQueriesDao.getDocumentMenuPairsContainingDocument(1001)
   }

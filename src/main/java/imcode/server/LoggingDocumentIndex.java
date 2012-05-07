@@ -70,7 +70,8 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
             addTerm(terms, termQuery.getTerm());
         } else if ( query instanceof MultiTermQuery ) {
             MultiTermQuery multiTermQuery = (MultiTermQuery) query;
-            addTerm(terms, multiTermQuery.getTerm());
+            //todo: check - method is removed - how to WA
+            //addTerm(terms, multiTermQuery.getTerm());
         } else if ( query instanceof PrefixQuery ) {
             PrefixQuery prefixQuery = (PrefixQuery) query;
             addTerm(terms, prefixQuery.getPrefix());

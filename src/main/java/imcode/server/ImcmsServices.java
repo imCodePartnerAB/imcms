@@ -17,6 +17,7 @@ import java.security.KeyStore;
 import java.text.Collator;
 import java.util.Date;
 
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.web.context.WebApplicationContext;

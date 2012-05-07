@@ -29,7 +29,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
 import org.apache.lucene.search.TermQuery;
 
 import com.imcode.imcms.flow.DispatchCommand;
@@ -39,7 +38,8 @@ import com.imcode.imcms.flow.Page;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 import org.apache.lucene.search.BooleanClause.Occur;
-
+import org.apache.lucene.search.TermRangeQuery;
+//todo: check termRangeQueries
 public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderPage {
 
     public static final String REQUEST_PARAMETER__DOCUMENTS_PER_PAGE = "num";
@@ -229,7 +229,10 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
 //            Term upperTerm = new Term( dateField, DateTools.dateToString(calculatedEndDate, DateTools.Resolution.MINUTE) );
             Term upperTerm = new Term( dateField, solrDateFormat.format(calculatedEndDate) );
 
-            Query publicationStartedQuery = new RangeQuery( lowerTerm, upperTerm, true );
+            TermRangeQuery publicationStartedQuery = new TermRangeQuery(dateField,
+                    solrDateFormat.format(calculatedStartDate),
+                    solrDateFormat.format(calculatedEndDate),
+                    true, true );
             newQuery.add( publicationStartedQuery, Occur.MUST );
         }
 

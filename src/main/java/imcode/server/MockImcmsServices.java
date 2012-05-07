@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.web.context.WebApplicationContext;
@@ -31,9 +32,7 @@ import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.kerberos.KerberosLoginService;
 
-public class
-
-        MockImcmsServices implements ImcmsServices {
+public class MockImcmsServices implements ImcmsServices {
 
     public Object getSpringBean(String beanName) {
 		// TODO Auto-generated method stub

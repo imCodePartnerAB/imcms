@@ -6,7 +6,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.document.index.SolrIndexDocumentFactory;
-import imcode.server.document.index.SolrServerFactory;
+import imcode.server.document.index.IndexService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.Authenticator;
@@ -79,7 +79,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private TextDocumentParser textDocParser;
     private Config config;
 
-    private static final String SOLR_HOME_PROPERTY = "solr.solr.home";
     private static final int DEFAULT_STARTDOCUMENT = 1001;
 
     private SystemData sysData;
@@ -108,7 +107,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private I18nSupport i18nSupport;
 
 
-
     static {
         mainLog.info("Main log started.");
     }
@@ -128,7 +126,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
-        setSolrHomeSystemPropertyIfNotAssignedExternally();
         initConfig(props);
         initSso();
         initKeyStore();
@@ -163,17 +160,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         
         if (config.isSsoKerberosDebug()) {
             System.setProperty("sun.security.krb5.debug", "true");
-        }
-    }
-    
-    private void setSolrHomeSystemPropertyIfNotAssignedExternally() {
-        String solrHome =  System.getProperty(SOLR_HOME_PROPERTY);
-        if (solrHome != null) {
-            log.info(String.format("Solr home is set to '%s'.", solrHome));
-        } else {
-            String defaultSolrHome = FileUtility.getFileFromWebappRelativePath("WEB-INF/solr").getAbsolutePath();
-            log.info(String.format("Solr home is not set. Using default '%s'", defaultSolrHome));
-            System.setProperty(SOLR_HOME_PROPERTY, defaultSolrHome);
         }
     }
 
@@ -280,14 +266,15 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initDocumentMapper() {
-        SolrServerFactory solrFactory = SolrServerFactory.getInstance(getConfig());
-        SolrServer solrServer = solrFactory.createServer();
+        IndexService inedxService = new IndexService(getConfig());
+        SolrServer solrServer = inedxService.solrServer();
+
         documentMapper = new DocumentMapper(this, this.getDatabase());
         documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,
                 new PhaseQueryFixingDocumentIndex(
                     new RebuildingDirectoryIndex(solrServer, documentMapper,
                         getConfig().getIndexingSchedulePeriodInMinutes(),
-                        new SolrIndexDocumentFactory(getCategoryMapper()))))) ;
+                        new SolrIndexDocumentFactory(getDocumentMapper(), getCategoryMapper()))))) ;
     }
 
     private void initTemplateMapper() {

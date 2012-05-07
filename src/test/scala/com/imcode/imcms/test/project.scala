@@ -69,12 +69,12 @@ class Project extends ProjectTestDB {
 
   def fileFn(relativePath: String) = () => file(relativePath)
 
-  def subDir(relativePath: String) = new File(basedir, relativePath)
+  def dir(relativePath: String) = new File(basedir, relativePath)
 
-  def subDirFn(relativePath: String) = () => subDir(relativePath)
+  def dirFn(relativePath: String) = () => dir(relativePath)
 
   def initImcms(start: Boolean = false, prepareDBOnStart: Boolean = false) {
-    subDir("src/test/resources") |> { path =>
+    dir("src/test/resources") |> { path =>
       Imcms.setPath(path, path)
     }
 

@@ -24,10 +24,13 @@ import java.util.*;
  */
 public class SolrIndexDocumentFactory {
 
-    private CategoryMapper categoryMapper;
-    private final static Logger log = Logger.getLogger(SolrIndexDocumentFactory.class.getName());
+    private final Logger log = Logger.getLogger(getClass());
 
-    public SolrIndexDocumentFactory(CategoryMapper categoryMapper) {
+    private CategoryMapper categoryMapper;
+    private DocumentMapper documentMapper;
+
+    public SolrIndexDocumentFactory(DocumentMapper documentMapper, CategoryMapper categoryMapper) {
+        this.documentMapper = documentMapper;
         this.categoryMapper = categoryMapper;
     }
     
@@ -41,8 +44,6 @@ public class SolrIndexDocumentFactory {
             throw new IllegalArgumentException("Unable to index document - docId argument is null.");
         }
 
-
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         DocumentVersionInfo versionInfo = documentMapper.getDocumentVersionInfo(documentId);
 
         if (versionInfo == null) {

@@ -47,7 +47,15 @@ public class Config {
     private boolean denyMultipleUserLogin;
     private File imageArchiveImagesPath;
 
+    /**
+     * Remote SOLr URL.
+     */
     private String solrUrl;
+
+    /**
+     * Embedded SOLr home.
+     */
+    private File solrHome;
 
     private String loginPasswordEncryptionSalt;
     private boolean loginPasswordEncryptionEnabled;
@@ -263,6 +271,14 @@ public class Config {
 
     public void setSolrUrl(String solrUrl) {
         this.solrUrl = StringUtils.trimToNull(solrUrl);
+    }
+
+    public File getSolrHome() {
+        return solrHome;
+    }
+
+    public void setSolrHome(File solrHome) {
+        this.solrHome = solrHome;
     }
 
     /**

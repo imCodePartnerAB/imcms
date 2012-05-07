@@ -4,7 +4,6 @@ import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.SystemDao;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
-import imcode.server.document.index.SolrServerFactory;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
@@ -21,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
@@ -164,7 +164,7 @@ public class Imcms {
         LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
 
         final CachingFileLoader fileLoader = new CachingFileLoader();
-        DefaultImcmsServices services = new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+        DefaultImcmsServices services = new DefaultImcmsServices( database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
         services.setI18nSupport(getI18nSupport());
         services.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
         return services;
@@ -186,7 +186,19 @@ public class Imcms {
 
     public static Properties getServerProperties() {
         try {
-            return Prefs.getProperties(SERVER_PROPERTIES_FILENAME);
+            Properties properties = Prefs.getProperties(SERVER_PROPERTIES_FILENAME);
+
+            String solrHome = StringUtils.trimToEmpty(properties.getProperty("SolrHome"));
+            properties.setProperty(
+                    "SolrHome",
+                    solrHome.isEmpty()
+                            ? "WEB-INF/solr"
+                            : solrHome.indexOf(0) == '/'
+                            ? solrHome
+                            : "/" + solrHome
+            );
+
+            return properties;
         } catch ( IOException e ) {
             logger.fatal("Failed to initialize imCMS", e);
             throw new UnhandledException(e);
@@ -236,12 +248,6 @@ public class Imcms {
         }
 
         Prefs.flush();
-
-        SolrServerFactory solrFactory = SolrServerFactory.getInstance(services.getConfig());
-        if (solrFactory != null) {
-            logger.debug("Destroying Solr server.");
-            solrFactory.destroy();
-        }
 
         services = null;
 

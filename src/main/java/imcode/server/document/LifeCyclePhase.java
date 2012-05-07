@@ -4,10 +4,11 @@ import imcode.server.document.index.DocumentIndex;
 
 import java.util.Date;
 
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TermQuery;
 
 import com.imcode.imcms.api.Document;
@@ -63,15 +64,15 @@ public abstract class LifeCyclePhase {
         return minuend;
     }
 
-    private static RangeQuery getPublicationStartRangeQuery(Date now) {
+    private static TermRangeQuery getPublicationStartRangeQuery(Date now) {
         return getDateRangeQuery(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, now);
     }
 
-    private static RangeQuery getPublicationEndRangeQuery(Date now) {
+    private static TermRangeQuery getPublicationEndRangeQuery(Date now) {
         return getDateRangeQuery(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, now);
     }
 
-    private static RangeQuery getArchivedRangeQuery(Date now) {
+    private static TermRangeQuery getArchivedRangeQuery(Date now) {
         return getDateRangeQuery(DocumentIndex.FIELD__ARCHIVED_DATETIME, now);
     }
 
@@ -80,13 +81,14 @@ public abstract class LifeCyclePhase {
      * @param field range field name.
      * @param now range upper bound.
      *
-     * @return a RangeQuery in an interval from infinity to now.
+     * @return a TermRangeQuery in an interval from infinity to now.
      */
-    private static RangeQuery getDateRangeQuery(String field, Date now) {
-        return new RangeQuery(null,
-                                new Term(field, DateUtil.getThreadLocalDateFormat().format(now)),
-//                              new Term(field, DateTool.dateToString(now, DateTools.Resolution.MINUTE)),
-                              true);
+    // todo: Check!
+    private static TermRangeQuery getDateRangeQuery(String field, Date now) {
+        return new TermRangeQuery(field,
+                                null,
+                                DateUtil.getThreadLocalDateFormat().format(now),
+                                true, true);
     }
 
     private static BooleanQuery getPublishedQuery(Date now) {

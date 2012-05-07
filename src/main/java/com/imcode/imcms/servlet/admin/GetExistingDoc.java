@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TermQuery;
 
 import com.imcode.imcms.flow.Page;
@@ -53,7 +53,7 @@ import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.solr.common.util.DateUtil;
-
+//todo: check termRangeQueries
 public class GetExistingDoc extends HttpServlet {
 
     private final static Logger LOG = Logger.getLogger( GetExistingDoc.class.getName() );
@@ -419,7 +419,15 @@ public class GetExistingDoc extends HttpServlet {
                 Term endDateTerm = null != endDate
                                    ? new Term( wantedIndexDateField, solrDateFormat.format( addOneDayToDate( endDate )) )
                                    : null;
-                RangeQuery dateRangeQuery = new RangeQuery( startDateTerm, endDateTerm, true );
+
+                TermRangeQuery dateRangeQuery = new TermRangeQuery(wantedIndexDateField,
+                        null != startDate
+                                    ? solrDateFormat.format(startDate)
+                                    : null,
+                        null != endDate
+                                   ? solrDateFormat.format( addOneDayToDate( endDate ))
+                                   : null,
+                        true, true);
                 query.add( dateRangeQuery, Occur.MUST );
             }
         }

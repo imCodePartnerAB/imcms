@@ -92,7 +92,7 @@
         </copy>
 
         <copy todir="${webinf.solr.dir}">
-            <fileset dir="src/main/solr"/>
+            <fileset dir="src/main/web/WEB-INF/solr"/>
         </copy>
 
         <antcall target="web-lang">
@@ -221,7 +221,8 @@
         <filter token="image-archive-max-zip-upload-size" value="${image-archive-max-zip-upload-size}"/>
         <filter token="image-cache-max-size" value="${image-cache-max-size}"/>
 
-        <filter token="solr-server-url" value="${solr-server-url}"/>
+        <filter token="solr-url" value="${solr-url}"/>
+        <filter token="solr-home" value="${solr-home}"/>
 
         <filter token="login-password-encryption-enabled" value="${login-password-encryption-enabled}"/>
         <filter token="login-password-encryption-salt" value="${login-password-encryption-salt}"/>
