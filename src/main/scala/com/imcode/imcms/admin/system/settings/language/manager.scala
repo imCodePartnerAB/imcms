@@ -92,7 +92,7 @@ class LanguageManager(app: ImcmsApplication) {
         c.chkEnabled.value = ?(vo.isEnabled) getOrElse (Boolean box false)
 
         dlg wrapOkHandler {
-          vo.clone |> { voc =>
+          new I18nLanguage.Builder |> { voc =>
             // todo: validate
             voc.setCode(c.txtCode.value)
             voc.setName(c.txtName.value)
@@ -100,7 +100,7 @@ class LanguageManager(app: ImcmsApplication) {
             voc.setEnabled(c.chkEnabled.value)
 
             app.privileged(permission) {
-              EX.allCatch.either(languageDao saveLanguage voc) match {
+              EX.allCatch.either(languageDao saveLanguage voc.build()) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
                   app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)

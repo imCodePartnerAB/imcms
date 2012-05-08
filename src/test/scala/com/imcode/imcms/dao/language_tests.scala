@@ -12,6 +12,7 @@ import com.imcode.imcms.test.{Project}
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.{Autowire}
 
+
 @RunWith(classOf[JUnitRunner])
 class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
@@ -42,24 +43,26 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     assertNull("Language with id %d does not exists." format id, languageDao.getById(3))
     assertNull("Language with code %s does not exists." format code, languageDao.getByCode(code))
 
-    var language = new I18nLanguage
+    val builder = new I18nLanguage.Builder
 
-    language.setCode(code)
-    language.setName("Estonain")
-    language.setNativeName("Eesti")
-    language.setEnabled(true)
-    languageDao.saveLanguage(language)
+    builder.setCode(code)
+    builder.setName("Estonain")
+    builder.setNativeName("Eesti")
+    builder.setEnabled(true)
+    val language = languageDao.saveLanguage(builder.build())
     assertNotNull("Language with id %d exists." format id, languageDao.getById(3))
     assertNotNull("Language with code %s exists." format code, languageDao.getByCode(code))
   }
 
   test("update existing language") {
-    var language = languageDao.getById(1)
+    val language = languageDao.getById(1)
     assertTrue("Language is enabled.", language.isEnabled.booleanValue)
-    language.setEnabled(false)
-    languageDao.saveLanguage(language)
-    language = languageDao.getById(1)
-    assertFalse("Language is disabled.", language.isEnabled.booleanValue)
+
+    val updatedLanguage = new I18nLanguage.Builder(language).setEnabled(false).build()
+    languageDao.saveLanguage(updatedLanguage)
+
+    val languageFromDb = languageDao.getById(1)
+    assertFalse("Language is disabled.", languageFromDb.isEnabled)
   }
 
   test("get defailt language") {

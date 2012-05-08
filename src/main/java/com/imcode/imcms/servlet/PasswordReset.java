@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet;
 
 
-import com.imcode.imcms.api.P;
+import com.imcode.imcms.util.P;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
@@ -12,9 +12,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.mail.DefaultAuthenticator;
-import org.apache.commons.mail.Email;
-import org.apache.commons.mail.SimpleEmail;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;

@@ -266,8 +266,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initDocumentMapper() {
-        IndexService inedxService = new IndexService(getConfig());
-        SolrServer solrServer = inedxService.solrServer();
+        IndexService indexService = new IndexService(getConfig());
+        SolrServer solrServer = indexService.solrServer();
 
         documentMapper = new DocumentMapper(this, this.getDatabase());
         documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,

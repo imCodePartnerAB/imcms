@@ -15,15 +15,14 @@ import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Project
 import com.imcode.imcms.api.{ImageHistory, I18nLanguage}
+import com.imcode.imcms.test.fixtures.LanguagesFX.{english, swedish}
+
 
 @RunWith(classOf[JUnitRunner])
 class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
 
   var imageDao: ImageDao = _
   var languageDao: LanguageDao = _
-
-  val english = Factory.createLanguage(1, "en", "English")
-  val swedish = Factory.createLanguage(2, "sv", "Swedish")
 
   val admin = new UserDomainObject(0)
 
@@ -56,7 +55,7 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
 
 
   test("get text doc's image by doc id, doc version no, language and no") {
-		val image = imageDao.getImage(english.getId().intValue, 1001, 0, 1, null, null)
+		val image = imageDao.getImage(english.getId, 1001, 0, 1, null, null)
     assertNotNull(image)
 	}
 

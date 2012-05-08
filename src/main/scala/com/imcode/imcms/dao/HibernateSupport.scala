@@ -3,7 +3,6 @@ package imcms.dao
 
 import org.hibernate._
 
-
 trait HibernateSupport {
 
   @scala.reflect.BeanProperty
@@ -20,20 +19,20 @@ trait HibernateSupport {
 
     def withSession[A](f: Session => A) =  f(sessionFactory.getCurrentSession)
 
-    def withNewSession[A](f: Session => A) =  f(sessionFactory.openSession())
-
-    def withTransaction[A](f: Transaction => A): A = withSession { session =>
-      val transaction = session.beginTransaction()
-      try {
-        f(transaction) |<< {
-          transaction.commit()
-        }
-      } catch {
-        case e =>
-          transaction.rollback()
-          throw e
-      }
-    }
+    def withOpenSession[A](f: Session => A) =  f(sessionFactory.openSession())
+//
+//    def withTransaction[A](f: Transaction => A): A = withSession { session =>
+//      val transaction = session.beginTransaction()
+//      try {
+//        f(transaction) |<< {
+//          transaction.commit()
+//        }
+//      } catch {
+//        case e =>
+//          transaction.rollback()
+//          throw e
+//      }
+//    }
 
 
     def flush() = withSession { _.flush() }

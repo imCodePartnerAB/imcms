@@ -1,4 +1,4 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.util;
 
 // Product
 public final class P {

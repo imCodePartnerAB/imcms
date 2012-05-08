@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class I18nMeta implements Cloneable, DocItem, DocI18nItem {
 
 	@Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 
 	@Column(name="doc_id")

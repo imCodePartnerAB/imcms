@@ -214,17 +214,20 @@ public class Meta implements Serializable, Cloneable {
 
     // These fields were lazy loaded in previous version:
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "document_properties",
-            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
+//    @JoinTable(
+//            name = "document_properties",
+//            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
+    @CollectionTable(name = "document_properties", joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
     @MapKeyColumn(name = "key_name")
     @Column(name = "value", nullable = false)
     private Map<String, String> properties = new HashMap<String, String>();
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "document_categories",
-            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
+    @CollectionTable(name = "document_categories", joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id")
+    )
+//    @JoinTable(
+//            name = "document_categories",
+//            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
     @Column(name = "category_id", nullable = false)
     private Set<Integer> categoryIds = new HashSet<Integer>();
 

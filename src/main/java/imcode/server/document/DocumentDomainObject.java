@@ -52,8 +52,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private I18nMeta i18nMeta = new I18nMeta();
 
-    private I18nLanguage language;
-
     private DocumentVersion version = new DocumentVersion();
 
 
@@ -552,11 +550,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public I18nLanguage getLanguage() {
-        return language;
+        return i18nMeta.getLanguage();
     }
 
     public void setLanguage(I18nLanguage language) {
-        this.language = language;
         this.i18nMeta.setLanguage(language);
     }
 

@@ -54,7 +54,7 @@ public class SolrIndexDocumentFactory {
         DocumentDomainObject document = documentMapper.getCustomDocument(documentId, defaultDocVersionNo, Imcms.getI18nSupport().getDefaultLanguage());
 
         MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
-        Collection<I18nMeta> labelsColl = metaDao.getI18nMetas(documentId);
+        Collection<I18nMeta> i18nMetas = metaDao.getI18nMetas(documentId);
 
         SolrInputDocument indexDocument = new SolrInputDocument();
 
@@ -70,7 +70,7 @@ public class SolrIndexDocumentFactory {
         }
 
 
-        for (I18nMeta l: labelsColl) {
+        for (I18nMeta l: i18nMetas) {
             String headline = l.getHeadline();
             String menuText = l.getMenuText();
 

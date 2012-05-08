@@ -130,7 +130,7 @@ public class DocumentMapper implements DocumentGetter {
         } else {
             newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
             newDocument.setMeta(parentDoc.getMeta().clone());
-            newDocument.setLanguage(parentDoc.getLanguage().clone());
+            newDocument.setLanguage(parentDoc.getLanguage());
         }
 
         newDocument.getMeta().setDocumentType(documentTypeId);

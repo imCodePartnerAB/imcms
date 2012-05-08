@@ -8,96 +8,135 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
-@Table(name="imcms_languages")
-public class I18nLanguage implements Serializable, Cloneable {
+@Table(name = "imcms_languages")
+public final class I18nLanguage implements Serializable, Cloneable {
 
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+    public static final class Builder {
+        private Integer id;
+        private Boolean enabled;
+        private String code;
+        private String name;
+        private String nativeName;
+
+        public Builder() {}
+
+        public Builder(I18nLanguage language) {
+            setId(language.id);
+            setEnabled(language.enabled);
+            setCode(language.code);
+            setName(language.name);
+            setNativeName(language.nativeName);
+        }
+
+        public Builder setId(Integer id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setEnabled(boolean enabled) {
+            this.enabled = enabled;
+            return this;
+        }
+
+        public Builder setCode(String code) {
+            this.code = code;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+
+            return this;
+        }
+
+        public Builder setNativeName(String nativeName) {
+            this.nativeName = nativeName;
+
+            return this;
+        }
+
+        public I18nLanguage build() {
+            I18nLanguage language = new I18nLanguage();
+
+            language.id = id;
+            language.code = code;
+            language.name = name;
+            language.nativeName = nativeName;
+            language.enabled = enabled;
+
+            return language;
+        }
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     // Reserved for future use
-	private Boolean enabled;	
-    
+    private Boolean enabled;
+
     private String code;
-    
+
     private String name;
 
-     @Column(name="native_name")
+    @Column(name = "native_name")
     private String nativeName;
 
-    
+
     @Override
-	public boolean equals(Object object) {
-        if ( !( object instanceof I18nLanguage ) ) {
+    public boolean equals(Object object) {
+        if (!(object instanceof I18nLanguage)) {
             return false;
         }
-        
+
         if (this == object) {
-        	return true;
+            return true;
         }
-        
-        I18nLanguage that = (I18nLanguage)object;
-        
+
+        I18nLanguage that = (I18nLanguage) object;
+
         return new EqualsBuilder()
-			.append(code, that.code).isEquals();
-	}
+                .append(code, that.code).isEquals();
+    }
 
-	@Override
-	public I18nLanguage clone() {
-		try {
-			return (I18nLanguage)super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}	
-	}
-	
-	@Override	
-	public int hashCode() {
+    @Override
+    public I18nLanguage clone() {
+        try {
+            return (I18nLanguage)super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Override
+    public int hashCode() {
         return new HashCodeBuilder(11, 31)
-			.append(code).toHashCode();
-	}
-	
-	@Override 
-	public String toString() {
-		return getName();
-	}
+                .append(code).toHashCode();
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    @Override
+    public String toString() {
+        return getName();
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getNativeName() {
+        return nativeName != null ? nativeName : name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getNativeName() {
-		return nativeName != null ? nativeName : name;
-	}
-	
-	public void setNativeName(String nativeName) {
-		this.nativeName = nativeName;
-	}
-	
-	public Boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}	
+    public Boolean isEnabled() {
+        return enabled;
+    }
 }

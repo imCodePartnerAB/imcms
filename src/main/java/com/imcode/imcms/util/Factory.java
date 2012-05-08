@@ -13,29 +13,6 @@ import java.util.Collection;
  */
 public class Factory {
 
-    public static I18nLanguage createLanguage(Integer id, String code, String name) {
-        return createLanguage(id, code, name, true);
-    }
-
-
-    public static I18nLanguage createLanguage(Integer id, String code, String name, Boolean enabled) {
-        return createLanguage(id, code, name, name, enabled);
-    }
-    
-
-    public static I18nLanguage createLanguage(Integer id, String code, String name, String nativeName, Boolean enabled) {
-        I18nLanguage language = new I18nLanguage();
-
-        language.setId(id);
-        language.setCode(code);
-        language.setName(name);
-        language.setNativeName(nativeName);
-        language.setEnabled(enabled);
-
-        return language;
-    }
-
-
     public static I18nMeta createI18nMeta(Integer docId, I18nLanguage language) {
         I18nMeta i18nMeta = newInstance(I18nMeta.class, docId, language);
 

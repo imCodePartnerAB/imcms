@@ -48,8 +48,9 @@ object UserFX {
 }
 
 object LanguagesFX {
-  def english = Factory.createLanguage(1, "en", "English")
-  def swedish = Factory.createLanguage(2, "sv", "Swedish")
+  val english = new I18nLanguage.Builder().setId(1).setCode("en").setName("English").build
+  val swedish = new I18nLanguage.Builder().setId(2).setCode("sv").setName("Swedish").build
+
   def default = english
   def languages = Seq(english, swedish)
   def i18nSupport = new I18nSupport {

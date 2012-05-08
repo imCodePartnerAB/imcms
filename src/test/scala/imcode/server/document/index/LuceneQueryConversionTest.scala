@@ -20,8 +20,6 @@ class LuceneQueryConversionTest extends WordSpec with BeforeAndAfterAll with Bef
       val query1 = new TermRangeQuery("field", dateFrom, dateTo, true, true)
       val query2 = new TermRangeQuery("field", null, dateTo, true, true)
 
-      println("query1: " + query1.toString())
-      println("query2: " + query2.toString())
     }
   }
 }

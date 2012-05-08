@@ -60,19 +60,19 @@ public interface DocumentIndex {
      */
     void removeDocument(Integer docId) throws IndexException;
 
+    List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
+
+    void rebuild() throws IndexException;
+
     /**
-     * Deprecated, use indexDocument(Integer) instead.
+     * Deprecated, use {@link #indexDocument(Integer)} instead.
      */
     @Deprecated
     void indexDocument( DocumentDomainObject document ) throws IndexException ;
 
     /**
-     * Deprecated, use removeDocument(Integer) instead.
+     * Deprecated, use {@link #removeDocument(Integer)} instead.
      */
     @Deprecated
     void removeDocument( DocumentDomainObject document ) throws IndexException;
-
-    List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
-
-    void rebuild() throws IndexException;
 }

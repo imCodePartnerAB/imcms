@@ -54,8 +54,8 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
   /**
    * @return doc's id or null if doc does not exists or alias is not set
    */
-  def getDocId(docAlias: String) = aliasesToIds.getOrLoad(docAlias) {
-    doto(docLoader.getMetaDao.getDocumentIdByAlias(docAlias)) {
+  def getDocId(docAlias: String): DocId = aliasesToIds.getOrLoad(docAlias) {
+    docLoader.getMetaDao.getDocumentIdByAlias(docAlias) |< {
       case null =>
       case docId => idsToAliases.put(docId, docAlias)
     }
@@ -71,7 +71,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
         val versionInfo = getDocVersionInfo(docId)
         val version = versionInfo.getWorkingVersion
 
-        docLoader.loadAndInitDocument(meta.clone, version.clone, language.clone)
+        docLoader.loadAndInitDocument(meta.clone, version.clone, language)
     }
   }
 
@@ -85,7 +85,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
         val versionInfo = getDocVersionInfo(docId)
         val version = versionInfo.getDefaultVersion
 
-        docLoader.loadAndInitDocument(meta.clone, version.clone, language.clone)
+        docLoader.loadAndInitDocument(meta.clone, version.clone, language)
     }
   }
 
@@ -99,7 +99,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
         val versionInfo = getDocVersionInfo(docId)
         val version = versionInfo.getVersion(docVersionNo)
 
-        docLoader.loadAndInitDocument(meta.clone, version.clone, language.clone)
+        docLoader.loadAndInitDocument(meta.clone, version.clone, language)
     }
   }
 
@@ -124,13 +124,19 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
 
 
 case class CacheWrapper[K >: Null, V >: Null](cache: Cache) {
-  def get(key: K) = ?(cache.get(key)).map(_.getObjectValue).orNull.asInstanceOf[V]
 
-  def put(key: K, value: V) = cache.put(new Element(key, value))
+  // Compiles, but Intellij can't infer
+  // Option(cache.get(key)).map(_.getObjectValue).orNull.asInstanceOf[V]
+  def get(key: K): V = cache.get(key) |> {
+    case null => null
+    case e => e.getObjectKey
+  } |> { _.asInstanceOf[V] }
 
-  def remove(key: K) = cache.remove(key)
+  def put(key: K, value: V): Unit = cache.put(new Element(key, value))
 
-  def getOrLoad(key: K)(loader: => V) = get(key) match {
+  def remove(key: K): Boolean = cache.remove(key)
+
+  def getOrLoad(key: K)(loader: => V): V = get(key) match {
     case null => doto(loader) {
       case null =>
       case value => put(key, value)
