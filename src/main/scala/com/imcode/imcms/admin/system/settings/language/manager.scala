@@ -86,10 +86,10 @@ class LanguageManager(app: ImcmsApplication) {
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
       dlg.mainUI = new LanguageEditorUI |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
-        c.txtCode.value = vo.getCode |> option getOrElse ""
-        c.txtName.value = vo.getName |> option getOrElse ""
-        c.txtNativeName.value = vo.getNativeName |> option getOrElse ""
-        c.chkEnabled.value = vo.isEnabled |> option getOrElse (Boolean box false)
+        c.txtCode.value = vo.getCode |> opt getOrElse ""
+        c.txtName.value = vo.getName |> opt getOrElse ""
+        c.txtNativeName.value = vo.getNativeName |> opt getOrElse ""
+        c.chkEnabled.value = vo.isEnabled |> opt getOrElse (Boolean box false)
 
         dlg wrapOkHandler {
           new I18nLanguage.Builder |> { voc =>

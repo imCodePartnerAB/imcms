@@ -103,7 +103,7 @@ trait SingleClickListener extends Button {
 
   override def addListener(listener: Button.ClickListener) {
     clickListenerRef.synchronized {
-      for (currentListener <- clickListenerRef.getAndSet(listener |> option)) {
+      for (currentListener <- clickListenerRef.getAndSet(listener |> opt)) {
         super.removeListener(currentListener)
       }
 

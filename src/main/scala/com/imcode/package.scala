@@ -14,7 +14,54 @@ package object imcode {
   type JList[A <: AnyRef] = java.util.List[A]
   type JMap[A <: AnyRef, B <: AnyRef] = java.util.Map[A, B]
 
-  //implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
+  class Piper[A](a: A) {
+    def |>[B](f: A => B): B = f(a)
+
+    def |>>(f: A => Any): A = { f(a); a }
+  }
+
+  implicit def any2Piper[A](a: A) = new Piper(a)
+
+  def ??? = new Exception().getStackTrace()(1) |> { se =>
+    sys.error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
+  }
+
+  // scala bug: 'import Option.{apply => opt}' - 'opt' can not be used as function
+  // scala> import Option.apply
+  // import Option.apply
+  //
+  // scala> import Option.{apply => opt}
+  // import Option.{apply=>opt}
+  //
+  // scala> val v1 = apply('test)
+  // v1: Option[Symbol] = Some('test)
+  //
+  // scala> val f1 = apply _
+  // f1: Nothing => Option[Nothing] = <function1>
+  //
+  // scala> val v2 = opt('test)
+  // v2: Option[Symbol] = Some('test)
+  //
+  // scala> val f2 = opt _
+  // <console>:9: error: value opt is not a member of object Option
+  //        val f2 = opt _
+  def opt[A](value: A) = Option(value)
+
+  def when[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
+
+  def doall[A](exp: A, exps: A*)(f: A => Any) {
+    exp +: exps foreach f
+  }
+
+  // move to collections
+  def unfold[A, B](init: A)(f: A => Option[(B, A)]): List[B] = f(init) match {
+    case None => Nil
+    case Some((r, next)) => r :: unfold(next)(f)
+  }
+
+  // remove
+  val EX = scala.util.control.Exception
+
 
   // scala bug: package methods overloading does not work
   object Atoms {
@@ -26,16 +73,6 @@ package object imcode {
     def Ref[A <: AnyRef](value: A) = new AtomicReference(value)
   }
 
-
-  val EX = scala.util.control.Exception
-
-
-  def ??? = new Exception().getStackTrace()(1) |> { se =>
-    sys.error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
-  }
-
-  //?? delete ??
-  //def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
 
   /** extractor */
   object IntNumber {
@@ -55,50 +92,20 @@ package object imcode {
   }
 
 
-  class Piper[A](a: A) {
-    def |>[B](f: A => B): B = f(a)
+  //?? delete ??
 
-    def |>>(f: A => Any): A = { f(a); a }
-  }
+  //implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
 
-  implicit def any2Piper[A](a: A) = new Piper(a)
+  //def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
 
 
-  def unfold[A, B](init: A)(f: A => Option[(B, A)]): List[B] = f(init) match {
-    case None => Nil
-    case Some((r, next)) => r :: unfold(next)(f)
-  }
 
-  /** Creates zero arity fn from by-name parameter. */
-  //def toF[A](byName: => A): () => A = byName _
 
-  // scala bug:
-  // import Option.{apply => ?}
-  //  scala> {
-  //       | import Option.apply
-  //       | import Option.{apply => ?}
-  //       |
-  //       | val r1 = apply('ok) // Option[Symbol]
-  //       | val f1 = apply _    // Nothing => Option[Nothing]
-  //       |
-  //       | val r2 = ?('ok)     // Option[Symbol]
-  //       | val f2 = ? _        // error: value ? is not a member of object Option
-  //       | }
-  //def ?[A <: AnyRef](nullable: A) = Option(nullable)
-
-  def option[A](value: A) = Option(value)
-
-  def when[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
-
-  def doall[A](exp: A, exps: A*)(f: A => Any) {
-    exp +: exps foreach f
-  }
 
 
   trait CloseableResource[R] {
     def close(resource: R)
   }
-
 
   object CloseableResource {
     implicit def stCloseableResource[R <: { def close() }](r: R) = new CloseableResource[R] {
@@ -121,6 +128,11 @@ package object imcode {
         EX.allCatch(implicitly[CloseableResource[R]].close(resource))
       }
     }
+
+  /** Creates zero arity fn from by-name parameter. */
+  //def toF[A](byName: => A): () => A = byName _
+
+  //def ?[A <: AnyRef](nullable: A) = Option(nullable)
 
 //  def bmap[A](test: => Boolean)(byName: => A): List[A] = {
 //    import collection.mutable.ListBuffer

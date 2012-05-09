@@ -34,7 +34,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected category type?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(categoryMapper.getCategoryTypeById(id.intValue) |> option foreach categoryMapper.deleteCategoryTypeFromDb) match {
+              EX.allCatch.either(categoryMapper.getCategoryTypeById(id.intValue) |> opt foreach categoryMapper.deleteCategoryTypeFromDb) match {
                 case Right(_) =>
                   app.showInfoNotification("Category type has been deleted")
                 case Left(ex) =>
@@ -65,7 +65,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
       dlg.mainUI = new CategoryTypeEditorUI |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
-        c.txtName.value = vo.getName |> option getOrElse ""
+        c.txtName.value = vo.getName |> opt getOrElse ""
         c.chkImageArchive.value = Boolean box vo.isImageArchive
         c.chkInherited.value = Boolean box vo.isInherited
         c.chkMultiSelect.value = Boolean box vo.isMultiselect
@@ -79,8 +79,8 @@ class CategoryTypeManager(app: ImcmsApplication) {
 
             // todo: move validate into separate fn
             val validationError: Option[String] = voc.getName match {
-              case "" => "Category type name is not set" |> option
-              case name => categoryMapper.getCategoryTypeByName(name) |> option collect {
+              case "" => "Category type name is not set" |> opt
+              case name => categoryMapper.getCategoryTypeByName(name) |> opt collect {
                 case categoryType if categoryType.getId != voc.getId =>
                   "Category type with such name already exists"
               }

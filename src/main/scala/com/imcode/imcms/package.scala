@@ -23,7 +23,7 @@ package object imcms {
 
   class ResourceBundleValue(key: String) {
     private val localeAndValue: (Locale, String) = {
-      val locale = Imcms.getUser |> option match {
+      val locale = Imcms.getUser |> opt match {
         case Some(user) => new Locale(user.getLanguageIso639_2)
         case _ => Locale.getDefault
       }

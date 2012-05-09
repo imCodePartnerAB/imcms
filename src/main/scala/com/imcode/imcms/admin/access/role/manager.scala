@@ -31,7 +31,7 @@ class RoleManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected role?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(roleMapper.getRole(id) |> option foreach roleMapper.deleteRole) match {
+              EX.allCatch.either(roleMapper.getRole(id) |> opt foreach roleMapper.deleteRole) match {
                 case Right(_) =>
                   app.showInfoNotification("Role has been deleted")
                 case Left(ex) =>

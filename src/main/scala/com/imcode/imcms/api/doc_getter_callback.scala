@@ -16,8 +16,8 @@ object DocGetterCallbackUtil {
     val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
     val language = Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE))
                    .map(Imcms.getI18nSupport.getByCode)
-                   .orElse(currentDocGetterCallback |> option map (_.params.language))
-                   .orElse(Imcms.getI18nSupport.getForHost(request.getServerName) |> option)
+                   .orElse(currentDocGetterCallback |> opt map (_.params.language))
+                   .orElse(Imcms.getI18nSupport.getForHost(request.getServerName) |> opt)
                    .getOrElse(defaultLanguage)
 
     val params = Params(user, language, defaultLanguage)
@@ -30,7 +30,7 @@ object DocGetterCallbackUtil {
         val docId: JInteger = docIdentity match {
           case IntNumber(n) => n
           case _ =>
-            Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity) |> option getOrElse {
+            Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity) |> opt getOrElse {
               sys.error("Document with identity %s does not exists." format docIdentity)
             }
         }

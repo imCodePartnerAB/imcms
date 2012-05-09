@@ -70,19 +70,19 @@ object ImcmsFileBrowser {
   def addLocation(captionResourceId: String, conf: LocationConf, image: Option[Resource])(browser: FileBrowser) =
     browser |>> { _ => browser.addLocation(captionResourceId.i, conf, image) }
 
-  val addHomeLocation = addLocation("file.browser.location.home", LocationConf(Imcms.getPath), Theme.Icons.Browser.TabHome32 |> option)_
+  val addHomeLocation = addLocation("file.browser.location.home", LocationConf(Imcms.getPath), Theme.Icons.Browser.TabHome32 |> opt)_
 
   val addImagesLocation =
-    addLocation("file.browser.location.images", LocationConf(Imcms.getPath, "images"), Theme.Icons.Browser.TabImages32 |> option)_
+    addLocation("file.browser.location.images", LocationConf(Imcms.getPath, "images"), Theme.Icons.Browser.TabImages32 |> opt)_
 
   val addTemplatesLocation =
-    addLocation("file.browser.location.templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), Theme.Icons.Browser.TabTemplates32 |> option)_
+    addLocation("file.browser.location.templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), Theme.Icons.Browser.TabTemplates32 |> opt)_
 
   val addLogsLocation =
-    addLocation("file.browser.location.logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), Theme.Icons.Browser.TabLogs32 |> option)_
+    addLocation("file.browser.location.logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), Theme.Icons.Browser.TabLogs32 |> opt)_
 
   val addConfLocation =
-    addLocation("file.browser.location.conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), Theme.Icons.Browser.TabConf32 |> option)_
+    addLocation("file.browser.location.conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), Theme.Icons.Browser.TabConf32 |> opt)_
 
   val addAllLocations =
     Function.chain(Seq(addHomeLocation, addImagesLocation, addTemplatesLocation, addLogsLocation, addConfLocation))
@@ -130,7 +130,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
     val locationItems = new LocationItems(conf.itemsFilter, isSelectable, isMultiSelect)
 
     locationTree.ui addValueChangeHandler {
-      locationTree.ui.value |> option match {
+      locationTree.ui.value |> opt match {
         case Some(dir) =>
           locationItems.reload(dir)
           Some(LocationSelection(dir, Nil)) |> { selection =>
@@ -167,7 +167,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   }
 
   private def updateSelection(locationTree: LocationTree, locationItems: LocationItems) {
-    locationTree.ui.value |> option match {
+    locationTree.ui.value |> opt match {
       case Some(dir) =>
         Some(LocationSelection(dir, locationItems.selection)) |> { selection =>
           selectionRef.set(selection)

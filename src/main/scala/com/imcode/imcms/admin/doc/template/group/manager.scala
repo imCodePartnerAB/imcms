@@ -66,7 +66,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
       dlg.mainUI = new TemplateGroupEditorUI |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
-        c.txtName.value = vo.getName |> option getOrElse ""
+        c.txtName.value = vo.getName |> opt getOrElse ""
         templateMapper.getTemplatesInGroup(vo) foreach (c.twsTemplates addChosenItem _.getName)
         templateMapper.getTemplatesNotInGroup(vo) foreach (c.twsTemplates addAvailableItem _.getName)
 
@@ -83,7 +83,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
 
             for {
               name <- c.twsTemplates.chosenItemIds
-              template <- templateMapper.getTemplateByName(name) |> option
+              template <- Option(templateMapper.getTemplateByName(name))
             } templateMapper.addTemplateToGroup(template, voc)
 
             reload()

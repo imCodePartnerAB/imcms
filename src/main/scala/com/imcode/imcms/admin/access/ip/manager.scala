@@ -73,9 +73,9 @@ class IPAccessManager(app: ImcmsApplication) {
       dlg.mainUI = new IPAccessEditorUI |>> { c =>
 
         c.txtId.value = if (isNew) "" else id.toString
-        c.userPickerUI.txtLoginName.value = (vo.getUserId |> option map { roleMapper getUser _.intValue } map { _.getLoginName } getOrElse "")
-        c.txtFrom.value = vo.getStart |> option map toDDN getOrElse ""
-        c.txtTo.value = vo.getEnd |> option map toDDN getOrElse ""
+        c.userPickerUI.txtLoginName.value = (vo.getUserId |> opt map { roleMapper getUser _.intValue } map { _.getLoginName } getOrElse "")
+        c.txtFrom.value = vo.getStart |> opt map toDDN getOrElse ""
+        c.txtTo.value = vo.getEnd |> opt map toDDN getOrElse ""
         c.userPickerUI.btnChoose addClickHandler {
           app.initAndShow(new OkCancelDialog("Choose user") with UserSelectDialog) { userSelectDlg =>
             userSelectDlg.wrapOkHandler {

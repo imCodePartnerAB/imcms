@@ -242,7 +242,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     ui.frmPublication.sltStatus.select(meta.getPublicationStatus)
 
     // dates
-    ui.frmPublication.lytDate.calStart.value = meta.getPublicationStartDatetime |> option getOrElse new Date
+    ui.frmPublication.lytDate.calStart.value = meta.getPublicationStartDatetime |> opt getOrElse new Date
     //ui.frmPublication.lytDate.calEnd.setReadOnly(false)
     ui.frmPublication.lytDate.calEnd.value = meta.getPublicationEndDatetime
     ui.frmPublication.lytDate.chkEnd.checked = meta.getPublicationEndDatetime != null

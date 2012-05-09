@@ -84,7 +84,7 @@ class DocumentContentIndexer(imcmsServices: ImcmsServices) extends Log4jLoggerSu
 
 
   def indexFileDoc(fileDoc: FileDocumentDomainObject, indexDoc: SolrInputDocument): SolrInputDocument = {
-    fileDoc.getDefaultFile |> option foreach { file =>
+    fileDoc.getDefaultFile |> opt foreach { file =>
       indexDoc.addField(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType)
 //      val metadata = new Metadata |>> { m =>
 //        m.set(HttpHeaders.CONTENT_DISPOSITION, file.getFilename);
