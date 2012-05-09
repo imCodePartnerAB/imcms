@@ -274,7 +274,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 new PhaseQueryFixingDocumentIndex(
                     new RebuildingDirectoryIndex(solrServer, documentMapper,
                         getConfig().getIndexingSchedulePeriodInMinutes(),
-                        new SolrIndexDocumentFactory(getDocumentMapper(), getCategoryMapper()))))) ;
+                        new SolrIndexDocumentFactory(this))))) ;
     }
 
     private void initTemplateMapper() {
@@ -282,7 +282,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initImageCacheMapper() {
-        imageCacheMapper = (ImageCacheMapper) getSpringBean("imageCacheMapper");
+        imageCacheMapper = getComponent(ImageCacheMapper.class);
     }
 
     private void initAuthenticatorsAndUserAndRoleMappers(Properties props) {
@@ -845,10 +845,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
-	public Object getSpringBean(String beanName) {
-		return Imcms.getSpringBean(beanName);
-	}
-
 	public void setDocumentMapper(DocumentMapper documentMapper) {
 		this.documentMapper = documentMapper;
 	}
@@ -859,5 +855,15 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public void setI18nSupport(I18nSupport i18nSupport) {
         this.i18nSupport = i18nSupport;
+    }
+
+    @Override
+    public <T> T getComponent(Class<T> requiredType) {
+        return Imcms.getApplicationContext().getBean(requiredType);
+    }
+
+    @Override
+    public <T> T getComponent(String name, Class<T> requiredType) {
+        return Imcms.getApplicationContext().getBean(name, requiredType);
     }
 }

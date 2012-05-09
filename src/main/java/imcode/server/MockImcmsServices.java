@@ -34,12 +34,17 @@ import imcode.server.kerberos.KerberosLoginService;
 
 public class MockImcmsServices implements ImcmsServices {
 
-    public Object getSpringBean(String beanName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public <T> T getComponent(String name, Class<T> requiredType) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-	private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
+    @Override
+    public <T> T getComponent(Class<T> requiredType) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
 
     private Database database = new MockDatabase();
     private KeyStore keyStore;

@@ -73,13 +73,13 @@ class IndexBuildingThread extends Thread {
         }
     }
 
-    public synchronized void addDocument(Integer docId) {
+    public synchronized void addDocument(int docId) {
         if (indexing) {
             documentsToAddToNewIndex.add(docId) ;
         }
     }
 
-    public synchronized void removeDocument(Integer docId) {
+    public synchronized void removeDocument(int docId) {
         if (indexing) {
             documentsToRemoveFromNewIndex.add(docId) ;
         }

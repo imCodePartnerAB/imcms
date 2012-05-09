@@ -114,8 +114,10 @@ public interface ImcmsServices {
     LocalizedMessageProvider getLocalizedMessageProvider();
     
     KerberosLoginService getKerberosLoginService();
-    
-    Object getSpringBean(String beanName);
 
     I18nSupport getI18nSupport();
+
+    <T> T getComponent(Class<T> requiredType);
+
+    <T> T getComponent(String name, Class<T> requiredType);
 }

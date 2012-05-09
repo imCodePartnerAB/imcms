@@ -22,7 +22,7 @@ public class DocumentGetterWrapper implements DocumentGetter {
     //    return documentGetter.getActiveDocuments(documentIds) ;
    // }
 
-    public DocumentDomainObject getDocument(Integer documentId) {
+    public DocumentDomainObject getDocument(int documentId) {
         return documentGetter.getDocument(documentId) ;
     }
     

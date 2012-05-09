@@ -124,7 +124,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         indexDocument(document.getId());
     }
 
-    public void indexDocument(Integer docId) {
+    public void indexDocument(int docId) {
         log.debug("Adding document.");
         backgroundIndexBuilder.addDocument(docId);
         try {
@@ -138,7 +138,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         removeDocument(document.getId());
     }
 
-    public void removeDocument(Integer docId) {
+    public void removeDocument(int docId) {
         log.debug("Removing document.");
         backgroundIndexBuilder.removeDocument(docId);
         try {
@@ -198,10 +198,10 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         public void removeDocument(DocumentDomainObject document) throws IndexException {
         }
 
-        public void indexDocument(Integer docId) throws IndexException {
+        public void indexDocument(int docId) throws IndexException {
         }
 
-        public void removeDocument(Integer docId) throws IndexException {
+        public void removeDocument(int docId) throws IndexException {
         }
 
         public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {

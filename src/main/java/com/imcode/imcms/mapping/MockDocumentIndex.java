@@ -18,11 +18,11 @@ public class MockDocumentIndex implements DocumentIndex {
         this.indexDocumentCalled = true ;
     }
 
-    public void removeDocument(Integer docId) throws IndexException {
+    public void removeDocument(int docId) throws IndexException {
         this.removeDocumentCalled = true ;
     }
 
-    public void indexDocument(Integer docId) throws IndexException {
+    public void indexDocument(int docId) throws IndexException {
         this.indexDocumentCalled = true ;
     }
 

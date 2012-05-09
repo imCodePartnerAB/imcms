@@ -1,8 +1,6 @@
 package imcode.server.document.index;
 
-import com.imcode.imcms.mapping.DocumentGetter;
 import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
@@ -48,7 +46,7 @@ class SolrDirectoryIndex implements DirectoryIndex {
         this.indexDocumentFactory = indexDocumentFactory;
     }
     
-    public void indexDocument(Integer docId) throws IndexException {
+    public void indexDocument(int docId) throws IndexException {
         try {
             addDocumentToIndex(docId);
         } catch (Exception e ) {
@@ -60,13 +58,13 @@ class SolrDirectoryIndex implements DirectoryIndex {
         indexDocument(document.getId());
     }
 
-    private void addDocumentToIndex(Integer docId) throws SolrServerException, IOException {
+    private void addDocumentToIndex(int docId) throws SolrServerException, IOException {
         SolrInputDocument indexDocument = indexDocumentFactory.createIndexDocument(docId);
         solrServer.add(indexDocument);
         solrServer.commit();
     }
 
-    public void removeDocument(Integer docId) throws IndexException {
+    public void removeDocument(int docId) throws IndexException {
         try {
             solrServer.deleteByQuery("meta_id:" + docId);
             solrServer.commit();

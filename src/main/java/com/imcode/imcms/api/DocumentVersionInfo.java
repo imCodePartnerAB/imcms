@@ -14,7 +14,7 @@ public class DocumentVersionInfo implements Serializable {
 	/**
 	 * Document's meta id. 
 	 */
-	private Integer metaId;
+	private int metaId;
 	
 	/**
 	 * Latest version;
@@ -48,7 +48,7 @@ public class DocumentVersionInfo implements Serializable {
 	 * 
 	 * @param versions document versions listByNamedParams.
 	 */
-	public DocumentVersionInfo(Integer metaId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
+	public DocumentVersionInfo(int metaId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
 		versionsMap = new TreeMap<Integer, DocumentVersion>();
 		
 		for (DocumentVersion  version: versions) {
@@ -67,7 +67,7 @@ public class DocumentVersionInfo implements Serializable {
     /**
 	 * @return document id.
 	 */
-	public Integer getMetaId() {
+	public int getMetaId() {
 		return metaId;
 	}
 	

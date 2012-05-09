@@ -21,11 +21,11 @@ public class DocumentIndexWrapper implements DocumentIndex {
         index.rebuild();
     }
 
-    public void removeDocument(Integer docId) throws IndexException {
+    public void removeDocument(int docId) throws IndexException {
         index.removeDocument(docId);
     }
 
-    public void indexDocument(Integer docId) throws IndexException {
+    public void indexDocument(int docId) throws IndexException {
         index.indexDocument(docId);
     }
 

@@ -54,13 +54,13 @@ public class BackgroundIndexBuilder {
         return rebuildingDirectoryIndex;
     }
 
-    public synchronized void addDocument(Integer docId) {
+    public synchronized void addDocument(int docId) {
         if ( null != indexBuildingThread ) {
             indexBuildingThread.addDocument(docId);
         }
     }
 
-    public synchronized void removeDocument(Integer docId) {
+    public synchronized void removeDocument(int docId) {
         if ( null != indexBuildingThread ) {
             indexBuildingThread.removeDocument(docId);
         }

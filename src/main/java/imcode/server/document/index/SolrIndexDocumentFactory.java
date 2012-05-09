@@ -5,7 +5,7 @@ import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
@@ -26,12 +26,14 @@ public class SolrIndexDocumentFactory {
 
     private final Logger log = Logger.getLogger(getClass());
 
+    private ImcmsServices imcmsServices;
     private CategoryMapper categoryMapper;
     private DocumentMapper documentMapper;
 
-    public SolrIndexDocumentFactory(DocumentMapper documentMapper, CategoryMapper categoryMapper) {
-        this.documentMapper = documentMapper;
-        this.categoryMapper = categoryMapper;
+    public SolrIndexDocumentFactory(ImcmsServices imcmsServices) {
+        this.imcmsServices = imcmsServices;
+        this.documentMapper = imcmsServices.getDocumentMapper();
+        this.categoryMapper = imcmsServices.getCategoryMapper();
     }
     
     /**
@@ -39,11 +41,7 @@ public class SolrIndexDocumentFactory {
      * @return solr document to be added into index.
      * // TODO: refactor and optimize
      */
-    public SolrInputDocument createIndexDocument(Integer documentId) {
-        if (documentId == null) {
-            throw new IllegalArgumentException("Unable to index document - docId argument is null.");
-        }
-
+    public SolrInputDocument createIndexDocument(int documentId) {
         DocumentVersionInfo versionInfo = documentMapper.getDocumentVersionInfo(documentId);
 
         if (versionInfo == null) {
@@ -51,9 +49,9 @@ public class SolrIndexDocumentFactory {
         }
 
         Integer defaultDocVersionNo = versionInfo.getDefaultVersion().getNo();
-        DocumentDomainObject document = documentMapper.getCustomDocument(documentId, defaultDocVersionNo, Imcms.getI18nSupport().getDefaultLanguage());
+        DocumentDomainObject document = documentMapper.getCustomDocument(documentId, defaultDocVersionNo);
 
-        MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
+        MetaDao metaDao = imcmsServices.getComponent(MetaDao.class);
         Collection<I18nMeta> i18nMetas = metaDao.getI18nMetas(documentId);
 
         SolrInputDocument indexDocument = new SolrInputDocument();

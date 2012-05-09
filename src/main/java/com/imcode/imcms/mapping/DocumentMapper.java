@@ -79,23 +79,23 @@ public class DocumentMapper implements DocumentGetter {
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
-        documentLoader = (DocumentLoader) services.getSpringBean("documentLoader");
+        documentLoader = services.getComponent(DocumentLoader.class);
         documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
 
         documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, Imcms.getI18nSupport().getLanguages(), documentCacheMaxSize);
-        categoryMapper = (CategoryMapper) services.getSpringBean("categoryMapper");
+        categoryMapper = services.getComponent(CategoryMapper.class);
 
-        documentSaver = (DocumentSaver) services.getSpringBean("documentSaver");
+        documentSaver = services.getComponent(DocumentSaver.class);
         documentSaver.setDocumentMapper(this);
 
-        nativeQueriesDao = (NativeQueriesDao) services.getSpringBean("nativeQueriesDao");
+        nativeQueriesDao = services.getComponent(NativeQueriesDao.class);
     }
 
     /**
      * @param documentId document id.
      * @return version info for a given document or null if document does not exist.
      */
-    public DocumentVersionInfo getDocumentVersionInfo(Integer documentId) {
+    public DocumentVersionInfo getDocumentVersionInfo(int documentId) {
         return documentLoaderCachingProxy.getDocVersionInfo(documentId);
     }
 
@@ -284,7 +284,7 @@ public class DocumentMapper implements DocumentGetter {
             i18nMetasList.add(e.getValue().clone());
         }
 
-        Integer docId = documentSaver.saveNewDocument(docClone, i18nMetasList, directives, user);
+        int docId = documentSaver.saveNewDocument(docClone, i18nMetasList, directives, user);
 
         invalidateDocument(docId);
 
@@ -546,6 +546,7 @@ public class DocumentMapper implements DocumentGetter {
                 : getDocument(documentId);
     }
 
+
     /**
      * @param documentIdentity document id or alias
      * @return document id or null if there is no document with such identity.
@@ -618,7 +619,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return new doc id.
      * @since 6.0
      */
-    public Integer copyDocument(final Integer docId, final Integer docVersionNo, final UserDomainObject user)
+    public Integer copyDocument(final int docId, final int docVersionNo, final UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         // todo: put into resource file.
@@ -683,7 +684,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return default document in default language.
      * @since 6.0
      */
-    public DocumentDomainObject getDefaultDocument(Integer docId) {
+    public DocumentDomainObject getDefaultDocument(int docId) {
         return getDefaultDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
     }
 
@@ -693,7 +694,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return working document in default language.
      * @since 6.0
      */
-    public DocumentDomainObject getWorkingDocument(Integer docId) {
+    public DocumentDomainObject getWorkingDocument(int docId) {
         return getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
     }
 
@@ -703,7 +704,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return custom document in default language.
      * @since 6.0
      */
-    public DocumentDomainObject getCustomDocument(Integer docId, Integer docVersionNo) {
+    public DocumentDomainObject getCustomDocument(int docId, int docVersionNo) {
         return getCustomDocument(docId, docVersionNo, Imcms.getI18nSupport().getDefaultLanguage());
     }
 
@@ -716,7 +717,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @param docId document id.
      */
-    public DocumentDomainObject getDocument(Integer docId) {
+    public DocumentDomainObject getDocument(int docId) {
         UserDomainObject user = Imcms.getUser();
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
 
@@ -732,7 +733,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return working document
      * @since 6.0
      */
-    public DocumentDomainObject getWorkingDocument(Integer docId, I18nLanguage language) {
+    public DocumentDomainObject getWorkingDocument(int docId, I18nLanguage language) {
         return documentLoaderCachingProxy.getWorkingDoc(docId, language);
     }
 
@@ -758,7 +759,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return custom document
      * @since 6.0
      */
-    public DocumentDomainObject getCustomDocument(Integer docId, Integer docVersionNo, I18nLanguage language) {
+    public DocumentDomainObject getCustomDocument(int docId, int docVersionNo, I18nLanguage language) {
         return documentLoaderCachingProxy.getCustomDoc(docId, docVersionNo, language);
     }
 

@@ -338,7 +338,7 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, List<I18nMeta> i18nMetas, EnumSet<DocumentMapper.SaveDirectives> directiveses, UserDomainObject user)
+    public <T extends DocumentDomainObject> int saveNewDocument(T doc, List<I18nMeta> i18nMetas, EnumSet<DocumentMapper.SaveDirectives> directiveses, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Meta meta = doc.getMeta();

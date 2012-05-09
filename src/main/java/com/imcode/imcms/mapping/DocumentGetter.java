@@ -24,7 +24,7 @@ public interface DocumentGetter {
      *
      * //TODO: WHAT TO RETURN???
      */
-    DocumentDomainObject getDocument(Integer metaId);
+    DocumentDomainObject getDocument(int metaId);
     
     /**
      * Returns published version of a document. 

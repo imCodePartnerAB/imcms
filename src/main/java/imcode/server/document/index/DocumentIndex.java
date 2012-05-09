@@ -49,7 +49,7 @@ public interface DocumentIndex {
      * @throws IndexException
      * @since 6.0
      */
-    void indexDocument(Integer docId) throws IndexException;
+    void indexDocument(int docId) throws IndexException;
 
     /**
      * Remove a document from index.
@@ -58,20 +58,20 @@ public interface DocumentIndex {
      * @throws IndexException
      * @since 6.0
      */
-    void removeDocument(Integer docId) throws IndexException;
+    void removeDocument(int docId) throws IndexException;
 
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
     void rebuild() throws IndexException;
 
     /**
-     * Deprecated, use {@link #indexDocument(Integer)} instead.
+     * Deprecated, use {@link #indexDocument(int)} instead.
      */
     @Deprecated
     void indexDocument( DocumentDomainObject document ) throws IndexException ;
 
     /**
-     * Deprecated, use {@link #removeDocument(Integer)} instead.
+     * Deprecated, use {@link #removeDocument(int)} instead.
      */
     @Deprecated
     void removeDocument( DocumentDomainObject document ) throws IndexException;
