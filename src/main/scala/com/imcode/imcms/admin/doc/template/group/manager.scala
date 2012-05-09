@@ -17,7 +17,7 @@ import imcms.security.{PermissionDenied, PermissionGranted}
 class TemplateGroupManager(app: ImcmsApplication) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
 
-  val ui = doto(new TemplateGroupManagerUI) { ui =>
+  val ui = new TemplateGroupManagerUI |>> { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblGroups addValueChangeHandler { handleSelection() }
 
@@ -64,9 +64,9 @@ class TemplateGroupManager(app: ImcmsApplication) {
     val dialogTitle = if(isNew) "Create new template group" else "Edit template group"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      dlg.mainUI = doto(new TemplateGroupEditorUI) { c =>
+      dlg.mainUI = new TemplateGroupEditorUI |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
-        c.txtName.value = ?(vo.getName) getOrElse ""
+        c.txtName.value = vo.getName |> option getOrElse ""
         templateMapper.getTemplatesInGroup(vo) foreach (c.twsTemplates addChosenItem _.getName)
         templateMapper.getTemplatesNotInGroup(vo) foreach (c.twsTemplates addAvailableItem _.getName)
 
@@ -75,7 +75,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
             val voc = if (isNew) {
               templateMapper.createTemplateGroup(c.txtName.value)
               templateMapper.getTemplateGroupByName(c.txtName.value)
-            } else doto(vo.clone()) { voc =>
+            } else vo.clone() |>> { voc =>
               templateMapper.renameTemplateGroup(voc, c.txtName.value)
             }
 
@@ -83,7 +83,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
 
             for {
               name <- c.twsTemplates.chosenItemIds
-              template <- ?(templateMapper.getTemplateByName(name))
+              template <- templateMapper.getTemplateByName(name) |> option
             } templateMapper.addTemplateToGroup(template, voc)
 
             reload()

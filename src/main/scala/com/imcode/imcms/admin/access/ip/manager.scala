@@ -24,7 +24,7 @@ class IPAccessManager(app: ImcmsApplication) {
   private val toDDN = ((_:String).toLong) andThen ipLongToString
   private val fromDDN = ipStringToLong(_:String).toString
 
-  val ui = doto(new IPAccessManagerUI) { ui =>
+  val ui = new IPAccessManagerUI |>> { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblIP addValueChangeHandler { handleSelection() }
 
@@ -70,12 +70,12 @@ class IPAccessManager(app: ImcmsApplication) {
     val dialogTitle = if(isNew) "Create new IP access" else "Edit IP access"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      dlg.mainUI = doto(new IPAccessEditorUI) { c =>
+      dlg.mainUI = new IPAccessEditorUI |>> { c =>
 
         c.txtId.value = if (isNew) "" else id.toString
-        c.userPickerUI.txtLoginName.value = (?(vo.getUserId) map { roleMapper getUser _.intValue } map { _.getLoginName } getOrElse "")
-        c.txtFrom.value = ?(vo.getStart) map toDDN getOrElse ""
-        c.txtTo.value = ?(vo.getEnd) map toDDN getOrElse ""
+        c.userPickerUI.txtLoginName.value = (vo.getUserId |> option map { roleMapper getUser _.intValue } map { _.getLoginName } getOrElse "")
+        c.txtFrom.value = vo.getStart |> option map toDDN getOrElse ""
+        c.txtTo.value = vo.getEnd |> option map toDDN getOrElse ""
         c.userPickerUI.btnChoose addClickHandler {
           app.initAndShow(new OkCancelDialog("Choose user") with UserSelectDialog) { userSelectDlg =>
             userSelectDlg.wrapOkHandler {
@@ -87,7 +87,7 @@ class IPAccessManager(app: ImcmsApplication) {
         dlg wrapOkHandler {
           vo.clone |> { voc =>
             // todo: validate
-            voc.setUserId(Int box (roleMapper getUser c.userPickerUI.txtLoginName.value getId))
+            voc.setUserId(roleMapper.getUser(c.userPickerUI.txtLoginName.value).getId)
             voc.setStart(fromDDN(c.txtFrom.value))
             voc.setEnd(fromDDN(c.txtTo.value))
 

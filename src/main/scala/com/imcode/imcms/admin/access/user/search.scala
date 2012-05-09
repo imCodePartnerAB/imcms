@@ -35,7 +35,7 @@ trait UserSelectDialog { this: OkCancelDialog =>
 
 class UserSingleSelect {
   private val selectionRef = new AtomicReference(Option.empty[UserDomainObject])
-  val ui = doto(new UserSingleSelectUI) { ui =>
+  val ui = new UserSingleSelectUI |>> { ui =>
     ui.btnSelect.addClickHandler {
       ui.getApplication.initAndShow(new OkCancelDialog("Select user") with UserSingleSelectDialog) { dlg =>
         dlg.wrapOkHandler {
@@ -89,7 +89,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
     setColumnHeaders(getContainerPropertyIds.map(_.toString.i).toArray)
   }
 
-  val ui = doto(new GridLayout(1, 2)) { ui =>
+  val ui = new GridLayout(1, 2) |>> { ui =>
     addComponents(ui, searchForm.ui, searchResult)
   }
 
@@ -158,7 +158,7 @@ case class UserSearchFormState(
 )
 
 class UserSearchForm extends ImcmsServicesSupport {
-  val ui: UserSearchFormUI = doto(new UserSearchFormUI) { ui =>
+  val ui: UserSearchFormUI = new UserSearchFormUI |>> { ui =>
     ui.chkText.addValueChangeHandler {
       SearchFormUtil.toggle(ui, "admin.access.user.search.frm.fld.text", ui.chkText, ui.txtText)
     }

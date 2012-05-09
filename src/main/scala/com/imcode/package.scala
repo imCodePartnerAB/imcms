@@ -16,7 +16,7 @@ package object imcode {
 
   //implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
 
-  // bug: package methods overloading does not work
+  // scala bug: package methods overloading does not work
   object Atoms {
     import java.util.concurrent.atomic.AtomicReference
 
@@ -28,6 +28,7 @@ package object imcode {
 
 
   val EX = scala.util.control.Exception
+
 
   def ??? = new Exception().getStackTrace()(1) |> { se =>
     sys.error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
@@ -41,28 +42,27 @@ package object imcode {
     def unapply(s: String): Option[Int] = EX.catching(classOf[NumberFormatException]) opt { s.toInt }
   }
 
+
   /** extractor */
   object PosInt {
-    def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(0 <=)
+    def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(_ >= 0)
   }
+
 
   /** extractor */
   object NegInt {
-    def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(0 >)
+    def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(_ < 0)
   }
+
 
   class Piper[A](a: A) {
     def |>[B](f: A => B): B = f(a)
 
-    // partial fn
-    // def ?>[B](f: Option[A] => B): B = f(Option(a))
-
-    def |<(f: A => Any): A = { f(a); a }
-
-    def |<<(byName: => Any): A = { byName; a }
+    def |>>(f: A => Any): A = { f(a); a }
   }
 
   implicit def any2Piper[A](a: A) = new Piper(a)
+
 
   def unfold[A, B](init: A)(f: A => Option[(B, A)]): List[B] = f(init) match {
     case None => Nil
@@ -72,8 +72,8 @@ package object imcode {
   /** Creates zero arity fn from by-name parameter. */
   //def toF[A](byName: => A): () => A = byName _
 
+  // scala bug:
   // import Option.{apply => ?}
-  // bug?,
   //  scala> {
   //       | import Option.apply
   //       | import Option.{apply => ?}
@@ -84,28 +84,21 @@ package object imcode {
   //       | val r2 = ?('ok)     // Option[Symbol]
   //       | val f2 = ? _        // error: value ? is not a member of object Option
   //       | }
-  def ?[A <: AnyRef](nullable: A) = Option(nullable)
+  //def ?[A <: AnyRef](nullable: A) = Option(nullable)
+
+  def option[A](value: A) = Option(value)
 
   def when[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
-
-  def doto[A](exp: A)(f: A => Any): A = {
-    f(exp)
-    exp
-  }
-
-//
-//  def doto[A](exp: A)(f1: A => Any, f2: A => Any, fs: (A => Any)*): A = {
-//    f1 +: f2 +: fs foreach (_ apply exp)
-//    exp
-//  }
 
   def doall[A](exp: A, exps: A*)(f: A => Any) {
     exp +: exps foreach f
   }
 
+
   trait CloseableResource[R] {
     def close(resource: R)
   }
+
 
   object CloseableResource {
     implicit def stCloseableResource[R <: { def close() }](r: R) = new CloseableResource[R] {
@@ -119,21 +112,23 @@ package object imcode {
     }
   }
 
-  def using[R: CloseableResource, T](resource: R)(fn: R => T): T = try {
-    fn(resource)
-  } finally {
-    if (resource != null) {
-      EX.allCatch(implicitly[CloseableResource[R]].close(resource))
-    }
-  }
 
-  def bmap[T](test: => Boolean)(fn: => T): List[T] = {
-    import collection.mutable.ListBuffer
-    
-    val ret = new ListBuffer[T]
-    while (test) ret += fn
-    ret.toList
-  }
+  def using[R: CloseableResource, A](resource: R)(f: R => A): A =
+    try {
+      f(resource)
+    } finally {
+      if (resource != null) {
+        EX.allCatch(implicitly[CloseableResource[R]].close(resource))
+      }
+    }
+
+//  def bmap[A](test: => Boolean)(byName: => A): List[A] = {
+//    import collection.mutable.ListBuffer
+//
+//    val ret = new ListBuffer[A]
+//    while (test) ret += byName
+//    ret.toList
+//  }
 
   /**
    * Converts camel-case string into underscore.

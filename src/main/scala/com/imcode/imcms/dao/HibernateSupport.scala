@@ -24,7 +24,7 @@ trait HibernateSupport {
 //    def withTransaction[A](f: Transaction => A): A = withSession { session =>
 //      val transaction = session.beginTransaction()
 //      try {
-//        f(transaction) |<< {
+//        f(transaction) |>>< {
 //          transaction.commit()
 //        }
 //      } catch {
@@ -38,11 +38,11 @@ trait HibernateSupport {
     def flush() = withSession { _.flush() }
 
 
-    private def setParams[Q <: Query](ps: Any*)(query: Q) = query |<< {
+    private def setParams[Q <: Query](ps: Any*)(query: Q) = query |>> { _ =>
       for ((param, position) <- ps.zipWithIndex) query.setParameter(position, param.asInstanceOf[AnyRef])
     }
 
-    private def setNamedParams[Q <: Query](namedParam: NamedParam, namedParams: NamedParam*)(query: Q) = query |<< {
+    private def setNamedParams[Q <: Query](namedParam: NamedParam, namedParams: NamedParam*)(query: Q) = query |>> { _ =>
       for ((name, value) <- namedParam +: namedParams) query.setParameter(name, value.asInstanceOf[AnyRef])
     }
 
@@ -152,7 +152,7 @@ object HibernateSupport {
 
   class HibernateArrayResultTransformer[E <: AnyRef : ClassManifest] extends HibernateResultTransformer[Array[E]] {
     def transformer = new ResultTransformer with ResultTransformerBase {
-      def transformTuple(tuple: Array[AnyRef], aliases: Array[String]) = Array.ofDim[E](tuple.size) |< { arr =>
+      def transformTuple(tuple: Array[AnyRef], aliases: Array[String]) = Array.ofDim[E](tuple.size) |>> { arr =>
         for ((n, i) <- tuple.zipWithIndex) arr(i) = n.asInstanceOf[E]
       }
     }

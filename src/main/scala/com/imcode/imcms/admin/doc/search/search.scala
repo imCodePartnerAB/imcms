@@ -163,8 +163,8 @@ class DocSearch(val docsContainer: DocsContainer) {
           for {
             (name, dr) <- Map("created" -> drCreated, "modified" -> drModified, "published" -> drPublished, "expired" -> drExpired)
             if dr.cbRangeType.value != DocRangeType.Undefined
-            start = ?(dr.dtFrom.value)
-            end = ?(dr.dtTo.value)
+            start = Option(dr.dtFrom.value)
+            end = Option(dr.dtTo.value)
             if start.isDefined || end.isDefined
 
             // todo: check start/end value
@@ -280,14 +280,14 @@ abstract class DocsContainer extends Container
         () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
           case Nil => null
           case pair :: Nil =>
-            doto(new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon) { tree =>
+            new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon |>> { tree =>
               val parentDoc = pair.getDocument
               tree.addItem(parentDoc)
               tree.setChildrenAllowed(parentDoc, false)
               tree.setItemCaption(parentDoc, "%s - %s" format (parentDoc.getId, parentDoc.getHeadline))
             }
 
-          case pairs => doto(new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon) { tree =>
+          case pairs => new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon |>> { tree =>
             val root = new {}
             tree.addItem(root)
             tree.setItemCaption(root, pairs.size.toString)
@@ -306,13 +306,13 @@ abstract class DocsContainer extends Container
             imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).toList match {
               case List() => null
               case List(childDoc) =>
-                doto(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable) { tree =>
+                new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable |>> { tree =>
                   tree.addItem(childDoc)
                   tree.setChildrenAllowed(childDoc, false)
                   tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
                 }
 
-              case childDocs =>doto(new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable) { tree =>
+              case childDocs => new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable |>> { tree =>
                 val root = new {}
                 tree.addItem(root)
                 tree.setItemCaption(root, childDocs.size.toString)
@@ -448,11 +448,11 @@ class CustomDocsContainer extends DocsContainer {
 
   def removeItem(itemId: AnyRef) = docIds.remove(itemId.asInstanceOf[DocId])
 
-  def addItem(itemId: AnyRef) = doto(new DocItem(itemId.asInstanceOf[DocId])) { docItem =>
+  def addItem(itemId: AnyRef) = new DocItem(itemId.asInstanceOf[DocId]) |>> { docItem =>
     docIds :+= docItem.docId
   }
 
-  def removeAllItems() = doto(true) { _ =>
+  def removeAllItems() = true |>> { _ =>
     docIds = Seq.empty
     notifyItemSetChanged()
   }
@@ -495,10 +495,10 @@ trait DocTableItemIcon extends AbstractSelect with ItemIdType[DocId] {
 
 class DocBasicSearchForm {
 
-  val ui: DocBasicFormSearchUI = doto(new DocBasicFormSearchUI) { ui =>
+  val ui: DocBasicFormSearchUI = new DocBasicFormSearchUI |>> { ui =>
     ui.chkRange.addValueChangeHandler {
        SearchFormUtil.toggle(ui, "doc.search.basic.frm.fld.range", ui.chkRange, ui.lytRange,
-                             new Label("%s - %s".format(?(ui.lytRange.txtStart.getInputPrompt).getOrElse(""), ?(ui.lytRange.txtEnd.getInputPrompt).getOrElse(""))))
+                             new Label("%s - %s".format(Option(ui.lytRange.txtStart.getInputPrompt).getOrElse(""), Option(ui.lytRange.txtEnd.getInputPrompt).getOrElse(""))))
     }
 
     ui.chkText.addValueChangeHandler {
@@ -682,7 +682,7 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
     } {
       ui.tcsCategories.addItem(category)
       ui.tcsCategories.setItemCaption(category, categoryType.getName + ":" + category.getName)
-      ?(category.getImageUrl).foreach(url => ui.tcsCategories.setItemIcon(category, new ExternalResource(url)))
+      Option(category.getImageUrl).foreach(url => ui.tcsCategories.setItemIcon(category, new ExternalResource(url)))
     }
 
     ui.lytRelationships.cbParents.value = "doc.search.advanced.frm.fld.cb_relationships_parents.item.undefined"

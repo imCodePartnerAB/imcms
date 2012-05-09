@@ -75,7 +75,7 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
   // if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document ))
   // This can be defined perd doc, so - change must be single select!!
   // Check!! ??? Mapped roles might contain: if ( DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) || RoleId.SUPERADMIN.equals(roleId)
-  val ui = doto(new PermissionsEditorUI) { ui =>
+  val ui = new PermissionsEditorUI |>> { ui =>
     // security
     ui.lytRestrictedPermSets.btnEditRestrictedOnePermSet setReadOnly !user.canDefineRestrictedOneFor(doc)
     ui.lytRestrictedPermSets.btnEditRestrictedTwoPermSet setReadOnly !user.canDefineRestrictedTwoFor(doc)
@@ -132,7 +132,7 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
       } else {
         ui.getApplication.initAndShow(new OkCancelDialog("Add role")) { dlg =>
           val availableRoles = availableRolesWithPermsSetTypes.keySet
-          dlg.mainUI = doto(new AddRolePermsSetTypeDialogMainUI) { c =>
+          dlg.mainUI = new AddRolePermsSetTypeDialogMainUI |>> { c =>
             availableRoles foreach { role => c.cbRole.addItem(role, role.getName) }
 
             c.cbRole.addValueChangeHandler {
@@ -164,7 +164,7 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
           case Nil => app.showWarningNotification("You are not allowed to edit this role")
           case availableSetTypes =>
             app.initAndShow(new OkCancelDialog("Change role permissions type")) { dlg =>
-              dlg.mainUI = doto(new ChangeRolePermsSetTypeDialogMainUI) { c =>
+              dlg.mainUI = new ChangeRolePermsSetTypeDialogMainUI |>> { c =>
                 c.lblRole.value = role.getName
 
                 c.ogPermsSetType.value = ui.rolesPermsSetTypeUI.tblRolesPermsTypes
@@ -236,7 +236,7 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
   val data = new Data {
     def get() = Right(
       Values(
-        doto(new RoleIdToDocumentPermissionSetTypeMappings) { rolesPermissions =>
+        new RoleIdToDocumentPermissionSetTypeMappings |>> { rolesPermissions =>
           import ui.rolesPermsSetTypeUI.tblRolesPermsTypes
           tblRolesPermsTypes.itemIds foreach { role =>
             rolesPermissions.setPermissionSetTypeForRole(
@@ -269,7 +269,7 @@ class PermissionsEditorUI extends VerticalLayout with Spacing with FullWidth {
     val miRemoveRole = mb.addItem("Remove role")
     val miChangeRolePermSetType = mb.addItem("Change permissions set")
 
-    val tblRolesPermsTypes = doto(new Table with MultiSelect[RoleDomainObject] with Immediate with FullWidth with Selectable) { tbl =>
+    val tblRolesPermsTypes = new Table with MultiSelect[RoleDomainObject] with Immediate with FullWidth with Selectable |>> { tbl =>
       tbl.setPageLength(7)
 
       addContainerProperties(tbl,
@@ -324,7 +324,7 @@ private case class RolePermsSetType(role: RoleDomainObject, setType: DocumentPer
  *   Property.getValue returns null.
  */
 private class RolePermsSetTypeTableColumnGenerator(setType: DocumentPermissionSetTypeDomainObject) extends Table.ColumnGenerator {
-  def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = doto(new Label with UndefinedSize) {
+  def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = new Label with UndefinedSize |>> {
     val rolePermissionSetType = source.getItem(itemId)
       .getItemProperty(RolePermsSetTypePropertyId)
       .getValue.asInstanceOf[RolePermsSetType]
@@ -352,7 +352,7 @@ private class AddRolePermsSetTypeDialogMainUI extends FormLayout with UndefinedS
  * Changes permission set type for a role.
  */
 private class ChangeRolePermsSetTypeDialogMainUI extends FormLayout with UndefinedSize {
-  val lblRole = doto(new Label with UndefinedSize){_ setCaption "Role"}
+  val lblRole = new Label with UndefinedSize |>> {_ setCaption "Role"}
   val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
   List(READ, RESTRICTED_1, RESTRICTED_2, FULL) foreach { setType =>
@@ -386,13 +386,13 @@ abstract class DocRestrictedPermSetEditor(
  * Any but text-doc restricted permission set editor.
  */
 trait NonTextDocRestrictedPermSetEditor { this: DocRestrictedPermSetEditor =>
-  val ui = doto(new NonTextDocRestrictedPermSetEditorUI) { ui =>
+  val ui = new NonTextDocRestrictedPermSetEditorUI |>> { ui =>
     ui.chkEditMeta.checked = permSet.getEditDocumentInformation
     ui.chkEditPermissions.checked = permSet.getEditPermissions
     ui.chkEditContent.checked = permSet.getEdit
   }
 
-  def state = doto(new TextDocumentPermissionSetDomainObject(permSet.getType)) { ps =>
+  def state = new TextDocumentPermissionSetDomainObject(permSet.getType) |>> { ps =>
     ps.setEditDocumentInformation(ui.chkEditMeta.checked)
     ps.setEditPermissions(ui.chkEditPermissions.checked)
     ps.setEdit(ui.chkEditContent.checked)
@@ -404,7 +404,7 @@ trait NonTextDocRestrictedPermSetEditor { this: DocRestrictedPermSetEditor =>
  * Text doc restricted permission set editor.
  */
 trait TextDocRestrictedPermSetEditor { this: DocRestrictedPermSetEditor =>
-  val ui = doto(new TextDocRestrictedPermSetEditorUI) { ui =>
+  val ui = new TextDocRestrictedPermSetEditorUI |>> { ui =>
     // Authorized document types
     val selectedTypeIds = permSet.getAllowedDocumentTypeIds
     for ((typeId, typeName) <- imcmsServices.getDocumentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user)) {
@@ -429,7 +429,7 @@ trait TextDocRestrictedPermSetEditor { this: DocRestrictedPermSetEditor =>
     ui.chkEditIncludes.checked = permSet.getEditIncludes
   }
 
-  def state = doto(new TextDocumentPermissionSetDomainObject(permSet.getType)) { ps =>
+  def state = new TextDocumentPermissionSetDomainObject(permSet.getType) |>> { ps =>
     ps.setEditDocumentInformation(ui.chkEditMeta.checked)
     ps.setEditPermissions(ui.chkEditPermissions.checked)
     ps.setEdit(ui.chkEditContent.checked)

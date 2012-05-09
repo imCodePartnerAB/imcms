@@ -200,7 +200,7 @@ trait SelectionCheck extends AbstractSelect {
 
 
 trait SelectOps[A <: AnyRef] extends AbstractSelect with ItemIdType[A] {
-  def addItem(id: A, caption: String): Item = doto(addItem(id)) { _ =>
+  def addItem(id: A, caption: String): Item = addItem(id) |>> { _ =>
     setItemCaption(id, caption)
   }
 }
@@ -257,7 +257,7 @@ trait MultiSelectBehavior[A <: AnyRef] extends SelectionCheck with SelectOps[A] 
   /**
    * @return collection of selected items or empty collection if there is no selected item(s).
    */
-  final override def getValue() = super.getValue |> { v => if (isMultiSelect) v else ?(v).toSeq.asJavaCollection }
+  final override def getValue() = super.getValue |> { v => if (isMultiSelect) v else Option(v).toSeq.asJavaCollection }
 
   final override def setMultiSelect(multiSelect: Boolean) =
     if (value.isEmpty) super.setMultiSelect(multiSelect)
@@ -332,7 +332,7 @@ case class FunctionProperty[A](valueFn: () => A)(implicit mf: Manifest[A]) exten
 
   def getValue = valueFn().asInstanceOf[AnyRef]
 
-  override def toString = ?(getValue) map { _.toString } getOrElse ""
+  override def toString = Option(getValue).map(_.toString).getOrElse("")
 }
 
 //case class ByNameProperty[A >: Null <: AnyRef](byName: => A)(implicit mf: Manifest[A]) extends Property {

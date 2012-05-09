@@ -15,11 +15,11 @@ import imcode.server.document.textdocument.ImageSource
 object ImageUtil {
 
   /** Inits Text docs images sources. */
-  def initImagesSources(images: JList[ImageDomainObject]) = images |< { _ foreach initImageSource }
+  def initImagesSources(images: JList[ImageDomainObject]) = images |>> { _ foreach initImageSource }
 
   /** Inits Text doc's image source. */
-  def initImageSource(image: ImageDomainObject) = image |< { _ =>
-    for (url <- ?(image) map (_.getImageUrl) map (_.trim)) {
+  def initImageSource(image: ImageDomainObject) = image |>> { _ =>
+    for (url <- Option(image).map(_.getImageUrl).map(_.trim)) {
       image.setSource(
         image.getType.intValue match {
           case ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT =>
@@ -50,7 +50,7 @@ class ImageDao extends HibernateSupport {
       language <- languageDao.getAllLanguages()
       image <- PartialFunction.condOpt(getImage(language.getId, docId, docVersionNo, no, loopNo, contentNo)) {
         case image if image != null => image
-        case _ if createImageIfNotExists => new ImageDomainObject |< { img =>
+        case _ if createImageIfNotExists => new ImageDomainObject |>> { img =>
           img.setDocId(docId)
           img.setName(no.toString)
 

@@ -39,7 +39,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
     versionDao.createVersion(docId, userId) |> { savedVO =>
       assert(savedVO.getId != null)
 
-      getVersion(docId, savedVO.getNo) |< { loadedVO =>
+      getVersion(docId, savedVO.getNo) |>> { loadedVO =>
         assert(loadedVO.getDocId === docId, "docId")
         assert(loadedVO.getCreatedBy === userId, "createdBy")
         assert(loadedVO.getModifiedBy === userId, "docId")
@@ -47,7 +47,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
     }
 
   def getVersion(docId: JInteger = 1001, no: JInteger = 0, assertExists: Boolean = true) =
-    versionDao.getVersion(docId, no) |< { version =>
+    versionDao.getVersion(docId, no) |>> { version =>
       if (assertExists) assert(version != null, "Version docId: %s, no: %s".format(docId, no))
     }
 

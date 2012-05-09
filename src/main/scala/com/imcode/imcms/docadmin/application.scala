@@ -31,8 +31,8 @@ class Application extends com.vaadin.Application with HttpServletRequestListener
 
     for {
       (IntNumber(docId), IntNumber(menuNo)) <- Option(request.getParameter("doc_id"), request.getParameter("menu_no"))
-      doc @ (si_900 : TextDocumentDomainObject) <- ?(imcmsServices.getDocumentMapper.getDocument(docId))
-      menu <- ?(doc.getMenu(menuNo))
+      doc @ (si_900 : TextDocumentDomainObject) <- Option(imcmsServices.getDocumentMapper.getDocument(docId))
+      menu <- Option(doc.getMenu(menuNo))
     } {
       val pnlAdmin = new Panel
       pnlAdmin.setSize(600, 600)
@@ -56,7 +56,7 @@ class Application extends com.vaadin.Application with HttpServletRequestListener
 
 
 class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) {
-  val ui = new MenuEditorUI |< { ui =>
+  val ui = new MenuEditorUI |>> { ui =>
     menu.getMenuItems foreach { ui.treeMenu.addItem(_) }
   }
 }

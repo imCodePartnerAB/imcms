@@ -56,10 +56,10 @@ class FileUploader extends Publisher[UploadStatus] {
    */
   var fileNameToSaveAsName = identity[String]_
 
-  val ui = doto(new FileUploaderUI) { ui =>
+  val ui = new FileUploaderUI |>> { ui =>
     // Temp file based receiver
     val receiver = new Upload.Receiver {
-      val file = doto(File.createTempFile("imcms_upload", null)) {
+      val file = File.createTempFile("imcms_upload", null) |>> {
         _.deleteOnExit()
       }
 

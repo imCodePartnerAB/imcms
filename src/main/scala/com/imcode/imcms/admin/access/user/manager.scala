@@ -13,12 +13,12 @@ import scala.collection.JavaConversions._
 class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
   private val search = new UserSearch
 
-  val ui = doto(new UserManagerUI(search.ui)) { ui =>
+  val ui = new UserManagerUI(search.ui) |>> { ui =>
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     ui.miNew setCommandHandler {
       app.initAndShow(new OkCancelDialog("user.dlg.new.caption".i)) { dlg =>
-        dlg.mainUI = doto(new UserEditorUI) { c =>
+        dlg.mainUI = new UserEditorUI |>> { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
             c.tcsRoles.addItem(role.getId, role.getName)
           }
@@ -51,7 +51,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     ui.miEdit setCommandHandler {
       whenSingle(search.selection) { user =>
         app.initAndShow(new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName))) { dlg =>
-          dlg.mainUI = doto(new UserEditorUI) { c =>
+          dlg.mainUI = new UserEditorUI |>> { c =>
             c.chkActivated setValue user.isActive
             c.txtFirstName setValue user.getFirstName
             c.txtLastName setValue user.getLastName

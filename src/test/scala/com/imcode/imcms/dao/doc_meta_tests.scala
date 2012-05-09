@@ -41,7 +41,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
     versionDao = ctx.getBean(classOf[DocumentVersionDao])
   }
 
-  def createMeta() = new Meta |< { m =>
+  def createMeta() = new Meta |>> { m =>
     m.setActivate(1)
     m.setDocumentType(2)
     m.setCreatorId(3)

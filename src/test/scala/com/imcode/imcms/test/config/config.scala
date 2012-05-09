@@ -18,7 +18,7 @@ class ProjectConfig {
 
   @Scope("prototype")
   @Bean(destroyMethod = "close")
-  def dataSource = new org.apache.commons.dbcp.BasicDataSource |< { ds =>
+  def dataSource = new org.apache.commons.dbcp.BasicDataSource |>> { ds =>
     ds.setDriverClassName(env.getRequiredProperty("JdbcDriver"))
     ds.setUsername(env.getRequiredProperty("Username"))
     ds.setPassword(env.getRequiredProperty("Password"))
@@ -37,7 +37,7 @@ class BasicConfig {
   var env: Environment = _
 
   @Bean(destroyMethod = "close")
-  def dataSource = new org.apache.commons.dbcp.BasicDataSource |< { ds =>
+  def dataSource = new org.apache.commons.dbcp.BasicDataSource |>> { ds =>
     ds.setDriverClassName(env.getRequiredProperty("JdbcDriver"))
     ds.setUrl(env.getRequiredProperty("JdbcUrl"))
     ds.setUsername(env.getRequiredProperty("Username"))

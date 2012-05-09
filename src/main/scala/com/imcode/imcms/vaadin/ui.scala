@@ -103,7 +103,7 @@ trait SingleClickListener extends Button {
 
   override def addListener(listener: Button.ClickListener) {
     clickListenerRef.synchronized {
-      for (currentListener <- clickListenerRef.getAndSet(?(listener))) {
+      for (currentListener <- clickListenerRef.getAndSet(listener |> option)) {
         super.removeListener(currentListener)
       }
 
@@ -141,7 +141,7 @@ class Dialog(caption: String = "") extends Window(caption) {
 
   def mainUI = content.getComponent(0, 0)
   /** By default rejects components with width and/or height in percentage. */
-  def mainUI_=[C <: Component](component: C): C = doto(component) { component =>
+  def mainUI_=[C <: Component](component: C): C = component |>> { component =>
     mainUICheck(component)
 
     content.addComponent(component, 0, 0)
@@ -151,7 +151,7 @@ class Dialog(caption: String = "") extends Window(caption) {
 
   def buttonsBarUI = content.getComponent(0, 1)
   /** By default rejects components with width and/or height in percentage. */
-  def buttonsBarUI_=[C <: Component](component: C): C = doto(component) { component =>
+  def buttonsBarUI_=[C <: Component](component: C): C = component |>> { component =>
     buttonsBarUICheck(component)
 
     content.addComponent(component, 0, 1)
@@ -486,7 +486,7 @@ trait MiddleLeftAlignment extends DefaultAlignment {
 
 
 trait NoChildrenAllowed extends Tree {
-  override def addItem(itemId: AnyRef) = doto(super.addItem(itemId)) { _ =>
+  override def addItem(itemId: AnyRef) = super.addItem(itemId) |>> { _ =>
     setChildrenAllowed(itemId, false)
   }
 }

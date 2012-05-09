@@ -14,23 +14,23 @@ object DocGetterCallbackUtil {
   def createAndSetDocGetterCallback(request: HttpServletRequest, user: UserDomainObject) {
     val currentDocGetterCallback = user.getDocGetterCallback
     val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
-    val language = ?(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE))
+    val language = Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE))
                    .map(Imcms.getI18nSupport.getByCode)
-                   .orElse(?(currentDocGetterCallback) map (_.params.language))
-                   .orElse(?(Imcms.getI18nSupport.getForHost(request.getServerName)))
+                   .orElse(currentDocGetterCallback |> option map (_.params.language))
+                   .orElse(Imcms.getI18nSupport.getForHost(request.getServerName) |> option)
                    .getOrElse(defaultLanguage)
 
     val params = Params(user, language, defaultLanguage)
     val docGetterCallback =
       (for {
-        docIdentity <- ?(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID))
-        docVersionNoStr <- ?(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION))
+        docIdentity <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID))
+        docVersionNoStr <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION))
         if !user.isDefaultUser
       } yield {
         val docId: JInteger = docIdentity match {
           case IntNumber(n) => n
           case _ =>
-            ?(Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity)).getOrElse {
+            Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity) |> option getOrElse {
               sys.error("Document with identity %s does not exists." format docIdentity)
             }
         }

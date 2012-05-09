@@ -44,7 +44,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
   }
 
   def createEmbeddedSolrServer(): SolrServer with SolrServerShutdown = {
-      val config = new Config() |< { c =>
+      val config = new Config() |>> { c =>
         c.setSolrHome(solrHome)
       }
 
@@ -62,7 +62,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
     }
 
     "create embedded SOLr server when Config.solrHome is set and Config.solrUrl is not" in  {
-      val config = new Config() |< { c =>
+      val config = new Config() |>> { c =>
         c.setSolrHome(solrHome)
       }
 
@@ -71,7 +71,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
     }
 
     "create remote SOLr server when Config.solrUrl is set" in  {
-      val config = new Config() |< { c =>
+      val config = new Config() |>> { c =>
         c.setSolrHome(new File("ingore"))
         c.setSolrUrl("http://localhost/solr/imcms")
       }
@@ -91,7 +91,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
     val dateTimeStr = "%1$TFT%1$TT.%1$TLZ" format dateTime
 
     "store document using all fields defined in schema" in {
-      val df = new DocFields |< { df =>
+      val df = new DocFields |>> { df =>
         df.metaId = 1001.toString
         df.docTypeId = 2
         df.createdDateTime = dateTime

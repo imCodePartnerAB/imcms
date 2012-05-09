@@ -15,11 +15,11 @@ import com.vaadin.terminal.{UserError, FileResource}
 class FileManager(app: ImcmsApplication) {
   val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))
 
-  val preview = doto(new FilePreview(browser)) { preview =>
+  val preview = new FilePreview(browser) |>> { preview =>
     preview.ui.previewUI.setSize(256, 256)
   }
 
-  val ui = doto(new FileManagerUI(browser.ui, preview.ui)) { ui =>
+  val ui = new FileManagerUI(browser.ui, preview.ui) |>> { ui =>
 
     ui.miEditRename setCommandHandler {
       for (LocationSelection(dir, Seq(item)) <- browser.selection; if item.isFile) {
@@ -31,7 +31,7 @@ class FileManager(app: ImcmsApplication) {
           dlgUI.txtName.value = item.getName
 
           dlg.wrapOkHandler {
-            val forbiddenChars = """?"\/:;%*|<>"""
+            val forbiddenChars = """?"\/:;%*|>>>"""
             val forbiddenCharsSet = forbiddenChars.toSet
             dlgUI.txtName.value.trim |> {
               case name if name.isEmpty || name.head == '.' || name.exists(forbiddenCharsSet(_)) =>
@@ -128,7 +128,7 @@ class FileManager(app: ImcmsApplication) {
           dlg.mainUI = new FormLayout with UndefinedSize {addComponents(this, lblMsg, txtName) }
 
           // refactor
-          val forbiddenChars = """?"\/:;%*|<>"""
+          val forbiddenChars = """?"\/:;%*|>>>"""
           val forbiddenCharsSet = forbiddenChars.toSet
 
           dlg.wrapOkHandler {
@@ -446,7 +446,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
         } else {
           app.synchronized {
             app.initAndShow(new YesNoCancelDialog("file.mgr.dlg.copy.item.issue.title".i)) { dlg =>
-              val dlgUI = doto(new ItemRenameDialogUI) { dlgUI =>
+              val dlgUI = new ItemRenameDialogUI |>> { dlgUI =>
                 dlgUI.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
                 dlgUI.txtName.value = destItemName
               }
@@ -580,7 +580,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
         } else {
           app.synchronized {
             app.initAndShow(new YesNoCancelDialog("file.mgr.dlg.move.item.issue.title".i)) { dlg =>
-              val dlgUI = doto(new ItemRenameDialogUI) { dlgUI =>
+              val dlgUI = new ItemRenameDialogUI |>> { dlgUI =>
                 dlgUI.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
                 dlgUI.txtName.value = destItemName
               }

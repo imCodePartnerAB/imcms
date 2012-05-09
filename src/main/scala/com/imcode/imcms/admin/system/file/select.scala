@@ -38,7 +38,7 @@ object FileOps {
   def download(app: Application, file: File) =
     app.getMainWindow.open(
       new FileResource(file, app) {
-        override def getStream() = doto(super.getStream) { ds =>
+        override def getStream() = super.getStream |>> { ds =>
           ds.setParameter("Content-Disposition", """attachment; filename="%s"""" format file.getName)
         }
       }
@@ -93,7 +93,7 @@ class FileDialog(caption: String, browser: FileBrowser)
 extends OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
   val preview = new FilePreview(browser)
 
-  mainUI = doto(new FileDialogUI(browser.ui, preview.ui)) { ui =>
+  mainUI = new FileDialogUI(browser.ui, preview.ui) |>> { ui =>
     ui.miViewPreview setCommandHandler {
       preview.enabled = !preview.enabled
     }
@@ -215,7 +215,7 @@ class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) w
  */
 class ImagePicker(app: Application, browser: FileBrowser) {
   val preview = new EmbeddedPreview; preview.stubUI.value = "No Icon"
-  val fileDialog = doto(new FileDialog("Pick an image", browser)) { dlg =>
+  val fileDialog = new FileDialog("Pick an image", browser) |>> { dlg =>
     dlg.preview.enabled = true
     dlg.wrapOkHandler {
       for (selection <- browser.selection; file <- selection.firstItem)
@@ -223,7 +223,7 @@ class ImagePicker(app: Application, browser: FileBrowser) {
     }
   }
 
-  val ui = doto(new ImagePickerUI(preview.ui)) { ui =>
+  val ui = new ImagePickerUI(preview.ui) |>> { ui =>
     ui.btnRemove addClickHandler {
       preview.clear()
     }

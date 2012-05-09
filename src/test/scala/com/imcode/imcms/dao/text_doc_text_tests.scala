@@ -27,7 +27,7 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
 
 	var textDao: TextDao = _
 
-  val admin = new UserDomainObject(0) |< { _.addRoleId(RoleId.SUPERADMIN) }
+  val admin = new UserDomainObject(0) |>> { _.addRoleId(RoleId.SUPERADMIN) }
 
   override def beforeAll() = testDB.recreate()
 

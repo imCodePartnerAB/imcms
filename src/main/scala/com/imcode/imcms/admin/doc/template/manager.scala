@@ -19,7 +19,7 @@ class TemplateManager(app: ImcmsApplication) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
   private val fileRE = """(?i)(.+?)(?:\.(\w+))?""".r // filename, (optional extension)
 
-  val ui = doto(new TemplateManagerUI) { ui =>
+  val ui = new TemplateManagerUI |>> { ui =>
     ui.tblTemplates addValueChangeHandler { handleSelection() }
     ui.miUpload setCommandHandler {
       app.initAndShow(new FileUploaderDialog("Upload template file")) { dlg =>
@@ -54,7 +54,7 @@ class TemplateManager(app: ImcmsApplication) {
     ui.miRename setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new OkCancelDialog("Rename template")) { dlg =>
-          val fileRenameUI = doto(new TemplateRenameUI) { c =>
+          val fileRenameUI = new TemplateRenameUI |>> { c =>
             c.txtName.value = name
           }
 
@@ -72,7 +72,7 @@ class TemplateManager(app: ImcmsApplication) {
     ui.miEditContent setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoMarginDialog) { dlg =>
-          dlg.mainUI = doto(new TemplateContentEditorUI) { c =>
+          dlg.mainUI = new TemplateContentEditorUI |>> { c =>
             c.txaContent.value = templateMapper.getTemplateData(name)
           }
 
@@ -86,7 +86,7 @@ class TemplateManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected template?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(?(templateMapper getTemplateByName name) foreach templateMapper.deleteTemplate) match {
+              EX.allCatch.either(Option(templateMapper getTemplateByName name) foreach templateMapper.deleteTemplate) match {
                 case Right(_) =>
                   app.showInfoNotification("Template has been deleted")
                 case Left(ex) =>
@@ -131,7 +131,7 @@ class TemplateManager(app: ImcmsApplication) {
       doall(miDownload, miRename, miEditContent, miDelete) { _ setEnabled enabled }
     }
 
-    miDocuments.setEnabled(?(tblTemplates.value) map { name =>
+    miDocuments.setEnabled(Option(tblTemplates.value) map { name =>
       templateMapper.getCountOfDocumentsUsingTemplate(templateMapper.getTemplateByName(name)) > 0
     } getOrElse false)
   }
@@ -167,7 +167,7 @@ class TemplateRenameUI extends FormLayout with UndefinedSize {
 }
 
 class TemplateContentEditorUI extends VerticalLayout with FullSize {
-  val txaContent = new TextArea with FullSize |< {
+  val txaContent = new TextArea with FullSize |>> {
     _.setRows(20)
   }
 

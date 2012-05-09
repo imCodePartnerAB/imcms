@@ -44,7 +44,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     }
   }
 
-  val ui = doto(new FileDocContentEditorUI with OnceOnlyAttachAction) { ui =>
+  val ui = new FileDocContentEditorUI with OnceOnlyAttachAction |>> { ui =>
     ui.tblFiles.addGeneratedColumn("Type", new ColumnGenerator {
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef): String = {
         val mimeType = values.fdfs(itemId.asInstanceOf[FileId]).getMimeType
@@ -62,7 +62,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     })
 
     ui.tblFiles.addGeneratedColumn("Default", new ColumnGenerator {
-      def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = doto(new CheckBox) { chk =>
+      def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = new CheckBox |>> { chk =>
         for (id <- values.defaultFdfId if id == itemId.asInstanceOf[FileId]) {
           chk.check
         }
@@ -86,7 +86,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
               case Some(fdf) => Right(fdf) // return new instance?
 
-              case None => doto(Right(new FileDocumentFile)) {
+              case None => Right(new FileDocumentFile) |> {
                 case Right(fdf) =>
                   val id = (
                     for ((IntNumber(id), _) <- values.fdfs) yield id
@@ -99,11 +99,11 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                   fdf.setId(id)
               }
             } |> {
-              case Left(errMsg) =>
+              case Left(errMsg: String) =>
                 dlg.uploader.ui.txtSaveAsName.setComponentError(errMsg)
                 ui.getApplication.showErrorNotification(errMsg)
 
-              case Right(fdf) =>
+              case Right(fdf: FileDocumentFile) =>
                 fdf.setFilename(saveAsName)
                 fdf.setMimeType(mimeType)
                 fdf.setInputStreamSource(new FileInputStreamSource(file))
@@ -129,7 +129,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
         case Seq(fileId) =>
           ui.getApplication.initAndShow(new OkCancelDialog("Edit file properties")) { dlg =>
             val fdf = values.fdfs(fileId)
-            val editorUI = doto(new FileDocFilePropertiesEditorUI) { eui =>
+            val editorUI = new FileDocFilePropertiesEditorUI |>> { eui =>
               eui.txtId.value = fdf.getId
               eui.txtName.value = fdf.getFilename
 
@@ -245,7 +245,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
       if (values.fdfs.isEmpty) {
         Left(Seq("Document must contain at least one file."))
       } else {
-        Right(doto(doc.clone.asInstanceOf[FileDocumentDomainObject]) { clone =>
+        Right(doc.clone.asInstanceOf[FileDocumentDomainObject] |>> { clone =>
           for ((fileId, _) <- clone.getFiles) {
             clone removeFile fileId
           }

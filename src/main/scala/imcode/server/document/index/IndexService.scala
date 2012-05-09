@@ -34,7 +34,7 @@ class IndexService(config: Config) extends Log4jLoggerSupport {
   }
 
 
-  private def createRemoteSolrServer() = new HttpSolrServer(config.getSolrUrl) with SolrServerShutdown |< { solr =>
+  private def createRemoteSolrServer() = new HttpSolrServer(config.getSolrUrl) with SolrServerShutdown |>> { solr =>
     solr.setRequestWriter(new BinaryRequestWriter())
   }
 }

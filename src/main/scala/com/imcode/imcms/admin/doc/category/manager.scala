@@ -22,7 +22,7 @@ import imcms.security.{PermissionGranted, PermissionDenied}
 class CategoryManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
-  val ui: CategoryManagerUI = doto(new CategoryManagerUI) { ui =>
+  val ui: CategoryManagerUI = new CategoryManagerUI |>> { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblCategories addValueChangeHandler { handleSelection() }
 
@@ -41,7 +41,7 @@ class CategoryManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected category?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(?(categoryMapper getCategoryById id.intValue) foreach categoryMapper.deleteCategoryFromDb) match {
+              EX.allCatch.either(categoryMapper.getCategoryById(id.intValue) |> option foreach categoryMapper.deleteCategoryFromDb) match {
                 case Right(_) =>
                   app.showInfoNotification("Category has been deleted")
                 case Left(ex) =>
@@ -76,29 +76,29 @@ class CategoryManager(app: ImcmsApplication) {
       val browser = ImcmsFileBrowser.addImagesLocation(new FileBrowser)
       val imagePicker = new ImagePicker(app, browser)
       val imageFile = for {
-        url <- ?(vo.getImageUrl)
+        url <- vo.getImageUrl |> option
         file = new File(Imcms.getPath, "WEB-INF/" + url) if file.isFile
       } imagePicker.preview.set(new Embedded("", new FileResource(file, app)))
 
       app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-        dlg.mainUI = new CategoryEditorUI(imagePicker.ui) |< { c =>
+        dlg.mainUI = new CategoryEditorUI(imagePicker.ui) |>> { c =>
           typesNames foreach { c.sltType addItem _ }
 
           c.txtId.value = if (isNew) "" else id.toString
-          c.txtName.value = ?(vo.getName) getOrElse ""
-          c.txaDescription.value = ?(vo.getDescription) getOrElse ""
+          c.txtName.value = vo.getName |> option getOrElse ""
+          c.txaDescription.value = vo.getDescription |> option getOrElse ""
           c.sltType.value = if (isNew) typesNames.head else vo.getType.getName
 
           dlg wrapOkHandler {
-            vo.clone() |> { voc =>
+            vo.clone |> { voc =>
               voc setName c.txtName.value.trim
               voc setDescription c.txaDescription.value.trim
               voc setImageUrl (if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.get.get.getSource.asInstanceOf[FileResource].getFilename)
               voc setType categoryMapper.getCategoryTypeByName(c.sltType.value)
               // todo: move validate into separate fn
               val validationError: Option[String] = voc.getName match {
-                case "" => ?("Category name is not set")
-                case name => ?(categoryMapper.getCategoryByTypeAndName(voc.getType, name)) collect {
+                case "" => "Category name is not set" |> option
+                case name => categoryMapper.getCategoryByTypeAndName(voc.getType, name) |> option collect {
                   case category if category.getId != voc.getId =>
                     "Category with such name and type already exists"
                 }
@@ -180,7 +180,7 @@ class CategoryEditorUI(val imagePickerUI: ImagePickerUI) extends FormLayout with
     setColumns(11)
   }
   val txtName = new TextField("Name") with Required
-  val txaDescription = new TextArea("Description") |< { t =>
+  val txaDescription = new TextArea("Description") |>> { t =>
     t.setRows(5)
     t.setColumns(11)
   }

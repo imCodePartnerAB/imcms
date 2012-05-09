@@ -13,7 +13,7 @@ import imcode.server.user.{RoleId, RoleDomainObject}
 class RoleManager(app: ImcmsApplication) {
   private def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
-  val ui = doto(new RoleManagerUI) { ui =>
+  val ui = new RoleManagerUI |>> { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblRoles addValueChangeHandler { handleSelection() }
 
@@ -31,7 +31,7 @@ class RoleManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected role?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(?(roleMapper getRole id) foreach roleMapper.deleteRole) match {
+              EX.allCatch.either(roleMapper.getRole(id) |> option foreach roleMapper.deleteRole) match {
                 case Right(_) =>
                   app.showInfoNotification("Role has been deleted")
                 case Left(ex) =>
@@ -60,7 +60,7 @@ class RoleManager(app: ImcmsApplication) {
     val dialogTitle = if(isNew) "Create new role" else "Edit role"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      dlg.mainUI = doto(new RoleEditorUI) { c =>
+      dlg.mainUI = new RoleEditorUI |>> { c =>
         val permsToChkBoxes = Map(
             RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> c.chkPermChangeImagesInArchive,
             RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION -> c.chkPermUseImagesFromArchive,

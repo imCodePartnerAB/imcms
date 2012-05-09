@@ -48,7 +48,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
   private val restrictedOnePermSetEditor = new DocRestrictedPermSetEditor(restrictedOnePermSet, doc, user) with TextDocRestrictedPermSetEditor
   private val restrictedTwoPermSetEditor = new DocRestrictedPermSetEditor(restrictedTwoPermSet, doc, user) with TextDocRestrictedPermSetEditor
 
-  val ui = doto(new ProfileEditorUI) { ui =>
+  val ui = new ProfileEditorUI |>> { ui =>
     ui.btnEditRestrictedOnePermSet addClickHandler {
       ui.getApplication.initAndShow(new OkCancelDialog("Limited-1 permissions")) { dlg =>
         dlg.mainUI = restrictedOnePermSetEditor.ui
@@ -94,7 +94,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
     def setTemplatesNamesAsComboBoxItems(cb: ComboBox with SingleSelect[String], selectedTemplateName: String) {
       cb.removeAllItems()
       templatesNames foreach {cb addItem _}
-      defaultTemplateNameOpt orElse ?(selectedTemplateName) foreach cb.select
+      defaultTemplateNameOpt orElse Option(selectedTemplateName) foreach cb.select
     }
 
     setTemplatesNamesAsComboBoxItems(ui.cbDefaultTemplate, doc.getDefaultTemplateName)

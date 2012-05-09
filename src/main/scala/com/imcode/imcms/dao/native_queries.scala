@@ -40,7 +40,7 @@ class NativeQueriesDao extends HibernateSupport {
       "SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", languageIso639_2
     ) |> {
       rows =>
-        new TreeMap[JInteger, String] |< { m =>
+        new TreeMap[JInteger, String] |>> { m =>
           for (Array(typeId: JInteger, name: String) <- rows) m.put(typeId, name)
         }
     }

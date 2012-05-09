@@ -68,21 +68,21 @@ case class LocationSelection(dir: File, items: Seq[File]) {
 object ImcmsFileBrowser {
 
   def addLocation(captionResourceId: String, conf: LocationConf, image: Option[Resource])(browser: FileBrowser) =
-    doto(browser) { _ => browser.addLocation(captionResourceId.i, conf, image) }
+    browser |>> { _ => browser.addLocation(captionResourceId.i, conf, image) }
 
-  val addHomeLocation = addLocation("file.browser.location.home", LocationConf(Imcms.getPath), ?(Theme.Icons.Browser.TabHome32))_
+  val addHomeLocation = addLocation("file.browser.location.home", LocationConf(Imcms.getPath), Theme.Icons.Browser.TabHome32 |> option)_
 
   val addImagesLocation =
-    addLocation("file.browser.location.images", LocationConf(Imcms.getPath, "images"), ?(Theme.Icons.Browser.TabImages32))_
+    addLocation("file.browser.location.images", LocationConf(Imcms.getPath, "images"), Theme.Icons.Browser.TabImages32 |> option)_
 
   val addTemplatesLocation =
-    addLocation("file.browser.location.templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), ?(Theme.Icons.Browser.TabTemplates32))_
+    addLocation("file.browser.location.templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), Theme.Icons.Browser.TabTemplates32 |> option)_
 
   val addLogsLocation =
-    addLocation("file.browser.location.logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), ?(Theme.Icons.Browser.TabLogs32))_
+    addLocation("file.browser.location.logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), Theme.Icons.Browser.TabLogs32 |> option)_
 
   val addConfLocation =
-    addLocation("file.browser.location.conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), ?(Theme.Icons.Browser.TabConf32))_
+    addLocation("file.browser.location.conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), Theme.Icons.Browser.TabConf32 |> option)_
 
   val addAllLocations =
     Function.chain(Seq(addHomeLocation, addImagesLocation, addTemplatesLocation, addLogsLocation, addConfLocation))
@@ -110,7 +110,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   /** Selection in a current location */
   private val selectionRef = new AtomicReference(Option.empty[LocationSelection])
 
-  val ui = doto(new FileBrowserUI) { ui =>
+  val ui = new FileBrowserUI |>> { ui =>
     ui.accLocationTrees.addListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
         val locationOpt = tabsToLocations.get(e.getTabSheet.getSelectedTab)
@@ -130,7 +130,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
     val locationItems = new LocationItems(conf.itemsFilter, isSelectable, isMultiSelect)
 
     locationTree.ui addValueChangeHandler {
-      ?(locationTree.ui.value) match {
+      locationTree.ui.value |> option match {
         case Some(dir) =>
           locationItems.reload(dir)
           Some(LocationSelection(dir, Nil)) |> { selection =>
@@ -167,7 +167,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   }
 
   private def updateSelection(locationTree: LocationTree, locationItems: LocationItems) {
-    ?(locationTree.ui.value) match {
+    locationTree.ui.value |> option match {
       case Some(dir) =>
         Some(LocationSelection(dir, locationItems.selection)) |> { selection =>
           selectionRef.set(selection)
@@ -240,7 +240,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
           LocationSelection(dir, items) <- e
           (locationTree, _) <- location
           conf <- locationRootToConf.get(locationTree.root)
-          confParent = ?(conf.dir.getParentFile).map(_.getCanonicalFile).orNull
+          confParent = Option(conf.dir.getParentFile).map(_.getCanonicalFile).orNull
           dirs = Iterator.iterate(dir)(_.getParentFile).takeWhile(_.getCanonicalFile != confParent).toList.reverse
           dirPath = dirs.map(_.getName).mkString("", "/", "/")
         } yield {

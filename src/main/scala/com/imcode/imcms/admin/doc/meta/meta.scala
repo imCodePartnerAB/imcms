@@ -40,7 +40,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
   private var categoriesEditorOpt = Option.empty[CategoriesEditor]
   private var profileEditorOpt = Option.empty[ProfileEditor]
 
-  val ui = doto(new MetaEditorUI) { ui =>
+  val ui = new MetaEditorUI |>> { ui =>
     ui.treeMenu.addItem("Appearance")
     ui.treeMenu.addItem("Life cycle")
     ui.treeMenu.addItem("Permissions")
@@ -55,7 +55,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
       ui.treeMenu.getValue match {
         case "Appearance" =>
           if (appearanceEditorOpt.isEmpty) {
-            val i18nMetas: Map[I18nLanguage, I18nMeta] = ?(doc.getIdValue) match {
+            val i18nMetas: Map[I18nLanguage, I18nMeta] = Option(doc.getIdValue) match {
               case Some(id) =>
                 imcmsServices.getDocumentMapper.getI18nMetas(id).map(m => m.getLanguage -> m).toMap
               case _ =>
@@ -123,14 +123,14 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
       UberData(
         Right(doc.clone, Map.empty[I18nLanguage, I18nMeta])
       ).merge(appearanceEditorOpt.map(_.data.get())) {
-          case ((dc, _), appearance) => doto(dc, appearance.i18nMetas) { _ =>
+          case ((dc, _), appearance) => (dc, appearance.i18nMetas) |>> { _ =>
             dc.getMeta.setLanguages(appearance.enabledLanguages)
             dc.getMeta.setI18nShowMode(appearance.disabledLanguageShowSetting)
             dc.getMeta.setAlias(appearance.alias.orNull)
             dc.getMeta.setTarget(appearance.target)
           }
       }.merge(lifeCycleEditorOpt.map(_.data.get())) {
-          case (uberData @ (dc, _), lifeCycle) => doto(uberData) { _ =>
+          case (uberData @ (dc, _), lifeCycle) => uberData |>> { _ =>
             dc.getMeta.setPublicationStatus(lifeCycle.publicationStatus)
             dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStart)
             dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
@@ -143,7 +143,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
             //???dc.getMeta.setModifierId
           }
       }.merge(permissionsEditorOpt.map(_.data.get())) {
-          case (uberData @ (dc, _), permissions) => doto(uberData) { _ =>
+          case (uberData @ (dc, _), permissions) => uberData |>> { _ =>
             dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
             dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)
             dc.getPermissionSets.setRestricted2(permissions.restrictedTwoPermSet)
@@ -152,11 +152,11 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
             dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
           }
       }.merge(categoriesEditorOpt.map(_.data.get())) {
-          case (uberData @ (dc, _), categories) => doto(uberData) { _ =>
+          case (uberData @ (dc, _), categories) => uberData |>> { _ =>
             dc.setCategoryIds(categories.categoriesIds)
           }
       }.merge(profileEditorOpt.map(_.data.get())) {
-          case (uberData @ (tdc: TextDocumentDomainObject, _), profile) => doto(uberData) { _ =>
+          case (uberData @ (tdc: TextDocumentDomainObject, _), profile) => uberData |>> { _ =>
             tdc.setDefaultTemplateId(profile.defaultTemplate)
             tdc.getPermissionSetsForNewDocuments.setRestricted1(profile.restrictedOnePermSet)
             tdc.getPermissionSetsForNewDocuments.setRestricted2(profile.restrictedTwoPermSet)
@@ -212,7 +212,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     modifier: Option[UserDomainObject]
   )
 
-  val ui = doto(new LifeCycleEditorUI) { ui =>
+  val ui = new LifeCycleEditorUI |>> { ui =>
     ui.frmPublication.lytDate.chkEnd.addValueChangeHandler {
       ui.frmPublication.lytDate.calEnd.setEnabled(ui.frmPublication.lytDate.chkEnd.checked)
     }
@@ -229,8 +229,8 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
         versionInfo.getVersions.map(_.getNo) -> versionInfo.getDefaultVersion.getNo
     }
 
-    ui.ussCreator.selection = ?(meta.getCreatorId).map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
-    ui.ussPublisher.selection = ?(meta.getPublisherId).map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
+    ui.ussCreator.selection = Option(meta.getCreatorId).map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
+    ui.ussPublisher.selection = Option(meta.getPublisherId).map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
     ui.ussModifier.selection = None
 
     ui.frmPublication.sltVersion.removeAllItems
@@ -242,7 +242,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     ui.frmPublication.sltStatus.select(meta.getPublicationStatus)
 
     // dates
-    ui.frmPublication.lytDate.calStart.value = ?(meta.getPublicationStartDatetime) getOrElse new Date
+    ui.frmPublication.lytDate.calStart.value = meta.getPublicationStartDatetime |> option getOrElse new Date
     //ui.frmPublication.lytDate.calEnd.setReadOnly(false)
     ui.frmPublication.lytDate.calEnd.value = meta.getPublicationEndDatetime
     ui.frmPublication.lytDate.chkEnd.checked = meta.getPublicationEndDatetime != null
@@ -364,7 +364,7 @@ class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
       chkCType -> sltCategories
     }
 
-  val ui = doto(new GridLayout(2, 1) with Spacing) { ui =>
+  val ui = new GridLayout(2, 1) with Spacing |>> { ui =>
     for ((chkCType, sltCategories) <- typeCategoriesUIs) {
       addComponents(ui, chkCType, sltCategories)
     }
@@ -411,7 +411,7 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
 
   private val initialValues = Values(meta.getKeywords.map(_.toLowerCase).toSet, false)
 
-  val ui = doto(new SearchSettingsEditorUI) { ui =>
+  val ui = new SearchSettingsEditorUI |>> { ui =>
     import ui.lytKeywords.{btnAdd, btnRemove, txtKeyword, lstKeywords}
 
     btnAdd.addClickHandler {
@@ -582,14 +582,14 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
       Values(
         i18nMetasUIs.map {
           case (language, chkBox, i18nMetaEditorUI) =>
-            language -> doto(new I18nMeta) { i18nMeta =>
+            language -> (new I18nMeta |>> { i18nMeta =>
               i18nMeta.setId(i18nMetas.get(language).map(_.getId).orNull)
               i18nMeta.setDocId(meta.getId)
               i18nMeta.setLanguage(language)
               i18nMeta.setHeadline(i18nMetaEditorUI.txtTitle.trim)
               i18nMeta.setMenuImageURL(i18nMetaEditorUI.embLinkImage.trim)
               i18nMeta.setMenuText(i18nMetaEditorUI.txaMenuText.trim)
-            }
+            })
         } (breakOut),
         i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language }(breakOut),
         ui.frmLanguages.cbShowMode.value,
@@ -626,8 +626,8 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
       }
     }
 
-    val alias = ?(meta.getAlias)
-    ui.frmAlias.txtAlias.setInputPrompt(?(meta.getId).map(_.toString).orNull)
+    val alias = Option(meta.getAlias)
+    ui.frmAlias.txtAlias.setInputPrompt(Option(meta.getId).map(_.toString).orNull)
     ui.frmAlias.txtAlias.value = alias.getOrElse("")
     ui.frmLanguages.cbShowMode.select(meta.getI18nShowSetting)
 

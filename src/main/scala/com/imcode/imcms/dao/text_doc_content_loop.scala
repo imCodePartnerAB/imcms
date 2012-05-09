@@ -51,7 +51,7 @@ class ContentLoopDao extends HibernateSupport {
    * @param loop content loop.
    * @return saved content loop.
    */
-  def saveLoop(loop: ContentLoop) = loop.clone() |< { loopClone =>
+  def saveLoop(loop: ContentLoop) = loop.clone() |>> { loopClone =>
     hibernate.saveOrUpdate(loopClone)
     hibernate.flush()
   }

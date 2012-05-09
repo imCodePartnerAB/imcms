@@ -56,7 +56,7 @@ class MetaDao extends HibernateSupport {
   def getI18nMeta(docId: JInteger, language: I18nLanguage): I18nMeta =
     hibernate.getByNamedQueryAndNamedParams[I18nMeta](
       "I18nMeta.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
-    ) |> ? getOrElse new I18nMeta |< { i18nMeta =>
+    ) |> option getOrElse new I18nMeta |>> { i18nMeta =>
       i18nMeta.setDocId(docId)
       i18nMeta.setLanguage(language)
       i18nMeta.setHeadline("")
@@ -90,7 +90,7 @@ class MetaDao extends HibernateSupport {
   def insertPropertyIfNotExists(docId: JInteger, name: String, value: String): Boolean =
     hibernate.getByNamedQueryAndNamedParams[DocumentProperty](
       "DocumentProperty.getProperty", "docId" -> docId, "name" -> name
-    ) |> ? getOrElse new DocumentProperty |< { property =>
+    ) |> option getOrElse new DocumentProperty |>> { property =>
       property.setDocId(docId)
       property.setName(name)
     } match {
@@ -185,7 +185,7 @@ class MetaDao extends HibernateSupport {
   )
 
 
-  def getDocIdByAliasOpt(alias: String) = getAliasProperty(alias) |> ? map(_.getDocId.toInt)
+  def getDocIdByAliasOpt(alias: String) = getAliasProperty(alias) |> option map(_.getDocId.toInt)
 
 
   def deleteDocument(docId: JInteger): Unit = hibernate.withSession { session =>

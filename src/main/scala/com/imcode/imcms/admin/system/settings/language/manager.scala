@@ -15,7 +15,7 @@ class LanguageManager(app: ImcmsApplication) {
   private val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
   private val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
 
-  val ui = doto(new LanguageManagerUI) { ui =>
+  val ui = new LanguageManagerUI |>> { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblLanguages addValueChangeHandler { handleSelection() }
 
@@ -84,12 +84,12 @@ class LanguageManager(app: ImcmsApplication) {
     val dialogTitle = if(isNew) "Create new language" else "edit Language"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      dlg.mainUI = doto(new LanguageEditorUI) { c =>
+      dlg.mainUI = new LanguageEditorUI |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
-        c.txtCode.value = ?(vo.getCode) getOrElse ""
-        c.txtName.value = ?(vo.getName) getOrElse ""
-        c.txtNativeName.value = ?(vo.getNativeName) getOrElse ""
-        c.chkEnabled.value = ?(vo.isEnabled) getOrElse (Boolean box false)
+        c.txtCode.value = vo.getCode |> option getOrElse ""
+        c.txtName.value = vo.getName |> option getOrElse ""
+        c.txtNativeName.value = vo.getNativeName |> option getOrElse ""
+        c.chkEnabled.value = vo.isEnabled |> option getOrElse (Boolean box false)
 
         dlg wrapOkHandler {
           new I18nLanguage.Builder |> { voc =>

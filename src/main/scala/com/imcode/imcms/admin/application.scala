@@ -208,7 +208,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     content setFirstComponent treeMenu
     //this setContent content
 
-    val splitView = new VerticalSplitPanel |< { p =>
+    val splitView = new VerticalSplitPanel |>> { p =>
       p.setFirstComponent(content)
       p.setSecondComponent(chat)
       p.setSplitPosition(85)

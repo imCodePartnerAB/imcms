@@ -24,11 +24,11 @@ object SessionCounter {
 }
 
 class SessionCounterManager(app: ImcmsApplication) {
-  val ui = doto(new SessionCounterManagerUI) { ui =>
+  val ui = new SessionCounterManagerUI |>> { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.miEdit setCommandHandler {
       app.initAndShow(new OkCancelDialog("Edit session counter")) { dlg =>
-        dlg.mainUI = doto(new SessionCounterEditorUI) { c =>
+        dlg.mainUI = new SessionCounterEditorUI |>> { c =>
           SessionCounter.get |> { sc =>
             c.txtValue.value = sc.value.toString
             c.calStart.value = sc.date

@@ -52,11 +52,11 @@ class Project extends ProjectTestDB {
       val Basic: Configurator = Dialect andThen Cache
       val BasicWithSql: Configurator = Basic andThen Sql
 
-      def addAnnotatedClasses(annotatedClasses: Class[_]*)(configuration: Configuration) = configuration |<< {
+      def addAnnotatedClasses(annotatedClasses: Class[_]*)(configuration: Configuration) = configuration |>> { _ =>
         annotatedClasses foreach configuration.addAnnotatedClass
       }
 
-      def addXmlFiles(xmlFiles: String*)(configuration: Configuration) = configuration |<< {
+      def addXmlFiles(xmlFiles: String*)(configuration: Configuration) = configuration |>> { _ =>
         xmlFiles foreach { xmlFile => ClassLoader.getSystemResource(xmlFile).getFile |> configuration.addFile }
       }
     }
@@ -105,7 +105,7 @@ trait ProjectTestDB { project: Project =>
     def createDataSource(urlType: DataSourceUrlType.Value = DataSourceUrlType.WithDBName,
                          autocommit: DataSourceAutocommit.Value = DataSourceAutocommit.No) =
 
-      project.spring.ctx.getBean(classOf[BasicDataSource]) |< { ds =>
+      project.spring.ctx.getBean(classOf[BasicDataSource]) |>> { ds =>
 
         ds.setUrl(project.env.getRequiredProperty(
           if (urlType == DataSourceUrlType.WithDBName) "JdbcUrl" else "JdbcUrlWithoutDBName"))

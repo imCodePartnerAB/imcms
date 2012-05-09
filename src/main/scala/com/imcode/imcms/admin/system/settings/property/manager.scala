@@ -14,11 +14,11 @@ import imcode.server.{SystemData, Imcms}
 
 class PropertyManagerManager(app: ImcmsApplication) {
 
-  val ui = doto(new PropertyManagerUI) { ui =>
+  val ui = new PropertyManagerUI |>> { ui =>
     ui.rc.btnReload addClickHandler { reload() }
     ui.miEdit setCommandHandler {
       app.initAndShow(new OkCancelDialog("Edit system properties")) { dlg =>
-        dlg.mainUI = doto(new PropertyEditorUI) { eui =>
+        dlg.mainUI = new PropertyEditorUI |>> { eui =>
           Imcms.getServices.getSystemData |> { d =>
             eui.txtStartPageNumber.value = d.getStartDocument.toString
             eui.txaSystemMessage.value = d.getSystemMessage
@@ -30,7 +30,7 @@ class PropertyManagerManager(app: ImcmsApplication) {
 
           dlg.wrapOkHandler {
             app.privileged(permission) {
-              val systemData = doto(Imcms.getServices.getSystemData) { d =>
+              val systemData = Imcms.getServices.getSystemData |>> { d =>
                 d setStartDocument eui.txtStartPageNumber.value.toInt
                 d setSystemMessage eui.txaSystemMessage.value
                 d setWebMaster eui.webMasterUI.txtName.value
@@ -103,7 +103,7 @@ class PropertyEditorUI extends FormLayout with UndefinedSize {
   }
 
   val txtStartPageNumber = new TextField("Start page number")
-  val txaSystemMessage = new TextArea("System message") |< { _.setRows(5) }
+  val txaSystemMessage = new TextArea("System message") |>> { _.setRows(5) }
   val serverMasterUI = new ContactUI("Server master")
   val webMasterUI = new ContactUI("Web master")
 

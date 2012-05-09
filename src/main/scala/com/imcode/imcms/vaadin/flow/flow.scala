@@ -35,7 +35,7 @@ class Flow[T](commit: () => Either[String, T], firstPage: FlowPage, restPages: F
 
   val commitListeners = ListBuffer.empty[T => Unit]
 
-  val ui = doto(new FlowUI) { ui =>
+  val ui = new FlowUI |>> { ui =>
     ui.bar.btnPrev addClickHandler {
       maybeGoPrev match {
         case Some(page) => ui.setContent(page.ui())
