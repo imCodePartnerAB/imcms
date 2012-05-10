@@ -175,7 +175,7 @@ class UserSearchForm extends ImcmsServicesSupport {
     ui.chkRoles.checked = state.roles.isDefined
     ui.chkShowInactive.checked = state.isShowInactive
 
-    doall(ui.chkText, ui.chkRoles, ui.chkShowInactive)(_ fireValueChange true)
+    doto(ui.chkText, ui.chkRoles, ui.chkShowInactive)(_ fireValueChange true)
 
     ui.txtText.value = state.text.getOrElse("")
     ui.tcsRoles.removeAllItems

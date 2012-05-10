@@ -140,7 +140,7 @@ class UserEditorUI extends FormLayout with UndefinedSize {
     addComponent(btnEditContacts)
   }
 
-  doall(txtLogin, txtPassword, txtVerifyPassword, txtEmail) { _ setRequired true }
+  doto(txtLogin, txtPassword, txtVerifyPassword, txtEmail) { _ setRequired true }
 
   addComponents(this, lytLogin, lytPassword, lytName, txtEmail, sltUILanguage, tcsRoles, lytContacts)
 }

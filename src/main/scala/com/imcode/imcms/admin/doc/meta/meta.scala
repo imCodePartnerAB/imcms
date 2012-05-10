@@ -694,7 +694,7 @@ class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
     getLayout.asInstanceOf[HorizontalLayout] |> { lyt =>
       addComponents(lyt, lblContextURL, txtAlias, btnCheck)
       lyt.setExpandRatio(txtAlias, 1.0f)
-      doall(lblContextURL, btnCheck) {
+      doto(lblContextURL, btnCheck) {
         lyt.setComponentAlignment(_, Alignment.MIDDLE_LEFT)
       }
     }

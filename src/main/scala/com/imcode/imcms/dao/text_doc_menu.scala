@@ -12,12 +12,12 @@ import imcode.server.document.textdocument.MenuDomainObject
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class MenuDao extends HibernateSupport {
 
-  def getMenu(docId: JInteger, docVersionNo: JInteger, no: JInteger): MenuDomainObject = hibernate.getByNamedQuery(
-    "Menu.getMenu", "docId" -> docId, "docVersionNo" -> docVersionNo, "no", no
+  def getMenu(docId: Int, docVersionNo: Int, no: Int): MenuDomainObject = hibernate.getByNamedQueryAndNamedParams(
+    "Menu.getMenu", "docId" -> docId, "docVersionNo" -> docVersionNo, "no" -> no
   )
 
   
-  def getMenus(docId: JInteger, docVersionNo: JInteger): JList[MenuDomainObject] =
+  def getMenus(docId: Int, docVersionNo: Int): JList[MenuDomainObject] =
     hibernate.listByNamedQueryAndNamedParams(
       "Menu.getMenus", "docId" -> docId, "docVersionNo" -> docVersionNo
     )
@@ -34,7 +34,7 @@ class MenuDao extends HibernateSupport {
   def saveMenuHistory(menuHistory: MenuHistory) = hibernate.save(menuHistory)
 
   
-  def deleteMenus(docId: JInteger, docVersionNo: JInteger) = hibernate.withSession { session =>
+  def deleteMenus(docId: Int, docVersionNo: Int) = hibernate.withCurrentSession { session =>
     val scroll = session.getNamedQuery("Menu.getMenus")
       .setParameter("docId", docId)
       .setParameter("docVersionNo", docVersionNo)

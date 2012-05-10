@@ -15,9 +15,10 @@ import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.api.{MenuHistory}
+import org.junit.Assert._
 
 @RunWith(classOf[JUnitRunner])
-class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
+class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
 	var menuDao: MenuDao = _
 
@@ -34,27 +35,23 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
   }
 
   def menu(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, no: JInteger = DocItemFX.defaultNo, assertExists: Boolean = true) =
-    doto(menuDao.getMenu(docId, docVersionNo, no)) { menu =>
+    menuDao.getMenu(docId, docVersionNo, no) |>> { menu =>
       if (assertExists) {
-        menu must not be (null)
-        menu must have (
-          'docId (docId),
-          'docVersionNo (docVersionNo),
-          'no (no)
-        )
+        assertNotNull("menu exists", menu)
+        assertEquals("docId", docId, menu.getDocId)
+        assertEquals("getDocVersionNo", docVersionNo, menu.getDocVersionNo)
+        assertEquals("no", docVersionNo, menu.getNo)
       }
     }
 
 
   def menus(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, assertNotEmpty: Boolean = true) =
-    doto(menuDao.getMenus(docId, docVersionNo)) { menus =>
+    menuDao.getMenus(docId, docVersionNo) |>> { menus =>
       if (assertNotEmpty) {
-        menus must not be ('empty)
+        assertTrue("menus exist", menus.nonEmpty)
         menus foreach { menu =>
-          menu must have (
-            'docId (docId),
-            'docVersionNo (docVersionNo)
-          )
+          assertEquals("docId", docId, menu.getDocId)
+          assertEquals("getDocVersionNo", docVersionNo, menu.getDocVersionNo)
         }
       }
     }
@@ -65,7 +62,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
 
   test("get all [4] menus") {
     val menus = defaultMenus()
-    menus must have size (menuNos.size)
+    assertEquals("menus count", 4, menuNos.size)
 
     for (menu <- menus) {
       expect(menu.getNo.intValue, "Items count in a menu") {
@@ -78,12 +75,12 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
     defaultMenu()
   }
 
-  test("get missing menu") {
-    menu(no = DocItemFX.missingNo, assertExists = false) must be ('null)
+  test("get non-existing menu") {
+    menu(no = DocItemFX.missingNo, assertExists = false) |> assertNull //("menu does not exist", _)
   }
 
   test("get missing menus") {
-    menus(docId = DocFX.missingId, assertNotEmpty = false) must be ('empty)
+    menus(docId = DocFX.missingId, assertNotEmpty = false) |> { menus => assertTrue("menus do not exist", menus.isEmpty) }
   }
 
   test("save new menu") {
@@ -101,7 +98,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
 
     menuDao.saveMenu(menu)
 
-    defaultMenus() must have size (menuNos.size + 1)
+    defaultMenus() |> { menus => assertEquals("menus count", menuNos.size + 1, menus.size) }
 
     val menuHistory = new MenuHistory(menu, admin)
     menuDao.saveMenuHistory(menuHistory)
@@ -112,7 +109,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
       menuDao.deleteMenu(menu)
     }
 
-    menu(assertExists = false) must be (null)
+    menu(assertExists = false) |> assertNull
   }
 
 
@@ -120,7 +117,7 @@ class MenuDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wit
     menuDao.deleteMenus(DocFX.defaultId, VersionFX.defaultNo)
 
     menus(assertNotEmpty = false) |> { menus =>
-      menus must be ('empty)
+      assertTrue("menus do not exist",  menus.isEmpty)
     }
   }
 }

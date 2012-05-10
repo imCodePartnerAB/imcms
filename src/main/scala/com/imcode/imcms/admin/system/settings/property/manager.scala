@@ -63,7 +63,7 @@ class PropertyManagerManager(app: ImcmsApplication) {
   def reload() {
     import ui.dataUI._
 
-    doall(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly false}
+    doto(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly false}
     Imcms.getServices.getSystemData |> { d =>
       txtStartPageNumber.value = d.getStartDocument.toString
       txaSystemMessage.value = d.getSystemMessage
@@ -72,9 +72,9 @@ class PropertyManagerManager(app: ImcmsApplication) {
       serverMasterUI.txtName.value = d.getServerMaster
       serverMasterUI.txtEmail.value = d.getServerMasterAddress
     }
-    doall(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly true}
+    doto(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly true}
 
-    doall(ui.miEdit) { _ setEnabled canManage }
+    doto(ui.miEdit) { _ setEnabled canManage }
   }
 } // class PropertyManager
 

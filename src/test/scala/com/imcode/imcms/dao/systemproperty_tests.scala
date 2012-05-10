@@ -30,7 +30,7 @@ class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAft
     testDB.runScripts("src/test/resources/sql/system_property_dao.sql")
   }
 
-  def getExistingProperty(name: String) = doto(systemDao.getProperty(name)) { property =>
+  def getExistingProperty(name: String) = systemDao.getProperty(name) |>> { property =>
     property must not be (null)
   }
 

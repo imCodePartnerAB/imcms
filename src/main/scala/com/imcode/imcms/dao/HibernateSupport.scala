@@ -17,9 +17,9 @@ trait HibernateSupport {
 
     type NamedParam = (String, Any)
 
-    def withSession[A](f: Session => A) =  f(sessionFactory.getCurrentSession)
-
     def withOpenSession[A](f: Session => A) =  f(sessionFactory.openSession())
+
+    def withCurrentSession[A](f: Session => A) =  f(sessionFactory.getCurrentSession)
 //
 //    def withTransaction[A](f: Transaction => A): A = withSession { session =>
 //      val transaction = session.beginTransaction()
@@ -35,7 +35,7 @@ trait HibernateSupport {
 //    }
 
 
-    def flush() = withSession { _.flush() }
+    def flush() = withCurrentSession { _.flush() }
 
 
     private def setParams[Q <: Query](ps: Any*)(query: Q) = query |>> { _ =>
@@ -47,23 +47,23 @@ trait HibernateSupport {
     }
 
 
-    def runSqlQuery[A](queryString: String, ps: Any*)(f: SQLQuery => A) = withSession {
+    def runSqlQuery[A](queryString: String, ps: Any*)(f: SQLQuery => A) = withCurrentSession {
       _.createSQLQuery(queryString) |> setParams(ps: _*) |> f
     }
 
-    def runQuery[A](queryString: String, ps: Any*)(f: Query => A) = withSession {
+    def runQuery[A](queryString: String, ps: Any*)(f: Query => A) = withCurrentSession {
       _.createQuery(queryString) |> setParams(ps: _*) |> f
     }
 
-    def runQueryWithNamedParams[A](queryString: String, nameParam: NamedParam, namedParams: NamedParam*)(f: Query => A) = withSession {
+    def runQueryWithNamedParams[A](queryString: String, nameParam: NamedParam, namedParams: NamedParam*)(f: Query => A) = withCurrentSession {
       _.createQuery(queryString) |> setNamedParams(nameParam, namedParams: _*) |> f
     }
 
-    def runNamedQuery[A](queryName: String, ps: Any*)(f: Query => A) = withSession {
+    def runNamedQuery[A](queryName: String, ps: Any*)(f: Query => A) = withCurrentSession {
       _.getNamedQuery(queryName) |> setParams(ps: _*) |> f
     }
 
-    def runNamedQueryWithNamedParams[A](queryName: String, namedParam: NamedParam, namedParams: NamedParam*)(f: Query => A) = withSession {
+    def runNamedQueryWithNamedParams[A](queryName: String, namedParam: NamedParam, namedParams: NamedParam*)(f: Query => A) = withCurrentSession {
       _.getNamedQuery(queryName) |> setNamedParams(namedParam, namedParams: _*) |> f
     }
 
@@ -78,7 +78,7 @@ trait HibernateSupport {
       runNamedQueryWithNamedParams(queryName, namedParam, namedParams: _*)(_.uniqueResult().asInstanceOf[A])
 
 
-    def listAll[A <: AnyRef : ClassManifest]() = withSession {
+    def listAll[A <: AnyRef : ClassManifest]() = withCurrentSession {
       _.createCriteria(classManifest[A].erasure).list().asInstanceOf[JList[A]]
     }
 
@@ -113,23 +113,23 @@ trait HibernateSupport {
       runNamedQueryWithNamedParams(queryString, namedParam, namedParams: _*)(_.executeUpdate())
 
 
-    def get[A: ClassManifest](id: java.io.Serializable): A = withSession {
+    def get[A: ClassManifest](id: java.io.Serializable): A = withCurrentSession {
       _.get(classManifest[A].erasure, id).asInstanceOf[A]
     }
 
-    def save[A <: AnyRef](obj: A): A = withSession { session =>
+    def save[A <: AnyRef](obj: A): A = withCurrentSession { session =>
       session.save(obj)
       obj
     }
 
-    def saveOrUpdate[A <: AnyRef](obj: A): A = withSession { session =>
+    def saveOrUpdate[A <: AnyRef](obj: A): A = withCurrentSession { session =>
       session.saveOrUpdate(obj)
       obj
     }
 
-    def delete[A <: AnyRef](obj: A): Unit = withSession { _.delete(obj) }
+    def delete[A <: AnyRef](obj: A): Unit = withCurrentSession { _.delete(obj) }
 
-    def merge[A <: AnyRef](obj: A): A = withSession { _.merge(obj).asInstanceOf[A] }
+    def merge[A <: AnyRef](obj: A): A = withCurrentSession { _.merge(obj).asInstanceOf[A] }
   }
 }
 

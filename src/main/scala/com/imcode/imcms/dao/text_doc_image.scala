@@ -73,7 +73,7 @@ class ImageDao extends HibernateSupport {
       """select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no
          and i.language.id = :languageId AND i.contentLoopNo = :contentLoopNo AND i.contentNo = :contentNo"""
 
-    hibernate.withSession { session =>
+    hibernate.withCurrentSession { session =>
       session.createQuery(queryStr) |> { query =>
         query.setParameter("docId", docId)
           .setParameter("docVersionNo", docVersionNo)

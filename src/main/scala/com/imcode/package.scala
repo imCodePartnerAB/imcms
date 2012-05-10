@@ -26,7 +26,7 @@ package object imcode {
     sys.error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
   }
 
-  // scala bug: 'import Option.{apply => opt}' - 'opt' can not be used as function
+  // scala bug: 'import Option.{apply => opt}' - 'opt' can not be treated as a function
   // scala> import Option.apply
   // import Option.apply
   //
@@ -49,7 +49,7 @@ package object imcode {
 
   def when[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
 
-  def doall[A](exp: A, exps: A*)(f: A => Any) {
+  def doto[A](exp: A, exps: A*)(f: A => Any) {
     exp +: exps foreach f
   }
 

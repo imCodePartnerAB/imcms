@@ -387,7 +387,7 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
   addComponents(this, lstChosen, lytButtons, lstAvailable)
   setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
 
-  doall(lstAvailable, lstChosen) { l =>
+  doto(lstAvailable, lstChosen) { l =>
     l setMultiSelect true
     l setImmediate true
     l setColumns 10
@@ -432,8 +432,8 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
     listSelect.setItemCaption(itemId, caption)    
   }                                                
 
-  def setListRows(count: Int) = doall(lstAvailable, lstChosen) { _ setRows count }
-  def setListColumns(count: Int) = doall(lstAvailable, lstChosen) { _ setColumns count }
+  def setListRows(count: Int) = doto(lstAvailable, lstChosen) { _ setRows count }
+  def setListColumns(count: Int) = doto(lstAvailable, lstChosen) { _ setColumns count }
 }
 
 /** Vertical layout containing tab sheet. */

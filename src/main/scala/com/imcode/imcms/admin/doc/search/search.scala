@@ -530,7 +530,7 @@ class DocBasicSearchForm {
     ui.chkText.checked = state.text.isDefined
     ui.chkType.checked = state.docType.isDefined
     ui.chkAdvanced.checked = state.advanced.isDefined
-    doall(ui.chkRange, ui.chkText, ui.chkType, ui.chkAdvanced)(_ fireValueChange true)
+    doto(ui.chkRange, ui.chkText, ui.chkType, ui.chkAdvanced)(_ fireValueChange true)
 
     ui.txtText.value = state.text.getOrElse("")
 
@@ -619,7 +619,7 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
     val btnSaveAs = new Button("doc.search.basic.frm.fld.btn_advanced_save_as".i) with SmallStyle with Disabled
     val btnDelete = new Button("doc.search.basic.frm.fld.btn_advanced_delete".i) with SmallStyle with Disabled
 
-    doall(cbTypes, btnCustomize, btnSaveAs, btnDelete) { component =>
+    doto(cbTypes, btnCustomize, btnSaveAs, btnDelete) { component =>
       addComponent(component)
       setComponentAlignment(component, Alignment.MIDDLE_LEFT)
     }
@@ -657,14 +657,14 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
   ui.chkStatus.addValueChangeHandler { toggleStatus() }
 
   def reset() {
-    doall(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers, ui.chkStatus)(_.uncheck)
-    doall(ui.lytStatus.chkNew, ui.lytStatus.chkPublished, ui.lytStatus.chkUnpublished, ui.lytStatus.chkApproved, ui.lytStatus.chkDisapproved, ui.lytStatus.chkExpired)(_.uncheck)
+    doto(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers, ui.chkStatus)(_.uncheck)
+    doto(ui.lytStatus.chkNew, ui.lytStatus.chkPublished, ui.lytStatus.chkUnpublished, ui.lytStatus.chkApproved, ui.lytStatus.chkDisapproved, ui.lytStatus.chkExpired)(_.uncheck)
 
-    doall(ui.lytDates.drCreated, ui.lytDates.drModified, ui.lytDates.drPublished, ui.lytDates.drExpired) { dr =>
+    doto(ui.lytDates.drCreated, ui.lytDates.drModified, ui.lytDates.drPublished, ui.lytDates.drExpired) { dr =>
       dr.cbRangeType.value = DocRangeType.Undefined
     }
 
-    doall(ui.lytMaintainers.ulCreators, ui.lytMaintainers.ulPublishers) { ul =>
+    doto(ui.lytMaintainers.ulCreators, ui.lytMaintainers.ulPublishers) { ul =>
       ul.chkEnabled.check
       ul.chkEnabled.fireValueChange(true)
       ul.lstUsers.removeAllItems
@@ -773,7 +773,7 @@ trait UserListUISetup { this: UserListUI =>
   val searchDialogCaption: String
 
   chkEnabled.addValueChangeHandler {
-    doall(lstUsers, lytButtons)(_ setEnabled chkEnabled.booleanValue)
+    doto(lstUsers, lytButtons)(_ setEnabled chkEnabled.booleanValue)
   }
 
   btnAdd.addClickHandler {
@@ -838,7 +838,7 @@ trait DocDateRangeUISetup { this: DocDateRangeUI =>
   import DocRangeType._
 
   cbRangeType.addValueChangeHandler {
-    doall(dtFrom, dtTo) { _ setEnabled false }
+    doto(dtFrom, dtTo) { _ setEnabled false }
     val now = new Date
     val calendar = Calendar.getInstance
 
@@ -848,7 +848,7 @@ trait DocDateRangeUISetup { this: DocDateRangeUI =>
         dtTo.setValue(null)
 
       case Custom =>
-        doall(dtFrom, dtTo) { dt => dt setEnabled true; dt.value = now }
+        doto(dtFrom, dtTo) { dt => dt setEnabled true; dt.value = now }
 
       case Day =>
         calendar.add(Calendar.DAY_OF_MONTH, -1)

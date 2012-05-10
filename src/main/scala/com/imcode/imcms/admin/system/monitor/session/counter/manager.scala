@@ -85,7 +85,7 @@ class SessionCounterManager(app: ImcmsApplication) {
       ui.dataUI.calStart.setReadOnly(true)
     }
 
-    doall(ui.miEdit, ui.miReset) { _ setEnabled canManage }
+    doto(ui.miEdit, ui.miReset) { _ setEnabled canManage }
   }
 } // class SessionCounterManager
 

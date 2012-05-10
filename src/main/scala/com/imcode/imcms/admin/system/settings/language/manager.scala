@@ -131,7 +131,7 @@ class LanguageManager(app: ImcmsApplication) {
 
     canManage |> { value =>
       ui.tblLanguages.setSelectable(value)
-      doall(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }
+      doto(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }
     }
 
     handleSelection()
@@ -139,7 +139,7 @@ class LanguageManager(app: ImcmsApplication) {
 
   private def handleSelection() {
     (canManage && ui.tblLanguages.isSelected) |> { enabled =>
-      doall(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+      doto(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 } // class LanguageManager

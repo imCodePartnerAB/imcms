@@ -102,7 +102,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
 
     canManage |> { value =>
       ui.tblGroups.setSelectable(value)
-      doall[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }   //ui.mb,
+      doto[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }   //ui.mb,
     }
 
     handleSelection()
@@ -110,7 +110,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
 
   private def handleSelection() {
     (canManage && ui.tblGroups.isSelected) |> { enabled =>
-      doall(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+      doto(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 }

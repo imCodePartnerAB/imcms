@@ -119,7 +119,7 @@ class TemplateManager(app: ImcmsApplication) {
     canManage |> { value =>
       import ui._
       tblTemplates.setSelectable(value)
-      doall[{def setEnabled(e: Boolean)}](miUpload, miDownload, miRename, miDelete, miEditContent) { _ setEnabled value }   //ui.mb,
+      doto[{def setEnabled(e: Boolean)}](miUpload, miDownload, miRename, miDelete, miEditContent) { _ setEnabled value }   //ui.mb,
     }
 
     handleSelection()
@@ -128,7 +128,7 @@ class TemplateManager(app: ImcmsApplication) {
   private def handleSelection() {
     import ui._
     (canManage && tblTemplates.isSelected) |> { enabled =>
-      doall(miDownload, miRename, miEditContent, miDelete) { _ setEnabled enabled }
+      doto(miDownload, miRename, miEditContent, miDelete) { _ setEnabled enabled }
     }
 
     miDocuments.setEnabled(Option(tblTemplates.value) map { name =>

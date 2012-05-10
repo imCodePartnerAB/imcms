@@ -188,7 +188,7 @@ class MetaDao extends HibernateSupport {
   def getDocIdByAliasOpt(alias: String) = getAliasProperty(alias) |> opt map(_.getDocId.toInt)
 
 
-  def deleteDocument(docId: JInteger): Unit = hibernate.withSession { session =>
+  def deleteDocument(docId: JInteger): Unit = hibernate.withCurrentSession { session =>
     List(
       "DELETE FROM document_categories WHERE meta_id = ?",
       "DELETE FROM imcms_text_doc_menu_items WHERE to_doc_id = ?",

@@ -108,7 +108,7 @@ class RoleManager(app: ImcmsApplication) {
 
     canManage |> { value =>
       ui.tblRoles.setSelectable(value)
-      doall(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }
+      doto(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }
     }
 
     handleSelection()
@@ -116,7 +116,7 @@ class RoleManager(app: ImcmsApplication) {
 
   private def handleSelection() {
     (canManage && ui.tblRoles.isSelected) |> { enabled =>
-      doall(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+      doto(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 } // class RoleManager

@@ -173,7 +173,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       }
     } // val newDocCommandListener
 
-    doall(ui.miNewTextDoc, ui.miNewFileDoc, ui.miNewURLDoc, ui.miNewHTMLDoc) {
+    doto(ui.miNewTextDoc, ui.miNewFileDoc, ui.miNewURLDoc, ui.miNewHTMLDoc) {
       _ setCommandListener newDocCommandListener
     }
 
