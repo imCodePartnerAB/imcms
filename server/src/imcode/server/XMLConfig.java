@@ -1,6 +1,8 @@
-package imcode.server.user.ldap;
+package imcode.server;
 
 import com.google.common.collect.ImmutableList;
+import imcode.server.user.ldap.MappedRole;
+import imcode.server.user.ldap.MappedRoles;
 import imcode.server.user.ldap.jaxb.LdapElement;
 import imcode.server.user.ldap.jaxb.RoleElement;
 import imcode.server.user.ldap.jaxb.MappedRolesElement;
@@ -11,8 +13,7 @@ import org.apache.log4j.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 
 public final class XMLConfig {
 
@@ -33,9 +34,13 @@ public final class XMLConfig {
         try {
             JAXBContext context = JAXBContext.newInstance(ServerElement.class);
             Unmarshaller um = context.createUnmarshaller();
-            serverElement = (ServerElement)um.unmarshal(new FileReader(configFilePath));
+            serverElement = (ServerElement)um.unmarshal(new InputStreamReader(new FileInputStream(configFilePath), "UTF-8"));
         } catch (FileNotFoundException e) {
             String errorMsg = String.format("Configuration file %s can not be found.", configFilePath);
+            logger.fatal(errorMsg, e);
+            throw new RuntimeException(errorMsg, e);
+        } catch (IOException e) {
+            String errorMsg = String.format("Failed to read configuration file %s.", configFilePath);
             logger.fatal(errorMsg, e);
             throw new RuntimeException(errorMsg, e);
         } catch (JAXBException e) {

@@ -15,7 +15,6 @@ import imcode.server.user.LdapUserAndRoleRegistry;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserAndRoleRegistry;
 import imcode.server.user.UserDomainObject;
-import imcode.server.user.ldap.XMLConfig;
 import imcode.util.CachingFileLoader;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
