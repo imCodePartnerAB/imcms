@@ -124,6 +124,12 @@
         <!-- End of logging configuration -->
 
         <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
             <version>1.1</version>
@@ -312,12 +318,6 @@
         </dependency>
 
         <dependency>
-            <groupId>gnu-activation</groupId>
-            <artifactId>gnu-activation</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>gnu-crypto-javax-security</groupId>
             <artifactId>gnu-crypto-javax-security</artifactId>
             <version>2.0.1</version>
@@ -352,12 +352,6 @@
             <groupId>com.imcode.util</groupId>
             <artifactId>imcode-util</artifactId>
             <version>2.0.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>activation</artifactId>
-                    <groupId>javax.activation</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- End of imCode Internal Repository dependencies -->
 

@@ -71,6 +71,14 @@ public class ChainedLdapUserAndRoleRegistry implements Authenticator, UserAndRol
 
     
     public String[] getAllRoleNames() {
+        for (UserAndRoleRegistry userAndRoleRegistry : userAndRoleRegistries) {
+            try {
+                return userAndRoleRegistry.getAllRoleNames();
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+
         return DEFAULT_ROLES;
     }
 }
