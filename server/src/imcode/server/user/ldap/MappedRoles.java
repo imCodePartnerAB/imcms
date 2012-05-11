@@ -10,31 +10,35 @@ import java.util.Set;
 
 public class MappedRoles {
 
-    private final List<MappedRole> mappedRolesList;
+    private final Set<String> rolesNames;
     private final Set<String> attributesNames;
-    private final Table<String, String, String> mappedRolesTable;
+    private final Table<String, String, String> rolesNamesTable;
 
     public MappedRoles(List<MappedRole> mappedRolesList) {
-        ImmutableTable.Builder<String, String, String> mappedRolesTableBuilder = new ImmutableTable.Builder<String, String, String>();
+        ImmutableTable.Builder<String, String, String> rolesNamesTableBuilder = new ImmutableTable.Builder<String, String, String>();
         ImmutableSet.Builder<String> attributesNamesBuilder = new ImmutableSet.Builder<String>();
+        ImmutableSet.Builder<String> rolesNamesBuilder = new ImmutableSet.Builder<String>();
 
-        for (MappedRole mappedRole: mappedRolesList) {
-            mappedRolesTableBuilder.put(
-                    mappedRole.getAttributeName().toLowerCase(),
-                    mappedRole.getAttributeValue().toLowerCase(),
-                    mappedRole.getRoleName().toLowerCase());
+        for (MappedRole mr: mappedRolesList) {
+            String name = mr.getRoleName();
 
-            attributesNamesBuilder.add(mappedRole.getAttributeName());
+            rolesNamesBuilder.add(name);
+            attributesNamesBuilder.add(mr.getAttributeName());
+
+            rolesNamesTableBuilder.put(
+                    mr.getAttributeName(),
+                    mr.getAttributeValue(),
+                    name);
         }
 
-        this.mappedRolesTable = mappedRolesTableBuilder.build();
+        this.rolesNamesTable = rolesNamesTableBuilder.build();
         this.attributesNames = attributesNamesBuilder.build();
-        this.mappedRolesList = mappedRolesList;
+        this.rolesNames = rolesNamesBuilder.build();
     }
 
 
     public String getRoleName(String attributeName, String attributeValue) {
-        return mappedRolesTable.get(attributeName.toLowerCase(), attributeValue.toLowerCase());
+        return rolesNamesTable.get(attributeName, attributeValue);
     }
 
     public Set<String> getRolesNames(List<P.P2<String, String>> keys) {
@@ -51,5 +55,9 @@ public class MappedRoles {
 
     public Set<String> getAttributesNames() {
         return attributesNames;
+    }
+
+    public Set<String> getRolesNames() {
+        return rolesNames;
     }
 }
