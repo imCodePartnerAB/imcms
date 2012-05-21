@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.search
 
+import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.imcode.imcms.vaadin._
 
@@ -89,7 +90,7 @@ class DocSearch(val docsContainer: DocsContainer) {
    *
    * @return query string.
    */
-  def createQuery(): Throwable Either Option[String] = EX.allCatch.either {
+  def createQuery(): Throwable Either Option[String] = Ex.allCatch.either {
     val basicFormUI = basicSearchForm.ui
     val advancedFormUI = advancedSearchForm.ui
 
@@ -98,14 +99,14 @@ class DocSearch(val docsContainer: DocsContainer) {
       else {
         val start = condOpt(basicFormUI.lytRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
-            case IntNumber(start) => start
+            case IntNum(start) => start
             case _ => sys.error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
           }
         }
 
         val end = condOpt(basicFormUI.lytRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
-            case IntNumber(end) => end
+            case IntNum(end) => end
             case _ => sys.error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
           }
         }

@@ -6,7 +6,7 @@ import scala.collection.JavaConversions._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test._
-import imcms.test.Project.{testDB}
+import imcms.test.Test.{db}
 import imcms.test.fixtures.UserFX.{admin}
 import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
@@ -25,14 +25,14 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
 
   var versionDao: DocumentVersionDao = _
 
-  override def beforeAll() = testDB.recreate()
+  override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Project.spring.createCtx(classOf[DocVersionDaoSuiteConfig])
+    val ctx = Test.spring.createCtx(classOf[DocVersionDaoSuiteConfig])
 
     versionDao = ctx.getBean(classOf[DocumentVersionDao])
 
-    testDB.runScripts("src/test/resources/sql/doc_version.sql")
+    db.runScripts("src/test/resources/sql/doc_version.sql")
   }
 
   def createVersion(docId: Int = 1001, userId: Int = admin.getId) =
@@ -66,17 +66,17 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
 
 
   "DocVersionDao.getLatestVersion" should {
-    "return version with highest 'no' if it exists" in {
+    "return version with highest 'no' for existing document" in {
       val maxVersion = versionDao.getAllVersions(1001).max
       val latestVersion = versionDao.getLatestVersion(1001)
 
       assertNotNull(maxVersion)
       assertNotNull(latestVersion)
 
-      assert(latestVersion === maxVersion)
+      assertEquals(latestVersion, maxVersion)
     }
 
-    "return [null] if there is *no* versions for provided docId" in {
+    "return [null] if there is *no* version(s) for provided docId" in {
       assert(versionDao.getLatestVersion(1002) == null)
     }
   }
@@ -160,9 +160,9 @@ class DocVersionDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Project.hibernate.configurators.BasicWithSql,
-      Project.hibernate.configurators.addAnnotatedClasses(
+      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Test.hibernate.configurators.BasicWithSql,
+      Test.hibernate.configurators.addAnnotatedClasses(
         classOf[Meta],
         classOf[I18nMeta],
         classOf[DocumentVersion],
@@ -174,6 +174,6 @@ class DocVersionDaoSuiteConfig {
         classOf[UrlReference],
         classOf[HtmlReference]
       ),
-      Project.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
+      Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
     ))
 }

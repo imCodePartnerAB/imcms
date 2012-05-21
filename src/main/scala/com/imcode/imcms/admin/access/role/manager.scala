@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.access.role
 
+import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
@@ -31,7 +32,7 @@ class RoleManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected role?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(roleMapper.getRole(id) |> opt foreach roleMapper.deleteRole) match {
+              Ex.allCatch.either(roleMapper.getRole(id) |> opt foreach roleMapper.deleteRole) match {
                 case Right(_) =>
                   app.showInfoNotification("Role has been deleted")
                 case Left(ex) =>
@@ -79,7 +80,7 @@ class RoleManager(app: ImcmsApplication) {
             for ((permission, chkBox) <- permsToChkBoxes if chkBox.booleanValue) voc.addPermission(permission)
 
             app.privileged(permission) {
-              EX.allCatch.either(roleMapper saveRole voc) match {
+              Ex.allCatch.either(roleMapper saveRole voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
                   app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)

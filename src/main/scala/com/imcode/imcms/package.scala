@@ -1,5 +1,6 @@
 package com.imcode
 
+import scala.util.control.{Exception => Ex}
 import java.text.MessageFormat
 import imcode.server.{ImcmsServices, Imcms}
 import org.apache.log4j.Logger
@@ -38,7 +39,7 @@ package object imcms {
           }
       }
 
-      (locale, EX.allCatch.opt(bundle.getString(key)) getOrElse "<#%s#>".format(key.split('.').last))
+      (locale, Ex.allCatch.opt(bundle.getString(key)) getOrElse "<#%s#>".format(key.split('.').last))
     }
 
 

@@ -2,39 +2,39 @@ package com.imcode
 package imcms.test
 
 import java.io.{File}
-import imcode.server.Imcms
 import org.apache.commons.dbcp.BasicDataSource
-import org.hibernate.SessionFactory
 import org.hibernate.cfg.{Configuration}
-import java.util.concurrent.atomic.AtomicReference
 import org.springframework.core.env.Environment
 import org.springframework.context.annotation._
 import java.lang.{Class, String}
 import org.springframework.context.ApplicationContext
 import com.imcode.imcms.test.config.{ProjectConfig}
-import org.springframework.context.support.{FileSystemXmlApplicationContext, ClassPathXmlApplicationContext}
+import org.springframework.context.support.{FileSystemXmlApplicationContext}
+import org.apache.commons.io.FileUtils
+import org.apache.solr.client.solrj.SolrServer
+import imcode.server.{Config, Imcms}
+import imcode.server.document.index.{IndexService, SolrServerShutdown}
 
-object Project extends Project
+object Test extends Test
 
-class Project extends ProjectTestDB {
+class Test extends TestDb with TestSolr {
 
   val basedir: String = ClassLoader.getSystemResource("test-log4j.xml") match {
     case null => sys.error("Not configured")
     case url => new File(url.getFile).getParentFile.getParentFile.getParentFile.getCanonicalPath
   }
 
-  System.setProperty("com.imcode.imcms.project.basedir", basedir)
+  System.setProperty("com.imcode.imcms.test.basedir", basedir)
   System.setProperty("log4j.configuration", "test-log4j.xml")
-  System.setProperty("solr.solr.home", path("src/main/solr"))
+  //System.setProperty("solr.solr.home", path("src/main/solr"))
 
-  val env = spring.ctx.getBean(classOf[Environment])
+  val env: Environment = spring.ctx.getBean(classOf[Environment])
 
   object spring {
     val ctx = createCtx(classOf[ProjectConfig])
 
     def createCtx(annotatedClass: Class[_]) = new AnnotationConfigApplicationContext(annotatedClass)
   }
-
 
   object hibernate {
     type Configurator = Configuration => Configuration
@@ -63,27 +63,28 @@ class Project extends ProjectTestDB {
   }
 
 
+  object imcms {
+    def init(start: Boolean = false, prepareDbOnStart: Boolean = false) {
+      dir("src/test/resources") |> { path =>
+        Imcms.setPath(path, path)
+      }
+
+      Imcms.setSQLScriptsPath(path("src/main/web/WEB-INF/sql"))
+      Imcms.setApplicationContext(new FileSystemXmlApplicationContext("file:" + path("src/test/resources/test-applicationContext.xml")))
+      Imcms.setPrepareDatabaseOnStart(prepareDbOnStart)
+
+      if (start) Imcms.start
+    }
+  }
+
+
   def path(relativePath: String) = new File(basedir, relativePath).getCanonicalPath
 
   def file(relativePath: String) = new File(basedir, relativePath)
 
-  def fileFn(relativePath: String) = () => file(relativePath)
-
   def dir(relativePath: String) = new File(basedir, relativePath)
 
-  def dirFn(relativePath: String) = () => dir(relativePath)
-
-  def initImcms(start: Boolean = false, prepareDBOnStart: Boolean = false) {
-    dir("src/test/resources") |> { path =>
-      Imcms.setPath(path, path)
-    }
-
-    Imcms.setSQLScriptsPath(path("src/main/web/WEB-INF/sql"))
-    Imcms.setApplicationContext(new FileSystemXmlApplicationContext("file:" + path("src/test/resources/test-applicationContext.xml")))
-    Imcms.setPrepareDatabaseOnStart(prepareDBOnStart)
-
-    if (start) Imcms.start
-  }
+  def nop() {}
 }
 
 
@@ -96,18 +97,18 @@ object DataSourceAutocommit extends Enumeration {
 }
 
 
-trait ProjectTestDB { project: Project =>
+trait TestDb { test: Test =>
 
-  object testDB {
+  object db {
 
     import com.imcode.imcms.db.{DB, Schema}
 
     def createDataSource(urlType: DataSourceUrlType.Value = DataSourceUrlType.WithDBName,
                          autocommit: DataSourceAutocommit.Value = DataSourceAutocommit.No) =
 
-      project.spring.ctx.getBean(classOf[BasicDataSource]) |>> { ds =>
+      test.spring.ctx.getBean(classOf[BasicDataSource]) |>> { ds =>
 
-        ds.setUrl(project.env.getRequiredProperty(
+        ds.setUrl(test.env.getRequiredProperty(
           if (urlType == DataSourceUrlType.WithDBName) "JdbcUrl" else "JdbcUrlWithoutDBName"))
 
         ds.setDefaultAutoCommit(autocommit == DataSourceAutocommit.Yes)
@@ -115,7 +116,7 @@ trait ProjectTestDB { project: Project =>
 
 
     def recreate() {
-      project.env.getRequiredProperty("DBName") |> { dbName =>
+      test.env.getRequiredProperty("DBName") |> { dbName =>
         new DB(createDataSource(DataSourceUrlType.WithoutDBName)) |> { db =>
           db.template.update("DROP DATABASE IF EXISTS %s" format dbName)
           db.template.update("CREATE DATABASE %s" format dbName)
@@ -126,7 +127,7 @@ trait ProjectTestDB { project: Project =>
 
     def runScripts(script: String, scripts: String*) {
       new DB(createDataSource(autocommit=DataSourceAutocommit.Yes)) |> { db =>
-        db.runScripts(script +: scripts map project.path)
+        db.runScripts(script +: scripts map test.path)
       }
     }
 
@@ -134,54 +135,43 @@ trait ProjectTestDB { project: Project =>
     def prepare(recreateBeforePrepare: Boolean = false) {
       if (recreateBeforePrepare) recreate()
 
-      val scriptsDir = project.path("src/main/web/WEB-INF/sql")
-      val schema = Schema.load(project.file("src/main/resources/schema.xml")).changeScriptsDir(scriptsDir)
+      val scriptsDir = test.path("src/main/web/WEB-INF/sql")
+      val schema = Schema.load(test.file("src/main/resources/schema.xml")).changeScriptsDir(scriptsDir)
 
       new DB(createDataSource()).prepare(schema)
     }
-
-
-    def createHibernateSessionFactory(annotatedClasses: Class[_]*): SessionFactory =
-      createHibernateSessionFactory(annotatedClasses.toSeq)
-
-    def createHibernateSessionFactory(annotatedClasses: Seq[Class[_]], xmlFiles: String*) =
-      new Configuration |> { c =>
-        for ((name, value) <- hibernateProperties) c.setProperty(name, value)
-        annotatedClasses foreach { c addAnnotatedClass _}
-        xmlFiles foreach { c addFile _ }
-
-        //new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry()
-
-        c.buildSessionFactory
-      }
-
-
-    def hibernateProperties = Map()
   }
 }
 
-object FileWatcher {
 
-  case class State[T](lastAccessNano: Long, lastModified: Long, handlerResult: T)
+trait TestSolr { test: Test =>
 
-  def create[T](fileFn: () => File, poolIntervalNano: Long = 1000)(handler: File => T) = new Function0[T] {
-    val stateRef = new AtomicReference(Option.empty[State[T]])
+  object solr {
+    val homeTemplate: File = test.dir("src/main/web/WEB-INF/solr").ensuring(_.isDirectory, "SOLr home template exists.")
+    val home: File = test.dir("target/test/solr")
 
-    def apply() = synchronized {
-      val now = System.nanoTime
-      val state = stateRef.get match {
-        case Some(state @ State(lastAccessNano, lastModified, handlerResult))
-          if lastAccessNano + poolIntervalNano < now || fileFn().lastModified == lastModified =>
-            state.copy(lastAccessNano = now)
+    def recreateHome() {
+      if (home.exists()) {
+        FileUtils.deleteDirectory(home)
 
-        case _ => fileFn() |> { file =>
-          State(now, file.lastModified, handler(file))
-        }
+        if (home.exists()) sys.error("Unable to delete SOLr home directory.")
       }
 
-      stateRef.set(Some(state))
+      FileUtils.copyDirectory(homeTemplate, home)
+    }
 
-      state.handlerResult
+    def deleteCoreDataDir() {
+      new File(home, "imcms/data") |> { dir =>
+        if (dir.exists() && !dir.delete()) sys.error("Unable to delete SOLr data  %s.".format(dir))
+      }
+    }
+
+    def createEmbeddedServer(): SolrServer with SolrServerShutdown = {
+      val config = new Config() |>> { c =>
+        c.setSolrHome(home)
+      }
+
+      new IndexService(config).solrServer
     }
   }
 }

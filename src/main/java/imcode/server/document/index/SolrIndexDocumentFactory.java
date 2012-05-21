@@ -45,22 +45,19 @@ public class SolrIndexDocumentFactory {
     }
     
     /**
-     * 
+     * Creates SolrInputDocument from default document.
+     *
      * @return solr document to be added into index.
-     * // TODO: refactor and optimize
      */
+    // TODO: refactor
     public SolrInputDocument createIndexDocument(int documentId) {
-        DocumentVersionInfo versionInfo = documentMapper.getDocumentVersionInfo(documentId);
+        DocumentDomainObject document = documentMapper.getDefaultDocument(documentId);
 
-        if (versionInfo == null) {
+        if (document == null) {
             throw new RuntimeException(String.format("Unable to index document - document does not exists. Doc id: %s.", documentId));
         }
 
-        Integer defaultDocVersionNo = versionInfo.getDefaultVersion().getNo();
-        DocumentDomainObject document = documentMapper.getCustomDocument(documentId, defaultDocVersionNo);
-
-        MetaDao metaDao = imcmsServices.getComponent(MetaDao.class);
-        Collection<I18nMeta> i18nMetas = metaDao.getI18nMetas(documentId);
+        Collection<I18nMeta> i18nMetas = documentMapper.getI18nMetas(documentId);
 
         SolrInputDocument indexDocument = new SolrInputDocument();
 

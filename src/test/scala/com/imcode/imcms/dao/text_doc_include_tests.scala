@@ -6,11 +6,11 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll}
 import org.scalatest.matchers.MustMatchers
-import imcms.test.Project.{testDB}
+import imcms.test.Test.{db}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.test.Project
+import com.imcode.imcms.test.Test
 
 
 @RunWith(classOf[JUnitRunner])
@@ -18,14 +18,14 @@ class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll w
 
 	var metaDao: MetaDao = _
 
-  override def beforeAll() = testDB.recreate()
+  override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Project.spring.createCtx(classOf[IncludeDaoSpecConfig])
+    val ctx = Test.spring.createCtx(classOf[IncludeDaoSpecConfig])
 
     metaDao = ctx.getBean(classOf[MetaDao])
 
-    testDB.runScripts("src/test/resources/sql/include_dao.sql")
+    db.runScripts("src/test/resources/sql/include_dao.sql")
   }
 
 
@@ -64,8 +64,8 @@ class IncludeDaoSpecConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Project.hibernate.configurators.BasicWithSql,
-      Project.hibernate.configurators.addAnnotatedClasses(classOf[Include])
+      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Test.hibernate.configurators.BasicWithSql,
+      Test.hibernate.configurators.addAnnotatedClasses(classOf[Include])
     ))
 }

@@ -2,6 +2,7 @@ package com.imcode
 package imcms.admin.doc.template
 package group
 
+import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.user._
@@ -35,7 +36,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected template group?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(templateMapper deleteTemplateGroup id.intValue) match {
+              Ex.allCatch.either(templateMapper deleteTemplateGroup id.intValue) match {
                 case Right(_) =>
                   app.showInfoNotification("Template group has been deleted")
                 case Left(ex) =>

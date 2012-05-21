@@ -1,5 +1,7 @@
 package com
 
+import scala.util.control.{Exception => Ex}
+
 package object imcode {
 
   type JBoolean = java.lang.Boolean
@@ -26,25 +28,26 @@ package object imcode {
     sys.error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
   }
 
-  // scala bug: 'import Option.{apply => opt}' - 'opt' can not be treated as a function
+
+  // scala bug: 'import Option.{apply => opt}' - 'opt' can not be used as a function
   // scala> import Option.apply
   // import Option.apply
   //
   // scala> import Option.{apply => opt}
   // import Option.{apply=>opt}
   //
-  // scala> val v1 = apply('test)
-  // v1: Option[Symbol] = Some('test)
+  // scala> "foo" |> Option.apply
+  // res0: Option[java.lang.String] = Some(foo)
   //
-  // scala> val f1 = apply _
-  // f1: Nothing => Option[Nothing] = <function1>
+  // scala> "foo" |> apply
+  // res1: Option[java.lang.String] = Some(foo)
   //
-  // scala> val v2 = opt('test)
-  // v2: Option[Symbol] = Some('test)
+  // scala> opt("foo")
+  // res2: Option[java.lang.String] = Some(foo)
   //
-  // scala> val f2 = opt _
-  // <console>:9: error: value opt is not a member of object Option
-  //        val f2 = opt _
+  // scala> "foo" |> opt
+  // <console>:12: error: value opt is not a member of object Option
+  //               "foo" |> opt
   def opt[A](value: A) = Option(value)
 
   def when[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
@@ -53,14 +56,12 @@ package object imcode {
     exp +: exps foreach f
   }
 
+
   // move to collections
   def unfold[A, B](init: A)(f: A => Option[(B, A)]): List[B] = f(init) match {
     case None => Nil
     case Some((r, next)) => r :: unfold(next)(f)
   }
-
-  // remove
-  val EX = scala.util.control.Exception
 
 
   // scala bug: package methods overloading does not work
@@ -71,24 +72,27 @@ package object imcode {
     def OptRef[A](value: A) = new AtomicReference(Option(value))
     def Ref[A <: AnyRef] = new AtomicReference[A]
     def Ref[A <: AnyRef](value: A) = new AtomicReference(value)
+
+    def swap[A](ref: AtomicReference[A])(f: A => A): A = ref.get |> f |>> ref.set
+    def swap[A](f: A => A)(ref: AtomicReference[A]): A = swap(ref)(f)
   }
 
 
   /** extractor */
-  object IntNumber {
-    def unapply(s: String): Option[Int] = EX.catching(classOf[NumberFormatException]) opt { s.toInt }
+  object IntNum {
+    def unapply(s: String): Option[Int] = Ex.catching(classOf[NumberFormatException]).opt(s.toInt)
   }
 
 
   /** extractor */
   object PosInt {
-    def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(_ >= 0)
+    def unapply(s: String): Option[Int] = IntNum.unapply(s).filter(_ >= 0)
   }
 
 
   /** extractor */
   object NegInt {
-    def unapply(s: String): Option[Int] = IntNumber.unapply(s).filter(_ < 0)
+    def unapply(s: String): Option[Int] = IntNum.unapply(s).filter(_ < 0)
   }
 
 
@@ -103,36 +107,34 @@ package object imcode {
 
 
 
-  trait CloseableResource[R] {
+  trait ManagedResource[R] {
     def close(resource: R)
   }
 
-  object CloseableResource {
-    implicit def stCloseableResource[R <: { def close() }](r: R) = new CloseableResource[R] {
+  object ManagedResource {
+    implicit def stManagedResource[R <: { def close() }](r: R) = new ManagedResource[R] {
       def close(resource: R) { resource.close() }
-      override def toString = "Resource[_ <: def close()]"
+      override def toString = "ManagedResource[_ <: def close()]"
     }
 
-    implicit def ioCloseableResource[R <: java.io.Closeable] = new CloseableResource[R] {
+    implicit def ioManagedResource[R <: java.io.Closeable] = new ManagedResource[R] {
       def close(resource: R) { resource.close() }
-      override def toString = "Resource[_ <: java.io.Closeable]"
+      override def toString = "ManagedResource[_ <: java.io.Closeable]"
     }
   }
 
 
-  def using[R: CloseableResource, A](resource: R)(f: R => A): A =
+  def using[R: ManagedResource, A](resource: R)(f: R => A): A =
     try {
       f(resource)
     } finally {
       if (resource != null) {
-        EX.allCatch(implicitly[CloseableResource[R]].close(resource))
+        Ex.allCatch(implicitly[ManagedResource[R]].close(resource))
       }
     }
 
   /** Creates zero arity fn from by-name parameter. */
   //def toF[A](byName: => A): () => A = byName _
-
-  //def ?[A <: AnyRef](nullable: A) = Option(nullable)
 
 //  def bmap[A](test: => Boolean)(byName: => A): List[A] = {
 //    import collection.mutable.ListBuffer
@@ -162,4 +164,22 @@ package object imcode {
 
     camelCaseToUnderscore(s.toList) mkString
   }
+
+//class Default[T](init: => T) { def value = init }
+//
+//object Default {
+//  final class Ops[A >: Null](value: A)(implicit default: Default[A]) {
+//    def orDefault = if (value != null) value else default.value
+//  }
+//
+//  implicit def mkOps[A >: Null : Default](value: A) = new Ops(value)
+//
+//  implicit object defaultString extends Default("")
+//  implicit object defaultJInteger extends Default[java.lang.Integer](0)
+//
+//  implicit def defaultList[A] = new Default[List[A]](List.empty)
+//  implicit def defaultMap[A, B] = new Default[Map[A, B]](Map.empty)
+//  implicit def defaultArray[A : ClassManifest] = new Default[Array[A]](Array())
+//}
+
 }

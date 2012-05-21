@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import imcms.test.Project.{testDB}
+import imcms.test.Test.{db}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll}
@@ -9,7 +9,7 @@ import org.scalatest.matchers.{MustMatchers}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.test.Project
+import com.imcode.imcms.test.Test
 import com.imcode.imcms.api.{SystemProperty}
 
 @RunWith(classOf[JUnitRunner])
@@ -20,14 +20,14 @@ class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAft
   val DEFAULT_LANGUAGE_ID = "DefaultLanguageId"
   val START_DOC = "startDocument"
 
-  override def beforeAll() = testDB.recreate()
+  override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Project.spring.createCtx(classOf[SystemPropertyDaoSuiteConfig])
+    val ctx = Test.spring.createCtx(classOf[SystemPropertyDaoSuiteConfig])
 
     systemDao = ctx.getBean(classOf[SystemDao])
 
-    testDB.runScripts("src/test/resources/sql/system_property_dao.sql")
+    db.runScripts("src/test/resources/sql/system_property_dao.sql")
   }
 
   def getExistingProperty(name: String) = systemDao.getProperty(name) |>> { property =>
@@ -73,8 +73,8 @@ class SystemPropertyDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Project.hibernate.configurators.BasicWithSql,
-      Project.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty])
+      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Test.hibernate.configurators.BasicWithSql,
+      Test.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty])
     ))
 }

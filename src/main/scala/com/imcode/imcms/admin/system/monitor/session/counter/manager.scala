@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.system.monitor.session.counter
 
+import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
@@ -36,7 +37,7 @@ class SessionCounterManager(app: ImcmsApplication) {
 
           dlg.wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(SessionCounter save SessionCounter(c.txtValue.value.toInt, c.calStart.value)) match {
+              Ex.allCatch.either(SessionCounter save SessionCounter(c.txtValue.value.toInt, c.calStart.value)) match {
                 case Right(_) =>
                   app.showInfoNotification("Session counter has been updated")
                   reload()
@@ -53,7 +54,7 @@ class SessionCounterManager(app: ImcmsApplication) {
       app.initAndShow(new ConfirmationDialog("Reset session counter?")) { dlg =>
         dlg wrapOkHandler {
           app.privileged(permission) {
-            EX.allCatch.either(SessionCounter save SessionCounter(0, new Date)) match {
+            Ex.allCatch.either(SessionCounter save SessionCounter(0, new Date)) match {
               case Right(_) =>
                 app.showInfoNotification("Session counter has been reseted")
                 reload()

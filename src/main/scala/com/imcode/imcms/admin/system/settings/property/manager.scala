@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.system.settings.property
 
+import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
@@ -39,7 +40,7 @@ class PropertyManagerManager(app: ImcmsApplication) {
                 d setServerMasterAddress eui.serverMasterUI.txtEmail.value
               }
 
-              EX.allCatch.either(Imcms.getServices.setSystemData(systemData)) match {
+              Ex.allCatch.either(Imcms.getServices.setSystemData(systemData)) match {
                 case Right(_) =>
                   app.showInfoNotification("System properties has been updated")
                   reload()

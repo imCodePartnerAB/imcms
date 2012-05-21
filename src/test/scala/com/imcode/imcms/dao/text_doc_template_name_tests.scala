@@ -7,8 +7,8 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
-import imcms.test.Project.{testDB}
-import com.imcode.imcms.test.Project
+import imcms.test.Test.{db}
+import com.imcode.imcms.test.Test
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
@@ -19,14 +19,14 @@ class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAft
 
 	var metaDao: MetaDao = _
 
-  override def beforeAll() = testDB.recreate()
+  override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Project.spring.createCtx(classOf[TemplateNamesDaoSuiteConfig])
+    val ctx = Test.spring.createCtx(classOf[TemplateNamesDaoSuiteConfig])
 
     metaDao = ctx.getBean(classOf[MetaDao])
 
-    testDB.runScripts("src/test/resources/sql/template_names_dao.sql")
+    db.runScripts("src/test/resources/sql/template_names_dao.sql")
   }
 
 
@@ -87,8 +87,8 @@ class TemplateNamesDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Project.hibernate.configurators.BasicWithSql,
-      Project.hibernate.configurators.addAnnotatedClasses(classOf[TemplateNames])
+      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Test.hibernate.configurators.BasicWithSql,
+      Test.hibernate.configurators.addAnnotatedClasses(classOf[TemplateNames])
     ))
 }

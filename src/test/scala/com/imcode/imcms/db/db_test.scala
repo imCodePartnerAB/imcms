@@ -2,30 +2,29 @@ package com.imcode.imcms.db
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.imcode.imcms.test.Project
-import com.imcode.imcms.test.Project.{testDB}
-import org.scalatest.{FunSpec, FunSuite}
+import com.imcode.imcms.test.Test
+import org.scalatest.{WordSpec}
 
 @RunWith(classOf[JUnitRunner])
-class DBTestSuite extends FunSpec {
+class DBTestSuite extends WordSpec {
 
-  describe("new db") {
-    testDB.recreate();
+  "new db" should {
+    Test.db.recreate()
 
-    val db = new DB(testDB.createDataSource())
+    val db = new DB(Test.db.createDataSource())
 
-    it("should be empty") {
+    "be empty" in {
       assert(db.isEmpty(), "empty")
-      assert(db.tables().length === 0, "no tables")
+      assert(db.tables().isEmpty, "no tables")
     }
 
-    it("should throw an exception on attempt to get a version") {
+    "throw an exception on attempt to get a version" in {
       intercept[Exception] {
         db.version()
       }
     }
 
-    it("should throw an exception on attempt to update a version") {
+    "throw an exception on attempt to update a version" in {
       intercept[Exception] {
         db.updateVersion(Version(1, 0))
       }
@@ -33,24 +32,24 @@ class DBTestSuite extends FunSpec {
   }
 
 
-  describe("prepare on 'new db'") {
-      testDB.recreate()
+  "DB.prepare(schema) on 'new db'" should {
+    Test.db.recreate()
 
-      val scriptsDir = Project.path("src/main/web/WEB-INF/sql")
-      val schema = Schema.load(Project.file("src/main/resources/schema.xml")).changeScriptsDir(scriptsDir)
-      val db = new DB(testDB.createDataSource());
+    val scriptsDir = Test.path("src/main/web/WEB-INF/sql")
+    val schema = Schema.load(Test.file("src/main/resources/schema.xml")).changeScriptsDir(scriptsDir)
+    val db = new DB(Test.db.createDataSource());
 
-      it("should run all update scritps") {
-        db.prepare(schema)
-      }
+    "run all update scritps" in {
+      db.prepare(schema)
+    }
 
-      it ("should create all necessary tables") {
-        assert(!db.isEmpty(), "not empty")
-        assert(db.tables().size > 0, "has tables")
-      }
+    "create all necessary tables" in {
+      assert(!db.isEmpty, "not empty")
+      assert(db.tables().nonEmpty, "has tables")
+    }
 
-      it ("should change database version to most recent schema version") {
-        assert(schema.version === db.version())
-      }
+    "change database version to most recent schema version" in {
+      assert(schema.version === db.version())
+    }
   }
 }

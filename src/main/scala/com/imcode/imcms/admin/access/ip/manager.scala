@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.access.ip
 
+import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
@@ -42,7 +43,7 @@ class IPAccessManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected IP access?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(ipAccessDao delete id) match {
+              Ex.allCatch.either(ipAccessDao delete id) match {
                 case Right(_) =>
                   app.showInfoNotification("IP access has been deleted")
                   reload()
@@ -92,7 +93,7 @@ class IPAccessManager(app: ImcmsApplication) {
             voc.setEnd(fromDDN(c.txtTo.value))
 
             app.privileged(permission) {
-              EX.allCatch.either(ipAccessDao save voc) match {
+              Ex.allCatch.either(ipAccessDao save voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
                   app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)

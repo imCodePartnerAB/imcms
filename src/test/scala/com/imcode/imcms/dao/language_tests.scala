@@ -5,10 +5,10 @@ import imcms.api.{SystemProperty, I18nLanguage}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import imcms.test.Project.{testDB}
+import imcms.test.Test.{db}
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test.config.{AbstractHibernateConfig}
-import com.imcode.imcms.test.{Project}
+import com.imcode.imcms.test.{Test}
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.{Autowire}
 
@@ -19,15 +19,15 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
   var systemDao: SystemDao = _
   var languageDao: LanguageDao = _
 
-  override def beforeAll() = testDB.recreate()
+  override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Project.spring.createCtx(classOf[LanguageDaoSuiteConfig])
+    val ctx = Test.spring.createCtx(classOf[LanguageDaoSuiteConfig])
 
     systemDao = ctx.getBean(classOf[SystemDao])
     languageDao = ctx.getBean(classOf[LanguageDao])
 
-    testDB.runScripts("src/test/resources/sql/language_dao.sql")
+    db.runScripts("src/test/resources/sql/language_dao.sql")
   }
 
 
@@ -114,9 +114,9 @@ class LanguageDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Project.hibernate.configurators.BasicWithSql,
-      Project.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty], classOf[I18nLanguage]),
-      Project.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/I18nLanguage.hbm.xml")
+      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Test.hibernate.configurators.BasicWithSql,
+      Test.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty], classOf[I18nLanguage]),
+      Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/I18nLanguage.hbm.xml")
     ))
 }

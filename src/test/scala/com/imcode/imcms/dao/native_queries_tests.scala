@@ -5,7 +5,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import scala.collection.JavaConversions._
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.test.{Project, withLogFailure}
+import com.imcode.imcms.test.{Test, withLogFailure}
 import org.springframework.context.annotation.{Bean, Import}
 import com.imcode.imcms.test.config.{AbstractHibernateConfig}
 import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll, FunSuite}
@@ -19,10 +19,10 @@ class NativeQueriesSuite extends WordSpec with BeforeAndAfter with BeforeAndAfte
   var nativeQueriesDao: NativeQueriesDao = _
 
   override def beforeAll() = withLogFailure {
-    Project.testDB.recreate()
-    Project.testDB.runScripts("src/test/resources/sql/native_queries_dao.sql")
+    Test.db.recreate()
+    Test.db.runScripts("src/test/resources/sql/native_queries_dao.sql")
 
-    nativeQueriesDao = Project.spring.createCtx(classOf[NativeQueriesSuiteConfig]) |> {
+    nativeQueriesDao = Test.spring.createCtx(classOf[NativeQueriesSuiteConfig]) |> {
       _.getBean(classOf[NativeQueriesDao])
     }
   }
@@ -83,5 +83,5 @@ class NativeQueriesSuiteConfig {
 
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
-    Project.hibernate.configurators.BasicWithSql
+    Test.hibernate.configurators.BasicWithSql
 }

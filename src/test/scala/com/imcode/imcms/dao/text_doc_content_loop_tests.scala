@@ -6,8 +6,8 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
-import imcms.test.Project.{testDB}
-import com.imcode.imcms.test.Project
+import imcms.test.Test.{db}
+import com.imcode.imcms.test.Test
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
@@ -29,14 +29,14 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   var contentLoopDao: ContentLoopDao = _
 
-  override def beforeAll() = testDB.recreate()
+  override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Project.spring.createCtx(classOf[ContentLoopDaoSuiteConfig])
+    val ctx = Test.spring.createCtx(classOf[ContentLoopDaoSuiteConfig])
 
     contentLoopDao = ctx.getBean(classOf[ContentLoopDao])
 
-    testDB.runScripts("src/test/resources/sql/content_loop_dao.sql")
+    db.runScripts("src/test/resources/sql/content_loop_dao.sql")
   }
 
 
@@ -155,9 +155,9 @@ class ContentLoopDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Project.hibernate.configurators.BasicWithSql,
-      Project.hibernate.configurators.addAnnotatedClasses(classOf[ContentLoop]),
-      Project.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/ContentLoop.hbm.xml")
+      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Test.hibernate.configurators.BasicWithSql,
+      Test.hibernate.configurators.addAnnotatedClasses(classOf[ContentLoop]),
+      Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/ContentLoop.hbm.xml")
     ))
 }

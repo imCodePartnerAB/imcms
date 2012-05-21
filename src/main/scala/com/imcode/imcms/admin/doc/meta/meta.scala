@@ -24,6 +24,8 @@ import _root_.com.vaadin.terminal.{UserError, ErrorMessage, Sizeable, ExternalRe
 import _root_.com.vaadin.data.Validator
 import _root_.com.vaadin.data.Validator.InvalidValueException
 
+import scala.util.control.{Exception => Ex}
+
 /**
  * Doc's meta editor.
  *
@@ -578,7 +580,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
   } // ui
 
   val data = new Data {
-    def get() = EX.allCatch.either(ui.frmAlias.txtAlias.validate()).left.map(e => Seq(e.getMessage)).right.map { _ =>
+    def get() = Ex.allCatch.either(ui.frmAlias.txtAlias.validate()).left.map(e => Seq(e.getMessage)).right.map { _ =>
       Values(
         i18nMetasUIs.map {
           case (language, chkBox, i18nMetaEditorUI) =>

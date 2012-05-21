@@ -9,11 +9,11 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
-import imcms.test.Project.{testDB}
+import imcms.test.Test.{db}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.test.Project
+import com.imcode.imcms.test.Test
 import com.imcode.imcms.api.{ImageHistory, I18nLanguage}
 import com.imcode.imcms.test.fixtures.LanguagesFX.{english, swedish}
 
@@ -26,15 +26,15 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
 
   val admin = new UserDomainObject(0)
 
-  override def beforeAll() = testDB.recreate()
+  override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Project.spring.createCtx(classOf[ImageDaoSuiteConfig])
+    val ctx = Test.spring.createCtx(classOf[ImageDaoSuiteConfig])
 
     imageDao = ctx.getBean(classOf[ImageDao])
     languageDao = ctx.getBean(classOf[LanguageDao])
 
-    testDB.runScripts("src/test/resources/sql/image_dao.sql")
+    db.runScripts("src/test/resources/sql/image_dao.sql")
   }
 
   test("get text doc's images by no") {
@@ -94,14 +94,14 @@ class ImageDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Project.hibernate.configurators.BasicWithSql,
-      Project.hibernate.configurators.addAnnotatedClasses(
+      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Test.hibernate.configurators.BasicWithSql,
+      Test.hibernate.configurators.addAnnotatedClasses(
         classOf[I18nLanguage],
         classOf[ImageDomainObject],
         classOf[ImageHistory]
       ),
-      Project.hibernate.configurators.addXmlFiles(
+      Test.hibernate.configurators.addXmlFiles(
         "com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
         "com/imcode/imcms/hbm/Image.hbm.xml"
       )

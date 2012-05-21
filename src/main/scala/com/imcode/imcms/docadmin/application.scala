@@ -30,7 +30,7 @@ class Application extends com.vaadin.Application with HttpServletRequestListener
     println(" URL: " + request.getRequestURL.toString)
 
     for {
-      (IntNumber(docId), IntNumber(menuNo)) <- Option(request.getParameter("doc_id"), request.getParameter("menu_no"))
+      (IntNum(docId), IntNum(menuNo)) <- Option(request.getParameter("doc_id"), request.getParameter("menu_no"))
       doc @ (si_900 : TextDocumentDomainObject) <- Option(imcmsServices.getDocumentMapper.getDocument(docId))
       menu <- Option(doc.getMenu(menuNo))
     } {

@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.system.settings.language
 
+import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
@@ -33,7 +34,7 @@ class LanguageManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected language?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(languageDao.deleteLanguage(id)) match {
+              Ex.allCatch.either(languageDao.deleteLanguage(id)) match {
                 case Right(_) =>
                   app.showInfoNotification("Language has been deleted")
                 case Left(ex) =>
@@ -55,7 +56,7 @@ class LanguageManager(app: ImcmsApplication) {
               val property = systemDao.getProperty("DefaultLanguageId")
               property.setValue(id.toString)
 
-              EX.allCatch.either(systemDao saveProperty property) match {
+              Ex.allCatch.either(systemDao saveProperty property) match {
                 case Right(_) =>
                   app.showInfoNotification("Default language has been changed")
                 case Left(ex) =>
@@ -100,7 +101,7 @@ class LanguageManager(app: ImcmsApplication) {
             voc.setEnabled(c.chkEnabled.value)
 
             app.privileged(permission) {
-              EX.allCatch.either(languageDao saveLanguage voc.build()) match {
+              Ex.allCatch.either(languageDao saveLanguage voc.build()) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
                   app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)

@@ -28,7 +28,7 @@ object DocGetterCallbackUtil {
         if !user.isDefaultUser
       } yield {
         val docId: JInteger = docIdentity match {
-          case IntNumber(n) => n
+          case IntNum(n) => n
           case _ =>
             Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity) |> opt getOrElse {
               sys.error("Document with identity %s does not exists." format docIdentity)

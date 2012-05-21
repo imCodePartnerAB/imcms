@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.doc.template
 
+import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.user._
@@ -86,7 +87,7 @@ class TemplateManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected template?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(Option(templateMapper getTemplateByName name) foreach templateMapper.deleteTemplate) match {
+              Ex.allCatch.either(Option(templateMapper getTemplateByName name) foreach templateMapper.deleteTemplate) match {
                 case Right(_) =>
                   app.showInfoNotification("Template has been deleted")
                 case Left(ex) =>

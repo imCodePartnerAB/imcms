@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.doc.category
 
+import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
@@ -41,7 +42,7 @@ class CategoryManager(app: ImcmsApplication) {
         app.initAndShow(new ConfirmationDialog("Delete selected category?")) { dlg =>
           dlg wrapOkHandler {
             app.privileged(permission) {
-              EX.allCatch.either(categoryMapper.getCategoryById(id.intValue) |> opt foreach categoryMapper.deleteCategoryFromDb) match {
+              Ex.allCatch.either(categoryMapper.getCategoryById(id.intValue) |> opt foreach categoryMapper.deleteCategoryFromDb) match {
                 case Right(_) =>
                   app.showInfoNotification("Category has been deleted")
                 case Left(ex) =>
@@ -110,7 +111,7 @@ class CategoryManager(app: ImcmsApplication) {
               }
 
               app.privileged(permission) {
-                EX.allCatch.either(categoryMapper saveCategory voc) match {
+                Ex.allCatch.either(categoryMapper saveCategory voc) match {
                   case Left(ex) =>
                     // todo: log ex, provide custom dialog with details -> show stack
                     app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)

@@ -10,7 +10,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import imcms.test._
 import fixtures.{DocItemFX, DocFX, VersionFX}
 import imcms.test.fixtures.UserFX.{admin}
-import imcms.test.Project.{testDB}
+import imcms.test.Test.{db}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
@@ -24,14 +24,14 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
   val menuNos = 1 to 4
 
-  override def beforeAll() = testDB.recreate()
+  override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Project.spring.createCtx(classOf[MenuDaoSuiteConfig])
+    val ctx = Test.spring.createCtx(classOf[MenuDaoSuiteConfig])
 
     menuDao = ctx.getBean(classOf[MenuDao])
 
-    testDB.runScripts("src/test/resources/sql/text_doc_menu_dao.sql")
+    db.runScripts("src/test/resources/sql/text_doc_menu_dao.sql")
   }
 
   def menu(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, no: JInteger = DocItemFX.defaultNo, assertExists: Boolean = true) =
@@ -76,10 +76,10 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
   }
 
   test("get non-existing menu") {
-    menu(no = DocItemFX.missingNo, assertExists = false) |> assertNull //("menu does not exist", _)
+    menu(no = DocItemFX.missingNo, assertExists = false) |> assertNull
   }
 
-  test("get missing menus") {
+  test("get non-existing menus") {
     menus(docId = DocFX.missingId, assertNotEmpty = false) |> { menus => assertTrue("menus do not exist", menus.isEmpty) }
   }
 
@@ -132,9 +132,9 @@ class MenuDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Project.hibernate.configurators.BasicWithSql,
-      Project.hibernate.configurators.addAnnotatedClasses(classOf[MenuDomainObject], classOf[MenuHistory]),
-      Project.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Menu.hbm.xml")
+      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Test.hibernate.configurators.BasicWithSql,
+      Test.hibernate.configurators.addAnnotatedClasses(classOf[MenuDomainObject], classOf[MenuHistory]),
+      Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Menu.hbm.xml")
     ))
 }

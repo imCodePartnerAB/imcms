@@ -5,7 +5,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
 import imcode.server.Config
 import com.imcode._
-import com.imcode.imcms.test.Project
+import com.imcode.imcms.test.Test
 import java.lang.IllegalStateException
 import java.io.{File}
 import org.apache.commons.io.FileUtils
@@ -19,36 +19,8 @@ import java.util.Date
 @RunWith(classOf[JUnitRunner])
 class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 
-  val solrHomeTemplate: File = Project.dir("src/main/web/WEB-INF/solr").ensuring(_.isDirectory, "solrHome template exists")
-  val solrHome: File = Project.dir("target/test/solr")
-
-
   override def beforeAll() {
-    recreateSolrHome()
-  }
-
-  def recreateSolrHome() {
-    if (solrHome.exists()) {
-      FileUtils.deleteDirectory(solrHome)
-
-      if (solrHome.exists()) sys.error("Unable to delete solrHome dir.")
-    }
-
-    FileUtils.copyDirectory(solrHomeTemplate, solrHome)
-  }
-
-  def deleteSolrCoreDataDir() {
-    new File(solrHome, "imcms/data") |> { dir =>
-      if (dir.exists() && !dir.delete()) sys.error("Unable to delete embedded SOLr data directory.")
-    }
-  }
-
-  def createEmbeddedSolrServer(): SolrServer with SolrServerShutdown = {
-      val config = new Config() |>> { c =>
-        c.setSolrHome(solrHome)
-      }
-
-      new IndexService(config).solrServer
+    Test.solr.recreateHome()
   }
 
 
@@ -63,7 +35,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
 
     "create embedded SOLr server when Config.solrHome is set and Config.solrUrl is not" in  {
       val config = new Config() |>> { c =>
-        c.setSolrHome(solrHome)
+        c.setSolrHome(Test.solr.home)
       }
 
       val solrServer = new IndexService(config).solrServer
@@ -86,7 +58,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
   // xmlformat, binary format
 
   "SolrServer" should {
-    val solr = createEmbeddedSolrServer()
+    val solr = Test.solr.createEmbeddedServer()
     val dateTime = new Date
     val dateTimeStr = "%1$TFT%1$TT.%1$TLZ" format dateTime
 

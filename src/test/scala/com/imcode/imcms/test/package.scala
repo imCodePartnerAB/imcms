@@ -1,10 +1,10 @@
 package com.imcode.imcms
 
-import com.imcode.EX
+import scala.util.control.{Exception => Ex}
 
 package object test {
   def withLogFailure[T](block: => T) =
-    EX.allCatch.withApply[T] { t =>
+    Ex.allCatch.withApply[T] { t =>
       t.printStackTrace
       throw t
     } apply block

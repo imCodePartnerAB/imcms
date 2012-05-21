@@ -87,8 +87,8 @@ class DocumentContentIndexer(imcmsServices: ImcmsServices) extends Log4jLoggerSu
     fileDoc.getDefaultFile |> opt foreach { file =>
       indexDoc.addField(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType)
 //      val metadata = new Metadata |>> { m =>
-//        m.set(HttpHeaders.CONTENT_DISPOSITION, file.getFilename);
-//        m.set(HttpHeaders.CONTENT_TYPE, file.getMimeType);
+//        m.set(HttpHeaders.CONTENT_DISPOSITION, file.getFilename)
+//        m.set(HttpHeaders.CONTENT_TYPE, file.getMimeType)
 //      }
 
       try {

@@ -8,7 +8,7 @@ import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
-import imcms.test.Project.{testDB}
+import imcms.test.Test.{db}
 import imcms.test.fixtures.LanguagesFX.{english, swedish, languages}
 import imcode.server.user.{RoleId, RoleDomainObject, UserDomainObject}
 import org.scalatest.fixture.FixtureFunSuite
@@ -17,7 +17,7 @@ import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.context.annotation.Bean._
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.test.Project
+import com.imcode.imcms.test.Test
 import com.imcode.imcms.api.{SystemProperty, I18nLanguage, TextHistory}
 
 @RunWith(classOf[JUnitRunner])
@@ -29,14 +29,14 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
 
   val admin = new UserDomainObject(0) |>> { _.addRoleId(RoleId.SUPERADMIN) }
 
-  override def beforeAll() = testDB.recreate()
+  override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Project.spring.createCtx(classOf[TextDaoSuiteConfig])
+    val ctx = Test.spring.createCtx(classOf[TextDaoSuiteConfig])
 
     textDao = ctx.getBean(classOf[TextDao])
 
-    testDB.runScripts("src/test/resources/sql/text_dao.sql")
+    db.runScripts("src/test/resources/sql/text_dao.sql")
   }
 
   def withFixture(test: OneArgTest) {
@@ -200,14 +200,14 @@ class TextDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Project.hibernate.configurators.BasicWithSql,
-      Project.hibernate.configurators.addAnnotatedClasses(
+      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Test.hibernate.configurators.BasicWithSql,
+      Test.hibernate.configurators.addAnnotatedClasses(
         classOf[I18nLanguage],
         classOf[TextDomainObject],
         classOf[TextHistory]
       ),
-      Project.hibernate.configurators.addXmlFiles(
+      Test.hibernate.configurators.addXmlFiles(
         "com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
         "com/imcode/imcms/hbm/Text.hbm.xml"
       )

@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package vaadin
 
+import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
@@ -179,7 +180,7 @@ trait YesButton extends Dialog {
 
   def wrapYesHandler(handler: => Unit) {
     btnYes addClickHandler {
-      EX.allCatch.either(handler) match {
+      Ex.allCatch.either(handler) match {
         case Right(_) => close()
         case Left(ex) => using(new java.io.StringWriter) { w =>
           ex.printStackTrace(new java.io.PrintWriter(w))
@@ -195,7 +196,7 @@ trait NoButton extends Dialog {
 
   def wrapNoHandler(handler: => Unit) {
     btnNo addClickHandler {
-      EX.allCatch.either(handler) match {
+      Ex.allCatch.either(handler) match {
         case Right(_) => close()
         case Left(ex) => using(new java.io.StringWriter) { w =>
           ex.printStackTrace(new java.io.PrintWriter(w))
@@ -216,7 +217,7 @@ trait OKButton extends Dialog {
    */
   def wrapOkHandler(handler: => Unit) {
     setOkHandler {
-      EX.allCatch.either(handler) match {
+      Ex.allCatch.either(handler) match {
         case Right(_) => close()
         case Left(ex) => using(new java.io.StringWriter) { w =>
           ex.printStackTrace(new java.io.PrintWriter(w))
@@ -258,7 +259,7 @@ trait CancelButton extends Dialog {
 
   def wrapCancelHandler(handler: => Unit) {
     btnCancel addClickHandler {
-      EX.allCatch.either(handler) match {
+      Ex.allCatch.either(handler) match {
         case Right(_) => close()
         case Left(ex) => using(new java.io.StringWriter) { w =>
           ex.printStackTrace(new java.io.PrintWriter(w))

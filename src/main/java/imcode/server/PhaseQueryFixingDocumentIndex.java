@@ -18,7 +18,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 /**
- * Replaces all TermQuery-es in a search query which field is equals to DocumentIndex.FIELD__PHASE with RangeQuery-es.
+ * Replaces all TermQuery-es in a search query which field equals to DocumentIndex.FIELD__PHASE with RangeQuery-es.
  * 
  * @see imcode.server.document.LifeCyclePhase#asQuery(java.util.Date) 
  */

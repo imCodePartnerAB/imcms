@@ -6,13 +6,13 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test.fixtures.UserFX.{admin}
 import org.scalatest.matchers.MustMatchers
-import imcms.test.Project.{testDB}
+import imcms.test.Test.{db}
 import org.scalatest.{WordSpec, BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.context.annotation.Bean._
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.test.Project
+import com.imcode.imcms.test.Test
 import com.imcode.imcms.api._
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 import com.imcode.imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
@@ -30,12 +30,12 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 	var metaDao: MetaDao = _
   var versionDao: DocumentVersionDao = _
 
-  override def beforeAll() = testDB.recreate()
+  override def beforeAll() = db.recreate()
 
   before {
     //db.runScripts()
 
-    val ctx = Project.spring.createCtx(classOf[MetaDaoTestConfig])
+    val ctx = Test.spring.createCtx(classOf[MetaDaoTestConfig])
 
     metaDao = ctx.getBean(classOf[MetaDao])
     versionDao = ctx.getBean(classOf[DocumentVersionDao])
@@ -104,9 +104,9 @@ class MetaDaoTestConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Project.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Project.hibernate.configurators.Basic,
-      Project.hibernate.configurators.addAnnotatedClasses(
+      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      Test.hibernate.configurators.Basic,
+      Test.hibernate.configurators.addAnnotatedClasses(
         classOf[DocumentProperty],
         classOf[Meta],
         classOf[I18nMeta],
@@ -118,6 +118,6 @@ class MetaDaoTestConfig {
         classOf[UrlReference],
         classOf[HtmlReference]
       ),
-      Project.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
+      Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
     ))
 }
