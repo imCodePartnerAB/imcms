@@ -38,7 +38,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
 
     public RebuildingDirectoryIndex(SolrServer solrServer, DocumentMapper documentMapper,
                                     float indexRebuildSchedulePeriodInMinutes,
-                                    SolrIndexDocumentFactory indexDocumentFactory) {
+                                    DocumentIndexer indexDocumentFactory) {
         this.documentMapper = documentMapper;
         indexRebuildSchedulePeriodInMilliseconds = (long) ( indexRebuildSchedulePeriodInMinutes * DateUtils.MILLIS_PER_MINUTE );
         backgroundIndexBuilder = new BackgroundIndexBuilder(solrServer, this, indexDocumentFactory);

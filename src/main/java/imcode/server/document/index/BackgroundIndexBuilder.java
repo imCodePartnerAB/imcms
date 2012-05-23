@@ -16,10 +16,10 @@ public class BackgroundIndexBuilder {
 
     private SolrServer solrServer;
     private IndexBuildingThread indexBuildingThread;
-    private SolrIndexDocumentFactory indexDocumentFactory;
+    private DocumentIndexer indexDocumentFactory;
 
     public BackgroundIndexBuilder(SolrServer solrServer, RebuildingDirectoryIndex rebuildingDirectoryIndex,
-                                  SolrIndexDocumentFactory indexDocumentFactory) {
+                                  DocumentIndexer indexDocumentFactory) {
         this.solrServer = solrServer;
         this.rebuildingDirectoryIndex = rebuildingDirectoryIndex;
         this.indexDocumentFactory = indexDocumentFactory;

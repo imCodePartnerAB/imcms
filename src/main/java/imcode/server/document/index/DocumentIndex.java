@@ -42,9 +42,17 @@ public interface DocumentIndex {
     String FIELD__CHILD_ID = "child_id";
     String FIELD__HAS_CHILDREN = "has_children";
 
+    List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
+
+    void rebuild() throws IndexException;
+
+    void indexDocument(DocumentDomainObject document) throws IndexException ;
+
+    void removeDocument(DocumentDomainObject document) throws IndexException;
+
     /**
-     * Indexes existing default document.
-     * 
+     * Adds default documents to index.
+     *
      * @param docId
      * @throws IndexException
      * @since 6.0
@@ -52,27 +60,11 @@ public interface DocumentIndex {
     void indexDocument(int docId) throws IndexException;
 
     /**
-     * Remove a document from index.
-     * 
+     * Removes default documents from index.
+     *
      * @param docId
      * @throws IndexException
      * @since 6.0
      */
     void removeDocument(int docId) throws IndexException;
-
-    List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
-
-    void rebuild() throws IndexException;
-
-    /**
-     * Deprecated, use {@link #indexDocument(int)} instead.
-     */
-    @Deprecated
-    void indexDocument( DocumentDomainObject document ) throws IndexException ;
-
-    /**
-     * Deprecated, use {@link #removeDocument(int)} instead.
-     */
-    @Deprecated
-    void removeDocument( DocumentDomainObject document ) throws IndexException;
 }

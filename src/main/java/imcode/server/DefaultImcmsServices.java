@@ -4,9 +4,7 @@ import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.RebuildingDirectoryIndex;
-import imcode.server.document.index.SolrIndexDocumentFactory;
-import imcode.server.document.index.IndexService;
+import imcode.server.document.index.*;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.Authenticator;
@@ -268,13 +266,18 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         IndexService indexService = new IndexService(getConfig());
         SolrServer solrServer = indexService.solrServer();
+        DocumentIndexer documentIndexer = new DocumentIndexer();
 
         documentMapper = new DocumentMapper(this, this.getDatabase());
+        documentIndexer.setDocumentMapper(documentMapper);
+        documentIndexer.setCategoryMapper(documentMapper.getCategoryMapper());
+        documentIndexer.setContentIndexer(new DocumentContentIndexer());
+
         documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,
                 new PhaseQueryFixingDocumentIndex(
-                    new RebuildingDirectoryIndex(solrServer, documentMapper,
-                        getConfig().getIndexingSchedulePeriodInMinutes(),
-                        new SolrIndexDocumentFactory(this))))) ;
+                        new RebuildingDirectoryIndex(solrServer, documentMapper,
+                                getConfig().getIndexingSchedulePeriodInMinutes(),
+                                documentIndexer)))) ;
     }
 
     private void initTemplateMapper() {

@@ -14,6 +14,7 @@ package object imcode {
   type JClass[A >: Null] = java.lang.Class[A]
   type JCollection[A <: AnyRef] = java.util.Collection[A]
   type JList[A <: AnyRef] = java.util.List[A]
+  type JSet[A <: AnyRef] = java.util.Set[A]
   type JMap[A <: AnyRef, B <: AnyRef] = java.util.Map[A, B]
 
   class Piper[A](a: A) {

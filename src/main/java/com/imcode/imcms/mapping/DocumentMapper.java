@@ -36,7 +36,7 @@ import com.imcode.imcms.flow.DocumentPageFlow;
 
 /**
  * NOTES:
- * DocumentSaver and DocumentLoader are instantiated by SpringFramework
+ * NativeQueriesDao, DocumentSaver, DocumentLoader and CategoryMapper are instantiated by SpringFramework
  * in order to support declared (AOP) transactions.
  */
 public class DocumentMapper implements DocumentGetter {
@@ -53,9 +53,10 @@ public class DocumentMapper implements DocumentGetter {
 
     private ImcmsServices imcmsServices;
 
+    /** injected by SpringFramework. */
     private NativeQueriesDao nativeQueriesDao;
 
-    /** Instantiated by SpringFramework. */
+    /** injected by SpringFramework. */
     private DocumentLoader documentLoader;
 
     /** Document loader caching proxy. Intercepts calls to DocumentLoader. */
@@ -63,10 +64,11 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Contain document saving and updating routines.
-     * Instantiated using SpringFramework.
+     * instantiated by SpringFramework.
      */
     private DocumentSaver documentSaver;
 
+    /** instantiated by SpringFramework. */
     private CategoryMapper categoryMapper;
 
     /** Empty constructor for unit testing. */
@@ -83,12 +85,12 @@ public class DocumentMapper implements DocumentGetter {
         documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
 
         documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, Imcms.getI18nSupport().getLanguages(), documentCacheMaxSize);
+
+        nativeQueriesDao = services.getComponent(NativeQueriesDao.class);
         categoryMapper = services.getComponent(CategoryMapper.class);
 
         documentSaver = services.getComponent(DocumentSaver.class);
         documentSaver.setDocumentMapper(this);
-
-        nativeQueriesDao = services.getComponent(NativeQueriesDao.class);
     }
 
     /**
@@ -384,7 +386,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return new document version.
      * @since 6.0
      */
-    public DocumentVersion makeDocumentVersion(final Integer docId, final UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(final int docId, final UserDomainObject user)
             throws DocumentSaveException {
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
@@ -413,7 +415,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void changeDocumentDefaultVersion(Integer docId, Integer newDocDefaultVersionNo, UserDomainObject publisher)
+    public void changeDocumentDefaultVersion(int docId, int newDocDefaultVersionNo, UserDomainObject publisher)
             throws DocumentSaveException, NoPermissionToEditDocumentException {
         try {
             documentSaver.changeDocumentDefaultVersion(docId, newDocDefaultVersionNo, publisher);
@@ -428,7 +430,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
 
-    public void invalidateDocument(Integer docId) {
+    public void invalidateDocument(int docId) {
         documentLoaderCachingProxy.removeDocFromCache(docId);
         documentIndex.indexDocument(docId);
     }
@@ -608,7 +610,10 @@ public class DocumentMapper implements DocumentGetter {
 
         Integer docId = copyDocument(doc.getId(), doc.getVersionNo(), user);
 
-        return (T) getWorkingDocument(docId, doc.getLanguage());
+        @SuppressWarnings("unchecked")
+        T workingDocument = (T)getWorkingDocument(docId, doc.getLanguage());
+
+        return workingDocument;
     }
 
 
@@ -743,7 +748,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return default document
      * @since 6.0
      */
-    public DocumentDomainObject getDefaultDocument(Integer docId, I18nLanguage language) {
+    public DocumentDomainObject getDefaultDocument(int docId, I18nLanguage language) {
         return documentLoaderCachingProxy.getDefaultDoc(docId, language);
     }
 
@@ -912,11 +917,11 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public I18nMeta getI18nMeta(Integer docId, I18nLanguage language) {
+    public I18nMeta getI18nMeta(int docId, I18nLanguage language) {
         return documentSaver.getMetaDao().getI18nMeta(docId, language);
     }
 
-    public List<I18nMeta> getI18nMetas(Integer docId) {
+    public List<I18nMeta> getI18nMetas(int docId) {
         return documentSaver.getMetaDao().getI18nMetas(docId);
     }
 
@@ -1039,6 +1044,10 @@ public class DocumentMapper implements DocumentGetter {
 
     public DocLoaderCachingProxy getDocumentLoaderCachingProxy() {
         return documentLoaderCachingProxy;
+    }
+
+    public void setCategoryMapper(CategoryMapper categoryMapper) {
+        this.categoryMapper = categoryMapper;
     }
 
 }

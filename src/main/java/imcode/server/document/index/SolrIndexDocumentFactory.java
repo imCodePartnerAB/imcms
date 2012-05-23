@@ -1,8 +1,7 @@
 package imcode.server.document.index;
 
-import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
-import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.ImcmsServices;
@@ -14,13 +13,6 @@ import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings.Mapping;
 import imcode.util.DateConstants;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.tika.Tika;
-import org.apache.tika.detect.Detector;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.html.HtmlParser;
-
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,13 +27,13 @@ public class SolrIndexDocumentFactory {
     private ImcmsServices imcmsServices;
     private CategoryMapper categoryMapper;
     private DocumentMapper documentMapper;
-    private DocumentContentIndexer documentContentIndexer;
+    private DocumentContentIndexer documentContentIndexBuilder;
 
     public SolrIndexDocumentFactory(ImcmsServices imcmsServices) {
         this.imcmsServices = imcmsServices;
         this.documentMapper = imcmsServices.getDocumentMapper();
         this.categoryMapper = imcmsServices.getCategoryMapper();
-        this.documentContentIndexer = new DocumentContentIndexer(imcmsServices);
+        this.documentContentIndexBuilder = new DocumentContentIndexer();
     }
     
     /**
@@ -50,8 +42,8 @@ public class SolrIndexDocumentFactory {
      * @return solr document to be added into index.
      */
     // TODO: refactor
-    public SolrInputDocument createIndexDocument(int documentId) {
-        DocumentDomainObject document = documentMapper.getDefaultDocument(documentId);
+    public SolrInputDocument createIndexDocument(int documentId, I18nLanguage language) {
+        DocumentDomainObject document = documentMapper.getDefaultDocument(documentId, language);
 
         if (document == null) {
             throw new RuntimeException(String.format("Unable to index document - document does not exists. Doc id: %s.", documentId));
@@ -110,7 +102,7 @@ public class SolrIndexDocumentFactory {
         }
 
         try {
-            documentContentIndexer.index(document, indexDocument);
+            documentContentIndexBuilder.index(document, indexDocument);
         } catch (Exception re) {
             log.error("Error indexing document-type-specific data of document " + document.getId(), re);
         }

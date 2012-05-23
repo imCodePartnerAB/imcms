@@ -1,10 +1,12 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -25,57 +27,59 @@ import java.util.List;
 
 class SolrDirectoryIndex implements DirectoryIndex {
 
-    private final static Logger log = Logger.getLogger( SolrDirectoryIndex.class.getName() );
     private final static int INDEXING_BULK_SIZE = 1000;
     private final static String TIMESTAMP_FIELD = "timestamp";
-
     private final static DateFormat solrDateFormat = DateUtil.getThreadLocalDateFormat();
 
     private final SolrServer solrServer;
+
+    private final Logger logger = Logger.getLogger(getClass());
     private final DocumentMapper documentMapper;
-    private final SolrIndexDocumentFactory indexDocumentFactory;
+    private final DocumentIndexer indexDocumentFactory;
 
     private boolean inconsistent;
 
     private static final int NUM_HITS = 1;
 
     SolrDirectoryIndex(SolrServer solrServer, DocumentMapper documentMapper,
-                       SolrIndexDocumentFactory indexDocumentFactory) {
+                       DocumentIndexer indexDocumentFactory) {
         this.solrServer = solrServer;
         this.documentMapper = documentMapper;
         this.indexDocumentFactory = indexDocumentFactory;
     }
     
     public void indexDocument(int docId) throws IndexException {
-        try {
-            addDocumentToIndex(docId);
-        } catch (Exception e ) {
-            throw new IndexException( e );
+        for (I18nLanguage language: documentMapper.getImcmsServices().getI18nSupport().getLanguages()) {
+            try {
+                indexDocument(documentMapper.getDefaultDocument(docId, language));
+            } catch (Exception e ) {
+                throw new IndexException( e );
+            }
         }
     }
 
     public void indexDocument(DocumentDomainObject document) throws IndexException {
-        indexDocument(document.getId());
-    }
-
-    private void addDocumentToIndex(int docId) throws SolrServerException, IOException {
-        SolrInputDocument indexDocument = indexDocumentFactory.createIndexDocument(docId);
-        solrServer.add(indexDocument);
-        solrServer.commit();
+        try {
+            SolrInputDocument indexDocument = indexDocumentFactory.index(document);
+            solrServer.add(indexDocument);
+            solrServer.commit();
+        } catch (Exception e) {
+            throw new IndexException(e);
+        }
     }
 
     public void removeDocument(int docId) throws IndexException {
+        throw new NotImplementedException();
+    }
+
+    public void removeDocument(DocumentDomainObject document) throws IndexException {
         try {
-            solrServer.deleteByQuery("meta_id:" + docId);
+            solrServer.deleteByQuery("meta_id:" + document.getId());
             solrServer.commit();
         }
         catch (Exception e) {
             throw new IndexException(e);
         }
-    }
-
-    public void removeDocument(DocumentDomainObject document) throws IndexException {
-        removeDocument(document.getId());
     }
 
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
@@ -91,8 +95,8 @@ class SolrDirectoryIndex implements DirectoryIndex {
 
             long searchTime = searchStopWatch.getTime();
             List<DocumentDomainObject> documentList = getDocumentList(qRes.getResults(), searchingUser );
-            if (log.isDebugEnabled()) {
-                log.debug( "Search for " + query.getQuery().toString() + ": " + searchTime + "ms. Total: "
+            if (logger.isDebugEnabled()) {
+                logger.debug( "Search for " + query.getQuery().toString() + ": " + searchTime + "ms. Total: "
                        + searchStopWatch.getTime()
                        + "ms." );
             }
@@ -138,8 +142,8 @@ class SolrDirectoryIndex implements DirectoryIndex {
         stopWatch.start();
         List<DocumentDomainObject> documentList = documentMapper.getDocuments(documentIds);
         stopWatch.stop();
-        if (log.isDebugEnabled()) {
-            log.debug("Got "+documentList.size()+" documents in "+stopWatch.getTime()+"ms.");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Got "+documentList.size()+" documents in "+stopWatch.getTime()+"ms.");
         }
         if (documentList.size() != docsList.getNumFound()) {
             inconsistent = true ;
@@ -162,7 +166,8 @@ class SolrDirectoryIndex implements DirectoryIndex {
         Date baseDate = new Date();
         ArrayList<SolrInputDocument> docs = new ArrayList<SolrInputDocument>(INDEXING_BULK_SIZE);
         for (Integer docId: documentIds) {
-            SolrInputDocument indexDocument = indexDocumentFactory.createIndexDocument(docId);
+            //todo: rewrite
+            SolrInputDocument indexDocument = indexDocumentFactory.index(null);
             docs.add(indexDocument);
 
             if (docs.size() >= INDEXING_BULK_SIZE) {
@@ -184,11 +189,11 @@ class SolrDirectoryIndex implements DirectoryIndex {
     }
 
     private void logIndexingStarting( int numberOfDocuments ) {
-        log.debug( "Building index of all " + numberOfDocuments + " documents" );
+        logger.debug( "Building index of all " + numberOfDocuments + " documents" );
     }
 
     private void logIndexingCompleted( int numberOfDocuments) {
-        log.debug( "Building index of all " + numberOfDocuments + " documents completed" );    
+        logger.debug( "Building index of all " + numberOfDocuments + " documents completed" );    
     }
 
     private static class DocumentIdsList extends AbstractList<Integer> {

@@ -20,11 +20,11 @@ class IndexBuildingThread extends Thread {
 
     private boolean indexing;
     private SolrServer solrServer;
-    private SolrIndexDocumentFactory indexDocumentFactory;
+    private DocumentIndexer indexDocumentFactory;
 
     IndexBuildingThread(BackgroundIndexBuilder backgroundIndexBuilder,
                         SolrServer solrServer,
-                        SolrIndexDocumentFactory indexDocumentFactory) {
+                        DocumentIndexer indexDocumentFactory) {
         this.backgroundIndexBuilder = backgroundIndexBuilder;
         setName(ClassUtils.getShortClassName(getClass())+"-"+getName());
         setPriority(Thread.MIN_PRIORITY);
