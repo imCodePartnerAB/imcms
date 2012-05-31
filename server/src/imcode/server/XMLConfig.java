@@ -7,6 +7,7 @@ import imcode.server.user.ldap.jaxb.LdapElement;
 import imcode.server.user.ldap.jaxb.RoleElement;
 import imcode.server.user.ldap.jaxb.MappedRolesElement;
 import imcode.server.user.ldap.jaxb.ServerElement;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -34,7 +35,8 @@ public final class XMLConfig {
         try {
             JAXBContext context = JAXBContext.newInstance(ServerElement.class);
             Unmarshaller um = context.createUnmarshaller();
-            serverElement = (ServerElement)um.unmarshal(new InputStreamReader(new FileInputStream(configFilePath), "UTF-8"));
+            serverElement = (ServerElement)um.unmarshal(new InputStreamReader(
+                    new BOMInputStream(new FileInputStream(configFilePath)), "UTF-8"));
         } catch (FileNotFoundException e) {
             String errorMsg = String.format("Configuration file %s can not be found.", configFilePath);
             logger.fatal(errorMsg, e);
