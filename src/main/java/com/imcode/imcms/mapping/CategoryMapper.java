@@ -65,7 +65,7 @@ public class CategoryMapper extends HibernateTemplate {
 
     @Transactional
     public CategoryDomainObject getCategoryById( int categoryId ) {
-    	return (CategoryDomainObject)get(CategoryDomainObject.class, categoryId);
+    	return get(CategoryDomainObject.class, categoryId);
     }
 
     @Transactional

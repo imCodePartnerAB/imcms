@@ -10,7 +10,7 @@ import java.util.concurrent.{Future, Executors, LinkedBlockingQueue}
 // todo: rebuild on timeout (IndexingSchedulePeriodInMinutes) ???
 class AsyncDocumentIndex(docIndex: DocumentIndex) extends DocumentIndex with Log4jLoggerSupport {
 
-  private trait DocOp
+  private sealed trait DocOp
   private case class IndexDoc(docId: Int) extends DocOp
   private case class RemoveDoc(docId: Int) extends DocOp
 

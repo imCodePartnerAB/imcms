@@ -105,13 +105,13 @@ class DocumentIndexer(
         indexDoc.addField(DocumentIndex.FIELD__CATEGORY_TYPE_ID, "" + categoryType.getId)
 //            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__CATEGORY_TYPE_ID, "" + categoryType.getId()))
     }
-    for (documentKeyword <- doc.getKeywords) {
+    for (documentKeyword <- doc.getKeywords.asScala) {
         indexDoc.addField(DocumentIndex.FIELD__KEYWORD, documentKeyword)
 //            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__KEYWORD, documentKeyword))
     }
 
-    val parentDocumentAndMenuIds = documentMapper.getDocumentMenuPairsContainingDocument(doc)
-    for (Array(parentId, menuId) <- parentDocumentAndMenuIds) {
+    val parentDocumentAndMenuIds = documentMapper.getDocumentMenuPairsContainingDocument(doc).map(p => p.getDocument.getId -> p.getMenuIndex)
+    for ((parentId, menuId) <- parentDocumentAndMenuIds) {
         indexDoc.addField(DocumentIndex.FIELD__PARENT_ID, parentId.toString)
 //            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__PARENT_ID, parentId.toString()))
         indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId)
