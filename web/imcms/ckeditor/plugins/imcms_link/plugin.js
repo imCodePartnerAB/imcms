@@ -67,79 +67,81 @@
 				}
 			}
 			
+            window.handleImcmsReturnLink = function(returnLink) {
+                if (!returnLink || '' == returnLink.HREF) { // user must have pressed Cancel
+                    return ;
+                }
+
+                //console.log('linkElement: ' + linkElement + '\nreturnLink.HREF: ' + returnLink.HREF) ;
+
+                var link = linkElement ;
+
+                //console.log('link.href (before): ' + (!link ? 'null' : link.getAttribute('href'))) ;
+
+                if (!link) { // If the <a/> tag doesn't exists in the editor - create it.
+                    if ('' == selectedText) {
+                        selectedText = returnLink.TITLE || returnLink.HREF ;
+                    }
+                    link = CKEDITOR.dom.element.createFromHtml('<a>' + selectedText + '</a>') ;
+                    link.setAttribute('href', returnLink.HREF) ;
+                    editor.insertElement(link) ;
+                    //console.log('link (not exist) - Created: ' + link) ;
+                } else { // If the <a/> tag exists in the editor (var link = linkElement ;) - change it.
+                    link.setAttribute('href', returnLink.HREF) ;
+                    //console.log('link (exist): ' + link) ;
+                }
+                link.removeAttribute('_cke_saved_href') ;
+
+                //console.log('link.href (after): ' + link.getAttribute('href')) ;
+
+                var linkType = returnLink.TYPE ;
+                var hasTarget = (1 == linkType || 2 == linkType) ;
+
+                for (var parameter in returnLink) {
+                    var parameterValue = returnLink[parameter] ;
+                    //console.log(parameter + ' : ' + parameterValue) ;
+                    switch (parameter) {
+                        case 'TITLE':
+                            if ('' != parameterValue) link.setAttribute('title', parameterValue) ;
+                            break ;
+                        case 'TARGET':
+                            if (hasTarget && null != parameterValue) {
+                                link.setAttribute('target', parameterValue) ;
+                            }
+                            break ;
+                        case 'CLASS':
+                            if ('' != parameterValue) link.setAttribute('class', parameterValue) ;
+                            break ;
+                        case 'STYLE':
+                            if ('' != parameterValue) link.setAttribute('style', parameterValue) ;
+                            break ;
+                        case 'OTHER':
+                            if ('' != parameterValue) {
+                                for (var i in CKEDITOR_otherLinkParams) {
+                                    var returnOtherLinkParamName  = CKEDITOR_otherLinkParams[i] ;
+                                    var returnOtherLinkParamValue = paramFromString(returnOtherLinkParamName, returnLink.OTHER) ;
+                                    //console.log('PARSE OTHER: ' + returnOtherLinkParamName + ':' + returnOtherLinkParamValue) ;
+                                    if (null != returnOtherLinkParamValue && '' != returnOtherLinkParamValue) {
+                                        //console.log('SET OTHER: ' + returnOtherLinkParamName + '="' + returnOtherLinkParamValue + '"') ;
+                                        link.setAttribute(returnOtherLinkParamName, returnOtherLinkParamValue) ;
+                                        link.removeAttribute('_cke_pa_' + returnOtherLinkParamName) ;
+                                    }
+                                }
+                            }
+                            break ;
+                    }
+                }
+                if ('null' == link.getAttribute('target') || '' == link.getAttribute('target')) {
+                    link.removeAttribute('target') ;
+                }
+                //console.log('link.getOuterHtml():\n' + link.getOuterHtml()) ;
+                //console.log('editor.getSnapshot():\n' + editor.getSnapshot()) ;
+                //console.log('editor.getData():\n' + editor.getData()) ;
+
+            }
 			//console.log('queryString: ' + queryString) ;
 			
-			var returnLink = window.showModalDialog(CKEDITOR_imcmsLinkEditPath + queryString,null,'dialogWidth:800px;dialogHeight:600px;center:yes;resizable:yes;help:no') ;
-			
-			if (!returnLink || '' == returnLink.HREF) { // user must have pressed Cancel
-				return false ;
-			}
-			
-			//console.log('linkElement: ' + linkElement + '\nreturnLink.HREF: ' + returnLink.HREF) ;
-			
-			var link = linkElement ;
-			
-			//console.log('link.href (before): ' + (!link ? 'null' : link.getAttribute('href'))) ;
-			
-			if (!link) { // If the <a/> tag doesn't exists in the editor - create it.
-				if ('' == selectedText) {
-					selectedText = returnLink.TITLE || returnLink.HREF ;
-				}
-				link = CKEDITOR.dom.element.createFromHtml('<a>' + selectedText + '</a>') ;
-				link.setAttribute('href', returnLink.HREF) ;
-				editor.insertElement(link) ;
-				//console.log('link (not exist) - Created: ' + link) ;
-			} else { // If the <a/> tag exists in the editor (var link = linkElement ;) - change it.
-				link.setAttribute('href', returnLink.HREF) ;
-				//console.log('link (exist): ' + link) ;
-			}
-			link.removeAttribute('_cke_saved_href') ;
-			
-			//console.log('link.href (after): ' + link.getAttribute('href')) ;
-			
-			var linkType = returnLink.TYPE ;
-			var hasTarget = (1 == linkType || 2 == linkType) ;
-			
-			for (var parameter in returnLink) {
-				var parameterValue = returnLink[parameter] ;
-				//console.log(parameter + ' : ' + parameterValue) ;
-				switch (parameter) {
-					case 'TITLE':
-						if ('' != parameterValue) link.setAttribute('title', parameterValue) ;
-						break ;
-					case 'TARGET':
-						if (hasTarget && null != parameterValue) {
-							link.setAttribute('target', parameterValue) ;
-						}
-						break ;
-					case 'CLASS':
-						if ('' != parameterValue) link.setAttribute('class', parameterValue) ;
-						break ;
-					case 'STYLE':
-						if ('' != parameterValue) link.setAttribute('style', parameterValue) ;
-						break ;
-					case 'OTHER':
-						if ('' != parameterValue) {
-							for (var i in CKEDITOR_otherLinkParams) {
-								var returnOtherLinkParamName  = CKEDITOR_otherLinkParams[i] ;
-								var returnOtherLinkParamValue = paramFromString(returnOtherLinkParamName, returnLink.OTHER) ;
-								//console.log('PARSE OTHER: ' + returnOtherLinkParamName + ':' + returnOtherLinkParamValue) ;
-								if (null != returnOtherLinkParamValue && '' != returnOtherLinkParamValue) {
-									//console.log('SET OTHER: ' + returnOtherLinkParamName + '="' + returnOtherLinkParamValue + '"') ;
-									link.setAttribute(returnOtherLinkParamName, returnOtherLinkParamValue) ;
-									link.removeAttribute('_cke_pa_' + returnOtherLinkParamName) ;
-								}
-							}
-						}
-						break ;
-				}
-			}
-			if ('null' == link.getAttribute('target') || '' == link.getAttribute('target')) {
-				link.removeAttribute('target') ;
-			}
-			//console.log('link.getOuterHtml():\n' + link.getOuterHtml()) ;
-			//console.log('editor.getSnapshot():\n' + editor.getSnapshot()) ;
-			//console.log('editor.getData():\n' + editor.getData()) ;
+            window.open(CKEDITOR_imcmsLinkEditPath + queryString, "_blank", "width=" + screen.availWidth + ",height=" + screen.availHeight);
 			
 		}
 	} ;

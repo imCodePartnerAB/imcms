@@ -117,54 +117,56 @@
 			
 			//console.log('image / image.src (before): ' + image + ' / ' + image.src + ' / ' + image.getAttribute('src')) ;
 			
-			var returnImage = window.showModalDialog(CKEDITOR_imcmsImageEditPath + queryString,null,'dialogWidth:' + screen.availWidth + 'px;dialogHeight:' + screen.availHeight + 'px;center:yes;resizable:yes;help:no') ;
-			
-			if (!returnImage) { // user must have pressed Cancel
-				return false ;
-			}
-			
-			//console.log('image: ' + image + '\nreturnImage.src: ' + returnImage.src) ;
+            window.handleImcmsReturnImage = function(returnImage) {
+                if (!returnImage) { // user must have pressed Cancel
+                    return ;
+                }
 
-            // Always recreate the image tag, otherwise the content will lag behind when
-            // editing existing images.
-			var img = editor.document.createElement('img') ;
-            img.setAttribute('src', returnImage.src) ;
-            editor.insertElement(img) ;
-			
-			for (var parameter in returnImage) {
-				var parameterValue = returnImage[parameter] ;
-				//console.log(parameter + ' : ' + parameterValue) ;
-				switch (parameter) {
-					case 'alt':
-						img.setAttribute('alt', parameterValue || '') ;
-						img.setAttribute('title', parameterValue) ;
-						break ;
-					case 'border':
-						img.setStyle('border-width', CKEDITOR.tools.cssLength(parameterValue)) ;
-						img.setAttribute('border', parseInt(parameterValue, 10) + '') ;
-						break ;
-					case 'align':
-						img.setAttribute('align', parameterValue) ;
-						break ;
-					case 'vert':
-						img.setStyle('margin-top', CKEDITOR.tools.cssLength(parameterValue)) ;
-						img.setStyle('margin-bottom', CKEDITOR.tools.cssLength(parameterValue)) ;
-						break ;
-					case 'horiz':
-						img.setStyle('margin-left', CKEDITOR.tools.cssLength(parameterValue)) ;
-						img.setStyle('margin-right', CKEDITOR.tools.cssLength(parameterValue)) ;
-						break ;
-					case 'width':
-						img.setAttribute('width', parseInt(parameterValue, 10) + '') ;
-						break ;
-					case 'height':
-						img.setAttribute('height', parseInt(parameterValue, 10) + '') ;
-						break ;
-					case 'name':
-						img.setAttribute('id', parameterValue) ;
-						break ;
-				}
-			}
+                //console.log('image: ' + image + '\nreturnImage.src: ' + returnImage.src) ;
+
+                // Always recreate the image tag, otherwise the content will lag behind when
+                // editing existing images.
+                var img = editor.document.createElement('img') ;
+                img.setAttribute('src', returnImage.src) ;
+                editor.insertElement(img) ;
+
+                for (var parameter in returnImage) {
+                    var parameterValue = returnImage[parameter] ;
+                    //console.log(parameter + ' : ' + parameterValue) ;
+                    switch (parameter) {
+                        case 'alt':
+                            img.setAttribute('alt', parameterValue || '') ;
+                            img.setAttribute('title', parameterValue) ;
+                            break ;
+                        case 'border':
+                            img.setStyle('border-width', CKEDITOR.tools.cssLength(parameterValue)) ;
+                            img.setAttribute('border', parseInt(parameterValue, 10) + '') ;
+                            break ;
+                        case 'align':
+                            img.setAttribute('align', parameterValue) ;
+                            break ;
+                        case 'vert':
+                            img.setStyle('margin-top', CKEDITOR.tools.cssLength(parameterValue)) ;
+                            img.setStyle('margin-bottom', CKEDITOR.tools.cssLength(parameterValue)) ;
+                            break ;
+                        case 'horiz':
+                            img.setStyle('margin-left', CKEDITOR.tools.cssLength(parameterValue)) ;
+                            img.setStyle('margin-right', CKEDITOR.tools.cssLength(parameterValue)) ;
+                            break ;
+                        case 'width':
+                            img.setAttribute('width', parseInt(parameterValue, 10) + '') ;
+                            break ;
+                        case 'height':
+                            img.setAttribute('height', parseInt(parameterValue, 10) + '') ;
+                            break ;
+                        case 'name':
+                            img.setAttribute('id', parameterValue) ;
+                            break ;
+                    }
+                }
+            };
+            
+            window.open(CKEDITOR_imcmsImageEditPath + queryString, "_blank", "width=" + screen.availWidth + ",height=" + screen.availHeight);
             
 		}
 	} ;

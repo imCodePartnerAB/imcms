@@ -17,9 +17,10 @@ EditLink.Link link = EditLink.getLink(request);
 <head>
 	<title></title>
 
-<script type="text/javascript"><%
+<script type="text/javascript">
+var returnLink = null;<%
 if (null != link) { %>
-window.returnValue = {
+returnLink = {
 	TYPE   : <%= link.getType() %>,
 	HREF   : '<%= StringEscapeUtils.escapeJavaScript(link.getHref()) %>',
 	TITLE  : '<%= StringEscapeUtils.escapeJavaScript(link.getTitle()) %>',
@@ -28,9 +29,8 @@ window.returnValue = {
 	STYLE  : '<%= StringEscapeUtils.escapeJavaScript(link.getCssStyle()) %>',
 	OTHER  : '<%= StringEscapeUtils.escapeJavaScript(link.getOtherParams()) %>'
 } ;<%
-} else { %>
-window.returnValue = null ;<%
 } %>
+window.opener.handleImcmsReturnLink(returnLink);
 window.close() ;
 </script> 
 

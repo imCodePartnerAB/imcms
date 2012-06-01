@@ -20,9 +20,10 @@ Integer metaId = EditImage.getMetaId(request);
 <head>
 	<title></title>
 
-<script type="text/javascript"><%
+<script type="text/javascript">
+var returnImage = null;<%
 if (null != image && StringUtils.isNotBlank(image.getUrlPathRelativeToContextPath())) { %>
-window.returnValue = {
+returnImage = {
 	src    : '<%= StringEscapeUtils.escapeJavaScript(ImcmsImageUtils.getImageUrl(metaId, image, request.getContextPath(), true)) %>',
 	alt    : '<%= StringEscapeUtils.escapeJavaScript(image.getAlternateText()) %>',<%
 	if (StringUtils.isNotBlank(image.getAlign())) { %>
@@ -39,9 +40,8 @@ window.returnValue = {
 	} %>
 	name   : '<%= StringEscapeUtils.escapeJavaScript(image.getName()) %>'
 } ;<%
-} else { %>
-window.returnValue = null ;<%
 } %>
+window.opener.handleImcmsReturnImage(returnImage);
 window.close();
 </script>
 
