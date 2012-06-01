@@ -35,6 +35,8 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
     doc.setCreatorId(0)
     doc.setCategoryIds(0.to(10).toSet.asJava)
     doc.setLanguage(LanguagesFX.english)
+    doc.setKeywords(Set("kw_abc", "kw_def", "kw_xyz", "kw_one kw_two kw_three").asJava)
+    //doc.setProperties(Map("prop_one"), ...)
 
     doc.getI18nMeta |> { m =>
       m.setHeadline("I18nMetaHeadlineEn")
@@ -87,22 +89,37 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       val indexedCategoriesTypesIds = indexDoc.getFieldValues(DocumentIndex.FIELD__CATEGORY_TYPE_ID).asScala.map(_.toString).toSet
       val indexedCategoriesTypesNames = indexDoc.getFieldValues(DocumentIndex.FIELD__CATEGORY_TYPE).asScala.map(_.toString).toSet
 
-      assertEquals("Indexed Categories Ids",
+      assertEquals("FIELD__META_ID", indexDoc.getField(DocumentIndex.FIELD__META_ID).toString, textDoc.getId.toString)
+      assertEquals("FIELD__META_ID_LEXICOGRAPHIC", indexDoc.getField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC).toString, textDoc.getId.toString)
+
+      // ROLE_ID
+
+      assertEquals("FIELD__META_HEADLINE", indexDoc.getField(DocumentIndex.FIELD__META_HEADLINE).toString, textDoc.getHeadline)
+      assertEquals("FIELD__META_HEADLINE_KEYWORD", indexDoc.getField(DocumentIndex.FIELD__META_HEADLINE_KEYWORD).toString, textDoc.getHeadline)
+      assertEquals("FIELD__META_TEXT", indexDoc.getField(DocumentIndex.FIELD__META_TEXT).toString, textDoc.getMenuText)
+
+
+      assertEquals("FIELD__KEYWORD",
+        Set("kw_abc", "kw_def", "kw_xyz", "kw_one kw_two kw_three"),
+        indexDoc.getFieldValues(DocumentIndex.FIELD__KEYWORD).asScala.map(_.toString).toSet
+      )
+
+      assertEquals("FIELD__CATEGORY_ID",
         Set("1", "2", "3", "4", "5"),
         indexedCategoriesIds
       )
 
-      assertEquals("Indexed Categories Names",
+      assertEquals("FIELD__CATEGORY",
         Set("category-one", "category-two", "category-three", "category-four", "category-five"),
         indexedCategoriesNames
       )
 
-      assertEquals("Indexed Categories Types Ids",
+      assertEquals("FIELD__CATEGORY_TYPE_ID",
         Set("1", "2", "3", "4", "5"),
         indexedCategoriesTypesIds
       )
 
-      assertEquals("Indexed Categories Types Names",
+      assertEquals("FIELD__CATEGORY_TYPE",
         Set("category-type-one", "category-type-two", "category-type-three", "category-type-four", "category-type-five"),
         indexedCategoriesTypesNames
       )
