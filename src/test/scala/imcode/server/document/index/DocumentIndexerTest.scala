@@ -21,8 +21,9 @@ import com.imcode.imcms.test.fixtures.LanguagesFX
 import com.imcode.imcms.mapping.DocumentMapper.TextDocumentMenuIndexPair
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.document.textdocument.{TextDocumentDomainObject, ImageDomainObject, TextDomainObject}
-import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject, DocumentDomainObject}
 import org.apache.solr.common.SolrInputDocument
+import imcode.server.user.RoleId
+import imcode.server.document.{DocumentPermissionSetTypeDomainObject, CategoryTypeDomainObject, CategoryDomainObject, DocumentDomainObject}
 
 @RunWith(classOf[JUnitRunner])
 class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
@@ -32,11 +33,22 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
   // text doc to index
   val textDoc = new TextDocumentDomainObject |>> { doc =>
     doc.setId(1001)
-    doc.setCreatorId(0)
+    doc.setCreatorId(100)
+    doc.setPublisherId(200)
     doc.setCategoryIds(0.to(10).toSet.asJava)
     doc.setLanguage(LanguagesFX.english)
     doc.setKeywords(Set("kw_abc", "kw_def", "kw_xyz", "kw_one kw_two kw_three").asJava)
+    doc.setAlias("main")
+
+    //how to index?
     //doc.setProperties(Map("prop_one"), ...)
+
+    // only roles are indexed, permission sets are ignored
+    doc.getMeta.getRoleIdToDocumentPermissionSetTypeMappings |> { m =>
+      m.setPermissionSetTypeForRole(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL)
+      m.setPermissionSetTypeForRole(RoleId.USERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
+      m.setPermissionSetTypeForRole(RoleId.SUPERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
+    }
 
     doc.getI18nMeta |> { m =>
       m.setHeadline("I18nMetaHeadlineEn")
@@ -75,7 +87,10 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
 
     fx.addParentDocumentsFor(textDoc,
       fx.ParentDoc(0, 0),
-      fx.ParentDoc(1, 2),
+      fx.ParentDoc(1, 0),
+      fx.ParentDoc(1, 1),
+      fx.ParentDoc(2, 0),
+      fx.ParentDoc(2, 1),
       fx.ParentDoc(2, 2)
     )
   } |> { _.docIndexer }
@@ -89,20 +104,58 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       val indexedCategoriesTypesIds = indexDoc.getFieldValues(DocumentIndex.FIELD__CATEGORY_TYPE_ID).asScala.map(_.toString).toSet
       val indexedCategoriesTypesNames = indexDoc.getFieldValues(DocumentIndex.FIELD__CATEGORY_TYPE).asScala.map(_.toString).toSet
 
-      assertEquals("FIELD__META_ID", indexDoc.getField(DocumentIndex.FIELD__META_ID).toString, textDoc.getId.toString)
-      assertEquals("FIELD__META_ID_LEXICOGRAPHIC", indexDoc.getField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC).toString, textDoc.getId.toString)
+      assertEquals("FIELD__META_ID", textDoc.getId.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__META_ID))
+      assertEquals("FIELD__META_ID_LEXICOGRAPHIC", textDoc.getId.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC))
 
-      // ROLE_ID
+      assertEquals("FIELD__ROLE_ID",
+        Set(RoleId.USERS, RoleId.USERADMIN, RoleId.SUPERADMIN).map(_.toString),
+        indexDoc.getFieldValues(DocumentIndex.FIELD__ROLE_ID).asScala.map(_.toString).toSet
+      )
 
-      assertEquals("FIELD__META_HEADLINE", indexDoc.getField(DocumentIndex.FIELD__META_HEADLINE).toString, textDoc.getHeadline)
-      assertEquals("FIELD__META_HEADLINE_KEYWORD", indexDoc.getField(DocumentIndex.FIELD__META_HEADLINE_KEYWORD).toString, textDoc.getHeadline)
-      assertEquals("FIELD__META_TEXT", indexDoc.getField(DocumentIndex.FIELD__META_TEXT).toString, textDoc.getMenuText)
+      assertEquals("FIELD__META_HEADLINE", textDoc.getHeadline, indexDoc.getFieldValue(DocumentIndex.FIELD__META_HEADLINE))
+      assertEquals("FIELD__META_HEADLINE_KEYWORD", textDoc.getHeadline, indexDoc.getFieldValue(DocumentIndex.FIELD__META_HEADLINE_KEYWORD))
+      assertEquals("FIELD__META_TEXT", textDoc.getMenuText, indexDoc.getFieldValue(DocumentIndex.FIELD__META_TEXT))
 
+      assertEquals("FIELD__DOC_TYPE_ID", textDoc.getDocumentTypeId.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__DOC_TYPE_ID))
+
+      assertEquals("FIELD__DOC_TYPE_ID", textDoc.getCreatorId.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__CREATOR_ID))
+      assertEquals("FIELD__PUBLISHER_ID", textDoc.getPublisherId.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__PUBLISHER_ID))
+
+      assertEquals("FIELD__CREATED_DATETIME", textDoc.getCreatedDatetime, indexDoc.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME))
+      assertEquals("FIELD__MODIFIED_DATETIME", textDoc.getModifiedDatetime, indexDoc.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME))
+      assertEquals("FIELD__ACTIVATED_DATETIME", textDoc.getPublicationStartDatetime, indexDoc.getFieldValue(DocumentIndex.FIELD__ACTIVATED_DATETIME))
+      assertEquals("FIELD__PUBLICATION_START_DATETIME", textDoc.getPublicationStartDatetime, indexDoc.getFieldValue(DocumentIndex.FIELD__PUBLICATION_START_DATETIME))
+      assertEquals("FIELD__PUBLICATION_END_DATETIME", textDoc.getPublicationEndDatetime, indexDoc.getFieldValue(DocumentIndex.FIELD__PUBLICATION_END_DATETIME))
+      assertEquals("FIELD__ARCHIVED_DATETIME", textDoc.getArchivedDatetime, indexDoc.getFieldValue(DocumentIndex.FIELD__ARCHIVED_DATETIME))
+
+      assertEquals("FIELD__STATUS", textDoc.getPublicationStatus.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__STATUS))
+
+      // ???
+      // ??? properties; AND .properties
+      // ???
 
       assertEquals("FIELD__KEYWORD",
         Set("kw_abc", "kw_def", "kw_xyz", "kw_one kw_two kw_three"),
         indexDoc.getFieldValues(DocumentIndex.FIELD__KEYWORD).asScala.map(_.toString).toSet
       )
+
+      assertEquals("FIELD__PARENT_ID",
+        Set("0", "1", "2"),
+        indexDoc.getFieldValues(DocumentIndex.FIELD__PARENT_ID).asScala.map(_.toString).toSet
+      )
+
+      assertEquals("FIELD__PARENT_MENU_ID",
+        Set("0_0", "1_0", "1_1", "2_0", "2_1", "2_2"),
+        indexDoc.getFieldValues(DocumentIndex.FIELD__PARENT_MENU_ID).asScala.map(_.toString).toSet
+      )
+
+
+      assertEquals("FIELD__HAS_PARENTS", true.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__HAS_PARENTS))
+      assertEquals("FIELD__ALIAS", textDoc.getAlias, indexDoc.getFieldValue(DocumentIndex.FIELD__ALIAS))
+
+      // ???
+      // properties wirt prefix
+      // ???
 
       assertEquals("FIELD__CATEGORY_ID",
         Set("1", "2", "3", "4", "5"),

@@ -34,42 +34,25 @@ class DocumentIndexer(
    */
   // TODO: refactor
   def index(doc: DocumentDomainObject): SolrInputDocument = new SolrInputDocument |>> { indexDoc =>
-//          if (doc == null) {
-//              throw new RuntimeException(String.format("Unable to index doc - doc does not exists. Doc id: %s.", documentId))
-//          }
     val documentId = doc.getId
 
-    indexDoc.addField(DocumentIndex.FIELD__META_ID, "" + documentId)
-//        indexDoc.add(new Field(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.YES, Field.Index.NOT_ANALYZED))
-    indexDoc.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, "" + documentId)
-//        indexDoc.add( unStoredKeyword( DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, NumberTools.longToString(documentId) ) )
-
-    val roleIdMappings: RoleIdToDocumentPermissionSetTypeMappings = doc.getRoleIdsMappedToDocumentPermissionSetTypes
-    for (mapping <- roleIdMappings.getMappings()) {
-      indexDoc.addField(DocumentIndex.FIELD__ROLE_ID, mapping.getRoleId.intValue.toString)
-//            indexDoc.add( unStoredKeyword( DocumentIndex.FIELD__ROLE_ID, Integer.toString(mapping.getRoleId().intValue())) )
-    }
+    indexDoc.addField(DocumentIndex.FIELD__META_ID, documentId.toString)
+    indexDoc.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, documentId.toString) // ???
 
     doc.getI18nMeta |> { l =>
       val headline = l.getHeadline
       val menuText = l.getMenuText
 
       indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE, headline)
-//            indexDoc.add(new Field(DocumentIndex.FIELD__META_HEADLINE, headline, Field.Store.NO, Field.Index.ANALYZED))
       indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE_KEYWORD, headline)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__META_HEADLINE_KEYWORD, headline))
       indexDoc.addField(DocumentIndex.FIELD__META_TEXT, menuText)
-//            indexDoc.add(new Field(DocumentIndex.FIELD__META_TEXT, menuText, Field.Store.NO, Field.Index.ANALYZED))
     }
 
-    indexDoc.addField(DocumentIndex.FIELD__DOC_TYPE_ID, "" + doc.getDocumentTypeId)
-//        indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__DOC_TYPE_ID, "" + doc.getDocumentTypeId()))
-    indexDoc.addField(DocumentIndex.FIELD__CREATOR_ID, "" + doc.getCreatorId)
-//        indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__CREATOR_ID, "" + doc.getCreatorId()))
+    indexDoc.addField(DocumentIndex.FIELD__DOC_TYPE_ID, doc.getDocumentTypeId.toString)
+    indexDoc.addField(DocumentIndex.FIELD__CREATOR_ID, doc.getCreatorId.toString)
 
     for (publisherId <- Option(doc.getPublisherId)) {
         indexDoc.addField(DocumentIndex.FIELD__PUBLISHER_ID, publisherId.toString)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__PUBLISHER_ID, "" + doc.getPublisherId()))
     }
 
     addDateFieldToIndexDocument(documentId, indexDoc, DocumentIndex.FIELD__CREATED_DATETIME, doc.getCreatedDatetime)
@@ -79,12 +62,53 @@ class DocumentIndexer(
     addDateFieldToIndexDocument(documentId, indexDoc, DocumentIndex.FIELD__PUBLICATION_END_DATETIME, doc.getPublicationEndDatetime)
     addDateFieldToIndexDocument(documentId, indexDoc, DocumentIndex.FIELD__ARCHIVED_DATETIME, doc.getArchivedDatetime)
 
-    indexDoc.addField(DocumentIndex.FIELD__STATUS, "" + doc.getPublicationStatus)
-//        indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__STATUS, "" + doc.getPublicationStatus()))
+    indexDoc.addField(DocumentIndex.FIELD__STATUS, doc.getPublicationStatus.toString)
 
+    // PROPERTIES values
+
+    for (category <- categoryMapper.getCategories(doc.getCategoryIds).asScala) {
+      indexDoc.addField(DocumentIndex.FIELD__CATEGORY, category.getName)
+      indexDoc.addField(DocumentIndex.FIELD__CATEGORY_ID, category.getId.toString)
+
+      val categoryType = category.getType
+      indexDoc.addField(DocumentIndex.FIELD__CATEGORY_TYPE, categoryType.getName)
+      indexDoc.addField(DocumentIndex.FIELD__CATEGORY_TYPE_ID, categoryType.getId.toString)
+    }
+
+    for (documentKeyword <- doc.getKeywords.asScala) {
+        indexDoc.addField(DocumentIndex.FIELD__KEYWORD, documentKeyword)
+    }
+
+
+    documentMapper.getDocumentMenuPairsContainingDocument(doc).map(p => p.getDocument.getId -> p.getMenuIndex) |> {
+      parentDocumentAndMenuIds =>
+
+        for ((parentId, menuId) <- parentDocumentAndMenuIds) {
+            indexDoc.addField(DocumentIndex.FIELD__PARENT_ID, parentId.toString)
+            indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId)
+        }
+
+        indexDoc.addField(DocumentIndex.FIELD__HAS_PARENTS, parentDocumentAndMenuIds.nonEmpty.toString)
+    }
+
+    for (alias <- Option(doc.getAlias)) {
+      indexDoc.addField(DocumentIndex.FIELD__ALIAS, alias)
+    }
+
+    // HOW TO INDEX???
     for ((name, value) <- doc.getProperties.asScala) {
         indexDoc.addField(name, value)
-//            indexDoc.add(unStoredKeyword(entry.getKey(), entry.getValue()))
+    }
+
+    for ((key, value) <- doc.getProperties.asScala) {
+      indexDoc.addField(DocumentIndex.FIELD__PROPERTY_PREFIX + key, value.toString)
+    }
+
+
+    // ??? WHY INDEX ???
+    val roleIdMappings: RoleIdToDocumentPermissionSetTypeMappings = doc.getRoleIdsMappedToDocumentPermissionSetTypes
+    for (mapping <- roleIdMappings.getMappings) {
+      indexDoc.addField(DocumentIndex.FIELD__ROLE_ID, mapping.getRoleId.intValue.toString)
     }
 
     try {
@@ -92,46 +116,7 @@ class DocumentIndexer(
     } catch {
       case re => logger.error("Error indexing doc-type-specific data of doc " + documentId, re)
     }
-
-    val categories = categoryMapper.getCategories(doc.getCategoryIds).asScala
-    for (category <- categories) {
-        indexDoc.addField(DocumentIndex.FIELD__CATEGORY, category.getName)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__CATEGORY, category.getName()))
-        indexDoc.addField(DocumentIndex.FIELD__CATEGORY_ID, "" + category.getId)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__CATEGORY_ID, "" + category.getId()))
-        val categoryType: CategoryTypeDomainObject = category.getType
-        indexDoc.addField(DocumentIndex.FIELD__CATEGORY_TYPE, categoryType.getName)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__CATEGORY_TYPE, categoryType.getName()))
-        indexDoc.addField(DocumentIndex.FIELD__CATEGORY_TYPE_ID, "" + categoryType.getId)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__CATEGORY_TYPE_ID, "" + categoryType.getId()))
-    }
-    for (documentKeyword <- doc.getKeywords.asScala) {
-        indexDoc.addField(DocumentIndex.FIELD__KEYWORD, documentKeyword)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__KEYWORD, documentKeyword))
-    }
-
-    val parentDocumentAndMenuIds = documentMapper.getDocumentMenuPairsContainingDocument(doc).map(p => p.getDocument.getId -> p.getMenuIndex)
-    for ((parentId, menuId) <- parentDocumentAndMenuIds) {
-        indexDoc.addField(DocumentIndex.FIELD__PARENT_ID, parentId.toString)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__PARENT_ID, parentId.toString()))
-        indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId))
-    }
-
-    val hasParents = parentDocumentAndMenuIds.nonEmpty
-    indexDoc.addField(DocumentIndex.FIELD__HAS_PARENTS, hasParents.toString)
-//        indexDoc.add( unStoredKeyword( DocumentIndex.FIELD__HAS_PARENTS, Boolean.toString(hasParents) ) )
-
-    for (alias <- Option(doc.getAlias)) {
-      indexDoc.addField(DocumentIndex.FIELD__ALIAS, doc.getAlias)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__ALIAS, doc.getAlias()))
-    }
-
-    for ((key, value) <- doc.getProperties.asScala) {
-      indexDoc.addField(DocumentIndex.FIELD__PROPERTY_PREFIX + key, value.toString)
-//            indexDoc.add(unStoredKeyword(DocumentIndex.FIELD__PROPERTY_PREFIX + propertyEntry.getKey(), "" + propertyEntry.getValue()))
-    }
-}
+  }
 
   private def addDateFieldToIndexDocument(documentId: Int, indexDocument: SolrInputDocument, fieldName: String,
                                           date: Date) {
