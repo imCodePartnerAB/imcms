@@ -246,7 +246,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setKeywords(keywords);
     }
 
-    public void setProperties(Map properties) {
+    public void setProperties(Map<String, String> properties) {
         meta.setProperties(properties);
     }
 

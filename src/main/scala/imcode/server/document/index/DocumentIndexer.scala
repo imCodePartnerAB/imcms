@@ -1,20 +1,15 @@
 package imcode.server.document.index
 
+import com.imcode._
+//import java.text.DateFormat
 import scala.collection.JavaConverters._
-import imcode.server.document.CategoryDomainObject
-import imcode.server.document.CategoryTypeDomainObject
 import imcode.server.document.DocumentDomainObject
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings.Mapping
 
-import com.imcode._
-import imcode.server.ImcmsServices
-
+import java.util.Date
 import imcode.util.DateConstants
 import org.apache.solr.common.SolrInputDocument
-import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util._
 import com.imcode.Log4jLoggerSupport
 import scala.reflect.BeanProperty
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
@@ -32,12 +27,12 @@ class DocumentIndexer(
    *
    * @return solr doc to be added into index.
    */
-  // TODO: refactor
   def index(doc: DocumentDomainObject): SolrInputDocument = new SolrInputDocument |>> { indexDoc =>
     val documentId = doc.getId
 
     indexDoc.addField(DocumentIndex.FIELD__META_ID, documentId.toString)
-    indexDoc.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, documentId.toString) // ???
+    // ??? WHY INDEX ???
+    indexDoc.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, documentId.toString)
 
     doc.getI18nMeta |> { l =>
       val headline = l.getHeadline
@@ -64,8 +59,6 @@ class DocumentIndexer(
 
     indexDoc.addField(DocumentIndex.FIELD__STATUS, doc.getPublicationStatus.toString)
 
-    // PROPERTIES values
-
     for (category <- categoryMapper.getCategories(doc.getCategoryIds).asScala) {
       indexDoc.addField(DocumentIndex.FIELD__CATEGORY, category.getName)
       indexDoc.addField(DocumentIndex.FIELD__CATEGORY_ID, category.getId.toString)
@@ -88,6 +81,7 @@ class DocumentIndexer(
             indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId)
         }
 
+        // WHY INDEX ???
         indexDoc.addField(DocumentIndex.FIELD__HAS_PARENTS, parentDocumentAndMenuIds.nonEmpty.toString)
     }
 
@@ -96,10 +90,13 @@ class DocumentIndexer(
     }
 
     // HOW TO INDEX???
-    for ((name, value) <- doc.getProperties.asScala) {
-        indexDoc.addField(name, value)
-    }
+    // remove not needed???
+//    for ((name, value) <- doc.getProperties.asScala) {
+//        indexDoc.addField(name, value)
+//    }
 
+    // why no multi - mutually exclusive???
+    // change to multi???
     for ((key, value) <- doc.getProperties.asScala) {
       indexDoc.addField(DocumentIndex.FIELD__PROPERTY_PREFIX + key, value.toString)
     }
@@ -118,12 +115,12 @@ class DocumentIndexer(
     }
   }
 
+  // todo: refactor
   private def addDateFieldToIndexDocument(documentId: Int, indexDocument: SolrInputDocument, fieldName: String,
                                           date: Date) {
     if (null != date) {
       try {
         indexDocument.addField(fieldName, date)
-//                indexDocument.add(unStoredKeyword(fieldName, date))
         return
       } catch {
         case re =>

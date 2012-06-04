@@ -7,7 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
 import org.scalatest.mock.MockitoSugar.mock
 import org.mockito.Mockito._
-import org.mockito.Matchers.{anyInt, anyCollectionOf, eq}
+import org.mockito.Matchers.{anyInt, anyCollectionOf, eq, anyObject, any}
 import scala.collection.JavaConverters._
 import imcode.server.ImcmsServices
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
@@ -20,10 +20,12 @@ import org.mockito.invocation.InvocationOnMock
 import com.imcode.imcms.test.fixtures.LanguagesFX
 import com.imcode.imcms.mapping.DocumentMapper.TextDocumentMenuIndexPair
 import scala.collection.mutable.{Map => MMap}
-import imcode.server.document.textdocument.{TextDocumentDomainObject, ImageDomainObject, TextDomainObject}
 import org.apache.solr.common.SolrInputDocument
 import imcode.server.user.RoleId
-import imcode.server.document.{DocumentPermissionSetTypeDomainObject, CategoryTypeDomainObject, CategoryDomainObject, DocumentDomainObject}
+import imcode.server.document._
+import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
+import imcode.util.io.FileInputStreamSource
+import imcode.server.document.textdocument.{MenuDomainObject, TextDocumentDomainObject, ImageDomainObject, TextDomainObject}
 
 @RunWith(classOf[JUnitRunner])
 class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
@@ -39,9 +41,7 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
     doc.setLanguage(LanguagesFX.english)
     doc.setKeywords(Set("kw_abc", "kw_def", "kw_xyz", "kw_one kw_two kw_three").asJava)
     doc.setAlias("main")
-
-    //how to index?
-    //doc.setProperties(Map("prop_one"), ...)
+    doc.setTemplateName("template_main")
 
     // only roles are indexed, permission sets are ignored
     doc.getMeta.getRoleIdToDocumentPermissionSetTypeMappings |> { m =>
@@ -54,6 +54,14 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       m.setHeadline("I18nMetaHeadlineEn")
       m.setMenuText("I18nMetaMenuTextEn")
     }
+
+    doc.setProperties(Map("p1" -> "property_one", "p2" -> "property_two", "p3" -> "property_three").asJava)
+
+    // setup menu items (FIELD__CHILD_ID) as mocks
+    // doc.setMenus(Map(
+    //   1 -> ...
+    //   2 -> ...
+    // ))
   }
 
   val docIndexer: DocumentIndexer = new DocumentIndexerFixture |>> { fx =>
@@ -130,10 +138,6 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
 
       assertEquals("FIELD__STATUS", textDoc.getPublicationStatus.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__STATUS))
 
-      // ???
-      // ??? properties; AND .properties
-      // ???
-
       assertEquals("FIELD__KEYWORD",
         Set("kw_abc", "kw_def", "kw_xyz", "kw_one kw_two kw_three"),
         indexDoc.getFieldValues(DocumentIndex.FIELD__KEYWORD).asScala.map(_.toString).toSet
@@ -152,10 +156,6 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
 
       assertEquals("FIELD__HAS_PARENTS", true.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__HAS_PARENTS))
       assertEquals("FIELD__ALIAS", textDoc.getAlias, indexDoc.getFieldValue(DocumentIndex.FIELD__ALIAS))
-
-      // ???
-      // properties wirt prefix
-      // ???
 
       assertEquals("FIELD__CATEGORY_ID",
         Set("1", "2", "3", "4", "5"),
@@ -176,10 +176,35 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
         Set("category-type-one", "category-type-two", "category-type-three", "category-type-four", "category-type-five"),
         indexedCategoriesTypesNames
       )
+
+      def propertyValue(name: String) = indexDoc.getFieldValue(DocumentIndex.FIELD__PROPERTY_PREFIX + name)
+
+      assertEquals("FIELD__PROPERTY_PREFIX",
+        Set("property_one", "property_two", "property_three"),
+        Set(propertyValue("p1"), propertyValue("p2"), propertyValue("p3"))
+      )
+
+      // ???
+      // properties wirt prefix
+      // ???
+
+      // content
+      assertEquals("FIELD__TEMPLATE", "template_main", indexDoc.getFieldValue(DocumentIndex.FIELD__TEMPLATE))
+
     }
 
     "create SolrInputDocument from FileDocumentDomainObject" in {
-      pending
+      for (file <- Test.dir("src/test/resources/test-file-doc-files").listFiles) {
+        val fdf = new FileDocumentFile |>> { fdf =>
+          fdf.setInputStreamSource(new FileInputStreamSource(file))
+          fdf.setMimeType("");
+        }
+
+        new FileDocumentDomainObject |>> { d =>
+          d.setCreatorId(0)
+          d.addFile(file.getName, fdf)
+        } |> docIndexer.index
+      }
     }
   }
 }
@@ -205,6 +230,10 @@ class DocumentIndexerFixture {
        availableCategories.toSet.asJava
      }
   })
+
+  when(documentMapperMock.getDocumentMenuPairsContainingDocument(any(classOf[DocumentDomainObject]))).thenReturn(
+    Array.empty[TextDocumentMenuIndexPair]
+  )
 
   val docIndexer = new DocumentIndexer |>> { di =>
     di.documentMapper = documentMapperMock

@@ -3,7 +3,6 @@ package imcode.server.document.index
 import com.imcode._
 import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
-import com.imcode.imcms.dao.{ImageDao, TextDao}
 import imcode.server.document.textdocument.{TextDomainObject, TextDocumentDomainObject}
 import imcode.server.document.{FileDocumentDomainObject, DocumentDomainObject}
 import org.apache.commons.io.IOUtils
@@ -45,11 +44,10 @@ class DocumentContentIndexer extends Log4jLoggerSupport {
   /**
    * Texts and images are not taken from textDocument. Instead they are queried from DB.
    */
-  def indexTextDoc(doc: TextDocumentDomainObject, indexDoc: SolrInputDocument): SolrInputDocument = {
+  def indexTextDoc(doc: TextDocumentDomainObject, indexDoc: SolrInputDocument): SolrInputDocument = indexDoc |>> { _ =>
     indexDoc.addField(DocumentIndex.FIELD__TEMPLATE, doc.getTemplateName)
 
-    // todo? include loop no into index vs multivalued
-    val texts =  Seq(doc.getTexts.values, doc.getLoopTexts.values).map(_.asScala).flatten
+    val texts = Seq(doc.getTexts.values, doc.getLoopTexts.values).map(_.asScala).flatten
     val images = Seq(doc.getImages.values, doc.getLoopImages.values).map(_.asScala).flatten
     val menus = doc.getMenus.values.asScala
 
@@ -74,13 +72,11 @@ class DocumentContentIndexer extends Log4jLoggerSupport {
     for (menu <- menus; menuItem <- menu.getMenuItems) {
       indexDoc.addField(DocumentIndex.FIELD__CHILD_ID, menuItem.getDocumentId.toString)
     }
-
-    indexDoc
   }
 
 
-  def indexFileDoc(fileDoc: FileDocumentDomainObject, indexDoc: SolrInputDocument): SolrInputDocument = {
-    fileDoc.getDefaultFile |> opt foreach { file =>
+  def indexFileDoc(doc: FileDocumentDomainObject, indexDoc: SolrInputDocument): SolrInputDocument = indexDoc |>> { _ =>
+    doc.getDefaultFile |> opt foreach { file =>
       indexDoc.addField(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType)
 //      val metadata = new Metadata |>> { m =>
 //        m.set(HttpHeaders.CONTENT_DISPOSITION, file.getFilename)
@@ -95,8 +91,6 @@ class DocumentContentIndexer extends Log4jLoggerSupport {
         case e => logger.error("Unable to index content of file-doc-file '%s'".format(file), e);
       }
     }
-
-    indexDoc
   }
 
 
