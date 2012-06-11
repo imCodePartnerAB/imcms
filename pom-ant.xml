@@ -228,6 +228,7 @@
         <filter token="choose-file-allowed-role-ids" value="${choose-file-allowed-role-ids}"/>
         <filter token="image-magick-path" value="${image-magick-path}"/>
         <filter token="image-cache-max-size" value="${image-cache-max-size}"/>
+        <filter token="image-size-cache-objects" value="${image-size-cache-objects}"/>
 
         <filter token="login-password-encryption-enabled" value="${login-password-encryption-enabled}"/>
         <filter token="login-password-encryption-salt" value="${login-password-encryption-salt}"/>

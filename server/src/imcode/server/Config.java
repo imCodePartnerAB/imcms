@@ -20,6 +20,8 @@ public class Config {
     private File imageCachePath;
     private String imageCacheAllowedPaths;
     private long imageCacheMaxSize;
+    // Maximum number of cached ImageSize objects for realSize of an ImageDomainObject
+    private int imageSizeCacheObjects = 10000;
     private String imageUrl;
     private String smtpServer;
     private int smtpPort;
@@ -399,5 +401,13 @@ public class Config {
 
     public void setSuperadminLoginPasswordResetAllowed(boolean superadminLoginPasswordResetAllowed) {
         this.superadminLoginPasswordResetAllowed = superadminLoginPasswordResetAllowed;
+    }
+
+    public int getImageSizeCacheObjects() {
+        return imageSizeCacheObjects;
+    }
+
+    public void setImageSizeCacheObjects(int imageSizeCacheObjects) {
+        this.imageSizeCacheObjects = imageSizeCacheObjects;
     }
 }

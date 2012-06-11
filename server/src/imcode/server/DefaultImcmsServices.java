@@ -69,6 +69,7 @@ import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.kerberos.KerberosLoginService;
+import imcode.util.*;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
@@ -184,6 +185,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private void initConfig(Properties props) {
         this.config = createConfigFromProperties(props);
+        
+        ImcmsImageUtils.setImageSizeCacheObjects(config.getImageSizeCacheObjects());
     }
 
     private static Config createConfigFromProperties(Properties props) {

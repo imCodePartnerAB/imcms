@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
+import com.imcode.util.ImageSize;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.util.image.Filter;
 import imcode.util.image.Format;
@@ -29,11 +30,9 @@ import imcode.util.image.Resize;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.InputStreamSource;
 import java.io.*;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,7 +43,9 @@ public class ImcmsImageUtils {
     // Set of file paths of images being currently generated.
     private static final Set<String> IMAGES_BEING_GENERATED = Collections.synchronizedSet(new HashSet<String>());
     
+    private static Map<String, ImageSize> IMAGE_SIZE_CACHE;
 
+    
     private ImcmsImageUtils() {
     }
 
@@ -458,5 +459,27 @@ public class ImcmsImageUtils {
             }
         }
         return imageSource;
+    }
+    
+    public static ImageSize getCachedRealSize(ImageDomainObject image) {
+        ImageSource source = image.getSource();
+        
+        String cacheId = source.getCacheId();
+        
+        ImageSize imageSize = IMAGE_SIZE_CACHE.get(cacheId);
+        
+        if (imageSize != null) {
+            return imageSize;
+        }
+        
+        imageSize = image.getRealImageSize();
+        
+        IMAGE_SIZE_CACHE.put(cacheId, imageSize);
+        
+        return imageSize;
+    }
+    
+    public static void setImageSizeCacheObjects(int cacheSize) {
+        IMAGE_SIZE_CACHE = Collections.synchronizedMap(new LRUMap(cacheSize));
     }
 }

@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.imcode.util.ImageSize;
+import imcode.util.io.FileInputStreamSource;
+import java.io.File;
 
 public abstract class ImageSource implements Serializable {
     public static final int IMAGE_TYPE_ID__NULL = -1;
@@ -54,9 +56,35 @@ public abstract class ImageSource implements Serializable {
     }
     
     ImageInfo getNonCachedImageInfo() throws IOException {
-    	return ImageOp.getImageInfo(Imcms.getServices().getConfig(), getInputStreamSource().getInputStream());
+        InputStreamSource source = getInputStreamSource();
+        
+        if (source instanceof FileInputStreamSource) {
+            File file = ((FileInputStreamSource) source).getFile();
+            
+            return ImageOp.getImageInfo(Imcms.getServices().getConfig(), file);
+        }
+        
+    	return ImageOp.getImageInfo(Imcms.getServices().getConfig(), source.getInputStream());
     }
 
+    public String getCacheId() {
+        String id = getUrlPathRelativeToContextPath();
+        
+        Date modified = getModifiedDatetime();
+        
+        id += "_" + (modified != null ? modified.getTime() : "0");
+        
+        InputStreamSource source = getInputStreamSource();
+        try {
+            id += "_" + source.getSize();
+            
+        } catch (IOException ex) {
+            id += "_0";
+        }
+        
+        return id;
+    }
+    
     public boolean isEmpty( ) {
         try {
             return getInputStreamSource().getSize() <= 0 ;

@@ -163,3 +163,7 @@ login-password-reset-lifespan =
 # Any non-true value or absence of value is treated as false.
 # Since 4.0.7
 superadmin-login-password-reset-allowed =
+
+# Maximum number of cached image size objects.
+image-size-cache-objects = 10000
+

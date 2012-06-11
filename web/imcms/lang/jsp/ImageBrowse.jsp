@@ -8,6 +8,8 @@
 	        com.imcode.imcms.util.l10n.LocalizedMessage,
 	        imcode.util.Utility,
             com.imcode.util.ImageSize,
+            imcode.util.image.Resize,
+            imcode.util.image.Format,
 	        java.io.File,
 	        imcode.util.io.FileUtility,
 	        java.util.List, java.awt.image.BufferedImage, javax.imageio.ImageIO, imcode.server.document.textdocument.ImageDomainObject, imcode.server.document.textdocument.ImagesPathRelativePathImageSource, imcode.util.ImcmsImageUtils"
@@ -116,32 +118,21 @@ if (null != imageBrowsePage.getLabel() ) { %>
 				//String pathAndFileName = "/images" + file.getPath().split("images")[1].replace("\\", "/");
 				String filePath = file.getPath() ;
 				String srcWithoutCp = "/images" + filePath.split("images")[1].replace("\\", "/");
-				String imgStyle = "width:" + THUMB_BOUNDARIES + "px; height:" + THUMB_BOUNDARIES + "px;" ;
 				String imgDimensions = "?" ;
 				ImageDomainObject iDO = new ImageDomainObject() ;
 				String path = filePath.replace(new File(imagesRoot, "/").toString(), "") ;
 				ImagesPathRelativePathImageSource imageSource = new ImagesPathRelativePathImageSource(path) ;
 				iDO.setSourceAndClearSize(imageSource) ;
+                iDO.setWidth(THUMB_BOUNDARIES);
+                iDO.setHeight(THUMB_BOUNDARIES);
+                iDO.setResize(Resize.GREATER_THAN);
 				try {
-                    ImageSize realSize = iDO.getRealImageSize();
+                    ImageSize realSize = ImcmsImageUtils.getCachedRealSize(iDO);
                     int orgWidth = realSize.getWidth();
                     int orgHeight = realSize.getHeight();
-					if (orgWidth > 0 && orgHeight > 0) {
-						if (orgWidth < THUMB_BOUNDARIES && orgHeight < THUMB_BOUNDARIES) {
-                            iDO.setWidth(orgWidth);
-                            iDO.setHeight(orgHeight);
-							imgStyle = "width:" + orgWidth + "px; height:" + orgHeight + "px;" ;
-						} else if (orgWidth > orgHeight) {
-                            iDO.setWidth(THUMB_BOUNDARIES);
-							imgStyle = "width:" + THUMB_BOUNDARIES + "px;" ;
-						} else {
-                            iDO.setHeight(THUMB_BOUNDARIES);
-							imgStyle = "height:" + THUMB_BOUNDARIES + "px;" ;
-						}
-						imgDimensions = orgWidth + " x " + orgHeight + ", " + ImageBrowse.getSimpleFileSize(file.length()) ;
-					}
+                    imgDimensions = orgWidth + " x " + orgHeight + ", " + ImageBrowse.getSimpleFileSize(file.length()) ;
 				} catch (Exception ignore) {}
-                String previewSrc = ImcmsImageUtils.getImagePreviewUrl(iDO, cp) ;
+                String previewSrc = ImcmsImageUtils.getImageUrl(null, iDO, cp);
 				String value = FileUtility.relativeFileToString(FileUtility.relativizeFile(imagesRoot, file)) ;
 				String src = cp + srcWithoutCp ;
 				String fileName = file.getName(); %>
@@ -152,13 +143,13 @@ if (null != imageBrowsePage.getLabel() ) { %>
 				<a href="javascript://choose()" title="<%= StringEscapeUtils.escapeHtml(fileName) %>"
 				   onclick="jQ('#imageCB<%= iCount %>').attr('checked', 'checked'); return false"
 				   ondblclick="jQ('#imageCB<%= iCount %>').attr('checked', 'checked'); jQ('#useBtn').click(); return false"><%
-					%><img src="<%= previewSrc %>" alt="" class="previewImage" style="<%= imgStyle %>margin:0; border:0;" longdesc="<%= iCount %>" /><%
+					%><img src="<%= previewSrc %>" alt="" class="previewImage" style="margin:0; border:0;" longdesc="<%= iCount %>" /><%
 				%></a></td>
 			</tr>
 			</table><%--
 			<%= "<hr/>" + imageSource.getUrlPathRelativeToContextPath() %>
 			<%= "<hr/>" + previewSrc + "<hr/>" %>
-			<img src="<%= previewSrc %>" alt="" class="previewImage" style="<%= imgStyle %>margin:0; border:0;" />--%>
+			<img src="<%= previewSrc %>" alt="" class="previewImage" style="margin:0; border:0;" />--%>
 			<div style="padding:2px; text-align:center; color:#999; font-size:9px;">
 				<%= imgDimensions %>
 			</div>
