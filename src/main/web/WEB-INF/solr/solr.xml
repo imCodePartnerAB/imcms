@@ -29,6 +29,6 @@
     If 'null' (or absent), cores will not be manageable via request handler
   -->
   <cores adminPath="/admin/cores">
-    <core name="imcms" instanceDir="imcms" />
+    <core name="core" instanceDir="core" />
   </cores>
 </solr>
