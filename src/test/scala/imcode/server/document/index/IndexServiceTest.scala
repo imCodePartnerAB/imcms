@@ -2,7 +2,6 @@ package imcode.server.document.index
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
 import imcode.server.Config
 import com.imcode._
 import com.imcode.imcms.test.Test
@@ -15,19 +14,20 @@ import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import org.apache.solr.client.solrj.response.QueryResponse
 import junit.framework.Assert._
 import java.util.Date
+import org.scalatest.{BeforeAndAfterEach, BeforeAndAfter, BeforeAndAfterAll, WordSpec}
 
 @RunWith(classOf[JUnitRunner])
-class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
+class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
+  //with BeforeAndAfterEach
 
   override def beforeAll() {
     Test.solr.recreateHome()
   }
 
-
   "IndexService constructor" should  {
     "throw an Exception when neither Config.solrUrl nor Config.solrHome is set" in {
       val ex = intercept[IllegalStateException] {
-        new IndexService(new Config)
+        //new SolrServerFactory(new Config)
       }
 
       assert("Configuration error. Neither Config.solrUrl nor Config.solrHome is set." === ex.getMessage)
@@ -38,8 +38,8 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
         c.setSolrHome(Test.solr.home)
       }
 
-      val solrServer = new IndexService(config).solrServer
-      assert(solrServer.isInstanceOf[EmbeddedSolrServer], "EmbeddedSolrServer")
+      //val solrServer = new SolrServerFactory(config).solrServer
+      //assert(solrServer.isInstanceOf[EmbeddedSolrServer], "EmbeddedSolrServer")
     }
 
     "create remote SOLr server when Config.solrUrl is set" in  {
@@ -48,8 +48,8 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
         c.setSolrUrl("http://localhost/solr/imcms")
       }
 
-      val solrServer = new IndexService(config).solrServer
-      assert(solrServer.isInstanceOf[HttpSolrServer], "HttpSolrServer")
+      //val solrServer = new SolrServerFactory(config).solrServer
+      //assert(solrServer.isInstanceOf[HttpSolrServer], "HttpSolrServer")
 
       fail("test connection using jetty")
     }
@@ -58,11 +58,11 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
   // xmlformat, binary format
 
   "SolrServer" should {
-    val solr = Test.solr.createEmbeddedServer()
     val dateTime = new Date
     val dateTimeStr = "%1$TFT%1$TT.%1$TLZ" format dateTime
 
     "store document using all fields defined in schema" in {
+      val solr = Test.solr.createEmbeddedServer()
       val df = new DocFields |>> { df =>
         df.metaId = 1001.toString
         df.docTypeId = 2
@@ -74,6 +74,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
     }
 
     "find previously stored document by *:*" in {
+      val solr = Test.solr.createEmbeddedServer()
       val query = new SolrQuery("*:*")
       val response = solr.query(query)
       val results = response.getResults
@@ -86,6 +87,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
     }
 
     "find previously stored document by meta_id:1001 AND doc_type_id:2" in {
+      val solr = Test.solr.createEmbeddedServer()
       val query = new SolrQuery("meta_id:1001 AND doc_type_id:2")
       val response = solr.query(query)
       val results = response.getResults
@@ -98,6 +100,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAft
     }
 
     "find nothing by created_datetime:dateTime AND doc_type_id:1" in {
+      val solr = Test.solr.createEmbeddedServer()
       val query = new SolrQuery("created_datetime:\""+dateTimeStr+"\" AND doc_type_id:1")
       val response = solr.query(query)
       val results = response.getResults

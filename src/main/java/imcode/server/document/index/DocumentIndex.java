@@ -46,7 +46,7 @@ public interface DocumentIndex {
 
     void rebuild() throws IndexException;
 
-    void indexDocument(DocumentDomainObject document) throws IndexException ;
+    void indexDocument(DocumentDomainObject document) throws IndexException;
 
     void removeDocument(DocumentDomainObject document) throws IndexException;
 

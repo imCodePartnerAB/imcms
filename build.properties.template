@@ -146,16 +146,9 @@ image-archive-max-zip-upload-size = 262144000
 image-cache-max-size = 524288000
 
 # Remote SOLr server URL
-# Type: URL; optional
+# Type: Http(s) URL; optional
 # Unless specified imCMS uses embedded SOLr server.
 solr-url=
-
-# Embedded SOLr server home.
-# Type: absolute or relative path; optional.
-# Value with leading slash '/' treated as absolute path.
-# Value without leading slash '/' treated as relative to application basedir.
-# When unspecified, defaults to 'WEB-INF/solr'
-solr-home=
 
 # Enables login passwords encryption
 # Type: boolean; optional; default: false

@@ -13,7 +13,7 @@ import org.springframework.context.support.{FileSystemXmlApplicationContext}
 import org.apache.commons.io.FileUtils
 import org.apache.solr.client.solrj.SolrServer
 import imcode.server.{Config, Imcms}
-import imcode.server.document.index.{IndexService, SolrServerShutdown}
+import imcode.server.document.index.{SolrServerFactory, SolrServerShutdown}
 
 object Test extends Test
 
@@ -161,17 +161,17 @@ trait TestSolr { test: Test =>
     }
 
     def deleteCoreDataDir() {
-      new File(home, "imcms/data") |> { dir =>
-        if (dir.exists() && !dir.delete()) sys.error("Unable to delete SOLr data  %s.".format(dir))
+      new File(home, "core/data") |> { dir =>
+        if (dir.exists() && !dir.delete()) sys.error("Unable to delete SOLr data dir %s.".format(dir))
       }
     }
 
-    def createEmbeddedServer(): SolrServer with SolrServerShutdown = {
-      val config = new Config() |>> { c =>
-        c.setSolrHome(home)
+    def createEmbeddedServer(recreateHome: Boolean = false): SolrServer with SolrServerShutdown = {
+      if (recreateHome) {
+        this.recreateHome()
       }
 
-      new IndexService(config).solrServer
+      SolrServerFactory.createEmbeddedSolrServer(home)
     }
   }
 }

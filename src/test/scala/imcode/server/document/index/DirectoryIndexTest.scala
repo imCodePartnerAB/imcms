@@ -18,6 +18,10 @@ import org.mockito.invocation.InvocationOnMock
 import imcode.server.document.textdocument.{ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
 import com.imcode.imcms.api.{DocumentVersion, I18nMeta}
 import scala.collection.JavaConverters._
+import java.io.File
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
+import org.apache.solr.core.{SolrCore, CoreDescriptor, CoreContainer}
+import org.apache.solr.client.solrj.SolrQuery
 
 @RunWith(classOf[JUnitRunner])
 class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
@@ -37,17 +41,48 @@ class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndA
 //    Test.imcms.init(start = true, prepareDbOnStart = true)
   }
 
-  "create composite DocumentIndex" in {
-    val solrServer = Test.solr.createEmbeddedServer()
-    val databaseMock = mock[Database]
-    val docMapper: DocumentMapper = null
-    val imcmsServices: ImcmsServices = null
+//  "create composite DocumentIndex" ignore {
+//    val solrServer = Test.solr.createEmbeddedServer(recreateHome = true)
+//    val databaseMock = mock[Database]
+//    val docMapper: DocumentMapper = null
+//    val imcmsServices: ImcmsServices = null
+//
+////    val docIndex = new LoggingDocumentIndex(databaseMock,
+////        new PhaseQueryFixingDocumentIndex(
+////            new RebuildingDirectoryIndex(solrServer, docMapper,
+////                        1.0f, //getConfig().getIndexingSchedulePeriodInMinutes(),
+////                        new SolrIndexDocumentFactory(imcmsServices))))
+//    solrServer.shutdown()
+//  }
 
-//    val docIndex = new LoggingDocumentIndex(databaseMock,
-//        new PhaseQueryFixingDocumentIndex(
-//            new RebuildingDirectoryIndex(solrServer, docMapper,
-//                        1.0f, //getConfig().getIndexingSchedulePeriodInMinutes(),
-//                        new SolrIndexDocumentFactory(imcmsServices))))
+  "create embedded solr server" in {
+    val coreContainer = new CoreContainer(Test.solr.home.getAbsolutePath, new File(Test.solr.home, "solr.xml"))
+//    val coreContainer = new CoreContainer(Test.solr.home.getAbsolutePath)
+//    val coreDescriptor = new CoreDescriptor(coreContainer, "core", new File(Test.solr.home, "core").getAbsolutePath)
+//    //coreDescriptor.setDataDir("/Users/ajosua/test/imSolr")
+//    val core = coreContainer.create(coreDescriptor)
+//    coreContainer.register(core, false)
+
+    println("SORL CONF> " + coreContainer.getCoreNames)
+    println("SORL HOME> " + coreContainer.getSolrHome)
+
+    //new EmbeddedSolrServer(coreContainer, "imcms") with SolrServerShutdown
+    val srv = new EmbeddedSolrServer(coreContainer, "core")
+    val srv2 = new EmbeddedSolrServer(coreContainer, "core")
+    //srv.ping()
+    while (true) try  {
+      println("QUERY>> " + srv.query(new SolrQuery("*:*")))
+//      srv.commit()
+      srv2.deleteByQuery("*:*")
+      println("QUERY>> " + srv.query(new SolrQuery("*:*")))
+      srv2.commit()
+      println("-------------------")
+    } catch {
+      case e => println("ERRR> " + e.getMessage); e.printStackTrace()
+    }
+    //srv.deleteById("*:*")
+    srv.shutdown()
+
   }
 
 }

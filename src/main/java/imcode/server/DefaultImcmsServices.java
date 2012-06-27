@@ -53,7 +53,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
@@ -264,20 +263,19 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initDocumentMapper() {
-        IndexService indexService = new IndexService(getConfig());
-        SolrServer solrServer = indexService.solrServer();
-        DocumentIndexer documentIndexer = new DocumentIndexer();
-
         documentMapper = new DocumentMapper(this, this.getDatabase());
-        documentIndexer.setDocumentMapper(documentMapper);
-        documentIndexer.setCategoryMapper(documentMapper.getCategoryMapper());
-        documentIndexer.setContentIndexer(new DocumentContentIndexer());
+        DocumentIndex documentIndex = DocumentIndexServiceFactory.createIndexService(this);
 
-        documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,
-                new PhaseQueryFixingDocumentIndex(
-                        new RebuildingDirectoryIndex(solrServer, documentMapper,
-                                getConfig().getIndexingSchedulePeriodInMinutes(),
-                                documentIndexer)))) ;
+        documentMapper.setDocumentIndex(documentIndex);
+        // todo:
+        //   Search Terms Logging - Y/N?
+        //   Do not parse and write query term into db every time - queue and write in a separate worker
+
+//        documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,
+//                new PhaseQueryFixingDocumentIndex(
+//                        new RebuildingDirectoryIndex(solrServer, documentMapper,
+//                                getConfig().getIndexingSchedulePeriodInMinutes(),
+//                                documentIndexer)))) ;
     }
 
     private void initTemplateMapper() {
