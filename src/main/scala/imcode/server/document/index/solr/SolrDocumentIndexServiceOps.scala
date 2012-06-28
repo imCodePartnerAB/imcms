@@ -7,15 +7,12 @@ import scala.collection.SeqView
 import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.client.solrj.SolrServer
-import imcode.server.user.UserDomainObject
 
 /**
  * Thread safe.
  */
 // todo: ??? mkXXX wrap any exception into indexCreate exception for distinguishing from SolrException ???
 // todo: ??? implement parallel indexing ???
-// todo: ??? implement search delegate - with/without user, additional params - size, etc ???
-//       ??? def search(solrServer: SolrServer, query: String, searchingUser: UserDomainObject) = ...
 class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) {
 
   type DocId = Int

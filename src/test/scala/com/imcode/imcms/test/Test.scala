@@ -13,7 +13,8 @@ import org.springframework.context.support.{FileSystemXmlApplicationContext}
 import org.apache.commons.io.FileUtils
 import org.apache.solr.client.solrj.SolrServer
 import imcode.server.{Config, Imcms}
-import imcode.server.document.index.solr.{SolrServerFactory, SolrServerShutdown}
+import imcode.server.document.index.solr.{SolrServerFactory}
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 
 object Test extends Test
 
@@ -166,7 +167,7 @@ trait TestSolr { test: Test =>
       }
     }
 
-    def createEmbeddedServer(recreateHome: Boolean = false): SolrServer with SolrServerShutdown = {
+    def createEmbeddedServer(recreateHome: Boolean = false): EmbeddedSolrServer = {
       if (recreateHome) {
         this.recreateHome()
       }

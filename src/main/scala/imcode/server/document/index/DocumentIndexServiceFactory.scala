@@ -13,7 +13,7 @@ import imcode.server.document.index.solr.DocumentContentIndexer
 
 object DocumentIndexServiceFactory extends Log4jLoggerSupport {
 
-  def createIndexService(services: ImcmsServices): DocumentIndexService = services.getConfig |> { config =>
+  def createService(services: ImcmsServices): DocumentIndexService = services.getConfig |> { config =>
     (Option(config.getSolrUrl), Option(config.getSolrHome)) |> {
       case (Some(solrUrl), _) => new RemoteSolrDocumentIndexService(solrUrl)
 

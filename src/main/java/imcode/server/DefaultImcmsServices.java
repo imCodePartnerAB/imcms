@@ -265,7 +265,7 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     private void initDocumentMapper() {
         documentMapper = new DocumentMapper(this, this.getDatabase());
-        DocumentIndex documentIndex = DocumentIndexServiceFactory.createIndexService(this);
+        DocumentIndex documentIndex = DocumentIndexServiceFactory.createService(this);
 
         documentMapper.setDocumentIndex(documentIndex);
         // todo:
