@@ -3,6 +3,7 @@ package imcode.server.document.index
 import com.imcode._
 import com.imcode.Log4jLoggerSupport
 import imcode.server.{ImcmsServices}
+import imcode.server.document.index.solr._
 
 object DocumentIndexServiceFactory extends Log4jLoggerSupport {
 
@@ -17,11 +18,13 @@ object DocumentIndexServiceFactory extends Log4jLoggerSupport {
         logger.fatal(errMsg)
         throw new IllegalArgumentException(errMsg)
     } |>> { service =>
-      service.documentMapper = services.getDocumentMapper
-      service.documentIndexer = new DocumentIndexer(
+      service.ops = new SolrDocumentIndexServiceOps(
         services.getDocumentMapper,
-        services.getCategoryMapper,
-        new DocumentContentIndexer
+        new DocumentIndexer(
+          services.getDocumentMapper,
+          services.getCategoryMapper,
+          new DocumentContentIndexer
+        )
       )
     }
   }

@@ -3,6 +3,7 @@ package imcode.server.document.index;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.index.solr.DocumentIndexer;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;

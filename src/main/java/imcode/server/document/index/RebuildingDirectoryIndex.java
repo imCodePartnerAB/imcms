@@ -2,6 +2,7 @@ package imcode.server.document.index;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.index.solr.DocumentIndexer;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import org.apache.commons.io.FileUtils;

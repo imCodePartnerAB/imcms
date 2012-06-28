@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.document.index.solr.DocumentIndexer;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;

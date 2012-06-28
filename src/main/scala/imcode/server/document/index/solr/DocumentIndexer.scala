@@ -1,4 +1,4 @@
-package imcode.server.document.index
+package imcode.server.document.index.solr
 
 import com.imcode._
 //import java.text.DateFormat
@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat
 import com.imcode.Log4jLoggerSupport
 import scala.reflect.BeanProperty
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
+import imcode.server.document.index.DocumentIndex
 
 class DocumentIndexer(
   @BeanProperty var documentMapper: DocumentMapper,

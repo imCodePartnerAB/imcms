@@ -26,6 +26,7 @@ import imcode.server.document._
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
 import imcode.util.io.FileInputStreamSource
 import imcode.server.document.textdocument.{MenuDomainObject, TextDocumentDomainObject, ImageDomainObject, TextDomainObject}
+import imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexer}
 
 @RunWith(classOf[JUnitRunner])
 class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {

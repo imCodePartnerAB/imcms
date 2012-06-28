@@ -5,6 +5,7 @@ import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.*;
+import imcode.server.document.index.DocumentIndexServiceFactory;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.Authenticator;
@@ -70,7 +71,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.kerberos.KerberosLoginService;
 
-final public class DefaultImcmsServices implements ImcmsServices {
+public class DefaultImcmsServices implements ImcmsServices {
 
 	private final Database database;
     private TextDocumentParser textDocParser;

@@ -1,4 +1,4 @@
-package imcode.server.document.index
+package imcode.server.document.index.solr
 
 import com.imcode._
 import scala.collection.JavaConverters._
@@ -12,6 +12,7 @@ import org.apache.tika.mime.MediaType
 import org.apache.tika.detect.Detector
 import java.io.InputStream
 import org.apache.tika.Tika
+import imcode.server.document.index.DocumentIndex
 
 class DocumentContentIndexer extends Log4jLoggerSupport {
 

@@ -1,4 +1,4 @@
-package imcode.server.document.index
+package imcode.server.document.index.solr
 
 import com.imcode._
 import com.imcode.imcms.mapping.DocumentMapper
@@ -7,11 +7,15 @@ import scala.collection.SeqView
 import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.client.solrj.SolrServer
+import imcode.server.user.UserDomainObject
 
 /**
  * Thread safe.
  */
-// mk - should wrap any exception into Ex dist from solrEx?
+// todo: ??? mkXXX wrap any exception into indexCreate exception for distinguishing from SolrException ???
+// todo: ??? implement parallel indexing ???
+// todo: ??? implement search delegate - with/without user, additional params - size, etc ???
+//       ??? def search(solrServer: SolrServer, query: String, searchingUser: UserDomainObject) = ...
 class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) {
 
   type DocId = Int
@@ -32,9 +36,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
   def mkSolrInputDocs(): SeqView[(DocId, Seq[SolrInputDocument]), Seq[_]] =
     documentMapper.getAllDocumentIds.asScala.view.map(docId => docId.toInt -> mkSolrInputDocs(docId))
 
-  // ??? def search(solrServer: SolrServer, query: String, searchingUser: UserDomainObject) = null
-
-  def addDocToIndex(solrServer: SolrServer, docId: Int) {
+  def addDocsToIndex(solrServer: SolrServer, docId: Int) {
     mkSolrInputDocs(docId) |> { solrInputDocs =>
       if (solrInputDocs.nonEmpty) {
         solrServer.add(solrInputDocs.asJava)
@@ -61,7 +63,9 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     solrServer.commit()
   }
 
-  def deleteDocFromIndex(solrServer: SolrServer, docId: Int) = null
+  def deleteDocsFromIndex(solrServer: SolrServer, docId: Int) = null
 
   def deleteDocFromIndex(solrServer: SolrServer, doc: DocumentDomainObject) = null
+
+  def search(solrServer: SolrServer, query: String) = null
 }

@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.test.config
 
+import com.imcode._
 import org.springframework.core.env.Environment
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.context.annotation._

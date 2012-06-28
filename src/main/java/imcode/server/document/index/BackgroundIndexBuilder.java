@@ -1,6 +1,7 @@
 package imcode.server.document.index;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.document.index.solr.DocumentIndexer;
 import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
 

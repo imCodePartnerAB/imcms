@@ -1,4 +1,4 @@
-package imcode.server.document.index
+package imcode.server.document.index.solr
 
 import com.imcode._
 import com.imcode.Log4jLoggerSupport
