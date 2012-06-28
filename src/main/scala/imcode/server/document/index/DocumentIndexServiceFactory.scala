@@ -3,11 +3,17 @@ package imcode.server.document.index
 import com.imcode._
 import com.imcode.Log4jLoggerSupport
 import imcode.server.{ImcmsServices}
-import imcode.server.document.index.solr._
+import imcode.server.document.index.solr.SolrDocumentIndexServiceOps
+import imcode.server.document.index.solr.RemoteSolrDocumentIndexService
+import imcode.server.document.index.solr.EmbeddedSolrDocumentIndexService
+import imcode.server.document.index.solr.SolrDocumentIndexServiceWrapper
+import imcode.server.document.index.solr.DocumentIndexer
+import imcode.server.document.index.solr.DocumentContentIndexer
+
 
 object DocumentIndexServiceFactory extends Log4jLoggerSupport {
 
-  def createIndexService(services: ImcmsServices): SolrDocumentIndexService = services.getConfig |> { config =>
+  def createIndexService(services: ImcmsServices): DocumentIndexService = services.getConfig |> { config =>
     (Option(config.getSolrUrl), Option(config.getSolrHome)) |> {
       case (Some(solrUrl), _) => new RemoteSolrDocumentIndexService(solrUrl)
 
@@ -26,6 +32,8 @@ object DocumentIndexServiceFactory extends Log4jLoggerSupport {
           new DocumentContentIndexer
         )
       )
+    } |> { service =>
+      new SolrDocumentIndexServiceWrapper(service)
     }
   }
 }

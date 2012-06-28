@@ -15,81 +15,76 @@ class RemoteSolrDocumentIndexService(solrUrl: String) extends SolrDocumentIndexS
   private val solrServerReader = SolrServerFactory.createHttpSolrServer(solrUrl)
   private val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrUrl)
 
-  protected val indexUpdate: IndexUpdate = new IndexUpdateImpl
+  private val events = new LinkedBlockingQueue[AlterRequest]//(1000)
+  private val eventsDispatcher = actor {
+    react {
+      // add DeleteXXX to the end of queue
+      case event: AlterRequest =>
+        if (!events.offer(event)) {
+          // log events query is full, unable to process
+          // request reindex
+        }
 
-  protected class IndexUpdateImpl extends IndexUpdate {
-    import Actor._
-
-    private val events = new LinkedBlockingQueue[Event]//(1000)
-    private val eventsDispatcher = actor {
-      react {
-        // add DeleteXXX to the end of queue
-        case event: Event =>
-          if (!events.offer(event)) {
-            // log events query is full, unable to process
-            // request reindex
-          }
-
-        case _ =>
-      }
+      case _ =>
     }
+  }
 
-    private val reindexTaskRef = new AtomicReference[JFuture[_]]
-    private val eventHandlerTaskRef = new AtomicReference[JFuture[_]]
-    private val executorService = Executors.newFixedThreadPool(2)
+  private val reindexTaskRef = new AtomicReference[JFuture[_]]
+  private val eventHandlerTaskRef = new AtomicReference[JFuture[_]]
+  private val executorService = Executors.newFixedThreadPool(2)
 
-    def submitEvent(event: Event) { eventsDispatcher ! event}
+  def requestAlter(event: AlterRequest) { eventsDispatcher ! event}
 
-    def requestRebuild(): JFuture[_] = reindexTaskRef.synchronized {
-      reindexTaskRef.get() match {
-        case task if !(task == null || task.isDone) => task
+  def requestRebuild(): JFuture[_] = reindexTaskRef.synchronized {
+    reindexTaskRef.get() match {
+      case task if !(task == null || task.isDone) => task
 
-        case _ =>
-          executorService.submit(new Runnable {
-            def run() {
-              try {
-                stopEventHandling()
-                ops.rebuildIndex(solrServerWriter)
-              } finally {
-                startEventHandling()
-              }
-            }
-          }) |>> reindexTaskRef.set
-      }
-    }
-
-    def startEventHandling() {
-      executorService.submit(new Runnable {
-        def run() {
-          while (!Thread.currentThread().isInterrupted) {
+      case _ =>
+        executorService.submit(new Runnable {
+          def run() {
             try {
-              events.poll() match {
-                case AddDocToIndex(doc) => ops.addDocToIndex(solrServerWriter, doc)
-                case AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
-                case DeleteDocFromIndex(doc) => ops.deleteDocFromIndex(solrServerWriter, doc)
-                case DeleteDocsFromIndex(docId) => ops.deleteDocsFromIndex(solrServerWriter, docId)
-              }
-            } catch {
-              case e: InterruptedException => Thread.currentThread().interrupt()
+              stopEventHandling()
+              ops.rebuildIndex(solrServerWriter)
+            } finally {
+              startEventHandling()
             }
+          }
+        }) |>> reindexTaskRef.set
+    }
+  }
+
+  def startEventHandling() {
+    executorService.submit(new Runnable {
+      def run() {
+        while (!Thread.currentThread().isInterrupted) {
+          try {
+            events.poll() match {
+              case AddDocToIndex(doc) => ops.addDocToIndex(solrServerWriter, doc)
+              case AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
+              case DeleteDocFromIndex(doc) => ops.deleteDocFromIndex(solrServerWriter, doc)
+              case DeleteDocsFromIndex(docId) => ops.deleteDocsFromIndex(solrServerWriter, docId)
+            }
+          } catch {
+            case e: InterruptedException => Thread.currentThread().interrupt()
           }
         }
-      })
-    }
+      }
+    })
+  }
 
-    def stopEventHandling() {
-      eventHandlerTaskRef.get() |> { task =>
-        if (task != null && !task.isDone) {
-          task.cancel(true)
-          scala.util.control.Exception.allCatch.opt {
-            task.get()
-          }
+  def stopEventHandling() {
+    eventHandlerTaskRef.get() |> { task =>
+      if (task != null && !task.isDone) {
+        task.cancel(true)
+        scala.util.control.Exception.allCatch.opt {
+          task.get()
         }
       }
     }
   }
 
-  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
+
+  def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
     try {
       val queryResponse = solrServerReader.query(new SolrQuery(query.toString))
 
