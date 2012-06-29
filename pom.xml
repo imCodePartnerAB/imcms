@@ -422,10 +422,10 @@
         </dependency>
 
         <!--<dependency>-->
-            <!--<groupId>org.apache.lucene</groupId>-->
-            <!--<artifactId>lucene-core</artifactId>-->
-            <!--&lt;!&ndash;<version>3.0.0</version>&ndash;&gt;-->
-            <!--<version>2.9.1</version>-->
+        <!--<groupId>org.apache.lucene</groupId>-->
+        <!--<artifactId>lucene-core</artifactId>-->
+        <!--&lt;!&ndash;<version>3.0.0</version>&ndash;&gt;-->
+        <!--<version>2.9.1</version>-->
         <!--</dependency>-->
 
         <dependency>
@@ -576,6 +576,12 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-swing</artifactId>
             <version>${scala.version}</version>
         </dependency>
 

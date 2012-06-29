@@ -1,34 +1,26 @@
 package imcode.server.document.index.solr
 
 import com.imcode._
-import scala.collection.JavaConverters._
-import com.imcode.imcms.mapping.DocumentMapper
 import com.imcode.Log4jLoggerSupport
-import java.io.File
 import imcode.server.document.DocumentDomainObject
 import imcode.server.user.UserDomainObject
-import org.apache.solr.common.SolrInputDocument
-import scala.actors.{DaemonActor, Actor, TIMEOUT}
-import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.{LinkedBlockingQueue, BlockingQueue, Callable, Executors, Future => JFuture}
-import java.util.LinkedList
+import java.util.concurrent.{Future => JFuture}
 import scala.reflect.BeanProperty
-import imcode.server.document.index.{DocumentQuery, DocumentIndex}
-import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
+import org.apache.solr.client.solrj.{SolrQuery}
+import scala.swing.Publisher
 
+object SolrDocumentIndexService {
+  sealed trait AlterIndexRequest
+  case class AddDocToIndex(doc: DocumentDomainObject) extends AlterIndexRequest
+  case class AddDocsToIndex(docId: Int) extends AlterIndexRequest
+  case class DeleteDocFromIndex(doc: DocumentDomainObject) extends AlterIndexRequest
+  case class DeleteDocsFromIndex(docId: Int) extends AlterIndexRequest
+}
 
-abstract class SolrDocumentIndexService extends Log4jLoggerSupport {
-  sealed trait AlterRequest
-  case class AddDocToIndex(doc: DocumentDomainObject) extends AlterRequest
-  case class AddDocsToIndex(docId: Int) extends AlterRequest
-  case class DeleteDocFromIndex(doc: DocumentDomainObject) extends AlterRequest
-  case class DeleteDocsFromIndex(docId: Int) extends AlterRequest
-
-  @BeanProperty
-  var ops: SolrDocumentIndexServiceOps = _
-
-  def requestAlter(request: AlterRequest)
-  def requestRebuild(): JFuture[_] // ??? IndexRebuild { def task(): Option[JFuture]; def }
+// todo: should be stateless trait; remove ops setter/getter
+abstract class SolrDocumentIndexService extends Publisher with Log4jLoggerSupport {
+  def requestAlterIndex(request: SolrDocumentIndexService.AlterIndexRequest)
+  def requestRebuildIndex(): JFuture[_] // ??? IndexRebuild { def task(): Option[JFuture]; def }
   def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject]
-  def shutdown() // ???
+  def shutdown()
 }

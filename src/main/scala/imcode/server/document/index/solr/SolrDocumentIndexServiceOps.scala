@@ -9,7 +9,7 @@ import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.client.solrj.SolrServer
 
 /**
- * Thread safe.
+ * The instance of this class is thread save.
  */
 // todo: ??? mkXXX wrap any exception into indexCreate exception for distinguishing from SolrException ???
 // todo: ??? implement parallel indexing ???

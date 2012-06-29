@@ -11,15 +11,15 @@ import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.index.DocumentQuery
 
 // solrUrl: String, solrReadOnlyUrl: String
-class RemoteSolrDocumentIndexService(solrUrl: String) extends SolrDocumentIndexService {
+class RemoteSolrDocumentIndexService(solrUrl: String, ops: SolrDocumentIndexServiceOps) extends SolrDocumentIndexService {
   private val solrServerReader = SolrServerFactory.createHttpSolrServer(solrUrl)
   private val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrUrl)
 
-  private val events = new LinkedBlockingQueue[AlterRequest]//(1000)
+  private val events = new LinkedBlockingQueue[SolrDocumentIndexService.AlterIndexRequest]//(1000)
   private val eventsDispatcher = actor {
     react {
       // add DeleteXXX to the end of queue
-      case event: AlterRequest =>
+      case event: SolrDocumentIndexService.AlterIndexRequest =>
         if (!events.offer(event)) {
           // log events query is full, unable to process
           // request reindex
@@ -33,9 +33,9 @@ class RemoteSolrDocumentIndexService(solrUrl: String) extends SolrDocumentIndexS
   private val eventHandlerTaskRef = new AtomicReference[JFuture[_]]
   private val executorService = Executors.newFixedThreadPool(2)
 
-  def requestAlter(event: AlterRequest) { eventsDispatcher ! event}
+  def requestAlterIndex(event: SolrDocumentIndexService.AlterIndexRequest) { eventsDispatcher ! event}
 
-  def requestRebuild(): JFuture[_] = reindexTaskRef.synchronized {
+  def requestRebuildIndex(): JFuture[_] = reindexTaskRef.synchronized {
     reindexTaskRef.get() match {
       case task if !(task == null || task.isDone) => task
 
@@ -59,10 +59,10 @@ class RemoteSolrDocumentIndexService(solrUrl: String) extends SolrDocumentIndexS
         while (!Thread.currentThread().isInterrupted) {
           try {
             events.poll() match {
-              case AddDocToIndex(doc) => ops.addDocToIndex(solrServerWriter, doc)
-              case AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
-              case DeleteDocFromIndex(doc) => ops.deleteDocFromIndex(solrServerWriter, doc)
-              case DeleteDocsFromIndex(docId) => ops.deleteDocsFromIndex(solrServerWriter, docId)
+              case SolrDocumentIndexService.AddDocToIndex(doc) => ops.addDocToIndex(solrServerWriter, doc)
+              case SolrDocumentIndexService.AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
+              case SolrDocumentIndexService.DeleteDocFromIndex(doc) => ops.deleteDocFromIndex(solrServerWriter, doc)
+              case SolrDocumentIndexService.DeleteDocsFromIndex(docId) => ops.deleteDocsFromIndex(solrServerWriter, docId)
             }
           } catch {
             case e: InterruptedException => Thread.currentThread().interrupt()
