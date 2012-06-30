@@ -10,24 +10,27 @@ import org.apache.solr.client.solrj.SolrQuery
 import java.util.concurrent.atomic.AtomicReference
 import java.util.Collections
 import scala.actors.{Actor}
-import scala.swing.{Publisher, Reactor}
+import scala.swing.{Reactor}
 import scala.swing.event.Event
 
-
+/**
+ *
+ */
 object NoOpSolrDocumentIndexService extends SolrDocumentIndexService {
 
   def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = Collections.emptyList()
 
-  def requestAlterIndex(request: SolrDocumentIndexService.AlterIndexRequest) {}
+  def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp) {}
                                                // class - return real future?
-  def requestRebuildIndex(): JFuture[_] = null // ??? IndexRebuild { def task(): Option[JFuture]; def }
+  def requestIndexRebuild(): JFuture[_] = null // ??? IndexRebuild { def task(): Option[JFuture]; def }
 
   def shutdown() {}
 }
 
+
 /**
- * Delegates all invocations to the instance of EmbeddedSolrDocumentIndexService.
- * In case of an indexing error replaces target instance with new.
+ * Delegates all invocations to the self-managed instance of EmbeddedSolrDocumentIndexService.
+ * In case of an indexing error replaces target instance with a new.
  */
 class EmbeddedSolrDocumentIndexServiceProxy(solrHome: File, ops: SolrDocumentIndexServiceOps)
     extends SolrDocumentIndexService with Reactor {
@@ -40,8 +43,8 @@ class EmbeddedSolrDocumentIndexServiceProxy(solrHome: File, ops: SolrDocumentInd
       serviceRef.synchronized {
         serviceRef.get() match {
           case service if service eq publisher =>
-            serviceRef.set(NoOpSolrDocumentIndexService)
             deafTo(service)
+            serviceRef.set(NoOpSolrDocumentIndexService)
             service.shutdown()
             // wait till shutdown
             serviceRef.set(newService(requestIndexRebuild = true))
@@ -52,24 +55,22 @@ class EmbeddedSolrDocumentIndexServiceProxy(solrHome: File, ops: SolrDocumentInd
 
   // todo: replace requestIndexRebuild flag with enum values
   private def newService(requestIndexRebuild: Boolean = false): EmbeddedSolrDocumentIndexService =
-    new EmbeddedSolrDocumentIndexService(solrHome) |>> { service =>
-      service.ops = ops
-    } |>> { service =>
+    new EmbeddedSolrDocumentIndexService(solrHome, ops) |>> { service =>
       listenTo(service)
       serviceRef.set(service)
       if (requestIndexRebuild) {
-        service.requestRebuildIndex()
+        service.requestIndexRebuild()
       }
     }
 
   def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
     serviceRef.get().search(query, searchingUser)
 
-  def requestAlterIndex(request: SolrDocumentIndexService.AlterIndexRequest) {
-    serviceRef.get().requestAlterIndex(request)
+  def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp) {
+    serviceRef.get().requestIndexUpdate(op)
   }
 
-  def requestRebuildIndex(): JFuture[_] = serviceRef.get().requestRebuildIndex() // ??? IndexRebuild { def task(): Option[JFuture]; def }
+  def requestIndexRebuild(): JFuture[_] = serviceRef.get().requestIndexRebuild() // ??? IndexRebuild { def task(): Option[JFuture]; def }
 
   def shutdown() {
     serviceRef.get().shutdown()
@@ -82,16 +83,20 @@ object EmbeddedSolrDocumentIndexService {
 }
 
 
+/**
+ *
+ */
 class EmbeddedSolrDocumentIndexService(solrHome: File, ops: SolrDocumentIndexServiceOps) extends SolrDocumentIndexService {
   private val solrServerReader = SolrServerFactory.createEmbeddedSolrServer(solrHome)
   private val solrServerWriter = SolrServerFactory.createEmbeddedSolrServer(solrHome)
 
-  private val alterIndexRequests = new LinkedBlockingQueue[SolrDocumentIndexService.AlterIndexRequest]//(1000)
-  private val alterIndexRequestsDispatcher = actor {
+  private val indexUpdateOps = new LinkedBlockingQueue[SolrDocumentIndexService.IndexUpdateOp]//(1000)
+  private val indexUpdateOpsRegistrator = actor {
     react {
       // add DeleteXXX to the end of queue as they are more lightweight
-      case request: SolrDocumentIndexService.AlterIndexRequest =>
-        if (!alterIndexRequests.offer(request)) {
+      // FATAL ERROR
+      case op: SolrDocumentIndexService.IndexUpdateOp =>
+        if (!indexUpdateOps.offer(op)) {
           // log events query is full, unable to process
           // request reindex
         }
@@ -100,56 +105,67 @@ class EmbeddedSolrDocumentIndexService(solrHome: File, ops: SolrDocumentIndexSer
     }
   }
 
-  private val reindexTaskRef = new AtomicReference[JFuture[_]]
-  private val eventHandlerTaskRef = new AtomicReference[JFuture[_]]
+  private val indexRebuildTaskRef = new AtomicReference[JFuture[_]]
+  private val indexUpdateTaskRef = new AtomicReference[JFuture[_]]
   private val executorService = Executors.newFixedThreadPool(2)
 
-  def requestAlterIndex(event: SolrDocumentIndexService.AlterIndexRequest) { alterIndexRequestsDispatcher ! event}
+  def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp) {
+    indexUpdateOpsRegistrator ! op
+  }
 
-  def requestRebuildIndex(): JFuture[_] = reindexTaskRef.synchronized {
-    reindexTaskRef.get() match {
+  def requestIndexRebuild(): JFuture[_] = indexRebuildTaskRef.synchronized {
+    indexRebuildTaskRef.get() match {
       case task if !(task == null || task.isDone) => task
 
       case _ =>
         executorService.submit(new Runnable {
           def run() {
             try {
-              stopAlterRequestsHandling()
+              cancelIndexUpdateTask()
               ops.rebuildIndex(solrServerWriter)
             } catch {
-              case e =>
+              case e: InterruptedException =>
+                Thread.currentThread().interrupt()
                 throw e
-                // repair: shutdown; recreate
 
+              case e =>
+                publish(EmbeddedSolrDocumentIndexService.IndexError(EmbeddedSolrDocumentIndexService.this, e))
+                throw e
             } finally {
-              startAlterRequestHandling()
+              startIndexUpdateTask()
             }
           }
-        }) |>> reindexTaskRef.set
+        }) |>> indexRebuildTaskRef.set
     }
   }
 
-  private def startAlterRequestHandling() {
+  private def startIndexUpdateTask() {
     executorService.submit(new Runnable {
       def run() {
         while (!Thread.currentThread().isInterrupted) {
           try {
-            alterIndexRequests.poll() match {
+            indexUpdateOps.poll() match {
               case SolrDocumentIndexService.AddDocToIndex(doc) => ops.addDocToIndex(solrServerWriter, doc)
               case SolrDocumentIndexService.AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
               case SolrDocumentIndexService.DeleteDocFromIndex(doc) => ops.deleteDocFromIndex(solrServerWriter, doc)
               case SolrDocumentIndexService.DeleteDocsFromIndex(docId) => ops.deleteDocsFromIndex(solrServerWriter, docId)
             }
           } catch {
-            case e: InterruptedException => Thread.currentThread().interrupt()
+            case e: InterruptedException =>
+              Thread.currentThread().interrupt()
+              throw e
+
+            case e =>
+              publish(EmbeddedSolrDocumentIndexService.IndexError(EmbeddedSolrDocumentIndexService.this, e))
+              throw e
           }
         }
       }
     })
   }
 
-  private def stopAlterRequestsHandling() {
-    eventHandlerTaskRef.get() |> { task =>
+  private def cancelIndexUpdateTask() {
+    indexUpdateTaskRef.get() |> { task =>
       if (task != null && !task.isDone) {
         task.cancel(true)
         scala.util.control.Exception.allCatch.opt {
@@ -168,13 +184,23 @@ class EmbeddedSolrDocumentIndexService(solrHome: File, ops: SolrDocumentIndexSer
     } catch {
       case e =>
         logger.error("Search error", e)
+        publish(EmbeddedSolrDocumentIndexService.IndexError(EmbeddedSolrDocumentIndexService.this, e))
         java.util.Collections.emptyList()
-      }
+    }
   }
 
+
+  def start() {
+    indexUpdateOpsRegistrator.start()
+    startIndexUpdateTask()
+  }
+
+
+  // ??? stop ???
   def shutdown() {
     solrServerReader.shutdown()
     solrServerWriter.shutdown()
+    executorService.shutdownNow()
+    // stop actor
   }
 }
-

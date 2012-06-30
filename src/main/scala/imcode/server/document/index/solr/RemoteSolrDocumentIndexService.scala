@@ -10,16 +10,16 @@ import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.index.DocumentQuery
 
-// solrUrl: String, solrReadOnlyUrl: String
+// todo: ??? add read-only solrServerUrl - i.e. (solrUrl: String, solrUrlReadOnly: String)
 class RemoteSolrDocumentIndexService(solrUrl: String, ops: SolrDocumentIndexServiceOps) extends SolrDocumentIndexService {
   private val solrServerReader = SolrServerFactory.createHttpSolrServer(solrUrl)
   private val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrUrl)
 
-  private val events = new LinkedBlockingQueue[SolrDocumentIndexService.AlterIndexRequest]//(1000)
+  private val events = new LinkedBlockingQueue[SolrDocumentIndexService.IndexUpdateOp]//(1000)
   private val eventsDispatcher = actor {
     react {
       // add DeleteXXX to the end of queue
-      case event: SolrDocumentIndexService.AlterIndexRequest =>
+      case event: SolrDocumentIndexService.IndexUpdateOp =>
         if (!events.offer(event)) {
           // log events query is full, unable to process
           // request reindex
@@ -33,9 +33,9 @@ class RemoteSolrDocumentIndexService(solrUrl: String, ops: SolrDocumentIndexServ
   private val eventHandlerTaskRef = new AtomicReference[JFuture[_]]
   private val executorService = Executors.newFixedThreadPool(2)
 
-  def requestAlterIndex(event: SolrDocumentIndexService.AlterIndexRequest) { eventsDispatcher ! event}
+  def requestIndexUpdate(event: SolrDocumentIndexService.IndexUpdateOp) { eventsDispatcher ! event}
 
-  def requestRebuildIndex(): JFuture[_] = reindexTaskRef.synchronized {
+  def requestIndexRebuild(): JFuture[_] = reindexTaskRef.synchronized {
     reindexTaskRef.get() match {
       case task if !(task == null || task.isDone) => task
 

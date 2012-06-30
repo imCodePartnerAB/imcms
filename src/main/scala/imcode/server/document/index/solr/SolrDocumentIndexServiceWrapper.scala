@@ -14,23 +14,23 @@ class SolrDocumentIndexServiceWrapper(service: SolrDocumentIndexService) extends
     = service.search(new SolrQuery(query.getQuery.toString), searchingUser)
 
   def indexDocument(docId: Int) {
-    service.requestAlterIndex(SolrDocumentIndexService.AddDocsToIndex(docId))
+    service.requestIndexUpdate(SolrDocumentIndexService.AddDocsToIndex(docId))
   }
 
   def indexDocument(document: DocumentDomainObject) {
-    service.requestAlterIndex(SolrDocumentIndexService.AddDocToIndex(document))
+    service.requestIndexUpdate(SolrDocumentIndexService.AddDocToIndex(document))
   }
 
   def removeDocument(docId: Int) {
-    service.requestAlterIndex(SolrDocumentIndexService.DeleteDocsFromIndex(docId))
+    service.requestIndexUpdate(SolrDocumentIndexService.DeleteDocsFromIndex(docId))
   }
 
   def removeDocument(document: DocumentDomainObject) {
-    service.requestAlterIndex(SolrDocumentIndexService.DeleteDocFromIndex(document))
+    service.requestIndexUpdate(SolrDocumentIndexService.DeleteDocFromIndex(document))
   }
 
   def rebuild() {
-    service.requestRebuildIndex()
+    service.requestIndexRebuild()
   }
 
   def shutdown() {

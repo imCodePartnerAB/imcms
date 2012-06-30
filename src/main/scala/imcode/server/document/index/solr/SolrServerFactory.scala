@@ -6,7 +6,6 @@ import org.apache.solr.client.solrj.impl.{BinaryRequestWriter, HttpSolrServer}
 import java.io.File
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.apache.solr.core.CoreContainer
-import org.apache.solr.client.solrj.SolrServer
 
 object SolrServerFactory extends Log4jLoggerSupport {
 
