@@ -13,50 +13,56 @@ object DocFX {
   // default doc/meta id - this doc/meta or an entity which have doc/meta id field always exists (or re-created) before each test.
   val defaultId = first
 
-  // doc/meta id an entity which have doc/meta id field which *never* exists before a test.
+  // doc/meta id an entity which have doc/meta id field which *never* exists before a test but created during this test.
   val newId = Int.MaxValue / 2
 
-  // missing doc/meta id an entity which have doc/meta id field
-  val missingId = Int.MaxValue
+  // vacant doc/meta id an entity which *never* exists before a test.
+  val vacantId = Int.MaxValue
 }
 
 object VersionFX {
   val Seq(zero, one, two, three, four, five, six, seven, eight, nine, ten) = 0 to 10
 
   val defaultNo = zero
+
   val newNo = Int.MaxValue / 2
-  val missingNo = Int.MaxValue
+
+  val vacantNo = Int.MaxValue
 }
 
 object DocItemFX {
   val Seq(zero, one, two, three, four, five, six, seven, eight, nine, ten) = 0 to 10
 
   val defaultNo = zero
+
   val newNo = Int.MaxValue / 2
-  val missingNo = Int.MaxValue
+
+  val vacantNo = Int.MaxValue
 }
 
 object UserFX {
 
-  def admin = new UserDomainObject(0) {
+  def mkSuperAdmin = new UserDomainObject(0) {
     addRoleId(RoleId.SUPERADMIN)
   }
 
-  def user = new UserDomainObject(2) {
+  def mkDefaultUser = new UserDomainObject(2) {
     addRoleId(RoleId.USERS)
   }
 }
 
-object LanguagesFX {
-  val english = new I18nLanguage.Builder().setId(1).setCode("en").setName("English").build
-  val swedish = new I18nLanguage.Builder().setId(2).setCode("sv").setName("Swedish").build
+object LanguageFX {
+  def mkEnglish: I18nLanguage = new I18nLanguage.Builder().id(1).code("en").name("English").nativeName("English").build
+  def mkSwedish: I18nLanguage = new I18nLanguage.Builder().id(2).code("sv").name("Swedish").nativeName("Svenska").build
 
-  def default = english
-  def languages = Seq(english, swedish)
-  def i18nSupport = new I18nSupport {
-    setDefaultLanguage(default)
+  def mkDefault: I18nLanguage = mkEnglish
+
+  def languages: Seq[I18nLanguage] = Seq(mkEnglish, mkSwedish)
+
+  def mkI18nSupport = new I18nSupport {
+    setDefaultLanguage(mkDefault)
     setLanguages(languages)
-    setHosts(Map.empty[String, I18nLanguage])
+    setHosts(Map("imcode.com" -> mkEnglish, "imcode.se" -> mkSwedish))
   }
 }
 

@@ -14,7 +14,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import imcms.test._
-import fixtures.LanguagesFX
+import fixtures.LanguageFX
 import imcms.test.Test
 import imcode.server.document._
 import java.util.EnumSet

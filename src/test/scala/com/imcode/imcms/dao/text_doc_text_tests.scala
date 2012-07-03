@@ -9,7 +9,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import imcms.test.Test.{db}
-import imcms.test.fixtures.LanguagesFX.{english, swedish, languages}
+import imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish, languages}
 import imcode.server.user.{RoleId, RoleDomainObject, UserDomainObject}
 import org.scalatest.fixture.FixtureFunSuite
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}

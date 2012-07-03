@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.index.solr.DocumentIndexer;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
@@ -64,12 +63,12 @@ class IndexBuildingThread extends Thread {
         log.debug( "Considering documents added and removed during index rebuild.");
         for (Iterator<Integer> iterator = documentsToAddToNewIndex.iterator(); iterator.hasNext(); ) {
             Integer docId = iterator.next();
-            index.indexDocument(docId);
+            index.indexDocuments(docId);
         }
         
         for (Iterator<Integer> iterator = documentsToRemoveFromNewIndex.iterator(); iterator.hasNext(); ) {
             Integer docId = iterator.next();
-            index.removeDocument(docId);
+            index.removeDocuments(docId);
             iterator.remove();
         }
     }

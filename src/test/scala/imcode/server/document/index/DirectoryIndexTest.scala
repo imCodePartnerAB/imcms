@@ -90,7 +90,7 @@ class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndA
 
 
 /**
- *
+ * REMOVE ???
  */
 class DirectoryIndexFixture {
 

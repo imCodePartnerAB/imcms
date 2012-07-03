@@ -95,10 +95,10 @@ class LanguageManager(app: ImcmsApplication) {
         dlg wrapOkHandler {
           new I18nLanguage.Builder |> { voc =>
             // todo: validate
-            voc.setCode(c.txtCode.value)
-            voc.setName(c.txtName.value)
-            voc.setNativeName(c.txtNativeName.value)
-            voc.setEnabled(c.chkEnabled.value)
+            voc.code(c.txtCode.value)
+            voc.name(c.txtName.value)
+            voc.nativeName(c.txtNativeName.value)
+            voc.enabled(c.chkEnabled.value)
 
             app.privileged(permission) {
               Ex.allCatch.either(languageDao saveLanguage voc.build()) match {

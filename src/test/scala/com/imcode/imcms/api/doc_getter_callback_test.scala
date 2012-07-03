@@ -6,7 +6,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import _root_.com.imcode.imcms.test.fixtures.{LanguagesFX, UserFX}
+import _root_.com.imcode.imcms.test.fixtures.{LanguageFX, UserFX}
 
 import imcode.server.user.UserDomainObject
 import org.mockito.Mockito._
@@ -17,11 +17,11 @@ import org.scalatest.mock.MockitoSugar
 @RunWith(classOf[JUnitRunner])
 class DocGetterCallbackSuite extends FunSuite {
 
-  Imcms.setI18nSupport(LanguagesFX.i18nSupport)
+  Imcms.setI18nSupport(LanguageFX.mkI18nSupport)
 
   test("default user - no params") {
     val request = MockitoSugar.mock[HttpServletRequest]
-    val user = UserFX.user
+    val user = UserFX.mkDefaultUser
 
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn null
@@ -33,25 +33,25 @@ class DocGetterCallbackSuite extends FunSuite {
 
   test("default user changing language through request param") {
     val request = MockitoSugar.mock[HttpServletRequest]
-    val user = UserFX.user
+    val user = UserFX.mkDefaultUser
 
-    Imcms.getI18nSupport.setDefaultLanguage(LanguagesFX.english)
+    Imcms.getI18nSupport.setDefaultLanguage(LanguageFX.mkEnglish)
 
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn LanguagesFX.swedish.getCode
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn LanguageFX.mkSwedish.getCode
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn null
 
     DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
 
-    assertEquals(LanguagesFX.swedish, user.getDocGetterCallback.getLanguage)
+    assertEquals(LanguageFX.mkSwedish, user.getDocGetterCallback.getLanguage)
   }
 
   test("default user requesting working version") {
     val request = MockitoSugar.mock[HttpServletRequest]
-    val user = UserFX.user
+    val user = UserFX.mkDefaultUser
 
-    Imcms.getI18nSupport.setDefaultLanguage(LanguagesFX.english)
+    Imcms.getI18nSupport.setDefaultLanguage(LanguageFX.mkEnglish)
 
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
@@ -63,9 +63,9 @@ class DocGetterCallbackSuite extends FunSuite {
 
   test("default user requesting custom version") {
     val request = MockitoSugar.mock[HttpServletRequest]
-    val user = UserFX.user
+    val user = UserFX.mkDefaultUser
 
-    Imcms.getI18nSupport.setDefaultLanguage(LanguagesFX.english)
+    Imcms.getI18nSupport.setDefaultLanguage(LanguageFX.mkEnglish)
 
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
@@ -77,9 +77,9 @@ class DocGetterCallbackSuite extends FunSuite {
 
   test("power user requesting working version") {
     val request = MockitoSugar.mock[HttpServletRequest]
-    val user = UserFX.admin
+    val user = UserFX.mkSuperAdmin
 
-    Imcms.getI18nSupport.setDefaultLanguage(LanguagesFX.english)
+    Imcms.getI18nSupport.setDefaultLanguage(LanguageFX.mkEnglish)
 
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
@@ -95,9 +95,9 @@ class DocGetterCallbackSuite extends FunSuite {
 
   test("power user requesting custom version") {
     val request = MockitoSugar.mock[HttpServletRequest]
-    val user = UserFX.admin
+    val user = UserFX.mkSuperAdmin
 
-    Imcms.getI18nSupport.setDefaultLanguage(LanguagesFX.english)
+    Imcms.getI18nSupport.setDefaultLanguage(LanguageFX.mkEnglish)
 
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"

@@ -1,7 +1,7 @@
 CREATE PROCEDURE GetTemplateGroupsForUser @meta_id INT, @user_id INT AS
 /*
  Nice query that fetches all templategroups a user may use in a document,
- for easy insertion into an html-option-list, no less!
+ for easy insertion into an html-option-listByNamedParams, no less!
 */
 SELECT distinct group_id,group_name
 FROM   templategroups dt

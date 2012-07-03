@@ -13,20 +13,22 @@ class SolrDocumentIndexServiceWrapper(service: SolrDocumentIndexService) extends
   def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject]
     = service.search(new SolrQuery(query.getQuery.toString), searchingUser)
 
-  def indexDocument(docId: Int) {
+  def indexDocuments(docId: Int) {
     service.requestIndexUpdate(SolrDocumentIndexService.AddDocsToIndex(docId))
   }
 
-  def indexDocument(document: DocumentDomainObject) {
-    service.requestIndexUpdate(SolrDocumentIndexService.AddDocToIndex(document))
-  }
-
-  def removeDocument(docId: Int) {
+  def removeDocuments(docId: Int) {
     service.requestIndexUpdate(SolrDocumentIndexService.DeleteDocsFromIndex(docId))
   }
 
+  @Deprecated
+  def indexDocument(document: DocumentDomainObject) {
+    indexDocuments(document.getId)
+  }
+
+  @Deprecated
   def removeDocument(document: DocumentDomainObject) {
-    service.requestIndexUpdate(SolrDocumentIndexService.DeleteDocFromIndex(document))
+    removeDocuments(document.getId)
   }
 
   def rebuild() {

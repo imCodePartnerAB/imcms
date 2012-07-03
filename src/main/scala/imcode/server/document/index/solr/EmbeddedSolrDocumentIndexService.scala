@@ -30,7 +30,7 @@ object NoOpSolrDocumentIndexService extends SolrDocumentIndexService {
 
 /**
  * Delegates all invocations to the self-managed instance of EmbeddedSolrDocumentIndexService.
- * In case of an indexing error replaces target instance with a new.
+ * In case of an indexing error replaces target instance with a new instance.
  */
 class EmbeddedSolrDocumentIndexServiceProxy(solrHome: File, ops: SolrDocumentIndexServiceOps)
     extends SolrDocumentIndexService with Reactor {
@@ -145,9 +145,7 @@ class EmbeddedSolrDocumentIndexService(solrHome: File, ops: SolrDocumentIndexSer
         while (!Thread.currentThread().isInterrupted) {
           try {
             indexUpdateOps.poll() match {
-              case SolrDocumentIndexService.AddDocToIndex(doc) => ops.addDocToIndex(solrServerWriter, doc)
               case SolrDocumentIndexService.AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
-              case SolrDocumentIndexService.DeleteDocFromIndex(doc) => ops.deleteDocFromIndex(solrServerWriter, doc)
               case SolrDocumentIndexService.DeleteDocsFromIndex(docId) => ops.deleteDocsFromIndex(solrServerWriter, docId)
             }
           } catch {

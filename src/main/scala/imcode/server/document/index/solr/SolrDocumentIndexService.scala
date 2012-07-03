@@ -12,7 +12,7 @@ import scala.swing.Publisher
  * Defines interface for SOLr based Document Index Service.
  * requestXXX methods are expected to execute asynchronously.
  */
-abstract class SolrDocumentIndexService extends Publisher with Log4jLoggerSupport {
+abstract class SolrDocumentIndexService extends Publisher with Log4jLoggerSupport { // ??? publisher ???
   def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp)
   def requestIndexRebuild(): JFuture[_] // ??? IndexRebuild { def task(): Option[JFuture]; def }
   def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] // ??? move searching user into wrapper ???
@@ -22,8 +22,9 @@ abstract class SolrDocumentIndexService extends Publisher with Log4jLoggerSuppor
 
 object SolrDocumentIndexService {
   sealed trait IndexUpdateOp
-  case class AddDocToIndex(doc: DocumentDomainObject) extends IndexUpdateOp
-  case class AddDocsToIndex(docId: Int) extends IndexUpdateOp
-  case class DeleteDocFromIndex(doc: DocumentDomainObject) extends IndexUpdateOp
-  case class DeleteDocsFromIndex(docId: Int) extends IndexUpdateOp
+  case class AddDocsToIndex(metaId: Int) extends IndexUpdateOp
+  case class DeleteDocsFromIndex(metaId: Int) extends IndexUpdateOp
+
+  //case class AddDocToIndex(doc: DocumentDomainObject) extends IndexUpdateOp
+  //case class DeleteDocFromIndex(doc: DocumentDomainObject) extends IndexUpdateOp
 }

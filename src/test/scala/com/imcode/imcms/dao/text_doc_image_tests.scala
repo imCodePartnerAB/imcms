@@ -15,7 +15,7 @@ import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
 import com.imcode.imcms.api.{ImageHistory, I18nLanguage}
-import com.imcode.imcms.test.fixtures.LanguagesFX.{english, swedish}
+import com.imcode.imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish}
 
 
 @RunWith(classOf[JUnitRunner])
@@ -49,32 +49,32 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
   }
 
   test("get text doc's images by doc id, doc version no and language") {
-    val images = imageDao.getImages(1001, 0, english.getId)
+    val images = imageDao.getImages(1001, 0, mkEnglish.getId)
     assertEquals(3, images.size)
   }
 
 
   test("get text doc's image by doc id, doc version no, language and no") {
-		val image = imageDao.getImage(english.getId, 1001, 0, 1, null, null)
+		val image = imageDao.getImage(mkEnglish.getId, 1001, 0, 1, null, null)
     assertNotNull(image)
 	}
 
 
 	test("delete text doc's images in a given language") {
-    val deletedCount = imageDao.deleteImages(1001, 0, english.getId)
+    val deletedCount = imageDao.deleteImages(1001, 0, mkEnglish.getId)
 
     assertEquals(3, deletedCount)
 	}
 
 
 	test("save text doc image") {
-    val image = Factory.createImage(1001, 0, english, 1000)
+    val image = Factory.createImage(1001, 0, mkEnglish, 1000)
 
     imageDao.saveImage(image)
 	}
 
 	test("save text doc's image history") {
-    val image = Factory.createImage(1001, 0, english, 1000)
+    val image = Factory.createImage(1001, 0, mkEnglish, 1000)
     val imageHistory = new ImageHistory(image, admin)
 
     imageDao.saveImageHistory(imageHistory)

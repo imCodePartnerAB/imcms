@@ -5,18 +5,14 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.solr.DocumentIndexer;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexReader;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.common.util.NamedList;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -122,28 +118,28 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     }
 
     public void indexDocument(DocumentDomainObject document) {
-        indexDocument(document.getId());
+        indexDocuments(document.getId());
     }
 
-    public void indexDocument(int docId) {
+    public void indexDocuments(int docId) {
         log.debug("Adding document.");
         backgroundIndexBuilder.addDocument(docId);
         try {
-            index.indexDocument(docId);
+            index.indexDocuments(docId);
         } catch ( IndexException e ) {
             rebuildBecauseOfError("Failed to add document " + docId + " to index.", e);
         }
     }
 
     public void removeDocument(DocumentDomainObject document) {
-        removeDocument(document.getId());
+        removeDocuments(document.getId());
     }
 
-    public void removeDocument(int docId) {
+    public void removeDocuments(int docId) {
         log.debug("Removing document.");
         backgroundIndexBuilder.removeDocument(docId);
         try {
-            index.removeDocument(docId);
+            index.removeDocuments(docId);
         } catch ( IndexException e ) {
             rebuildBecauseOfError("Failed to remove document " + docId + " from index.", e);
         }
@@ -199,10 +195,10 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         public void removeDocument(DocumentDomainObject document) throws IndexException {
         }
 
-        public void indexDocument(int docId) throws IndexException {
+        public void indexDocuments(int docId) throws IndexException {
         }
 
-        public void removeDocument(int docId) throws IndexException {
+        public void removeDocuments(int docId) throws IndexException {
         }
 
         public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {

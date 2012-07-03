@@ -46,25 +46,27 @@ public interface DocumentIndex {
 
     void rebuild() throws IndexException;
 
+    /**
+     * Adds default document(s) to index.
+     *
+     * @param metaId
+     * @throws IndexException
+     * @since 6.0
+     */
+    void indexDocuments(int metaId) throws IndexException;
+
+    /**
+     * Removes default document(s) from index.
+     *
+     * @param metaId
+     * @throws IndexException
+     * @since 6.0
+     */
+    void removeDocuments(int metaId) throws IndexException;
+
+    @Deprecated
     void indexDocument(DocumentDomainObject document) throws IndexException;
 
+    @Deprecated
     void removeDocument(DocumentDomainObject document) throws IndexException;
-
-    /**
-     * Adds default documents to index.
-     *
-     * @param docId
-     * @throws IndexException
-     * @since 6.0
-     */
-    void indexDocument(int docId) throws IndexException;
-
-    /**
-     * Removes default documents from index.
-     *
-     * @param docId
-     * @throws IndexException
-     * @since 6.0
-     */
-    void removeDocument(int docId) throws IndexException;
 }

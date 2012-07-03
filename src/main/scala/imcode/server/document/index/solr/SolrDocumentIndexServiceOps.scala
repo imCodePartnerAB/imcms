@@ -2,11 +2,11 @@ package imcode.server.document.index.solr
 
 import com.imcode._
 import com.imcode.imcms.mapping.DocumentMapper
-import imcode.server.document.DocumentDomainObject
 import scala.collection.SeqView
 import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.client.solrj.SolrServer
+import com.imcode.imcms.api.I18nLanguage
 
 /**
  * The instance of this class is thread save.
@@ -16,22 +16,25 @@ import org.apache.solr.client.solrj.SolrServer
 class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) {
 
   type DocId = Int
-  type SolrDeleteQuery = String
-
-  def mkSolrInputDoc(doc: DocumentDomainObject): SolrInputDocument = documentIndexer.index(doc)
 
   def mkSolrInputDocs(docId: Int): Seq[SolrInputDocument] =
+    mkSolrInputDocs(docId, documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala)
+
+  def mkSolrInputDocs(docId: Int, languages: Seq[I18nLanguage]): Seq[SolrInputDocument] =
     for {
-      language <- documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala
+      language <- languages
       doc <- Option(documentMapper.getDefaultDocument(docId, language))
-    } yield mkSolrInputDoc(doc)
+    } yield documentIndexer.index(doc)
 
-  def mkSolrDeleteQuery(doc: DocumentDomainObject): SolrDeleteQuery = null
-
-  def mkSolrDeleteQueries(docId: Int): Seq[SolrDeleteQuery] = null
 
   def mkSolrInputDocs(): SeqView[(DocId, Seq[SolrInputDocument]), Seq[_]] =
-    documentMapper.getAllDocumentIds.asScala.view.map(docId => docId.toInt -> mkSolrInputDocs(docId))
+    documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala |> { languages =>
+      documentMapper.getAllDocumentIds.asScala.view.map(docId => docId.toInt -> mkSolrInputDocs(docId, languages))
+    }
+
+  def mkSolrDeleteQuery(docId: Int): String = null
+
+  def search(solrServer: SolrServer, query: String) = null
 
   def addDocsToIndex(solrServer: SolrServer, docId: Int) {
     mkSolrInputDocs(docId) |> { solrInputDocs =>
@@ -42,13 +45,9 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     }
   }
 
-  def addDocToIndex(solrServer: SolrServer, doc: DocumentDomainObject) {
-    mkSolrInputDoc(doc) |> { solrInputDoc =>
-      solrServer.add(solrInputDoc)
-      solrServer.commit()
-    }
-  }
+  def deleteDocsFromIndex(solrServer: SolrServer, docId: Int) = null
 
+  // ??? hard to maintain, use mkSolrDocs, followed by commit ???
   def rebuildIndex(solrServer: SolrServer) {
     val rebuildStartTime = System.currentTimeMillis()
 
@@ -59,10 +58,4 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     solrServer.deleteByQuery("timestamp < rebuildStartTime")
     solrServer.commit()
   }
-
-  def deleteDocsFromIndex(solrServer: SolrServer, docId: Int) = null
-
-  def deleteDocFromIndex(solrServer: SolrServer, doc: DocumentDomainObject) = null
-
-  def search(solrServer: SolrServer, query: String) = null
 }

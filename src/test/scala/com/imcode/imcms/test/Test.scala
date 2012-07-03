@@ -85,7 +85,9 @@ class Test extends TestDb with TestSolr {
 
   def dir(relativePath: String) = new File(basedir, relativePath)
 
-  def nop() {}
+  def init() {
+    // does nothing, an explicit way to initialize logging engine
+  }
 }
 
 

@@ -10,7 +10,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Entity
 @Table(name = "imcms_languages")
 public final class I18nLanguage implements Serializable, Cloneable {
-
+                    //
     public static final class Builder {
         private Integer id;
         private Boolean enabled;
@@ -21,37 +21,35 @@ public final class I18nLanguage implements Serializable, Cloneable {
         public Builder() {}
 
         public Builder(I18nLanguage language) {
-            setId(language.id);
-            setEnabled(language.enabled);
-            setCode(language.code);
-            setName(language.name);
-            setNativeName(language.nativeName);
+            id(language.id);
+            enabled(language.enabled);
+            code(language.code);
+            name(language.name);
+            nativeName(language.nativeName);
         }
 
-        public Builder setId(Integer id) {
+        public Builder id(Integer id) {
             this.id = id;
             return this;
         }
 
-        public Builder setEnabled(boolean enabled) {
+        public Builder enabled(boolean enabled) {
             this.enabled = enabled;
             return this;
         }
 
-        public Builder setCode(String code) {
+        public Builder code(String code) {
             this.code = code;
             return this;
         }
 
-        public Builder setName(String name) {
+        public Builder name(String name) {
             this.name = name;
-
             return this;
         }
 
-        public Builder setNativeName(String nativeName) {
+        public Builder nativeName(String nativeName) {
             this.nativeName = nativeName;
-
             return this;
         }
 

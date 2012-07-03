@@ -4,7 +4,7 @@ package imcms.dao
 import imcode.server.user.UserDomainObject
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import imcms.test.fixtures.UserFX.{admin}
+import imcms.test.fixtures.UserFX.{mkSuperAdmin}
 import org.scalatest.matchers.MustMatchers
 import imcms.test.Test.{db}
 import org.scalatest.{WordSpec, BeforeAndAfter, FunSuite, BeforeAndAfterAll}
@@ -68,7 +68,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 
     "return null when no meta with provided id exists" in {
       expect(null) {
-        metaDao.getMeta(DocFX.missingId)
+        metaDao.getMeta(DocFX.vacantId)
       }
     }
   }
@@ -77,16 +77,16 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
   "MetaDao.touch should update meta and version" in {
     val dt = new DateTime(2012, 12, 10, 13, 30).toDate;
     val meta = createMeta()
-    val version = versionDao.createVersion(meta.getId, UserFX.admin.getId)
+    val version = versionDao.createVersion(meta.getId, UserFX.mkSuperAdmin.getId)
 
-    metaDao.touch(meta.getId, 0, dt, UserFX.user.getId)
+    metaDao.touch(meta.getId, 0, dt, UserFX.mkDefaultUser.getId)
 
     val updatedMeta = metaDao.getMeta(meta.getId)
     val updatedVersion = versionDao.getVersion(meta.getId, 0)
 
     assertEquals("meta modified datetime", dt, updatedMeta.getModifiedDatetime)
     assertEquals("version modified datetime", dt, updatedVersion.getModifiedDt)
-    assertEquals("version modified by", UserFX.user.getId, updatedVersion.getModifiedBy)
+    assertEquals("version modified by", UserFX.mkDefaultUser.getId, updatedVersion.getModifiedBy)
   }
 
 }

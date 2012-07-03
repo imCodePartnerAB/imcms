@@ -49,7 +49,7 @@ class SolrDirectoryIndex implements DirectoryIndex {
         this.indexDocumentFactory = indexDocumentFactory;
     }
     
-    public void indexDocument(int docId) throws IndexException {
+    public void indexDocuments(int docId) throws IndexException {
         for (I18nLanguage language: documentMapper.getImcmsServices().getI18nSupport().getLanguages()) {
             try {
                 indexDocument(documentMapper.getDefaultDocument(docId, language));
@@ -69,7 +69,7 @@ class SolrDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    public void removeDocument(int docId) throws IndexException {
+    public void removeDocuments(int docId) throws IndexException {
         throw new NotImplementedException();
     }
 

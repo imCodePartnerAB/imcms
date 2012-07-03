@@ -45,10 +45,10 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
 
     val builder = new I18nLanguage.Builder
 
-    builder.setCode(code)
-    builder.setName("Estonain")
-    builder.setNativeName("Eesti")
-    builder.setEnabled(true)
+    builder.code(code)
+    builder.name("Estonain")
+    builder.nativeName("Eesti")
+    builder.enabled(true)
     val language = languageDao.saveLanguage(builder.build())
     assertNotNull("Language with id %d exists." format id, languageDao.getById(3))
     assertNotNull("Language with code %s exists." format code, languageDao.getByCode(code))
@@ -58,7 +58,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     val language = languageDao.getById(1)
     assertTrue("Language is enabled.", language.isEnabled.booleanValue)
 
-    val updatedLanguage = new I18nLanguage.Builder(language).setEnabled(false).build()
+    val updatedLanguage = new I18nLanguage.Builder(language).enabled(false).build()
     languageDao.saveLanguage(updatedLanguage)
 
     val languageFromDb = languageDao.getById(1)

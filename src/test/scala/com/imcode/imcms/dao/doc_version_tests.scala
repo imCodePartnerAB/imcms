@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test._
 import imcms.test.Test.{db}
-import imcms.test.fixtures.UserFX.{admin}
+import imcms.test.fixtures.UserFX.{mkSuperAdmin}
 import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 import imcms.api._
@@ -35,7 +35,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
     db.runScripts("src/test/resources/sql/doc_version.sql")
   }
 
-  def createVersion(docId: Int = 1001, userId: Int = admin.getId) =
+  def createVersion(docId: Int = 1001, userId: Int = mkSuperAdmin.getId) =
     versionDao.createVersion(docId, userId) |> { savedVO =>
       assert(savedVO.getId != null)
 

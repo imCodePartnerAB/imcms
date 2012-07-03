@@ -9,7 +9,7 @@ import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import imcms.test._
 import fixtures.{DocItemFX, DocFX, VersionFX}
-import imcms.test.fixtures.UserFX.{admin}
+import imcms.test.fixtures.UserFX.{mkSuperAdmin}
 import imcms.test.Test.{db}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
@@ -76,11 +76,11 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
   }
 
   test("get non-existing menu") {
-    menu(no = DocItemFX.missingNo, assertExists = false) |> assertNull
+    menu(no = DocItemFX.vacantNo, assertExists = false) |> assertNull
   }
 
   test("get non-existing menus") {
-    menus(docId = DocFX.missingId, assertNotEmpty = false) |> { menus => assertTrue("menus do not exist", menus.isEmpty) }
+    menus(docId = DocFX.vacantId, assertNotEmpty = false) |> { menus => assertTrue("menus do not exist", menus.isEmpty) }
   }
 
   test("save new menu") {
@@ -100,7 +100,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
     defaultMenus() |> { menus => assertEquals("menus count", menuNos.size + 1, menus.size) }
 
-    val menuHistory = new MenuHistory(menu, admin)
+    val menuHistory = new MenuHistory(menu, mkSuperAdmin)
     menuDao.saveMenuHistory(menuHistory)
   }
 
