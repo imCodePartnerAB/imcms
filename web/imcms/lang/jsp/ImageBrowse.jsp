@@ -122,14 +122,17 @@ if (null != imageBrowsePage.getLabel() ) { %>
 				ImageDomainObject iDO = new ImageDomainObject() ;
 				String path = filePath.replace(new File(imagesRoot, "/").toString(), "") ;
 				ImagesPathRelativePathImageSource imageSource = new ImagesPathRelativePathImageSource(path) ;
+                iDO.setFormat(Format.PNG);
 				iDO.setSourceAndClearSize(imageSource) ;
                 iDO.setWidth(THUMB_BOUNDARIES);
                 iDO.setHeight(THUMB_BOUNDARIES);
                 iDO.setResize(Resize.GREATER_THAN);
+                boolean canPreview = false;
 				try {
                     ImageSize realSize = ImcmsImageUtils.getCachedRealSize(iDO);
                     int orgWidth = realSize.getWidth();
                     int orgHeight = realSize.getHeight();
+                    canPreview = (orgWidth > 0 && orgHeight > 0);
                     imgDimensions = orgWidth + " x " + orgHeight + ", " + ImageBrowse.getSimpleFileSize(file.length()) ;
 				} catch (Exception ignore) {}
                 String previewSrc = ImcmsImageUtils.getImageUrl(null, iDO, cp);
@@ -158,6 +161,7 @@ if (null != imageBrowsePage.getLabel() ) { %>
 				       id="imageCB<%= iCount %>"
 				       name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_URL %>"
 				       value="<%= StringEscapeUtils.escapeHtml(value) %>"
+                       data-canpreview="<%= canPreview %>"
 				       style="margin-right:5px; vertical-align:-2px;" />
 				<%= ImageBrowse.truncateString(fileName, 15) %>
 			</label>
@@ -219,9 +223,10 @@ if (null != errorMessage) { %>
 if (null != imageBrowsePage.getImageUrl()) {
 
 	ImageDomainObject iDO = new ImageDomainObject() ;
+    iDO.setFormat(Format.PNG);
 	ImagesPathRelativePathImageSource imageSource = new ImagesPathRelativePathImageSource(imageBrowsePage.getImageUrl()) ;
 	iDO.setSourceAndClearSize(imageSource) ;
-	String previewSrc = ImcmsImageUtils.getImagePreviewUrl(iDO, cp) ;%>
+	String previewSrc = ImcmsImageUtils.getImageUrl(null, iDO, cp) ;%>
 <div align="center" id="previewDiv">
 	<img src="<%= previewSrc %>" alt="" />
 </div>
@@ -276,16 +281,24 @@ function getFile() {<%--
 	} catch (e) {}
 	return theVal;--%>
 	var $selRadio = jQ(':radio[id^="imageCB"]:checked') ;
-	return ($selRadio.length > 0) ? $selRadio.val() : '' ;
+    
+    if ($selRadio.length > 0) {
+        return {
+            path: $selRadio.val(), 
+            canPreview: ($selRadio.attr("data-canpreview") == "true")
+        };
+    }
+    
+    return null;
 }
 
 <vel:velocity>
 function previewFile() {
 	try {
 		var actFile = getFile() ;
-		if ('' != actFile) {
-			var file = "<%= Imcms.getServices().getConfig().getImageUrl() %>" + actFile ;
-			if (isImageFile(file)) {
+        if (actFile != null) {
+			var file = "<%= Imcms.getServices().getConfig().getImageUrl() %>" + actFile.path ;
+			if (actFile.canPreview) {
 				popWinOpen(800,570,"$contextPath/imcms/$language/jsp/FileAdmin_preview.jsp?file=" + encodeURIComponent(file),"",1,0);
 				return false;
 			}

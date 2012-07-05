@@ -2,6 +2,8 @@
 	
 	import="imcode.server.Imcms,
 	        imcode.util.Utility,
+            imcode.util.image.ImageInfo,
+            imcode.util.image.Format,
 	        org.apache.oro.text.perl.Perl5Util,
 	        javax.imageio.ImageIO,
 	        java.awt.image.BufferedImage,
@@ -22,11 +24,6 @@ String cp = request.getContextPath() ;
  ******************************************************************* */
 
 String ren = "(\\.[\\d]+)?" ;
-
-String acceptedExtPattern = "/" +
-	"(\\.(GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|JSP|ASP|FRAG|PROPERTIES)+" + ren + "$)" +
-	"|(\\.LOG+)" +
-	"/i" ;
 
 String IMG_PATH   = cp+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ; // path to buttons (with trailing /)
 
@@ -68,7 +65,6 @@ File fn = new File(webRoot, file) ;
 
 /* Is image? */
 Perl5Util re       = new Perl5Util() ;
-boolean isImage    = re.match(acceptedExtPattern, file) ;
 
 /* Check browser */
 
@@ -164,19 +160,24 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 <body class="imcmsAdmBgCont" style="margin:10px">
 
 <div align="center"><%
+File imagesRoot = Imcms.getServices().getConfig().getImagePath() ;
+ImageDomainObject iDO = new ImageDomainObject() ;
+String path = file.replace(new File(imagesRoot, "/").toString(), "") ;
+ImagesPathRelativePathImageSource imageSource = new ImagesPathRelativePathImageSource(path) ;
+iDO.setSourceAndClearSize(imageSource) ;
+ImageInfo imageInfo = iDO.getImageInfo();
 
-if (isImage) {
-    try {
-        BufferedImage image = ImageIO.read( fn ); %>
+if (imageInfo != null) {
+    try { %>
 	<div class="imcmsAdmText" style="padding: 5px 0 <%= hasBorder ? 7 : 8 %>px 0; color:#666;">
 		&quot;<%= cp %><%= file.replaceAll("\\\\","/") %>&quot;<%
-        if (image.getWidth() > 0 && image.getHeight() > 0 && !size.equals("")) {
+        if (imageInfo.getWidth() > 0 && imageInfo.getHeight() > 0 && !size.equals("")) {
             %> (<%
-            if (image.getWidth() > 0 && image.getHeight() > 0) {
-                %><%= image.getWidth() + "x" + image.getHeight() %> px, <%
+            if (imageInfo.getWidth() > 0 && imageInfo.getHeight() > 0) {
+                %><%= imageInfo.getWidth() + "x" + imageInfo.getHeight() %> px, <%
 	            if (hasGetElementById && !hasDocumentAll && defZoom.matches("^\\d+\\.\\d+$")) {// Gecko
 		            double dZoom = Double.parseDouble(defZoom) ;
-		            double newWidth = (dZoom * image.getWidth()) ;
+		            double newWidth = (dZoom * imageInfo.getWidth()) ;
 		            //out.print(defZoom + " - " + dZoom + " - " + newWidth + " - " + Math.round(newWidth) + " - ");
 		            zoom = " style=\"width:" + Math.round(newWidth) + "px;\"" ;
 	            }
@@ -191,14 +192,8 @@ if (isImage) {
 	    if (hasGetElementById && !hasDocumentAll) zoom = "" ;
     } %><%--
 	<img name="theImg" id="theImg" src="$contextPath<%= Utility.escapeUrl(file).replaceAll("(%5C|%255C)","/") %>"<%= border + zoom %> alt="">--%><%
-	
-		File imagesRoot = Imcms.getServices().getConfig().getImagePath() ;
-		ImageDomainObject iDO = new ImageDomainObject() ;
-		String path = file.replace(new File(imagesRoot, "/").toString(), "") ;
-		ImagesPathRelativePathImageSource imageSource = new ImagesPathRelativePathImageSource(path) ;
-		iDO.setSourceAndClearSize(imageSource) ;
-		String previewSrc = ImcmsImageUtils.getImagePreviewUrl(iDO, cp) ;
-		
+        iDO.setFormat(Format.PNG);
+		String previewSrc = ImcmsImageUtils.getImageUrl(null, iDO, cp) ;
 		%>
 	<img name="theImg" id="theImg" src="<%= previewSrc %>"<%= border + zoom %> alt="" /><%
 } %>
