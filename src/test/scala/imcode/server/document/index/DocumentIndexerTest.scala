@@ -63,7 +63,7 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       }
     )
 
-    fx.addParentDocumentsFor(defaultTextDocEn,
+    fx.addParentDocumentsFor(defaultTextDocEn.getId,
       fx.ParentDoc(0, 0),
       fx.ParentDoc(1, 0),
       fx.ParentDoc(1, 1),

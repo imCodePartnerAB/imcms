@@ -3,11 +3,11 @@ package imcms.test
 package fixtures
 
 import scala.collection.JavaConverters._
-import imcode.server.user.{RoleId, UserDomainObject}
 import scala.collection.JavaConversions._
 import imcms.api.{I18nLanguage, I18nSupport}
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.DocumentPermissionSetTypeDomainObject
+import imcode.server.user.{UserDomainObject, RoleId}
 
 object DocFX {
   val Seq(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth) = 1001 to 1010
@@ -18,7 +18,7 @@ object DocFX {
   // doc/meta id an entity which have doc/meta id field which *never* exists before a test but created during this test.
   val newId = Int.MaxValue / 2
 
-  // vacant doc/meta id an entity which *never* exists before a test.
+  // id of nonexistent document
   val vacantId = Int.MaxValue
 
   def mkDefaultTextDocEn: TextDocumentDomainObject = mkTextDoc(DocFX.defaultId, LanguageFX.mkEnglish)
@@ -85,13 +85,11 @@ object DocItemFX {
 }
 
 object UserFX {
+  def mkSuperAdmin: UserDomainObject = mkUser(0, RoleId.SUPERADMIN)
+  def mkDefaultUser: UserDomainObject = mkUser(2, RoleId.USERS)
 
-  def mkSuperAdmin = new UserDomainObject(0) {
-    addRoleId(RoleId.SUPERADMIN)
-  }
-
-  def mkDefaultUser = new UserDomainObject(2) {
-    addRoleId(RoleId.USERS)
+  def mkUser(id: Int, roleIds: RoleId*): UserDomainObject = new UserDomainObject(id) |>> { user =>
+    roleIds foreach user.addRoleId
   }
 }
 
@@ -102,12 +100,10 @@ object LanguageFX {
   def mkEnglish: I18nLanguage = new I18nLanguage.Builder().id(1).code("en").name("English").nativeName("English").build
   def mkSwedish: I18nLanguage = new I18nLanguage.Builder().id(2).code("sv").name("Swedish").nativeName("Svenska").build
 
-  def mkDefault: I18nLanguage = mkEnglish
-
   def mkLanguages: Seq[I18nLanguage] = Seq(mkEnglish, mkSwedish)
 
-  def mkI18nSupport = new I18nSupport {
-    setDefaultLanguage(mkDefault)
+  def mkI18nSupport(defaultLanguage: I18nLanguage = mkEnglish): I18nSupport = new I18nSupport {
+    setDefaultLanguage(defaultLanguage)
     setLanguages(mkLanguages)
     setHosts(Map(HostNameEn -> mkEnglish, HostNameSe -> mkSwedish))
   }

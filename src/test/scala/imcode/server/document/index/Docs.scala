@@ -22,41 +22,53 @@ import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
 
 class DocIndexingMocksSetup {
 
+  implicit def fnToAnswer[A](f: InvocationOnMock => A): Answer[A] =
+    new Answer[A] {
+      def answer(invocation: InvocationOnMock): A = f(invocation)
+    }
+
   case class ParentDoc(docId: Int, menuNo: Int)
 
   private val documentMapperMock = mock[DocumentMapper]
   private val categoryMapperMock = mock[CategoryMapper]
   private val servicesMock = mock[ImcmsServices]
 
-  private val categories = MMap.empty[Int, CategoryDomainObject]
   private val docs = MMap.empty[Int, MMap[I18nLanguage, DocumentDomainObject]].withDefaultValue(MMap.empty.withDefaultValue(null))
+  private val categories = MMap.empty[Int, CategoryDomainObject]
+  private val parentDocs = MMap.empty[Int, Seq[ParentDoc]].withDefaultValue(Seq.empty)
 
   when(documentMapperMock.getImcmsServices).thenReturn(servicesMock)
 
-  when(servicesMock.getI18nSupport).thenReturn(LanguageFX.mkI18nSupport)
+  when(servicesMock.getI18nSupport).thenReturn(LanguageFX.mkI18nSupport())
 
-  when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer(new Answer[JSet[CategoryDomainObject]] {
-    def answer(invocation: InvocationOnMock) = {
-       val availableCategories = for {
-         categoryId <- invocation.getArguments()(0).asInstanceOf[JCollection[JInteger]].asScala
-         category <- categories.get(categoryId)
-       } yield category
+  when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer {
+    invocation: InvocationOnMock =>
+      val availableCategories = for {
+        categoryId <- invocation.getArguments()(0).asInstanceOf[JCollection[JInteger]].asScala
+        category <- categories.get(categoryId)
+      } yield category
 
-       availableCategories.toSet.asJava
-     }
-  })
+      availableCategories.toSet.asJava
+  }
 
-  when(documentMapperMock.getDocumentMenuPairsContainingDocument(any[DocumentDomainObject])).thenReturn(
-      Array.empty[TextDocumentMenuIndexPair]
-  )
-
-  when(documentMapperMock.getDefaultDocument(anyInt, any[I18nLanguage])).thenAnswer(new Answer[DocumentDomainObject] {
-    def answer(invocation: InvocationOnMock) = invocation.getArguments match {
+  when(documentMapperMock.getDefaultDocument(anyInt, any[I18nLanguage])).thenAnswer {
+    invocation: InvocationOnMock => invocation.getArguments match {
       case Array(id: JInteger, language: I18nLanguage) => docs(id)(language)
     }
-  })
+  }
 
-  when(documentMapperMock.getAllDocumentIds).thenReturn(docs.keys.map(Int.box).toList.asJava)
+  when(documentMapperMock.getAllDocumentIds).thenAnswer {
+    _: InvocationOnMock => docs.keys.map(Int.box).toList.asJava
+  }
+
+  when(documentMapperMock.getDocumentMenuPairsContainingDocument(any[DocumentDomainObject])).thenAnswer {
+    invocation: InvocationOnMock => invocation.getArguments match {
+      case Array(doc: DocumentDomainObject) =>
+        parentDocs(doc.getId).toArray.map {
+          case ParentDoc(docId, menuNo) => new TextDocumentMenuIndexPair(new TextDocumentDomainObject(docId), menuNo)
+        }
+    }
+  }
 
 
   val docIndexer = new DocumentIndexer |>> { di =>
@@ -71,10 +83,8 @@ class DocIndexingMocksSetup {
   }
 
   // DocumentIndexer uses parent doc id and menu id as index fields
-  def addParentDocumentsFor(doc: DocumentDomainObject, parentDocs: ParentDoc*) = this |>> { _ =>
-    when(documentMapperMock.getDocumentMenuPairsContainingDocument(doc)).thenReturn(parentDocs.toArray.map {
-      case ParentDoc(docId, menuNo) => new TextDocumentMenuIndexPair(new TextDocumentDomainObject(docId), menuNo)
-    })
+  def addParentDocumentsFor(docId: Int, pds: ParentDoc*) = this |>> { _ =>
+    parentDocs(docId) = pds
   }
 
   def addDocument(doc: DocumentDomainObject) = this |>> { _ =>

@@ -21,8 +21,8 @@ object NoOpSolrDocumentIndexService extends SolrDocumentIndexService {
   def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = Collections.emptyList()
 
   def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp) {}
-                                               // class - return real future?
-  def requestIndexRebuild(): JFuture[_] = null // ??? IndexRebuild { def task(): Option[JFuture]; def }
+
+  def requestIndexRebuild() {}
 
   def shutdown() {}
 }
@@ -70,7 +70,9 @@ class EmbeddedSolrDocumentIndexServiceProxy(solrHome: File, ops: SolrDocumentInd
     serviceRef.get().requestIndexUpdate(op)
   }
 
-  def requestIndexRebuild(): JFuture[_] = serviceRef.get().requestIndexRebuild() // ??? IndexRebuild { def task(): Option[JFuture]; def }
+  def requestIndexRebuild() {
+    serviceRef.get().requestIndexRebuild()
+  }
 
   def shutdown() {
     serviceRef.get().shutdown()

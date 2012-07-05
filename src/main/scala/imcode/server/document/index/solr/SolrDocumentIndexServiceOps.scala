@@ -9,16 +9,19 @@ import org.apache.solr.client.solrj.SolrServer
 import com.imcode.imcms.api.I18nLanguage
 
 /**
+ * Common low-level SOLr index operations.
+ *
  * The instance of this class is thread save.
  */
 // todo: ??? mkXXX wrap any exception into indexCreate exception for distinguishing from SolrException ???
 // todo: ??? implement parallel indexing ???
 class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) {
-
+   // todo: refactor out
   type DocId = Int
 
   def mkSolrInputDocs(docId: Int): Seq[SolrInputDocument] =
     mkSolrInputDocs(docId, documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala)
+
 
   def mkSolrInputDocs(docId: Int, languages: Seq[I18nLanguage]): Seq[SolrInputDocument] =
     for {
@@ -32,9 +35,12 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
       documentMapper.getAllDocumentIds.asScala.view.map(docId => docId.toInt -> mkSolrInputDocs(docId, languages))
     }
 
-  def mkSolrDeleteQuery(docId: Int): String = null
 
-  def search(solrServer: SolrServer, query: String) = null
+  def mkSolrDeleteQuery(docId: Int): String = ???
+
+
+  def search(solrServer: SolrServer, query: String) = ??? // return
+
 
   def addDocsToIndex(solrServer: SolrServer, docId: Int) {
     mkSolrInputDocs(docId) |> { solrInputDocs =>
@@ -45,9 +51,15 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     }
   }
 
-  def deleteDocsFromIndex(solrServer: SolrServer, docId: Int) = null
 
-  // ??? hard to maintain, use mkSolrDocs, followed by commit ???
+  // todo: ??? return affected count ???
+  def deleteDocsFromIndex(solrServer: SolrServer, docId: Int): Unit = mkSolrDeleteQuery(docId) |> { deleteQuery =>
+    solrServer.deleteByQuery(deleteQuery)
+    solrServer.commit()
+  }
+
+  // todo: refactor out into separate class with threading support?
+  // todo: make commit opp with default value
   def rebuildIndex(solrServer: SolrServer) {
     val rebuildStartTime = System.currentTimeMillis()
 

@@ -22,20 +22,40 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
 
   "SolrDocumentIndexServiceOps" should {
     "create an empty Seq of SolrInputDocument" in {
-      ops.mkSolrInputDocs(DocFX.vacantId) |> { docs =>
-        assertTrue("No docs", docs.isEmpty)
+      ops.mkSolrInputDocs(DocFX.vacantId) |> { solrInputDocs =>
+        assertTrue("No solrInputDocs", solrInputDocs.isEmpty)
       }
     }
 
     "create a singleton Seq of SolrInputDocument" in {
-      ops.mkSolrInputDocs(1001, Seq(LanguageFX.mkEnglish)) |> { docs =>
-        assertTrue("Single docs", docs.length == 1)
+      ops.mkSolrInputDocs(1001, Seq(LanguageFX.mkEnglish)) |> { solrInputDocs =>
+        assertTrue("Single solrInputDoc", solrInputDocs.length == 1)
       }
     }
 
     "create a Seq of SolrInputDocument" in {
-      ops.mkSolrInputDocs(1001, LanguageFX.mkLanguages) |> { docs =>
-        assertTrue("Docs count", docs.length == 2)
+      ops.mkSolrInputDocs(1001, LanguageFX.mkLanguages) |> { solrInputDocs =>
+        assertTrue("solrInputDocs count", solrInputDocs.length == 2)
+      }
+    }
+
+    "create a view of tuples (DocId -> Seq[SolrInputDocument])" in {
+      ops.mkSolrInputDocs() |> { view =>
+        assertEquals("solrInputDocs sequences in view", 10, view.length)
+
+        for {
+          (docId, solrInputDocsSeq) <- view
+        } {
+          assertEquals("solrInputDocs in seq", 2, solrInputDocsSeq.length)
+        }
+      }
+    }
+
+    "produce SOLr delete query for every document id" in pendingUntilFixed {
+      for (docId <- DocFX.defaultId until (DocFX.defaultId + 10)) {
+        expect("<undefined>", "valid SOLr delete query") {
+          ops.mkSolrDeleteQuery(docId)
+        }
       }
     }
   }

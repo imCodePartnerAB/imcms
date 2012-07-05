@@ -110,7 +110,7 @@ class DocumentIndexer(
     }
 
     try {
-        contentIndexer.index(doc, indexDoc)
+      contentIndexer.index(doc, indexDoc)
     } catch {
       case re => logger.error("Error indexing doc-type-specific data of doc " + documentId, re)
     }

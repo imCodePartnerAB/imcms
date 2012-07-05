@@ -17,7 +17,7 @@ import org.scalatest.mock.MockitoSugar
 @RunWith(classOf[JUnitRunner])
 class DocGetterCallbackSuite extends FunSuite {
 
-  Imcms.setI18nSupport(LanguageFX.mkI18nSupport)
+  Imcms.setI18nSupport(LanguageFX.mkI18nSupport())
 
   test("default user - no params") {
     val request = MockitoSugar.mock[HttpServletRequest]
