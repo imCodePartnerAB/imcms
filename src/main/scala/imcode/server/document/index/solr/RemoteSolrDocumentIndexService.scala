@@ -59,9 +59,7 @@ class RemoteSolrDocumentIndexService(solrUrl: String, ops: SolrDocumentIndexServ
         while (!Thread.currentThread().isInterrupted) {
           try {
             events.poll() match {
-              case SolrDocumentIndexService.AddDocToIndex(doc) => ops.addDocToIndex(solrServerWriter, doc)
               case SolrDocumentIndexService.AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
-              case SolrDocumentIndexService.DeleteDocFromIndex(doc) => ops.deleteDocFromIndex(solrServerWriter, doc)
               case SolrDocumentIndexService.DeleteDocsFromIndex(docId) => ops.deleteDocsFromIndex(solrServerWriter, docId)
             }
           } catch {

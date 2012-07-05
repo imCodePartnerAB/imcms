@@ -3,7 +3,6 @@ package imcode.server.document.index
 import com.imcode.{when => _, _}
 import scala.collection.JavaConverters._
 import imcode.server.document.textdocument.TextDocumentDomainObject
-import com.imcode.imcms.test.fixtures.LanguageFX
 import imcode.server.user.RoleId
 import com.imcode.imcms.api.I18nLanguage
 import org.scalatest.mock.MockitoSugar._
@@ -17,74 +16,7 @@ import org.mockito.invocation.InvocationOnMock
 import com.imcode.imcms.mapping.DocumentMapper.TextDocumentMenuIndexPair
 import imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexer}
 import imcode.server.ImcmsServices
-
-object Docs {
-
-  // text doc to index
-  val textDocEn = new TextDocumentDomainObject |>> { doc =>
-    doc.setId(1001)
-    doc.setCreatorId(100)
-    doc.setPublisherId(200)
-    doc.setCategoryIds(0.to(10).toSet.asJava)
-    doc.setLanguage(LanguageFX.mkEnglish)
-    doc.setKeywords(Set("kw_1", "kw_2", "kw_3", "kw_compound kw_keyword kw_sentence").asJava)
-    doc.setAlias("alis_text_doc_1001")
-    doc.setTemplateName("template_1001")
-
-    // only roles are indexed, permission sets are ignored
-    doc.getMeta.getRoleIdToDocumentPermissionSetTypeMappings |> { m =>
-      m.setPermissionSetTypeForRole(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL)
-      m.setPermissionSetTypeForRole(RoleId.USERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
-      m.setPermissionSetTypeForRole(RoleId.SUPERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
-    }
-
-    doc.getI18nMeta |> { m =>
-      m.setHeadline("I18nMetaHeadline_en")
-      m.setMenuText("I18nMetaMenuText_en")
-    }
-
-    doc.setProperties(Map("p1" -> "property_1", "p2" -> "property_2", "p3" -> "property_3").asJava)
-
-    // setup menu items (FIELD__CHILD_ID) as mocks
-    // doc.setMenus(Map(
-    //   1 -> ...
-    //   2 -> ...
-    // ))
-  }
-
-  def generateTextDoc(docId: Int, language: I18nLanguage): TextDocumentDomainObject = new TextDocumentDomainObject |>> { doc =>
-    doc.setId(docId)
-    doc.setCreatorId(100)
-    doc.setPublisherId(200)
-    doc.setCategoryIds(0.until(10).toSet.asJava)
-    doc.setLanguage(language)
-    doc.setKeywords(0.until(10).map(n => "keyword_%d_%d".format(docId, n)).toSet.asJava)
-    doc.setAlias("alias_%d" format docId)
-    doc.setTemplateName("template_%d" format docId)
-
-    // only roles are indexed, permission sets are ignored
-    doc.getMeta.getRoleIdToDocumentPermissionSetTypeMappings |> { m =>
-      m.setPermissionSetTypeForRole(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL)
-      m.setPermissionSetTypeForRole(RoleId.USERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
-      m.setPermissionSetTypeForRole(RoleId.SUPERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
-    }
-
-    doc.getI18nMeta |> { m =>
-      m.setHeadline("i18n_meta_headline_%d_%s".format(docId, language.getCode))
-      m.setMenuText("i18n_meta_menu_text_%d_%s".format(docId, language.getCode))
-    }
-
-    doc.setProperties(0.until(10).map(n => ("property_name_%d" format docId, "property_value_%d" format docId)).toMap.asJava)
-  }
-
-
-  def generateTextDocs(startDocId: Int, count: Int): Iterator[TextDocumentDomainObject] =
-    for {
-      docId <- startDocId.until(startDocId + count).toIterator
-    } yield generateTextDoc(docId, LanguageFX.mkEnglish)
-
-}
-
+import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
 
 
 
@@ -97,7 +29,7 @@ class DocIndexingMocksSetup {
   private val servicesMock = mock[ImcmsServices]
 
   private val categories = MMap.empty[Int, CategoryDomainObject]
-  private val docs = MMap.empty[Int, MMap[I18nLanguage, DocumentDomainObject]].withDefaultValue(MMap.empty)
+  private val docs = MMap.empty[Int, MMap[I18nLanguage, DocumentDomainObject]].withDefaultValue(MMap.empty.withDefaultValue(null))
 
   when(documentMapperMock.getImcmsServices).thenReturn(servicesMock)
 
@@ -119,8 +51,8 @@ class DocIndexingMocksSetup {
   )
 
   when(documentMapperMock.getDefaultDocument(anyInt, any[I18nLanguage])).thenAnswer(new Answer[DocumentDomainObject] {
-    def answer(invocation: InvocationOnMock) = invocation.getArguments |> { args =>
-      docs(args(0).asInstanceOf[Int])(args(1).asInstanceOf[I18nLanguage])
+    def answer(invocation: InvocationOnMock) = invocation.getArguments match {
+      case Array(id: JInteger, language: I18nLanguage) => docs(id)(language)
     }
   })
 
@@ -146,7 +78,19 @@ class DocIndexingMocksSetup {
   }
 
   def addDocument(doc: DocumentDomainObject) = this |>> { _ =>
-    docs(doc.getId).put(doc.getLanguage, doc)
+    docs.get(doc.getId) |> {
+      case None => MMap.empty[I18nLanguage, DocumentDomainObject].withDefaultValue(null) |>> { langToDoc =>
+        docs(doc.getId) = langToDoc
+      }
+
+      case Some(langToDoc) => langToDoc
+    } |> { langToDoc =>
+      langToDoc.put(doc.getLanguage, doc)
+    }
+  }
+
+  def addDocuments(docs: Seq[DocumentDomainObject]) = this |>> { _ =>
+    docs foreach addDocument
   }
 
   // getDocumentMenuPairsContainingDocument
