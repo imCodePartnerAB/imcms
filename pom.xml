@@ -42,7 +42,7 @@
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>4.1.10</version>
+    <version>4.1.11-SNAPSHOT</version>
     <name>imCMS</name>
 
     <properties>
@@ -776,9 +776,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/4.1.10</connection>
-        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/4.1.10</developerConnection>
-        <url>/tags/4.1.10</url>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/RB-4</developerConnection>
+        <url></url>
     </scm>
 </project>
 
