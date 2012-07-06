@@ -16,7 +16,7 @@ object DocumentIndexServiceFactory extends Log4jLoggerSupport {
         new RemoteSolrDocumentIndexService(solrUrl, createSolrDocumentIndexServiceOps(services))
 
       case (_, Some(solrHome)) =>
-        new EmbeddedSolrDocumentIndexServiceProxy(solrHome, createSolrDocumentIndexServiceOps(services))
+        new EmbeddedSolrDocumentIndexService(solrHome, createSolrDocumentIndexServiceOps(services))
 
       case _ =>
         val errMsg = "Configuration error. Neither Config.solrUrl nor Config.solrHome is set."

@@ -9,93 +9,33 @@ import com.imcode._
 import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.index.DocumentQuery
+import imcode.server.document.index.solr.SolrDocumentIndexService.IndexUpdateOp
 
+// todo: implement
 // todo: ??? add read-only solrServerUrl - i.e. (solrUrl: String, solrUrlReadOnly: String)
 class RemoteSolrDocumentIndexService(solrUrl: String, ops: SolrDocumentIndexServiceOps) extends SolrDocumentIndexService {
-  private val solrServerReader = SolrServerFactory.createHttpSolrServer(solrUrl)
-  private val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrUrl)
 
-  private val events = new LinkedBlockingQueue[SolrDocumentIndexService.IndexUpdateOp]//(1000)
-  private val eventsDispatcher = actor {
-    react {
-      // add DeleteXXX to the end of queue
-      case event: SolrDocumentIndexService.IndexUpdateOp =>
-        if (!events.offer(event)) {
-          // log events query is full, unable to process
-          // request reindex
-        }
+  private val serviceRef: AtomicReference[SolrDocumentIndexService] = new AtomicReference(newManagedService())
 
-      case _ =>
-    }
-  }
+  // todo: replace requestIndexRebuild flag with enum values
+  private def newManagedService(requestIndexRebuild: Boolean = false): ManagedSolrDocumentIndexService = {
+    val solrServerReader = SolrServerFactory.createHttpSolrServer(solrUrl)
+    val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrUrl)
 
-  private val reindexTaskRef = new AtomicReference[JFuture[_]]
-  private val eventHandlerTaskRef = new AtomicReference[JFuture[_]]
-  private val executorService = Executors.newFixedThreadPool(2)
-
-  def requestIndexUpdate(event: SolrDocumentIndexService.IndexUpdateOp) { eventsDispatcher ! event}
-
-  def requestIndexRebuild(): JFuture[_] = reindexTaskRef.synchronized {
-    reindexTaskRef.get() match {
-      case task if !(task == null || task.isDone) => task
-
-      case _ =>
-        executorService.submit(new Runnable {
-          def run() {
-            try {
-              stopEventHandling()
-              ops.rebuildIndex(solrServerWriter)
-            } finally {
-              startEventHandling()
-            }
-          }
-        }) |>> reindexTaskRef.set
-    }
-  }
-
-  def startEventHandling() {
-    executorService.submit(new Runnable {
-      def run() {
-        while (!Thread.currentThread().isInterrupted) {
-          try {
-            events.poll() match {
-              case SolrDocumentIndexService.AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
-              case SolrDocumentIndexService.DeleteDocsFromIndex(docId) => ops.deleteDocsFromIndex(solrServerWriter, docId)
-            }
-          } catch {
-            case e: InterruptedException => Thread.currentThread().interrupt()
-          }
-        }
-      }
-    })
-  }
-
-  def stopEventHandling() {
-    eventHandlerTaskRef.get() |> { task =>
-      if (task != null && !task.isDone) {
-        task.cancel(true)
-        scala.util.control.Exception.allCatch.opt {
-          task.get()
-        }
+    new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops) |>> { service =>
+      listenTo(service)
+      serviceRef.set(service)
+      if (requestIndexRebuild) {
+        service.requestIndexRebuild()
       }
     }
   }
 
+  def requestIndexRebuild() = null
 
-  def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
-    try {
-      val queryResponse = solrServerReader.query(new SolrQuery(query.toString))
+  def requestIndexUpdate(op: IndexUpdateOp) = null
 
-      java.util.Collections.emptyList()
-    } catch {
-      case e =>
-        logger.error("Search error", e)
-        java.util.Collections.emptyList()
-      }
-  }
+  def search(query: SolrQuery, searchingUser: UserDomainObject) = null
 
-  def shutdown() {
-    solrServerReader.shutdown()
-    solrServerWriter.shutdown()
-  }
+  def shutdown() = null
 }

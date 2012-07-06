@@ -9,12 +9,12 @@ import org.apache.solr.core.CoreContainer
 
 object SolrServerFactory extends Log4jLoggerSupport {
 
-  def createHttpSolrServer(solrUrl: String) = new HttpSolrServer(solrUrl) |>> { solr =>
+  def createHttpSolrServer(solrUrl: String) = new HttpSolrServer(solrUrl) with SolrServerShutdown |>> { solr =>
     solr.setRequestWriter(new BinaryRequestWriter())
   }
 
 
-  def createEmbeddedSolrServer(solrHome: File, recreateDataDir: Boolean = false): EmbeddedSolrServer = {
+  def createEmbeddedSolrServer(solrHome: File, recreateDataDir: Boolean = false): EmbeddedSolrServer with SolrServerShutdown = {
     if (recreateDataDir) {
       new File(solrHome, "core/data") |> { dataDir =>
         if (dataDir.exists() && !dataDir.delete()) sys.error("Unable to delete SOLr data dir %s.".format(dataDir))
@@ -22,7 +22,7 @@ object SolrServerFactory extends Log4jLoggerSupport {
     }
 
     new CoreContainer(solrHome.getAbsolutePath, new File(solrHome, "solr.xml")) |> { coreContainer =>
-      new EmbeddedSolrServer(coreContainer, "core")
+      new EmbeddedSolrServer(coreContainer, "core") with SolrServerShutdown
     }
   }
 }
