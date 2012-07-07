@@ -8,7 +8,7 @@ import org.apache.solr.client.solrj.{SolrQuery}
 import scala.swing.Publisher
 import java.util.Date
 import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.{Future, Future => JFuture}
+import java.util.concurrent.{Future => JFuture}
 
 /**
  * Defines interface for SOLr based Document Index Service.
@@ -19,8 +19,8 @@ abstract class SolrDocumentIndexService extends Publisher with Log4jLoggerSuppor
   def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp)
   def requestIndexRebuild()
   def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] // ??? move searching user into wrapper ???
-  def shutdown()
   def getMonitor(): SolrDocumentIndexServiceMonitor = ???
+  def shutdown()
 }
 
 
@@ -37,37 +37,8 @@ object SolrDocumentIndexService {
 trait SolrDocumentIndexServiceMonitor {
   import SolrDocumentIndexServiceMonitor._
 
-  // private val rebuildTaskRef: AtomicReference[JFuture[RebuildTaskState]]
-  // private val rebuildTaskStateRef: AtomicReference[RebuildTaskState]
-
-  def rebuildTask: Option[JFuture[RebuildState]]
-
-  def rebuildTaskState: RebuildState
-}
-
-
-class SolrDocumentIndexServiceMonitorImpl extends SolrDocumentIndexServiceMonitor with Log4jLoggerSupport {
-  import SolrDocumentIndexServiceMonitor._
-
-  private val rebuildTaskRef: AtomicReference[JFuture[RebuildState]] = new AtomicReference(null)
-  private val rebuildTaskStateRef: AtomicReference[RebuildState] = new AtomicReference(Idle)
-
-  def rebuildTask: Option[JFuture[RebuildState]] = Option(rebuildTaskRef.get())
-
-  def rebuildTaskState: RebuildState = rebuildTaskStateRef.get()
-
-  def setRebuildTask(task: JFuture[RebuildState]) {
-    rebuildTaskRef.set(task)
-    // publish asyncronously
-  }
-
-  def setRebuildTaskState(state: RebuildState) {
-    rebuildTaskStateRef.set(state)
-    // publish asyncronously
-  }
-
-
-  def indexRebuildState: (Option[JFuture[_], ])
+  // indexRebuildActivity: opt SolrDocumentIndexRebuildActivity|Monitor
+  def indexRebuild(): Option[SolrDocumentIndexRebuild]
 }
 
 

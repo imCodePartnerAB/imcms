@@ -34,7 +34,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
     db.runScripts("src/test/resources/sql/text_doc_menu_dao.sql")
   }
 
-  def menu(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, no: JInteger = DocItemFX.defaultNo, assertExists: Boolean = true) =
+  def menu(docId: JInteger = DocFX.DefaultId, docVersionNo: JInteger = VersionFX.DefaultNo, no: JInteger = DocItemFX.DefaultNo, assertExists: Boolean = true) =
     menuDao.getMenu(docId, docVersionNo, no) |>> { menu =>
       if (assertExists) {
         assertNotNull("menu exists", menu)
@@ -45,7 +45,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
     }
 
 
-  def menus(docId: JInteger = DocFX.defaultId, docVersionNo: JInteger = VersionFX.defaultNo, assertNotEmpty: Boolean = true) =
+  def menus(docId: JInteger = DocFX.DefaultId, docVersionNo: JInteger = VersionFX.DefaultNo, assertNotEmpty: Boolean = true) =
     menuDao.getMenus(docId, docVersionNo) |>> { menus =>
       if (assertNotEmpty) {
         assertTrue("menus exist", menus.nonEmpty)
@@ -76,17 +76,17 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
   }
 
   test("get non-existing menu") {
-    menu(no = DocItemFX.vacantNo, assertExists = false) |> assertNull
+    menu(no = DocItemFX.VacantNo, assertExists = false) |> assertNull
   }
 
   test("get non-existing menus") {
-    menus(docId = DocFX.vacantId, assertNotEmpty = false) |> { menus => assertTrue("menus do not exist", menus.isEmpty) }
+    menus(docId = DocFX.VacantId, assertNotEmpty = false) |> { menus => assertTrue("menus do not exist", menus.isEmpty) }
   }
 
   test("save new menu") {
     val menu = new MenuDomainObject
-    menu.setDocId(DocFX.defaultId)
-    menu.setDocVersionNo(VersionFX.defaultNo)
+    menu.setDocId(DocFX.DefaultId)
+    menu.setDocVersionNo(VersionFX.DefaultNo)
     menu.setNo(menuNos.max + 1)
     menu.setSortOrder(MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE)
 
@@ -94,7 +94,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
     mi.setSortKey(2)
     mi.setTreeSortKey(new TreeSortKeyDomainObject("3"))
 
-    menu.getItemsMap().put(DocFX.defaultId, mi)
+    menu.getItemsMap().put(DocFX.DefaultId, mi)
 
     menuDao.saveMenu(menu)
 
@@ -114,7 +114,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
 
   test("delete all menus") {
-    menuDao.deleteMenus(DocFX.defaultId, VersionFX.defaultNo)
+    menuDao.deleteMenus(DocFX.DefaultId, VersionFX.DefaultNo)
 
     menus(assertNotEmpty = false) |> { menus =>
       assertTrue("menus do not exist",  menus.isEmpty)

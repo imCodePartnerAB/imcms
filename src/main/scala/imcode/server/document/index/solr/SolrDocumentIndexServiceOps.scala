@@ -7,9 +7,13 @@ import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.client.solrj.SolrServer
 import com.imcode.imcms.api.I18nLanguage
+import java.lang.InterruptedException
+import java.util.Date
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.{ExecutorService, Future}
 
 /**
- * Common low-level SOLr index operations.
+ * SOLr document index operations.
  *
  * The instance of this class is thread save.
  */
@@ -58,16 +62,66 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     solrServer.commit()
   }
 
-  // todo: refactor out into separate class with threading support?
-  // todo: make commit opp with default value
-  def rebuildIndex(solrServer: SolrServer) {
-    val rebuildStartTime = System.currentTimeMillis()
 
-    for ((docId, solrInputDocs) <- mkSolrInputDocs(); if solrInputDocs.nonEmpty) {
-      solrServer.add(solrInputDocs.asJava)
+  /**
+   *
+   */
+  // todo: ??? one interrupt per execution (in the for loop) is enough ???
+  def rebuildIndex(solrServer: SolrServer, executorService: ExecutorService): SolrDocumentIndexRebuild = {
+    val rebuildStartDt = new Date
+    val rebuildStateRef = new AtomicReference[SolrDocumentIndexRebuild.State](SolrDocumentIndexRebuild.Started(rebuildStartDt))
+
+    executorService.submit(new Runnable() {
+      def run() {
+        // publish state
+        try {
+          // counter
+          for ((docId, solrInputDocs) <- mkSolrInputDocs(); if solrInputDocs.nonEmpty) {
+            if (Thread.currentThread().isInterrupted) throw new InterruptedException
+            solrServer.add(solrInputDocs.asJava)
+
+            // publish state
+            if (Thread.currentThread().isInterrupted) throw new InterruptedException
+          }
+
+          solrServer.deleteByQuery("timestamp < rebuildStartTime")
+          solrServer.commit()
+        } catch {
+          case e: InterruptedException =>
+            // publish cancelled
+            solrServer.rollback() // ???
+            throw e
+
+          case e =>
+            // publish Failed
+            solrServer.rollback() // ???
+            throw e
+        }
+      }
+    }) |> { future =>
+      new SolrDocumentIndexRebuild {
+        val task: Future[_] = future
+        def state(): SolrDocumentIndexRebuild.State = rebuildStateRef.get()
+      }
     }
-
-    solrServer.deleteByQuery("timestamp < rebuildStartTime")
-    solrServer.commit()
   }
+}
+
+
+// SolrDocumentIndexRebuildMonitor
+abstract class SolrDocumentIndexRebuild {
+  val task: Future[_]
+  def state(): SolrDocumentIndexRebuild.State
+}
+
+
+object SolrDocumentIndexRebuild {
+  case class Progress(startDt: Date, stateDt: Date, total: Int, indexed: Int) // doc: DocumentDomainObject ??? ProgressSnapshot
+
+  sealed trait State
+  case class Started(startDt: Date) extends State
+  case class Running(progress: Progress) extends State
+  case class Cancelled(progress: Progress) extends State
+  case class Failed(progress: Progress, failure: Throwable) extends State
+  case class Finished(progress: Progress)
 }

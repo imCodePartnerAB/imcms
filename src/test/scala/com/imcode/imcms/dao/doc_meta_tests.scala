@@ -68,7 +68,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 
     "return null when no meta with provided id exists" in {
       expect(null) {
-        metaDao.getMeta(DocFX.vacantId)
+        metaDao.getMeta(DocFX.VacantId)
       }
     }
   }

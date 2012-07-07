@@ -13,16 +13,16 @@ object DocFX {
   val Seq(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth) = 1001 to 1010
 
   // default doc/meta id - this doc/meta or an entity which have doc/meta id field always exists (or re-created) before each test.
-  val defaultId = 1001
+  val DefaultId = 1001
 
   // doc/meta id an entity which have doc/meta id field which *never* exists before a test but created during this test.
-  val newId = Int.MaxValue / 2
+  val NewId = Int.MaxValue / 2
 
   // id of nonexistent document
-  val vacantId = Int.MaxValue
+  val VacantId = Int.MaxValue
 
-  def mkDefaultTextDocEn: TextDocumentDomainObject = mkTextDoc(DocFX.defaultId, LanguageFX.mkEnglish)
-  def mkDefaultTextDocSe: TextDocumentDomainObject = mkTextDoc(DocFX.defaultId, LanguageFX.mkSwedish)
+  def mkDefaultTextDocEn: TextDocumentDomainObject = mkTextDoc(DocFX.DefaultId, LanguageFX.mkEnglish)
+  def mkDefaultTextDocSe: TextDocumentDomainObject = mkTextDoc(DocFX.DefaultId, LanguageFX.mkSwedish)
 
   def mkTextDoc(docId: Int, language: I18nLanguage): TextDocumentDomainObject = new TextDocumentDomainObject |>> { doc =>
     doc.setId(docId)
@@ -67,21 +67,21 @@ object DocFX {
 object VersionFX {
   val Seq(zero, one, two, three, four, five, six, seven, eight, nine, ten) = 0 to 10
 
-  val defaultNo = zero
+  val DefaultNo = zero
 
-  val newNo = Int.MaxValue / 2
+  val NewNo = Int.MaxValue / 2
 
-  val vacantNo = Int.MaxValue
+  val VacantNo = Int.MaxValue
 }
 
 object DocItemFX {
   val Seq(zero, one, two, three, four, five, six, seven, eight, nine, ten) = 0 to 10
 
-  val defaultNo = zero
+  val DefaultNo = zero
 
-  val newNo = Int.MaxValue / 2
+  val NewNo = Int.MaxValue / 2
 
-  val vacantNo = Int.MaxValue
+  val VacantNo = Int.MaxValue
 }
 
 object UserFX {
@@ -108,5 +108,3 @@ object LanguageFX {
     setHosts(Map(HostNameEn -> mkEnglish, HostNameSe -> mkSwedish))
   }
 }
-
-// mem; from db?

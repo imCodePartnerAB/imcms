@@ -1,6 +1,5 @@
 package imcode.server.document.index.solr
 
-import java.io.File
 import scala.actors.Actor._
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.{Executors, Future => JFuture, LinkedBlockingQueue}
@@ -40,7 +39,7 @@ class ManagedSolrDocumentIndexService(
     indexUpdateOpsRegistrator ! op
   }
 
-  def requestIndexRebuild(): JFuture[_] = indexRebuildTaskRef.synchronized {
+  def requestIndexRebuild(): Unit = indexRebuildTaskRef.synchronized {
     indexRebuildTaskRef.get() match {
       case task if !(task == null || task.isDone) => task
 
@@ -49,7 +48,10 @@ class ManagedSolrDocumentIndexService(
           def run() {
             try {
               cancelIndexUpdateTask()
-              ops.rebuildIndex(solrServerWriter)
+              ops.rebuildIndex(solrServerWriter, null) |> { indexRebuild =>
+                // publish indexRebuild
+                indexRebuild.task.get()
+              }
             } catch {
               case e: InterruptedException =>
                 Thread.currentThread().interrupt()

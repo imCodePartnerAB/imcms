@@ -77,7 +77,7 @@ object EmbeddedSolrDocumentIndexService {
 
 
 /**
- *
+ * rebuild monitor - Service UNAVAILABLE | IDLE | Monitor -vs- Option[Monitor]
  */
 object NoOpSolrDocumentIndexService extends SolrDocumentIndexService {
 

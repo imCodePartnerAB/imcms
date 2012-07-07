@@ -15,14 +15,14 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
   val ops: SolrDocumentIndexServiceOps = {
     val ms = new DocIndexingMocksSetup
 
-    ms.addDocuments(DocFX.mkTextDocs(DocFX.defaultId, 10))
+    ms.addDocuments(DocFX.mkTextDocs(DocFX.DefaultId, 10))
 
     new SolrDocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
   }
 
   "SolrDocumentIndexServiceOps" should {
     "create an empty Seq of SolrInputDocument" in {
-      ops.mkSolrInputDocs(DocFX.vacantId) |> { solrInputDocs =>
+      ops.mkSolrInputDocs(DocFX.VacantId) |> { solrInputDocs =>
         assertTrue("No solrInputDocs", solrInputDocs.isEmpty)
       }
     }
@@ -52,7 +52,7 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
     }
 
     "produce SOLr delete query for every document id" in pendingUntilFixed {
-      for (docId <- DocFX.defaultId until (DocFX.defaultId + 10)) {
+      for (docId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
         expect("<undefined>", "valid SOLr delete query") {
           ops.mkSolrDeleteQuery(docId)
         }
