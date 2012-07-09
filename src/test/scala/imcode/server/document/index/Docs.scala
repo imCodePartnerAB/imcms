@@ -16,16 +16,12 @@ import org.mockito.invocation.InvocationOnMock
 import com.imcode.imcms.mapping.DocumentMapper.TextDocumentMenuIndexPair
 import imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexer}
 import imcode.server.ImcmsServices
+import com.imcode.imcms.test._
 import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
 
 
 
 class DocIndexingMocksSetup {
-
-  implicit def fnToAnswer[A](f: InvocationOnMock => A): Answer[A] =
-    new Answer[A] {
-      def answer(invocation: InvocationOnMock): A = f(invocation)
-    }
 
   case class ParentDoc(docId: Int, menuNo: Int)
 

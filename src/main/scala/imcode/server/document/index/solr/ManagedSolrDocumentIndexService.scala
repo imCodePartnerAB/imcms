@@ -1,12 +1,13 @@
 package imcode.server.document.index.solr
 
 import scala.actors.Actor._
-import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.{Executors, Future => JFuture, LinkedBlockingQueue}
+import java.util.concurrent.{LinkedBlockingQueue}
 import imcode.server.user.UserDomainObject
 import com.imcode._
 import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.{SolrServer, SolrQuery}
+import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
+import java.lang.{InterruptedException, IllegalStateException, Thread}
 
 /**
  *
@@ -31,47 +32,71 @@ class ManagedSolrDocumentIndexService(
     }
   }
 
-  private val indexRebuildTaskRef = new AtomicReference[JFuture[_]]
-  private val indexUpdateTaskRef = new AtomicReference[JFuture[_]]
-  private val executorService = Executors.newFixedThreadPool(2)
+  private val shutdownRef = new AtomicBoolean(false)
+  private val indexWriteLock = new AnyRef // mutex/sem
+  private val indexRebuildThreadRef = new AtomicReference[Thread]
+  private val indexUpdateThreadRef = new AtomicReference[Thread]
+
 
   def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp) {
     indexUpdateOpsRegistrator ! op
   }
 
-  def requestIndexRebuild(): Unit = indexRebuildTaskRef.synchronized {
-    indexRebuildTaskRef.get() match {
-      case task if !(task == null || task.isDone) => task
 
-      case _ =>
-        executorService.submit(new Runnable {
-          def run() {
+  def requestIndexRebuild() {
+    new Thread {
+      override def run() {
+        shutdownRef.synchronized {
+          shutdownRef.get() match {
+            case true =>
+            case _ => startIndexRebuildThread()
+          }
+        }
+      }
+    }.start()
+  }
+
+  // todo: publish task as a part of thread execution
+  private def startIndexRebuildThread(): Unit = indexWriteLock.synchronized {
+    PartialFunction.condOpt(indexRebuildThreadRef.get()) {
+      case thread if thread == null || thread.getState == Thread.State.TERMINATED =>
+        new Thread {
+          override def run() {
             try {
-              cancelIndexUpdateTask()
-              ops.rebuildIndex(solrServerWriter, null) |> { indexRebuild =>
-                // publish indexRebuild
-                indexRebuild.task.get()
+              stopIndexUpdateThread()
+
+              ops.rebuildIndexInterruptibly(solrServerWriter) { _ =>
+                // update progress
               }
+
+              startIndexUpdateThread()
             } catch {
               case e: InterruptedException =>
-                Thread.currentThread().interrupt()
-                throw e
+                // startIndexUpdateTask()
+                //Thread.currentThread().interrupt()
+                //throw e
 
               case e =>
                 publish(EmbeddedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
-                throw e
-            } finally {
-              startIndexUpdateTask()
             }
           }
-        }) |>> indexRebuildTaskRef.set
+        } |>> indexRebuildThreadRef.set |>> { _.start() }
     }
   }
 
-  private def startIndexUpdateTask() {
-    executorService.submit(new Runnable {
-      def run() {
-        while (!Thread.currentThread().isInterrupted) {
+
+  private def stopIndexRebuildThread(): Unit = indexWriteLock.synchronized {
+    for (thread <- Option(indexRebuildThreadRef.get())) {
+      thread.interrupt()
+      thread.join()
+    }
+  }
+
+
+  private def startIndexUpdateThread(): Unit = indexWriteLock.synchronized {
+    new Thread {
+      override def run() {
+        while (!isInterrupted()) {
           try {
             indexUpdateOps.poll() match {
               case SolrDocumentIndexService.AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
@@ -79,26 +104,20 @@ class ManagedSolrDocumentIndexService(
             }
           } catch {
             case e: InterruptedException =>
-              Thread.currentThread().interrupt()
-              throw e
 
             case e =>
               publish(EmbeddedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
-              throw e
           }
         }
       }
-    })
+    } |>> { _.start() } |>> indexUpdateThreadRef.set
   }
 
-  private def cancelIndexUpdateTask() {
-    indexUpdateTaskRef.get() |> { task =>
-      if (task != null && !task.isDone) {
-        task.cancel(true)
-        scala.util.control.Exception.allCatch.opt {
-          task.get()
-        }
-      }
+
+  private def stopIndexUpdateThread(): Unit = indexWriteLock.synchronized {
+    for (thread <- Option(indexUpdateThreadRef.get())) {
+      thread.interrupt()
+      thread.join()
     }
   }
 
@@ -117,16 +136,25 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  def start() {
-    indexUpdateOpsRegistrator.start()
-    startIndexUpdateTask()
-  }
+//  def start(): Unit = shutdownRef.synchronized {
+//    shutdownRef.get() match {
+//      case true => throw new IllegalStateException()
+//      case _ =>
+//        // check shutdown
+//        indexUpdateOpsRegistrator.start()
+//        startIndexUpdateThread()
+//    }
+//  }
 
 
   def shutdown() {
-    solrServerReader.shutdown()
-    solrServerWriter.shutdown()
-    executorService.shutdownNow()
-    // todo: stop actor
+    shutdownRef.synchronized {
+      if (shutdownRef.compareAndSet(false, true)) {
+
+        solrServerReader.shutdown()
+        solrServerWriter.shutdown()
+          // todo: stop actor
+      }
+    }
   }
 }
