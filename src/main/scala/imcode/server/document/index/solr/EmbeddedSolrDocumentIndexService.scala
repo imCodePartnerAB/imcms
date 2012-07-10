@@ -1,22 +1,19 @@
 package imcode.server.document.index.solr
 
 import java.io.File
-import scala.actors.Actor._
-import java.util.concurrent.{Executors, Future => JFuture, LinkedBlockingQueue}
 import imcode.server.user.UserDomainObject
 import com.imcode._
 import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.SolrQuery
 import java.util.concurrent.atomic.AtomicReference
 import java.util.Collections
-import scala.actors.{Actor}
 import scala.swing.{Reactor}
 import scala.swing.event.Event
 
 
 /**
- * Delegates all invocations to the self-managed instance of EmbeddedSolrDocumentIndexService.
- * In case of an indexing error replaces target instance with a new instance.
+ * Delegates all invocations to the ManagedSolrDocumentIndexService instance.
+ * In case of an indexing error replaces managed instance with new one and re-indexes documents.
  */
 class EmbeddedSolrDocumentIndexService(solrHome: File, ops: SolrDocumentIndexServiceOps)
     extends SolrDocumentIndexService with Reactor {

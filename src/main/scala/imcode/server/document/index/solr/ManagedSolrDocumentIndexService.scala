@@ -7,18 +7,25 @@ import com.imcode._
 import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.{SolrServer, SolrQuery}
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
-import java.lang.{InterruptedException, IllegalStateException, Thread}
+import java.lang.{Thread, InterruptedException, IllegalStateException}
 
 /**
+ * Coordinates index update and rebuild requests.
  *
+ * Makes sure that update and rebuild operations are never run in parallel.
  */
 class ManagedSolrDocumentIndexService(
     solrServerReader: SolrServer with SolrServerShutdown,
     solrServerWriter: SolrServer with SolrServerShutdown,
     ops: SolrDocumentIndexServiceOps) extends SolrDocumentIndexService {
 
+  private val lock = new AnyRef
+  private val shutdownRef = new AtomicBoolean(false)
+  private val indexRebuildThreadRef = new AtomicReference[Thread]
+  private val indexUpdateThreadRef = new AtomicReference[Thread]
   private val indexUpdateOps = new LinkedBlockingQueue[SolrDocumentIndexService.IndexUpdateOp]//(1000)
-  private val indexUpdateOpsRegistrator = actor {
+
+  private val requestsHandler = actor {
     react {
       // add DeleteXXX to the end of queue as they are more lightweight
       // FATAL ERROR
@@ -28,56 +35,75 @@ class ManagedSolrDocumentIndexService(
           // request reindex
         }
 
+      case 'rebuild => startIndexRebuildThread()
+
       case _ =>
     }
   }
 
-  private val shutdownRef = new AtomicBoolean(false)
-  private val indexWriteLock = new AnyRef // mutex/sem
-  private val indexRebuildThreadRef = new AtomicReference[Thread]
-  private val indexUpdateThreadRef = new AtomicReference[Thread]
+
+  private def notTerminated(thread: Thread) = thread != null && thread.getState != Thread.State.TERMINATED
+  private def interruptAndAwaitTermination(thread: Thread) {
+    if (thread != null) {
+      thread.interrupt()
+      try {
+        thread.join()
+      } catch {
+        case e: InterruptedException =>
+          Thread.currentThread().interrupt()
+          throw e
+      }
+    }
+  }
 
 
   def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp) {
-    indexUpdateOpsRegistrator ! op
+    requestsHandler ! op
   }
 
 
   def requestIndexRebuild() {
-    new Thread {
-      override def run() {
-        shutdownRef.synchronized {
-          shutdownRef.get() match {
-            case true =>
-            case _ => startIndexRebuildThread()
-          }
-        }
-      }
-    }.start()
+    requestsHandler ! 'rebuild
   }
 
+  /**
+   * Creates and starts new index-rebuild-thread if there is no already running one.
+   *
+   * An existing index-update-thread is stopped before rebuilding happens and a new index-update-thread is started
+   * as soon as running index-rebuild-thread is terminated.
+   *
+   * Any exception terminates index-rebuild-thread.
+   */
   // todo: publish task as a part of thread execution
-  private def startIndexRebuildThread(): Unit = indexWriteLock.synchronized {
-    PartialFunction.condOpt(indexRebuildThreadRef.get()) {
-      case thread if thread == null || thread.getState == Thread.State.TERMINATED =>
-        new Thread {
-          override def run() {
-            try {
-              stopIndexUpdateThread()
+  private def startIndexRebuildThread(): Unit = lock.synchronized {
+    (shutdownRef.get(), indexRebuildThreadRef.get()) match {
+      case (true, _) =>
+      case (_, existingIndexRebuildThread) if notTerminated(existingIndexRebuildThread) =>
+      case _ =>
+        new Thread { currentIndexRebuildThread =>
+          setName("solr-document-index-rebuild-" + System.nanoTime())
 
+          override def run() {
+            stopIndexUpdateThread()
+            indexUpdateOps.clear()
+
+            try {
               ops.rebuildIndexInterruptibly(solrServerWriter) { _ =>
                 // update progress
               }
-
-              startIndexUpdateThread()
             } catch {
               case e: InterruptedException =>
-                // startIndexUpdateTask()
-                //Thread.currentThread().interrupt()
-                //throw e
 
               case e =>
                 publish(EmbeddedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
+                // publish index rebuild error
+            } finally {
+              new Thread {
+                override def run() {
+                  currentIndexRebuildThread.join()
+                  startIndexUpdateThread()
+                }
+              }.start()
             }
           }
         } |>> indexRebuildThreadRef.set |>> { _.start() }
@@ -85,7 +111,7 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  private def stopIndexRebuildThread(): Unit = indexWriteLock.synchronized {
+  private def stopIndexRebuildThread(): Unit = lock.synchronized {
     for (thread <- Option(indexRebuildThreadRef.get())) {
       thread.interrupt()
       thread.join()
@@ -93,28 +119,50 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  private def startIndexUpdateThread(): Unit = indexWriteLock.synchronized {
-    new Thread {
-      override def run() {
-        while (!isInterrupted()) {
-          try {
-            indexUpdateOps.poll() match {
-              case SolrDocumentIndexService.AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
-              case SolrDocumentIndexService.DeleteDocsFromIndex(docId) => ops.deleteDocsFromIndex(solrServerWriter, docId)
-            }
-          } catch {
-            case e: InterruptedException =>
+  /**
+   * Creates and starts new index-update-thread if there is no already running index-update or index-rebuild thread.
+   *
+   * Any exception or interruption terminates index-update-thread.
+   * However, as its final action, index-update-thread submits start of a new index-update-thread .
+   */
+  private def startIndexUpdateThread(): Unit = lock.synchronized {
+    (shutdownRef.get(), indexRebuildThreadRef.get(), indexUpdateThreadRef.get()) match {
+      case (true, _, _) => // terminated
+      case (_, existingIndexRebuildThread, _) if notTerminated(existingIndexRebuildThread) =>
+      case (_, _, existingIndexUpdateThread) if notTerminated(existingIndexUpdateThread) =>
+      case _ =>
+        new Thread { currentIndexUpdateThread =>
+          setName("solr-document-index-update-" + System.nanoTime())
 
-            case e =>
-              publish(EmbeddedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
+          override def run() {
+            try {
+              while (!isInterrupted()) {
+                indexUpdateOps.take() match {
+                  case SolrDocumentIndexService.AddDocsToIndex(docId) => ops.addDocsToIndex(solrServerWriter, docId)
+                  case SolrDocumentIndexService.DeleteDocsFromIndex(docId) => ops.deleteDocsFromIndex(solrServerWriter, docId)
+                }
+              }
+            } catch {
+              case e: InterruptedException =>
+
+              case e =>
+                publish(EmbeddedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
+                // publish index update error
+            } finally {
+              new Thread {
+                override def run() {
+                  currentIndexUpdateThread.join()
+                  startIndexUpdateThread()
+                }
+              }.start()
+            }
           }
-        }
-      }
-    } |>> { _.start() } |>> indexUpdateThreadRef.set
+        } |>> indexUpdateThreadRef.set |>> { _.start() }
+    }
   }
 
 
-  private def stopIndexUpdateThread(): Unit = indexWriteLock.synchronized {
+  private def stopIndexUpdateThread(): Unit = lock.synchronized {
     for (thread <- Option(indexUpdateThreadRef.get())) {
       thread.interrupt()
       thread.join()
@@ -147,14 +195,12 @@ class ManagedSolrDocumentIndexService(
 //  }
 
 
-  def shutdown() {
-    shutdownRef.synchronized {
-      if (shutdownRef.compareAndSet(false, true)) {
-
-        solrServerReader.shutdown()
-        solrServerWriter.shutdown()
-          // todo: stop actor
-      }
+  def shutdown(): Unit = lock.synchronized {
+    if (shutdownRef.compareAndSet(false, true)) {
+      // stop worker threads
+      solrServerReader.shutdown()
+      solrServerWriter.shutdown()
+        // todo: stop actor
     }
   }
 }
