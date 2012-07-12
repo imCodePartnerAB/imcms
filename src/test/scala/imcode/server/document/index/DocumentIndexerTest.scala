@@ -31,7 +31,7 @@ import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
 @RunWith(classOf[JUnitRunner])
 class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 
-  Test.init()
+  Test.initLogging()
 
   val defaultTextDocEn = DocFX.mkDefaultTextDocEn
   val docIndexer: DocumentIndexer = new DocIndexingMocksSetup |>> { fx =>

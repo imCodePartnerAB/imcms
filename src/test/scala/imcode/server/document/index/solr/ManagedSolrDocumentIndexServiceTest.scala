@@ -21,7 +21,7 @@ import imcode.server.document.index.solr.SolrDocumentIndexRebuild.Progress
 @RunWith(classOf[JUnitRunner])
 class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 
-  Test.init()
+  Test.initLogging()
 
   val ops: SolrDocumentIndexServiceOps = {
     val ms = new DocIndexingMocksSetup

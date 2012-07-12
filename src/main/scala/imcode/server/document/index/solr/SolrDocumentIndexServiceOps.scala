@@ -7,9 +7,7 @@ import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.client.solrj.SolrServer
 import com.imcode.imcms.api.I18nLanguage
-import java.util.concurrent._
-import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
-import java.lang.{InterruptedException, Thread, Throwable}
+import java.lang.{InterruptedException, Thread}
 
 /**
  * SOLr document index operations.

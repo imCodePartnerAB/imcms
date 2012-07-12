@@ -1,9 +1,6 @@
 package imcode.server.document.index.solr
 
-import scala.actors.Actor
-import scala.actors.Actor._
 import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.{Executors, Future =>JFuture, LinkedBlockingQueue}
 import imcode.server.user.UserDomainObject
 import com.imcode._
 import imcode.server.document.DocumentDomainObject

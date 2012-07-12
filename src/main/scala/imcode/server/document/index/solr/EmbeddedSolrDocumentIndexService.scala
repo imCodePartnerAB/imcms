@@ -42,7 +42,6 @@ class EmbeddedSolrDocumentIndexService(solrHome: File, ops: SolrDocumentIndexSer
 
     new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops) |>> { service =>
       listenTo(service)
-      serviceRef.set(service)
       if (requestIndexRebuild) {
         service.requestIndexRebuild()
       }
