@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import org.springframework.transaction.annotation.Transactional
 
 import com.imcode.imcms.api.MenuHistory
@@ -24,7 +24,7 @@ class MenuDao extends HibernateSupport {
 
   
   def saveMenu(menu: MenuDomainObject): MenuDomainObject = {
-    for ((_, menuItem) <- menu.getItemsMap)
+    for ((_, menuItem) <- menu.getItemsMap.asScala)
       menuItem.setTreeSortIndex(menuItem.getTreeSortKey.toString)
 
     hibernate.saveOrUpdate(menu)

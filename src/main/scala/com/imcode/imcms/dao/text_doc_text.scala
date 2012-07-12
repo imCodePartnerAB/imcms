@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.imcode.imcms.api.I18nLanguage
 import com.imcode.imcms.api.TextHistory
 import imcode.server.document.textdocument.TextDomainObject

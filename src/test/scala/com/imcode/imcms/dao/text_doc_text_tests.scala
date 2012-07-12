@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import imcms.util.Factory
 import imcode.server.document.textdocument.TextDomainObject
 import org.junit.Assert._
@@ -170,7 +170,7 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
 
 
     for (versionNo <- versionNos; language <- mkLanguages) {
-      val texts = textDao.getTexts(Default.docId, versionNo, language)
+      val texts = textDao.getTexts(Default.docId, versionNo, language).asScala
 
       expect(nos.size * contentInfos.size) { texts.size }
 

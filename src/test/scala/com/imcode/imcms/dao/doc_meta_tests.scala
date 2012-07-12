@@ -20,7 +20,7 @@ import org.junit.Assert._
 import java.lang.Integer
 import com.google.common.collect.Maps
 import java.util.{HashMap, HashSet, Date}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.imcode.imcms.test.fixtures.{UserFX, DocFX}
 import org.joda.time.DateTime
 
@@ -54,7 +54,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
     m.setTarget("_top")
 
     //m.setProperties(Map("p1" -> "v1", "p2" -> "v2", "p3" -> "v3"))
-    m.setCategoryIds(Set[JInteger](0,1,2,3,4,5))
+    m.setCategoryIds(Set[JInteger](0,1,2,3,4,5).asJava)
   } |> metaDao.saveMeta
 
 

@@ -1,7 +1,6 @@
 package com.imcode
 package imcms.dao
 
-import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 import imcode.server.user.UserDomainObject
 import imcode.server.Imcms
@@ -58,7 +57,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val headlinePrefix = "headline_"
     val menuTextPrefix = "menu_text_"
 
-    val i18nMetas = i18nSupport.getLanguages.map { language =>
+    val i18nMetas = i18nSupport.getLanguages.asScala.map { language =>
       val i18nMeta = new I18nMeta
 
       i18nMeta.setLanguage(language)
@@ -74,7 +73,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       EnumSet.noneOf(classOf[DocumentMapper.SaveDirectives]),
       admin).getMeta.getId
 
-    i18nSupport.getLanguages.map { language =>
+    i18nSupport.getLanguages.asScala.map { language =>
       val doc = docMapper.getDefaultDocument(id, language).asInstanceOf[TextDocumentDomainObject]
 
       assertEquals(headlinePrefix + language.getCode, doc.getHeadline)
@@ -95,7 +94,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val headlinePrefix = "headline_"
     val menuTextPrefix = "menu_text_"
 
-    val i18nMetas = i18nSupport.getLanguages.map { language =>
+    val i18nMetas = i18nSupport.getLanguages.asScala.map { language =>
       val i18nMeta = new I18nMeta
 
       i18nMeta.setLanguage(language)
@@ -111,7 +110,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       EnumSet.of(DocumentMapper.SaveDirectives.CopyI18nMetaTextsIntoTextFields),
       admin).getMeta.getId
 
-    i18nSupport.getLanguages.map { language =>
+    i18nSupport.getLanguages.asScala.map { language =>
       val doc = docMapper.getDefaultDocument(id, language).asInstanceOf[TextDocumentDomainObject]
 
       assertEquals(headlinePrefix + language.getCode, doc.getHeadline)
@@ -257,7 +256,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       val menuItems = menu.getItemsMap
       assertEquals(no, menuItems.size)
       assertEquals(menus(no).getMenuItems.map(_.getDocumentId).toSet,
-                   menuItems.values.map(_.getDocumentId).toSet)
+                   menuItems.values.asScala.map(_.getDocumentId).toSet)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
         val text = savedDoc.getText(no, loopNo, contentNo)
@@ -473,7 +472,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
   test("copy text doc") {
     //TextDocumentDomainObject doc = saveNewTextDocumentFn();
-    for (l <- Imcms.getI18nSupport.getLanguages) {
+    for (l <- Imcms.getI18nSupport.getLanguages.asScala) {
       val doc = docMapper.getDocument(1001).asInstanceOf[TextDocumentDomainObject]
       assertNotNull(doc)
     }
@@ -485,8 +484,8 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
     assertNotSame(doc.getId, docCopyId)
 
-    for (l <- Imcms.getI18nSupport.getLanguages.toList) {
-      val d = docMapper.getDocument(docCopyId)
+    for (l <- Imcms.getI18nSupport.getLanguages.asScala.toList) {
+      val doc = docMapper.getDocument(docCopyId)
       assertNotNull(doc)
     }
   }

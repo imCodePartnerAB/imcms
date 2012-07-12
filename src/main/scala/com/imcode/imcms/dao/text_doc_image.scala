@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.imcode.imcms.api.ImageHistory
 import imcode.server.document.textdocument.ImageDomainObject
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource
@@ -15,7 +15,7 @@ import imcode.server.document.textdocument.ImageSource
 object ImageUtil {
 
   /** Inits Text docs images sources. */
-  def initImagesSources(images: JList[ImageDomainObject]) = images |>> { _ foreach initImageSource }
+  def initImagesSources(images: JList[ImageDomainObject]) = images |>> { _.asScala.foreach(initImageSource) }
 
   /** Inits Text doc's image source. */
   def initImageSource(image: ImageDomainObject) = image |>> { _ =>
@@ -46,20 +46,22 @@ class ImageDao extends HibernateSupport {
    */
   def getImagesByIndex(docId: JInteger, docVersionNo: JInteger, no: Int, loopNo: JInteger, contentNo: JInteger,
                        createImageIfNotExists: Boolean): JList[ImageDomainObject] =
-    for {
-      language <- languageDao.getAllLanguages()
-      image <- PartialFunction.condOpt(getImage(language.getId, docId, docVersionNo, no, loopNo, contentNo)) {
-        case image if image != null => image
-        case _ if createImageIfNotExists => new ImageDomainObject |>> { img =>
-          img.setDocId(docId)
-          img.setName(no.toString)
+    {
+      for {
+        language <- languageDao.getAllLanguages().asScala
+        image <- PartialFunction.condOpt(getImage(language.getId, docId, docVersionNo, no, loopNo, contentNo)) {
+          case image if image != null => image
+          case _ if createImageIfNotExists => new ImageDomainObject |>> { img =>
+            img.setDocId(docId)
+            img.setName(no.toString)
 
-          img.setLanguage(language)
-          img.setContentLoopNo(loopNo)
-          img.setContentNo(contentNo)
+            img.setLanguage(language)
+            img.setContentLoopNo(loopNo)
+            img.setContentNo(contentNo)
+          }
         }
-      }
-    } yield image
+      } yield image
+    } |> { _.asJava }
 
 
 

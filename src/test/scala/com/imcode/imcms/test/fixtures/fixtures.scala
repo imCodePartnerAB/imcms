@@ -3,7 +3,6 @@ package imcms.test
 package fixtures
 
 import scala.collection.JavaConverters._
-import scala.collection.JavaConversions._
 import imcms.api.{I18nLanguage, I18nSupport}
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.DocumentPermissionSetTypeDomainObject
@@ -67,7 +66,7 @@ object DocFX {
 object VersionFX {
   val Seq(zero, one, two, three, four, five, six, seven, eight, nine, ten) = 0 to 10
 
-  val DefaultNo = zero
+  val DefaultNo = 0
 
   val NewNo = Int.MaxValue / 2
 
@@ -77,7 +76,7 @@ object VersionFX {
 object DocItemFX {
   val Seq(zero, one, two, three, four, five, six, seven, eight, nine, ten) = 0 to 10
 
-  val DefaultNo = zero
+  val DefaultNo = 0
 
   val NewNo = Int.MaxValue / 2
 
@@ -104,7 +103,7 @@ object LanguageFX {
 
   def mkI18nSupport(defaultLanguage: I18nLanguage = mkEnglish): I18nSupport = new I18nSupport {
     setDefaultLanguage(defaultLanguage)
-    setLanguages(mkLanguages)
-    setHosts(Map(HostNameEn -> mkEnglish, HostNameSe -> mkSwedish))
+    setLanguages(mkLanguages.asJava)
+    setHosts(Map(HostNameEn -> mkEnglish, HostNameSe -> mkSwedish).asJava)
   }
 }

@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import org.springframework.transaction.annotation.Transactional
 
 import com.imcode.imcms.api.ContentLoop
@@ -58,7 +58,7 @@ class ContentLoopDao extends HibernateSupport {
 
 
   def deleteLoops(docId: Int, docVersionNo: Int) =
-    getLoops(docId, docVersionNo).map(hibernate.delete).size
+    getLoops(docId, docVersionNo).asScala.map(hibernate.delete).size
 
 
   def deleteLoop(loopId: Long) = getLoop(loopId) match {

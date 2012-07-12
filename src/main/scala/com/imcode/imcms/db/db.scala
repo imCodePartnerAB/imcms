@@ -3,7 +3,7 @@ package com.imcode.imcms.db
 import javax.sql.DataSource
 import org.springframework.jdbc.core.JdbcTemplate
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import java.sql.{ResultSet, Connection}
 import com.ibatis.common.jdbc.ScriptRunner
 import org.springframework.jdbc.core.{ConnectionCallback, RowMapper}
@@ -14,11 +14,11 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
   
   val template = new JdbcTemplate(ds)
 
-  def tables() = template.query("SHOW TABLES", new RowMapper[String] {
+  def tables(): List[String] = template.query("SHOW TABLES", new RowMapper[String] {
     def mapRow(rs: ResultSet, rowNum: Int) = rs getString 1
-  }).toList
+  }).asScala.toList
 
-  def isEmpty() = tables().isEmpty
+  def isEmpty(): Boolean = tables().isEmpty
 
   def version(): Version = template.queryForObject("""SELECT concat(major, '.', minor) FROM database_version""",
                                                    classOf[String])

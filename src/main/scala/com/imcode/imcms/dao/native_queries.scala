@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 import org.springframework.transaction.annotation.Transactional
 import java.util.TreeMap
@@ -41,7 +41,7 @@ class NativeQueriesDao extends HibernateSupport {
     ) |> {
       rows =>
         new TreeMap[JInteger, String] |>> { m =>
-          for (Array(typeId: JInteger, name: String) <- rows) m.put(typeId, name)
+          for (Array(typeId: JInteger, name: String) <- rows.asScala) m.put(typeId, name)
         }
     }
 

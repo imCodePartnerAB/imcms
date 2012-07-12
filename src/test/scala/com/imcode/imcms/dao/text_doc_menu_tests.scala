@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import imcode.server.document.textdocument.{TreeSortKeyDomainObject, MenuItemDomainObject, MenuDomainObject}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -46,18 +46,18 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
 
   def menus(docId: JInteger = DocFX.DefaultId, docVersionNo: JInteger = VersionFX.DefaultNo, assertNotEmpty: Boolean = true) =
-    menuDao.getMenus(docId, docVersionNo) |>> { menus =>
+    menuDao.getMenus(docId, docVersionNo) |>> { _.asScala |> { menus =>
       if (assertNotEmpty) {
         assertTrue("menus exist", menus.nonEmpty)
         menus foreach { menu =>
           assertEquals("docId", docId, menu.getDocId)
           assertEquals("getDocVersionNo", docVersionNo, menu.getDocVersionNo)
         }
-      }
+      }}
     }
 
   def defaultMenu() = menu()
-  def defaultMenus() = menus()
+  def defaultMenus() = menus().asScala
 
 
   test("get all [4] menus") {

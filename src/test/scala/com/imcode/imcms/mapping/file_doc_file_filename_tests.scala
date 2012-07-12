@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.mapping
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{WordSpec}

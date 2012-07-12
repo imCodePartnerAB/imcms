@@ -2,7 +2,7 @@ package com.imcode
 package imcms.dao
 
 import org.junit.Assert._
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test._
@@ -67,7 +67,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
 
   "DocVersionDao.getLatestVersion" should {
     "return version with highest 'no' for existing document" in {
-      val maxVersion = versionDao.getAllVersions(1001).max
+      val maxVersion = versionDao.getAllVersions(1001).asScala.max
       val latestVersion = versionDao.getLatestVersion(1001)
 
       assertNotNull(maxVersion)
@@ -131,7 +131,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
     }
 
     "create a new version with no [latest version no + 1] if there is/are existing version(s)" in {
-      val latestVersionNo = versionDao.getAllVersions(1001).max.getNo.intValue
+      val latestVersionNo = versionDao.getAllVersions(1001).asScala.max.getNo.intValue
        assert(createVersion().getNo === (latestVersionNo + 1))
     }
   }
@@ -141,7 +141,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
       val versions = versionDao.getAllVersions(1001)
 
       assert(versions.size === 3)
-      assert(versions.max.getNo === 2)
+      assert(versions.asScala.max.getNo === 2)
     }
 
     "return empty collection if no version exist" in {
