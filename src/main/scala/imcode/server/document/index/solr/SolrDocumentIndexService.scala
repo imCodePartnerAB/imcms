@@ -5,15 +5,12 @@ import com.imcode.Log4jLoggerSupport
 import imcode.server.document.DocumentDomainObject
 import imcode.server.user.UserDomainObject
 import org.apache.solr.client.solrj.{SolrQuery}
-import scala.swing.Publisher
-import java.util.concurrent.Future
 
 /**
  * Defines interface for SOLr based Document Index Service.
  * requestXXX methods are expected to execute asynchronously.
  */
-// todo: remove publisher, use monitor for events publishing
-abstract class SolrDocumentIndexService extends Publisher with Log4jLoggerSupport {
+abstract class SolrDocumentIndexService extends Log4jLoggerSupport {
   def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp)
   def requestIndexRebuild()
   def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] // ??? move searching user into wrapper ???

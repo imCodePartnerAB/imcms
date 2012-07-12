@@ -15,6 +15,8 @@ import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.mockito.invocation.InvocationOnMock
+import scala.swing.Reactor
+import imcode.server.document.index.solr.SolrDocumentIndexRebuild.Progress
 
 @RunWith(classOf[JUnitRunner])
 class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
@@ -54,11 +56,20 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       val solrServerWriter = mock[SolrServerWithShutdown]
       val opsMock = mock[SolrDocumentIndexServiceOps]
       val service = new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, opsMock)
+      val indexErrorsReactor = new Reactor {
+        var errors = Vector.empty[ManagedSolrDocumentIndexService.IndexError]
+
+        reactions += {
+          case e: ManagedSolrDocumentIndexService.IndexError => errors :+= e
+        }
+
+        listenTo(service)
+      }
 
       when(opsMock.addDocsToIndex(any(classOf[SolrServer]), anyInt())).thenAnswer {
         invocation: InvocationOnMock => invocation.getArguments match {
           case Array(solrServer: SolrServer, docId: JInteger) =>
-            if (docId % 2 == 0) throw new RuntimeException("can't index document " + docId)
+            if (docId % 2 == 0) throw new RuntimeException("failed to index document " + docId)
             else ops.addDocsToIndex(solrServer, docId)
         }
       }
@@ -74,6 +85,8 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       }
 
       verify(solrServerWriter, times(5)).add(anyCollectionOf(classOf[SolrInputDocument]))
+
+      assertEquals("Errors count reported during indexing", 5, indexErrorsReactor.errors.length)
     }
 
     "rebuild (write) all documents with provided ids into the solr index" in {

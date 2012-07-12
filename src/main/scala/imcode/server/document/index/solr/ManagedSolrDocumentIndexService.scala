@@ -7,20 +7,22 @@ import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.{SolrServer, SolrQuery}
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 import java.lang.{Thread, InterruptedException}
-import scala.actors.{DaemonActor, Actor}
-import scala.annotation.tailrec
+import scala.swing.Publisher
+import scala.swing.event.Event
 
 /**
  * Implements all SolrDocumentIndexService functionality.
  * Coordinates index update and rebuild requests.
  * Ensures that update and rebuild operations are never run in parallel.
  *
- * The business-logic, (like rebuild scheduling or index recovery) should be implemented on higher layers.
+ * Indexing (ops) errors are wrapped and published asynchronously as ManagedSolrDocumentIndexService.IndexError events.
+ *
+ * The business-logic, (like rebuild scheduling or index recovery) should be implemented on higher levels.
  */
 class ManagedSolrDocumentIndexService(
     solrServerReader: SolrServer with SolrServerShutdown,
     solrServerWriter: SolrServer with SolrServerShutdown,
-    ops: SolrDocumentIndexServiceOps) extends SolrDocumentIndexService {
+    ops: SolrDocumentIndexServiceOps) extends SolrDocumentIndexService with Publisher {
 
   private val lock = new AnyRef
   private val shutdownRef = new AtomicBoolean(false)
@@ -28,28 +30,13 @@ class ManagedSolrDocumentIndexService(
   private val indexUpdateThreadRef = new AtomicReference[Thread]
   private val indexUpdateOps = new LinkedBlockingQueue[SolrDocumentIndexService.IndexUpdateOp]//(1000)
 
-  private val requestsHandler = new Actor with DaemonActor {
-
-    //@tailrec
-    def act() {
-      while (true) {
-        receive {
-          // add DeleteXXX to the end of queue as they are more lightweight
-          // FATAL ERROR
-          case op: SolrDocumentIndexService.IndexUpdateOp =>
-            if (!indexUpdateOps.offer(op)) {
-              // log events query is full, unable to process
-              // request reindex
-            }
-
-          case 'rebuild => startIndexRebuildThread()
-
-          case _ =>
-        }
+  private def spawnDaemonThread(body: => Any): Thread =
+    new Thread {
+      setDaemon(true)
+      override def run() {
+        body
       }
-    }
-  }
-
+    } |>> { _.start() }
 
   private def notTerminated(thread: Thread) = thread != null && thread.getState != Thread.State.TERMINATED
   private def interruptThreadAndAwaitTermination(thread: Thread) {
@@ -104,16 +91,15 @@ class ManagedSolrDocumentIndexService(
 
               case e =>
                 logger.error("error in document-index-rebuild thread [%s].".format(indexRebuildThread), e)
-                publish(EmbeddedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
-                // publish index *rebuild* error ???
-            } finally {
-              new Thread /* daemon */ {
-                setDaemon(true)
-                override def run() {
-                  indexRebuildThread.join()
-                  startIndexUpdateThread()
+                spawnDaemonThread {
+                  publish(ManagedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
+                  // publish index *rebuild* error ???
                 }
-              }.start()
+            } finally {
+              spawnDaemonThread {
+                indexRebuildThread.join()
+                startIndexUpdateThread()
+              }
 
               logger.info("document-index-rebuild thread [%s] is about to terminate.".format(indexRebuildThread))
             }
@@ -165,16 +151,15 @@ class ManagedSolrDocumentIndexService(
 
               case e =>
                 logger.error("error in document-index-update thread [%s].".format(indexUpdateThread), e)
-                publish(EmbeddedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
-                // publish index update error
-            } finally {
-              new Thread /* daemon */ {
-                setDaemon(true)
-                override def run() {
-                  indexUpdateThread.join()
-                  startIndexUpdateThread()
+                spawnDaemonThread {
+                  publish(ManagedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
+                  // publish index update error
                 }
-              }.start()
+            } finally {
+              spawnDaemonThread {
+                indexUpdateThread.join()
+                startIndexUpdateThread()
+              }
 
               logger.info("document-index-update thread [%s] is about to terminate.".format(indexUpdateThread))
             }
@@ -198,12 +183,18 @@ class ManagedSolrDocumentIndexService(
 
 
   def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp) {
-    requestsHandler ! op
+    spawnDaemonThread {
+      if (!indexUpdateOps.offer(op)) {
+        // log events query is full, unable to process
+      }
+    }
   }
 
 
   def requestIndexRebuild() {
-    requestsHandler ! 'rebuild
+    spawnDaemonThread {
+      startIndexRebuildThread()
+    }
   }
 
 
@@ -215,7 +206,8 @@ class ManagedSolrDocumentIndexService(
     } catch {
       case e =>
         logger.error("Search error", e)
-        publish(EmbeddedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
+        // *search* error
+        publish(ManagedSolrDocumentIndexService.IndexError(ManagedSolrDocumentIndexService.this, e))
         java.util.Collections.emptyList()
     }
   }
@@ -230,7 +222,8 @@ class ManagedSolrDocumentIndexService(
 //        startIndexUpdateThread()
 //    }
 //  }
-  requestsHandler.start()
+
+  // move to index document and get rid of implicit start???
   startIndexUpdateThread()
 
   def shutdown(): Unit = lock.synchronized {
@@ -242,7 +235,6 @@ class ManagedSolrDocumentIndexService(
 
         solrServerReader.shutdown()
         solrServerWriter.shutdown()
-        //requestsHandler.stop()
         logger.info("service has been shut down.")
       } catch {
         case e =>
@@ -251,4 +243,9 @@ class ManagedSolrDocumentIndexService(
       }
     }
   }
+}
+
+
+object ManagedSolrDocumentIndexService {
+  case class IndexError(publisher: SolrDocumentIndexService, error: Throwable) extends Event
 }

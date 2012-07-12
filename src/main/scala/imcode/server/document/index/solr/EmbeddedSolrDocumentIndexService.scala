@@ -7,8 +7,7 @@ import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.SolrQuery
 import java.util.concurrent.atomic.AtomicReference
 import java.util.Collections
-import scala.swing.{Reactor}
-import scala.swing.event.Event
+import scala.swing.{Publisher, Reactor}
 
 
 /**
@@ -18,18 +17,18 @@ import scala.swing.event.Event
 class EmbeddedSolrDocumentIndexService(solrHome: File, ops: SolrDocumentIndexServiceOps)
     extends SolrDocumentIndexService with Reactor {
 
-  private val serviceRef: AtomicReference[SolrDocumentIndexService] = new AtomicReference(newManagedService())
+  private val serviceRef: AtomicReference[SolrDocumentIndexService with Publisher] = new AtomicReference(newManagedService())
 
   reactions += {
     // swap target service
-    case EmbeddedSolrDocumentIndexService.IndexError(publisher, error) =>
+    case ManagedSolrDocumentIndexService.IndexError(publisher, error) =>
       serviceRef.synchronized {
         serviceRef.get() match {
           case service if service eq publisher =>
             deafTo(service)
             serviceRef.set(NoOpSolrDocumentIndexService)
             service.shutdown()
-            // wait till shutdown
+
             serviceRef.set(newManagedService(requestIndexRebuild = true))
           case _ =>
         }
@@ -68,15 +67,10 @@ class EmbeddedSolrDocumentIndexService(solrHome: File, ops: SolrDocumentIndexSer
 }
 
 
-object EmbeddedSolrDocumentIndexService {
-  case class IndexError(publisher: SolrDocumentIndexService, error: Throwable) extends Event
-}
-
-
 /**
  * rebuild monitor - Service UNAVAILABLE | IDLE | Monitor -vs- Option[Monitor]
  */
-object NoOpSolrDocumentIndexService extends SolrDocumentIndexService {
+object NoOpSolrDocumentIndexService extends SolrDocumentIndexService with Publisher {
 
   def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = Collections.emptyList()
 

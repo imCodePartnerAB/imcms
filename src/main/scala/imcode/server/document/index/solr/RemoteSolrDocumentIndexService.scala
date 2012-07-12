@@ -10,17 +10,34 @@ import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.index.DocumentQuery
 import imcode.server.document.index.solr.SolrDocumentIndexService.IndexUpdateOp
+import scala.swing.{Reactor, Publisher}
 
-// todo: implement
-// todo: ??? add read-only solrServerUrl - i.e. (solrUrl: String, solrUrlReadOnly: String)
-class RemoteSolrDocumentIndexService(solrUrl: String, ops: SolrDocumentIndexServiceOps) extends SolrDocumentIndexService {
+// ??? todo: wait n seconds before plugging in a new ManagedServer | Ping ???
+class RemoteSolrDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, ops: SolrDocumentIndexServiceOps)
+    extends SolrDocumentIndexService with Reactor {
 
-  private val serviceRef: AtomicReference[SolrDocumentIndexService] = new AtomicReference(newManagedService())
+  private val serviceRef: AtomicReference[SolrDocumentIndexService with Publisher] = new AtomicReference(newManagedService())
+
+  reactions += {
+    // swap target service
+    case ManagedSolrDocumentIndexService.IndexError(publisher, error) =>
+      serviceRef.synchronized {
+        serviceRef.get() match {
+          case service if service eq publisher =>
+            deafTo(service)
+            serviceRef.set(NoOpSolrDocumentIndexService)
+            service.shutdown()
+
+            serviceRef.set(newManagedService(requestIndexRebuild = true))
+          case _ =>
+        }
+      }
+  }
 
   // todo: replace requestIndexRebuild flag with enum values
   private def newManagedService(requestIndexRebuild: Boolean = false): ManagedSolrDocumentIndexService = {
-    val solrServerReader = SolrServerFactory.createHttpSolrServer(solrUrl)
-    val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrUrl)
+    val solrServerReader = SolrServerFactory.createHttpSolrServer(solrReadUrl)
+    val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrWriteUrl)
 
     new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops) |>> { service =>
       listenTo(service)
@@ -31,11 +48,18 @@ class RemoteSolrDocumentIndexService(solrUrl: String, ops: SolrDocumentIndexServ
     }
   }
 
-  def requestIndexRebuild() = null
+  def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
+    serviceRef.get().search(query, searchingUser)
 
-  def requestIndexUpdate(op: IndexUpdateOp) = null
+  def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp) {
+    serviceRef.get().requestIndexUpdate(op)
+  }
 
-  def search(query: SolrQuery, searchingUser: UserDomainObject) = null
+  def requestIndexRebuild() {
+    serviceRef.get().requestIndexRebuild()
+  }
 
-  def shutdown() = null
+  def shutdown() {
+    serviceRef.get().shutdown()
+  }
 }

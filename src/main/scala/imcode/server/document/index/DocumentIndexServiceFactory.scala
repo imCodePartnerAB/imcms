@@ -13,7 +13,7 @@ object DocumentIndexServiceFactory extends Log4jLoggerSupport {
   def createService(services: ImcmsServices): DocumentIndexService = services.getConfig |> { config =>
     (Option(config.getSolrUrl), Option(config.getSolrHome)) |> {
       case (Some(solrUrl), _) =>
-        new RemoteSolrDocumentIndexService(solrUrl, createSolrDocumentIndexServiceOps(services))
+        new RemoteSolrDocumentIndexService(solrUrl, solrUrl, createSolrDocumentIndexServiceOps(services))
 
       case (_, Some(solrHome)) =>
         new EmbeddedSolrDocumentIndexService(solrHome, createSolrDocumentIndexServiceOps(services))
