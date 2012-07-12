@@ -8,21 +8,15 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
 import imcode.server.document.index.{DocIndexingMocksSetup}
 import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
 import org.apache.solr.common.SolrInputDocument
-import java.util.concurrent.{ThreadFactory, Executors}
 import java.lang.Thread
 import org.apache.solr.client.solrj.SolrServer
 import org.mockito.Mockito.{mock => _, _}
 import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar._
 import com.imcode.imcms.test._
-import org.mockito.invocation.InvocationOnMock
 
 @RunWith(classOf[JUnitRunner])
 class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
-
-  object DaemonThreadFactory extends ThreadFactory {
-    def newThread(r: Runnable): Thread = new Thread(r) |>> { _ setDaemon true}
-  }
 
   val ops: SolrDocumentIndexServiceOps = {
     val ms = new DocIndexingMocksSetup
@@ -32,6 +26,7 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
     new SolrDocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
   }
 
+  // ??? printed to out ???
   "SolrDocumentIndexServiceOps" should {
     "create an empty Seq of SolrInputDocument" in {
       ops.mkSolrInputDocs(DocFX.VacantId) |> { solrInputDocs =>
@@ -72,56 +67,42 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
     }
   }
 
-
+  // ??? printed to out ???
   "running index rebuild" should {
-    "index all docs and accompilish with state eq Finished " in {
+    "index all docs when running without interruption" in {
       import SolrDocumentIndexRebuild._
+      val solrServerMock = mock[SolrServer]
+      var progress = Vector.empty[Progress]
 
-      val ste = Executors.newSingleThreadExecutor()
-      scala.util.control.Exception.ultimately(ste.shutdown()) {
-        val solrServerMock = mock[SolrServer]
-        val solrDocumentIndexRebuild = ops.rebuildIndexInterruptibly(solrServerMock, ste)
+      ops.rebuildIndexInterruptibly(solrServerMock)(p => progress :+= p)
 
-        solrDocumentIndexRebuild.task.get()
-        solrDocumentIndexRebuild.state() match {
-          case Finished(Progress(startDt, currentDt, total, indexed)) =>
-            assertEquals("total docs count should be 10", total, 10)
-            assertEquals("total docs should match indexed docs count", total, indexed)
-
-          case otherState => fail("Unexpected state: " + otherState)
-        }
-      }
+      assertEquals("progress callablck invokation count", 11, progress.length)
+      assertTrue("progress callback value is incremented on every call starting from 0",
+        progress.zipWithIndex.forall { case (Progress(10, indexed), expectedIndexed) => indexed == expectedIndexed }
+      )
     }
 
-    "accompilish with state eq Cancelled when a task cancelled" in {
+    "index half of docs when running thread is interrupted and throw an InterruptedException" in {
       import SolrDocumentIndexRebuild._
 
-      val ste = Executors.newSingleThreadExecutor()
-      scala.util.control.Exception.ultimately(ste.shutdown()) {
-        val solrServerMock = mock[SolrServer]
-        var solrDocumentIndexRebuild: SolrDocumentIndexRebuild = null
-        // todo: introduce count = 5 before cancelling
+      val solrServerMock = mock[SolrServer]
+      var progress = Vector.empty[Progress]
 
-        when(solrServerMock.add(anyCollectionOf(classOf[SolrInputDocument]))).thenAnswer { _: InvocationOnMock =>
-          solrDocumentIndexRebuild.task.cancel(true)
-          null
-        }
-
-        solrDocumentIndexRebuild = ops.rebuildIndexInterruptibly(solrServerMock, ste)
-
-        intercept[java.util.concurrent.CancellationException] {
-          solrDocumentIndexRebuild.task.get()
-        }
-
-        println("####### GETTING STATE")
-        solrDocumentIndexRebuild.state() match {
-          case Cancelled(Progress(startDt, currentDt, total, indexed)) =>
-            //assertEquals("total docs count should be 10", total, 10)
-
-          case otherState => fail("Unexpected state: " + otherState)
+      intercept[InterruptedException] {
+        ops.rebuildIndexInterruptibly(solrServerMock) {
+          case p@Progress(10, indexedDocsCount) =>
+            progress :+= p
+            if (indexedDocsCount == 5) Thread.currentThread().interrupt()
         }
       }
-    }
 
+      // clear interrupted flag
+      Thread.interrupted()
+
+      assertEquals("progress callablck invokation count", 6, progress.length)
+      assertTrue("progress callback value is incremented on every call starting from 0",
+        progress.zipWithIndex.forall { case (Progress(10, indexed), expectedIndexed) => indexed == expectedIndexed }
+      )
+    }
   }
 }

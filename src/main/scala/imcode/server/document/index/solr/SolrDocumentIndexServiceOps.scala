@@ -18,7 +18,7 @@ import java.lang.{InterruptedException, Thread, Throwable}
  */
 // todo: ??? mkXXX wrap any exception into indexCreate exception for distinguishing from SolrException ???
 // todo: ??? implement parallel indexing ???
-class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) {
+class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) extends Log4jLoggerSupport {
    // todo: refactor out
   type DocId = Int
 
@@ -27,10 +27,18 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
 
 
   def mkSolrInputDocs(docId: Int, languages: Seq[I18nLanguage]): Seq[SolrInputDocument] =
-    for {
-      language <- languages
-      doc <- Option(documentMapper.getDefaultDocument(docId, language))
-    } yield documentIndexer.index(doc)
+    {
+      for {
+        language <- languages
+        doc <- Option(documentMapper.getDefaultDocument(docId, language))
+      } yield documentIndexer.index(doc)
+    } |>> { solrInputDocs =>
+      if (logger.isTraceEnabled) {
+        logger.trace("made %d solrInputDocs with docId=%d and languages=%s.".format(
+          solrInputDocs.length, docId, languages.mkString(","))
+        )
+      }
+    }
 
 
   // consider using other data structure
@@ -51,6 +59,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
       if (solrInputDocs.nonEmpty) {
         solrServer.add(solrInputDocs.asJava)
         solrServer.commit()
+        logger.trace("added %d solrInputDocs with docId %d into the index.".format(solrInputDocs.length, docId))
       }
     }
   }
@@ -66,7 +75,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
   /**
    *
    */
-  def rebuildIndexInterruptibly(solrServer: SolrServer)(progressCallback: SolrDocumentIndexRebuild.Progress => Unit) = {
+  def rebuildIndexInterruptibly(solrServer: SolrServer)(progressCallback: SolrDocumentIndexRebuild.Progress => Unit) {
     import SolrDocumentIndexRebuild.Progress
 
     val docsView = mkSolrInputDocsView()
@@ -74,7 +83,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
 
     progressCallback(Progress(docsCount, 0))
 
-    for (((docId, solrInputDocs), docNo) <- docsView.zipWithIndex; if solrInputDocs.nonEmpty) {
+    for (((docId, solrInputDocs), docNo) <- docsView.zip(Stream.from(1)); if solrInputDocs.nonEmpty) {
       if (Thread.currentThread().isInterrupted) throw new InterruptedException
 
       solrServer.add(solrInputDocs.asJava)

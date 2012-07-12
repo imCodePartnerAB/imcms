@@ -45,7 +45,7 @@
     -->
 
     <root>
-        <priority value="info"/>
+        <priority value="trace"/>
         <appender-ref ref="ALL"/>
     </root>
 
