@@ -96,8 +96,6 @@ class DocumentIndexer(
 //        indexDoc.addField(name, value)
 //    }
 
-    // why no multi - mutually exclusive???
-    // change to multi???
     for ((key, value) <- doc.getProperties.asScala) {
       indexDoc.addField(DocumentIndex.FIELD__PROPERTY_PREFIX + key, value.toString)
     }

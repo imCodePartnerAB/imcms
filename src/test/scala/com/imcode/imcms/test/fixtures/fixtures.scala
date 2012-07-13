@@ -29,7 +29,7 @@ object DocFX {
     doc.setPublisherId(200)
     doc.setCategoryIds(0.until(10).toSet.asJava)
     doc.setLanguage(language)
-    doc.setKeywords(0.until(10).map(n => "keyword_%d_%d".format(docId, n)).toSet.asJava)
+    doc.setKeywords(0.until(10).map(n => "keyword_%d_%d".format(docId, n)).:+("keyword %d %d".format(docId, 10)).toSet.asJava)
     doc.setAlias("alias_%d" format docId)
     doc.setTemplateName("template_%d" format docId)
 
@@ -45,7 +45,8 @@ object DocFX {
       m.setMenuText("i18n_meta_menu_text_%d_%s".format(docId, language.getCode))
     }
 
-    doc.setProperties(0.until(10).map(n => ("property_name_%d" format docId, "property_value_%d" format docId)).toMap.asJava)
+    doc.setProperties(0.until(10).map(n => ("property_name_%d_%d".format(docId, n), "property_value_%d_%d".format(docId, n))).
+      :+("property_name_%d_%d".format(docId, 10), "property value %d %d".format(docId, 10)).toMap.asJava)
 
     // setup menu items (FIELD__CHILD_ID) as mocks
     // doc.setMenus(Map(

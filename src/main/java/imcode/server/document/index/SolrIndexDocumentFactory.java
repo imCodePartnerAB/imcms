@@ -1,4 +1,4 @@
-package imcode.server.document.index.solr;
+package imcode.server.document.index;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
@@ -11,6 +11,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings.Mapping;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.solr.DocumentContentIndexer;
 import imcode.util.DateConstants;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
