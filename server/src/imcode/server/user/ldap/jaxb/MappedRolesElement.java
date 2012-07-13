@@ -5,8 +5,11 @@ import java.util.List;
 
 public class MappedRolesElement {
 
-    @XmlAttribute(name = "default-attribute-name", required = true)
-    private String defaultAttributeName;
+    @XmlAttribute(name = "role-attribute-name", required = true)
+    private String roleAttributeName;
+
+    @XmlAttribute(name = "group-attribute-name", required = true)
+    private String groupAttributeName;
 
     @XmlElement(name = "role")
     private List<RoleElement> rolesElements;
@@ -15,8 +18,12 @@ public class MappedRolesElement {
         return rolesElements;
     }
 
-    public String getDefaultAttributeName() {
-        return defaultAttributeName;
+    public String getRoleAttributeName() {
+        return roleAttributeName;
+    }
+
+    public String getGroupAttributeName() {
+        return groupAttributeName;
     }
 }
 

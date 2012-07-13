@@ -1,6 +1,6 @@
 <server>
     <ldap>
-        <mapped-roles default-attribute-name="memberOf">
+        <mapped-roles role-attribute-name="memberOf" group-attribute-name="member">
             <role
                     name="LDAP-ROLE-1"
                     attribute-name="isMemberOf"

@@ -56,7 +56,7 @@
 
         <log4j-conf.file>log4j-nodebug.xml</log4j-conf.file>
 
-        <slf4j.version>1.6.4</slf4j.version>
+        <slf4j.version>1.6.5</slf4j.version>
 
         <!-- jetty plugin since version 7.5.3+ requires maven v3.x -->
         <jetty.version>7.5.2.v20111006</jetty.version>

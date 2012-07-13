@@ -12,7 +12,7 @@ public class MappedRoles {
 
     private final Set<String> rolesNames;
     private final Set<String> attributesNames;
-    private final Table<String, String, String> rolesNamesTable;
+    private final Table<String, String, String> mappedRolesNamesTable;
 
     public MappedRoles(List<MappedRole> mappedRolesList) {
         ImmutableTable.Builder<String, String, String> rolesNamesTableBuilder = new ImmutableTable.Builder<String, String, String>();
@@ -31,22 +31,22 @@ public class MappedRoles {
                     name);
         }
 
-        this.rolesNamesTable = rolesNamesTableBuilder.build();
+        this.mappedRolesNamesTable = rolesNamesTableBuilder.build();
         this.attributesNames = attributesNamesBuilder.build();
         this.rolesNames = rolesNamesBuilder.build();
     }
 
 
-    public String getRoleName(String attributeName, String attributeValue) {
-        return rolesNamesTable.get(attributeName, attributeValue);
+    public String roleName(String attributeName, String attributeValue) {
+        return mappedRolesNamesTable.get(attributeName, attributeValue);
     }
 
-    public Set<String> getRolesNames(List<P.P2<String, String>> keys) {
+    public Set<String> rolesNames(List<P.P2<String, String>> attributesNameValuePairs) {
         ImmutableSet.Builder<String> rolesNamesBuilder = new ImmutableSet.Builder<String>();
 
-        for (P.P2<String, String> key: keys) {
-            String name = getRoleName(key._1(), key._2());
-            if (name != null) rolesNamesBuilder.add(name);
+        for (P.P2<String, String> nameAndValue: attributesNameValuePairs) {
+            String roleName = roleName(nameAndValue._1(), nameAndValue._2());
+            if (roleName != null) rolesNamesBuilder.add(roleName);
         }
 
         return rolesNamesBuilder.build();

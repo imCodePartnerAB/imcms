@@ -1,10 +1,8 @@
 package imcode.server.user;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.imcode.imcms.api.P;
-import imcode.server.user.ldap.MappedRole;
 import imcode.server.user.ldap.MappedRoles;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -12,10 +10,8 @@ import org.apache.commons.collections.ExtendedProperties;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.logging.Log;
 import org.apache.log4j.Logger;
 
-import javax.naming.CommunicationException;
 import javax.naming.directory.SearchControls;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -277,7 +273,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                     keys.size(), loginName, Joiner.on(", ").join(keys)));
         }
 
-        return mappedRoles.getRolesNames(keys);
+        return mappedRoles.rolesNames(keys);
     }
 
 

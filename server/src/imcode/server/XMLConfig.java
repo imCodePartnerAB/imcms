@@ -68,7 +68,7 @@ public final class XMLConfig {
         if (ldapElement != null) {
             MappedRolesElement rolesMappingElement = ldapElement.getMappedRolesElement();
 
-            String defaultAttributeName = rolesMappingElement.getDefaultAttributeName().trim();
+            String defaultAttributeName = rolesMappingElement.getRoleAttributeName().trim();
             logger.info("Default LDAP role mapping attribute name is "+defaultAttributeName+".");
 
             for (RoleElement roleElement: rolesMappingElement.getRolesElements()) {
