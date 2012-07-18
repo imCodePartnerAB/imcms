@@ -113,7 +113,7 @@
 
         <copy file="${conf}/${log4j-conf.file}" tofile="${conf}/log4j.xml" overwrite="true"/>
 
-        <copy file="${basedir}/server.xml" todir="${conf}" overwrite="true"/>
+        <!--<copy file="${basedir}/server.xml" todir="${conf}" overwrite="true"/>-->
     </target>
 
 

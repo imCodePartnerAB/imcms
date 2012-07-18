@@ -9,7 +9,7 @@ public class ServerElement {
     @XmlElement(name = "ldap", required = false)
     private LdapElement ldapElement;
 
-    public LdapElement getLdapElement() {
+    public LdapElement ldapElement() {
         return ldapElement;
     }
 }

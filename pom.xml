@@ -36,7 +36,8 @@
          But only deploy goal is most safest and recommended.
          Unlike other goals it invokes the execution of the lifecycle phase 'package' prior to executing itself.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.imcode.imcms</groupId>
@@ -52,11 +53,11 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <javac.deprecation>false</javac.deprecation>
-        <javac.args />
+        <javac.args/>
 
         <log4j-conf.file>log4j-nodebug.xml</log4j-conf.file>
 
-        <slf4j.version>1.6.5</slf4j.version>
+        <slf4j.version>1.6.6</slf4j.version>
 
         <!-- jetty plugin since version 7.5.3+ requires maven v3.x -->
         <jetty.version>7.5.2.v20111006</jetty.version>
@@ -99,6 +100,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <!--<scope>runtime</scope>-->
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
             <scope>runtime</scope>
         </dependency>
@@ -460,11 +468,11 @@
             </plugin>
 
             <!--<plugin>-->
-                <!--<artifactId>maven-resources-plugin</artifactId>-->
-                <!--<version>2.5</version>-->
-                <!--<configuration>-->
-                    <!--<includeEmptyDirs>true</includeEmptyDirs>-->
-                <!--</configuration>-->
+            <!--<artifactId>maven-resources-plugin</artifactId>-->
+            <!--<version>2.5</version>-->
+            <!--<configuration>-->
+            <!--<includeEmptyDirs>true</includeEmptyDirs>-->
+            <!--</configuration>-->
             <!--</plugin>-->
 
             <plugin>
@@ -524,7 +532,7 @@
                         <phase>pre-clean</phase>
                         <configuration>
                             <target>
-                                <delete dir="${generated.webapp.dir}" verbose="false" />
+                                <delete dir="${generated.webapp.dir}" verbose="false"/>
                             </target>
                         </configuration>
                         <goals>
@@ -537,44 +545,27 @@
                         <phase>validate</phase>
                         <configuration>
                             <target>
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
                                 <if>
                                     <not>
-                                        <available file="${basedir}/build.properties" />
+                                        <available file="${basedir}/build.properties"/>
                                     </not>
                                     <then>
-                                        <copy file="${basedir}/build.properties.template" tofile="${basedir}/build.properties" />
+                                        <copy file="${basedir}/build.properties.template"
+                                              tofile="${basedir}/build.properties"/>
                                     </then>
                                 </if>
 
-                                <if>
-                                    <not>
-                                        <available file="${basedir}/server.xml" />
-                                    </not>
-                                    <then>
-                                        <copy file="${basedir}/server.xml.template" tofile="${basedir}/server.xml" />
-                                    </then>
-                                </if>
-
-                                <uptodate targetfile="${basedir}/build.properties" property="build-properties-up-to-date">
-                                    <srcfiles dir="${basedir}" includes="build.properties.template" />
-                                </uptodate>
-
-                                <uptodate targetfile="${basedir}/server.xml" property="server-properties-up-to-date">
-                                    <srcfiles dir="${basedir}" includes="server.xml.template" />
+                                <uptodate targetfile="${basedir}/build.properties"
+                                          property="build-properties-up-to-date">
+                                    <srcfiles dir="${basedir}" includes="build.properties.template"/>
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
                                     'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT
                                     for details.)
                                     Copy 'build.properties.template' content into 'build.properties' and edit it!
-                                </fail>
-
-                                <fail unless="server-properties-up-to-date">
-                                    'server.xml.template' is newer than 'server.xml'. (See docs/BUILD.TXT
-                                    for details.)
-                                    Copy 'server.xml.template' content into 'server.xml' and edit it!
                                 </fail>
                             </target>
                         </configuration>
@@ -589,15 +580,15 @@
                         <configuration>
                             <target>
                                 <ant antfile="${basedir}/pom-ant.xml" target="web">
-                                    <property name="version" value="${project.version}" />
-                                    <property name="webroot" value="${generated.webapp.dir}" />
-                                    <property name="log4j-conf.file" value="${log4j-conf.file}" />
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="webroot" value="${generated.webapp.dir}"/>
+                                    <property name="log4j-conf.file" value="${log4j-conf.file}"/>
                                 </ant>
 
                                 <ant antfile="${basedir}/pom-ant.xml" target="sql">
-                                    <property name="version" value="${project.version}" />
-                                    <property name="webroot" value="${generated.webapp.dir}" />
-                                    <property name="log4j-conf.file" value="${log4j-conf.file}" />
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="webroot" value="${generated.webapp.dir}"/>
+                                    <property name="log4j-conf.file" value="${log4j-conf.file}"/>
                                 </ant>
                             </target>
                         </configuration>
@@ -782,38 +773,38 @@
     </scm>
 </project>
 
-<!--
-todo: check non utf-files:
-docs/_test__iso_8859-1.txt -> iso-8859-1
-docs/changes.xml -> iso-8859-1
-server/src/com/imcode/imcms/test/external/imcms-init-3.0.sql -> iso-8859-1
-sql/data/init.sql -> iso-8859-1
-sql/diff/version3.0/diff-1.10.2-1.11.sql -> iso-8859-1
-sql/diff/version3.0/diff-1.11-2.0.sql -> iso-8859-1
-sql/diff/version3.0/diff-1.7.0.sql -> iso-8859-1
-sql/diff/version3.0/diff-1.7.3-1.7.4.sql -> iso-8859-1
-sql/diff/version3.0/diff-1.7.5-1.8.0.sql -> iso-8859-1
-sql/diff/version3.0/diff-1.8.1-1.8.2.sql -> iso-8859-1
-sql/diff/version3.0/diff-1.8.2-1.8.3.sql -> iso-8859-1
-sql/diff/version3.0/diff-1.8.4-1.9.0.sql -> iso-8859-1
-sql/diff/version3.0/diff-2-2a.sql -> iso-8859-1
-sql/diff/version3.0/diff-2-3.sql -> iso-8859-1
-sql/diff/version3.0/diff-2a-3.sql -> iso-8859-1
-sql/diff/version3.0/diff_update.sql -> iso-8859-1
-tools/sql/DEUmla_tbl_meta.sql -> iso-8859-1
-web/css/style.css -> iso-8859-1
-web/imcms/lang/htmleditor/css/default_word.css -> iso-8859-1
-web/imcms/lang/htmleditor/editor.jsp -> iso-8859-1
-web/imcms/lang/htmleditor/scripts/editor_config.js.jsp -> iso-8859-1
-web/imcms/lang/htmleditor/scripts/editor_config.vbs.jsp -> iso-8859-1
-web/imcms/lang/htmleditor/scripts/editor_functions.js -> iso-8859-1
-web/imcms/lang/htmleditor/scripts/editor_functions.vbs -> iso-8859-1
-web/imcms/lang/htmleditor/scripts/editor_functions_wordsupport.js -> iso-8859-1
-web/imcms/xinha/htmlarea.js -> iso-8859-1
-web/imcms/xinha/lang/lv.js -> iso-8859-1
-web/imcms/xinha/plugins/ExtendedFileManager/assets/editor.js -> iso-8859-1
-web/imcms/xinha/plugins/ExtendedFileManager/assets/EditorContent.js -> iso-8859-1
-web/imcms/xinha/plugins/ImageManager/assets/editor.js -> iso-8859-1
-web/imcms/xinha/plugins/ImageManager/assets/EditorContent.js -> iso-8859-1
-web/imcms/xinha/plugins/LangMarks/lang-marks.css -> iso-8859-1
--->
+        <!--
+        todo: check non utf-files:
+        docs/_test__iso_8859-1.txt -> iso-8859-1
+        docs/changes.xml -> iso-8859-1
+        server/src/com/imcode/imcms/test/external/imcms-init-3.0.sql -> iso-8859-1
+        sql/data/init.sql -> iso-8859-1
+        sql/diff/version3.0/diff-1.10.2-1.11.sql -> iso-8859-1
+        sql/diff/version3.0/diff-1.11-2.0.sql -> iso-8859-1
+        sql/diff/version3.0/diff-1.7.0.sql -> iso-8859-1
+        sql/diff/version3.0/diff-1.7.3-1.7.4.sql -> iso-8859-1
+        sql/diff/version3.0/diff-1.7.5-1.8.0.sql -> iso-8859-1
+        sql/diff/version3.0/diff-1.8.1-1.8.2.sql -> iso-8859-1
+        sql/diff/version3.0/diff-1.8.2-1.8.3.sql -> iso-8859-1
+        sql/diff/version3.0/diff-1.8.4-1.9.0.sql -> iso-8859-1
+        sql/diff/version3.0/diff-2-2a.sql -> iso-8859-1
+        sql/diff/version3.0/diff-2-3.sql -> iso-8859-1
+        sql/diff/version3.0/diff-2a-3.sql -> iso-8859-1
+        sql/diff/version3.0/diff_update.sql -> iso-8859-1
+        tools/sql/DEUmla_tbl_meta.sql -> iso-8859-1
+        web/css/style.css -> iso-8859-1
+        web/imcms/lang/htmleditor/css/default_word.css -> iso-8859-1
+        web/imcms/lang/htmleditor/editor.jsp -> iso-8859-1
+        web/imcms/lang/htmleditor/scripts/editor_config.js.jsp -> iso-8859-1
+        web/imcms/lang/htmleditor/scripts/editor_config.vbs.jsp -> iso-8859-1
+        web/imcms/lang/htmleditor/scripts/editor_functions.js -> iso-8859-1
+        web/imcms/lang/htmleditor/scripts/editor_functions.vbs -> iso-8859-1
+        web/imcms/lang/htmleditor/scripts/editor_functions_wordsupport.js -> iso-8859-1
+        web/imcms/xinha/htmlarea.js -> iso-8859-1
+        web/imcms/xinha/lang/lv.js -> iso-8859-1
+        web/imcms/xinha/plugins/ExtendedFileManager/assets/editor.js -> iso-8859-1
+        web/imcms/xinha/plugins/ExtendedFileManager/assets/EditorContent.js -> iso-8859-1
+        web/imcms/xinha/plugins/ImageManager/assets/editor.js -> iso-8859-1
+        web/imcms/xinha/plugins/ImageManager/assets/EditorContent.js -> iso-8859-1
+        web/imcms/xinha/plugins/LangMarks/lang-marks.css -> iso-8859-1
+        -->

@@ -325,6 +325,32 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
         return attributeMap;
     }
 
+    /**
+     * @since 4.1.XX
+     */
+    private Map<String, Set<String>> searchForUserMultiAttributes2(String loginName, Set<String> attributesToReturn, String groupAttribute) {
+        Map<String, Set<String>> attributeMap = null;
+
+        try {
+            String ldapUserIdentifyingAttribute = userPropertyNameToLdapAttributeNameMap.getProperty("LoginName");
+
+            SearchControls searchControls = new SearchControls();
+            searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            searchControls.setReturningAttributes(attributesToReturn.toArray(new String[] {}));
+            searchControls.setReturningObjFlag(true);
+
+            Iterator<Map<String, Set<String>>> searchResult = ldapConnection.searchMultivalues("(&(objectClass={0})({1}={2}))",
+                    new Object[]{ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName},
+                    searchControls);
+
+            if (searchResult.hasNext()) attributeMap = searchResult.next();
+        } catch (LdapClientException e) {
+            LOG.warn("Could not find user " + loginName, e);
+        }
+
+        return attributeMap;
+    }
+
 
     private static String[] splitStringOnCommasAndSpaces(String stringToSplit) {
         StringTokenizer attributesTokenizer = new StringTokenizer(stringToSplit, ", ");

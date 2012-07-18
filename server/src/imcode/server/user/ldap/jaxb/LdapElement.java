@@ -7,7 +7,7 @@ public class LdapElement {
     @XmlElement(name = "mapped-roles", required = true)
     private MappedRolesElement mappedRolesElement;
 
-    public MappedRolesElement getMappedRolesElement() {
+    public MappedRolesElement mappedRolesElement() {
         return mappedRolesElement;
     }
 }

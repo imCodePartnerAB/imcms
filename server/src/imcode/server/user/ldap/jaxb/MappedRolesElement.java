@@ -1,29 +1,21 @@
 package imcode.server.user.ldap.jaxb;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 public class MappedRolesElement {
 
-    @XmlAttribute(name = "role-attribute-name", required = true)
-    private String roleAttributeName;
+    @XmlElement(name = "role-to-ad-group")
+    private List<RoleToAdGroupElement> rolesToAdGroupsElements;
 
-    @XmlAttribute(name = "group-attribute-name", required = true)
-    private String groupAttributeName;
+    @XmlElement(name = "role-to-attribute")
+    private List<RoleToAttributeElement> rolesToAttributesElements;
 
-    @XmlElement(name = "role")
-    private List<RoleElement> rolesElements;
-
-    public List<RoleElement> getRolesElements() {
-        return rolesElements;
+    public List<RoleToAdGroupElement> rolesToAdGroupsElements() {
+        return rolesToAdGroupsElements;
     }
 
-    public String getRoleAttributeName() {
-        return roleAttributeName;
-    }
-
-    public String getGroupAttributeName() {
-        return groupAttributeName;
+    public List<RoleToAttributeElement> rolesToAttributesElements() {
+        return rolesToAttributesElements;
     }
 }
-
