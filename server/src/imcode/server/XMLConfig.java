@@ -63,10 +63,10 @@ public final class XMLConfig {
     private MappedRoles readLdapMappedRoles() {
         logger.info("Reading LDAP attributes mapped to roles.");
         ImmutableList.Builder<MappedRole> mappedRolesListBuilder = new ImmutableList.Builder<MappedRole>();
-        LdapElement ldapElement = serverElement.getLdapElement();
+        LdapElement ldapElement = serverElement.ldapElement();
 
         if (ldapElement != null) {
-            MappedRolesElement rolesMappingElement = ldapElement.getMappedRolesElement();
+            MappedRolesElement rolesMappingElement = ldapElement.mappedRolesElement();
 
             String defaultAttributeName = rolesMappingElement.getRoleAttributeName().trim();
             logger.info("Default LDAP role mapping attribute name is "+defaultAttributeName+".");
