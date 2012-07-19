@@ -1,6 +1,7 @@
 package imcode.server.user.ldap.jaxb;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Collections;
 import java.util.List;
 
 public class MappedRolesElement {
@@ -12,10 +13,14 @@ public class MappedRolesElement {
     private List<RoleToAttributeElement> rolesToAttributesElements;
 
     public List<RoleToAdGroupElement> rolesToAdGroupsElements() {
-        return rolesToAdGroupsElements;
+        return rolesToAdGroupsElements != null
+                ? rolesToAdGroupsElements
+                : Collections.<RoleToAdGroupElement>emptyList();
     }
 
     public List<RoleToAttributeElement> rolesToAttributesElements() {
-        return rolesToAttributesElements;
+        return rolesToAttributesElements != null
+                ? rolesToAttributesElements
+                : Collections.<RoleToAttributeElement>emptyList();
     }
 }

@@ -13,10 +13,10 @@ public class XMLConfigTest {
 
         MappedRoles mappedRoles = config.getLdapMappedRoles();
         System.out.println(mappedRoles.rolesNames());
-        System.out.println(mappedRoles.mappedToAttributes().attributesNames());
-        System.out.println(mappedRoles.mappedToAdGroups().rolesNames());
-        System.out.println(mappedRoles.mappedToAttributes().roleName("title", "manager"));
-        System.out.println(mappedRoles.mappedToAdGroups().rolesNames(Sets.newHashSet(
+        System.out.println(mappedRoles.rolesToAttributes().attributesNames());
+        System.out.println(mappedRoles.rolesToAdGroups().rolesNames());
+        System.out.println(mappedRoles.rolesToAttributes().roleName("title", "manager"));
+        System.out.println(mappedRoles.rolesToAdGroups().rolesNames(Sets.newHashSet(
                 "CN=imGrpGlobalSec,CN=Users,DC=d01,DC=imcode,DC=com",
                 "CN=imGrpUniversalSec,CN=Users,DC=d01,DC=imcode,DC=com",
                 "CN=imGrpUniversalSec,CN=Users,DC=d01,DC=imcode,DC=com")));

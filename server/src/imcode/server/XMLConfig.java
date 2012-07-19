@@ -60,11 +60,8 @@ public final class XMLConfig {
     private MappedRoles readLdapMappedRoles() {
         logger.info("Reading LDAP attributes mapped to roles.");
 
-        ImmutableCollection.Builder<MappedRole.MappedToAttribute> rolesMappedToAttributesBuilder =
-                new ImmutableList.Builder<MappedRole.MappedToAttribute>();
-
-        ImmutableCollection.Builder<MappedRole.MappedToAdGroup> rolesMappedToAdGroupsBuilder =
-                new ImmutableList.Builder<MappedRole.MappedToAdGroup>();
+        ImmutableCollection.Builder<MappedRole.RoleToAttribute> rolesToAttributesColl = ImmutableList.builder();
+        ImmutableCollection.Builder<MappedRole.RoleToAdGroup> rolesToAdGroupsBuilderColl = ImmutableList.builder();
 
         LdapElement ldapElement = serverElement.ldapElement();
 
@@ -76,7 +73,7 @@ public final class XMLConfig {
                 String attributeName = el.attributeName().trim();
                 String attributeValue = el.attributeValue().trim();
 
-                rolesMappedToAttributesBuilder.add(new MappedRole.MappedToAttribute(roleName, attributeName, attributeValue));
+                rolesToAttributesColl.add(new MappedRole.RoleToAttribute(roleName, attributeName, attributeValue));
 
                 logger.info(String.format("Added LDAP role-to-attribute mapping. Role: %s, attribute: %s -> %s.",
                         roleName, attributeName, attributeValue));
@@ -86,14 +83,14 @@ public final class XMLConfig {
                 String roleName = el.roleName().trim();
                 String groupDn = el.groupDn().trim();
 
-                rolesMappedToAdGroupsBuilder.add(new MappedRole.MappedToAdGroup(roleName, groupDn));
+                rolesToAdGroupsBuilderColl.add(new MappedRole.RoleToAdGroup(roleName, groupDn));
 
                 logger.info(String.format("Added AD role-to-ad-group mapping. Role: %s, group dn: %s.",
                         roleName, groupDn));
             }
         }
 
-        MappedRoles mappedRoles = new MappedRoles(rolesMappedToAttributesBuilder.build(), rolesMappedToAdGroupsBuilder.build());
+        MappedRoles mappedRoles = new MappedRoles(rolesToAttributesColl.build(), rolesToAdGroupsBuilderColl.build());
 
         if (mappedRoles.rolesNames().isEmpty()) {
             logger.info("No configuration provided for LDAP mapped roles.");

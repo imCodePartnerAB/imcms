@@ -7,15 +7,44 @@ import java.util.*;
 
 public class MappedRoles {
 
-    public static class MappedToAttributes {
+    private final RolesToAdGroups rolesToAdGroups;
+    private final RolesToAttributes rolesToAttributes;
+
+    public MappedRoles(Collection<MappedRole.RoleToAttribute> rolesToAttributesColl,
+                       Collection<MappedRole.RoleToAdGroup> rolesToAdGroupsColl) {
+
+        this.rolesToAttributes = new RolesToAttributes(rolesToAttributesColl);
+        this.rolesToAdGroups = new RolesToAdGroups(rolesToAdGroupsColl);
+    }
+
+
+    public Set<String> rolesNames() {
+        ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
+
+        rolesNamesBuilder.addAll(rolesToAdGroups.rolesNames());
+        rolesNamesBuilder.addAll(rolesToAttributes.rolesNames());
+
+        return rolesNamesBuilder.build();
+    }
+
+    public RolesToAdGroups rolesToAdGroups() {
+        return rolesToAdGroups;
+    }
+
+    public RolesToAttributes rolesToAttributes() {
+        return rolesToAttributes;
+    }
+
+
+    public static class RolesToAttributes {
         private final Set<String> rolesNames;
         private final Table<String, String, String> mappedRolesNamesTable;
 
-        private MappedToAttributes(Collection<MappedRole.MappedToAttribute> mappedRoles) {
-            ImmutableTable.Builder<String, String, String> rolesNamesTableBuilder = new ImmutableTable.Builder<String, String, String>();
-            ImmutableSet.Builder<String> rolesNamesBuilder = new ImmutableSet.Builder<String>();
+        private RolesToAttributes(Collection<MappedRole.RoleToAttribute> rolesToAttributesColl) {
+            ImmutableTable.Builder<String, String, String> rolesNamesTableBuilder = ImmutableTable.builder();
+            ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
 
-            for (MappedRole.MappedToAttribute mr: mappedRoles) {
+            for (MappedRole.RoleToAttribute mr: rolesToAttributesColl) {
                 rolesNamesBuilder.add(mr.roleName());
                 rolesNamesTableBuilder.put(mr.attributeName(), mr.attributeValue(), mr.roleName());
             }
@@ -29,7 +58,7 @@ public class MappedRoles {
         }
 
         public Set<String> rolesNames(List<P.P2<String, String>> attributesNameValuePairs) {
-            ImmutableSet.Builder<String> rolesNamesBuilder = new ImmutableSet.Builder<String>();
+            ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
 
             for (P.P2<String, String> nameAndValue: attributesNameValuePairs) {
                 String roleName = roleName(nameAndValue._1(), nameAndValue._2());
@@ -49,16 +78,15 @@ public class MappedRoles {
     }
 
 
-    public static class ToAdGroups {
-        private final Table<String, String, MappedRole.MappedToAdGroup> mappedRolesTable;
+    public static class RolesToAdGroups {
+        private final Table<String, String, MappedRole.RoleToAdGroup> mappedRolesTable;
 
-        private ToAdGroups(Collection<MappedRole.MappedToAdGroup> mappedRoles) {
-            ImmutableTable.Builder<String, String, MappedRole.MappedToAdGroup> mappedRolesTableBuilder =
-                    new ImmutableTable.Builder<String, String, MappedRole.MappedToAdGroup>();
-            ImmutableSet.Builder<String> groupsDnsBuilder = new ImmutableSet.Builder<String>();
-            ImmutableSet.Builder<String> rolesNamesBuilder = new ImmutableSet.Builder<String>();
+        private RolesToAdGroups(Collection<MappedRole.RoleToAdGroup> rolesToAdGroupsColl) {
+            ImmutableTable.Builder<String, String, MappedRole.RoleToAdGroup> mappedRolesTableBuilder = ImmutableTable.builder();
+            ImmutableSet.Builder<String> groupsDnsBuilder = ImmutableSet.builder();
+            ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
 
-            for (MappedRole.MappedToAdGroup mr: mappedRoles) {
+            for (MappedRole.RoleToAdGroup mr: rolesToAdGroupsColl) {
                 rolesNamesBuilder.add(mr.roleName());
                 groupsDnsBuilder.add(mr.groupDn());
 
@@ -77,8 +105,8 @@ public class MappedRoles {
         }
 
         public Set<String> rolesNames(Set<String> groupsDns) {
-            ImmutableSet.Builder<String> rolesNamesBuilder = new ImmutableSet.Builder<String>();
-            ImmutableSet.Builder<String> lowerCasedGroupDnsBuilder = new ImmutableSet.Builder<String>();
+            ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
+            ImmutableSet.Builder<String> lowerCasedGroupDnsBuilder = ImmutableSet.builder();
 
             for (String groupDn: groupsDns) {
                 lowerCasedGroupDnsBuilder.add(groupDn.toLowerCase());
@@ -86,40 +114,11 @@ public class MappedRoles {
 
             Set<String> lowerCasedGroupDns = lowerCasedGroupDnsBuilder.build();
 
-            for (MappedRole.MappedToAdGroup mappedRole: mappedRolesTable.values()) {
+            for (MappedRole.RoleToAdGroup mappedRole: mappedRolesTable.values()) {
                 if (lowerCasedGroupDns.contains(mappedRole.groupDn())) rolesNamesBuilder.add(mappedRole.roleName());
             }
 
             return rolesNamesBuilder.build();
         }
-    }
-
-
-    private final ToAdGroups toAdGroups;
-    private final MappedToAttributes toAttributes;
-
-    public MappedRoles(Collection<MappedRole.MappedToAttribute> rolesMappedToAttributes,
-                       Collection<MappedRole.MappedToAdGroup> rolesMappedToAdGroups) {
-
-        this.toAttributes = new MappedToAttributes(rolesMappedToAttributes);
-        this.toAdGroups = new ToAdGroups(rolesMappedToAdGroups);
-    }
-
-
-    public Set<String> rolesNames() {
-        ImmutableSet.Builder<String> rolesNamesBuilder = new ImmutableSet.Builder<String>();
-
-        rolesNamesBuilder.addAll(toAdGroups.rolesNames());
-        rolesNamesBuilder.addAll(toAttributes.rolesNames());
-
-        return rolesNamesBuilder.build();
-    }
-
-    public ToAdGroups mappedToAdGroups() {
-        return toAdGroups;
-    }
-
-    public MappedToAttributes mappedToAttributes() {
-        return toAttributes;
     }
 }

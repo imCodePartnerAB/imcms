@@ -1,27 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-There are two ways to map roles to LDAP attributes:
-  1.Custom imCMS role can me mapped to any LDAP user's attribute.
-    An imCMS user will be assigned a role specified in the <role-to-attribute mapping if
-    user's LDAP context contains attribute with matching name-value pair.
-
-  2.Custom imCMS role can me mapped to any Active Directory group.
-    An imCMS user will be assigned a role specified in the role-to-ad-group mapping if
-    user is a member of a group with matching distinguished name.
--->
 <server>
     <ldap>
         <mapped-roles>
-            <role-to-attribute role-name="LDAP-EMERGENCY" attribute-name="phone" attribute-value="112"/>
-            <role-to-attribute role-name="LDAP-MANAGER" attribute-name="title" attribute-value="manager"/>
-            <role-to-attribute role-name="LDAP-DYNAMIC" attribute-name="dynamicGroupId" attribute-value="514"/>
+            <!--<role-to-attribute role-name="LDAP-EMERGENCY" attribute-name="phone" attribute-value="112"/>-->
+            <!--<role-to-attribute role-name="LDAP-MANAGER" attribute-name="title" attribute-value="manager"/>-->
+            <!--<role-to-attribute role-name="LDAP-DYNAMIC" attribute-name="dynamicGroupId" attribute-value="514"/>-->
 
-            <role-to-ad-group role-name="imGrpLocSec" group-dn="CN=imGrpLocalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>
-            <role-to-ad-group role-name="imGrpGloSec" group-dn="CN=imGrpGlobalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>
-            <role-to-ad-group role-name="imGrpUniSec" group-dn="CN=imGrpUniversalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>
-            <role-to-ad-group role-name="imGrpLocDist" group-dn="CN=imGrpLocalDistribution,CN=Users,DC=d01,DC=imcode,DC=com"/>
-            <role-to-ad-group role-name="imGrpGloDist" group-dn="CN=imGrpGlobalDistribution,CN=Users,DC=d01,DC=imcode,DC=com"/>
-            <role-to-ad-group role-name="imGrpUniDist" group-dn="CN=imGrpUniversalDistribution,CN=Users,DC=d01,DC=imcode,DC=com"/>
+            <!--<role-to-ad-group role-name="imGrpLocSec" group-dn="CN=imGrpLocalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
+            <!--<role-to-ad-group role-name="imGrpGloSec" group-dn="CN=imGrpGlobalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
+            <!--<role-to-ad-group role-name="imGrpUniSec" group-dn="CN=imGrpUniversalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
+            <!--<role-to-ad-group role-name="imGrpLocDist" group-dn="CN=imGrpLocalDistribution,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
+            <!--<role-to-ad-group role-name="imGrpGloDist" group-dn="CN=imGrpGlobalDistribution,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
+            <!--<role-to-ad-group role-name="imGrpUniDist" group-dn="CN=imGrpUniversalDistribution,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
         </mapped-roles>
     </ldap>
 </server>

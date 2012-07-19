@@ -134,7 +134,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                                    String[] ldapAttributesMappedToRoles,
                                    Properties ldapUserAttributes,
                                    MappedRoles mappedRoles
-                                   ) throws LdapClientException {
+    ) throws LdapClientException {
         ldapAttributesAutoMappedToRoles = ldapAttributesMappedToRoles;
         initLdapUserAttributesMap(ldapUserAttributes);
 
@@ -159,7 +159,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
 
         names.add(DEFAULT_LDAP_ROLE);
 
-        return names.toArray(new String[] {});
+        return names.toArray(new String[]{});
     }
 
     private void initLdapUserAttributesMap(Properties ldapUserAttributes) throws LdapClientException {
@@ -245,7 +245,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                     mappedRolesNames.size(), Joiner.on(", ").join(mappedRolesNames)));
         }
 
-        for (String roleName: mappedRolesNames) {
+        for (String roleName : mappedRolesNames) {
             roles.add(roleName);
         }
 
@@ -254,29 +254,29 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
 
 
     /**
-     * @since 4.1.16
+     * @since 4.1.6
      */
     public Set<String> getMappedRoleNames(String loginName) {
         Map<String, Set<String>> mappedAttributes = searchForUserMultiAttributes(
-                loginName, mappedRoles.mappedToAttributes().attributesNames().toArray(new String[]{})
-        );
+                loginName, mappedRoles.rolesToAttributes().attributesNames().toArray(new String[]{}));
+
         List<P.P2<String, String>> attributeNameValuePairs = Lists.newLinkedList();
 
-        for (Map.Entry<String, Set<String>> mappedAttribute: mappedAttributes.entrySet()) {
+        for (Map.Entry<String, Set<String>> mappedAttribute : mappedAttributes.entrySet()) {
             String attributeName = mappedAttribute.getKey();
-            for (String attributeValue: mappedAttribute.getValue()) {
+            for (String attributeValue : mappedAttribute.getValue()) {
                 attributeNameValuePairs.add(P.of(attributeName, attributeValue));
             }
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Found %s LDAP role mapping attributes for user %s: %s.",
+            LOG.debug(String.format("Found %s LDAP roles mapped to attributes for user %s: %s.",
                     attributeNameValuePairs.size(), loginName, Joiner.on(", ").join(attributeNameValuePairs)));
         }
 
-        Set<String> usersAdGroupsDns = searchForUserAdGroups(loginName, mappedRoles.mappedToAdGroups().groupsDns());
-        Set<String> rolesNamesMappedToAttributes = mappedRoles.mappedToAttributes().rolesNames(attributeNameValuePairs);
-        Set<String> rolesNamesMappedToAdGroupsDns = mappedRoles.mappedToAdGroups().rolesNames(usersAdGroupsDns);
+        Set<String> usersAdGroupsDns = searchForUserAdGroups(loginName, mappedRoles.rolesToAdGroups().groupsDns());
+        Set<String> rolesNamesMappedToAttributes = mappedRoles.rolesToAttributes().rolesNames(attributeNameValuePairs);
+        Set<String> rolesNamesMappedToAdGroupsDns = mappedRoles.rolesToAdGroups().rolesNames(usersAdGroupsDns);
         ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
 
         rolesNamesBuilder.addAll(rolesNamesMappedToAttributes);
@@ -304,12 +304,14 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
         } catch (LdapClientException e) {
             LOG.warn("Could not find user " + loginName, e);
         }
+
         return attributeMap;
     }
 
 
     /**
-     * @since 4.1.16
+     * @return a map containing attribute name mapped to values.
+     * @since 4.1.6
      */
     private Map<String, Set<String>> searchForUserMultiAttributes(String loginName, String[] attributesToReturn) {
         Map<String, Set<String>> attributeMap = null;
@@ -320,15 +322,15 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
             SearchControls searchControls = new SearchControls();
             searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             searchControls.setReturningAttributes(attributesToReturn);
-            searchControls.setReturningObjFlag(true);
 
-            Iterator<Map<String, Set<String>>> searchResult = ldapConnection.searchMultivalues("(&(objectClass={0})({1}={2}))",
+            Iterator<Map<String, Set<String>>> searchResult = ldapConnection.searchMultivalues(
+                    "(&(objectClass={0})({1}={2}))",
                     new Object[]{ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName},
                     searchControls);
 
             if (searchResult.hasNext()) attributeMap = searchResult.next();
         } catch (LdapClientException e) {
-            LOG.warn("Could not find user " + loginName, e);
+            LOG.error("LDAP search error. User: " + loginName, e);
         }
 
         return attributeMap;
@@ -339,11 +341,11 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
      * If LDAP service provider is not an AD then the empty set will be returned.
      *
      * @param groupsDns groups dns to consider.
-     *
-     * @since 4.1.XX
+     * @since 4.1.11
      */
     private Set<String> searchForUserAdGroups(String loginName, Set<String> groupsDns) {
         if (userPropertyNameToLdapAttributeNameMap.getProperty("LoginName").trim().compareToIgnoreCase("sAMAccountName") != 0) {
+            LOG.debug("LDAP service is not Active Directory based. No search will be performed.");
             return Collections.emptySet();
         }
 
@@ -354,10 +356,10 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
             searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             searchControls.setReturningAttributes(new String[]{"sAMAccountName"});
 
-            for (String groupsDn: groupsDns) {
+            for (String groupsDn : groupsDns) {
                 boolean userInRole = ldapConnection.search(
                         "(&(objectClass=user)(sAMAccountName={0})(memberOf:1.2.840.113556.1.4.1941:={1}))",
-                        new Object[] {loginName, groupsDn},
+                        new Object[]{loginName, groupsDn},
                         searchControls).hasNext();
 
                 if (userInRole) {
@@ -365,11 +367,12 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                 }
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.info(String.format("User %s is in AD role %s - %s.", loginName, groupsDn, userInRole));
+                    LOG.info(String.format("User '%s' is a member of AD group '%s' - %s.",
+                            loginName, groupsDn, userInRole));
                 }
             }
         } catch (LdapClientException e) {
-            LOG.error("LDAP search error", e);
+            LOG.error("LDAP search error. User: " + loginName, e);
         }
 
         return groupsDnsBuilder.build();
