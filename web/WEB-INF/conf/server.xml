@@ -1,13 +1,13 @@
-<?xml encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-There are two ways to map roles to LDAP attributes:
+There are two ways to map roles to LDAP entries:
   1.Custom imCMS role can me mapped to any LDAP user's attribute.
     An imCMS user will be assigned a role specified in the <role-to-attribute mapping if
     user's LDAP context contains attribute with matching name-value pair.
 
   2.Custom imCMS role can me mapped to any Active Directory group.
     An imCMS user will be assigned a role specified in the role-to-ad-group mapping if
-    user is a member of a group with matching distinguished name.
+    user is a (direct or indirect) member of a group with matching distinguished name.
 -->
 <server>
     <ldap>

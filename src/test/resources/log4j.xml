@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+
+<!-- Start log4j configuration -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
+
+    <!-- Renderer for DocumentRequest -->
+    <renderer
+        renderingClass="imcode.util.log.FakeRequestRenderer"
+        renderedClass="imcode.server.DocumentRequest"/>
+
+    <!-- The accesslog (logs usermovements) -->
+    <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/access.log"/>
+        <param name="DatePattern" value="'.'yyyy-MM"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- The mainlog (captures edits and changes) -->
+    <appender name="MAIN" class="imcode.util.log.DailyRollingFileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/main.log"/>
+        <param name="DatePattern" value="'.'yyyy-MM"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- The errorlog (captures everything that doesn't go to one of the above. -->
+    <appender name="ERROR" class="imcode.util.log.DailyRollingFileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/error.log"/>
+        <param name="DatePattern" value="'.'yyyy-MM"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c %x - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c %x - %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- Set up accesslog with priority 'debug' -->
+    <category name="com.imcode.imcms.log.access" additivity="false">
+        <priority value="debug"/>
+        <appender-ref ref="ACCESS"/>
+    </category>
+
+    <!-- Set up mainlog with priority 'debug' -->
+    <category name="com.imcode.imcms.log.main" additivity="false">
+        <priority value="debug"/>
+        <appender-ref ref="MAIN"/>
+    </category>
+
+    <category name="org.apache" additivity="false">
+        <priority value="error"/>
+        <appender-ref ref="ERROR"/>
+    </category>
+
+    <!-- Set up the errorlog with priority 'debug' -->
+    <root>
+        <priority value="trace"/>
+        <appender-ref ref="ERROR"/>
+        <appender-ref ref="stdout"/>
+    </root>
+
+</log4j:configuration>

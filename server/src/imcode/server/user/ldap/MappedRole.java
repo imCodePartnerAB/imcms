@@ -12,11 +12,11 @@ public abstract class MappedRole {
         return roleName;
     }
 
-    public static final class ToAttribute extends MappedRole {
+    public static final class MappedToAttribute extends MappedRole {
         protected final String attributeName;
         protected final String attributeValue;
 
-        public ToAttribute(String roleName, String attributeName, String attributeValue) {
+        public MappedToAttribute(String roleName, String attributeName, String attributeValue) {
             super(roleName);
             this.attributeName = attributeName;
             this.attributeValue = attributeValue;
@@ -39,10 +39,10 @@ public abstract class MappedRole {
         }
     }
 
-    public static final class ToAdGroup extends MappedRole {
+    public static final class MappedToAdGroup extends MappedRole {
         private final String groupDn;
 
-        public ToAdGroup(String roleName, String groupDn) {
+        public MappedToAdGroup(String roleName, String groupDn) {
             super(roleName);
             this.groupDn = groupDn;
         }

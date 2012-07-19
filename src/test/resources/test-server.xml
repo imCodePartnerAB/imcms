@@ -1,4 +1,4 @@
-<?xml encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 There are two ways to map roles to LDAP attributes:
   1.Custom imCMS role can me mapped to any LDAP user's attribute.

@@ -1,27 +1,24 @@
 package imcode.server;
 
-import imcode.server.user.ldap.jaxb.ServerElement;
-import org.apache.commons.io.input.BOMInputStream;
+import com.google.common.collect.Sets;
+import imcode.server.user.ldap.MappedRoles;
 import org.junit.Test;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class XMLConfigTest {
 
     @Test
-    public void readConfig() throws Exception {
-        JAXBContext context = JAXBContext.newInstance(ServerElement.class);
-        Unmarshaller um = context.createUnmarshaller(
+    public void constructor() throws Exception {
+        String configFilePath = ClassLoader.getSystemClassLoader().getResource("test-server.xml").getFile();
+        XMLConfig config = new XMLConfig(configFilePath);
 
-        );
-        InputStream in = ClassLoader.getSystemClassLoader().getResourceAsStream("test-server.xml");
-        ServerElement serverElement2 = (ServerElement)um.unmarshal(new InputStreamReader(
-                new BOMInputStream(in), "UTF-8"));
-
-        serverElement2.ldapElement().mappedRolesElement().rolesToAdGroupsElements();
-        serverElement2.ldapElement().mappedRolesElement().rolesToAttributesElements();
+        MappedRoles mappedRoles = config.getLdapMappedRoles();
+        System.out.println(mappedRoles.rolesNames());
+        System.out.println(mappedRoles.mappedToAttributes().attributesNames());
+        System.out.println(mappedRoles.mappedToAdGroups().rolesNames());
+        System.out.println(mappedRoles.mappedToAttributes().roleName("title", "manager"));
+        System.out.println(mappedRoles.mappedToAdGroups().rolesNames(Sets.newHashSet(
+                "CN=imGrpGlobalSec,CN=Users,DC=d01,DC=imcode,DC=com",
+                "CN=imGrpUniversalSec,CN=Users,DC=d01,DC=imcode,DC=com",
+                "CN=imGrpUniversalSec,CN=Users,DC=d01,DC=imcode,DC=com")));
     }
 }

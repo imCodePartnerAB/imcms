@@ -1,14 +1,11 @@
 package imcode.server;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import imcode.server.user.ldap.MappedRole;
 import imcode.server.user.ldap.MappedRoles;
-import imcode.server.user.ldap.jaxb.LdapElement;
-import imcode.server.user.ldap.jaxb.RoleElement;
-import imcode.server.user.ldap.jaxb.MappedRolesElement;
-import imcode.server.user.ldap.jaxb.ServerElement;
+import imcode.server.user.ldap.jaxb.*;
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.xml.bind.JAXBContext;
@@ -62,38 +59,43 @@ public final class XMLConfig {
 
     private MappedRoles readLdapMappedRoles() {
         logger.info("Reading LDAP attributes mapped to roles.");
-        ImmutableList.Builder<MappedRole> mappedRolesListBuilder = new ImmutableList.Builder<MappedRole>();
+
+        ImmutableCollection.Builder<MappedRole.MappedToAttribute> rolesMappedToAttributesBuilder =
+                new ImmutableList.Builder<MappedRole.MappedToAttribute>();
+
+        ImmutableCollection.Builder<MappedRole.MappedToAdGroup> rolesMappedToAdGroupsBuilder =
+                new ImmutableList.Builder<MappedRole.MappedToAdGroup>();
+
         LdapElement ldapElement = serverElement.ldapElement();
 
         if (ldapElement != null) {
             MappedRolesElement rolesMappingElement = ldapElement.mappedRolesElement();
 
-            String defaultAttributeName = rolesMappingElement.getRoleAttributeName().trim();
-            logger.info("Default LDAP role mapping attribute name is "+defaultAttributeName+".");
+            for (RoleToAttributeElement el: rolesMappingElement.rolesToAttributesElements()) {
+                String roleName = el.roleName().trim();
+                String attributeName = el.attributeName().trim();
+                String attributeValue = el.attributeValue().trim();
 
-            for (RoleElement roleElement: rolesMappingElement.getRolesElements()) {
-                String roleName = roleElement.getName().trim();
-                String attributeName = StringUtils.trimToEmpty(roleElement.getAttributeName());
-                String attributeValue = StringUtils.trimToEmpty(roleElement.getAttributeValue());
+                rolesMappedToAttributesBuilder.add(new MappedRole.MappedToAttribute(roleName, attributeName, attributeValue));
 
-                mappedRolesListBuilder.add(
-                        new MappedRole(
-                                roleName,
-                                attributeName.isEmpty() ? defaultAttributeName : attributeName,
-                                attributeValue
-                        )
-                );
+                logger.info(String.format("Added LDAP role-to-attribute mapping. Role: %s, attribute: %s -> %s.",
+                        roleName, attributeName, attributeValue));
+            }
 
-                logger.info(String.format("Added LDAP mapping for role %s:  %s -> %s.",
-                        roleName,
-                        attributeName.isEmpty() ? defaultAttributeName : attributeName,
-                        attributeValue));
+            for (RoleToAdGroupElement el: rolesMappingElement.rolesToAdGroupsElements()) {
+                String roleName = el.roleName().trim();
+                String groupDn = el.groupDn().trim();
+
+                rolesMappedToAdGroupsBuilder.add(new MappedRole.MappedToAdGroup(roleName, groupDn));
+
+                logger.info(String.format("Added AD role-to-ad-group mapping. Role: %s, group dn: %s.",
+                        roleName, groupDn));
             }
         }
 
-        MappedRoles mappedRoles = new MappedRoles(mappedRolesListBuilder.build());
+        MappedRoles mappedRoles = new MappedRoles(rolesMappedToAttributesBuilder.build(), rolesMappedToAdGroupsBuilder.build());
 
-        if (mappedRoles.getAttributesNames().isEmpty()) {
+        if (mappedRoles.rolesNames().isEmpty()) {
             logger.info("No configuration provided for LDAP mapped roles.");
         }
 

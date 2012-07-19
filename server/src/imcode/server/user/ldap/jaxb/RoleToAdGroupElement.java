@@ -11,13 +11,13 @@ public class RoleToAdGroupElement {
     private String roleName;
 
     @XmlAttribute(name = "group-dn", required = true)
-    private String attributeName;
+    private String groupDn;
 
-    public String getAttributeName() {
-        return attributeName;
+    public String roleName() {
+        return roleName.trim().toLowerCase();
     }
 
-    public String getRoleName() {
-        return roleName;
+    public String groupDn() {
+        return groupDn.trim().toLowerCase();
     }
 }

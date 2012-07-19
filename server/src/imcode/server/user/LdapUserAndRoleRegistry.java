@@ -1,6 +1,7 @@
 package imcode.server.user;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.imcode.imcms.api.P;
 import imcode.server.user.ldap.MappedRoles;
@@ -154,7 +155,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     }
 
     public String[] getAllRoleNames() {
-        Set<String> names = new HashSet<String>(mappedRoles.getRolesNames());
+        Set<String> names = new HashSet<String>(mappedRoles.rolesNames());
 
         names.add(DEFAULT_LDAP_ROLE);
 
@@ -257,23 +258,31 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
      */
     public Set<String> getMappedRoleNames(String loginName) {
         Map<String, Set<String>> mappedAttributes = searchForUserMultiAttributes(
-                loginName, mappedRoles.getAttributesNames().toArray(new String[]{})
+                loginName, mappedRoles.mappedToAttributes().attributesNames().toArray(new String[]{})
         );
-        List<P.P2<String, String>> keys = Lists.newLinkedList();
+        List<P.P2<String, String>> attributeNameValuePairs = Lists.newLinkedList();
 
         for (Map.Entry<String, Set<String>> mappedAttribute: mappedAttributes.entrySet()) {
             String attributeName = mappedAttribute.getKey();
-            for (String attributeValue : mappedAttribute.getValue()) {
-                keys.add(P.of(attributeName, attributeValue));
+            for (String attributeValue: mappedAttribute.getValue()) {
+                attributeNameValuePairs.add(P.of(attributeName, attributeValue));
             }
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug(String.format("Found %s LDAP role mapping attributes for user %s: %s.",
-                    keys.size(), loginName, Joiner.on(", ").join(keys)));
+                    attributeNameValuePairs.size(), loginName, Joiner.on(", ").join(attributeNameValuePairs)));
         }
 
-        return mappedRoles.rolesNames(keys);
+        Set<String> usersAdGroupsDns = searchForUserAdGroups(loginName, mappedRoles.mappedToAdGroups().groupsDns());
+        Set<String> rolesNamesMappedToAttributes = mappedRoles.mappedToAttributes().rolesNames(attributeNameValuePairs);
+        Set<String> rolesNamesMappedToAdGroupsDns = mappedRoles.mappedToAdGroups().rolesNames(usersAdGroupsDns);
+        ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
+
+        rolesNamesBuilder.addAll(rolesNamesMappedToAttributes);
+        rolesNamesBuilder.addAll(rolesNamesMappedToAdGroupsDns);
+
+        return rolesNamesBuilder.build();
     }
 
 
@@ -326,29 +335,44 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     }
 
     /**
+     * Returns user's Active Directory groups dns.
+     * If LDAP service provider is not an AD then the empty set will be returned.
+     *
+     * @param groupsDns groups dns to consider.
+     *
      * @since 4.1.XX
      */
-    private Map<String, Set<String>> searchForUserMultiAttributes2(String loginName, Set<String> attributesToReturn, String groupAttribute) {
-        Map<String, Set<String>> attributeMap = null;
-
-        try {
-            String ldapUserIdentifyingAttribute = userPropertyNameToLdapAttributeNameMap.getProperty("LoginName");
-
-            SearchControls searchControls = new SearchControls();
-            searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            searchControls.setReturningAttributes(attributesToReturn.toArray(new String[] {}));
-            searchControls.setReturningObjFlag(true);
-
-            Iterator<Map<String, Set<String>>> searchResult = ldapConnection.searchMultivalues("(&(objectClass={0})({1}={2}))",
-                    new Object[]{ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName},
-                    searchControls);
-
-            if (searchResult.hasNext()) attributeMap = searchResult.next();
-        } catch (LdapClientException e) {
-            LOG.warn("Could not find user " + loginName, e);
+    private Set<String> searchForUserAdGroups(String loginName, Set<String> groupsDns) {
+        if (userPropertyNameToLdapAttributeNameMap.getProperty("LoginName").trim().compareToIgnoreCase("sAMAccountName") != 0) {
+            return Collections.emptySet();
         }
 
-        return attributeMap;
+        ImmutableSet.Builder<String> groupsDnsBuilder = ImmutableSet.builder();
+
+        try {
+            SearchControls searchControls = new SearchControls();
+            searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            searchControls.setReturningAttributes(new String[]{"sAMAccountName"});
+
+            for (String groupsDn: groupsDns) {
+                boolean userInRole = ldapConnection.search(
+                        "(&(objectClass=user)(sAMAccountName={0})(memberOf:1.2.840.113556.1.4.1941:={1}))",
+                        new Object[] {loginName, groupsDn},
+                        searchControls).hasNext();
+
+                if (userInRole) {
+                    groupsDnsBuilder.add(groupsDn);
+                }
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.info(String.format("User %s is in AD role %s - %s.", loginName, groupsDn, userInRole));
+                }
+            }
+        } catch (LdapClientException e) {
+            LOG.error("LDAP search error", e);
+        }
+
+        return groupsDnsBuilder.build();
     }
 
 

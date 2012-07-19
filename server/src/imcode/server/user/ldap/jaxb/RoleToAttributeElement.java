@@ -12,15 +12,15 @@ public class RoleToAttributeElement {
     @XmlAttribute(name = "attribute-value", required = true)
     private String attributeValue;
 
-    public String getAttributeName() {
-        return attributeName;
+    public String attributeName() {
+        return attributeName.trim().toLowerCase();
     }
 
-    public String getAttributeValue() {
-        return attributeValue;
+    public String attributeValue() {
+        return attributeValue.trim().toLowerCase();
     }
 
-    public String getRoleName() {
-        return roleName;
+    public String roleName() {
+        return roleName.trim().toLowerCase();
     }
 }
