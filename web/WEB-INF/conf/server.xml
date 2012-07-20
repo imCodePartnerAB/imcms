@@ -15,7 +15,7 @@ There are two ways to associate custom imCMS roles with a LDAP entries:
         <mapped-roles>
             <!--<role-to-attribute role-name="LDAP-EMERGENCY" attribute-name="phone" attribute-value="112"/>-->
             <!--<role-to-attribute role-name="LDAP-MANAGER" attribute-name="title" attribute-value="manager"/>-->
-            <!--<role-to-attribute role-name="LDAP-SPECIAL" attribute-name="primaryGroupID" attribute-value="514"/>-->
+            <!--<role-to-attribute role-name="LDAP-SPECIAL" attribute-name="primaryGroupID" attribute-value="513"/>-->
 
             <!--<role-to-ad-group role-name="imGrpLocSec" group-dn="CN=imGrpLocalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
             <!--<role-to-ad-group role-name="imGrpGloSec" group-dn="CN=imGrpGlobalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
