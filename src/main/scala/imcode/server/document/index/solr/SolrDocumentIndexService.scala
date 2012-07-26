@@ -11,7 +11,7 @@ import org.apache.solr.client.solrj.{SolrQuery}
  * requestXXX methods are expected to execute asynchronously.
  */
 abstract class SolrDocumentIndexService extends Log4jLoggerSupport {
-  def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp)
+  def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest)
   def requestIndexRebuild()
   def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] // ??? move searching user into wrapper ???
   def getMonitor(): SolrDocumentIndexServiceMonitor = ???
@@ -20,12 +20,9 @@ abstract class SolrDocumentIndexService extends Log4jLoggerSupport {
 
 
 object SolrDocumentIndexService {
-  sealed trait IndexUpdateOp
-  case class AddDocsToIndex(metaId: Int) extends IndexUpdateOp
-  case class DeleteDocsFromIndex(metaId: Int) extends IndexUpdateOp
-
-  //case class AddDocToIndex(doc: DocumentDomainObject) extends IndexUpdateOp
-  //case class DeleteDocFromIndex(doc: DocumentDomainObject) extends IndexUpdateOp
+  sealed trait IndexUpdateRequest
+  case class AddDocsToIndex(metaId: Int) extends IndexUpdateRequest
+  case class DeleteDocsFromIndex(metaId: Int) extends IndexUpdateRequest
 }
 
 

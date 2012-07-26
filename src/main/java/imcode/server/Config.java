@@ -49,11 +49,13 @@ public class Config {
 
     /**
      * Remote SOLr URL.
+     * The value is read from configuration file.
      */
     private String solrUrl;
 
     /**
-     * Embedded SOLr home.
+     * Embedded SOLr home - absolute path.
+     * The value is set manually at the service startup.
      */
     private File solrHome;
 

@@ -27,17 +27,17 @@ class DocumentIndexer(
   def this() = this(null, null, null)
 
   /**
-   * Creates SolrInputDocument based on provided document.
+   * Creates SolrInputDocument based on provided DocumentDomainObject.
    *
    * @return SolrInputDocument
    */
   def index(doc: DocumentDomainObject): SolrInputDocument = new SolrInputDocument |>> { indexDoc =>
     def addFieldIfNotNull(name: String, value: AnyRef) = if (value != null) indexDoc.addField(name, value)
 
-    val documentId = doc.getId
+    val docId = doc.getId
 
-    indexDoc.addField(DocumentIndex.FIELD__META_ID, documentId)
-    indexDoc.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, documentId)
+    indexDoc.addField(DocumentIndex.FIELD__META_ID, docId)
+    indexDoc.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, docId)
 
     doc.getI18nMeta |> { l =>
       val headline = l.getHeadline
@@ -103,7 +103,7 @@ class DocumentIndexer(
     } catch {
       case e =>
         logger.error("Failed to index doc's content. Doc id: %d, language: %s, type: %s".
-          format(documentId, doc.getLanguage, doc.getDocumentType), e
+          format(docId, doc.getLanguage, doc.getDocumentType), e
         )
     }
   }

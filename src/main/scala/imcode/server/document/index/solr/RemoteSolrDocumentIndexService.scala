@@ -6,50 +6,27 @@ import com.imcode._
 import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.index.DocumentQuery
-import imcode.server.document.index.solr.SolrDocumentIndexService.IndexUpdateOp
-import scala.swing.{Reactor, Publisher}
+import imcode.server.document.index.solr.SolrDocumentIndexService.IndexUpdateRequest
 
 // ??? todo: wait n seconds before plugging in a new ManagedServer | Ping ???
 class RemoteSolrDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, ops: SolrDocumentIndexServiceOps)
-    extends SolrDocumentIndexService with Reactor {
+    extends SolrDocumentIndexService {
 
-  private val serviceRef: AtomicReference[SolrDocumentIndexService with Publisher] = new AtomicReference(newManagedService())
-
-  reactions += {
-    // swap target service
-    case ManagedSolrDocumentIndexService.IndexError(publisher, error) =>
-      serviceRef.synchronized {
-        serviceRef.get() match {
-          case service if service eq publisher =>
-            deafTo(service)
-            serviceRef.set(NoOpSolrDocumentIndexService)
-            service.shutdown()
-
-            serviceRef.set(newManagedService(requestIndexRebuild = true))
-          case _ =>
-        }
-      }
-  }
+  private val serviceRef: AtomicReference[SolrDocumentIndexService] = new AtomicReference(newManagedService())
 
   // todo: replace requestIndexRebuild flag with enum values
   private def newManagedService(requestIndexRebuild: Boolean = false): ManagedSolrDocumentIndexService = {
     val solrServerReader = SolrServerFactory.createHttpSolrServer(solrReadUrl)
     val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrWriteUrl)
 
-    new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops) |>> { service =>
-      listenTo(service)
-      serviceRef.set(service)
-      if (requestIndexRebuild) {
-        service.requestIndexRebuild()
-      }
-    }
+    new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops, _ => ())
   }
 
   def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
     serviceRef.get().search(query, searchingUser)
 
-  def requestIndexUpdate(op: SolrDocumentIndexService.IndexUpdateOp) {
-    serviceRef.get().requestIndexUpdate(op)
+  def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest) {
+    serviceRef.get().requestIndexUpdate(request)
   }
 
   def requestIndexRebuild() {
