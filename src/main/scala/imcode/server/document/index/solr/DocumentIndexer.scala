@@ -9,6 +9,7 @@ import com.imcode.Log4jLoggerSupport
 import scala.reflect.BeanProperty
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
 import imcode.server.document.index.DocumentIndex
+import java.util.Date
 
 /**
  * Lucene & SOLr indexing differences:
@@ -34,10 +35,15 @@ class DocumentIndexer(
   def index(doc: DocumentDomainObject): SolrInputDocument = new SolrInputDocument |>> { indexDoc =>
     def addFieldIfNotNull(name: String, value: AnyRef) = if (value != null) indexDoc.addField(name, value)
 
-    val docId = doc.getId
+    val metaId = doc.getId
+    val languageCode = doc.getLanguage.getCode
 
-    indexDoc.addField(DocumentIndex.FIELD__META_ID, docId)
-    indexDoc.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, docId)
+    indexDoc.addField(DocumentIndex.FIELD__ID, "%d_%s".format(metaId, languageCode))
+    indexDoc.addField(DocumentIndex.FIELD__TIMESTAMP, new Date)
+    indexDoc.addField(DocumentIndex.FIELD__META_ID, metaId)
+    indexDoc.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, metaId)
+    indexDoc.addField(DocumentIndex.FIELD__LANGUAGE, languageCode)
+
 
     doc.getI18nMeta |> { l =>
       val headline = l.getHeadline
@@ -53,15 +59,16 @@ class DocumentIndexer(
 
     addFieldIfNotNull(DocumentIndex.FIELD__PUBLISHER_ID, doc.getPublisherId)
 
-    // todo: ??? or "" ???
-    indexDoc.addField(DocumentIndex.FIELD__CREATED_DATETIME, doc.getCreatedDatetime)
-    indexDoc.addField(DocumentIndex.FIELD__MODIFIED_DATETIME, doc.getModifiedDatetime)
-    indexDoc.addField(DocumentIndex.FIELD__ACTIVATED_DATETIME, doc.getPublicationStartDatetime)
-    indexDoc.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, doc.getPublicationStartDatetime)
-    indexDoc.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, doc.getPublicationEndDatetime)
-    indexDoc.addField(DocumentIndex.FIELD__ARCHIVED_DATETIME, doc.getArchivedDatetime)
+    addFieldIfNotNull(DocumentIndex.FIELD__CREATED_DATETIME, doc.getCreatedDatetime)
+    addFieldIfNotNull(DocumentIndex.FIELD__MODIFIED_DATETIME, doc.getModifiedDatetime)
+    addFieldIfNotNull(DocumentIndex.FIELD__ACTIVATED_DATETIME, doc.getPublicationStartDatetime)
+    addFieldIfNotNull(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, doc.getPublicationStartDatetime)
+    addFieldIfNotNull(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, doc.getPublicationEndDatetime)
+    addFieldIfNotNull(DocumentIndex.FIELD__ARCHIVED_DATETIME, doc.getArchivedDatetime)
 
     indexDoc.addField(DocumentIndex.FIELD__STATUS, doc.getPublicationStatus.asInt())
+
+    // todo: ??? v4.x indexes properties as fields without any prefix. map as * string, indexed + not-stored ???
 
     for (category <- categoryMapper.getCategories(doc.getCategoryIds).asScala) {
       indexDoc.addField(DocumentIndex.FIELD__CATEGORY, category.getName)
@@ -76,15 +83,13 @@ class DocumentIndexer(
         indexDoc.addField(DocumentIndex.FIELD__KEYWORD, documentKeyword)
     }
 
-    documentMapper.getDocumentMenuPairsContainingDocument(doc).map(p => p.getDocument.getId -> p.getMenuIndex) |> {
-      parentDocumentAndMenuIds =>
-
-        for ((parentId, menuId) <- parentDocumentAndMenuIds) {
+    documentMapper.getParentDocumentAndMenuIdsForDocument(doc) |> { parentDocumentAndMenuIds =>
+        for (Array(parentId, menuId) <- parentDocumentAndMenuIds.asScala) {
           indexDoc.addField(DocumentIndex.FIELD__PARENT_ID, parentId)
           indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId)
         }
 
-        indexDoc.addField(DocumentIndex.FIELD__HAS_PARENTS, parentDocumentAndMenuIds.nonEmpty)
+        indexDoc.addField(DocumentIndex.FIELD__HAS_PARENTS, !parentDocumentAndMenuIds.isEmpty)
     }
 
     addFieldIfNotNull(DocumentIndex.FIELD__ALIAS, doc.getAlias)
@@ -103,7 +108,7 @@ class DocumentIndexer(
     } catch {
       case e =>
         logger.error("Failed to index doc's content. Doc id: %d, language: %s, type: %s".
-          format(docId, doc.getLanguage, doc.getDocumentType), e
+          format(metaId, doc.getLanguage, doc.getDocumentType), e
         )
     }
   }

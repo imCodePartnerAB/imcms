@@ -4,9 +4,9 @@ import com.imcode._
 import imcode.server.user.UserDomainObject
 import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.{SolrServer, SolrQuery}
-import java.lang.{Thread, InterruptedException}
 import java.util.concurrent.{Callable, LinkedBlockingQueue}
 import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
+import java.lang.{InterruptedException, Thread}
 
 /**
  * Implements all SolrDocumentIndexService functionality.
@@ -87,8 +87,8 @@ class ManagedSolrDocumentIndexService(
               indexUpdateRequests.clear()
               // publishFutureTask
               // indexRebuildFutureTask.run()
-              serviceOps.rebuildIndexInterruptibly(solrServerWriter) { _ =>
-                // update progress
+              serviceOps.rebuildIndex(solrServerWriter) { progress =>
+                //
               }
 
               Threads.spawnDaemon {

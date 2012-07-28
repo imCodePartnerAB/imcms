@@ -282,7 +282,7 @@
     
   <!-- config for the admin interface -->
   <admin>
-    <defaultQuery>solr</defaultQuery>
+    <defaultQuery>*:*</defaultQuery>
   </admin>
 
 </config>

@@ -165,7 +165,17 @@
         <!-- CHECK: -->
         <!-- ??? virtual field ??? - phase -->
 
-        <field name="meta_id" type="string" indexed="true" stored="true"/>
+        <!--
+            Unique field, contains of meta_id and language code combination delimited with underscore (ex: 1001_en).
+            Latter may be extended to include doc version no.
+        -->
+        <field name="id" type="string" indexed="true" stored="true" required="true"/>
+        <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" required="true"/>
+
+        <!-- language code - i.e en, se -->
+        <field name="language" type="string" indexed="true" stored="true" required="true"/>
+
+        <field name="meta_id" type="string" indexed="true" stored="true" required="true"/>
         <field name="meta_id_lexicographic" type="int" indexed="true" stored="false"/>
         <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="meta_headline" type="string" indexed="true" stored="false"/>
@@ -187,6 +197,7 @@
         <!-- text-doc field -->
         <field name="nonstripped_text" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
         <!--text-doc field + also used as prefix + textNo to index the same text field -->
+        <!-- todo: solr strip ???: HTMLStripCharFilterFactory -->
         <field name="text" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
         <!--text-doc field-->
         <field name="child_id" type="int" indexed="false" stored="true" multiValued="true"/>
@@ -197,37 +208,32 @@
         <!-- file-doc field -->
         <field name="mime_type" type="keyword_lowercase" indexed="true" stored="false"/>
         <!-- category name -->
-        <!-- ??? multi ??? -->
-        <field name="category" type="keyword_lowercase" indexed="true" stored="false"/>
-        <!-- ??? multi ??? -->
-        <field name="category_id" type="int" indexed="true" stored="false"/>
-        <!-- ??? multi ??? -->
-        <field name="category_type" type="keyword_lowercase" indexed="true" stored="false"/>
-        <!-- ??? multi ??? -->
-        <field name="category_type_id" type="int" indexed="true" stored="false"/>
-        <field name="keyword" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
+        <field name="category" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
+        <field name="category_id" type="int" indexed="true" stored="false" multiValued="true"/>
+        <field name="category_type" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
+        <field name="category_type_id" type="int" indexed="true" stored="false" multiValued="true"/>
+        <field name="keyword" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
         <field name="parent_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="parent_menu_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="has_parents" type="boolean" indexed="true" stored="false"/>
         <field name="alias" type="keyword_lowercase" indexed="true" stored="false"/>
-        <!-- ??? =UNIQUE=; also need an ID ??? -->
-        <field name="timestamp" type="date" indexed="true" stored="true" default="NOW"/>
 
-        <dynamicField name="property.*" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
-        <!-- ??? -->
-        <dynamicField name="imcms.document*" type="string" indexed="true" stored="false" multiValued="true"/>
-        <!-- ??? add '_' ??? -->
+        <!-- ??? todo ???
+        <dynamicField name="*" type="keyword_lowercase" indexed="true" stored="false"/>
+        -->
+        <dynamicField name="property.*" type="keyword_lowercase" indexed="true" stored="false"/>
         <dynamicField name="text*" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
     </fields>
 
     <!-- Field to use to determine and enforce document uniqueness.
        Unless this field is marked with required="false", it will be a required field
     -->
-    <uniqueKey>meta_id</uniqueKey>
+    <uniqueKey>id</uniqueKey>
 
-    <!-- field for the QueryParser to use when an explicit fieldname is absent -->
+    <!-- field for the QueryParser to use when an explicit fielename is absent -->
     <defaultSearchField>text</defaultSearchField>
 
     <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
+    <!-- todo: configure handler -->
     <solrQueryParser defaultOperator="OR"/>
 </schema>

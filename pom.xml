@@ -13,10 +13,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <slf4j.version>1.6.4</slf4j.version>
+        <slf4j.version>1.6.6</slf4j.version>
         <scala.version>2.9.2</scala.version>
-        <org.springframework.version>3.1.1.RELEASE</org.springframework.version>
-        <solr.version>3.6.0</solr.version>
+        <org.springframework.version>3.1.2.RELEASE</org.springframework.version>
+        <solr.version>3.6.1</solr.version>
 
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
@@ -121,7 +121,7 @@
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -340,7 +340,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>4.1.2.Final</version>
+            <version>4.1.5.SP1</version>
         </dependency>
 
         <dependency>

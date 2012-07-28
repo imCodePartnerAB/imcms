@@ -5,8 +5,8 @@ package fixtures
 import scala.collection.JavaConverters._
 import imcms.api.{I18nLanguage, I18nSupport}
 import imcode.server.document.textdocument.TextDocumentDomainObject
-import imcode.server.document.DocumentPermissionSetTypeDomainObject
 import imcode.server.user.{UserDomainObject, RoleId}
+import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject, DocumentPermissionSetTypeDomainObject}
 
 object DocFX {
   val Seq(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth) = 1001 to 1010
@@ -107,4 +107,14 @@ object LanguageFX {
     setLanguages(mkLanguages.asJava)
     setHosts(Map(HostNameEn -> mkEnglish, HostNameSe -> mkSwedish).asJava)
   }
+}
+
+object CategoryFX {
+  def mkCategories: Seq[CategoryDomainObject] =
+    for (id <- 0 until 10)
+    yield new CategoryDomainObject |>> { c =>
+      c.setId(id)
+      c.setName("category_" + id)
+      c.setType(new CategoryTypeDomainObject(id, "category_type_" + id, id + 1, id % 2 == true))
+    }
 }

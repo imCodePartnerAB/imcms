@@ -8,12 +8,12 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
 import imcode.server.document.index.{DocIndexingMocksSetup}
 import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
 import org.apache.solr.common.SolrInputDocument
-import java.lang.Thread
 import org.apache.solr.client.solrj.SolrServer
 import org.mockito.Mockito.{mock => _, _}
 import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar._
 import com.imcode.imcms.test._
+import java.lang.{InterruptedException, Thread}
 
 @RunWith(classOf[JUnitRunner])
 class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
@@ -58,10 +58,10 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
       }
     }
 
-    "produce SOLr delete query for every document id" in pendingUntilFixed {
-      for (docId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-        expect("<undefined>", "valid SOLr delete query") {
-          ops.mkSolrDeleteQuery(docId)
+    "produce SOLr delete query for every document meta id" in {
+      for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
+        expect("meta_id:"+metaId, "valid SOLr delete query") {
+          ops.mkSolrDocsDeleteQuery(metaId)
         }
       }
     }
@@ -69,12 +69,12 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
 
   // ??? printed to out ???
   "running index rebuild" should {
-    "index all docs when running without interruption" in {
+    "index all docs" in {
       import SolrDocumentIndexRebuild._
       val solrServerMock = mock[SolrServer]
       var progress = Vector.empty[Progress]
 
-      ops.rebuildIndexInterruptibly(solrServerMock)(p => progress :+= p)
+      ops.rebuildIndex(solrServerMock){p => progress :+= p; Thread.sleep(2000)}
 
       assertEquals("progress callablck invokation count", 11, progress.length)
       assertTrue("progress callback value is incremented on every call starting from 0",
@@ -89,10 +89,10 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
       var progress = Vector.empty[Progress]
 
       intercept[InterruptedException] {
-        ops.rebuildIndexInterruptibly(solrServerMock) {
+        ops.rebuildIndex(solrServerMock) {
           case p@Progress(10, indexedDocsCount) =>
             progress :+= p
-            if (indexedDocsCount == 5) Thread.currentThread().interrupt()
+            if (indexedDocsCount == 5) throw new InterruptedException()
         }
       }
 
