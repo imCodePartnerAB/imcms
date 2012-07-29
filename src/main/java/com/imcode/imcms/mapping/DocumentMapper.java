@@ -754,6 +754,17 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
+     * @param docId
+     * @param languageCode
+     * @return default document
+     * @since 6.0
+     */
+    public DocumentDomainObject getDefaultDocument(int docId, String languageCode) {
+        return documentLoaderCachingProxy.getDefaultDoc(docId, getImcmsServices().getI18nSupport().getByCode(languageCode));
+    }
+
+
+    /**
      * Returns custom document.
      * <p/>
      * Custom document is never cached.

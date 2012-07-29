@@ -25,7 +25,6 @@ public interface DocumentIndex {
     String FIELD__META_HEADLINE = "meta_headline";
     String FIELD__META_HEADLINE_KEYWORD = "meta_headline_keyword";
     String FIELD__META_ID = "meta_id";
-    String FIELD__META_ID_LEXICOGRAPHIC = "meta_id_lexicographic";
     String FIELD__META_TEXT = "meta_text";
     String FIELD__MODIFIED_DATETIME = "modified_datetime";
     String FIELD__PARENT_ID = "parent_id";

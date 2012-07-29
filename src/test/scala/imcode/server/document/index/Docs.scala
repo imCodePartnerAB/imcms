@@ -18,10 +18,12 @@ import imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexe
 import imcode.server.ImcmsServices
 import com.imcode.imcms.test._
 import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
-
+import java.util.LinkedList
 
 
 class DocIndexingMocksSetup {
+  // refactor out
+  type DocId = Int
 
   case class ParentDoc(docId: Int, menuNo: Int)
 
@@ -29,41 +31,43 @@ class DocIndexingMocksSetup {
   private val categoryMapperMock = mock[CategoryMapper]
   private val servicesMock = mock[ImcmsServices]
 
-  private val docs = MMap.empty[Int, MMap[I18nLanguage, DocumentDomainObject]].withDefaultValue(MMap.empty.withDefaultValue(null))
-  private val categories = MMap.empty[Int, CategoryDomainObject]
-  private val parentDocs = MMap.empty[Int, Seq[ParentDoc]].withDefaultValue(Seq.empty)
+  private val docs = MMap.empty[DocId, MMap[I18nLanguage, DocumentDomainObject]].withDefaultValue(MMap.empty.withDefaultValue(null))
+  private val categories = MMap.empty[DocId, CategoryDomainObject]
+  private val parentDocs = MMap.empty[DocId, Seq[ParentDoc]].withDefaultValue(Seq.empty)
 
   when(documentMapperMock.getImcmsServices).thenReturn(servicesMock)
 
   when(servicesMock.getI18nSupport).thenReturn(LanguageFX.mkI18nSupport())
 
-  when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer {
-    invocation: InvocationOnMock =>
-      val availableCategories = for {
-        categoryId <- invocation.getArguments()(0).asInstanceOf[JCollection[JInteger]].asScala
-        category <- categories.get(categoryId)
-      } yield category
+  when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer { args: Array[AnyRef] =>
+    val availableCategories = for {
+      categoryId <- args(0).asInstanceOf[JCollection[JInteger]].asScala
+      category <- categories.get(categoryId)
+    } yield category
 
-      availableCategories.toSet.asJava
+    availableCategories.toSet.asJava
   }
 
-  when(documentMapperMock.getDefaultDocument(anyInt, any[I18nLanguage])).thenAnswer {
-    invocation: InvocationOnMock => invocation.getArguments match {
+
+  when(documentMapperMock.getDefaultDocument(anyInt, any[I18nLanguage])).thenAnswer { args: Array[AnyRef] =>
+    args match {
       case Array(id: JInteger, language: I18nLanguage) => docs(id)(language)
     }
   }
 
-  when(documentMapperMock.getAllDocumentIds).thenAnswer {
-    _: InvocationOnMock => docs.keys.map(Int.box).toList.asJava
+
+  when(documentMapperMock.getAllDocumentIds).thenAnswer { () =>
+    docs.keys.map(Int.box).toList.asJava
   }
 
-  when(documentMapperMock.getDocumentMenuPairsContainingDocument(any[DocumentDomainObject])).thenAnswer {
-    invocation: InvocationOnMock => invocation.getArguments match {
-      case Array(doc: DocumentDomainObject) =>
-        parentDocs(doc.getId).toArray.map {
-          case ParentDoc(docId, menuNo) => new TextDocumentMenuIndexPair(new TextDocumentDomainObject(docId), menuNo)
-        }
-    }
+  when(documentMapperMock.getParentDocumentAndMenuIdsForDocument(any[DocumentDomainObject])).thenAnswer {
+    args: Array[AnyRef] =>
+      args match {
+        case Array(doc: DocumentDomainObject) =>
+          parentDocs(doc.getId).map {
+            case ParentDoc(docId, menuNo) => Array(Int box docId, Int box menuNo)
+          } |> { _.asJavaCollection } |> { coll => new java.util.LinkedList(coll) }
+      }
   }
 
 
@@ -84,13 +88,7 @@ class DocIndexingMocksSetup {
   }
 
   def addDocument(doc: DocumentDomainObject) = this |>> { _ =>
-    docs.get(doc.getId) |> {
-      case None => MMap.empty[I18nLanguage, DocumentDomainObject].withDefaultValue(null) |>> { langToDoc =>
-        docs(doc.getId) = langToDoc
-      }
-
-      case Some(langToDoc) => langToDoc
-    } |> { langToDoc =>
+    docs.getOrElseUpdate(doc.getId,  MMap.empty[I18nLanguage, DocumentDomainObject].withDefaultValue(null)) |> { langToDoc =>
       langToDoc.put(doc.getLanguage, doc)
     }
   }

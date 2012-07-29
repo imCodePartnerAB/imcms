@@ -6,11 +6,13 @@ import scala.collection.SeqView
 import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
 import com.imcode.imcms.api.I18nLanguage
-import imcode.server.document.index.DocumentIndex
 import java.util.Date
 import org.apache.solr.common.util.DateUtil
 import java.lang.{InterruptedException, Thread}
 import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
+import imcode.server.document.DocumentDomainObject
+import imcode.server.document.index.{DocumentQuery, DocumentIndex}
+import imcode.server.user.UserDomainObject
 
 /**
  * SOLr document index operations.
@@ -51,8 +53,31 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
 
   def mkSolrDocsDeleteQuery(metaId: Int): String = "%s:%d".format(DocumentIndex.FIELD__META_ID, metaId)
 
+  def search(solrServer: SolrServer, query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
+    val solrDocs = solrServer.query(new SolrQuery(query.getQuery.toString)).getResults
+    new java.util.LinkedList[DocumentDomainObject] |>> { docs =>
+      for (solrDocId <- 0.until(solrDocs.size)) {
+        val solrDoc = solrDocs.get(solrDocId.toInt)
+        val metaId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
+        val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).asInstanceOf[String]
+        val doc = documentMapper.getDefaultDocument(metaId, languageCode)
 
-  def search(solrServer: SolrServer, query: String) = solrServer.query(new SolrQuery(query))
+        if (doc != null /* && user can read doc */) {
+          docs.add(doc)
+        }
+      }
+    }
+  }
+
+//  def search(solrServer: SolrServer, query: String): SeqView[DocumentDomainObject, Seq[_]] =
+//    solrServer.query(new SolrQuery(query)).getResults |> { result =>
+//      0.until(result.size).view.map { id =>
+//        val solrDoc = result.get(id.toInt)
+//        val metaId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
+//        val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).asInstanceOf[String]
+//
+//        documentMapper.getDefaultDocument(metaId, languageCode)
+//    }
 
 
   def addDocsToIndex(solrServer: SolrServer, metaId: Int) {

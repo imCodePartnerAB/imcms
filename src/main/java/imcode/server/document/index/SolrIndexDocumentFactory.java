@@ -57,7 +57,7 @@ public class SolrIndexDocumentFactory {
 
         indexDocument.addField(DocumentIndex.FIELD__META_ID, "" + documentId);
 //        indexDocument.add(new Field(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        indexDocument.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, "" + documentId);
+//        indexDocument.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, "" + documentId);
 //        indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, NumberTools.longToString(documentId) ) );
         
         RoleIdToDocumentPermissionSetTypeMappings roleIdMappings = document.getRoleIdsMappedToDocumentPermissionSetTypes();

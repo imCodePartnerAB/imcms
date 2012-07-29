@@ -17,8 +17,8 @@ import java.util.Date
  * - text* dynamic field - add underscore | conflict with text | RE format ???
  * - virtual field - phase
  */
-// todo: ??? Truncate date fields to minute ???, check for null or insert default ("" - empty string) ???
-// todo: ??? null handling in SOLR ???
+// todo: ??? Truncate date fields to minute ???
+
 class DocumentIndexer(
   @BeanProperty var documentMapper: DocumentMapper,
   @BeanProperty var categoryMapper: CategoryMapper,
@@ -41,9 +41,7 @@ class DocumentIndexer(
     indexDoc.addField(DocumentIndex.FIELD__ID, "%d_%s".format(metaId, languageCode))
     indexDoc.addField(DocumentIndex.FIELD__TIMESTAMP, new Date)
     indexDoc.addField(DocumentIndex.FIELD__META_ID, metaId)
-    indexDoc.addField(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, metaId)
     indexDoc.addField(DocumentIndex.FIELD__LANGUAGE, languageCode)
-
 
     doc.getI18nMeta |> { l =>
       val headline = l.getHeadline
@@ -84,12 +82,12 @@ class DocumentIndexer(
     }
 
     documentMapper.getParentDocumentAndMenuIdsForDocument(doc) |> { parentDocumentAndMenuIds =>
-        for (Array(parentId, menuId) <- parentDocumentAndMenuIds.asScala) {
-          indexDoc.addField(DocumentIndex.FIELD__PARENT_ID, parentId)
-          indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId)
-        }
+      for (Array(parentId, menuId) <- parentDocumentAndMenuIds.asScala) {
+        indexDoc.addField(DocumentIndex.FIELD__PARENT_ID, parentId)
+        indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId)
+      }
 
-        indexDoc.addField(DocumentIndex.FIELD__HAS_PARENTS, !parentDocumentAndMenuIds.isEmpty)
+      indexDoc.addField(DocumentIndex.FIELD__HAS_PARENTS, !parentDocumentAndMenuIds.isEmpty)
     }
 
     addFieldIfNotNull(DocumentIndex.FIELD__ALIAS, doc.getAlias)

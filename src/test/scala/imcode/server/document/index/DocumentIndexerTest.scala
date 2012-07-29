@@ -77,13 +77,14 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
     "create SolrInputDocument from TextDocumentDomainObject" in {
       val indexDoc: SolrInputDocument = docIndexer.index(defaultTextDocEn)
 
-      val indexedCategoriesIds = indexDoc.getFieldValues(DocumentIndex.FIELD__CATEGORY_ID).asScala.map(_.toString).toSet
+      val indexedCategoriesIds = indexDoc.getFieldValues(DocumentIndex.FIELD__CATEGORY_ID).asScala.toSet
       val indexedCategoriesNames = indexDoc.getFieldValues(DocumentIndex.FIELD__CATEGORY).asScala.map(_.toString).toSet
-      val indexedCategoriesTypesIds = indexDoc.getFieldValues(DocumentIndex.FIELD__CATEGORY_TYPE_ID).asScala.map(_.toString).toSet
+      val indexedCategoriesTypesIds = indexDoc.getFieldValues(DocumentIndex.FIELD__CATEGORY_TYPE_ID).asScala.toSet
       val indexedCategoriesTypesNames = indexDoc.getFieldValues(DocumentIndex.FIELD__CATEGORY_TYPE).asScala.map(_.toString).toSet
 
-      assertEquals("FIELD__META_ID", defaultTextDocEn.getId.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__META_ID))
-      assertEquals("FIELD__META_ID_LEXICOGRAPHIC", defaultTextDocEn.getId.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC))
+      assertEquals("FIELD__ID", "%d_%s".format(defaultTextDocEn.getId, defaultTextDocEn.getLanguage.getCode), indexDoc.getFieldValue(DocumentIndex.FIELD__ID))
+      assertNotNull("FIELD__TIMESTAMP is set", indexDoc.getFieldValue(DocumentIndex.FIELD__TIMESTAMP).asInstanceOf[Date])
+      assertEquals("FIELD__META_ID", defaultTextDocEn.getId, indexDoc.getFieldValue(DocumentIndex.FIELD__META_ID))
 
       assertEquals("FIELD__ROLE_ID",
         Set(RoleId.USERS, RoleId.USERADMIN, RoleId.SUPERADMIN).map(_.toString),
@@ -94,10 +95,10 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       assertEquals("FIELD__META_HEADLINE_KEYWORD", defaultTextDocEn.getHeadline, indexDoc.getFieldValue(DocumentIndex.FIELD__META_HEADLINE_KEYWORD))
       assertEquals("FIELD__META_TEXT", defaultTextDocEn.getMenuText, indexDoc.getFieldValue(DocumentIndex.FIELD__META_TEXT))
 
-      assertEquals("FIELD__DOC_TYPE_ID", defaultTextDocEn.getDocumentTypeId.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__DOC_TYPE_ID))
+      assertEquals("FIELD__DOC_TYPE_ID", defaultTextDocEn.getDocumentTypeId, indexDoc.getFieldValue(DocumentIndex.FIELD__DOC_TYPE_ID))
 
-      assertEquals("FIELD__DOC_TYPE_ID", defaultTextDocEn.getCreatorId.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__CREATOR_ID))
-      assertEquals("FIELD__PUBLISHER_ID", defaultTextDocEn.getPublisherId.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__PUBLISHER_ID))
+      assertEquals("FIELD__CREATOR_ID", defaultTextDocEn.getCreatorId, indexDoc.getFieldValue(DocumentIndex.FIELD__CREATOR_ID))
+      assertEquals("FIELD__PUBLISHER_ID", defaultTextDocEn.getPublisherId, indexDoc.getFieldValue(DocumentIndex.FIELD__PUBLISHER_ID))
 
       assertEquals("FIELD__CREATED_DATETIME", defaultTextDocEn.getCreatedDatetime, indexDoc.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME))
       assertEquals("FIELD__MODIFIED_DATETIME", defaultTextDocEn.getModifiedDatetime, indexDoc.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME))
@@ -106,7 +107,7 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       assertEquals("FIELD__PUBLICATION_END_DATETIME", defaultTextDocEn.getPublicationEndDatetime, indexDoc.getFieldValue(DocumentIndex.FIELD__PUBLICATION_END_DATETIME))
       assertEquals("FIELD__ARCHIVED_DATETIME", defaultTextDocEn.getArchivedDatetime, indexDoc.getFieldValue(DocumentIndex.FIELD__ARCHIVED_DATETIME))
 
-      assertEquals("FIELD__STATUS", defaultTextDocEn.getPublicationStatus.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__STATUS))
+      assertEquals("FIELD__STATUS", defaultTextDocEn.getPublicationStatus.asInt(), indexDoc.getFieldValue(DocumentIndex.FIELD__STATUS))
 
       assertEquals("FIELD__KEYWORD",
         defaultTextDocEn.getKeywords.asScala,
@@ -114,8 +115,8 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       )
 
       assertEquals("FIELD__PARENT_ID",
-        Set("0", "1", "2"),
-        indexDoc.getFieldValues(DocumentIndex.FIELD__PARENT_ID).asScala.map(_.toString).toSet
+        Set(0, 1, 2),
+        indexDoc.getFieldValues(DocumentIndex.FIELD__PARENT_ID).asScala.toSet
       )
 
       assertEquals("FIELD__PARENT_MENU_ID",
@@ -123,11 +124,11 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
         indexDoc.getFieldValues(DocumentIndex.FIELD__PARENT_MENU_ID).asScala.map(_.toString).toSet
       )
 
-      assertEquals("FIELD__HAS_PARENTS", true.toString, indexDoc.getFieldValue(DocumentIndex.FIELD__HAS_PARENTS))
+      assertEquals("FIELD__HAS_PARENTS", true, indexDoc.getFieldValue(DocumentIndex.FIELD__HAS_PARENTS))
       assertEquals("FIELD__ALIAS", defaultTextDocEn.getAlias, indexDoc.getFieldValue(DocumentIndex.FIELD__ALIAS))
 
       assertEquals("FIELD__CATEGORY_ID",
-        Set("1", "2", "3", "4", "5"),
+        Set(1, 2, 3, 4, 5),
         indexedCategoriesIds
       )
 
@@ -137,7 +138,7 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       )
 
       assertEquals("FIELD__CATEGORY_TYPE_ID",
-        Set("1", "2", "3", "4", "5"),
+        Set(1, 2, 3, 4, 5),
         indexedCategoriesTypesIds
       )
 
@@ -171,6 +172,7 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
 
         new FileDocumentDomainObject |>> { d =>
           d.setCreatorId(0)
+          d.setLanguage(LanguageFX.mkEnglish)
           d.addFile(file.getName, fdf)
         } |> docIndexer.index
       }

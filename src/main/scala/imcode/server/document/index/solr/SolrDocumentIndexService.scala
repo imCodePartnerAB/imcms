@@ -2,18 +2,22 @@ package imcode.server.document.index.solr
 
 import com.imcode._
 import com.imcode.Log4jLoggerSupport
-import imcode.server.document.DocumentDomainObject
+import org.apache.solr.common.params.SolrParams
+import org.apache.solr.client.solrj.{SolrResponse}
+import org.apache.solr.client.solrj.response.QueryResponse
+import imcode.server.document.index.DocumentQuery
 import imcode.server.user.UserDomainObject
-import org.apache.solr.client.solrj.{SolrQuery}
+import imcode.server.document.DocumentDomainObject
 
 /**
- * Defines interface for SOLr based Document Index Service.
+ * SOLr based Document Index Service.
  * requestXXX methods are expected to execute asynchronously.
  */
 abstract class SolrDocumentIndexService extends Log4jLoggerSupport {
   def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest)
   def requestIndexRebuild()
-  def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] // ??? move searching user into wrapper ???
+  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject]
+  //def search(solrParams: SolrParams): QueryResponse
   def getMonitor(): SolrDocumentIndexServiceMonitor = ???
   def shutdown()
 }

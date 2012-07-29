@@ -7,6 +7,7 @@ import org.apache.solr.client.solrj.{SolrServer, SolrQuery}
 import java.util.concurrent.{Callable, LinkedBlockingQueue}
 import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
 import java.lang.{InterruptedException, Thread}
+import imcode.server.document.index.DocumentQuery
 
 /**
  * Implements all SolrDocumentIndexService functionality.
@@ -210,14 +211,12 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
+  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
     try {
-      val queryResponse = solrServerReader.query(new SolrQuery(query.toString))
-
-      java.util.Collections.emptyList()
+      serviceOps.search(solrServerReader, query, searchingUser)
     } catch {
       case e =>
-        logger.error("Search error", e)
+        logger.error("Search error. Query: %s, searchingUser: %s".format(query, searchingUser), e)
         Threads.spawnDaemon {
           serviceErrorHandler(ManagedSolrDocumentIndexService.IndexSearchError(ManagedSolrDocumentIndexService.this, e))
         }

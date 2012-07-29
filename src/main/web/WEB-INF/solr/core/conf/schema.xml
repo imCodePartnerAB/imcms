@@ -218,7 +218,7 @@
         <field name="has_parents" type="boolean" indexed="true" stored="false"/>
         <field name="alias" type="keyword_lowercase" indexed="true" stored="false"/>
 
-        <!-- ??? todo ???
+        <!-- ??? todo: property name as field name -> property value as field value ???
         <dynamicField name="*" type="keyword_lowercase" indexed="true" stored="false"/>
         -->
         <dynamicField name="property.*" type="keyword_lowercase" indexed="true" stored="false"/>
@@ -234,6 +234,6 @@
     <defaultSearchField>text</defaultSearchField>
 
     <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
-    <!-- todo: configure handler -->
+    <!-- todo: configure in handler -->
     <solrQueryParser defaultOperator="OR"/>
 </schema>
