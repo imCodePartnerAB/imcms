@@ -150,17 +150,18 @@ trait TestDb { test: Test =>
 trait TestSolr { test: Test =>
 
   object solr {
-    val homeTemplate: File = test.dir("src/main/web/WEB-INF/solr").ensuring(_.isDirectory, "SOLr home template exists.")
-    val home: File = test.dir("target/test/solr")
+    val home: String = test.path("target/test/solr")
+    val homeDir: File = new File(home)
+    val homeTemplateDir: File = test.dir("src/main/web/WEB-INF/solr").ensuring(_.isDirectory, "SOLr home template exists.")
 
     def recreateHome() {
-      if (home.exists()) {
-        FileUtils.deleteDirectory(home)
+      if (homeDir.exists()) {
+        FileUtils.deleteDirectory(homeDir)
 
-        if (home.exists()) sys.error("Unable to delete SOLr home directory.")
+        if (homeDir.exists()) sys.error("Unable to delete SOLr home directory.")
       }
 
-      FileUtils.copyDirectory(homeTemplate, home)
+      FileUtils.copyDirectory(homeTemplateDir, homeDir)
     }
 
     def deleteCoreDataDir() {

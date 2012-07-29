@@ -263,20 +263,16 @@ public class DefaultImcmsServices implements ImcmsServices {
         return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 1", parameters, Utility.SINGLE_STRING_HANDLER)));
     }
 
+    // todo: implement rebuild scheduler ...getConfig().getIndexingSchedulePeriodInMinutes()...
+    // todo: Search Terms Logging: Do not parse and write query term into db every time - queue and write in a separate worker
     private void initDocumentMapper() {
         documentMapper = new DocumentMapper(this, this.getDatabase());
         DocumentIndex documentIndex = DocumentIndexServiceFactory.createService(this);
 
         documentMapper.setDocumentIndex(documentIndex);
-        // todo:
-        //   Search Terms Logging - Y/N?
-        //   Do not parse and write query term into db every time - queue and write in a separate worker
 
-//        documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,
-//                new PhaseQueryFixingDocumentIndex(
-//                        new RebuildingDirectoryIndex(solrServer, documentMapper,
-//                                getConfig().getIndexingSchedulePeriodInMinutes(),
-//                                documentIndexer)))) ;
+        documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,
+                new PhaseQueryFixingDocumentIndex(documentIndex)));
     }
 
     private void initTemplateMapper() {
@@ -316,7 +312,7 @@ public class DefaultImcmsServices implements ImcmsServices {
             log.error("External authenticator and external usermapper should both be either set or not set. Using default implementation.");
         }
 
-        // TO-DO: problem if primary LDAP classes are not instantiatd,
+        // TODO: problem if primary LDAP classes are not instantiatd,
         // because of conf error, secondary LDAP also will not be instantiated
         if (externalAuthenticator != null
                 && externalUserAndRoleRegistry != null
@@ -381,7 +377,7 @@ public class DefaultImcmsServices implements ImcmsServices {
                     "Initializing secondary LDAP user and role registry");
 
             // Copied from method initAuthenticatorsAndUserAndRoleMappers
-            // TO-DO refactor
+            // TODO refactor
             String externalAuthenticatorName = secondaryLdapProperties.getProperty("ExternalAuthenticator");
             String externalUserAndRoleMapperName = secondaryLdapProperties.getProperty("ExternalUserAndRoleMapper");
 

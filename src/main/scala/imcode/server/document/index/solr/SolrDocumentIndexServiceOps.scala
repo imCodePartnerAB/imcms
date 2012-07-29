@@ -9,10 +9,10 @@ import com.imcode.imcms.api.I18nLanguage
 import java.util.Date
 import org.apache.solr.common.util.DateUtil
 import java.lang.{InterruptedException, Thread}
-import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import imcode.server.document.DocumentDomainObject
 import imcode.server.document.index.{DocumentQuery, DocumentIndex}
 import imcode.server.user.UserDomainObject
+import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 
 /**
  * SOLr document index operations.
@@ -57,12 +57,12 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     val solrDocs = solrServer.query(new SolrQuery(query.getQuery.toString)).getResults
     new java.util.LinkedList[DocumentDomainObject] |>> { docs =>
       for (solrDocId <- 0.until(solrDocs.size)) {
-        val solrDoc = solrDocs.get(solrDocId.toInt)
+        val solrDoc = solrDocs.get(solrDocId)
         val metaId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
         val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).asInstanceOf[String]
         val doc = documentMapper.getDefaultDocument(metaId, languageCode)
 
-        if (doc != null /* && user can read doc */) {
+        if (doc != null /* && searchingUser.canSearchFor(doc) */) {
           docs.add(doc)
         }
       }

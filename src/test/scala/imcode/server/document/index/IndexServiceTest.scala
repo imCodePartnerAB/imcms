@@ -44,7 +44,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
 
     "create remote SOLr server when Config.solrUrl is set" in  {
       val config = new Config() |>> { c =>
-        c.setSolrHome(new File("ingore"))
+        c.setSolrHome("ingore")
         c.setSolrUrl("http://localhost/solr/imcms")
       }
 

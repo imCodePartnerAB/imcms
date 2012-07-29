@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
@@ -51,10 +50,13 @@ public class Imcms {
     private static File path;
     
     /** Prefs config path relative to deployment path. */
-    private static final String DEFAULT_RELATIVE_PREFS_CONFIG_PATH = "WEB-INF/conf";
+    private static final String DEFAULT_PREFS_CONFIG_PATH = "WEB-INF/conf";
 
     /** SQL scripts directory path relative to deployment path */
-    private static final String DEFAULT_RELATIVE_SQL_SCRIPTS_PATH = "WEB-INF/sql";
+    private static final String DEFAULT_SQL_SCRIPTS_PATH = "WEB-INF/sql";
+
+    /** Embedded solr home directory, elative to deployment path */
+    private static final String DEFAULT_SQLR_HOME = "WEB-INF/solr";
 
     private static Logger logger = Logger.getLogger(Imcms.class);
 
@@ -74,7 +76,8 @@ public class Imcms {
     /** Spring-framework application context. */
     public static ApplicationContext applicationContext;
 
-    private static String sqlScriptsPath = DEFAULT_RELATIVE_SQL_SCRIPTS_PATH;
+    private static String sqlScriptsPath = DEFAULT_SQL_SCRIPTS_PATH;
+    private static String solrHome = DEFAULT_SQLR_HOME;
 
 	/**
      * Users associated with servlet requests.
@@ -142,7 +145,7 @@ public class Imcms {
     }
 
     public static void setPath(File path) {
-        File prefsConfigPath = new File(path, DEFAULT_RELATIVE_PREFS_CONFIG_PATH);
+        File prefsConfigPath = new File(path, DEFAULT_PREFS_CONFIG_PATH);
 
         setPath(path, prefsConfigPath);
     }
@@ -188,15 +191,7 @@ public class Imcms {
         try {
             Properties properties = Prefs.getProperties(SERVER_PROPERTIES_FILENAME);
 
-            String solrHome = StringUtils.trimToEmpty(properties.getProperty("SolrHome"));
-            properties.setProperty(
-                    "SolrHome",
-                    solrHome.isEmpty()
-                            ? "WEB-INF/solr"
-                            : solrHome.indexOf(0) == '/'
-                            ? solrHome
-                            : "/" + solrHome
-            );
+            properties.setProperty("SolrHome", getSolrHome());
 
             return properties;
         } catch ( IOException e ) {
@@ -454,9 +449,6 @@ public class Imcms {
      */
     public static void prepareDatabase() {
         String sqlScriptsPath = getSQLScriptsPath();
-        String sqlScriptsPathReal = (sqlScriptsPath.equals(DEFAULT_RELATIVE_SQL_SCRIPTS_PATH)
-            ? new File(path.getAbsolutePath(), sqlScriptsPath).getAbsolutePath()
-            : sqlScriptsPath);
 
         URL schemaConfFileURL = Imcms.class.getResource("/schema.xml");
 
@@ -467,7 +459,7 @@ public class Imcms {
         DataSource dataSource = (DataSource)getSpringBean("dataSource");
         DB db = new DB(dataSource);
 
-        db.prepare(schema.changeScriptsDir(sqlScriptsPathReal));
+        db.prepare(schema.changeScriptsDir(sqlScriptsPath));
     }
 
     public static ApplicationContext getApplicationContext() {
@@ -499,10 +491,25 @@ public class Imcms {
     }
 
     public static String getSQLScriptsPath() {
-        return sqlScriptsPath;
+        if (path == null) throw new IllegalStateException("Application path is not set.");
+        if (sqlScriptsPath == null) throw new IllegalStateException("SQL scripts path is not set.");
+
+        return sqlScriptsPath.startsWith("/")
+                ? sqlScriptsPath
+                : new File(path.getAbsolutePath(), sqlScriptsPath).getAbsolutePath();
     }
+
 
     public static void setSQLScriptsPath(String sqlScriptsPath) {
         Imcms.sqlScriptsPath = sqlScriptsPath;
+    }
+
+    public static String getSolrHome() {
+        if (path == null) throw new IllegalStateException("Application path is not set.");
+        if (solrHome == null) throw new IllegalStateException("Embedded SOLr home is not set.");
+
+        return solrHome.startsWith("/")
+                ? solrHome
+                : new File(path.getAbsolutePath(), solrHome).getAbsolutePath();
     }
 }

@@ -57,7 +57,7 @@ public class Config {
      * Embedded SOLr home - absolute path.
      * The value is set manually at the service startup.
      */
-    private File solrHome;
+    private String solrHome;
 
     private String loginPasswordEncryptionSalt;
     private boolean loginPasswordEncryptionEnabled;
@@ -275,11 +275,11 @@ public class Config {
         this.solrUrl = StringUtils.trimToNull(solrUrl);
     }
 
-    public File getSolrHome() {
+    public String getSolrHome() {
         return solrHome;
     }
 
-    public void setSolrHome(File solrHome) {
+    public void setSolrHome(String solrHome) {
         this.solrHome = solrHome;
     }
 

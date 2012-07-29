@@ -175,8 +175,7 @@
         <!-- language code - i.e en, se -->
         <field name="language" type="string" indexed="true" stored="true" required="true"/>
 
-        <field name="meta_id" type="string" indexed="true" stored="true" required="true"/>
-        <field name="meta_id_lexicographic" type="int" indexed="true" stored="false"/>
+        <field name="meta_id" type="int" indexed="true" stored="true" required="true"/>
         <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="meta_headline" type="string" indexed="true" stored="false"/>
         <field name="meta_headline_keyword" type="keyword_lowercase" indexed="true" stored="false"/>

@@ -66,9 +66,7 @@ public interface DocumentIndex {
      */
     void removeDocuments(int metaId) throws IndexException;
 
-    @Deprecated
     void indexDocument(DocumentDomainObject document) throws IndexException;
 
-    @Deprecated
     void removeDocument(DocumentDomainObject document) throws IndexException;
 }

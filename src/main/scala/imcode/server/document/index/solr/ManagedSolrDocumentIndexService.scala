@@ -1,13 +1,13 @@
 package imcode.server.document.index.solr
 
-import com.imcode._
-import imcode.server.user.UserDomainObject
-import imcode.server.document.DocumentDomainObject
-import org.apache.solr.client.solrj.{SolrServer, SolrQuery}
+import _root_.com.imcode._
+import _root_.imcode.server.user.UserDomainObject
+import _root_.imcode.server.document.DocumentDomainObject
+import _root_.imcode.server.document.index.DocumentQuery
+import org.apache.solr.client.solrj.{SolrServer}
 import java.util.concurrent.{Callable, LinkedBlockingQueue}
 import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
 import java.lang.{InterruptedException, Thread}
-import imcode.server.document.index.DocumentQuery
 
 /**
  * Implements all SolrDocumentIndexService functionality.
@@ -89,7 +89,7 @@ class ManagedSolrDocumentIndexService(
               // publishFutureTask
               // indexRebuildFutureTask.run()
               serviceOps.rebuildIndex(solrServerWriter) { progress =>
-                //
+
               }
 
               Threads.spawnDaemon {

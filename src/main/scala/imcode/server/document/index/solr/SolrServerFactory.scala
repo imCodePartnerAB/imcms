@@ -14,14 +14,14 @@ object SolrServerFactory extends Log4jLoggerSupport {
   }
 
 
-  def createEmbeddedSolrServer(solrHome: File, recreateDataDir: Boolean = false): EmbeddedSolrServer with SolrServerShutdown = {
+  def createEmbeddedSolrServer(solrHome: String, recreateDataDir: Boolean = false): EmbeddedSolrServer with SolrServerShutdown = {
     if (recreateDataDir) {
       new File(solrHome, "core/data") |> { dataDir =>
         if (dataDir.exists() && !dataDir.delete()) sys.error("Unable to delete SOLr data dir %s.".format(dataDir))
       }
     }
 
-    new CoreContainer(solrHome.getAbsolutePath, new File(solrHome, "solr.xml")) |> { coreContainer =>
+    new CoreContainer(solrHome, new File(solrHome, "solr.xml")) |> { coreContainer =>
       new EmbeddedSolrServer(coreContainer, "core") with SolrServerShutdown
     }
   }

@@ -11,13 +11,7 @@ import imcode.server.document.index.{DocumentIndex, DocumentIndexService, Docume
  * This implementation of {@link DocumentIndexService} routes all calls to the wrapped instance of {@link SolrDocumentIndexService}.
  */
 class SolrDocumentIndexServiceWrapper(service: SolrDocumentIndexService) extends DocumentIndexService with Log4jLoggerSupport {
-  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
-
-
-          }
-        }
-    }
-  }
+  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = service.search(query, searchingUser)
 
   def indexDocuments(docId: Int) {
     service.requestIndexUpdate(SolrDocumentIndexService.AddDocsToIndex(docId))

@@ -22,7 +22,7 @@
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
-        <jetty.version>8.1.2.v20120308</jetty.version>
+        <jetty.version>8.1.5.v20120716</jetty.version>
         <jetty.contextPath>/${project.artifactId}-${project.version}</jetty.contextPath>
 
         <build.webapp.dir>${project.build.directory}/${project.build.finalName}</build.webapp.dir>

@@ -22,7 +22,7 @@ class RemoteSolrDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, 
     new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops, _ => ())
   }
 
-  def search(query: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
+  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
     serviceRef.get().search(query, searchingUser)
 
   def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest) {

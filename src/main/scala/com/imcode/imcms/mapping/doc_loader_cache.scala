@@ -4,7 +4,7 @@ package mapping
 
 import _root_.net.sf.ehcache.config.CacheConfiguration
 import _root_.net.sf.ehcache.{CacheManager, Element, Cache}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import imcode.server.document.DocumentDomainObject
 import imcms.api.{DocumentVersionInfo, Meta, I18nLanguage}
 
@@ -64,7 +64,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
   /**
    * @return working doc or null if doc does not exists
    */
-  def getWorkingDoc(docId: DocId, language: I18nLanguage) = workingDocs.getOrLoad(DocCacheKey(docId, language.getId)) {
+  def getWorkingDoc(docId: DocId, language: I18nLanguage): DocumentDomainObject = workingDocs.getOrLoad(DocCacheKey(docId, language.getId)) {
     getMeta(docId) match {
       case null => null
       case meta =>
@@ -78,7 +78,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
   /**
    * @return default doc or null if doc does not exists
    */
-  def getDefaultDoc(docId: DocId, language: I18nLanguage) = defaultDocs.getOrLoad(DocCacheKey(docId, language.getId)) {
+  def getDefaultDoc(docId: DocId, language: I18nLanguage): DocumentDomainObject = defaultDocs.getOrLoad(DocCacheKey(docId, language.getId)) {
     getMeta(docId) match {
       case null => null
       case meta =>
@@ -108,7 +108,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
     versionInfos.remove(docId)
 
     for {
-      language <- languages
+      language <- languages.asScala
       key = DocCacheKey(docId, language.getId)
     } {
       workingDocs.remove(key)
@@ -129,7 +129,7 @@ case class CacheWrapper[K >: Null, V >: Null](cache: Cache) {
   // Option(cache.get(key)).map(_.getObjectValue).orNull.asInstanceOf[V]
   def get(key: K): V = cache.get(key) |> {
     case null => null
-    case e => e.getObjectKey
+    case e => e.getObjectValue
   } |> { _.asInstanceOf[V] }
 
   def put(key: K, value: V): Unit = cache.put(new Element(key, value))
