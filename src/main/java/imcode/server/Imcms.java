@@ -244,6 +244,10 @@ public class Imcms {
 
         Prefs.flush();
 
+        if (services != null) {
+            services.getDocumentMapper().getDocumentIndex().shutdown();
+        }
+
         services = null;
 
         for (ImcmsListener listener: listeners) {

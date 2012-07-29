@@ -1,9 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.DocIdentityCleanerVisitor;
-import imcode.server.Config;
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
+import imcode.server.*;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -13,6 +11,7 @@ import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.DocumentIndexService;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -49,7 +48,7 @@ public class DocumentMapper implements DocumentGetter {
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
     private Database database;
-    private DocumentIndex documentIndex;
+    private DocumentIndexService documentIndexService;
 
     private ImcmsServices imcmsServices;
 
@@ -84,7 +83,7 @@ public class DocumentMapper implements DocumentGetter {
         documentLoader = services.getComponent(DocumentLoader.class);
         documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
 
-        documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, Imcms.getI18nSupport().getLanguages(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getI18nSupport().getLanguages(), documentCacheMaxSize);
 
         nativeQueriesDao = services.getComponent(NativeQueriesDao.class);
         categoryMapper = services.getComponent(CategoryMapper.class);
@@ -235,7 +234,7 @@ public class DocumentMapper implements DocumentGetter {
         I18nLanguage language = docClone.getLanguage();
 
         if (language == null) {
-            language = Imcms.getI18nSupport().getDefaultLanguage();
+            language = imcmsServices.getI18nSupport().getDefaultLanguage();
             docClone.setLanguage(language);
         }
 
@@ -391,7 +390,7 @@ public class DocumentMapper implements DocumentGetter {
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
-        for (I18nLanguage language : Imcms.getI18nSupport().getLanguages()) {
+        for (I18nLanguage language : imcmsServices.getI18nSupport().getLanguages()) {
             DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(docId, DocumentVersion.WORKING_VERSION_NO, language);
             docs.add(doc);
         }
@@ -432,12 +431,12 @@ public class DocumentMapper implements DocumentGetter {
 
     public void invalidateDocument(int docId) {
         documentLoaderCachingProxy.removeDocFromCache(docId);
-        documentIndex.indexDocuments(docId);
+        documentIndexService.indexDocuments(docId);
     }
 
 
-    public DocumentIndex getDocumentIndex() {
-        return documentIndex;
+    public DocumentIndexService getDocumentIndex() {
+        return documentIndexService;
     }
 
     public List<Integer[]> getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
@@ -470,7 +469,7 @@ public class DocumentMapper implements DocumentGetter {
 
         documentSaver.getMetaDao().deleteDocument(document.getId());
         document.accept(new DocumentDeletingVisitor());
-        documentIndex.removeDocument(document);
+        documentIndexService.removeDocument(document);
 
         documentLoaderCachingProxy.removeDocFromCache(document.getId());
     }
@@ -690,7 +689,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public DocumentDomainObject getDefaultDocument(int docId) {
-        return getDefaultDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+        return getDefaultDocument(docId, imcmsServices.getI18nSupport().getDefaultLanguage());
     }
 
 
@@ -700,7 +699,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public DocumentDomainObject getWorkingDocument(int docId) {
-        return getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+        return getWorkingDocument(docId, imcmsServices.getI18nSupport().getDefaultLanguage());
     }
 
 
@@ -710,7 +709,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public DocumentDomainObject getCustomDocument(int docId, int docVersionNo) {
-        return getCustomDocument(docId, docVersionNo, Imcms.getI18nSupport().getDefaultLanguage());
+        return getCustomDocument(docId, docVersionNo, imcmsServices.getI18nSupport().getDefaultLanguage());
     }
 
 
@@ -871,8 +870,8 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public void setDocumentIndex(DocumentIndex documentIndex) {
-        this.documentIndex = documentIndex;
+    public void setDocumentIndex(DocumentIndexService documentIndexService) {
+        this.documentIndexService = documentIndexService;
     }
 
 
@@ -885,7 +884,7 @@ public class DocumentMapper implements DocumentGetter {
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
         I18nLanguage language = callback != null
                 ? callback.getParams().language()
-                : Imcms.getI18nSupport().getDefaultLanguage();
+                : imcmsServices.getI18nSupport().getDefaultLanguage();
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 

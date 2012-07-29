@@ -5,7 +5,7 @@ import imcode.server.user.UserDomainObject
 import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.SolrQuery
 import java.util.LinkedList
-import imcode.server.document.index.{DocumentIndex, DocumentIndexService, DocumentQuery}
+import imcode.server.document.index.{DocumentIndexService, DocumentQuery}
 
 /**
  * This implementation of {@link DocumentIndexService} routes all calls to the wrapped instance of {@link SolrDocumentIndexService}.

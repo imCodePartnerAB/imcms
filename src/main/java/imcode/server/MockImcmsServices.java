@@ -2,6 +2,7 @@ package imcode.server;
 
 import com.imcode.imcms.api.I18nSupport;
 import imcode.server.document.TemplateMapper;
+import imcode.server.document.index.DocumentIndexService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;

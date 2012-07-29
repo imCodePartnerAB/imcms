@@ -267,12 +267,12 @@ public class DefaultImcmsServices implements ImcmsServices {
     // todo: Search Terms Logging: Do not parse and write query term into db every time - queue and write in a separate worker
     private void initDocumentMapper() {
         documentMapper = new DocumentMapper(this, this.getDatabase());
+
         DocumentIndex documentIndex = DocumentIndexServiceFactory.createService(this);
+        documentMapper.setDocumentIndex(
+                new LoggingDocumentIndex(database,
+                        new PhaseQueryFixingDocumentIndex(documentIndex)));
 
-        documentMapper.setDocumentIndex(documentIndex);
-
-        documentMapper.setDocumentIndex(new LoggingDocumentIndex(database,
-                new PhaseQueryFixingDocumentIndex(documentIndex)));
     }
 
     private void initTemplateMapper() {
