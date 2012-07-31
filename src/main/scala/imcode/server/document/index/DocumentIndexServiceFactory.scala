@@ -3,7 +3,6 @@ package imcode.server.document.index
 import com.imcode._
 import com.imcode.Log4jLoggerSupport
 import _root_.imcode.server.ImcmsServices
-import _root_.imcode.server.document.index.DocumentIndex
 import _root_.imcode.server.document.index.solr._
 
 /**

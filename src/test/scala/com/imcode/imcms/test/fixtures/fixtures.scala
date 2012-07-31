@@ -32,6 +32,7 @@ object DocFX {
     doc.setKeywords(0.until(10).map(n => "keyword_%d_%d".format(docId, n)).:+("keyword %d %d".format(docId, 10)).toSet.asJava)
     doc.setAlias("alias_%d" format docId)
     doc.setTemplateName("template_%d" format docId)
+    doc.setSearchDisabled(false)
 
     // only roles are indexed, permission sets are ignored
     doc.getMeta.getRoleIdToDocumentPermissionSetTypeMappings |> { m =>

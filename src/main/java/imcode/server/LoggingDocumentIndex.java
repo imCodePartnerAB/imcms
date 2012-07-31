@@ -1,9 +1,6 @@
 package imcode.server;
 
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.DocumentIndexWrapper;
-import imcode.server.document.index.DocumentQuery;
-import imcode.server.document.index.IndexException;
+import imcode.server.document.index.*;
 import imcode.server.user.UserDomainObject;
 
 import java.sql.Timestamp;
@@ -29,7 +26,7 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
     private final Database database;
 
-    public LoggingDocumentIndex(Database database, DocumentIndex documentIndex) {
+    public LoggingDocumentIndex(Database database, DocumentIndexService documentIndex) {
         super(documentIndex);
         this.database = database;
     }

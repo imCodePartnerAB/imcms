@@ -187,8 +187,8 @@ class UserSearchForm extends ImcmsServicesSupport {
   }
   
   def getState() = UserSearchFormState(
-    when(ui.chkText.checked)(ui.txtText.trim),
-    when(ui.chkRoles.checked)(ui.tcsRoles.value.toSet),
+    whenOpt(ui.chkText.checked)(ui.txtText.trim),
+    whenOpt(ui.chkRoles.checked)(ui.tcsRoles.value.toSet),
     ui.chkShowInactive.checked
   )  
 }

@@ -5,11 +5,11 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.List;
 
-public class DocumentIndexWrapper implements DocumentIndex {
+public class DocumentIndexWrapper implements DocumentIndexService {
 
-    private final DocumentIndex index;
+    private final DocumentIndexService index;
 
-    public DocumentIndexWrapper(DocumentIndex index) {
+    public DocumentIndexWrapper(DocumentIndexService index) {
         this.index = index ;
     }
 
@@ -36,5 +36,10 @@ public class DocumentIndexWrapper implements DocumentIndex {
 
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return index.search(query, searchingUser) ;
+    }
+
+    @Override
+    public void shutdown() {
+        index.shutdown();
     }
 }

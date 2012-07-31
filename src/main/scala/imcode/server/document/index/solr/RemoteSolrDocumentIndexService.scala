@@ -7,6 +7,8 @@ import imcode.server.document.DocumentDomainObject
 import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.index.DocumentQuery
 import imcode.server.document.index.solr.SolrDocumentIndexService.IndexUpdateRequest
+import org.apache.solr.common.params.SolrParams
+import org.apache.solr.client.solrj.response.QueryResponse
 
 // ??? todo: wait n seconds before plugging in a new ManagedServer | Ping ???
 class RemoteSolrDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, ops: SolrDocumentIndexServiceOps)
@@ -22,8 +24,8 @@ class RemoteSolrDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, 
     new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops, _ => ())
   }
 
-  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
-    serviceRef.get().search(query, searchingUser)
+  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
+    serviceRef.get().search(solrParams, searchingUser)
 
   def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest) {
     serviceRef.get().requestIndexUpdate(request)

@@ -6,6 +6,8 @@ import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.DocumentQuery
 import java.util.Collections
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
+import org.apache.solr.common.params.SolrParams
+import org.apache.solr.client.solrj.response.QueryResponse
 
 
 /**
@@ -26,7 +28,7 @@ class EmbeddedSolrDocumentIndexService(solrHome: String, serviceOps: SolrDocumen
           shutdownManagedService(service)
 
           if (!shutdownRef.get()) {
-            newManagedService() |> { newService =>
+            newManagedService(recreateDataDir = true) |> { newService =>
               managedServiceRef.set(newService)
               newService.requestIndexRebuild()
             }
@@ -36,11 +38,11 @@ class EmbeddedSolrDocumentIndexService(solrHome: String, serviceOps: SolrDocumen
     }
   }
 
-  newManagedService() |> managedServiceRef.set
+  newManagedService(recreateDataDir = false) |> managedServiceRef.set
 
 
-  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
-    managedServiceRef.get().search(query, searchingUser)
+  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
+    managedServiceRef.get().search(solrParams, searchingUser)
 
   def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest) {
     managedServiceRef.get().requestIndexUpdate(request)
@@ -57,8 +59,8 @@ class EmbeddedSolrDocumentIndexService(solrHome: String, serviceOps: SolrDocumen
   }
 
 
-  private def newManagedService(): ManagedSolrDocumentIndexService = {
-    val solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome)
+  private def newManagedService(recreateDataDir: Boolean): ManagedSolrDocumentIndexService = {
+    val solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome, recreateDataDir)
 
     new ManagedSolrDocumentIndexService(solrServer, solrServer, serviceOps, managedServiceErrorHandler)
   }
@@ -77,7 +79,7 @@ class EmbeddedSolrDocumentIndexService(solrHome: String, serviceOps: SolrDocumen
  */
 object NoOpSolrDocumentIndexService extends SolrDocumentIndexService {
 
-  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = Collections.emptyList()
+  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] = Collections.emptyList()
 
   def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest) {}
 

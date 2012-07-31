@@ -111,7 +111,7 @@ class DocSearch(val docsContainer: DocsContainer) {
           }
         }
 
-        when(start.isDefined || end.isDefined) {
+        whenOpt(start.isDefined || end.isDefined) {
           DocSearchRange(start, end)
         }
       }
@@ -555,24 +555,24 @@ class DocBasicSearchForm {
 
   // todo: return Error Either State
   def getState() = DocBasicSearchFormState(
-    range = when(ui.chkRange.isChecked) {
+    range = whenOpt(ui.chkRange.isChecked) {
       DocSearchRange(
         condOpt(ui.lytRange.txtStart.trim) { case value if value.nonEmpty => value.toInt },
         condOpt(ui.lytRange.txtEnd.trim) { case value if value.nonEmpty => value.toInt }
       )
     },
 
-    text = when(ui.chkText.isChecked)(ui.txtText.trim),
+    text = whenOpt(ui.chkText.isChecked)(ui.txtText.trim),
 
-    docType = when(ui.chkType.isChecked) {
+    docType = whenOpt(ui.chkType.isChecked) {
       Set(
-        when(ui.lytType.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
-        when(ui.lytType.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
-        when(ui.lytType.chkHtml.isChecked) { DocumentTypeDomainObject.HTML }
+        whenOpt(ui.lytType.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
+        whenOpt(ui.lytType.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
+        whenOpt(ui.lytType.chkHtml.isChecked) { DocumentTypeDomainObject.HTML }
       ).flatten
     },
 
-    advanced = when(ui.chkAdvanced.isChecked)(ui.lytAdvanced.cbTypes.value)
+    advanced = whenOpt(ui.chkAdvanced.isChecked)(ui.lytAdvanced.cbTypes.value)
   )
 }
 

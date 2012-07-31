@@ -3,9 +3,6 @@ package imcode.server.document.index.solr
 import com.imcode._
 import com.imcode.Log4jLoggerSupport
 import org.apache.solr.common.params.SolrParams
-import org.apache.solr.client.solrj.{SolrResponse}
-import org.apache.solr.client.solrj.response.QueryResponse
-import imcode.server.document.index.DocumentQuery
 import imcode.server.user.UserDomainObject
 import imcode.server.document.DocumentDomainObject
 
@@ -16,8 +13,7 @@ import imcode.server.document.DocumentDomainObject
 abstract class SolrDocumentIndexService extends Log4jLoggerSupport {
   def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest)
   def requestIndexRebuild()
-  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject]
-  //def search(solrParams: SolrParams): QueryResponse
+  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject]
   def getMonitor(): SolrDocumentIndexServiceMonitor = ???
   def shutdown()
 }

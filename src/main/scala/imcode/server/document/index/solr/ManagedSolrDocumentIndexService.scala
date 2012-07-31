@@ -8,6 +8,8 @@ import org.apache.solr.client.solrj.{SolrServer}
 import java.util.concurrent.{Callable, LinkedBlockingQueue}
 import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
 import java.lang.{InterruptedException, Thread}
+import org.apache.solr.common.params.SolrParams
+import org.apache.solr.client.solrj.response.QueryResponse
 
 /**
  * Implements all SolrDocumentIndexService functionality.
@@ -211,12 +213,12 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
+  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
     try {
-      serviceOps.search(solrServerReader, query, searchingUser)
+      serviceOps.search(solrServerReader, solrParams, searchingUser)
     } catch {
       case e =>
-        logger.error("Search error. Query: %s, searchingUser: %s".format(query, searchingUser), e)
+        logger.error("Search error. solrParams: %s, searchingUser: %s".format(solrParams, searchingUser), e)
         Threads.spawnDaemon {
           serviceErrorHandler(ManagedSolrDocumentIndexService.IndexSearchError(ManagedSolrDocumentIndexService.this, e))
         }

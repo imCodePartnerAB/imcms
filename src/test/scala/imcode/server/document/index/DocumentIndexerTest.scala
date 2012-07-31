@@ -1,6 +1,6 @@
 package imcode.server.document.index
 
-import com.imcode.{when => _, _}
+import com.imcode._
 import junit.framework.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

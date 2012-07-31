@@ -1,17 +1,26 @@
-package imcode.server.document.index.solr
+package imcode.server.document.index
 
 import com.imcode._
 import imcode.server.user.UserDomainObject
 import imcode.server.document.DocumentDomainObject
+import imcode.server.document.index.solr.SolrDocumentIndexService
 import org.apache.solr.client.solrj.SolrQuery
-import java.util.LinkedList
-import imcode.server.document.index.{DocumentIndexService, DocumentQuery}
 
 /**
- * This implementation of {@link DocumentIndexService} routes all calls to the wrapped instance of {@link SolrDocumentIndexService}.
+ * This implementation of {@link DocumentIndexService} transforms and routes all calls
+ * to the wrapped instance of {@link SolrDocumentIndexService}.
  */
 class SolrDocumentIndexServiceWrapper(service: SolrDocumentIndexService) extends DocumentIndexService with Log4jLoggerSupport {
-  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = service.search(query, searchingUser)
+  // todo: extract search from query
+  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
+    val queryString = query.getQuery.toString
+
+    if (logger.isDebugEnabled) {
+      logger.debug("Searching using query %s.".format(queryString))
+    }
+
+    service.search(new SolrQuery(queryString), searchingUser)
+  }
 
   def indexDocuments(docId: Int) {
     service.requestIndexUpdate(SolrDocumentIndexService.AddDocsToIndex(docId))
@@ -21,12 +30,10 @@ class SolrDocumentIndexServiceWrapper(service: SolrDocumentIndexService) extends
     service.requestIndexUpdate(SolrDocumentIndexService.DeleteDocsFromIndex(docId))
   }
 
-  @Deprecated
   def indexDocument(document: DocumentDomainObject) {
     indexDocuments(document.getId)
   }
 
-  @Deprecated
   def removeDocument(document: DocumentDomainObject) {
     removeDocuments(document.getId)
   }

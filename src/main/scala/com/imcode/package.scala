@@ -1,5 +1,6 @@
 package com
 
+import _root_.imcode.server.document.index.solr.SolrDocumentIndexService
 import scala.util.control.{Exception => Ex}
 
 package object imcode {
@@ -51,7 +52,7 @@ package object imcode {
   //               "foo" |> opt
   def opt[A](value: A) = Option(value)
 
-  def when[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
+  def whenOpt[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
 
   def doto[A](exp: A, exps: A*)(f: A => Any) {
     exp +: exps foreach f
@@ -113,7 +114,7 @@ package object imcode {
   }
 
   object ManagedResource {
-    implicit def stManagedResource[R <: { def close() }](r: R) = new ManagedResource[R] {
+    implicit def stCloseManagedResource[R <: { def close() }](r: R) = new ManagedResource[R] {
       def close(resource: R) { resource.close() }
       override def toString = "ManagedResource[_ <: def close()]"
     }
@@ -122,6 +123,16 @@ package object imcode {
       def close(resource: R) { resource.close() }
       override def toString = "ManagedResource[_ <: java.io.Closeable]"
     }
+
+    implicit def ssManagedResource[R <: SolrDocumentIndexService] = new ManagedResource[R] {
+      def close(resource: R) { resource.shutdown() }
+      override def toString = "ManagedResource[_ <: SolrDocumentIndexService]"
+    }
+
+//    implicit def stShutdownManagedResource[R <: { def shutdown() }](r: R) = new ManagedResource[R] {
+//      def close(resource: R) { resource.shutdown() }
+//      override def toString = "ManagedResource[_ <: def shutdown()]"
+//    }
   }
 
 

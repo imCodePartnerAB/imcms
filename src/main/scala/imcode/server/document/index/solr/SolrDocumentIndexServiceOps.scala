@@ -10,9 +10,10 @@ import java.util.Date
 import org.apache.solr.common.util.DateUtil
 import java.lang.{InterruptedException, Thread}
 import imcode.server.document.DocumentDomainObject
-import imcode.server.document.index.{DocumentQuery, DocumentIndex}
+import imcode.server.document.index.{DocumentIndex}
 import imcode.server.user.UserDomainObject
-import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
+import org.apache.solr.client.solrj.{SolrServer}
+import org.apache.solr.common.params.SolrParams
 
 /**
  * SOLr document index operations.
@@ -53,8 +54,12 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
 
   def mkSolrDocsDeleteQuery(metaId: Int): String = "%s:%d".format(DocumentIndex.FIELD__META_ID, metaId)
 
-  def search(solrServer: SolrServer, query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
-    val solrDocs = solrServer.query(new SolrQuery(query.getQuery.toString)).getResults
+  def search(solrServer: SolrServer, solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
+    if (logger.isDebugEnabled) {
+      logger.debug("Searching using solrParams: %s, searchingUser: %s.".format(solrParams, searchingUser))
+    }
+
+    val solrDocs = solrServer.query(solrParams).getResults
     new java.util.LinkedList[DocumentDomainObject] |>> { docs =>
       for (solrDocId <- 0.until(solrDocs.size)) {
         val solrDoc = solrDocs.get(solrDocId)
@@ -62,7 +67,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
         val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).asInstanceOf[String]
         val doc = documentMapper.getDefaultDocument(metaId, languageCode)
 
-        if (doc != null /* && searchingUser.canSearchFor(doc) */) {
+        if (doc != null && searchingUser.canSearchFor(doc)) {
           docs.add(doc)
         }
       }

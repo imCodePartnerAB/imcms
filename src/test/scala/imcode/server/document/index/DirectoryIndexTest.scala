@@ -11,7 +11,7 @@ import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
 import com.imcode.imcms.dao.{TextDao, ImageDao}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.imcode.{when => _, _}
+import com.imcode._
 import org.mockito.stubbing.Answer
 import imcode.server.document.CategoryDomainObject
 import org.mockito.invocation.InvocationOnMock

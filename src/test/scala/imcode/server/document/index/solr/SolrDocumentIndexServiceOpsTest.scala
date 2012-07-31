@@ -1,6 +1,6 @@
 package imcode.server.document.index.solr
 
-import com.imcode.{when => _, _}
+import com.imcode._
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

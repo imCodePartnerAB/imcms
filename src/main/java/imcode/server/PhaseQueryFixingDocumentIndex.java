@@ -1,11 +1,7 @@
 package imcode.server;
 
 import imcode.server.document.LifeCyclePhase;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.DocumentIndexWrapper;
-import imcode.server.document.index.DocumentQuery;
-import imcode.server.document.index.IndexException;
-import imcode.server.document.index.SimpleDocumentQuery;
+import imcode.server.document.index.*;
 import imcode.server.user.UserDomainObject;
 
 import java.util.Date;
@@ -24,7 +20,7 @@ import org.apache.lucene.search.TermQuery;
  */
 public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
 
-    public PhaseQueryFixingDocumentIndex(DocumentIndex index) {
+    public PhaseQueryFixingDocumentIndex(DocumentIndexService index) {
         super(index);
     }
 

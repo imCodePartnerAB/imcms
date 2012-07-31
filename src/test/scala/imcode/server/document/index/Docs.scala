@@ -1,6 +1,6 @@
 package imcode.server.document.index
 
-import com.imcode.{when => _, _}
+import com.imcode._
 import scala.collection.JavaConverters._
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.user.RoleId
@@ -24,6 +24,7 @@ import java.util.LinkedList
 class DocIndexingMocksSetup {
   // refactor out
   type DocId = Int
+  type LanguageCode = String
 
   case class ParentDoc(docId: Int, menuNo: Int)
 
@@ -31,7 +32,7 @@ class DocIndexingMocksSetup {
   private val categoryMapperMock = mock[CategoryMapper]
   private val servicesMock = mock[ImcmsServices]
 
-  private val docs = MMap.empty[DocId, MMap[I18nLanguage, DocumentDomainObject]].withDefaultValue(MMap.empty.withDefaultValue(null))
+  private val docs = MMap.empty[DocId, MMap[LanguageCode, DocumentDomainObject]].withDefaultValue(MMap.empty.withDefaultValue(null))
   private val categories = MMap.empty[DocId, CategoryDomainObject]
   private val parentDocs = MMap.empty[DocId, Seq[ParentDoc]].withDefaultValue(Seq.empty)
 
@@ -51,7 +52,13 @@ class DocIndexingMocksSetup {
 
   when(documentMapperMock.getDefaultDocument(anyInt, any[I18nLanguage])).thenAnswer { args: Array[AnyRef] =>
     args match {
-      case Array(id: JInteger, language: I18nLanguage) => docs(id)(language)
+      case Array(id: JInteger, language: I18nLanguage) => docs(id)(language.getCode)
+    }
+  }
+
+  when(documentMapperMock.getDefaultDocument(anyInt, any[LanguageCode])).thenAnswer { args: Array[AnyRef] =>
+    args match {
+      case Array(id: JInteger, languageCode: String) => docs(id)(languageCode)
     }
   }
 
@@ -88,8 +95,8 @@ class DocIndexingMocksSetup {
   }
 
   def addDocument(doc: DocumentDomainObject) = this |>> { _ =>
-    docs.getOrElseUpdate(doc.getId,  MMap.empty[I18nLanguage, DocumentDomainObject].withDefaultValue(null)) |> { langToDoc =>
-      langToDoc.put(doc.getLanguage, doc)
+    docs.getOrElseUpdate(doc.getId,  MMap.empty[LanguageCode, DocumentDomainObject].withDefaultValue(null)) |> { langToDoc =>
+      langToDoc.put(doc.getLanguage.getCode, doc)
     }
   }
 
