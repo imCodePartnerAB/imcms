@@ -166,8 +166,13 @@
         <!-- ??? virtual field ??? - phase -->
 
         <!--
-            Unique field, contains of meta_id and language code combination delimited with underscore (ex: 1001_en).
-            Latter may be extended to include doc version no.
+            Unique field, contains of meta_id, version no and language code combination delimited with underscore.
+            Currently only default version (no eq 0) is indexed.
+            ex: 1001_0_en, 1001_0_se.
+
+            In multi-version support index will combine document's meta and content.
+            Meta index id field value will eq meta id value (1001, 1002, ...)
+            Content index id field value remain the same (1001_0_en, 1001_1_en, ...)
         -->
         <field name="id" type="string" indexed="true" stored="true" required="true"/>
         <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" required="true"/>
@@ -191,19 +196,6 @@
         <field name="archived_datetime" type="date" indexed="true" stored="false"/>
         <!-- publication status -->
         <field name="status" type="int" indexed="true" stored="false"/>
-        <!-- text-doc field -->
-        <field name="template" type="keyword_lowercase" indexed="true" stored="false"/>
-        <!-- text-doc field -->
-        <field name="nonstripped_text" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
-        <!--text-doc field + also used as prefix + textNo to index the same text field -->
-        <!-- todo: solr strip ???: HTMLStripCharFilterFactory -->
-        <field name="text" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
-        <!--text-doc field-->
-        <field name="child_id" type="int" indexed="false" stored="true" multiValued="true"/>
-        <!-- text-doc-field -->
-        <field name="has_children" type="boolean" indexed="true" stored="false"/>
-        <!--text-doc field-->
-        <field name="image_link_url" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
         <!-- file-doc field -->
         <field name="mime_type" type="keyword_lowercase" indexed="true" stored="false"/>
         <!-- category name -->
@@ -217,10 +209,24 @@
         <field name="has_parents" type="boolean" indexed="true" stored="false"/>
         <field name="alias" type="keyword_lowercase" indexed="true" stored="false"/>
 
-        <!-- ??? todo: property name as field name -> property value as field value ???
-        <dynamicField name="*" type="keyword_lowercase" indexed="true" stored="false"/>
+        <!--                 -->
+        <!-- text-doc fields -->
+        <!--                 -->
+        <field name="template" type="keyword_lowercase" indexed="true" stored="false"/>
+        <field name="nonstripped_text" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
+        <!--text-doc field + also used as prefix + textNo to index the same text field -->
+        <!-- todo: solr strip ???: HTMLStripCharFilterFactory -->
+        <field name="text" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
+        <field name="child_id" type="int" indexed="false" stored="true" multiValued="true"/>
+        <field name="has_children" type="boolean" indexed="true" stored="false"/>
+        <field name="image_link_url" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
+
+        <!--
+            Document property: property name as field name -> property value as field value.
+            <dynamicField name="*" type="keyword_lowercase" indexed="true" stored="false"/>
         -->
         <dynamicField name="property.*" type="keyword_lowercase" indexed="true" stored="false"/>
+        <!-- text-doc field, name: text+textNo (including text in a loop) -->
         <dynamicField name="text*" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
     </fields>
 

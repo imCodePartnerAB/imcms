@@ -26,7 +26,7 @@ import imcode.util.io.FileInputStreamSource
 import imcode.server.document.textdocument.{MenuDomainObject, TextDocumentDomainObject, ImageDomainObject, TextDomainObject}
 import imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexer}
 import com.imcode.imcms.api.{I18nLanguage, I18nMeta, DocumentVersion, DocumentVersionInfo}
-import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
+import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX, LanguageFX}
 
 @RunWith(classOf[JUnitRunner])
 class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
@@ -35,33 +35,7 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
 
   val defaultTextDocEn = DocFX.mkDefaultTextDocEn
   val docIndexer: DocumentIndexer = new DocIndexingMocksSetup |>> { fx =>
-    fx.addCategories(
-      new CategoryDomainObject |>> { c =>
-        c.setId(1)
-        c.setName("category-one")
-        c.setType(new CategoryTypeDomainObject(1, "category-type-one", 0, false))
-      },
-      new CategoryDomainObject |>> { c =>
-        c.setId(2)
-        c.setName("category-two")
-        c.setType(new CategoryTypeDomainObject(2, "category-type-two", 0, false))
-      },
-      new CategoryDomainObject |>> { c =>
-        c.setId(3)
-        c.setName("category-three")
-        c.setType(new CategoryTypeDomainObject(3, "category-type-three", 0, false))
-      },
-      new CategoryDomainObject |>> { c =>
-        c.setId(4)
-        c.setName("category-four")
-        c.setType(new CategoryTypeDomainObject(4, "category-type-four", 0, false))
-      },
-      new CategoryDomainObject |>> { c =>
-        c.setId(5)
-        c.setName("category-five")
-        c.setType(new CategoryTypeDomainObject(5, "category-type-five", 0, false))
-      }
-    )
+    fx.addCategories(CategoryFX.mkCategories(): _*)
 
     fx.addParentDocumentsFor(defaultTextDocEn.getId,
       fx.ParentDoc(0, 0),
@@ -128,22 +102,22 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       assertEquals("FIELD__ALIAS", defaultTextDocEn.getAlias, indexDoc.getFieldValue(DocumentIndex.FIELD__ALIAS))
 
       assertEquals("FIELD__CATEGORY_ID",
-        Set(1, 2, 3, 4, 5),
+        defaultTextDocEn.getCategoryIds.asScala,
         indexedCategoriesIds
       )
 
       assertEquals("FIELD__CATEGORY",
-        Set("category-one", "category-two", "category-three", "category-four", "category-five"),
+        0 until 10 map {id => "category_" + id} toSet,
         indexedCategoriesNames
       )
 
       assertEquals("FIELD__CATEGORY_TYPE_ID",
-        Set(1, 2, 3, 4, 5),
+        0 until 10 toSet,
         indexedCategoriesTypesIds
       )
 
       assertEquals("FIELD__CATEGORY_TYPE",
-        Set("category-type-one", "category-type-two", "category-type-three", "category-type-four", "category-type-five"),
+        0 until 10 map {id => "category_type_" + id} toSet,
         indexedCategoriesTypesNames
       )
 
@@ -154,13 +128,20 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
 //        Set("property_1", "property_2", "property_3"),
 //      )
 
-      // ???
-      // properties wirt prefix
-      // ???
-
       // content
       assertEquals("FIELD__TEMPLATE", defaultTextDocEn.getTemplateName, indexDoc.getFieldValue(DocumentIndex.FIELD__TEMPLATE))
 
+      assertEquals("FIELD__TEXT",
+        indexDoc.getFieldValues(DocumentIndex.FIELD__TEXT).asScala.toList,
+        defaultTextDocEn.getTexts.values().asScala.map(_.getText).toList
+      )
+
+      println(">>>>>>>" + indexDoc.getFieldValues(DocumentIndex.FIELD__TEXT).asScala)
+
+      for ((textNo, text) <- defaultTextDocEn.getTexts.asScala) {
+        val fieldId = DocumentIndex.FIELD__TEXT + textNo
+        assertEquals(fieldId, text.getText, indexDoc.getFieldValue(fieldId))
+      }
     }
 
     "create SolrInputDocument from FileDocumentDomainObject" in {

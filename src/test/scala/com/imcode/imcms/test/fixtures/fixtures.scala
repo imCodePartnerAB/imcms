@@ -4,9 +4,9 @@ package fixtures
 
 import scala.collection.JavaConverters._
 import imcms.api.{I18nLanguage, I18nSupport}
-import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.user.{UserDomainObject, RoleId}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject, DocumentPermissionSetTypeDomainObject}
+import imcode.server.document.textdocument.{TextDomainObject, TextDocumentDomainObject}
 
 object DocFX {
   val Seq(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth) = 1001 to 1010
@@ -54,15 +54,17 @@ object DocFX {
     //   1 -> ...
     //   2 -> ...
     // ))
+
+    for (textNo <- 0 until 10) {
+      doc.setText(textNo, new TextDomainObject("text_%d_%d_%s".format(docId, textNo, language.getCode)))
+    }
   }
 
-  def mkTextDocs(startDocId: Int, count: Int, languages: Seq[I18nLanguage]): Seq[TextDocumentDomainObject] =
+  def mkTextDocs(startDocId: Int = DefaultId, count: Int = 10, languages: Seq[I18nLanguage] = LanguageFX.mkLanguages): Seq[TextDocumentDomainObject] =
     for {
       docId <- startDocId until (startDocId + count) toSeq;
       language <- languages
     } yield mkTextDoc(docId, language)
-
-  def mkTextDocs(startDocId: Int, count: Int): Seq[TextDocumentDomainObject] = mkTextDocs(startDocId, count, LanguageFX.mkLanguages)
 }
 
 object VersionFX {
@@ -111,11 +113,11 @@ object LanguageFX {
 }
 
 object CategoryFX {
-  def mkCategories: Seq[CategoryDomainObject] =
-    for (id <- 0 until 10)
+  def mkCategories(starId: Int = 0, count: Int = 10): Seq[CategoryDomainObject] =
+    for (id <- starId until (starId + count))
     yield new CategoryDomainObject |>> { c =>
       c.setId(id)
       c.setName("category_" + id)
-      c.setType(new CategoryTypeDomainObject(id, "category_type_" + id, id + 1, id % 2 == true))
+      c.setType(new CategoryTypeDomainObject(id, "category_type_" + id, id + 1, id % 2 == 0))
     }
 }

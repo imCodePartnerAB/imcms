@@ -25,7 +25,7 @@ class EmbeddedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterA
     val ms = new DocIndexingMocksSetup
 
     ms.addDocuments(DocFX.mkTextDocs(DocFX.DefaultId, 10))
-    ms.addCategories(CategoryFX.mkCategories :_*)
+    ms.addCategories(CategoryFX.mkCategories() :_*)
 
     new SolrDocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
   }

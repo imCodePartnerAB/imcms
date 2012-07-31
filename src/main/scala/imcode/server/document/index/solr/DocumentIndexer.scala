@@ -12,13 +12,10 @@ import imcode.server.document.index.DocumentIndex
 import java.util.Date
 
 /**
- * Lucene & SOLr indexing differences:
- * - properties - key - value not possible ???
- * - text* dynamic field - add underscore | conflict with text | RE format ???
- * - virtual field - phase
+ *
  */
+// todo: virtual field - phase
 // todo: ??? Truncate date fields to minute ???
-
 class DocumentIndexer(
   @BeanProperty var documentMapper: DocumentMapper,
   @BeanProperty var categoryMapper: CategoryMapper,
@@ -33,7 +30,7 @@ class DocumentIndexer(
    * @return SolrInputDocument
    */
   def index(doc: DocumentDomainObject): SolrInputDocument = new SolrInputDocument |>> { indexDoc =>
-    def addFieldIfNotNull(name: String, value: AnyRef) = if (value != null) indexDoc.addField(name, value)
+    def addFieldIfNotNull(name: String, value: AnyRef): Unit = if (value != null) indexDoc.addField(name, value)
 
     val metaId = doc.getId
     val languageCode = doc.getLanguage.getCode
@@ -66,8 +63,6 @@ class DocumentIndexer(
 
     indexDoc.addField(DocumentIndex.FIELD__STATUS, doc.getPublicationStatus.asInt())
 
-    // todo: ??? v4.x indexes properties as fields without any prefix. map as * string, indexed + not-stored ???
-
     for (category <- categoryMapper.getCategories(doc.getCategoryIds).asScala) {
       indexDoc.addField(DocumentIndex.FIELD__CATEGORY, category.getName)
       indexDoc.addField(DocumentIndex.FIELD__CATEGORY_ID, category.getId)
@@ -94,6 +89,9 @@ class DocumentIndexer(
 
     for ((key, value) <- doc.getProperties.asScala) {
       indexDoc.addField(DocumentIndex.FIELD__PROPERTY_PREFIX + key, value)
+      // Legacy document property indexing support: property name as field name -> property value as field value.
+      // See also schema.xml * field
+      // indexDoc.addField(key, value)
     }
 
     val roleIdMappings: RoleIdToDocumentPermissionSetTypeMappings = doc.getRoleIdsMappedToDocumentPermissionSetTypes
