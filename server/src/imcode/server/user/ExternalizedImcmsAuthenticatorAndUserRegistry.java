@@ -117,15 +117,21 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     }
 
     private void syncUserExternalRoles(UserDomainObject externalUser, UserDomainObject internalUser) {
-        Set<String> externalRolesNames = Sets.newHashSet(externalUserRegistry.getAllRoleNames());
-        Set<String> userExternalRolesNames = Sets.newHashSet(externalUserRegistry.getRoleNames(externalUser));
+        Set<String> externalRolesNamesLCase = Sets.newHashSet();
+        Set<String> userExternalRolesNamesLCase = Sets.newHashSet();
 
-        log.debug(">>>>>>>>>>>>>SYNC externalRolesNames: " +  externalRolesNames);
-        log.debug(">>>>>>>>>>>>>SYNC userExternalRolesNames: " +  userExternalRolesNames);
+        for (String roleName: externalUserRegistry.getAllRoleNames()) {
+            externalRolesNamesLCase.add(roleName.toLowerCase());
+        }
 
-        log.debug(String.format("Syncing user %s external roles.", externalUser));
+        for (String roleName: externalUserRegistry.getRoleNames(externalUser)) {
+            userExternalRolesNamesLCase.add(roleName.toLowerCase());
+        }
 
-        for (String roleName : userExternalRolesNames) {
+
+        log.debug(String.format("Syncing user %s externally mapped roles.", externalUser));
+
+        for (String roleName : userExternalRolesNamesLCase) {
             RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRoleByName(roleName);
             log.debug(String.format("Syncing user %s external role %s.", externalUser, role));
 
@@ -144,21 +150,21 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
 
 
         if (internalUser != null) {
-            log.debug(String.format("Syncing user %s previously assigned external roles.", externalUser));
+            log.debug(String.format("Syncing user %s all previously assigned roles.", externalUser));
 
             for (RoleId roleId : internalUser.getRoleIds()) {
                 RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRole(roleId);
                 String roleName = role.getName();
 
-                log.debug(String.format("Syncing user %s previously assigned external role %s.", externalUser, role));
+                log.debug(String.format("Syncing user %s previously assigned role %s.", externalUser, role));
                 boolean add = false;
 
-                if (!externalRolesNames.contains(roleName)) {
+                if (!externalRolesNamesLCase.contains(roleName.toLowerCase())) {
                     log.debug(String.format("User %s role %s is not mapped externally and not need to be synced. The role will be granted.", externalUser, role));
                     add = true;
                 } else {
                     log.debug(String.format("User %s role %s is mapped externally and need to be synced.", externalUser, role));
-                    if (!userExternalRolesNames.contains(roleName)) {
+                    if (!userExternalRolesNamesLCase.contains(roleName.toLowerCase())) {
                         log.debug(String.format("User %s is not more a member-of externally mapped role %s. The role will be revoked.", externalUser, role));
                     } else {
                         log.debug(String.format("User %s is a member-of mapped role %s. The role will be granted.", externalUser, role));
