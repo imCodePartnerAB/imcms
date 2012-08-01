@@ -129,45 +129,45 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
         }
 
 
-        log.debug(String.format("Syncing user %s externally mapped roles.", externalUser));
+        log.debug(String.format("Syncing user %s externally mapped roles.", externalUser.getLoginName()));
 
         for (String roleName : userExternalRolesNamesLCase) {
             RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRoleByName(roleName);
-            log.debug(String.format("Syncing user %s external role %s.", externalUser, role));
+            log.debug(String.format("Syncing user %s external role %s.", externalUser.getLoginName(), role.getName()));
 
             if (null == role) {
-                log.debug(String.format("Role %s is new and will be stored internally.", role));
+                log.debug(String.format("Role %s is new and will be stored internally.", role.getName()));
                 role = imcmsAuthenticatorAndUserMapperAndRole.addRole(roleName);
             }
 
             if (role.isAdminRole()) {
-                log.debug(String.format("External role %s is marked as an admin role and can not be granted to user %s.", role, externalUser));
+                log.debug(String.format("External role %s is marked as an admin role and can not be granted to user %s.", role.getName(), externalUser.getLoginName()));
             } else {
-                log.debug(String.format("User %s is a member-of externally mapped role %s. The role will be granted.", externalUser, role));
+                log.debug(String.format("User %s is a member-of externally mapped role %s. The role will be granted.", externalUser.getLoginName(), role.getName()));
                 externalUser.addRoleId(role.getId());
             }
         }
 
 
         if (internalUser != null) {
-            log.debug(String.format("Syncing user %s all previously assigned roles.", externalUser));
+            log.debug(String.format("Syncing user %s all previously assigned roles.", externalUser.getLoginName()));
 
             for (RoleId roleId : internalUser.getRoleIds()) {
                 RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRole(roleId);
                 String roleName = role.getName();
 
-                log.debug(String.format("Syncing user %s previously assigned role %s.", externalUser, role));
+                log.debug(String.format("Syncing user %s previously assigned role %s.", externalUser.getLoginName(), role.getName()));
                 boolean add = false;
 
                 if (!externalRolesNamesLCase.contains(roleName.toLowerCase())) {
-                    log.debug(String.format("User %s role %s is not mapped externally and not need to be synced. The role will be granted.", externalUser, role));
+                    log.debug(String.format("User %s role %s is not mapped externally and not need to be synced. The role will be granted.", externalUser.getLoginName(), role.getName()));
                     add = true;
                 } else {
-                    log.debug(String.format("User %s role %s is mapped externally and need to be synced.", externalUser, role));
+                    log.debug(String.format("User %s role %s is mapped externally and need to be synced.", externalUser.getLoginName(), role.getName()));
                     if (!userExternalRolesNamesLCase.contains(roleName.toLowerCase())) {
-                        log.debug(String.format("User %s is not more a member-of externally mapped role %s. The role will be revoked.", externalUser, role));
+                        log.debug(String.format("User %s is NOT ANY MORE a member-of externally mapped role %s. The role will be revoked.", externalUser.getLoginName(), role.getName()));
                     } else {
-                        log.debug(String.format("User %s is a member-of mapped role %s. The role will be granted.", externalUser, role));
+                        log.debug(String.format("User %s is a member-of mapped role %s. The role will be granted.", externalUser.getLoginName(), role.getName()));
                     }
                 }
 
@@ -175,7 +175,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
             }
         }
 
-        log.debug(String.format("User %s roles have been synced. Granted roles ids %s.", externalUser, Arrays.toString(externalUser.getRoleIds())));
+        log.debug(String.format("User %s roles have been synced. Granted roles ids %s.", externalUser.getLoginName(), Arrays.toString(externalUser.getRoleIds())));
     }
 
     private void deactivateExternalUserInImcms(String loginName, UserDomainObject imcmsUser) {
