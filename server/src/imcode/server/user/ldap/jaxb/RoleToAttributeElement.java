@@ -21,6 +21,6 @@ public class RoleToAttributeElement {
     }
 
     public String roleName() {
-        return roleName.trim().toLowerCase();
+        return roleName.trim();
     }
 }

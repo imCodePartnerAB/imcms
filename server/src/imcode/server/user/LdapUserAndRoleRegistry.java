@@ -235,7 +235,6 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
 
         Map attributeMappedRoles = searchForUserAttributes(loginName, ldapAttributesAutoMappedToRoles);
         Set<String> roles = new HashSet<String>(attributeMappedRoles.values());
-        roles.add(DEFAULT_LDAP_ROLE);
 
         Set<String> mappedRolesNames = getMappedRoleNames(loginName);
         if (mappedRolesNames.size() == 0) {
@@ -245,9 +244,8 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                     mappedRolesNames.size(), Joiner.on(", ").join(mappedRolesNames)));
         }
 
-        for (String roleName : mappedRolesNames) {
-            roles.add(roleName);
-        }
+        roles.add(DEFAULT_LDAP_ROLE);
+        roles.addAll(mappedRolesNames);
 
         return roles.toArray(new String[roles.size()]);
     }
@@ -256,7 +254,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     /**
      * @since 4.1.6
      */
-    public Set<String> getMappedRoleNames(String loginName) {
+    private Set<String> getMappedRoleNames(String loginName) {
         Map<String, Set<String>> mappedAttributes = searchForUserMultiAttributes(
                 loginName, mappedRoles.rolesToAttributes().attributesNames().toArray(new String[]{}));
 
@@ -405,5 +403,4 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     public void setUserPropertyLdapAttribute(String userPropertyName, String ldapAttribute) {
         userPropertyNameToLdapAttributeNameMap.put(userPropertyName, ldapAttribute);
     }
-
 }

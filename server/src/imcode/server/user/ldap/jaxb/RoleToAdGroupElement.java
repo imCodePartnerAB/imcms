@@ -14,7 +14,7 @@ public class RoleToAdGroupElement {
     private String groupDn;
 
     public String roleName() {
-        return roleName.trim().toLowerCase();
+        return roleName.trim();
     }
 
     public String groupDn() {
