@@ -120,6 +120,9 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
         Set<String> externalRolesNames = Sets.newHashSet(externalUserRegistry.getAllRoleNames());
         Set<String> userExternalRolesNames = Sets.newHashSet(externalUserRegistry.getRoleNames(externalUser));
 
+        log.debug(">>>>>>>>>>>>>SYNC externalRolesNames: " +  externalRolesNames);
+        log.debug(">>>>>>>>>>>>>SYNC userExternalRolesNames: " +  userExternalRolesNames);
+
         log.debug(String.format("Syncing user %s external roles.", externalUser));
 
         for (String roleName : userExternalRolesNames) {

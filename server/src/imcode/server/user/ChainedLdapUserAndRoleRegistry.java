@@ -75,8 +75,6 @@ public class ChainedLdapUserAndRoleRegistry implements Authenticator, UserAndRol
 
     
     public String[] getAllRoleNames() {
-        logger.debug(">>>>>>>>>>>>>>>>>>>>>> getting all roles names");
-
         for (UserAndRoleRegistry userAndRoleRegistry : userAndRoleRegistries) {
             try {
                 return userAndRoleRegistry.getAllRoleNames();

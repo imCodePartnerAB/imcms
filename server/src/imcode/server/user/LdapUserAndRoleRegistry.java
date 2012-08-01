@@ -155,13 +155,8 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     }
 
     public String[] getAllRoleNames() {
-        LOG.debug(">>>>>>>>>>>>>>>>>>>>>> getting all roles names");
-
         Set<String> names = new HashSet<String>(mappedRoles.rolesNames());
         names.add(DEFAULT_LDAP_ROLE);
-
-
-        LOG.debug(">>>>>>>>>>>>>>>>>>>>>> all roles names: " + names);
 
         return names.toArray(new String[]{});
     }
