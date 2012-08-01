@@ -98,12 +98,12 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     }
 
     private UserDomainObject synchExternalUserInImcms(String loginName, UserDomainObject externalUser,
-                                                      UserDomainObject imcmsUser) {
+                                                      UserDomainObject internalUser) {
         externalUser.setImcmsExternal(true);
-        syncUserExternalRoles(externalUser);
 
-        if (null != imcmsUser) {
-            externalUser.setRoleIds(imcmsUser.getRoleIds());
+        syncUserExternalRoles(externalUser, internalUser);
+
+        if (internalUser != null) {
             imcmsAuthenticatorAndUserMapperAndRole.saveUser(loginName, externalUser);
         } else {
             try {
@@ -116,26 +116,29 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
         return imcmsAuthenticatorAndUserMapperAndRole.getUser(loginName);
     }
 
-    private void syncUserExternalRoles(UserDomainObject user) {
-        Set<String> userExternalRoleNames = Sets.newHashSet(externalUserRegistry.getRoleNames(user));
-        Set<String> externalRoleNames = Sets.newHashSet(externalUserRegistry.getAllRoleNames());
+    private void syncUserExternalRoles(UserDomainObject externalUser, UserDomainObject internalUser) {
+        Set<String> externalRolesNames = Sets.newHashSet(externalUserRegistry.getAllRoleNames());
+        Set<String> userExternalRolesNames = Sets.newHashSet(externalUserRegistry.getRoleNames(externalUser));
 
-        for (RoleId roleId : user.getRoleIds()) {
-            RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRole(roleId);
-            String roleName = role.getName();
+        if (internalUser != null) {
+            for (RoleId roleId : internalUser.getRoleIds()) {
+                RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRole(roleId);
+                String roleName = role.getName();
 
-            if (externalRoleNames.contains(roleName) && !userExternalRoleNames.contains(roleName)) {
-                user.removeRoleId(roleId);
+                if (!externalRolesNames.contains(roleName)
+                        || (externalRolesNames.contains(roleName) && userExternalRolesNames.contains(roleName))) {
+                    externalUser.addRoleId(roleId);
+                }
             }
         }
 
-        for (String externalRoleName : userExternalRoleNames) {
-            RoleDomainObject externalRole = imcmsAuthenticatorAndUserMapperAndRole.getRoleByName(externalRoleName);
-            if (null == externalRole) {
-                externalRole = imcmsAuthenticatorAndUserMapperAndRole.addRole(externalRoleName);
+        for (String roleName : userExternalRolesNames) {
+            RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRoleByName(roleName);
+            if (null == role) {
+                role = imcmsAuthenticatorAndUserMapperAndRole.addRole(roleName);
             }
-            if (!externalRole.isAdminRole()) {
-                user.addRoleId(externalRole.getId());
+            if (!role.isAdminRole()) {
+                externalUser.addRoleId(role.getId());
             }
         }
     }
