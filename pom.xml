@@ -42,7 +42,7 @@
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>4.1.12-SNAPSHOT</version>
+    <version>4.1.13-SNAPSHOT</version>
     <name>imCMS</name>
 
     <properties>
