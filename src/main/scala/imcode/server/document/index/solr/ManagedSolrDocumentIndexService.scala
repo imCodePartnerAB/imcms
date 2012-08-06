@@ -3,13 +3,12 @@ package imcode.server.document.index.solr
 import _root_.com.imcode._
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
-import _root_.imcode.server.document.index.DocumentQuery
 import org.apache.solr.client.solrj.{SolrServer}
-import java.util.concurrent.{Callable, LinkedBlockingQueue}
-import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
 import java.lang.{InterruptedException, Thread}
 import org.apache.solr.common.params.SolrParams
-import org.apache.solr.client.solrj.response.QueryResponse
+import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
+import imcode.server.document.index.solr.SolrDocumentIndexService.IndexRebuildTask
+import java.util.concurrent.{Future, FutureTask, Callable, LinkedBlockingQueue}
 
 /**
  * Implements all SolrDocumentIndexService functionality.
@@ -32,6 +31,7 @@ class ManagedSolrDocumentIndexService(
   private val indexUpdateThreadRef = new AtomicReference[Thread]
   private val indexUpdateRequests = new LinkedBlockingQueue[SolrDocumentIndexService.IndexUpdateRequest](1000)
   private val indexWriteErrorRef = new AtomicReference[ManagedSolrDocumentIndexService.IndexWriteError]
+  private val indexRebuildTaskRef = new AtomicReference[SolrDocumentIndexService.IndexRebuildTask]
 
 
   /**
@@ -39,85 +39,75 @@ class ManagedSolrDocumentIndexService(
    * Any exception or an interruption terminates index-rebuild-thread.
    *
    * An existing index-update-thread is stopped before rebuilding happens and a new index-update-thread is started
-   * as soon as running index-rebuild-thread is terminated without errors.
-   *
+   * immediately after running index-rebuild-thread is terminated without errors.
    */
-  // todo: ??? publish task as a part of thread execution ???
-  private def startNewIndexRebuildThread(): Unit = lock.synchronized {
+  def requestIndexRebuild(): Option[SolrDocumentIndexService.IndexRebuildTask] = lock.synchronized {
     logger.info("attempting to start new document-index-rebuild thread.")
 
     (shutdownRef.get(), indexWriteErrorRef.get(), indexRebuildThreadRef.get()) match {
       case (shutdown@true, _, _) =>
         logger.info("new document-index-rebuild thread can not be started - service is shut down.")
+        indexRebuildTask()
 
       case (_, indexWriteError, _) if indexWriteError != null =>
-        logger.info("new document-index-rebuild thread can not be started - previous index write attempt has failed [%s]."
+        logger.info("new document-index-rebuild thread can not be started - previous index write attempt has failed with error [%s]."
           .format(indexWriteError))
+        indexRebuildTask()
 
       case (_, _, indexRebuildThread) if Threads.notTerminated(indexRebuildThread) =>
         logger.info("new document-index-rebuild thread can not be started - document-index-rebuild thread [%s] is allready running."
           .format(indexRebuildThread))
+        indexRebuildTask()
 
       case _ =>
-//        val indexRebuildFutureTask0: FutureTask[_] = new Runnable[_] { runnable =>
-//          val task = new FutureTask[Unit](runnable, null) {
-//            override def cancel(mayInterruptIfRunning: Boolean): Boolean = super.cancel(true)
-//          }
-//
-//          def run() {
-//            val indexRebuildThread = Thread.currentThread()
-//          }
-//        }.task
-//
-//        Threads.mkRunnable {
-//          //val indexRebuildThread = Thread.currentThread()
-//
-//          serviceOps.rebuildIndexInterruptibly(solrServerWriter) { _ =>
-//            // update progress
-//          }
-//        } |> { runnable =>
-//          new FutureTask[Unit](runnable, null) {
-//            override def cancel(mayInterruptIfRunning: Boolean): Boolean = super.cancel(true)
-//          }
-//        } |> { futureTask =>
-//
-//        }
-
-        new Thread { indexRebuildThread =>
-          override def run() {
-            try {
-              interruptIndexUpdateThreadAndAwaitTermination()
-              indexUpdateRequests.clear()
-              // publishFutureTask
-              // indexRebuildFutureTask.run()
-              serviceOps.rebuildIndex(solrServerWriter) { progress =>
-
-              }
-
-              Threads.spawnDaemon {
-                indexRebuildThread.join()
-                startNewIndexUpdateThread()
-              }
-            } catch {
-              case _: InterruptedException =>
-                logger.trace("document-index-rebuild thread [%s] was interrupted".format(indexRebuildThread))
-
-              case e =>
-                val writeError = ManagedSolrDocumentIndexService.IndexRebuildError(ManagedSolrDocumentIndexService.this, e)
-                logger.error("error in document-index-rebuild thread [%s].".format(indexRebuildThread), e)
-                indexWriteErrorRef.set(writeError)
-                Threads.spawnDaemon {
-                  serviceErrorHandler(writeError)
-                }
-            } finally {
-              logger.info("document-index-rebuild thread [%s] is about to terminate.".format(indexRebuildThread))
+        new IndexRebuildTask {
+          val progressRef = new AtomicReference[SolrDocumentIndexService.IndexRebuildProgress]
+          val futureTask = new FutureTask[Unit](Threads.mkCallable {
+            serviceOps.rebuildIndex(solrServerWriter) { progress =>
+              progressRef.set(progress)
             }
+          })
+
+          def progress(): Option[SolrDocumentIndexService.IndexRebuildProgress] = Option(progressRef.get())
+
+          def future(): Future[_] = futureTask
+        } |>> indexRebuildTaskRef.set |>> { indexRebuildTaskImpl =>
+          new Thread { indexRebuildThread =>
+            override def run() {
+              try {
+                interruptIndexUpdateThreadAndAwaitTermination()
+                indexUpdateRequests.clear()
+                indexRebuildTaskImpl.futureTask.run()
+
+                Threads.spawnDaemon {
+                  indexRebuildThread.join()
+                  startNewIndexUpdateThread()
+                }
+              } catch {
+                case _: InterruptedException =>
+                  logger.trace("document-index-rebuild thread [%s] was interrupted".format(indexRebuildThread))
+                  Threads.spawnDaemon {
+                    indexRebuildThread.join()
+                    startNewIndexUpdateThread()
+                  }
+
+                case e =>
+                  val writeError = ManagedSolrDocumentIndexService.IndexRebuildError(ManagedSolrDocumentIndexService.this, e)
+                  logger.error("error in document-index-rebuild thread [%s].".format(indexRebuildThread), e)
+                  indexWriteErrorRef.set(writeError)
+                  Threads.spawnDaemon {
+                    serviceErrorHandler(writeError)
+                  }
+              } finally {
+                logger.info("document-index-rebuild thread [%s] is about to terminate.".format(indexRebuildThread))
+              }
+            }
+          } |>> indexRebuildThreadRef.set |>> { indexRebuildThread =>
+            indexRebuildThread.setName("document-index-rebuild-" + indexRebuildThread.getId)
+            indexRebuildThread.start()
+            logger.info("new document-index-rebuild thread [%s] has been started".format(indexRebuildThread))
           }
-        } |>> indexRebuildThreadRef.set |>> { indexRebuildThread =>
-          indexRebuildThread.setName("document-index-rebuild-" + indexRebuildThread.getId)
-          indexRebuildThread.start()
-          logger.info("new document-index-rebuild thread [%s] has been started".format(indexRebuildThread))
-        }
+        } |> opt
     }
   }
 
@@ -191,13 +181,6 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  def requestIndexRebuild() {
-    Threads.spawnDaemon {
-      startNewIndexRebuildThread()
-    }
-  }
-
-
   def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest) {
     Threads.spawnDaemon {
       shutdownRef.get() match {
@@ -244,6 +227,8 @@ class ManagedSolrDocumentIndexService(
       }
     }
   }
+
+  def indexRebuildTask(): Option[SolrDocumentIndexService.IndexRebuildTask] = Option(indexRebuildTaskRef.get)
 }
 
 

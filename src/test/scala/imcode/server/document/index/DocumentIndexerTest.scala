@@ -19,12 +19,12 @@ import org.mockito.invocation.InvocationOnMock
 import com.imcode.imcms.mapping.DocumentMapper.TextDocumentMenuIndexPair
 import scala.collection.mutable.{Map => MMap}
 import org.apache.solr.common.SolrInputDocument
-import imcode.server.user.RoleId
-import imcode.server.document._
-import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
-import imcode.util.io.FileInputStreamSource
-import imcode.server.document.textdocument.{MenuDomainObject, TextDocumentDomainObject, ImageDomainObject, TextDomainObject}
-import imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexer}
+import _root_.imcode.server.user.RoleId
+import _root_.imcode.server.document._
+import _root_.imcode.server.document.FileDocumentDomainObject.FileDocumentFile
+import _root_.imcode.util.io.FileInputStreamSource
+import _root_.imcode.server.document.textdocument.{MenuDomainObject, TextDocumentDomainObject, ImageDomainObject, TextDomainObject}
+import _root_.imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexer}
 import com.imcode.imcms.api.{I18nLanguage, I18nMeta, DocumentVersion, DocumentVersionInfo}
 import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX, LanguageFX}
 
@@ -36,7 +36,6 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
   val defaultTextDocEn = DocFX.mkDefaultTextDocEn
   val docIndexer: DocumentIndexer = new DocIndexingMocksSetup |>> { fx =>
     fx.addCategories(CategoryFX.mkCategories(): _*)
-
     fx.addParentDocumentsFor(defaultTextDocEn.getId,
       fx.ParentDoc(0, 0),
       fx.ParentDoc(1, 0),
@@ -135,8 +134,6 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
         indexDoc.getFieldValues(DocumentIndex.FIELD__TEXT).asScala.toList,
         defaultTextDocEn.getTexts.values().asScala.map(_.getText).toList
       )
-
-      println(">>>>>>>" + indexDoc.getFieldValues(DocumentIndex.FIELD__TEXT).asScala)
 
       for ((textNo, text) <- defaultTextDocEn.getTexts.asScala) {
         val fieldId = DocumentIndex.FIELD__TEXT + textNo

@@ -338,7 +338,7 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public <T extends DocumentDomainObject> int saveNewDocument(T doc, List<I18nMeta> i18nMetas, EnumSet<DocumentMapper.SaveDirectives> directiveses, UserDomainObject user)
+    public <T extends DocumentDomainObject> int saveNewDocument(T doc, List<I18nMeta> i18nMetas, EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Meta meta = doc.getMeta();
@@ -377,7 +377,7 @@ public class DocumentSaver {
         doc.accept(docCreatingVisitor);
 
         // refactor
-        if (doc instanceof TextDocumentDomainObject && directiveses.contains(DocumentMapper.SaveDirectives.CopyI18nMetaTextsIntoTextFields)) {
+        if (doc instanceof TextDocumentDomainObject && directiveses.contains(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)) {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
             for (I18nMeta i18nMeta : i18nMetas) {
                 TextDomainObject text1 = new TextDomainObject(i18nMeta.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN);

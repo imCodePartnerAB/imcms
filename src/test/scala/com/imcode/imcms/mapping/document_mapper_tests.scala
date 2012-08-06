@@ -22,7 +22,7 @@ import imcms.api.{I18nMeta, ContentLoop, I18nSupport}
 import textdocument._
 import imcms.api.TextDocument.TextField
 import imcms.util.Factory
-import imcms.mapping.DocumentMapper.SaveDirectives
+import imcms.mapping.DocumentMapper.SaveOpts
 
 @RunWith(classOf[JUnitRunner])
 class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
@@ -70,7 +70,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val id = docMapper.saveNewDocument(
       newDoc,
       i18nMetas,
-      EnumSet.noneOf(classOf[DocumentMapper.SaveDirectives]),
+      EnumSet.noneOf(classOf[DocumentMapper.SaveOpts]),
       admin).getMeta.getId
 
     i18nSupport.getLanguages.asScala.map { language =>
@@ -107,7 +107,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val id = docMapper.saveNewDocument(
       newDoc,
       i18nMetas,
-      EnumSet.of(DocumentMapper.SaveDirectives.CopyI18nMetaTextsIntoTextFields),
+      EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields),
       admin).getMeta.getId
 
     i18nSupport.getLanguages.asScala.map { language =>

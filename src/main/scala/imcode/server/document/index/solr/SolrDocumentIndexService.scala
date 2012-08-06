@@ -5,41 +5,45 @@ import com.imcode.Log4jLoggerSupport
 import org.apache.solr.common.params.SolrParams
 import imcode.server.user.UserDomainObject
 import imcode.server.document.DocumentDomainObject
+import java.util.concurrent.Future
+import java.util.Collections
 
 /**
  * SOLr based Document Index Service.
  * requestXXX methods are expected to execute asynchronously.
  */
 abstract class SolrDocumentIndexService extends Log4jLoggerSupport {
-  def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest)
-  def requestIndexRebuild()
   def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject]
-  def getMonitor(): SolrDocumentIndexServiceMonitor = ???
+  def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest)
+  def requestIndexRebuild(): Option[SolrDocumentIndexService.IndexRebuildTask] // LEFT[UNAVAILABLE MSG] RIGHT[INDEX_REBUILD_TASK]
+  def indexRebuildTask(): Option[SolrDocumentIndexService.IndexRebuildTask]
   def shutdown()
 }
 
 
 object SolrDocumentIndexService {
+  trait IndexRebuildTask {
+    def future(): Future[_]
+    def progress(): Option[SolrDocumentIndexService.IndexRebuildProgress]
+  }
+
+  case class IndexRebuildProgress(startTimeMillis: Long, currentTimeMillis: Long, totalDocsCount: Int, indexedDocsCount: Int)
+
   sealed trait IndexUpdateRequest
   case class AddDocsToIndex(metaId: Int) extends IndexUpdateRequest
   case class DeleteDocsFromIndex(metaId: Int) extends IndexUpdateRequest
 }
 
 
-trait SolrDocumentIndexServiceMonitor {
-  // indexRebuildActivity: opt SolrDocumentIndexRebuildActivity|Monitor
-  def indexRebuild(): SolrDocumentIndexRebuild
-}
+object NoOpSolrDocumentIndexService extends SolrDocumentIndexService {
 
+  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] = Collections.emptyList()
 
-// SolrDocumentIndexRebuildMonitor
-abstract class SolrDocumentIndexRebuild {
-  //val future: Future[_]
-  //def progress(): SolrDocumentIndexRebuild.Progress
-}
+  def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest) {}
 
+  def requestIndexRebuild(): Option[SolrDocumentIndexService.IndexRebuildTask] = None
 
-object SolrDocumentIndexRebuild {
-  // startTimeMillis: Long, currentTimeMillis: Long,
-  case class Progress(totalDocsCount: Int, indexedDocsCount: Int)
+  def indexRebuildTask(): Option[SolrDocumentIndexService.IndexRebuildTask] = None
+
+  def shutdown() {}
 }

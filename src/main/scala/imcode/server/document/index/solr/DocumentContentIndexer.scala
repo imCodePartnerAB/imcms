@@ -95,7 +95,7 @@ class DocumentContentIndexer extends Log4jLoggerSupport {
   }
 
 
-  private def stripHtml(tdo: TextDomainObject) = tdo.getText |> {
+  private def stripHtml(tdo: TextDomainObject): String = tdo.getText |> {
     case text if tdo.getType != TextDomainObject.TEXT_TYPE_HTML => text
     case htmlText =>
       try {
@@ -104,6 +104,8 @@ class DocumentContentIndexer extends Log4jLoggerSupport {
         }
       } catch {
         case e => logger.error("Unable to strip html '%s'".format(htmlText), e);
+
+        htmlText
       }
   }
 }

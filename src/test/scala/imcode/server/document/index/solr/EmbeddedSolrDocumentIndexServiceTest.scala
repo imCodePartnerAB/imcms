@@ -58,9 +58,9 @@ class EmbeddedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterA
 
     "rebuild index" in {
       using(new EmbeddedSolrDocumentIndexService(Test.solr.home, ops)) { service =>
-        service.requestIndexRebuild()
-
-        Thread.sleep(1000)
+        service.requestIndexRebuild().get |> { task =>
+          task.future.get()
+        }
       }
 
 

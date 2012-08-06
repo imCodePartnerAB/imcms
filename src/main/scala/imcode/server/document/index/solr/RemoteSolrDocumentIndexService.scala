@@ -31,11 +31,11 @@ class RemoteSolrDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, 
     serviceRef.get().requestIndexUpdate(request)
   }
 
-  def requestIndexRebuild() {
-    serviceRef.get().requestIndexRebuild()
-  }
+  def requestIndexRebuild(): Option[SolrDocumentIndexService.IndexRebuildTask] = serviceRef.get().requestIndexRebuild()
 
   def shutdown() {
     serviceRef.get().shutdown()
   }
+
+  def indexRebuildTask() = None
 }

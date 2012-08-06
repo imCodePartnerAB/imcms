@@ -277,7 +277,7 @@ public class MenuEditPage extends OkCancelPage {
 
 
         @Override
-        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<DocumentMapper.SaveDirectives> saveParams, UserDomainObject user)
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<DocumentMapper.SaveOpts> saveParams, UserDomainObject user)
                 throws NoPermissionInternalException, DocumentSaveException {
 
             if ( null != savedDocument ) {

@@ -70,27 +70,28 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
   // ??? printed to out ???
   "running index rebuild" should {
     "index all docs" in {
-      import SolrDocumentIndexRebuild._
+      import SolrDocumentIndexService.IndexRebuildProgress
+
       val solrServerMock = mock[SolrServer]
-      var progress = Vector.empty[Progress]
+      var progress = Vector.empty[IndexRebuildProgress]
 
       ops.rebuildIndex(solrServerMock){p => progress :+= p; Thread.sleep(2000)}
 
       assertEquals("progress callablck invokation count", 11, progress.length)
       assertTrue("progress callback value is incremented on every call starting from 0",
-        progress.zipWithIndex.forall { case (Progress(10, indexed), expectedIndexed) => indexed == expectedIndexed }
+        progress.zipWithIndex.forall { case (IndexRebuildProgress(_, _, 10, indexed), expectedIndexed) => indexed == expectedIndexed }
       )
     }
 
     "index half of docs when running thread is interrupted and throw an InterruptedException" in {
-      import SolrDocumentIndexRebuild._
+      import SolrDocumentIndexService.IndexRebuildProgress
 
       val solrServerMock = mock[SolrServer]
-      var progress = Vector.empty[Progress]
+      var progress = Vector.empty[IndexRebuildProgress]
 
       intercept[InterruptedException] {
         ops.rebuildIndex(solrServerMock) {
-          case p@Progress(10, indexedDocsCount) =>
+          case p@IndexRebuildProgress(_, _, 10, indexedDocsCount) =>
             progress :+= p
             if (indexedDocsCount == 5) throw new InterruptedException()
         }
@@ -101,7 +102,7 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
 
       assertEquals("progress callablck invokation count", 6, progress.length)
       assertTrue("progress callback value is incremented on every call starting from 0",
-        progress.zipWithIndex.forall { case (Progress(10, indexed), expectedIndexed) => indexed == expectedIndexed }
+        progress.zipWithIndex.forall { case (IndexRebuildProgress(_, _, 10, indexed), expectedIndexed) => indexed == expectedIndexed }
       )
     }
   }

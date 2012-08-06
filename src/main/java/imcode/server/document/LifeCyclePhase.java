@@ -83,7 +83,6 @@ public abstract class LifeCyclePhase {
      *
      * @return a TermRangeQuery in an interval from infinity to now.
      */
-    // todo: Check!
     private static TermRangeQuery getDateRangeQuery(String field, Date now) {
         return new TermRangeQuery(field,
                                 null,

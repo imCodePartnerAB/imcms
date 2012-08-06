@@ -16,7 +16,7 @@ import java.net.{MalformedURLException, URL}
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
 import textdocument.TextDocumentDomainObject
 import java.util.{EnumSet}
-import imcms.mapping.DocumentMapper.SaveDirectives
+import imcms.mapping.DocumentMapper.SaveOpts
 import imcms.mapping.{DocumentMapper, DocumentSaver}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 import java.io.{FileInputStream, ByteArrayInputStream}

@@ -3,12 +3,9 @@ package imcode.server.document.index.solr
 import _root_.com.imcode._
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
-import _root_.imcode.server.document.index.DocumentQuery
 import java.util.Collections
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 import org.apache.solr.common.params.SolrParams
-import org.apache.solr.client.solrj.response.QueryResponse
-
 
 /**
  * Delegates all invocations to the ManagedSolrDocumentIndexService instance.
@@ -44,13 +41,15 @@ class EmbeddedSolrDocumentIndexService(solrHome: String, serviceOps: SolrDocumen
   def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
     managedServiceRef.get().search(solrParams, searchingUser)
 
+
   def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest) {
     managedServiceRef.get().requestIndexUpdate(request)
   }
 
-  def requestIndexRebuild() {
-    managedServiceRef.get().requestIndexRebuild()
-  }
+
+  def requestIndexRebuild(): Option[SolrDocumentIndexService.IndexRebuildTask] = managedServiceRef.get().requestIndexRebuild()
+
+  def indexRebuildTask(): Option[SolrDocumentIndexService.IndexRebuildTask] = managedServiceRef.get().indexRebuildTask()
 
   def shutdown(): Unit = lock.synchronized {
     if (shutdownRef.compareAndSet(false, true)) {
@@ -71,19 +70,4 @@ class EmbeddedSolrDocumentIndexService(solrHome: String, serviceOps: SolrDocumen
       service.shutdown()
     }
   }
-}
-
-
-/**
- * rebuild monitor - Service UNAVAILABLE | IDLE | Monitor -vs- Option[Monitor]
- */
-object NoOpSolrDocumentIndexService extends SolrDocumentIndexService {
-
-  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] = Collections.emptyList()
-
-  def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest) {}
-
-  def requestIndexRebuild() {}
-
-  def shutdown() {}
 }

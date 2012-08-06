@@ -10,7 +10,6 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexService;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.RoleDomainObject;
@@ -40,7 +39,7 @@ import com.imcode.imcms.flow.DocumentPageFlow;
  */
 public class DocumentMapper implements DocumentGetter {
 
-    public enum SaveDirectives {
+    public enum SaveOpts {
         // Applies to text document only.
         CopyI18nMetaTextsIntoTextFields
     }
@@ -269,7 +268,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<I18nLanguage, I18nMeta> i18nMetas,
-                                                              EnumSet<SaveDirectives> directives,
+                                                              EnumSet<SaveOpts> directives,
                                                               final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
@@ -314,7 +313,7 @@ public class DocumentMapper implements DocumentGetter {
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<I18nLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        return saveNewDocument(doc, i18nMetas, EnumSet.noneOf(SaveDirectives.class), user);
+        return saveNewDocument(doc, i18nMetas, EnumSet.noneOf(SaveOpts.class), user);
     }
 
 
@@ -972,7 +971,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         @Override
-        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<SaveDirectives> saveParams, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<SaveOpts> saveParams, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveDocument(document, labelsMap, user);
         }
     }

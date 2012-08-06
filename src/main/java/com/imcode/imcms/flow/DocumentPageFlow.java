@@ -72,7 +72,7 @@ public abstract class DocumentPageFlow extends PageFlow {
         public void saveDocumentWithI18nSupport(
                 DocumentDomainObject document,
                 Map<I18nLanguage, I18nMeta> labelsMap,
-                EnumSet<DocumentMapper.SaveDirectives> directiveses,
+                EnumSet<DocumentMapper.SaveOpts> directiveses,
                 UserDomainObject user)
                throws NoPermissionInternalException, DocumentSaveException {
 

@@ -155,10 +155,10 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     
     @Override
     protected synchronized void saveDocument( HttpServletRequest request ) {
-        EnumSet<DocumentMapper.SaveDirectives> saveParams =
+        EnumSet<DocumentMapper.SaveOpts> saveParams =
             request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS) != null
-                ? EnumSet.of(DocumentMapper.SaveDirectives.CopyI18nMetaTextsIntoTextFields)
-                : EnumSet.noneOf(DocumentMapper.SaveDirectives.class);
+                ? EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)
+                : EnumSet.noneOf(DocumentMapper.SaveOpts.class);
         try {
             saveDocumentCommand.saveDocumentWithI18nSupport(getDocument(), i18nMetasMap, saveParams, Utility.getLoggedOnUser(request));
         } catch ( NoPermissionToEditDocumentException e ) {

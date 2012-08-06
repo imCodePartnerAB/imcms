@@ -6,7 +6,6 @@ import scala.collection.SeqView
 import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
 import com.imcode.imcms.api.I18nLanguage
-import java.util.Date
 import org.apache.solr.common.util.DateUtil
 import java.lang.{InterruptedException, Thread}
 import imcode.server.document.DocumentDomainObject
@@ -14,6 +13,7 @@ import imcode.server.document.index.{DocumentIndex}
 import imcode.server.user.UserDomainObject
 import org.apache.solr.client.solrj.{SolrServer}
 import org.apache.solr.common.params.SolrParams
+import java.util.Date
 
 /**
  * SOLr document index operations.
@@ -96,21 +96,22 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
   }
 
 
-  // todo: ??? return affected count ???
   def deleteDocsFromIndex(solrServer: SolrServer, metaId: Int): Unit = mkSolrDocsDeleteQuery(metaId) |> { deleteQuery =>
     solrServer.deleteByQuery(deleteQuery)
     solrServer.commit()
   }
 
+
   @throws(classOf[InterruptedException])
-  def rebuildIndex(solrServer: SolrServer)(progressCallback: SolrDocumentIndexRebuild.Progress => Unit) {
-    import SolrDocumentIndexRebuild.Progress
+  def rebuildIndex(solrServer: SolrServer)(progressCallback: SolrDocumentIndexService.IndexRebuildProgress => Unit) {
+    import SolrDocumentIndexService.IndexRebuildProgress
 
     val docsView = mkSolrInputDocsView()
     val docsCount = docsView.length
     val rebuildStartDt = new Date
+    val rebuildStartMills = rebuildStartDt.getTime
 
-    progressCallback(Progress(docsCount, 0))
+    progressCallback(IndexRebuildProgress(rebuildStartMills, rebuildStartMills, docsCount, 0))
 
     for (((metaId, solrInputDocs), docNo) <- docsView.zip(Stream.from(1)); if solrInputDocs.nonEmpty) {
       if (Thread.currentThread().isInterrupted) {
@@ -118,7 +119,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
         throw new InterruptedException()
       }
       solrServer.add(solrInputDocs.asJava)
-      progressCallback(Progress(docsCount, docNo))
+      progressCallback(IndexRebuildProgress(rebuildStartMills, new Date().getTime, docsCount, docNo))
     }
 
     solrServer.deleteByQuery("timestamp:{* TO %s}".format(DateUtil.getThreadLocalDateFormat.format(rebuildStartDt)))

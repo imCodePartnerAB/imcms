@@ -625,7 +625,7 @@ public class AdminManager extends HttpServlet {
         }
 
         @Override
-        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<DocumentMapper.SaveDirectives> directiveses, UserDomainObject user)
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
                 throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveNewDocument(document, labelsMap, directiveses, user);
         }

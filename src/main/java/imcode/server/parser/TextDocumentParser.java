@@ -127,6 +127,8 @@ public class TextDocumentParser {
                        }
                     }, contents ) ;
                     if (hasAdminPanel) {
+                        String adminPanelContent = Utility.getContents("/imcms/eng/jsp/admin/adminbuttons.jsp", request, response);
+
                         contents = Util.substitute( patMat, headEndTagPattern, new Substitution() {
                             public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
                                                             PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,

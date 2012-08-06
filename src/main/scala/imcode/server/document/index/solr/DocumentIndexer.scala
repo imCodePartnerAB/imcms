@@ -1,20 +1,19 @@
 package imcode.server.document.index.solr
 
+import _root_.imcode.server.document.DocumentDomainObject
+import _root_.imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings
+import _root_.imcode.server.document.index.DocumentIndex
 import com.imcode._
-import scala.collection.JavaConverters._
-import imcode.server.document.DocumentDomainObject
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings
-import org.apache.solr.common.SolrInputDocument
 import com.imcode.Log4jLoggerSupport
-import scala.reflect.BeanProperty
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
-import imcode.server.document.index.DocumentIndex
+import scala.collection.JavaConverters._
+import org.apache.solr.common.SolrInputDocument
+import scala.reflect.BeanProperty
 import java.util.Date
 
 /**
  *
  */
-// todo: virtual field - phase
 // todo: ??? Truncate date fields to minute ???
 class DocumentIndexer(
   @BeanProperty var documentMapper: DocumentMapper,
@@ -104,8 +103,7 @@ class DocumentIndexer(
     } catch {
       case e =>
         logger.error("Failed to index doc's content. Doc id: %d, language: %s, type: %s".
-          format(metaId, doc.getLanguage, doc.getDocumentType), e
-        )
+            format(metaId, doc.getLanguage, doc.getDocumentType), e)
     }
   }
 }

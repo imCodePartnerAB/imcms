@@ -166,13 +166,13 @@
         <!-- ??? virtual field ??? - phase -->
 
         <!--
-            Unique field, contains of meta_id, version no and language code combination delimited with underscore.
-            Currently only default version (no eq 0) is indexed.
-            ex: 1001_0_en, 1001_0_se.
+            Unique field, contains of meta_id and language code combination delimited with underscore.
+            Currently only default version is indexed.
+            ex: 1001_en, 1001_se.
 
-            In multi-version support index will combine document's meta and content.
+            In multi-version support index will contain solr docs for document's meta and content.
             Meta index id field value will eq meta id value (1001, 1002, ...)
-            Content index id field value remain the same (1001_0_en, 1001_1_en, ...)
+            Content index id field value will include version no prior to language code (1001_0_en, 1001_1_en, ...)
         -->
         <field name="id" type="string" indexed="true" stored="true" required="true"/>
         <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" required="true"/>

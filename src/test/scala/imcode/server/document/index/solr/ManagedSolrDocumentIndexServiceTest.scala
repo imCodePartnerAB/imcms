@@ -15,7 +15,6 @@ import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.mockito.invocation.InvocationOnMock
-import imcode.server.document.index.solr.SolrDocumentIndexRebuild.Progress
 
 @RunWith(classOf[JUnitRunner])
 class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
