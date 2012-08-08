@@ -6,6 +6,8 @@
 
     <!-- The errorlog (captures everything that doesn't go to one of the above. -->
     <appender name="ALL" class="org.apache.log4j.ConsoleAppender">
+        <param name="Threshold" value="ALL"/>
+
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
         </layout>
@@ -45,7 +47,7 @@
     -->
 
     <root>
-        <priority value="trace"/>
+        <priority value="ALL"/>
         <appender-ref ref="ALL"/>
     </root>
 

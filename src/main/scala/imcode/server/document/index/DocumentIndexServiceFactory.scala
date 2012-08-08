@@ -23,7 +23,7 @@ object DocumentIndexServiceFactory extends Log4jLoggerSupport {
         logger.fatal(errMsg)
         throw new IllegalArgumentException(errMsg)
     } |> { service =>
-      new SolrDocumentIndexServiceWrapper(service)
+      new SolrDocumentIndexServiceWrapper(service, services.getI18nSupport.getDefaultLanguage)
     }
   }
 

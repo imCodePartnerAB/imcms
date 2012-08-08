@@ -15,28 +15,30 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 
-@Entity(name="Category")
-@Table(name="categories")
+@Entity(name = "Category")
+@Table(name = "categories")
 public class CategoryDomainObject implements Comparable, Serializable, Cloneable {
-	
+
     private String name;
-    
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="category_id")	    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
     private int id;
-	    
+
     private String description = "";
-    
-    @Column(name="image")	 
+
+    @Column(name = "image")
     private String imageUrl = "";
-    
-    @OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.REFRESH)
-    @JoinColumn(name="category_type_id", nullable=false)
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "category_type_id", nullable = false)
     private CategoryTypeDomainObject type;
 
 
-    public CategoryDomainObject() {} 
-    
+    public CategoryDomainObject() {
+    }
+
     public CategoryDomainObject(int id, String name, String description, String imageUrl, CategoryTypeDomainObject type) {
         this.description = description;
         this.type = type;
@@ -62,10 +64,10 @@ public class CategoryDomainObject implements Comparable, Serializable, Cloneable
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof CategoryDomainObject ) ) {
+        if (!(o instanceof CategoryDomainObject)) {
             return false;
         }
 
@@ -88,7 +90,7 @@ public class CategoryDomainObject implements Comparable, Serializable, Cloneable
     }
 
     public int compareTo(Object o) {
-        return name.compareToIgnoreCase(( (CategoryDomainObject) o ).name);
+        return name.compareToIgnoreCase(((CategoryDomainObject) o).name);
     }
 
     public void setName(String name) {
@@ -114,7 +116,7 @@ public class CategoryDomainObject implements Comparable, Serializable, Cloneable
     @Override
     public CategoryDomainObject clone() {
         try {
-            CategoryDomainObject clone = (CategoryDomainObject)super.clone();
+            CategoryDomainObject clone = (CategoryDomainObject) super.clone();
             if (type != null) clone.setType(type.clone());
 
             return clone;

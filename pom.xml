@@ -22,7 +22,7 @@
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
-        <jetty.version>8.1.5.v20120716</jetty.version>
+        <jetty.version>7.6.4.v20120524</jetty.version>
         <jetty.contextPath>/${project.artifactId}-${project.version}</jetty.contextPath>
 
         <build.webapp.dir>${project.build.directory}/${project.build.finalName}</build.webapp.dir>
@@ -30,16 +30,18 @@
         <javac.deprecation>false</javac.deprecation>
         <javac.args></javac.args>
 
-        <build.log4j.level>info</build.log4j.level>
-        <build.log4j.hibernalte.level>error</build.log4j.hibernalte.level>
+        <build.log4j.hibernate.level>error</build.log4j.hibernate.level>
+        <build.log4j.console-appender.threshold>off</build.log4j.console-appender.threshold>
+        <build.log4j.threshold>info</build.log4j.threshold>
     </properties>
 
     <profiles>
         <profile>
             <id>trace</id>
             <properties>
-                <build.log4j.level>all</build.log4j.level>
-                <build.log4j.hibernalte.level>all</build.log4j.hibernalte.level>
+                <build.log4j.hibernate.level>all</build.log4j.hibernate.level>
+                <build.log4j.console-appender.threshold>all</build.log4j.console-appender.threshold>
+                <build.log4j.threshold>all</build.log4j.threshold>
 
                 <javac.args>-Xlint</javac.args>
                 <javac.deprecation>true</javac.deprecation>
@@ -49,8 +51,9 @@
         <profile>
             <id>debug</id>
             <properties>
-                <build.log4j.level>debug</build.log4j.level>
-                <build.log4j.hibernalte.level>info</build.log4j.hibernalte.level>
+                <build.log4j.hibernate.level>debug</build.log4j.hibernate.level>
+                <build.log4j.console-appender.threshold>debug</build.log4j.console-appender.threshold>
+                <build.log4j.threshold>debug</build.log4j.threshold>
 
                 <javac.deprecation>true</javac.deprecation>
             </properties>

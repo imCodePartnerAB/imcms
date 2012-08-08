@@ -46,6 +46,13 @@
         </layout>
     </appender>
 
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Threshold" value="${build.log4j.console-appender.threshold}"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
+        </layout>
+    </appender>
+
     <!-- Set up accesslog with priority 'info' -->
     <category name="com.imcode.imcms.log.access" additivity="false">
         <priority value="info"/>
@@ -66,19 +73,19 @@
 
     <!--Log all SQL DML statements as they are executed-->
     <category name="org.hibernate.SQL" additivity="false">
-        <priority value="${build.log4j.hibernalte.level}"/>
+        <priority value="${build.log4j.hibernate.level}"/>
         <appender-ref ref="ALL"/>
     </category>
 
     <!--Log all JDBC parameters-->
     <category name="org.hibernate.type" additivity="false">
-        <priority value="${build.log4j.hibernalte.level}"/>
+        <priority value="${build.log4j.hibernate.level}"/>
         <appender-ref ref="ALL"/>
     </category>
 
     <!--Log transaction related activity-->
     <category name="org.hibernate.transaction" additivity="false">
-        <priority value="${build.log4j.hibernalte.level}"/>
+        <priority value="${build.log4j.hibernate.level}"/>
         <appender-ref ref="ALL"/>
     </category>
 
@@ -128,9 +135,10 @@
     </category>
 
     <root>
-        <priority value="info"/>
+        <priority value="${build.log4j.threshold}"/>
         <appender-ref ref="ALL"/>
         <appender-ref ref="ERROR"/>
+        <appender-ref ref="CONSOLE"/>
     </root>
 
 </log4j:configuration>

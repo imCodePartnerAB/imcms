@@ -112,6 +112,8 @@ trait HibernateSupport {
     def bulkUpdateByNamedQueryAndNamedParams(queryString: String, namedParam: NamedParam, namedParams: NamedParam*): Int =
       runNamedQueryWithNamedParams(queryString, namedParam, namedParams: _*)(_.executeUpdate())
 
+    def bulkUpdateBySqlQuery(queryString: String, ps: Any*): Int =
+      runSqlQuery(queryString, ps: _*)(_.executeUpdate())
 
     def get[A: ClassManifest](id: java.io.Serializable): A = withCurrentSession {
       _.get(classManifest[A].erasure, id).asInstanceOf[A]

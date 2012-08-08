@@ -75,7 +75,8 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     new java.util.LinkedList[DocumentDomainObject] |>> { docs =>
       for (solrDocId <- 0.until(solrDocs.size)) {
         val solrDoc = solrDocs.get(solrDocId)
-        val metaId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
+        val metaId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
+        //val metaId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
         val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).asInstanceOf[String]
         val doc = documentMapper.getDefaultDocument(metaId, languageCode)
 
@@ -110,6 +111,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
   def rebuildIndex(solrServer: SolrServer)(progressCallback: SolrDocumentIndexService.IndexRebuildProgress => Unit) {
     import SolrDocumentIndexService.IndexRebuildProgress
 
+    logger.trace("Rebuilding index.")
     val docsView = mkSolrInputDocsView()
     val docsCount = docsView.length
     val rebuildStartDt = new Date
@@ -123,10 +125,16 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
         throw new InterruptedException()
       }
       solrServer.add(solrInputDocs.asJava)
+      if (logger.isTraceEnabled) {
+        logger.trace("Added input docs [%s] to index.".format(solrInputDocs))
+      }
+
       progressCallback(IndexRebuildProgress(rebuildStartMills, new Date().getTime, docsCount, docNo))
     }
 
+    logger.trace("Deleting old documents from the index.")
     solrServer.deleteByQuery("timestamp:{* TO %s}".format(DateUtil.getThreadLocalDateFormat.format(rebuildStartDt)))
     solrServer.commit()
+    logger.trace("Reinfexing is complete.")
   }
 }

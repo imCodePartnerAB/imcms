@@ -8,7 +8,7 @@ import java.lang.{InterruptedException, Thread}
 import org.apache.solr.common.params.SolrParams
 import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
 import imcode.server.document.index.solr.SolrDocumentIndexService.IndexRebuildTask
-import java.util.concurrent.{Future, FutureTask, Callable, LinkedBlockingQueue}
+import java.util.concurrent._
 
 /**
  * Implements all SolrDocumentIndexService functionality.
@@ -78,6 +78,14 @@ class ManagedSolrDocumentIndexService(
                 interruptIndexUpdateThreadAndAwaitTermination()
                 indexUpdateRequests.clear()
                 indexRebuildTaskImpl.futureTask.run()
+                if (!indexRebuildTaskImpl.futureTask.isCancelled) {
+                  try {
+                    indexRebuildTaskImpl.futureTask.get()
+                  } catch {
+                    case e: ExecutionException => throw e.getCause
+                    case e => throw e
+                  }
+                }
 
                 Threads.spawnDaemon {
                   indexRebuildThread.join()
@@ -93,7 +101,7 @@ class ManagedSolrDocumentIndexService(
 
                 case e =>
                   val writeError = ManagedSolrDocumentIndexService.IndexRebuildError(ManagedSolrDocumentIndexService.this, e)
-                  logger.error("error in document-index-rebuild thread [%s].".format(indexRebuildThread), e)
+                  logger.error("Error in document-index-rebuild thread [%s].".format(indexRebuildThread), e)
                   indexWriteErrorRef.set(writeError)
                   Threads.spawnDaemon {
                     serviceErrorHandler(writeError)
