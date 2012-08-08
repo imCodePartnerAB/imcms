@@ -145,7 +145,7 @@ image-archive-max-zip-upload-size = 262144000
 # Maximum size in bytes of cache for images. By default 500 MB.
 image-cache-max-size = 524288000
 
-# Remote SOLr server URL
+# External SOLr server URL
 # Type: Http(s) URL; optional
 # Unless specified imCMS uses embedded SOLr server.
 solr-url=

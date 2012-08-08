@@ -20,32 +20,43 @@ import java.util.Date
  *
  * The instance of this class is thread save.
  */
-// todo: ??? mkXXX wrap any exception into indexCreate exception for distinguishing from SolrException ???
-// todo: ??? implement parallel indexing ???
 class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) extends Log4jLoggerSupport {
-   // todo: refactor out
   type MetaId = Int
 
-  def mkSolrInputDocs(metaId: Int): Seq[SolrInputDocument] =
-    mkSolrInputDocs(metaId, documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala)
-
-
-  def mkSolrInputDocs(metaId: Int, languages: Seq[I18nLanguage]): Seq[SolrInputDocument] =
-    {
-      for {
-        language <- languages
-        doc <- Option(documentMapper.getDefaultDocument(metaId, language))
-      } yield documentIndexer.index(doc)
-    } |>> { solrInputDocs =>
-      if (logger.isTraceEnabled) {
-        logger.trace("created %d solrInputDoc(s) with metaId: %d and language(s): %s.".format(
-          solrInputDocs.length, metaId, languages.mkString(", "))
-        )
-      }
+  @throws(classOf[SolrInputDocumentCreateException])
+  def withExceptionWrapper[A](body: => A): A =
+    try {
+      body
+    } catch {
+      case e: Throwable => throw new SolrInputDocumentCreateException(e)
     }
+
+  @throws(classOf[SolrInputDocumentCreateException])
+  def mkSolrInputDocs(metaId: Int): Seq[SolrInputDocument] = withExceptionWrapper {
+    mkSolrInputDocs(metaId, documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala)
+  }
+
+
+  @throws(classOf[SolrInputDocumentCreateException])
+  def mkSolrInputDocs(metaId: Int, languages: Seq[I18nLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
+    val solrInputDocs = for {
+      language <- languages
+      doc <- Option(documentMapper.getDefaultDocument(metaId, language))
+    } yield documentIndexer.index(doc)
+
+
+    if (logger.isTraceEnabled) {
+      logger.trace("created %d solrInputDoc(s) with metaId: %d and language(s): %s.".format(
+        solrInputDocs.length, metaId, languages.mkString(", "))
+      )
+    }
+
+    solrInputDocs
+  }
 
 
   // consider using other data structure
+  @throws(classOf[SolrInputDocumentCreateException])
   def mkSolrInputDocsView(): SeqView[(MetaId, Seq[SolrInputDocument]), Seq[_]] =
     documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala |> { languages =>
       documentMapper.getAllDocumentIds.asScala.view.map(metaId => metaId.toInt -> mkSolrInputDocs(metaId, languages))
@@ -60,6 +71,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     }
 
     val solrDocs = solrServer.query(solrParams).getResults
+
     new java.util.LinkedList[DocumentDomainObject] |>> { docs =>
       for (solrDocId <- 0.until(solrDocs.size)) {
         val solrDoc = solrDocs.get(solrDocId)
@@ -74,17 +86,8 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     }
   }
 
-//  def search(solrServer: SolrServer, query: String): SeqView[DocumentDomainObject, Seq[_]] =
-//    solrServer.query(new SolrQuery(query)).getResults |> { result =>
-//      0.until(result.size).view.map { id =>
-//        val solrDoc = result.get(id.toInt)
-//        val metaId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
-//        val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).asInstanceOf[String]
-//
-//        documentMapper.getDefaultDocument(metaId, languageCode)
-//    }
 
-
+  @throws(classOf[SolrInputDocumentCreateException])
   def addDocsToIndex(solrServer: SolrServer, metaId: Int) {
     mkSolrInputDocs(metaId) |> { solrInputDocs =>
       if (solrInputDocs.nonEmpty) {
@@ -103,6 +106,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
 
 
   @throws(classOf[InterruptedException])
+  @throws(classOf[SolrInputDocumentCreateException])
   def rebuildIndex(solrServer: SolrServer)(progressCallback: SolrDocumentIndexService.IndexRebuildProgress => Unit) {
     import SolrDocumentIndexService.IndexRebuildProgress
 

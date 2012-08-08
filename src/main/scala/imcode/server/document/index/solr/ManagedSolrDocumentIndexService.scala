@@ -44,20 +44,20 @@ class ManagedSolrDocumentIndexService(
   def requestIndexRebuild(): Option[SolrDocumentIndexService.IndexRebuildTask] = lock.synchronized {
     logger.info("attempting to start new document-index-rebuild thread.")
 
-    (shutdownRef.get(), indexWriteErrorRef.get(), indexRebuildThreadRef.get()) match {
-      case (shutdown@true, _, _) =>
+    (shutdownRef.get(), indexWriteErrorRef.get(), indexRebuildThreadRef.get(), indexRebuildTask()) match {
+      case (shutdown@true, _, _, currentIndexRebuildTask) =>
         logger.info("new document-index-rebuild thread can not be started - service is shut down.")
-        indexRebuildTask()
+        currentIndexRebuildTask
 
-      case (_, indexWriteError, _) if indexWriteError != null =>
+      case (_, indexWriteError, _, currentIndexRebuildTask) if indexWriteError != null =>
         logger.info("new document-index-rebuild thread can not be started - previous index write attempt has failed with error [%s]."
           .format(indexWriteError))
-        indexRebuildTask()
+        currentIndexRebuildTask
 
-      case (_, _, indexRebuildThread) if Threads.notTerminated(indexRebuildThread) =>
+      case (_, _, indexRebuildThread, currentIndexRebuildTask) if Threads.notTerminated(indexRebuildThread) =>
         logger.info("new document-index-rebuild thread can not be started - document-index-rebuild thread [%s] is allready running."
           .format(indexRebuildThread))
-        indexRebuildTask()
+        currentIndexRebuildTask
 
       case _ =>
         new IndexRebuildTask {
@@ -212,17 +212,17 @@ class ManagedSolrDocumentIndexService(
 
   def shutdown(): Unit = lock.synchronized {
     if (shutdownRef.compareAndSet(false, true)) {
-      logger.info("attempting to shut down the service.")
+      logger.info("Attempting to shut down the service.")
       try {
         interruptIndexUpdateThreadAndAwaitTermination()
         interruptIndexRebuildThreadAndAwaitTermination()
 
         solrServerReader.shutdown()
         solrServerWriter.shutdown()
-        logger.info("service has been shut down.")
+        logger.info("Service has been shut down.")
       } catch {
         case e =>
-          logger.error("an error occured while shutting down the service.", e)
+          logger.error("An error occured while shutting down the service.", e)
           throw e
       }
     }

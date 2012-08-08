@@ -1,16 +1,12 @@
 package imcode.server.document.index.solr
 
-import _root_.com.imcode._
+import com.imcode._
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
-import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 import org.apache.solr.common.params.SolrParams
+import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 
-/**
- * Delegates all invocations to the ManagedSolrDocumentIndexService instance.
- * In case of an indexing error replaces managed instance with new one and re-indexes documents.
- */
-class EmbeddedSolrDocumentIndexService(solrHome: String, serviceOps: SolrDocumentIndexServiceOps)
+class ExternalSolrDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serviceOps: SolrDocumentIndexServiceOps)
     extends SolrDocumentIndexService {
 
   private val lock = new AnyRef
@@ -30,7 +26,7 @@ class EmbeddedSolrDocumentIndexService(solrHome: String, serviceOps: SolrDocumen
             logger.info("New managed service instance will not be created - service has been shout down.")
           } else {
             logger.info("Creating new instance of managed service. Data directory will be recreated.")
-            newManagedService(recreateDataDir = true) |> { newService =>
+            newManagedService() |> { newService =>
               serviceRef.set(newService)
               newService.requestIndexRebuild()
             }
@@ -42,7 +38,7 @@ class EmbeddedSolrDocumentIndexService(solrHome: String, serviceOps: SolrDocumen
     }
   }
 
-  newManagedService(recreateDataDir = false) |> serviceRef.set
+  newManagedService() |> serviceRef.set
 
 
   def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
@@ -69,9 +65,10 @@ class EmbeddedSolrDocumentIndexService(solrHome: String, serviceOps: SolrDocumen
   }
 
 
-  private def newManagedService(recreateDataDir: Boolean): ManagedSolrDocumentIndexService = {
-    val solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome, recreateDataDir)
+  private def newManagedService(): ManagedSolrDocumentIndexService = {
+    val solrServerReader = SolrServerFactory.createHttpSolrServer(solrReadUrl)
+    val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrWriteUrl)
 
-    new ManagedSolrDocumentIndexService(solrServer, solrServer, serviceOps, serviceErrorHandler)
+    new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, serviceOps, serviceErrorHandler)
   }
 }
