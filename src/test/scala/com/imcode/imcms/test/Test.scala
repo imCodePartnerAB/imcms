@@ -139,7 +139,7 @@ trait TestDb { test: Test =>
       if (recreateBeforePrepare) recreate()
 
       val scriptsDir = test.path("src/main/web/WEB-INF/sql")
-      val schema = Schema.load(test.file("src/main/resources/schema.xml")).changeScriptsDir(scriptsDir)
+      val schema = Schema.load(test.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
 
       new DB(createDataSource()).prepare(schema)
     }

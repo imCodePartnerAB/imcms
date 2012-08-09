@@ -1,4 +1,7 @@
-package com.imcode.imcms.db
+package com.imcode
+package imcms.db
+
+import java.net.URL
 
 case class Schema(version: Version, init: Init, diffs: Set[Diff], scriptsDir: String = "") {
   require(diffs.size == diffs.map(_.from).size, "'diffs' 'from' values must must be distinct: %s." format diffs)
@@ -10,15 +13,16 @@ case class Schema(version: Version, init: Init, diffs: Set[Diff], scriptsDir: St
     case _ => Nil
   }
 
-  def changeScriptsDir(newScriptsDir: String): Schema = copy(scriptsDir = newScriptsDir)
+  def setScriptsDir(newScriptsDir: String): Schema = copy(scriptsDir = newScriptsDir)
 }
+
 
 object Schema {
 
   import java.io.File
   import xml.XML
 
-  implicit def xmlToSchema(xml: scala.xml.Elem) = {
+  def apply(xml: scala.xml.Elem) = {
     val version = (xml \ "@version").text
     val scriptsDir = (xml \ "@scripts-dir").text
 
@@ -39,7 +43,9 @@ object Schema {
   }
 
 
-  def load(file: File) = XML loadFile file : Schema
+  def load(file: File) = XML.loadFile(file) |> apply
+
+  def load(url: URL) = XML.load(url) |> apply
 }
 
 

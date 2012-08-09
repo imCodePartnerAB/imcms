@@ -36,7 +36,7 @@ class DBTestSuite extends WordSpec {
     Test.db.recreate()
 
     val scriptsDir = Test.path("src/main/web/WEB-INF/sql")
-    val schema = Schema.load(Test.file("src/main/resources/schema.xml")).changeScriptsDir(scriptsDir)
+    val schema = Schema.load(Test.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
     val db = new DB(Test.db.createDataSource());
 
     "run all update scritps" in {

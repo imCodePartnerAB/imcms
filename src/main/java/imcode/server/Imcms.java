@@ -479,14 +479,19 @@ public class Imcms {
 
         URL schemaConfFileURL = Imcms.class.getResource("/schema.xml");
 
-        if (schemaConfFileURL == null) throw new RuntimeException("Schema file could not be found");
+        if (schemaConfFileURL == null) {
+            String errMsg = "Database schema config file 'schema.xml' can not be found.";
+            logger.fatal(errMsg);
+            throw new RuntimeException(errMsg);
+        }
 
-        Schema schema = Schema.load(new File(schemaConfFileURL.getFile()));
+        logger.info(String.format("Loading database schema config file %s.", schemaConfFileURL));
+        Schema schema = Schema.load(schemaConfFileURL);
 
-        DataSource dataSource = (DataSource) getSpringBean("dataSource");
+        DataSource dataSource = (DataSource)Imcms.getSpringBean("dataSource");
         DB db = new DB(dataSource);
 
-        db.prepare(schema.changeScriptsDir(sqlScriptsPath));
+        db.prepare(schema.setScriptsDir(sqlScriptsPath));
     }
 
     public static ApplicationContext getApplicationContext() {
