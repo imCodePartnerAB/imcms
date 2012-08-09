@@ -22,7 +22,7 @@ object Schema {
   import java.io.File
   import xml.XML
 
-  def apply(xml: scala.xml.Elem) = {
+  def apply(xml: scala.xml.Elem): Schema = {
     val version = (xml \ "@version").text
     val scriptsDir = (xml \ "@scripts-dir").text
 
