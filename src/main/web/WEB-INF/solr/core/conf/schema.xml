@@ -178,9 +178,14 @@
         <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" required="true"/>
 
         <!-- language code - i.e en, se -->
-        <field name="language" type="string" indexed="true" stored="true" required="true"/>
+        <field name="language" type="keyword_lowercase" indexed="true" stored="true" required="true"/>
 
-        <field name="meta_id" type="int" indexed="true" stored="true" required="true"/>
+        <!--
+            Should be of type int.
+            Unfortunately some imCMS query builders do not check value type before using this field
+            in -OR- queries
+         -->
+        <field name="meta_id" type="keyword_lowercase" indexed="true" stored="true" required="true"/>
         <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="meta_headline" type="string" indexed="true" stored="false"/>
         <field name="meta_headline_keyword" type="keyword_lowercase" indexed="true" stored="false"/>
@@ -205,7 +210,7 @@
         <field name="category_type_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="keyword" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
         <field name="parent_id" type="int" indexed="true" stored="false" multiValued="true"/>
-        <field name="parent_menu_id" type="int" indexed="true" stored="false" multiValued="true"/>
+        <field name="parent_menu_id" type="keyword_lowercase" indexed="true" stored="false" multiValued="true"/>
         <field name="has_parents" type="boolean" indexed="true" stored="false"/>
         <field name="alias" type="keyword_lowercase" indexed="true" stored="false"/>
 
