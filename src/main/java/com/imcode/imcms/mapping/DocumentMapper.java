@@ -815,24 +815,32 @@ public class DocumentMapper implements DocumentGetter {
      * <p/>
      * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
      *
-     * @param doc - existing document
      * @param text - text being saved
      *
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      *
-     * @throws IllegalStateException if text 'no' is not set
+     * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      */
-    public synchronized void saveTextDocText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user)
+    public synchronized void saveTextDocText(TextDomainObject text, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
+
+        if (text.getDocId() == null)
+            throw new IllegalStateException("text document no is not set");
+
+        if (text.getDocVersionNo() == null)
+            throw new IllegalStateException("text document version no is not set");
 
         if (text.getNo() == null)
             throw new IllegalStateException("text no is not set");
 
+        if (text.getLanguage() == null)
+            throw new IllegalStateException("text language is not set");
+
         try {
-            documentSaver.saveText(doc, text, user);
+            documentSaver.saveText(text, user);
         } finally {
-            invalidateDocument(doc);
+            invalidateDocument(text.getDocId());
         }
     }
 

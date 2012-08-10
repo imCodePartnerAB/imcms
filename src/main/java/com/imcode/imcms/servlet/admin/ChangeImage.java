@@ -5,6 +5,7 @@ import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.textdocument.ContentRef;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -51,6 +52,7 @@ public class ChangeImage extends HttpServlet {
         String contentNoStr = request.getParameter("content_no");
         Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
+        ContentRef contentRef = loopNo == null || contentNo == null ? null : new ContentRef(loopNo, contentNo);
 
         final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(
                 documentId);
@@ -64,16 +66,15 @@ public class ChangeImage extends HttpServlet {
         /**
          * Image DTO. Holds generic properties such as size and border. 
          */
-        final ImageDomainObject defaultImage = loopNo == null
+        final ImageDomainObject defaultImage = contentRef == null
                 ? document.getImage(imageIndex)
-                : document.getImage(imageIndex, loopNo, contentNo);
+                : document.getImage(imageIndex, contentRef);
         final ImageDomainObject image = defaultImage != null
                 ? defaultImage
                 : new ImageDomainObject();
 
         image.setNo(imageIndex);
-        image.setContentLoopNo(loopNo);
-        image.setContentNo(contentNo);
+        image.setContentRef(contentRef);
 
         // Check if user has image rights
         if (!ImageEditPage.userHasImagePermissionsOnDocument(user, document)) {

@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.textdocument.ContentRef;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -37,7 +38,8 @@ public class ChangeText extends HttpServlet {
         String contentIndexStr = request.getParameter("content_index");
 
         Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
-        Integer contentIndex = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);
+        Integer contentNo = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);
+        ContentRef contentRef = loopNo == null || contentNo == null ? null : new ContentRef(loopNo, contentNo);
 
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentMapper.getDocument(
                 documentId);
@@ -54,9 +56,9 @@ public class ChangeText extends HttpServlet {
         String label = null == request.getParameter("label") ? "" : request.getParameter("label");
 
         I18nLanguage language = Imcms.getUser().getDocGetterCallback().getParams().language();
-        TextDomainObject text = loopNo == null
+        TextDomainObject text = contentRef == null
                 ? textDocument.getText(textIndex)
-                : textDocument.getText(textIndex, loopNo, contentIndex);
+                : textDocument.getText(textIndex, contentRef);
 
         Integer metaId = textDocument.getId();
 
@@ -67,8 +69,7 @@ public class ChangeText extends HttpServlet {
             text.setNo(textIndex);
             text.setLanguage(language);
             text.setType(TextDomainObject.TEXT_TYPE_HTML);
-            text.setContentLoopNo(loopNo);
-            text.setContentNo(contentIndex);
+            text.setContentRef(contentRef);
         }
 
         TextEditPage page = new TextEditPage(documentId, textIndex, text, label);

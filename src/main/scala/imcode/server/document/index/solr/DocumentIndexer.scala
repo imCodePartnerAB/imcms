@@ -31,12 +31,12 @@ class DocumentIndexer(
   def index(doc: DocumentDomainObject): SolrInputDocument = new SolrInputDocument |>> { indexDoc =>
     def addFieldIfNotNull(name: String, value: AnyRef): Unit = if (value != null) indexDoc.addField(name, value)
 
-    val metaId = doc.getId
+    val docId = doc.getId
     val languageCode = doc.getLanguage.getCode
 
-    indexDoc.addField(DocumentIndex.FIELD__ID, "%d_%s".format(metaId, languageCode))
+    indexDoc.addField(DocumentIndex.FIELD__ID, "%d_%s".format(docId, languageCode))
     indexDoc.addField(DocumentIndex.FIELD__TIMESTAMP, new Date)
-    indexDoc.addField(DocumentIndex.FIELD__META_ID, metaId)
+    indexDoc.addField(DocumentIndex.FIELD__META_ID, docId)
     indexDoc.addField(DocumentIndex.FIELD__LANGUAGE, languageCode)
 
     doc.getI18nMeta |> { l =>
@@ -103,7 +103,7 @@ class DocumentIndexer(
     } catch {
       case e =>
         logger.error("Failed to index doc's content. Doc id: %d, language: %s, type: %s".
-            format(metaId, doc.getLanguage, doc.getDocumentType), e)
+            format(docId, doc.getLanguage, doc.getDocumentType), e)
     }
   }
 }

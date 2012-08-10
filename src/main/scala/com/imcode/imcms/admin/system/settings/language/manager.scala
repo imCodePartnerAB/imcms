@@ -20,7 +20,7 @@ class LanguageManager(app: ImcmsApplication) {
     ui.rc.btnReload addClickHandler { reload() }
     ui.tblLanguages addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommandHandler { editAndSave(new I18nLanguage) }
+    ui.miNew setCommandHandler { editAndSave(I18nLanguage.builder().build()) }
     ui.miEdit setCommandHandler {
       whenSelected(ui.tblLanguages) { id =>
         languageDao.getById(id) match {
@@ -90,10 +90,10 @@ class LanguageManager(app: ImcmsApplication) {
         c.txtCode.value = vo.getCode |> opt getOrElse ""
         c.txtName.value = vo.getName |> opt getOrElse ""
         c.txtNativeName.value = vo.getNativeName |> opt getOrElse ""
-        c.chkEnabled.value = vo.isEnabled |> opt getOrElse (Boolean box false)
+        c.chkEnabled.value = vo.isEnabled
 
         dlg wrapOkHandler {
-          new I18nLanguage.Builder |> { voc =>
+          I18nLanguage.builder() |> { voc =>
             // todo: validate
             voc.code(c.txtCode.value)
             voc.name(c.txtName.value)
@@ -128,7 +128,7 @@ class LanguageManager(app: ImcmsApplication) {
       vo <- languageDao.getAllLanguages
       id = vo.getId
       isDefault = Boolean box (default == id.intValue)
-    } ui.tblLanguages.addItem(Array[AnyRef](id, vo.getCode, vo.getName, vo.getNativeName, vo.isEnabled, isDefault), id)
+    } ui.tblLanguages.addItem(Array[AnyRef](id, vo.getCode, vo.getName, vo.getNativeName, Boolean box vo.isEnabled, isDefault), id)
 
     canManage |> { value =>
       ui.tblLanguages.setSelectable(value)

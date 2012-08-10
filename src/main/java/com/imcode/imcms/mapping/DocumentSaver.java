@@ -70,12 +70,12 @@ public class DocumentSaver {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      */
     @Transactional
-    public void saveText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfNecessary(doc, text);
+    public void saveText(TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        createEnclosingContentLoopIfNecessary(text);
 
-        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(doc, text, user);
+        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(text, user);
 
-        metaDao.touch(doc, user);
+        metaDao.touch(text.getDocId(), text.getDocVersionNo(), user.getId());
     }
 
 
@@ -106,7 +106,7 @@ public class DocumentSaver {
             throws NoPermissionInternalException, DocumentSaveException {
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
-        createEnclosingContentLoopIfNecessary(doc, images.iterator().next());
+        createEnclosingContentLoopIfNecessary(images.iterator().next());
 
         for (ImageDomainObject image : images) {
             storingVisitor.saveTextDocumentImage(doc, image, user);
@@ -118,7 +118,7 @@ public class DocumentSaver {
 
     @Transactional
     public void saveImage(TextDocumentDomainObject doc, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfNecessary(doc, image);
+        createEnclosingContentLoopIfNecessary(image);
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
@@ -131,36 +131,29 @@ public class DocumentSaver {
     /**
      * Creates content loop if item references non-saved enclosing content loop.
      *
-     * @param doc
      * @param item
      */
     @Transactional
-    public ContentLoop createEnclosingContentLoopIfNecessary(TextDocumentDomainObject doc, DocContentLoopItem item) {
-        ContentLoop loop = null;
-        Integer loopNo = item.getContentLoopNo();
+    public ContentLoop createEnclosingContentLoopIfNecessary(DocContentLoopItem item) {
+        ContentRef contentRef = item.getContentRef();
 
-        if (loopNo != null) {
-            Integer contentNo = item.getContentNo();
-
-            if (contentNo == null) {
-                throw new IllegalStateException(String.format(
-                        "Content loop's context no is not set. Doc id: %s, item :%s, content loop no: %s.", doc.getId(), item, loopNo));
-            }
-
-            loop = doc.getContentLoop(loopNo);
-
-            if (loop == null) {
-                throw new IllegalStateException(String.format(
-                        "Content loop does not exists. Doc id: %s, item :%s, content loop no: %s.", doc.getId(), item, loopNo));
-            }
-
-            if (!loop.contentExists(contentNo)) {
-                throw new IllegalStateException(String.format(
-                        "Content does not exists. Doc id: %s, item :%s, content loop no: %s.", doc.getId(), item, loopNo));
-            }
-
-            loop = contentLoopDao.saveLoop(loop);
+        if (contentRef == null) {
+            return null;
         }
+
+        ContentLoop loop = contentLoopDao.getLoop(item.getDocId(), item.getDocVersionNo(), contentRef.getLoopNo());
+
+        if (loop == null) {
+            throw new IllegalStateException(String.format(
+                    "Content loop does not exists. Doc id: %s, item :%s, content loop no: %s.", item.getDocId(), item, contentRef.getLoopNo()));
+        }
+
+        if (!loop.contentExists(contentRef.getContentNo())) {
+            throw new IllegalStateException(String.format(
+                    "Content does not exists. Doc id: %s, item :%s, content loop no: %s.", item.getDocId(), item, contentRef.getLoopNo()));
+        }
+
+        loop = contentLoopDao.saveLoop(loop);
 
         return loop;
     }
@@ -384,12 +377,17 @@ public class DocumentSaver {
                 TextDomainObject text2 = new TextDomainObject(i18nMeta.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN);
 
                 text1.setNo(1);
-                text2.setNo(2);
                 text1.setLanguage(i18nMeta.getLanguage());
-                text2.setLanguage(i18nMeta.getLanguage());
+                text1.setDocId(textDoc.getId());
+                text1.setDocVersionNo(textDoc.getVersionNo());
 
-                docCreatingVisitor.saveTextDocumentText(textDoc, text1, user);
-                docCreatingVisitor.saveTextDocumentText(textDoc, text2, user);
+                text2.setNo(2);
+                text2.setLanguage(i18nMeta.getLanguage());
+                text2.setDocId(textDoc.getId());
+                text2.setDocVersionNo(textDoc.getVersionNo());
+
+                docCreatingVisitor.saveTextDocumentText(text1, user);
+                docCreatingVisitor.saveTextDocumentText(text2, user);
             }
         }
 

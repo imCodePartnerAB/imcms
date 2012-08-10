@@ -2,27 +2,27 @@ package com.imcode
 package imcms.dao
 
 import scala.collection.JavaConverters._
-import imcode.server.user.UserDomainObject
-import imcode.server.Imcms
+import _root_.imcode.server.user.UserDomainObject
+import _root_.imcode.server.Imcms
+import _root_.imcode.server.document._
+import _root_.imcode.server.document.textdocument._
+import _root_.imcode.util.io.InputStreamSource
 import java.io.ByteArrayInputStream
-import imcode.util.io.InputStreamSource
+import java.util.EnumSet
 import org.apache.commons.io.FileUtils
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
-import imcms.test._
-import fixtures.LanguageFX
-import imcms.test.Test
-import imcode.server.document._
-import java.util.EnumSet
-import imcms.mapping.{DocumentSaver, DocumentStoringVisitor, DocumentMapper}
-import imcms.api.{I18nMeta, ContentLoop, I18nSupport}
-import textdocument._
-import imcms.api.TextDocument.TextField
-import imcms.util.Factory
-import imcms.mapping.DocumentMapper.SaveOpts
+import com.imcode.imcms.test._
+import com.imcode.imcms.test.Test
+import com.imcode.imcms.test.fixtures.LanguageFX
+import com.imcode.imcms.mapping.{DocumentSaver, DocumentStoringVisitor, DocumentMapper}
+import com.imcode.imcms.mapping.DocumentMapper.SaveOpts
+import com.imcode.imcms.api.{I18nMeta, ContentLoop, I18nSupport}
+import com.imcode.imcms.api.TextDocument.TextField
+import com.imcode.imcms.util.Factory
 
 @RunWith(classOf[JUnitRunner])
 class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
@@ -34,6 +34,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
   override def beforeAll() = withLogFailure {
     Test.db.recreate()
+    Test.solr.recreateHome()
     Test.imcms.init(start = true, prepareDbOnStart = true)
 
     i18nSupport = Imcms.getI18nSupport
@@ -208,11 +209,10 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       newDoc.setMenu(no, menu)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = Factory.createText(null, null, null, null, loopNo, contentNo)
+        val text = Factory.createText(null, null, null, null, new ContentRef(loopNo, contentNo))
         val image = new ImageDomainObject
 
-        image.setContentLoopNo(loopNo)
-        image.setContentNo(contentNo)
+        image.setContentRef(new ContentRef(loopNo, contentNo))
 
         text.setText(textPrefix + no + "_%d:%d".format(loopNo, contentNo))
         text.setType(textType)
@@ -259,13 +259,13 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
                    menuItems.values.asScala.map(_.getDocumentId).toSet)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = savedDoc.getText(no, loopNo, contentNo)
-        val image = savedDoc.getImage(no, loopNo, contentNo)
+        val text = savedDoc.getText(no, new ContentRef(loopNo, contentNo))
+        val image = savedDoc.getImage(no, new ContentRef(loopNo, contentNo))
 
         assertNotNull(text)
         assertEquals(no, text.getNo)
-        assertEquals(loopNo, text.getContentLoopNo)
-        assertEquals(contentNo, text.getContentNo)
+        assertEquals(loopNo, text.getContentRef.getLoopNo)
+        assertEquals(contentNo, text.getContentRef.getContentNo)
         assertEquals(textType, text.getType)
         assertEquals(textPrefix + no + "_%d:%d".format(loopNo, contentNo), text.getText)
 
@@ -680,13 +680,18 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val text = "text"
     val textDO = new TextDomainObject(text)
 
+    textDO.setDocId(doc.getId)
+    textDO.setDocVersionNo(doc.getVersionNo)
+    textDO.setLanguage(doc.getLanguage)
+    textDO.setNo(no)
+
     expect(null, "Text field does not exists") {
       doc.getText(no)
     }
 
 
 
-    docMapper.saveTextDocText(doc, textDO, admin)
+    docMapper.saveTextDocText(textDO, admin)
 
     // check:
     // touch, creation of enclosed content loop, no is not specified.

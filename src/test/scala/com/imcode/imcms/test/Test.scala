@@ -66,15 +66,16 @@ class Test extends TestDb with TestSolr {
 
   object imcms {
     def init(start: Boolean = false, prepareDbOnStart: Boolean = false) {
-      dir("src/test/resources") |> { path =>
+      dir("target/test-classes") |> { path =>
         Imcms.setPath(path, path)
       }
 
       Imcms.setSQLScriptsPath(path("src/main/web/WEB-INF/sql"))
+      Imcms.setServerPropertiesFilename("test-server.properties")
       Imcms.setApplicationContext(new FileSystemXmlApplicationContext("file:" + path("src/test/resources/test-applicationContext.xml")))
       Imcms.setPrepareDatabaseOnStart(prepareDbOnStart)
 
-      if (start) Imcms.start
+      if (start) Imcms.start()
     }
   }
 
@@ -150,7 +151,7 @@ trait TestDb { test: Test =>
 trait TestSolr { test: Test =>
 
   object solr {
-    val home: String = test.path("target/test/solr")
+    val home: String = test.path("target/test-classes/WEB-INF/solr")
     val homeDir: File = new File(home)
     val homeTemplateDir: File = test.dir("src/main/web/WEB-INF/solr").ensuring(_.isDirectory, "SOLr home template exists.")
 

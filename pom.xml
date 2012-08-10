@@ -13,10 +13,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <solr.version>3.6.1</solr.version>
         <slf4j.version>1.6.6</slf4j.version>
         <scala.version>2.9.2</scala.version>
-        <org.springframework.version>3.1.2.RELEASE</org.springframework.version>
-        <solr.version>3.6.1</solr.version>
+        <springframework.version>3.1.2.RELEASE</springframework.version>
 
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
@@ -30,9 +30,9 @@
         <javac.deprecation>false</javac.deprecation>
         <javac.args></javac.args>
 
+        <build.log4j.threshold>info</build.log4j.threshold>
         <build.log4j.hibernate.level>error</build.log4j.hibernate.level>
         <build.log4j.console-appender.threshold>off</build.log4j.console-appender.threshold>
-        <build.log4j.threshold>info</build.log4j.threshold>
     </properties>
 
     <profiles>
@@ -55,6 +55,7 @@
                 <build.log4j.console-appender.threshold>debug</build.log4j.console-appender.threshold>
                 <build.log4j.threshold>debug</build.log4j.threshold>
 
+                <javac.args>-Xlint</javac.args>
                 <javac.deprecation>true</javac.deprecation>
             </properties>
         </profile>
@@ -77,7 +78,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
-            <!--<scope>runtime</scope>-->
         </dependency>
 
         <dependency>
@@ -119,6 +119,12 @@
             <artifactId>dbunit</artifactId>
             <version>2.4.8</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>11.0.2</version>
         </dependency>
 
         <dependency>
@@ -214,7 +220,7 @@
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-core</artifactId>
-            <version>2.3.0</version>
+            <version>2.5.3</version>
         </dependency>
 
         <dependency>
@@ -343,7 +349,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>4.1.5.SP1</version>
+            <version>4.1.6.Final</version>
         </dependency>
 
         <dependency>
@@ -351,10 +357,11 @@
             <artifactId>validation-api</artifactId>
             <version>1.0.0.GA</version>
         </dependency>
+
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>4.2.0.Final</version>
+            <version>4.3.0.Final</version>
         </dependency>
 
         <dependency>
@@ -434,7 +441,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.18</version>
+            <version>5.1.21</version>
         </dependency>
 
         <dependency>
@@ -464,7 +471,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>${org.springframework.version}</version>
+            <version>${springframework.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -476,7 +483,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${org.springframework.version}</version>
+            <version>${springframework.version}</version>
         </dependency>
 
         <dependency>
@@ -524,19 +531,6 @@
         <!--<scope>provided</scope>-->
         <!--</dependency>-->
 
-        <!--<dependency>-->
-        <!--<groupId>commons-el</groupId>-->
-        <!--<artifactId>commons-el</artifactId>-->
-        <!--<version>1.0</version>-->
-        <!--<scope>provided</scope>-->
-        <!--<exclusions>-->
-        <!--<exclusion>-->
-        <!--<artifactId>commons-logging</artifactId>-->
-        <!--<groupId>commons-logging</groupId>-->
-        <!--</exclusion>-->
-        <!--</exclusions>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>jakarta-regexp</groupId>
             <artifactId>jakarta-regexp</artifactId>
@@ -560,7 +554,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Not provided with some J2EE web containers such as Tomcat 6.X -->
+        <!-- Not distributed with all JEE web containers such as Tomcat 6.X -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>

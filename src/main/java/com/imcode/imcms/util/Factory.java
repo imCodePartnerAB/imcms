@@ -46,7 +46,7 @@ public class Factory {
      * @return
      */
     public static TextDomainObject createText(Integer docId, Integer docVersionNo, Integer no, I18nLanguage language) {
-        return createText(docId, docVersionNo, no, language, null, null);
+        return createText(docId, docVersionNo, no, language, null);
     }
 
 
@@ -56,14 +56,12 @@ public class Factory {
      * @param docVersionNo
      * @param no
      * @param language
-     * @param loopNo
-     * @param contentNo
+     * @param contentRef
      * @return
      */
-    public static TextDomainObject createText(Integer docId, Integer docVersionNo, Integer no, I18nLanguage language, Integer loopNo, Integer contentNo) {
+    public static TextDomainObject createText(Integer docId, Integer docVersionNo, Integer no, I18nLanguage language, ContentRef contentRef) {
         TextDomainObject text = newInstance(TextDomainObject.class, docId, docVersionNo, language, no);
-        text.setContentLoopNo(loopNo);
-        text.setContentNo(contentNo);
+        text.setContentRef(contentRef);
 
         return text;
     }
@@ -75,9 +73,9 @@ public class Factory {
         return createImage(docId, docVersionNo, language, no, null);
     }
 
-    public static ImageDomainObject createImage(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no, Integer contentIndex) {
+    public static ImageDomainObject createImage(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no, ContentRef contentRef) {
         ImageDomainObject image = newInstance(ImageDomainObject.class, docId, docVersionNo, language, no);
-        image.setContentNo(contentIndex);
+        image.setContentRef(contentRef);
 
         return image;
     }
@@ -117,8 +115,8 @@ public class Factory {
         return createNextImage(doc, null);
     }
 
-    public static ImageDomainObject createNextImage(TextDocumentDomainObject doc, Integer contentIndex) {
-        return createImage(doc.getId(), doc.getVersion().getNo(), doc.getLanguage(), getNextItemNo(doc.getImages().values()), contentIndex);
+    public static ImageDomainObject createNextImage(TextDocumentDomainObject doc, ContentRef contentRef) {
+        return createImage(doc.getId(), doc.getVersion().getNo(), doc.getLanguage(), getNextItemNo(doc.getImages().values()), contentRef);
     }
 
     public static MenuDomainObject createNextMenu(TextDocumentDomainObject doc, DocumentReference docRef) {

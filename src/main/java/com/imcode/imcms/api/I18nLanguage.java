@@ -66,19 +66,25 @@ public final class I18nLanguage implements Serializable, Cloneable {
         }
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    // Reserved for future use
-    private Boolean enabled;
 
     private String code;
 
     private String name;
 
+    private boolean enabled;
+
     @Column(name = "native_name")
     private String nativeName;
+
+    protected I18nLanguage() {
+    }
 
 
     @Override
@@ -134,7 +140,7 @@ public final class I18nLanguage implements Serializable, Cloneable {
         return nativeName != null ? nativeName : name;
     }
 
-    public Boolean isEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 }

@@ -113,8 +113,7 @@ public class Meta implements Serializable, Cloneable {
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "disabled_language_show_rule", nullable = false)
-    private DisabledLanguageShowSetting disabledLanguageShowSetting =
-            DisabledLanguageShowSetting.DO_NOT_SHOW;
+    private DisabledLanguageShowSetting disabledLanguageShowSetting = DisabledLanguageShowSetting.DO_NOT_SHOW;
 
     // CHECKED
     @Column(name = "activate", nullable = false, updatable = false)
@@ -214,20 +213,13 @@ public class Meta implements Serializable, Cloneable {
 
     // These fields were lazy loaded in previous version:
     @ElementCollection(fetch = FetchType.EAGER)
-//    @JoinTable(
-//            name = "document_properties",
-//            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
-    @CollectionTable(name = "document_properties", joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
+    @CollectionTable(name = "document_properties", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "key_name")
     @Column(name = "value", nullable = false)
     private Map<String, String> properties = new HashMap<String, String>();
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "document_categories", joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id")
-    )
-//    @JoinTable(
-//            name = "document_categories",
-//            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
+    @CollectionTable(name = "document_categories", joinColumns = @JoinColumn(name = "meta_id"))
     @Column(name = "category_id", nullable = false)
     private Set<Integer> categoryIds = new HashSet<Integer>();
 
@@ -236,9 +228,7 @@ public class Meta implements Serializable, Cloneable {
     // RoleId to permission-set id mapping.  
     // For processing after load:
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "roles_rights",
-            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
+    @CollectionTable(name = "roles_rights", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "role_id")
     @Column(name = "set_id")
     private Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<Integer, Integer>();
@@ -251,9 +241,7 @@ public class Meta implements Serializable, Cloneable {
     // For processing after load:
     // permisionId in the table actually is not an 'id' but a bit set value.
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "doc_permission_sets",
-            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
+    @CollectionTable(name = "doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "set_id")
     @Column(name = "permission_id")
     private Map<Integer, Integer> permissionSetBitsMap = new HashMap<Integer, Integer>();
@@ -266,9 +254,7 @@ public class Meta implements Serializable, Cloneable {
     // For processing after load:
     // permisionId in the table actually is not an 'id' but a bit set value.
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "new_doc_permission_sets",
-            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
+    @CollectionTable(name = "new_doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "set_id")
     @Column(name = "permission_id")
     private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<Integer, Integer>();
@@ -278,24 +264,20 @@ public class Meta implements Serializable, Cloneable {
      */
     // For processing after load:
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "doc_permission_sets_ex",
-            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
+    @CollectionTable(name = "doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
     private Set<PermisionSetEx> permisionSetEx = new HashSet<PermisionSetEx>();
 
 
     // For processing after load:
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "new_doc_permission_sets_ex",
-            joinColumns = @JoinColumn(name = "meta_id", referencedColumnName = "meta_id"))
+    @CollectionTable(name = "new_doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
     private Set<PermisionSetEx> permisionSetExForNew = new HashSet<PermisionSetEx>();
 
 
     /**
      * Enabled languages - might be empty.
      */
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH})
     @JoinTable(
             name = "imcms_doc_languages",
             joinColumns = @JoinColumn(name = "doc_id"),
@@ -305,12 +287,7 @@ public class Meta implements Serializable, Cloneable {
 
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @javax.persistence.JoinTable(
-            name = "imcms_doc_keywords",
-            joinColumns = {
-                    @JoinColumn(name = "doc_id", referencedColumnName = "meta_id")
-            }
-    )
+    @CollectionTable(name = "imcms_doc_keywords", joinColumns = @JoinColumn(name = "doc_id"))
     @Column(name = "value")
     private Set<String> keywords = new HashSet<String>();
 

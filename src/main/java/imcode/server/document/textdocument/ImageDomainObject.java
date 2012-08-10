@@ -76,12 +76,6 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
     @Column(name="archive_image_id")
     private Long archiveImageId;
 
-    @Column(name="content_loop_no")
-    private Integer contentLoopNo;
-
-    @Column(name="content_no")
-    private Integer contentNo;
-
     @Column(name="format", nullable=false)
     private short format;
 
@@ -102,7 +96,9 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
 
     @Column(name="gen_file", length=GEN_FILE_LENGTH)
     private String generatedFilename;
-    
+
+    private ContentRef contentRef;
+
     /**
      * i18n support 
      */
@@ -474,22 +470,6 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
 		this.docVersionNo = docVersionNo;
 	}
 
-    public Integer getContentLoopNo() {
-        return contentLoopNo;
-    }
-
-    public void setContentLoopNo(Integer contentLoopNo) {
-        this.contentLoopNo = contentLoopNo;
-    }
-
-    public Integer getContentNo() {
-        return contentNo;
-    }
-
-    public void setContentNo(Integer contentNo) {
-        this.contentNo = contentNo;
-    }
-
     public String getImageName() {
         return imageName;
     }
@@ -710,5 +690,13 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
 
             return (direction != null ? direction : RotateDirection.NORTH);
         }
+    }
+
+    public ContentRef getContentRef() {
+        return contentRef;
+    }
+
+    public void setContentRef(ContentRef contentRef) {
+        this.contentRef = contentRef;
     }
 }

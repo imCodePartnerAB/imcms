@@ -3,9 +3,7 @@ package com.imcode.imcms.api;
 import javax.persistence.*;
 
 /**
- * Content is a part of a content loop.
- * It is never instantiated directly.
- *
+ * Content is a facet of a content loop.
  * 
  * @see com.imcode.imcms.api.ContentLoop
  */
@@ -33,7 +31,7 @@ public class Content implements Cloneable {
 
     @Override
     public String toString() {
-        return String.format("{no: %s, enabled: %s}", no, enabled);
+        return String.format("Content{no=%s, enabled=%s}", no, enabled);
     }
 
     public boolean isEnabled() {

@@ -3,7 +3,6 @@ package imcms.dao
 
 import scala.collection.JavaConverters._
 import imcms.util.Factory
-import imcode.server.document.textdocument.TextDomainObject
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -19,6 +18,7 @@ import org.springframework.context.annotation.Bean._
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
 import com.imcode.imcms.api.{SystemProperty, I18nLanguage, TextHistory}
+import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
 
 @RunWith(classOf[JUnitRunner])
 class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
@@ -43,8 +43,6 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
     mkLanguages foreach { test(_) }
   }
 
-  case class ContentInfo(loopNo: JInteger, contentNo: JInteger)
-
   object Default {
     val docId = 1001
     val docVersionNo = 0
@@ -55,16 +53,13 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
   def saveNewTextDoc(
       docId: Int = Default.docId,
       docVersionNo: Int = Default.docVersionNo,
-      contentInfo: Option[ContentInfo] = None,
+      contentRef: Option[ContentRef] = None,
       no: Int = Default.no,
       text: String = Default.text,
       language: I18nLanguage) =
 
     Factory.createText(docId, docVersionNo, no, language) |>> { vo =>
-      for (ContentInfo(loopNo, contentNo) <- contentInfo) {
-        vo.setContentLoopNo(loopNo)
-        vo.setContentNo(contentNo)
-      }
+      contentRef.foreach(vo.setContentRef)
 
       vo.setText(text)
       textDao.saveText(vo)
@@ -77,8 +72,8 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
         'id (id),
         'docId (docId),
         'docVersionNo (docVersionNo),
-        'contentLoopNo (contentInfo.map(_.loopNo).orNull),
-        'contentNo (contentInfo.map(_.contentNo).orNull),
+        'contentLoopNo (contentRef.map(_.getLoopNo).orNull),
+        'contentNo (contentRef.map(_.getContentNo).orNull),
         'no (no),
         'text (text),
         'language (language))
@@ -109,8 +104,8 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
       'type (text.getType),
       'docId (text.getDocId),
       'docVersionNo (updatedDocVersionNo),
-      'contentLoopNo (text.getContentLoopNo),
-      'contentNo (text.getContentNo),
+//      'contentLoopNo (text.getContentLoopNo),
+//      'contentNo (text.getContentNo),
       'no (text.getNo),
       'text (updatedTextValue),
       'language (language))
@@ -118,20 +113,20 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
 
 
   test("delete text doc's texts") { () =>
-    val contentInfo = ContentInfo(100, 1)
-    val contentInfos = Seq(None, Some(contentInfo))
+    val contentRef = new ContentRef(100, 1)
+    val contentRefs = Seq(None, Some(contentRef))
     val nos = 0 until 5
 
-    for (indexNo <- nos; ci <- contentInfos; language <- mkLanguages)
+    for (indexNo <- nos; ci <- contentRefs; language <- mkLanguages)
       saveNewTextDoc(
         docId = Default.docId,
         docVersionNo = Default.docVersionNo,
         no = indexNo,
-        contentInfo = ci,
+        contentRef = ci,
         language = language)
 
     for (language <- mkLanguages)
-      expect(nos.size * contentInfos.size, "texts count inside and outside of content loop") {
+      expect(nos.size * contentRefs.size, "texts count inside and outside of content loop") {
         textDao.deleteTexts(Default.docId, Default.docVersionNo, language)
       }
   }
@@ -160,29 +155,26 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
 
 
   test("get text doc's texts by doc id and doc version no and language") { () =>
-    val contentInfo = ContentInfo(100, 1)
+    val contentRef = new ContentRef(100, 1)
     val versionNos = 0 until 2
     val nos = 0 until 5
-    val contentInfos = Seq(None, Some(contentInfo))
+    val contentRefs = Seq(None, Some(contentRef))
 
-    for (versionNo <- versionNos; orderNo <- nos; ci <- contentInfos; language <- mkLanguages)
-      saveNewTextDoc(docId = Default.docId, docVersionNo = versionNo, contentInfo = ci,  no = orderNo, language = language)
+    for (versionNo <- versionNos; orderNo <- nos; ci <- contentRefs; language <- mkLanguages)
+      saveNewTextDoc(docId = Default.docId, docVersionNo = versionNo, contentRef = ci,  no = orderNo, language = language)
 
 
     for (versionNo <- versionNos; language <- mkLanguages) {
       val texts = textDao.getTexts(Default.docId, versionNo, language).asScala
 
-      expect(nos.size * contentInfos.size) { texts.size }
+      expect(nos.size * contentRefs.size) { texts.size }
 
       expect(nos.size, "Texts count outsude content loop") {
-        texts filter { text => text.getContentLoopNo == null && text.getContentNo == null} size
+        texts.count(_.getContentRef == null)
       }
 
       expect(nos.size, "Texts count inside content loop") {
-        texts filter { text =>
-          text.getContentLoopNo == contentInfo.loopNo &&
-          text.getContentNo == contentInfo.contentNo
-        } size
+        texts.count(text => text.getContentRef != null && text.getContentRef == contentRef)
       }
     }
   }

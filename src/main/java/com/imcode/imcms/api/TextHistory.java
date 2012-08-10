@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import imcode.server.document.textdocument.ContentRef;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -7,57 +8,54 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name="imcms_text_doc_texts_history")
+@Table(name = "imcms_text_doc_texts_history")
 public class TextHistory {
-	
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
 
-	@Column(name="doc_id")
-	private Integer docId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(name="doc_version_no")
-	private Integer docVersionNo;
+    @Column(name = "doc_id")
+    private Integer docId;
 
-	private Integer no;
+    @Column(name = "doc_version_no")
+    private Integer docVersionNo;
 
-	private String text;
+    private Integer no;
 
-	private Integer type;
+    private String text;
 
-    @Column(name="content_loop_no")
-    private Integer contentLoopNo;
+    private Integer type;
 
-    @Column(name="content_no")
-    private Integer contentNo;
+    private ContentRef contentRef;
 
     /**
      * i18n support
      */
-	@OneToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="language_id", referencedColumnName="id")
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "language_id", referencedColumnName = "id")
     private I18nLanguage language;
 
 
-    @Column(name="user_id")
+    @Column(name = "user_id")
     private Integer userId;
 
-    
-    @Column(name="modified_dt")
+
+    @Column(name = "modified_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
-    
-    public TextHistory() {}
-    
+
+    public TextHistory() {
+    }
+
     public TextHistory(TextDomainObject textDO, UserDomainObject user) {
         setType(textDO.getType());
-    	setDocId(textDO.getDocId());
+        setDocId(textDO.getDocId());
         setDocVersionNo(textDO.getDocVersionNo());
-    	setNo(textDO.getNo());
-    	setText(textDO.getText());
-    	setLanguage(textDO.getLanguage());
-        setContentLoopNo(textDO.getContentLoopNo());
-        setContentNo(textDO.getContentNo());
+        setNo(textDO.getNo());
+        setText(textDO.getText());
+        setLanguage(textDO.getLanguage());
+        setContentRef(textDO.getContentRef());
         setUserId(user.getId());
         setModifiedDt(new Date());
     }
@@ -76,7 +74,7 @@ public class TextHistory {
      *
      * @param text Value to assign to text
      */
-    public void setText( String text ) {
+    public void setText(String text) {
         this.text = text;
     }
 
@@ -94,8 +92,8 @@ public class TextHistory {
      *
      * @param type Value to assign to type
      */
-    public void setType( int type ) {
-    	this.type = type;
+    public void setType(int type) {
+        this.type = type;
     }
 
     /**
@@ -105,21 +103,21 @@ public class TextHistory {
         return getText();
     }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public I18nLanguage getLanguage() {
-		return language;
-	}
+    public I18nLanguage getLanguage() {
+        return language;
+    }
 
-	public void setLanguage(I18nLanguage language) {
-		this.language = language;
-	}
+    public void setLanguage(I18nLanguage language) {
+        this.language = language;
+    }
 
     public Integer getDocId() {
         return docId;
@@ -153,27 +151,19 @@ public class TextHistory {
         this.userId = userId;
     }
 
-    public Integer getContentLoopNo() {
-        return contentLoopNo;
-    }
-
-    public void setContentLoopNo(Integer contentLoopNo) {
-        this.contentLoopNo = contentLoopNo;
-    }
-
-    public Integer getContentNo() {
-        return contentNo;
-    }
-
-    public void setContentNo(Integer contentNo) {
-        this.contentNo = contentNo;
-    }
-
     public Date getModifiedDt() {
         return modifiedDt;
     }
 
     public void setModifiedDt(Date modifiedDt) {
         this.modifiedDt = modifiedDt;
+    }
+
+    public ContentRef getContentRef() {
+        return contentRef;
+    }
+
+    public void setContentRef(ContentRef contentRef) {
+        this.contentRef = contentRef;
     }
 }

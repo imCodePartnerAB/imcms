@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import imcode.server.document.textdocument.ContentRef;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
@@ -59,12 +60,6 @@ public class ImageHistory {
 
     private Integer type;
 
-    @Column(name="content_loop_no")
-    private Integer contentLoopNo;
-
-    @Column(name="content_no")
-    private Integer contentNo;
-
     @Column(name="format", nullable=false)
     private short format;
 
@@ -85,6 +80,8 @@ public class ImageHistory {
 
     @Column(name="gen_file")
     private String generatedFilename;
+
+    private ContentRef contentRef;
 
     /**
      * i18n support
@@ -124,8 +121,7 @@ public class ImageHistory {
         setType(imageDO.getType());
         
     	setLanguage(imageDO.getLanguage());
-        setContentLoopNo(imageDO.getContentLoopNo());
-        setContentNo(imageDO.getContentNo());
+        setContentRef(imageDO.getContentRef());
         setUserId(user.getId());
         setModifiedDt(new Date());
         setFormat(imageDO.getFormat());
@@ -270,20 +266,12 @@ public class ImageHistory {
         this.type = type;
     }
 
-    public Integer getContentLoopNo() {
-        return contentLoopNo;
+    public ContentRef getContentRef() {
+        return contentRef;
     }
 
-    public void setContentLoopNo(Integer contentLoopNo) {
-        this.contentLoopNo = contentLoopNo;
-    }
-
-    public Integer getContentNo() {
-        return contentNo;
-    }
-
-    public void setContentNo(Integer contentNo) {
-        this.contentNo = contentNo;
+    public void setContentRef(ContentRef contentRef) {
+        this.contentRef = contentRef;
     }
 
     public I18nLanguage getLanguage() {

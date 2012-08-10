@@ -174,7 +174,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             text.setDocVersionNo(docVersionNo);
             text.setLanguage(language);
 
-            saveTextDocumentText(textDocument, text, user);
+            saveTextDocumentText(text, user);
         }
 
         for (TextDomainObject text : textDocument.getLoopTexts().values()) {
@@ -183,7 +183,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             text.setDocVersionNo(docVersionNo);
             text.setLanguage(language);
 
-            saveTextDocumentText(textDocument, text, user);
+            saveTextDocumentText(text, user);
         }
     }
 
@@ -226,17 +226,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     /**
      * Saves text document's text.
      *
-     * @param doc
      * @param text
      * @param user
      */
     @Transactional
-    public void saveTextDocumentText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user) {
+    public void saveTextDocumentText(TextDomainObject text, UserDomainObject user) {
         TextDao textDao = services.getComponent(TextDao.class);
-
-        text.setDocId(doc.getIdValue());
-        text.setDocVersionNo(doc.getVersionNo());
-        text.setLanguage(doc.getLanguage());
 
         textDao.saveText(text);
 

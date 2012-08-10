@@ -5,11 +5,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
-import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
@@ -422,13 +418,13 @@ public class TagParser {
             no = implicitTextNumber++;
             text = content == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(no, loop.getNo(), content.getNo());
+                    : textDocumentToUse.getText(no, new ContentRef(loop.getNo(), content.getNo()));
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
             text = content == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(no, loop.getNo(), content.getNo());
+                    : textDocumentToUse.getText(no, new ContentRef(loop.getNo(), content.getNo()));
             
             implicitTextNumber = no + 1;
         }
@@ -544,7 +540,7 @@ public class TagParser {
         }
         ImageDomainObject image = loop == null
                 ? textDocumentToUse.getImage(imageIndex)
-                : textDocumentToUse.getImage(imageIndex, loop.getNo(), content.getNo());
+                : textDocumentToUse.getImage(imageIndex, new ContentRef(loop.getNo(), content.getNo()));
         
         if (image == null) {
         	image = DEFAULT_IMAGE;

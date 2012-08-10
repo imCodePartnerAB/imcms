@@ -21,7 +21,7 @@ import java.util.Date
  * The instance of this class is thread save.
  */
 class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) extends Log4jLoggerSupport {
-  type MetaId = Int
+  type DocId = Int
 
   @throws(classOf[SolrInputDocumentCreateException])
   def withExceptionWrapper[A](body: => A): A =
@@ -32,22 +32,22 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     }
 
   @throws(classOf[SolrInputDocumentCreateException])
-  def mkSolrInputDocs(metaId: Int): Seq[SolrInputDocument] = withExceptionWrapper {
-    mkSolrInputDocs(metaId, documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala)
+  def mkSolrInputDocs(docId: Int): Seq[SolrInputDocument] = withExceptionWrapper {
+    mkSolrInputDocs(docId, documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala)
   }
 
 
   @throws(classOf[SolrInputDocumentCreateException])
-  def mkSolrInputDocs(metaId: Int, languages: Seq[I18nLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
+  def mkSolrInputDocs(docId: Int, languages: Seq[I18nLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
     val solrInputDocs = for {
       language <- languages
-      doc <- Option(documentMapper.getDefaultDocument(metaId, language))
+      doc <- Option(documentMapper.getDefaultDocument(docId, language))
     } yield documentIndexer.index(doc)
 
 
     if (logger.isTraceEnabled) {
-      logger.trace("created %d solrInputDoc(s) with metaId: %d and language(s): %s.".format(
-        solrInputDocs.length, metaId, languages.mkString(", "))
+      logger.trace("created %d solrInputDoc(s) with docId: %d and language(s): %s.".format(
+        solrInputDocs.length, docId, languages.mkString(", "))
       )
     }
 
@@ -57,13 +57,13 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
 
   // consider using other data structure
   @throws(classOf[SolrInputDocumentCreateException])
-  def mkSolrInputDocsView(): SeqView[(MetaId, Seq[SolrInputDocument]), Seq[_]] =
+  def mkSolrInputDocsView(): SeqView[(DocId, Seq[SolrInputDocument]), Seq[_]] =
     documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala |> { languages =>
-      documentMapper.getAllDocumentIds.asScala.view.map(metaId => metaId.toInt -> mkSolrInputDocs(metaId, languages))
+      documentMapper.getAllDocumentIds.asScala.view.map(docId => docId.toInt -> mkSolrInputDocs(docId, languages))
     }
 
 
-  def mkSolrDocsDeleteQuery(metaId: Int): String = "%s:%d".format(DocumentIndex.FIELD__META_ID, metaId)
+  def mkSolrDocsDeleteQuery(docId: Int): String = "%s:%d".format(DocumentIndex.FIELD__META_ID, docId)
 
   def search(solrServer: SolrServer, solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
     if (logger.isDebugEnabled) {
@@ -75,10 +75,10 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
     new java.util.LinkedList[DocumentDomainObject] |>> { docs =>
       for (solrDocId <- 0.until(solrDocs.size)) {
         val solrDoc = solrDocs.get(solrDocId)
-        val metaId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
-        //val metaId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
+        val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
+        //val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
         val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).asInstanceOf[String]
-        val doc = documentMapper.getDefaultDocument(metaId, languageCode)
+        val doc = documentMapper.getDefaultDocument(docId, languageCode)
 
         if (doc != null && searchingUser.canSearchFor(doc)) {
           docs.add(doc)
@@ -89,18 +89,18 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
 
 
   @throws(classOf[SolrInputDocumentCreateException])
-  def addDocsToIndex(solrServer: SolrServer, metaId: Int) {
-    mkSolrInputDocs(metaId) |> { solrInputDocs =>
+  def addDocsToIndex(solrServer: SolrServer, docId: Int) {
+    mkSolrInputDocs(docId) |> { solrInputDocs =>
       if (solrInputDocs.nonEmpty) {
         solrServer.add(solrInputDocs.asJava)
         solrServer.commit()
-        logger.trace("added %d solrInputDoc(s) with metaId %d into the index.".format(solrInputDocs.length, metaId))
+        logger.trace("added %d solrInputDoc(s) with docId %d into the index.".format(solrInputDocs.length, docId))
       }
     }
   }
 
 
-  def deleteDocsFromIndex(solrServer: SolrServer, metaId: Int): Unit = mkSolrDocsDeleteQuery(metaId) |> { deleteQuery =>
+  def deleteDocsFromIndex(solrServer: SolrServer, docId: Int): Unit = mkSolrDocsDeleteQuery(docId) |> { deleteQuery =>
     solrServer.deleteByQuery(deleteQuery)
     solrServer.commit()
   }
@@ -119,7 +119,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
 
     progressCallback(IndexRebuildProgress(rebuildStartMills, rebuildStartMills, docsCount, 0))
 
-    for (((metaId, solrInputDocs), docNo) <- docsView.zip(Stream.from(1)); if solrInputDocs.nonEmpty) {
+    for (((docId, solrInputDocs), docNo) <- docsView.zip(Stream.from(1)); if solrInputDocs.nonEmpty) {
       if (Thread.currentThread().isInterrupted) {
         solrServer.rollback()
         throw new InterruptedException()

@@ -105,6 +105,8 @@ public class Imcms {
      */
     private static I18nSupport i18nSupport;
 
+    private static String serverPropertiesFilename = SERVER_PROPERTIES_FILENAME;
+
 
     /**
      * Can not be instantiated directly.
@@ -212,7 +214,7 @@ public class Imcms {
 
     public static Properties getServerProperties() {
         try {
-            Properties properties = Prefs.getProperties(SERVER_PROPERTIES_FILENAME);
+            Properties properties = Prefs.getProperties(serverPropertiesFilename);
 
             properties.setProperty("SolrHome", getSolrHome());
 
@@ -543,5 +545,13 @@ public class Imcms {
         return solrHome.startsWith("/")
                 ? solrHome
                 : new File(path.getAbsolutePath(), solrHome).getAbsolutePath();
+    }
+
+    public static String getServerPropertiesFilename() {
+        return serverPropertiesFilename;
+    }
+
+    public static void setServerPropertiesFilename(String serverPropertiesFilename) {
+        Imcms.serverPropertiesFilename = serverPropertiesFilename;
     }
 }

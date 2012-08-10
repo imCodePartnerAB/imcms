@@ -30,8 +30,8 @@ object SolrDocumentIndexService {
   case class IndexRebuildProgress(startTimeMillis: Long, currentTimeMillis: Long, totalDocsCount: Int, indexedDocsCount: Int)
 
   sealed trait IndexUpdateRequest
-  case class AddDocsToIndex(metaId: Int) extends IndexUpdateRequest
-  case class DeleteDocsFromIndex(metaId: Int) extends IndexUpdateRequest
+  case class AddDocsToIndex(docId: Int) extends IndexUpdateRequest
+  case class DeleteDocsFromIndex(docId: Int) extends IndexUpdateRequest
 }
 
 

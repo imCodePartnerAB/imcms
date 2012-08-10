@@ -37,15 +37,11 @@ public class TextDomainObject implements Serializable, Cloneable, DocVersionItem
     /** Text filed no in a document. */
     private Integer no;
 
-    @Column(name = "content_loop_no")
-    private Integer contentLoopNo;
-
-    @Column(name = "content_no")
-    private Integer contentNo;
-
     String text;
 
     int type;
+
+    private ContentRef contentRef;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
@@ -169,7 +165,7 @@ public class TextDomainObject implements Serializable, Cloneable, DocVersionItem
     @Override
     public TextDomainObject clone() {
         try {
-            return (TextDomainObject) super.clone();
+            return (TextDomainObject)super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -225,19 +221,11 @@ public class TextDomainObject implements Serializable, Cloneable, DocVersionItem
         this.docVersionNo = docVersionNo;
     }
 
-    public Integer getContentLoopNo() {
-        return contentLoopNo;
+    public ContentRef getContentRef() {
+        return contentRef;
     }
 
-    public void setContentLoopNo(Integer contentLoopNo) {
-        this.contentLoopNo = contentLoopNo;
-    }
-
-    public Integer getContentNo() {
-        return contentNo;
-    }
-
-    public void setContentNo(Integer contentNo) {
-        this.contentNo = contentNo;
+    public void setContentRef(ContentRef contentRef) {
+        this.contentRef = contentRef;
     }
 }

@@ -3,14 +3,10 @@ package imcms.dao
 
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api.ImageHistory
-import imcode.server.document.textdocument.ImageDomainObject
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource
 
 import org.springframework.transaction.annotation.Transactional
+import imcode.server.document.textdocument._
 
-import imcode.server.document.textdocument.ImageArchiveImageSource
-import imcode.server.document.textdocument.NullImageSource
-import imcode.server.document.textdocument.ImageSource
 
 object ImageUtil {
 
@@ -56,8 +52,7 @@ class ImageDao extends HibernateSupport {
             img.setName(no.toString)
 
             img.setLanguage(language)
-            img.setContentLoopNo(loopNo)
-            img.setContentNo(contentNo)
+            img.setContentRef(new ContentRef(loopNo, contentNo))
           }
         }
       } yield image

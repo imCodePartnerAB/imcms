@@ -43,7 +43,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     assertNull("Language with id %d does not exists." format id, languageDao.getById(3))
     assertNull("Language with code %s does not exists." format code, languageDao.getByCode(code))
 
-    val builder = new I18nLanguage.Builder
+    val builder = I18nLanguage.builder()
 
     builder.code(code)
     builder.name("Estonain")
