@@ -37,7 +37,7 @@ public class EditImage extends HttpServlet {
         // Create edited image for current language.
         ImageDomainObject image = new ImageDomainObject();
         image.setNo(null);
-        image.setLanguage(Imcms.getUser().getDocGetterCallback().getLanguage());
+        image.setLanguage(Imcms.getUser().getDocGetterCallback().selectedLanguage());
         
         ImageEditPage imageEditPage = new ImageEditPage(null, image, null, "", getServletContext(), imageCommand, returnCommand, false, 0, 0);
         

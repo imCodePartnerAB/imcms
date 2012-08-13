@@ -41,12 +41,12 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
 
   test("get all [4] text doc's content loops") {
-    assertEquals("loops count", 4, contentLoopDao.getLoops(1001, 0))
+    assertEquals("loops count", 4, contentLoopDao.getLoops(1001, 0).size())
   }
 
 
-	test("get text doc's content loop") {
-		val loops = Array(
+  test("get text doc's content loop") {
+    val loops = Array(
       getLoop(loop_0_id, true),
       getLoop(loop_1_id, true),
       getLoop(loop_3_asc_id, true),
@@ -56,11 +56,11 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     assertEquals("Contents count.", loops(1).getContents.size, 1)
     assertEquals("Contents count.", loops(2).getContents.size, 3)
     assertEquals("Contents count.", loops(3).getContents.size, 3)
-	}
+  }
 
 
-	test("check contents order in a loop") {
-		val ascSortedContens = getLoop(loop_3_asc_id, true).getContents
+  test("check contents order in a loop") {
+    val ascSortedContens = getLoop(loop_3_asc_id, true).getContents
     val descSortedContens = getLoop(loop_3_desc_id, true).getContents
 
     for (i <- 0 to 2) {
@@ -68,47 +68,48 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     }
 
 
-    for ((no, i) <- 2 to (0, -1) zipWithIndex) {
+    for ((no, i) <- 2 to(0, -1) zipWithIndex) {
       assertEquals("Content order no.", no, descSortedContens.get(i).getNo)
-    }
-	}
-
-  test("create empty content loop") {
-    new ContentLoop |> { loop =>
-      loop.setDocId(1001);
-      loop.setDocVersionNo(0);
-      loop.setNo(contentLoopDao.getNextLoopNo(1001, 0))
-
-      contentLoopDao.saveLoop(loop)
     }
   }
 
-	test("update existing content loop") {
-		val loop = getLoop(0, true)
-		val loopId = loop.getId
+  test("create empty content loop") {
+    new ContentLoop |> {
+      loop =>
+        loop.setDocId(1001);
+        loop.setDocVersionNo(0);
+        loop.setNo(contentLoopDao.getNextLoopNo(1001, 0))
 
-		val count = loop.getContents.size
+        contentLoopDao.saveLoop(loop)
+    }
+  }
+
+  test("update existing content loop") {
+    val loop = getLoop(0, true)
+    val loopId = loop.getId
+
+    val count = loop.getContents.size
 
     loop.addLastContent
-		val newLoop = contentLoopDao.saveLoop(loop)
-		assertEquals(count + 1, newLoop.getContents.size)
+    val newLoop = contentLoopDao.saveLoop(loop)
+    assertEquals(count + 1, newLoop.getContents.size)
 
-		assertNotNull(contentLoopDao.getLoop(newLoop.getId))
-	}
+    assertNotNull(contentLoopDao.getLoop(newLoop.getId))
+  }
 
-	test("delete existing content loop") {
-		val loop = getLoop(0, true)
+  test("delete existing content loop") {
+    val loop = getLoop(0, true)
 
     assertNotNull("Loop exists", loop)
 
-		val loopId = loop.getId
+    val loopId = loop.getId
 
-		contentLoopDao.deleteLoop(loopId)
+    contentLoopDao.deleteLoop(loopId)
 
-		assertNull(contentLoopDao.getLoop(loopId))
-	}
+    assertNull(contentLoopDao.getLoop(loopId))
+  }
 
-	test("create non empty content loop [with 5 contents]") {
+  test("create non empty content loop [with 5 contents]") {
     var loop = new ContentLoop
     loop.setDocId(1001)
     loop.setDocVersionNo(0)
@@ -135,14 +136,15 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
       assertEquals("Contents no-s mathces.", content.getNo, savedContent.getNo)
     }
-	}
+  }
 
 
-	def getLoop(no: Int): ContentLoop = getLoop(no, false)
+  def getLoop(no: Int): ContentLoop = getLoop(no, false)
 
-	def getLoop(no: Int, assertLoopNotNull: Boolean) = contentLoopDao.getLoop(1001, 0, no) |>> { loop =>
-    if (assertLoopNotNull)
-      assertNotNull("Loop exists - docId: %s, docVersionNo: %s, no: %s.".format(1001, 0, no), loop)
+  def getLoop(no: Int, assertLoopNotNull: Boolean) = contentLoopDao.getLoop(1001, 0, no) |>> {
+    loop =>
+      if (assertLoopNotNull)
+        assertNotNull("Loop exists - docId: %s, docVersionNo: %s, no: %s.".format(1001, 0, no), loop)
   }
 }
 

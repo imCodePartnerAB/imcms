@@ -40,7 +40,6 @@ import org.apache.log4j.NDC;
  * Otherwise request is processed normally.
  *
  * @see imcode.server.Imcms
- * @see imcode.server.Imcms#mode
  */
 public class ImcmsFilter implements Filter {
 
@@ -116,7 +115,7 @@ public class ImcmsFilter implements Filter {
                 Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
                 Imcms.setUser(user);
-                DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user);
+                DocGetterCallbackUtil.createAndSetDocGetterCallback(request, Imcms.getServices(), user);
 
                 Utility.initRequestWithApi(request, user);
 
@@ -161,34 +160,13 @@ public class ImcmsFilter implements Filter {
      * @throws ServletException
      */
     public void init(FilterConfig filterConfig) throws ServletException {
-        Imcms.addListener(new ImcmsListener() {
-
-            public void onImcmsStart() { /*ignore*/ }
-
-            public void onImcmsStop() {
-                onImcmsModeChange(ImcmsMode.MAINTENANCE);
-            }
-
-            public void onImcmsStartEx(Exception ex) {
-                onImcmsModeChange(ImcmsMode.MAINTENANCE);
-            }
-
-            // Change delegate filter.
-            public void onImcmsModeChange(ImcmsMode newMode) {
-                delegateFilter = newMode == ImcmsMode.NORMAL
-                        ? normalModeFilter
-                        : maintenanceModeFilter;
-            }
-        });
-
-        
         try {
             logger.info("Starting CMS.");
             Imcms.start();
-            Imcms.setNormalMode();
+            delegateFilter = normalModeFilter;
         } catch (Exception e) {
             logger.error("Error starting CMS.", e);
-            Imcms.setMaintenanceMode();
+            delegateFilter = maintenanceModeFilter;
         }
     }
 

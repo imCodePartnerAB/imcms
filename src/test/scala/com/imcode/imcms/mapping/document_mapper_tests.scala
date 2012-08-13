@@ -13,7 +13,6 @@ import org.apache.commons.io.FileUtils
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test._
 import com.imcode.imcms.test.Test
@@ -25,7 +24,7 @@ import com.imcode.imcms.api.TextDocument.TextField
 import com.imcode.imcms.util.Factory
 
 @RunWith(classOf[JUnitRunner])
-class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
+class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
   var docMapper: DocumentMapper = _
   var admin: UserDomainObject = _
@@ -37,10 +36,10 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     Test.solr.recreateHome()
     Test.imcms.init(start = true, prepareDbOnStart = true)
 
-    i18nSupport = Imcms.getI18nSupport
-    docMapper = Imcms.getServices().getDocumentMapper
-    admin = Imcms.getServices().verifyUser("admin", "admin")
-    user = Imcms.getServices().verifyUser("user", "user")
+    i18nSupport = Imcms.getServices.getI18nSupport
+    docMapper = Imcms.getServices.getDocumentMapper
+    admin = Imcms.getServices.verifyUser("admin", "admin")
+    user = Imcms.getServices.verifyUser("user", "user")
   }
 
   override def afterAll() = Imcms.stop()
@@ -187,7 +186,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
     val menus = 0 until fieldsCountOfEachType map { menuNo =>
       val menu = new MenuDomainObject
       0 until menuNo foreach { _ =>
-        menu.addMenuItem(new MenuItemDomainObject(new GetterDocumentReference(saveNewTextDocumentFn().getId)))
+        menu.addMenuItem(new MenuItemDomainObject(new GetterDocumentReference(saveNewTextDocumentFn().getId, docMapper)))
       }
 
       menuNo -> menu
@@ -199,7 +198,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       val menu = new MenuDomainObject
 
       menus(no).getMenuItems foreach { menuItem =>
-        menu.addMenuItem(new MenuItemDomainObject(new GetterDocumentReference(menuItem.getDocumentId)))
+        menu.addMenuItem(new MenuItemDomainObject(new GetterDocumentReference(menuItem.getDocumentId, docMapper)))
       }
 
       image.setType(ImageSource.IMAGE_TYPE_ID__NULL)
@@ -209,10 +208,10 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
       newDoc.setMenu(no, menu)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = Factory.createText(null, null, null, null, new ContentRef(loopNo, contentNo))
+        val text = Factory.createText(null, null, null, null, new ContentLoopRef(loopNo, contentNo))
         val image = new ImageDomainObject
 
-        image.setContentRef(new ContentRef(loopNo, contentNo))
+        image.setContentLoopRef(new ContentLoopRef(loopNo, contentNo))
 
         text.setText(textPrefix + no + "_%d:%d".format(loopNo, contentNo))
         text.setType(textType)
@@ -259,13 +258,13 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
                    menuItems.values.asScala.map(_.getDocumentId).toSet)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = savedDoc.getText(no, new ContentRef(loopNo, contentNo))
-        val image = savedDoc.getImage(no, new ContentRef(loopNo, contentNo))
+        val text = savedDoc.getText(no, new ContentLoopRef(loopNo, contentNo))
+        val image = savedDoc.getImage(no, new ContentLoopRef(loopNo, contentNo))
 
         assertNotNull(text)
         assertEquals(no, text.getNo)
-        assertEquals(loopNo, text.getContentRef.getLoopNo)
-        assertEquals(contentNo, text.getContentRef.getContentNo)
+        assertEquals(loopNo, text.getContentLoopRef.getLoopNo)
+        assertEquals(contentNo, text.getContentLoopRef.getContentNo)
         assertEquals(textType, text.getType)
         assertEquals(textPrefix + no + "_%d:%d".format(loopNo, contentNo), text.getText)
 
@@ -472,7 +471,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
   test("copy text doc") {
     //TextDocumentDomainObject doc = saveNewTextDocumentFn();
-    for (l <- Imcms.getI18nSupport.getLanguages.asScala) {
+    for (l <- Imcms.getServices.getI18nSupport.getLanguages.asScala) {
       val doc = docMapper.getDocument(1001).asInstanceOf[TextDocumentDomainObject]
       assertNotNull(doc)
     }
@@ -484,7 +483,7 @@ class DocumentMapperSuite extends FunSuite with MustMatchers with BeforeAndAfter
 
     assertNotSame(doc.getId, docCopyId)
 
-    for (l <- Imcms.getI18nSupport.getLanguages.asScala.toList) {
+    for (l <- Imcms.getServices.getI18nSupport.getLanguages.asScala.toList) {
       val doc = docMapper.getDocument(docCopyId)
       assertNotNull(doc)
     }

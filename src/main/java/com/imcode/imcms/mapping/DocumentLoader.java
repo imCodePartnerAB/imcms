@@ -103,40 +103,10 @@ public class DocumentLoader {
 
     /**
      * Initializes document's fields.
-     * <p/>
-     * TODO: Refactor out AOP aspects creation and copy-paste.
      */
     private DocumentDomainObject initDocument(DocumentDomainObject document) {
         if (document == null) return null;
 
-        /*
-        AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document);
-        aspectJProxyFactory.setProxyTargetClass(true);
-
-        switch (document.loadMeta().getDocumentType()) {
-        case DocumentTypeDomainObject.TEXT_ID:
-            aspectJProxyFactory.addAspect(new TextDocumentLazyLoadingAspect(
-                    documentInitializingVisitor.getTextDocumentInitializer()));
-           break;
-
-        case DocumentTypeDomainObject.FILE_ID:
-            aspectJProxyFactory.addAspect(new FileDocumentLazyLoadingAspect(documentInitializingVisitor));
-            break;
-
-        case DocumentTypeDomainObject.URL_ID:
-            aspectJProxyFactory.addAspect(new UrlDocumentLazyLoadingAspect(documentInitializingVisitor));
-            break;
-
-        case DocumentTypeDomainObject.HTML_ID:
-            aspectJProxyFactory.addAspect(new HtmlDocumentLazyLoadingAspect(documentInitializingVisitor));
-            break;
-
-        default:
-            throw new AssertionError("Unknown document type id: " + document.loadMeta().getDocumentType());
-        }
-        
-        return aspectJProxyFactory.getProxy();
-        */
         document.accept(documentInitializingVisitor);
 
         return document;

@@ -11,13 +11,16 @@ import _root_.com.imcode.imcms.test.fixtures.{LanguageFX, UserFX}
 import imcode.server.user.UserDomainObject
 import org.mockito.Mockito._
 import javax.servlet.http.HttpServletRequest
-import imcode.server.{Imcms, ImcmsConstants}
 import org.scalatest.mock.MockitoSugar
+import imcode.server.{ImcmsServices, Imcms, ImcmsConstants}
 
 @RunWith(classOf[JUnitRunner])
 class DocGetterCallbackSuite extends FunSuite {
 
-  Imcms.setI18nSupport(LanguageFX.mkI18nSupport())
+  val i18nSupport = LanguageFX.mkI18nSupport()
+  val services = mock(classOf[ImcmsServices])
+
+  when(services.getI18nSupport).thenReturn(i18nSupport)
 
   test("default user - no params") {
     val request = MockitoSugar.mock[HttpServletRequest]
@@ -27,7 +30,7 @@ class DocGetterCallbackSuite extends FunSuite {
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn null
 
-    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user)
+    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
   }
 
@@ -35,29 +38,25 @@ class DocGetterCallbackSuite extends FunSuite {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkDefaultUser
 
-    Imcms.getI18nSupport.setDefaultLanguage(LanguageFX.mkEnglish)
-
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn LanguageFX.mkSwedish.getCode
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn null
 
-    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user)
+    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
 
-    assertEquals(LanguageFX.mkSwedish, user.getDocGetterCallback.getLanguage)
+    assertEquals(LanguageFX.mkSwedish, user.getDocGetterCallback.selectedLanguage)
   }
 
   test("default user requesting working version") {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkDefaultUser
 
-    Imcms.getI18nSupport.setDefaultLanguage(LanguageFX.mkEnglish)
-
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "0"
 
-    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user)
+    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
   }
 
@@ -65,13 +64,11 @@ class DocGetterCallbackSuite extends FunSuite {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkDefaultUser
 
-    Imcms.getI18nSupport.setDefaultLanguage(LanguageFX.mkEnglish)
-
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "2"
 
-    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user)
+    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
   }
 
@@ -79,37 +76,33 @@ class DocGetterCallbackSuite extends FunSuite {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkSuperAdmin
 
-    Imcms.getI18nSupport.setDefaultLanguage(LanguageFX.mkEnglish)
-
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "0"
 
-    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user)
+    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, services, user)
 
     assertDGC[WorkingDocGetterCallback](user.getDocGetterCallback)
     val gdc = user.getDocGetterCallback.asInstanceOf[WorkingDocGetterCallback]
 
-    assertEquals(1001, gdc.docId)
+    assertEquals(1001, gdc.selectedDocId)
   }
 
   test("power user requesting custom version") {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkSuperAdmin
 
-    Imcms.getI18nSupport.setDefaultLanguage(LanguageFX.mkEnglish)
-
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "2"
 
-    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, user)
+    DocGetterCallbackUtil.createAndSetDocGetterCallback(request, services, user)
 
     assertDGC[CustomDocGetterCallback](user.getDocGetterCallback)
     val gdc = user.getDocGetterCallback.asInstanceOf[CustomDocGetterCallback]
 
-    assertEquals(1001, gdc.docId)
-    assertEquals(2, gdc.docVersionNo)
+    assertEquals(1001, gdc.selectedDocId)
+    assertEquals(2, gdc.selectedDocVersionNo)
   }
 
   def assertDGC[A <: DocGetterCallback](dgc: DocGetterCallback)(implicit mf: Manifest[A]) {

@@ -97,7 +97,7 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
     @Column(name="gen_file", length=GEN_FILE_LENGTH)
     private String generatedFilename;
 
-    private ContentRef contentRef;
+    private ContentLoopRef contentLoopRef;
 
     /**
      * i18n support 
@@ -692,11 +692,11 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
         }
     }
 
-    public ContentRef getContentRef() {
-        return contentRef;
+    public ContentLoopRef getContentLoopRef() {
+        return contentLoopRef;
     }
 
-    public void setContentRef(ContentRef contentRef) {
-        this.contentRef = contentRef;
+    public void setContentLoopRef(ContentLoopRef contentRef) {
+        this.contentLoopRef = contentRef;
     }
 }

@@ -1,7 +1,5 @@
 package imcode.server.document;
 
-import org.apache.commons.lang.NotImplementedException;
-
 public class DirectDocumentReference extends DocumentReference {
 
     private DocumentDomainObject document;

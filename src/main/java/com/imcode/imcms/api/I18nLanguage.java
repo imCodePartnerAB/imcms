@@ -13,7 +13,7 @@ public final class I18nLanguage implements Serializable, Cloneable {
                     //
     public static final class Builder {
         private Integer id;
-        private Boolean enabled;
+        private boolean enabled;
         private String code;
         private String name;
         private String nativeName;

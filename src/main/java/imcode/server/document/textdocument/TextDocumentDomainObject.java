@@ -22,15 +22,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private static final class ContentLoopItemKey {
 
         public final int itemNo;
-        public final ContentRef contentRef;
+        public final ContentLoopRef contentLoopRef;
         public final int hashCode;
 
-        public ContentLoopItemKey(int itemNo, ContentRef contentRef) {
+        public ContentLoopItemKey(int itemNo, ContentLoopRef contentLoopRef) {
             this.itemNo = itemNo;
-            this.contentRef = contentRef;
+            this.contentLoopRef = contentLoopRef;
             this.hashCode = new HashCodeBuilder(17, 31).
-                    append(contentRef.getLoopNo()).
-                    append(contentRef.getContentNo()).
+                    append(contentLoopRef.getLoopNo()).
+                    append(contentLoopRef.getContentNo()).
                     append(itemNo).
                     toHashCode();
         }
@@ -168,8 +168,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-    public TextDomainObject getText(int textNo, ContentRef contentRef) {
-        return loopTexts.get(new ContentLoopItemKey(textNo, contentRef));
+    public TextDomainObject getText(int textNo, ContentLoopRef contentLoopRef) {
+        return loopTexts.get(new ContentLoopItemKey(textNo, contentLoopRef));
     }
 
     /**
@@ -233,10 +233,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         Integer docId = getIdValue();
         Integer docVersionNo = getVersionNo();
 
-        ContentRef contentRef = text.getContentRef();
-        ContentLoopItemKey key = contentRef == null
+        ContentLoopRef contentLoopRef = text.getContentLoopRef();
+        ContentLoopItemKey key = contentLoopRef == null
                 ? null :
-                new ContentLoopItemKey(no, contentRef);
+                new ContentLoopItemKey(no, contentLoopRef);
 
         TextDomainObject oldText = key == null ? texts.get(no) : loopTexts.get(key);
         TextDomainObject newText = text.clone();
@@ -251,21 +251,21 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         if (key == null) {
             texts.put(no, newText);
         } else {
-            ContentLoop loop = getContentLoop(contentRef.getLoopNo());
+            ContentLoop loop = getContentLoop(contentLoopRef.getLoopNo());
 
             if (loop == null) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Loop does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
-                        , docId, docVersionNo, contentRef.getLoopNo(), contentRef.getContentNo(), no)
+                        , docId, docVersionNo, contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
                 );
             }
 
-            Content content = loop.getContent(contentRef.getContentNo());
+            Content content = loop.getContent(contentLoopRef.getContentNo());
 
             if (content == null) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Content does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
-                        , docId, docVersionNo, contentRef.getLoopNo(), contentRef.getContentNo(), no)
+                        , docId, docVersionNo, contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
                 );
             }
 
@@ -341,8 +341,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         Integer docId = getIdValue();
         Integer docVersionNo = getVersionNo();
 
-        ContentRef contentRef = image.getContentRef();
-        ContentLoopItemKey key = contentRef == null ? null : new ContentLoopItemKey(no, contentRef);
+        ContentLoopRef contentLoopRef = image.getContentLoopRef();
+        ContentLoopItemKey key = contentLoopRef == null ? null : new ContentLoopItemKey(no, contentLoopRef);
 
         ImageDomainObject oldImage = key == null ? images.get(no) : loopImages.get(key);
         ImageDomainObject newImage = image.clone();
@@ -357,21 +357,21 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         if (key == null) {
             images.put(no, newImage);
         } else {
-            ContentLoop loop = getContentLoop(contentRef.getLoopNo());
+            ContentLoop loop = getContentLoop(contentLoopRef.getLoopNo());
 
             if (loop == null) {
                 throw new IllegalStateException(String.format(
                         "Invalid image. Loop does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
-                        , docId, docVersionNo, contentRef.getLoopNo(), contentRef.getContentNo(), no)
+                        , docId, docVersionNo, contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
                 );
             }
 
-            Content content = loop.getContent(contentRef.getContentNo());
+            Content content = loop.getContent(contentLoopRef.getContentNo());
 
             if (content == null) {
                 throw new IllegalStateException(String.format(
                         "Invalid image. Content does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
-                        , docId, docVersionNo, contentRef.getLoopNo(), contentRef.getContentNo(), no)
+                        , docId, docVersionNo, contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
                 );
             }
 
@@ -388,8 +388,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return images.get(no);
     }
 
-    public ImageDomainObject getImage(int imageNo, ContentRef contentRef) {
-        return loopImages.get(new ContentLoopItemKey(imageNo, contentRef));
+    public ImageDomainObject getImage(int imageNo, ContentLoopRef contentLoopRef) {
+        return loopImages.get(new ContentLoopItemKey(imageNo, contentLoopRef));
     }
 
     private Map<Integer, MenuDomainObject> cloneMenusMap() {

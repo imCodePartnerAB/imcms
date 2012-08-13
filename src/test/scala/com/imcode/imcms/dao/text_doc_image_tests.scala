@@ -3,7 +3,6 @@ package imcms.dao
 
 import imcode.server.user.UserDomainObject
 import imcms.util.Factory
-import imcode.server.document.textdocument.ImageDomainObject
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -16,10 +15,11 @@ import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
 import com.imcode.imcms.api.{ImageHistory, I18nLanguage}
 import com.imcode.imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish}
+import imcode.server.document.textdocument.{ContentLoopRef, ImageDomainObject}
 
 
 @RunWith(classOf[JUnitRunner])
-class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
+class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
   var imageDao: ImageDao = _
   var languageDao: LanguageDao = _
@@ -37,25 +37,29 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
     db.runScripts("src/test/resources/sql/image_dao.sql")
   }
 
-  test("get text doc's images by no") {
-    val images = imageDao.getImagesByIndex(1001, 0, 1, null, null, false)
+  test("get text doc's images by no outside of content loop") {
+    val images = imageDao.getImagesByNo(1001, 0, 1, None, false)
     assertEquals(2, images.size)
   }
 
+  test("get text doc's images by no inside content loop") {
+    val images = imageDao.getImagesByNo(1001, 0, 1, Some(new ContentLoopRef(1, 1)), false)
+    assertEquals(2, images.size)
+  }
 
   test("get text doc's images by doc id and doc version no") {
     val images = imageDao.getImages(1001, 0)
-    assertEquals(6, images.size)
+    assertEquals(12, images.size)
   }
 
   test("get text doc's images by doc id, doc version no and language") {
     val images = imageDao.getImages(1001, 0, mkEnglish.getId)
-    assertEquals(3, images.size)
+    assertEquals(6, images.size)
   }
 
 
   test("get text doc's image by doc id, doc version no, language and no") {
-		val image = imageDao.getImage(mkEnglish.getId, 1001, 0, 1, null, null)
+		val image = imageDao.getImage(mkEnglish.getId, 1001, 0, 1, None)
     assertNotNull(image)
 	}
 
@@ -63,7 +67,7 @@ class ImageDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll wi
 	test("delete text doc's images in a given language") {
     val deletedCount = imageDao.deleteImages(1001, 0, mkEnglish.getId)
 
-    assertEquals(3, deletedCount)
+    assertEquals(6, deletedCount)
 	}
 
 

@@ -10,7 +10,6 @@ import org.scalatest.matchers.MustMatchers
 import imcms.test.Test.{db}
 import imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish, mkLanguages}
 import imcode.server.user.{RoleId, RoleDomainObject, UserDomainObject}
-import org.scalatest.fixture.FixtureFunSuite
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
@@ -18,10 +17,12 @@ import org.springframework.context.annotation.Bean._
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
 import com.imcode.imcms.api.{SystemProperty, I18nLanguage, TextHistory}
-import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
+import imcode.server.document.textdocument.{ContentLoopRef, TextDomainObject}
+
+import org.scalatest.fixture
 
 @RunWith(classOf[JUnitRunner])
-class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
+class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
   type FixtureParam = I18nLanguage
 
@@ -53,30 +54,28 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
   def saveNewTextDoc(
       docId: Int = Default.docId,
       docVersionNo: Int = Default.docVersionNo,
-      contentRef: Option[ContentRef] = None,
+      contentLoopRef: Option[ContentLoopRef] = None,
       no: Int = Default.no,
       text: String = Default.text,
       language: I18nLanguage) =
 
     Factory.createText(docId, docVersionNo, no, language) |>> { vo =>
-      contentRef.foreach(vo.setContentRef)
+      contentLoopRef.foreach(vo.setContentLoopRef)
 
       vo.setText(text)
       textDao.saveText(vo)
       val id = vo.getId
-      id must not be (null)
+      assertNotNull("Id has been assigned during text save", id)
 
       val savedVO = textDao.getTextById(id)
-      savedVO must not be (null)
-      savedVO must have (
-        'id (id),
-        'docId (docId),
-        'docVersionNo (docVersionNo),
-        'contentLoopNo (contentRef.map(_.getLoopNo).orNull),
-        'contentNo (contentRef.map(_.getContentNo).orNull),
-        'no (no),
-        'text (text),
-        'language (language))
+      assertNotNull("Saved text", savedVO)
+      assertEquals("Saved text id", id, savedVO.getId)
+      assertEquals("Saved text docId", docId, savedVO.getDocId)
+      assertEquals("Saved text docVersionNo", docVersionNo, savedVO.getDocVersionNo)
+      assertEquals("Saved text no", no, savedVO.getNo)
+      assertEquals("Saved text text", text, savedVO.getText)
+      assertEquals("Saved text language", language, savedVO.getLanguage)
+      assertEquals("Saved text contentLoopRef", contentLoopRef, Option(savedVO.getContentLoopRef))
     }
 
 
@@ -84,36 +83,37 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
     val text = saveNewTextDoc(language = language)
     val texts = textDao.getTexts(Default.docId, Default.docVersionNo, language)
 
-    texts must (have size (1) and contain (text))
+    assertEquals("Texts count in doc", 1, texts.size)
+    assertTrue("Texts cotains saved text", texts.contains(text))
   }
 
 
   test("update existing text doc's text") { language =>
     val text = saveNewTextDoc(text="initial text", language = language)
-    val updatedText = text.clone
     val updatedTextValue = "modified text"
     val updatedDocVersionNo = 1
 
-    updatedText.setText(updatedTextValue)
-    updatedText.setDocVersionNo(updatedDocVersionNo)
+    text.clone |> { textToUpdate =>
+      textToUpdate.setText(updatedTextValue)
+      textToUpdate.setDocVersionNo(updatedDocVersionNo)
 
-    textDao.saveText(updatedText)
-    val queriedText = textDao.getTextById(text.getId)
-    queriedText must have (
-      'id (text.getId),
-      'type (text.getType),
-      'docId (text.getDocId),
-      'docVersionNo (updatedDocVersionNo),
-//      'contentLoopNo (text.getContentLoopNo),
-//      'contentNo (text.getContentNo),
-      'no (text.getNo),
-      'text (updatedTextValue),
-      'language (language))
+      textDao.saveText(textToUpdate)
+    }
+
+    val updatedText = textDao.getTextById(text.getId)
+    assertNotNull("Updated text", updatedText)
+    assertEquals("Updated text id", text.getId, updatedText.getId)
+    assertEquals("Updated text docId", text.getDocId, updatedText.getDocId)
+    assertEquals("Updated text docVersionNo", updatedDocVersionNo, updatedText.getDocVersionNo)
+    assertEquals("Updated text no", text.getNo, updatedText.getNo)
+    assertEquals("Updated text text", updatedTextValue, updatedText.getText)
+    assertEquals("Updated text language", text.getLanguage, updatedText.getLanguage)
+    assertEquals("Updated text contentLoopRef", text.getContentLoopRef, updatedText.getContentLoopRef)
   }
 
 
   test("delete text doc's texts") { () =>
-    val contentRef = new ContentRef(100, 1)
+    val contentRef = new ContentLoopRef(100, 1)
     val contentRefs = Seq(None, Some(contentRef))
     val nos = 0 until 5
 
@@ -122,7 +122,7 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
         docId = Default.docId,
         docVersionNo = Default.docVersionNo,
         no = indexNo,
-        contentRef = ci,
+        contentLoopRef = ci,
         language = language)
 
     for (language <- mkLanguages)
@@ -155,13 +155,13 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
 
 
   test("get text doc's texts by doc id and doc version no and language") { () =>
-    val contentRef = new ContentRef(100, 1)
+    val contentRef = new ContentLoopRef(100, 1)
     val versionNos = 0 until 2
     val nos = 0 until 5
     val contentRefs = Seq(None, Some(contentRef))
 
     for (versionNo <- versionNos; orderNo <- nos; ci <- contentRefs; language <- mkLanguages)
-      saveNewTextDoc(docId = Default.docId, docVersionNo = versionNo, contentRef = ci,  no = orderNo, language = language)
+      saveNewTextDoc(docId = Default.docId, docVersionNo = versionNo, contentLoopRef = ci,  no = orderNo, language = language)
 
 
     for (versionNo <- versionNos; language <- mkLanguages) {
@@ -170,11 +170,11 @@ class TextDaoSuite extends FixtureFunSuite with MustMatchers with BeforeAndAfter
       expect(nos.size * contentRefs.size) { texts.size }
 
       expect(nos.size, "Texts count outsude content loop") {
-        texts.count(_.getContentRef == null)
+        texts.count(_.getContentLoopRef == null)
       }
 
       expect(nos.size, "Texts count inside content loop") {
-        texts.count(text => text.getContentRef != null && text.getContentRef == contentRef)
+        texts.count(text => text.getContentLoopRef != null && text.getContentLoopRef == contentRef)
       }
     }
   }

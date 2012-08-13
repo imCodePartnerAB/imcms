@@ -29,7 +29,6 @@ public class TextDocumentInitializer {
 
     private final static Logger LOG = Logger.getLogger(TextDocumentInitializer.class);
 
-    /** Set to documentMapper */
     private DocumentGetter documentGetter;
 
     private MetaDao metaDao;
@@ -114,9 +113,9 @@ public class TextDocumentInitializer {
     private void initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
     	
     	for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
-    		Integer destinationDocumentId = entry.getKey();
+    		Integer referencedDocumentId = entry.getKey();
     		MenuItemDomainObject menuItem = entry.getValue();
-    		GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId);
+    		GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, documentGetter);
     		
     		menuItem.setDocumentReference(gtr);
     		menuItem.setTreeSortKey(new TreeSortKeyDomainObject(menuItem.getTreeSortIndex()));

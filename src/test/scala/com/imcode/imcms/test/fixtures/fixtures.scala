@@ -105,11 +105,11 @@ object LanguageFX {
 
   def mkLanguages: Seq[I18nLanguage] = Seq(mkEnglish, mkSwedish)
 
-  def mkI18nSupport(defaultLanguage: I18nLanguage = mkEnglish): I18nSupport = new I18nSupport {
-    setDefaultLanguage(defaultLanguage)
-    setLanguages(mkLanguages.asJava)
-    setHosts(Map(HostNameEn -> mkEnglish, HostNameSe -> mkSwedish).asJava)
-  }
+  def mkI18nSupport(defaultLanguage: I18nLanguage = mkEnglish): I18nSupport = new I18nSupport(
+    mkLanguages.map(l => l.getCode -> l).toMap.asJava,
+    Map(HostNameEn -> mkEnglish, HostNameSe -> mkSwedish).asJava,
+    defaultLanguage
+  )
 }
 
 object CategoryFX {

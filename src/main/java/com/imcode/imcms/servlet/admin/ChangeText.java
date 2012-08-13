@@ -1,9 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.textdocument.ContentRef;
+import imcode.server.document.textdocument.ContentLoopRef;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -39,7 +38,7 @@ public class ChangeText extends HttpServlet {
 
         Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);
-        ContentRef contentRef = loopNo == null || contentNo == null ? null : new ContentRef(loopNo, contentNo);
+        ContentLoopRef contentRef = loopNo == null || contentNo == null ? null : new ContentLoopRef(loopNo, contentNo);
 
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentMapper.getDocument(
                 documentId);
@@ -55,7 +54,7 @@ public class ChangeText extends HttpServlet {
         int textIndex = Integer.parseInt(request.getParameter("txt"));
         String label = null == request.getParameter("label") ? "" : request.getParameter("label");
 
-        I18nLanguage language = Imcms.getUser().getDocGetterCallback().getParams().language();
+        I18nLanguage language = Imcms.getUser().getDocGetterCallback().state().selectedLanguage();
         TextDomainObject text = contentRef == null
                 ? textDocument.getText(textIndex)
                 : textDocument.getText(textIndex, contentRef);
@@ -69,7 +68,7 @@ public class ChangeText extends HttpServlet {
             text.setNo(textIndex);
             text.setLanguage(language);
             text.setType(TextDomainObject.TEXT_TYPE_HTML);
-            text.setContentRef(contentRef);
+            text.setContentLoopRef(contentRef);
         }
 
         TextEditPage page = new TextEditPage(documentId, textIndex, text, label);

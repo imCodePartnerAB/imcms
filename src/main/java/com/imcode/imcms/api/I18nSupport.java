@@ -1,116 +1,66 @@
 package com.imcode.imcms.api;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * I18n support.
- * 
+ *
  * @see com.imcode.imcms.servlet.ImcmsFilter
  */
 public class I18nSupport {
 
-    private Map<String, I18nLanguage> hosts;
-		
-	/**
-	 * Default language.  
-	 */
-	private I18nLanguage defaultLanguage;
-	
-	/**
-	 * Available languages listByNamedParams.
-	 */
-	private List<I18nLanguage> languages;
-	
-	/**
-	 * Available languages map.   
-	 */
-	private Map<String, I18nLanguage> codeMap;
-	
-	/**
-	 * Available languages map. 
-	 */
-	private Map<Integer, I18nLanguage> idMap;
+    final private I18nLanguage defaultLanguage;
 
-    /**
-	 * Implicit instantiation is not allowed.
-	 */
-	public I18nSupport() {}
-	
-	/**
-	 * Sets default language.
-	 * 
-	 * When application running in container default language should be set
-	 * during setup.
-	 * 
-	 * @param language default language.
-	 * @throws IllegalArgumentException in case of attempt 
-	 * to assign null to default language.
-	 */
-	public void setDefaultLanguage(I18nLanguage language) 
-	throws IllegalArgumentException {
-		if (language == null) {
-			throw new IllegalArgumentException("Language argument " +
-					"can not be null.");			
-		}
-		
-		defaultLanguage = language;
-	}
-	
-	/**
-	 * Returns default language. 
-	 */
-	public I18nLanguage getDefaultLanguage()
-	throws I18nException {
-		if (defaultLanguage == null) {
-			throw new I18nException("Default language is not set.");
-		}
-		
-		return defaultLanguage;
-	}
+    final private Map<String, I18nLanguage> languagesByCodes;
 
-	public List<I18nLanguage> getLanguages() {
-		return languages;
-	}
+    final private Map<String, I18nLanguage> languagesByHosts;
 
-	public void setLanguages(List<I18nLanguage> languages) {
-		if (languages == null) {
-			throw new IllegalArgumentException("Languages argument " +
-					"can not be null.");			
-		}
-		
-		this.languages = languages;
-		
-		idMap = new HashMap<Integer, I18nLanguage>();
-		codeMap = new HashMap<String, I18nLanguage>();
-		
-		for (I18nLanguage language: languages) {
-			idMap.put(language.getId(), language);
-			codeMap.put(language.getCode(), language);
-		}
-	}	
-	
-	
-	public I18nLanguage getByCode(String code) {
-		return codeMap.get(code);
-	}
-	
-	public I18nLanguage getById(Integer id) {
-		return idMap.get(id);
-	}
+    final private List<I18nLanguage> languages;
 
-	public boolean isDefault(I18nLanguage language) {
-		return getDefaultLanguage().equals(language); 
-	}
+    final private Map<Integer, I18nLanguage> languagesByIds;
 
-    public Map<String, I18nLanguage> getHosts() {
-        return hosts;
+    public I18nSupport(Map<String, I18nLanguage> languagesByCodes, Map<String, I18nLanguage> languagesByHosts, I18nLanguage defaultLanguage) {
+        this.languagesByCodes = languagesByCodes;
+        this.languagesByHosts = languagesByHosts;
+        this.defaultLanguage = defaultLanguage;
+
+        languages = Lists.newLinkedList();
+        languagesByIds = Maps.newHashMap();
+
+
+        for (I18nLanguage language: languagesByCodes.values()) {
+            languages.add(language);
+            languagesByIds.put(language.getId(), language);
+        }
     }
 
-    public void setHosts(Map<String, I18nLanguage> hosts) {
-        this.hosts = hosts;
+
+    public I18nLanguage getDefaultLanguage() {
+        return defaultLanguage;
     }
 
-    public I18nLanguage getForHost(String host) { return hosts.get(host); }
+    public List<I18nLanguage> getLanguages() {
+        return languages;
+    }
+
+    public I18nLanguage getByCode(String code) {
+        return languagesByCodes.get(code);
+    }
+
+    public I18nLanguage getById(Integer id) {
+        return languagesByIds.get(id);
+    }
+
+    public boolean isDefault(I18nLanguage language) {
+        return defaultLanguage.equals(language);
+    }
+
+    public I18nLanguage getForHost(String host) {
+        return languagesByHosts.get(host);
+    }
 }

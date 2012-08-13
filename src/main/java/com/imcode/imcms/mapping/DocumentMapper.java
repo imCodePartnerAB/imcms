@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.google.common.collect.Sets;
 import com.imcode.imcms.DocIdentityCleanerVisitor;
 import imcode.server.*;
 import imcode.server.document.CategoryDomainObject;
@@ -51,10 +52,10 @@ public class DocumentMapper implements DocumentGetter {
 
     private ImcmsServices imcmsServices;
 
-    /** injected by SpringFramework. */
+    /** instantiated by SpringFramework. */
     private NativeQueriesDao nativeQueriesDao;
 
-    /** injected by SpringFramework. */
+    /** instantiated by SpringFramework. */
     private DocumentLoader documentLoader;
 
     /** Document loader caching proxy. Intercepts calls to DocumentLoader. */
@@ -211,7 +212,7 @@ public class DocumentMapper implements DocumentGetter {
 
 
     public DocumentReference getDocumentReference(int childId) {
-        return new GetterDocumentReference(childId);
+        return new GetterDocumentReference(childId, this);
     }
 
 
@@ -726,7 +727,7 @@ public class DocumentMapper implements DocumentGetter {
 
         return callback == null
                 ? getDefaultDocument(docId)
-                : callback.getDoc(this, docId);
+                : callback.getDoc(docId, user, this);
     }
 
 
@@ -852,11 +853,18 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * @since 6.0
      */
-    public synchronized void saveTextDocImages(TextDocumentDomainObject document, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocImages(Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         try {
-            documentSaver.saveImages(document, images, user);
+            documentSaver.saveImages(images, user);
         } finally {
-            invalidateDocument(document);
+            Set<Integer> docIds = Sets.newHashSet();
+            for (ImageDomainObject image: images) {
+                docIds.add(image.getDocId());
+            }
+
+            for (Integer docId: docIds) {
+                invalidateDocument(docId);
+            }
         }
     }
 
@@ -869,11 +877,23 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * @since 6.0
      */
-    public synchronized void saveTextDocImage(TextDocumentDomainObject document, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocImage(ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        if (image.getDocId() == null)
+            throw new IllegalStateException("image document no is not set");
+
+        if (image.getDocVersionNo() == null)
+            throw new IllegalStateException("image document version no is not set");
+
+        if (image.getNo() == null)
+            throw new IllegalStateException("image no is not set");
+
+        if (image.getLanguage() == null)
+            throw new IllegalStateException("image language is not set");
+
         try {
-            documentSaver.saveImage(document, image, user);
+            documentSaver.saveImage(image, user);
         } finally {
-            invalidateDocument(document);
+            invalidateDocument(image.getDocId());
         }
     }
 
@@ -890,7 +910,7 @@ public class DocumentMapper implements DocumentGetter {
         UserDomainObject user = Imcms.getUser();
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
         I18nLanguage language = callback != null
-                ? callback.getParams().language()
+                ? callback.state().selectedLanguage()
                 : imcmsServices.getI18nSupport().getDefaultLanguage();
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();

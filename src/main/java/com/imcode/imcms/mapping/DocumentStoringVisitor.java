@@ -243,11 +243,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * Saves text document's image.
      */
     @Transactional
-    public void saveTextDocumentImage(TextDocumentDomainObject doc, ImageDomainObject image, UserDomainObject user) {
+    public void saveTextDocumentImage(ImageDomainObject image, UserDomainObject user) {
         ImageDao imageDao = services.getComponent(ImageDao.class);
-
-        image.setDocId(doc.getIdValue());
-        image.setDocVersionNo(doc.getVersionNo());
 
         image.setImageUrl(image.getSource().toStorageString());
         image.setType(image.getSource().getTypeId());
@@ -275,7 +272,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             image.setDocVersionNo(docVersionNo);
             image.setLanguage(language);
 
-            saveTextDocumentImage(doc, image, user);
+            saveTextDocumentImage(image, user);
         }
 
         for (ImageDomainObject image : doc.getLoopImages().values()) {
@@ -284,7 +281,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             image.setDocVersionNo(docVersionNo);
             image.setLanguage(language);
 
-            saveTextDocumentImage(doc, image, user);
+            saveTextDocumentImage(image, user);
         }
     }
 

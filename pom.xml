@@ -486,17 +486,17 @@
             <version>${springframework.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-            <version>1.6.9</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.aspectj</groupId>-->
+            <!--<artifactId>aspectjrt</artifactId>-->
+            <!--<version>1.6.9</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.6.9</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.aspectj</groupId>-->
+            <!--<artifactId>aspectjweaver</artifactId>-->
+            <!--<version>1.6.9</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>taglibs</groupId>
@@ -576,16 +576,16 @@
             <version>${scala.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-swing</artifactId>
-            <version>${scala.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.scala-lang</groupId>-->
+            <!--<artifactId>scala-swing</artifactId>-->
+            <!--<version>${scala.version}</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.version}</artifactId>
-            <version>1.7.2</version>
+            <version>1.8</version>
             <scope>test</scope>
         </dependency>
 
@@ -894,26 +894,26 @@
                 </executions>
             </plugin>
 
-            <!--<plugin>-->
-            <!--<groupId>org.mortbay.jetty</groupId>-->
-            <!--<artifactId>maven-jetty-jspc-plugin</artifactId>-->
-            <!--<version>6.1.22</version>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<id>jspc</id>-->
-            <!--<goals>-->
-            <!--<goal>jspc</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-            <!--<excludes>-->
-            <!--**/apisamples/*,-->
-            <!--**/eng/jsp/category_admin_category.included.jsp, **/eng/jsp/text_restorer.jsp,-->
-            <!--**/swe/jsp/category_admin_category.included.jsp, **/swe/jsp/text_restorer.jsp-->
-            <!--</excludes>-->
-            <!--</configuration>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-jspc-plugin</artifactId>
+                <version>6.1.26</version>
+                <executions>
+                    <execution>
+                        <id>jspc</id>
+                        <goals>
+                            <goal>jspc</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                **/apisamples/*,
+                                **/eng/jsp/category_admin_category.included.jsp, **/eng/jsp/text_restorer.jsp,
+                                **/swe/jsp/category_admin_category.included.jsp, **/swe/jsp/text_restorer.jsp
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

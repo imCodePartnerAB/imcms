@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.api.I18nLanguage;
 import imcode.server.document.DocumentDomainObject;
 
 import java.util.Collection;
@@ -11,39 +12,21 @@ public interface DocumentGetter {
      * @return list of working documents. 
      */ 
     List<DocumentDomainObject> getDocuments(Collection<Integer> metaIds);
-    
-    /** 
-     * @return list of active documents. 
-     */ 
-    //List<DocumentDomainObject> getActiveDocuments(Collection<Integer> metaIds);
 
     /**
-     * Returns latest (working) version of a document. 
+     * Returns default document in default language.
      * 
      * @param metaId document's meta id.
      *
-     * //TODO: WHAT TO RETURN???
      */
     DocumentDomainObject getDocument(int metaId);
-    
+
     /**
-     * Returns published version of a document. 
-     * 
-     * @param metaId document's meta id.
+     * Returns default document
+     * @param metaId
+     * @return
      */
-    //DocumentDomainObject getDefaultDocument(Integer metaId);
-    
-    /**
-     * Returns working (latest) version of a document.
-     * 
-     * @param metaId document's id.
-     */
-    //DocumentDomainObject getWorkingDocument(Integer metaId);
-        
-    /**
-     * Returns custom version of a document.
-     * 
-     * @param metaId document's id.
-     */
-    //DocumentDomainObject getDocument(Integer metaId, Integer version);
+    DocumentDomainObject getDefaultDocument(int metaId, I18nLanguage language);
+
+    DocumentDomainObject getDefaultDocument(int metaId);
 }

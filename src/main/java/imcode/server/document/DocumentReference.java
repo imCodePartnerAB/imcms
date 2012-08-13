@@ -1,8 +1,6 @@
 package imcode.server.document;
 
-import java.io.Serializable;
-
-public abstract class DocumentReference implements Serializable, Cloneable {
+public abstract class DocumentReference implements Cloneable {
 
     private final int documentId;
 
@@ -14,7 +12,7 @@ public abstract class DocumentReference implements Serializable, Cloneable {
         return documentId;
     }
 
-    public abstract DocumentDomainObject getDocument() ;   
+    public abstract DocumentDomainObject getDocument() ;
 
     public int hashCode() {
         return documentId ;

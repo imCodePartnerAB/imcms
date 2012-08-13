@@ -6,7 +6,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.textdocument.ContentRef;
+import imcode.server.document.textdocument.ContentLoopRef;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -70,7 +70,7 @@ public final class SaveText extends HttpServlet {
 
             Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
             Integer contentNo = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);
-            ContentRef contentRef = (loopNo == null || contentNo == null) ? null : new ContentRef(loopNo, contentNo);
+            ContentLoopRef contentRef = (loopNo == null || contentNo == null) ? null : new ContentLoopRef(loopNo, contentNo);
 
             TextDomainObject text = contentRef == null
                     ? document.getText(txt_no)
@@ -81,10 +81,10 @@ public final class SaveText extends HttpServlet {
             text.setDocId(document.getId());
             text.setNo(txt_no);
             text.setDocVersionNo(document.getVersion().getNo());
-            text.setLanguage(Imcms.getUser().getDocGetterCallback().getParams().language());
+            text.setLanguage(Imcms.getUser().getDocGetterCallback().state().selectedLanguage());
             text.setText(text_string);
             text.setType(text_format);
-            text.setContentRef(contentRef);
+            text.setContentLoopRef(contentRef);
 
             saveText(documentMapper, text, document, txt_no, imcref, meta_id, user);
 

@@ -2,7 +2,7 @@ package imcode.server.document.textdocument;
 
 
 public interface DocContentLoopItem extends DocVersionItem {
-    ContentRef getContentRef();
+    ContentLoopRef getContentLoopRef();
 
-    void setContentRef(ContentRef contentRef);
+    void setContentLoopRef(ContentLoopRef contentRef);
 }

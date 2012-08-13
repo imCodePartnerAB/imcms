@@ -4,7 +4,6 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.aspectj.bridge.MessageWriter;
 
 import java.io.Serializable;
 

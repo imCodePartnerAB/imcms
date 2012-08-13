@@ -1,6 +1,6 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.ContentRef;
+import imcode.server.document.textdocument.ContentLoopRef;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
@@ -81,7 +81,7 @@ public class ImageHistory {
     @Column(name="gen_file")
     private String generatedFilename;
 
-    private ContentRef contentRef;
+    private ContentLoopRef contentRef;
 
     /**
      * i18n support
@@ -121,7 +121,7 @@ public class ImageHistory {
         setType(imageDO.getType());
         
     	setLanguage(imageDO.getLanguage());
-        setContentRef(imageDO.getContentRef());
+        setContentRef(imageDO.getContentLoopRef());
         setUserId(user.getId());
         setModifiedDt(new Date());
         setFormat(imageDO.getFormat());
@@ -266,11 +266,11 @@ public class ImageHistory {
         this.type = type;
     }
 
-    public ContentRef getContentRef() {
+    public ContentLoopRef getContentRef() {
         return contentRef;
     }
 
-    public void setContentRef(ContentRef contentRef) {
+    public void setContentRef(ContentLoopRef contentRef) {
         this.contentRef = contentRef;
     }
 

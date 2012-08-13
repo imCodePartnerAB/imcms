@@ -1,5 +1,7 @@
 package imcode.server;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.SystemDao;
 import com.imcode.imcms.db.DB;
@@ -15,7 +17,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.sql.DataSource;
 
@@ -32,8 +33,6 @@ import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.imcms.dao.LanguageDao;
-import com.imcode.imcms.servlet.ImcmsMode;
-import com.imcode.imcms.servlet.ImcmsListener;
 
 /**
  * Singleton registry.
@@ -81,10 +80,6 @@ public class Imcms {
      */
     private static boolean prepareDatabaseOnStart = true;
 
-    private static ImcmsMode mode = ImcmsMode.MAINTENANCE;
-    private static List<ImcmsListener> listeners = new LinkedList<ImcmsListener>();
-    private static AtomicReference<Exception> startEx = new AtomicReference<Exception>();
-
     /**
      * Spring-framework application context.
      */
@@ -99,11 +94,6 @@ public class Imcms {
      * @see com.imcode.imcms.servlet.ImcmsFilter
      */
     private static InheritableThreadLocal<UserDomainObject> users = new InheritableThreadLocal<UserDomainObject>();
-
-    /**
-     * Internalization support.
-     */
-    private static I18nSupport i18nSupport;
 
     private static String serverPropertiesFilename = SERVER_PROPERTIES_FILENAME;
 
@@ -130,8 +120,6 @@ public class Imcms {
      * @throws StartupException
      */
     public static void start() throws StartupException {
-        clearStarEx();
-
         try {
             if (path == null) {
                 throw new IllegalStateException("Imcms path is not set.");
@@ -147,18 +135,10 @@ public class Imcms {
                 prepareDatabase();
             }
 
-            initI18nSupport();
-
             services = createServices();
-
-            for (ImcmsListener listener : listeners) {
-                listener.onImcmsStart();
-            }
         } catch (Exception e) {
             String msg = "Application could not be started. Please see the log file in WEB-INF/logs/ for details.";
             logger.error(msg, e);
-            setStartEx(e);
-
             throw new StartupException(msg, e);
         }
     }
@@ -192,7 +172,7 @@ public class Imcms {
                 localizedMessageProvider,
                 fileLoader,
                 new DefaultProcedureExecutor(database, fileLoader),
-                getI18nSupport());
+                createI18nSupport());
 
         services.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
         return services;
@@ -247,7 +227,6 @@ public class Imcms {
     }
 
 
-    // TODO - print stack trace to imcms logger not app logger.
     public static void stop() {
         if (null != apiDataSource) {
             try {
@@ -274,10 +253,6 @@ public class Imcms {
         }
 
         services = null;
-
-        for (ImcmsListener listener : listeners) {
-            listener.onImcmsStop();
-        }
     }
 
     private static void logDatabaseVersion(BasicDataSource basicDataSource) throws SQLException {
@@ -345,47 +320,6 @@ public class Imcms {
         return users.get();
     }
 
-
-    public static ImcmsMode setMode(ImcmsMode mode) {
-        Imcms.mode = mode;
-        for (ImcmsListener listener : listeners) {
-            listener.onImcmsModeChange(mode);
-        }
-
-        return mode;
-    }
-
-    public static ImcmsMode setMaintenanceMode() {
-        return setMode(ImcmsMode.MAINTENANCE);
-    }
-
-
-    public static ImcmsMode setNormalMode() {
-        return setMode(ImcmsMode.NORMAL);
-    }
-
-    public static ImcmsMode getMode() {
-        return mode;
-    }
-
-
-    public static Exception getStartEx() {
-        return startEx.get();
-    }
-
-    private static void setStartEx(Exception ex) {
-        Imcms.startEx.set(ex);
-
-        for (ImcmsListener listener : listeners) {
-            listener.onImcmsStartEx(ex);
-        }
-    }
-
-    private static void clearStarEx() {
-        Imcms.startEx.set(null);
-    }
-
-
     public static Object getSpringBean(String beanName) {
         if (applicationContext == null) {
             throw new IllegalStateException("Spring application context is not set.");
@@ -399,20 +333,25 @@ public class Imcms {
      * Initializes I18N support.
      * Reads languages from the database.
      */
-    private static void initI18nSupport() {
-        logger.info("Initializing i18n support.");
+    private static I18nSupport createI18nSupport() {
+        logger.info("Creating i18n support.");
 
         LanguageDao languageDao = (LanguageDao) Imcms.getSpringBean("languageDao");
-        List<I18nLanguage> languages = languageDao.getAllLanguages();
+        SystemDao systemDao = (SystemDao) getSpringBean("systemDao");
+        SystemProperty languageIdProperty = systemDao.getProperty("DefaultLanguageId");
 
-        if (languages.size() == 0) {
+        Map<String, I18nLanguage> languagesByCodes = Maps.newHashMap();
+        Map<String, I18nLanguage> languagesByHosts = Maps.newHashMap();
+
+        for (I18nLanguage language: languageDao.getAllLanguages()) {
+            languagesByCodes.put(language.getCode(), language);
+        }
+
+        if (languagesByCodes.size() == 0) {
             String msg = "I18n configuration error. Database table i18n_languages must contain at least one record.";
             logger.fatal(msg);
             throw new I18nException(msg);
         }
-
-        SystemDao systemDao = (SystemDao) getSpringBean("systemDao");
-        SystemProperty languageIdProperty = systemDao.getProperty("DefaultLanguageId");
 
         if (languageIdProperty == null) {
             String msg = "I18n configuration error. Default language (DefaultLanguageId system property) is not set.";
@@ -430,18 +369,10 @@ public class Imcms {
             throw new I18nException(msg);
         }
 
-        I18nSupport i18nSupport = new I18nSupport();
-
-        i18nSupport.setDefaultLanguage(defaultLanguage);
-        i18nSupport.setLanguages(languages);
-
         // Read "virtual" hosts mapped to languages.
         String prefix = "i18n.host.";
         int prefixLength = prefix.length();
         Properties properties = Imcms.getServerProperties();
-
-        Map<String, I18nLanguage> i18nHosts = new HashMap<String, I18nLanguage>();
-        i18nSupport.setHosts(i18nHosts);
 
         for (Map.Entry entry : properties.entrySet()) {
             String key = (String) entry.getKey();
@@ -455,7 +386,7 @@ public class Imcms {
 
             logger.info("I18n configuration: language code [" + languageCode + "] mapped to host(s) [" + value + "].");
 
-            I18nLanguage language = i18nSupport.getByCode(languageCode);
+            I18nLanguage language = languagesByCodes.get(languageCode);
 
             if (language == null) {
                 String msg = "I18n configuration error. Language with code [" + languageCode + "] is not defined in database.";
@@ -466,11 +397,12 @@ public class Imcms {
             String hosts[] = value.split("[ \\t]*,[ \\t]*");
 
             for (String host : hosts) {
-                i18nHosts.put(host.trim(), language);
+                languagesByHosts.put(host.trim(), language);
             }
         }
 
-        Imcms.i18nSupport = i18nSupport;
+
+        return new I18nSupport(languagesByCodes, languagesByHosts, defaultLanguage);
     }
 
     /**
@@ -482,12 +414,12 @@ public class Imcms {
         URL schemaConfFileURL = Imcms.class.getResource("/schema.xml");
 
         if (schemaConfFileURL == null) {
-            String errMsg = "Database schema config file 'schema.xml' can not be found.";
+            String errMsg = "Database schema config file 'schema.xml' can not be found in the classpath.";
             logger.fatal(errMsg);
             throw new RuntimeException(errMsg);
         }
 
-        logger.info(String.format("Loading database schema config file %s.", schemaConfFileURL));
+        logger.info(String.format("Loading database schema config from %s.", schemaConfFileURL));
         Schema schema = Schema.load(schemaConfFileURL);
 
         DataSource dataSource = (DataSource)Imcms.getSpringBean("dataSource");
@@ -502,18 +434,6 @@ public class Imcms {
 
     public static void setApplicationContext(ApplicationContext applicationContext) {
         Imcms.applicationContext = applicationContext;
-    }
-
-    public static I18nSupport getI18nSupport() {
-        return i18nSupport;
-    }
-
-    public static void setI18nSupport(I18nSupport i18nSupport) {
-        Imcms.i18nSupport = i18nSupport;
-    }
-
-    public static void addListener(ImcmsListener listener) {
-        listeners.add(listener);
     }
 
     public static boolean isPrepareDatabaseOnStart() {

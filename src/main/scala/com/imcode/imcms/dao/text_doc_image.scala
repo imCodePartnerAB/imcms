@@ -40,35 +40,33 @@ class ImageDao extends HibernateSupport {
   /**
    * Please note that createImageIfNotExists merely creates an instance of ImageDomainObject not a database entry.
    */
-  def getImagesByIndex(docId: JInteger, docVersionNo: JInteger, no: Int, loopNo: JInteger, contentNo: JInteger,
-                       createImageIfNotExists: Boolean): JList[ImageDomainObject] =
-    {
-      for {
-        language <- languageDao.getAllLanguages().asScala
-        image <- PartialFunction.condOpt(getImage(language.getId, docId, docVersionNo, no, loopNo, contentNo)) {
-          case image if image != null => image
-          case _ if createImageIfNotExists => new ImageDomainObject |>> { img =>
-            img.setDocId(docId)
-            img.setName(no.toString)
+  def getImagesByNo(docId: Int, docVersionNo: Int, no: Int, contentLoopRef: Option[ContentLoopRef],
+                    createImageIfNotExists: Boolean): JList[ImageDomainObject] = {
+    for {
+      language <- languageDao.getAllLanguages().asScala
+      image <- PartialFunction.condOpt(getImage(language.getId, docId, docVersionNo, no, contentLoopRef)) {
+        case image if image != null => image
+        case _ if createImageIfNotExists => new ImageDomainObject |>> { img =>
+          img.setDocId(docId)
+          img.setName(no.toString)
 
-            img.setLanguage(language)
-            img.setContentRef(new ContentRef(loopNo, contentNo))
-          }
+          img.setLanguage(language)
+          img.setContentLoopRef(contentLoopRef.orNull)
         }
-      } yield image
-    } |> { _.asJava }
+      }
+    } yield image
+  } |> { _.asJava }
 
 
 
-  def getImage(languageId: JInteger, docId: JInteger, docVersionNo: JInteger, no: Int, loopNo: JInteger,
-               contentNo: JInteger) = {
+  def getImage(languageId: Int, docId: Int, docVersionNo: Int, no: Int, contentLoopRef: Option[ContentLoopRef]) = {
 
-    val queryStr = if (loopNo == null)
+    val queryStr = if (contentLoopRef.isDefined)
       """select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no
-         and i.language.id = :languageId AND i.contentLoopNo IS NULL AND i.contentNo IS NULL"""
+         and i.language.id = :languageId AND i.contentLoopRef = :contentLoopRef"""
     else
       """select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no
-         and i.language.id = :languageId AND i.contentLoopNo = :contentLoopNo AND i.contentNo = :contentNo"""
+         and i.language.id = :languageId AND i.contentLoopRef IS NULL"""
 
     hibernate.withCurrentSession { session =>
       session.createQuery(queryStr) |> { query =>
@@ -77,8 +75,8 @@ class ImageDao extends HibernateSupport {
           .setParameter("no", "" + no)
           .setParameter("languageId", languageId)
 
-        if (loopNo != null) {
-          query.setParameter("contentLoopNo", loopNo).setParameter("contentNo", contentNo)
+        if (contentLoopRef.isDefined) {
+          query.setParameter("contentLoopRef", contentLoopRef.get)
         }
 
         ImageUtil.initImageSource(query.uniqueResult.asInstanceOf[ImageDomainObject])
@@ -93,13 +91,13 @@ class ImageDao extends HibernateSupport {
   def saveImageHistory(imageHistory: ImageHistory) = hibernate.save(imageHistory)
 
 
-  def getImages(docId: JInteger, docVersionNo: JInteger): JList[ImageDomainObject] =
+  def getImages(docId: Int, docVersionNo: Int): JList[ImageDomainObject] =
     hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
       "Image.getByDocIdAndDocVersionNo", "docId" -> docId, "docVersionNo" -> docVersionNo
     ) |> ImageUtil.initImagesSources
 
 
-  def getImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger): JList[ImageDomainObject] =
+  def getImages(docId: Int, docVersionNo: Int, languageId: Int): JList[ImageDomainObject] =
      hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
        "Image.getByDocIdAndDocVersionNoAndLanguageId",
        "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
@@ -107,7 +105,7 @@ class ImageDao extends HibernateSupport {
 
 
 
-  def deleteImages(docId: JInteger, docVersionNo: JInteger, languageId: JInteger) =
+  def deleteImages(docId: Int, docVersionNo: Int, languageId: Int) =
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
       "Image.deleteImages", "docId" -> docId, "docVersionNo" -> docVersionNo, "languageId" -> languageId
     )

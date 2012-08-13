@@ -94,7 +94,6 @@ public class DocumentSaver {
      * Saves changed text-document image(s).
      * If an image is enclosed into unsaved content loop then this content loop is also saved.
      *
-     * @param doc
      * @param images images with the same 'no' for every language.
      * @param user
      * @throws NoPermissionInternalException
@@ -102,29 +101,23 @@ public class DocumentSaver {
      * @see com.imcode.imcms.servlet.admin.ChangeImage
      */
     @Transactional
-    public void saveImages(TextDocumentDomainObject doc, Collection<ImageDomainObject> images, UserDomainObject user)
+    public void saveImages(Collection<ImageDomainObject> images, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
-
-        createEnclosingContentLoopIfNecessary(images.iterator().next());
-
         for (ImageDomainObject image : images) {
-            storingVisitor.saveTextDocumentImage(doc, image, user);
+            saveImage(image, user);
         }
-
-        metaDao.touch(doc, user);
     }
 
 
     @Transactional
-    public void saveImage(TextDocumentDomainObject doc, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveImage(ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         createEnclosingContentLoopIfNecessary(image);
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
-        storingVisitor.saveTextDocumentImage(doc, image, user);
+        storingVisitor.saveTextDocumentImage(image, user);
 
-        metaDao.touch(doc, user);
+        metaDao.touch(image.getDocId(), image.getDocVersionNo(), user.getId());
     }
 
 
@@ -135,7 +128,7 @@ public class DocumentSaver {
      */
     @Transactional
     public ContentLoop createEnclosingContentLoopIfNecessary(DocContentLoopItem item) {
-        ContentRef contentRef = item.getContentRef();
+        ContentLoopRef contentRef = item.getContentLoopRef();
 
         if (contentRef == null) {
             return null;

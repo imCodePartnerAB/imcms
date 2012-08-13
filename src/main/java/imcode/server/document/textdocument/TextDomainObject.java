@@ -41,7 +41,7 @@ public class TextDomainObject implements Serializable, Cloneable, DocVersionItem
 
     int type;
 
-    private ContentRef contentRef;
+    private ContentLoopRef contentLoopRef;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
@@ -221,11 +221,11 @@ public class TextDomainObject implements Serializable, Cloneable, DocVersionItem
         this.docVersionNo = docVersionNo;
     }
 
-    public ContentRef getContentRef() {
-        return contentRef;
+    public ContentLoopRef getContentLoopRef() {
+        return contentLoopRef;
     }
 
-    public void setContentRef(ContentRef contentRef) {
-        this.contentRef = contentRef;
+    public void setContentLoopRef(ContentLoopRef contentRef) {
+        this.contentLoopRef = contentRef;
     }
 }

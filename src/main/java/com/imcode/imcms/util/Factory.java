@@ -59,9 +59,9 @@ public class Factory {
      * @param contentRef
      * @return
      */
-    public static TextDomainObject createText(Integer docId, Integer docVersionNo, Integer no, I18nLanguage language, ContentRef contentRef) {
+    public static TextDomainObject createText(Integer docId, Integer docVersionNo, Integer no, I18nLanguage language, ContentLoopRef contentRef) {
         TextDomainObject text = newInstance(TextDomainObject.class, docId, docVersionNo, language, no);
-        text.setContentRef(contentRef);
+        text.setContentLoopRef(contentRef);
 
         return text;
     }
@@ -73,9 +73,9 @@ public class Factory {
         return createImage(docId, docVersionNo, language, no, null);
     }
 
-    public static ImageDomainObject createImage(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no, ContentRef contentRef) {
+    public static ImageDomainObject createImage(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no, ContentLoopRef contentRef) {
         ImageDomainObject image = newInstance(ImageDomainObject.class, docId, docVersionNo, language, no);
-        image.setContentRef(contentRef);
+        image.setContentLoopRef(contentRef);
 
         return image;
     }
@@ -115,7 +115,7 @@ public class Factory {
         return createNextImage(doc, null);
     }
 
-    public static ImageDomainObject createNextImage(TextDocumentDomainObject doc, ContentRef contentRef) {
+    public static ImageDomainObject createNextImage(TextDocumentDomainObject doc, ContentLoopRef contentRef) {
         return createImage(doc.getId(), doc.getVersion().getNo(), doc.getLanguage(), getNextItemNo(doc.getImages().values()), contentRef);
     }
 

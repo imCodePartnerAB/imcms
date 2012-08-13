@@ -113,7 +113,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         
         super(document, returnCommand, saveDocumentCommand);
 
-        Set<I18nLanguage> availableLanguages = new HashSet<I18nLanguage>(Imcms.getI18nSupport().getLanguages());
+        Set<I18nLanguage> availableLanguages = new HashSet<I18nLanguage>(Imcms.getServices().getI18nSupport().getLanguages());
 
         for (I18nLanguage language: availableLanguages) {
             languagesStates.put(language, false);
@@ -130,7 +130,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         });
 
         if (!atLeastOneIsEnabled) {
-            languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
+            languagesStates.put(Imcms.getServices().getI18nSupport().getDefaultLanguage(), true);
         }
 
         Integer docId = document.getIdValue();
@@ -214,7 +214,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             throw new IllegalStateException("i18nCode request parameter is blank.");
         }
 
-        final I18nLanguage language = Imcms.getI18nSupport().getByCode(i18nCode);
+        final I18nLanguage language = Imcms.getServices().getI18nSupport().getByCode(i18nCode);
 
         if (language == null) {
             throw new IllegalArgumentException(String.format("Language with code %s does not exists.", i18nCode));

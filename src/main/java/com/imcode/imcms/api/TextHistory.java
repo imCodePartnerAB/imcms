@@ -1,6 +1,6 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.ContentRef;
+import imcode.server.document.textdocument.ContentLoopRef;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -27,7 +27,7 @@ public class TextHistory {
 
     private Integer type;
 
-    private ContentRef contentRef;
+    private ContentLoopRef contentRef;
 
     /**
      * i18n support
@@ -55,7 +55,7 @@ public class TextHistory {
         setNo(textDO.getNo());
         setText(textDO.getText());
         setLanguage(textDO.getLanguage());
-        setContentRef(textDO.getContentRef());
+        setContentRef(textDO.getContentLoopRef());
         setUserId(user.getId());
         setModifiedDt(new Date());
     }
@@ -159,11 +159,11 @@ public class TextHistory {
         this.modifiedDt = modifiedDt;
     }
 
-    public ContentRef getContentRef() {
+    public ContentLoopRef getContentRef() {
         return contentRef;
     }
 
-    public void setContentRef(ContentRef contentRef) {
+    public void setContentRef(ContentLoopRef contentRef) {
         this.contentRef = contentRef;
     }
 }
