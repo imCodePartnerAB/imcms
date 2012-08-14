@@ -20,7 +20,7 @@ import javax.persistence.{Id, Entity}
 // help: "Users from a specific IP number or an interval of numbers are given direct access to the system (so that the user does not have to log in)."
 
 class IPAccessManager(app: ImcmsApplication) {
-  private val ipAccessDao = Imcms.getSpringBean("ipAccessDao").asInstanceOf[IPAccessDao]
+  private val ipAccessDao = Imcms.getServices.getSpringBean(classOf[IPAccessDao])
   private val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
   private val toDDN = ((_:String).toLong) andThen ipLongToString
   private val fromDDN = ipStringToLong(_:String).toString

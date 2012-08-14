@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class ContentLoopRef implements Cloneable {
+public class ContentLoopIdentity implements Cloneable {
 
     @Column(name = "content_loop_no")
     private int loopNo;
@@ -14,20 +14,20 @@ public class ContentLoopRef implements Cloneable {
     @Column(name = "content_no")
     private int contentNo;
 
-    protected ContentLoopRef() {}
+    protected ContentLoopIdentity() {}
 
-    public ContentLoopRef(int loopNo, int contentNo) {
+    public ContentLoopIdentity(int loopNo, int contentNo) {
         this.loopNo = loopNo;
         this.contentNo = contentNo;
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof ContentLoopRef)) {
+        if (!(object instanceof ContentLoopIdentity)) {
             return false;
         }
 
-        ContentLoopRef that = (ContentLoopRef)object;
+        ContentLoopIdentity that = (ContentLoopIdentity)object;
 
         return this.hashCode() == that.hashCode();
     }

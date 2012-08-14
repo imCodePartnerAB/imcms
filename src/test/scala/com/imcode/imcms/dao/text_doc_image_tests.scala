@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
 import com.imcode.imcms.api.{ImageHistory, I18nLanguage}
 import com.imcode.imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish}
-import imcode.server.document.textdocument.{ContentLoopRef, ImageDomainObject}
+import imcode.server.document.textdocument.{DocIdentity, ContentLoopIdentity, ImageDomainObject}
 
 
 @RunWith(classOf[JUnitRunner])
@@ -38,47 +38,47 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter 
   }
 
   test("get text doc's images by no outside of content loop") {
-    val images = imageDao.getImagesByNo(1001, 0, 1, None, false)
+    val images = imageDao.getImages(new DocIdentity(1001, 0), 1, None, false)
     assertEquals(2, images.size)
   }
 
   test("get text doc's images by no inside content loop") {
-    val images = imageDao.getImagesByNo(1001, 0, 1, Some(new ContentLoopRef(1, 1)), false)
+    val images = imageDao.getImages(new DocIdentity(1001, 0), 1, Some(new ContentLoopIdentity(1, 1)), false)
     assertEquals(2, images.size)
   }
 
   test("get text doc's images by doc id and doc version no") {
-    val images = imageDao.getImages(1001, 0)
+    val images = imageDao.getImages(new DocIdentity(1001, 0))
     assertEquals(12, images.size)
   }
 
   test("get text doc's images by doc id, doc version no and language") {
-    val images = imageDao.getImages(1001, 0, mkEnglish.getId)
+    val images = imageDao.getImages(new DocIdentity(1001, 0), mkEnglish.getId)
     assertEquals(6, images.size)
   }
 
 
   test("get text doc's image by doc id, doc version no, language and no") {
-		val image = imageDao.getImage(mkEnglish.getId, 1001, 0, 1, None)
+		val image = imageDao.getImage(new DocIdentity(1001, 0), 1, mkEnglish, None)
     assertNotNull(image)
 	}
 
 
 	test("delete text doc's images in a given language") {
-    val deletedCount = imageDao.deleteImages(1001, 0, mkEnglish.getId)
+    val deletedCount = imageDao.deleteImages(new DocIdentity(1001, 0), mkEnglish.getId)
 
     assertEquals(6, deletedCount)
 	}
 
 
 	test("save text doc image") {
-    val image = Factory.createImage(1001, 0, mkEnglish, 1000)
+    val image = ImageDomainObject.builder().docIdentity(new DocIdentity(1001, 0)).language(mkEnglish).no(1000).build()
 
     imageDao.saveImage(image)
 	}
 
 	test("save text doc's image history") {
-    val image = Factory.createImage(1001, 0, mkEnglish, 1000)
+    val image = ImageDomainObject.builder().docIdentity(new DocIdentity(1001, 0)).language(mkEnglish).no(1000).build()
     val imageHistory = new ImageHistory(image, admin)
 
     imageDao.saveImageHistory(imageHistory)

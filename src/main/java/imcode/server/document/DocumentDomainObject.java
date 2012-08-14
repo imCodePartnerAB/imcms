@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.Imcms;
+import imcode.server.document.textdocument.DocIdentity;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
@@ -50,7 +51,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private Meta meta = new Meta();
 
-    private I18nMeta i18nMeta = new I18nMeta();
+    private I18nMeta i18nMeta = I18nMeta.builder().build();
 
     private DocumentVersion version = new DocumentVersion();
 
@@ -67,10 +68,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         if (clone.meta != null) {
             clone.meta = meta.clone();
-        }
-
-        if (clone.i18nMeta != null) {
-            clone.i18nMeta = i18nMeta.clone();
         }
 
         if (version != null) {
@@ -115,6 +112,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      */
     public void setVersion(DocumentVersion version) {
         this.version = version;
+    }
+
+    public DocIdentity getIdentity() {
+        return getVersionNo() == null || getIdValue() == null ? null : new DocIdentity(getVersionNo(), getIdValue());
     }
 
 
@@ -212,7 +213,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setHeadline(String v) {
-        i18nMeta.setHeadline(v);
+        setI18nMeta(I18nMeta.builder(getI18nMeta()).headline(v).build());
     }
 
     public int getId() {
@@ -233,7 +234,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setMenuImage(String v) {
-        i18nMeta.setMenuImageURL(v);
+        setI18nMeta(I18nMeta.builder(getI18nMeta()).menuImageURL(v).build());
     }
 
 
@@ -275,7 +276,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 
     public void setMenuText(String v) {
-        i18nMeta.setMenuText(v);
+        setI18nMeta(I18nMeta.builder(getI18nMeta()).menuText(v).build());
     }
 
     public Date getModifiedDatetime() {
@@ -554,7 +555,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setLanguage(I18nLanguage language) {
-        this.i18nMeta.setLanguage(language);
+        setI18nMeta(I18nMeta.builder(getI18nMeta()).language(language).build());
     }
 
 

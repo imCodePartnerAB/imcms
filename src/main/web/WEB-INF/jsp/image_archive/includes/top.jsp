@@ -6,7 +6,7 @@
 <div id="containerTop">
     <div id="archive_banner" class="clearfix" style="padding: 10px 0 13px 0;">
         <span class="left pageHeading">${pageHeading}</span>
-        <% String isoLang2 = Language.getLanguageByISO639_1(Imcms.getUser().getDocGetterCallback().getLanguage().getCode()).getIsoCode639_2(); %>
+        <% String isoLang2 = Language.getLanguageByISO639_1(Imcms.getUser().getDocGetterCallback().selectedLanguage().getCode()).getIsoCode639_2(); %>
         <img class="right" src="${pageContext.servletContext.contextPath}/imcms/<%= isoLang2 %>/images/admin/logo_imcms_admin.gif" width="100" height="20"/>
     </div>
     

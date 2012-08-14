@@ -15,7 +15,6 @@ import com.imcode._
 import org.mockito.stubbing.Answer
 import imcode.server.document.CategoryDomainObject
 import org.mockito.invocation.InvocationOnMock
-import imcode.server.document.textdocument.{ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
 import com.imcode.imcms.api.{DocumentVersion, I18nMeta}
 import scala.collection.JavaConverters._
 import java.io.File
@@ -23,6 +22,7 @@ import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.apache.solr.core.{SolrCore, CoreDescriptor, CoreContainer}
 import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexer}
+import imcode.server.document.textdocument.{DocIdentity, ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
 
 @RunWith(classOf[JUnitRunner])
 class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
@@ -128,11 +128,11 @@ class DirectoryIndexFixture {
       i18nMetas.getOrElse(Seq(doc.getI18nMeta)).asJava
     )
 
-    when(textDaoMock.getTexts(docId, DocumentVersion.WORKING_VERSION_NO)).thenReturn(
+    when(textDaoMock.getTexts(new DocIdentity(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       texts.getOrElse(Seq(doc.getTexts.values.asScala, doc.getLoopTexts.values.asScala).flatten).asJava
     )
 
-    when(imageDaoMock.getImages(docId, DocumentVersion.WORKING_VERSION_NO)).thenReturn(
+    when(imageDaoMock.getImages(new DocIdentity(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       images.getOrElse(Seq(doc.getImages.values.asScala, doc.getLoopImages.values.asScala).flatten).asJava
     )
   }

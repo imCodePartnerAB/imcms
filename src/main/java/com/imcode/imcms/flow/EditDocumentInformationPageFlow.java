@@ -3,6 +3,7 @@ package com.imcode.imcms.flow;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.Factory;
+import com.sun.org.apache.xml.internal.security.utils.I18n;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
@@ -134,17 +135,17 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         }
 
         Integer docId = document.getIdValue();
-        MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
+        MetaDao metaDao = Imcms.getServices().getSpringBean(MetaDao.class);
 
         if (docId == null) {
             for (I18nLanguage language: availableLanguages) {
-                i18nMetasMap.put(language, Factory.createI18nMeta(docId, language));
+                i18nMetasMap.put(language, I18nMeta.builder().docId(docId).language(language).build());
             }
         } else {
             for (I18nLanguage language: availableLanguages) {
                 I18nMeta i18nMeta = metaDao.getI18nMeta(docId, language);
                 if (i18nMeta == null) {
-                    i18nMeta = Factory.createI18nMeta(docId, language);
+                    i18nMeta = I18nMeta.builder().docId(docId).language(language).build();
                 }
 
                 i18nMetasMap.put(language, i18nMeta);
@@ -232,7 +233,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                i18nMetasMap.get(language).setMenuImageURL(imageUrl);
+                I18nMeta i18nMeta = I18nMeta.builder(i18nMetasMap.get(language)).menuImageURL(imageUrl).build();
+
+                i18nMetasMap.put(language, i18nMeta);
 
                 request.setAttribute( REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
                 dispatchToFirstPage( request, response );
@@ -324,18 +327,21 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         final CategoryMapper categoryMapper = service.getCategoryMapper();
         final DocumentMapper documentMapper = service.getDocumentMapper();
 
-        for (Map.Entry<I18nLanguage, I18nMeta> l: i18nMetasMap.entrySet()) {
-        	String suffix = "_" + l.getKey().getCode();
+        for (Map.Entry<I18nLanguage, I18nMeta> entry: i18nMetasMap.entrySet()) {
+            I18nLanguage language = entry.getKey();
+        	String suffix = "_" + language.getCode();
 
             String headline = request.getParameter(REQUEST_PARAMETER__HEADLINE + suffix);
             String menuText = request.getParameter(REQUEST_PARAMETER__MENUTEXT + suffix);
             String imageURL = request.getParameter(REQUEST_PARAMETER__IMAGE + suffix);
 
-            I18nMeta labels = l.getValue();
+            I18nMeta i18nMeta = I18nMeta.builder(entry.getValue())
+                    .headline(headline)
+                    .menuText(menuText)
+                    .menuImageURL(imageURL)
+                    .build();
 
-            labels.setHeadline(headline);
-            labels.setMenuText(menuText);
-            labels.setMenuImageURL(imageURL);
+            i18nMetasMap.put(language, i18nMeta);
         }
 
         document.setI18nMeta(i18nMetasMap.get(document.getLanguage()));

@@ -22,15 +22,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private static final class ContentLoopItemKey {
 
         public final int itemNo;
-        public final ContentLoopRef contentLoopRef;
+        public final ContentLoopIdentity contentLoopIdentity;
         public final int hashCode;
 
-        public ContentLoopItemKey(int itemNo, ContentLoopRef contentLoopRef) {
+        public ContentLoopItemKey(int itemNo, ContentLoopIdentity contentLoopIdentity) {
             this.itemNo = itemNo;
-            this.contentLoopRef = contentLoopRef;
+            this.contentLoopIdentity = contentLoopIdentity;
             this.hashCode = new HashCodeBuilder(17, 31).
-                    append(contentLoopRef.getLoopNo()).
-                    append(contentLoopRef.getContentNo()).
+                    append(contentLoopIdentity.getLoopNo()).
+                    append(contentLoopIdentity.getContentNo()).
                     append(itemNo).
                     toHashCode();
         }
@@ -168,8 +168,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-    public TextDomainObject getText(int textNo, ContentLoopRef contentLoopRef) {
-        return loopTexts.get(new ContentLoopItemKey(textNo, contentLoopRef));
+    public TextDomainObject getText(int textNo, ContentLoopIdentity contentLoopIdentity) {
+        return loopTexts.get(new ContentLoopItemKey(textNo, contentLoopIdentity));
     }
 
     /**
@@ -212,8 +212,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         newMenu.setId(id);
         newMenu.setNo(no);
-        newMenu.setDocId(getMeta().getId());
-        newMenu.setDocVersionNo(getVersion().getNo());
+        newMenu.setDocIdentity(getIdentity());
 
         menus.put(no, newMenu);
 
@@ -230,42 +229,38 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @return
      */
     public TextDomainObject setText(int no, TextDomainObject text) {
-        Integer docId = getIdValue();
-        Integer docVersionNo = getVersionNo();
-
-        ContentLoopRef contentLoopRef = text.getContentLoopRef();
-        ContentLoopItemKey key = contentLoopRef == null
+        ContentLoopIdentity contentLoopIdentity = text.getContentLoopIdentity();
+        ContentLoopItemKey key = contentLoopIdentity == null
                 ? null :
-                new ContentLoopItemKey(no, contentLoopRef);
+                new ContentLoopItemKey(no, contentLoopIdentity);
 
         TextDomainObject oldText = key == null ? texts.get(no) : loopTexts.get(key);
         TextDomainObject newText = text.clone();
         Long id = oldText != null ? oldText.getId() : null;
 
         newText.setId(id);
-        newText.setDocId(docId);
-        newText.setDocVersionNo(docVersionNo);
+        newText.setDocIdentity(getIdentity());
         newText.setNo(no);
         newText.setLanguage(getLanguage());
 
         if (key == null) {
             texts.put(no, newText);
         } else {
-            ContentLoop loop = getContentLoop(contentLoopRef.getLoopNo());
+            ContentLoop loop = getContentLoop(contentLoopIdentity.getLoopNo());
 
             if (loop == null) {
                 throw new IllegalStateException(String.format(
-                        "Invalid text. Loop does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
-                        , docId, docVersionNo, contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
+                        "Invalid text. Loop does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
+                        , getIdentity(), contentLoopIdentity.getLoopNo(), contentLoopIdentity.getContentNo(), no)
                 );
             }
 
-            Content content = loop.getContent(contentLoopRef.getContentNo());
+            Content content = loop.getContent(contentLoopIdentity.getContentNo());
 
             if (content == null) {
                 throw new IllegalStateException(String.format(
-                        "Invalid text. Content does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
-                        , docId, docVersionNo, contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
+                        "Invalid text. Content does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
+                        , getIdentity(), contentLoopIdentity.getLoopNo(), contentLoopIdentity.getContentNo(), no)
                 );
             }
 
@@ -338,40 +333,36 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
 
     public ImageDomainObject setImage(int no, ImageDomainObject image) {
-        Integer docId = getIdValue();
-        Integer docVersionNo = getVersionNo();
-
-        ContentLoopRef contentLoopRef = image.getContentLoopRef();
-        ContentLoopItemKey key = contentLoopRef == null ? null : new ContentLoopItemKey(no, contentLoopRef);
+        ContentLoopIdentity contentLoopIdentity = image.getContentLoopIdentity();
+        ContentLoopItemKey key = contentLoopIdentity == null ? null : new ContentLoopItemKey(no, contentLoopIdentity);
 
         ImageDomainObject oldImage = key == null ? images.get(no) : loopImages.get(key);
         ImageDomainObject newImage = image.clone();
         Long id = oldImage != null ? oldImage.getId() : null;
 
         newImage.setId(id);
-        newImage.setDocId(docId);
-        newImage.setDocVersionNo(docVersionNo);
+        newImage.setDocIdentity(getIdentity());
         newImage.setNo(no);
         newImage.setLanguage(getLanguage());
 
         if (key == null) {
             images.put(no, newImage);
         } else {
-            ContentLoop loop = getContentLoop(contentLoopRef.getLoopNo());
+            ContentLoop loop = getContentLoop(contentLoopIdentity.getLoopNo());
 
             if (loop == null) {
                 throw new IllegalStateException(String.format(
-                        "Invalid image. Loop does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
-                        , docId, docVersionNo, contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
+                        "Invalid image. Loop does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
+                        , getIdentity(), contentLoopIdentity.getLoopNo(), contentLoopIdentity.getContentNo(), no)
                 );
             }
 
-            Content content = loop.getContent(contentLoopRef.getContentNo());
+            Content content = loop.getContent(contentLoopIdentity.getContentNo());
 
             if (content == null) {
                 throw new IllegalStateException(String.format(
-                        "Invalid image. Content does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
-                        , docId, docVersionNo, contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
+                        "Invalid image. Content does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
+                        , getIdentity(), contentLoopIdentity.getLoopNo(), contentLoopIdentity.getContentNo(), no)
                 );
             }
 
@@ -388,8 +379,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return images.get(no);
     }
 
-    public ImageDomainObject getImage(int imageNo, ContentLoopRef contentLoopRef) {
-        return loopImages.get(new ContentLoopItemKey(imageNo, contentLoopRef));
+    public ImageDomainObject getImage(int imageNo, ContentLoopIdentity contentLoopIdentity) {
+        return loopImages.get(new ContentLoopItemKey(imageNo, contentLoopIdentity));
     }
 
     private Map<Integer, MenuDomainObject> cloneMenusMap() {
@@ -525,8 +516,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         Integer docVersionNo = getVersionNo();
         Long id = oldContentLoop != null ? oldContentLoop.getId() : null;
 
-        newContentLoop.setDocId(docId);
-        newContentLoop.setDocVersionNo(docVersionNo);
+        newContentLoop.setDocIdentity(getIdentity());
         newContentLoop.setId(id);
         newContentLoop.setNo(no);
 

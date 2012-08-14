@@ -131,7 +131,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     }
   }
 
-  val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
+  val systemDao = Imcms.getServices.getSpringBean(classOf[SystemDao])
 
 
 

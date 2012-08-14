@@ -80,15 +80,15 @@ public class DocumentMapper implements DocumentGetter {
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
-        documentLoader = services.getComponent(DocumentLoader.class);
+        documentLoader = services.getSpringBean(DocumentLoader.class);
         documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
 
         documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getI18nSupport().getLanguages(), documentCacheMaxSize);
 
-        nativeQueriesDao = services.getComponent(NativeQueriesDao.class);
-        categoryMapper = services.getComponent(CategoryMapper.class);
+        nativeQueriesDao = services.getSpringBean(NativeQueriesDao.class);
+        categoryMapper = services.getSpringBean(CategoryMapper.class);
 
-        documentSaver = services.getComponent(DocumentSaver.class);
+        documentSaver = services.getSpringBean(DocumentSaver.class);
         documentSaver.setDocumentMapper(this);
     }
 
@@ -238,8 +238,7 @@ public class DocumentMapper implements DocumentGetter {
             docClone.setLanguage(language);
         }
 
-        I18nMeta i18nMeta = docClone.getI18nMeta();
-        i18nMeta.setLanguage(language);
+        I18nMeta i18nMeta = I18nMeta.builder(docClone.getI18nMeta()).language(language).build();
 
         Map<I18nLanguage, I18nMeta> i18nMetas = new HashMap<I18nLanguage, I18nMeta>();
         i18nMetas.put(language, i18nMeta);
@@ -352,7 +351,7 @@ public class DocumentMapper implements DocumentGetter {
             i18nMetasClone.add(e.getValue().clone());
         }
 
-        DocumentDomainObject oldDoc = getCustomDocument(doc.getId(), doc.getVersionNo(), doc.getLanguage());
+        DocumentDomainObject oldDoc = getCustomDocument(doc.getIdentity(), doc.getLanguage());
 
         try {
             documentSaver.updateDocument(docClone, i18nMetasClone, oldDoc.clone(), user);
@@ -367,12 +366,16 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveTextDocMenu(TextDocumentDomainObject doc, MenuDomainObject menu, UserDomainObject user)
+    public void saveTextDocMenu(MenuDomainObject menu, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
+
+        if (menu.getDocIdentity() == null)
+            throw new IllegalStateException("menu doc ref is not set");
+
         try {
-            documentSaver.saveMenu(doc, menu, user);
+            documentSaver.saveMenu(menu, user);
         } finally {
-            invalidateDocument(doc);
+            invalidateDocument(menu.getDocIdentity().getDocId());
         }
     }
 
@@ -391,7 +394,7 @@ public class DocumentMapper implements DocumentGetter {
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         for (I18nLanguage language : imcmsServices.getI18nSupport().getLanguages()) {
-            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(docId, DocumentVersion.WORKING_VERSION_NO, language);
+            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(new DocIdentity(docId, DocumentVersion.WORKING_VERSION_NO), language);
             docs.add(doc);
         }
 
@@ -607,7 +610,7 @@ public class DocumentMapper implements DocumentGetter {
     public <T extends DocumentDomainObject> T copyDocument(final T doc, final UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        Integer docId = copyDocument(doc.getId(), doc.getVersionNo(), user);
+        Integer docId = copyDocument(doc.getIdentity(), user);
 
         @SuppressWarnings("unchecked")
         T workingDocument = (T)getWorkingDocument(docId, doc.getLanguage());
@@ -623,14 +626,14 @@ public class DocumentMapper implements DocumentGetter {
      * @return new doc id.
      * @since 6.0
      */
-    public Integer copyDocument(final int docId, final int docVersionNo, final UserDomainObject user)
+    public Integer copyDocument(final DocIdentity docIdentity, final UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         // todo: put into resource file.
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        Meta meta = documentSaver.getMetaDao().getMeta(docId);
-        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docId);
+        Meta meta = documentSaver.getMetaDao().getMeta(docIdentity.getDocId());
+        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docIdentity.getDocId());
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         makeDocumentLookNew(meta, user);
@@ -638,25 +641,19 @@ public class DocumentMapper implements DocumentGetter {
         meta.removeAlis();
 
         for (I18nMeta i18nMeta : i18nMetas) {
-            i18nMeta.setId(null);
-            i18nMeta.setDocId(null);
-
-            i18nMeta.setHeadline(i18nMeta.getHeadline() + copyHeadlineSuffix);
-
             I18nLanguage language = i18nMeta.getLanguage();
-            DocumentDomainObject doc = getCustomDocument(docId, docVersionNo, language).clone();
+            DocumentDomainObject doc = getCustomDocument(docIdentity, language).clone();
 
             doc.accept(new DocIdentityCleanerVisitor());
             doc.setMeta(meta);
-            doc.setI18nMeta(i18nMeta);
+            doc.setI18nMeta(I18nMeta.builder(i18nMeta).headline(i18nMeta.getHeadline() + copyHeadlineSuffix).build());
 
             docs.add(doc);
         }
 
         if (docs.isEmpty()) {
             throw new IllegalArgumentException(String.format(
-                    "Unable to copy. Source document does not exists. DocId: %d, doc version no: %d.",
-                    docId, docVersionNo));
+                    "Unable to copy. Source document does not exists. DocIdentity: %s.", docIdentity));
         }
 
         Integer docCopyId = documentSaver.copyDocument(docs, user);
@@ -704,12 +701,11 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * @param docId
      * @return custom document in default language.
      * @since 6.0
      */
-    public DocumentDomainObject getCustomDocument(int docId, int docVersionNo) {
-        return getCustomDocument(docId, docVersionNo, imcmsServices.getI18nSupport().getDefaultLanguage());
+    public DocumentDomainObject getCustomDocument(DocIdentity docIdentity) {
+        return getCustomDocument(docIdentity, imcmsServices.getI18nSupport().getDefaultLanguage());
     }
 
 
@@ -768,14 +764,12 @@ public class DocumentMapper implements DocumentGetter {
      * <p/>
      * Custom document is never cached.
      *
-     * @param docId
-     * @param docVersionNo
      * @param language
      * @return custom document
      * @since 6.0
      */
-    public DocumentDomainObject getCustomDocument(int docId, int docVersionNo, I18nLanguage language) {
-        return documentLoaderCachingProxy.getCustomDoc(docId, docVersionNo, language);
+    public DocumentDomainObject getCustomDocument(DocIdentity docIdentity, I18nLanguage language) {
+        return documentLoaderCachingProxy.getCustomDoc(docIdentity, language);
     }
 
 
@@ -826,11 +820,8 @@ public class DocumentMapper implements DocumentGetter {
     public synchronized void saveTextDocText(TextDomainObject text, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
 
-        if (text.getDocId() == null)
-            throw new IllegalStateException("text document no is not set");
-
-        if (text.getDocVersionNo() == null)
-            throw new IllegalStateException("text document version no is not set");
+        if (text.getDocIdentity() == null)
+            throw new IllegalStateException("text document identity is not set");
 
         if (text.getNo() == null)
             throw new IllegalStateException("text no is not set");
@@ -841,7 +832,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveText(text, user);
         } finally {
-            invalidateDocument(text.getDocId());
+            invalidateDocument(text.getDocIdentity().getDocId());
         }
     }
 
@@ -859,7 +850,7 @@ public class DocumentMapper implements DocumentGetter {
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
             for (ImageDomainObject image: images) {
-                docIds.add(image.getDocId());
+                docIds.add(image.getDocIdentity().getDocId());
             }
 
             for (Integer docId: docIds) {
@@ -878,11 +869,8 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public synchronized void saveTextDocImage(ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        if (image.getDocId() == null)
-            throw new IllegalStateException("image document no is not set");
-
-        if (image.getDocVersionNo() == null)
-            throw new IllegalStateException("image document version no is not set");
+        if (image.getDocIdentity() == null)
+            throw new IllegalStateException("image document identity is not set");
 
         if (image.getNo() == null)
             throw new IllegalStateException("image no is not set");
@@ -893,7 +881,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveImage(image, user);
         } finally {
-            invalidateDocument(image.getDocId());
+            invalidateDocument(image.getDocIdentity().getDocId());
         }
     }
 

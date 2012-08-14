@@ -1,11 +1,15 @@
 package imcode.server.document;
 
-import com.imcode.imcms.api.I18nLanguage;
+import imcode.server.Imcms;
 import com.imcode.imcms.mapping.DocumentGetter;
 
-public class GetterDocumentReference extends DocumentReference {
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 
-    private DocumentGetter documentGetter;
+public class GetterDocumentReference extends DocumentReference implements Serializable {
+
+    transient private DocumentGetter documentGetter;
 
     public GetterDocumentReference(int documentId, DocumentGetter documentGetter) {
         super(documentId);
@@ -14,5 +18,10 @@ public class GetterDocumentReference extends DocumentReference {
 
     public DocumentDomainObject getDocument() {
         return documentGetter.getDefaultDocument(getDocumentId());
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        documentGetter = Imcms.getServices().getDocumentMapper();
     }
 }

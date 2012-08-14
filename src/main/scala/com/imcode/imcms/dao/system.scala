@@ -46,7 +46,7 @@ class LanguageDao extends HibernateSupport {
     hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getByCode", "code" -> code)
 
 
-  def saveLanguage(language: I18nLanguage): I18nLanguage = hibernate.saveOrUpdate(language.clone())
+  def saveLanguage(language: I18nLanguage): I18nLanguage = language.clone() |> hibernate.saveOrUpdate
 
 
   def deleteLanguage(id: JInteger) =

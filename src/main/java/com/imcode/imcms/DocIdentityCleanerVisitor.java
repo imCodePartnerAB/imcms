@@ -2,6 +2,7 @@ package com.imcode.imcms;
 
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.I18nMeta;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
@@ -20,25 +21,25 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
     public void visitTextDocument(TextDocumentDomainObject doc) {
         visitOtherDocument(doc);
 
-        for (TextDomainObject text: doc.getTexts().values()) {
+        for (TextDomainObject text : doc.getTexts().values()) {
             text.setId(null);
-            text.setDocId(null);
+            text.setDocIdentity(null);
         }
 
-        for (ImageDomainObject image: doc.getImages().values()) {
+        for (ImageDomainObject image : doc.getImages().values()) {
             image.setId(null);
-            image.setDocId(null);
+            image.setDocIdentity(null);
         }
 
-    	for (MenuDomainObject menu: doc.getMenus().values()) {
-    		menu.setId(null);
-    		menu.setDocId(null);
-    	}
+        for (MenuDomainObject menu : doc.getMenus().values()) {
+            menu.setId(null);
+            menu.setDocIdentity(null);
+        }
 
-    	for (ContentLoop loop: doc.getContentLoops().values()) {
-    		loop.setId(null);
-    		loop.setDocId(null);
-    	}
+        for (ContentLoop loop : doc.getContentLoops().values()) {
+            loop.setId(null);
+            loop.setDocIdentity(null);
+        }
 
         doc.getTemplateNames().setDocId(null);
     }
@@ -46,8 +47,8 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
 
     @Override
     protected void visitOtherDocument(DocumentDomainObject doc) {
-		doc.getMeta().setId(null);
-        doc.getI18nMeta().setId(null);
+        doc.getMeta().setId(null);
+        doc.setI18nMeta(I18nMeta.builder(doc.getI18nMeta()).id(null).docId(null).build());
 
         DocumentVersion version = doc.getVersion();
 

@@ -6,6 +6,7 @@ import imcode.server.document.DocumentDomainObject
 import imcode.server.user.UserDomainObject
 import javax.servlet.http.HttpServletRequest
 import imcode.server.{Imcms, ImcmsServices, ImcmsConstants}
+import imcode.server.document.textdocument.DocIdentity
 
 
 object DocGetterCallbackUtil {
@@ -99,7 +100,7 @@ case class WorkingDocGetterCallback(state: State, selectedDocId: Int) extends Do
 
 case class CustomDocGetterCallback(state: State, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    if (selectedDocId == docId) docMapper.getCustomDocument(docId, selectedDocVersionNo, state.selectedLanguage)
+    if (selectedDocId == docId) docMapper.getCustomDocument(new DocIdentity(selectedDocId, selectedDocVersionNo), state.selectedLanguage)
     else DefaultDocGetterCallback(state).getDoc(docId, user, docMapper)
 }
 

@@ -3,10 +3,10 @@ package imcms.test
 package fixtures
 
 import scala.collection.JavaConverters._
-import imcms.api.{I18nLanguage, I18nSupport}
 import imcode.server.user.{UserDomainObject, RoleId}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject, DocumentPermissionSetTypeDomainObject}
 import imcode.server.document.textdocument.{TextDomainObject, TextDocumentDomainObject}
+import com.imcode.imcms.api.{I18nMeta, I18nLanguage, I18nSupport}
 
 object DocFX {
   val Seq(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth) = 1001 to 1010
@@ -42,8 +42,10 @@ object DocFX {
     }
 
     doc.getI18nMeta |> { m =>
-      m.setHeadline("i18n_meta_headline_%d_%s".format(docId, language.getCode))
-      m.setMenuText("i18n_meta_menu_text_%d_%s".format(docId, language.getCode))
+      I18nMeta.builder(m)
+        .headline("i18n_meta_headline_%d_%s".format(docId, language.getCode))
+        .menuText("i18n_meta_menu_text_%d_%s".format(docId, language.getCode))
+        .build() |> doc.setI18nMeta
     }
 
     doc.setProperties(0.until(10).map(n => ("property_name_%d_%d".format(docId, n), "property_value_%d_%d".format(docId, n))).

@@ -31,7 +31,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         reference.setDocVersionNo(document.getVersionNo());
     	reference.setHtml(document.getHtml());
     	
-    	MetaDao dao = services.getComponent(MetaDao.class);
+    	MetaDao dao = services.getSpringBean(MetaDao.class);
     	
     	dao.saveHtmlReference(reference);
     }
@@ -48,7 +48,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     	reference.setUrlFrameName("");
     	reference.setUrl(document.getUrl());
     	
-    	MetaDao dao = services.getComponent(MetaDao.class);
+    	MetaDao dao = services.getSpringBean(MetaDao.class);
     	
     	dao.saveUrlReference(reference);    	
     }

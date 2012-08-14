@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.ContentLoopRef;
+import imcode.server.document.textdocument.ContentLoopIdentity;
+import imcode.server.document.textdocument.DocIdentity;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -27,7 +28,9 @@ public class TextHistory {
 
     private Integer type;
 
-    private ContentLoopRef contentRef;
+    private ContentLoopIdentity contentLoopIdentity;
+
+    private DocIdentity docIdentity;
 
     /**
      * i18n support
@@ -50,12 +53,11 @@ public class TextHistory {
 
     public TextHistory(TextDomainObject textDO, UserDomainObject user) {
         setType(textDO.getType());
-        setDocId(textDO.getDocId());
-        setDocVersionNo(textDO.getDocVersionNo());
+        setDocIdentity(textDO.getDocIdentity());
         setNo(textDO.getNo());
         setText(textDO.getText());
         setLanguage(textDO.getLanguage());
-        setContentRef(textDO.getContentLoopRef());
+        setContentLoopIdentity(textDO.getContentLoopIdentity());
         setUserId(user.getId());
         setModifiedDt(new Date());
     }
@@ -119,22 +121,6 @@ public class TextHistory {
         this.language = language;
     }
 
-    public Integer getDocId() {
-        return docId;
-    }
-
-    public void setDocId(Integer docId) {
-        this.docId = docId;
-    }
-
-    public Integer getDocVersionNo() {
-        return docVersionNo;
-    }
-
-    public void setDocVersionNo(Integer docVersionNo) {
-        this.docVersionNo = docVersionNo;
-    }
-
     public Integer getNo() {
         return no;
     }
@@ -159,11 +145,19 @@ public class TextHistory {
         this.modifiedDt = modifiedDt;
     }
 
-    public ContentLoopRef getContentRef() {
-        return contentRef;
+    public ContentLoopIdentity getContentLoopIdentity() {
+        return contentLoopIdentity;
     }
 
-    public void setContentRef(ContentLoopRef contentRef) {
-        this.contentRef = contentRef;
+    public void setContentLoopIdentity(ContentLoopIdentity contentLoopIdentity) {
+        this.contentLoopIdentity = contentLoopIdentity;
+    }
+
+    public DocIdentity getDocIdentity() {
+        return docIdentity;
+    }
+
+    public void setDocIdentity(DocIdentity docIdentity) {
+        this.docIdentity = docIdentity;
     }
 }

@@ -30,7 +30,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  */
 @Entity(name = "Menu")
 @Table(name = "imcms_text_doc_menus")
-public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem, DocOrderedItem {
+public class MenuDomainObject implements Cloneable, Serializable {
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
     public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;
@@ -53,11 +53,7 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
     @Column(name = "no")
     private Integer no;
 
-    @Column(name = "doc_version_no")
-    private Integer docVersionNo;
-
-    @Column(name = "doc_id")
-    private Integer docId;
+    private DocIdentity docIdentity;
 
 
     /**
@@ -252,24 +248,9 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
         return new HashCodeBuilder().append(sortOrder).append(menuItems).toHashCode();
     }
 
-    public Integer getDocId() {
-        return docId;
-    }
-
-    public void setDocId(Integer docId) {
-        this.docId = docId;
-    }
 
     public Map<Integer, MenuItemDomainObject> getItemsMap() {
         return menuItems;
-    }
-
-    public Integer getDocVersionNo() {
-        return docVersionNo;
-    }
-
-    public void setDocVersionNo(Integer docVersionNo) {
-        this.docVersionNo = docVersionNo;
     }
 
     public Integer getNo() {
@@ -294,5 +275,13 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
     @Deprecated
     public void setIndex(Integer index) {
         setNo(index);
+    }
+
+    public DocIdentity getDocIdentity() {
+        return docIdentity;
+    }
+
+    public void setDocIdentity(DocIdentity docRef) {
+        this.docIdentity = docRef;
     }
 }

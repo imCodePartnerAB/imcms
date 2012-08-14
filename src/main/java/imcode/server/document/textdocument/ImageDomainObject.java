@@ -15,32 +15,82 @@ import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Entity(name="Image")
-@Table(name="imcms_text_doc_images")
-public class ImageDomainObject implements Serializable, Cloneable, DocVersionItem, DocI18nItem, DocContentLoopItem, DocOrderedItem {
-	
+@Entity(name = "Image")
+@Table(name = "imcms_text_doc_images")
+public class ImageDomainObject implements Serializable, Cloneable {
+
+    public static final class Builder {
+        private ImageDomainObject ido;
+
+        public Builder() {
+        }
+
+        public ImageDomainObject build() {
+            ImageDomainObject ido = new ImageDomainObject();
+
+            ido.id = this.ido.id;
+            ido.docIdentity = this.ido.docIdentity;
+            ido.no = this.ido.no;
+            ido.language = this.ido.language;
+            ido.contentLoopIdentity = this.ido.contentLoopIdentity;
+
+            return ido;
+        }
+
+        public Builder id(Long id) {
+            ido.id = id;
+            return this;
+        }
+
+        public Builder docIdentity(DocIdentity docIdentity) {
+            ido.docIdentity = docIdentity;
+            return this;
+        }
+
+        public Builder no(Integer no) {
+            ido.no = no.toString();
+            return this;
+        }
+
+        public Builder language(I18nLanguage language) {
+            ido.language = language;
+            return this;
+        }
+
+        public Builder contentLoopIdentity(ContentLoopIdentity contentLoopIdentity) {
+            ido.contentLoopIdentity = contentLoopIdentity;
+            return this;
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static final int IMAGE_NAME_LENGTH = 40;
 
     private static final int GEN_FILE_LENGTH = 255;
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
-    
-	@Transient
-	private ImageSource source = new NullImageSource();
-	
-	@Column(name="doc_id", nullable=false)
-	private Integer docId;
-	
-	@Column(name="doc_version_no", nullable=false)
-	private Integer docVersionNo;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    /** Image order no in a text doc.*/
+    @Transient
+    private ImageSource source = new NullImageSource();
+
+    private DocIdentity docIdentity;
+
+    private ContentLoopIdentity contentLoopIdentity;
+
+    /**
+     * Image order no in a text doc.
+     */
     private String no = "";
 
 
@@ -48,62 +98,60 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
     private int height;
     private int border;
     private String align = "";
-    
-    @Column(name="alt_text")
+
+    @Column(name = "alt_text")
     private String alternateText = "";
-    
-    @Column(name="low_scr")
+
+    @Column(name = "low_scr")
     private String lowResolutionUrl = "";
-    
-    @Column(name="v_space")
+
+    @Column(name = "v_space")
     private int verticalSpace;
-    
-    @Column(name="h_space")
+
+    @Column(name = "h_space")
     private int horizontalSpace;
     private String target = "";
-    
-    @Column(name="linkurl")
+
+    @Column(name = "linkurl")
     private String linkUrl = "";
-    
-    @Column(name="imgurl")
+
+    @Column(name = "imgurl")
     private String imageUrl = "";
 
-    @Column(name="image_name", nullable=false, length=IMAGE_NAME_LENGTH)
+    @Column(name = "image_name", nullable = false, length = IMAGE_NAME_LENGTH)
     private String imageName = "";
-    
+
     private Integer type;
 
-    @Column(name="archive_image_id")
+    @Column(name = "archive_image_id")
     private Long archiveImageId;
 
-    @Column(name="format", nullable=false)
+    @Column(name = "format", nullable = false)
     private short format;
 
-    @Column(name="crop_x1", nullable=false)
+    @Column(name = "crop_x1", nullable = false)
     private int cropX1;
 
-    @Column(name="crop_y1", nullable=false)
+    @Column(name = "crop_y1", nullable = false)
     private int cropY1;
 
-    @Column(name="crop_x2", nullable=false)
+    @Column(name = "crop_x2", nullable = false)
     private int cropX2;
 
-    @Column(name="crop_y2", nullable=false)
+    @Column(name = "crop_y2", nullable = false)
     private int cropY2;
 
-    @Column(name="rotate_angle", nullable=false)
+    @Column(name = "rotate_angle", nullable = false)
     private short rotateAngle;
 
-    @Column(name="gen_file", length=GEN_FILE_LENGTH)
+    @Column(name = "gen_file", length = GEN_FILE_LENGTH)
     private String generatedFilename;
 
-    private ContentLoopRef contentLoopRef;
-
     /**
-     * i18n support 
+     * i18n support
      */
-	@OneToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="language_id", referencedColumnName="id")
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "language_id", referencedColumnName = "id")
     private I18nLanguage language;
 
     public String getName() {
@@ -113,10 +161,10 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
     public ImageSize getDisplayImageSize() {
         ImageSize realImageSize = getRealImageSize();
         CropRegion region = getCropRegion();
-        
+
         int realWidth;
         int realHeight;
-        
+
         if (region.isValid()) {
             realWidth = region.getWidth();
             realHeight = region.getHeight();
@@ -124,15 +172,15 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
             realWidth = realImageSize.getWidth();
             realHeight = realImageSize.getHeight();
         }
-        
+
         int wantedWidth = getWidth();
         int wantedHeight = getHeight();
         int displayWidth;
         int displayHeight;
-        
+
         if (wantedWidth > 0 || wantedHeight > 0) {
-            float ratio = realWidth / (float)realHeight;
-            
+            float ratio = realWidth / (float) realHeight;
+
             if (wantedWidth > 0 && wantedHeight > 0) {
                 displayWidth = wantedWidth;
                 displayHeight = wantedHeight;
@@ -143,33 +191,35 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
                 displayHeight = wantedHeight;
                 displayWidth = Math.round(wantedHeight * ratio);
             }
-            
+
         } else {
             displayWidth = realWidth;
             displayHeight = realHeight;
         }
-        
+
         return new ImageSize(displayWidth, displayHeight);
     }
 
     public ImageSize getRealImageSize() {
-        ImageSize imageSize = new ImageSize( 0, 0 );
-        if ( !isEmpty( ) ) {
+        ImageSize imageSize = new ImageSize(0, 0);
+        if (!isEmpty()) {
             try {
-                imageSize = source.getImageSize( );
-            } catch ( IOException ignored ) {}
+                imageSize = source.getImageSize();
+            } catch (IOException ignored) {
+            }
         }
         return imageSize;
     }
 
     public ImageInfo getImageInfo() {
         if (!isEmpty()) {
-    		try {
-    			return source.getImageInfo();
-    		} catch (IOException ex) {}
-    	}
+            try {
+                return source.getImageInfo();
+            } catch (IOException ex) {
+            }
+        }
 
-    	return null;
+        return null;
     }
 
     public int getWidth() {
@@ -257,9 +307,9 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
     }
 
     public void setSourceAndClearSize(ImageSource source) {
-        setSource( source );
-        setWidth( 0 );
-        setHeight( 0 );
+        setSource(source);
+        setWidth(0);
+        setHeight(0);
     }
 
     public void setSource(ImageSource source) {
@@ -270,19 +320,19 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
     }
 
     public boolean isEmpty() {
-        return source.isEmpty( );
+        return source.isEmpty();
     }
 
     public String getUrlPath(String contextPath) {
-        String urlPathRelativeToContextPath = getUrlPathRelativeToContextPath( );
-        if ( StringUtils.isBlank( urlPathRelativeToContextPath ) ) {
+        String urlPathRelativeToContextPath = getUrlPathRelativeToContextPath();
+        if (StringUtils.isBlank(urlPathRelativeToContextPath)) {
             return "";
         }
         return contextPath + urlPathRelativeToContextPath;
     }
 
     public String getUrlPathRelativeToContextPath() {
-        return source.getUrlPathRelativeToContextPath( );
+        return source.getUrlPathRelativeToContextPath();
     }
 
     public File getGeneratedFile() {
@@ -329,37 +379,37 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
     }
 
     public long getSize() {
-        if ( isEmpty( ) ) {
+        if (isEmpty()) {
             return 0;
         }
         try {
-            return source.getInputStreamSource( ).getSize( );
-        } catch ( IOException e ) {                                                    
+            return source.getInputStreamSource().getSize();
+        } catch (IOException e) {
             return 0;
         }
     }
 
     public ImageSource getSource() {
-        if ( isEmpty( ) ) {
-            return new NullImageSource( );
+        if (isEmpty()) {
+            return new NullImageSource();
         }
         return source;
     }
 
     @Override
-    public boolean equals( Object obj ) {
-        if ( !( obj instanceof ImageDomainObject ) ) {
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ImageDomainObject)) {
             return false;
         }
-        
-        final ImageDomainObject o = (ImageDomainObject)obj;
+
+        final ImageDomainObject o = (ImageDomainObject) obj;
         return new EqualsBuilder().append(source.toStorageString(), o.getSource().toStorageString())
                 .append(no, o.getName())
                 .append(width, o.getWidth())
                 .append(height, o.getHeight())
-                .append(border, o .getBorder())
+                .append(border, o.getBorder())
                 .append(align, o.getAlign())
-                .append(alternateText,o.getAlternateText())
+                .append(alternateText, o.getAlternateText())
                 .append(lowResolutionUrl, o.getLowResolutionUrl())
                 .append(verticalSpace, o.getVerticalSpace())
                 .append(horizontalSpace, o.getHorizontalSpace())
@@ -373,7 +423,7 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
                 .append(cropY2, o.cropY2)
                 .append(rotateAngle, o.rotateAngle)
                 .isEquals();
-   }
+    }
 
     public int hashCode() {
         return new HashCodeBuilder()
@@ -387,88 +437,72 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
                 .toHashCode();
     }
 
-	public I18nLanguage getLanguage() {
-		return language;
-	}
+    public I18nLanguage getLanguage() {
+        return language;
+    }
 
-	public void setLanguage(I18nLanguage language) {
-		this.language = language;
-	}
+    public void setLanguage(I18nLanguage language) {
+        this.language = language;
+    }
 
-	public Integer getDocId() {
-		return docId;
-	}
+    public ImageDomainObject clone() {
+        try {
+            return (ImageDomainObject) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public void setDocId(Integer docId) {
-		this.docId = docId;
-	}
-	
-	public ImageDomainObject clone() {
-		try {
-			return (ImageDomainObject)super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public String getImageUrl() {
+        return imageUrl;
+    }
 
-	public String getImageUrl() {
-		return imageUrl;
-	}
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     /**
-     * @see ImageSource
      * @return image source type
+     * @see ImageSource
      */
-	public Integer getType() {
-		return type;
-	}
+    public Integer getType() {
+        return type;
+    }
 
-	public void setType(Integer type) {
-		this.type = type;
-	}
-
-    @Deprecated
-	public Integer getIndex() {
-		return no == null ? null : new Integer(no);
-	}
+    public void setType(Integer type) {
+        this.type = type;
+    }
 
     @Deprecated
-	public void setIndex(Integer index) {
-		if (index == null) {
-			no = null;
-		} else {
-			no = index.toString();
-		}
-	}
+    public Integer getIndex() {
+        return no == null ? null : new Integer(no);
+    }
+
+    @Deprecated
+    public void setIndex(Integer index) {
+        if (index == null) {
+            no = null;
+        } else {
+            no = index.toString();
+        }
+    }
 
 
-	public Integer getNo() {
-		return getIndex();
-	}
+    public Integer getNo() {
+        return getIndex();
+    }
 
-	public void setNo(Integer no) {
-		setIndex(no);
-	}
-
-	public Integer getDocVersionNo() {
-		return docVersionNo;
-	}
-
-	public void setDocVersionNo(Integer docVersionNo) {
-		this.docVersionNo = docVersionNo;
-	}
+    public void setNo(Integer no) {
+        setIndex(no);
+    }
 
     public String getImageName() {
         return imageName;
@@ -651,7 +685,7 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
         WEST(-90, 180, 0);
 
         private static final Map<Integer, RotateDirection> ANGLE_MAP =
-            new HashMap<Integer, RotateDirection>(RotateDirection.values().length);
+                new HashMap<Integer, RotateDirection>(RotateDirection.values().length);
 
         static {
             for (RotateDirection direction : RotateDirection.values()) {
@@ -692,11 +726,29 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
         }
     }
 
-    public ContentLoopRef getContentLoopRef() {
-        return contentLoopRef;
+    public DocIdentity getDocIdentity() {
+        return docIdentity;
     }
 
-    public void setContentLoopRef(ContentLoopRef contentRef) {
-        this.contentLoopRef = contentRef;
+    public void setDocIdentity(DocIdentity docIdentity) {
+        this.docIdentity = docIdentity;
+    }
+
+    public ContentLoopIdentity getContentLoopIdentity() {
+        return contentLoopIdentity;
+    }
+
+    public void setContentLoopIdentity(ContentLoopIdentity contentRef) {
+        this.contentLoopIdentity = contentRef;
+    }
+
+    @Override
+    public String toString() {
+        return "ImageDomainObject{" +
+                "no='" + no + '\'' +
+                ", id=" + id +
+                ", contentLoopIdentity=" + contentLoopIdentity +
+                ", docIdentity=" + docIdentity +
+                '}';
     }
 }

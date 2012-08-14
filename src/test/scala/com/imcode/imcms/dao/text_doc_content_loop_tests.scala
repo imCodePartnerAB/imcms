@@ -13,6 +13,7 @@ import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.api.{ContentLoop}
 import org.springframework.orm.hibernate4.HibernateTransactionManager
+import imcode.server.document.textdocument.DocIdentity
 
 @RunWith(classOf[JUnitRunner])
 class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
@@ -41,7 +42,7 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
 
   test("get all [4] text doc's content loops") {
-    assertEquals("loops count", 4, contentLoopDao.getLoops(1001, 0).size())
+    assertEquals("loops count", 4, contentLoopDao.getLoops(new DocIdentity(1001, 0)).size())
   }
 
 
@@ -76,9 +77,9 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   test("create empty content loop") {
     new ContentLoop |> {
       loop =>
-        loop.setDocId(1001);
-        loop.setDocVersionNo(0);
-        loop.setNo(contentLoopDao.getNextLoopNo(1001, 0))
+        val docIdentity = new DocIdentity(1001, 0)
+        loop.setDocIdentity(docIdentity)
+        loop.setNo(contentLoopDao.getNextLoopNo(docIdentity))
 
         contentLoopDao.saveLoop(loop)
     }
@@ -111,9 +112,9 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("create non empty content loop [with 5 contents]") {
     var loop = new ContentLoop
-    loop.setDocId(1001)
-    loop.setDocVersionNo(0)
-    loop.setNo(contentLoopDao.getNextLoopNo(1001, 0))
+    val docIdentity = new DocIdentity(1001, 0)
+    loop.setDocIdentity(docIdentity)
+    loop.setNo(contentLoopDao.getNextLoopNo(docIdentity))
 
     val contentsCount = 5
 
@@ -141,10 +142,11 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   def getLoop(no: Int): ContentLoop = getLoop(no, false)
 
-  def getLoop(no: Int, assertLoopNotNull: Boolean) = contentLoopDao.getLoop(1001, 0, no) |>> {
-    loop =>
+  def getLoop(no: Int, assertLoopNotNull: Boolean) = new DocIdentity(1001, 0) |> { docIdentity =>
+    contentLoopDao.getLoop(docIdentity, no) |>> { loop =>
       if (assertLoopNotNull)
-        assertNotNull("Loop exists - docId: %s, docVersionNo: %s, no: %s.".format(1001, 0, no), loop)
+        assertNotNull("Loop exists - docIdentity: %s, no: %s.".format(docIdentity, no), loop)
+    }
   }
 }
 

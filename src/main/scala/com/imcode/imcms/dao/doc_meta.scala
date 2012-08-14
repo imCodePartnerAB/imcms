@@ -9,6 +9,7 @@ import com.imcode.imcms.api.{DocumentProperty, Meta, I18nMeta, I18nLanguage}
 import com.imcode.imcms.mapping.orm.{FileReference, HtmlReference, Include, TemplateNames, UrlReference}
 import imcode.server.user.UserDomainObject
 import java.util.Date
+import imcode.server.document.textdocument.DocIdentity
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class MetaDao extends HibernateSupport {
@@ -19,15 +20,11 @@ class MetaDao extends HibernateSupport {
   def getMeta(docId: Int) = hibernate.get[Meta](docId)
 
   /**  Updates doc's access and modified date-time. */
-  def touch(doc: DocumentDomainObject, user: UserDomainObject): Unit = touch(doc, new Date, user)
+  def touch(docIdentity: DocIdentity, user: UserDomainObject): Unit = touch(docIdentity, user, new Date)
+  def touch(docIdentity: DocIdentity, user: UserDomainObject, date: Date): Unit =
+    touch(docIdentity.getDocId, docIdentity.getDocVersionNo, user.getId, date)
 
-  def touch(doc: DocumentDomainObject, dt: Date, user: UserDomainObject): Unit =
-    touch(doc.getIdValue, doc.getVersionNo, doc.getModifiedDatetime, user.getId)
-
-  def touch(docId: Int, docVersionNo: Int, userId: Int): Unit =
-    touch(docId, docVersionNo, new Date, userId)
-
-  def touch(docId: Int, docVersionNo: Int, dt: Date, userId: Int) {
+  def touch(docId: Int, docVersionNo: Int, userId: Int, dt: Date) {
     hibernate.bulkUpdateByNamedParams(
       "UPDATE Meta m SET m.modifiedDatetime = :modifiedDt WHERE m.id = :docId",
 
@@ -56,12 +53,13 @@ class MetaDao extends HibernateSupport {
   def getI18nMeta(docId: Int, language: I18nLanguage): I18nMeta =
     hibernate.getByNamedQueryAndNamedParams[I18nMeta](
       "I18nMeta.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
-    ) |> opt getOrElse new I18nMeta |>> { i18nMeta =>
-      i18nMeta.setDocId(docId)
-      i18nMeta.setLanguage(language)
-      i18nMeta.setHeadline("")
-      i18nMeta.setMenuText("")
-      i18nMeta.setMenuImageURL("")
+    ) |> opt getOrElse I18nMeta.builder() |> {
+      _.docId(docId)
+       .language(language)
+       .headline("")
+       .menuText("")
+       .menuImageURL("")
+       .build()
     }
 
 
@@ -80,10 +78,11 @@ class MetaDao extends HibernateSupport {
     val headlineThatFitsInDB = headline.take(java.lang.Math.min(headline.length, META_HEADLINE_MAX_LENGTH - 1))
     val textThatFitsInDB = text.take(java.lang.Math.min(text.length, META_TEXT_MAX_LENGTH - 1))
 
-    i18nMeta.setHeadline(headlineThatFitsInDB)
-    i18nMeta.setMenuText(textThatFitsInDB)
-
-    hibernate.saveOrUpdate(i18nMeta)
+    I18nMeta.builder(i18nMeta) |> {
+      _.headline(headlineThatFitsInDB)
+       .menuText(textThatFitsInDB)
+       .build()
+    } |> hibernate.saveOrUpdate
   }
 
 

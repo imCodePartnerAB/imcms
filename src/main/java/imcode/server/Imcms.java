@@ -172,6 +172,7 @@ public class Imcms {
                 localizedMessageProvider,
                 fileLoader,
                 new DefaultProcedureExecutor(database, fileLoader),
+                applicationContext,
                 createI18nSupport());
 
         services.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
@@ -320,15 +321,6 @@ public class Imcms {
         return users.get();
     }
 
-    public static Object getSpringBean(String beanName) {
-        if (applicationContext == null) {
-            throw new IllegalStateException("Spring application context is not set.");
-        }
-
-        return applicationContext.getBean(beanName);
-    }
-
-
     /**
      * Initializes I18N support.
      * Reads languages from the database.
@@ -336,8 +328,8 @@ public class Imcms {
     private static I18nSupport createI18nSupport() {
         logger.info("Creating i18n support.");
 
-        LanguageDao languageDao = (LanguageDao) Imcms.getSpringBean("languageDao");
-        SystemDao systemDao = (SystemDao) getSpringBean("systemDao");
+        LanguageDao languageDao = applicationContext.getBean(LanguageDao.class);
+        SystemDao systemDao = applicationContext.getBean(SystemDao.class);
         SystemProperty languageIdProperty = systemDao.getProperty("DefaultLanguageId");
 
         Map<String, I18nLanguage> languagesByCodes = Maps.newHashMap();
@@ -422,7 +414,7 @@ public class Imcms {
         logger.info(String.format("Loading database schema config from %s.", schemaConfFileURL));
         Schema schema = Schema.load(schemaConfFileURL);
 
-        DataSource dataSource = (DataSource)Imcms.getSpringBean("dataSource");
+        DataSource dataSource = applicationContext.getBean(DataSource.class);
         DB db = new DB(dataSource);
 
         db.prepare(schema.setScriptsDir(sqlScriptsPath));

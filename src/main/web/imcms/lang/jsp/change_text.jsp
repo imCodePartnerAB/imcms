@@ -70,13 +70,14 @@ try {
 
 List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
 I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage();
-I18nLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().getLanguage();
+I18nLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().selectedLanguage();
 
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 TextDomainObject text = textEditPage.getText();
 %>
 <%@page import="com.imcode.imcms.api.I18nLanguage, imcode.server.document.DocumentDomainObject, com.imcode.imcms.mapping.DocumentMapper"%>
 <%@ page import="imcode.server.ImcmsConstants" %>
+<%@ page import="imcode.server.document.textdocument.ContentLoopIdentity" %>
 <vel:velocity>
 <html>
 <head>
@@ -108,12 +109,11 @@ if (returnUrl != null) {
 }
 %>
 <%
-Integer loopNo = text.getContentLoopNo();
-if (loopNo != null) {
-    Integer contentIndex = text.getContentNo();
+ContentLoopIdentity contentLoopRef = text.getContentLoopIdentity();
+if (contentLoopRef != null) {
     %>
-    <input type="hidden" name="loop_no"  value="<%= loopNo %>">
-    <input type="hidden" name="content_index"  value="<%= contentIndex %>">
+    <input type="hidden" name="loop_no"  value="<%= contentLoopRef.getLoopNo() %>">
+    <input type="hidden" name="content_index"  value="<%= contentLoopRef.getContentNo() %>">
     <%
 }
 %>

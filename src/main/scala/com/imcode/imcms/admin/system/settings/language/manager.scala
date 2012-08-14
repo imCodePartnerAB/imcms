@@ -13,8 +13,8 @@ import imcms.dao.{SystemDao, LanguageDao}
 
 //todo delete in use message
 class LanguageManager(app: ImcmsApplication) {
-  private val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
-  private val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
+  private val languageDao = Imcms.getServices.getSpringBean(classOf[LanguageDao])
+  private val systemDao = Imcms.getServices.getSpringBean(classOf[SystemDao])
 
   val ui = new LanguageManagerUI |>> { ui =>
     ui.rc.btnReload addClickHandler { reload() }

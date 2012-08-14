@@ -17,22 +17,8 @@ trait HibernateSupport {
 
     type NamedParam = (String, Any)
 
-    def withOpenSession[A](f: Session => A): A =  f(sessionFactory.openSession())
 
     def withCurrentSession[A](f: Session => A): A =  f(sessionFactory.getCurrentSession)
-//
-//    def withTransaction[A](f: Transaction => A): A = withSession { session =>
-//      val transaction = session.beginTransaction()
-//      try {
-//        f(transaction) |>>< {
-//          transaction.commit()
-//        }
-//      } catch {
-//        case e =>
-//          transaction.rollback()
-//          throw e
-//      }
-//    }
 
 
     def flush(): Unit = withCurrentSession { _.flush() }

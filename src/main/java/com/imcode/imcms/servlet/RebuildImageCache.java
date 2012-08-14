@@ -194,7 +194,7 @@ class RebuildImageCacheThread extends Thread {
     }
 
     private static String getFailureMessage(ImageDomainObject image) {
-        return String.format("Failed to create cache of image, docId: %s, no: %s", image.getDocId(), image.getNo());
+        return String.format("Failed to create cache of image: %s", image);
     }
 
     public boolean isCancelled() {

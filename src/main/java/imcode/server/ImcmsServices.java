@@ -118,7 +118,7 @@ public interface ImcmsServices {
 
     I18nSupport getI18nSupport();
 
-    <T> T getComponent(Class<T> requiredType);
+    <T> T getSpringBean(Class<T> requiredType);
 
-    <T> T getComponent(String name, Class<T> requiredType);
+    <T> T getSpringBean(String name, Class<T> requiredType);
 }

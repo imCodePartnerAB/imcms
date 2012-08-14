@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.tags;
 
+import imcode.server.document.textdocument.DocIdentity;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.Utility;
@@ -22,12 +23,11 @@ import com.imcode.imcms.api.ContentLoop;
 public class ContentLoopTag2 extends BodyTagSupport {
 
     /** Creates empty content loop. */
-    private static ContentLoop createLoop(Integer metaId, Integer documentVersion, Integer no) {
+    private static ContentLoop createLoop(DocIdentity docIdentity, Integer no) {
         ContentLoop loop = new ContentLoop();
 
-        loop.setDocId(metaId);
+        loop.setDocIdentity(docIdentity);
         loop.setNo(no);
-        loop.setDocVersionNo(documentVersion);
 
         return loop;
     }
@@ -80,7 +80,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
         loop = document.getContentLoop(no);
         
         if (loop == null) {
-        	loop = createLoop(document.getMeta().getId(), document.getVersion().getNo(), no);
+        	loop = createLoop(document.getIdentity(), no);
 
            	document.setContentLoop(no, loop);
         }

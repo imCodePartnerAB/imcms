@@ -163,7 +163,7 @@ public class MenuEditPage extends OkCancelPage {
                 //documentMapper.saveDocument(textDocument, user);
                 // -- -- -- menu.setIndex(menuIndex);
                 menu.setNo(menuIndex);
-                documentMapper.saveTextDocMenu(textDocument, menu, user);
+                documentMapper.saveTextDocMenu(menu, user);
             }
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
@@ -255,7 +255,7 @@ public class MenuEditPage extends OkCancelPage {
 
     public void save(UserDomainObject user) throws DocumentSaveException {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        documentMapper.saveTextDocMenu(textDocument, getMenu(), user);
+        documentMapper.saveTextDocMenu(getMenu(), user);
     }
 
     public static class SaveNewDocumentAndAddToMenuCommand extends CreateDocumentPageFlow.SaveDocumentCommand {
@@ -294,7 +294,7 @@ public class MenuEditPage extends OkCancelPage {
 
             MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());
             menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(savedDocument)));
-            documentMapper.saveTextDocMenu(parentDocument, menu, user);
+            documentMapper.saveTextDocMenu(menu, user);
         }
 
 

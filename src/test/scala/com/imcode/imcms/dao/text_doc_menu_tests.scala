@@ -2,7 +2,6 @@ package com.imcode
 package imcms.dao
 
 import scala.collection.JavaConverters._
-import imcode.server.document.textdocument.{TreeSortKeyDomainObject, MenuItemDomainObject, MenuDomainObject}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
@@ -16,6 +15,7 @@ import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.api.{MenuHistory}
 import org.junit.Assert._
+import imcode.server.document.textdocument._
 
 @RunWith(classOf[JUnitRunner])
 class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
@@ -34,24 +34,22 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
     db.runScripts("src/test/resources/sql/text_doc_menu_dao.sql")
   }
 
-  def menu(docId: JInteger = DocFX.DefaultId, docVersionNo: JInteger = VersionFX.DefaultNo, no: JInteger = DocItemFX.DefaultNo, assertExists: Boolean = true) =
-    menuDao.getMenu(docId, docVersionNo, no) |>> { menu =>
+  def menu(docId: Int = DocFX.DefaultId, docVersionNo: Int = VersionFX.DefaultNo, no: JInteger = DocItemFX.DefaultNo, assertExists: Boolean = true) =
+    menuDao.getMenu(new DocIdentity(docId, docVersionNo), no) |>> { menu =>
       if (assertExists) {
         assertNotNull("menu exists", menu)
-        assertEquals("docId", docId, menu.getDocId)
-        assertEquals("getDocVersionNo", docVersionNo, menu.getDocVersionNo)
+        assertEquals("docIdentity", new DocIdentity(docId, docVersionNo), menu.getDocIdentity)
         assertEquals("no", docVersionNo, menu.getNo)
       }
     }
 
 
   def menus(docId: JInteger = DocFX.DefaultId, docVersionNo: JInteger = VersionFX.DefaultNo, assertNotEmpty: Boolean = true) =
-    menuDao.getMenus(docId, docVersionNo) |>> { _.asScala |> { menus =>
+    menuDao.getMenus(new DocIdentity(docId, docVersionNo)) |>> { _.asScala |> { menus =>
       if (assertNotEmpty) {
         assertTrue("menus exist", menus.nonEmpty)
         menus foreach { menu =>
-          assertEquals("docId", docId, menu.getDocId)
-          assertEquals("getDocVersionNo", docVersionNo, menu.getDocVersionNo)
+          assertEquals("docIdentity", new DocIdentity(docId, docVersionNo), menu.getDocIdentity)
         }
       }}
     }
@@ -85,8 +83,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
   test("save new menu") {
     val menu = new MenuDomainObject
-    menu.setDocId(DocFX.DefaultId)
-    menu.setDocVersionNo(VersionFX.DefaultNo)
+    menu.setDocIdentity(new DocIdentity(DocFX.DefaultId, VersionFX.DefaultNo))
     menu.setNo(menuNos.max + 1)
     menu.setSortOrder(MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE)
 
@@ -114,7 +111,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
 
   test("delete all menus") {
-    menuDao.deleteMenus(DocFX.DefaultId, VersionFX.DefaultNo)
+    menuDao.deleteMenus(new DocIdentity(DocFX.DefaultId, VersionFX.DefaultNo))
 
     menus(assertNotEmpty = false) |> { menus =>
       assertTrue("menus do not exist",  menus.isEmpty)

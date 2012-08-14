@@ -7,6 +7,7 @@ import _root_.net.sf.ehcache.config.CacheConfiguration
 import _root_.net.sf.ehcache.{Ehcache, CacheManager, Element, Cache}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api.{DocumentVersionInfo, Meta, I18nLanguage}
+import imcode.server.document.textdocument.DocIdentity
 
 
 class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLanguage], size: Int) {
@@ -94,12 +95,12 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
   /**
    * @return custom doc or null if doc does not exists
    */
-  def getCustomDoc(docId: DocId, docVersionNo: Int, language: I18nLanguage) = {
-    getMeta(docId) match {
+  def getCustomDoc(docIdentity: DocIdentity, language: I18nLanguage) = {
+    getMeta(docIdentity.getDocId) match {
       case null => null
       case meta =>
-        val versionInfo = getDocVersionInfo(docId)
-        val version = versionInfo.getVersion(docVersionNo)
+        val versionInfo = getDocVersionInfo(docIdentity.getDocId)
+        val version = versionInfo.getVersion(docIdentity.getDocVersionNo)
 
         docLoader.loadAndInitDocument(meta.clone, version.clone, language)
     }

@@ -54,7 +54,7 @@ public class TextDocumentInitializer {
     }
     
     public void initTexts(TextDocumentDomainObject document) {
-    	Collection<TextDomainObject> texts = textDao.getTexts(document.getId(), document.getVersion().getNo(), document.getLanguage().getId());
+    	Collection<TextDomainObject> texts = textDao.getTexts(document.getIdentity(), document.getLanguage().getId());
 
     	for (TextDomainObject text: texts) {
             Integer no = text.getNo();
@@ -89,7 +89,7 @@ public class TextDocumentInitializer {
     
     
     public void initImages(TextDocumentDomainObject document) {
-    	Collection<ImageDomainObject> images = imageDao.getImages(document.getId(), document.getVersion().getNo(), document.getLanguage().getId());
+    	Collection<ImageDomainObject> images = imageDao.getImages(document.getIdentity(), document.getLanguage().getId());
     	
     	for (ImageDomainObject image: images) {
     		document.setImage(image.getNo(), image);
@@ -98,7 +98,7 @@ public class TextDocumentInitializer {
 
 
     public void initMenus(TextDocumentDomainObject document) {
-    	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getId(), document.getVersion().getNo());	
+    	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getIdentity());
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
 
     	for (MenuDomainObject menu: menus) {
@@ -127,7 +127,7 @@ public class TextDocumentInitializer {
      * @throws IllegalStateException if a content loop is empty i.e. does not have a contents. 
      */
 	public void initContentLoops(TextDocumentDomainObject document) {
-		List<ContentLoop> loops = contentLoopDao.getLoops(document.getMeta().getId(), document.getVersion().getNo());
+		List<ContentLoop> loops = contentLoopDao.getLoops(document.getIdentity());
 		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
 		
 		for (ContentLoop loop: loops) {

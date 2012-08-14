@@ -14,7 +14,7 @@ public class Content implements Cloneable {
     private Integer no;
 
     /**
-     * To support history, contents are never deleted physically - they are disabled. 
+     * Contents are never deleted - they are disabled.
      */
     private boolean enabled = true;
 

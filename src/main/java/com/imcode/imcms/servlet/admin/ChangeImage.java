@@ -5,7 +5,7 @@ import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.textdocument.ContentLoopRef;
+import imcode.server.document.textdocument.ContentLoopIdentity;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -53,7 +53,7 @@ public class ChangeImage extends HttpServlet {
         String contentNoStr = request.getParameter("content_no");
         Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
-        ContentLoopRef contentRef = loopNo == null || contentNo == null ? null : new ContentLoopRef(loopNo, contentNo);
+        ContentLoopIdentity contentRef = loopNo == null || contentNo == null ? null : new ContentLoopIdentity(loopNo, contentNo);
 
         final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(
                 documentId);
@@ -75,7 +75,7 @@ public class ChangeImage extends HttpServlet {
                 : new ImageDomainObject();
 
         image.setNo(imageIndex);
-        image.setContentLoopRef(contentRef);
+        image.setContentLoopIdentity(contentRef);
 
         // Check if user has image rights
         if (!ImageEditPage.userHasImagePermissionsOnDocument(user, document)) {
@@ -139,10 +139,9 @@ public class ChangeImage extends HttpServlet {
 
         };
 
-        ImageDao imageDao = Imcms.getServices().getComponent(ImageDao.class);
+        ImageDao imageDao = Imcms.getServices().getSpringBean(ImageDao.class);
 
-        List<ImageDomainObject> images = imageDao.getImagesByNo(document.getMeta().getId(),
-                document.getVersion().getNo(), imageIndex, Option.apply(contentRef), true);
+        List<ImageDomainObject> images = imageDao.getImages(document.getIdentity(), imageIndex, Option.apply(contentRef), true);
 
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);

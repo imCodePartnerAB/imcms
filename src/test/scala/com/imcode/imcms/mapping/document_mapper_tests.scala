@@ -5,7 +5,6 @@ import scala.collection.JavaConverters._
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.Imcms
 import _root_.imcode.server.document._
-import _root_.imcode.server.document.textdocument._
 import _root_.imcode.util.io.InputStreamSource
 import java.io.ByteArrayInputStream
 import java.util.EnumSet
@@ -22,6 +21,7 @@ import com.imcode.imcms.mapping.DocumentMapper.SaveOpts
 import com.imcode.imcms.api.{I18nMeta, ContentLoop, I18nSupport}
 import com.imcode.imcms.api.TextDocument.TextField
 import com.imcode.imcms.util.Factory
+import imcode.server.document.textdocument._
 
 @RunWith(classOf[JUnitRunner])
 class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
@@ -58,11 +58,11 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val menuTextPrefix = "menu_text_"
 
     val i18nMetas = i18nSupport.getLanguages.asScala.map { language =>
-      val i18nMeta = new I18nMeta
-
-      i18nMeta.setLanguage(language)
-      i18nMeta.setHeadline(headlinePrefix + language.getCode)
-      i18nMeta.setMenuText(menuTextPrefix + language.getCode)
+      val i18nMeta = I18nMeta.builder()
+        .language(language)
+        .headline(headlinePrefix + language.getCode)
+        .menuText(menuTextPrefix + language.getCode)
+        .build()
 
       language -> i18nMeta
     }.toMap.asJava
@@ -95,11 +95,11 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val menuTextPrefix = "menu_text_"
 
     val i18nMetas = i18nSupport.getLanguages.asScala.map { language =>
-      val i18nMeta = new I18nMeta
-
-      i18nMeta.setLanguage(language)
-      i18nMeta.setHeadline(headlinePrefix + language.getCode)
-      i18nMeta.setMenuText(menuTextPrefix + language.getCode)
+      val i18nMeta = I18nMeta.builder()
+        .language(language)
+        .headline(headlinePrefix + language.getCode)
+        .menuText(menuTextPrefix + language.getCode)
+        .build()
 
       language -> i18nMeta
     }.toMap.asJava
@@ -174,7 +174,9 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val textPrefix = "text_"
 
     for (loopNo <- 0 until loopsCount) {
-      val loop = Factory.createContentLoop(null, null, loopNo)
+      val loop = new ContentLoop {
+        setNo(loopNo)
+      }
 
       for (contentNo <- 0 until loopNo) {
         loop.addLastContent
@@ -208,10 +210,10 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       newDoc.setMenu(no, menu)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = Factory.createText(null, null, null, null, new ContentLoopRef(loopNo, contentNo))
+        val text = TextDomainObject.builder().contentLoopIdentity(new ContentLoopIdentity(loopNo, contentNo)).build()
         val image = new ImageDomainObject
 
-        image.setContentLoopRef(new ContentLoopRef(loopNo, contentNo))
+        image.setContentLoopIdentity(new ContentLoopIdentity(loopNo, contentNo))
 
         text.setText(textPrefix + no + "_%d:%d".format(loopNo, contentNo))
         text.setType(textType)
@@ -258,13 +260,13 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
                    menuItems.values.asScala.map(_.getDocumentId).toSet)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = savedDoc.getText(no, new ContentLoopRef(loopNo, contentNo))
-        val image = savedDoc.getImage(no, new ContentLoopRef(loopNo, contentNo))
+        val text = savedDoc.getText(no, new ContentLoopIdentity(loopNo, contentNo))
+        val image = savedDoc.getImage(no, new ContentLoopIdentity(loopNo, contentNo))
 
         assertNotNull(text)
         assertEquals(no, text.getNo)
-        assertEquals(loopNo, text.getContentLoopRef.getLoopNo)
-        assertEquals(contentNo, text.getContentLoopRef.getContentNo)
+        assertEquals(loopNo, text.getContentLoopIdentity.getLoopNo)
+        assertEquals(contentNo, text.getContentLoopIdentity.getContentNo)
         assertEquals(textType, text.getType)
         assertEquals(textPrefix + no + "_%d:%d".format(loopNo, contentNo), text.getText)
 
@@ -406,7 +408,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     docMapper.saveDocument(textDoc, admin)
 
-    val savedTextDoc = docMapper.getCustomDocument(textDoc.getId, textDoc.getVersionNo, textDoc.getLanguage)
+    val savedTextDoc = docMapper.getCustomDocument(textDoc.getIdentity, textDoc.getLanguage)
       .asInstanceOf[TextDocumentDomainObject]
 
     val savedMenu = savedTextDoc.getMenus.get(0)
@@ -602,7 +604,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     assertEquals(info.getVersionsCount + 1, newInfo.getVersionsCount)
     assertEquals(newInfo.getLatestVersion.getNo, expectedNewVersionNo)
 
-    val newVersionDoc = docMapper.getCustomDocument(workingVersionDoc.getId, expectedNewVersionNo)
+    val newVersionDoc = docMapper.getCustomDocument(workingVersionDoc.getIdentity)
     // instance of TextDocumentDomainObject ???
 
     assertNotNull(newVersionDoc)
@@ -628,7 +630,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     assertEquals(info.getVersionsCount + 1, newInfo.getVersionsCount)
     assertEquals(newInfo.getLatestVersion.getNo, expectedNewVersionNo)
 
-    val newVersionDoc = docMapper.getCustomDocument(doc.getId, expectedNewVersionNo)
+    val newVersionDoc = docMapper.getCustomDocument(new DocIdentity(doc.getId, expectedNewVersionNo))
     // instance of HtmlDocumentDomainObject
 
     assertNotNull(newVersionDoc)
@@ -647,7 +649,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     assertEquals(info.getVersionsCount + 1, newInfo.getVersionsCount)
     assertEquals(newInfo.getLatestVersion.getNo, expectedNewVersionNo)
 
-    val newVersionDoc = docMapper.getCustomDocument(doc.getId, expectedNewVersionNo)
+    val newVersionDoc = docMapper.getCustomDocument(new DocIdentity(doc.getId, expectedNewVersionNo))
     // instanceOf UrlDocumentDomainObject
 
     assertNotNull(newVersionDoc);
@@ -664,7 +666,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     assertEquals(info.getVersionsCount + 1, infoNew.getVersionsCount)
     assertEquals(infoNew.getLatestVersion.getNo, expectedNewVersionNo)
 
-    val docNew = docMapper.getCustomDocument(doc.getId, expectedNewVersionNo)
+    val docNew = docMapper.getCustomDocument(new DocIdentity(doc.getId, expectedNewVersionNo))
     // instance of FileDocumentDomainObject
     assertNotNull(docNew)
     assertEquals(doc.getId, docNew.getId)
@@ -679,8 +681,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val text = "text"
     val textDO = new TextDomainObject(text)
 
-    textDO.setDocId(doc.getId)
-    textDO.setDocVersionNo(doc.getVersionNo)
+    textDO.setDocIdentity(doc.getIdentity)
     textDO.setLanguage(doc.getLanguage)
     textDO.setNo(no)
 
@@ -775,7 +776,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
 
   def getMainWorkingDocumentInDefaultLanguage(assertDocExists: Boolean) = {
-    val doc = docMapper.getCustomDocument(1001, 0, i18nSupport.getDefaultLanguage)
+    val doc = docMapper.getCustomDocument(new DocIdentity(1001, 0), i18nSupport.getDefaultLanguage)
 
     if (assertDocExists) {
       assertNotNull(doc)

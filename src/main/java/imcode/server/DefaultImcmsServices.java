@@ -70,6 +70,7 @@ import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.kerberos.KerberosLoginService;
+import org.springframework.context.ApplicationContext;
 
 public class DefaultImcmsServices implements ImcmsServices {
 
@@ -103,6 +104,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
     private I18nSupport i18nSupport;
+    private ApplicationContext applicationContext;
 
 
     static {
@@ -122,12 +124,15 @@ public class DefaultImcmsServices implements ImcmsServices {
      */
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
+                                ApplicationContext applicationContext,
                                 I18nSupport i18nSupport) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
+        this.applicationContext = applicationContext;
         this.i18nSupport = i18nSupport;
+
         initConfig(props);
         initSso();
         initKeyStore();
@@ -284,7 +289,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initImageCacheMapper() {
-        imageCacheMapper = getComponent(ImageCacheMapper.class);
+        imageCacheMapper = getSpringBean(ImageCacheMapper.class);
     }
 
     private void initAuthenticatorsAndUserAndRoleMappers(Properties props) {
@@ -872,12 +877,12 @@ public class DefaultImcmsServices implements ImcmsServices {
     }
 
     @Override
-    public <T> T getComponent(Class<T> requiredType) {
-        return Imcms.getApplicationContext().getBean(requiredType);
+    public <T> T getSpringBean(Class<T> requiredType) {
+        return applicationContext.getBean(requiredType);
     }
 
     @Override
-    public <T> T getComponent(String name, Class<T> requiredType) {
-        return Imcms.getApplicationContext().getBean(name, requiredType);
+    public <T> T getSpringBean(String name, Class<T> requiredType) {
+        return applicationContext.getBean(name, requiredType);
     }
 }

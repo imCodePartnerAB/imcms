@@ -16,7 +16,60 @@ import com.imcode.imcms.api.I18nLanguage;
  */
 @Entity(name = "Text")
 @Table(name = "imcms_text_doc_texts")
-public class TextDomainObject implements Serializable, Cloneable, DocVersionItem, DocContentLoopItem, DocI18nItem, DocOrderedItem {
+public class TextDomainObject implements Serializable, Cloneable {
+
+    public static final class Builder {
+        private final TextDomainObject tdo = new TextDomainObject();
+
+        public Builder() {
+        }
+
+        public TextDomainObject build() {
+            TextDomainObject tdo = new TextDomainObject();
+
+            tdo.id = this.tdo.id;
+            tdo.docIdentity = this.tdo.docIdentity;
+            tdo.no = this.tdo.no;
+            tdo.language = this.tdo.language;
+            tdo.contentLoopIdentity = this.tdo.contentLoopIdentity;
+
+            return tdo;
+        }
+
+        public Builder id(Long id) {
+            tdo.id = id;
+            return this;
+        }
+
+        public Builder docIdentity(DocIdentity docIdentity) {
+            tdo.docIdentity = docIdentity;
+            return this;
+        }
+
+        public Builder no(Integer no) {
+            tdo.no = no;
+            return this;
+        }
+
+        public Builder language(I18nLanguage language) {
+            tdo.language = language;
+            return this;
+        }
+
+        public Builder contentLoopIdentity(ContentLoopIdentity contentLoopIdentity) {
+            tdo.contentLoopIdentity = contentLoopIdentity;
+            return this;
+        }
+
+        public Builder text(String text) {
+            tdo.text = text;
+            return this;
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     /** Plain text, with linebreaks. */
     public final static int TEXT_TYPE_PLAIN = 0;
@@ -28,12 +81,6 @@ public class TextDomainObject implements Serializable, Cloneable, DocVersionItem
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "doc_id")
-    private Integer docId;
-
-    @Column(name = "doc_version_no")
-    private Integer docVersionNo;
-
     /** Text filed no in a document. */
     private Integer no;
 
@@ -41,7 +88,8 @@ public class TextDomainObject implements Serializable, Cloneable, DocVersionItem
 
     int type;
 
-    private ContentLoopRef contentLoopRef;
+    private DocIdentity docIdentity;
+    private ContentLoopIdentity contentLoopIdentity;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
@@ -179,14 +227,6 @@ public class TextDomainObject implements Serializable, Cloneable, DocVersionItem
         this.id = id;
     }
 
-    public Integer getDocId() {
-        return docId;
-    }
-
-    public void setDocId(Integer docId) {
-        this.docId = docId;
-    }
-
     public I18nLanguage getLanguage() {
         return language;
     }
@@ -213,19 +253,19 @@ public class TextDomainObject implements Serializable, Cloneable, DocVersionItem
         this.no = no;
     }
 
-    public Integer getDocVersionNo() {
-        return docVersionNo;
+    public DocIdentity getDocIdentity() {
+        return docIdentity;
     }
 
-    public void setDocVersionNo(Integer docVersionNo) {
-        this.docVersionNo = docVersionNo;
+    public void setDocIdentity(DocIdentity docIdentity) {
+        this.docIdentity = docIdentity;
     }
 
-    public ContentLoopRef getContentLoopRef() {
-        return contentLoopRef;
+    public ContentLoopIdentity getContentLoopIdentity() {
+        return contentLoopIdentity;
     }
 
-    public void setContentLoopRef(ContentLoopRef contentRef) {
-        this.contentLoopRef = contentRef;
+    public void setContentLoopIdentity(ContentLoopIdentity contentRef) {
+        this.contentLoopIdentity = contentRef;
     }
 }

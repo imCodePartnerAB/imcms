@@ -12,11 +12,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public final class I18nLanguage implements Serializable, Cloneable {
                     //
     public static final class Builder {
-        private Integer id;
-        private boolean enabled;
-        private String code;
-        private String name;
-        private String nativeName;
+        private I18nLanguage i18nLanguage;
 
         public Builder() {}
 
@@ -29,45 +25,49 @@ public final class I18nLanguage implements Serializable, Cloneable {
         }
 
         public Builder id(Integer id) {
-            this.id = id;
+            i18nLanguage.id = id;
             return this;
         }
 
         public Builder enabled(boolean enabled) {
-            this.enabled = enabled;
+            i18nLanguage.enabled = enabled;
             return this;
         }
 
         public Builder code(String code) {
-            this.code = code;
+            i18nLanguage.code = code;
             return this;
         }
 
         public Builder name(String name) {
-            this.name = name;
+            i18nLanguage.name = name;
             return this;
         }
 
         public Builder nativeName(String nativeName) {
-            this.nativeName = nativeName;
+            i18nLanguage.nativeName = nativeName;
             return this;
         }
 
         public I18nLanguage build() {
-            I18nLanguage language = new I18nLanguage();
+            I18nLanguage newI18nLanguage = new I18nLanguage();
 
-            language.id = id;
-            language.code = code;
-            language.name = name;
-            language.nativeName = nativeName;
-            language.enabled = enabled;
+            newI18nLanguage.id = i18nLanguage.id;
+            newI18nLanguage.code = i18nLanguage.code;
+            newI18nLanguage.name = i18nLanguage.name;
+            newI18nLanguage.nativeName = i18nLanguage.nativeName;
+            newI18nLanguage.enabled = i18nLanguage.enabled;
 
-            return language;
+            return newI18nLanguage;
         }
     }
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public static Builder builder(I18nLanguage i18nLanguage) {
+        return new Builder(i18nLanguage);
     }
 
     @Id
@@ -104,16 +104,6 @@ public final class I18nLanguage implements Serializable, Cloneable {
     }
 
     @Override
-    public I18nLanguage clone() {
-        try {
-            return (I18nLanguage)super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    @Override
     public int hashCode() {
         return new HashCodeBuilder(11, 31)
                 .append(code).toHashCode();
@@ -122,6 +112,15 @@ public final class I18nLanguage implements Serializable, Cloneable {
     @Override
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public I18nLanguage clone() {
+        try {
+            return (I18nLanguage)super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Integer getId() {

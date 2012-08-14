@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import imcode.server.document.textdocument.DocIdentity;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -56,12 +57,7 @@ public class MenuHistory implements Serializable {
 
 	private Integer no;
 
-    @Column(name="doc_id")
-	private Integer docId;
-
-    
-    @Column(name="doc_version_no")
-	private Integer docVersionNo;
+	private DocIdentity docIdentity;
 
 
 	@ElementCollection(fetch=FetchType.EAGER)
@@ -84,8 +80,7 @@ public class MenuHistory implements Serializable {
     public MenuHistory() {}
 
     public MenuHistory(MenuDomainObject menu, UserDomainObject user) {
-        setDocId(menu.getDocId());
-        setDocVersionNo(menu.getDocVersionNo());
+        setDocIdentity(menu.getDocIdentity());
         setMenuId(menu.getId());
         setNo(menu.getNo());        
         setModifiedDt(new Date());
@@ -133,27 +128,19 @@ public class MenuHistory implements Serializable {
         return sortOrder;
     }
 
-	public Integer getDocId() {
-		return docId;
-	}
-
-	public void setDocId(Integer docId) {
-		this.docId = docId;
-	}
-
-    public Integer getDocVersionNo() {
-        return docVersionNo;
-    }
-
-    public void setDocVersionNo(Integer docVersionNo) {
-        this.docVersionNo = docVersionNo;
-    }
-
     public Integer getNo() {
         return no;
     }
 
     public void setNo(Integer no) {
         this.no = no;
+    }
+
+    public DocIdentity getDocIdentity() {
+        return docIdentity;
+    }
+
+    public void setDocIdentity(DocIdentity docRef) {
+        this.docIdentity = docRef;
     }
 }

@@ -71,22 +71,19 @@ public class DocumentSaver {
      */
     @Transactional
     public void saveText(TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfNecessary(text);
+        createEnclosingContentLoopIfNecessary(text.getDocIdentity(), text.getContentLoopIdentity());
 
         new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(text, user);
 
-        metaDao.touch(text.getDocId(), text.getDocVersionNo(), user.getId());
+        metaDao.touch(text.getDocIdentity(), user);
     }
 
 
     @Transactional
-    public void saveMenu(TextDocumentDomainObject doc, MenuDomainObject menu, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        menu.setDocId(doc.getId());
-        menu.setDocVersionNo(doc.getVersion().getNo());
+    public void saveMenu(MenuDomainObject menu, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(menu, user);
 
-        new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(doc, menu, user);
-
-        metaDao.touch(doc, user);
+        metaDao.touch(menu.getDocIdentity(), user);
     }
 
 
@@ -111,39 +108,35 @@ public class DocumentSaver {
 
     @Transactional
     public void saveImage(ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfNecessary(image);
+        createEnclosingContentLoopIfNecessary(image.getDocIdentity(), image.getContentLoopIdentity());
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
         storingVisitor.saveTextDocumentImage(image, user);
 
-        metaDao.touch(image.getDocId(), image.getDocVersionNo(), user.getId());
+        metaDao.touch(image.getDocIdentity(), user);
     }
 
 
     /**
      * Creates content loop if item references non-saved enclosing content loop.
-     *
-     * @param item
      */
     @Transactional
-    public ContentLoop createEnclosingContentLoopIfNecessary(DocContentLoopItem item) {
-        ContentLoopRef contentRef = item.getContentLoopRef();
-
-        if (contentRef == null) {
+    public ContentLoop createEnclosingContentLoopIfNecessary(DocIdentity docIdentity, ContentLoopIdentity contentLoopIdentity) {
+        if (contentLoopIdentity == null) {
             return null;
         }
 
-        ContentLoop loop = contentLoopDao.getLoop(item.getDocId(), item.getDocVersionNo(), contentRef.getLoopNo());
+        ContentLoop loop = contentLoopDao.getLoop(docIdentity, contentLoopIdentity.getLoopNo());
 
         if (loop == null) {
             throw new IllegalStateException(String.format(
-                    "Content loop does not exists. Doc id: %s, item :%s, content loop no: %s.", item.getDocId(), item, contentRef.getLoopNo()));
+                    "Content loop does not exists. Doc identity: %s, content loop no: %s.", docIdentity, contentLoopIdentity.getLoopNo()));
         }
 
-        if (!loop.contentExists(contentRef.getContentNo())) {
+        if (!loop.contentExists(contentLoopIdentity.getContentNo())) {
             throw new IllegalStateException(String.format(
-                    "Content does not exists. Doc id: %s, item :%s, content loop no: %s.", item.getDocId(), item, contentRef.getLoopNo()));
+                    "Content does not exists. Doc identity :%s, content loop no: %s.", docIdentity, contentLoopIdentity.getLoopNo()));
         }
 
         loop = contentLoopDao.saveLoop(loop);
@@ -165,7 +158,8 @@ public class DocumentSaver {
             }
 
             documentVersionDao.changeDefaultVersion(docId, version, publisher);
-            metaDao.touch(docId, docVersionNo, publisher.getId());
+
+            metaDao.touch(docId, docVersionNo, publisher.getId(), new Date());
         }
     }
 
@@ -237,7 +231,7 @@ public class DocumentSaver {
 
         doc.accept(savingVisitor);
         updateModifiedDtIfNotSetExplicitly(doc);
-        metaDao.touch(doc, doc.getModifiedDatetime(), user);
+        metaDao.touch(doc.getIdentity(), user, doc.getModifiedDatetime());
     }
 
 
@@ -269,10 +263,7 @@ public class DocumentSaver {
         Integer copyDocId = saveMeta(meta).getId();
         metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
         for (DocumentDomainObject doc : docs) {
-            I18nMeta i18nMeta = doc.getI18nMeta();
-
-            i18nMeta.setId(null);
-            i18nMeta.setDocId(copyDocId);
+            I18nMeta i18nMeta = I18nMeta.builder(doc.getI18nMeta()).id(null).docId(copyDocId).build();
 
             metaDao.saveI18nMeta(i18nMeta);
         }
@@ -347,10 +338,7 @@ public class DocumentSaver {
         Integer docId = saveMeta(meta).getId();
 
         for (I18nMeta i18nMeta : i18nMetas) {
-            i18nMeta.setId(null);
-            i18nMeta.setDocId(docId);
-
-            metaDao.saveI18nMeta(i18nMeta);
+            metaDao.saveI18nMeta(I18nMeta.builder(i18nMeta).id(null).docId(docId).build());
         }
 
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
@@ -371,13 +359,11 @@ public class DocumentSaver {
 
                 text1.setNo(1);
                 text1.setLanguage(i18nMeta.getLanguage());
-                text1.setDocId(textDoc.getId());
-                text1.setDocVersionNo(textDoc.getVersionNo());
+                text1.setDocIdentity(textDoc.getIdentity());
 
                 text2.setNo(2);
                 text2.setLanguage(i18nMeta.getLanguage());
-                text2.setDocId(textDoc.getId());
-                text2.setDocVersionNo(textDoc.getVersionNo());
+                text2.setDocIdentity(textDoc.getIdentity());
 
                 docCreatingVisitor.saveTextDocumentText(text1, user);
                 docCreatingVisitor.saveTextDocumentText(text2, user);

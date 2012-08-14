@@ -1,7 +1,6 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.DocVersionItem;
-import imcode.server.document.textdocument.DocOrderedItem;
+import imcode.server.document.textdocument.DocIdentity;
 import org.hibernate.annotations.IndexColumn;
 
 import java.io.Serializable;
@@ -16,18 +15,14 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="imcms_text_doc_content_loops")
-public class ContentLoop implements Serializable, Cloneable, DocVersionItem, DocOrderedItem {
+public class ContentLoop implements Serializable, Cloneable {
 	
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
     private Integer no;
 
-    @Column(name="doc_id")
-    private Integer docId;
-
-    @Column(name="doc_version_no")
-    private Integer docVersionNo;
+    private DocIdentity docIdentity;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
@@ -55,29 +50,12 @@ public class ContentLoop implements Serializable, Cloneable, DocVersionItem, Doc
         this.no = no;
     }
 
-    public Integer getDocId() {
-        return docId;
-    }
-
-    public void setDocId(Integer docId) {
-        this.docId = docId;
-    }
-
-    public Integer getDocVersionNo() {
-        return docVersionNo;
-    }
-
-    public void setDocVersionNo(Integer docVersionNo) {
-        this.docVersionNo = docVersionNo;
-    }
-
-
     // synchronized methods
 
     @Override
     public synchronized String toString() {
-        return String.format("{id: %s, docId: %s, docVersionNo: %s, no: %s, contents: [%s]}",
-                id, docId, docVersionNo, no, "..."); // causes hibernate stack overflow: StringUtils.join(contents, ", "));
+        return String.format("{id: %s, docKey: %s, %s, no: %s, contents: [%s]}",
+                id, docIdentity, no, "..."); // causes hibernate stack overflow: StringUtils.join(contents, ", "));
     }
 
     @Override
@@ -125,7 +103,7 @@ public class ContentLoop implements Serializable, Cloneable, DocVersionItem, Doc
         Integer index = getContentIndex(contentNo);
 
         if (index == null) {
-            throw new RuntimeException(String.format("No such content - docId: %s, docVersionNo: %s, loop no: %s, contentNo: %s.", getDocId(), getDocVersionNo(), getNo(), contentNo));
+            throw new RuntimeException(String.format("No such content - docKey: %s, loop no: %s, contentNo: %s.", getDocIdentity(), getNo(), contentNo));
         }
 
         return index;
@@ -180,7 +158,7 @@ public class ContentLoop implements Serializable, Cloneable, DocVersionItem, Doc
         Content content = contents.get(contentIndex);
 
         if (!content.isEnabled()) {
-            throw new RuntimeException(String.format("Can not move disabled content - docId: %s, docVersionNo: %s, no: %s, contentNo: %s.", getDocId(), getDocVersionNo(), getNo(), contentNo));
+            throw new RuntimeException(String.format("Can not move disabled content - docKey: %s, no: %s, contentNo: %s.", getDocIdentity(), getNo(), contentNo));
         }
 
         for (int i = contentIndex - 1; i >= 0; i--) {
@@ -201,7 +179,7 @@ public class ContentLoop implements Serializable, Cloneable, DocVersionItem, Doc
         Content content = contents.get(contentIndex);
 
         if (!content.isEnabled()) {
-            throw new RuntimeException(String.format("Can not move disabled content - docId: %s, docVersionNo: %s, no: %s, contentNo: %s.", getDocId(), getDocVersionNo(), getNo(), contentNo));
+            throw new RuntimeException(String.format("Can not move disabled content - docKey: %s, no: %s, contentNo: %s.", getDocIdentity(), getNo(), contentNo));
         }
 
         int contentCount = contents.size();
@@ -237,5 +215,13 @@ public class ContentLoop implements Serializable, Cloneable, DocVersionItem, Doc
 
     public synchronized boolean contentExists(int contentNo) {
         return getContentIndex(contentNo) != null;
+    }
+
+    public DocIdentity getDocIdentity() {
+        return docIdentity;
+    }
+
+    public void setDocIdentity(DocIdentity docIdentity) {
+        this.docIdentity = docIdentity;
     }
 }

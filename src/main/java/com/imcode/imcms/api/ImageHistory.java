@@ -1,11 +1,8 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.ContentLoopRef;
-import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.NullImageSource;
 import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
 
@@ -16,21 +13,15 @@ import java.util.Date;
  *
  */
 @Entity
-@Table(name="imcms_text_doc_images_history")
+@Table(name = "imcms_text_doc_images_history")
 public class ImageHistory {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Transient
     private ImageSource source = new NullImageSource();
-
-    @Column(name="doc_id")
-    private Integer docId;
-
-    @Column(name="doc_version_no")
-    private Integer docVersionNo;
 
     private Integer no;
 
@@ -39,76 +30,77 @@ public class ImageHistory {
     private int border;
     private String align = "";
 
-    @Column(name="alt_text")
+    @Column(name = "alt_text")
     private String alternateText = "";
 
-    @Column(name="low_scr")
+    @Column(name = "low_scr")
     private String lowResolutionUrl = "";
 
-    @Column(name="v_space")
+    @Column(name = "v_space")
     private int verticalSpace;
 
-    @Column(name="h_space")
+    @Column(name = "h_space")
     private int horizontalSpace;
     private String target = "";
 
-    @Column(name="linkurl")
+    @Column(name = "linkurl")
     private String linkUrl = "";
 
-    @Column(name="imgurl")
+    @Column(name = "imgurl")
     private String imageUrl = "";
 
     private Integer type;
 
-    @Column(name="format", nullable=false)
+    @Column(name = "format", nullable = false)
     private short format;
 
-    @Column(name="crop_x1", nullable=false)
+    @Column(name = "crop_x1", nullable = false)
     private int cropX1;
 
-    @Column(name="crop_y1", nullable=false)
+    @Column(name = "crop_y1", nullable = false)
     private int cropY1;
 
-    @Column(name="crop_x2", nullable=false)
+    @Column(name = "crop_x2", nullable = false)
     private int cropX2;
 
-    @Column(name="crop_y2", nullable=false)
+    @Column(name = "crop_y2", nullable = false)
     private int cropY2;
 
-    @Column(name="rotate_angle", nullable=false)
+    @Column(name = "rotate_angle", nullable = false)
     private short rotateAngle;
 
-    @Column(name="gen_file")
+    @Column(name = "gen_file")
     private String generatedFilename;
 
-    private ContentLoopRef contentRef;
+    private ContentLoopIdentity contentLoopIdentity;
+
+    private DocIdentity docIdentity;
 
     /**
      * i18n support
      */
-    @OneToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="language_id", referencedColumnName="id")
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "language_id", referencedColumnName = "id")
     private I18nLanguage language;
 
 
-
-    @Column(name="user_id")
+    @Column(name = "user_id")
     private Integer userId;
 
 
-    @Column(name="modified_dt")
+    @Column(name = "modified_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
-    public ImageHistory() {}
+    public ImageHistory() {
+    }
 
     public ImageHistory(ImageDomainObject imageDO, UserDomainObject user) {
-    	setDocId(imageDO.getDocId());
-        setDocVersionNo(imageDO.getDocVersionNo());
-    	setNo(imageDO.getNo());
+        setDocIdentity(imageDO.getDocIdentity());
+        setNo(imageDO.getNo());
 
-    	setWidth(imageDO.getWidth());
-    	setHeight(imageDO.getHeight());
+        setWidth(imageDO.getWidth());
+        setHeight(imageDO.getHeight());
         setBorder(imageDO.getBorder());
         setAlign(imageDO.getAlign());
         setAlternateText(imageDO.getAlternateText());
@@ -119,9 +111,9 @@ public class ImageHistory {
         setLinkUrl(imageDO.getLinkUrl());
         setImageUrl(imageDO.getImageUrl());
         setType(imageDO.getType());
-        
-    	setLanguage(imageDO.getLanguage());
-        setContentRef(imageDO.getContentLoopRef());
+
+        setLanguage(imageDO.getLanguage());
+        setContentRef(imageDO.getContentLoopIdentity());
         setUserId(user.getId());
         setModifiedDt(new Date());
         setFormat(imageDO.getFormat());
@@ -144,22 +136,6 @@ public class ImageHistory {
 
     public void setSource(ImageSource source) {
         this.source = source;
-    }
-
-    public Integer getDocId() {
-        return docId;
-    }
-
-    public void setDocId(Integer docId) {
-        this.docId = docId;
-    }
-
-    public Integer getDocVersionNo() {
-        return docVersionNo;
-    }
-
-    public void setDocVersionNo(Integer docVersionNo) {
-        this.docVersionNo = docVersionNo;
     }
 
     public Integer getNo() {
@@ -266,12 +242,12 @@ public class ImageHistory {
         this.type = type;
     }
 
-    public ContentLoopRef getContentRef() {
-        return contentRef;
+    public ContentLoopIdentity getContentRef() {
+        return contentLoopIdentity;
     }
 
-    public void setContentRef(ContentLoopRef contentRef) {
-        this.contentRef = contentRef;
+    public void setContentRef(ContentLoopIdentity contentRef) {
+        this.contentLoopIdentity = contentRef;
     }
 
     public I18nLanguage getLanguage() {
@@ -338,5 +314,13 @@ public class ImageHistory {
 
     public void setGeneratedFilename(String generatedFilename) {
         this.generatedFilename = generatedFilename;
+    }
+
+    public DocIdentity getDocIdentity() {
+        return docIdentity;
+    }
+
+    public void setDocIdentity(DocIdentity docIdentity) {
+        this.docIdentity = docIdentity;
     }
 }

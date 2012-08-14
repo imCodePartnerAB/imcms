@@ -561,7 +561,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
       def isValid(value: AnyRef) = {
         val errMsgOpt = for {
           alias <- ui.frmAlias.txtAlias.trimOpt
-          docId <- imcmsServices.getComponent(classOf[MetaDao]).asInstanceOf[MetaDao].getDocIdByAliasOpt(alias)
+          docId <- imcmsServices.getSpringBean(classOf[MetaDao]).asInstanceOf[MetaDao].getDocIdByAliasOpt(alias)
           if meta.getId != docId
         } yield "alias allready exists"
 
@@ -584,13 +584,14 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
       Values(
         i18nMetasUIs.map {
           case (language, chkBox, i18nMetaEditorUI) =>
-            language -> (new I18nMeta |>> { i18nMeta =>
-              i18nMeta.setId(i18nMetas.get(language).map(_.getId).orNull)
-              i18nMeta.setDocId(meta.getId)
-              i18nMeta.setLanguage(language)
-              i18nMeta.setHeadline(i18nMetaEditorUI.txtTitle.trim)
-              i18nMeta.setMenuImageURL(i18nMetaEditorUI.embLinkImage.trim)
-              i18nMeta.setMenuText(i18nMetaEditorUI.txaMenuText.trim)
+            language -> (I18nMeta.builder() |> { builder =>
+              builder.id(i18nMetas.get(language).map(_.getId).orNull)
+                .docId(meta.getId)
+                .language(language)
+                .headline(i18nMetaEditorUI.txtTitle.trim)
+                .menuImageURL(i18nMetaEditorUI.embLinkImage.trim)
+                .menuText(i18nMetaEditorUI.txaMenuText.trim)
+                .build()
             })
         } (breakOut),
         i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language }(breakOut),
