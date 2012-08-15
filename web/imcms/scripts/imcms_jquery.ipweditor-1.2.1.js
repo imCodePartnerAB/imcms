@@ -59,9 +59,9 @@ $.fn.editable = function(options){
 		$.editableFactory[opts.type].toEditable($this.empty(),opts);
 		// Configure events,styles for changed content
 		$this.data('editable.previous',$this.data('editable.current'))
-			 .children()
-				 .focus()
-				 .addClass(opts.editClass);
+					.children()
+					//.focus() // Error in IE
+					.addClass(opts.editClass);
 		var $buttons = $('<div class="imcmsFormBtnDiv" style="text-align:right;" />') ;
 		// Submit Event
 		if (opts.submit) {
@@ -70,8 +70,8 @@ $.fn.editable = function(options){
 						.one('mouseup',function(){opts.toNonEditable($(this).parent().parent(),true)});
 		} else {
 			$this.one(opts.submitBy,function(){opts.toNonEditable($(this),true)})
-				 .children()
-				 	.one(opts.submitBy,function(){opts.toNonEditable($(this).parent().parent(),true)});
+						.children()
+						.one(opts.submitBy,function(){opts.toNonEditable($(this).parent().parent(),true)});
 		}
 		// Cancel Event
 		if (opts.cancel) {
