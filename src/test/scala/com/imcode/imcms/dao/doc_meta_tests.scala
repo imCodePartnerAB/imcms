@@ -23,7 +23,7 @@ import java.util.{HashMap, HashSet, Date}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.test.fixtures.{UserFX, DocFX}
 import org.joda.time.DateTime
-import imcode.server.document.textdocument.DocIdentity
+import imcode.server.document.textdocument.DocRef
 
 @RunWith(classOf[JUnitRunner])
 class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
@@ -80,7 +80,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
     val meta = createMeta()
     val version = versionDao.createVersion(meta.getId, UserFX.mkSuperAdmin.getId)
 
-    metaDao.touch(new DocIdentity(meta.getId, 0), UserFX.mkDefaultUser, dt)
+    metaDao.touch(new DocRef(meta.getId, 0), UserFX.mkDefaultUser, dt)
 
     val updatedMeta = metaDao.getMeta(meta.getId)
     val updatedVersion = versionDao.getVersion(meta.getId, 0)

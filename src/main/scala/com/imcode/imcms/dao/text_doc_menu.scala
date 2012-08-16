@@ -6,20 +6,20 @@ import org.springframework.transaction.annotation.Transactional
 
 import com.imcode.imcms.api.MenuHistory
 import org.hibernate.{ScrollMode, CacheMode}
-import imcode.server.document.textdocument.{DocIdentity, MenuDomainObject}
+import imcode.server.document.textdocument.{DocRef, MenuDomainObject}
 
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class MenuDao extends HibernateSupport {
 
-  def getMenu(docIdentity: DocIdentity, no: Int): MenuDomainObject = hibernate.getByNamedQueryAndNamedParams(
-    "Menu.getMenu", "docIdentity" -> docIdentity, "no" -> no
+  def getMenu(docRef: DocRef, no: Int): MenuDomainObject = hibernate.getByNamedQueryAndNamedParams(
+    "Menu.getMenu", "docRef" -> docRef, "no" -> no
   )
 
   
-  def getMenus(docIdentity: DocIdentity): JList[MenuDomainObject] =
+  def getMenus(docRef: DocRef): JList[MenuDomainObject] =
     hibernate.listByNamedQueryAndNamedParams(
-      "Menu.getMenus", "docIdentity" -> docIdentity
+      "Menu.getMenus", "docRef" -> docRef
     )
 
   
@@ -34,9 +34,9 @@ class MenuDao extends HibernateSupport {
   def saveMenuHistory(menuHistory: MenuHistory) = hibernate.save(menuHistory)
 
   
-  def deleteMenus(docIdentity: DocIdentity) = hibernate.withCurrentSession { session =>
+  def deleteMenus(docRef: DocRef) = hibernate.withCurrentSession { session =>
     val scroll = session.getNamedQuery("Menu.getMenus")
-      .setParameter("docIdentity", docIdentity)
+      .setParameter("docRef", docRef)
       .setCacheMode(CacheMode.IGNORE)
       .scroll(ScrollMode.FORWARD_ONLY)
 

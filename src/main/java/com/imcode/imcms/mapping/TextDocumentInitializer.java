@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.dao.ContentLoopDao;
 import com.imcode.imcms.dao.ImageDao;
@@ -54,7 +53,7 @@ public class TextDocumentInitializer {
     }
     
     public void initTexts(TextDocumentDomainObject document) {
-    	Collection<TextDomainObject> texts = textDao.getTexts(document.getIdentity(), document.getLanguage().getId());
+    	Collection<TextDomainObject> texts = textDao.getTexts(document.getRef(), document.getLanguage().getId());
 
     	for (TextDomainObject text: texts) {
             Integer no = text.getNo();
@@ -89,7 +88,7 @@ public class TextDocumentInitializer {
     
     
     public void initImages(TextDocumentDomainObject document) {
-    	Collection<ImageDomainObject> images = imageDao.getImages(document.getIdentity(), document.getLanguage().getId());
+    	Collection<ImageDomainObject> images = imageDao.getImages(document.getRef(), document.getLanguage().getId());
     	
     	for (ImageDomainObject image: images) {
     		document.setImage(image.getNo(), image);
@@ -98,7 +97,7 @@ public class TextDocumentInitializer {
 
 
     public void initMenus(TextDocumentDomainObject document) {
-    	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getIdentity());
+    	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getRef());
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
 
     	for (MenuDomainObject menu: menus) {
@@ -127,7 +126,7 @@ public class TextDocumentInitializer {
      * @throws IllegalStateException if a content loop is empty i.e. does not have a contents. 
      */
 	public void initContentLoops(TextDocumentDomainObject document) {
-		List<ContentLoop> loops = contentLoopDao.getLoops(document.getIdentity());
+		List<ContentLoop> loops = contentLoopDao.getLoops(document.getRef());
 		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
 		
 		for (ContentLoop loop: loops) {

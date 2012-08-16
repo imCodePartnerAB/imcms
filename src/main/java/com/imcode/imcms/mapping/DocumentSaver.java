@@ -71,11 +71,11 @@ public class DocumentSaver {
      */
     @Transactional
     public void saveText(TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfNecessary(text.getDocIdentity(), text.getContentLoopIdentity());
+        createEnclosingContentLoopIfNecessary(text.getDocRef(), text.getContentRef());
 
         new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(text, user);
 
-        metaDao.touch(text.getDocIdentity(), user);
+        metaDao.touch(text.getDocRef(), user);
     }
 
 
@@ -83,7 +83,7 @@ public class DocumentSaver {
     public void saveMenu(MenuDomainObject menu, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(menu, user);
 
-        metaDao.touch(menu.getDocIdentity(), user);
+        metaDao.touch(menu.getDocRef(), user);
     }
 
 
@@ -108,13 +108,13 @@ public class DocumentSaver {
 
     @Transactional
     public void saveImage(ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfNecessary(image.getDocIdentity(), image.getContentLoopIdentity());
+        createEnclosingContentLoopIfNecessary(image.getDocRef(), image.getContentRef());
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
         storingVisitor.saveTextDocumentImage(image, user);
 
-        metaDao.touch(image.getDocIdentity(), user);
+        metaDao.touch(image.getDocRef(), user);
     }
 
 
@@ -122,21 +122,21 @@ public class DocumentSaver {
      * Creates content loop if item references non-saved enclosing content loop.
      */
     @Transactional
-    public ContentLoop createEnclosingContentLoopIfNecessary(DocIdentity docIdentity, ContentLoopIdentity contentLoopIdentity) {
-        if (contentLoopIdentity == null) {
+    public ContentLoop createEnclosingContentLoopIfNecessary(DocRef docRef, ContentRef contentRef) {
+        if (contentRef == null) {
             return null;
         }
 
-        ContentLoop loop = contentLoopDao.getLoop(docIdentity, contentLoopIdentity.getLoopNo());
+        ContentLoop loop = contentLoopDao.getLoop(docRef, contentRef.getLoopNo());
 
         if (loop == null) {
             throw new IllegalStateException(String.format(
-                    "Content loop does not exists. Doc identity: %s, content loop no: %s.", docIdentity, contentLoopIdentity.getLoopNo()));
+                    "Content loop does not exists. Doc identity: %s, content loop no: %s.", docRef, contentRef.getLoopNo()));
         }
 
-        if (!loop.contentExists(contentLoopIdentity.getContentNo())) {
+        if (!loop.hasContent(contentRef.getContentNo())) {
             throw new IllegalStateException(String.format(
-                    "Content does not exists. Doc identity :%s, content loop no: %s.", docIdentity, contentLoopIdentity.getLoopNo()));
+                    "Content does not exists. Doc identity :%s, content loop no: %s.", docRef, contentRef.getLoopNo()));
         }
 
         loop = contentLoopDao.saveLoop(loop);
@@ -231,7 +231,7 @@ public class DocumentSaver {
 
         doc.accept(savingVisitor);
         updateModifiedDtIfNotSetExplicitly(doc);
-        metaDao.touch(doc.getIdentity(), user, doc.getModifiedDatetime());
+        metaDao.touch(doc.getRef(), user, doc.getModifiedDatetime());
     }
 
 
@@ -359,11 +359,11 @@ public class DocumentSaver {
 
                 text1.setNo(1);
                 text1.setLanguage(i18nMeta.getLanguage());
-                text1.setDocIdentity(textDoc.getIdentity());
+                text1.setDocRef(textDoc.getRef());
 
                 text2.setNo(2);
                 text2.setLanguage(i18nMeta.getLanguage());
-                text2.setDocIdentity(textDoc.getIdentity());
+                text2.setDocRef(textDoc.getRef());
 
                 docCreatingVisitor.saveTextDocumentText(text1, user);
                 docCreatingVisitor.saveTextDocumentText(text2, user);

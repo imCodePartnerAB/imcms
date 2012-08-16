@@ -1,11 +1,10 @@
 package com.imcode.imcms.servlet.tags;
 
-import imcode.server.document.textdocument.DocIdentity;
+import imcode.server.document.textdocument.DocRef;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.Utility;
 
-import java.util.ListIterator;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,10 +22,10 @@ import com.imcode.imcms.api.ContentLoop;
 public class ContentLoopTag2 extends BodyTagSupport {
 
     /** Creates empty content loop. */
-    private static ContentLoop createLoop(DocIdentity docIdentity, Integer no) {
+    private static ContentLoop createLoop(DocRef docRef, Integer no) {
         ContentLoop loop = new ContentLoop();
 
-        loop.setDocIdentity(docIdentity);
+        loop.setDocRef(docRef);
         loop.setNo(no);
 
         return loop;
@@ -80,13 +79,13 @@ public class ContentLoopTag2 extends BodyTagSupport {
         loop = document.getContentLoop(no);
         
         if (loop == null) {
-        	loop = createLoop(document.getIdentity(), no);
+        	loop = createLoop(document.getRef(), no);
 
            	document.setContentLoop(no, loop);
         }
 
         currentContent = null;
-        contentsCount = loop.getContents().size();
+        contentsCount = loop.getAllContents().size();
         contentIndex = -1;        
 
         return contentsCount == 0 || !nextContent()
@@ -109,21 +108,21 @@ public class ContentLoopTag2 extends BodyTagSupport {
             return false;
         }
 
-        currentContent = loop.getContents().get(contentIndex);
+        currentContent = loop.getAllContents().get(contentIndex);
 
         if (currentContent.isEnabled()) {
             firstContent = true;
             lastContent = true;
             
             for (int i = contentIndex - 1; i > -1; i--) {
-                if (loop.getContents().get(i).isEnabled()) {
+                if (loop.getAllContents().get(i).isEnabled()) {
                     firstContent = false;
                     break;
                 }
             }
 
             for (int i = contentIndex + 1; i < contentsCount; i++) {
-                if (loop.getContents().get(i).isEnabled()) {
+                if (loop.getAllContents().get(i).isEnabled()) {
                     lastContent = false;
                     break;
                 }

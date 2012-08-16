@@ -19,7 +19,7 @@ import com.imcode.imcms.test.Test
 import com.imcode.imcms.api.{SystemProperty, I18nLanguage, TextHistory}
 
 import org.scalatest.fixture
-import imcode.server.document.textdocument.{DocIdentity, ContentLoopIdentity, TextDomainObject}
+import imcode.server.document.textdocument.{DocRef, ContentRef, TextDomainObject}
 
 @RunWith(classOf[JUnitRunner])
 class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAndAfter {
@@ -54,16 +54,15 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
   def saveNewTextDoc(
       docId: Int = Default.docId,
       docVersionNo: Int = Default.docVersionNo,
-      contentLoopRef: Option[ContentLoopIdentity] = None,
+      contentLoopRef: Option[ContentRef] = None,
       no: Int = Default.no,
       text: String = Default.text,
       language: I18nLanguage) =
 
-    TextDomainObject.builder().docIdentity(new DocIdentity(docId, docVersionNo)).no(no).text(text) |> { builder =>
+    TextDomainObject.builder().docRef(new DocRef(docId, docVersionNo)).no(no).text(text) |> { builder =>
       contentLoopRef.foreach(builder.contentLoopIdentity)
       builder.build()
     } |>> { vo =>
-
       textDao.saveText(vo)
       val id = vo.getId
       assertNotNull("Id has been assigned during text save", id)
@@ -71,17 +70,17 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       val savedVO = textDao.getTextById(id)
       assertNotNull("Saved text", savedVO)
       assertEquals("Saved text id", id, savedVO.getId)
-      assertEquals("Saved text docIdentity", docId, savedVO.getDocIdentity)
+      assertEquals("Saved text docRef", docId, savedVO.getDocRef)
       assertEquals("Saved text no", no, savedVO.getNo)
       assertEquals("Saved text text", text, savedVO.getText)
       assertEquals("Saved text language", language, savedVO.getLanguage)
-      assertEquals("Saved text contentLoopIdentity", contentLoopRef, Option(savedVO.getContentLoopIdentity))
+      assertEquals("Saved text contentRef", contentLoopRef, Option(savedVO.getContentRef))
     }
 
 
   test("save new text doc's text") { language =>
     val text = saveNewTextDoc(language = language)
-    val texts = textDao.getTexts(new DocIdentity(Default.docId, Default.docVersionNo), language)
+    val texts = textDao.getTexts(new DocRef(Default.docId, Default.docVersionNo), language)
 
     assertEquals("Texts count in doc", 1, texts.size)
     assertTrue("Texts cotains saved text", texts.contains(text))
@@ -95,7 +94,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
     text.clone |> { textToUpdate =>
       textToUpdate.setText(updatedTextValue)
-      textToUpdate.setDocIdentity(new DocIdentity(text.getDocIdentity.getDocId, updatedDocVersionNo))
+      textToUpdate.setDocRef(new DocRef(text.getDocRef.getDocId, updatedDocVersionNo))
 
       textDao.saveText(textToUpdate)
     }
@@ -103,16 +102,16 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     val updatedText = textDao.getTextById(text.getId)
     assertNotNull("Updated text", updatedText)
     assertEquals("Updated text id", text.getId, updatedText.getId)
-    assertEquals("Updated text docIdentity", text.getDocIdentity, updatedText.getDocIdentity)
+    assertEquals("Updated text docRef", text.getDocRef, updatedText.getDocRef)
     assertEquals("Updated text no", text.getNo, updatedText.getNo)
     assertEquals("Updated text text", updatedTextValue, updatedText.getText)
     assertEquals("Updated text language", text.getLanguage, updatedText.getLanguage)
-    assertEquals("Updated text contentLoopIdentity", text.getContentLoopIdentity, updatedText.getContentLoopIdentity)
+    assertEquals("Updated text contentRef", text.getContentRef, updatedText.getContentRef)
   }
 
 
   test("delete text doc's texts") { () =>
-    val contentRef = new ContentLoopIdentity(100, 1)
+    val contentRef = new ContentRef(100, 1)
     val contentRefs = Seq(None, Some(contentRef))
     val nos = 0 until 5
 
@@ -126,7 +125,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
     for (language <- mkLanguages)
       expect(nos.size * contentRefs.size, "texts count inside and outside of content loop") {
-        textDao.deleteTexts(new DocIdentity(Default.docId, Default.docVersionNo), language)
+        textDao.deleteTexts(new DocRef(Default.docId, Default.docVersionNo), language)
       }
   }
 
@@ -146,7 +145,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       saveNewTextDoc(docId = Default.docId, docVersionNo = versionNo, no = indexNo, language = language)
 
     for (versionNo <- versionNos) {
-      val texts = textDao.getTexts(new DocIdentity(1001, versionNo))
+      val texts = textDao.getTexts(new DocRef(1001, versionNo))
 
       expect(nos.size * mkLanguages.size) { texts.size }
     }
@@ -154,7 +153,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
 
   test("get text doc's texts by doc id and doc version no and language") { () =>
-    val contentRef = new ContentLoopIdentity(100, 1)
+    val contentRef = new ContentRef(100, 1)
     val versionNos = 0 until 2
     val nos = 0 until 5
     val contentRefs = Seq(None, Some(contentRef))
@@ -164,16 +163,16 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
 
     for (versionNo <- versionNos; language <- mkLanguages) {
-      val texts = textDao.getTexts(new DocIdentity(Default.docId, versionNo), language).asScala
+      val texts = textDao.getTexts(new DocRef(Default.docId, versionNo), language).asScala
 
       expect(nos.size * contentRefs.size) { texts.size }
 
       expect(nos.size, "Texts count outsude content loop") {
-        texts.count(_.getContentLoopIdentity == null)
+        texts.count(_.getContentRef == null)
       }
 
       expect(nos.size, "Texts count inside content loop") {
-        texts.count(text => text.getContentLoopIdentity != null && text.getContentLoopIdentity == contentRef)
+        texts.count(text => text.getContentRef != null && text.getContentRef == contentRef)
       }
     }
   }

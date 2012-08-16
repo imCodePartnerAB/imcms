@@ -1,7 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.Imcms;
-import imcode.server.document.textdocument.DocIdentity;
+import imcode.server.document.textdocument.DocRef;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
@@ -114,8 +114,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         this.version = version;
     }
 
-    public DocIdentity getIdentity() {
-        return getVersionNo() == null || getIdValue() == null ? null : new DocIdentity(getVersionNo(), getIdValue());
+    public DocRef getRef() {
+        return getVersionNo() == null || getIdValue() == null ? null : new DocRef(getVersionNo(), getIdValue());
     }
 
 

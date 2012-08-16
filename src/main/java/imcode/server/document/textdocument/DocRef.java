@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class DocIdentity {
+public class DocRef {
 
     @Column(name="doc_id")
     private int docId;
@@ -12,10 +12,10 @@ public class DocIdentity {
     @Column(name="doc_version_no")
     private int docVersionNo;
 
-    protected DocIdentity() {
+    protected DocRef() {
     }
 
-    public DocIdentity(int docId, int docVersionNo) {
+    public DocRef(int docId, int docVersionNo) {
         this.docId = docId;
         this.docVersionNo = docVersionNo;
     }
@@ -25,7 +25,7 @@ public class DocIdentity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DocIdentity docRef = (DocIdentity) o;
+        DocRef docRef = (DocRef) o;
 
         if (docId != docRef.docId) return false;
         if (docVersionNo != docRef.docVersionNo) return false;
@@ -46,5 +46,13 @@ public class DocIdentity {
 
     public int getDocVersionNo() {
         return docVersionNo;
+    }
+
+    @Override
+    public String toString() {
+        return "DocRef{" +
+                "docId=" + docId +
+                ", docVersionNo=" + docVersionNo +
+                '}';
     }
 }

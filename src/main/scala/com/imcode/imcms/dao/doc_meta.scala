@@ -9,7 +9,7 @@ import com.imcode.imcms.api.{DocumentProperty, Meta, I18nMeta, I18nLanguage}
 import com.imcode.imcms.mapping.orm.{FileReference, HtmlReference, Include, TemplateNames, UrlReference}
 import imcode.server.user.UserDomainObject
 import java.util.Date
-import imcode.server.document.textdocument.DocIdentity
+import imcode.server.document.textdocument.DocRef
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class MetaDao extends HibernateSupport {
@@ -20,9 +20,9 @@ class MetaDao extends HibernateSupport {
   def getMeta(docId: Int) = hibernate.get[Meta](docId)
 
   /**  Updates doc's access and modified date-time. */
-  def touch(docIdentity: DocIdentity, user: UserDomainObject): Unit = touch(docIdentity, user, new Date)
-  def touch(docIdentity: DocIdentity, user: UserDomainObject, date: Date): Unit =
-    touch(docIdentity.getDocId, docIdentity.getDocVersionNo, user.getId, date)
+  def touch(docRef: DocRef, user: UserDomainObject): Unit = touch(docRef, user, new Date)
+  def touch(docRef: DocRef, user: UserDomainObject, date: Date): Unit =
+    touch(docRef.getDocId, docRef.getDocVersionNo, user.getId, date)
 
   def touch(docId: Int, docVersionNo: Int, userId: Int, dt: Date) {
     hibernate.bulkUpdateByNamedParams(

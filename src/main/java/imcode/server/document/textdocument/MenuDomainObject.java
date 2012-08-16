@@ -53,7 +53,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
     @Column(name = "no")
     private Integer no;
 
-    private DocIdentity docIdentity;
+    private DocRef docRef;
 
 
     /**
@@ -277,11 +277,11 @@ public class MenuDomainObject implements Cloneable, Serializable {
         setNo(index);
     }
 
-    public DocIdentity getDocIdentity() {
-        return docIdentity;
+    public DocRef getDocRef() {
+        return docRef;
     }
 
-    public void setDocIdentity(DocIdentity docRef) {
-        this.docIdentity = docRef;
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
     }
 }

@@ -6,7 +6,7 @@ import imcode.server.document.DocumentDomainObject
 import imcode.server.user.UserDomainObject
 import javax.servlet.http.HttpServletRequest
 import imcode.server.{Imcms, ImcmsServices, ImcmsConstants}
-import imcode.server.document.textdocument.DocIdentity
+import imcode.server.document.textdocument.DocRef
 
 
 object DocGetterCallbackUtil {
@@ -25,15 +25,15 @@ object DocGetterCallbackUtil {
     val state = State(language, defaultLanguage)
     val docGetterCallback =
       (for {
-        docIdentity <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID))
+        docRef <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID))
         docVersionNoStr <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION))
         if !user.isDefaultUser
       } yield {
-        val docId: Int = docIdentity match {
+        val docId: Int = docRef match {
           case IntNum(n) => n
           case _ =>
-            Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity) |> opt getOrElse {
-              sys.error("Document with identity %s does not exists." format docIdentity)
+            Imcms.getServices.getDocumentMapper.toDocumentId(docRef) |> opt getOrElse {
+              sys.error("Document with identity %s does not exists." format docRef)
             }
         }
 
@@ -100,7 +100,7 @@ case class WorkingDocGetterCallback(state: State, selectedDocId: Int) extends Do
 
 case class CustomDocGetterCallback(state: State, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    if (selectedDocId == docId) docMapper.getCustomDocument(new DocIdentity(selectedDocId, selectedDocVersionNo), state.selectedLanguage)
+    if (selectedDocId == docId) docMapper.getCustomDocument(new DocRef(selectedDocId, selectedDocVersionNo), state.selectedLanguage)
     else DefaultDocGetterCallback(state).getDoc(docId, user, docMapper)
 }
 

@@ -22,7 +22,7 @@ import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.apache.solr.core.{SolrCore, CoreDescriptor, CoreContainer}
 import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexer}
-import imcode.server.document.textdocument.{DocIdentity, ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
+import imcode.server.document.textdocument.{DocRef, ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
 
 @RunWith(classOf[JUnitRunner])
 class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
@@ -128,11 +128,11 @@ class DirectoryIndexFixture {
       i18nMetas.getOrElse(Seq(doc.getI18nMeta)).asJava
     )
 
-    when(textDaoMock.getTexts(new DocIdentity(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    when(textDaoMock.getTexts(new DocRef(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       texts.getOrElse(Seq(doc.getTexts.values.asScala, doc.getLoopTexts.values.asScala).flatten).asJava
     )
 
-    when(imageDaoMock.getImages(new DocIdentity(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    when(imageDaoMock.getImages(new DocRef(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       images.getOrElse(Seq(doc.getImages.values.asScala, doc.getLoopImages.values.asScala).flatten).asJava
     )
   }

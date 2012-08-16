@@ -26,45 +26,45 @@ import java.util.UUID;
 public class ImageDomainObject implements Serializable, Cloneable {
 
     public static final class Builder {
-        private ImageDomainObject ido;
+        private ImageDomainObject vo = new ImageDomainObject();
 
         public Builder() {
         }
 
         public ImageDomainObject build() {
-            ImageDomainObject ido = new ImageDomainObject();
+            ImageDomainObject vo = new ImageDomainObject();
 
-            ido.id = this.ido.id;
-            ido.docIdentity = this.ido.docIdentity;
-            ido.no = this.ido.no;
-            ido.language = this.ido.language;
-            ido.contentLoopIdentity = this.ido.contentLoopIdentity;
+            vo.id = this.vo.id;
+            vo.docRef = this.vo.docRef;
+            vo.no = this.vo.no;
+            vo.language = this.vo.language;
+            vo.contentRef = this.vo.contentRef;
 
-            return ido;
+            return vo;
         }
 
         public Builder id(Long id) {
-            ido.id = id;
+            vo.id = id;
             return this;
         }
 
-        public Builder docIdentity(DocIdentity docIdentity) {
-            ido.docIdentity = docIdentity;
+        public Builder docRef(DocRef docRef) {
+            vo.docRef = docRef;
             return this;
         }
 
         public Builder no(Integer no) {
-            ido.no = no.toString();
+            vo.no = no.toString();
             return this;
         }
 
         public Builder language(I18nLanguage language) {
-            ido.language = language;
+            vo.language = language;
             return this;
         }
 
-        public Builder contentLoopIdentity(ContentLoopIdentity contentLoopIdentity) {
-            ido.contentLoopIdentity = contentLoopIdentity;
+        public Builder contentRef(ContentRef contentRef) {
+            vo.contentRef = contentRef;
             return this;
         }
     }
@@ -84,9 +84,9 @@ public class ImageDomainObject implements Serializable, Cloneable {
     @Transient
     private ImageSource source = new NullImageSource();
 
-    private DocIdentity docIdentity;
+    private DocRef docRef;
 
-    private ContentLoopIdentity contentLoopIdentity;
+    private ContentRef contentRef;
 
     /**
      * Image order no in a text doc.
@@ -726,20 +726,20 @@ public class ImageDomainObject implements Serializable, Cloneable {
         }
     }
 
-    public DocIdentity getDocIdentity() {
-        return docIdentity;
+    public DocRef getDocRef() {
+        return docRef;
     }
 
-    public void setDocIdentity(DocIdentity docIdentity) {
-        this.docIdentity = docIdentity;
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
     }
 
-    public ContentLoopIdentity getContentLoopIdentity() {
-        return contentLoopIdentity;
+    public ContentRef getContentRef() {
+        return contentRef;
     }
 
-    public void setContentLoopIdentity(ContentLoopIdentity contentRef) {
-        this.contentLoopIdentity = contentRef;
+    public void setContentRef(ContentRef contentRef) {
+        this.contentRef = contentRef;
     }
 
     @Override
@@ -747,8 +747,8 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return "ImageDomainObject{" +
                 "no='" + no + '\'' +
                 ", id=" + id +
-                ", contentLoopIdentity=" + contentLoopIdentity +
-                ", docIdentity=" + docIdentity +
+                ", contentRef=" + contentRef +
+                ", docRef=" + docRef +
                 '}';
     }
 }

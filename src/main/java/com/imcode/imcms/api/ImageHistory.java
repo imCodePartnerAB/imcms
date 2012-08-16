@@ -72,9 +72,9 @@ public class ImageHistory {
     @Column(name = "gen_file")
     private String generatedFilename;
 
-    private ContentLoopIdentity contentLoopIdentity;
+    private ContentRef contentRef;
 
-    private DocIdentity docIdentity;
+    private DocRef docRef;
 
     /**
      * i18n support
@@ -96,7 +96,7 @@ public class ImageHistory {
     }
 
     public ImageHistory(ImageDomainObject imageDO, UserDomainObject user) {
-        setDocIdentity(imageDO.getDocIdentity());
+        setDocRef(imageDO.getDocRef());
         setNo(imageDO.getNo());
 
         setWidth(imageDO.getWidth());
@@ -113,7 +113,7 @@ public class ImageHistory {
         setType(imageDO.getType());
 
         setLanguage(imageDO.getLanguage());
-        setContentRef(imageDO.getContentLoopIdentity());
+        setContentRef(imageDO.getContentRef());
         setUserId(user.getId());
         setModifiedDt(new Date());
         setFormat(imageDO.getFormat());
@@ -242,12 +242,12 @@ public class ImageHistory {
         this.type = type;
     }
 
-    public ContentLoopIdentity getContentRef() {
-        return contentLoopIdentity;
+    public ContentRef getContentRef() {
+        return contentRef;
     }
 
-    public void setContentRef(ContentLoopIdentity contentRef) {
-        this.contentLoopIdentity = contentRef;
+    public void setContentRef(ContentRef contentRef) {
+        this.contentRef = contentRef;
     }
 
     public I18nLanguage getLanguage() {
@@ -316,11 +316,11 @@ public class ImageHistory {
         this.generatedFilename = generatedFilename;
     }
 
-    public DocIdentity getDocIdentity() {
-        return docIdentity;
+    public DocRef getDocRef() {
+        return docRef;
     }
 
-    public void setDocIdentity(DocIdentity docIdentity) {
-        this.docIdentity = docIdentity;
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
     }
 }

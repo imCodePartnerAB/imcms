@@ -23,22 +23,22 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
 
         for (TextDomainObject text : doc.getTexts().values()) {
             text.setId(null);
-            text.setDocIdentity(null);
+            text.setDocRef(null);
         }
 
         for (ImageDomainObject image : doc.getImages().values()) {
             image.setId(null);
-            image.setDocIdentity(null);
+            image.setDocRef(null);
         }
 
         for (MenuDomainObject menu : doc.getMenus().values()) {
             menu.setId(null);
-            menu.setDocIdentity(null);
+            menu.setDocRef(null);
         }
 
         for (ContentLoop loop : doc.getContentLoops().values()) {
             loop.setId(null);
-            loop.setDocIdentity(null);
+            loop.setDocRef(null);
         }
 
         doc.getTemplateNames().setDocId(null);

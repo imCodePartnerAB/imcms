@@ -162,12 +162,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         TextDao textDao = services.getSpringBean(TextDao.class);
         I18nLanguage language = textDocument.getLanguage();
 
-        textDao.deleteTexts(textDocument.getIdentity(), language.getId());
+        textDao.deleteTexts(textDocument.getRef(), language.getId());
         textDao.flush();
 
         for (TextDomainObject text : textDocument.getTexts().values()) {
             text.setId(null);
-            text.setDocIdentity(textDocument.getIdentity());
+            text.setDocRef(textDocument.getRef());
             text.setLanguage(language);
 
             saveTextDocumentText(text, user);
@@ -175,7 +175,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         for (TextDomainObject text : textDocument.getLoopTexts().values()) {
             text.setId(null);
-            text.setDocIdentity(textDocument.getIdentity());
+            text.setDocRef(textDocument.getRef());
             text.setLanguage(language);
 
             saveTextDocumentText(text, user);
@@ -189,12 +189,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, UserDomainObject user) {
         ContentLoopDao dao = services.getSpringBean(ContentLoopDao.class);
 
-        dao.deleteLoops(textDocument.getIdentity());
+        dao.deleteLoops(textDocument.getRef());
         dao.flush();
 
         for (ContentLoop loop : textDocument.getContentLoops().values()) {
             loop.setId(null);
-            loop.setDocIdentity(textDocument.getIdentity());
+            loop.setDocRef(textDocument.getRef());
 
             dao.saveLoop(loop);
         }
@@ -249,12 +249,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         ImageDao imageDao =  services.getSpringBean(ImageDao.class);
         I18nLanguage language = doc.getLanguage();
 
-        imageDao.deleteImages(doc.getIdentity(), language.getId());
+        imageDao.deleteImages(doc.getRef(), language.getId());
         imageDao.flush();
 
         for (ImageDomainObject image: doc.getImages().values()) {
             image.setId(null);
-            image.setDocIdentity(doc.getIdentity());
+            image.setDocRef(doc.getRef());
             image.setLanguage(language);
 
             saveTextDocumentImage(image, user);
@@ -262,7 +262,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         for (ImageDomainObject image : doc.getLoopImages().values()) {
             image.setId(null);
-            image.setDocIdentity(doc.getIdentity());
+            image.setDocRef(doc.getRef());
             image.setLanguage(language);
 
             saveTextDocumentImage(image, user);
@@ -356,15 +356,15 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         Integer docId = doc.getId();
         Integer docVersionNo = doc.getVersionNo();
-        DocIdentity docRef = docId == null || docVersionNo == null ? null : new DocIdentity(docId, docVersionNo);
+        DocRef docRef = docId == null || docVersionNo == null ? null : new DocRef(docId, docVersionNo);
 
-        dao.deleteMenus(doc.getIdentity());
+        dao.deleteMenus(doc.getRef());
 
         for (Map.Entry<Integer, MenuDomainObject> entry : doc.getMenus().entrySet()) {
             MenuDomainObject menu = entry.getValue();
 
             menu.setId(null);
-            menu.setDocIdentity(docRef);
+            menu.setDocRef(docRef);
             menu.setNo(entry.getKey());
 
             updateTextDocumentMenu(menu, user);

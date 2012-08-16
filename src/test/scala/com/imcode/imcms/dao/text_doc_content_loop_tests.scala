@@ -4,7 +4,6 @@ package imcms.dao
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import imcms.test.Test.{db}
 import com.imcode.imcms.test.Test
@@ -12,21 +11,22 @@ import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.api.{ContentLoop}
-import org.springframework.orm.hibernate4.HibernateTransactionManager
-import imcode.server.document.textdocument.DocIdentity
+import imcode.server.document.textdocument.{DocRef}
 
 @RunWith(classOf[JUnitRunner])
 class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
-  // loops predefined in src/test/resources/dbunit-content_loop.xml: loop_<contents-count>_[sort-order]_id
-  val loop_0_id = 0
-
-  val loop_1_id = 1
-
-  val loop_3_asc_id = 2
-
-  val loop_3_desc_id = 3
-
+//  object ContentsSort extends Enumeration {
+//    val Asc, Desc = Value
+//  }
+//
+//  case class ContentsDesc(count: Int, sort: ContentsSort.Value)
+//  case class ContentLoopDesc(loopId: Long, docRef: DocRef, contentLoopIdentity: ContentRef, contentsDesc: ContentsDesc)
+//
+//  val loop0 = ContentLoopDesc(0, new DocRef(1001, 0), new ContentRef(0, 0), ContentsDesc(count = 0, sort = ContentsSort.Asc))
+//  val loop1 = ContentLoopDesc(1, new DocRef(1001, 0), new ContentRef(0, 1), ContentsDesc(count = 1, sort = ContentsSort.Asc))
+//  val loop2 = ContentLoopDesc(2, new DocRef(1001, 0), new ContentRef(0, 2), ContentsDesc(count = 2, sort = ContentsSort.Asc))
+//  val loop3 = ContentLoopDesc(3, new DocRef(1001, 0), new ContentRef(0, 3), ContentsDesc(count = 3, sort = ContentsSort.Desc))
 
   var contentLoopDao: ContentLoopDao = _
 
@@ -41,45 +41,45 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   }
 
 
-  test("get all [4] text doc's content loops") {
-    assertEquals("loops count", 4, contentLoopDao.getLoops(new DocIdentity(1001, 0)).size())
+  test("get all content loops") {
+    assertEquals("loops count", 4, contentLoopDao.getLoops(new DocRef(1001, 0)).size())
   }
 
 
-  test("get text doc's content loop") {
+  test("get content loop") {
     val loops = Array(
-      getLoop(loop_0_id, true),
-      getLoop(loop_1_id, true),
-      getLoop(loop_3_asc_id, true),
-      getLoop(loop_3_desc_id, true))
+      getLoop(0, true),
+      getLoop(1, true),
+      getLoop(2, true),
+      getLoop(3, true))
 
-    assertEquals("Contents count.", loops(0).getContents.size, 0)
-    assertEquals("Contents count.", loops(1).getContents.size, 1)
-    assertEquals("Contents count.", loops(2).getContents.size, 3)
-    assertEquals("Contents count.", loops(3).getContents.size, 3)
+    assertEquals("Contents count.", loops(0).getAllContents.size, 0)
+    assertEquals("Contents count.", loops(1).getAllContents.size, 1)
+    assertEquals("Contents count.", loops(2).getAllContents.size, 3)
+    assertEquals("Contents count.", loops(3).getAllContents.size, 3)
   }
 
 
   test("check contents order in a loop") {
-    val ascSortedContens = getLoop(loop_3_asc_id, true).getContents
-    val descSortedContens = getLoop(loop_3_desc_id, true).getContents
+    val ascSortedContents = getLoop(2, true).getAllContents
+    val descSortedContents = getLoop(3, true).getAllContents
 
     for (i <- 0 to 2) {
-      assertEquals("Content order no.", i, ascSortedContens.get(i).getNo)
+      assertEquals("Content order no.", i, ascSortedContents.get(i).getNo)
     }
 
 
-    for ((no, i) <- 2 to(0, -1) zipWithIndex) {
-      assertEquals("Content order no.", no, descSortedContens.get(i).getNo)
+    for ((no, i) <- 2 to 0 by -1 zipWithIndex) {
+      assertEquals("Content order no.", no, descSortedContents.get(i).getNo)
     }
   }
 
   test("create empty content loop") {
     new ContentLoop |> {
       loop =>
-        val docIdentity = new DocIdentity(1001, 0)
-        loop.setDocIdentity(docIdentity)
-        loop.setNo(contentLoopDao.getNextLoopNo(docIdentity))
+        val docRef = new DocRef(1001, 0)
+        loop.setDocRef(docRef)
+        loop.setNo(contentLoopDao.getNextLoopNo(docRef))
 
         contentLoopDao.saveLoop(loop)
     }
@@ -89,11 +89,11 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val loop = getLoop(0, true)
     val loopId = loop.getId
 
-    val count = loop.getContents.size
+    val count = loop.getAllContents.size
 
     loop.addLastContent
     val newLoop = contentLoopDao.saveLoop(loop)
-    assertEquals(count + 1, newLoop.getContents.size)
+    assertEquals(count + 1, newLoop.getAllContents.size)
 
     assertNotNull(contentLoopDao.getLoop(newLoop.getId))
   }
@@ -112,9 +112,9 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("create non empty content loop [with 5 contents]") {
     var loop = new ContentLoop
-    val docIdentity = new DocIdentity(1001, 0)
-    loop.setDocIdentity(docIdentity)
-    loop.setNo(contentLoopDao.getNextLoopNo(docIdentity))
+    val docRef = new DocRef(1001, 0)
+    loop.setDocRef(docRef)
+    loop.setNo(contentLoopDao.getNextLoopNo(docRef))
 
     val contentsCount = 5
 
@@ -126,8 +126,8 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     assertNotNull("Loop exists", savedLoop)
 
-    val contents = loop.getContents
-    val savedContents = savedLoop.getContents
+    val contents = loop.getAllContents
+    val savedContents = savedLoop.getAllContents
 
     assertEquals("Content count matches", contentsCount, savedContents.size)
 
@@ -142,10 +142,10 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   def getLoop(no: Int): ContentLoop = getLoop(no, false)
 
-  def getLoop(no: Int, assertLoopNotNull: Boolean) = new DocIdentity(1001, 0) |> { docIdentity =>
-    contentLoopDao.getLoop(docIdentity, no) |>> { loop =>
+  def getLoop(no: Int, assertLoopNotNull: Boolean) = new DocRef(1001, 0) |> { docRef =>
+    contentLoopDao.getLoop(docRef, no) |>> { loop =>
       if (assertLoopNotNull)
-        assertNotNull("Loop exists - docIdentity: %s, no: %s.".format(docIdentity, no), loop)
+        assertNotNull("Loop exists - docRef: %s, no: %s.".format(docRef, no), loop)
     }
   }
 }

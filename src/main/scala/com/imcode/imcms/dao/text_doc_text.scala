@@ -6,7 +6,7 @@ import com.imcode.imcms.api.I18nLanguage
 import com.imcode.imcms.api.TextHistory
 
 import org.springframework.transaction.annotation.Transactional
-import imcode.server.document.textdocument.{DocIdentity, TextDomainObject}
+import imcode.server.document.textdocument.{DocRef, TextDomainObject}
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class TextDao extends HibernateSupport {
@@ -18,14 +18,14 @@ class TextDao extends HibernateSupport {
   def getTextById(id: Long) = hibernate.get[TextDomainObject](id)
 
 
-  def deleteTexts(docIdentity: DocIdentity, language: I18nLanguage): Int =
-    deleteTexts(docIdentity: DocIdentity, language.getId)
+  def deleteTexts(docRef: DocRef, language: I18nLanguage): Int =
+    deleteTexts(docRef: DocRef, language.getId)
 
 
-  def deleteTexts(docIdentity: DocIdentity, languageId: Int) =
+  def deleteTexts(docRef: DocRef, languageId: Int) =
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
       "Text.deleteTexts",
-      "docIdentity" -> docIdentity, "languageId" -> languageId
+      "docRef" -> docRef, "languageId" -> languageId
     )
 
 
@@ -38,25 +38,25 @@ class TextDao extends HibernateSupport {
    *
    * @return all texts in a doc.
    */
-  def getTexts(docIdentity: DocIdentity): JList[TextDomainObject] =
+  def getTexts(docRef: DocRef): JList[TextDomainObject] =
     hibernate.listByNamedQueryAndNamedParams(
-      "Text.getByDocIdAndDocVersionNo", "docIdentity" -> docIdentity
+      "Text.getByDocIdAndDocVersionNo", "docRef" -> docRef
     )
 
 
   /**
    * Returns text fields for the same doc, version and language.
    */
-  def getTexts(docIdentity: DocIdentity, languageId: Int): JList[TextDomainObject] =
+  def getTexts(docRef: DocRef, languageId: Int): JList[TextDomainObject] =
     hibernate.listByNamedQueryAndNamedParams(
       "Text.getByDocIdAndDocVersionNoAndLanguageId",
-      "docIdentity" -> docIdentity, "languageId" -> languageId
+      "docRef" -> docRef, "languageId" -> languageId
     )
 
 
   /**
    * Returns text fields for the same doc, version and language.
    */
-  def getTexts(docIdentity: DocIdentity, language: I18nLanguage): JList[TextDomainObject] =
-    getTexts(docIdentity: DocIdentity, language.getId)
+  def getTexts(docRef: DocRef, language: I18nLanguage): JList[TextDomainObject] =
+    getTexts(docRef: DocRef, language.getId)
 }

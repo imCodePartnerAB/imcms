@@ -5,7 +5,7 @@ import scala.collection.JavaConverters._
 import org.springframework.transaction.annotation.Transactional
 
 import com.imcode.imcms.api.ContentLoop
-import imcode.server.document.textdocument.DocIdentity
+import imcode.server.document.textdocument.DocRef
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class ContentLoopDao extends HibernateSupport {
@@ -20,9 +20,9 @@ class ContentLoopDao extends HibernateSupport {
    *
    * @return loop or null if loop can not be found.
    */
-  def getLoop(docIdentity: DocIdentity, no: Int): ContentLoop =
+  def getLoop(docRef: DocRef, no: Int): ContentLoop =
     hibernate.getByNamedQueryAndNamedParams(
-      "ContentLoop.getByDocIdAndDocVersionNoAndNo", "docIdentity" -> docIdentity, "no" -> no
+      "ContentLoop.getByDocIdAndDocVersionNoAndNo", "docId" -> docRef.getDocId, "docVersionNo" -> docRef.getDocVersionNo, "no" -> no
     )
 
 
@@ -33,13 +33,13 @@ class ContentLoopDao extends HibernateSupport {
    *
    * @return document content loops.
    */
-  def getLoops(docIdentity: DocIdentity): JList[ContentLoop] = hibernate.listByNamedQueryAndNamedParams(
-    "ContentLoop.getByDocIdAndDocVersionNo", "docIdentity" -> docIdentity
+  def getLoops(docRef: DocRef): JList[ContentLoop] = hibernate.listByNamedQueryAndNamedParams(
+   "ContentLoop.getByDocIdAndDocVersionNo", "docId" -> docRef.getDocId, "docVersionNo" -> docRef.getDocVersionNo
   )
 
 
-  def getNextLoopNo(docIdentity: DocIdentity): Int = hibernate.getByQuery[JInteger](
-      "select max(l.no) from ContentLoop l where l.docIdentity = ?", docIdentity
+  def getNextLoopNo(docRef: DocRef): Int = hibernate.getByQuery[JInteger](
+      "select max(l.no) from ContentLoop l where l.docId = ? and l.docVersionNo = ?", docRef.getDocId, docRef.getDocVersionNo
     ) match {
       case null => 0
       case n => n.intValue + 1
@@ -58,8 +58,8 @@ class ContentLoopDao extends HibernateSupport {
   }
 
 
-  def deleteLoops(docIdentity: DocIdentity) =
-    getLoops(docIdentity).asScala.map(hibernate.delete).size
+  def deleteLoops(docRef: DocRef) =
+    getLoops(docRef).asScala.map(hibernate.delete).size
 
 
   def deleteLoop(loopId: Long) = getLoop(loopId) match {

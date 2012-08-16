@@ -1,7 +1,7 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.ContentLoopIdentity;
-import imcode.server.document.textdocument.DocIdentity;
+import imcode.server.document.textdocument.ContentRef;
+import imcode.server.document.textdocument.DocRef;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -28,9 +28,9 @@ public class TextHistory {
 
     private Integer type;
 
-    private ContentLoopIdentity contentLoopIdentity;
+    private ContentRef contentRef;
 
-    private DocIdentity docIdentity;
+    private DocRef docRef;
 
     /**
      * i18n support
@@ -53,11 +53,11 @@ public class TextHistory {
 
     public TextHistory(TextDomainObject textDO, UserDomainObject user) {
         setType(textDO.getType());
-        setDocIdentity(textDO.getDocIdentity());
+        setDocRef(textDO.getDocRef());
         setNo(textDO.getNo());
         setText(textDO.getText());
         setLanguage(textDO.getLanguage());
-        setContentLoopIdentity(textDO.getContentLoopIdentity());
+        setContentRef(textDO.getContentRef());
         setUserId(user.getId());
         setModifiedDt(new Date());
     }
@@ -145,19 +145,19 @@ public class TextHistory {
         this.modifiedDt = modifiedDt;
     }
 
-    public ContentLoopIdentity getContentLoopIdentity() {
-        return contentLoopIdentity;
+    public ContentRef getContentRef() {
+        return contentRef;
     }
 
-    public void setContentLoopIdentity(ContentLoopIdentity contentLoopIdentity) {
-        this.contentLoopIdentity = contentLoopIdentity;
+    public void setContentRef(ContentRef contentRef) {
+        this.contentRef = contentRef;
     }
 
-    public DocIdentity getDocIdentity() {
-        return docIdentity;
+    public DocRef getDocRef() {
+        return docRef;
     }
 
-    public void setDocIdentity(DocIdentity docIdentity) {
-        this.docIdentity = docIdentity;
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
     }
 }

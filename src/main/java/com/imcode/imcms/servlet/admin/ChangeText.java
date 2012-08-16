@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.textdocument.ContentLoopIdentity;
-import imcode.server.document.textdocument.DocIdentity;
+import imcode.server.document.textdocument.ContentRef;
+import imcode.server.document.textdocument.DocRef;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -39,7 +39,7 @@ public class ChangeText extends HttpServlet {
 
         Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);
-        ContentLoopIdentity contentRef = loopNo == null || contentNo == null ? null : new ContentLoopIdentity(loopNo, contentNo);
+        ContentRef contentRef = loopNo == null || contentNo == null ? null : new ContentRef(loopNo, contentNo);
 
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentMapper.getDocument(
                 documentId);
@@ -64,11 +64,11 @@ public class ChangeText extends HttpServlet {
 
         if (text == null) {
             text = new TextDomainObject();
-            text.setDocIdentity(new DocIdentity(metaId, textDocument.getVersionNo()));
+            text.setDocRef(new DocRef(metaId, textDocument.getVersionNo()));
             text.setNo(textIndex);
             text.setLanguage(language);
             text.setType(TextDomainObject.TEXT_TYPE_HTML);
-            text.setContentLoopIdentity(contentRef);
+            text.setContentRef(contentRef);
         }
 
         TextEditPage page = new TextEditPage(documentId, textIndex, text, label);

@@ -19,50 +19,50 @@ import com.imcode.imcms.api.I18nLanguage;
 public class TextDomainObject implements Serializable, Cloneable {
 
     public static final class Builder {
-        private final TextDomainObject tdo = new TextDomainObject();
+        private final TextDomainObject vo = new TextDomainObject();
 
         public Builder() {
         }
 
         public TextDomainObject build() {
-            TextDomainObject tdo = new TextDomainObject();
+            TextDomainObject vo = new TextDomainObject();
 
-            tdo.id = this.tdo.id;
-            tdo.docIdentity = this.tdo.docIdentity;
-            tdo.no = this.tdo.no;
-            tdo.language = this.tdo.language;
-            tdo.contentLoopIdentity = this.tdo.contentLoopIdentity;
+            vo.id = this.vo.id;
+            vo.docRef = this.vo.docRef;
+            vo.no = this.vo.no;
+            vo.language = this.vo.language;
+            vo.contentRef = this.vo.contentRef;
 
-            return tdo;
+            return vo;
         }
 
         public Builder id(Long id) {
-            tdo.id = id;
+            vo.id = id;
             return this;
         }
 
-        public Builder docIdentity(DocIdentity docIdentity) {
-            tdo.docIdentity = docIdentity;
+        public Builder docRef(DocRef docRef) {
+            vo.docRef = docRef;
             return this;
         }
 
         public Builder no(Integer no) {
-            tdo.no = no;
+            vo.no = no;
             return this;
         }
 
         public Builder language(I18nLanguage language) {
-            tdo.language = language;
+            vo.language = language;
             return this;
         }
 
-        public Builder contentLoopIdentity(ContentLoopIdentity contentLoopIdentity) {
-            tdo.contentLoopIdentity = contentLoopIdentity;
+        public Builder contentLoopIdentity(ContentRef contentRef) {
+            vo.contentRef = contentRef;
             return this;
         }
 
         public Builder text(String text) {
-            tdo.text = text;
+            vo.text = text;
             return this;
         }
     }
@@ -88,8 +88,8 @@ public class TextDomainObject implements Serializable, Cloneable {
 
     int type;
 
-    private DocIdentity docIdentity;
-    private ContentLoopIdentity contentLoopIdentity;
+    private DocRef docRef;
+    private ContentRef contentRef;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
@@ -253,19 +253,19 @@ public class TextDomainObject implements Serializable, Cloneable {
         this.no = no;
     }
 
-    public DocIdentity getDocIdentity() {
-        return docIdentity;
+    public DocRef getDocRef() {
+        return docRef;
     }
 
-    public void setDocIdentity(DocIdentity docIdentity) {
-        this.docIdentity = docIdentity;
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
     }
 
-    public ContentLoopIdentity getContentLoopIdentity() {
-        return contentLoopIdentity;
+    public ContentRef getContentRef() {
+        return contentRef;
     }
 
-    public void setContentLoopIdentity(ContentLoopIdentity contentRef) {
-        this.contentLoopIdentity = contentRef;
+    public void setContentRef(ContentRef contentRef) {
+        this.contentRef = contentRef;
     }
 }

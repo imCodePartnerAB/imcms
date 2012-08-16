@@ -33,10 +33,10 @@ public class Factory {
 //
 //
 //
-//    public static MenuDomainObject createMenu(DocIdentity docRef, int no, DocumentReference documentReference) {
+//    public static MenuDomainObject createMenu(DocRef docRef, int no, DocumentReference documentReference) {
 //        MenuDomainObject menu = new MenuDomainObject();
 //        menu.setNo(no);
-//        menu.setDocIdentity(docRef);
+//        menu.setDocRef(docRef);
 //
 //        MenuItemDomainObject menuItem = new MenuItemDomainObject();
 //        menuItem.setSortKey(0);
@@ -62,12 +62,12 @@ public class Factory {
 //        return createNextImage(doc, null);
 //    }
 //
-//    public static ImageDomainObject createNextImage(TextDocumentDomainObject doc, ContentLoopIdentity contentRef) {
+//    public static ImageDomainObject createNextImage(TextDocumentDomainObject doc, ContentRef contentRef) {
 //        return createImage(doc.getId(), doc.getVersion().getNo(), doc.getLanguage(), getNextItemNo(doc.getImages().values()), contentRef);
 //    }
 //
 //    public static MenuDomainObject createNextMenu(TextDocumentDomainObject doc, DocumentReference docRef) {
-//        return createMenu(new DocIdentity(doc.getIdValue(), doc.getVersion().getNo()), getNextItemNo(doc.getMenus().values()), docRef);
+//        return createMenu(new DocRef(doc.getIdValue(), doc.getVersion().getNo()), getNextItemNo(doc.getMenus().values()), docRef);
 //    }
 //
 //    public static ContentLoop createNextContentLoop(TextDocumentDomainObject doc) {

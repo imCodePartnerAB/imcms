@@ -1,6 +1,6 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.DocIdentity;
+import imcode.server.document.textdocument.DocRef;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -57,7 +57,7 @@ public class MenuHistory implements Serializable {
 
 	private Integer no;
 
-	private DocIdentity docIdentity;
+	private DocRef docRef;
 
 
 	@ElementCollection(fetch=FetchType.EAGER)
@@ -80,7 +80,7 @@ public class MenuHistory implements Serializable {
     public MenuHistory() {}
 
     public MenuHistory(MenuDomainObject menu, UserDomainObject user) {
-        setDocIdentity(menu.getDocIdentity());
+        setDocRef(menu.getDocRef());
         setMenuId(menu.getId());
         setNo(menu.getNo());        
         setModifiedDt(new Date());
@@ -136,11 +136,11 @@ public class MenuHistory implements Serializable {
         this.no = no;
     }
 
-    public DocIdentity getDocIdentity() {
-        return docIdentity;
+    public DocRef getDocRef() {
+        return docRef;
     }
 
-    public void setDocIdentity(DocIdentity docRef) {
-        this.docIdentity = docRef;
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
     }
 }
