@@ -16,12 +16,6 @@ public class TextHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "doc_id")
-    private Integer docId;
-
-    @Column(name = "doc_version_no")
-    private Integer docVersionNo;
-
     private Integer no;
 
     private String text;

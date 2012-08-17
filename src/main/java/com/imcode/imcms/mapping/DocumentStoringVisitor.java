@@ -162,7 +162,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         TextDao textDao = services.getSpringBean(TextDao.class);
         I18nLanguage language = textDocument.getLanguage();
 
-        textDao.deleteTexts(textDocument.getRef(), language.getId());
+        textDao.deleteTexts(textDocument.getRef(), language);
         textDao.flush();
 
         for (TextDomainObject text : textDocument.getTexts().values()) {
@@ -193,10 +193,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         dao.flush();
 
         for (ContentLoop loop : textDocument.getContentLoops().values()) {
-            loop.setId(null);
-            loop.setDocRef(textDocument.getRef());
-
-            dao.saveLoop(loop);
+            dao.saveLoop(ContentLoop.builder(loop).id(null).docRef(textDocument.getRef()).build());
         }
     }
 
@@ -249,7 +246,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         ImageDao imageDao =  services.getSpringBean(ImageDao.class);
         I18nLanguage language = doc.getLanguage();
 
-        imageDao.deleteImages(doc.getRef(), language.getId());
+        imageDao.deleteImages(doc.getRef(), language);
         imageDao.flush();
 
         for (ImageDomainObject image: doc.getImages().values()) {

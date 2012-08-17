@@ -42,30 +42,30 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter 
     assertEquals(2, images.size)
   }
 
-  test("get text doc's images by no inside content loop") {
+  test("get text doc's images by doc ref and no inside content loop") {
     val images = imageDao.getImages(new DocRef(1001, 0), 1, Some(new ContentRef(1, 1)), false)
     assertEquals(2, images.size)
   }
 
-  test("get text doc's images by doc id and doc version no") {
+  test("get text doc's images by doc ref") {
     val images = imageDao.getImages(new DocRef(1001, 0))
     assertEquals(12, images.size)
   }
 
-  test("get text doc's images by doc id, doc version no and language") {
-    val images = imageDao.getImages(new DocRef(1001, 0), mkEnglish.getId)
+  test("get text doc's images by doc ref and language") {
+    val images = imageDao.getImages(new DocRef(1001, 0), mkEnglish)
     assertEquals(6, images.size)
   }
 
 
-  test("get text doc's image by doc id, doc version no, language and no") {
+  test("get text doc's image by doc ref, language and no") {
 		val image = imageDao.getImage(new DocRef(1001, 0), 1, mkEnglish, None)
     assertNotNull(image)
 	}
 
 
 	test("delete text doc's images in a given language") {
-    val deletedCount = imageDao.deleteImages(new DocRef(1001, 0), mkEnglish.getId)
+    val deletedCount = imageDao.deleteImages(new DocRef(1001, 0), mkEnglish)
 
     assertEquals(6, deletedCount)
 	}

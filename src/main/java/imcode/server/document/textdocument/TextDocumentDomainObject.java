@@ -255,9 +255,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
                 );
             }
 
-            Content content = loop.findContent(contentRef.getContentNo());
+            boolean contentExist = loop.findContent(contentRef.getContentNo()).isDefined();
 
-            if (content == null) {
+            if (!contentExist) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Content does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
                         , getRef(), contentRef.getLoopNo(), contentRef.getContentNo(), no)
@@ -357,9 +357,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
                 );
             }
 
-            Content content = loop.findContent(contentRef.getContentNo());
+            boolean contentExist = loop.findContent(contentRef.getContentNo()).isDefined();
 
-            if (content == null) {
+            if (!contentExist) {
                 throw new IllegalStateException(String.format(
                         "Invalid image. Content does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
                         , getRef(), contentRef.getLoopNo(), contentRef.getContentNo(), no)

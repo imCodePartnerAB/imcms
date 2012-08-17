@@ -37,8 +37,8 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
         }
 
         for (ContentLoop loop : doc.getContentLoops().values()) {
-            loop.setId(null);
-            loop.setDocRef(null);
+            //loop.setId(null);
+            //loop.setDocRef(null);
         }
 
         doc.getTemplateNames().setDocId(null);

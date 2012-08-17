@@ -174,12 +174,10 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val textPrefix = "text_"
 
     for (loopNo <- 0 until loopsCount) {
-      val loop = new ContentLoop {
-        setNo(loopNo)
-      }
+      var loop = ContentLoop.builder().no(loopNo).build()
 
       for (contentNo <- 0 until loopNo) {
-        loop.addLastContent
+        loop = loop.addLastContent._1
       }
 
       newDoc.setContentLoop(loopNo, loop)
@@ -704,8 +702,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("save text doc content loop") {
     val doc = saveNewTextDocumentFn()
-    val loop = new ContentLoop
-    loop.addFirstContent
+    val loop = ContentLoop.builder().addContent(0).build();
 
     doc.setContentLoop(0, loop)
 

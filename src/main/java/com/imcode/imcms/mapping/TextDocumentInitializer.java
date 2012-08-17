@@ -53,7 +53,7 @@ public class TextDocumentInitializer {
     }
     
     public void initTexts(TextDocumentDomainObject document) {
-    	Collection<TextDomainObject> texts = textDao.getTexts(document.getRef(), document.getLanguage().getId());
+    	Collection<TextDomainObject> texts = textDao.getTexts(document.getRef(), document.getLanguage());
 
     	for (TextDomainObject text: texts) {
             Integer no = text.getNo();
@@ -88,7 +88,7 @@ public class TextDocumentInitializer {
     
     
     public void initImages(TextDocumentDomainObject document) {
-    	Collection<ImageDomainObject> images = imageDao.getImages(document.getRef(), document.getLanguage().getId());
+    	Collection<ImageDomainObject> images = imageDao.getImages(document.getRef(), document.getLanguage());
     	
     	for (ImageDomainObject image: images) {
     		document.setImage(image.getNo(), image);

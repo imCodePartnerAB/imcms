@@ -58,7 +58,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
   def defaultMenus() = menus().asScala
 
 
-  test("get all [4] menus") {
+  test("get all menus") {
     val menus = defaultMenus()
     assertEquals("menus count", 4, menuNos.size)
 

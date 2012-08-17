@@ -12,20 +12,16 @@ import imcode.server.document.textdocument.{DocRef, TextDomainObject}
 class TextDao extends HibernateSupport {
 
   /** Inserts or updates text. */
-  def saveText(text: TextDomainObject) = hibernate.saveOrUpdate(text)
+  def saveText(text: TextDomainObject): TextDomainObject = hibernate.saveOrUpdate(text)
 
 
-  def getTextById(id: Long) = hibernate.get[TextDomainObject](id)
+  def getTextById(id: Long): TextDomainObject = hibernate.get[TextDomainObject](id)
 
 
   def deleteTexts(docRef: DocRef, language: I18nLanguage): Int =
-    deleteTexts(docRef: DocRef, language.getId)
-
-
-  def deleteTexts(docRef: DocRef, languageId: Int) =
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
-      "Text.deleteTexts",
-      "docRef" -> docRef, "languageId" -> languageId
+      "Text.deleteTextsByDocRefAndLanguage",
+      "docRef" -> docRef, "language" -> language
     )
 
 
@@ -40,17 +36,7 @@ class TextDao extends HibernateSupport {
    */
   def getTexts(docRef: DocRef): JList[TextDomainObject] =
     hibernate.listByNamedQueryAndNamedParams(
-      "Text.getByDocIdAndDocVersionNo", "docRef" -> docRef
-    )
-
-
-  /**
-   * Returns text fields for the same doc, version and language.
-   */
-  def getTexts(docRef: DocRef, languageId: Int): JList[TextDomainObject] =
-    hibernate.listByNamedQueryAndNamedParams(
-      "Text.getByDocIdAndDocVersionNoAndLanguageId",
-      "docRef" -> docRef, "languageId" -> languageId
+      "Text.getByDocRef", "docRef" -> docRef
     )
 
 
@@ -58,5 +44,8 @@ class TextDao extends HibernateSupport {
    * Returns text fields for the same doc, version and language.
    */
   def getTexts(docRef: DocRef, language: I18nLanguage): JList[TextDomainObject] =
-    getTexts(docRef: DocRef, language.getId)
+    hibernate.listByNamedQueryAndNamedParams(
+      "Text.getByDocRefAndLanguage",
+      "docRef" -> docRef, "language" -> language
+    )
 }

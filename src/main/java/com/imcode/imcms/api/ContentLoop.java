@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import imcode.server.document.textdocument.DocRef;
 import org.hibernate.annotations.IndexColumn;
 import scala.Option;
+import scala.Some;
 import scala.Tuple2;
 
 import java.io.Serializable;
@@ -177,7 +178,8 @@ public class ContentLoop implements Serializable, Cloneable {
     public Option<Tuple2<Content, Integer>> findContent(int contentNo) {
         for (int i = 0; i < contents.size(); i++) {
             Content content = contents.get(i);
-            if (contents.get(i).getNo().equals(contentNo)) return Option.apply(Tuple2.apply(content, i));
+            if (contents.get(i).getNo().equals(contentNo))
+                return new Some<Tuple2<Content, Integer>>(new Tuple2<Content, Integer>(content, i));
         }
 
         return Option.empty();
@@ -186,13 +188,13 @@ public class ContentLoop implements Serializable, Cloneable {
     public Tuple2<ContentLoop, Content> addFirstContent() {
         ContentLoop contentLoop = builder(this).addContent(0).build();
 
-        return Tuple2.apply(contentLoop, contents.get(0));
+        return new Tuple2<ContentLoop, Content>(contentLoop, contentLoop.contents.get(0));
     }
 
     public Tuple2<ContentLoop, Content> addLastContent() {
         ContentLoop contentLoop = builder(this).addContent(contents.size()).build();
 
-        return Tuple2.apply(contentLoop, contents.get(contents.size() - 1));
+        return new Tuple2<ContentLoop, Content>(contentLoop, contentLoop.contents.get(contentLoop.contents.size() - 1));
     }
 
     public Option<Tuple2<ContentLoop, Content>> insertContentAfter(int contentNo) {
@@ -203,7 +205,7 @@ public class ContentLoop implements Serializable, Cloneable {
         Integer contentIndex = contentAndIndex.get()._2() + 1;
         ContentLoop contentLoop = builder(this).addContent(contentIndex).build();
 
-        return Option.apply(Tuple2.apply(contentLoop, contentLoop.contents.get(contentIndex)));
+        return new Some<Tuple2<ContentLoop, Content>>(new Tuple2<ContentLoop, Content>(contentLoop, contentLoop.contents.get(contentIndex)));
     }
 
     public Option<Tuple2<ContentLoop, Content>> insertContentBefore(int contentNo) {
@@ -214,7 +216,7 @@ public class ContentLoop implements Serializable, Cloneable {
         Integer contentIndex = contentAndIndex.get()._2();
         ContentLoop contentLoop = builder(this).addContent(contentIndex).build();
 
-        return Option.apply(Tuple2.apply(contentLoop, contentLoop.contents.get(contentIndex)));
+        return new Some<Tuple2<ContentLoop, Content>>(new Tuple2<ContentLoop, Content>(contentLoop, contentLoop.contents.get(contentIndex)));
     }
 
     public Tuple2<ContentLoop, Boolean> moveContentBackward(int contentNo) {
@@ -227,12 +229,12 @@ public class ContentLoop implements Serializable, Cloneable {
                 Content prevContent = contents.get(i);
                 if (prevContent.isEnabled()) {
                     ContentLoop contentLoop = builder(this).swapContents(contentIndex, i).build();
-                    return Tuple2.apply(contentLoop, true);
+                    return new Tuple2<ContentLoop, Boolean>(contentLoop, true);
                 }
             }
         }
 
-        return Tuple2.apply(this, false);
+        return new Tuple2<ContentLoop, Boolean>(this, false);
     }
 
     public Tuple2<ContentLoop, Boolean> moveContentForward(int contentNo) {
@@ -245,12 +247,12 @@ public class ContentLoop implements Serializable, Cloneable {
                 Content nextContent = contents.get(i);
                 if (nextContent.isEnabled()) {
                     ContentLoop contentLoop = builder(this).swapContents(contentIndex, i).build();
-                    return Tuple2.apply(contentLoop, true);
+                    return new Tuple2<ContentLoop, Boolean>(contentLoop, true);
                 }
             }
         }
 
-        return Tuple2.apply(this, false);
+        return new Tuple2<ContentLoop, Boolean>(this, false);
     }
 
 
@@ -258,15 +260,15 @@ public class ContentLoop implements Serializable, Cloneable {
         Option<Tuple2<Content, Integer>> contentAndIndex = findContent(contentNo);
 
         return contentAndIndex.isEmpty()
-                ? Tuple2.apply(this, false)
-                : Tuple2.apply(builder(this).toggleContent(contentAndIndex.get()._2(), false).build(), true);
+                ? new Tuple2<ContentLoop, Boolean>(this, false)
+                : new Tuple2<ContentLoop, Boolean>(builder(this).toggleContent(contentAndIndex.get()._2(), false).build(), true);
     }
 
     public Tuple2<ContentLoop, Boolean> enableContent(int contentNo) {
         Option<Tuple2<Content, Integer>> contentAndIndex = findContent(contentNo);
 
         return contentAndIndex.isEmpty()
-                ? Tuple2.apply(this, false)
-                : Tuple2.apply(builder(this).toggleContent(contentAndIndex.get()._2(), true).build(), true);
+                ? new Tuple2<ContentLoop, Boolean>(this, false)
+                : new Tuple2<ContentLoop, Boolean>(builder(this).toggleContent(contentAndIndex.get()._2(), true).build(), true);
     }
 }

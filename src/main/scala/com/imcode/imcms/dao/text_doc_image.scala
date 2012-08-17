@@ -93,20 +93,20 @@ class ImageDao extends HibernateSupport {
 
   def getImages(docRef: DocRef): JList[ImageDomainObject] =
     hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
-      "Image.getByDocIdAndDocVersionNo", "docRef" -> docRef
+      "Image.getByDocRef", "docRef" -> docRef
     ) |> ImageUtil.initImagesSources
 
 
-  def getImages(docRef: DocRef, languageId: Int): JList[ImageDomainObject] =
+  def getImages(docRef: DocRef, language: I18nLanguage): JList[ImageDomainObject] =
      hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
-       "Image.getByDocIdAndDocVersionNoAndLanguageId",
-       "docRef" -> docRef, "languageId" -> languageId
+       "Image.getByDocRefAndLanguage",
+       "docRef" -> docRef, "language" -> language
      ) |> ImageUtil.initImagesSources
 
 
 
-  def deleteImages(docRef: DocRef, languageId: Int): Int =
+  def deleteImages(docRef: DocRef, language: I18nLanguage): Int =
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
-      "Image.deleteImages", "docRef" -> docRef, "languageId" -> languageId
+      "Image.deleteImagesByDocRefAndLanguage", "docRef" -> docRef, "language" -> language
     )
 }

@@ -32,6 +32,7 @@ public class TextDomainObject implements Serializable, Cloneable {
             vo.no = this.vo.no;
             vo.language = this.vo.language;
             vo.contentRef = this.vo.contentRef;
+            vo.text = this.vo.text;
 
             return vo;
         }

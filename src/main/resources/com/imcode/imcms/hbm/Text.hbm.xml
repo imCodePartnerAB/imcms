@@ -5,30 +5,30 @@
 
 <hibernate-mapping>
 
-  <query name="Text.deleteTexts">
+  <query name="Text.deleteTextsByDocRefAndLanguage">
     <![CDATA[
-    DELETE FROM Text t WHERE t.docId = :docId AND t.docVersionNo = :docVersionNo AND t.language.id = :languageId
+    DELETE FROM Text t WHERE t.docRef = :docRef AND t.language = :language
     ]]>
   </query>
 
   <!-- Collection -->
-  <query name="Text.getByDocIdAndDocVersionNoAndLanguageId">
+  <query name="Text.getByDocRefAndLanguage">
     <![CDATA[
-    SELECT t FROM Text t WHERE t.docId = :docId AND t.docVersionNo = :docVersionNo AND t.language.id = :languageId
+    SELECT t FROM Text t WHERE t.docRef = :docRef AND t.language = :language
     ]]>
   </query>
 
   <!-- Collection -->
-  <query name="Text.getByDocIdAndDocVersionNo">
+  <query name="Text.getByDocRef">
     <![CDATA[
-    SELECT t FROM Text t WHERE t.docId = :docId AND t.docVersionNo = :docVersionNo
+    SELECT t FROM Text t WHERE t.docRef = :docRef
     ]]>
   </query>
 
   <!-- Unique result -->
-  <query name="Text.getByDocIdAndDocVersionNoAndNoAndLanguageId">
+  <query name="Text.getByDocRefAndNoAndLanguage">
     <![CDATA[
-    SELECT t FROM Text t WHERE t.docId = :docId AND t.docVersionNo = :docVersionNo AND t.no = :no AND t.language.id = :languageId
+    SELECT t FROM Text t WHERE t.docRef = :docRef AND t.no = :no AND t.language = :language
     ]]>
   </query>
 

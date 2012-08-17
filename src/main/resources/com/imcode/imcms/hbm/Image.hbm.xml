@@ -5,17 +5,17 @@
 
 <hibernate-mapping>
 
-  <query name="Image.deleteImages">
+  <query name="Image.deleteImagesByDocRefAndLanguage">
     <![CDATA[
-    DELETE FROM Image i WHERE i.docId = :docId AND i.docVersionNo = :docVersionNo AND i.language.id = :languageId
+    DELETE FROM Image i WHERE i.docRef = :docRef AND i.language = :language
     ]]>
   </query>
 
-  <query name="Image.getByLanguageId">
-    <![CDATA[
-    select i from Image i where i.docId = :docId and i.language.id = :languageId
-    ]]>
-  </query>
+  <!--<query name="Image.getByLanguageId">-->
+    <!--<![CDATA[-->
+    <!--select i from Image i where i.docId = :docId and i.language.id = :languageId-->
+    <!--]]>-->
+  <!--</query>-->
 
   <!--<query name="Image.getLanguagesToImagesByDocId">-->
     <!--<![CDATA[-->
@@ -23,17 +23,17 @@
     <!--]]>-->
   <!--</query>-->
 
-  <query name="Image.getAllImages">
-    <![CDATA[
-    select i from Image i where i.docId = :docId
-    ]]>
-  </query>
+  <!--<query name="Image.getAllImages">-->
+    <!--<![CDATA[-->
+    <!--select i from Image i where i.docId = :docId-->
+    <!--]]>-->
+  <!--</query>-->
 
-  <query name="Image.getAllDocumentImagesByLanguage">
-    <![CDATA[
-    select i from Image i where i.docId = :docId and i.language.id = :languageId
-    ]]>
-  </query>
+  <!--<query name="Image.getAllDocumentImagesByLanguage">-->
+    <!--<![CDATA[-->
+    <!--select i from Image i where i.docId = :docId and i.language.id = :languageId-->
+    <!--]]>-->
+  <!--</query>-->
 
   <!--<query name="Image.getDefaultImage">-->
     <!--<![CDATA[-->
@@ -42,15 +42,15 @@
   <!--</query>-->
 
 
-  <query name="Image.getByDocIdAndDocVersionNo">
+  <query name="Image.getByDocRef">
     <![CDATA[
-    SELECT i FROM Image i WHERE i.docId = :docId AND i.docVersionNo = :docVersionNo
+    SELECT i FROM Image i WHERE i.docRef = :docRef
     ]]>
   </query>
 
-  <query name="Image.getByDocIdAndDocVersionNoAndLanguageId">
+  <query name="Image.getByDocRefAndLanguage">
     <![CDATA[
-    SELECT i FROM Image i WHERE i.docId = :docId AND i.docVersionNo = :docVersionNo AND i.language.id = :languageId
+    SELECT i FROM Image i WHERE i.docRef = :docRef AND i.language = :language
     ]]>
   </query>
 

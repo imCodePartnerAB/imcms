@@ -23,12 +23,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
     /** Creates empty content loop. */
     private static ContentLoop createLoop(DocRef docRef, Integer no) {
-        ContentLoop loop = new ContentLoop();
-
-        loop.setDocRef(docRef);
-        loop.setNo(no);
-
-        return loop;
+        return ContentLoop.builder().docRef(docRef).no(no).build();
     }
 
 

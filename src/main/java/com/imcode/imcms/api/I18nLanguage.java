@@ -12,7 +12,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public final class I18nLanguage implements Serializable, Cloneable {
                     //
     public static final class Builder {
-        private I18nLanguage i18nLanguage;
+        private I18nLanguage i18nLanguage = new I18nLanguage();
 
         public Builder() {}
 

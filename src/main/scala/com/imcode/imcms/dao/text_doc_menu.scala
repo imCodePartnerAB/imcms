@@ -13,13 +13,13 @@ import imcode.server.document.textdocument.{DocRef, MenuDomainObject}
 class MenuDao extends HibernateSupport {
 
   def getMenu(docRef: DocRef, no: Int): MenuDomainObject = hibernate.getByNamedQueryAndNamedParams(
-    "Menu.getMenu", "docRef" -> docRef, "no" -> no
+    "Menu.getMenuByDocRefAndNo", "docRef" -> docRef, "no" -> no
   )
 
   
   def getMenus(docRef: DocRef): JList[MenuDomainObject] =
     hibernate.listByNamedQueryAndNamedParams(
-      "Menu.getMenus", "docRef" -> docRef
+      "Menu.getMenusByDocRef", "docRef" -> docRef
     )
 
   
@@ -35,7 +35,7 @@ class MenuDao extends HibernateSupport {
 
   
   def deleteMenus(docRef: DocRef) = hibernate.withCurrentSession { session =>
-    val scroll = session.getNamedQuery("Menu.getMenus")
+    val scroll = session.getNamedQuery("Menu.getMenusByDocRef")
       .setParameter("docRef", docRef)
       .setCacheMode(CacheMode.IGNORE)
       .scroll(ScrollMode.FORWARD_ONLY)

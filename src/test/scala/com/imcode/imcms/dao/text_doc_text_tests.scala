@@ -51,7 +51,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     val text = ""
   }
 
-  def saveNewTextDoc(
+  def saveNewText(
       docId: Int = Default.docId,
       docVersionNo: Int = Default.docVersionNo,
       contentLoopRef: Option[ContentRef] = None,
@@ -59,7 +59,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       text: String = Default.text,
       language: I18nLanguage) =
 
-    TextDomainObject.builder().docRef(new DocRef(docId, docVersionNo)).no(no).text(text) |> { builder =>
+    TextDomainObject.builder().docRef(new DocRef(docId, docVersionNo)).no(no).text(text).language(language) |> { builder =>
       contentLoopRef.foreach(builder.contentLoopIdentity)
       builder.build()
     } |>> { vo =>
@@ -70,7 +70,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       val savedVO = textDao.getTextById(id)
       assertNotNull("Saved text", savedVO)
       assertEquals("Saved text id", id, savedVO.getId)
-      assertEquals("Saved text docRef", docId, savedVO.getDocRef)
+      assertEquals("Saved text docRef", new DocRef(docId, docVersionNo), savedVO.getDocRef)
       assertEquals("Saved text no", no, savedVO.getNo)
       assertEquals("Saved text text", text, savedVO.getText)
       assertEquals("Saved text language", language, savedVO.getLanguage)
@@ -79,7 +79,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
 
   test("save new text doc's text") { language =>
-    val text = saveNewTextDoc(language = language)
+    val text = saveNewText(language = language)
     val texts = textDao.getTexts(new DocRef(Default.docId, Default.docVersionNo), language)
 
     assertEquals("Texts count in doc", 1, texts.size)
@@ -88,13 +88,14 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
 
   test("update existing text doc's text") { language =>
-    val text = saveNewTextDoc(text="initial text", language = language)
+    val text = saveNewText(text="initial text", language = language)
     val updatedTextValue = "modified text"
     val updatedDocVersionNo = 1
+    val updatedDocRef = new DocRef(text.getDocRef.getDocId, updatedDocVersionNo)
 
     text.clone |> { textToUpdate =>
       textToUpdate.setText(updatedTextValue)
-      textToUpdate.setDocRef(new DocRef(text.getDocRef.getDocId, updatedDocVersionNo))
+      textToUpdate.setDocRef(updatedDocRef)
 
       textDao.saveText(textToUpdate)
     }
@@ -102,7 +103,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     val updatedText = textDao.getTextById(text.getId)
     assertNotNull("Updated text", updatedText)
     assertEquals("Updated text id", text.getId, updatedText.getId)
-    assertEquals("Updated text docRef", text.getDocRef, updatedText.getDocRef)
+    assertEquals("Updated text docRef", updatedDocRef, updatedText.getDocRef)
     assertEquals("Updated text no", text.getNo, updatedText.getNo)
     assertEquals("Updated text text", updatedTextValue, updatedText.getText)
     assertEquals("Updated text language", text.getLanguage, updatedText.getLanguage)
@@ -116,7 +117,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     val nos = 0 until 5
 
     for (indexNo <- nos; ci <- contentRefs; language <- mkLanguages)
-      saveNewTextDoc(
+      saveNewText(
         docId = Default.docId,
         docVersionNo = Default.docVersionNo,
         no = indexNo,
@@ -130,7 +131,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
   }
 
   test("save text doc's text history") { language =>
-    val text = saveNewTextDoc(language = language)
+    val text = saveNewText(language = language)
     val textHistory = new TextHistory(text, admin)
 
     textDao.saveTextHistory(textHistory)
@@ -142,7 +143,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     val nos = 0 until 5
 
     for (versionNo <- versionNos; indexNo <- nos; language <- mkLanguages)
-      saveNewTextDoc(docId = Default.docId, docVersionNo = versionNo, no = indexNo, language = language)
+      saveNewText(docId = Default.docId, docVersionNo = versionNo, no = indexNo, language = language)
 
     for (versionNo <- versionNos) {
       val texts = textDao.getTexts(new DocRef(1001, versionNo))
@@ -159,7 +160,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     val contentRefs = Seq(None, Some(contentRef))
 
     for (versionNo <- versionNos; orderNo <- nos; ci <- contentRefs; language <- mkLanguages)
-      saveNewTextDoc(docId = Default.docId, docVersionNo = versionNo, contentLoopRef = ci,  no = orderNo, language = language)
+      saveNewText(docId = Default.docId, docVersionNo = versionNo, contentLoopRef = ci,  no = orderNo, language = language)
 
 
     for (versionNo <- versionNos; language <- mkLanguages) {
