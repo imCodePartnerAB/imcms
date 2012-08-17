@@ -77,7 +77,7 @@ TextDomainObject text = textEditPage.getText();
 %>
 <%@page import="com.imcode.imcms.api.I18nLanguage, imcode.server.document.DocumentDomainObject, com.imcode.imcms.mapping.DocumentMapper"%>
 <%@ page import="imcode.server.ImcmsConstants" %>
-<%@ page import="imcode.server.document.textdocument.ContentLoopIdentity" %>
+<%@ page import="imcode.server.document.textdocument.ContentRef" %>
 <vel:velocity>
 <html>
 <head>
@@ -109,7 +109,7 @@ if (returnUrl != null) {
 }
 %>
 <%
-ContentLoopIdentity contentLoopRef = text.getContentLoopIdentity();
+ContentRef contentLoopRef = text.getContentRef();
 if (contentLoopRef != null) {
     %>
     <input type="hidden" name="loop_no"  value="<%= contentLoopRef.getLoopNo() %>">
