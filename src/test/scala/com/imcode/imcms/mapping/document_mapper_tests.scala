@@ -20,7 +20,6 @@ import com.imcode.imcms.mapping.{DocumentSaver, DocumentStoringVisitor, Document
 import com.imcode.imcms.mapping.DocumentMapper.SaveOpts
 import com.imcode.imcms.api.{I18nMeta, ContentLoop, I18nSupport}
 import com.imcode.imcms.api.TextDocument.TextField
-import com.imcode.imcms.util.Factory
 import imcode.server.document.textdocument._
 
 @RunWith(classOf[JUnitRunner])

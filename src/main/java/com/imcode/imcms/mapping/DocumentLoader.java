@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.util.Factory;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;

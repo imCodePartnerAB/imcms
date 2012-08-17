@@ -2,7 +2,6 @@ package com.imcode
 package imcms.dao
 
 import imcode.server.user.UserDomainObject
-import imcms.util.Factory
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

@@ -2,11 +2,9 @@ package com.imcode
 package imcms.dao
 
 import scala.collection.JavaConverters._
-import imcms.util.Factory
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.MustMatchers
 import imcms.test.Test.{db}
 import imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish, mkLanguages}
 import imcode.server.user.{RoleId, RoleDomainObject, UserDomainObject}
