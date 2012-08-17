@@ -1,6 +1,5 @@
 package imcode.server;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.SystemDao;
@@ -13,14 +12,9 @@ import imcode.util.Prefs;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.*;
 
 import javax.sql.DataSource;
-
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
@@ -71,9 +65,6 @@ public class Imcms {
      * Core services.
      */
     private static ImcmsServices services;
-
-    private static BasicDataSource apiDataSource;
-    private static BasicDataSource dataSource;
 
     /**
      * Used to disable db init/upgrade on start.
@@ -162,7 +153,7 @@ public class Imcms {
     private static ImcmsServices createServices() throws Exception {
         Properties serverprops = getServerProperties();
         logger.debug("Creating main DataSource.");
-        Database database = createDatabase(serverprops);
+        Database database = new DataSourceDatabase(getApiDataSource());
         LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
 
         final CachingFileLoader fileLoader = new CachingFileLoader();
@@ -179,18 +170,9 @@ public class Imcms {
         return services;
     }
 
-    private static Database createDatabase(Properties serverprops) {
-        dataSource = createDataSource(serverprops);
-        return new DataSourceDatabase(dataSource);
-    }
 
-    public synchronized static DataSource getApiDataSource() {
-        if (null == apiDataSource) {
-            Properties serverprops = getServerProperties();
-            logger.debug("Creating API DataSource.");
-            apiDataSource = createDataSource(serverprops);
-        }
-        return apiDataSource;
+    public static DataSource getApiDataSource() {
+        return applicationContext.getBean("dataSourceWithAutoCommit", DataSource.class);
     }
 
     public static Properties getServerProperties() {
@@ -206,22 +188,6 @@ public class Imcms {
         }
     }
 
-    private static BasicDataSource createDataSource(Properties props) {
-
-        String jdbcDriver = props.getProperty("JdbcDriver");
-        String jdbcUrl = props.getProperty("JdbcUrl");
-        String user = props.getProperty("User");
-        String password = props.getProperty("Password");
-        int maxConnectionCount = Integer.parseInt(props.getProperty("MaxConnectionCount"));
-
-        logger.debug("JdbcDriver = " + jdbcDriver);
-        logger.debug("JdbcUrl = " + jdbcUrl);
-        logger.debug("User = " + user);
-        logger.debug("MaxConnectionCount = " + maxConnectionCount);
-
-        return createDataSource(jdbcDriver, jdbcUrl, user, password, maxConnectionCount);
-    }
-
     public synchronized static void restartCms() {
         stop();
         start();
@@ -229,24 +195,6 @@ public class Imcms {
 
 
     public static void stop() {
-        if (null != apiDataSource) {
-            try {
-                logger.debug("Closing API DataSource.");
-                apiDataSource.close();
-            } catch (SQLException e) {
-                logger.error(e, e);
-            }
-        }
-
-        if (null != dataSource) {
-            try {
-                logger.debug("Closing main DataSource.");
-                dataSource.close();
-            } catch (SQLException e) {
-                logger.error(e, e);
-            }
-        }
-
         Prefs.flush();
 
         if (services != null) {
@@ -256,40 +204,6 @@ public class Imcms {
         services = null;
     }
 
-    private static void logDatabaseVersion(BasicDataSource basicDataSource) throws SQLException {
-        Connection connection = basicDataSource.getConnection();
-        DatabaseMetaData metaData = connection.getMetaData();
-        logger.info("Database product version = " + metaData.getDatabaseProductVersion());
-        connection.close();
-    }
-
-    public static BasicDataSource createDataSource(String jdbcDriver, String jdbcUrl,
-                                                   String user, String password,
-                                                   int maxConnectionCount) {
-        try {
-            BasicDataSource basicDataSource = new BasicDataSource();
-            basicDataSource.setDriverClassName(jdbcDriver);
-            basicDataSource.setUsername(user);
-            basicDataSource.setPassword(password);
-            basicDataSource.setUrl(jdbcUrl);
-
-            basicDataSource.setMaxActive(maxConnectionCount);
-            basicDataSource.setMaxIdle(maxConnectionCount);
-            basicDataSource.setDefaultAutoCommit(true);
-            basicDataSource.setPoolPreparedStatements(true);
-            basicDataSource.setTestOnBorrow(true);
-            basicDataSource.setValidationQuery("select 1");
-
-            logDatabaseVersion(basicDataSource);
-
-            return basicDataSource;
-        } catch (SQLException ex) {
-            String message = "Could not connect to database " + jdbcUrl + " with driver " + jdbcDriver + ": " + ex.getMessage() + " Error code: "
-                    + ex.getErrorCode() + " SQL GroupData: " + ex.getSQLState();
-            logger.fatal(message, ex);
-            throw new RuntimeException(message, ex);
-        }
-    }
 
     public static class StartupException extends RuntimeException {
         public StartupException(String message, Exception e) {
@@ -414,7 +328,7 @@ public class Imcms {
         logger.info(String.format("Loading database schema config from %s.", schemaConfFileURL));
         Schema schema = Schema.load(schemaConfFileURL);
 
-        DataSource dataSource = applicationContext.getBean(DataSource.class);
+        DataSource dataSource = applicationContext.getBean("dataSource", DataSource.class);
         DB db = new DB(dataSource);
 
         db.prepare(schema.setScriptsDir(sqlScriptsPath));

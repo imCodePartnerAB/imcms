@@ -53,6 +53,11 @@
           p:defaultAutoCommit="false"
           p:maxActive="${MaxConnectionCount}"/>
 
+    <!--
+        Legacy code support:
+        Imcms.getApiDataSource returns DataSource with autocommit;
+        com.imcode.db.DataSourceDatabase requires DataSource with autocommit;
+    -->
     <bean id="dataSourceWithAutoCommit" parent="dataSource"
           p:defaultAutoCommit="true"/>
 

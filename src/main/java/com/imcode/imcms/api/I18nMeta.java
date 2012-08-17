@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class I18nMeta implements Serializable, Cloneable {
 
     public static class Builder {
-        private I18nMeta i18nMeta;
+        private I18nMeta i18nMeta = new I18nMeta();
 
         {
             i18nMeta.headline = "";
