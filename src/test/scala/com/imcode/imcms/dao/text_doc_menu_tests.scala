@@ -35,21 +35,21 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
   }
 
   def menu(docId: Int = DocFX.DefaultId, docVersionNo: Int = VersionFX.DefaultNo, no: JInteger = DocItemFX.DefaultNo, assertExists: Boolean = true) =
-    menuDao.getMenu(new DocRef(docId, docVersionNo), no) |>> { menu =>
+    menuDao.getMenu(DocRef.of(docId, docVersionNo), no) |>> { menu =>
       if (assertExists) {
         assertNotNull("menu exists", menu)
-        assertEquals("docRef", new DocRef(docId, docVersionNo), menu.getDocRef)
+        assertEquals("docRef", DocRef.of(docId, docVersionNo), menu.getDocRef)
         assertEquals("no", docVersionNo, menu.getNo)
       }
     }
 
 
   def menus(docId: JInteger = DocFX.DefaultId, docVersionNo: JInteger = VersionFX.DefaultNo, assertNotEmpty: Boolean = true) =
-    menuDao.getMenus(new DocRef(docId, docVersionNo)) |>> { _.asScala |> { menus =>
+    menuDao.getMenus(DocRef.of(docId, docVersionNo)) |>> { _.asScala |> { menus =>
       if (assertNotEmpty) {
         assertTrue("menus exist", menus.nonEmpty)
         menus foreach { menu =>
-          assertEquals("docRef", new DocRef(docId, docVersionNo), menu.getDocRef)
+          assertEquals("docRef", DocRef.of(docId, docVersionNo), menu.getDocRef)
         }
       }}
     }
@@ -83,7 +83,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
   test("save new menu") {
     val menu = new MenuDomainObject
-    menu.setDocRef(new DocRef(DocFX.DefaultId, VersionFX.DefaultNo))
+    menu.setDocRef(DocRef.of(DocFX.DefaultId, VersionFX.DefaultNo))
     menu.setNo(menuNos.max + 1)
     menu.setSortOrder(MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE)
 
@@ -111,7 +111,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
 
   test("delete all menus") {
-    menuDao.deleteMenus(new DocRef(DocFX.DefaultId, VersionFX.DefaultNo))
+    menuDao.deleteMenus(DocRef.of(DocFX.DefaultId, VersionFX.DefaultNo))
 
     menus(assertNotEmpty = false) |> { menus =>
       assertTrue("menus do not exist",  menus.isEmpty)

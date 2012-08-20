@@ -37,47 +37,47 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter 
   }
 
   test("get text doc's images by no outside of content loop") {
-    val images = imageDao.getImages(new DocRef(1001, 0), 1, None, false)
+    val images = imageDao.getImages(DocRef.of(1001, 0), 1, None, false)
     assertEquals(2, images.size)
   }
 
   test("get text doc's images by doc ref and no inside content loop") {
-    val images = imageDao.getImages(new DocRef(1001, 0), 1, Some(new ContentRef(1, 1)), false)
+    val images = imageDao.getImages(DocRef.of(1001, 0), 1, Some(new ContentRef(1, 1)), false)
     assertEquals(2, images.size)
   }
 
   test("get text doc's images by doc ref") {
-    val images = imageDao.getImages(new DocRef(1001, 0))
+    val images = imageDao.getImages(DocRef.of(1001, 0))
     assertEquals(12, images.size)
   }
 
   test("get text doc's images by doc ref and language") {
-    val images = imageDao.getImages(new DocRef(1001, 0), mkEnglish)
+    val images = imageDao.getImages(DocRef.of(1001, 0), mkEnglish)
     assertEquals(6, images.size)
   }
 
 
   test("get text doc's image by doc ref, language and no") {
-		val image = imageDao.getImage(new DocRef(1001, 0), 1, mkEnglish, None)
+		val image = imageDao.getImage(DocRef.of(1001, 0), 1, mkEnglish, None)
     assertNotNull(image)
 	}
 
 
 	test("delete text doc's images in a given language") {
-    val deletedCount = imageDao.deleteImages(new DocRef(1001, 0), mkEnglish)
+    val deletedCount = imageDao.deleteImages(DocRef.of(1001, 0), mkEnglish)
 
     assertEquals(6, deletedCount)
 	}
 
 
 	test("save text doc image") {
-    val image = ImageDomainObject.builder().docRef(new DocRef(1001, 0)).language(mkEnglish).no(1000).build()
+    val image = ImageDomainObject.builder().docRef(DocRef.of(1001, 0)).language(mkEnglish).no(1000).build()
 
     imageDao.saveImage(image)
 	}
 
 	test("save text doc's image history") {
-    val image = ImageDomainObject.builder().docRef(new DocRef(1001, 0)).language(mkEnglish).no(1000).build()
+    val image = ImageDomainObject.builder().docRef(DocRef.of(1001, 0)).language(mkEnglish).no(1000).build()
     val imageHistory = new ImageHistory(image, admin)
 
     imageDao.saveImageHistory(imageHistory)

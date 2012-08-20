@@ -1,11 +1,12 @@
 package com.imcode.imcms.api;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.imcode.imcms.util.P;
+import com.imcode.imcms.util.P2;
 import imcode.server.document.textdocument.DocRef;
 import org.hibernate.annotations.IndexColumn;
-import scala.Option;
-import scala.Some;
-import scala.Tuple2;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -15,7 +16,7 @@ import java.util.List;
 import javax.persistence.*;
 
 /**
- * @see com.imcode.imcms.dao.ContentLoopDao
+ * A content can not be removed from a content loop - it can only be disabled.
  */
 @Entity
 @Table(name = "imcms_text_doc_content_loops")
@@ -23,58 +24,63 @@ public class ContentLoop implements Serializable, Cloneable {
 
     public static final class Builder {
 
-        private ContentLoop vo = new ContentLoop();
+        private ContentLoop contentLoop;
 
         public Builder() {
+            contentLoop = new ContentLoop();
+        }
+
+        public Builder(ContentLoop contentLoop) {
+            this.contentLoop = contentLoop.clone();
         }
 
         public Builder id(Long id) {
-            vo.id = id;
+            contentLoop.id = id;
             return this;
         }
 
         public Builder docRef(DocRef docRef) {
-            vo.docId = docRef == null ? null : docRef.getDocId();
-            vo.docVersionNo = docRef == null ? null : docRef.getDocVersionNo();
+            contentLoop.docId = docRef == null ? null : docRef.getDocId();
+            contentLoop.docVersionNo = docRef == null ? null : docRef.getDocVersionNo();
 
             return this;
         }
 
         public Builder no(Integer no) {
-            vo.no = no;
+            contentLoop.no = no;
             return this;
         }
 
-        public Builder addContent(int contentIndex) {
-            Content content = new Content();
-            content.setNo(vo.contents.size());
-
-            vo.contents.add(contentIndex, content);
+        public Builder insertContent(int contentIndex) {
+            Content content = Content.builder().no(contentLoop.contents.size()).build();
+            contentLoop.contents.add(contentIndex, content);
 
             return this;
         }
 
-        public Builder toggleContent(int contentIndex, boolean enabled) {
-            vo.contents.set(contentIndex, Content.builder(vo.contents.get(contentIndex)).enabled(enabled).build());
+        public Builder enableContent(int contentIndex) {
+            contentLoop.contents.set(contentIndex, Content.builder(contentLoop.contents.get(contentIndex)).enabled(true).build());
+            return this;
+        }
 
+        public Builder disableContent(int contentIndex) {
+            contentLoop.contents.set(contentIndex, Content.builder(contentLoop.contents.get(contentIndex)).enabled(false).build());
             return this;
         }
 
         public Builder swapContents(int contentIndexA, int contentIndexB) {
-            Content contentA = vo.contents.get(contentIndexA);
-            Content contentB = vo.contents.get(contentIndexB);
+            Content contentA = contentLoop.contents.get(contentIndexA);
+            Content contentB = contentLoop.contents.get(contentIndexB);
 
-            vo.contents.set(contentIndexA, contentB);
-            vo.contents.set(contentIndexB, contentA);
+            contentLoop.contents.set(contentIndexA, contentB);
+            contentLoop.contents.set(contentIndexB, contentA);
 
             return this;
         }
 
         public ContentLoop build() {
-            return vo.clone();
+            return contentLoop.clone();
         }
-
-
     }
 
     public static Builder builder() {
@@ -82,11 +88,7 @@ public class ContentLoop implements Serializable, Cloneable {
     }
 
     public static Builder builder(ContentLoop contentLoop) {
-        Builder builder = new Builder();
-
-        builder.vo = contentLoop.clone();
-
-        return builder;
+        return new Builder(contentLoop);
     }
 
     @Id
@@ -110,7 +112,7 @@ public class ContentLoop implements Serializable, Cloneable {
                     @JoinColumn(name = "loop_no", referencedColumnName = "no")
             }
     )
-    @IndexColumn(name = "order_no") // todo: rename to index
+    @IndexColumn(name = "order_no") // todo: rename to index?
     private List<Content> contents = new LinkedList<Content>();
 
     protected ContentLoop() {
@@ -140,19 +142,13 @@ public class ContentLoop implements Serializable, Cloneable {
             throw new RuntimeException(e);
         }
 
-        List<Content> contentsClone = new LinkedList<Content>();
-
-        for (Content content : contents) {
-            contentsClone.add(content.clone());
-        }
-
-        clone.contents = contentsClone;
+        clone.contents = new LinkedList<Content>(contents);
 
         return clone;
     }
 
     public DocRef getDocRef() {
-        return docId == null ? null : new DocRef(docId, docVersionNo);
+        return docId == null ? null : DocRef.of(docId, docVersionNo);
     }
 
     /**
@@ -175,100 +171,104 @@ public class ContentLoop implements Serializable, Cloneable {
         return Collections.unmodifiableList(enabledContents);
     }
 
-    public Option<Tuple2<Content, Integer>> findContent(int contentNo) {
+    public Optional<P2<Content, Integer>> findContentWithIndexByNo(int contentNo) {
         for (int i = 0; i < contents.size(); i++) {
             Content content = contents.get(i);
-            if (contents.get(i).getNo().equals(contentNo))
-                return new Some<Tuple2<Content, Integer>>(new Tuple2<Content, Integer>(content, i));
+            if (contents.get(i).getNo() == contentNo) return Optional.of(P.of(content, i));
         }
 
-        return Option.empty();
+        return Optional.absent();
     }
 
-    public Tuple2<ContentLoop, Content> addFirstContent() {
-        ContentLoop contentLoop = builder(this).addContent(0).build();
-
-        return new Tuple2<ContentLoop, Content>(contentLoop, contentLoop.contents.get(0));
+    public Optional<Content> findContentByNo(int contentNo) {
+        return findContentWithIndexByNo(contentNo).transform(new Function<P2<Content, Integer>, Content>() {
+            public Content apply(P2<Content, Integer> input) { return input._1(); }
+        });
     }
 
-    public Tuple2<ContentLoop, Content> addLastContent() {
-        ContentLoop contentLoop = builder(this).addContent(contents.size()).build();
+    public P2<ContentLoop, Content> addFirstContent() {
+        ContentLoop contentLoop = builder(this).insertContent(0).build();
 
-        return new Tuple2<ContentLoop, Content>(contentLoop, contentLoop.contents.get(contentLoop.contents.size() - 1));
+        return P.of(contentLoop, contentLoop.contents.get(0));
     }
 
-    public Option<Tuple2<ContentLoop, Content>> insertContentAfter(int contentNo) {
-        Option<Tuple2<Content, Integer>> contentAndIndex = findContent(contentNo);
+    public P2<ContentLoop, Content> addLastContent() {
+        ContentLoop contentLoop = builder(this).insertContent(contents.size()).build();
+        List<Content> contents = contentLoop.contents;
 
-        if (contentAndIndex.isEmpty()) return Option.empty();
+        return P.of(contentLoop, contents.get(contents.size() - 1));
+    }
+
+    public Optional<P2<ContentLoop, Content>> addContentAfter(Content content) {
+        Optional<P2<Content, Integer>> contentAndIndex = findContentWithIndexByNo(content.getNo());
+
+        if (!contentAndIndex.isPresent()) return Optional.absent();
 
         Integer contentIndex = contentAndIndex.get()._2() + 1;
-        ContentLoop contentLoop = builder(this).addContent(contentIndex).build();
+        ContentLoop contentLoop = builder(this).insertContent(contentIndex).build();
 
-        return new Some<Tuple2<ContentLoop, Content>>(new Tuple2<ContentLoop, Content>(contentLoop, contentLoop.contents.get(contentIndex)));
+        return Optional.of(P.of(contentLoop, contentLoop.contents.get(contentIndex)));
     }
 
-    public Option<Tuple2<ContentLoop, Content>> insertContentBefore(int contentNo) {
-        Option<Tuple2<Content, Integer>> contentAndIndex = findContent(contentNo);
+    public Optional<P2<ContentLoop, Content>> addContentBefore(Content content) {
+        Optional<P2<Content, Integer>> contentAndIndex = findContentWithIndexByNo(content.getNo());
 
-        if (contentAndIndex.isEmpty()) return Option.empty();
+        if (!contentAndIndex.isPresent()) return Optional.absent();
 
         Integer contentIndex = contentAndIndex.get()._2();
-        ContentLoop contentLoop = builder(this).addContent(contentIndex).build();
+        ContentLoop contentLoop = builder(this).insertContent(contentIndex).build();
 
-        return new Some<Tuple2<ContentLoop, Content>>(new Tuple2<ContentLoop, Content>(contentLoop, contentLoop.contents.get(contentIndex)));
+        return Optional.of(P.of(contentLoop, contentLoop.contents.get(contentIndex)));
     }
 
-    public Tuple2<ContentLoop, Boolean> moveContentBackward(int contentNo) {
-        Option<Tuple2<Content, Integer>> contentAndIndex = findContent(contentNo);
+    public Optional<ContentLoop> moveContentBackward(Content content) {
+        Optional<P2<Content, Integer>> contentAndIndex = findContentWithIndexByNo(content.getNo());
 
-        if (contentAndIndex.isDefined() && contentAndIndex.get()._1().isEnabled()) {
+        if (contentAndIndex.isPresent() && contentAndIndex.get()._1().isEnabled()) {
             int contentIndex = contentAndIndex.get()._2();
 
             for (int i = contentIndex - 1; i >= 0; i--) {
                 Content prevContent = contents.get(i);
                 if (prevContent.isEnabled()) {
-                    ContentLoop contentLoop = builder(this).swapContents(contentIndex, i).build();
-                    return new Tuple2<ContentLoop, Boolean>(contentLoop, true);
+                    return Optional.of(builder(this).swapContents(contentIndex, i).build());
                 }
             }
         }
 
-        return new Tuple2<ContentLoop, Boolean>(this, false);
+        return Optional.absent();
     }
 
-    public Tuple2<ContentLoop, Boolean> moveContentForward(int contentNo) {
-        Option<Tuple2<Content, Integer>> contentAndIndex = findContent(contentNo);
+    public Optional<ContentLoop> moveContentForward(Content content) {
+        Optional<P2<Content, Integer>> contentAndIndex = findContentWithIndexByNo(content.getNo());
 
-        if (contentAndIndex.isDefined() && contentAndIndex.get()._1().isEnabled()) {
+        if (contentAndIndex.isPresent() && contentAndIndex.get()._1().isEnabled()) {
             int contentIndex = contentAndIndex.get()._2();
 
             for (int i = contentIndex + 1; i < contents.size(); i++) {
                 Content nextContent = contents.get(i);
                 if (nextContent.isEnabled()) {
-                    ContentLoop contentLoop = builder(this).swapContents(contentIndex, i).build();
-                    return new Tuple2<ContentLoop, Boolean>(contentLoop, true);
+                    return Optional.of(builder(this).swapContents(contentIndex, i).build());
                 }
             }
         }
 
-        return new Tuple2<ContentLoop, Boolean>(this, false);
+        return Optional.absent();
     }
 
 
-    public Tuple2<ContentLoop, Boolean> disableContent(int contentNo) {
-        Option<Tuple2<Content, Integer>> contentAndIndex = findContent(contentNo);
+    public Optional<ContentLoop> disableContent(Content content) {
+        Optional<Content> contentOpt = findContentByNo(content.getNo());
 
-        return contentAndIndex.isEmpty()
-                ? new Tuple2<ContentLoop, Boolean>(this, false)
-                : new Tuple2<ContentLoop, Boolean>(builder(this).toggleContent(contentAndIndex.get()._2(), false).build(), true);
+        return contentOpt.isPresent()
+                ? Optional.of(builder(this).disableContent(contentOpt.get().getNo()).build())
+                : Optional.<ContentLoop>absent();
     }
 
-    public Tuple2<ContentLoop, Boolean> enableContent(int contentNo) {
-        Option<Tuple2<Content, Integer>> contentAndIndex = findContent(contentNo);
+    public Optional<ContentLoop> enableContent(Content content) {
+        Optional<Content> contentOpt = findContentByNo(content.getNo());
 
-        return contentAndIndex.isEmpty()
-                ? new Tuple2<ContentLoop, Boolean>(this, false)
-                : new Tuple2<ContentLoop, Boolean>(builder(this).toggleContent(contentAndIndex.get()._2(), true).build(), true);
+        return contentOpt.isPresent()
+                ? Optional.of(builder(this).enableContent(contentOpt.get().getNo()).build())
+                : Optional.<ContentLoop>absent();
     }
 }

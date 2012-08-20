@@ -128,11 +128,11 @@ class DirectoryIndexFixture {
       i18nMetas.getOrElse(Seq(doc.getI18nMeta)).asJava
     )
 
-    when(textDaoMock.getTexts(new DocRef(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    when(textDaoMock.getTexts(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       texts.getOrElse(Seq(doc.getTexts.values.asScala, doc.getLoopTexts.values.asScala).flatten).asJava
     )
 
-    when(imageDaoMock.getImages(new DocRef(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    when(imageDaoMock.getImages(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       images.getOrElse(Seq(doc.getImages.values.asScala, doc.getLoopImages.values.asScala).flatten).asJava
     )
   }

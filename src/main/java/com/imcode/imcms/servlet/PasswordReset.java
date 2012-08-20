@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.util.P;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
+import com.imcode.imcms.util.P2;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
 import imcode.server.Imcms;
@@ -106,7 +107,7 @@ public class PasswordReset extends HttpServlet {
                 setValidationErrors(request, validationErrorMissingUserId.toLocalizedString(request));
                 view = identity_form_view;
             } else {
-                P.P2<UserDomainObject, String> userAndEmail = createPasswordReset(identity);
+                P2<UserDomainObject, String> userAndEmail = createPasswordReset(identity);
                 if (userAndEmail != null) {
                     String url = String.format("%s?%s=%s&%s=%s",
                             request.getRequestURL(),
@@ -184,10 +185,10 @@ public class PasswordReset extends HttpServlet {
     }
 
 
-    private P.P2<UserDomainObject, String> createPasswordReset(String identity) {
-        P.P2<UserDomainObject, String> result = null;
+    private P2<UserDomainObject, String> createPasswordReset(String identity) {
+        P2<UserDomainObject, String> result = null;
         ImcmsAuthenticatorAndUserAndRoleMapper urm = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
-        Map<Integer, P.P2<UserDomainObject, String>> idToUser = new HashMap<Integer, P.P2<UserDomainObject, String>>();
+        Map<Integer, P2<UserDomainObject, String>> idToUser = new HashMap<Integer, P2<UserDomainObject, String>>();
         boolean identityIsValidEmail = Utility.isValidEmail(identity);
         UserDomainObject userByLogin = identityIsValidEmail
                 ? urm.getUserByLoginIgnoreCase(identity)
@@ -226,7 +227,7 @@ public class PasswordReset extends HttpServlet {
         if (usersCount == 0) {
             logger.warn(String.format("Can't create password reset. No user with identity '%s' were found or e-mail address is invalid.", identity));
         } else if (usersCount == 1) {
-            P.P2<UserDomainObject, String> userAndEmail = idToUser.values().iterator().next();
+            P2<UserDomainObject, String> userAndEmail = idToUser.values().iterator().next();
             UserDomainObject user = userAndEmail._1();
 
             try {
@@ -239,7 +240,7 @@ public class PasswordReset extends HttpServlet {
             int index = 1;
             StringBuilder sb = new StringBuilder("[");
 
-            for (P.P2<UserDomainObject, String> userAndEmail: idToUser.values()) {
+            for (P2<UserDomainObject, String> userAndEmail: idToUser.values()) {
                  UserDomainObject user = userAndEmail._1();
                 sb.append(String.format("User(login: '%s', email: '%s')", user.getLoginName(), user.getEmailAddress()));
 
@@ -266,7 +267,7 @@ public class PasswordReset extends HttpServlet {
     }
 
 
-    private void asyncSendPasswordResetURL(final P.P2<UserDomainObject, String> userAndEmail, final String serverName, final String url) {
+    private void asyncSendPasswordResetURL(final P2<UserDomainObject, String> userAndEmail, final String serverName, final String url) {
         emailSender.submit(new Runnable() {
             public void run() {
                 UserDomainObject user = userAndEmail._1();

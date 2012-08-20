@@ -100,7 +100,7 @@ case class WorkingDocGetterCallback(state: State, selectedDocId: Int) extends Do
 
 case class CustomDocGetterCallback(state: State, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    if (selectedDocId == docId) docMapper.getCustomDocument(new DocRef(selectedDocId, selectedDocVersionNo), state.selectedLanguage)
+    if (selectedDocId == docId) docMapper.getCustomDocument(DocRef.of(selectedDocId, selectedDocVersionNo), state.selectedLanguage)
     else DefaultDocGetterCallback(state).getDoc(docId, user, docMapper)
 }
 

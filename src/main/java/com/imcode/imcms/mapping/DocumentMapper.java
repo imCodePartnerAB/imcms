@@ -394,7 +394,7 @@ public class DocumentMapper implements DocumentGetter {
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         for (I18nLanguage language : imcmsServices.getI18nSupport().getLanguages()) {
-            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(new DocRef(docId, DocumentVersion.WORKING_VERSION_NO), language);
+            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO), language);
             docs.add(doc);
         }
 

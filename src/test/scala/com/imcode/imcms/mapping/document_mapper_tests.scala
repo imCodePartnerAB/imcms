@@ -229,7 +229,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       expect(loop.getAllContents.size, "contents in the loop")(loopNo)
 
       for (contentNo <- 0 until loopNo) {
-        val content = loop.findContent(contentNo)
+        val content = loop.findContentWithIndexByNo(contentNo)
         assertNotNull(content)
       }
     }
@@ -627,7 +627,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     assertEquals(info.getVersionsCount + 1, newInfo.getVersionsCount)
     assertEquals(newInfo.getLatestVersion.getNo, expectedNewVersionNo)
 
-    val newVersionDoc = docMapper.getCustomDocument(new DocRef(doc.getId, expectedNewVersionNo))
+    val newVersionDoc = docMapper.getCustomDocument(DocRef.of(doc.getId, expectedNewVersionNo))
     // instance of HtmlDocumentDomainObject
 
     assertNotNull(newVersionDoc)
@@ -646,7 +646,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     assertEquals(info.getVersionsCount + 1, newInfo.getVersionsCount)
     assertEquals(newInfo.getLatestVersion.getNo, expectedNewVersionNo)
 
-    val newVersionDoc = docMapper.getCustomDocument(new DocRef(doc.getId, expectedNewVersionNo))
+    val newVersionDoc = docMapper.getCustomDocument(DocRef.of(doc.getId, expectedNewVersionNo))
     // instanceOf UrlDocumentDomainObject
 
     assertNotNull(newVersionDoc);
@@ -663,7 +663,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     assertEquals(info.getVersionsCount + 1, infoNew.getVersionsCount)
     assertEquals(infoNew.getLatestVersion.getNo, expectedNewVersionNo)
 
-    val docNew = docMapper.getCustomDocument(new DocRef(doc.getId, expectedNewVersionNo))
+    val docNew = docMapper.getCustomDocument(DocRef.of(doc.getId, expectedNewVersionNo))
     // instance of FileDocumentDomainObject
     assertNotNull(docNew)
     assertEquals(doc.getId, docNew.getId)
@@ -701,7 +701,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("save text doc content loop") {
     val doc = saveNewTextDocumentFn()
-    val loop = ContentLoop.builder().addContent(0).build();
+    val loop = ContentLoop.builder().insertContent(0).build();
 
     doc.setContentLoop(0, loop)
 
@@ -772,7 +772,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
 
   def getMainWorkingDocumentInDefaultLanguage(assertDocExists: Boolean) = {
-    val doc = docMapper.getCustomDocument(new DocRef(1001, 0), i18nSupport.getDefaultLanguage)
+    val doc = docMapper.getCustomDocument(DocRef.of(1001, 0), i18nSupport.getDefaultLanguage)
 
     if (assertDocExists) {
       assertNotNull(doc)

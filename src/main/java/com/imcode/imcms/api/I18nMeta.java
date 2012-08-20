@@ -11,36 +11,21 @@ import java.io.Serializable;
 public class I18nMeta implements Serializable, Cloneable {
 
     public static class Builder {
-        private I18nMeta i18nMeta = new I18nMeta();
+        private I18nMeta i18nMeta;
 
-        {
+        public Builder() {
+            i18nMeta = new I18nMeta();
             i18nMeta.headline = "";
             i18nMeta.menuText = "";
             i18nMeta.menuImageURL = "";
         }
 
-        public Builder() {}
-
         public Builder(I18nMeta i18nMeta) {
-            id(i18nMeta.getId());
-            docId(i18nMeta.getDocId());
-            language(i18nMeta.getLanguage());
-            headline(i18nMeta.getHeadline());
-            menuText(i18nMeta.getMenuText());
-            menuImageURL(i18nMeta.getMenuImageURL());
+            this.i18nMeta = i18nMeta.clone();
         }
 
         public I18nMeta build() {
-            I18nMeta newI18nMeta = new I18nMeta();
-
-            newI18nMeta.id = i18nMeta.id;
-            newI18nMeta.docId = i18nMeta.docId;
-            newI18nMeta.language = i18nMeta.language;
-            newI18nMeta.headline = i18nMeta.headline;
-            newI18nMeta.menuText = i18nMeta.menuText;
-            newI18nMeta.menuImageURL = i18nMeta.menuImageURL;
-
-            return newI18nMeta;
+            return i18nMeta.clone();
         }
 
         public Builder id(Integer id) {

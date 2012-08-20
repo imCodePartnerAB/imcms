@@ -14,28 +14,28 @@ import java.io.Serializable;
 public class Content implements Serializable, Cloneable {
 
     public static final class Builder {
-        private Content vo;
+        private Content content;
 
         public Builder() {
-            vo = new Content();
+            content = new Content();
         }
 
-        public Builder(Content vo) {
-            this.vo = vo.clone();
+        public Builder(Content content) {
+            this.content = content.clone();
         }
 
-        public Builder no(Integer no) {
-            vo.no = no;
+        public Builder no(int no) {
+            content.no = no;
             return this;
         }
 
         public Builder enabled(boolean enabled) {
-            vo.enabled = enabled;
+            content.enabled = enabled;
             return this;
         }
 
         public Content build() {
-            return vo.clone();
+            return content.clone();
         }
     }
 
@@ -43,19 +43,17 @@ public class Content implements Serializable, Cloneable {
         return new Builder();
     }
 
-    public static Builder builder(Content vo) {
-        return new Builder(vo);
+    public static Builder builder(Content content) {
+        return new Builder(content);
     }
 
-    @Column(name = "no")
-    private Integer no;
 
-    /**
-     * Contents are never deleted - they are disabled.
-     */
+    @Column(name = "no")
+    private int no;
+
     private boolean enabled = true;
 
-    Content() {
+    protected Content() {
     }
 
     @Override
@@ -76,15 +74,7 @@ public class Content implements Serializable, Cloneable {
         return enabled;
     }
 
-    public Integer getNo() {
+    public int getNo() {
         return no;
-    }
-
-    void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    void setNo(Integer no) {
-        this.no = no;
     }
 }

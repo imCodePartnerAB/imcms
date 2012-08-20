@@ -19,51 +19,47 @@ import com.imcode.imcms.api.I18nLanguage;
 public class TextDomainObject implements Serializable, Cloneable {
 
     public static final class Builder {
-        private final TextDomainObject vo = new TextDomainObject();
+        private TextDomainObject textDomainObject;
 
         public Builder() {
+            textDomainObject = new TextDomainObject();
+        }
+
+        public Builder(TextDomainObject textDomainObject) {
+            this.textDomainObject = textDomainObject.clone();
         }
 
         public TextDomainObject build() {
-            TextDomainObject vo = new TextDomainObject();
-
-            vo.id = this.vo.id;
-            vo.docRef = this.vo.docRef;
-            vo.no = this.vo.no;
-            vo.language = this.vo.language;
-            vo.contentRef = this.vo.contentRef;
-            vo.text = this.vo.text;
-
-            return vo;
+            return textDomainObject.clone();
         }
 
         public Builder id(Long id) {
-            vo.id = id;
+            textDomainObject.id = id;
             return this;
         }
 
         public Builder docRef(DocRef docRef) {
-            vo.docRef = docRef;
+            textDomainObject.docRef = docRef;
             return this;
         }
 
         public Builder no(Integer no) {
-            vo.no = no;
+            textDomainObject.no = no;
             return this;
         }
 
         public Builder language(I18nLanguage language) {
-            vo.language = language;
+            textDomainObject.language = language;
             return this;
         }
 
         public Builder contentLoopIdentity(ContentRef contentRef) {
-            vo.contentRef = contentRef;
+            textDomainObject.contentRef = contentRef;
             return this;
         }
 
         public Builder text(String text) {
-            vo.text = text;
+            textDomainObject.text = text;
             return this;
         }
     }

@@ -134,7 +134,7 @@ public class DocumentSaver {
                     "Content loop does not exists. Doc identity: %s, content loop no: %s.", docRef, contentRef.getLoopNo()));
         }
 
-        if (loop.findContent(contentRef.getContentNo()).isDefined()) {
+        if (loop.findContentWithIndexByNo(contentRef.getContentNo()).isPresent()) {
             throw new IllegalStateException(String.format(
                     "Content does not exists. Doc identity :%s, content loop no: %s.", docRef, contentRef.getLoopNo()));
         }

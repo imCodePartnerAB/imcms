@@ -353,7 +353,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         Integer docId = doc.getId();
         Integer docVersionNo = doc.getVersionNo();
-        DocRef docRef = docId == null || docVersionNo == null ? null : new DocRef(docId, docVersionNo);
+        DocRef docRef = docId == null || docVersionNo == null ? null : DocRef.of(docId, docVersionNo);
 
         dao.deleteMenus(doc.getRef());
 

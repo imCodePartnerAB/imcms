@@ -585,7 +585,7 @@ public class TagParser {
             replaceTags.add("#loop_no#");
             replaceTags.add(loop != null ? loop.getNo().toString() : "");
             replaceTags.add("#content_no#");
-            replaceTags.add(content != null ? content.getNo().toString() : "");
+            replaceTags.add(content != null ? Integer.toString(content.getNo()) : "");
 
             imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
         }

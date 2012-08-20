@@ -20,6 +20,10 @@ public class DocRef {
         this.docVersionNo = docVersionNo;
     }
 
+    public static DocRef of(int docId, int docVersionNo) {
+        return new DocRef(docId, docVersionNo);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -57,7 +57,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       text: String = Default.text,
       language: I18nLanguage) =
 
-    TextDomainObject.builder().docRef(new DocRef(docId, docVersionNo)).no(no).text(text).language(language) |> { builder =>
+    TextDomainObject.builder().docRef(DocRef.of(docId, docVersionNo)).no(no).text(text).language(language) |> { builder =>
       contentLoopRef.foreach(builder.contentLoopIdentity)
       builder.build()
     } |>> { vo =>
@@ -68,7 +68,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       val savedVO = textDao.getTextById(id)
       assertNotNull("Saved text", savedVO)
       assertEquals("Saved text id", id, savedVO.getId)
-      assertEquals("Saved text docRef", new DocRef(docId, docVersionNo), savedVO.getDocRef)
+      assertEquals("Saved text docRef", DocRef.of(docId, docVersionNo), savedVO.getDocRef)
       assertEquals("Saved text no", no, savedVO.getNo)
       assertEquals("Saved text text", text, savedVO.getText)
       assertEquals("Saved text language", language, savedVO.getLanguage)
@@ -78,7 +78,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
   test("save new text doc's text") { language =>
     val text = saveNewText(language = language)
-    val texts = textDao.getTexts(new DocRef(Default.docId, Default.docVersionNo), language)
+    val texts = textDao.getTexts(DocRef.of(Default.docId, Default.docVersionNo), language)
 
     assertEquals("Texts count in doc", 1, texts.size)
     assertTrue("Texts cotains saved text", texts.contains(text))
@@ -89,7 +89,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     val text = saveNewText(text="initial text", language = language)
     val updatedTextValue = "modified text"
     val updatedDocVersionNo = 1
-    val updatedDocRef = new DocRef(text.getDocRef.getDocId, updatedDocVersionNo)
+    val updatedDocRef = DocRef.of(text.getDocRef.getDocId, updatedDocVersionNo)
 
     text.clone |> { textToUpdate =>
       textToUpdate.setText(updatedTextValue)
@@ -124,7 +124,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
     for (language <- mkLanguages)
       expect(nos.size * contentRefs.size, "texts count inside and outside of content loop") {
-        textDao.deleteTexts(new DocRef(Default.docId, Default.docVersionNo), language)
+        textDao.deleteTexts(DocRef.of(Default.docId, Default.docVersionNo), language)
       }
   }
 
@@ -144,7 +144,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       saveNewText(docId = Default.docId, docVersionNo = versionNo, no = indexNo, language = language)
 
     for (versionNo <- versionNos) {
-      val texts = textDao.getTexts(new DocRef(1001, versionNo))
+      val texts = textDao.getTexts(DocRef.of(1001, versionNo))
 
       expect(nos.size * mkLanguages.size) { texts.size }
     }
@@ -162,7 +162,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
 
     for (versionNo <- versionNos; language <- mkLanguages) {
-      val texts = textDao.getTexts(new DocRef(Default.docId, versionNo), language).asScala
+      val texts = textDao.getTexts(DocRef.of(Default.docId, versionNo), language).asScala
 
       expect(nos.size * contentRefs.size) { texts.size }
 

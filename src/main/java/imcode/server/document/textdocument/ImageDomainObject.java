@@ -26,51 +26,52 @@ import java.util.UUID;
 public class ImageDomainObject implements Serializable, Cloneable {
 
     public static final class Builder {
-        private ImageDomainObject vo = new ImageDomainObject();
+        private ImageDomainObject imageDomainObject;
 
         public Builder() {
+            imageDomainObject = new ImageDomainObject();
+        }
+
+        public Builder(ImageDomainObject imageDomainObject) {
+            this.imageDomainObject = imageDomainObject.clone();
         }
 
         public ImageDomainObject build() {
-            ImageDomainObject vo = new ImageDomainObject();
-
-            vo.id = this.vo.id;
-            vo.docRef = this.vo.docRef;
-            vo.no = this.vo.no;
-            vo.language = this.vo.language;
-            vo.contentRef = this.vo.contentRef;
-
-            return vo;
+            return imageDomainObject.clone();
         }
 
         public Builder id(Long id) {
-            vo.id = id;
+            imageDomainObject.id = id;
             return this;
         }
 
         public Builder docRef(DocRef docRef) {
-            vo.docRef = docRef;
+            imageDomainObject.docRef = docRef;
             return this;
         }
 
         public Builder no(Integer no) {
-            vo.no = no.toString();
+            imageDomainObject.no = no.toString();
             return this;
         }
 
         public Builder language(I18nLanguage language) {
-            vo.language = language;
+            imageDomainObject.language = language;
             return this;
         }
 
         public Builder contentRef(ContentRef contentRef) {
-            vo.contentRef = contentRef;
+            imageDomainObject.contentRef = contentRef;
             return this;
         }
     }
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public static Builder builder(ImageDomainObject imageDomainObject) {
+        return new Builder(imageDomainObject);
     }
 
     public static final int IMAGE_NAME_LENGTH = 40;

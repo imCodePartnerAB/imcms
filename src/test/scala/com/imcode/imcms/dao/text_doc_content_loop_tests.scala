@@ -23,10 +23,10 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 //  case class ContentsDesc(count: Int, sort: ContentsSort.Value)
 //  case class ContentLoopDesc(loopId: Long, docRef: DocRef, contentLoopIdentity: ContentRef, contentsDesc: ContentsDesc)
 //
-//  val loop0 = ContentLoopDesc(0, new DocRef(1001, 0), new ContentRef(0, 0), ContentsDesc(count = 0, sort = ContentsSort.Asc))
-//  val loop1 = ContentLoopDesc(1, new DocRef(1001, 0), new ContentRef(0, 1), ContentsDesc(count = 1, sort = ContentsSort.Asc))
-//  val loop2 = ContentLoopDesc(2, new DocRef(1001, 0), new ContentRef(0, 2), ContentsDesc(count = 2, sort = ContentsSort.Asc))
-//  val loop3 = ContentLoopDesc(3, new DocRef(1001, 0), new ContentRef(0, 3), ContentsDesc(count = 3, sort = ContentsSort.Desc))
+//  val loop0 = ContentLoopDesc(0, DocRef.of(1001, 0), new ContentRef(0, 0), ContentsDesc(count = 0, sort = ContentsSort.Asc))
+//  val loop1 = ContentLoopDesc(1, DocRef.of(1001, 0), new ContentRef(0, 1), ContentsDesc(count = 1, sort = ContentsSort.Asc))
+//  val loop2 = ContentLoopDesc(2, DocRef.of(1001, 0), new ContentRef(0, 2), ContentsDesc(count = 2, sort = ContentsSort.Asc))
+//  val loop3 = ContentLoopDesc(3, DocRef.of(1001, 0), new ContentRef(0, 3), ContentsDesc(count = 3, sort = ContentsSort.Desc))
 
   var contentLoopDao: ContentLoopDao = _
 
@@ -42,7 +42,7 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
 
   test("get all content loops") {
-    assertEquals("loops count", 4, contentLoopDao.getLoops(new DocRef(1001, 0)).size())
+    assertEquals("loops count", 4, contentLoopDao.getLoops(DocRef.of(1001, 0)).size())
   }
 
 
@@ -76,7 +76,7 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("create empty content loop") {
     ContentLoop.builder() |> { builder =>
-      val docRef = new DocRef(1001, 0)
+      val docRef = DocRef.of(1001, 0)
       builder.docRef(docRef)
       builder.no(contentLoopDao.getNextLoopNo(docRef))
 
@@ -110,7 +110,7 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("create non empty content loop [with 5 contents]") {
 //    var loop = new ContentLoop
-//    val docRef = new DocRef(1001, 0)
+//    val docRef = DocRef.of(1001, 0)
 //    loop.setDocRef(docRef)
 //    loop.setNo(contentLoopDao.getNextLoopNo(docRef))
 //
@@ -140,7 +140,7 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   def getLoop(no: Int): ContentLoop = getLoop(no, false)
 
-  def getLoop(no: Int, assertLoopNotNull: Boolean) = new DocRef(1001, 0) |> { docRef =>
+  def getLoop(no: Int, assertLoopNotNull: Boolean) = DocRef.of(1001, 0) |> { docRef =>
     contentLoopDao.getLoop(docRef, no) |>> { loop =>
       if (assertLoopNotNull)
         assertNotNull("Loop exists - docRef: %s, no: %s.".format(docRef, no), loop)
