@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Admin panel prototype</title>
+    <link type="text/css" href="../css/ui-lightness/jquery-ui-1.8.22.custom.css" rel="Stylesheet"/>
+    <script type="text/javascript" src="../js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="../js/jquery-ui-1.8.22.custom.min.js"></script>
+
+    <style>
+        #admin_panel {
+            width: 150px;
+            height: 150px;
+            padding: 0.5em;
+            margin: 5px;
+            /*position: relative;*/
+
+            containment: "parent";
+            scroll: false;
+        }
+    </style>
+    <script>
+        $(document).ready(function() {alert('a')});
+        $(document).ready(function() {alert('b')});
+        $(document).ready(function() {
+            //alert('');
+            $(function() {
+                $("#admin_panel").draggable({
+                    containment: "parent",
+                    scroll: false
+                }).hover(
+                        function() {
+                            $(this).fadeTo('fast', 1.0);
+                        }, function() {
+                            $(this).fadeTo('fast', 0.9);
+                        });
+
+                $("#minimize").onClick(function() {
+                    alert('');
+                    $("#admin_panel").animate({
+                        padding: '20px'
+                    }, 2000);
+                });
+            });
+
+            $(window).scroll(function() {
+                $('#admin_panel').css('top', $(document).scrollTop());
+                $('#admin_panel')
+                        .stop()
+                        .animate({top: $(document).scrollTop()}, 'slow', 'easeOutBack');
+            });
+        });
+
+
+    </script>
+</head>
+<body style="margin: 0">
+<h2 id="todo">
+    TO-DO: Write documentation, design decisions;
+</h2>
+Abstract
+Administration vision:
+-Vaadin part
+-On site part
+--Familiar; does not suck - current legacy implementation sucks
+--Foldable, initial location after login upper-left corner
+----Never affects page UI
+
+
+<div id="admin_panel" class="ui-widget-content">
+    <p>Admin panel</p>
+
+    <form>
+        <input id="minimize" type="button" value="button"/>
+    </form>
+</div>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vitae lorem vel sapien sodales lobortis. Quisque
+facilisis erat nec orci lacinia sit amet elementum sem dignissim. Nulla sit amet risus vel tortor iaculis adipiscing.
+Nullam semper, lacus ut feugiat imperdiet, odio ipsum eleifend nisi, vitae cursus sem quam pharetra justo. In hac
+habitasse platea dictumst. Ut nisi nulla, elementum vel accumsan quis, hendrerit et orci. Cras enim urna, rhoncus vel
+lacinia a, rhoncus id metus. Ut et viverra turpis. Nulla facilisi. Duis mollis sodales porta. Vivamus facilisis, nunc
+sit amet imperdiet posuere, nulla odio blandit velit, sed sodales augue mauris eget nunc.
+
+Cras hendrerit ipsum vitae nunc aliquam vitae vulputate enim sodales. Curabitur magna orci, lacinia non hendrerit vel,
+porta in diam. Vestibulum dictum felis semper leo scelerisque aliquam. Nulla ullamcorper fermentum volutpat. Quisque in
+ligula tempor velit tincidunt malesuada. In dictum porttitor sapien, ut lobortis lacus laoreet et. Maecenas eget metus
+nulla. Suspendisse fringilla tristique augue, quis blandit velit aliquam quis. Maecenas ac tellus orci, eget mattis
+purus. Suspendisse blandit imperdiet congue. Donec purus urna, hendrerit sit amet viverra nec, tristique id libero.
+Proin ac magna at lorem sodales egestas.
+
+Donec et tincidunt arcu. Sed facilisis magna eu nisl convallis congue. Quisque nunc erat, rutrum vitae commodo a,
+feugiat non nisl. Ut et quam vel erat euismod ultricies sed sit amet mauris. Vestibulum vitae odio eget ipsum porta
+eleifend. Aliquam ligula urna, volutpat vitae ultricies id, rutrum aliquet neque. In porta aliquam fringilla. Donec
+accumsan augue urna, ut faucibus lacus. Quisque sagittis, urna sed placerat posuere, lectus eros sodales lectus, at
+malesuada neque enim nec nisi. Pellentesque adipiscing orci eu ipsum iaculis elementum. Nam vel erat ipsum.
+
+Quisque dolor lorem, rutrum ac commodo vel, rhoncus fermentum metus. Curabitur volutpat nisl in nisi lacinia volutpat.
+Fusce nibh felis, faucibus eget malesuada et, porta ac est. Donec massa massa, rhoncus volutpat iaculis eu, sollicitudin
+sed justo. Proin suscipit est a nulla tempor ornare. Nulla vitae massa sit amet massa tempus sagittis eget eu erat.
+Mauris a metus ipsum.
+
+Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Pellentesque venenatis, turpis vel
+euismod aliquet, justo erat tincidunt purus, non luctus nunc nibh eu arcu. Suspendisse eget luctus justo. Ut condimentum
+egestas erat, non fringilla enim aliquet a. Sed consectetur, nisi scelerisque auctor consectetur, quam nibh convallis
+dolor, quis sodales dui diam vel quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus
+mus. Curabitur vulputate porta nibh, in facilisis est sodales sed. Nunc volutpat vulputate eros, non fermentum nunc
+imperdiet vel. Cras convallis dignissim nulla ut elementum. Sed at pellentesque arcu. Pellentesque venenatis gravida
+elit quis rhoncus.
+
+Fusce lacinia vulputate pretium. Donec porta tristique mauris, vitae laoreet quam congue aliquam. Quisque dui odio,
+eleifend vel molestie vel, imperdiet ac nisl. Aliquam hendrerit, nisl non faucibus convallis, massa arcu pretium sapien,
+at lacinia nunc turpis nec sem. Sed vitae justo a quam dictum facilisis. Ut nec arcu vitae augue consequat posuere.
+Donec vulputate dolor nec nibh imperdiet non viverra eros aliquam. Quisque non eros sit amet lacus mattis mattis.
+
+Integer interdum dolor urna, at pulvinar mauris. Morbi nec nunc dolor, et consequat purus. Nulla facilisi. Fusce
+commodo, enim et rutrum scelerisque, ligula neque sodales lacus, sed ultricies ligula arcu vel velit. Fusce vestibulum,
+nisi vitae rhoncus dignissim, odio nisi dictum tortor, ut placerat lectus lacus et mauris. Nullam tempor, ipsum vel
+malesuada scelerisque, nulla justo feugiat nunc, et adipiscing tortor dolor eu nulla. Integer pharetra iaculis diam ac
+convallis. Curabitur placerat venenatis velit in dapibus. Suspendisse at suscipit nunc. Nulla lacinia scelerisque neque,
+sit amet sodales mi mattis tincidunt. Etiam eros nisl, elementum sed elementum eget, accumsan non diam. Etiam sed nulla
+massa, sit amet pellentesque mauris.
+
+Aenean vel sapien est. Praesent non sem magna, ac suscipit dolor. Nulla convallis, orci id molestie sollicitudin, nisi
+lectus malesuada quam, ac fermentum dui arcu sit amet massa. Proin eu enim sapien. Nulla pulvinar blandit blandit.
+Maecenas ultrices ante sagittis lorem dignissim sit amet facilisis ante consequat. Nam hendrerit auctor urna, at commodo
+sapien condimentum eget. Sed vulputate, erat sit amet interdum interdum, justo sapien congue est, vel tempus felis ipsum
+sed massa. Pellentesque vulputate justo massa. Aenean turpis mi, malesuada at gravida sit amet, pulvinar eu velit. Donec
+velit erat, consequat ut cursus quis, blandit in ipsum. Etiam ligula diam, placerat vel eleifend at, euismod quis
+libero. Praesent eget enim purus, eu lobortis tortor.
+
+Sed venenatis consectetur massa a ullamcorper. Aenean hendrerit mi ut dui condimentum vestibulum. Sed gravida suscipit
+tempor. Nullam egestas ante eu odio elementum cursus. Donec lacus augue, imperdiet sit amet consequat in, consequat non
+elit. Sed est odio, bibendum a mattis id, vulputate id ante. Sed rutrum, odio a vestibulum eleifend, ligula tellus
+fringilla ligula, a posuere est ligula ac nisl. Nunc eu lectus eu ligula tincidunt tempor. Class aptent taciti sociosqu
+ad litora torquent per conubia nostra, per inceptos himenaeos. Vestibulum tellus turpis, commodo sit amet adipiscing a,
+rhoncus tempor tortor. Aliquam malesuada risus quis augue tincidunt faucibus. Donec eget est ligula.
+
+Suspendisse aliquet eros a quam venenatis tincidunt. Morbi tempor risus ac nulla tempus aliquam. Donec turpis justo,
+commodo non convallis nec, gravida a sem. Maecenas in metus ut est vulputate pulvinar. Morbi accumsan fringilla
+pharetra. Morbi in iaculis dui. Ut quis facilisis ipsum. Nullam sodales nibh id urna facilisis congue. Mauris eros nunc,
+laoreet in egestas at, sollicitudin sit amet arcu.
+
+Donec cursus ante ut lorem dictum non consectetur elit rhoncus. Nulla eleifend lacinia interdum. Vivamus commodo egestas
+lectus id egestas. Quisque ut libero quis orci aliquam suscipit. Donec non magna felis. Fusce malesuada, ipsum ut
+feugiat tempor, velit risus ornare quam, id hendrerit odio nunc ullamcorper nisi. Cras in justo id enim volutpat
+laoreet. Aenean lacus purus, aliquam sit amet pretium at, rutrum vel lacus. Sed fringilla tempus pellentesque. Nunc at
+dui nisi, sed mattis lorem.
+
+Vivamus fermentum scelerisque velit non laoreet. In hac habitasse platea dictumst. Donec faucibus sapien vel nibh
+tincidunt porttitor. Curabitur a nisl libero. Aliquam erat volutpat. Nullam faucibus mollis massa, nec sollicitudin
+libero lacinia eget. Ut accumsan quam a orci laoreet interdum. Class aptent taciti sociosqu ad litora torquent per
+conubia nostra, per inceptos himenaeos.
+
+Vivamus eleifend elit a dolor fringilla venenatis. Nulla quis dolor est, sit amet sagittis erat. Maecenas mollis
+tristique turpis, ac mattis velit dapibus porta. Vestibulum in elit magna. Phasellus fermentum molestie dui vitae
+vehicula. Cras tempus dapibus sem, ut dapibus sem pharetra eget. Phasellus scelerisque est sit amet nisl tincidunt
+sollicitudin. Nunc facilisis dictum tellus, eget pellentesque ipsum tincidunt et. Pellentesque ac massa orci. Sed
+eleifend ullamcorper sapien.
+
+Ut fringilla neque in mi imperdiet sollicitudin. In eget nibh urna, ut lacinia arcu. Praesent felis nulla, vehicula sed
+bibendum sit amet, pharetra id felis. In hac habitasse platea dictumst. Pellentesque habitant morbi tristique senectus
+et netus et malesuada fames ac turpis egestas. Mauris eleifend nisl nec eros posuere commodo. Etiam pulvinar malesuada
+odio, sed congue tellus aliquet sed. Nullam feugiat, tortor sed ullamcorper tincidunt, felis quam congue velit, eu
+posuere nisl tortor vel nisi. Vivamus quis lobortis diam. Vestibulum vitae nisi sit amet orci gravida malesuada ut
+elementum sapien. Pellentesque quis elit nisi. Phasellus vel ultricies ligula.
+
+Aenean hendrerit lectus nec neque vulputate non cursus nisi interdum. Nulla in purus velit. Fusce scelerisque nisl eget
+turpis ornare pellentesque vitae vitae tellus. Mauris at ipsum arcu. Cras sodales augue vel nunc rhoncus consectetur.
+Vivamus eu nulla sed lorem vehicula varius sit amet interdum diam. Proin vel eros arcu, scelerisque aliquam lacus.
+Integer diam mi, iaculis eu tempor nec, suscipit interdum lacus. Sed ut dui purus, eu sollicitudin lacus. Nulla vel
+turpis libero.
+
+Vestibulum eget felis erat. Aenean at molestie elit. Cras eget nibh massa, at commodo lacus. Vestibulum et quam erat,
+condimentum dapibus orci. Aenean iaculis mollis nisi ut dictum. Donec condimentum placerat turpis ac pellentesque.
+Quisque ac ligula eget mauris lobortis bibendum. Nunc vel nisi eu risus volutpat dapibus.
+
+Cras tempor bibendum nunc, et volutpat tellus pretium ut. Vivamus lobortis tincidunt vestibulum. Integer erat felis,
+aliquam eu malesuada feugiat, varius eget dui. Quisque ut turpis ipsum, ut blandit tellus. Donec gravida, risus sit amet
+pellentesque mattis, lacus mauris eleifend elit, ac aliquet lectus mauris vel libero. Duis sed libero ligula. Nulla
+dolor tellus, vehicula id aliquam at, tincidunt feugiat justo. Donec euismod scelerisque vulputate. Vestibulum ante
+ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Lorem ipsum dolor sit amet, consectetur
+adipiscing elit.
+
+Praesent orci diam, laoreet sed facilisis at, semper nec ante. Nulla pellentesque tempor elementum. Sed et justo nibh.
+In neque felis, aliquam eget pharetra sit amet, commodo ut nunc. Curabitur in tortor velit. Curabitur sem velit,
+tincidunt quis volutpat vitae, pulvinar a erat. Donec eu enim a nulla suscipit tempus. Suspendisse iaculis, nisl at
+luctus sagittis, felis tortor eleifend enim, eget commodo elit dui id justo. Maecenas in sem vitae odio vulputate
+laoreet sit amet vitae erat. Nulla tincidunt gravida nibh, euismod blandit tortor lacinia sed. Proin eu risus nunc.
+Mauris ac mauris quis nulla euismod vehicula. Sed accumsan lobortis ultrices. Pellentesque habitant morbi tristique
+senectus et netus et malesuada fames ac turpis egestas. Cras massa nisl, auctor ac varius eget, rutrum eleifend dui.
+
+Donec in nibh ullamcorper augue scelerisque vehicula eget vel velit. Phasellus rutrum dignissim bibendum. Phasellus ac
+sapien ante. Vivamus vulputate, ligula vitae gravida varius, nisi nibh bibendum mi, ac rutrum dolor justo ut ligula.
+Pellentesque id lectus arcu, ut volutpat justo. Nullam at quam tellus, porta viverra odio. Nullam condimentum volutpat
+fringilla. Vivamus ac risus nec urna consectetur tincidunt.
+
+Phasellus suscipit dolor eu nibh lacinia ultrices. Fusce nulla turpis, venenatis a blandit in, tincidunt bibendum nunc.
+Aenean sed turpis felis, quis scelerisque nisl. Sed ut nisi vel odio volutpat consequat at a arcu. Proin volutpat, metus
+in facilisis volutpat, elit leo interdum mi, quis varius erat eros sit amet augue. Aenean sollicitudin urna eu enim
+suscipit ornare. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla tempus
+consectetur lectus, at volutpat eros sollicitudin a.
+
+</body>
+</html>

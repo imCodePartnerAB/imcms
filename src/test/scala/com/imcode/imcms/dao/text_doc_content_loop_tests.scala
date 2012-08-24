@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import scala.collection.JavaConverters._
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -53,24 +54,24 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       getLoop(2, true),
       getLoop(3, true))
 
-    assertEquals("Contents count.", loops(0).getAllContents.size, 0)
-    assertEquals("Contents count.", loops(1).getAllContents.size, 1)
-    assertEquals("Contents count.", loops(2).getAllContents.size, 3)
-    assertEquals("Contents count.", loops(3).getAllContents.size, 3)
+    assertEquals("Contents count.", loops(0).getContents.size, 0)
+    assertEquals("Contents count.", loops(1).getContents.size, 1)
+    assertEquals("Contents count.", loops(2).getContents.size, 3)
+    assertEquals("Contents count.", loops(3).getContents.size, 3)
   }
 
 
   test("check contents order in a loop") {
-    val ascSortedContents = getLoop(2, true).getAllContents
-    val descSortedContents = getLoop(3, true).getAllContents
+    val ascSortedContents = getLoop(2, true).getContents.asScala.toList
+    val descSortedContents = getLoop(3, true).getContents.asScala.toList
 
     for (i <- 0 to 2) {
-      assertEquals("Content order no.", i, ascSortedContents.get(i).getNo)
+      assertEquals("Content order no.", i, ascSortedContents(i).getNo)
     }
 
 
     for ((no, i) <- 2 to 0 by -1 zipWithIndex) {
-      assertEquals("Content order no.", no, descSortedContents.get(i).getNo)
+      assertEquals("Content order no.", no, descSortedContents(i).getNo)
     }
   }
 
@@ -88,10 +89,10 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val loop = getLoop(0, true)
     val loopId = loop.getId
 
-    val count = loop.getAllContents.size
+    val count = loop.getContents.size
 
     val newLoop = contentLoopDao.saveLoop(loop.addLastContent._1)
-    assertEquals(count + 1, newLoop.getAllContents.size)
+    assertEquals(count + 1, newLoop.getContents.size)
 
     assertNotNull(contentLoopDao.getLoop(newLoop.getId))
   }
@@ -109,32 +110,27 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   }
 
   test("create non empty content loop [with 5 contents]") {
-//    var loop = new ContentLoop
-//    val docRef = DocRef.of(1001, 0)
-//    loop.setDocRef(docRef)
-//    loop.setNo(contentLoopDao.getNextLoopNo(docRef))
-//
-//    val contentsCount = 5
-//
-//    for (_ <- 0 until contentsCount) loop.addFirstContent
-//
-//    loop = contentLoopDao.saveLoop(loop)
-//
-//    val savedLoop = contentLoopDao.getLoop(loop.getId)
-//
-//    assertNotNull("Loop exists", savedLoop)
-//
-//    val contents = loop.getAllContents
-//    val savedContents = savedLoop.getAllContents
-//
-//    assertEquals("Content count matches", contentsCount, savedContents.size)
-//
-//    for (i <- 0 until contentsCount) {
-//      val content = contents.get(i)
-//      val savedContent = savedContents.get(i)
-//
-//      assertEquals("Contents no-s mathces.", content.getNo, savedContent.getNo)
-//    }
+    val contentsCount = 5
+    val docRef = DocRef.of(1001, 0)
+    val loop = ContentLoop.builder().docRef(docRef).no(contentLoopDao.getNextLoopNo(docRef)).build() |> { emptyLoop =>
+      1.to(contentsCount).foldLeft(emptyLoop) { case (loop, _) => loop.addFirstContent()._1 }
+    }
+
+    contentLoopDao.saveLoop(loop) |> { savedLoop =>
+      assertNotNull("Loop exists", savedLoop)
+
+      val contents = loop.getContents.asScala.toList
+      val savedContents = savedLoop.getContents.asScala.toList
+
+      assertEquals("Content count matches", contentsCount, savedContents.size)
+
+      for (i <- 0 until contentsCount) {
+        val content = contents(i)
+        val savedContent = savedContents(i)
+
+        assertEquals("Contents no-s mathces.", content.getNo, savedContent.getNo)
+      }
+    }
   }
 
 

@@ -4,9 +4,10 @@ import com.google.common.base.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 @Embeddable
-public class ContentRef implements Cloneable {
+public class ContentRef implements Serializable, Cloneable {
 
     @Column(name = "content_loop_no")
     private int loopNo;
@@ -22,19 +23,23 @@ public class ContentRef implements Cloneable {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof ContentRef)) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ContentRef)) return false;
 
-        ContentRef that = (ContentRef)object;
+        ContentRef that = (ContentRef) o;
 
-        return this.hashCode() == that.hashCode();
+        if (contentNo != that.contentNo) return false;
+        if (loopNo != that.loopNo) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(loopNo, contentNo);
+        int result = loopNo;
+        result = 31 * result + contentNo;
+        return result;
     }
 
     @Override

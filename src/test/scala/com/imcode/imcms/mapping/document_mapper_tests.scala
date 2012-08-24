@@ -1,11 +1,12 @@
 package com.imcode
 package imcms.dao
 
-import scala.collection.JavaConverters._
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.Imcms
 import _root_.imcode.server.document._
 import _root_.imcode.util.io.InputStreamSource
+import _root_.imcode.server.document.textdocument._
+import scala.collection.JavaConverters._
 import java.io.ByteArrayInputStream
 import java.util.EnumSet
 import org.apache.commons.io.FileUtils
@@ -20,7 +21,6 @@ import com.imcode.imcms.mapping.{DocumentSaver, DocumentStoringVisitor, Document
 import com.imcode.imcms.mapping.DocumentMapper.SaveOpts
 import com.imcode.imcms.api.{I18nMeta, ContentLoop, I18nSupport}
 import com.imcode.imcms.api.TextDocument.TextField
-import imcode.server.document.textdocument._
 
 @RunWith(classOf[JUnitRunner])
 class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
@@ -226,15 +226,12 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       val loop = savedDoc.getContentLoop(loopNo);
       assertNotNull(loop)
 
-      expect(loop.getAllContents.size, "contents in the loop")(loopNo)
+      expect(loop.getContents.size, "contents in the loop")(loopNo)
 
       for (contentNo <- 0 until loopNo) {
-        val content = loop.findContentWithIndexByNo(contentNo)
-        assertNotNull(content)
+        assertTrue(loop.getContents.asScala.find(_.getNo == contentNo).isDefined)
       }
     }
-
-
 
     for ((textType, no) <- textTypeToNo) {
       val text = savedDoc.getText(no)
@@ -701,7 +698,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("save text doc content loop") {
     val doc = saveNewTextDocumentFn()
-    val loop = ContentLoop.builder().insertContent(0).build();
+    val loop = ContentLoop.builder().addContent(0).build();
 
     doc.setContentLoop(0, loop)
 

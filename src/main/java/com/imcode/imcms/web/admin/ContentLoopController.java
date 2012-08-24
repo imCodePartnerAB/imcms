@@ -1,8 +1,5 @@
 package com.imcode.imcms.web.admin;
 
-import com.google.common.base.Optional;
-import com.imcode.imcms.api.Content;
-import com.imcode.imcms.util.P2;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
@@ -48,28 +45,28 @@ public class ContentLoopController {
             @RequestParam("cmd") int cmd,
             @RequestParam("docId") int docId,
             @RequestParam("no") Integer no,
-            @RequestParam("contentNo") int contentNo,
+            final @RequestParam("contentIndex") int contentIndex,
             @RequestParam("flags") int flags) {
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(docId);
         final Command command = getCommand(cmd);
         final ContentLoop loop = document.getContentLoop(no);
-        final Content content = loop.findContentByNo(contentNo).get();
+
         ContentLoop updatedLoop = new Object() {
             ContentLoop updateLoop() {
                 switch (command) {
                     case MOVE_UP:
-                        return loop.moveContentBackward(content).get();
+                        return loop.moveContentBackward(contentIndex);
 
                     case MOVE_DOWN:
-                        return loop.moveContentForward(content).get();
+                        return loop.moveContentForward(contentIndex);
 
                     case ADD_BEFORE:
-                        return loop.addContentBefore(content).get()._1();
+                        return loop.addContentBefore(contentIndex)._1();
 
                     case ADD_AFTER:
-                        return loop.addContentAfter(content).get()._1();
+                        return loop.addContentAfter(contentIndex)._1();
 
                     case ADD_FISRT:
                         return loop.addFirstContent()._1();
@@ -78,7 +75,7 @@ public class ContentLoopController {
                         return loop.addLastContent()._1();
 
                     case DELETE:
-                        return loop.disableContent(content).get();
+                        return loop.disableContent(contentIndex);
 
                     default:
                         return loop;

@@ -80,7 +80,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
         }
 
         currentContent = null;
-        contentsCount = loop.getAllContents().size();
+        contentsCount = loop.getContents().size();
         contentIndex = -1;        
 
         return contentsCount == 0 || !nextContent()
@@ -103,21 +103,21 @@ public class ContentLoopTag2 extends BodyTagSupport {
             return false;
         }
 
-        currentContent = loop.getAllContents().get(contentIndex);
+        currentContent = loop.getContents().get(contentIndex);
 
         if (currentContent.isEnabled()) {
             firstContent = true;
             lastContent = true;
             
             for (int i = contentIndex - 1; i > -1; i--) {
-                if (loop.getAllContents().get(i).isEnabled()) {
+                if (loop.getContents().get(i).isEnabled()) {
                     firstContent = false;
                     break;
                 }
             }
 
             for (int i = contentIndex + 1; i < contentsCount; i++) {
-                if (loop.getAllContents().get(i).isEnabled()) {
+                if (loop.getContents().get(i).isEnabled()) {
                     lastContent = false;
                     break;
                 }

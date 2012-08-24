@@ -1,8 +1,6 @@
 package com.imcode.imcms.api;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.imcode.imcms.util.P;
 import com.imcode.imcms.util.P2;
 import imcode.server.document.textdocument.DocRef;
@@ -16,7 +14,12 @@ import java.util.List;
 import javax.persistence.*;
 
 /**
- * A content can not be removed from a content loop - it can only be disabled.
+ * ContentLoop does not provide methods for content removing since it has no ability to check
+ * whether a content is being referenced by other document items (such as texts or images).
+ * <p/>
+ * Content 'index' corresponds to absolute context position in a loop starting from zero.
+ * Content 'no' is a unique content identifier in a loop which is assigned (incremented) automatically
+ * when a new content is added into the loop.
  */
 @Entity
 @Table(name = "imcms_text_doc_content_loops")
@@ -51,7 +54,7 @@ public class ContentLoop implements Serializable, Cloneable {
             return this;
         }
 
-        public Builder insertContent(int contentIndex) {
+        public Builder addContent(int contentIndex) {
             Content content = Content.builder().no(contentLoop.contents.size()).build();
             contentLoop.contents.add(contentIndex, content);
 
@@ -68,12 +71,9 @@ public class ContentLoop implements Serializable, Cloneable {
             return this;
         }
 
-        public Builder swapContents(int contentIndexA, int contentIndexB) {
-            Content contentA = contentLoop.contents.get(contentIndexA);
-            Content contentB = contentLoop.contents.get(contentIndexB);
-
-            contentLoop.contents.set(contentIndexA, contentB);
-            contentLoop.contents.set(contentIndexB, contentA);
+        public Builder moveContent(int fromIndex, int toIndex) {
+            Content content = contentLoop.contents.remove(fromIndex);
+            contentLoop.contents.add(toIndex, content);
 
             return this;
         }
@@ -112,7 +112,7 @@ public class ContentLoop implements Serializable, Cloneable {
                     @JoinColumn(name = "loop_no", referencedColumnName = "no")
             }
     )
-    @IndexColumn(name = "order_no") // todo: rename to index?
+    @IndexColumn(name = "order_no") // content index
     private List<Content> contents = new LinkedList<Content>();
 
     protected ContentLoop() {
@@ -147,128 +147,134 @@ public class ContentLoop implements Serializable, Cloneable {
         return clone;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ContentLoop)) return false;
+
+        ContentLoop that = (ContentLoop) o;
+
+        if (contents != null ? !contents.equals(that.contents) : that.contents != null) return false;
+        if (docId != null ? !docId.equals(that.docId) : that.docId != null) return false;
+        if (docVersionNo != null ? !docVersionNo.equals(that.docVersionNo) : that.docVersionNo != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (no != null ? !no.equals(that.no) : that.no != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (no != null ? no.hashCode() : 0);
+        result = 31 * result + (docId != null ? docId.hashCode() : 0);
+        result = 31 * result + (docVersionNo != null ? docVersionNo.hashCode() : 0);
+        result = 31 * result + (contents != null ? contents.hashCode() : 0);
+        return result;
+    }
+
     public DocRef getDocRef() {
         return docId == null ? null : DocRef.of(docId, docVersionNo);
     }
 
-    /**
-     * @return all contents
-     */
-    public List<Content> getAllContents() {
-        return Collections.unmodifiableList(contents);
-    }
-
-    /**
-     * @return enabled contents.
-     */
-    public List<Content> getEnabledContents() {
-        List<Content> enabledContents = Lists.newLinkedList();
-
-        for (Content content: contents) {
-            if (content.isEnabled()) enabledContents.add(content);
-        }
-
-        return Collections.unmodifiableList(enabledContents);
-    }
-
-    public Optional<P2<Content, Integer>> findContentWithIndexByNo(int contentNo) {
+    public Optional<P2<Content, Integer>> findContent(int contentNo) {
         for (int i = 0; i < contents.size(); i++) {
             Content content = contents.get(i);
-            if (contents.get(i).getNo() == contentNo) return Optional.of(P.of(content, i));
+            if (content.getNo() == contentNo) return Optional.of(P.of(content, i));
         }
 
         return Optional.absent();
     }
 
-    public Optional<Content> findContentByNo(int contentNo) {
-        return findContentWithIndexByNo(contentNo).transform(new Function<P2<Content, Integer>, Content>() {
-            public Content apply(P2<Content, Integer> input) { return input._1(); }
-        });
+    public List<Content> getContents() {
+        return Collections.unmodifiableList(contents);
     }
 
     public P2<ContentLoop, Content> addFirstContent() {
-        ContentLoop contentLoop = builder(this).insertContent(0).build();
+        ContentLoop contentLoop = builder(this).addContent(0).build();
 
         return P.of(contentLoop, contentLoop.contents.get(0));
     }
 
     public P2<ContentLoop, Content> addLastContent() {
-        ContentLoop contentLoop = builder(this).insertContent(contents.size()).build();
+        ContentLoop contentLoop = builder(this).addContent(contents.size()).build();
         List<Content> contents = contentLoop.contents;
 
         return P.of(contentLoop, contents.get(contents.size() - 1));
     }
 
-    public Optional<P2<ContentLoop, Content>> addContentAfter(Content content) {
-        Optional<P2<Content, Integer>> contentAndIndex = findContentWithIndexByNo(content.getNo());
+    public P2<ContentLoop, Content> addContentAfter(int contentIndex) {
+        int newContentIndex = contentIndex + 1;
+        ContentLoop contentLoop = builder(this).addContent(newContentIndex).build();
 
-        if (!contentAndIndex.isPresent()) return Optional.absent();
-
-        Integer contentIndex = contentAndIndex.get()._2() + 1;
-        ContentLoop contentLoop = builder(this).insertContent(contentIndex).build();
-
-        return Optional.of(P.of(contentLoop, contentLoop.contents.get(contentIndex)));
+        return P.of(contentLoop, contentLoop.contents.get(newContentIndex));
     }
 
-    public Optional<P2<ContentLoop, Content>> addContentBefore(Content content) {
-        Optional<P2<Content, Integer>> contentAndIndex = findContentWithIndexByNo(content.getNo());
+    public P2<ContentLoop, Content> addContentBefore(int contentIndex) {
+        Content throwExIfNotExists = contents.get(contentIndex);
+        ContentLoop contentLoop = builder(this).addContent(contentIndex).build();
 
-        if (!contentAndIndex.isPresent()) return Optional.absent();
-
-        Integer contentIndex = contentAndIndex.get()._2();
-        ContentLoop contentLoop = builder(this).insertContent(contentIndex).build();
-
-        return Optional.of(P.of(contentLoop, contentLoop.contents.get(contentIndex)));
+        return P.of(contentLoop, contentLoop.contents.get(contentIndex));
     }
 
-    public Optional<ContentLoop> moveContentBackward(Content content) {
-        Optional<P2<Content, Integer>> contentAndIndex = findContentWithIndexByNo(content.getNo());
+    public ContentLoop moveContentBackward(int contentIndex, boolean skipDisabled) {
+        Content throwExIfNotExists = contents.get(contentIndex);
 
-        if (contentAndIndex.isPresent() && contentAndIndex.get()._1().isEnabled()) {
-            int contentIndex = contentAndIndex.get()._2();
+        for (int i = contentIndex - 1; i >= 0; i--) {
+            Content nextContent = contents.get(i);
+            if (skipDisabled && !nextContent.isEnabled()) continue;
 
-            for (int i = contentIndex - 1; i >= 0; i--) {
-                Content prevContent = contents.get(i);
-                if (prevContent.isEnabled()) {
-                    return Optional.of(builder(this).swapContents(contentIndex, i).build());
-                }
-            }
+            return builder(this).moveContent(contentIndex, i).build();
         }
 
-        return Optional.absent();
+        return this;
     }
 
-    public Optional<ContentLoop> moveContentForward(Content content) {
-        Optional<P2<Content, Integer>> contentAndIndex = findContentWithIndexByNo(content.getNo());
+    public ContentLoop moveContentBackward(int contentIndex) {
+        return moveContentBackward(contentIndex, true);
+    }
 
-        if (contentAndIndex.isPresent() && contentAndIndex.get()._1().isEnabled()) {
-            int contentIndex = contentAndIndex.get()._2();
+    public ContentLoop moveContentForward(int contentIndex) {
+        return moveContentForward(contentIndex, true);
+    }
 
-            for (int i = contentIndex + 1; i < contents.size(); i++) {
-                Content nextContent = contents.get(i);
-                if (nextContent.isEnabled()) {
-                    return Optional.of(builder(this).swapContents(contentIndex, i).build());
-                }
-            }
+    public ContentLoop moveContentForward(int contentIndex, boolean skipDisabled) {
+        Content throwExIfNotExists = contents.get(contentIndex);
+        for (int i = contentIndex + 1; i < contents.size(); i++) {
+            Content nextContent = contents.get(i);
+            if (skipDisabled && !nextContent.isEnabled()) continue;
+
+            return builder(this).moveContent(contentIndex, i).build();
         }
 
-        return Optional.absent();
+        return this;
     }
 
 
-    public Optional<ContentLoop> disableContent(Content content) {
-        Optional<Content> contentOpt = findContentByNo(content.getNo());
+    public ContentLoop moveContentTop(int contentIndex) {
+        Content throwExIfNotExists = contents.get(contentIndex);
 
-        return contentOpt.isPresent()
-                ? Optional.of(builder(this).disableContent(contentOpt.get().getNo()).build())
-                : Optional.<ContentLoop>absent();
+        return contentIndex == 0
+                ? this
+                : builder(this).moveContent(contentIndex, 0).build();
     }
 
-    public Optional<ContentLoop> enableContent(Content content) {
-        Optional<Content> contentOpt = findContentByNo(content.getNo());
+    public ContentLoop moveContentBottom(int contentIndex) {
+        Content throwExIfNotExists = contents.get(contentIndex);
+        int lastIndex = contents.size() - 1;
 
-        return contentOpt.isPresent()
-                ? Optional.of(builder(this).enableContent(contentOpt.get().getNo()).build())
-                : Optional.<ContentLoop>absent();
+        return contentIndex == lastIndex
+                ? this
+                : builder(this).moveContent(contentIndex, lastIndex).build();
+    }
+
+
+
+    public ContentLoop disableContent(int contentIndex) {
+        return ContentLoop.builder(this).disableContent(contentIndex).build();
+    }
+
+    public ContentLoop enableContent(int contentIndex) {
+        return ContentLoop.builder(this).enableContent(contentIndex).build();
     }
 }

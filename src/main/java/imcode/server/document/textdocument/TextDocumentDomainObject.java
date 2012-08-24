@@ -255,7 +255,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
                 );
             }
 
-            boolean contentExist = loop.findContentWithIndexByNo(contentRef.getContentNo()).isPresent();
+            boolean contentExist = loop.findContent(contentRef.getContentNo()).isPresent();
 
             if (!contentExist) {
                 throw new IllegalStateException(String.format(
@@ -357,7 +357,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
                 );
             }
 
-            boolean contentExist = loop.findContentWithIndexByNo(contentRef.getContentNo()).isPresent();
+            boolean contentExist = loop.findContent(contentRef.getContentNo()).isPresent();
 
             if (!contentExist) {
                 throw new IllegalStateException(String.format(

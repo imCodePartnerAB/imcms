@@ -74,7 +74,32 @@ public class Content implements Serializable, Cloneable {
         return enabled;
     }
 
+    public boolean isDisabled() {
+        return !enabled;
+    }
+
     public int getNo() {
         return no;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Content)) return false;
+
+        Content content = (Content) o;
+
+        if (enabled != content.enabled) return false;
+        if (no != content.no) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = no;
+        result = 31 * result + (enabled ? 1 : 0);
+        return result;
+    }
 }
+
