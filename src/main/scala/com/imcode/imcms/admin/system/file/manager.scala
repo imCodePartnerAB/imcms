@@ -152,7 +152,7 @@ class FileManager(app: ImcmsApplication) {
 
 
 class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends GridLayout(2, 2) with Spacing with FullSize {
-  import Theme.Icons._
+  import Theme.Icon._
 
   val mb = new MenuBar
   val miFile = mb.addItem("file.mgr.menu.file".i, File16)

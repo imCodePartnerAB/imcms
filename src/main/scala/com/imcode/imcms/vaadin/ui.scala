@@ -18,10 +18,13 @@ import com.vaadin.data.Container
 import com.vaadin.data.Container.ItemSetChangeListener
 import com.vaadin.data.Container.ItemSetChangeListener._
 import com.vaadin.ui.Layout.AlignmentHandler
+import imcode.server.user.UserDomainObject
+import javax.servlet.http.HttpSession
+import javax.servlet.ServletContext
 
 trait ImcmsApplication extends Application {
 
-  def user = Utility.getLoggedOnUser(this.session)
+  def user(): UserDomainObject = Utility.getLoggedOnUser(this.session())
 
   /**
    * If permission is granted executes an action.
@@ -39,39 +42,39 @@ trait ImcmsApplication extends Application {
 
 class ApplicationWrapper(app: Application) {
 
-  def content = app.getContext.asInstanceOf[WebApplicationContext]
+  def context(): WebApplicationContext = app.getContext.asInstanceOf[WebApplicationContext]
 
-  def session = content.getHttpSession
+  def session(): HttpSession = context().getHttpSession
 
-  def servletContext = session.getServletContext
+  def servletContext(): ServletContext = session().getServletContext
 
   def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
     init(window)
-    window setModal modal
-    window setResizable resizable
-    window setDraggable draggable
-    app.getMainWindow addWindow window
+    window.setModal(modal)
+    window.setResizable(resizable)
+    window.setDraggable(draggable)
+    app.getMainWindow.addWindow(window)
   }
 
-  def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
+  def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true): Unit =
     initAndShow(window, modal, resizable, draggable) { _ => }
 
-  def showNotification(caption: String, description: String, notificationType: Int) =
+  def showNotification(caption: String, description: String, notificationType: Int): Unit =
     app.getMainWindow.showNotification(caption, description, notificationType)
 
-  def showErrorNotification(caption: String, description: String = null) =
+  def showErrorNotification(caption: String, description: String = null): Unit =
     showNotification(caption, description, Notification.TYPE_ERROR_MESSAGE)
 
-  def showWarningNotification(caption: String, description: String = null) =
+  def showWarningNotification(caption: String, description: String = null): Unit =
     showNotification(caption, description, Notification.TYPE_WARNING_MESSAGE)
 
-  def showInfoNotification(caption: String, description: String = null) =
+  def showInfoNotification(caption: String, description: String = null): Unit =
     showNotification(caption, description, Notification.TYPE_HUMANIZED_MESSAGE)
 }
 
 class MenuBarWrapper(mb: MenuBar) {
-  def addItem(caption: String, resource: Resource) = mb.addItem(caption, resource, null)
-  def addItem(caption: String) = mb.addItem(caption, null)
+  def addItem(caption: String, resource: Resource): MenuBar#MenuItem = mb.addItem(caption, resource, null)
+  def addItem(caption: String): MenuBar#MenuItem = mb.addItem(caption, null)
 }
 
 class MenuItemWrapper(mi: MenuBar#MenuItem) {
@@ -88,12 +91,12 @@ class MenuItemWrapper(mi: MenuBar#MenuItem) {
 
 class ButtonWrapper(button: Button) {
 
-  def addClickListener(listener: Button#ClickEvent => Unit) =
+  def addClickListener(listener: Button#ClickEvent => Unit): Unit =
     button.addListener(new Button.ClickListener {
       def buttonClick(event: Button#ClickEvent) = listener(event)
     })
 
-  def addClickHandler(handler: => Unit) = addClickListener(_ => handler)
+  def addClickHandler(handler: => Unit): Unit = addClickListener(_ => handler)
 }
 
 /**
@@ -345,29 +348,17 @@ class OkCancelErrorDialog(msg: String = "") extends OkCancelDialog("dlg.err.titl
 }
 
 
-/** Creates root item; root is not displayed */
-@deprecated
-class MenuItem(val parent: MenuItem = null, val icon: Option[Resource]=None, val handler: () => Unit = () => {}) {
+/** Menu item descriptor */
+class MenuItem(val id: String = null, val icon: Resource = null) {
 
-  import collection.mutable.ListBuffer
+  val children: Seq[MenuItem] = {
+    val isMenuItemType: Class[_] => Boolean = classOf[MenuItem].isAssignableFrom
 
-  private val itemsBuffer = new ListBuffer[MenuItem]
-
-  def items = itemsBuffer.toList
-
-  override val toString = getClass.getName split '$' last
-
-  val id = {
-    def pathToRoot(m: MenuItem): List[MenuItem] = m :: (if (m.parent == null) Nil else pathToRoot(m.parent))
-
-    pathToRoot(this).reverse map (_.toString) map camelCaseToUnderscore mkString "."
+    getClass.getDeclaredMethods
+      .filter(_.getReturnType |> isMenuItemType)
+      .sortBy(_.getAnnotation(classOf[OrderedMethod]) |> opt map(_.value()) getOrElse 0)
+      .map(_.invoke(this).asInstanceOf[MenuItem])
   }
-
-  if (parent != null) parent.itemsBuffer += this
-
-  // forces initialization of items declared as inner objects
-  for (m <- getClass.getDeclaredMethods if m.getParameterTypes().length == 0)
-    m.invoke(this)
 }
 
 
@@ -497,7 +488,7 @@ trait NoChildrenAllowed extends Tree {
  * Reload button is placed under the content with right alignment.
  */
 class ReloadableContentUI[T <: Component](val content: T) extends GridLayout(1,2) with Spacing {
-  import com.imcode.imcms.vaadin.Theme.Icons._
+  import com.imcode.imcms.vaadin.Theme.Icon._
 
   val btnReload = new Button("Reload") with LinkStyle {
     setIcon(Reload16)

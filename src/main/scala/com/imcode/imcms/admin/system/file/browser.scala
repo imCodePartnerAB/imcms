@@ -70,19 +70,19 @@ object ImcmsFileBrowser {
   def addLocation(captionResourceId: String, conf: LocationConf, image: Option[Resource])(browser: FileBrowser) =
     browser |>> { _ => browser.addLocation(captionResourceId.i, conf, image) }
 
-  val addHomeLocation = addLocation("file.browser.location.home", LocationConf(Imcms.getPath), Theme.Icons.Browser.TabHome32 |> opt)_
+  val addHomeLocation = addLocation("file.browser.location.home", LocationConf(Imcms.getPath), Theme.Icon.Browser.TabHome32 |> opt)_
 
   val addImagesLocation =
-    addLocation("file.browser.location.images", LocationConf(Imcms.getPath, "images"), Theme.Icons.Browser.TabImages32 |> opt)_
+    addLocation("file.browser.location.images", LocationConf(Imcms.getPath, "images"), Theme.Icon.Browser.TabImages32 |> opt)_
 
   val addTemplatesLocation =
-    addLocation("file.browser.location.templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), Theme.Icons.Browser.TabTemplates32 |> opt)_
+    addLocation("file.browser.location.templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), Theme.Icon.Browser.TabTemplates32 |> opt)_
 
   val addLogsLocation =
-    addLocation("file.browser.location.logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), Theme.Icons.Browser.TabLogs32 |> opt)_
+    addLocation("file.browser.location.logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), Theme.Icon.Browser.TabLogs32 |> opt)_
 
   val addConfLocation =
-    addLocation("file.browser.location.conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), Theme.Icons.Browser.TabConf32 |> opt)_
+    addLocation("file.browser.location.conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), Theme.Icon.Browser.TabConf32 |> opt)_
 
   val addAllLocations =
     Function.chain(Seq(addHomeLocation, addImagesLocation, addTemplatesLocation, addLogsLocation, addConfLocation))
@@ -275,7 +275,7 @@ class FileBrowserUI extends VerticalLayout with Spacing with FullSize {
 /** Select item can be a dir or a file. */
 trait FSItemIcon extends AbstractSelect {
   override def getItemIcon(itemId: AnyRef) =
-    if (itemId.asInstanceOf[File].isDirectory) Theme.Icons.Folder16 else Theme.Icons.File16
+    if (itemId.asInstanceOf[File].isDirectory) Theme.Icon.Folder16 else Theme.Icon.File16
 }
 
 

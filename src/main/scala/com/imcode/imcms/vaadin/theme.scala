@@ -6,30 +6,30 @@ import com.vaadin.terminal.{ThemeResource => TR}
 object Theme {
   implicit val stringToThemeResource = new TR(_:String)
 
-  object Icons {
-    val About16 = "icons/16/globe.png" : TR
-    val Help16 = "icons/16/help.png" : TR
-    val New16 = "icons/16/document-add.png" : TR
-    val Edit16 = "icons/16/settings.png" : TR
-    val Delete16 = "icons/16/document-delete.png" : TR
-    val Reload16 = "icons/16/reload.png" : TR
-    val EditContent16 = "icons/16/document-txt.png" : TR
-    val Documents16 = "icons/16/note.png" : TR
-    val Tab32 = "icons/32/folder.png" : TR
-    val Lock32 = "icons/32/lock.png" : TR
-    val Ok16 = "icons/16/ok.png" : TR
-    val Ok32 = "icons/32/ok.png" : TR
-    val Done16 = Ok16
-    val Done32 = Ok32
-    val File16 = "icons/16/document.png" : TR
-    val Folder16 = "icons/16/folder.png" : TR
+  object Icon {
+    val About16: TR = "icons/16/globe.png" 
+    val Help16: TR = "icons/16/help.png"
+    val New16: TR = "icons/16/document-add.png"
+    val Edit16: TR = "icons/16/settings.png"
+    val Delete16: TR = "icons/16/document-delete.png"
+    val Reload16: TR = "icons/16/reload.png"
+    val EditContent16: TR = "icons/16/document-txt.png"
+    val Documents16: TR = "icons/16/note.png"
+    val Tab32: TR = "icons/32/folder.png"
+    val Lock32: TR = "icons/32/lock.png"
+    val Ok16: TR = "icons/16/ok.png"
+    val Ok32: TR = "icons/32/ok.png"
+    val Done16: TR = Ok16
+    val Done32: TR = Ok32
+    val File16: TR = "icons/16/document.png"
+    val Folder16: TR = "icons/16/folder.png"
 
     object Browser {
-      val TabHome32 = "icons/16/document-web.png" : TR
-      val TabImages32 = "icons/16/document-image.png" : TR
-      val TabTemplates32 = "icons/16/document-ppt.png" : TR
-      val TabConf32 = "icons/16/document-txt.png" : TR
-      val TabLogs32 = "icons/16/document.png" : TR
+      val TabHome32: TR = "icons/16/document-web.png"
+      val TabImages32: TR = "icons/16/document-image.png"
+      val TabTemplates32: TR = "icons/16/document-ppt.png"
+      val TabConf32: TR = "icons/16/document-txt.png"
+      val TabLogs32: TR = "icons/16/document.png"
     }
   }
 }

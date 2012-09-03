@@ -80,7 +80,7 @@ class PropertyManagerManager(app: ImcmsApplication) {
 } // class PropertyManager
 
 class PropertyManagerUI extends VerticalLayout with Spacing with UndefinedSize {
-  import com.imcode.imcms.vaadin.Theme.Icons._
+  import com.imcode.imcms.vaadin.Theme.Icon._
 
   val mb = new MenuBar
   val miEdit = mb.addItem("Edit", Edit16)

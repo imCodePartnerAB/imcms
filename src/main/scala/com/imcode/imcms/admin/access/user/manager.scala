@@ -94,7 +94,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
 
 class UserManagerUI(val searchUI: Component) extends VerticalLayout with Spacing {
-  import com.imcode.imcms.vaadin.Theme.Icons._
+  import com.imcode.imcms.vaadin.Theme.Icon._
 
   val mb = new MenuBar
   val miNew = mb.addItem("mi.new".i, New16)

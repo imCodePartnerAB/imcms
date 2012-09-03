@@ -60,6 +60,10 @@ package object imcms {
 
   implicit def stringToResourceBundleValue(string: String) = new ResourceBundleValue(string)
 
+  object I18n {
+    def i(key: String): String = key.i
+    def f(arg: Any, args: Any*)(key: String): String = key.f(arg, args)
+  }
 
   trait ImcmsServicesSupport {
     def imcmsServices(implicit implicitImcmsServices: ImcmsServices = Imcms.getServices) = implicitImcmsServices

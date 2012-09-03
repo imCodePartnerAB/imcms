@@ -68,9 +68,9 @@ try {
  *         Get languages                                                                     *
  ******************************************************************************************* */
 
-List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
-I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage();
-I18nLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().selectedLanguage();
+List<I18nLanguage> languages = Imcms.getServices().getI18nSupport().getLanguages();
+I18nLanguage defaultLanguage = Imcms.getServices().getI18nSupport().getDefaultLanguage();
+I18nLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().languages().selected();
 
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 TextDomainObject text = textEditPage.getText();
