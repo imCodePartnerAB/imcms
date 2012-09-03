@@ -71,7 +71,7 @@
 	  SELECT v FROM DocumentVersion v
 	  WHERE v.id IN (
 	    SELECT max(v.id) FROM DocumentVersion v
-	    WHERE v.docId = :docId)
+	    WHERE v.docId = :docId
 	  )
     ]]>
   </query>
@@ -189,7 +189,7 @@
   <!-- ==================================================================== -->
   <query name="HtmlDoc.getReference">
     <![CDATA[
-    FROM HtmlReference r WHERE r.docId = :docId AND r.docVersionNo = :docVersionNo
+    FROM HtmlReference r WHERE r.docRef = :docRef
     ]]>
   </query>
 
@@ -199,7 +199,7 @@
   <!-- ==================================================================== -->
   <query name="UrlDoc.getReference">
     <![CDATA[
-    FROM UrlReference r WHERE r.docId = :docId AND r.docVersionNo = :docVersionNo
+    FROM UrlReference r WHERE r.docRef = :docRef
     ]]>
   </query>
 
@@ -208,13 +208,13 @@
   <!-- ==================================================================== -->
   <query name="FileDoc.getReferences">
     <![CDATA[
-    FROM FileReference r WHERE r.docId = :docId AND r.docVersionNo = :docVersionNo ORDER BY r.defaultFileId DESC, r.fileId
+    FROM FileReference r WHERE r.docRef = :docRef ORDER BY r.defaultFileId DESC, r.fileId
     ]]>
   </query>
 
   <query name="FileDoc.deleteAllReferences">
     <![CDATA[
-    DELETE FROM FileReference r WHERE r.docId = :docId AND r.docVersionNo = :docVersionNo
+    DELETE FROM FileReference r WHERE r.docRef = :docRef
     ]]>
   </query>
     

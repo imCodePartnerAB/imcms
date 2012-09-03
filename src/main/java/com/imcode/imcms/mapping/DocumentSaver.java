@@ -146,20 +146,20 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void changeDocumentDefaultVersion(Integer docId, Integer docVersionNo, UserDomainObject publisher) {
+    public void changeDocumentDefaultVersion(int docId, int newDefaultDocVersionNo, UserDomainObject publisher) {
         DocumentVersion currentDefaultVersion = documentVersionDao.getDefaultVersion(docId);
 
-        if (!currentDefaultVersion.getNo().equals(docVersionNo)) {
-            DocumentVersion version = documentVersionDao.getVersion(docId, docVersionNo);
+        if (!currentDefaultVersion.getNo().equals(newDefaultDocVersionNo)) {
+            DocumentVersion version = documentVersionDao.getVersion(docId, newDefaultDocVersionNo);
             if (version == null) {
                 throw new IllegalStateException(
-                        String.format("Can not change doc %d version. Version no %d does not exists.",
-                                docId, docVersionNo));
+                        String.format("Doc %d default version can not be changed. Version no %d does not exists.",
+                                docId, newDefaultDocVersionNo));
             }
 
-            documentVersionDao.changeDefaultVersion(docId, version, publisher);
+            documentVersionDao.changeDefaultVersion(version, publisher);
 
-            metaDao.touch(docId, docVersionNo, publisher.getId(), new Date());
+            metaDao.touch(DocRef.of(docId, newDefaultDocVersionNo), publisher);
         }
     }
 
@@ -302,7 +302,7 @@ public class DocumentSaver {
      * Please note that custom (limited) permissions might be changed on save:
      * -If saving user is a super-admin or have full perms on a doc, then all custom perms settings are merely inherited.
      * -Otherwise custom (lim1 and lim2) perms are replaced with predefined set.
-     *
+     * <p/>
      * If user is a super-admin or has full permissions on a new document then
      *
      * @param doc
@@ -312,6 +312,7 @@ public class DocumentSaver {
      * @param <T>
      * @return
      * @throws NoPermissionToAddDocumentToMenuException
+     *
      * @throws DocumentSaveException
      */
     @Transactional
@@ -408,8 +409,8 @@ public class DocumentSaver {
      * Modified copy of legacy updateDocumentRolePermissions method.
      * NB! Compared to legacy this method does not update database.
      *
-     * @param document document being saved
-     * @param user an authorized user
+     * @param document    document being saved
+     * @param user        an authorized user
      * @param oldDocument original doc when updating or null when inserting (a new doc)
      */
     private void newUpdateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,

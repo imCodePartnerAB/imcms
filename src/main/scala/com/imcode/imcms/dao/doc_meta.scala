@@ -24,7 +24,7 @@ class MetaDao extends HibernateSupport {
   def touch(docRef: DocRef, user: UserDomainObject, date: Date): Unit =
     touch(docRef.getDocId, docRef.getDocVersionNo, user.getId, date)
 
-  def touch(docId: Int, docVersionNo: Int, userId: Int, dt: Date) {
+  private def touch(docId: Int, docVersionNo: Int, userId: Int, dt: Date) {
     hibernate.bulkUpdateByNamedParams(
       "UPDATE Meta m SET m.modifiedDatetime = :modifiedDt WHERE m.id = :docId",
 
@@ -33,8 +33,8 @@ class MetaDao extends HibernateSupport {
     )
 
     hibernate.bulkUpdateByNamedParams(
-      """UPDATE DocumentVersion v SET v.modifiedDt = :modifiedDt, v.modifiedBy = :modifiedBy
-         WHERE v.docId = :docId AND v.no = :docVersionNo""",
+      """|UPDATE DocumentVersion v SET v.modifiedDt = :modifiedDt, v.modifiedBy = :modifiedBy
+         |WHERE v.docId = :docId AND v.no = :docVersionNo""".stripMargin,
 
       "modifiedDt" -> dt,
       "modifiedBy" -> userId,
@@ -111,14 +111,14 @@ class MetaDao extends HibernateSupport {
   def saveInclude(include: Include) = hibernate.saveOrUpdate(include)
 
 
-  def deleteHtmlReference(docId: Int, docVersionNo: Int) = hibernate.bulkUpdate(
-    "delete from HtmlReference r where r.docId = ? AND r.docVersionNo = ?", docId, docVersionNo
+  def deleteHtmlReference(docRef: DocRef) = hibernate.bulkUpdate(
+    "delete from HtmlReference r where r.docRef = ?", docRef
   )
 
 
 
-  def deleteUrlReference(docId: Int, docVersionNo: Int) = hibernate.bulkUpdate(
-    "delete from UrlReference r where r.docId = ? AND r.docVersionNo = ?", docId, docVersionNo
+  def deleteUrlReference(docRef: DocRef) = hibernate.bulkUpdate(
+    "delete from UrlReference r where r.docRef = ?", docRef
   )
 
 
@@ -138,30 +138,30 @@ class MetaDao extends HibernateSupport {
   )
 
 
-  def getFileReferences(docId: Int, docVersionNo: Int): JList[FileReference] =
+  def getFileReferences(docRef: DocRef): JList[FileReference] =
     hibernate.listByNamedQueryAndNamedParams(
-      "FileDoc.getReferences", "docId" -> docId, "docVersionNo" -> docVersionNo
+      "FileDoc.getReferences", "docRef" -> docRef
     )
 
 
   def saveFileReference(fileRef: FileReference) = hibernate.saveOrUpdate(fileRef)
 
 
-  def deleteFileReferences(docId: Int, docVersionNo: Int) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
-    "FileDoc.deleteAllReferences", "docId" -> docId, "docVersionNo" -> docVersionNo
+  def deleteFileReferences(docRef: DocRef) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
+    "FileDoc.deleteAllReferences", "docRef" -> docRef
   )
 
 
-  def getHtmlReference(docId: Int, docVersionNo: Int): HtmlReference = hibernate.getByNamedQueryAndNamedParams(
-    "HtmlDoc.getReference", "docId" -> docId, "docVersionNo" -> docVersionNo
+  def getHtmlReference(docRef: DocRef): HtmlReference = hibernate.getByNamedQueryAndNamedParams(
+    "HtmlDoc.getReference", "docRef" -> docRef
   )
 
 
   def saveHtmlReference(reference: HtmlReference) = hibernate.saveOrUpdate(reference)
 
 
-  def getUrlReference(docId: Int, docVersionNo: Int): UrlReference = hibernate.getByNamedQueryAndNamedParams(
-    "UrlDoc.getReference", "docId" -> docId, "docVersionNo" -> docVersionNo
+  def getUrlReference(docRef: DocRef): UrlReference = hibernate.getByNamedQueryAndNamedParams(
+    "UrlDoc.getReference", "docRef" -> docRef
   )
 
 

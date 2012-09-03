@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
 
     <!-- Renderer for DocumentRequest -->
@@ -47,7 +46,7 @@
     </appender>
 
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-        <param name="Threshold" value="${build.log4j.console-appender.threshold}"/>
+        <param name="Threshold" value="${artifact.log4j.console-appender.threshold}"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
         </layout>
@@ -73,19 +72,19 @@
 
     <!--Log all SQL DML statements as they are executed-->
     <category name="org.hibernate.SQL" additivity="false">
-        <priority value="${build.log4j.hibernate.level}"/>
+        <priority value="${artifact.log4j.hibernate.level}"/>
         <appender-ref ref="ALL"/>
     </category>
 
     <!--Log all JDBC parameters-->
     <category name="org.hibernate.type" additivity="false">
-        <priority value="${build.log4j.hibernate.level}"/>
+        <priority value="${artifact.log4j.hibernate.level}"/>
         <appender-ref ref="ALL"/>
     </category>
 
     <!--Log transaction related activity-->
     <category name="org.hibernate.transaction" additivity="false">
-        <priority value="${build.log4j.hibernate.level}"/>
+        <priority value="${artifact.log4j.hibernate.level}"/>
         <appender-ref ref="ALL"/>
     </category>
 
@@ -135,7 +134,7 @@
     </category>
 
     <root>
-        <priority value="${build.log4j.threshold}"/>
+        <priority value="${artifact.log4j.threshold}"/>
         <appender-ref ref="ALL"/>
         <appender-ref ref="ERROR"/>
         <appender-ref ref="CONSOLE"/>

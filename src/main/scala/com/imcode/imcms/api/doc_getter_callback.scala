@@ -12,40 +12,42 @@ import imcode.server.document.textdocument.DocRef
 object DocGetterCallbackUtil {
 
   /** Creates callback and sets it to a user. */
-  def createAndSetDocGetterCallback(request: HttpServletRequest, services: ImcmsServices, user: UserDomainObject) {
+  def updateUserDocGetterCallback(request: HttpServletRequest, services: ImcmsServices, user: UserDomainObject) {
     val currentDocGetterCallback = user.getDocGetterCallback
     val i18nSupport = services.getI18nSupport
     val defaultLanguage = i18nSupport.getDefaultLanguage
     val language = Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE))
                    .map(i18nSupport.getByCode)
-                   .orElse(currentDocGetterCallback |> opt map (_.state.selectedLanguage))
+                   .orElse(currentDocGetterCallback |> opt map (_.languages.selected))
                    .orElse(i18nSupport.getForHost(request.getServerName) |> opt)
                    .getOrElse(defaultLanguage)
 
-    val state = State(language, defaultLanguage)
+    val callbackLanguages = CallbackLanguages(language, defaultLanguage)
     val docGetterCallback =
       (for {
-        docRef <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID))
+        docIdentity <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID))
         docVersionNoStr <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION))
         if !user.isDefaultUser
       } yield {
-        val docId: Int = docRef match {
+        val docId: Int = docIdentity match {
           case IntNum(n) => n
           case _ =>
-            Imcms.getServices.getDocumentMapper.toDocumentId(docRef) |> opt getOrElse {
-              sys.error("Document with identity %s does not exists." format docRef)
+            Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity) |> opt getOrElse {
+              sys.error("Document with identity %s does not exists." format docIdentity)
             }
         }
 
-        Integer.valueOf(docVersionNoStr) match {
-          case DocumentVersion.WORKING_VERSION_NO => WorkingDocGetterCallback(state, docId)
-          case docVersionNo => CustomDocGetterCallback(state, docId, docVersionNo)
+        docVersionNoStr match {
+          case IntNum(DocumentVersion.WORKING_VERSION_NO) => WorkingDocGetterCallback(callbackLanguages, docId)
+          case PosInt(docVersionNo) => CustomDocGetterCallback(callbackLanguages, docId, docVersionNo)
+          case _ =>
+            sys.error("Invalid document version value: %s." format docIdentity)
         }
       }) getOrElse {
         currentDocGetterCallback match {
-          case docGetterCallback: CustomDocGetterCallback => docGetterCallback.copy(state)
-          case docGetterCallback: WorkingDocGetterCallback => docGetterCallback.copy(state)
-          case _ => DefaultDocGetterCallback(state)
+          case docGetterCallback: CustomDocGetterCallback => docGetterCallback.copy(callbackLanguages)
+          case docGetterCallback: WorkingDocGetterCallback => docGetterCallback.copy(callbackLanguages)
+          case _ => DefaultDocGetterCallback(callbackLanguages)
         }
       }
 
@@ -68,22 +70,19 @@ object DocGetterCallbackUtil {
  * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(Integer)
  */
 trait DocGetterCallback {
-  def state: State
+  def languages: CallbackLanguages
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper): DocumentDomainObject
-
-  // legacy code support
-  def selectedLanguage = state.selectedLanguage
 }
 
-case class DefaultDocGetterCallback(state: State) extends DocGetterCallback {
+case class DefaultDocGetterCallback(languages: CallbackLanguages) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    docMapper.getDefaultDocument(docId, state.selectedLanguage) match {
-      case doc if doc != null && !state.selectedLanguageIsDefault && user.isSuperAdmin =>
+    docMapper.getDefaultDocument(docId, languages.selected) match {
+      case doc if doc != null && !languages.selectedIsDefault && user.isSuperAdmin =>
         val meta = doc.getMeta
 
-        if (!meta.getLanguages.contains(state.selectedLanguage)) {
+        if (!meta.getEnabledLanguages.contains(languages.selected)) {
           if (meta.getDisabledLanguageShowSetting == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE)
-            docMapper.getDefaultDocument(docId)
+            docMapper.getDefaultDocument(docId, languages.default)
           else
             null
         } else doc
@@ -92,18 +91,18 @@ case class DefaultDocGetterCallback(state: State) extends DocGetterCallback {
     }
 }
 
-case class WorkingDocGetterCallback(state: State, selectedDocId: Int) extends DocGetterCallback {
+case class WorkingDocGetterCallback(languages: CallbackLanguages, selectedDocId: Int) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    if (selectedDocId == docId) docMapper.getWorkingDocument(docId, state.selectedLanguage)
-    else DefaultDocGetterCallback(state).getDoc(docId, user, docMapper)
+    if (selectedDocId == docId) docMapper.getWorkingDocument(docId, languages.selected)
+    else DefaultDocGetterCallback(languages).getDoc(docId, user, docMapper)
 }
 
-case class CustomDocGetterCallback(state: State, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
+case class CustomDocGetterCallback(languages: CallbackLanguages, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    if (selectedDocId == docId) docMapper.getCustomDocument(DocRef.of(selectedDocId, selectedDocVersionNo), state.selectedLanguage)
-    else DefaultDocGetterCallback(state).getDoc(docId, user, docMapper)
+    if (selectedDocId == docId) docMapper.getCustomDocument(DocRef.of(selectedDocId, selectedDocVersionNo), languages.selected)
+    else DefaultDocGetterCallback(languages).getDoc(docId, user, docMapper)
 }
 
-case class State(selectedLanguage: I18nLanguage, defaultLanguage: I18nLanguage) {
-  val selectedLanguageIsDefault = selectedLanguage == defaultLanguage
+case class CallbackLanguages(selected: I18nLanguage, default: I18nLanguage) {
+  val selectedIsDefault = selected == default
 }

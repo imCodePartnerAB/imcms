@@ -67,7 +67,7 @@ class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Ma
     tblLanguages.removeAllItems
     
     whenSelected(tblMetas) { docId =>
-      docLoaderCache.getMeta(docId).getLanguages foreach { l =>
+      docLoaderCache.getMeta(docId).getEnabledLanguages foreach { l =>
         tblLanguages.addItem(Array(l.getName), l.getId)  
       }
 

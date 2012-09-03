@@ -1,5 +1,7 @@
 package com.imcode.imcms.mapping.orm;
 
+import imcode.server.document.textdocument.DocRef;
+
 import javax.persistence.*;
 
 /**
@@ -12,9 +14,6 @@ public class UrlReference {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;    
 	
-	@Column(name="doc_id")
-	private Integer docId;		
-
 	@Column(name="frame_name")
 	private String urlFrameName;
 	
@@ -30,8 +29,7 @@ public class UrlReference {
 	@Column(name="lang_prefix")	
 	private String urlLanguagePrefix;
 
-    @Column(name="doc_version_no")
-    private Integer docVersionNo;
+    private DocRef docRef;
 
     public String getUrlFrameName() {
 		return urlFrameName;
@@ -73,19 +71,11 @@ public class UrlReference {
 		this.urlLanguagePrefix = urlLanguagePrefix;
 	}
 
-	public Integer getDocId() {
-		return docId;
-	}
-
-	public void setDocId(Integer docId) {
-		this.docId = docId;
-	}
-
-    public Integer getDocVersionNo() {
-        return docVersionNo;
+    public DocRef getDocRef() {
+        return docRef;
     }
 
-    public void setDocVersionNo(Integer docVersionNo) {
-        this.docVersionNo = docVersionNo;
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
     }
 }

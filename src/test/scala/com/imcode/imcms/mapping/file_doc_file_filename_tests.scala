@@ -7,6 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{WordSpec}
 import DocumentStoringVisitor.getFilenameForFileDocumentFile
 import imcms.api.DocumentVersion.WORKING_VERSION_NO
+import imcode.server.document.textdocument.DocRef
 
 @RunWith(classOf[JUnitRunner])
 class FilenameSpec extends WordSpec {
@@ -15,11 +16,11 @@ class FilenameSpec extends WordSpec {
     "doc version is a working version and file id is a blank" should {
       "be just 'docId'" in {
         expect("1001") {
-          getFilenameForFileDocumentFile(1001, WORKING_VERSION_NO, null)
+          getFilenameForFileDocumentFile(DocRef.of(1001, WORKING_VERSION_NO), null)
         }
 
         expect("1111") {
-          getFilenameForFileDocumentFile(1111, WORKING_VERSION_NO, "")
+          getFilenameForFileDocumentFile(DocRef.of(1111, WORKING_VERSION_NO), "")
         }
       }
     }
@@ -27,15 +28,15 @@ class FilenameSpec extends WordSpec {
     "doc version is a working version and file id is *not* a blank" should {
       "be 'docId.fileId'" in {
         expect("1001.10") {
-          getFilenameForFileDocumentFile(1001, WORKING_VERSION_NO, 10.toString)
+          getFilenameForFileDocumentFile(DocRef.of(1001, WORKING_VERSION_NO), 10.toString)
         }
 
         expect("1234.56") {
-          getFilenameForFileDocumentFile(1234, WORKING_VERSION_NO, 56.toString)
+          getFilenameForFileDocumentFile(DocRef.of(1234, WORKING_VERSION_NO), 56.toString)
         }
 
         expect("1212.ok") {
-          getFilenameForFileDocumentFile(1212, WORKING_VERSION_NO, "ok")
+          getFilenameForFileDocumentFile(DocRef.of(1212, WORKING_VERSION_NO), "ok")
         }
       }
     }
@@ -43,11 +44,11 @@ class FilenameSpec extends WordSpec {
     "doc version is not a working version and file id is a blank" should {
       "be 'docId_docVersionNo'" in {
         expect("1001_3") {
-          getFilenameForFileDocumentFile(1001, 3, null)
+          getFilenameForFileDocumentFile(DocRef.of(1001, 30), null)
         }
 
         expect("1111_5") {
-          getFilenameForFileDocumentFile(1111, 5, "")
+          getFilenameForFileDocumentFile(DocRef.of(1111, 5), "")
         }
       }
     }
@@ -55,15 +56,15 @@ class FilenameSpec extends WordSpec {
     "doc version is not a working version and file id is *not* a blank" should {
       "be 'docId_docVersionNo.fileId'" in {
         expect("1001_4.2") {
-          getFilenameForFileDocumentFile(1001, 4, 2.toString)
+          getFilenameForFileDocumentFile(DocRef.of(1001, 4), 2.toString)
         }
 
         expect("3210_6.11") {
-          getFilenameForFileDocumentFile(3210, 6, 11.toString)
+          getFilenameForFileDocumentFile(DocRef.of(3210, 6), 11.toString)
         }
 
         expect("3412_2.abc") {
-          getFilenameForFileDocumentFile(3412, 2, "abc")
+          getFilenameForFileDocumentFile(DocRef.of(3412, 2), "abc")
         }
       }
     }

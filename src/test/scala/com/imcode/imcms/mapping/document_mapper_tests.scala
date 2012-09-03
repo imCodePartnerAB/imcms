@@ -5,8 +5,8 @@ import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.Imcms
 import _root_.imcode.server.document._
 import _root_.imcode.util.io.InputStreamSource
-import _root_.imcode.server.document.textdocument._
 import scala.collection.JavaConverters._
+import _root_.imcode.server.document.textdocument._
 import java.io.ByteArrayInputStream
 import java.util.EnumSet
 import org.apache.commons.io.FileUtils
@@ -342,7 +342,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       assertEquals(fdf.getFilename, "test_file_%d.txt" format i)
       assertEquals(fdf.getMimeType(), "text")
 
-      val file = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getId, doc.getVersionNo.intValue, fdfId)
+      val file = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getRef, fdfId)
       assertTrue(file.exists)
 
       val content = FileUtils.readFileToString(file)
@@ -749,7 +749,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     for (i <- 0 to 2) {
       val fdfId = "file_id_" + i
-      val file = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getId, doc.getVersionNo.intValue, fdfId)
+      val file = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getRef, fdfId)
 
       assertTrue(file.exists)
     }
@@ -759,7 +759,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     for (i <- 0 to 2) {
       val fdfId = "file_id_" + i
-      val file = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getId, doc.getVersionNo.intValue, fdfId)
+      val file = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getRef, fdfId)
 
       assertTrue(!file.exists)
     }

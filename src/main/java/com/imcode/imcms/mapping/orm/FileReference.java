@@ -1,7 +1,9 @@
 /**
- * 
+ *
  */
 package com.imcode.imcms.mapping.orm;
+
+import imcode.server.document.textdocument.DocRef;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,94 +18,83 @@ import javax.persistence.Table;
  * FileDocumentDomainObject Hibernate ORM.
  */
 @Entity
-@Table(name="fileupload_docs")
+@Table(name = "fileupload_docs")
 public class FileReference {
-	
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
-	
-	@Column(name="meta_id")
-	private Integer docId;
 
-	@Column(name="doc_version_no")
-	private Integer docVersionNo;	    
-	
-	@Column(name="filename")
-	private String filename;
-	
-	@Column(name="created_as_image")
-	private Boolean createdAsImage;
-	
-	@Column(name="mime")
-	private String mimeType;
-	
-	@Column(name="default_variant")
-	private Boolean defaultFileId;
-	
-	@Column(name="variant_name")
-	private String fileId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "filename")
+    private String filename;
+
+    @Column(name = "created_as_image")
+    private Boolean createdAsImage;
+
+    @Column(name = "mime")
+    private String mimeType;
+
+    @Column(name = "default_variant")
+    private Boolean defaultFileId;
+
+    @Column(name = "variant_name")
+    private String fileId;
+
+    private DocRef docRef;
 
     public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-	public Boolean getCreatedAsImage() {
-		return createdAsImage;
-	}
-
-	public void setCreatedAsImage(Boolean createdAsImage) {
-		this.createdAsImage = createdAsImage;
-	}
-
-	public Boolean isDefaultFileId() {
-		return defaultFileId;
-	}
-
-	public void setDefaultFileId(Boolean defaultFileId) {
-		this.defaultFileId = defaultFileId;
-	}
-
-	public String getMimeType() {
-		return mimeType;
-	}
-
-	public void setMimeType(String mimeType) {
-		this.mimeType = mimeType;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Integer getDocId() {
-		return docId;
-	}
-
-	public void setDocId(Integer docId) {
-		this.docId = docId;
-	}
-
-	public String getFileId() {
-		return fileId;
-	}
-
-	public void setFileId(String fileId) {
-		this.fileId = fileId;
-	}
-
-    public Integer getDocVersionNo() {
-        return docVersionNo;
+        return filename;
     }
 
-    public void setDocVersionNo(Integer docVersionNo) {
-        this.docVersionNo = docVersionNo;
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public Boolean getCreatedAsImage() {
+        return createdAsImage;
+    }
+
+    public void setCreatedAsImage(Boolean createdAsImage) {
+        this.createdAsImage = createdAsImage;
+    }
+
+    public Boolean isDefaultFileId() {
+        return defaultFileId;
+    }
+
+    public void setDefaultFileId(Boolean defaultFileId) {
+        this.defaultFileId = defaultFileId;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
+    }
+
+    public DocRef getDocRef() {
+        return docRef;
+    }
+
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
     }
 }

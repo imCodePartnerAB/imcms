@@ -1,9 +1,9 @@
 package com
 
-import _root_.imcode.server.document.index.solr.SolrDocumentIndexService
-import scala.util.control.{Exception => Ex}
-
 package object imcode {
+
+  import _root_.imcode.server.document.index.solr.SolrDocumentIndexService
+  import scala.util.control.{Exception => Ex}
 
   type JBoolean = java.lang.Boolean
   type JByte = java.lang.Byte

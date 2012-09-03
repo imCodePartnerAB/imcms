@@ -15,11 +15,12 @@ import org.scalatest._
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
+import com.imcode.imcms.test.fixtures.UserFX
 
 @RunWith(classOf[JUnitRunner])
 class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAfter with GivenWhenThen {
 
-  implicit object DocumentVersion extends Ordering[DocumentVersion] {
+  implicit object OrderingDocumentVersion extends Ordering[DocumentVersion] {
     def compare(v1: DocumentVersion, v2: DocumentVersion) = v1.getNo.intValue - v2.getNo.intValue
   }
 
@@ -52,12 +53,12 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
     }
 
 
-  "DocVersionDao.getVersion" should {
-    "return version if it exists" in {
+  ".getVersion" should {
+    "return version when the version exists" in {
       getVersion(assertExists = true)
     }
 
-    "return [null] if version does *not* exist" in {
+    "return [null] when the version does *not* exist" in {
       expect(null) {
         getVersion(1002, 0, assertExists = false)
       }
@@ -65,7 +66,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
   }
 
 
-  "DocVersionDao.getLatestVersion" should {
+  ".getLatestVersion" should {
     "return version with highest 'no' for existing document" in {
       val maxVersion = versionDao.getAllVersions(1001).asScala.max
       val latestVersion = versionDao.getLatestVersion(1001)
@@ -76,13 +77,13 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
       assertEquals(latestVersion, maxVersion)
     }
 
-    "return [null] if there is *no* version(s) for provided docId" in {
+    "return [null] if there is *no* version(s) with provided docId" in {
       assert(versionDao.getLatestVersion(1002) == null)
     }
   }
 
 
-  "DocVersionDao.changeDefaultVersion" should {
+  ".changeDefaultVersion" should {
     "change version when changing it to an existing version" in {
       given("default version is [0]")
       val version0 = getVersion(1001, 0)
@@ -94,7 +95,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
       }
 
       when("change it from 0 to 1")
-      versionDao.changeDefaultVersion(1001, 1, 0)
+      versionDao.changeDefaultVersion(version1, UserFX.mkSuperAdmin)
 
       then("default version should eq [version 1]")
       versionDao.getDefaultVersion(1001) |> { defaultVersion =>
@@ -104,14 +105,16 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
     }
 
     "throw an exception when changing it to non existing version" in {
+      val nonExistingVersion = getVersion(1001, 1).clone() |>> { _.setDocId(1002) }
+
       intercept[Exception] {
-        versionDao.changeDefaultVersion(1002, 1, 0)
+        versionDao.changeDefaultVersion(nonExistingVersion, UserFX.mkSuperAdmin)
       }
     }
   }
 
 
-  "DocVersionDao.getDefaultVersion" should {
+  ".getDefaultVersion" should {
     "return null when it (or a doc) does not exists" in {
       assert(versionDao.getDefaultVersion(1002) == null)
     }
@@ -125,7 +128,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
   }
 
 
-  "DocVersionDao.createVersion" should {
+  ".createVersion" should {
     "create a new version with no [0] if there is no previous versions" in {
       assert(createVersion(1002).getNo === 0)
     }
@@ -136,7 +139,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
     }
   }
 
-  "DocVersionDao.getAllVersions" should {
+  ".getAllVersions" should {
     "return all existing version sorted ascending by 'no'" in {
       val versions = versionDao.getAllVersions(1001)
 
@@ -144,7 +147,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
       assert(versions.asScala.max.getNo === 2)
     }
 
-    "return empty collection if no version exist" in {
+    "return empty list if no version exist" in {
       assert(versionDao.getAllVersions(1002).isEmpty)
     }
   }

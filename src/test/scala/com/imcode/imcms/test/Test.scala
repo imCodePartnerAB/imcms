@@ -122,8 +122,8 @@ trait TestDb { test: Test =>
     def recreate() {
       test.env.getRequiredProperty("DBName") |> { dbName =>
         new DB(createDataSource(DataSourceUrlType.WithoutDBName)) |> { db =>
-          db.template.update("DROP DATABASE IF EXISTS %s" format dbName)
-          db.template.update("CREATE DATABASE %s" format dbName)
+          db.jdbcTemplate.update("DROP DATABASE IF EXISTS %s" format dbName)
+          db.jdbcTemplate.update("CREATE DATABASE %s" format dbName)
         }
       }
     }

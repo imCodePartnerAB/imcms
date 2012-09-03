@@ -30,18 +30,18 @@
         <javac.deprecation>false</javac.deprecation>
         <javac.args></javac.args>
 
-        <build.log4j.threshold>info</build.log4j.threshold>
-        <build.log4j.hibernate.level>error</build.log4j.hibernate.level>
-        <build.log4j.console-appender.threshold>off</build.log4j.console-appender.threshold>
+        <artifact.log4j.threshold>info</artifact.log4j.threshold>
+        <artifact.log4j.hibernate.level>error</artifact.log4j.hibernate.level>
+        <artifact.log4j.console-appender.threshold>off</artifact.log4j.console-appender.threshold>
     </properties>
 
     <profiles>
         <profile>
             <id>trace</id>
             <properties>
-                <build.log4j.hibernate.level>all</build.log4j.hibernate.level>
-                <build.log4j.console-appender.threshold>all</build.log4j.console-appender.threshold>
-                <build.log4j.threshold>all</build.log4j.threshold>
+                <artifact.log4j.hibernate.level>all</artifact.log4j.hibernate.level>
+                <artifact.log4j.console-appender.threshold>all</artifact.log4j.console-appender.threshold>
+                <artifact.log4j.threshold>all</artifact.log4j.threshold>
 
                 <javac.args>-Xlint</javac.args>
                 <javac.deprecation>true</javac.deprecation>
@@ -51,9 +51,9 @@
         <profile>
             <id>debug</id>
             <properties>
-                <build.log4j.hibernate.level>debug</build.log4j.hibernate.level>
-                <build.log4j.console-appender.threshold>debug</build.log4j.console-appender.threshold>
-                <build.log4j.threshold>debug</build.log4j.threshold>
+                <artifact.log4j.hibernate.level>debug</artifact.log4j.hibernate.level>
+                <artifact.log4j.console-appender.threshold>debug</artifact.log4j.console-appender.threshold>
+                <artifact.log4j.threshold>debug</artifact.log4j.threshold>
 
                 <javac.args>-Xlint</javac.args>
                 <javac.deprecation>true</javac.deprecation>
@@ -324,7 +324,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin</artifactId>
-            <version>6.7.6</version>
+            <version>6.8.2</version>
         </dependency>
 
         <dependency>
@@ -341,9 +341,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.ibatis</groupId>
-            <artifactId>ibatis-sqlmap</artifactId>
-            <version>2.3.0</version>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.1.1</version>
         </dependency>
 
         <dependency>

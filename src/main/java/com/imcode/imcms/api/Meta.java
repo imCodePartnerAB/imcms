@@ -105,7 +105,7 @@ public class Meta implements Serializable, Cloneable {
     private Integer id;
 
     @Column(name = "default_version_no", nullable = false)
-    private Integer defaultVersionNo = 0;
+    private int defaultVersionNo = DocumentVersion.WORKING_VERSION_NO;
 
 
     /**
@@ -283,7 +283,7 @@ public class Meta implements Serializable, Cloneable {
             joinColumns = @JoinColumn(name = "doc_id"),
             inverseJoinColumns = @JoinColumn(name = "language_id")
     )
-    private Set<I18nLanguage> languages = new HashSet<I18nLanguage>();
+    private Set<I18nLanguage> enabledLanguages = new HashSet<I18nLanguage>();
 
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -327,7 +327,7 @@ public class Meta implements Serializable, Cloneable {
             clone.categoryIds = new HashSet<Integer>(categoryIds);
 
             clone.keywords = new HashSet<String>(keywords);
-            clone.languages = new HashSet<I18nLanguage>(languages);
+            clone.enabledLanguages = new HashSet<I18nLanguage>(enabledLanguages);
 
             if (permissionSets != null) {
                 clone.permissionSets = permissionSets.clone();
@@ -582,12 +582,12 @@ public class Meta implements Serializable, Cloneable {
         this.disabledLanguageShowSetting = disabledLanguageShowSetting;
     }
 
-    public Set<I18nLanguage> getLanguages() {
-        return languages;
+    public Set<I18nLanguage> getEnabledLanguages() {
+        return enabledLanguages;
     }
 
-    public void setLanguages(Set<I18nLanguage> languages) {
-        this.languages = languages != null ? languages : new HashSet<I18nLanguage>();
+    public void setEnabledLanguages(Set<I18nLanguage> languages) {
+        this.enabledLanguages = languages != null ? languages : new HashSet<I18nLanguage>();
     }
 
     // Transient properties

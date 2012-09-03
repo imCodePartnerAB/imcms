@@ -1,8 +1,6 @@
 package com.imcode
 package imcms.admin
 
-
-
 import scala.collection.JavaConversions._
 import com.imcode._
 import com.vaadin.data.Property

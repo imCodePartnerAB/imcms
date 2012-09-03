@@ -898,7 +898,7 @@ public class DocumentMapper implements DocumentGetter {
         UserDomainObject user = Imcms.getUser();
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
         I18nLanguage language = callback != null
-                ? callback.state().selectedLanguage()
+                ? callback.languages().selected()
                 : imcmsServices.getI18nSupport().getDefaultLanguage();
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
@@ -1059,7 +1059,7 @@ public class DocumentMapper implements DocumentGetter {
 
         @Override
         public boolean accept(File file, int fileDocumentId, int docVersionNo, String fileId) {
-            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocumentFile(fileDocumentId, fileDocument.getVersionNo(), fileId));
+            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocumentFile(DocRef.of(fileDocumentId, fileDocument.getVersionNo()), fileId));
             boolean fileDocumentHasFile = null != fileDocument.getFile(fileId);
             return fileDocumentId == fileDocument.getId()
                     && docVersionNo == fileDocument.getVersionNo()

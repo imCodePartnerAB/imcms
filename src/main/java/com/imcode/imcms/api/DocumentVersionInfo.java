@@ -82,7 +82,7 @@ public class DocumentVersionInfo implements Serializable {
 
     
     public static boolean isWorkingVersion(DocumentVersion version) {
-        return version != null && DocumentVersion.WORKING_VERSION_NO.equals(version.getNo());
+        return version != null && DocumentVersion.WORKING_VERSION_NO == version.getNo();
     }
     
 	

@@ -86,27 +86,30 @@ public final class I18nLanguage implements Serializable, Cloneable {
     protected I18nLanguage() {
     }
 
-
     @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof I18nLanguage)) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof I18nLanguage)) return false;
 
-        if (this == object) {
-            return true;
-        }
+        I18nLanguage language = (I18nLanguage) o;
 
-        I18nLanguage that = (I18nLanguage) object;
+        if (enabled != language.enabled) return false;
+        if (code != null ? !code.equals(language.code) : language.code != null) return false;
+        if (id != null ? !id.equals(language.id) : language.id != null) return false;
+        if (name != null ? !name.equals(language.name) : language.name != null) return false;
+        if (nativeName != null ? !nativeName.equals(language.nativeName) : language.nativeName != null) return false;
 
-        return new EqualsBuilder()
-                .append(code, that.code).isEquals();
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(11, 31)
-                .append(code).toHashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (code != null ? code.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (enabled ? 1 : 0);
+        result = 31 * result + (nativeName != null ? nativeName.hashCode() : 0);
+        return result;
     }
 
     @Override

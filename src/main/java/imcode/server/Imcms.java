@@ -40,44 +40,47 @@ public class Imcms {
     public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
 
     /**
-     * Absolute application (deployment) path.
-     */
-    private static File path;
-
-    /**
-     * Prefs config path relative to deployment path.
+     * Default prefs config path relative to deployment path.
      */
     private static final String DEFAULT_PREFS_CONFIG_PATH = "WEB-INF/conf";
 
     /**
-     * SQL scripts directory path relative to deployment path
+     * Default SQL scripts directory path relative to deployment path
      */
     private static final String DEFAULT_SQL_SCRIPTS_PATH = "WEB-INF/sql";
 
     /**
-     * Embedded solr home directory, elative to deployment path
+     * Default Embedded SOLr home directory relative to deployment path
      */
     private static final String DEFAULT_SQLR_HOME = "WEB-INF/solr";
 
-    private static Logger logger = Logger.getLogger(Imcms.class);
+    private static final Logger logger = Logger.getLogger(Imcms.class);
+
+    /**
+     * imCMS deployment (real context) path.
+     */
+    private static volatile File path;
 
     /**
      * Core services.
      */
-    private static ImcmsServices services;
-
-    /**
-     * Used to disable db init/upgrade on start.
-     */
-    private static boolean prepareDatabaseOnStart = true;
+    private static volatile ImcmsServices services;
 
     /**
      * Spring-framework application context.
      */
-    public static ApplicationContext applicationContext;
+    private static volatile ApplicationContext applicationContext;
 
-    private static String sqlScriptsPath = DEFAULT_SQL_SCRIPTS_PATH;
-    private static String solrHome = DEFAULT_SQLR_HOME;
+    private static volatile String sqlScriptsPath = DEFAULT_SQL_SCRIPTS_PATH;
+
+    private static volatile String solrHome = DEFAULT_SQLR_HOME;
+
+    private static volatile String serverPropertiesFilename = SERVER_PROPERTIES_FILENAME;
+
+    /**
+     * Used to disable db init/upgrade on start.
+     */
+    private static volatile boolean prepareDatabaseOnStart = true;
 
     /**
      * Users associated with servlet requests.
@@ -86,18 +89,13 @@ public class Imcms {
      */
     private static InheritableThreadLocal<UserDomainObject> users = new InheritableThreadLocal<UserDomainObject>();
 
-    private static String serverPropertiesFilename = SERVER_PROPERTIES_FILENAME;
 
-
-    /**
-     * Can not be instantiated directly.
-     */
     private Imcms() {
     }
 
 
     /**
-     * @return ImcmsServices interface implementation.
+     * @return ImcmsServices
      */
     public static ImcmsServices getServices() {
         return services;
@@ -110,7 +108,7 @@ public class Imcms {
      *
      * @throws StartupException
      */
-    public static void start() throws StartupException {
+    public static synchronized void start() throws StartupException {
         try {
             if (path == null) {
                 throw new IllegalStateException("Imcms path is not set.");
@@ -188,13 +186,13 @@ public class Imcms {
         }
     }
 
-    public synchronized static void restartCms() {
+    public static synchronized void restartCms() {
         stop();
         start();
     }
 
 
-    public static void stop() {
+    public static synchronized void stop() {
         Prefs.flush();
 
         if (services != null) {
@@ -213,30 +211,30 @@ public class Imcms {
 
 
     /**
-     * Associates a user with a current thread.
-     * This is a system call - must be never used in a client code.
+     * Associates a user with a current request thread.
+     * Must not be called from a client code.
      */
     public static void setUser(UserDomainObject user) {
         users.set(user);
     }
 
     /**
-     * Removes a user from a current thread.
-     * This is a system call - must be never used in a client code.
+     * Removes a user from a current request thread.
+     * Must not be called from a client code.
      */
     public static void removeUser() {
         users.set(null);
     }
 
     /**
-     * @return a user associated with a current thread.
+     * @return a user associated with a current request thread.
      */
     public static UserDomainObject getUser() {
         return users.get();
     }
 
     /**
-     * Initializes I18N support.
+     * Creates and initializes I18N support.
      * Reads languages from the database.
      */
     private static I18nSupport createI18nSupport() {

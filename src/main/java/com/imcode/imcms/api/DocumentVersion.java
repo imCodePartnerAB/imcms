@@ -1,7 +1,6 @@
 package com.imcode.imcms.api;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
+import com.google.common.base.Objects;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -14,20 +13,19 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * A document version.
+ * Document content version.
  */
 @Entity
 @Table(name = "imcms_doc_versions")
 public class DocumentVersion implements Cloneable {
 
-    /** Working version no is always 0. */
-    public static final Integer WORKING_VERSION_NO = 0;
+    public static final int WORKING_VERSION_NO = 0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "doc_id", updatable = false)
+    @Column(name = "doc_id", updatable = false, nullable = false)
     private Integer docId;
 
     private Integer no;
@@ -67,26 +65,41 @@ public class DocumentVersion implements Cloneable {
     }
 
     @Override
-    public boolean equals(Object that) {
-        return this == that
-            ? true
-            : that instanceof DocumentVersion
-                ? hashCode() == that.hashCode()
-                : false;
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof DocumentVersion)) return false;
+
+        DocumentVersion that = (DocumentVersion)other;
+
+        return that.canEqual(this)
+                && Objects.equal(this.id, that.id)
+                && Objects.equal(this.no, that.no)
+                && Objects.equal(this.docId, that.docId)
+                && Objects.equal(this.createdBy, that.createdBy)
+                && Objects.equal(this.createdDt, that.createdDt)
+                && Objects.equal(this.modifiedBy, that.modifiedBy)
+                && Objects.equal(this.modifiedDt, that.modifiedDt);
     }
+
+    protected boolean canEqual(Object other) { return other instanceof DocumentVersion; }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 3)
-            .append(id)
-            .append(no)
-            .append(docId)
-            .append(createdBy)
-            .append(createdDt)
-            .append(modifiedBy)
-            .append(modifiedDt)
-            .toHashCode();
+        return Objects.hashCode(id, no, docId, createdBy, createdDt, modifiedBy, modifiedDt);
 
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("id", id)
+                .add("docId", docId)
+                .add("no", no)
+                .add("createdBy", createdBy)
+                .add("createdDt", createdDt)
+                .add("modifiedBy", modifiedBy)
+                .add("modifiedDt", modifiedDt)
+                .toString();
     }
 
     public Long getId() {

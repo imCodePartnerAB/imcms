@@ -16,7 +16,7 @@ class DocumentVersionDao extends HibernateSupport {
    *
    * @return new document version.
    */
-  def createVersion(docId: JInteger, userId: JInteger): DocumentVersion = synchronized {
+  def createVersion(docId: Int, userId: Int): DocumentVersion = synchronized {
     val no = getLatestVersion(docId) match {
       case null => 0
       case version => version.getNo.intValue + 1
@@ -26,7 +26,7 @@ class DocumentVersionDao extends HibernateSupport {
   }
 
 
-  def getLatestVersion(docId: JInteger): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
+  def getLatestVersion(docId: Int): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
     "DocumentVersion.getLatestVersion", "docId" -> docId
   )
 
@@ -36,36 +36,31 @@ class DocumentVersionDao extends HibernateSupport {
    * @param docId meta id.
    * @return available versions for the document.
    */
-  def getAllVersions (docId: JInteger): JList[DocumentVersion] = hibernate.listByNamedQueryAndNamedParams(
+  def getAllVersions (docId: Int): JList[DocumentVersion] = hibernate.listByNamedQueryAndNamedParams(
     "DocumentVersion.getByDocId", "docId" -> docId
   )
 
 
+  def getVersion(docId: Int, no: Int): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
+    "DocumentVersion.getByDocIdAndNo", "docId" -> docId, "no" -> no
+  )
 
-  def getDefaultVersion(docId: JInteger): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
+
+  def getDefaultVersion(docId: Int): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
     "DocumentVersion.getDefaultVersion", "docId" -> docId
   )
 
 
-  def changeDefaultVersion(docId: JInteger, version: DocumentVersion, publisher: UserDomainObject): Int =
-    changeDefaultVersion(docId, version.getNo, publisher.getId)
+  def changeDefaultVersion(newDefaultVersion: DocumentVersion, publisher: UserDomainObject) {
+    hibernate.bulkUpdateByNamedQueryAndNamedParams(
+      "DocumentVersion.changeDefaultVersion",
 
-
-  def changeDefaultVersion(docId: JInteger, no: JInteger, publisherId: JInteger) =
-    getVersion(docId, no) |> { version =>
-      require(version != null, "Version must exists")
-
-      hibernate.bulkUpdateByNamedQueryAndNamedParams(
-        "DocumentVersion.changeDefaultVersion",
-
-        "defaultVersionNo" -> no,
-        "publisherId" -> publisherId,
-        "docId" -> docId
-      )
+      "docId" -> newDefaultVersion.getDocId,
+      "defaultVersionNo" -> newDefaultVersion.getNo,
+      "publisherId" -> publisher.getId
+    ) |> {
+      case 0 => sys.error("Default document version can not be changed. Version %s does not exists.".format(newDefaultVersion))
+      case _ =>
     }
-
-
-  def getVersion(docId: JInteger, no: JInteger): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
-    "DocumentVersion.getByDocIdAndNo", "docId" -> docId, "no" -> no
-  )
+  }
 }

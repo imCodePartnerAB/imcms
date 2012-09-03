@@ -1,32 +1,30 @@
-package com.imcode.imcms.db
+package com.imcode
+package imcms.db
 
 import javax.sql.DataSource
 import org.springframework.jdbc.core.JdbcTemplate
 
 import scala.collection.JavaConverters._
 import java.sql.{ResultSet, Connection}
-import com.ibatis.common.jdbc.ScriptRunner
+import org.apache.ibatis.jdbc.ScriptRunner
 import org.springframework.jdbc.core.{ConnectionCallback, RowMapper}
 import java.io.FileReader
-import com.imcode._
 
 class DB(ds: DataSource) extends Slf4jLoggerSupport {
   
-  val template = new JdbcTemplate(ds)
+  val jdbcTemplate = new JdbcTemplate(ds)
 
-  def tables(): List[String] = template.query("SHOW TABLES", new RowMapper[String] {
+  def tables(): List[String] = jdbcTemplate.query("SHOW TABLES", new RowMapper[String] {
     def mapRow(rs: ResultSet, rowNum: Int) = rs getString 1
   }).asScala.toList
 
-  def isEmpty(): Boolean = tables().isEmpty
+  def isNew(): Boolean = tables().isEmpty
 
-  def version(): Version = template.queryForObject("""SELECT concat(major, '.', minor) FROM database_version""",
-                                                   classOf[String])
+  def version(): Version = jdbcTemplate.queryForObject("""SELECT concat(major, '.', minor) FROM database_version""", classOf[String])
 
   def updateVersion(newVersion: Version): Unit = synchronized {
     logger.info("Updating database version from %s to %s.".format(version(), newVersion))
-    template.update("UPDATE database_version SET major=?, minor=?", Int box newVersion.major,
-                                                                    Int box newVersion.minor)
+    jdbcTemplate.update("UPDATE database_version SET major=?, minor=?", Int.box(newVersion.major), Int.box(newVersion.minor))
   }
 
   def prepare(schema: Schema): Version = synchronized {
@@ -60,17 +58,12 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
           }
 
         case unexpectedDbVersion =>
-          Left("Unexpected database version. Database version: %s is greater than required version: %s."
-                         .format(unexpectedDbVersion, schema.version))
+          Left("Unexpected database version. Database version: %s is greater than required version: %s.".format(unexpectedDbVersion, schema.version))
       }
     } // update
 
     logger.info("Preparing databse.")
-
-                  // logger.error(errorMsg)
-                  // sys.error(errorMsg)
-
-    if (isEmpty()) {
+    if (isNew()) {
       logger.info("Database is empty and need to be initialized.")
       logger.info("The following init will be applied: %s." format schema.init)
 
@@ -91,16 +84,19 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
   }
 
   def runScripts(scripts: Seq[String]): Unit = synchronized {
-    template execute new ConnectionCallback[Unit] {
+    jdbcTemplate.execute(new ConnectionCallback[Unit] {
       def doInConnection(connection: Connection) {
-        val scriptRunner = new ScriptRunner(connection, false, true)
+        val scriptRunner = new ScriptRunner(connection) |>> { sr =>
+          sr.setAutoCommit(false)
+          sr.setStopOnError(true)
+        }
 
-        scripts foreach { script =>
+        for (script <- scripts) {
           logger.debug("Running script %s." format script)
 
           using(new FileReader(script)) { scriptRunner runScript _ }
         }
       }
-    }
+    })
   }
 }

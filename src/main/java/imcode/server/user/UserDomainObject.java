@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -306,17 +305,17 @@ public class UserDomainObject implements Cloneable, Serializable {
         this.emailAddress = emailAddress;
     }
 
-    private AtomicReference<DocGetterCallback> docGetterCallbackRef = new AtomicReference<DocGetterCallback>();
+    private volatile DocGetterCallback docGetterCallbackRef;
 
     /**
      * @return document getter callback associated with this user.
      */
     public DocGetterCallback getDocGetterCallback() {
-        return docGetterCallbackRef.get();
+        return docGetterCallbackRef;
     }
 
     public void setDocGetterCallback(DocGetterCallback callback) {
-        docGetterCallbackRef.set(callback);
+        this.docGetterCallbackRef  = callback;
     }    
 
     /**
@@ -757,9 +756,9 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
     
     private boolean languageIsActive(DocumentDomainObject document) {
-    	I18nLanguage currentLanguage = getDocGetterCallback().state().selectedLanguage();
+    	I18nLanguage currentLanguage = getDocGetterCallback().languages().selected();
     	Meta meta = document.getMeta();
-    	boolean enabled = meta.getLanguages().contains(currentLanguage);
+    	boolean enabled = meta.getEnabledLanguages().contains(currentLanguage);
     	
     	return enabled ||
     		meta.getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE;

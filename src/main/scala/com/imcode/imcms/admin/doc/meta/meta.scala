@@ -126,7 +126,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         Right(doc.clone, Map.empty[I18nLanguage, I18nMeta])
       ).merge(appearanceEditorOpt.map(_.data.get())) {
           case ((dc, _), appearance) => (dc, appearance.i18nMetas) |>> { _ =>
-            dc.getMeta.setLanguages(appearance.enabledLanguages)
+            dc.getMeta.setEnabledLanguages(appearance.enabledLanguages)
             dc.getMeta.setI18nShowMode(appearance.disabledLanguageShowSetting)
             dc.getMeta.setAlias(appearance.alias.orNull)
             dc.getMeta.setTarget(appearance.target)
@@ -224,7 +224,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     // version
     val (versionsNos, defaultVersionNo) = meta.getId match {
       case null =>
-        Seq(DocumentVersion.WORKING_VERSION_NO) -> DocumentVersion.WORKING_VERSION_NO
+        Seq[JInteger](DocumentVersion.WORKING_VERSION_NO) -> DocumentVersion.WORKING_VERSION_NO
 
       case id =>
         val versionInfo = imcmsServices.getDocumentMapper.getDocumentVersionInfo(id)
@@ -613,7 +613,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
       val isDefaultLanguage = language == defaultLanguage
 
       chkBox.setReadOnly(false)
-      chkBox.checked = isDefaultLanguage || meta.getLanguages.contains(language)
+      chkBox.checked = isDefaultLanguage || meta.getEnabledLanguages.contains(language)
       chkBox.setReadOnly(isDefaultLanguage)
 
       i18nMetas.get(language) match {

@@ -13,7 +13,6 @@ import java.nio.charset.Charset;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import javax.mail.Session;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -115,7 +114,7 @@ public class ImcmsFilter implements Filter {
                 Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
                 Imcms.setUser(user);
-                DocGetterCallbackUtil.createAndSetDocGetterCallback(request, Imcms.getServices(), user);
+                DocGetterCallbackUtil.updateUserDocGetterCallback(request, Imcms.getServices(), user);
 
                 Utility.initRequestWithApi(request, user);
 

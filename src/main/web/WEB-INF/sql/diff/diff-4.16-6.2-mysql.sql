@@ -46,9 +46,9 @@ INSERT INTO sys_data (
 );
 
 --
--- Doc languages
+-- Languages supported by documents
 -- 
--- enabled document languages
+-- document supported languages
 CREATE TABLE `imcms_doc_languages` (
   `id` int AUTO_INCREMENT PRIMARY KEY,
   `doc_id` int NOT NULL,
@@ -176,7 +176,7 @@ ALTER TABLE meta
   DROP COLUMN meta_headline,
   DROP COLUMN meta_text,
   DROP COLUMN meta_image,
-  -- todo: move to properties.
+  -- todo: move to properties???
   ADD COLUMN  `disabled_language_show_rule` varchar(32) NOT NULL DEFAULT 'DO_NOT_SHOW';
   --  COMMENT 'Possible values: DO_NOT_SHOW, SHOW_IN_DEFAULT_LANGUAGE';
 
@@ -345,7 +345,7 @@ INSERT INTO __fileupload_docs (
   default_variant
 ) SELECT
   meta_id,
-  0,
+  @doc_version_no,
   variant_name,
   filename,
   mime,
@@ -870,7 +870,7 @@ ALTER TABLE includes
 
 -- archive xxx - new in RB 4
 
--- category_roles ADDED ???
+-- category_roles -> archieve_category_roles
 -- category_types Y 4.11 is_image_archive
 -- childs Y 5.x added id, meta_id renamed to doc_id - revert.
 -- childs_history NO, but ??? no track info

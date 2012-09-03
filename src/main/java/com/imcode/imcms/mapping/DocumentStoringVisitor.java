@@ -59,12 +59,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     /**
      * Saves (possibly rewrites) file if its InputStreamSource has been changed.
      *
-     * @param fileDocumentId
-     * @param docVersionNo
      * @param fileDocumentFile
      * @param fileId
      */
-    protected void saveFileDocumentFile(int fileDocumentId, Integer docVersionNo, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
+    protected void saveFileDocumentFile(DocRef docRef, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
                                         String fileId) {
         try {
             InputStreamSource inputStreamSource = fileDocumentFile.getInputStreamSource();
@@ -72,14 +70,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             try {
                 in = inputStreamSource.getInputStream();
             } catch (FileNotFoundException e) {
-                throw new UnhandledException("The file for filedocument " + fileDocumentId
+                throw new UnhandledException("The file for filedocument " + docRef
                         + " has disappeared.", e);
             }
             if (null == in) {
                 return;
             }
 
-            File file = getFileForFileDocumentFile(fileDocumentId, docVersionNo, fileId);
+            File file = getFileForFileDocumentFile(docRef, fileId);
 
             FileInputStreamSource fileInputStreamSource = new FileInputStreamSource(file);
             boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(fileInputStreamSource);
@@ -91,7 +89,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             byte[] buffer = new byte[FILE_BUFFER_LENGTH];
             final OutputStream out = new FileOutputStream(file);
             try {
-                for (int bytesRead; -1 != (bytesRead = in.read(buffer));) {
+                for (int bytesRead; -1 != (bytesRead = in.read(buffer)); ) {
                     out.write(buffer, 0, bytesRead);
                 }
             } finally {
@@ -108,9 +106,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     /**
      * Returns file for FileDocumentFile.
      */
-    public static File getFileForFileDocumentFile(int fileDocumentId, int docVersionNo, String fileId) {
+    public static File getFileForFileDocumentFile(DocRef docRef, String fileId) {
         File filePath = Imcms.getServices().getConfig().getFilePath();
-        String filename = getFilenameForFileDocumentFile(fileDocumentId, docVersionNo, fileId);
+        String filename = getFilenameForFileDocumentFile(docRef, fileId);
 
         return new File(filePath, filename);
     }
@@ -125,16 +123,17 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * If fieldId is not blank its added to filename as an extension.
      * <p/>
      * Examples:
-     *   1002.xxx - 1002 is a doc id, doc version no is 0 and xxx is fileId.
-     *   1002_3.xxx - 1002 is a doc id, 3 is a version no and xxx is fileId.
-     *   1002_2 - 1002 is a doc id, 2 is a version no and fileId is blank.
+     * 1002.xxx - 1002 is a doc id, doc version no is 0 and xxx is fileId.
+     * 1002_3.xxx - 1002 is a doc id, 3 is a version no and xxx is fileId.
+     * 1002_2 - 1002 is a doc id, 2 is a version no and fileId is blank.
      *
-     * @param docId
-     * @param docVersionNo
      * @param fileId
      * @return FileDocumentFile filename
      */
-    public static String getFilenameForFileDocumentFile(int docId, int docVersionNo, String fileId) {
+    public static String getFilenameForFileDocumentFile(DocRef docRef, String fileId) {
+        int docId = docRef.getDocId();
+        int docVersionNo = docRef.getDocVersionNo();
+
         String filename = "" + docId;
 
         if (docVersionNo != DocumentVersion.WORKING_VERSION_NO) {
@@ -243,13 +242,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     void updateTextDocumentImages(TextDocumentDomainObject doc, UserDomainObject user) {
-        ImageDao imageDao =  services.getSpringBean(ImageDao.class);
+        ImageDao imageDao = services.getSpringBean(ImageDao.class);
         I18nLanguage language = doc.getLanguage();
 
         imageDao.deleteImages(doc.getRef(), language);
         imageDao.flush();
 
-        for (ImageDomainObject image: doc.getImages().values()) {
+        for (ImageDomainObject image : doc.getImages().values()) {
             image.setId(null);
             image.setDocRef(doc.getRef());
             image.setLanguage(language);
@@ -298,7 +297,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
 
     public void visitFileDocument(FileDocumentDomainObject fileDocument) {
-        metaDao.deleteFileReferences(fileDocument.getMeta().getId(), fileDocument.getVersionNo());
+        metaDao.deleteFileReferences(fileDocument.getRef());
 
         for (Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> entry : fileDocument.getFiles().entrySet()) {
             String fileId = entry.getKey();
@@ -311,8 +310,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
             boolean isDefaultFile = fileId.equals(fileDocument.getDefaultFileId());
             FileReference fileRef = new FileReference();
-            fileRef.setDocId(fileDocument.getMeta().getId());
-            fileRef.setDocVersionNo(fileDocument.getVersionNo());
+            fileRef.setDocRef(fileDocument.getRef());
             fileRef.setFileId(fileId);
             fileRef.setFilename(filename);
             fileRef.setDefaultFileId(isDefaultFile);
@@ -321,7 +319,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
             metaDao.saveFileReference(fileRef);
 
-            saveFileDocumentFile(fileDocument.getId(), fileDocument.getVersionNo(), fileDocumentFile, fileId);
+            saveFileDocumentFile(fileDocument.getRef(), fileDocumentFile, fileId);
         }
 
         DocumentMapper.deleteOtherFileDocumentFiles(fileDocument);
@@ -349,7 +347,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     public void updateTextDocumentMenus(final TextDocumentDomainObject doc, final UserDomainObject user) {
-        MenuDao dao =  services.getSpringBean(MenuDao.class);
+        MenuDao dao = services.getSpringBean(MenuDao.class);
 
         Integer docId = doc.getId();
         Integer docVersionNo = doc.getVersionNo();

@@ -8,13 +8,16 @@ import org.scalatest.{WordSpec}
 @RunWith(classOf[JUnitRunner])
 class DBTestSuite extends WordSpec {
 
-  "new db" should {
+  "A new db" should {
     Test.db.recreate()
 
     val db = new DB(Test.db.createDataSource())
 
-    "be empty" in {
-      assert(db.isEmpty(), "empty")
+    "be new" in {
+      assert(db.isNew(), "empty")
+    }
+
+    "contain no tables" in {
       assert(db.tables().isEmpty, "no tables")
     }
 
@@ -32,7 +35,7 @@ class DBTestSuite extends WordSpec {
   }
 
 
-  "DB.prepare(schema) on 'new db'" should {
+  ".prepare(schema) on 'a new db'" should {
     Test.db.recreate()
 
     val scriptsDir = Test.path("src/main/web/WEB-INF/sql")
@@ -44,7 +47,7 @@ class DBTestSuite extends WordSpec {
     }
 
     "create all necessary tables" in {
-      assert(!db.isEmpty, "not empty")
+      assert(!db.isNew, "not empty")
       assert(db.tables().nonEmpty, "has tables")
     }
 

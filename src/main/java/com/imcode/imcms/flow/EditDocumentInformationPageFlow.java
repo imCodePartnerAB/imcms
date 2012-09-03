@@ -118,7 +118,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             languagesStates.put(language, false);
         }
 
-        for (I18nLanguage language: document.getMeta().getLanguages()) {
+        for (I18nLanguage language: document.getMeta().getEnabledLanguages()) {
             languagesStates.put(language, true);
         }
 
@@ -344,7 +344,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         document.setI18nMeta(i18nMetasMap.get(document.getLanguage()));
 
-        Set<I18nLanguage> enabledLanguages = document.getMeta().getLanguages();
+        Set<I18nLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
 
         enabledLanguages.clear();
 

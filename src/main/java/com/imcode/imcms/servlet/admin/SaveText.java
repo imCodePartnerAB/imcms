@@ -80,7 +80,7 @@ public final class SaveText extends HttpServlet {
 
             text.setNo(txt_no);
             text.setDocRef(document.getRef());
-            text.setLanguage(Imcms.getUser().getDocGetterCallback().state().selectedLanguage());
+            text.setLanguage(Imcms.getUser().getDocGetterCallback().languages().selected());
             text.setText(text_string);
             text.setType(text_format);
             text.setContentRef(contentRef);
