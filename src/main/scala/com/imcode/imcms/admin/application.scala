@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.imcode._
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
@@ -77,43 +77,45 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
 
 
-  object Menu extends MenuItem {
-    @OrderedMethod(0) object About extends MenuItem("menu.about", Icon.About16)
+  object Menu extends TreeMenuItem {
+    @OrderedMethod(0) object About extends TreeMenuItem("menu.about", Icon.About16)
 
-    @OrderedMethod(1) object Documents extends MenuItem("menu.documents") {
-      @OrderedMethod(0) object Categories extends MenuItem("menu.documents.categories", Icon.Done16)
-      @OrderedMethod(1) object Templates extends MenuItem("menu.documents.templates", Icon.Done16)
+    @OrderedMethod(1) object Documents extends TreeMenuItem("menu.documents") {
+      @OrderedMethod(0) object Categories extends TreeMenuItem("menu.documents.categories", Icon.Done16)
+      @OrderedMethod(1) object Templates extends TreeMenuItem("menu.documents.templates", Icon.Done16)
     }
 
-    @OrderedMethod(2) object Permissions extends MenuItem("menu.permissions") {
-      @OrderedMethod(0) object Users extends MenuItem("menu.permissions.users", Icon.Done16)
-      @OrderedMethod(1) object Roles extends MenuItem("menu.permissions.roles", Icon.Done16)
-      @OrderedMethod(2) object IP_Access extends MenuItem("menu.permissions.ip_access", Icon.Done16)
+    @OrderedMethod(2) object Permissions extends TreeMenuItem("menu.permissions") {
+      @OrderedMethod(0) object Users extends TreeMenuItem("menu.permissions.users", Icon.Done16)
+      @OrderedMethod(1) object Roles extends TreeMenuItem("menu.permissions.roles", Icon.Done16)
+      @OrderedMethod(2) object IP_Access extends TreeMenuItem("menu.permissions.ip_access", Icon.Done16)
     }
 
-    @OrderedMethod(3) object System extends MenuItem("menu.system") {
-      @OrderedMethod(0) object Settings extends MenuItem("menu.system.settings") {
-        @OrderedMethod(0) object Languages extends MenuItem("menu.system.settings.languages", Icon.Done16)
-        @OrderedMethod(1) object Properties extends MenuItem("menu.system.settings.properties", Icon.Done16)
+    @OrderedMethod(3) object System extends TreeMenuItem("menu.system") {
+      @OrderedMethod(0) object Settings extends TreeMenuItem("menu.system.settings") {
+        @OrderedMethod(0) object Languages extends TreeMenuItem("menu.system.settings.languages", Icon.Done16)
+        @OrderedMethod(1) object Properties extends TreeMenuItem("menu.system.settings.properties", Icon.Done16)
       }
 
-      @OrderedMethod(1) object Monitor extends MenuItem("menu.monitor") {
-        @OrderedMethod(0) object SearchTerms extends MenuItem("menu.monitor.search_terms")
-        @OrderedMethod(1) object Session extends MenuItem("menu.monitor.session", Icon.Done16)
-        @OrderedMethod(2) object Cache extends MenuItem("menu.monitor.cache")
-        @OrderedMethod(3) object LinkValidator extends MenuItem("menu.monitor.link_validator")
+      @OrderedMethod(1) object Monitor extends TreeMenuItem("menu.monitor") {
+        @OrderedMethod(0) object SearchTerms extends TreeMenuItem("menu.monitor.search_terms")
+        @OrderedMethod(1) object Session extends TreeMenuItem("menu.monitor.session", Icon.Done16)
+        @OrderedMethod(2) object Cache extends TreeMenuItem("menu.monitor.cache")
+        @OrderedMethod(3) object LinkValidator extends TreeMenuItem("menu.monitor.link_validator")
       }
     }
 
-    @OrderedMethod(4) object Files extends MenuItem("menu.files", Icon.Done16)
+    @OrderedMethod(4) object Files extends TreeMenuItem("menu.files", Icon.Done16)
   }
 
 
   val mainWindow = new Window {
     val hspManagers = new HorizontalSplitPanel with FullSize {
       val menu = new Tree with Immediate
+      val content = new VerticalLayout with FullSize with Margin
 
       setFirstComponent(menu)
+      setSecondComponent(content)
       setSplitPosition(15)
     }
 
@@ -126,7 +128,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     setContent(content)
 
     def initManagersMenu() {
-      def addMenuItem(parentItem: MenuItem, item: MenuItem) {
+      def addMenuItem(parentItem: TreeMenuItem, item: TreeMenuItem) {
         hspManagers.menu.addItem(item)
         hspManagers.menu.setParent(item, parentItem)
         hspManagers.menu.setItemCaption(item, item.id |> I18n.i)
@@ -144,13 +146,14 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       }
 
       hspManagers.menu.addValueChangeListener { e =>
-        hspManagers.setSecondComponent(
-          e.getProperty.getValue match {
+        hspManagers.content.removeAllComponents()
+        hspManagers.content.addComponent(
+          e.getProperty.getValue |> {
             case null | Menu.About => labelAbout
 
             case Menu.System.Monitor.SearchTerms => searchTerms
             case Menu.Documents.Categories => categories
-            case Menu.System.Settings.Languages => languagesPanel
+            case Menu.System.Settings.Languages => languages
             case Menu.System.Settings.Properties => settingsProperties
             case Menu.System.Monitor.Session => sessionMonitor
             case Menu.Documents => documents
@@ -176,7 +179,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
   def init() {
     setTheme("imcms")
-    setLocale(new Locale(user.getLanguageIso639_2))
+    setLocale(new Locale(user().getLanguageIso639_2))
     mainWindow.initManagersMenu()
     setMainWindow(mainWindow)
   }
@@ -321,101 +324,73 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 //    new cache.View(Imcms.getDocumentMapper.getCahcingDocumentGetter)
 //  }
 
-  def NA(id: Any) = new TabSheetView {
-    addTab(new VerticalLayoutUI(id.toString) {
-      addComponent(new Label("NOT AVAILABLE"))
-    })
+  def NA(id: Any) = new Panel(id.toString) {
+    setIcon(Icon.Tab32)
+
+    addComponent(new Label("NOT AVAILABLE"))
   }
 
-  val labelAbout = new VerticalLayoutUI {
-    addComponent(new Panel("About") {
-      getContent |> {
-        case c: VerticalLayout =>
-          c.setMargin(true)
-          c.setSpacing(true)
-      }
 
-      addComponent(new Label("""
-                     |Welcome to the imCMS new admin UI prototype -
-                     | please pick a task from the menu. Note that some views are not (yet) available.
-                     |""".stripMargin))
-    })
+  val labelAbout = new Panel("About") {
+    getContent |> {
+      case c: VerticalLayout =>
+        c.setMargin(true)
+        c.setSpacing(true)
+    }
+
+    addComponent(new Label("""
+                   |Welcome to the imCMS new admin UI prototype -
+                   | please pick a task from the menu. Note that some views are not (yet) available.
+                   |""".stripMargin))
   }
+
 
   def systemCacheView = new com.imcode.imcms.admin.system.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
 
 
-  lazy val languagesPanel = new VerticalLayout with Margin {
+  lazy val languages = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.system.settings.language.LanguageManager(app)
-    val tabSheet = new TabSheet
-    tabSheet.addTab(manager.ui, "Language", Icon.Tab32)
-
     manager.ui.setMargin(true)
-
-    addComponent(tabSheet)
+    addTab(manager.ui, "Language", Icon.Tab32)
   }
 
 
-  lazy val documents = new VerticalLayout with Margin with FullSize {
+  lazy val documents = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.doc.DocManager(app)
-    val tabSheet = new TabSheet with FullSize
-    tabSheet.addTab(manager.ui, "Document", Icon.Tab32)
-
     manager.ui.setMargin(true)
-
-    addComponent(tabSheet)
+    addTab(manager.ui, "Document", Icon.Tab32)
   }
 
-  lazy val ipAccess = new VerticalLayout with Margin {
+
+  lazy val ipAccess = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.access.ip.IPAccessManager(app)
-    val tabSheet = new TabSheet
-    tabSheet.addTab(manager.ui, "IP Access ", Icon.Tab32)
-
     manager.ui.setMargin(true)
-
-    addComponent(tabSheet)
+    addTab(manager.ui, "IP Access ", Icon.Tab32)
   }
 
 
-  lazy val roles = new VerticalLayout with Margin {
+  lazy val roles = new TabSheet with FullSize {
     val roleManager = new com.imcode.imcms.admin.access.role.RoleManager(app)
-
-    val tabSheet = new TabSheet
-    tabSheet.addTab(roleManager.ui, "Roles and their permissions", Icon.Tab32)
-
     roleManager.ui.setMargin(true)
-
-    addComponent(tabSheet)
+    addTab(roleManager.ui, "Roles and their permissions", Icon.Tab32)
   }
 
 
-
-
-  lazy val settingsProperties = new VerticalLayout with Margin {
+  lazy val settingsProperties = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.system.settings.property.PropertyManagerManager(app)
-    val tabSheet = new TabSheet
-    tabSheet.addTab(manager.ui, "System Properties", Icon.Tab32)
-
     manager.ui.setMargin(true)
-
-    addComponent(tabSheet)
+    addTab(manager.ui, "System Properties", Icon.Tab32)
   }
 
 
-  lazy val sessionMonitor = new VerticalLayout with Margin {
+  lazy val sessionMonitor = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.system.monitor.session.counter.SessionCounterManager(app)
-    val tabSheet = new TabSheet
-    tabSheet.addTab(manager.ui, "Counter", Icon.Tab32)
-
     manager.ui.setMargin(true)
-
-    addComponent(tabSheet)
+    addTab(manager.ui, "Counter", Icon.Tab32)
   }
 
 
-
-
-  lazy val searchTerms = new TabSheetView {
+  lazy val searchTerms = new TabSheet with FullSize {
     addTab(new VerticalLayoutUI("Popular search terms") {
       val tblTerms = new Table {
         addContainerProperties(this, ContainerProperty[String]("Term"), ContainerProperty[String]("Count"))
@@ -446,68 +421,56 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
         val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue.asInstanceOf[Date],
           lytBar.calTo.getValue.asInstanceOf[Date])
 
-        tblTerms.removeAllItems
-        terms foreach { t =>
+        tblTerms.removeAllItems()
+        terms.asScala.foreach { t =>
           val item = Array[AnyRef](t.getTerm, t.getCount.toString)
           tblTerms.addItem(item, item)
         }
       }
 
-      lytBar.btnReload addClickHandler { reload() }
+      lytBar.btnReload.addClickHandler { reload() }
 
       reload()
     })
   }
 
 
-  lazy val filesystem = new TabSheetView {
-    tabSheet.setSizeFull
-    setSizeFull
-    addTab(new VerticalLayoutUI("File manager") {
-      setSizeFull
-
-      addComponent((new com.imcode.imcms.admin.system.file.FileManager(app)).ui)
-    })
+  lazy val filesystem = new TabSheet with FullSize {
+    val manager = new com.imcode.imcms.admin.system.file.FileManager(app)
+    manager.ui.setMargin(true)
+    addTab(manager.ui, "File manager", Icon.Tab32)
   }
 
-  lazy val templates = new VerticalLayout with Margin {
+
+  lazy val templates = new TabSheet with FullSize {
     val templateManager = new com.imcode.imcms.admin.doc.template.TemplateManager(app)
     val templateGroupManager = new com.imcode.imcms.admin.doc.template.group.TemplateGroupManager(app)
 
-    val tabSheet = new TabSheet
-    tabSheet.addTab(templateManager.ui, "Templates", Icon.Tab32)
-    tabSheet.addTab(templateGroupManager.ui, "Template Groups", Icon.Tab32)
+    addTab(templateManager.ui, "Templates", Icon.Tab32)
+    addTab(templateGroupManager.ui, "Template Groups", Icon.Tab32)
 
     templateManager.ui.setMargin(true)
     templateGroupManager.ui.setMargin(true)
-
-    addComponent(tabSheet)
   }
 
 
-  lazy val categories = new VerticalLayout with Margin {
+  lazy val categories = new TabSheet with FullSize {
     val categoryManager = new com.imcode.imcms.admin.doc.category.CategoryManager(app)
     val categoryTypeManager = new com.imcode.imcms.admin.doc.category.`type`.CategoryTypeManager(app)
 
-    val tabSheet = new TabSheet
-    tabSheet.addTab(categoryManager.ui, "Categories ", Icon.Tab32)
-    tabSheet.addTab(categoryTypeManager.ui, "Category types", Icon.Tab32)
+    addTab(categoryManager.ui, "Categories ", Icon.Tab32)
+    addTab(categoryTypeManager.ui, "Category types", Icon.Tab32)
 
     categoryManager.ui.setMargin(true)
     categoryTypeManager.ui.setMargin(true)
-
-    addComponent(tabSheet)
-  } // category
-
-  lazy val chat =  new VerticalLayout
-
-  lazy val users = new VerticalLayout with Margin {
-    val manager = new UserManager(app)
-    val tabSheet = new TabSheet
-    tabSheet.addTab(manager.ui, "Users and their permissions", Icon.Tab32)
-    manager.ui.setMargin(true)
-    addComponent(tabSheet)
   }
 
 
+  lazy val chat =  new VerticalLayout
+
+  lazy val users = new TabSheet with FullSize {
+    val manager = new UserManager(app)
+    manager.ui.setMargin(true)
+    addTab(manager.ui, "Users and their permissions", Icon.Tab32)
+  }
 }

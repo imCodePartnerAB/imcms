@@ -348,16 +348,16 @@ class OkCancelErrorDialog(msg: String = "") extends OkCancelDialog("dlg.err.titl
 }
 
 
-/** Menu item descriptor */
-class MenuItem(val id: String = null, val icon: Resource = null) {
+/** Tree item descriptor */
+class TreeMenuItem(val id: String = null, val icon: Resource = null) {
 
-  val children: Seq[MenuItem] = {
-    val isMenuItemType: Class[_] => Boolean = classOf[MenuItem].isAssignableFrom
+  val children: Seq[TreeMenuItem] = {
+    val isMenuItemType: Class[_] => Boolean = classOf[TreeMenuItem].isAssignableFrom
 
     getClass.getDeclaredMethods
       .filter(_.getReturnType |> isMenuItemType)
       .sortBy(_.getAnnotation(classOf[OrderedMethod]) |> opt map(_.value()) getOrElse 0)
-      .map(_.invoke(this).asInstanceOf[MenuItem])
+      .map(_.invoke(this).asInstanceOf[TreeMenuItem])
   }
 }
 
@@ -428,17 +428,6 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
   def setListColumns(count: Int) = doto(lstAvailable, lstChosen) { _ setColumns count }
 }
 
-/** Vertical layout containing tab sheet. */
-@deprecated("prototype")
-class TabSheetView extends VerticalLayout {
-  val tabSheet = new TabSheet
-
-  addComponent(tabSheet)
-  setMargin(true)
-
-  // short cut
-  def addTab(c: Component) = tabSheet.addTab(c)
-}
 
 /** Vertical layout with margin, spacing and optional caption. */
 class VerticalLayoutUI(caption: String = null, spacing: Boolean=true, margin: Boolean=true) extends VerticalLayout {

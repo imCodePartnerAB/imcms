@@ -106,7 +106,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
 }
 
 
-class ProfileEditorUI extends VerticalLayoutUI(margin = false) with FullWidth {
+class ProfileEditorUI extends VerticalLayout with FullWidth {
 
   private val frmDefault = new Form { setCaption("Default") }
   private val frmCustom = new Form { setCaption("Custom") }
