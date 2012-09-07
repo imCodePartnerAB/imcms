@@ -62,19 +62,24 @@ import com.imcode.imcms.vaadin.Theme.Icon
  *
  * In some trivial cases an editor might not have a separate UI class.
  */
-class Application extends com.vaadin.Application with ImcmsApplication { app =>
+class AdminApplication extends com.vaadin.Application with ImcmsApplication { app =>
 
-  def canAccess {
-//            if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
-//                Utility.forwardToLogin( request, response );
-//                return;
-//            }
-//
-//        if ( !user.canAccessAdminPages() ) {
-//            Utility.forwardToLogin( request, response );
-//            return;
-//        }
-  }
+  // superadmin access:
+  // ------------------
+  // categories
+  // counter
+  // delete doc
+  // ipaccess
+  // profiles ???
+  // roles
+  // search terms
+  // ~~ sections
+  // system info
+  // users: !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole()
+  // file
+  // link check ???
+  // list docs ???
+  // templates
 
 
   object Menu extends TreeMenuItem {

@@ -41,6 +41,16 @@
 
     <filter>
         <description>
+            Restricts access to the AdminApplication
+        </description>
+
+        <display-name>Imcms Admin Application Filter</display-name>
+        <filter-name>ImcmsAdminApplicationAccessFilter</filter-name>
+        <filter-class>com.imcode.imcms.admin.AdminApplicationAccessFilter</filter-class>
+    </filter>
+
+    <filter>
+        <description>
             Restricts access to mapped resources to users who are in the superadmin role.
             Currently API samples only.
         </description>
@@ -74,12 +84,16 @@
         <url-pattern>/web/archive/*</url-pattern>
     </filter-mapping>
 
-
     <filter-mapping>
         <filter-name>ImcmsFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
+
+    <filter-mapping>
+        <filter-name>ImcmsAdminApplicationAccessFilter</filter-name>
+        <url-pattern>/vaadin/*</url-pattern>
+    </filter-mapping>
+
     <!--<security-constraint>-->
         <!--<web-resource-collection>-->
             <!--<web-resource-name>secured</web-resource-name>-->
@@ -101,13 +115,13 @@
     <!--</security-constraint>-->
 
     <servlet>
-        <servlet-name>admin-vaadin</servlet-name>
+        <servlet-name>admin-application-vaadin</servlet-name>
         <servlet-class>
             com.vaadin.terminal.gwt.server.ApplicationServlet
         </servlet-class>
         <init-param>
             <param-name>application</param-name>
-            <param-value>com.imcode.imcms.admin.Application</param-value>
+            <param-value>com.imcode.imcms.admin.AdminApplication</param-value>
         </init-param>
     </servlet>
 
@@ -646,7 +660,7 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>admin-vaadin</servlet-name>
+        <servlet-name>admin-application-vaadin</servlet-name>
         <url-pattern>/vaadin/*</url-pattern>
         <url-pattern>/VAADIN/*</url-pattern>
     </servlet-mapping>
@@ -655,11 +669,6 @@
         <servlet-name>docadmin</servlet-name>
         <url-pattern>/docadmin/*</url-pattern>
     </servlet-mapping>
-
-    <!--<servlet-mapping>-->
-    <!--<servlet-name>admin-vaadin</servlet-name>-->
-    <!--<url-pattern>/VAADIN/*</url-pattern>-->
-    <!--</servlet-mapping>-->
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
