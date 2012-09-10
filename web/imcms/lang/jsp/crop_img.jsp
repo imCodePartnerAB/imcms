@@ -73,7 +73,7 @@
                             displayOnInit: true
                         };
 
-                        if (${image.width gt 0 and image.height gt 0}) {
+                        if (${forceCropRatio and image.width gt 0 and image.height gt 0}) {
                             options.ratioDim = {
                                 x: ${image.width}, 
                                 y: ${image.height}

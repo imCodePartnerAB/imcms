@@ -40,10 +40,11 @@ public class ImageCropPage extends OkCancelPage {
 	private int imageHeight;
 	private int forcedWidth;
 	private int forcedHeight;
+    private boolean forceCropRatio;
 
 	
 	public ImageCropPage(DispatchCommand okCancelCommand, Handler<CropRegion> selectRegionCommand, 
-	        ImageDomainObject image, int forcedWidth, int forcedHeight) {
+	        ImageDomainObject image, int forcedWidth, int forcedHeight, boolean forceCropRatio) {
 		super(okCancelCommand, okCancelCommand);
 		
 		this.selectRegionCommand = selectRegionCommand;
@@ -51,6 +52,7 @@ public class ImageCropPage extends OkCancelPage {
 		this.region = image.getCropRegion();
 		this.forcedWidth = forcedWidth;
 		this.forcedHeight = forcedHeight;
+        this.forceCropRatio = forceCropRatio;
 		
 		if (forcedWidth > 0) {
 			image.setWidth(forcedWidth);
@@ -75,6 +77,7 @@ public class ImageCropPage extends OkCancelPage {
 		request.setAttribute("cropPage", this);
 		request.setAttribute("region", region);
 		request.setAttribute("image", image);
+        request.setAttribute("forceCropRatio", forceCropRatio);
 		
 		request.setAttribute("imageWidth", imageWidth);
 		request.setAttribute("imageHeight", imageHeight);

@@ -441,7 +441,7 @@ public class ImageEditPage extends OkCancelPage {
 			}
 		};
 		
-		ImageCropPage cropPage = new ImageCropPage(returnCommand, cropHandler, image, forcedWidth, forcedHeight);
+		ImageCropPage cropPage = new ImageCropPage(returnCommand, cropHandler, image, forcedWidth, forcedHeight, !(maxWidth > 0 || maxHeight > 0));
 		cropPage.forward(request, response);
     }
 
