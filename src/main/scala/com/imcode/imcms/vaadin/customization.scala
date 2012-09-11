@@ -140,7 +140,7 @@ trait NoSpacing { this: Layout.SpacingHandler =>
 }
 
 trait UndefinedSize { this: AbstractComponent =>
-  setSizeUndefined
+  setSizeUndefined()
 }
 
 
@@ -149,7 +149,7 @@ trait Scrollable { this: com.vaadin.terminal.Scrollable =>
 }
 
 trait FullSize { this: AbstractComponent =>
-  setSizeFull
+  setSizeFull()
 }
 
 trait FullWidth { this: AbstractComponent =>
