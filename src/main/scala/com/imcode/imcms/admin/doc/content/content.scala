@@ -29,58 +29,50 @@ import com.vaadin.ui._
 
 
 trait DocContentEditor extends Editor {
-  type DataType <: DocumentDomainObject
+  type Data <: DocumentDomainObject
 }
 
 
 class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEditor {
-  type DataType = TextDocumentDomainObject
+  type Data = TextDocumentDomainObject
 
   val ui = new TextDocContentEditorUI |>> { ui =>
   } //ui
 
-  val data = new Data {
-    def get() = Right(doc)
-  } //data
+  def collectValues() = Right(doc)
 }
 
 
 class URLDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor {
-  type DataType = UrlDocumentDomainObject
+  type Data = UrlDocumentDomainObject
 
   val ui = new URLDocContentEditorUI |>> { ui =>
     ui.txtURL.value = "http://"
   } // ui
 
-  val data = new Data {
-    def get() = Right(doc)
-  } // data
+  def collectValues() = Right(doc)
 }
 
 
 class HTMLDocContentEditor(doc: HtmlDocumentDomainObject) extends DocContentEditor {
-  type DataType = HtmlDocumentDomainObject
+  type Data = HtmlDocumentDomainObject
 
   val ui = new HTMLDocContentEditorUI |>> { ui =>
     ui.txaHTML.value = <html/>.toString
   } // ui
 
-  val data = new Data {
-    def get() = Right(doc)
-  } // data
+  def collectValues() = Right(doc)
 }
 
 /**
  * Used with deprecated docs such as Browser.
  */
 class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor {
-  type DataType = DocumentDomainObject
+  type Data = DocumentDomainObject
 
   val ui = new Label("Not supported".i)
 
-  val data = new Data {
-    def get() = Right(doc)
-  } // data
+  def collectValues() = Right(doc)
 }
 
 

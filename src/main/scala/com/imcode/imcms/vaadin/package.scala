@@ -11,21 +11,6 @@ import com.vaadin.ui._
 
 package object vaadin {
 
-  trait Editor {
-
-    /** Edited data type */
-    type DataType
-    type ErrorMsgsEitherData = Seq[ErrorMsg] Either DataType
-
-    def ui: Component
-    def data: Data
-
-    trait Data {
-      def get(): ErrorMsgsEitherData
-    }
-  }
-
-
   def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {
     def menuSelected(mi: MenuBar#MenuItem) = handler(mi)
   }
@@ -146,11 +131,14 @@ package object vaadin {
 
   implicit def wrapApplication(app: Application) = new ApplicationWrapper(app)
 
+  implicit def wrapWindow(window: Window) = new WindowWrapper(window)
+
   implicit def wrapMenuBar(mb: MenuBar) = new MenuBarWrapper(mb)
 
   implicit def wrapMenuItem(mi: MenuBar#MenuItem) = new MenuItemWrapper(mi)
 
   implicit def wrapButton(button: Button) = new ButtonWrapper(button)
+
 
   implicit def wrapValueChangeNotifier(vcn: Property.ValueChangeNotifier) = new {
     def addValueChangeListener(listener: Property.ValueChangeEvent => Unit) =

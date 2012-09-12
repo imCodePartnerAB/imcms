@@ -27,7 +27,7 @@ object DocFX {
     doc.setId(docId)
     doc.setCreatorId(100)
     doc.setPublisherId(200)
-    doc.setCategoryIds(0.until(10).toSet.asJava)
+    doc.setCategoryIds(0.until(10).toSet.map(Int.box).asJava)
     doc.setLanguage(language)
     doc.setKeywords(0.until(10).map(n => "keyword_%d_%d".format(docId, n)).:+("keyword %d %d".format(docId, 10)).toSet.asJava)
     doc.setAlias("alias_%d" format docId)

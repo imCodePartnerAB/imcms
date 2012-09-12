@@ -21,7 +21,7 @@ import scala.collection.mutable.{Map => MMap}
  * @param doc used as a read only value object to initialize editor.
  */
 class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEditor with ImcmsServicesSupport {
-  type DataType = FileDocumentDomainObject
+  type Data = FileDocumentDomainObject
 
   private type MimeType = String
   private type DisplayName = String
@@ -240,23 +240,21 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.attachAction = Some(_ => sync())
   } // ui
 
-  val data = new Data {
-    def get() = {
-      if (values.fdfs.isEmpty) {
-        Left(Seq("Document must contain at least one file."))
-      } else {
-        Right(doc.clone.asInstanceOf[FileDocumentDomainObject] |>> { clone =>
-          for ((fileId, _) <- clone.getFiles) {
-            clone removeFile fileId
-          }
+  def collectValues() = {
+    if (values.fdfs.isEmpty) {
+      Left(Seq("Document must contain at least one file."))
+    } else {
+      Right(doc.clone.asInstanceOf[FileDocumentDomainObject] |>> { clone =>
+        for ((fileId, _) <- clone.getFiles) {
+          clone removeFile fileId
+        }
 
-          for ((fileId, fdf) <- values.fdfs) {
-            clone.addFile(fileId, fdf)
-          }
+        for ((fileId, fdf) <- values.fdfs) {
+          clone.addFile(fileId, fdf)
+        }
 
-          clone.setDefaultFileId(values.defaultFdfId.get)
-        })
-      }
+        clone.setDefaultFileId(values.defaultFdfId.get)
+      })
     }
   } // data
 

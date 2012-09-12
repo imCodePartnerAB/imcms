@@ -400,8 +400,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void addCategoryId(int categoryId) {
-        Set categoryIds = (Set) meta.getCategoryIds();
-        categoryIds.add(categoryId);
+        meta.getCategoryIds().add(categoryId);
     }
 
     public boolean equals(Object o) {
@@ -442,8 +441,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void removeCategoryId(int categoryId) {
-        Set categoryIds = (Set) meta.getCategoryIds();
-        categoryIds.remove(categoryId);
+        meta.getCategoryIds().remove(categoryId);
     }
 
     public void setDocumentPermissionSetTypeForRoleId(RoleId roleId,
@@ -514,7 +512,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return lifeCyclePhase;
     }
 
-    public void setCategoryIds(Set categoryIds) {
+    public void setCategoryIds(Set<Integer> categoryIds) {
         meta.setCategoryIds(categoryIds);
     }
 

@@ -91,7 +91,7 @@
 
     <filter-mapping>
         <filter-name>ImcmsAdminApplicationAccessFilter</filter-name>
-        <url-pattern>/vaadin/*</url-pattern>
+        <url-pattern>/sysadmin/*</url-pattern>
     </filter-mapping>
 
     <!--<security-constraint>-->
@@ -115,7 +115,7 @@
     <!--</security-constraint>-->
 
     <servlet>
-        <servlet-name>admin-application-vaadin</servlet-name>
+        <servlet-name>vaadin-sysadmin</servlet-name>
         <servlet-class>
             com.vaadin.terminal.gwt.server.ApplicationServlet
         </servlet-class>
@@ -126,13 +126,13 @@
     </servlet>
 
     <servlet>
-        <servlet-name>docadmin</servlet-name>
+        <servlet-name>vaadin-docadmin</servlet-name>
         <servlet-class>
             com.vaadin.terminal.gwt.server.ApplicationServlet
         </servlet-class>
         <init-param>
             <param-name>application</param-name>
-            <param-value>com.imcode.imcms.docadmin.Application</param-value>
+            <param-value>com.imcode.imcms.docadmin.DocAdminApplication</param-value>
         </init-param>
     </servlet>
 
@@ -660,13 +660,13 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>admin-application-vaadin</servlet-name>
-        <url-pattern>/vaadin/*</url-pattern>
+        <servlet-name>vaadin-sysadmin</servlet-name>
+        <url-pattern>/sysadmin/*</url-pattern>
         <url-pattern>/VAADIN/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>docadmin</servlet-name>
+        <servlet-name>vaadin-docadmin</servlet-name>
         <url-pattern>/docadmin/*</url-pattern>
     </servlet-mapping>
 

@@ -32,9 +32,7 @@ import admin.doc.meta.permissions.{DocRestrictedPermSetEditor, TextDocRestricted
  */
 class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) extends Editor with ImcmsServicesSupport {
 
-  type DataType = Values
-
-  case class Values(
+  case class Data(
     defaultTemplate: String,
     restrictedOnePermSet: TextDocumentPermissionSetDomainObject,
     restrictedTwoPermSet: TextDocumentPermissionSetDomainObject,
@@ -63,9 +61,9 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
   } // ui
 
 
-  val data = new Data {
-    def get() = Right(
-      Values(
+  val collectValues: Seq[ErrorMsg] Either Data =
+    Right(
+      Data(
         ui.cbDefaultTemplate.value,
         restrictedOnePermSet, // ??? clone
         restrictedTwoPermSet, // ??? clone
@@ -73,8 +71,6 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
         ui.cbRestrictedTwoDefaultTemplate.value
       )
     )
-  } // data
-
 
   def revert() {
     //restrictedOnePermSetEditor.revert()

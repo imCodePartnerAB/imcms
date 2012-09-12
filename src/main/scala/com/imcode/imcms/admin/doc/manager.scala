@@ -112,7 +112,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
               dlg.setSize(500, 500)
 
               dlg.setOkHandler {
-                (dlg.metaEditor.data.get(), dlg.contentEditor.data.get()) match {
+                (dlg.metaEditor.collectValues(), dlg.contentEditor.collectValues()) match {
                   case (Left(errorMsgs), _) =>
                     ui.getApplication.showErrorNotification(errorMsgs.mkString(","))
 
@@ -152,7 +152,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
             app.initAndShow(DocManager.createDocEditorDlg(newDoc, dlgCaption), resizable = true) { dlg =>
               dlg.setSize(500, 500)
               dlg.setOkHandler {
-                (dlg.metaEditor.data.get(), dlg.contentEditor.data.get()) match {
+                (dlg.metaEditor.collectValues(), dlg.contentEditor.collectValues()) match {
                   case (Left(errorMsgs), _) =>
                     ui.getApplication.showErrorNotification(errorMsgs.mkString(","))
 

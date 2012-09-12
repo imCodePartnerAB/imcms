@@ -50,12 +50,10 @@ import imcode.server.document._
  * -Lim1 and Lim2 perm sets can be customized - i.e. predefined permissions can be added/removed to/from those sets.
  */
 class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserDomainObject) extends Editor with ImcmsServicesSupport {
-  type DataType = Values
-
   private val meta = doc.getMeta.clone
   private val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
 
-  case class Values(
+  case class Data(
     rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone,
     restrictedOnePermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject],
     restrictedTwoPermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject],
@@ -64,7 +62,7 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
     isLinkableByOtherUsers: Boolean = meta.getLinkableByOtherUsers
   )
 
-  private val initialValues = Values()
+  private val initialValues = Data()
 
   // Initialized in revert()
   // Might be edited in their own pop-up dialogs
@@ -189,7 +187,7 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
     }
   }
 
-  def revert() {
+  def revertValues() {
     restrictedOnePermSet = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject]
     restrictedTwoPermSet = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject]
 
@@ -233,29 +231,27 @@ class PermissionsEditor(app: Application, doc: DocumentDomainObject, user: UserD
   }
 
 
-  val data = new Data {
-    def get() = Right(
-      Values(
-        new RoleIdToDocumentPermissionSetTypeMappings |>> { rolesPermissions =>
-          import ui.rolesPermsSetTypeUI.tblRolesPermsTypes
-          tblRolesPermsTypes.itemIds foreach { role =>
-            rolesPermissions.setPermissionSetTypeForRole(
-              role.getId,
-              tblRolesPermsTypes.getContainerProperty(role, RolePermsSetTypePropertyId).getValue.asInstanceOf[RolePermsSetType].setType
-            )
-          }
-        },
-        restrictedOnePermSet, // clone ???
-        restrictedTwoPermSet, // clone ???
-        ui.chkLim1IsMorePrivilegedThanLim2.checked,
-        ui.frmExtraSettings.chkShowToUnauthorizedUser.checked,
-        ui.frmExtraSettings.chkShareWithOtherAdmins.checked
-      )
+  def collectValues() = Right(
+    Data(
+      new RoleIdToDocumentPermissionSetTypeMappings |>> { rolesPermissions =>
+        import ui.rolesPermsSetTypeUI.tblRolesPermsTypes
+        tblRolesPermsTypes.itemIds foreach { role =>
+          rolesPermissions.setPermissionSetTypeForRole(
+            role.getId,
+            tblRolesPermsTypes.getContainerProperty(role, RolePermsSetTypePropertyId).getValue.asInstanceOf[RolePermsSetType].setType
+          )
+        }
+      },
+      restrictedOnePermSet, // clone ???
+      restrictedTwoPermSet, // clone ???
+      ui.chkLim1IsMorePrivilegedThanLim2.checked,
+      ui.frmExtraSettings.chkShowToUnauthorizedUser.checked,
+      ui.frmExtraSettings.chkShareWithOtherAdmins.checked
     )
-  }
+  )
 
   // init
-  revert()
+  revertValues()
 }
 
 

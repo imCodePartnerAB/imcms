@@ -2,38 +2,40 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
-import _root_.com.imcode.imcms.admin.doc.meta.permissions.{PermissionsEditor}
-import _root_.com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
 
-import _root_.scala.collection.JavaConversions._
-import _root_.scala.collection.breakOut
+import scala.collection.JavaConverters._
+import scala.collection.breakOut
+import scala.collection.immutable.ListMap
+import scala.util.control.{Exception => Ex}
 
 import _root_.imcode.server.user.UserDomainObject
-
-import _root_.com.imcode.imcms.vaadin._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.document.{TextDocumentPermissionSetDomainObject, DocumentDomainObject}
-import _root_.java.util.{Date, Calendar}
-import _root_.scala.collection.immutable.ListMap
-import _root_.com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
-import _root_.com.vaadin.ui._
-import _root_.com.imcode.imcms.admin.access.user.{UserSingleSelectUI, UserSingleSelect, UserSingleSelectDialog, UserSelectDialog}
-import _root_.com.imcode.imcms.api._
-import _root_.com.imcode.imcms.dao.MetaDao
-import _root_.com.vaadin.terminal.{UserError, ErrorMessage, Sizeable, ExternalResource}
-import _root_.com.vaadin.data.Validator
-import _root_.com.vaadin.data.Validator.InvalidValueException
 
-import scala.util.control.{Exception => Ex}
+import com.imcode.imcms.api._
+import com.imcode.imcms.vaadin._
+import com.imcode.imcms.admin.access.user.{UserSingleSelectUI, UserSingleSelect, UserSingleSelectDialog, UserSelectDialog}
+import com.imcode.imcms.admin.doc.meta.permissions.{PermissionsEditor}
+import com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
+import com.imcode.imcms.dao.MetaDao
+
+import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
+import com.vaadin.ui._
+import com.vaadin.terminal.{UserError, ErrorMessage, Sizeable, ExternalResource}
+import com.vaadin.data.Validator
+import com.vaadin.data.Validator.InvalidValueException
+import javax.swing.JList
+import java.util.{Collections, Date, Calendar}
+
 
 /**
  * Doc's meta editor.
  *
- * @param doc used to as editor's initial state, never modified.
+ * @param doc used to initialize editor's data. It is never modified.
  */
 class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSupport {
 
-  type DataType = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
+  type Data = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
 
   private var appearanceEditorOpt = Option.empty[AppearanceEditor]
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
@@ -59,7 +61,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
           if (appearanceEditorOpt.isEmpty) {
             val i18nMetas: Map[I18nLanguage, I18nMeta] = Option(doc.getIdValue) match {
               case Some(id) =>
-                imcmsServices.getDocumentMapper.getI18nMetas(id).map(m => m.getLanguage -> m).toMap
+                imcmsServices.getDocumentMapper.getI18nMetas(id).asScala.map(m => m.getLanguage -> m).toMap
               case _ =>
                 Map.empty
             }
@@ -109,9 +111,9 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     ui.treeMenu.select("Appearance")
   } // ui
 
-  val data = new Data {
-    case class UberData(uberData: ErrorMsgsEitherData) {
-      def merge[B](childDataOpt: => Option[Either[Seq[ErrorMsg], B]])(fn: (DataType, B) => DataType): UberData =
+  def collectValues(): ErrorsOrData = {
+    case class UberData(uberData: ErrorsOrData) {
+      def merge[B](childDataOpt: => Option[Either[Seq[ErrorMsg], B]])(fn: (Data, B) => Data): UberData =
         childDataOpt match {
           case None => this
           case Some(Right(_)) if uberData.isLeft => this
@@ -121,60 +123,58 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         }
     }
 
-    def get() = {
-      UberData(
-        Right(doc.clone, Map.empty[I18nLanguage, I18nMeta])
-      ).merge(appearanceEditorOpt.map(_.data.get())) {
-          case ((dc, _), appearance) => (dc, appearance.i18nMetas) |>> { _ =>
-            dc.getMeta.setEnabledLanguages(appearance.enabledLanguages)
-            dc.getMeta.setI18nShowMode(appearance.disabledLanguageShowSetting)
-            dc.getMeta.setAlias(appearance.alias.orNull)
-            dc.getMeta.setTarget(appearance.target)
-          }
-      }.merge(lifeCycleEditorOpt.map(_.data.get())) {
-          case (uberData @ (dc, _), lifeCycle) => uberData |>> { _ =>
-            dc.getMeta.setPublicationStatus(lifeCycle.publicationStatus)
-            dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStart)
-            dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
-            dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
-            dc.getMeta.setPublisherId(lifeCycle.publisher.map(p => Int box p.getId).orNull)
-            //???dc.setVersion(new DocumentVersion() state.versionNo)
-            dc.getMeta.setCreatedDatetime(lifeCycle.created)
-            dc.getMeta.setModifiedDatetime(lifeCycle.modified)
-            dc.getMeta.setCreatorId(lifeCycle.creator.map(c => Int box c.getId).orNull)
-            //???dc.getMeta.setModifierId
-          }
-      }.merge(permissionsEditorOpt.map(_.data.get())) {
-          case (uberData @ (dc, _), permissions) => uberData |>> { _ =>
-            dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
-            dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)
-            dc.getPermissionSets.setRestricted2(permissions.restrictedTwoPermSet)
-            dc.setRestrictedOneMorePrivilegedThanRestrictedTwo(permissions.isRestrictedOneMorePrivilegedThanRestricted2)
-            dc.setLinkedForUnauthorizedUsers(permissions.isLinkedForUnauthorizedUsers)
-            dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
-          }
-      }.merge(categoriesEditorOpt.map(_.data.get())) {
-          case (uberData @ (dc, _), categories) => uberData |>> { _ =>
-            dc.setCategoryIds(categories.categoriesIds)
-          }
-      }.merge(profileEditorOpt.map(_.data.get())) {
-          case (uberData @ (tdc: TextDocumentDomainObject, _), profile) => uberData |>> { _ =>
-            tdc.setDefaultTemplateId(profile.defaultTemplate)
-            tdc.getPermissionSetsForNewDocuments.setRestricted1(profile.restrictedOnePermSet)
-            tdc.getPermissionSetsForNewDocuments.setRestricted2(profile.restrictedTwoPermSet)
-            tdc.setDefaultTemplateIdForRestricted1(profile.restrictedOneTemplate)
-            tdc.setDefaultTemplateIdForRestricted2(profile.restrictedTwoTemplate)
-          }
+    UberData(
+      Right(doc.clone, Map.empty[I18nLanguage, I18nMeta])
+    ).merge(appearanceEditorOpt.map(_.collectValues())) {
+        case ((dc, _), appearance) => (dc, appearance.i18nMetas) |>> { _ =>
+          dc.getMeta.setEnabledLanguages(appearance.enabledLanguages.asJava)
+          dc.getMeta.setI18nShowMode(appearance.disabledLanguageShowSetting)
+          dc.getMeta.setAlias(appearance.alias.orNull)
+          dc.getMeta.setTarget(appearance.target)
+        }
+    }.merge(lifeCycleEditorOpt.map(_.collectValues())) {
+        case (uberData @ (dc, _), lifeCycle) => uberData |>> { _ =>
+          dc.getMeta.setPublicationStatus(lifeCycle.publicationStatus)
+          dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStart)
+          dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
+          dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
+          dc.getMeta.setPublisherId(lifeCycle.publisher.map(p => Int box p.getId).orNull)
+          //???dc.setVersion(new DocumentVersion() state.versionNo)
+          dc.getMeta.setCreatedDatetime(lifeCycle.created)
+          dc.getMeta.setModifiedDatetime(lifeCycle.modified)
+          dc.getMeta.setCreatorId(lifeCycle.creator.map(c => Int box c.getId).orNull)
+          //???dc.getMeta.setModifierId
+        }
+    }.merge(permissionsEditorOpt.map(_.collectValues)) {
+        case (uberData @ (dc, _), permissions) => uberData |>> { _ =>
+          dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
+          dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)
+          dc.getPermissionSets.setRestricted2(permissions.restrictedTwoPermSet)
+          dc.setRestrictedOneMorePrivilegedThanRestrictedTwo(permissions.isRestrictedOneMorePrivilegedThanRestricted2)
+          dc.setLinkedForUnauthorizedUsers(permissions.isLinkedForUnauthorizedUsers)
+          dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
+        }
+    }.merge(categoriesEditorOpt.map(_.collectValues)) {
+        case (uberData @ (dc, _), categories) => uberData |>> { _ =>
+          dc.setCategoryIds(categories.categoriesIds.asJava)
+        }
+    }.merge(profileEditorOpt.map(_.collectValues)) {
+        case (uberData @ (tdc: TextDocumentDomainObject, _), profile) => uberData |>> { _ =>
+          tdc.setDefaultTemplateId(profile.defaultTemplate)
+          tdc.getPermissionSetsForNewDocuments.setRestricted1(profile.restrictedOnePermSet)
+          tdc.getPermissionSetsForNewDocuments.setRestricted2(profile.restrictedTwoPermSet)
+          tdc.setDefaultTemplateIdForRestricted1(profile.restrictedOneTemplate)
+          tdc.setDefaultTemplateIdForRestricted2(profile.restrictedTwoTemplate)
+        }
 
-          case (uberData, _) => uberData
-      }.uberData
-      //      //// ?????????????????????????????????????
-      //      ////    ui.cbDefaultTemplate.value,
-      //      ////    restrictedOnePermSet, // ??? clone
-      //      ////    restrictedTwoPermSet, // ??? clone
-      //      ////    ui.cbRestrictedOneDefaultTemplate,
-      //      ////    ui.cbRestrictedTwoDefaultTemplate
-    }
+        case (uberData, _) => uberData
+    }.uberData
+    //      //// ?????????????????????????????????????
+    //      ////    ui.cbDefaultTemplate.value,
+    //      ////    restrictedOnePermSet, // ??? clone
+    //      ////    restrictedTwoPermSet, // ??? clone
+    //      ////    ui.cbRestrictedOneDefaultTemplate,
+    //      ////    ui.cbRestrictedTwoDefaultTemplate
   } // data
 }
 
@@ -200,9 +200,8 @@ class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
 
 
 class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
-  type DataType = Values
 
-  case class Values(
+  case class Data(
     publicationStatus: Document.PublicationStatus,
     publicationStart: Date,
     publicationEnd: Option[Date],
@@ -228,7 +227,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
       case id =>
         val versionInfo = imcmsServices.getDocumentMapper.getDocumentVersionInfo(id)
-        versionInfo.getVersions.map(_.getNo) -> versionInfo.getDefaultVersion.getNo
+        versionInfo.getVersions.asScala.map(_.getNo) -> versionInfo.getDefaultVersion.getNo
     }
 
     ui.ussCreator.selection = Option(meta.getCreatorId).map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
@@ -252,21 +251,19 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     // todo: ??? remember lytDate.chkEnd date when uncheked???
   }
 
-  val data = new Data {
-    def get() = Right(
-      Values(
-        ui.frmPublication.sltStatus.value,
-        ui.frmPublication.lytDate.calStart.value,
-        ui.frmPublication.lytDate.calEnd.valueOpt,
-        ui.ussCreator.selection,
-        ui.frmPublication.sltVersion.value.intValue,
-        ui.frmMaintenance.dCreated.calDate.value,
-        ui.frmMaintenance.dModified.calDate.value,
-        ui.ussCreator.selection,
-        ui.ussModifier.selection
-      )
+  def collectValues() = Right(
+    Data(
+      ui.frmPublication.sltStatus.value,
+      ui.frmPublication.lytDate.calStart.value,
+      ui.frmPublication.lytDate.calEnd.valueOpt,
+      ui.ussCreator.selection,
+      ui.frmPublication.sltVersion.value.intValue,
+      ui.frmMaintenance.dCreated.calDate.value,
+      ui.frmMaintenance.dModified.calDate.value,
+      ui.ussCreator.selection,
+      ui.ussModifier.selection
     )
-  }
+  )
 
   // init
   revert()
@@ -337,12 +334,10 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
  * Components (Select and TwinSelect) captions is set to type name.
  */
 class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
-  type DataType = Values
-
-  case class Values(categoriesIds: Set[CategoryId])
+  case class Data(categoriesIds: Set[CategoryId])
 
   // todo: remove???
-  private val initialValues = Values(meta.getCategoryIds.toSet)
+  private val initialValues = Data(meta.getCategoryIds.asScala.toSet)
 
   private val typeCategoriesUIs: Seq[(CheckBox with ExposeValueChange, MultiSelectBehavior[CategoryId])] =
     for {
@@ -375,9 +370,9 @@ class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   def revert() {
     for ((chkCType, sltCategories) <- typeCategoriesUIs) {
       chkCType.uncheck
-      sltCategories.value = Nil
+      sltCategories.value = Collections.emptyList()
 
-      for (categoryId <- sltCategories.itemIds if initialValues.categoriesIds(categoryId)) {
+      for (categoryId <- sltCategories.itemIds.asScala if initialValues.categoriesIds(categoryId)) {
         sltCategories.select(categoryId)
         chkCType.check
       }
@@ -386,15 +381,13 @@ class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     }
   }
 
-  val data = new Data {
-    def get() = Right(
-      Values(
-        typeCategoriesUIs.collect {
-          case (chkCType, sltCategories) if chkCType.isChecked => sltCategories.value
-        }.flatten.toSet
-      )
+  def collectValues() = Right(
+    Data(
+      typeCategoriesUIs.collect {
+        case (chkCType, sltCategories) if chkCType.isChecked => sltCategories.value.asScala
+      }.flatten.toSet
     )
-  }
+  )
 
   //def isModified = state != initialData
 
@@ -407,11 +400,9 @@ class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
  * Doc's search settings editor.
  */
 class SearchSettingsEditor(meta: Meta) extends Editor {
-  type DataType = Values
+  case class Data(keywords: Set[Keyword], isExcludeFromInnerSearch: Boolean)
 
-  case class Values(keywords: Set[Keyword], isExcludeFromInnerSearch: Boolean)
-
-  private val initialValues = Values(meta.getKeywords.map(_.toLowerCase).toSet, false)
+  private val initialValues = Data(meta.getKeywords.asScala.map(_.toLowerCase).toSet, false)
 
   val ui = new SearchSettingsEditorUI |>> { ui =>
     import ui.lytKeywords.{btnAdd, btnRemove, txtKeyword, lstKeywords}
@@ -419,7 +410,7 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
     btnAdd.addClickHandler {
       txtKeyword.trim.toLowerCase match {
         case value if value.length > 0 && lstKeywords.getItem(value) == null =>
-          setKeywords(lstKeywords.itemIds.toSet + value)
+          setKeywords(lstKeywords.itemIds.asScala.toSet + value)
 
         case _ =>
       }
@@ -428,11 +419,11 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
     }
 
     btnRemove.addClickHandler {
-      whenSelected(lstKeywords) { _ foreach (lstKeywords removeItem _) }
+      whenSelected(lstKeywords) { keywords => keywords.asScala.foreach(lstKeywords removeItem _) }
     }
 
     lstKeywords.addValueChangeHandler {
-      lstKeywords.value.toSeq match {
+      lstKeywords.value.asScala.toSeq match {
         case Seq(value) => txtKeyword.value = value
         case Seq(_, _, _*) => txtKeyword.value = ""
         case _ =>
@@ -444,7 +435,7 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
 
 
   private def setKeywords(keywords: Set[Keyword]) {
-    ui.lytKeywords.lstKeywords.itemIds = keywords.map(_.toLowerCase).toSeq.sorted
+    ui.lytKeywords.lstKeywords.itemIds = keywords.map(_.toLowerCase).toSeq.sorted.asJava
   }
 
 
@@ -453,12 +444,9 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
     ui.chkExcludeFromInternalSearch.checked = initialValues.isExcludeFromInnerSearch
   }
 
-  val data = new Data {
-    def get() = Right(
-      Values(ui.lytKeywords.lstKeywords.itemIds.toSet, ui.chkExcludeFromInternalSearch.isChecked)
-    )
-  }
-
+  def collectValues() = Right(
+    Data(ui.lytKeywords.lstKeywords.itemIds.asScala.toSet, ui.chkExcludeFromInternalSearch.isChecked)
+  )
   //def isModified = state != initialData
 }
 
@@ -505,9 +493,7 @@ class SearchSettingsEditorUI extends FormLayout with UndefinedSize {
  */
 class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extends Editor with ImcmsServicesSupport {
 
-  type DataType = Values
-
-  case class Values(
+  case class Data(
     i18nMetas: Map[I18nLanguage, I18nMeta],
     enabledLanguages: Set[I18nLanguage],
     disabledLanguageShowSetting: Meta.DisabledLanguageShowSetting,
@@ -518,7 +504,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
   // i18nMetas sorted by language (default always first) and native name
   private val i18nMetasUIs: Seq[(I18nLanguage, CheckBox, I18nMetaEditorUI)] = locally {
     val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage
-    val languages = imcmsServices.getI18nSupport.getLanguages.sortWith {
+    val languages = imcmsServices.getI18nSupport.getLanguages.asScala.sortWith {
       case (l1, _) if l1 == defaultLanguage => true
       case (_, l2) if l2 == defaultLanguage => false
       case (l1, l2) => l1.getNativeName < l2.getNativeName
@@ -579,27 +565,25 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
     })
   } // ui
 
-  val data = new Data {
-    def get() = Ex.allCatch.either(ui.frmAlias.txtAlias.validate()).left.map(e => Seq(e.getMessage)).right.map { _ =>
-      Values(
-        i18nMetasUIs.map {
-          case (language, chkBox, i18nMetaEditorUI) =>
-            language -> (I18nMeta.builder() |> { builder =>
-              builder.id(i18nMetas.get(language).map(_.getId).orNull)
-                .docId(meta.getId)
-                .language(language)
-                .headline(i18nMetaEditorUI.txtTitle.trim)
-                .menuImageURL(i18nMetaEditorUI.embLinkImage.trim)
-                .menuText(i18nMetaEditorUI.txaMenuText.trim)
-                .build()
-            })
-        } (breakOut),
-        i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language }(breakOut),
-        ui.frmLanguages.cbShowMode.value,
-        ui.frmAlias.txtAlias.trimOpt,
-        ui.frmLinkTarget.cbTarget.value
-      )
-    }
+  def collectValues() = Ex.allCatch.either(ui.frmAlias.txtAlias.validate()).left.map(e => Seq(e.getMessage)).right.map { _ =>
+    Data(
+      i18nMetasUIs.map {
+        case (language, chkBox, i18nMetaEditorUI) =>
+          language -> (I18nMeta.builder() |> { builder =>
+            builder.id(i18nMetas.get(language).map(_.getId).orNull)
+              .docId(meta.getId)
+              .language(language)
+              .headline(i18nMetaEditorUI.txtTitle.trim)
+              .menuImageURL(i18nMetaEditorUI.embLinkImage.trim)
+              .menuText(i18nMetaEditorUI.txaMenuText.trim)
+              .build()
+          })
+      } (breakOut),
+      i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language }(breakOut),
+      ui.frmLanguages.cbShowMode.value,
+      ui.frmAlias.txtAlias.trimOpt,
+      ui.frmLinkTarget.cbTarget.value
+    )
   } // data
 
 
@@ -644,7 +628,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
     val target = meta.getTarget match {
       case null => ui.frmLinkTarget.cbTarget.firstItemIdOpt.get
       case target =>
-        ui.frmLinkTarget.cbTarget.itemIds.find(_ == target.toLowerCase) match {
+        ui.frmLinkTarget.cbTarget.itemIds.asScala.find(_ == target.toLowerCase) match {
           case Some(predefinedTarget) => predefinedTarget
           case _ =>
             ui.frmLinkTarget.cbTarget.addItem(target, "Other frame: %s".format(target))

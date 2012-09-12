@@ -72,6 +72,18 @@ class ApplicationWrapper(app: Application) {
     showNotification(caption, description, Notification.TYPE_HUMANIZED_MESSAGE)
 }
 
+
+class WindowWrapper(window: Window) {
+  def showErrorNotification(caption: String, description: String = null): Unit =
+    window.showNotification(caption, description, Notification.TYPE_ERROR_MESSAGE)
+
+  def showWarningNotification(caption: String, description: String = null): Unit =
+    window.showNotification(caption, description, Notification.TYPE_WARNING_MESSAGE)
+
+  def showInfoNotification(caption: String, description: String = null): Unit =
+    window.showNotification(caption, description, Notification.TYPE_HUMANIZED_MESSAGE)
+}
+
 class MenuBarWrapper(mb: MenuBar) {
   def addItem(caption: String, resource: Resource): MenuBar#MenuItem = mb.addItem(caption, resource, null)
   def addItem(caption: String): MenuBar#MenuItem = mb.addItem(caption, null)
