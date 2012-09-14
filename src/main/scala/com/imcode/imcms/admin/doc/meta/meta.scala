@@ -14,7 +14,7 @@ import _root_.imcode.server.document.{TextDocumentPermissionSetDomainObject, Doc
 import com.imcode.imcms.api._
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.admin.access.user.{UserSingleSelectUI, UserSingleSelect, UserSingleSelectDialog, UserSelectDialog}
-import com.imcode.imcms.admin.doc.meta.permissions.{PermissionsEditor}
+import com.imcode.imcms.admin.doc.meta.permissions.{AccessEditor}
 import com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
 import com.imcode.imcms.dao.MetaDao
 
@@ -46,7 +46,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
   private var appearanceEditorOpt = Option.empty[AppearanceEditor]
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
-  private var permissionsEditorOpt = Option.empty[PermissionsEditor]
+  private var accessEditorOpt = Option.empty[AccessEditor]
   private var searchSettingsEditorOpt = Option.empty[SearchSettingsEditor]
   private var categoriesEditorOpt = Option.empty[CategoriesEditor]
   private var profileEditorOpt = Option.empty[ProfileEditor]
@@ -54,7 +54,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
   val ui = new MetaEditorUI |>> { ui =>
     ui.treeMenu.addItem("Appearance")
     ui.treeMenu.addItem("Life cycle")
-    ui.treeMenu.addItem("Permissions")
+    ui.treeMenu.addItem("Access")
     ui.treeMenu.addItem("Search")
     ui.treeMenu.addItem("Categories")
 
@@ -85,11 +85,11 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
           ui.pnlMenuItem.setContent(lifeCycleEditorOpt.get.ui)
 
-        case "Permissions" =>
-          if (permissionsEditorOpt.isEmpty) permissionsEditorOpt =
-            Some(new PermissionsEditor(doc, ui.getApplication.user))
+        case "Access" =>
+          if (accessEditorOpt.isEmpty) accessEditorOpt =
+            Some(new AccessEditor(doc, ui.getApplication.user))
 
-          ui.pnlMenuItem.setContent(permissionsEditorOpt.get.ui)
+          ui.pnlMenuItem.setContent(accessEditorOpt.get.ui)
 
         case "Search" =>
           if (searchSettingsEditorOpt.isEmpty) searchSettingsEditorOpt = Some(new SearchSettingsEditor(doc.getMeta))
@@ -148,7 +148,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         dc.getMeta.setCreatorId(lifeCycle.creator.map(c => Int box c.getId).orNull)
         //???dc.getMeta.setModifierId
       }
-    }.merge(permissionsEditorOpt.map(_.collectValues)) {
+    }.merge(accessEditorOpt.map(_.collectValues)) {
       case (uberData @ (dc, _), permissions) => uberData |>> { _ =>
         dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
         dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)

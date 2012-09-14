@@ -22,28 +22,33 @@ class DocAdminApplication extends com.vaadin.Application with HttpServletRequest
 
   // extractors
   private object PathHandlers {
-    private val DocRe = """doc-0*(\d+)""".r
+    private val DefaultDocRe = """0*(\d+)""".r
+    private val CustomDocRe = """0*(\d+)-0*(\d+)""".r
     private val MenuRe = """menu-0*(\d+)-0*(\d+)-0*(\d+)""".r
     private val TextRe = """text-0*(\d+)-0*(\d+)-0*(\d+)""".r
 
-    object Doc {
-      def unapply(value: String): Option[Int] = value match {
-        case DocRe(IntNum(docId)) => Some(docId)
-        case _ => None
+    object DefaultDoc {
+      def unapply(value: String): Option[Int] = PartialFunction.condOpt(value) {
+        case DefaultDocRe(IntNum(docId)) => docId
       }
     }
 
+    object CustomDoc {
+      def unapply(value: String): Option[(Int, Int)] = PartialFunction.condOpt(value) {
+        case CustomDocRe(IntNum(docId), IntNum(docVersionNo)) => (docId, docVersionNo)
+      }
+    }
+
+
     object Menu {
-      def unapply(value: String): Option[(Int, Int, Int)] = value match {
-        case MenuRe(IntNum(docId), IntNum(docVersion), IntNum(menuNo)) => Some(docId, docVersion, menuNo)
-        case _ => None
+      def unapply(value: String): Option[(Int, Int, Int)] = PartialFunction.condOpt(value) {
+        case MenuRe(IntNum(docId), IntNum(docVersion), IntNum(menuNo)) => (docId, docVersion, menuNo)
       }
     }
 
     object Text {
-      def unapply(value: String): Option[(Int, Int, Int)] = value match {
-        case TextRe(IntNum(docId), IntNum(docVersion), IntNum(textNo)) => Some(docId, docVersion, textNo)
-        case _ => None
+      def unapply(value: String): Option[(Int, Int, Int)] = PartialFunction.condOpt(value) {
+        case TextRe(IntNum(docId), IntNum(docVersion), IntNum(textNo)) => (docId, docVersion, textNo)
       }
     }
   }
@@ -55,7 +60,8 @@ class DocAdminApplication extends com.vaadin.Application with HttpServletRequest
     case window if window != null => window
     case _ =>
       name |> {
-        case PathHandlers.Doc(docId) => mkDocEditorWindow(docId)
+        case PathHandlers.DefaultDoc(docId) => mkDocEditorWindow(docId)
+        case PathHandlers.CustomDoc(docId, docVersionNo) => mkDocEditorWindow(docId)
         case PathHandlers.Menu(docId, docVersionNo, menuNo) => mkMenuEditorWindow(docId)
         case PathHandlers.Text(docId, docVersionNo, textNo) => mkTextEditorWindow(docId)
         case _ => null
@@ -68,8 +74,6 @@ class DocAdminApplication extends com.vaadin.Application with HttpServletRequest
   }
 
 
-  // block save btn
-  // handle
   def mkDocEditorWindow(docId: Int): Window = new Window |>> { wnd =>
     val doc = app.imcmsServices.getDocumentMapper.getDocument(docId)
     val lytProperties = new VerticalLayout with Spacing with Margin with FullHeight |>> { lyt =>
