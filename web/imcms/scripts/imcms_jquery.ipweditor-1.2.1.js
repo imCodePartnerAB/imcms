@@ -60,8 +60,10 @@ $.fn.editable = function(options){
 		// Configure events,styles for changed content
 		$this.data('editable.previous',$this.data('editable.current'))
 					.children()
-					//.focus() // Error in IE
 					.addClass(opts.editClass);
+		try {
+			$this.focus() ;
+		} catch (e) {}
 		var $buttons = $('<div class="imcmsFormBtnDiv" style="text-align:right;" />') ;
 		// Submit Event
 		if (opts.submit) {
