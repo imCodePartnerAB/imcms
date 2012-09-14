@@ -239,7 +239,9 @@ class MetaDao extends HibernateSupport {
 
 
   def getMinMaxDocumentIds(): Array[JInteger] =
-    hibernate.getByNamedQuery("Meta.getMinMaxDocumentIds")
+    hibernate.getByNamedQuery[Array[Object]]("Meta.getMinMaxDocumentIds") |> { pair =>
+      Array(pair(0).asInstanceOf[JInteger], pair(1).asInstanceOf[JInteger])
+    }
 
 
   def getEnabledLanguages(docId: Int) = sys.error("Not implemented")

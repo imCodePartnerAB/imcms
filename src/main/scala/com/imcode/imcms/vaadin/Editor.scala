@@ -10,5 +10,6 @@ trait Editor {
 
   def ui: Component
 
+  def resetValues()
   def collectValues(): ErrorsOrData
 }

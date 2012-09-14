@@ -152,7 +152,7 @@ class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSi
     CP[JBoolean]("Inherited to new documents?"),
     CP[JBoolean]("Used by image archive?"))
 
-  addComponents(this, mb, rc)
+  addComponentsTo(this, mb, rc)
 }
 
 
@@ -163,5 +163,5 @@ class CategoryTypeEditorUI extends FormLayout with UndefinedSize {
   val chkInherited = new CheckBox("Inherited to new documents")
   val chkImageArchive = new CheckBox("Used by image archive")
 
-  addComponents(this, txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
+  addComponentsTo(this, txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
 }

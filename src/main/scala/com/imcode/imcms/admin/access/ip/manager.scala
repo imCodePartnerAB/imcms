@@ -153,7 +153,7 @@ class IPAccessManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     CP[String]("IP range from"),
     CP[String]("IP range to"))
 
-  addComponents(this, mb, rc)
+  addComponentsTo(this, mb, rc)
 }
 
 
@@ -162,7 +162,7 @@ class IPAccessEditorUI extends FormLayout with UndefinedSize {
     val txtLoginName = new TextField  { setInputPrompt("No user selected") }    // with ReadOnly
     val btnChoose = new Button("...") { setStyleName("small") }
 
-    addComponents(this, txtLoginName, btnChoose)
+    addComponentsTo(this, txtLoginName, btnChoose)
     setCaption("User")
   }
 
@@ -171,5 +171,5 @@ class IPAccessEditorUI extends FormLayout with UndefinedSize {
   val txtFrom = new TextField("From")
   val txtTo = new TextField("To")
 
-  addComponents(this, txtId, userPickerUI, txtFrom, txtTo)
+  addComponentsTo(this, txtId, userPickerUI, txtFrom, txtTo)
 }

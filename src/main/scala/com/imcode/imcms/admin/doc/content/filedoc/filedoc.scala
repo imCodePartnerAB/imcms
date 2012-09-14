@@ -288,7 +288,7 @@ class FileDocContentEditorUI extends VerticalLayout with Spacing with Margin wit
       ContainerProperty[String]("Name"))
   }
 
-  addComponents(this, mb, tblFiles)
+  addComponentsTo(this, mb, tblFiles)
   setExpandRatio(tblFiles, 1.0f)
 }
 
@@ -298,5 +298,5 @@ class FileDocFilePropertiesEditorUI extends FormLayout with UndefinedSize {
   val txtName = new TextField("Name") with Required
   val cbType = new ComboBox("Type") with Required with SingleSelect[String] with NoTextInput with NoNullSelection
 
-  addComponents(this, txtId, txtName, cbType)
+  addComponentsTo(this, txtId, txtName, cbType)
 }

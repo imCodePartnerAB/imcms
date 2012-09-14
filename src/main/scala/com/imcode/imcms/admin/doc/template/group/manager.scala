@@ -133,7 +133,7 @@ class TemplateGroupManagerUI extends VerticalLayout with Spacing with UndefinedS
     CP[String]("Name"),
     CP[JInteger]("Templates count"))
 
-  addComponents(this, mb, rc)
+  addComponentsTo(this, mb, rc)
 }
 
 class TemplateGroupEditorUI extends FormLayout with UndefinedSize {
@@ -141,5 +141,5 @@ class TemplateGroupEditorUI extends FormLayout with UndefinedSize {
   val txtName = new TextField("Name") with Required
   val twsTemplates = new TwinSelect[String]("Templates")
 
-  addComponents(this, txtId, txtName, twsTemplates)
+  addComponentsTo(this, txtId, txtName, twsTemplates)
 }

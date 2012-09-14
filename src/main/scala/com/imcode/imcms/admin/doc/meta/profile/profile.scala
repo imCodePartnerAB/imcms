@@ -48,20 +48,20 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
 
   val ui = new ProfileEditorUI |>> { ui =>
     ui.btnEditRestrictedOnePermSet addClickHandler {
-      ui.getApplication.initAndShow(new OkCancelDialog("Limited-1 permissions")) { dlg =>
+      ui.topWindow.initAndShow(new OkCancelDialog("Limited-1 permissions")) { dlg =>
         dlg.mainUI = restrictedOnePermSetEditor.ui
       }
     }
 
     ui.btnEditRestrictedTwoPermSet addClickHandler {
-      ui.getApplication.initAndShow(new OkCancelDialog("Limited-2 permissions")) { dlg =>
+      ui.topWindow.initAndShow(new OkCancelDialog("Limited-2 permissions")) { dlg =>
         dlg.mainUI = restrictedTwoPermSetEditor.ui
       }
     }
   } // ui
 
 
-  val collectValues: Seq[ErrorMsg] Either Data =
+  val collectValues: ErrorsOrData =
     Right(
       Data(
         ui.cbDefaultTemplate.value,
@@ -72,7 +72,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
       )
     )
 
-  def revert() {
+  def resetValues() {
     //restrictedOnePermSetEditor.revert()
     //restrictedOnePermSetEditor.revert()
 
@@ -98,7 +98,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
     setTemplatesNamesAsComboBoxItems(ui.cbRestrictedTwoDefaultTemplate, doc.getDefaultTemplateNameForRestricted2)
   }
 
-  revert()
+  resetValues()
 }
 
 
@@ -117,11 +117,11 @@ class ProfileEditorUI extends VerticalLayout with FullWidth {
   val btnEditRestrictedOnePermSet = new Button("permissions") with SmallStyle
   val btnEditRestrictedTwoPermSet = new Button("permissions") with SmallStyle
 
-  addComponents(lytCustomOne, cbRestrictedOneDefaultTemplate, btnEditRestrictedOnePermSet)
-  addComponents(lytCustomTwo, cbRestrictedTwoDefaultTemplate, btnEditRestrictedTwoPermSet)
+  addComponentsTo(lytCustomOne, cbRestrictedOneDefaultTemplate, btnEditRestrictedOnePermSet)
+  addComponentsTo(lytCustomTwo, cbRestrictedTwoDefaultTemplate, btnEditRestrictedTwoPermSet)
 
-  addComponents(frmDefault.getLayout, cbDefaultTemplate)
-  addComponents(frmCustom.getLayout, lytCustomOne, lytCustomTwo)
+  addComponentsTo(frmDefault.getLayout, cbDefaultTemplate)
+  addComponentsTo(frmCustom.getLayout, lytCustomOne, lytCustomTwo)
 
-  addComponents(this, frmDefault, frmCustom)
+  addComponentsTo(this, frmDefault, frmCustom)
 }

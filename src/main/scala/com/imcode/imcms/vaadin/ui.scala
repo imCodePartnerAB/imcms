@@ -21,6 +21,7 @@ import com.vaadin.ui.Layout.AlignmentHandler
 import imcode.server.user.UserDomainObject
 import javax.servlet.http.HttpSession
 import javax.servlet.ServletContext
+import scala.annotation.tailrec
 
 trait ImcmsApplication extends Application {
 
@@ -74,6 +75,14 @@ class ApplicationWrapper(app: Application) {
 
 
 class WindowWrapper(window: Window) {
+  def initAndShow[W <: Window](childWindow: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
+    init(childWindow)
+    childWindow.setModal(modal)
+    childWindow.setResizable(resizable)
+    childWindow.setDraggable(draggable)
+    window.addWindow(childWindow)
+  }
+
   def showErrorNotification(caption: String, description: String = null): Unit =
     window.showNotification(caption, description, Notification.TYPE_ERROR_MESSAGE)
 
@@ -99,6 +108,21 @@ class MenuItemWrapper(mi: MenuBar#MenuItem) {
     })
 
   def setCommandHandler(handler: => Unit) = setCommandListener(_ => handler)
+}
+
+
+class ComponentWrapper(component: Component) {
+  def topWindow: Window = {
+    @tailrec def findTopWindow(window: Window): Window = window.getParent match {
+      case null => window
+      case parent => findTopWindow(parent)
+    }
+
+    component.getWindow match {
+      case null => null
+      case window => findTopWindow(window)
+    }
+  }
 }
 
 class ButtonWrapper(button: Button) {
@@ -314,7 +338,7 @@ class MsgDialog(caption: String = "", msg: String ="") extends OKDialog(caption)
 class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton with CancelButton {
 
   val lytButtons = new GridLayout(2, 1) with Spacing {
-    addComponents(this, btnOk, btnCancel)
+    addComponentsTo(this, btnOk, btnCancel)
 
     setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)
     setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
@@ -327,7 +351,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton
 class YesNoCancelDialog(caption: String = "") extends Dialog(caption) with YesButton with NoButton with CancelButton {
 
   val lytButtons = new GridLayout(3, 1) with Spacing {
-    addComponents(this, btnYes, btnNo, btnCancel)
+    addComponentsTo(this, btnYes, btnNo, btnCancel)
 
     setComponentAlignment(btnYes, Alignment.MIDDLE_RIGHT)
     setComponentAlignment(btnNo, Alignment.MIDDLE_CENTER)
@@ -385,10 +409,10 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
   val lstAvailable = new ListSelect("Available") with ValueType[JCollection[T]]
   val lstChosen = new ListSelect("Chosen") with ValueType[JCollection[T]]
   val lytButtons = new VerticalLayout {
-    addComponents(this, btnAdd, btnRemove)
+    addComponentsTo(this, btnAdd, btnRemove)
   }
 
-  addComponents(this, lstChosen, lytButtons, lstAvailable)
+  addComponentsTo(this, lstChosen, lytButtons, lstAvailable)
   setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
 
   doto(lstAvailable, lstChosen) { l =>
@@ -495,7 +519,7 @@ class ReloadableContentUI[T <: Component](val content: T) extends GridLayout(1,2
     setIcon(Reload16)
   }
 
-  addComponents(this, content, btnReload)
+  addComponentsTo(this, content, btnReload)
   setComponentAlignment(content, Alignment.TOP_LEFT)
   setComponentAlignment(btnReload, Alignment.BOTTOM_RIGHT)
 }

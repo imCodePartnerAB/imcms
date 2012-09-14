@@ -301,7 +301,7 @@ public class DocumentSaver {
     /**
      * Please note that custom (limited) permissions might be changed on save:
      * -If saving user is a super-admin or have full perms on a doc, then all custom perms settings are merely inherited.
-     * -Otherwise custom (lim1 and lim2) perms are replaced with predefined set.
+     * -Otherwise custom (lim1 and lim2) perms are replaced with permissions set for new document.
      * <p/>
      * If user is a super-admin or has full permissions on a new document then
      *

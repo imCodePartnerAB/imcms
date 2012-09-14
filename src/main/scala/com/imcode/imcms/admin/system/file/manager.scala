@@ -125,7 +125,7 @@ class FileManager(app: ImcmsApplication) {
         app.initAndShow(new OkCancelDialog("file.mgr.dlg.new_dir.title".i)) { dlg =>
           val txtName = new TextField("file.mgr.dlg.new_dir.frm.fld.name".i)
           val lblMsg = new Label with UndefinedSize
-          dlg.mainUI = new FormLayout with UndefinedSize {addComponents(this, lblMsg, txtName) }
+          dlg.mainUI = new FormLayout with UndefinedSize {addComponentsTo(this, lblMsg, txtName) }
 
           // refactor
           val forbiddenChars = """?"\/:;%*|>>>"""
@@ -173,7 +173,7 @@ class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends 
   val miHelp = mb.addItem("file.mgr.menu.help".i, Help16)
 
   addComponent(mb, 0, 0, 1, 0)
-  addComponents(this, browserUI, previewUI)
+  addComponentsTo(this, browserUI, previewUI)
   setComponentAlignment(previewUI, Alignment.MIDDLE_CENTER)
   setColumnExpandRatio(0, 1f)
   setRowExpandRatio(1, 1f)
@@ -610,7 +610,7 @@ class ItemsDeletePrgressDialogUI extends FormLayout with Spacing with UndefinedS
   val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 
-  addComponents(this, lblMsg, pi)
+  addComponentsTo(this, lblMsg, pi)
 }
 
 
@@ -618,7 +618,7 @@ class ItemsTransferProgressDialogUI extends FormLayout with Spacing with Undefin
   val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 
-  addComponents(this, lblMsg, pi)
+  addComponentsTo(this, lblMsg, pi)
 }
 
 
@@ -626,5 +626,5 @@ class ItemRenameDialogUI extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label with UndefinedSize
   val txtName = new TextField("file.mgr.dlg.transfer.item.frm.fld.name".i)
 
-  addComponents(this, lblMsg, txtName)
+  addComponentsTo(this, lblMsg, txtName)
 }

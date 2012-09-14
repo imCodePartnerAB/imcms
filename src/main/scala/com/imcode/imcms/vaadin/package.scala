@@ -17,7 +17,7 @@ package object vaadin {
 
   implicit def fn0ToMenuCommand(f: () => Unit) = menuCommand { _ => f() }
 
-  def addComponents(container: ComponentContainer, component: Component, components: Component*) = {
+  def addComponentsTo(container: ComponentContainer, component: Component, components: Component*) = {
     component +: components foreach { c => container addComponent c }
     container
   }
@@ -128,6 +128,8 @@ package object vaadin {
 
 
   implicit def applicationToImcmsApplication(app: Application) = app.asInstanceOf[ImcmsApplication]
+
+  implicit def wrapComponent(c: Component) = new ComponentWrapper(c)
 
   implicit def wrapApplication(app: Application) = new ApplicationWrapper(app)
 

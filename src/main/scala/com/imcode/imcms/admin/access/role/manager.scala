@@ -137,7 +137,7 @@ class RoleManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     CP[JInteger]("Id"),
     CP[String]("Name"))
 
-  addComponents(this, mb, rc)
+  addComponentsTo(this, mb, rc)
 }
 
 class RoleEditorUI extends FormLayout with UndefinedSize {
@@ -148,6 +148,6 @@ class RoleEditorUI extends FormLayout with UndefinedSize {
   val chkPermUseImagesFromArchive = new CheckBox("Permission to use images from image archive")
   val chkPermChangeImagesInArchive = new CheckBox("Permission to change images in image archive")
 
-  addComponents(this, txtName, chkPermGetPasswordByEmail, chkPermAccessMyPages, chkPermUseImagesFromArchive,
+  addComponentsTo(this, txtName, chkPermGetPasswordByEmail, chkPermAccessMyPages, chkPermUseImagesFromArchive,
       chkPermChangeImagesInArchive)
 }

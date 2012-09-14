@@ -595,7 +595,7 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
     val txtStart = new TextField { setColumns(5) }
     val txtEnd = new TextField { setColumns(5) }
 
-    addComponents(this, txtStart, txtEnd)
+    addComponentsTo(this, txtStart, txtEnd)
   }
 
   val chkText = new CheckBox("doc.search.basic.frm.fld.chk_text".i) with Immediate with ExposeValueChange
@@ -609,7 +609,7 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
     val chkURL = new CheckBox("doc.search.basic.frm.fld.chk_type_url".i)
     val chkProfile = new CheckBox("doc.search.basic.frm.fld.chk_type_profile".i)
 
-    addComponents(this, chkText, chkFile, chkHtml, chkURL, new Label(" | ") with UndefinedSize,  chkProfile)
+    addComponentsTo(this, chkText, chkFile, chkHtml, chkURL, new Label(" | ") with UndefinedSize,  chkProfile)
   }
 
   val chkAdvanced = new CheckBox("doc.search.basic.frm.fld.chk_advanced".i) with Immediate with ExposeValueChange
@@ -631,7 +631,7 @@ class DocBasicFormSearchUI extends CustomLayout("admin/doc/search/basic_form") w
     val btnReset = new Button("btn_reset".i) with SmallStyle
     val btnSearch = new Button("btn_search".i) with SmallStyle
 
-    addComponents(this, btnReset, btnSearch)
+    addComponentsTo(this, btnReset, btnSearch)
   }
 
   addNamedComponents(this,
@@ -708,7 +708,7 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
     val chkDisapproved = new CheckBox("doc.search.advanced.frm.fld.chk_status_disapproved".i)
     val chkExpired = new CheckBox("doc.search.advanced.frm.fld.chk_status_expired".i)
 
-    addComponents(this, chkNew, chkPublished, chkUnpublished, chkApproved, chkDisapproved, chkExpired)
+    addComponentsTo(this, chkNew, chkPublished, chkUnpublished, chkApproved, chkDisapproved, chkExpired)
   }
 
   val chkDates = new CheckBox("doc.search.advanced.frm.fld.chk_dates".i) with Immediate
@@ -718,7 +718,7 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
     val drPublished = new DocDateRangeUI("doc.search.advanced.frm.fld.dr_published".i) with DocDateRangeUISetup
     val drExpired = new DocDateRangeUI("doc.search.advanced.frm.fld.dr_expired".i) with DocDateRangeUISetup
 
-    addComponents(this, drCreated, drModified, drPublished, drExpired)
+    addComponentsTo(this, drCreated, drModified, drPublished, drExpired)
   }
 
   val chkCategories = new CheckBox("doc.search.advanced.frm.fld.chk_categories".i) with Immediate
@@ -739,7 +739,7 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
         "doc.search.advanced.frm.fld.cb_relationships_children.item.no_children"
     ).foreach(itemId => cbChildren.addItem(itemId, itemId.i))
 
-    addComponents(this, cbParents, cbChildren)
+    addComponentsTo(this, cbParents, cbChildren)
   }
 
   val chkMaintainers = new CheckBox("doc.search.advanced.frm.fld.chk_maintainers".i) with Immediate
@@ -752,7 +752,7 @@ class DocAdvancedSearchFormUI extends CustomLayout("admin/doc/search/advanced_fo
       val searchDialogCaption = "doc.search.advanced.dlg_select_publishers.caption".i
     }
 
-    addComponents(this, ulCreators, ulPublishers)
+    addComponentsTo(this, ulCreators, ulPublishers)
   }
 
   addNamedComponents(this,
@@ -803,9 +803,9 @@ class UserListUI(caption: String = "") extends GridLayout(2, 2) {
   val btnRemove = new Button("-") with SmallStyle
   val lytButtons = new VerticalLayout with UndefinedSize
 
-  addComponents(lytButtons, btnRemove, btnAdd)
+  addComponentsTo(lytButtons, btnRemove, btnAdd)
   addComponent(chkEnabled, 0, 0, 1, 0)
-  addComponents(this, lstUsers, lytButtons)
+  addComponentsTo(this, lstUsers, lytButtons)
 
   setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
 }
@@ -831,7 +831,7 @@ class DocDateRangeUI(caption: String = "") extends HorizontalLayout with Spacing
 
   setCaption(caption)
 
-  addComponents(this, cbRangeType, dtFrom, dtTo)
+  addComponentsTo(this, cbRangeType, dtFrom, dtTo)
 }
 
 

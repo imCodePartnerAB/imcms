@@ -165,7 +165,7 @@ class LanguageManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     CP[String]("Enabled"),
     CP[String]("Default"))
 
-  addComponents(this, mb, rc)
+  addComponentsTo(this, mb, rc)
 }
 
 class LanguageEditorUI extends FormLayout with UndefinedSize {
@@ -175,7 +175,7 @@ class LanguageEditorUI extends FormLayout with UndefinedSize {
   val txtNativeName = new TextField("Native name")
   val chkEnabled = new CheckBox("Enabled")
 
-  addComponents(this, txtId, txtCode, txtName, txtNativeName, chkEnabled)
+  addComponentsTo(this, txtId, txtCode, txtName, txtNativeName, chkEnabled)
 }
 
 

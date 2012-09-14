@@ -278,10 +278,10 @@ class AdminApplication extends com.vaadin.Application with ImcmsApplication { ap
         //calTo.setStyle("calendar")
         calTo.setResolution(DateField.RESOLUTION_DAY)
 
-        addComponents(this, calFrom, calTo, btnReload)
+        addComponentsTo(this, calFrom, calTo, btnReload)
       }
 
-      addComponents(this, tblTerms, lytBar)
+      addComponentsTo(this, tblTerms, lytBar)
 
       def reload() {
         val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue.asInstanceOf[Date],

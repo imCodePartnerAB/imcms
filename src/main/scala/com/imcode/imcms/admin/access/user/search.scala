@@ -37,7 +37,7 @@ class UserSingleSelect {
   private val selectionRef = new AtomicReference(Option.empty[UserDomainObject])
   val ui = new UserSingleSelectUI |>> { ui =>
     ui.btnSelect.addClickHandler {
-      ui.getApplication.initAndShow(new OkCancelDialog("Select user") with UserSingleSelectDialog) { dlg =>
+      ui.topWindow.initAndShow(new OkCancelDialog("Select user") with UserSingleSelectDialog) { dlg =>
         dlg.wrapOkHandler {
           selection = dlg.search.selection.headOption
         }
@@ -47,7 +47,7 @@ class UserSingleSelect {
     ui.btnClear.addClickHandler { selection = None }
   }
 
-  def selection = selectionRef.get
+  def selection: Option[UserDomainObject] = selectionRef.get
   def selection_=(userOpt: Option[UserDomainObject]) {
     ui.btnClear.setEnabled(userOpt.isDefined)
     ui.lblName.value = userOpt match {
@@ -66,7 +66,7 @@ class UserSingleSelectUI extends HorizontalLayout with Spacing with UndefinedSiz
   val btnSelect = new Button("select") with SmallStyle
   val btnClear = new Button("clear") with SmallStyle
 
-  addComponents(this, lblName, btnSelect, btnClear)
+  addComponentsTo(this, lblName, btnSelect, btnClear)
 }
 
 
@@ -90,7 +90,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
   }
 
   val ui = new GridLayout(1, 2) |>> { ui =>
-    addComponents(ui, searchForm.ui, searchResult)
+    addComponentsTo(ui, searchForm.ui, searchResult)
   }
 
   searchResult.addValueChangeHandler {
@@ -208,7 +208,7 @@ class UserSearchFormUI extends CustomLayout("admin/access/user/search/form") wit
     val btnReset = new Button("btn_reset".i) with SmallStyle
     val btnSearch = new Button("btn_search".i) with SmallStyle
 
-    addComponents(this, btnReset, btnSearch)
+    addComponentsTo(this, btnReset, btnSearch)
   }
 
   addNamedComponents(this,

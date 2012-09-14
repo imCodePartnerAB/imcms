@@ -267,7 +267,7 @@ class FileBrowserUI extends VerticalLayout with Spacing with FullSize {
   spLocation.setFirstComponent(accLocationTrees)
   spLocation.setSplitPosition(15)
 
-  addComponents(this, spLocation, lblSelectionPath)
+  addComponentsTo(this, spLocation, lblSelectionPath)
   setExpandRatio(spLocation, 1.0f)
 }
 

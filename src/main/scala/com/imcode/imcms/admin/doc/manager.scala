@@ -89,7 +89,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
               browser.setSource(new ExternalResource(docURL)) //
             }
 
-            addComponents(lyt, mb, emb)
+            addComponentsTo(lyt, mb, emb)
             lyt.setExpandRatio(emb, 1.0f)
           }
 
@@ -265,7 +265,7 @@ class DocManagerUI(searchUI: DocSearchUI) extends VerticalLayout with Spacing wi
 
   val miProfileEditName = miProfile.addItem("doc.mgr.mi.profile.edit_name".i)
 
-  addComponents(this, mb, searchUI)
+  addComponentsTo(this, mb, searchUI)
   setExpandRatio(searchUI, 1.0f)
 }
 
@@ -296,7 +296,7 @@ class CustomDocsUI(searchUI: Component) extends VerticalLayout with Spacing with
   val mb = new MenuBar
   val miDoc = mb.addItem("doc.selection.mi.doc".i)
 
-  addComponents(this, mb, searchUI)
+  addComponentsTo(this, mb, searchUI)
   setExpandRatio(searchUI, 1.0f)
 }
 

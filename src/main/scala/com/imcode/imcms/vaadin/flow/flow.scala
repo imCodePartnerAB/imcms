@@ -112,7 +112,7 @@ class FlowUI extends VerticalLayout with FullSize with Spacing {
     pnlPageUI.setContent(content)
   }
 
-  addComponents(this, pnlPageUI, bar)
+  addComponentsTo(this, pnlPageUI, bar)
   setExpandRatio(pnlPageUI, 1.0f)
   setComponentAlignment(bar, Alignment.TOP_CENTER)
 }
@@ -127,5 +127,5 @@ class FlowBarUI extends HorizontalLayout with Spacing with UndefinedSize {
   val btnFinish = new Button("Finish")
   val btnCancel = new Button("Cancel")
 
-  addComponents(this, btnCancel, btnPrev, btnNext, btnFinish)
+  addComponentsTo(this, btnCancel, btnPrev, btnNext, btnFinish)
 }

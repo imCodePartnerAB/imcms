@@ -90,7 +90,7 @@ class PropertyManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val rc = new ReloadableContentUI(dataPanel)
 
   dataPanel.addComponent(dataUI)
-  addComponents(this, mb, rc)
+  addComponentsTo(this, mb, rc)
 }
 
 
@@ -100,7 +100,7 @@ class PropertyEditorUI extends FormLayout with UndefinedSize {
     val txtEmail = new TextField("e-mail")
 
     setCaption(caption)
-    addComponents(this, txtName, txtEmail)
+    addComponentsTo(this, txtName, txtEmail)
   }
 
   val txtStartPageNumber = new TextField("Start page number")
@@ -108,5 +108,5 @@ class PropertyEditorUI extends FormLayout with UndefinedSize {
   val serverMasterUI = new ContactUI("Server master")
   val webMasterUI = new ContactUI("Web master")
 
-  addComponents(this, txtStartPageNumber, txaSystemMessage, serverMasterUI, webMasterUI)
+  addComponentsTo(this, txtStartPageNumber, txaSystemMessage, serverMasterUI, webMasterUI)
 }

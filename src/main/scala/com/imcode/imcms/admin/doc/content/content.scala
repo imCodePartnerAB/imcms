@@ -30,6 +30,8 @@ import com.vaadin.ui._
 
 trait DocContentEditor extends Editor {
   type Data <: DocumentDomainObject
+
+  def resetValues() {}
 }
 
 
@@ -76,6 +78,18 @@ class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentE
 }
 
 
+/**
+ * Used with deprecated docs such as Browser.
+ */
+class UnavailableDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor {
+  type Data = DocumentDomainObject
+
+  val ui = new Label("Not available".i)
+
+  def collectValues() = Right(doc)
+}
+
+
 //case class MimeType(name: String, displayName: String)
 
 
@@ -85,7 +99,7 @@ class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentE
 class URLDocContentEditorUI extends FormLayout {
   val txtURL = new TextField("URL/Link".i) with ValueType[String] with FullWidth
 
-  addComponents(this, txtURL)
+  addComponentsTo(this, txtURL)
 }
 
 
@@ -95,7 +109,7 @@ class URLDocContentEditorUI extends FormLayout {
 class HTMLDocContentEditorUI extends FormLayout {
   val txaHTML = new TextArea("HTML".i) with FullSize
 
-  addComponents(this, txaHTML)
+  addComponentsTo(this, txaHTML)
 }
 
 
@@ -115,13 +129,13 @@ class NewTextDocContentEditorUI extends VerticalLayout with FullSize with Spacin
     val txtText1 = new TextField("No 1")
     val txtText2 = new TextField("No 2")
 
-    addComponents(this, txtText1, txtText2)
+    addComponentsTo(this, txtText1, txtText2)
   }
 
   val chkCopyI18nMetaTextsToTextFields = new CheckBox("Copy link heading & subheading to text 1 & text 2 in page")
                                            with Immediate
   val tsTexts = new TabSheet with UndefinedSize with FullSize
 
-  addComponents(this, chkCopyI18nMetaTextsToTextFields, tsTexts)
+  addComponentsTo(this, chkCopyI18nMetaTextsToTextFields, tsTexts)
   setExpandRatio(tsTexts, 1.0f)
 }

@@ -144,7 +144,7 @@ class FileUploaderUI extends FormLayout with UndefinedSize {
   val chkOverwrite = new CheckBox("file.upload.dlg.frm.fld.overwrite".i)
 
   upload.setButtonCaption("...")
-  addComponents(this, upload, pgiBytesReceived, txtSaveAsName, chkOverwrite)
+  addComponentsTo(this, upload, pgiBytesReceived, txtSaveAsName, chkOverwrite)
 
   txtSaveAsName.setRequiredError("achtung")
 }

@@ -172,7 +172,7 @@ class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     CP[String]("Icon"),
     CP[String]("Type"))
 
-  addComponents(this, mb, rc)
+  addComponentsTo(this, mb, rc)
 }
 
 
@@ -188,6 +188,6 @@ class CategoryEditorUI(val imagePickerUI: ImagePickerUI) extends FormLayout with
 
   val sltType = new Select("Type") with ValueType[String] with Required with NoNullSelection
 
-  addComponents(this, txtId, txtName, sltType, imagePickerUI, txaDescription)
+  addComponentsTo(this, txtId, txtName, sltType, imagePickerUI, txaDescription)
   imagePickerUI.setCaption("Icon")
 }

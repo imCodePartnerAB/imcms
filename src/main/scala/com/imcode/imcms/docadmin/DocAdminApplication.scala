@@ -14,21 +14,21 @@ import com.vaadin.terminal.ExternalResource
 import com.imcode.imcms.admin.doc.meta.MetaEditor
 import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
 import imcode.server.document.{UrlDocumentDomainObject, HtmlDocumentDomainObject, FileDocumentDomainObject}
-import com.imcode.imcms.admin.doc.content.{UnsupportedDocContentEditor, URLDocContentEditor, HTMLDocContentEditor, TextDocContentEditor}
 import com.vaadin.ui._
 import scala.collection.JavaConverters._
+import com.imcode.imcms.admin.doc.content._
 
 class DocAdminApplication extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
 
   // extractors
   private object PathHandlers {
-    private val InfoRe = """meta-0*(\d+)""".r
+    private val DocRe = """doc-0*(\d+)""".r
     private val MenuRe = """menu-0*(\d+)-0*(\d+)-0*(\d+)""".r
     private val TextRe = """text-0*(\d+)-0*(\d+)-0*(\d+)""".r
 
-    object Properties {
+    object Doc {
       def unapply(value: String): Option[Int] = value match {
-        case InfoRe(IntNum(docId)) => Some(docId)
+        case DocRe(IntNum(docId)) => Some(docId)
         case _ => None
       }
     }
@@ -55,22 +55,22 @@ class DocAdminApplication extends com.vaadin.Application with HttpServletRequest
     case window if window != null => window
     case _ =>
       name |> {
-        case PathHandlers.Properties(docId) => mkPropertiesWindow(docId)
-        case PathHandlers.Menu(docId, docVersionNo, menuNo) => mkMenuWindow(docId)
-        case PathHandlers.Text(docId, docVersionNo, textNo) => mkTextWindow(docId)
+        case PathHandlers.Doc(docId) => mkDocEditorWindow(docId)
+        case PathHandlers.Menu(docId, docVersionNo, menuNo) => mkMenuEditorWindow(docId)
+        case PathHandlers.Text(docId, docVersionNo, textNo) => mkTextEditorWindow(docId)
         case _ => null
-      } |>> {
-        case null =>
-        case window =>
+      } |>> { window =>
+        if (window != null) {
           window.setName(name)
           addWindow(window)
+        }
       }
   }
 
 
   // block save btn
   // handle
-  def mkPropertiesWindow(docId: Int): Window = new Window |>> { wnd =>
+  def mkDocEditorWindow(docId: Int): Window = new Window |>> { wnd =>
     val doc = app.imcmsServices.getDocumentMapper.getDocument(docId)
     val lytProperties = new VerticalLayout with Spacing with Margin with FullHeight |>> { lyt =>
       lyt.setWidth("800px")
@@ -81,12 +81,12 @@ class DocAdminApplication extends com.vaadin.Application with HttpServletRequest
       val btnClose = new Button("Close")
       val btnSave = new Button("Save")
 
-      addComponents(this, btnClose, btnSave)
+      addComponentsTo(this, btnClose, btnSave)
     }
 
     val metaEditor = new MetaEditor(doc)
     val contentEditor = doc match {
-      case textDoc: TextDocumentDomainObject => new TextDocContentEditor(textDoc)
+      case textDoc: TextDocumentDomainObject => new UnavailableDocContentEditor(textDoc) //new TextDocContentEditor(textDoc)
       case fileDoc: FileDocumentDomainObject => new FileDocContentEditor(fileDoc)
       case htmlDoc: HtmlDocumentDomainObject => new HTMLDocContentEditor(htmlDoc)
       case urlDoc: UrlDocumentDomainObject => new URLDocContentEditor(urlDoc)
@@ -132,12 +132,12 @@ class DocAdminApplication extends com.vaadin.Application with HttpServletRequest
   }
 
 
-  def mkMenuWindow(docId: Int): Window = new Window |>> { wnd =>
+  def mkMenuEditorWindow(docId: Int): Window = new Window |>> { wnd =>
     wnd.addComponent(new Button("menu"))
     wnd.addComponent(new Button("save"))
   }
 
-  def mkTextWindow(docId: Int): Window = new Window |>> { wnd =>
+  def mkTextEditorWindow(docId: Int): Window = new Window |>> { wnd =>
     wnd.addComponent(new Button("text"))
     wnd.addComponent(new Button("save"))
   }
@@ -198,5 +198,5 @@ class MenuEditorUI extends VerticalLayout with Spacing with Margin with Undefine
 
   val treeMenu = new Tree
 
-  addComponents(this, mb, treeMenu)
+  addComponentsTo(this, mb, treeMenu)
 }

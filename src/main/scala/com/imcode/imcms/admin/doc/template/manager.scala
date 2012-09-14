@@ -157,7 +157,7 @@ class TemplateManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     CP[String]("Type"),
     CP[JInteger]("Document count using this template"))
 
-  addComponents(this, mb, rc)
+  addComponentsTo(this, mb, rc)
 }
 
 

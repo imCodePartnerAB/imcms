@@ -106,7 +106,8 @@ trait OnceOnlyAttachAction extends AbstractComponent {
 }
 
 /**
- * Always fires value change event on value change even if new and old values are equal.
+ * By default a fields does not fire ValueChangeEvent when assigned value equals to existing.
+ * This traits overrides default behavior and always fires ValueChangeEvent on value change.
  */
 trait AlwaysFireValueChange extends AbstractField {
   override def setValue(value: AnyRef) {

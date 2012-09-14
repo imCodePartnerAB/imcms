@@ -2,7 +2,6 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
-
 import scala.collection.JavaConverters._
 import scala.collection.breakOut
 import scala.collection.immutable.ListMap
@@ -20,19 +19,27 @@ import com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
 import com.imcode.imcms.dao.MetaDao
 
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
-import com.vaadin.ui._
 import com.vaadin.terminal.{UserError, ErrorMessage, Sizeable, ExternalResource}
 import com.vaadin.data.Validator
 import com.vaadin.data.Validator.InvalidValueException
-import javax.swing.JList
 import java.util.{Collections, Date, Calendar}
+import com.vaadin.ui.AbstractTextField.TextChangeEventMode
+import com.vaadin.ui._
 
 
 /**
  * Doc's meta editor.
  *
- * @param doc used to initialize editor's data. It is never modified.
+ * @param doc used to initialize editor's values. It is never modified.
  */
+// todo: i18n
+// todo: appearance: alias prefix should be set to context path
+// todo: appearance: alias check unique while typing
+// todo: appearance: I18nMetaEditorUI link image instead of text
+// todo: appearance:
+//   add custom case class Target(id: String, boolean: Custom), so can check on override
+//   legacy target support: up to v 6.x it was possible to define custom target for a doc
+//   if this doc has custom target, then adds this target to the targets combo-box as a last item
 class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSupport {
 
   type Data = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
@@ -80,11 +87,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
         case "Permissions" =>
           if (permissionsEditorOpt.isEmpty) permissionsEditorOpt =
-            Some(
-              new PermissionsEditor(ui.getApplication,
-              doc,
-              ui.getApplication.user)
-            )
+            Some(new PermissionsEditor(doc, ui.getApplication.user))
 
           ui.pnlMenuItem.setContent(permissionsEditorOpt.get.ui)
 
@@ -126,48 +129,48 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     UberData(
       Right(doc.clone, Map.empty[I18nLanguage, I18nMeta])
     ).merge(appearanceEditorOpt.map(_.collectValues())) {
-        case ((dc, _), appearance) => (dc, appearance.i18nMetas) |>> { _ =>
-          dc.getMeta.setEnabledLanguages(appearance.enabledLanguages.asJava)
-          dc.getMeta.setI18nShowMode(appearance.disabledLanguageShowSetting)
-          dc.getMeta.setAlias(appearance.alias.orNull)
-          dc.getMeta.setTarget(appearance.target)
-        }
+      case ((dc, _), appearance) => (dc, appearance.i18nMetas) |>> { _ =>
+        dc.getMeta.setEnabledLanguages(appearance.enabledLanguages.asJava)
+        dc.getMeta.setI18nShowMode(appearance.disabledLanguageShowSetting)
+        dc.getMeta.setAlias(appearance.alias.orNull)
+        dc.getMeta.setTarget(appearance.target)
+      }
     }.merge(lifeCycleEditorOpt.map(_.collectValues())) {
-        case (uberData @ (dc, _), lifeCycle) => uberData |>> { _ =>
-          dc.getMeta.setPublicationStatus(lifeCycle.publicationStatus)
-          dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStart)
-          dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
-          dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
-          dc.getMeta.setPublisherId(lifeCycle.publisher.map(p => Int box p.getId).orNull)
-          //???dc.setVersion(new DocumentVersion() state.versionNo)
-          dc.getMeta.setCreatedDatetime(lifeCycle.created)
-          dc.getMeta.setModifiedDatetime(lifeCycle.modified)
-          dc.getMeta.setCreatorId(lifeCycle.creator.map(c => Int box c.getId).orNull)
-          //???dc.getMeta.setModifierId
-        }
+      case (uberData @ (dc, _), lifeCycle) => uberData |>> { _ =>
+        dc.getMeta.setPublicationStatus(lifeCycle.publicationStatus)
+        dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStart)
+        dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
+        dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
+        dc.getMeta.setPublisherId(lifeCycle.publisher.map(p => Int box p.getId).orNull)
+        //???dc.setVersion(new DocumentVersion() state.versionNo)
+        dc.getMeta.setCreatedDatetime(lifeCycle.created)
+        dc.getMeta.setModifiedDatetime(lifeCycle.modified)
+        dc.getMeta.setCreatorId(lifeCycle.creator.map(c => Int box c.getId).orNull)
+        //???dc.getMeta.setModifierId
+      }
     }.merge(permissionsEditorOpt.map(_.collectValues)) {
-        case (uberData @ (dc, _), permissions) => uberData |>> { _ =>
-          dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
-          dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)
-          dc.getPermissionSets.setRestricted2(permissions.restrictedTwoPermSet)
-          dc.setRestrictedOneMorePrivilegedThanRestrictedTwo(permissions.isRestrictedOneMorePrivilegedThanRestricted2)
-          dc.setLinkedForUnauthorizedUsers(permissions.isLinkedForUnauthorizedUsers)
-          dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
-        }
+      case (uberData @ (dc, _), permissions) => uberData |>> { _ =>
+        dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
+        dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)
+        dc.getPermissionSets.setRestricted2(permissions.restrictedTwoPermSet)
+        dc.setRestrictedOneMorePrivilegedThanRestrictedTwo(permissions.isRestrictedOneMorePrivilegedThanRestricted2)
+        dc.setLinkedForUnauthorizedUsers(permissions.isLinkedForUnauthorizedUsers)
+        dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
+      }
     }.merge(categoriesEditorOpt.map(_.collectValues)) {
-        case (uberData @ (dc, _), categories) => uberData |>> { _ =>
-          dc.setCategoryIds(categories.categoriesIds.asJava)
-        }
+      case (uberData @ (dc, _), categories) => uberData |>> { _ =>
+        dc.setCategoryIds(categories.categoriesIds.asJava)
+      }
     }.merge(profileEditorOpt.map(_.collectValues)) {
-        case (uberData @ (tdc: TextDocumentDomainObject, _), profile) => uberData |>> { _ =>
-          tdc.setDefaultTemplateId(profile.defaultTemplate)
-          tdc.getPermissionSetsForNewDocuments.setRestricted1(profile.restrictedOnePermSet)
-          tdc.getPermissionSetsForNewDocuments.setRestricted2(profile.restrictedTwoPermSet)
-          tdc.setDefaultTemplateIdForRestricted1(profile.restrictedOneTemplate)
-          tdc.setDefaultTemplateIdForRestricted2(profile.restrictedTwoTemplate)
-        }
+      case (uberData @ (tdc: TextDocumentDomainObject, _), profile) => uberData |>> { _ =>
+        tdc.setDefaultTemplateId(profile.defaultTemplate)
+        tdc.getPermissionSetsForNewDocuments.setRestricted1(profile.restrictedOnePermSet)
+        tdc.getPermissionSetsForNewDocuments.setRestricted2(profile.restrictedTwoPermSet)
+        tdc.setDefaultTemplateIdForRestricted1(profile.restrictedOneTemplate)
+        tdc.setDefaultTemplateIdForRestricted2(profile.restrictedTwoTemplate)
+      }
 
-        case (uberData, _) => uberData
+      case (uberData, _) => uberData
     }.uberData
     //      //// ?????????????????????????????????????
     //      ////    ui.cbDefaultTemplate.value,
@@ -176,6 +179,8 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     //      ////    ui.cbRestrictedOneDefaultTemplate,
     //      ////    ui.cbRestrictedTwoDefaultTemplate
   } // data
+
+  def resetValues() {}
 }
 
 
@@ -198,7 +203,7 @@ class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
 
 
 
-
+// todo: ??? remember lytDate.chkEnd date when uncheked ???
 class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
   case class Data(
@@ -219,7 +224,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     }
   }
 
-  def revert() {
+  def resetValues() {
     // version
     val (versionsNos, defaultVersionNo) = meta.getId match {
       case null =>
@@ -244,14 +249,11 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
     // dates
     ui.frmPublication.lytDate.calStart.value = meta.getPublicationStartDatetime |> opt getOrElse new Date
-    //ui.frmPublication.lytDate.calEnd.setReadOnly(false)
     ui.frmPublication.lytDate.calEnd.value = meta.getPublicationEndDatetime
     ui.frmPublication.lytDate.chkEnd.checked = meta.getPublicationEndDatetime != null
-
-    // todo: ??? remember lytDate.chkEnd date when uncheked???
   }
 
-  def collectValues() = Right(
+  def collectValues(): ErrorsOrData = Right(
     Data(
       ui.frmPublication.sltStatus.value,
       ui.frmPublication.lytDate.calStart.value,
@@ -266,7 +268,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   )
 
   // init
-  revert()
+  resetValues()
 }
 
 
@@ -296,12 +298,12 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
       val chkStart = new CheckBox("start") with Checked with ReadOnly // decoration, always read-only
       val chkEnd = new CheckBox("end") with Immediate with AlwaysFireValueChange
 
-      addComponents(this, chkStart, calStart, chkEnd, calEnd)
+      addComponentsTo(this, chkStart, calStart, chkEnd, calEnd)
     }
 
     ussPublisher.ui.setCaption("Publisher")
 
-    addComponents(getLayout, sltStatus, sltVersion, lytDate, ussPublisher.ui)
+    addComponentsTo(getLayout, sltStatus, sltVersion, lytDate, ussPublisher.ui)
   }
 
   val frmMaintenance = new Form with FullSize {
@@ -312,16 +314,16 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
       val calDate = new PopupDateField with MinuteResolution with Now
       val lblBy = new Label("by") with UndefinedSize
 
-      addComponents(this, calDate, lblBy, ussUI)
+      addComponentsTo(this, calDate, lblBy, ussUI)
     }
 
     val dCreated = new DateUI("Created", ussCreator.ui)
     val dModified = new DateUI("Modified", ussModifier.ui)
 
-    addComponents(getLayout, dCreated, dModified)
+    addComponentsTo(getLayout, dCreated, dModified)
   }
 
-  addComponents(this, frmPublication, frmMaintenance)
+  addComponentsTo(this, frmPublication, frmMaintenance)
 }
 
 
@@ -336,7 +338,6 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
 class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   case class Data(categoriesIds: Set[CategoryId])
 
-  // todo: remove???
   private val initialValues = Data(meta.getCategoryIds.asScala.toSet)
 
   private val typeCategoriesUIs: Seq[(CheckBox with ExposeValueChange, MultiSelectBehavior[CategoryId])] =
@@ -363,11 +364,11 @@ class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
   val ui = new GridLayout(2, 1) with Spacing |>> { ui =>
     for ((chkCType, sltCategories) <- typeCategoriesUIs) {
-      addComponents(ui, chkCType, sltCategories)
+      addComponentsTo(ui, chkCType, sltCategories)
     }
   }
 
-  def revert() {
+  def resetValues() {
     for ((chkCType, sltCategories) <- typeCategoriesUIs) {
       chkCType.uncheck
       sltCategories.value = Collections.emptyList()
@@ -381,7 +382,7 @@ class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     }
   }
 
-  def collectValues() = Right(
+  def collectValues(): ErrorsOrData = Right(
     Data(
       typeCategoriesUIs.collect {
         case (chkCType, sltCategories) if chkCType.isChecked => sltCategories.value.asScala
@@ -389,10 +390,7 @@ class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     )
   )
 
-  //def isModified = state != initialData
-
-  // init
-  revert()
+  resetValues()
 }
 
 
@@ -431,7 +429,7 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
     }
   } // ui
 
-  revert()
+  resetValues()
 
 
   private def setKeywords(keywords: Set[Keyword]) {
@@ -439,12 +437,12 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
   }
 
 
-  def revert() {
+  def resetValues() {
     setKeywords(initialValues.keywords)
     ui.chkExcludeFromInternalSearch.checked = initialValues.isExcludeFromInnerSearch
   }
 
-  def collectValues() = Right(
+  def collectValues(): ErrorsOrData = Right(
     Data(ui.lytKeywords.lstKeywords.itemIds.asScala.toSet, ui.chkExcludeFromInternalSearch.isChecked)
   )
   //def isModified = state != initialData
@@ -473,7 +471,7 @@ class SearchSettingsEditorUI extends FormLayout with UndefinedSize {
     addComponent(lstKeywords, 0, 1, 2, 1)
   }
 
-  addComponents(this, lytKeywords, chkExcludeFromInternalSearch)
+  addComponentsTo(this, lytKeywords, chkExcludeFromInternalSearch)
 }
 
 
@@ -502,7 +500,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
   )
 
   // i18nMetas sorted by language (default always first) and native name
-  private val i18nMetasUIs: Seq[(I18nLanguage, CheckBox, I18nMetaEditorUI)] = locally {
+  private val i18nMetasUIs: Seq[(I18nLanguage, CheckBox, I18nMetaEditorUI)] = {
     val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage
     val languages = imcmsServices.getI18nSupport.getLanguages.asScala.sortWith {
       case (l1, _) if l1 == defaultLanguage => true
@@ -526,71 +524,59 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
   }
 
   val ui = new AppearanceEditorUI { ui =>
-    ui.frmLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
-    ui.frmLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
+    ui.pnlLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
+    ui.pnlLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
 
     for ((_, chkLanguage, i18nMetaEditorUI) <- i18nMetasUIs) {
-      addComponents(ui.frmLanguages.lytI18nMetas, chkLanguage, i18nMetaEditorUI)
+      addComponentsTo(ui.pnlLanguages.lytI18nMetas, chkLanguage, i18nMetaEditorUI)
     }
 
-//    // todo: check once!!!
-//    override def attach() {
-//      super.attach()
-//      revert()
-//    }
+    ui.pnlAlias.txtAlias.addValidator(new Validator {
+      val metaDao = imcmsServices.getSpringBean(classOf[MetaDao])
 
-//    ui.frmAlias.txtAlias.setImmediate(true)
-//    ui.frmAlias.txtAlias.setTextChangeEventMode(TextChangeEventMode.TIMEOUT)
-    ui.frmAlias.txtAlias.addValidator(new Validator {
-      val errMsgOptRef = Atoms.OptRef[String]
-
-      def isValid(value: AnyRef) = {
-        val errMsgOpt = for {
-          alias <- ui.frmAlias.txtAlias.trimOpt
-          docId <- imcmsServices.getSpringBean(classOf[MetaDao]).asInstanceOf[MetaDao].getDocIdByAliasOpt(alias)
+      def findDocIdByAlias(): Option[Int] =
+        for {
+          alias <- ui.pnlAlias.txtAlias.trimOpt
+          docId <- metaDao.getDocIdByAliasOpt(alias)
           if meta.getId != docId
-        } yield "alias allready exists"
+        } yield docId
 
-        errMsgOptRef.set(errMsgOpt)
-        errMsgOpt.isEmpty
-      }
+      def isValid(value: AnyRef) = findDocIdByAlias().isEmpty
 
       def validate(value: AnyRef) {
-        if (!isValid(value)) {
-          for (errMsg <- errMsgOptRef.get) {
-            throw new InvalidValueException(errMsg)
-          }
+        for (docId <- findDocIdByAlias()) {
+          throw new InvalidValueException("this alias is allredy taken by doc %d."format(docId))
         }
       }
     })
   } // ui
 
-  def collectValues() = Ex.allCatch.either(ui.frmAlias.txtAlias.validate()).left.map(e => Seq(e.getMessage)).right.map { _ =>
-    Data(
-      i18nMetasUIs.map {
-        case (language, chkBox, i18nMetaEditorUI) =>
-          language -> (I18nMeta.builder() |> { builder =>
-            builder.id(i18nMetas.get(language).map(_.getId).orNull)
-              .docId(meta.getId)
-              .language(language)
-              .headline(i18nMetaEditorUI.txtTitle.trim)
-              .menuImageURL(i18nMetaEditorUI.embLinkImage.trim)
-              .menuText(i18nMetaEditorUI.txaMenuText.trim)
-              .build()
-          })
-      } (breakOut),
-      i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language }(breakOut),
-      ui.frmLanguages.cbShowMode.value,
-      ui.frmAlias.txtAlias.trimOpt,
-      ui.frmLinkTarget.cbTarget.value
-    )
-  } // data
+  def collectValues(): ErrorsOrData = Ex.allCatch.either(ui.pnlAlias.txtAlias.validate())
+    .left.map(e => Seq(e.getMessage))
+    .right.map { _ =>
+      Data(
+        i18nMetasUIs.map {
+          case (language, chkBox, i18nMetaEditorUI) =>
+            language -> (I18nMeta.builder() |> { builder =>
+              builder.id(i18nMetas.get(language).map(_.getId).orNull)
+                .docId(meta.getId)
+                .language(language)
+                .headline(i18nMetaEditorUI.txtTitle.trim)
+                .menuImageURL(i18nMetaEditorUI.embLinkImage.trim)
+                .menuText(i18nMetaEditorUI.txaMenuText.trim)
+                .build()
+            })
+        } (breakOut),
+        i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language } (breakOut),
+        ui.pnlLanguages.cbShowMode.value,
+        ui.pnlAlias.txtAlias.trimOpt,
+        ui.pnlLinkTarget.cbTarget.value
+      )
+    } // data
 
 
-  /**
-   * Default language checkbox is always checked (hence its i18n meta form is always visible)
-   */
-  def revert() {
+  // Default language checkbox is be always checked.
+  def resetValues() {
     val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage
 
     for ((language, chkBox, i18nMetaEditorUI) <- i18nMetasUIs) {
@@ -614,40 +600,35 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
     }
 
     val alias = Option(meta.getAlias)
-    ui.frmAlias.txtAlias.setInputPrompt(Option(meta.getId).map(_.toString).orNull)
-    ui.frmAlias.txtAlias.value = alias.getOrElse("")
-    ui.frmLanguages.cbShowMode.select(meta.getI18nShowSetting)
+    ui.pnlAlias.txtAlias.setInputPrompt(Option(meta.getId).map(_.toString).orNull)
+    ui.pnlAlias.txtAlias.value = alias.getOrElse("")
+    ui.pnlLanguages.cbShowMode.select(meta.getI18nShowSetting)
 
     for ((target, targetCaption) <- ListMap("_self" -> "Same frame", "_blank" -> "New window", "_top" -> "Replace all")) {
-      ui.frmLinkTarget.cbTarget.addItem(target, targetCaption)
+      ui.pnlLinkTarget.cbTarget.addItem(target, targetCaption)
     }
 
-    // todo:?? add custom case class Target(id: String, boolean: Custom), so can check on override
-    // legacy target support: up to v 6.x it was possible to define custom target for a doc
-    // if this doc has custom target, then adds this target to the targets combo-box as a last item
     val target = meta.getTarget match {
-      case null => ui.frmLinkTarget.cbTarget.firstItemIdOpt.get
+      case null => ui.pnlLinkTarget.cbTarget.firstItemIdOpt.get
       case target =>
-        ui.frmLinkTarget.cbTarget.itemIds.asScala.find(_ == target.toLowerCase) match {
+        ui.pnlLinkTarget.cbTarget.itemIds.asScala.find(_ == target.toLowerCase) match {
           case Some(predefinedTarget) => predefinedTarget
           case _ =>
-            ui.frmLinkTarget.cbTarget.addItem(target, "Other frame: %s".format(target))
+            ui.pnlLinkTarget.cbTarget.addItem(target, "Other frame: %s".format(target))
             target
         }
     }
 
-    ui.frmLinkTarget.cbTarget.select(target)
+    ui.pnlLinkTarget.cbTarget.select(target)
   }
 
-  revert()
+  resetValues()
 }
 
 
 class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
-  val frmLanguages = new Form(new VerticalLayout with Spacing) {
-    setCaption("Languages")
-    setMargin(true, false, false, false)
-    getLayout.setMargin(true)
+  val pnlLanguages = new Panel("Languages") with FullWidth {
+    val layout = new VerticalLayout with Spacing with Margin with FullWidth
 
     val lytI18nMetas = new VerticalLayout with Spacing with FullWidth
     val cbShowMode = new ComboBox("When language is disabled") with SingleSelect[Meta.DisabledLanguageShowSetting] with NoNullSelection
@@ -655,39 +636,30 @@ class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
     private val lytShowMode = new FormLayout with FullWidth
     lytShowMode.addComponent(cbShowMode)
 
-    addComponents(getLayout, lytI18nMetas, lytShowMode)
+    addComponentsTo(layout, lytI18nMetas, lytShowMode)
+    setContent(layout)
   }
 
-
-  val frmLinkTarget = new Form with FullWidth {
-    setCaption("Link action")
-    getLayout.setMargin(true)
-
+  val pnlLinkTarget = new Panel("Link action") with FullWidth {
+    val layout = new FormLayout with Margin with FullWidth
     val cbTarget = new ComboBox("Show in") with SingleSelect[String] with NoNullSelection
 
-    getLayout.addComponent(cbTarget)
+    layout.addComponent(cbTarget)
+    setContent(layout)
   }
 
-  val frmAlias = new Form(new HorizontalLayoutUI with FullWidth) with FullWidth {
-    setCaption("Alias")
-    getLayout.setMargin(false, true, true, true)
 
-    val lblContextURL = new Label("http://host/") with UndefinedSize
-    val txtAlias = new TextField with FullWidth {
-      setInputPrompt("alternate page name")
+  val pnlAlias = new Panel("Alias") with FullWidth {
+    val layout = new FormLayout with Margin with FullWidth
+    val txtAlias = new TextField("http://host/") with FullWidth |>> {
+      _.setInputPrompt("alternate page name")
     }
-    val btnCheck = new Button("check") with SmallStyle
 
-    getLayout.asInstanceOf[HorizontalLayout] |> { lyt =>
-      addComponents(lyt, lblContextURL, txtAlias, btnCheck)
-      lyt.setExpandRatio(txtAlias, 1.0f)
-      doto(lblContextURL, btnCheck) {
-        lyt.setComponentAlignment(_, Alignment.MIDDLE_LEFT)
-      }
-    }
+    addComponentsTo(layout, txtAlias)
+    setContent(layout)
   }
 
-  addComponents(this, frmLanguages, frmLinkTarget, frmAlias)
+  addComponentsTo(this, pnlLanguages, pnlLinkTarget, pnlAlias)
 }
 
 /**
@@ -700,8 +672,6 @@ class I18nMetaEditorUI extends FormLayout with FullWidth {
   }
 
   val embLinkImage = new TextField("Link image") with FullWidth
-  // val chkEnabled ???
-  // val flag, default???
 
-  addComponents(this, txtTitle, txaMenuText, embLinkImage)
+  addComponentsTo(this, txtTitle, txaMenuText, embLinkImage)
 }

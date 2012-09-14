@@ -142,7 +142,7 @@ class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends G
   val miFileDownload = miFile.addItem("Download", null)
 
   addComponent(mb, 0, 0, 1, 0)
-  addComponents(this, browserUI, previewUI)
+  addComponentsTo(this, browserUI, previewUI)
 
   setComponentAlignment(previewUI, Alignment.MIDDLE_CENTER)
   previewUI.setMargin(false, true, false, true)
@@ -202,7 +202,7 @@ class FilePreview(browser: FileBrowser) {
 
 class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) with Spacing {
   val btnAction = new Button with SingleClickListener with LinkStyle
-  addComponents(this, previewUI, btnAction)
+  addComponentsTo(this, previewUI, btnAction)
 
   doto(previewUI, btnAction) { c => setComponentAlignment(c, Alignment.MIDDLE_CENTER) }
 }
@@ -241,8 +241,8 @@ class ImagePickerUI(previewUI: EmbeddedPreviewUI) extends GridLayout(2, 1) with 
   val btnChoose = new Button("Choose") with LinkStyle
   val btnRemove = new Button("Remove") with LinkStyle
 
-  addComponents(lytButtons, btnRemove, btnChoose)
-  addComponents(this, previewUI, lytButtons)
+  addComponentsTo(lytButtons, btnRemove, btnChoose)
+  addComponentsTo(this, previewUI, lytButtons)
 
   setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
 }
