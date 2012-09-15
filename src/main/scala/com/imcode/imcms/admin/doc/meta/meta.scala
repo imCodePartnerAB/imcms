@@ -153,7 +153,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
         dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)
         dc.getPermissionSets.setRestricted2(permissions.restrictedTwoPermSet)
-        dc.setRestrictedOneMorePrivilegedThanRestrictedTwo(permissions.isRestrictedOneMorePrivilegedThanRestricted2)
+        dc.setRestrictedOneMorePrivilegedThanRestrictedTwo(permissions.isRestrictedOneMorePrivilegedThanRestrictedTwo)
         dc.setLinkedForUnauthorizedUsers(permissions.isLinkedForUnauthorizedUsers)
         dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
       }

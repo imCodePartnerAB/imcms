@@ -95,8 +95,8 @@ package object vaadin {
     def checked = booleanValue
     def checked_=(value: Boolean) = setValue(value.asInstanceOf[AnyRef])
 
-    def check { checked = true }
-    def uncheck { checked = false }
+    def check() { checked = true }
+    def uncheck() { checked = false }
   }
 
   /** Ensures setValue is called directly on wrapped property, and not on wrapper itself. */

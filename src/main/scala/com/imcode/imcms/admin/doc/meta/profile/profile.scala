@@ -11,7 +11,7 @@ import com.imcode.imcms.vaadin._
 import imcms.ImcmsServicesSupport
 import textdocument.TextDocumentDomainObject
 import com.vaadin.ui._
-import admin.doc.meta.permissions.{PermSetEditor, TextDocPermSetEditor}
+import admin.doc.meta.permissions.{TextDocPermSetEditor}
 
 
 // todo: check: ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)
@@ -43,8 +43,8 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
   private val restrictedOnePermSet = doc.getPermissionSetsForNewDocuments.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject]
   private val restrictedTwoPermSet = doc.getPermissionSetsForNewDocuments.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject]
 
-  private val restrictedOnePermSetEditor = new PermSetEditor(restrictedOnePermSet, doc, user) with TextDocPermSetEditor
-  private val restrictedTwoPermSetEditor = new PermSetEditor(restrictedTwoPermSet, doc, user) with TextDocPermSetEditor
+  private val restrictedOnePermSetEditor = new TextDocPermSetEditor(restrictedOnePermSet, doc, user)
+  private val restrictedTwoPermSetEditor = new TextDocPermSetEditor(restrictedTwoPermSet, doc, user)
 
   val ui = new ProfileEditorUI |>> { ui =>
     ui.btnEditRestrictedOnePermSet addClickHandler {
