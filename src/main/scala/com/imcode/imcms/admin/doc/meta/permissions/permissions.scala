@@ -99,7 +99,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
 
             c.cbRole.addValueChangeHandler {
               val availablePermSetTypes = availableRolesWithPermsSetTypes(c.cbRole.value)
-              types foreach { typeSet =>
+              types.foreach { typeSet =>
                 c.ogPermsSetType.setItemEnabled(typeSet, availablePermSetTypes contains typeSet)
               }
 
@@ -125,7 +125,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
         types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
           case Nil => ui.topWindow.showWarningNotification("You are not allowed to edit this role")
           case availableSetTypes =>
-            ui.topWindow.initAndShow(new OkCancelDialog("Change role permissions type")) { dlg =>
+            ui.topWindow.initAndShow(new OkCancelDialog("Change Role Permissions")) { dlg =>
               dlg.mainUI = new ChangeRolePermSetDialogMainUI |>> { c =>
                 c.lblRole.value = role.getName
 
@@ -133,7 +133,9 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
                   .item(role)
                   .getItemProperty(RolePermSetPropertyId).getValue.asInstanceOf[RolePermSet].setType
 
-                types foreach {setType => c.ogPermsSetType.setItemEnabled(setType, availableSetTypes contains setType)}
+                types.foreach { setType =>
+                  c.ogPermsSetType.setItemEnabled(setType, availableSetTypes contains setType)
+                }
 
                 dlg.wrapOkHandler {
                   setRolePermSetType(role, c.ogPermsSetType.value)
@@ -151,7 +153,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     }
 
     ui.perms.miEditPermSets.setCommandHandler {
-      ui.topWindow.initAndShow(new OkCancelDialog("Edit Permission Sets")) { dlg =>
+      ui.topWindow.initAndShow(new OkCancelDialog("Permissions")) { dlg =>
         dlg.mainUI = permSetsEditor.ui
       }
     }
@@ -230,10 +232,10 @@ class AccessEditorUI extends VerticalLayout with Spacing with FullWidth {
   object perms {
     val mb = new MenuBar
     val miRole = mb.addItem("Role")
-    val miEditPermSets = mb.addItem("Edit Permission Sets")
+    val miEditPermSets = mb.addItem("Permissions")
     val miRoleAdd = miRole.addItem("Add")
     val miRoleRemove = miRole.addItem("Remove")
-    val miRoleChangePermSet = miRole.addItem("Change Permission Set")
+    val miRoleChangePermSet = miRole.addItem("Change Permissions")
 
     val tblRolesPermSets = new Table with MultiSelect[RoleDomainObject] with Immediate with FullWidth with Selectable |>> { tbl =>
       tbl.setPageLength(7)
@@ -245,15 +247,7 @@ class AccessEditorUI extends VerticalLayout with Spacing with FullWidth {
 
       for (setType <- Seq(READ, RESTRICTED_1, RESTRICTED_2, FULL)) {
         tbl.addGeneratedColumn(setType, new RolesPermSetsTableColumnGenerator(setType))
-        tbl.setColumnHeader(
-          setType,
-          (setType: @unchecked) match {
-            case READ => "View [sealed]"
-            case RESTRICTED_1 => "Custom-One"
-            case RESTRICTED_2 => "Custom-Two"
-            case FULL => "All [sealed]"
-          }
-        )
+        tbl.setColumnHeader(setType, PermSetTypeName(setType))
       }
     }
   }
@@ -263,10 +257,11 @@ class AccessEditorUI extends VerticalLayout with Spacing with FullWidth {
     val chkShareWithOtherAdmins = new CheckBox("Share the document with other administrators")
   }
 
-  private val pnlPerms = new Panel("Permissions") with FullWidth {
-    val content = new VerticalLayout with Spacing with FullWidth
+  private val pnlRights = new Panel("Rights") with FullWidth {
+    val content = new VerticalLayout with Spacing with Margin with FullWidth
 
     addComponentsTo(content, perms.mb, perms.tblRolesPermSets)
+
     setContent(content)
   }
 
@@ -277,7 +272,7 @@ class AccessEditorUI extends VerticalLayout with Spacing with FullWidth {
     setContent(content)
   }
 
-  addComponentsTo(this, pnlPerms, pnlMisc)
+  addComponentsTo(this, pnlRights, pnlMisc)
 }
 
 
@@ -297,22 +292,22 @@ private case class RolePermSet(role: RoleDomainObject, setType: DocumentPermissi
  *   Property.getValue returns null.
  */
 private class RolesPermSetsTableColumnGenerator(setType: DocumentPermissionSetTypeDomainObject) extends Table.ColumnGenerator {
-  def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = new Label with UndefinedSize |>> {
+  def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = new Label with UndefinedSize |>> { lbl =>
     val rolePermSetType = source.getItem(itemId)
       .getItemProperty(RolePermSetPropertyId)
       .getValue.asInstanceOf[RolePermSet]
 
-    _.value = if (rolePermSetType != null && rolePermSetType.setType == setType) "X" else ""
+    lbl.value = if (rolePermSetType != null && rolePermSetType.setType == setType) "X" else ""
   }
 }
 
 
 private class AddRolePermSetDialogMainUI extends FormLayout with UndefinedSize {
   val cbRole = new ComboBox("Role") with SingleSelect[RoleDomainObject] with NoNullSelection with Immediate
-  val ogPermsSetType = new OptionGroup("Permission Sets") with SingleSelect[DocumentPermissionSetTypeDomainObject]
+  val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
   doto(READ, RESTRICTED_1, RESTRICTED_2, FULL) { setType =>
-    ogPermsSetType.addItem(setType, setType.toString.i)
+    ogPermsSetType.addItem(setType, PermSetTypeName(setType))
   }
 
   addComponentsTo(this, cbRole, ogPermsSetType)
@@ -323,10 +318,10 @@ private class AddRolePermSetDialogMainUI extends FormLayout with UndefinedSize {
  */
 private class ChangeRolePermSetDialogMainUI extends FormLayout with UndefinedSize {
   val lblRole = new Label with UndefinedSize |>> {_ setCaption "Role"}
-  val ogPermsSetType = new OptionGroup("Permission Sets") with SingleSelect[DocumentPermissionSetTypeDomainObject]
+  val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
   doto(READ, RESTRICTED_1, RESTRICTED_2, FULL) { setType =>
-    ogPermsSetType.addItem(setType, setType.toString.i)
+    ogPermsSetType.addItem(setType, PermSetTypeName(setType))
   }
 
   addComponentsTo(this, lblRole, ogPermsSetType)
@@ -483,10 +478,10 @@ class DocPermSetsEditor(doc: DocumentDomainObject, user: UserDomainObject) exten
   }
 
   val ui = new DocPermSetsEditorUI |>> { ui =>
-    ui.tsSets.addTab(editors.read.ui, "View [sealed])")
-    ui.tsSets.addTab(editors.restrictedOne.ui, "Custom-One")
-    ui.tsSets.addTab(editors.restrictedTwo.ui, "Custom-Two")
-    ui.tsSets.addTab(editors.full.ui, "All [sealed]")
+    ui.tsSets.addTab(editors.read.ui, PermSetTypeName(READ))
+    ui.tsSets.addTab(editors.restrictedOne.ui, PermSetTypeName(RESTRICTED_1))
+    ui.tsSets.addTab(editors.restrictedTwo.ui, PermSetTypeName(RESTRICTED_2))
+    ui.tsSets.addTab(editors.full.ui, PermSetTypeName(FULL))
 
     editors.read.ui.setEnabled(false)
     editors.full.ui.setEnabled(false)
@@ -513,4 +508,11 @@ class DocPermSetsEditorUI extends VerticalLayout with UndefinedSize with Spacing
   val chkRestrictedOneIsMorePrivilegedThanRestrictedTwo = new CheckBox("Custom-One is more privileged that Custom-Two")
 
   addComponentsTo(this, tsSets, chkRestrictedOneIsMorePrivilegedThanRestrictedTwo)
+}
+
+
+private object PermSetTypeName extends (DocumentPermissionSetTypeDomainObject => String) {
+  private val permSetTypesNames = Map(FULL -> "All [sealed]", RESTRICTED_1 -> "Custom-One", RESTRICTED_2 -> "Custom-Two", READ -> "View [sealed]")
+
+  def apply(permSetType: DocumentPermissionSetTypeDomainObject) = permSetTypesNames(permSetType)
 }

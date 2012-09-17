@@ -10,8 +10,8 @@ import imcode.server.document._
 import com.imcode.imcms.vaadin._
 import imcms.ImcmsServicesSupport
 import textdocument.TextDocumentDomainObject
+import com.imcode.imcms.admin.doc.meta.permissions.{TextDocPermSetEditorUI, TextDocPermSetEditor}
 import com.vaadin.ui._
-import admin.doc.meta.permissions.{TextDocPermSetEditor}
 
 
 // todo: check: ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)
@@ -45,21 +45,11 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
 
   private val restrictedOnePermSetEditor = new TextDocPermSetEditor(restrictedOnePermSet, doc, user)
   private val restrictedTwoPermSetEditor = new TextDocPermSetEditor(restrictedTwoPermSet, doc, user)
+  private val defaultPermSetEditor = new TextDocPermSetEditor(
+    DocumentPermissionSetDomainObject.READ.asInstanceOf[TextDocumentPermissionSetDomainObject], doc, user
+  ) |>> { _.ui.setEnabled(false) }
 
-  val ui = new ProfileEditorUI |>> { ui =>
-    ui.btnEditRestrictedOnePermSet addClickHandler {
-      ui.topWindow.initAndShow(new OkCancelDialog("Limited-1 permissions")) { dlg =>
-        dlg.mainUI = restrictedOnePermSetEditor.ui
-      }
-    }
-
-    ui.btnEditRestrictedTwoPermSet addClickHandler {
-      ui.topWindow.initAndShow(new OkCancelDialog("Limited-2 permissions")) { dlg =>
-        dlg.mainUI = restrictedTwoPermSetEditor.ui
-      }
-    }
-  } // ui
-
+  val ui = new ProfileEditorUI(defaultPermSetEditor.ui, restrictedOnePermSetEditor.ui, restrictedTwoPermSetEditor.ui)
 
   val collectValues: ErrorsOrData =
     Right(
@@ -73,24 +63,20 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
     )
 
   def resetValues() {
-    //restrictedOnePermSetEditor.revert()
-    //restrictedOnePermSetEditor.revert()
+    restrictedOnePermSetEditor.resetValues()
+    restrictedOnePermSetEditor.resetValues()
 
-    revertTemplates()
-
-    // todo: add checks:
-    //ui.frmLimPermsSet.btnEditLim1.setEnabled(user.canDefineRestrictedOneFor(doc))
-    //ui.frmLimPermsSet.btnEditLim2.setEnabled(user.canDefineRestrictedTwoFor(doc))
+    resetTemplatesValues()
   }
 
-  private def revertTemplates() {
-    val templatesNames = imcmsServices.getTemplateMapper.getAllTemplates map {_.getName}
+  private def resetTemplatesValues() {
+    val templatesNames = imcmsServices.getTemplateMapper.getAllTemplates.map {_.getName}
     val defaultTemplateNameOpt = templatesNames.headOption
 
     def setTemplatesNamesAsComboBoxItems(cb: ComboBox with SingleSelect[String], selectedTemplateName: String) {
       cb.removeAllItems()
-      templatesNames foreach {cb addItem _}
-      defaultTemplateNameOpt orElse Option(selectedTemplateName) foreach cb.select
+      templatesNames.foreach { cb addItem _ }
+      defaultTemplateNameOpt.orElse(Option(selectedTemplateName)).foreach(cb.select)
     }
 
     setTemplatesNamesAsComboBoxItems(ui.cbDefaultTemplate, doc.getDefaultTemplateName)
@@ -102,26 +88,39 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
 }
 
 
-class ProfileEditorUI extends VerticalLayout with FullWidth {
-
-  private val frmDefault = new Form { setCaption("Default") }
-  private val frmCustom = new Form { setCaption("Custom") }
-
-  private val lytCustomOne = new HorizontalLayoutUI("Limited-1", defaultAlignment = Alignment.MIDDLE_LEFT)
-  private val lytCustomTwo = new HorizontalLayoutUI("Limited-2", defaultAlignment = Alignment.MIDDLE_LEFT)
+class ProfileEditorUI(
+    defaultPermSetEditorUI: TextDocPermSetEditorUI,
+    restrictedOnePermSetEditorUI: TextDocPermSetEditorUI,
+    restrictedTwoPermSetEditorUI: TextDocPermSetEditorUI) extends VerticalLayout with FullWidth {
 
   val cbDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NoNullSelection // ??? NullSelection ???
   val cbRestrictedOneDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NullSelection
   val cbRestrictedTwoDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NullSelection
 
-  val btnEditRestrictedOnePermSet = new Button("permissions") with SmallStyle
-  val btnEditRestrictedTwoPermSet = new Button("permissions") with SmallStyle
+  defaultPermSetEditorUI.setCaption("Permissions")
+  restrictedOnePermSetEditorUI.setCaption("Permissions")
+  restrictedTwoPermSetEditorUI.setCaption("Permissions")
 
-  addComponentsTo(lytCustomOne, cbRestrictedOneDefaultTemplate, btnEditRestrictedOnePermSet)
-  addComponentsTo(lytCustomTwo, cbRestrictedTwoDefaultTemplate, btnEditRestrictedTwoPermSet)
+  private val pnlSettings = new Panel("Settings") with FullWidth {
+    val content = new VerticalLayout with FullWidth with Margin
 
-  addComponentsTo(frmDefault.getLayout, cbDefaultTemplate)
-  addComponentsTo(frmCustom.getLayout, lytCustomOne, lytCustomTwo)
+    val tsSettings = new TabSheet
+    val lytDefault = new FormLayout with Margin
+    val lytRestrictedOne = new FormLayout with Margin
+    val lytRestrictedTwo = new FormLayout with Margin
 
-  addComponentsTo(this, frmDefault, frmCustom)
+    tsSettings.addTab(lytDefault, "Default")
+    tsSettings.addTab(lytRestrictedOne, "Custom-One")
+    tsSettings.addTab(lytRestrictedTwo, "Custom-Two")
+
+    addComponentsTo(lytDefault, cbDefaultTemplate, defaultPermSetEditorUI)
+    addComponentsTo(lytRestrictedOne, cbRestrictedOneDefaultTemplate, restrictedOnePermSetEditorUI)
+    addComponentsTo(lytRestrictedTwo, cbRestrictedTwoDefaultTemplate, restrictedTwoPermSetEditorUI)
+
+    content.addComponent(tsSettings)
+
+    setContent(content)
+  }
+
+  addComponentsTo(this, pnlSettings)
 }
