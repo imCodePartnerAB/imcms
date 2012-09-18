@@ -10,7 +10,7 @@ import imcode.server.document._
 import com.imcode.imcms.vaadin._
 import imcms.ImcmsServicesSupport
 import textdocument.TextDocumentDomainObject
-import com.imcode.imcms.admin.doc.meta.permissions.{TextDocPermSetEditorUI, TextDocPermSetEditor}
+import com.imcode.imcms.admin.doc.meta.access.{TextDocPermSetEditorUI, TextDocPermSetEditor}
 import com.vaadin.ui._
 
 
