@@ -52,7 +52,7 @@ public class DocumentMapper implements DocumentGetter {
     private Map documentCache ;
     private Clock clock = new SystemClock();
     private ImcmsServices imcmsServices;
-    private DocumentGetter documentGetter ;
+    private CachingDocumentGetter documentGetter ;
     private DocumentSaver documentSaver ;
     private CategoryMapper categoryMapper;
 
@@ -153,10 +153,6 @@ public class DocumentMapper implements DocumentGetter {
         return allSections;
     }
 
-    public DocumentDomainObject getDocument(int documentId) {
-        return getDocument(new Integer(documentId)) ;
-    }
-
     public DocumentReference getDocumentReference(DocumentDomainObject document) {
         return getDocumentReference(document.getId());
     }
@@ -194,7 +190,7 @@ public class DocumentMapper implements DocumentGetter {
 
     public void invalidateDocument(DocumentDomainObject document) {
         documentIndex.indexDocument(document);
-        documentCache.remove(new Integer(document.getId()));
+        documentCache.remove(document.getId());
         if (StringUtils.isNotBlank(document.getAlias())) {
             aliasCache.remove(document.getAlias());
         }
@@ -255,7 +251,7 @@ public class DocumentMapper implements DocumentGetter {
         getDatabase().execute(deleteDocumentCommand);
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
-        documentCache.remove(new Integer(document.getId()));
+        documentCache.remove(document.getId());
         if (StringUtils.isNotBlank(document.getAlias())) {
             aliasCache.remove(document.getAlias());
         }
@@ -380,7 +376,7 @@ public class DocumentMapper implements DocumentGetter {
             }else{
                 String documentIdStringLower = documentIdString.toLowerCase();
                 String[] documentIds = (String[])aliasCache.get(documentIdStringLower);
-                if (documentIds == null) {
+                if (documentIds == null || documentIds.length == 0) {
                     documentIds = (String[]) getDatabase().execute(
                             new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
                                     new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdStringLower },
@@ -452,7 +448,11 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public DocumentDomainObject getDocument(Integer documentId) {
-        return documentGetter.getDocument(documentId);
+        return getDocument(documentId, false);
+    }
+
+    public DocumentDomainObject getDocument(Integer documentId, boolean renewCache) {
+        return documentGetter.getDocument(documentId, renewCache);
     }
 
     public CategoryMapper getCategoryMapper() {

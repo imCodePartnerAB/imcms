@@ -7,15 +7,15 @@ import java.util.*;
 
 public class CachingDocumentGetter extends DocumentGetterWrapper {
 
-    private Map cache;
+    private Map<Integer, DocumentDomainObject> cache;
 
-    public CachingDocumentGetter(DocumentGetter documentGetter, Map cache) {
+    public CachingDocumentGetter(DocumentGetter documentGetter, Map<Integer, DocumentDomainObject> cache) {
         super(documentGetter);
         this.cache = cache ;
     }
 
-    public DocumentDomainObject getDocument(Integer documentId) {
-        DocumentDomainObject document = (DocumentDomainObject) cache.get(documentId) ;
+    public DocumentDomainObject getDocument(Integer documentId, boolean renewCache) {
+        DocumentDomainObject document = renewCache ? null : cache.get(documentId) ;
         if (null == document) {
             document = super.getDocument(documentId) ;
             if (null == document) {
