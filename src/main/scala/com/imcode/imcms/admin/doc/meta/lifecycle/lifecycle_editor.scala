@@ -9,6 +9,7 @@ import com.imcode.imcms.vaadin._
 import _root_.imcode.server.user.UserDomainObject
 import java.util.Date
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.ui._
 
 // todo: ??? remember lytDate.chkEnd date when uncheked ???
 class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {

@@ -1,14 +1,16 @@
 package com.imcode
 package imcms.admin.access.role
 
+import _root_.imcode.server.{Imcms}
+import _root_.imcode.server.user.{RoleId, RoleDomainObject}
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import com.vaadin.ui.Window.Notification
-import imcms.security.{PermissionGranted, PermissionDenied}
-import imcode.server.user.{RoleId, RoleDomainObject}
+import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 //todo delete in use message
 class RoleManager(app: ImcmsApplication) {

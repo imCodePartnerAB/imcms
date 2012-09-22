@@ -12,6 +12,8 @@ import imcms.api.IPAccess
 import imcode.util.Utility.{ipLongToString, ipStringToLong}
 import com.vaadin.ui.Window.Notification
 import java.util.Date
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 case class SessionCounter(value: Int, date: Date)
 

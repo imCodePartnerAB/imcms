@@ -26,6 +26,8 @@ import imcode.util.io.{FileInputStreamSource, InputStreamSource}
 import com.vaadin.ui.Table.ColumnGenerator
 import com.vaadin.terminal.{ThemeResource, ExternalResource}
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 
 trait DocContentEditor extends Editor {
@@ -97,7 +99,7 @@ class UnavailableDocContentEditor(doc: DocumentDomainObject) extends DocContentE
  * URL document editor UI
  */
 class URLDocContentEditorUI extends FormLayout {
-  val txtURL = new TextField("URL/Link".i) with ValueType[String] with FullWidth
+  val txtURL = new TextField("URL/Link".i) with GenericProperty[String] with FullWidth
 
   addComponentsTo(this, txtURL)
 }

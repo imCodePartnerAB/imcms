@@ -10,6 +10,8 @@ import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionGranted, PermissionDenied}
 import imcms.api.I18nLanguage
 import imcms.dao.{SystemDao, LanguageDao}
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 //todo delete in use message
 class LanguageManager(app: ImcmsApplication) {

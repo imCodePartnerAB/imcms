@@ -9,6 +9,8 @@ import imcms.security.{PermissionGranted, PermissionDenied}
 import imcode.util.Utility.{ipLongToString, ipStringToLong}
 import com.vaadin.ui.Window.Notification
 import imcode.server.{SystemData, Imcms}
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 //todo: move to system dir + monitor
 // todo: updateReadOnly ->

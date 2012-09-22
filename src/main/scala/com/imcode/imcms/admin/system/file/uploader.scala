@@ -2,12 +2,14 @@ package com.imcode
 package imcms
 package admin.system.file
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin._
 import com.imcode.util.event.Publisher
 import java.io._
 import org.apache.commons.io.FileUtils
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 
 case class UploadedFile(name: String, mimeType: String, file: File)

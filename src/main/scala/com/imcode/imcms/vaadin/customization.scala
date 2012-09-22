@@ -2,7 +2,6 @@ package com.imcode
 package imcms
 package vaadin
 
-import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import com.vaadin.data.{Item, Container, Property}
@@ -14,65 +13,9 @@ trait TCSDefaultI18n extends TwinColSelect {
   setRightColumnCaption("tcs.col.selected.caption".i)
 }
 
-/**
- * A container property.
- *
- * @param A container property class
- * @pram id container property id
- * @pram defaultValue container property default value
- */
-case class ContainerProperty[A <: AnyRef : Manifest](id: AnyRef, defaultValue: A = null) {
-  val clazz = implicitly[Manifest[A]].erasure
-}
-
-/**
- * Property value type.
- *
- * Adds type-checked access to property value.
- */
-trait ValueType[A <: AnyRef] extends Property {
-  def value = getValue.asInstanceOf[A]
-  def value_=(v: A) = setValue(v)
-  def valueOpt: Option[A] = Option(value) // multiselect?
-
-  def clear(implicit ev: A =:= String) { setValue("") }
-  def trim(implicit ev: A =:= String): String = value.trim
-  def trimOpt(implicit ev: A =:= String): Option[String] = trim match {
-    case "" => None
-    case v => Some(v)
-  }
-  def isBlank(implicit ev: A =:= String) = trim.isEmpty
-  def notBlank(implicit ev: A =:= String) = !isBlank
-}
-
-trait ItemIdType[A <: AnyRef] extends Container {
-  def itemIds = getItemIds.asInstanceOf[JCollection[A]]
-  def itemIds_=(ids: JCollection[A]) {
-    removeAllItems()
-    ids.foreach(addItem _)
-  }
-
-  def item(id: A) = getItem(id)
-
-  def firstItemIdOpt = itemIds.headOption
-}
-
-
-
-/**
- * Component data type.
- *
- * Adds type-checked access to data.
- */
-trait DataType[A <: AnyRef] extends AbstractComponent {
-  def data = getData.asInstanceOf[A]
-  def data_=(d: A) = setData(d)
-}
-
 trait Disabled { this: Component =>
   setEnabled(false)
 }
-
 
 trait ReadOnly { this: Component =>
   setReadOnly(true)
@@ -88,11 +31,11 @@ trait Unchecked { this: CheckBox =>
 
 /** Changes fireClick visibility from protected to public. */
 trait ExposeFireClick extends Button {
-  override def fireClick() = super.fireClick()
+  override def fireClick(): Unit = super.fireClick()
 }
 
 trait ExposeValueChange extends AbstractField {
-  override def fireValueChange(repaintIsNotNeeded: Boolean = true) = super.fireValueChange(repaintIsNotNeeded)
+  override def fireValueChange(repaintIsNotNeeded: Boolean = true): Unit = super.fireValueChange(repaintIsNotNeeded)
 }
 
 trait OnceOnlyAttachAction extends AbstractComponent {
@@ -100,7 +43,7 @@ trait OnceOnlyAttachAction extends AbstractComponent {
   var attachAction = Option.empty[this.type => Unit]
 
   override def attach() {
-    attachAction foreach (_ apply this)
+    attachAction.foreach(_ apply this)
     attachAction = None
   }
 }
@@ -122,14 +65,6 @@ trait Margin { this: Layout =>
 
 trait NoMargin { this: Layout =>
   setMargin(false)
-}
-
-trait BottomMarginDialog extends Dialog {
-  content.setMargin(false, false, true, false)
-}
-
-trait NoMarginDialog extends Dialog {
-  content.setMargin(false)
 }
 
 trait Spacing { this: Layout.SpacingHandler =>
@@ -186,28 +121,25 @@ trait NotSelectable { this: {def setSelectable(selectable: Boolean): Unit} =>
   setSelectable(false)
 }
 
-trait NullSelection extends AbstractSelect {
+trait NullSelection { this: AbstractSelect =>
   setNullSelectionAllowed(true)
 }
 
-trait NoNullSelection extends AbstractSelect {
+trait NoNullSelection { this: AbstractSelect =>
   setNullSelectionAllowed(false)
 }
 
 
-trait SelectionCheck extends AbstractSelect {
+trait GenericSelect[A <: ItemId] extends AbstractSelect with GenericContainer[A] {
+  def addItem(id: A, caption: String): Item = addItem(id) |>> { _ =>
+    setItemCaption(id, caption)
+  }
+
   def isSelected: Boolean
 }
 
 
-trait SelectOps[A <: AnyRef] extends AbstractSelect with ItemIdType[A] {
-  def addItem(id: A, caption: String): Item = addItem(id) |>> { _ =>
-    setItemCaption(id, caption)
-  }
-}
-
-
-trait SingleSelect[A <: AnyRef] extends SelectionCheck with SelectOps[A] with ValueType[A]  {
+trait SingleSelect[A <: ItemId] extends GenericSelect[A] with GenericProperty[A] {
   setMultiSelect(false)
 
   def isSelected = value != null
@@ -218,7 +150,7 @@ trait SingleSelect[A <: AnyRef] extends SelectionCheck with SelectOps[A] with Va
   }
 }
 
-trait MultiSelect[A <: AnyRef] extends SelectionCheck with SelectOps[A] with ValueType[JCollection[A]] {
+trait MultiSelect[A <: ItemId] extends GenericSelect[A] with GenericProperty[JCollection[A]] {
   setMultiSelect(true)
 
   override def setMultiSelect(multiSelect: Boolean) {
@@ -226,39 +158,39 @@ trait MultiSelect[A <: AnyRef] extends SelectionCheck with SelectOps[A] with Val
     super.setMultiSelect(multiSelect)
   }
 
-  def isSelected = value.nonEmpty
+  def isSelected: Boolean = value.asScala.nonEmpty
 
-  def selection = value.toSeq
+  def selection: Seq[A] = value.asScala.toSeq
 
-  def selection_=(v: Seq[A]) { value = v }
+  def selection_=(v: Seq[A]) { value = v.asJava }
 
   def selection_=(v: Option[A]) { selection = v.toSeq }
 
-  def first = value.headOption
+  def first: Option[A] = value.asScala.headOption
 }
 
 
 
 
 /**
- * Type check <code>value<code> property always returns a collection.
+ * <code>value<code> property always returns a collection.
  */
-trait MultiSelectBehavior[A <: AnyRef] extends SelectionCheck with SelectOps[A] with ValueType[JCollection[A]] {
+trait MultiSelectBehavior[A <: AnyRef] extends GenericSelect[A] with GenericProperty[JCollection[A]] {
 
-  def selection = value.toSeq
+  def selection: Seq[A] = value.asScala.toSeq
 
-  def selection_=(v: Seq[A]) { value = v }
+  def selection_=(v: Seq[A]) { value = v.asJava }
 
   def selection_=(v: Option[A]) { selection = v.toSeq }
 
-  def first = value.headOption
+  def first: Option[A] = value.asScala.headOption
 
-  def isSelected = value.nonEmpty
+  def isSelected: Boolean = value.asScala.nonEmpty
 
   /**
    * @return collection of selected items or empty collection if there is no selected item(s).
    */
-  final override def getValue() = super.getValue |> { v => if (isMultiSelect) v else Option(v).toSeq.asJavaCollection }
+  final override def getValue(): AnyRef = super.getValue |> { v => if (isMultiSelect) v else Option(v).toSeq.asJavaCollection }
 
   final override def setMultiSelect(multiSelect: Boolean) =
     if (value.isEmpty) super.setMultiSelect(multiSelect)
@@ -269,49 +201,41 @@ trait MultiSelectBehavior[A <: AnyRef] extends SelectionCheck with SelectOps[A] 
     super.setValue(
       v match {
         case null => if (isMultiSelect) Collections.emptyList[AnyRef] else null
-        case coll: JCollection[_] => if (isMultiSelect) coll else coll.headOption.orNull
+        case coll: JCollection[_] => if (isMultiSelect) coll else coll.asScala.headOption.orNull
         case _ => if (isMultiSelect) Collections.singletonList(v) else v
       }
     )
   }
 }
 
-trait Now extends DateField {
+trait Now { this: DateField =>
   setValue(new java.util.Date)
 }
 
-trait YearResolution extends DateField {
+trait YearResolution { this: DateField =>
   setResolution(DateField.RESOLUTION_YEAR)
 }
 
-trait MonthResolution extends DateField {
+trait MonthResolution { this: DateField =>
   setResolution(DateField.RESOLUTION_MONTH)
 }
 
-trait DayResolution extends DateField {
+trait DayResolution { this: DateField =>
   setResolution(DateField.RESOLUTION_DAY)
 }
 
-trait MinuteResolution extends DateField {
+trait MinuteResolution { this: DateField =>
   setResolution(DateField.RESOLUTION_MIN)
 }
 
-trait Required extends Field {
+trait Required { this: Field =>
   setRequired(true)
 }
 
-trait NoTextInput extends ComboBox {
+trait NoTextInput { this: ComboBox =>
   setTextInputAllowed(false)
 }
 
-//trait UndefiedWidth { this: AbstractComponent =>
-//  setSizeFull
-//  setWid
-//}
-//
-//trait UndefiedHeight { this: Layout.SpacingHandler =>
-//  setSpacing(true)
-//}
 
 
 object Checks {
@@ -320,36 +244,4 @@ object Checks {
     require(c.getHeightUnits != Sizeable.UNITS_PERCENTAGE, "Component height must not be difined in percentage.")
   }
 }
-
-case class FunctionProperty[A](valueFn: () => A)(implicit mf: Manifest[A]) extends Property {
-
-  def setReadOnly(newStatus: Boolean) = throw new UnsupportedOperationException
-
-  val isReadOnly = true
-
-  val getType = mf.erasure
-
-  def setValue(newValue: AnyRef) = throw new UnsupportedOperationException
-
-  def getValue = valueFn().asInstanceOf[AnyRef]
-
-  override def toString = Option(getValue).map(_.toString).getOrElse("")
-}
-
-//case class ByNameProperty[A >: Null <: AnyRef](byName: => A)(implicit mf: Manifest[A]) extends Property {
-//
-//  def setReadOnly(newStatus: Boolean) = throw new UnsupportedOperationException
-//
-//  val isReadOnly = true
-//
-//  val getType = mf.erasure
-//
-//  def setValue(newValue: AnyRef) = throw new UnsupportedOperationException
-//
-//  def getValue = byName //.asInstanceOf[AnyRef]
-//
-//  override def toString = ?(getValue) map { _.toString } getOrElse ""
-//}
-
-// add memoized byNameProperty
 

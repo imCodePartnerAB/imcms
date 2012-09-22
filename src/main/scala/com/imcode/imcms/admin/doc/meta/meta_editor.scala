@@ -2,12 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
-import java.util.{Collections, Date}
-
 import scala.collection.JavaConverters._
-import scala.collection.breakOut
-import scala.collection.immutable.ListMap
-import scala.util.control.{Exception => Ex}
 
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
@@ -15,18 +10,19 @@ import _root_.imcode.server.document.{DocumentDomainObject}
 
 import com.imcode.imcms.api._
 import com.imcode.imcms.vaadin._
-import com.imcode.imcms.admin.access.user.{UserSingleSelectUI, UserSingleSelect}
 import com.imcode.imcms.admin.doc.meta.access.AccessEditor
 import com.imcode.imcms.admin.doc.meta.search.SearchSettingsEditor
 import com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
 import com.imcode.imcms.admin.doc.meta.appearance.AppearanceEditor
 import com.imcode.imcms.admin.doc.meta.lifecycle.LifeCycleEditor
-import com.imcode.imcms.dao.MetaDao
+import com.imcode.imcms.admin.doc.meta.category.CategoryEditor
 
 import com.vaadin.terminal.{Sizeable, ExternalResource}
 import com.vaadin.data.Validator
 import com.vaadin.data.Validator.InvalidValueException
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 
 /**
@@ -50,7 +46,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
   private var accessEditorOpt = Option.empty[AccessEditor]
   private var searchSettingsEditorOpt = Option.empty[SearchSettingsEditor]
-  private var categoriesEditorOpt = Option.empty[CategoriesEditor]
+  private var categoryEditorOpt = Option.empty[CategoryEditor]
   private var profileEditorOpt = Option.empty[ProfileEditor]
 
   val ui = new MetaEditorUI |>> { ui =>
@@ -99,9 +95,9 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
           ui.pnlMenuItem.setContent(searchSettingsEditorOpt.get.ui)
 
         case "Categories" =>
-          if (categoriesEditorOpt.isEmpty) categoriesEditorOpt = Some(new CategoriesEditor(doc.getMeta))
+          if (categoryEditorOpt.isEmpty) categoryEditorOpt = Some(new CategoryEditor(doc.getMeta))
 
-          ui.pnlMenuItem.setContent(categoriesEditorOpt.get.ui)
+          ui.pnlMenuItem.setContent(categoryEditorOpt.get.ui)
 
         case "Profile" =>
           if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], ui.getApplication.user))
@@ -159,7 +155,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         dc.setLinkedForUnauthorizedUsers(permissions.isLinkedForUnauthorizedUsers)
         dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
       }
-    }.merge(categoriesEditorOpt.map(_.collectValues)) {
+    }.merge(categoryEditorOpt.map(_.collectValues)) {
       case (uberData @ (dc, _), categories) => uberData |>> { _ =>
         dc.setCategoryIds(categories.categoriesIds.asJava)
       }
@@ -201,74 +197,4 @@ class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
   sp.setSecondComponent(pnlMenuItem)
 
   addComponent(sp)
-}
-
-
-
-
-
-
-/**
- * Doc's categories editor.
- *
- * Categories are added dynamically in editor and grouped by their type.
- * Single-choice categories appear in a Select component, multi-choice in TwinSelect component.
- * Components (Select and TwinSelect) captions is set to type name.
- */
-class CategoriesEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
-  case class Data(categoriesIds: Set[CategoryId])
-
-  private val initialValues = Data(meta.getCategoryIds.asScala.toSet)
-
-  private val typeCategoriesUIs: Seq[(CheckBox with ExposeValueChange, MultiSelectBehavior[CategoryId])] =
-    for {
-      cType <- imcmsServices.getCategoryMapper.getAllCategoryTypes.toSeq
-      categories = imcmsServices.getCategoryMapper.getAllCategoriesOfType(cType)
-      if categories.nonEmpty
-    } yield {
-      val chkCType = new CheckBox(cType.getName) with ExposeValueChange with Immediate
-      val sltCategories =
-        if (cType.isMultiselect) new TwinColSelect with MultiSelectBehavior[CategoryId]
-        else new ComboBox with MultiSelectBehavior[CategoryId] with NoNullSelection
-
-      categories foreach { category =>
-        sltCategories.addItem(category.getId, category.getName)
-      }
-
-      chkCType.addValueChangeHandler {
-        sltCategories.setVisible(chkCType.isChecked)
-      }
-
-      chkCType -> sltCategories
-    }
-
-  val ui = new GridLayout(2, 1) with Spacing |>> { ui =>
-    for ((chkCType, sltCategories) <- typeCategoriesUIs) {
-      addComponentsTo(ui, chkCType, sltCategories)
-    }
-  }
-
-  def resetValues() {
-    for ((chkCType, sltCategories) <- typeCategoriesUIs) {
-      chkCType.uncheck
-      sltCategories.value = Collections.emptyList()
-
-      for (categoryId <- sltCategories.itemIds.asScala if initialValues.categoriesIds(categoryId)) {
-        sltCategories.select(categoryId)
-        chkCType.check
-      }
-
-      chkCType.fireValueChange()
-    }
-  }
-
-  def collectValues(): ErrorsOrData = Right(
-    Data(
-      typeCategoriesUIs.collect {
-        case (chkCType, sltCategories) if chkCType.isChecked => sltCategories.value.asScala
-      }.flatten.toSet
-    )
-  )
-
-  resetValues()
 }

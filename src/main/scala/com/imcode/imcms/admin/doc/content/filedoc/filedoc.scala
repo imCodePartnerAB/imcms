@@ -16,6 +16,8 @@ import scala.collection.breakOut
 import scala.collection.JavaConversions._
 import scala.collection.immutable.ListMap
 import scala.collection.mutable.{Map => MMap}
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 /**
  * @param doc used as a read only value object to initialize editor.

@@ -8,9 +8,10 @@ import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcms.api._
-import imcms.servlet.superadmin.AdminSearchTerms
+import com.imcode.imcms.servlet.superadmin.AdminSearchTerms
 import java.util.{Locale, Date}
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.ui._
 
 //import imcms.admin.chat.{MessageView, Chat}
 

@@ -12,6 +12,8 @@ import imcms.admin.system.file._
 import org.apache.commons.io.FileUtils
 import imcms.security.{PermissionDenied, PermissionGranted}
 import java.io.{FileInputStream, ByteArrayInputStream, File}
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 //todo: common internal ex handler???
 //todo: add related docs handling
@@ -142,13 +144,13 @@ class TemplateManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   import com.imcode.imcms.vaadin.Theme.Icon._
 
   val mb = new MenuBar
-  val miUpload = mb.addItem("Upload", New16)
-  val miDownload = mb.addItem("Download", New16)
-  val miRename = mb.addItem("Rename", Edit16)
-  val miDelete = mb.addItem("Delete", Delete16)
-  val miEditContent = mb.addItem("Edit content", EditContent16)
-  val miDocuments = mb.addItem("Related documents", Documents16)
-  val miHelp = mb.addItem("Help", Help16)
+  val miUpload = mb.addItem("Upload", New16, null)
+  val miDownload = mb.addItem("Download", New16, null)
+  val miRename = mb.addItem("Rename", Edit16, null)
+  val miDelete = mb.addItem("Delete", Delete16, null)
+  val miEditContent = mb.addItem("Edit content", EditContent16, null)
+  val miDocuments = mb.addItem("Related documents", Documents16, null)
+  val miHelp = mb.addItem("Help", Help16, null)
   val tblTemplates = new Table with SingleSelect[TemplateName] with Selectable with Immediate
   val rc = new ReloadableContentUI(tblTemplates)
 

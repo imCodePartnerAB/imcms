@@ -11,6 +11,8 @@ import imcode.server.document.{CategoryTypeDomainObject}
 import com.imcode.imcms.admin.doc.category.{CategoryTypeId}
 import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionDenied, PermissionGranted}
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 //todo:
 //fix: edit - multiselect - always on
@@ -33,7 +35,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblTypes) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected category type?")) { dlg =>
-          dlg wrapOkHandler {
+          dlg.wrapOkHandler {
             app.privileged(permission) {
               Ex.allCatch.either(categoryMapper.getCategoryTypeById(id.intValue) |> opt foreach categoryMapper.deleteCategoryTypeFromDb) match {
                 case Right(_) =>

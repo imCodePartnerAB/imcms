@@ -17,6 +17,7 @@ import imcode.server.document.{UrlDocumentDomainObject, HtmlDocumentDomainObject
 import com.vaadin.ui._
 import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.doc.content._
+import com.imcode.imcms.vaadin.ui._
 
 class DocAdminApplication extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
 

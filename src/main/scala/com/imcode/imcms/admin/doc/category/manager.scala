@@ -12,6 +12,8 @@ import imcms.admin.system.file._
 import com.vaadin.terminal.FileResource
 import java.io.File
 import imcms.security.{PermissionGranted, PermissionDenied}
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 /**
  * Category manager.
@@ -186,7 +188,7 @@ class CategoryEditorUI(val imagePickerUI: ImagePickerUI) extends FormLayout with
     t.setColumns(11)
   }
 
-  val sltType = new Select("Type") with ValueType[String] with Required with NoNullSelection
+  val sltType = new Select("Type") with GenericProperty[String] with Required with NoNullSelection
 
   addComponentsTo(this, txtId, txtName, sltType, imagePickerUI, txaDescription)
   imagePickerUI.setCaption("Icon")

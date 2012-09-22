@@ -11,6 +11,8 @@ import org.apache.commons.io.FileUtils
 import actors.Actor
 import scala.concurrent.ops.{spawn}
 import com.vaadin.terminal.{UserError, FileResource}
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 class FileManager(app: ImcmsApplication) {
   val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))

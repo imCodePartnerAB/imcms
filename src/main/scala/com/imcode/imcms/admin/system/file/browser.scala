@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.system.file
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import scala.collection.mutable.{Map => MMap}
 import com.vaadin.terminal.{Resource}
@@ -12,6 +12,8 @@ import java.io.{FilenameFilter, File}
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 import imcode.server.Imcms
+import com.imcode.imcms.vaadin.ui._
+
 
 /** Hierarchical filesystem (non-hidden dirs) container with a single root. */
 class LocationTreeContainer(root: File) extends FilesystemContainer(root) {
@@ -229,7 +231,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       case (tab, (locationTree, locationItems)) =>
         ui.accLocationTrees.setSelectedTab(tab)
         locationTree.selection = locationSelection.dir
-        if (isSelectable) locationItems.ui.value = locationSelection.items
+        if (isSelectable) locationItems.ui.value = locationSelection.items.asJava
     }
 
   // primary constructor
@@ -339,5 +341,5 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
     }
   }
 
-  def selection = ui.value.toSeq
+  def selection = ui.value.asScala.toSeq
 }

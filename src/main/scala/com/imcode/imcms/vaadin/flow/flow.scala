@@ -6,6 +6,7 @@ import com.imcode.imcms.vaadin._
 import java.util.concurrent.atomic.AtomicReference
 import com.vaadin.ui.Window.Notification
 import collection.mutable.ListBuffer
+import com.imcode.imcms.vaadin.ui._
 
 /**
  * Single flow page.
@@ -36,14 +37,14 @@ class Flow[T](commit: () => Either[String, T], firstPage: FlowPage, restPages: F
   val commitListeners = ListBuffer.empty[T => Unit]
 
   val ui = new FlowUI |>> { ui =>
-    ui.bar.btnPrev addClickHandler {
+    ui.bar.btnPrev.addClickHandler {
       maybeGoPrev match {
         case Some(page) => ui.setContent(page.ui())
         case _ => ui.getWindow.showNotification("This is the first page", "Press 'Next' or 'Finish'", Notification.TYPE_WARNING_MESSAGE)
       }
     }
 
-    ui.bar.btnNext addClickHandler {
+    ui.bar.btnNext.addClickHandler {
       maybeGoNext match {
         case Left(errorMsg) => ui.getWindow.showNotification("Can't go to the next page", errorMsg, Notification.TYPE_ERROR_MESSAGE)
         case Right(Some(page)) => ui.setContent(page.ui())
@@ -51,7 +52,7 @@ class Flow[T](commit: () => Either[String, T], firstPage: FlowPage, restPages: F
       }
     }
 
-    ui.bar.btnFinish addClickHandler {
+    ui.bar.btnFinish.addClickHandler {
       commit() match {
         case Left(errorMsg) => ui.getWindow.showNotification("Can't commit flow", errorMsg, Notification.TYPE_ERROR_MESSAGE)
         case Right(result) => commitListeners foreach { _.apply(result) }

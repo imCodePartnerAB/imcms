@@ -8,10 +8,10 @@ import java.util.Date
 import imcms.api.DocumentVersion
 import imcode.server.document.DocumentTypeDomainObject
 import imcms.mapping.{DocLoaderCachingProxy}
-;
+import com.imcode.imcms.vaadin.ui._
 
 class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Margin with Spacing {
-  val tblMetas = new Table("Metas") with ValueType[JInteger] with Selectable with Immediate {
+  val tblMetas = new Table("Metas") with GenericProperty[JInteger] with Selectable with Immediate {
     addContainerProperties(this,
       ContainerProperty[JInteger]("Id"),
       ContainerProperty[String]("Type"),

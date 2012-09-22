@@ -11,6 +11,8 @@ import com.imcode.util.event.Publisher
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 
 trait UserSingleSelectDialog { this: OkCancelDialog =>
@@ -178,7 +180,7 @@ class UserSearchForm extends ImcmsServicesSupport {
     doto(ui.chkText, ui.chkRoles, ui.chkShowInactive)(_ fireValueChange true)
 
     ui.txtText.value = state.text.getOrElse("")
-    ui.tcsRoles.removeAllItems
+    ui.tcsRoles.removeAllItems()
     for (role <- imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllRolesExceptUsersRole) {
       ui.tcsRoles.addItem(role.getId)
       ui.tcsRoles.setItemCaption(role.getId, role.getName)

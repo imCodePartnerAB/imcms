@@ -12,6 +12,8 @@ import imcode.server.document.DocumentPermissionSetTypeDomainObject.{NONE, FULL,
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document._
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 
 // Discuss

@@ -11,6 +11,8 @@ import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import imcode.server.document.{TemplateGroupDomainObject}
 import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionDenied, PermissionGranted}
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 //todo: form check
 //todo: duplicate save check!

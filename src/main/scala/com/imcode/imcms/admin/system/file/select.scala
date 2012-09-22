@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.system.file
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin._
 import java.io.{File}
 import com.imcode.util.event.Publisher
@@ -11,6 +11,8 @@ import com.vaadin.Application
 import com.vaadin.terminal._
 import org.apache.commons.io.FileUtils
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 /**
  * Common file operations used in file manager and preview.

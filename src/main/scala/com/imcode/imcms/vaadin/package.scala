@@ -1,18 +1,146 @@
 package com.imcode
 package imcms
 
+import scala.collection.JavaConverters._
+
 import com.vaadin.Application
 import com.vaadin.data.Property.{ValueChangeNotifier, ValueChangeEvent, ValueChangeListener}
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.data.{Item, Container, Property}
-import com.vaadin.terminal.{UserError, Sizeable}
 import com.vaadin.ui.Table.CellStyleGenerator
 import com.vaadin.ui._
+import com.vaadin.terminal.gwt.server.WebApplicationContext
+import javax.servlet.http.HttpSession
+import javax.servlet.ServletContext
+import com.vaadin.ui.Window.Notification
+import com.vaadin.data.Container.ItemSetChangeListener
+import com.vaadin.terminal.{Resource, UserError, Sizeable}
 
 package object vaadin {
 
+  type PropertyId = AnyRef
+  type PropertyValue = AnyRef
+  type ItemId = AnyRef
+  type ColumnId = AnyRef
+
+  class ApplicationWrapper(app: Application) {
+
+    def context(): WebApplicationContext = app.getContext.asInstanceOf[WebApplicationContext]
+
+    def session(): HttpSession = context().getHttpSession
+
+    def servletContext(): ServletContext = session().getServletContext
+
+    def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
+      init(window)
+      window.setModal(modal)
+      window.setResizable(resizable)
+      window.setDraggable(draggable)
+      app.getMainWindow.addWindow(window)
+    }
+
+    def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true): Unit =
+      initAndShow(window, modal, resizable, draggable) { _ => }
+
+    def showNotification(caption: String, description: String, notificationType: Int): Unit =
+      app.getMainWindow.showNotification(caption, description, notificationType)
+
+    def showErrorNotification(caption: String, description: String = null): Unit =
+      showNotification(caption, description, Notification.TYPE_ERROR_MESSAGE)
+
+    def showWarningNotification(caption: String, description: String = null): Unit =
+      showNotification(caption, description, Notification.TYPE_WARNING_MESSAGE)
+
+    def showInfoNotification(caption: String, description: String = null): Unit =
+      showNotification(caption, description, Notification.TYPE_HUMANIZED_MESSAGE)
+  }
+
+  /**
+   * A container property.
+   *
+   * @param A container property class
+   * @pram id container property id
+   * @pram defaultValue container property default value
+   */
+  case class ContainerProperty[A <: PropertyValue : Manifest](id: AnyRef, defaultValue: A = null) {
+    val clazz = implicitly[Manifest[A]].erasure
+  }
+
+  /**
+   * Property value type.
+   *
+   * Adds type-checked access to property value.
+   */
+  trait GenericProperty[A <: PropertyValue] extends Property {
+    def value = getValue.asInstanceOf[A]
+    def value_=(v: A): Unit = setValue(v)
+
+    def clear(implicit ev: A =:= String) { setValue("") }
+    def trim(implicit ev: A =:= String): String = value.trim
+    def trimOpt(implicit ev: A =:= String): Option[String] = trim match {
+      case "" => None
+      case v => Some(v)
+    }
+    def isBlank(implicit ev: A =:= String): Boolean = trim.isEmpty
+    def notBlank(implicit ev: A =:= String): Boolean = !isBlank
+  }
+
+  case class FunctionProperty[A](valueFn: () => A)(implicit mf: Manifest[A]) extends Property {
+    val isReadOnly = true
+    val getType = mf.erasure
+    def setValue(newValue: AnyRef) = throw new UnsupportedOperationException
+    def setReadOnly(newStatus: Boolean): Unit = throw new UnsupportedOperationException
+    def getValue = valueFn().asInstanceOf[AnyRef]
+    override def toString = Option(getValue).map(_.toString).getOrElse("")
+  }
+
+//case class ByNameProperty[A >: Null <: AnyRef](byName: => A)(implicit mf: Manifest[A]) extends Property {
+//
+//  def setReadOnly(newStatus: Boolean) = throw new UnsupportedOperationException
+//
+//  val isReadOnly = true
+//
+//  val getType = mf.erasure
+//
+//  def setValue(newValue: AnyRef) = throw new UnsupportedOperationException
+//
+//  def getValue = byName //.asInstanceOf[AnyRef]
+//
+//  override def toString = ?(getValue) map { _.toString } getOrElse ""
+//}
+
+// add memoized byNameProperty
+
+  trait NullableProperty[A <: PropertyValue] extends GenericProperty[A] {
+    def valueOpt: Option[A] = Option(value)
+  }
+
+  trait GenericContainer[A <: ItemId] extends Container {
+    def itemIds: JCollection[A] = getItemIds.asInstanceOf[JCollection[A]]
+    def itemIds_=(ids: JCollection[A]) {
+      removeAllItems()
+      ids.asScala.foreach(addItem _)
+    }
+
+    def item(id: A): Item = getItem(id)
+
+    def firstItemIdOpt: Option[A] = itemIds.asScala.headOption
+  }
+
+
+
+  /**
+   * Component data type.
+   *
+   * Adds type-checked access to data.
+   */
+  trait GenericData[A <: AnyRef] extends AbstractComponent {
+    def data: A = getData.asInstanceOf[A]
+    def data_=(d: A) { setData(d) }
+  }
+
   def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {
-    def menuSelected(mi: MenuBar#MenuItem) = handler(mi)
+    def menuSelected(mi: MenuBar#MenuItem): Unit = handler(mi)
   }
 
   implicit def fn0ToMenuCommand(f: () => Unit) = menuCommand { _ => f() }
@@ -28,16 +156,9 @@ package object vaadin {
   }
 
   def addContainerProperties(container: Container, properties: ContainerProperty[_]*) =
-    properties foreach { p =>
+    properties.foreach { p =>
       container.addContainerProperty(p.id, p.clazz, p.defaultValue)
     }
-
-
-  type ItemId = AnyRef
-  type PropertyId = AnyRef
-  type ColumnId = AnyRef
-
-  // table.properties = CP[Int]("id", "name") ~ CP[String]("id", "name") ~ ... ???
 
   implicit def fnToTableCellStyleGenerator(fn: (ItemId,  PropertyId) => String ) =
     new Table.CellStyleGenerator {
@@ -49,26 +170,9 @@ package object vaadin {
       def generateCell(source: Table, itemId: ItemId, columnId: AnyRef) = fn(source, itemId, columnId)
     }
 
-  class TableOps[A <: ItemId](table: Table with ItemIdType[A]) {
-    def addRow(itemId: A, cells: AnyRef*): AnyRef = addTableRow(table, itemId, cells: _*)
-    def addRowWithAutoId(cell: AnyRef, cells: AnyRef*): AnyRef = addTableRow(table, null, (cell +: cells) : _*)
-
-    object generatedColumn {
-      def update(columnId: ColumnId, generator: (Table, A, ColumnId) => AnyRef) {
-        table.addGeneratedColumn(columnId, new Table.ColumnGenerator {
-          def generateCell(source: Table, itemId: ItemId, columnId: AnyRef) = generator(source, itemId.asInstanceOf[A], columnId)
-        })
-      }
-    }
-
-    def columnHeaders = table.getColumnHeaders.toList
-    def columnHeaders_=(headers: List[String]) { table setColumnHeaders headers.toArray }
-  }
-
-  implicit def tableOps[A <: ItemId](table: Table with ItemIdType[A]) = new TableOps[A](table)
 
 
-  def addTableRow(table: Table, itemId: AnyRef, cells: AnyRef*): AnyRef = table.addItem(cells.toArray[AnyRef], itemId)
+
 
 //  def whenSelected[A, B](property: Property)(fn: A => B): Option[B] = property.getValue match {
 //    case null => None
@@ -76,130 +180,79 @@ package object vaadin {
 //    case other => sys.error("Unexpected field value: %s." format other)
 //  }
 
-  def whenSelected[A <: AnyRef, B](property: ValueType[A] with AbstractSelect)(fn: A => B): Option[B] = property.value match {
+  def whenSelected[A <: AnyRef, B](property: GenericProperty[A] with AbstractSelect)(fn: A => B): Option[B] = property.value match {
     case null => None
     case value: JCollection[_] if value.isEmpty => None
     case value => Some(fn(value))
   }
 
+  // todo: selection, not sec ???
   def whenSingle[A, B](seq: Seq[A])(fn: A => B): Option[B] = seq match {
     case Seq(a) => Some(fn(a))
     case _ => None
   }
 
-  /** Convenient extension */
-  trait CheckBoxOps { this: CheckBox =>
-    def isChecked = checked
-    def isUnchecked = !isChecked
-
-    def checked = booleanValue
-    def checked_=(value: Boolean) = setValue(value.asInstanceOf[AnyRef])
-
-    def check() { checked = true }
-    def uncheck() { checked = false }
-  }
-
-  /** Ensures setValue is called directly on wrapped property, and not on wrapper itself. */
-  trait WrappedPropertyValueSetterDelegate extends Property with Property.Viewer {
-    abstract override def setValue(value: AnyRef) = getPropertyDataSource match {
-      case null => super.setValue(value)
-      case property => property.setValue(value)
-    }
-  }
-
-  /** Text field value type is always String */
-  implicit def wrapTextField(textField: TextField) = new TextField(textField) with ValueType[String] with WrappedPropertyValueSetterDelegate
-
-  /** Password field value type is always String */
-  implicit def wrapPasswordField(field: PasswordField) = new PasswordField(field) with ValueType[String] with WrappedPropertyValueSetterDelegate
-
-  /** Text area field value type is always String */
-  implicit def wrapTextArea(textArea: TextArea) = new TextArea(textArea) with ValueType[String] with WrappedPropertyValueSetterDelegate
-
-  /** Label value type is always String */
-  implicit def wrapLabel(label: Label) = new Label(label) with ValueType[String] with WrappedPropertyValueSetterDelegate
 
 
-  /** Checkbox value type is always JBoolean */
-  implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBox("", checkBox) with CheckBoxOps with ValueType[JBoolean] with WrappedPropertyValueSetterDelegate
-
-  /** Date field value type is always Date */
-  implicit def wrapDateField(dateField: DateField) = new DateField(dateField) with ValueType[java.util.Date]
 
 
   implicit def applicationToImcmsApplication(app: Application) = app.asInstanceOf[ImcmsApplication]
 
-  implicit def wrapComponent(c: Component) = new ComponentWrapper(c)
 
   implicit def wrapApplication(app: Application) = new ApplicationWrapper(app)
 
-  implicit def wrapWindow(window: Window) = new WindowWrapper(window)
-
-  implicit def wrapMenuBar(mb: MenuBar) = new MenuBarWrapper(mb)
-
-  implicit def wrapMenuItem(mi: MenuBar#MenuItem) = new MenuItemWrapper(mi)
-
-  implicit def wrapButton(button: Button) = new ButtonWrapper(button)
 
 
   implicit def wrapValueChangeNotifier(vcn: Property.ValueChangeNotifier) = new {
-    def addValueChangeListener(listener: Property.ValueChangeEvent => Unit) =
+    def addValueChangeListener(listener: Property.ValueChangeEvent => Unit): Unit =
       vcn.addListener(new Property.ValueChangeListener {
-        def valueChange(event: ValueChangeEvent) = listener(event)
+        def valueChange(event: ValueChangeEvent): Unit = listener(event)
       })
 
-    def addValueChangeHandler(handler: => Unit) = addValueChangeListener(_ => handler)
+    def addValueChangeHandler(handler: => Unit): Unit = addValueChangeListener(_ => handler)
   }
 
   implicit def wrapItemClickNotifier(notifier: ItemClickEvent.ItemClickNotifier) = new {
-    def addItemClickListener(listener: ItemClickEvent => Unit) =
+    def addItemClickListener(listener: ItemClickEvent => Unit): Unit =
       notifier.addListener(new ItemClickEvent.ItemClickListener {
-        def itemClick(event: ItemClickEvent) = listener(event)
+        def itemClick(event: ItemClickEvent): Unit = listener(event)
       })
   }
 
+  trait ContainerItemSetChangeNotifier extends Container.ItemSetChangeNotifier { container: Container =>
 
-  implicit def wrapSizeable(sizeable: Sizeable) = new {
-    def setSize(width: Float, height: Float, units: Int = Sizeable.UNITS_PIXELS) {
-      sizeable.setWidth(width, units)
-      sizeable.setHeight(height, units)
+    private var listeners = Set.empty[ItemSetChangeListener]
+
+    def removeListener(listener: ItemSetChangeListener) {
+      listeners -= listener
     }
 
-    def setSize(width: String, height: String) {
-      sizeable.setWidth(width)
-      sizeable.setHeight(height)
+    def addListener(listener: ItemSetChangeListener) {
+      listeners += listener
     }
-  }
 
-  def updateDisabled[A <: Component](component: A)(f: A => Unit) {
-    component.setEnabled(true)
-    try {
-      f(component)
-    } finally {
-      component.setEnabled(false)
-    }
-  }
+    protected def notifyItemSetChanged() {
+      val event = new Container.ItemSetChangeEvent {
+        def getContainer = container
+      }
 
-  def updateReadOnly[A <: Component](component: A)(f: A => Unit) {
-    component.setReadOnly(false)
-    try {
-      f(component)
-    } finally {
-      component.setReadOnly(true)
+      listeners.foreach(_ containerItemSetChange event)
     }
   }
 
-  object SearchFormUtil {
-    def toggle(layout: CustomLayout, name: String, checkBox: CheckBox, component: Component,
-               stub: => Component = { new Label("search.frm.fld.lbl_any_value".i) with UndefinedSize }) {
 
-      layout.addComponent(if (checkBox.checked) component else stub, name)
+  /** Tree item descriptor */
+  class TreeMenuItem(val id: String = null, val icon: Resource = null) {
+
+    val children: Seq[TreeMenuItem] = {
+      val isMenuItemType: Class[_] => Boolean = classOf[TreeMenuItem].isAssignableFrom
+
+      getClass.getDeclaredMethods
+        .filter(_.getReturnType |> isMenuItemType)
+        .sortBy(_.getAnnotation(classOf[OrderedMethod]) |> opt map(_.value()) getOrElse 0)
+        .map(_.invoke(this).asInstanceOf[TreeMenuItem])
     }
   }
 
-  // avstract component ops
-  //implicit def wrapAbstractComponent(c: AbstractComponent) = new {
-  //  def set
-  //}
-  implicit def strToUserError(str: String) = new UserError(str)
+  implicit def stringToUserError(string: String) = new UserError(string)
 }

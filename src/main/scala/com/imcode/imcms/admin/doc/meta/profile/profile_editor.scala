@@ -70,12 +70,12 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
   }
 
   private def resetTemplatesValues() {
-    val templatesNames = imcmsServices.getTemplateMapper.getAllTemplates.map {_.getName}
+    val templatesNames = imcmsServices.getTemplateMapper.getAllTemplates.map(_.getName)
     val defaultTemplateNameOpt = templatesNames.headOption
 
     def setTemplatesNamesAsComboBoxItems(cb: ComboBox with SingleSelect[String], selectedTemplateName: String) {
       cb.removeAllItems()
-      templatesNames.foreach { cb addItem _ }
+      templatesNames.foreach(cb.addItem)
       defaultTemplateNameOpt.orElse(Option(selectedTemplateName)).foreach(cb.select)
     }
 

@@ -6,8 +6,10 @@ import imcode.server.user._
 import com.imcode.imcms.vaadin._
 import com.vaadin.ui._
 
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
+
 import scala.collection.JavaConverters._
-import scala.collection.JavaConversions._
 
 // todo add security check, add editAndSave, add external UI
 class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
@@ -37,7 +39,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
               u setLastName c.txtLastName.value
               u setLoginName c.txtLogin.value
               u setPassword c.txtPassword.value
-              u setRoleIds c.tcsRoles.value.toSeq.toArray
+              u setRoleIds c.tcsRoles.value.asScala.toSeq.toArray
               u setLanguageIso639_2 c.sltUILanguage.value
 
               roleMapper.addUser(u)
@@ -62,7 +64,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
               c.tcsRoles.addItem(role.getId, role.getName)
             }
 
-            c.tcsRoles.value = user.getRoleIds.filterNot(RoleId.USERS ==).toSeq
+            c.tcsRoles.value = user.getRoleIds.filterNot(RoleId.USERS ==).toSeq.asJava
 
             imcmsServices.getLanguageMapper.getDefaultLanguage |> { l =>
               c.sltUILanguage.addItem(l)
@@ -71,13 +73,13 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
             c.sltUILanguage.select(user.getLanguageIso639_2)
 
             dlg wrapOkHandler {
-              user setActive c.chkActivated.booleanValue
-              user setFirstName c.txtFirstName.value
-              user setLastName c.txtLastName.value
-              user setLoginName c.txtLogin.value
-              user setPassword c.txtPassword.value
-              user setRoleIds c.tcsRoles.value.toSeq.toArray
-              user setLanguageIso639_2 c.sltUILanguage.value
+              user.setActive(c.chkActivated.booleanValue)
+              user.setFirstName(c.txtFirstName.value)
+              user.setLastName(c.txtLastName.value)
+              user.setLoginName(c.txtLogin.value)
+              user.setPassword(c.txtPassword.value)
+              user.setRoleIds(c.tcsRoles.value.asScala.toArray)
+              user.setLanguageIso639_2(c.sltUILanguage.value)
 
               roleMapper.saveUser(user)
               search.reset()
@@ -116,7 +118,7 @@ class UserEditorUI extends FormLayout with UndefinedSize {
   val txtLastName = new TextField("user.editor.frm.fld.txt_last_name".i)
   val chkActivated = new CheckBox("user.editor.frm.fld.chk_activated".i)
   val tcsRoles = new TwinColSelect("user.editor.frm.fld.tcs_roles".i) with MultiSelect[RoleId] with TCSDefaultI18n
-  val sltUILanguage = new Select("user.editor.frm.fld.interface_language".i) with ValueType[String] with NoNullSelection
+  val sltUILanguage = new Select("user.editor.frm.fld.interface_language".i) with GenericProperty[String] with NoNullSelection
   val txtEmail = new TextField("user.editor.frm.fld.email".i)
 
   val lytPassword = new HorizontalLayoutUI("user.editor.frm.fld.password".i) with UndefinedSize {

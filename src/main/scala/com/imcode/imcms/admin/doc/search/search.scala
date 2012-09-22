@@ -22,7 +22,8 @@ import imcode.server.user.UserDomainObject
 import imcode.server.document.index.SimpleDocumentQuery
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
 import com.vaadin.ui._
-import scala.Some
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.dialog._
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
@@ -243,7 +244,7 @@ class DocSearchUI(
 abstract class DocsContainer extends Container
     with ContainerItemSetChangeNotifier
     with Container.Ordered
-    with ItemIdType[DocId]
+    with GenericContainer[DocId]
     with ImcmsServicesSupport {
 
   private val propertyIdToType = ListMap(
@@ -281,14 +282,14 @@ abstract class DocsContainer extends Container
         () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
           case Nil => null
           case pair :: Nil =>
-            new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon |>> { tree =>
+            new Tree with GenericContainer[DocumentDomainObject] with NotSelectable with DocStatusItemIcon |>> { tree =>
               val parentDoc = pair.getDocument
               tree.addItem(parentDoc)
               tree.setChildrenAllowed(parentDoc, false)
               tree.setItemCaption(parentDoc, "%s - %s" format (parentDoc.getId, parentDoc.getHeadline))
             }
 
-          case pairs => new Tree with ItemIdType[DocumentDomainObject] with NotSelectable with DocStatusItemIcon |>> { tree =>
+          case pairs => new Tree with GenericContainer[DocumentDomainObject] with NotSelectable with DocStatusItemIcon |>> { tree =>
             val root = new {}
             tree.addItem(root)
             tree.setItemCaption(root, pairs.size.toString)
@@ -307,13 +308,13 @@ abstract class DocsContainer extends Container
             imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).toList match {
               case List() => null
               case List(childDoc) =>
-                new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable |>> { tree =>
+                new Tree with GenericContainer[DocumentDomainObject] with DocStatusItemIcon with NotSelectable |>> { tree =>
                   tree.addItem(childDoc)
                   tree.setChildrenAllowed(childDoc, false)
                   tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
                 }
 
-              case childDocs => new Tree with ItemIdType[DocumentDomainObject] with DocStatusItemIcon with NotSelectable |>> { tree =>
+              case childDocs => new Tree with GenericContainer[DocumentDomainObject] with DocStatusItemIcon with NotSelectable |>> { tree =>
                 val root = new {}
                 tree.addItem(root)
                 tree.setItemCaption(root, childDocs.size.toString)
@@ -484,7 +485,7 @@ trait DocStatusItemIcon extends AbstractSelect {
   }
 }
 
-trait DocTableItemIcon extends AbstractSelect with ItemIdType[DocId] {
+trait DocTableItemIcon extends AbstractSelect with GenericContainer[DocId] {
   override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
     case docItem: DocsContainer#DocItem =>
       new ExternalResource("imcms/eng/images/admin/status/%s.gif" format docItem.doc.getLifeCyclePhase.toString)
@@ -822,7 +823,7 @@ object DocRangeType extends Enumeration {
 }
 
 class DocDateRangeUI(caption: String = "") extends HorizontalLayout with Spacing with UndefinedSize {
-  val cbRangeType = new ComboBox with ValueType[DocRangeType.Value] with NoNullSelection with Immediate
+  val cbRangeType = new ComboBox with GenericProperty[DocRangeType.Value] with NoNullSelection with Immediate
   val dtFrom = new PopupDateField with DayResolution
   val dtTo = new PopupDateField with DayResolution
 

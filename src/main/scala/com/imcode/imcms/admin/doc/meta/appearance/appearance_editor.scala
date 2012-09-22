@@ -15,6 +15,7 @@ import com.vaadin.terminal.{ExternalResource}
 import com.vaadin.data.Validator
 import com.vaadin.data.Validator.InvalidValueException
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.ui._
 
 
 /**
