@@ -24,16 +24,17 @@ import scala.util.control.{Exception => Ex}
  *   -size is adjusted automatically according to its content size.
  */
 class Dialog(caption: String = "") extends Window(caption) {
-  protected val mainUICheck: Component => Unit = Checks.assertFixedSize
-  protected val buttonsBarUICheck: Component => Unit = Checks.assertFixedSize
+  protected val mainUISizeAssert: Component => Unit = Asserts.assertFixedSize
+  protected val buttonsBarUISizeAssert: Component => Unit = Asserts.assertFixedSize
   protected val content = new GridLayout(1, 2) with Spacing with Margin
 
   setContent(content)
 
   def mainUI = content.getComponent(0, 0)
+
   /** By default rejects components with width and/or height in percentage. */
   def mainUI_=[C <: Component](component: C): C = component |>> { component =>
-    mainUICheck(component)
+    mainUISizeAssert(component)
 
     content.addComponent(component, 0, 0)
     content.setComponentAlignment(component, Alignment.TOP_LEFT)
@@ -41,9 +42,10 @@ class Dialog(caption: String = "") extends Window(caption) {
 
 
   def buttonsBarUI = content.getComponent(0, 1)
+
   /** By default rejects components with width and/or height in percentage. */
   def buttonsBarUI_=[C <: Component](component: C): C = component |>> { component =>
-    buttonsBarUICheck(component)
+    buttonsBarUISizeAssert(component)
 
     content.addComponent(component, 0, 1)
     content.setComponentAlignment(component, Alignment.TOP_CENTER)
@@ -58,7 +60,7 @@ class Dialog(caption: String = "") extends Window(caption) {
  * Size (both width and height) of this dialog MUST be set explicitly.
  */
 trait CustomSizeDialog extends Dialog {
-  override protected val mainUICheck: Component => Unit = Function.const(Unit)
+  override protected val mainUISizeAssert: Component => Unit = Function.const(Unit)
 
   content.setSizeFull()
   content.setColumnExpandRatio(0, 1f)
@@ -68,98 +70,28 @@ trait CustomSizeDialog extends Dialog {
 trait YesButton { this: Dialog =>
   val btnYes = new Button("btn_yes".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  def wrapYesHandler(handler: => Unit) {
-    btnYes addClickHandler {
-      Ex.allCatch.either(handler) match {
-        case Right(_) => close()
-        case Left(ex) => using(new java.io.StringWriter) { w =>
-          ex.printStackTrace(new java.io.PrintWriter(w))
-          throw ex
-        }
-      }
-    }
-  }
+  def setYesHandler(handler: => Unit): Unit = DialogUtil.wrapButtonClickHandler(this, btnYes, handler)
 }
 
 trait NoButton { this: Dialog =>
   val btnNo = new Button("btn_no".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/cancel.png")) }
 
-  def wrapNoHandler(handler: => Unit) {
-    btnNo addClickHandler {
-      Ex.allCatch.either(handler) match {
-        case Right(_) => close()
-        case Left(ex) => using(new java.io.StringWriter) { w =>
-          ex.printStackTrace(new java.io.PrintWriter(w))
-          throw ex
-        }
-      }
-    }
-  }
+  def setNoHandler(handler: => Unit): Unit = DialogUtil.wrapButtonClickHandler(this, btnNo, handler)
 }
 
 trait OKButton { this: Dialog =>
   val btnOk = new Button("btn_ok".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  wrapOkHandler {}
-
-  /**
-   * Wraps Ok handler: invokes original handler and closes dialog if there is no exception.
-   */
-  def wrapOkHandler(handler: => Unit) {
-    setOkHandler {
-      Ex.allCatch.either(handler) match {
-        case Right(_) => close()
-        case Left(ex) => using(new java.io.StringWriter) { w =>
-          ex.printStackTrace(new java.io.PrintWriter(w))
-          getApplication.showErrorNotification("Unexpected error: %s".format(ex.getMessage), w.toString)
-          throw ex
-        }
-      }
-    }
-  }
-
-  def setOkHandler(handler: => Unit) = btnOk.addClickHandler(handler)
-
-  // todo: ??? setOKEitherHandler
-  //
-  //  def setOkEitherHandler(handler: => Either[Option[String], Option[String]]) {
-  //    handler match {
-  //      case Left
-  //    }
-  //  }
-  // Left, Right: Option[Info|Warning|Error]
-  // if one of them - show notification/ or msg dialog
-  // close if close is set to true:
-  // sealed trait HandlerStatus {
-  //
-  // }
-  // case class StatusInfo(autoClose: Boolean = true, show: notification | dialog)
-  // case class StatusWarning(autoClose: Boolean = false)
-  // case class StatusError(autoClose: Boolean = false)
+  def setOkHandler(handler: => Unit): Unit = DialogUtil.wrapButtonClickHandler(this, btnOk, handler)
+  def setOkCustomHandler(handler: => Unit): Unit = btnOk.addClickHandler(handler)
 }
-
-
-
 
 
 trait CancelButton { this: Dialog =>
   val btnCancel = new Button("btn_cancel".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
-  wrapCancelHandler {}
-
-  def wrapCancelHandler(handler: => Unit) {
-    btnCancel addClickHandler {
-      Ex.allCatch.either(handler) match {
-        case Right(_) => close()
-        case Left(ex) => using(new java.io.StringWriter) { w =>
-          ex.printStackTrace(new java.io.PrintWriter(w))
-          throw ex
-        }
-      }
-    }
-  }
-
-  def setCancelHandler(handler: => Unit) = btnCancel.addClickHandler(handler)
+  def setCancelHandler(handler: => Unit): Unit = DialogUtil.wrapButtonClickHandler(this, btnCancel, handler)
+  def setCancelCustomHandler(handler: => Unit): Unit = btnCancel.addClickHandler(handler)
 }
 
 /** Empty dialog window. */
@@ -170,6 +102,8 @@ class OKDialog(caption: String = "") extends Dialog(caption) with OKButton {
 /** Empty dialog window. */
 class CancelDialog(caption: String = "") extends Dialog(caption) with CancelButton {
   buttonsBarUI = btnCancel
+
+  setCancelCustomHandler { close() }
 }
 
 
@@ -183,6 +117,8 @@ trait MsgLabel { this: Dialog =>
 /** Message dialog window. */
 class MsgDialog(caption: String = "", msg: String ="") extends OKDialog(caption) with MsgLabel {
   lblMessage.value = msg
+
+  setOkCustomHandler { close() }
 }
 
 /** OKCancel dialog window. */
@@ -240,4 +176,29 @@ trait BottomMarginDialog { this: Dialog =>
 
 trait NoMarginDialog { this: Dialog =>
   content.setMargin(false)
+}
+
+object DialogUtil extends Log4jLoggerSupport {
+
+  /**
+   * Wraps button click handler: invokes original handler and closes dialog if there is no exception.
+   */
+  def wrapButtonClickHandler(dialog: Dialog, button: Button, handler: => Unit) {
+    button.addClickHandler {
+      try {
+        handler
+        dialog.close()
+      } catch {
+        case e =>
+          using(new java.io.StringWriter) { w =>
+            e.printStackTrace(new java.io.PrintWriter(w))
+            dialog.topWindow.showErrorNotification("Unexpected error: %s".format(e.getMessage), w.toString)
+          }
+
+          logger.error("Dialog button click hander error", e)
+
+          throw e
+      }
+    }
+  }
 }

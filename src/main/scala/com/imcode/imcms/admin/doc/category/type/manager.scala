@@ -6,7 +6,7 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.user._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
 import imcode.server.document.{CategoryTypeDomainObject}
 import com.imcode.imcms.admin.doc.category.{CategoryTypeId}
 import com.vaadin.ui.Window.Notification
@@ -34,14 +34,14 @@ class CategoryTypeManager(app: ImcmsApplication) {
     }
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblTypes) { id =>
-        app.initAndShow(new ConfirmationDialog("Delete selected category type?")) { dlg =>
-          dlg.wrapOkHandler {
+        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected category type?")) { dlg =>
+          dlg.setOkHandler {
             app.privileged(permission) {
               Ex.allCatch.either(categoryMapper.getCategoryTypeById(id.intValue) |> opt foreach categoryMapper.deleteCategoryTypeFromDb) match {
                 case Right(_) =>
-                  app.showInfoNotification("Category type has been deleted")
+                  app.getMainWindow.showInfoNotification("Category type has been deleted")
                 case Left(ex) =>
-                  app.showErrorNotification("Internal error")
+                  app.getMainWindow.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -65,7 +65,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
     val isNew = id == 0
     val dialogTitle = if(isNew) "Create new category type" else "Edit category type"
 
-    app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+    app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
       dlg.mainUI = new CategoryTypeEditorUI |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = vo.getName |> opt getOrElse ""
@@ -73,7 +73,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
         c.chkInherited.value = Boolean box vo.isInherited
         c.chkMultiSelect.value = Boolean box vo.isMultiselect
 
-        dlg wrapOkHandler {
+        dlg.setOkHandler {
           vo.clone() |> { voc =>
             voc setName c.txtName.value.trim
             voc setInherited c.chkInherited.booleanValue

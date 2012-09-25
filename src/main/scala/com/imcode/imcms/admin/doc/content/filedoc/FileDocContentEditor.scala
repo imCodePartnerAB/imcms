@@ -5,7 +5,7 @@ package filedoc
 
 import com.imcode._
 import com.imcode.imcms._
-import com.imcode.imcms.admin.system.file.{UploadedFile, FileUploaderDialog}
+import com.imcode.imcms.admin.instance.file.{UploadedFile, FileUploaderDialog}
 import com.imcode.imcms.vaadin._
 import com.vaadin.ui._
 import com.vaadin.ui.Table.ColumnGenerator
@@ -35,8 +35,9 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
   )
 
   private lazy val mimeTypes: ListMap[MimeType, DisplayName] =
-    imcmsServices.getDocumentMapper.getAllMimeTypesWithDescriptions(ui.getApplication.user)
-    .map { case Array(mimeType, displayName) => mimeType -> displayName } (breakOut)
+    imcmsServices.getDocumentMapper
+      .getAllMimeTypesWithDescriptions(ui.getApplication.user)
+      .map { case Array(mimeType, displayName) => mimeType -> displayName } (breakOut)
 
   private def findFDFByName(name: String, ignoreCase: Boolean = true): Option[FileDocumentFile] = {
     val namePredicate: String => Boolean = if (ignoreCase) name.equalsIgnoreCase else (name ==)
@@ -66,7 +67,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.tblFiles.addGeneratedColumn("Default", new ColumnGenerator {
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = new CheckBox |>> { chk =>
         for (id <- values.defaultFdfId if id == itemId.asInstanceOf[FileId]) {
-          chk.check
+          chk.check()
         }
 
         chk.setReadOnly(true)
@@ -76,7 +77,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.tblFiles.setColumnAlignment("Default", Table.ALIGN_CENTER)
 
     ui.miUpload.setCommandHandler {
-      ui.getApplication.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
+      ui.topWindow.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
         dlg.setOkHandler {
           for (UploadedFile(_, mimeType, file) <- dlg.uploader.uploadedFile) {
             val saveAsName = dlg.uploader.saveAsName
@@ -88,22 +89,20 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
               case Some(fdf) => Right(fdf) // return new instance?
 
-              case None => Right(new FileDocumentFile) |> {
-                case Right(fdf) =>
-                  val id = (
-                    for ((IntNum(id), _) <- values.fdfs) yield id
-                  ) |> { ids =>
-                    if (ids.isEmpty) 1 else ids.max + 1
-                  } |> {
-                    _.toString
-                  }
+              case None =>
+                val id = (
+                  for ((IntNum(id), _) <- values.fdfs) yield id
+                ) |> { ids =>
+                  if (ids.isEmpty) 1 else ids.max + 1
+                } |> {
+                  _.toString
+                }
 
-                  fdf.setId(id)
-              }
+                new FileDocumentFile |>> { _.setId(id) } |> Right.apply
             } |> {
               case Left(errMsg: String) =>
                 dlg.uploader.ui.txtSaveAsName.setComponentError(errMsg)
-                ui.getApplication.showErrorNotification(errMsg)
+                ui.topWindow.showErrorNotification(errMsg)
 
               case Right(fdf: FileDocumentFile) =>
                 fdf.setFilename(saveAsName)
@@ -123,13 +122,13 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.miEditProperties.setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
-          ui.getApplication.showWarningNotification("Please select a file")
+          ui.topWindow.showWarningNotification("Please select a file")
 
         case Seq(_, _, _*) =>
-          ui.getApplication.showWarningNotification("Can't edit multiple files", "Please select a single file")
+          ui.topWindow.showWarningNotification("Can't edit multiple files", "Please select a single file")
 
         case Seq(fileId) =>
-          ui.getApplication.initAndShow(new OkCancelDialog("Edit file properties")) { dlg =>
+          ui.topWindow.initAndShow(new OkCancelDialog("Edit file properties")) { dlg =>
             val fdf = values.fdfs(fileId)
             val editorUI = new FileDocFilePropertiesEditorUI |>> { eui =>
               eui.txtId.value = fdf.getId
@@ -210,7 +209,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.miDelete setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
-          ui.getApplication.showWarningNotification("Please select file(s)")
+          ui.topWindow.showWarningNotification("Please select file(s)")
 
         case fileIds =>
           val fdfs = values.fdfs filterKeys fileIds.toSet.andThen(!_)
@@ -219,7 +218,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
           values = Values(fdfs, defaultFdfId)
           sync()
-          ui.getApplication.showInfoNotification("Selected file(s) have been deleted")
+          ui.topWindow.showInfoNotification("Selected file(s) have been deleted")
       }
     }
 
@@ -227,19 +226,19 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.miMarkAsDefault setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
-          ui.getApplication.showWarningNotification("Please select a file")
+          ui.topWindow.showWarningNotification("Please select a file")
 
         case Seq(_, _, _*) =>
-          ui.getApplication.showWarningNotification("Please select a single file")
+          ui.topWindow.showWarningNotification("Please select a single file")
 
         case Seq(fileId) =>
           values = values.copy(defaultFdfId = Some(fileId))
           sync()
-          ui.getApplication.showInfoNotification("File has been marked as default")
+          ui.topWindow.showInfoNotification("File has been marked as default")
       }
     }
 
-    ui.attachAction = Some(_ => sync())
+    ui.attachAction = Some(_ => resetValues())
   } // ui
 
   def collectValues() = {
@@ -248,7 +247,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     } else {
       Right(doc.clone.asInstanceOf[FileDocumentDomainObject] |>> { clone =>
         for ((fileId, _) <- clone.getFiles) {
-          clone removeFile fileId
+          clone.removeFile(fileId)
         }
 
         for ((fileId, fdf) <- values.fdfs) {
@@ -261,7 +260,12 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
   } // data
 
 
-  def sync() {
+  def resetValues() {
+    sync()
+  }
+
+
+  private def sync() {
     ui.tblFiles.removeAllItems()
 
     for ((fileId, fdf) <- values.fdfs) {
@@ -286,8 +290,8 @@ class FileDocContentEditorUI extends VerticalLayout with Spacing with Margin wit
 
   val tblFiles = new Table with MultiSelect[FileId] with Selectable with Immediate with FullSize {
     addContainerProperties(this,
-      ContainerProperty[FileId]("Id"),
-      ContainerProperty[String]("Name"))
+      PropertyDescriptor[FileId]("Id"),
+      PropertyDescriptor[String]("Name"))
   }
 
   addComponentsTo(this, mb, tblFiles)

@@ -19,7 +19,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     ui.miNew setCommandHandler {
-      app.initAndShow(new OkCancelDialog("user.dlg.new.caption".i)) { dlg =>
+      app.getMainWindow.initAndShow(new OkCancelDialog("user.dlg.new.caption".i)) { dlg =>
         dlg.mainUI = new UserEditorUI |>> { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
             c.tcsRoles.addItem(role.getId, role.getName)
@@ -32,7 +32,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
           c.chkActivated.setValue(true)
 
-          dlg wrapOkHandler {
+          dlg.setOkHandler {
             new UserDomainObject |> { u =>
               u setActive c.chkActivated.booleanValue
               u setFirstName c.txtFirstName.value
@@ -52,7 +52,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
     ui.miEdit setCommandHandler {
       whenSingle(search.selection) { user =>
-        app.initAndShow(new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName))) { dlg =>
+        app.getMainWindow.initAndShow(new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName))) { dlg =>
           dlg.mainUI = new UserEditorUI |>> { c =>
             c.chkActivated setValue user.isActive
             c.txtFirstName setValue user.getFirstName
@@ -72,7 +72,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
             c.sltUILanguage.select(user.getLanguageIso639_2)
 
-            dlg wrapOkHandler {
+            dlg.setOkHandler {
               user.setActive(c.chkActivated.booleanValue)
               user.setFirstName(c.txtFirstName.value)
               user.setLastName(c.txtLastName.value)

@@ -20,20 +20,18 @@ import imcms.mapping.DocumentMapper.SaveOpts
 import imcms.mapping.{DocumentMapper, DocumentSaver}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 import java.io.{FileInputStream, ByteArrayInputStream}
-import com.imcode.imcms.admin.system.file.{UploadedFile, FileUploaderDialog}
+import com.imcode.imcms.admin.instance.file.{UploadedFile, FileUploaderDialog}
 import scala.collection.immutable.ListMap
 import imcode.util.io.{FileInputStreamSource, InputStreamSource}
 import com.vaadin.ui.Table.ColumnGenerator
 import com.vaadin.terminal.{ThemeResource, ExternalResource}
-import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.vaadin.ui._
 
 
 trait DocContentEditor extends Editor {
   type Data <: DocumentDomainObject
-
-  def resetValues() {}
 }
 
 
@@ -43,30 +41,16 @@ class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEdit
   val ui = new TextDocContentEditorUI |>> { ui =>
   } //ui
 
-  def collectValues() = Right(doc)
-}
-
-
-class URLDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor {
-  type Data = UrlDocumentDomainObject
-
-  val ui = new URLDocContentEditorUI |>> { ui =>
-    ui.txtURL.value = "http://"
-  } // ui
+  def resetValues() {}
 
   def collectValues() = Right(doc)
 }
 
 
-class HTMLDocContentEditor(doc: HtmlDocumentDomainObject) extends DocContentEditor {
-  type Data = HtmlDocumentDomainObject
 
-  val ui = new HTMLDocContentEditorUI |>> { ui =>
-    ui.txaHTML.value = <html/>.toString
-  } // ui
 
-  def collectValues() = Right(doc)
-}
+
+
 
 /**
  * Used with deprecated docs such as Browser.
@@ -74,19 +58,9 @@ class HTMLDocContentEditor(doc: HtmlDocumentDomainObject) extends DocContentEdit
 class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor {
   type Data = DocumentDomainObject
 
-  val ui = new Label("Not supported".i)
+  val ui = new UnsupportedDocContentEditorUI
 
-  def collectValues() = Right(doc)
-}
-
-
-/**
- * Used with deprecated docs such as Browser.
- */
-class UnavailableDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor {
-  type Data = DocumentDomainObject
-
-  val ui = new Label("Not available".i)
+  def resetValues() {}
 
   def collectValues() = Right(doc)
 }
@@ -95,23 +69,20 @@ class UnavailableDocContentEditor(doc: DocumentDomainObject) extends DocContentE
 //case class MimeType(name: String, displayName: String)
 
 
-/**
- * URL document editor UI
- */
-class URLDocContentEditorUI extends FormLayout {
-  val txtURL = new TextField("URL/Link".i) with GenericProperty[String] with FullWidth
 
-  addComponentsTo(this, txtURL)
-}
+
 
 
 /**
- * HTML document editor UI
+ *  Unsupported document editor UI
  */
-class HTMLDocContentEditorUI extends FormLayout {
-  val txaHTML = new TextArea("HTML".i) with FullSize
+class UnsupportedDocContentEditorUI extends Panel("Unsupported".i) with FullWidth {
+  private val content = new VerticalLayout with FullWidth with Spacing with Margin
+  val lblInfo = new Label("Unsupported document type".i)
 
-  addComponentsTo(this, txaHTML)
+  setContent(content)
+
+  addComponentsTo(content, lblInfo)
 }
 
 

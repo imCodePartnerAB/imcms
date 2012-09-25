@@ -68,7 +68,7 @@ package object ui {
   implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBox("", checkBox) with CheckBoxExt with GenericProperty[JBoolean] with WrappedPropertyValue
 
   /** Date field value type is always Date */
-  implicit def wrapDateField(dateField: DateField) = new DateField(dateField) with NullableProperty[java.util.Date]
+  implicit def wrapDateField(dateField: DateField) = new DateField(dateField) with NullableProperty[java.util.Date] with WrappedPropertyValue
 
   implicit def wrapSizeable(sizeable: Sizeable) = new {
     def setSize(width: Float, height: Float, units: Int = Sizeable.UNITS_PIXELS) {
@@ -113,9 +113,6 @@ package object ui {
     }
   }
 
-
-
-
   class WindowWrapper(window: Window) {
     def initAndShow[W <: Window](childWindow: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
       init(childWindow)
@@ -124,6 +121,12 @@ package object ui {
       childWindow.setDraggable(draggable)
       window.addWindow(childWindow)
     }
+
+    def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true): Unit =
+      initAndShow(window, modal, resizable, draggable) { _ => }
+
+    def showNotification(caption: String, description: String, notificationType: Int): Unit =
+      window.showNotification(caption, description, notificationType)
 
     def showErrorNotification(caption: String, description: String = null): Unit =
       window.showNotification(caption, description, Notification.TYPE_ERROR_MESSAGE)
@@ -141,8 +144,8 @@ package object ui {
   }
 
   class MenuItemWrapper(mi: MenuBar#MenuItem) {
-    def addItem(caption: String, resource: Resource) = mi.addItem(caption, resource, null)
-    def addItem(caption: String) = mi.addItem(caption, null)
+    def addItem(caption: String, resource: Resource): MenuBar#MenuItem = mi.addItem(caption, resource, null)
+    def addItem(caption: String): MenuBar#MenuItem = mi.addItem(caption, null)
 
     def setCommandListener(listener: MenuBar#MenuItem => Unit): Unit =
       mi.setCommand(new MenuBar.Command {
@@ -220,27 +223,6 @@ package object ui {
     def columnHeaders_=(headers: List[String]) { table setColumnHeaders headers.toArray }
   }
 
-
-  /** Vertical layout with margin, spacing and optional caption. */
-  class VerticalLayoutUI(caption: String = null, spacing: Boolean=true, margin: Boolean=true) extends VerticalLayout {
-    setCaption(caption)
-    setMargin(margin)
-    setSpacing(spacing)
-  }
-
-  /** Horizontal layout with optional margin, spacing and caption. */
-  class HorizontalLayoutUI(caption: String = null, spacing: Boolean=true, margin: Boolean=false, defaultAlignment: Alignment=Alignment.TOP_LEFT) extends HorizontalLayout {
-    setCaption(caption)
-    setMargin(margin)
-    setSpacing(spacing)
-
-    override def addComponent(c: Component) {
-      super.addComponent(c)
-      setComponentAlignment(c, defaultAlignment)
-    }
-  }
-
-
   trait ContainerWithDefaultAlignment extends ComponentContainer with AlignmentHandler {
 
     protected def defaultAlignment: Alignment
@@ -292,5 +274,4 @@ package object ui {
       layout.addComponent(if (checkBox.checked) component else stub, name)
     }
   }
-
 }

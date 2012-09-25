@@ -6,7 +6,7 @@ import _root_.imcode.server.user.{RoleId, RoleDomainObject}
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
 import com.vaadin.ui.Window.Notification
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
@@ -31,14 +31,14 @@ class RoleManager(app: ImcmsApplication) {
     }
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblRoles) { id =>
-        app.initAndShow(new ConfirmationDialog("Delete selected role?")) { dlg =>
-          dlg wrapOkHandler {
+        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected role?")) { dlg =>
+          dlg.setOkHandler {
             app.privileged(permission) {
               Ex.allCatch.either(roleMapper.getRole(id) |> opt foreach roleMapper.deleteRole) match {
                 case Right(_) =>
-                  app.showInfoNotification("Role has been deleted")
+                  app.getMainWindow.showInfoNotification("Role has been deleted")
                 case Left(ex) =>
-                  app.showErrorNotification("Internal error")
+                  app.getMainWindow.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -62,7 +62,7 @@ class RoleManager(app: ImcmsApplication) {
     val isNew = id.intValue == 0
     val dialogTitle = if(isNew) "Create new role" else "Edit role"
 
-    app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+    app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
       dlg.mainUI = new RoleEditorUI |>> { c =>
         val permsToChkBoxes = Map(
             RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> c.chkPermChangeImagesInArchive,
@@ -74,7 +74,7 @@ class RoleManager(app: ImcmsApplication) {
         c.txtName.value = vo.getName
         for ((permission, chkBox) <- permsToChkBoxes) chkBox.value = vo.getPermissions.contains(permission)
 
-        dlg wrapOkHandler {
+        dlg.setOkHandler {
           vo.clone |> { voc =>
             // todo: validate
             voc.setName(c.txtName.value)

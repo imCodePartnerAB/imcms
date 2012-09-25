@@ -7,7 +7,7 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.user._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
 import imcode.server.document.{TemplateGroupDomainObject}
 import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionDenied, PermissionGranted}
@@ -35,14 +35,14 @@ class TemplateGroupManager(app: ImcmsApplication) {
     }
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblGroups) { id =>
-        app.initAndShow(new ConfirmationDialog("Delete selected template group?")) { dlg =>
-          dlg wrapOkHandler {
+        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected template group?")) { dlg =>
+          dlg.setOkHandler {
             app.privileged(permission) {
               Ex.allCatch.either(templateMapper deleteTemplateGroup id.intValue) match {
                 case Right(_) =>
-                  app.showInfoNotification("Template group has been deleted")
+                  app.getMainWindow.showInfoNotification("Template group has been deleted")
                 case Left(ex) =>
-                  app.showErrorNotification("Internal error")
+                  app.getMainWindow.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -66,14 +66,14 @@ class TemplateGroupManager(app: ImcmsApplication) {
     val isNew = id == 0
     val dialogTitle = if(isNew) "Create new template group" else "Edit template group"
 
-    app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+    app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
       dlg.mainUI = new TemplateGroupEditorUI |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = vo.getName |> opt getOrElse ""
         templateMapper.getTemplatesInGroup(vo) foreach (c.twsTemplates addChosenItem _.getName)
         templateMapper.getTemplatesNotInGroup(vo) foreach (c.twsTemplates addAvailableItem _.getName)
 
-        dlg.wrapOkHandler {
+        dlg.setOkHandler {
           app.privileged(permission) {
             val voc = if (isNew) {
               templateMapper.createTemplateGroup(c.txtName.value)

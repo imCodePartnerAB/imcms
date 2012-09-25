@@ -32,14 +32,13 @@ object Actions {
 
 object DocManager {
 
-  def createDocEditorDlg(doc: DocumentDomainObject, caption: String) = {
+  def mkDocEditorDlg(doc: DocumentDomainObject, caption: String) = {
     val dlg = new OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
       val metaEditor = new MetaEditor(doc)
       val contentEditor = doc match {
         case textDoc: TextDocumentDomainObject => new TextDocContentEditor(textDoc)
         case fileDoc: FileDocumentDomainObject => new FileDocContentEditor(fileDoc)
-        case htmlDoc: HtmlDocumentDomainObject => new HTMLDocContentEditor(htmlDoc)
-        case urlDoc: UrlDocumentDomainObject => new URLDocContentEditor(urlDoc)
+        case urlDoc: UrlDocumentDomainObject => new UrlDocContentEditor(urlDoc)
         case _ => new UnsupportedDocContentEditor(doc)
       }
 
@@ -64,7 +63,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
   val ui = new DocManagerUI(search.ui) |>> { ui =>
     ui.miSelectionShow.setCommandHandler {
-      app.show(docSelectionDlg, modal = false, resizable = true)
+      app.getMainWindow.show(docSelectionDlg, modal = false, resizable = true)
     }
 
     // todo: check select single doc
@@ -75,7 +74,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         val appURL = app.getURL
         val docURL = new URL(appURL.getProtocol, appURL.getHost, appURL.getPort, "/%d" format docId)
 
-        app.initAndShow(new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog, resizable = true) { dlg =>
+        app.getMainWindow.initAndShow(new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog, resizable = true) { dlg =>
 //          dlg.mainUI = new Embedded with FullSize |>> { browser =>
 //            browser.setType(Embedded.TYPE_BROWSER)
 //            browser.setSource(new ExternalResource(new URL("/" + docId))) // docURL
@@ -110,23 +109,23 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         case Seq(docId) => imcmsServices.getDocumentMapper.getDocument(docId) match {
           case null =>
           case doc =>
-            app.initAndShow(DocManager.createDocEditorDlg(doc, "Edit document"), resizable = true) { dlg =>
+            app.getMainWindow.initAndShow(DocManager.mkDocEditorDlg(doc, "Edit document"), resizable = true) { dlg =>
               dlg.setSize(500, 500)
 
               dlg.setOkHandler {
                 (dlg.metaEditor.collectValues(), dlg.contentEditor.collectValues()) match {
                   case (Left(errorMsgs), _) =>
-                    ui.getApplication.showErrorNotification(errorMsgs.mkString(","))
+                    ui.topWindow.showErrorNotification(errorMsgs.mkString(","))
 
                   case (_, Left(errorMsgs)) =>
-                    ui.getApplication.showErrorNotification(errorMsgs.mkString(","))
+                    ui.topWindow.showErrorNotification(errorMsgs.mkString(","))
 
                   case (Right((metaDoc, i18nMetas)), Right(doc)) =>
                     doc.setMeta(metaDoc.getMeta)
 
                     imcmsServices.getDocumentMapper.saveDocument(doc, i18nMetas, ui.getApplication.user)
                     search.search()
-                    ui.getApplication.showInfoNotification("Document has been saved")
+                    ui.topWindow.showInfoNotification("Document has been saved")
                     dlg.close()
                 }
               }
@@ -151,22 +150,22 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
             }
 
             val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(docType.getId, doc, ui.getApplication.user)
-            app.initAndShow(DocManager.createDocEditorDlg(newDoc, dlgCaption), resizable = true) { dlg =>
+            app.getMainWindow.initAndShow(DocManager.mkDocEditorDlg(newDoc, dlgCaption), resizable = true) { dlg =>
               dlg.setSize(500, 500)
               dlg.setOkHandler {
                 (dlg.metaEditor.collectValues(), dlg.contentEditor.collectValues()) match {
                   case (Left(errorMsgs), _) =>
-                    ui.getApplication.showErrorNotification(errorMsgs.mkString(","))
+                    ui.topWindow.showErrorNotification(errorMsgs.mkString(","))
 
                   case (_, Left(errorMsgs)) =>
-                    ui.getApplication.showErrorNotification(errorMsgs.mkString(","))
+                    ui.topWindow.showErrorNotification(errorMsgs.mkString(","))
 
                   case (Right((metaDoc, i18nMetas)), Right(doc)) =>
                     doc.setMeta(metaDoc.getMeta)
 
                     imcmsServices.getDocumentMapper.saveNewDocument(doc, i18nMetas, ui.getApplication.user)
                     search.search()
-                    ui.getApplication.showInfoNotification("New document has been created")
+                    ui.topWindow.showInfoNotification("New document has been created")
                     dlg.close()
                 }
               }
@@ -185,13 +184,13 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         val profileMapper = new ProfileMapper(imcmsServices.getDatabase)
         val profileOpt = profileMapper.getAll.find(_.getDocumentName == docIdStr)
 
-        app.initAndShow(new OkCancelDialog("Edit profile name")) { dlg =>
+        app.getMainWindow.initAndShow(new OkCancelDialog("Edit profile name")) { dlg =>
           val mainUI = new DocProfileNameEditorUI
           mainUI.txtName.value = profileOpt.map(_.getName).getOrElse("")
 
           dlg.mainUI = mainUI
 
-          dlg.wrapOkHandler {
+          dlg.setOkHandler {
             mainUI.txtName.trimOpt match {
               case Some(name) =>
                 // check name is not taken by a profile with other id
@@ -199,17 +198,17 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
                 profileOpt match {
                   case Some(profile: ProfileMapper.SimpleProfile) =>
                     profileMapper.update(new ProfileMapper.SimpleProfile(profile.getId.toString, name, profile.getDocumentName))
-                    app.showInfoNotification("Profile name is updated")
+                    app.getMainWindow.showInfoNotification("Profile name is updated")
 
                   case _ =>
                     profileMapper.create(new ProfileMapper.SimpleProfile(null, name, docIdStr))
-                    app.showInfoNotification("Profile name is assigned")
+                    app.getMainWindow.showInfoNotification("Profile name is assigned")
                 }
 
               case _ =>
                 for (profile <- profileOpt) {
                   profileMapper.delete(profile.getId)
-                  app.showInfoNotification("Profile name is removed")
+                  app.getMainWindow.showInfoNotification("Profile name is removed")
                 }
             }
           }
@@ -223,7 +222,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         // dialog with drop down???? -> version select
         imcmsServices.getDocumentMapper.copyDocument(imcmsServices.getDocumentMapper.getWorkingDocument(docId), app.user)
         search.search()
-        app.showInfoNotification("Document has been copied")
+        app.getMainWindow.showInfoNotification("Document has been copied")
       }
     }
 
@@ -369,7 +368,7 @@ class DocProfileNameEditorUI extends FormLayout with UndefinedSize {
 //        case IntNumber(id) =>
 //          Imcms.getServices.getDocumentMapper.getDocument(id) match {
 //            case null =>
-//              app.show(new MsgDialog("Information", "No document with id ["+id+"]."))
+//              app.getMainWindow.show(new MsgDialog("Information", "No document with id ["+id+"]."))
 //            case doc: TextDocumentDomainObject =>
 //              lytStructure.removeAllComponents
 //              lytStructure.addComponent(new Form(new GridLayout(2,1)) {
@@ -403,11 +402,11 @@ class DocProfileNameEditorUI extends FormLayout with UndefinedSize {
 //              })
 //
 //            case _ =>
-//              app.show(new MsgDialog("Information", "Not a text document."))
+//              app.getMainWindow.show(new MsgDialog("Information", "Not a text document."))
 //
 //          }
 //        case _: String =>
-//          app.show(new MsgDialog("Information", "Document id must be integer."))
+//          app.getMainWindow.show(new MsgDialog("Information", "Document id must be integer."))
 //      }
 //    }
 //

@@ -5,10 +5,10 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
 import imcode.server.document.{CategoryDomainObject}
 import com.vaadin.ui.Window.Notification
-import imcms.admin.system.file._
+import imcms.admin.instance.file._
 import com.vaadin.terminal.FileResource
 import java.io.File
 import imcms.security.{PermissionGranted, PermissionDenied}
@@ -41,14 +41,14 @@ class CategoryManager(app: ImcmsApplication) {
 
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblCategories) { id =>
-        app.initAndShow(new ConfirmationDialog("Delete selected category?")) { dlg =>
-          dlg wrapOkHandler {
+        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected category?")) { dlg =>
+          dlg.setOkHandler {
             app.privileged(permission) {
               Ex.allCatch.either(categoryMapper.getCategoryById(id.intValue) |> opt foreach categoryMapper.deleteCategoryFromDb) match {
                 case Right(_) =>
-                  app.showInfoNotification("Category has been deleted")
+                  app.getMainWindow.showInfoNotification("Category has been deleted")
                 case Left(ex) =>
-                  app.showErrorNotification("Internal error")
+                  app.getMainWindow.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -83,7 +83,7 @@ class CategoryManager(app: ImcmsApplication) {
         file = new File(Imcms.getPath, "WEB-INF/" + url) if file.isFile
       } imagePicker.preview.set(new Embedded("", new FileResource(file, app)))
 
-      app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+      app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
         dlg.mainUI = new CategoryEditorUI(imagePicker.ui) |>> { c =>
           typesNames foreach { c.sltType addItem _ }
 
@@ -92,7 +92,7 @@ class CategoryManager(app: ImcmsApplication) {
           c.txaDescription.value = vo.getDescription |> opt getOrElse ""
           c.sltType.value = if (isNew) typesNames.head else vo.getType.getName
 
-          dlg wrapOkHandler {
+          dlg.setOkHandler {
             vo.clone |> { voc =>
               voc setName c.txtName.value.trim
               voc setDescription c.txaDescription.value.trim

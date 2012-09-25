@@ -30,4 +30,8 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
         documentVisitor.visitUrlDocument( this );
     }
 
+    @Override
+    public UrlDocumentDomainObject clone() {
+        return (UrlDocumentDomainObject)super.clone();
+    }
 }

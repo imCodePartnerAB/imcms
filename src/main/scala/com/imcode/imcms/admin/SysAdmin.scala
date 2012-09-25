@@ -4,10 +4,6 @@ package admin
 
 import scala.collection.JavaConverters._
 import com.imcode._
-import com.vaadin.data.Property
-import com.vaadin.data.Property._
-import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
-import imcms.api._
 import com.imcode.imcms.servlet.superadmin.AdminSearchTerms
 import java.util.{Locale, Date}
 import com.vaadin.ui._
@@ -16,18 +12,9 @@ import com.imcode.imcms.vaadin.ui._
 //import imcms.admin.chat.{MessageView, Chat}
 
 import imcms.admin.access.user.{UserManager}
-import imcode.util.Utility
-import imcode.server.user._
-import imcode.server.{SystemData, Imcms}
-import scala.actors.Actor._
-import scala.actors._
-import imcode.server.document.textdocument.TextDocumentDomainObject
-import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
+import imcode.server.{Imcms}
 import com.vaadin.terminal.{ThemeResource, UserError}
-import imcode.server.document._
 import com.imcode.imcms.vaadin._
-import com.vaadin.ui.Window.Notification
-import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.imcode.imcms.vaadin.Theme.Icon
 
 
@@ -63,7 +50,7 @@ import com.imcode.imcms.vaadin.Theme.Icon
  *
  * In some trivial cases an editor might not have a separate UI class.
  */
-class AdminApplication extends com.vaadin.Application with ImcmsApplication { app =>
+class SysAdmin extends com.vaadin.Application with ImcmsApplication { app =>
 
   // superadmin access:
   // ------------------
@@ -97,10 +84,10 @@ class AdminApplication extends com.vaadin.Application with ImcmsApplication { ap
       @OrderedMethod(2) object IP_Access extends TreeMenuItem("menu.permissions.ip_access", Icon.Done16)
     }
 
-    @OrderedMethod(3) object System extends TreeMenuItem("menu.system") {
-      @OrderedMethod(0) object Settings extends TreeMenuItem("menu.system.settings") {
-        @OrderedMethod(0) object Languages extends TreeMenuItem("menu.system.settings.languages", Icon.Done16)
-        @OrderedMethod(1) object Properties extends TreeMenuItem("menu.system.settings.properties", Icon.Done16)
+    @OrderedMethod(3) object Instance extends TreeMenuItem("menu.instance") {
+      @OrderedMethod(0) object Settings extends TreeMenuItem("menu.instance.settings") {
+        @OrderedMethod(0) object Languages extends TreeMenuItem("menu.instance.settings.languages", Icon.Done16)
+        @OrderedMethod(1) object Properties extends TreeMenuItem("menu.instance.settings.properties", Icon.Done16)
       }
 
       @OrderedMethod(1) object Monitor extends TreeMenuItem("menu.monitor") {
@@ -157,17 +144,17 @@ class AdminApplication extends com.vaadin.Application with ImcmsApplication { ap
           e.getProperty.getValue |> {
             case null | Menu.About => labelAbout
 
-            case Menu.System.Monitor.SearchTerms => searchTerms
+            case Menu.Instance.Monitor.SearchTerms => searchTerms
             case Menu.Documents.Categories => categories
-            case Menu.System.Settings.Languages => languages
-            case Menu.System.Settings.Properties => settingsProperties
-            case Menu.System.Monitor.Session => sessionMonitor
+            case Menu.Instance.Settings.Languages => languages
+            case Menu.Instance.Settings.Properties => settingsProperties
+            case Menu.Instance.Monitor.Session => sessionMonitor
             case Menu.Documents => documents
             case Menu.Permissions.Roles => roles
             case Menu.Permissions.Users => users
             case Menu.Permissions.IP_Access => ipAccess
             case Menu.Documents.Templates => templates
-            case Menu.System.Monitor.Cache => systemCacheView
+            case Menu.Instance.Monitor.Cache => instanceCacheView
             case Menu.Files => filesystem
 
             case other => NA(other)
@@ -212,11 +199,11 @@ class AdminApplication extends com.vaadin.Application with ImcmsApplication { ap
   }
 
 
-  def systemCacheView = new com.imcode.imcms.admin.system.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
+  def instanceCacheView = new com.imcode.imcms.admin.instance.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
 
 
   lazy val languages = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.system.settings.language.LanguageManager(app)
+    val manager = new com.imcode.imcms.admin.instance.settings.language.LanguageManager(app)
     manager.ui.setMargin(true)
     addTab(manager.ui, "Language", Icon.Tab32)
   }
@@ -244,14 +231,14 @@ class AdminApplication extends com.vaadin.Application with ImcmsApplication { ap
 
 
   lazy val settingsProperties = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.system.settings.property.PropertyManagerManager(app)
+    val manager = new com.imcode.imcms.admin.instance.settings.property.PropertyManagerManager(app)
     manager.ui.setMargin(true)
-    addTab(manager.ui, "System Properties", Icon.Tab32)
+    addTab(manager.ui, "Instance Properties", Icon.Tab32)
   }
 
 
   lazy val sessionMonitor = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.system.monitor.session.counter.SessionCounterManager(app)
+    val manager = new com.imcode.imcms.admin.instance.monitor.session.counter.SessionCounterManager(app)
     manager.ui.setMargin(true)
     addTab(manager.ui, "Counter", Icon.Tab32)
   }
@@ -260,7 +247,7 @@ class AdminApplication extends com.vaadin.Application with ImcmsApplication { ap
   lazy val searchTerms = new TabSheet with FullSize {
     addTab(new VerticalLayoutUI("Popular search terms") {
       val tblTerms = new Table {
-        addContainerProperties(this, ContainerProperty[String]("Term"), ContainerProperty[String]("Count"))
+        addContainerProperties(this, PropertyDescriptor[String]("Term"), PropertyDescriptor[String]("Count"))
         setPageLength(10)
       }
 
@@ -303,7 +290,7 @@ class AdminApplication extends com.vaadin.Application with ImcmsApplication { ap
 
 
   lazy val filesystem = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.system.file.FileManager(app)
+    val manager = new com.imcode.imcms.admin.instance.file.FileManager(app)
     manager.ui.setMargin(true)
     addTab(manager.ui, "File manager", Icon.Tab32)
   }

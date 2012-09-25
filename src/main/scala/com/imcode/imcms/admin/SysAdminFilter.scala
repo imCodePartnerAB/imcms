@@ -5,7 +5,7 @@ import javax.servlet._
 import imcode.util.Utility
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 
-class AdminApplicationAccessFilter extends Filter {
+class SysAdminFilter extends Filter {
 
   def init(filterConfig: FilterConfig) {}
 

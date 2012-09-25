@@ -6,7 +6,7 @@ import scala.collection.breakOut
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api._
 import imcode.server.user._
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
 import imcms.ImcmsServicesSupport
 import imcode.server.document.DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
 import imcode.server.document.textdocument.TextDocumentDomainObject
@@ -109,7 +109,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
 
             c.cbRole.value = availableRoles.head
 
-            dlg.wrapOkHandler {
+            dlg.setOkHandler {
               val role = c.cbRole.value
               val setType = c.ogPermsSetType.value
 
@@ -138,7 +138,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
                   c.ogPermsSetType.setItemEnabled(setType, availableSetTypes contains setType)
                 }
 
-                dlg.wrapOkHandler {
+                dlg.setOkHandler {
                   setRolePermSetType(role, c.ogPermsSetType.value)
                 }
               }

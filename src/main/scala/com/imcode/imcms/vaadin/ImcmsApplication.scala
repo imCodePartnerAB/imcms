@@ -2,9 +2,10 @@ package com.imcode
 package imcms
 package vaadin
 
-import com.imcode.imcms.security.{PermissionDenied, PermissionGranted, Permission}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.Utility
+import com.imcode.imcms.security.{PermissionDenied, PermissionGranted, Permission}
+import com.imcode.imcms.vaadin.ui._
 
 trait ImcmsApplication extends com.vaadin.Application {
 
@@ -18,7 +19,7 @@ trait ImcmsApplication extends com.vaadin.Application {
     permission match {
       case PermissionGranted => action
       case PermissionDenied(reason) =>
-        this.showErrorNotification(reason)
+        getMainWindow.showErrorNotification(reason)
         sys.error(reason)
     }
   }

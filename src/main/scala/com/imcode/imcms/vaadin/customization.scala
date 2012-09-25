@@ -112,6 +112,10 @@ trait Immediate { this: AbstractComponent =>
   setImmediate(true)
 }
 
+trait Invisible { this: AbstractComponent =>
+  setVisible(false)
+}
+
 // Tree and Table
 trait Selectable { this: {def setSelectable(selectable: Boolean): Unit} =>
   setSelectable(true)
@@ -126,6 +130,10 @@ trait NullSelection { this: AbstractSelect =>
 }
 
 trait NoNullSelection { this: AbstractSelect =>
+  setNullSelectionAllowed(false)
+}
+
+trait NoTextInput { this: AbstractSelect =>
   setNullSelectionAllowed(false)
 }
 
@@ -232,13 +240,13 @@ trait Required { this: Field =>
   setRequired(true)
 }
 
-trait NoTextInput { this: ComboBox =>
-  setTextInputAllowed(false)
-}
+//trait NoTextInput { this: ComboBox =>
+//  setTextInputAllowed(false)
+//}
 
 
 
-object Checks {
+object Asserts {
   def assertFixedSize(c: Component) {
     require(c.getWidthUnits != Sizeable.UNITS_PERCENTAGE, "Component width must not be difined in percentage.")
     require(c.getHeightUnits != Sizeable.UNITS_PERCENTAGE, "Component height must not be difined in percentage.")

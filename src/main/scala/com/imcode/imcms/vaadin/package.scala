@@ -30,41 +30,8 @@ package object vaadin {
     def session(): HttpSession = context().getHttpSession
 
     def servletContext(): ServletContext = session().getServletContext
-
-    def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
-      init(window)
-      window.setModal(modal)
-      window.setResizable(resizable)
-      window.setDraggable(draggable)
-      app.getMainWindow.addWindow(window)
-    }
-
-    def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true): Unit =
-      initAndShow(window, modal, resizable, draggable) { _ => }
-
-    def showNotification(caption: String, description: String, notificationType: Int): Unit =
-      app.getMainWindow.showNotification(caption, description, notificationType)
-
-    def showErrorNotification(caption: String, description: String = null): Unit =
-      showNotification(caption, description, Notification.TYPE_ERROR_MESSAGE)
-
-    def showWarningNotification(caption: String, description: String = null): Unit =
-      showNotification(caption, description, Notification.TYPE_WARNING_MESSAGE)
-
-    def showInfoNotification(caption: String, description: String = null): Unit =
-      showNotification(caption, description, Notification.TYPE_HUMANIZED_MESSAGE)
   }
 
-  /**
-   * A container property.
-   *
-   * @param A container property class
-   * @pram id container property id
-   * @pram defaultValue container property default value
-   */
-  case class ContainerProperty[A <: PropertyValue : Manifest](id: AnyRef, defaultValue: A = null) {
-    val clazz = implicitly[Manifest[A]].erasure
-  }
 
   /**
    * Property value type.
@@ -155,9 +122,9 @@ package object vaadin {
     container
   }
 
-  def addContainerProperties(container: Container, properties: ContainerProperty[_]*) =
-    properties.foreach { p =>
-      container.addContainerProperty(p.id, p.clazz, p.defaultValue)
+  def addContainerProperties(container: Container, descriptors: PropertyDescriptor[_]*): Unit =
+    descriptors.foreach { pd =>
+      container.addContainerProperty(pd.id, pd.clazz, pd.defaultValue)
     }
 
   implicit def fnToTableCellStyleGenerator(fn: (ItemId,  PropertyId) => String ) =
@@ -241,18 +208,7 @@ package object vaadin {
   }
 
 
-  /** Tree item descriptor */
-  class TreeMenuItem(val id: String = null, val icon: Resource = null) {
 
-    val children: Seq[TreeMenuItem] = {
-      val isMenuItemType: Class[_] => Boolean = classOf[TreeMenuItem].isAssignableFrom
-
-      getClass.getDeclaredMethods
-        .filter(_.getReturnType |> isMenuItemType)
-        .sortBy(_.getAnnotation(classOf[OrderedMethod]) |> opt map(_.value()) getOrElse 0)
-        .map(_.invoke(this).asInstanceOf[TreeMenuItem])
-    }
-  }
 
   implicit def stringToUserError(string: String) = new UserError(string)
 }

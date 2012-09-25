@@ -41,12 +41,12 @@
 
     <filter>
         <description>
-            Restricts access to the AdminApplication
+            Restricts access to the SysAdmin
         </description>
 
-        <display-name>Imcms Admin Application Filter</display-name>
-        <filter-name>ImcmsAdminApplicationAccessFilter</filter-name>
-        <filter-class>com.imcode.imcms.admin.AdminApplicationAccessFilter</filter-class>
+        <display-name>SysAdmin Filter</display-name>
+        <filter-name>SysAdminFilter</filter-name>
+        <filter-class>com.imcode.imcms.admin.SysAdminFilter</filter-class>
     </filter>
 
     <filter>
@@ -90,7 +90,7 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>ImcmsAdminApplicationAccessFilter</filter-name>
+        <filter-name>SysAdminFilter</filter-name>
         <url-pattern>/sysadmin/*</url-pattern>
     </filter-mapping>
 
@@ -121,7 +121,7 @@
         </servlet-class>
         <init-param>
             <param-name>application</param-name>
-            <param-value>com.imcode.imcms.admin.AdminApplication</param-value>
+            <param-value>com.imcode.imcms.admin.SysAdmin</param-value>
         </init-param>
     </servlet>
 
@@ -132,7 +132,7 @@
         </servlet-class>
         <init-param>
             <param-name>application</param-name>
-            <param-value>com.imcode.imcms.docadmin.DocAdminApplication</param-value>
+            <param-value>com.imcode.imcms.docadmin.DocAdmin</param-value>
         </init-param>
     </servlet>
 

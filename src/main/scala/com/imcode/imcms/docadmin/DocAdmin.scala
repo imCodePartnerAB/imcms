@@ -19,7 +19,7 @@ import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.doc.content._
 import com.imcode.imcms.vaadin.ui._
 
-class DocAdminApplication extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
+class DocAdmin extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
 
   // extractors
   private object PathHandlers {
@@ -91,10 +91,9 @@ class DocAdminApplication extends com.vaadin.Application with HttpServletRequest
 
     val metaEditor = new MetaEditor(doc)
     val contentEditor = doc match {
-      case textDoc: TextDocumentDomainObject => new UnavailableDocContentEditor(textDoc) //new TextDocContentEditor(textDoc)
+      //case textDoc: TextDocumentDomainObject => //new TextDocContentEditor(textDoc)
       case fileDoc: FileDocumentDomainObject => new FileDocContentEditor(fileDoc)
-      case htmlDoc: HtmlDocumentDomainObject => new HTMLDocContentEditor(htmlDoc)
-      case urlDoc: UrlDocumentDomainObject => new URLDocContentEditor(urlDoc)
+      case urlDoc: UrlDocumentDomainObject => new UrlDocContentEditor(urlDoc)
       case _ => new UnsupportedDocContentEditor(doc)
     }
 

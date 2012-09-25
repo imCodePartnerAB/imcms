@@ -6,9 +6,9 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.user._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
 import com.vaadin.ui.Window.Notification
-import imcms.admin.system.file._
+import imcms.admin.instance.file._
 import org.apache.commons.io.FileUtils
 import imcms.security.{PermissionDenied, PermissionGranted}
 import java.io.{FileInputStream, ByteArrayInputStream, File}
@@ -25,10 +25,10 @@ class TemplateManager(app: ImcmsApplication) {
   val ui = new TemplateManagerUI |>> { ui =>
     ui.tblTemplates addValueChangeHandler { handleSelection() }
     ui.miUpload setCommandHandler {
-      app.initAndShow(new FileUploaderDialog("Upload template file")) { dlg =>
+      app.getMainWindow.initAndShow(new FileUploaderDialog("Upload template file")) { dlg =>
         // strips filename extension, trims and replaces spaces with underscores
         dlg.uploader.fileNameToSaveAsName = fileRE.unapplySeq(_:String).map(_.head.trim.replaceAll("""\s""", "_")).get
-        dlg.wrapOkHandler {
+        dlg.setOkHandler {
           for {
             uploadedFile <- dlg.uploader.uploadedFile
             name = dlg.uploader.ui.txtSaveAsName.value // todo: check not empty
@@ -40,13 +40,13 @@ class TemplateManager(app: ImcmsApplication) {
                   FileUtils.deleteQuietly(uploadedFile.file)
                   reload() // ok
                 case -1 =>
-                  app.showErrorNotification("Template with such name allready exists")
+                  app.getMainWindow.showErrorNotification("Template with such name allready exists")
                   sys.error("File exists")
                 case -2 =>
-                  app.showErrorNotification("Internal error")
+                  app.getMainWindow.showErrorNotification("Internal error")
                   sys.error("IO error")
                 case n =>
-                  app.showErrorNotification("Internal error")
+                  app.getMainWindow.showErrorNotification("Internal error")
                   sys.error("Unknown error")
               }
             }
@@ -56,13 +56,13 @@ class TemplateManager(app: ImcmsApplication) {
     }
     ui.miRename setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
-        app.initAndShow(new OkCancelDialog("Rename template")) { dlg =>
+        app.getMainWindow.initAndShow(new OkCancelDialog("Rename template")) { dlg =>
           val fileRenameUI = new TemplateRenameUI |>> { c =>
             c.txtName.value = name
           }
 
           dlg.mainUI = fileRenameUI
-          dlg.wrapOkHandler {
+          dlg.setOkHandler {
             app.privileged(permission) {
               templateMapper.renameTemplate(name, fileRenameUI.txtName.value)
             }
@@ -74,7 +74,7 @@ class TemplateManager(app: ImcmsApplication) {
     }
     ui.miEditContent setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
-        app.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoMarginDialog) { dlg =>
+        app.getMainWindow.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoMarginDialog) { dlg =>
           dlg.mainUI = new TemplateContentEditorUI |>> { c =>
             c.txaContent.value = templateMapper.getTemplateData(name)
           }
@@ -86,14 +86,14 @@ class TemplateManager(app: ImcmsApplication) {
     }
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
-        app.initAndShow(new ConfirmationDialog("Delete selected template?")) { dlg =>
-          dlg wrapOkHandler {
+        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected template?")) { dlg =>
+          dlg.setOkHandler {
             app.privileged(permission) {
               Ex.allCatch.either(Option(templateMapper getTemplateByName name) foreach templateMapper.deleteTemplate) match {
                 case Right(_) =>
-                  app.showInfoNotification("Template has been deleted")
+                  app.getMainWindow.showInfoNotification("Template has been deleted")
                 case Left(ex) =>
-                  app.showErrorNotification("Internal error")
+                  app.getMainWindow.showErrorNotification("Internal error")
                   throw ex
               }
 

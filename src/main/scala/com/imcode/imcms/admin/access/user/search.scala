@@ -8,7 +8,7 @@ import scala.collection.JavaConversions._
 
 import imcode.server.user._
 import com.imcode.util.event.Publisher
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.imcms.vaadin.ui._
@@ -40,7 +40,7 @@ class UserSingleSelect {
   val ui = new UserSingleSelectUI |>> { ui =>
     ui.btnSelect.addClickHandler {
       ui.topWindow.initAndShow(new OkCancelDialog("Select user") with UserSingleSelectDialog) { dlg =>
-        dlg.wrapOkHandler {
+        dlg.setOkHandler {
           selection = dlg.search.selection.headOption
         }
       }

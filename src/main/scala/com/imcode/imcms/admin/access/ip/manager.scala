@@ -5,7 +5,7 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
 import imcms.security.{PermissionGranted, PermissionDenied}
 import imcms.dao.IPAccessDao
 import imcms.api.IPAccess
@@ -42,15 +42,15 @@ class IPAccessManager(app: ImcmsApplication) {
     }
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblIP) { id =>
-        app.initAndShow(new ConfirmationDialog("Delete selected IP access?")) { dlg =>
-          dlg wrapOkHandler {
+        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected IP access?")) { dlg =>
+          dlg.setOkHandler {
             app.privileged(permission) {
               Ex.allCatch.either(ipAccessDao delete id) match {
                 case Right(_) =>
-                  app.showInfoNotification("IP access has been deleted")
+                  app.getMainWindow.showInfoNotification("IP access has been deleted")
                   reload()
                 case Left(ex) =>
-                  app.showErrorNotification("Internal error")
+                  app.getMainWindow.showErrorNotification("Internal error")
                   throw ex
               }
             }
@@ -72,7 +72,7 @@ class IPAccessManager(app: ImcmsApplication) {
     val isNew = id == null
     val dialogTitle = if(isNew) "Create new IP access" else "Edit IP access"
 
-    app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+    app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
       dlg.mainUI = new IPAccessEditorUI |>> { c =>
 
         c.txtId.value = if (isNew) "" else id.toString
@@ -80,14 +80,14 @@ class IPAccessManager(app: ImcmsApplication) {
         c.txtFrom.value = vo.getStart |> opt map toDDN getOrElse ""
         c.txtTo.value = vo.getEnd |> opt map toDDN getOrElse ""
         c.userPickerUI.btnChoose addClickHandler {
-          app.initAndShow(new OkCancelDialog("Choose user") with UserSelectDialog) { userSelectDlg =>
-            userSelectDlg.wrapOkHandler {
+          app.getMainWindow.initAndShow(new OkCancelDialog("Choose user") with UserSelectDialog) { userSelectDlg =>
+            userSelectDlg.setOkHandler {
               c.userPickerUI.txtLoginName.value = userSelectDlg.search.selection.head.getLoginName
             }
           }
         }
 
-        dlg wrapOkHandler {
+        dlg.setOkHandler {
           vo.clone |> { voc =>
             // todo: validate
             voc.setUserId(roleMapper.getUser(c.userPickerUI.txtLoginName.value).getId)

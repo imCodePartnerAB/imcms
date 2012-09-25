@@ -73,7 +73,7 @@ class DocSearch(val docsContainer: DocsContainer) {
   def search() {
     createQuery() match {
       case Left(throwable) =>
-        ui.getApplication.show(new ErrorDialog(throwable.getMessage.i))
+        ui.topWindow.show(new ErrorDialog(throwable.getMessage.i))
 
       case Right(solrQueryOpt) =>
         println("Doc search query: " + solrQueryOpt)
@@ -667,9 +667,9 @@ class DocAdvancedSearchForm extends ImcmsServicesSupport {
     }
 
     doto(ui.lytMaintainers.ulCreators, ui.lytMaintainers.ulPublishers) { ul =>
-      ul.chkEnabled.check
+      ul.chkEnabled.check()
       ul.chkEnabled.fireValueChange(true)
-      ul.lstUsers.removeAllItems
+      ul.lstUsers.removeAllItems()
     }
 
     toggleCategories()
@@ -779,8 +779,8 @@ trait UserListUISetup { this: UserListUI =>
   }
 
   btnAdd.addClickHandler {
-    getApplication.initAndShow(new OkCancelDialog(searchDialogCaption) with UserSelectDialog) { dlg =>
-      dlg.wrapOkHandler {
+    this.topWindow.initAndShow(new OkCancelDialog(searchDialogCaption) with UserSelectDialog) { dlg =>
+      dlg.setOkHandler {
         for (user <- dlg.search.selection) lstUsers.addItem(Int box user.getId, "#" + user.getLoginName)
       }
     }
