@@ -2,21 +2,22 @@ package com.imcode
 package imcms
 package admin.doc
 
-import scala.collection.JavaConversions._
 import _root_.imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 
+import scala.collection.JavaConverters._
+
 import com.vaadin.event.Action
-import com.imcode.imcms.vaadin._
 import com.imcode.imcms.admin.doc.meta.MetaEditor
 import com.imcode.imcms.mapping.ProfileMapper
 import com.imcode.imcms.admin.doc.content._
 import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
-import com.imcode.imcms.admin.doc.search.{DocSearchUI, DocSearch, AllDocsContainer, CustomDocsContainer}
+import com.imcode.imcms.admin.doc.search.{DocsProjectionUI, DocsProjection, AllDocsContainer, CustomDocsContainer}
 
 import java.net.URL
 import com.vaadin.terminal.ExternalResource
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 
@@ -53,7 +54,7 @@ object DocManager {
 }
 
 class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
-  val search = new DocSearch(new AllDocsContainer)
+  val search = new DocsProjection(new AllDocsContainer)
   val customDocs = new CustomDocs
 
   val docSelectionDlg = new OKDialog("doc.dlg_selection.caption".i) with CustomSizeDialog |>> { dlg =>
@@ -70,7 +71,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     // todo: add embedded/popu view???
     // todo: remove buttons
     ui.miView.setCommandHandler {
-      whenSingle(search.searchResultUI.selection) { docId =>
+      whenSingle(search.filteredDocsUI.selection) { docId =>
         val appURL = app.getURL
         val docURL = new URL(appURL.getProtocol, appURL.getHost, appURL.getPort, "/%d" format docId)
 
@@ -103,7 +104,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     // todo: allow change several at once???
     // todo: permissions
     ui.miEdit.setCommandHandler {
-      search.searchResultUI.selection match {
+      search.filteredDocsUI.selection match {
         case Seq() =>
         case Seq(_, _, _*) =>
         case Seq(docId) => imcmsServices.getDocumentMapper.getDocument(docId) match {
@@ -123,8 +124,8 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
                   case (Right((metaDoc, i18nMetas)), Right(doc)) =>
                     doc.setMeta(metaDoc.getMeta)
 
-                    imcmsServices.getDocumentMapper.saveDocument(doc, i18nMetas, ui.getApplication.user)
-                    search.search()
+                    imcmsServices.getDocumentMapper.saveDocument(doc, i18nMetas.asJava, ui.getApplication.user)
+                    search.filter()
                     ui.topWindow.showInfoNotification("Document has been saved")
                     dlg.close()
                 }
@@ -135,7 +136,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     } // ui.miEdit
 
     val newDocCommandListener: MenuBar#MenuItem => Unit = { mi =>
-      search.searchResultUI.selection match {
+      search.filteredDocsUI.selection match {
         case Seq() =>
         case Seq(_, _, _*) =>
         case Seq(docId) => imcmsServices.getDocumentMapper.getDocument(docId) match {
@@ -146,7 +147,6 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
               case ui.miNewTextDoc => (DocumentTypeDomainObject.TEXT, "New text document")
               case ui.miNewFileDoc => (DocumentTypeDomainObject.FILE, "New file document")
               case ui.miNewURLDoc => (DocumentTypeDomainObject.URL, "New url document")
-              case ui.miNewHTMLDoc => (DocumentTypeDomainObject.HTML, "New html document")
             }
 
             val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(docType.getId, doc, ui.getApplication.user)
@@ -163,8 +163,8 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
                   case (Right((metaDoc, i18nMetas)), Right(doc)) =>
                     doc.setMeta(metaDoc.getMeta)
 
-                    imcmsServices.getDocumentMapper.saveNewDocument(doc, i18nMetas, ui.getApplication.user)
-                    search.search()
+                    imcmsServices.getDocumentMapper.saveNewDocument(doc, i18nMetas.asJava, ui.getApplication.user)
+                    search.filter()
                     ui.topWindow.showInfoNotification("New document has been created")
                     dlg.close()
                 }
@@ -174,15 +174,15 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       }
     } // val newDocCommandListener
 
-    doto(ui.miNewTextDoc, ui.miNewFileDoc, ui.miNewURLDoc, ui.miNewHTMLDoc) {
+    doto(ui.miNewTextDoc, ui.miNewFileDoc, ui.miNewURLDoc) {
       _ setCommandListener newDocCommandListener
     }
 
     ui.miProfileEditName.setCommandHandler {
-      whenSingle(search.searchResultUI.selection) { docId =>
+      whenSingle(search.filteredDocsUI.selection) { docId =>
         val docIdStr = docId.toString
         val profileMapper = new ProfileMapper(imcmsServices.getDatabase)
-        val profileOpt = profileMapper.getAll.find(_.getDocumentName == docIdStr)
+        val profileOpt = profileMapper.getAll.asScala.find(_.getDocumentName == docIdStr)
 
         app.getMainWindow.initAndShow(new OkCancelDialog("Edit profile name")) { dlg =>
           val mainUI = new DocProfileNameEditorUI
@@ -217,16 +217,16 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     }
 
     ui.miCopy.setCommandHandler {
-      whenSingle(search.searchResultUI.selection) { docId =>
+      whenSingle(search.filteredDocsUI.selection) { docId =>
         // todo copy selected document VERSION, not working???
         // dialog with drop down???? -> version select
         imcmsServices.getDocumentMapper.copyDocument(imcmsServices.getDocumentMapper.getWorkingDocument(docId), app.user)
-        search.search()
+        search.filter()
         app.getMainWindow.showInfoNotification("Document has been copied")
       }
     }
 
-    search.searchResultUI.addActionHandler(new Action.Handler {
+    search.filteredDocsUI.addActionHandler(new Action.Handler {
       import Actions._
 
       def getActions(target: AnyRef, sender: AnyRef) = Array(IncludeToSelection, Delete)
@@ -236,7 +236,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
           case IncludeToSelection =>
             customDocs.search.docsContainer.addItem(target)
             customDocs.search.update()
-            customDocs.search.search()
+            customDocs.search.filter()
           case _ =>
         }
     })
@@ -244,12 +244,11 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 }
 
 
-class DocManagerUI(searchUI: DocSearchUI) extends VerticalLayout with Spacing with FullSize {
+class DocManagerUI(searchUI: DocsProjectionUI) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar
   val miNew = mb.addItem("doc.mgr.mi.new".i)
   val miNewTextDoc = miNew.addItem("doc.mgr.mi.new.text_doc".i)
   val miNewFileDoc = miNew.addItem("doc.mgr.mi.new.file_doc".i)
-  val miNewHTMLDoc = miNew.addItem("doc.mgr.mi.new.html_doc".i)
   val miNewURLDoc = miNew.addItem("doc.mgr.mi.new.url_doc".i)
 
   val miCopy = mb.addItem("doc.mgr.mi.copy".i)
@@ -276,10 +275,10 @@ class DocManagerUI(searchUI: DocSearchUI) extends VerticalLayout with Spacing wi
  * Custom docs selection.
  */
 class CustomDocs {
-  val search = new DocSearch(new CustomDocsContainer)
+  val search = new DocsProjection(new CustomDocsContainer)
   val ui = new CustomDocsUI(search.ui)
 
-  search.searchResultUI.addActionHandler(new Action.Handler {
+  search.filteredDocsUI.addActionHandler(new Action.Handler {
     import Actions._
 
     def getActions(target: AnyRef, sender: AnyRef) = Array(ExcludeFromSelection, Delete)

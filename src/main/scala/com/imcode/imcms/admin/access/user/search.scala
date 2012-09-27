@@ -4,9 +4,8 @@ package admin.access.user
 
 import scala.collection.breakOut
 import scala.collection.JavaConverters._
-import scala.collection.JavaConversions._
 
-import imcode.server.user._
+import _root_.imcode.server.user._
 import com.imcode.util.event.Publisher
 import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
 import com.vaadin.ui._
@@ -88,7 +87,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
 
     setMultiSelect(multiSelect)
 
-    setColumnHeaders(getContainerPropertyIds.map(_.toString.i).toArray)
+    setColumnHeaders(getContainerPropertyIds.asScala.map(_.toString.i).toArray)
   }
 
   val ui = new GridLayout(1, 2) |>> { ui =>
@@ -96,7 +95,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
   }
 
   searchResult.addValueChangeHandler {
-    selectionRef.set(searchResult.value.map(roleMapper getUser _.intValue)(breakOut))
+    selectionRef.set(searchResult.value.asScala.map(roleMapper getUser _.intValue)(breakOut))
     notifyListeners()
   }
 
@@ -123,7 +122,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
 
     val matchesRoles: UserDomainObject => Boolean =
       state.roles match {
-        case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(searchForm.ui.tcsRoles.value.toSeq).nonEmpty }
+        case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(searchForm.ui.tcsRoles.value.asScala.toSeq).nonEmpty }
         case _ => matchesAlways
       }
 
@@ -162,11 +161,11 @@ case class UserSearchFormState(
 class UserSearchForm extends ImcmsServicesSupport {
   val ui: UserSearchFormUI = new UserSearchFormUI |>> { ui =>
     ui.chkText.addValueChangeHandler {
-      SearchFormUtil.toggle(ui, "admin.access.user.search.frm.fld.text", ui.chkText, ui.txtText)
+      FilterFormUtil.toggle(ui, "admin.access.user.search.frm.fld.text", ui.chkText, ui.txtText)
     }
 
     ui.chkRoles.addValueChangeHandler {
-      SearchFormUtil.toggle(ui, "admin.access.user.search.frm.fld.roles", ui.chkRoles, ui.tcsRoles)
+      FilterFormUtil.toggle(ui, "admin.access.user.search.frm.fld.roles", ui.chkRoles, ui.tcsRoles)
     }
   }
 
@@ -190,7 +189,7 @@ class UserSearchForm extends ImcmsServicesSupport {
   
   def getState() = UserSearchFormState(
     whenOpt(ui.chkText.checked)(ui.txtText.trim),
-    whenOpt(ui.chkRoles.checked)(ui.tcsRoles.value.toSet),
+    whenOpt(ui.chkRoles.checked)(ui.tcsRoles.value.asScala.toSet),
     ui.chkShowInactive.checked
   )  
 }

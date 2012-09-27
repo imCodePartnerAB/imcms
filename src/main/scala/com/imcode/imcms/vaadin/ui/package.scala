@@ -223,7 +223,7 @@ package object ui {
     def columnHeaders_=(headers: List[String]) { table setColumnHeaders headers.toArray }
   }
 
-  trait ContainerWithDefaultAlignment extends ComponentContainer with AlignmentHandler {
+  trait ContainerWithDefaultAlignment extends Layout with AlignmentHandler {
 
     protected def defaultAlignment: Alignment
 
@@ -234,13 +234,17 @@ package object ui {
   }
 
 
-  trait LeftBottomAlignment { this: ContainerWithDefaultAlignment =>
+  trait LeftBottomAlignment extends ContainerWithDefaultAlignment {
     protected val defaultAlignment = Alignment.BOTTOM_LEFT
   }
 
 
-  trait MiddleLeftAlignment { this: ContainerWithDefaultAlignment =>
+  trait MiddleLeftAlignment extends ContainerWithDefaultAlignment {
     protected val defaultAlignment = Alignment.MIDDLE_LEFT
+  }
+
+  trait MiddleCenterAlignment extends ContainerWithDefaultAlignment {
+    protected val defaultAlignment = Alignment.MIDDLE_CENTER
   }
 
 
@@ -267,7 +271,7 @@ package object ui {
   }
 
 
-  object SearchFormUtil {
+  object FilterFormUtil {
     def toggle(layout: CustomLayout, name: String, checkBox: CheckBox, component: Component,
                stub: => Component = { new Label("search.frm.fld.lbl_any_value".i) with UndefinedSize }) {
 

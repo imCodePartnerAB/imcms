@@ -2,9 +2,8 @@ package com.imcode
 package imcms
 package admin.instance.file
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
-import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 import java.io.File
 import org.apache.commons.io.FileUtils
@@ -214,7 +213,7 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
     }
 
     app.getMainWindow.initAndShow(new CancelDialog("dlg.progress.title".i)) { dlg =>
-      val dlgUI = new ItemsDeletePrgressDialogUI
+      val dlgUI = new ItemsDeleteProgressDialogUI
       dlg.mainUI = dlgUI
       dlgUI.lblMsg.value = "file.mgr.dlg.delete.progress.prepare.msg".i
       dlgUI.pi.setPollingInterval(500)
@@ -608,7 +607,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 }
 
 
-class ItemsDeletePrgressDialogUI extends FormLayout with Spacing with UndefinedSize {
+class ItemsDeleteProgressDialogUI extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 

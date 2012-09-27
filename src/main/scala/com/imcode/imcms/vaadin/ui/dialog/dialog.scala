@@ -31,9 +31,7 @@ class Dialog(caption: String = "") extends Window(caption) {
   setContent(content)
 
   def mainUI = content.getComponent(0, 0)
-
-  /** By default rejects components with width and/or height in percentage. */
-  def mainUI_=[C <: Component](component: C): C = component |>> { component =>
+  def mainUI_=(component: Component) {
     mainUISizeAssert(component)
 
     content.addComponent(component, 0, 0)
@@ -42,9 +40,7 @@ class Dialog(caption: String = "") extends Window(caption) {
 
 
   def buttonsBarUI = content.getComponent(0, 1)
-
-  /** By default rejects components with width and/or height in percentage. */
-  def buttonsBarUI_=[C <: Component](component: C): C = component |>> { component =>
+  def buttonsBarUI_=(component: Component) {
     buttonsBarUISizeAssert(component)
 
     content.addComponent(component, 0, 1)
