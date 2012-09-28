@@ -11,7 +11,6 @@ import com.vaadin.terminal.{ExternalResource, Resource}
 import com.vaadin.data.{Property, Item, Container}
 import java.lang.Class
 import collection.immutable.{SortedSet, ListMap}
-import imcode.server.document.{DocumentTypeDomainObject, DocumentDomainObject}
 import PartialFunction.condOpt
 import admin.access.user.UserSelectDialog
 import java.util.{Calendar, Date}
@@ -23,6 +22,9 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
+import imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentTypeDomainObject, DocumentDomainObject}
+import java.net.URL
+import com.imcode.imcms.admin.doc.{DocEditor, DocManager}
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
@@ -37,10 +39,10 @@ import com.imcode.util.event.Publisher
  *
  * Publishes selected filtered documents.
  */
-class DocsProjection(val docsContainer: FilterableDocsContainer) extends Publisher[Seq[DocId]] {
+class DocsProjection(val filterableDocsContainer: FilterableDocsContainer) extends Publisher[Seq[DocId]] {
   val basicFilter = new BasicFilter
   val advancedFilter = new AdvancedFilter
-  val filteredDocsUI = new FilteredDocsUI(docsContainer) with FullSize
+  val filteredDocsUI = new FilteredDocsUI(filterableDocsContainer) with FullSize
   private val selectionRef = new AtomicReference(Seq.empty[DocId])
 
   val ui = new DocsProjectionUI(basicFilter.ui, advancedFilter.ui, filteredDocsUI) { ui =>
@@ -66,7 +68,6 @@ class DocsProjection(val docsContainer: FilterableDocsContainer) extends Publish
   }
 
 
-
   def reset() {
     basicFilter.reset()
     advancedFilter.reset()
@@ -74,8 +75,9 @@ class DocsProjection(val docsContainer: FilterableDocsContainer) extends Publish
     filter()
   }
 
+
   def update() {
-    basicFilter.setIdRangeInputPrompt(docsContainer.idRange)
+    basicFilter.setIdRangeInputPrompt(filterableDocsContainer.idRange)
   }
 
   def filter() {
@@ -89,7 +91,7 @@ class DocsProjection(val docsContainer: FilterableDocsContainer) extends Publish
         ui.removeComponent(0, 1)
         ui.addComponent(filteredDocsUI, 0, 1)
 
-        docsContainer.filter(solrQueryOpt, ui.getApplication.user)
+        filterableDocsContainer.filter(solrQueryOpt, ui.getApplication.user)
     }
   }
 
@@ -906,3 +908,190 @@ trait DateRangeUISetup { this: DateRangeUI =>
 //  search.listen { btnOk setEnabled _.nonEmpty }
 //  search.notifyListeners()
 //}
+
+
+// add callbacks???
+class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport {
+
+  def mkDocOfType[T <: DocumentDomainObject : ClassManifest] {
+    whenSingle(projection.selection) { selectedDocId =>
+      imcmsServices.getDocumentMapper.getDocument(selectedDocId) match {
+        case selectedDoc: TextDocumentDomainObject =>
+          val (newDocType, dlgCaption) = classManifest[T].erasure match {
+            case c if c == classOf[TextDocumentDomainObject] => DocumentTypeDomainObject.TEXT_ID -> "New text document"
+            case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "New file document"
+            case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "New url document"
+          }
+          val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.ui.getApplication.user)
+
+          projection.ui.topWindow.initAndShow(DocEditor.mkDocEditorDlg(newDoc, dlgCaption)) { dlg =>
+            dlg.setOkHandler {
+              val ui = projection.ui
+
+              (dlg.docEditor.metaEditor.collectValues(), dlg.docEditor.contentEditor.collectValues()) match {
+                case (Left(errorMsgs), _) =>
+                  ui.topWindow.showErrorNotification(errorMsgs.mkString(","))
+
+                case (_, Left(errorMsgs)) =>
+                  ui.topWindow.showErrorNotification(errorMsgs.mkString(","))
+
+                case (Right((metaDoc, i18nMetas)), Right(doc)) =>
+                  doc.setMeta(metaDoc.getMeta)
+
+                  imcmsServices.getDocumentMapper.saveNewDocument(doc, i18nMetas.asJava, ui.getApplication.user)
+                  projection.filter()
+                  ui.topWindow.showInfoNotification("New document has been created")
+                  projection.filter()
+              }
+            }
+          }
+
+        case _ =>
+      }
+    }
+  }
+
+
+  def deleteSelectedDocs() {
+    // show do you want to delete confirmation ...
+    projection.selection match {
+      case Seq() =>
+      case docIds =>
+        for {
+          docId <- docIds
+          doc <- imcmsServices.getDocumentMapper.getDocument(docId) |> opt
+        } {
+          // todo: user
+          imcmsServices.getDocumentMapper.deleteDocument(doc, projection.ui.getApplication.user())
+        }
+    }
+  }
+
+  // todo: check select single doc
+  // todo: add embedded/popu view???
+  // todo: remove buttons
+  def showSelectedDoc() {
+    whenSingle(projection.selection) { docId =>
+      val appURL = projection.ui.getApplication.getURL
+      val docURL = new URL(appURL.getProtocol, appURL.getHost, appURL.getPort, "/%d" format docId)
+
+
+      projection.ui.topWindow.initAndShow(new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog, resizable = true) { dlg =>
+//          dlg.mainUI = new Embedded with FullSize |>> { browser =>
+//            browser.setType(Embedded.TYPE_BROWSER)
+//            browser.setSource(new ExternalResource(new URL("/" + docId))) // docURL
+//          }
+
+        dlg.mainUI = new VerticalLayout with FullSize |>> { lyt =>
+          val mb = new MenuBar
+          val mi = mb.addItem("Menu")
+          1 to 10 foreach { mi addItem _.toString }
+
+          val emb = new Embedded with FullSize |>> { browser =>
+            browser.setType(Embedded.TYPE_BROWSER)
+            browser.setSource(new ExternalResource(docURL)) //
+          }
+
+          addComponentsTo(lyt, mb, emb)
+          lyt.setExpandRatio(emb, 1.0f)
+        }
+
+        dlg.setSize(600, 600)
+      }
+    }
+  }
+
+  def copySelectedDoc() {
+    whenSingle(projection.selection) { docId =>
+      // todo copy selected document VERSION, not working???
+      // dialog with drop down???? -> version select
+      imcmsServices.getDocumentMapper.copyDocument(imcmsServices.getDocumentMapper.getWorkingDocument(docId), projection.ui.getApplication.user)
+      projection.filter()
+      projection.ui.topWindow.showInfoNotification("Document has been copied")
+    }
+  }
+
+  // todo: a doc must be selected
+  // todo: allow change several at once???
+  // todo: permissions
+  def editSelectedDoc() {
+    whenSingle(projection.selection) { docId =>
+      imcmsServices.getDocumentMapper.getDocument(docId) match {
+        case null =>
+        case doc =>
+          val ui = projection.ui
+          val topWindow = ui.topWindow
+          topWindow.initAndShow(DocEditor.mkDocEditorDlg(doc, "Edit document"), resizable = true) { dlg =>
+            dlg.setSize(500, 500)
+
+            dlg.setOkHandler {
+              (dlg.docEditor.metaEditor.collectValues(), dlg.docEditor.contentEditor.collectValues()) match {
+                case (Left(errorMsgs), _) =>
+                  topWindow.showErrorNotification(errorMsgs.mkString(","))
+
+                case (_, Left(errorMsgs)) =>
+                  topWindow.showErrorNotification(errorMsgs.mkString(","))
+
+                case (Right((metaDoc, i18nMetas)), Right(doc)) =>
+                  doc.setMeta(metaDoc.getMeta)
+
+                  imcmsServices.getDocumentMapper.saveDocument(doc, i18nMetas.asJava, ui.getApplication.user)
+                  projection.filter()
+                  topWindow.showInfoNotification("Document has been saved")
+                  dlg.close()
+              }
+            }
+          }
+      }
+    }
+  }
+}
+
+
+trait DocsProjectionDialog extends CustomSizeDialog { this: OkCancelDialog =>
+  val projection = new DocsProjection(new AllDocsContainer)
+  val ops = new DocsProjectionOps(projection)
+
+  mainUI = new DocsProjectionDialogMainUI(projection.ui) |>> { ui =>
+    ui.miNewFileDoc.setCommandHandler { ops.mkDocOfType[FileDocumentDomainObject] }
+    ui.miNewTextDoc.setCommandHandler { ops.mkDocOfType[TextDocumentDomainObject] }
+    ui.miNewUrlDoc.setCommandHandler { ops.mkDocOfType[UrlDocumentDomainObject] }
+
+    ui.miCopySelectedDoc.setCommandHandler { ops.copySelectedDoc() }
+    ui.miDeleteSelectedDocs.setCommandHandler { ops.deleteSelectedDocs() }
+    ui.miShowSelectedDoc.setCommandHandler { ops.showSelectedDoc() }
+    ui.miHelp.setCommandHandler { /* show help in modal dialog */ }
+
+    projection.listen { selection =>
+      doto(ui.miNewFileDoc, ui.miNewTextDoc, ui.miNewUrlDoc, ui.miShowSelectedDoc, ui.miCopySelectedDoc) { mi =>
+        mi.setEnabled(selection.size == 1)
+      }
+
+      ui.miDeleteSelectedDocs.setEnabled(selection.nonEmpty)
+    }
+  }
+
+  projection.listen { selection =>
+    btnOk.setEnabled(selection.nonEmpty)
+  }
+
+  projection.notifyListeners()
+}
+
+
+class DocsProjectionDialogMainUI(docsProjectionUI: DocsProjectionUI) extends VerticalLayout with Spacing with FullSize {
+  val mb = new MenuBar
+  val miNew = mb.addItem("doc.mgr.mi.new".i)
+  val miNewTextDoc = miNew.addItem("doc.mgr.mi.new.text_doc".i)
+  val miNewFileDoc = miNew.addItem("doc.mgr.mi.new.file_doc".i)
+  val miNewUrlDoc = miNew.addItem("doc.mgr.mi.new.url_doc".i)
+
+  val miCopySelectedDoc = mb.addItem("doc.mgr.mi.copy".i)
+  val miDeleteSelectedDocs = mb.addItem("doc.mgr.action.delete".i)
+
+  val miShowSelectedDoc = mb.addItem("doc.mgr.mi.show".i)
+  val miHelp = mb.addItem("doc.mgr.mi.help".i)
+
+  addComponentsTo(this, mb, docsProjectionUI)
+  setExpandRatio(docsProjectionUI, 1f)
+}

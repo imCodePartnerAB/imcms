@@ -8,19 +8,18 @@ import java.util.Locale
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import imcode.server.{ImcmsConstants}
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener
-import java.util.concurrent.ConcurrentMap
-import com.vaadin.terminal.ExternalResource
 import com.imcode.imcms.admin.doc.meta.MetaEditor
 import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
-import imcode.server.document.{UrlDocumentDomainObject, HtmlDocumentDomainObject, FileDocumentDomainObject}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.doc.content._
 import com.imcode.imcms.vaadin.ui._
 import imcode.server.document.textdocument.{DocRef, MenuDomainObject, TextDocumentDomainObject}
 import com.imcode.imcms.admin.access.user.UserSelectDialog
-import com.imcode.imcms.vaadin.ui.dialog.{CustomSizeDialog, OkCancelDialog}
-import com.imcode.imcms.admin.doc.search.{DocsProjectionUI, AllDocsContainer, DocsProjection}
 import com.vaadin.ui._
+import imcode.server.document._
+import com.imcode.imcms.vaadin.ui.dialog.{NoMarginDialog, OKDialog, CustomSizeDialog, OkCancelDialog}
+import com.imcode.imcms.admin.doc.search.{DocsProjectionDialog}
+import com.imcode.imcms.admin.doc.DocEditor
 
 class DocAdmin extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
 
@@ -80,11 +79,11 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
 
   def mkDocEditorWindow(docId: Int): Window = new Window |>> { wnd =>
     val doc = app.imcmsServices.getDocumentMapper.getDocument(docId)
-    val lytProperties = new VerticalLayout with Spacing with Margin with FullHeight |>> { lyt =>
+    val lytEditor = new VerticalLayout with Spacing with Margin with FullHeight |>> { lyt =>
       lyt.setWidth("800px")
     }
 
-    val lblCaption = new Label("Document " + docId) with UndefinedSize
+    val lblTitle = new Label("Document " + docId) with UndefinedSize
     val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
       val btnClose = new Button("Close")
       val btnSave = new Button("Save")
@@ -92,33 +91,22 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
       addComponentsTo(this, btnClose, btnSave)
     }
 
-    val metaEditor = new MetaEditor(doc)
-    val contentEditor = doc match {
-      //case textDoc: TextDocumentDomainObject => //new TextDocContentEditor(textDoc)
-      case fileDoc: FileDocumentDomainObject => new FileDocContentEditor(fileDoc)
-      case urlDoc: UrlDocumentDomainObject => new UrlDocContentEditor(urlDoc)
-      case _ => new UnsupportedDocContentEditor(doc)
-    }
+    val docEditor = new DocEditor(doc)
 
-    val tsProperties = new TabSheet with FullSize |>> { ts =>
-      ts.addTab(metaEditor.ui, "Properties", null)
-      ts.addTab(contentEditor.ui, "Content", null)
-    }
+    lytEditor.addComponent(lblTitle)
+    lytEditor.addComponent(docEditor.ui)
+    lytEditor.addComponent(lytButtons)
+    lytEditor.setExpandRatio(docEditor.ui, 1.0f)
+    lytEditor.setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
 
-    lytProperties.addComponent(lblCaption)
-    lytProperties.addComponent(tsProperties)
-    lytProperties.addComponent(lytButtons)
-    lytProperties.setExpandRatio(tsProperties, 1.0f)
-    lytProperties.setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
+    val windowContent = new VerticalLayout with FullSize
+    windowContent.addComponent(lytEditor)
+    windowContent.setComponentAlignment(lytEditor, Alignment.MIDDLE_CENTER)
 
-    val lytWindow = new VerticalLayout with FullSize
-    lytWindow.addComponent(lytProperties)
-    lytWindow.setComponentAlignment(lytProperties, Alignment.MIDDLE_CENTER)
-
-    wnd.setContent(lytWindow)
+    wnd.setContent(windowContent)
 
     lytButtons.btnSave.addClickHandler {
-      (metaEditor.collectValues(), contentEditor.collectValues()) match {
+      (docEditor.metaEditor.collectValues(), docEditor.contentEditor.collectValues()) match {
         case (Left(errorMsgs), _) =>
           wnd.showErrorNotification(errorMsgs.mkString(","))
 
@@ -232,51 +220,3 @@ class MenuEditorUI extends VerticalLayout with Spacing with Margin with FullSize
   addComponentsTo(this, mb, treeMenu)
   setExpandRatio(treeMenu, 1f)
 }
-
-
-
-trait DocsProjectionDialog extends CustomSizeDialog { this: OkCancelDialog =>
-  val projection = new DocsProjection(new AllDocsContainer)
-
-  mainUI = new DocsProjectionDialogMainUI(projection.ui) |>> { ui =>
-    ui.miNewFileDoc.setCommandHandler {}
-    ui.miNewTextDoc.setCommandHandler {}
-    ui.miNewUrlDoc.setCommandHandler {}
-
-    ui.miCopyDoc.setCommandHandler {}
-    ui.miDeleteDoc.setCommandHandler {}
-    ui.miViewDoc.setCommandHandler {}
-
-    projection.listen { selection =>
-      doto(ui.miNewFileDoc, ui.miNewTextDoc, ui.miNewUrlDoc, ui.miViewDoc, ui.miCopyDoc) { mi =>
-        mi.setEnabled(selection.size == 1)
-      }
-
-      ui.miDeleteDoc.setEnabled(selection.nonEmpty)
-    }
-  }
-
-  projection.listen { selection =>
-    btnOk.setEnabled(selection.nonEmpty)
-  }
-
-  projection.notifyListeners()
-}
-
-
-class DocsProjectionDialogMainUI(docsProjectionUI: DocsProjectionUI) extends VerticalLayout with Spacing with FullSize {
-  val mb = new MenuBar
-  val miNew = mb.addItem("doc.mgr.mi.new".i)
-  val miNewTextDoc = miNew.addItem("doc.mgr.mi.new.text_doc".i)
-  val miNewFileDoc = miNew.addItem("doc.mgr.mi.new.file_doc".i)
-  val miNewUrlDoc = miNew.addItem("doc.mgr.mi.new.url_doc".i)
-
-  val miCopyDoc = mb.addItem("doc.mgr.mi.copy".i)
-  val miDeleteDoc = mb.addItem("doc.mgr.action.delete".i)
-
-  val miViewDoc = mb.addItem("doc.mgr.mi.view".i)
-
-  addComponentsTo(this, mb, docsProjectionUI)
-  setExpandRatio(docsProjectionUI, 1f)
-}
-
