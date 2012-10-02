@@ -4,27 +4,27 @@ package admin.doc.search
 
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
-import com.imcode.imcms.vaadin._
+import scala.collection.immutable.{SortedSet, ListMap}
 
-import imcode.server.document.textdocument.TextDocumentDomainObject
+import java.net.URL
+import java.util.concurrent.atomic.AtomicReference
+import java.util.{Calendar, Date}
+
+import _root_.imcode.server.user.UserDomainObject
+import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentTypeDomainObject, DocumentDomainObject}
+import PartialFunction.condOpt
+import com.vaadin.ui._
+import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
 import com.vaadin.terminal.{ExternalResource, Resource}
 import com.vaadin.data.{Property, Item, Container}
-import java.lang.Class
-import collection.immutable.{SortedSet, ListMap}
-import PartialFunction.condOpt
-import admin.access.user.UserSelectDialog
-import java.util.{Calendar, Date}
-import api.{LuceneParsedQuery, Document}
-import imcode.server.user.UserDomainObject
-import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
-import com.vaadin.ui._
+import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import java.util.concurrent.atomic.AtomicReference
-import com.imcode.util.event.Publisher
-import imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentTypeDomainObject, DocumentDomainObject}
-import java.net.URL
 import com.imcode.imcms.admin.doc.{DocEditor, DocManager}
+import com.imcode.imcms.admin.access.user.UserSelectDialog
+import com.imcode.util.event.Publisher
+import com.imcode.imcms.api.{LuceneParsedQuery, Document}
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
@@ -37,24 +37,24 @@ import com.imcode.imcms.admin.doc.{DocEditor, DocManager}
  * Docs projection consists of two filter forms (basic and advanced)
  * and a table that displays filtered documents.
  *
- * Publishes selected filtered documents.
+ * Publishes selected docs.
  */
-class DocsProjection(val filterableDocsContainer: FilterableDocsContainer) extends Publisher[Seq[DocId]] {
+class DocsProjection(val docsContainer: FilterableDocsContainer) extends Publisher[Seq[DocId]] {
   val basicFilter = new BasicFilter
   val advancedFilter = new AdvancedFilter
-  val filteredDocsUI = new FilteredDocsUI(filterableDocsContainer) with FullSize
+  val docsUI = new DocsUI(docsContainer) with FullSize
   private val selectionRef = new AtomicReference(Seq.empty[DocId])
 
-  val ui = new DocsProjectionUI(basicFilter.ui, advancedFilter.ui, filteredDocsUI) { ui =>
-    val basicFormUI = basicFilter.ui
+  val ui = new DocsProjectionUI(basicFilter.ui, advancedFilter.ui, docsUI) { ui =>
+    val basicFilterUI = basicFilter.ui
 
-    basicFormUI.lytAdvanced.btnCustomize.addClickHandler { ui.toggleAdvancedFilter() }
-    basicFormUI.chkAdvanced.addValueChangeHandler {
-      if (!basicFormUI.chkAdvanced.booleanValue) ui.isAdvancedFilterVisible = false
+    basicFilterUI.lytAdvanced.btnCustomize.addClickHandler { ui.toggleAdvancedFilter() }
+    basicFilterUI.chkAdvanced.addValueChangeHandler {
+      if (!basicFilterUI.chkAdvanced.booleanValue) ui.isAdvancedFilterVisible = false
     }
 
-    basicFormUI.lytButtons.btnFilter.addClickHandler { filter() }
-    basicFormUI.lytButtons.btnReset.addClickHandler { reset() }
+    basicFilterUI.lytButtons.btnFilter.addClickHandler { filter() }
+    basicFilterUI.lytButtons.btnReset.addClickHandler { reset() }
 
     override def attach() {
       super.attach()
@@ -62,8 +62,8 @@ class DocsProjection(val filterableDocsContainer: FilterableDocsContainer) exten
     }
   }
 
-  filteredDocsUI.addValueChangeHandler {
-    selectionRef.set(filteredDocsUI.value.asScala.toSeq)
+  docsUI.addValueChangeHandler {
+    selectionRef.set(docsUI.value.asScala.toSeq)
     notifyListeners()
   }
 
@@ -77,7 +77,7 @@ class DocsProjection(val filterableDocsContainer: FilterableDocsContainer) exten
 
 
   def update() {
-    basicFilter.setIdRangeInputPrompt(filterableDocsContainer.idRange)
+    basicFilter.setIdRangeInputPrompt(docsContainer.idRange)
   }
 
   def filter() {
@@ -89,9 +89,9 @@ class DocsProjection(val filterableDocsContainer: FilterableDocsContainer) exten
         println("Doc solr search query: " + solrQueryOpt)
 
         ui.removeComponent(0, 1)
-        ui.addComponent(filteredDocsUI, 0, 1)
+        ui.addComponent(docsUI, 0, 1)
 
-        filterableDocsContainer.filter(solrQueryOpt, ui.getApplication.user)
+        docsContainer.filter(solrQueryOpt, ui.getApplication.user)
     }
   }
 
@@ -226,7 +226,7 @@ class DocsProjection(val filterableDocsContainer: FilterableDocsContainer) exten
 class DocsProjectionUI(
     basicFilterUI: BasicFilterUI,
     advancedFilterUI: AdvancedFilterUI,
-    docsUI: FilteredDocsUI) extends GridLayout(1, 2) with FullSize {
+    docsUI: DocsUI) extends GridLayout(1, 2) with FullSize {
 
   private val pnlAdvancedFilterForm = new Panel with Scrollable with FullSize {
     setStyleName(Panel.STYLE_LIGHT)
@@ -272,6 +272,7 @@ abstract class FilterableDocsContainer extends Container
   case class DocItem(docId: DocId) extends Item {
 
     lazy val doc = imcmsServices.getDocumentMapper.getDocument(docId)
+    //def doc() = imcmsServices.getDocumentMapper.getDocument(docId)
 
     def removeItemProperty(id: AnyRef) = throw new UnsupportedOperationException
 
@@ -370,13 +371,15 @@ abstract class FilterableDocsContainer extends Container
 
   def getType(propertyId: AnyRef) = propertyIdToType(propertyId.asInstanceOf[String])
 
-  def getItem(itemId: AnyRef) = DocItem(itemId.asInstanceOf[DocId])
+  def getItem(itemId: AnyRef) = {
+    DocItem(itemId.asInstanceOf[DocId])
+  }
 
   def getContainerProperty(itemId: AnyRef, propertyId: AnyRef) = getItem(itemId).getItemProperty(propertyId)
 
   def containsId(itemId: AnyRef) = getItemIds.contains(itemId)
 
-  def addContainerProperty(propertyId: AnyRef, `type` : Class[_], defaultValue: AnyRef) = throw new UnsupportedOperationException
+  def addContainerProperty(propertyId: AnyRef, `type`: Class[_], defaultValue: AnyRef) = throw new UnsupportedOperationException
 
   def removeContainerProperty(propertyId: AnyRef) = throw new UnsupportedOperationException
 
@@ -438,7 +441,7 @@ class AllDocsContainer extends FilterableDocsContainer {
   def removeAllItems() = throw new UnsupportedOperationException
 
   def idRange = docMapper.getDocumentIdRange |> { idsRange =>
-    Some(Int box idsRange.getMinimumInteger, Int box idsRange.getMaximumInteger)
+    Some(idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
   }
 
   def getItemIds = filteredDocIds.asJava
@@ -476,8 +479,9 @@ class CustomDocsContainer extends FilterableDocsContainer {
 
 
 
-class FilteredDocsUI(container: FilterableDocsContainer) extends Table(null, container)
-    with MultiSelectBehavior[DocId] with DocTableItemIcon with Selectable {
+class DocsUI(container: FilterableDocsContainer) extends Table(null, container)
+    with MultiSelectBehavior[DocId]
+    with DocTableItemIcon with Selectable with Immediate {
 
   setColumnCollapsingAllowed(true)
   setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
@@ -497,10 +501,14 @@ trait DocStatusItemIcon extends AbstractSelect {
   }
 }
 
+// todo: check doc is not deleted from container
 trait DocTableItemIcon extends AbstractSelect with GenericContainer[DocId] {
   override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
     case docItem: FilterableDocsContainer#DocItem =>
-      new ExternalResource("imcms/eng/images/admin/status/%s.gif" format docItem.doc.getLifeCyclePhase.toString)
+      docItem.doc match {
+        case null => null
+        case doc => new ExternalResource("imcms/eng/images/admin/status/%s.gif".format(doc.getLifeCyclePhase.toString))
+      }
 
     case _ => null
   }
@@ -797,7 +805,7 @@ trait UserListUISetup { this: UserListUI =>
   btnAdd.addClickHandler {
     this.topWindow.initAndShow(new OkCancelDialog(projectionDialogCaption) with UserSelectDialog) { dlg =>
       dlg.setOkHandler {
-        for (user <- dlg.search.selection) lstUsers.addItem(Int box user.getId, "#" + user.getLoginName)
+        for (user <- dlg.search.selection) lstUsers.addItem(user.getId: JInteger, "#" + user.getLoginName)
       }
     }
   }
@@ -911,7 +919,7 @@ trait DateRangeUISetup { this: DateRangeUI =>
 
 
 // add callbacks???
-class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport {
+class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport with Log4jLoggerSupport {
 
   def mkDocOfType[T <: DocumentDomainObject : ClassManifest] {
     whenSingle(projection.selection) { selectedDocId =>
@@ -928,20 +936,16 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
             dlg.setOkHandler {
               val ui = projection.ui
 
-              (dlg.docEditor.metaEditor.collectValues(), dlg.docEditor.contentEditor.collectValues()) match {
-                case (Left(errorMsgs), _) =>
-                  ui.topWindow.showErrorNotification(errorMsgs.mkString(","))
-
-                case (_, Left(errorMsgs)) =>
-                  ui.topWindow.showErrorNotification(errorMsgs.mkString(","))
-
-                case (Right((metaDoc, i18nMetas)), Right(doc)) =>
-                  doc.setMeta(metaDoc.getMeta)
-
-                  imcmsServices.getDocumentMapper.saveNewDocument(doc, i18nMetas.asJava, ui.getApplication.user)
-                  projection.filter()
-                  ui.topWindow.showInfoNotification("New document has been created")
-                  projection.filter()
+              dlg.docEditor.collectValues() match {
+                case Left(errors) => ui.topWindow.showErrorNotification(errors.mkString(","))
+                case Right((editedDoc, i18nMetas)) =>
+                  try {
+                    imcmsServices.getDocumentMapper.saveNewDocument(editedDoc, i18nMetas.asJava, ui.getApplication.user)
+                    ui.topWindow.showInfoNotification("New document has been created")
+                    projection.filter()
+                  } catch {
+                    case e => ui.topWindow.showErrorNotification("Failed to create new document", e.getStackTraceString)
+                  }
               }
             }
           }
@@ -953,17 +957,27 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
 
   def deleteSelectedDocs() {
-    // show do you want to delete confirmation ...
-    projection.selection match {
-      case Seq() =>
-      case docIds =>
-        for {
-          docId <- docIds
-          doc <- imcmsServices.getDocumentMapper.getDocument(docId) |> opt
-        } {
-          // todo: user
-          imcmsServices.getDocumentMapper.deleteDocument(doc, projection.ui.getApplication.user())
+    whenNotEmpty(projection.selection) { docIds =>
+      projection.ui.topWindow.initAndShow(new ConfirmationDialog("Delete selected document(s)?")) { dlg =>
+        dlg.setOkHandler {
+          try {
+            for {
+              docId <- docIds
+              doc <- imcmsServices.getDocumentMapper.getDocument(docId) |> opt
+            } {
+              imcmsServices.getDocumentMapper.deleteDocument(doc, projection.ui.getApplication.user)
+            }
+            projection.ui.topWindow.showInfoNotification("Document(s) deleted")
+          } catch {
+            case e =>
+              logger.error("Document delete error", e)
+              projection.ui.topWindow.showErrorNotification("Error deleging document(s)", e.getStackTraceString)
+          } finally {
+            // todo: update ranges ???
+            projection.filter()
+          }
         }
+      }
     }
   }
 
@@ -1011,7 +1025,6 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
     }
   }
 
-  // todo: a doc must be selected
   // todo: allow change several at once???
   // todo: permissions
   def editSelectedDoc() {
@@ -1025,20 +1038,16 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
             dlg.setSize(500, 500)
 
             dlg.setOkHandler {
-              (dlg.docEditor.metaEditor.collectValues(), dlg.docEditor.contentEditor.collectValues()) match {
-                case (Left(errorMsgs), _) =>
-                  topWindow.showErrorNotification(errorMsgs.mkString(","))
-
-                case (_, Left(errorMsgs)) =>
-                  topWindow.showErrorNotification(errorMsgs.mkString(","))
-
-                case (Right((metaDoc, i18nMetas)), Right(doc)) =>
-                  doc.setMeta(metaDoc.getMeta)
-
-                  imcmsServices.getDocumentMapper.saveDocument(doc, i18nMetas.asJava, ui.getApplication.user)
-                  projection.filter()
-                  topWindow.showInfoNotification("Document has been saved")
-                  dlg.close()
+              dlg.docEditor.collectValues() match {
+                case Left(errors) => topWindow.showErrorNotification(errors.mkString(","))
+                case Right((editedDoc, i18nMetas)) =>
+                  try {
+                    imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, ui.getApplication.user)
+                    topWindow.showInfoNotification("Document has been saved")
+                    projection.filter()
+                  } catch {
+                    case e => topWindow.showErrorNotification("Failed to save document", e.getStackTraceString)
+                  }
               }
             }
           }
@@ -1049,7 +1058,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
 
 trait DocsProjectionDialog extends CustomSizeDialog { this: OkCancelDialog =>
-  val projection = new DocsProjection(new AllDocsContainer)
+  val projection = new DocsProjection(new AllDocsContainer) |>> { _.docsUI.setMultiSelect(true) }
   val ops = new DocsProjectionOps(projection)
 
   mainUI = new DocsProjectionDialogMainUI(projection.ui) |>> { ui =>
@@ -1063,11 +1072,18 @@ trait DocsProjectionDialog extends CustomSizeDialog { this: OkCancelDialog =>
     ui.miHelp.setCommandHandler { /* show help in modal dialog */ }
 
     projection.listen { selection =>
-      doto(ui.miNewFileDoc, ui.miNewTextDoc, ui.miNewUrlDoc, ui.miShowSelectedDoc, ui.miCopySelectedDoc) { mi =>
-        mi.setEnabled(selection.size == 1)
-      }
+      val isSingleSelection = selection.size == 1
+      val isTextDocSelection = isSingleSelection &&
+        (projection.docsUI.item(selection.head) match {
+          case docItem: FilterableDocsContainer#DocItem => docItem.doc.isInstanceOf[TextDocumentDomainObject]
+          case _ => false
+        })
 
       ui.miDeleteSelectedDocs.setEnabled(selection.nonEmpty)
+
+      doto(ui.miShowSelectedDoc, ui.miCopySelectedDoc) { mi => mi.setEnabled(isSingleSelection) }
+
+      doto(ui.miNew, ui.miNewFileDoc, ui.miNewTextDoc, ui.miNewUrlDoc) { mi => mi.setEnabled(isTextDocSelection) }
     }
   }
 
@@ -1080,7 +1096,7 @@ trait DocsProjectionDialog extends CustomSizeDialog { this: OkCancelDialog =>
 
 
 class DocsProjectionDialogMainUI(docsProjectionUI: DocsProjectionUI) extends VerticalLayout with Spacing with FullSize {
-  val mb = new MenuBar
+  val mb = new MenuBar with FullWidth
   val miNew = mb.addItem("doc.mgr.mi.new".i)
   val miNewTextDoc = miNew.addItem("doc.mgr.mi.new.text_doc".i)
   val miNewFileDoc = miNew.addItem("doc.mgr.mi.new.file_doc".i)

@@ -69,9 +69,9 @@ class CategoryTypeManager(app: ImcmsApplication) {
       dlg.mainUI = new CategoryTypeEditorUI |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = vo.getName |> opt getOrElse ""
-        c.chkImageArchive.value = Boolean box vo.isImageArchive
-        c.chkInherited.value = Boolean box vo.isInherited
-        c.chkMultiSelect.value = Boolean box vo.isMultiselect
+        c.chkImageArchive.value = vo.isImageArchive// : JBoolean
+        c.chkInherited.value = vo.isInherited //: JBoolean
+        c.chkMultiSelect.value = vo.isMultiselect //: JBoolean
 
         dlg.setOkHandler {
           vo.clone() |> { voc =>
@@ -118,8 +118,8 @@ class CategoryTypeManager(app: ImcmsApplication) {
     ui.tblTypes.removeAllItems
     for {
       vo <- categoryMapper.getAllCategoryTypes
-      id = Int box vo.getId
-    } ui.tblTypes.addItem(Array[AnyRef](id, vo.getName, Boolean box vo.isMultiselect, Boolean box vo.isInherited, Boolean box vo.isImageArchive), id)
+      id = vo.getId :JInteger
+    } ui.tblTypes.addItem(Array[AnyRef](id, vo.getName, vo.isMultiselect : JBoolean, vo.isInherited : JBoolean, vo.isImageArchive : JBoolean), id)
 
     canManage |> { value =>
       ui.tblTypes.setSelectable(value)

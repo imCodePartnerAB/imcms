@@ -172,9 +172,9 @@ trait MultiSelect[A <: ItemId] extends GenericSelect[A] with GenericProperty[JCo
 
   def selection_=(v: Seq[A]) { value = v.asJava }
 
-  def selection_=(v: Option[A]) { selection = v.toSeq }
+  def selection_=(v: A) { selection = Option(v).toSeq }
 
-  def first: Option[A] = value.asScala.headOption
+  def firstOpt: Option[A] = value.asScala.headOption
 }
 
 
@@ -189,31 +189,41 @@ trait MultiSelectBehavior[A <: AnyRef] extends GenericSelect[A] with GenericProp
 
   def selection_=(v: Seq[A]) { value = v.asJava }
 
-  def selection_=(v: Option[A]) { selection = v.toSeq }
+  def selection_=(v: A) { selection = Option(v).toSeq }
 
-  def first: Option[A] = value.asScala.headOption
+  def firstOpt: Option[A] = value.asScala.headOption
 
   def isSelected: Boolean = value.asScala.nonEmpty
 
-  /**
-   * @return collection of selected items or empty collection if there is no selected item(s).
-   */
-  final override def getValue(): AnyRef = super.getValue |> { v => if (isMultiSelect) v else Option(v).toSeq.asJavaCollection }
-
-  final override def setMultiSelect(multiSelect: Boolean) =
-    if (value.isEmpty) super.setMultiSelect(multiSelect)
-    else throw new IllegalStateException("Multi-select value can not be changed on non-empty select.")
-
-
-  final override def setValue(v: AnyRef) {
-    super.setValue(
-      v match {
-        case null => if (isMultiSelect) Collections.emptyList[AnyRef] else null
-        case coll: JCollection[_] => if (isMultiSelect) coll else coll.asScala.headOption.orNull
-        case _ => if (isMultiSelect) Collections.singletonList(v) else v
-      }
-    )
+  override def value: JCollection[A] = getValue |> { v =>
+    if (isMultiSelect) v.asInstanceOf[JCollection[A]] else Option(v.asInstanceOf[A]).toSeq.asJavaCollection
   }
+
+  override def value_=(v: JCollection[A]): Unit = super.setValue(if (isMultiSelect) v else v.asScala.headOption.orNull)
+
+//  /**
+//   * @return collection of selected items or empty collection if there is no selected item(s).
+//   */
+//  final override def getValue(): AnyRef = super.getValue |> { v =>
+//    println (">>>>>>>>>> " + v)
+//    val x = if (isMultiSelect) v else Option(v).toSeq.asJavaCollection
+//    x
+//  }
+//
+//  final override def setMultiSelect(multiSelect: Boolean) =
+//    if (value.isEmpty) super.setMultiSelect(multiSelect)
+//    else throw new IllegalStateException("Multi-select value can not be changed on non-empty select.")
+//
+//
+//  final override def setValue(v: AnyRef) {
+//    super.setValue(
+//      v match {
+//        case null => if (isMultiSelect) Collections.emptyList[AnyRef] else null
+//        case coll: JCollection[_] => if (isMultiSelect) coll else coll.asScala.headOption.orNull
+//        case _ => if (isMultiSelect) Collections.singletonList(v) else v
+//      }
+//    )
+//  }
 }
 
 trait Now { this: DateField =>

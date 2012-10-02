@@ -18,6 +18,7 @@ import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.admin.doc.search._
+import com.imcode.imcms.api.{I18nMeta, I18nLanguage}
 
 // import _root_.com.imcode.imcms.mapping.ProfileMapper.SimpleProfile ????
 
@@ -53,13 +54,29 @@ class DocEditorDlg(doc: DocumentDomainObject, caption: String) extends OkCancelD
   mainUI = docEditor.ui
 }
 
-class DocEditor(doc: DocumentDomainObject) {
+class DocEditor(doc: DocumentDomainObject) extends Editor {
+
+  type Data = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
+
   val metaEditor = new MetaEditor(doc)
   val contentEditor = DocEditor.mkContentEditor(doc)
 
   val ui= new TabSheet with FullSize |>> { ts =>
     ts.addTab(metaEditor.ui, "Properties", null)
     ts.addTab(contentEditor.ui, "Content", null)
+  }
+
+  def resetValues() {
+    metaEditor.resetValues()
+    contentEditor.resetValues()
+  }
+
+  def collectValues(): ErrorsOrData = (metaEditor.collectValues(), contentEditor.collectValues()) match {
+    case (Left(errors), _) => Left(errors)
+    case (_, Left(errors)) => Left(errors)
+    case (Right((metaDoc, i18nMetas)), Right(contentDoc)) =>
+      // todo: merge meta doc and content doc
+      Right((metaDoc, i18nMetas))
   }
 }
 
@@ -91,7 +108,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
     ui.miNewUrlDoc.setCommandHandler { projectionOps.mkDocOfType[UrlDocumentDomainObject] }
 
     ui.miProfileEditName.setCommandHandler {
-      whenSingle(projection.filteredDocsUI.selection) { docId =>
+      whenSingle(projection.docsUI.selection) { docId =>
         val docIdStr = docId.toString
         val profileMapper = new ProfileMapper(imcmsServices.getDatabase)
         val profileOpt = profileMapper.getAll.asScala.find(_.getDocumentName == docIdStr)
@@ -132,7 +149,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       projectionOps.copySelectedDoc()
     }
 
-    projection.filteredDocsUI.addActionHandler(new Action.Handler {
+    projection.docsUI.addActionHandler(new Action.Handler {
       import Actions._
 
       def getActions(target: AnyRef, sender: AnyRef) = Array(IncludeToSelection, Delete)
@@ -140,7 +157,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       def handleAction(action: Action, sender: AnyRef, target: AnyRef) =
         action match {
           case IncludeToSelection =>
-            customDocs.projection.filterableDocsContainer.addItem(target)
+            customDocs.projection.docsContainer.addItem(target)
             customDocs.projection.update()
             customDocs.projection.filter()
           case _ =>
@@ -184,7 +201,7 @@ class CustomDocs {
   val projection = new DocsProjection(new CustomDocsContainer)
   val ui = new CustomDocsUI(projection.ui)
 
-  projection.filteredDocsUI.addActionHandler(new Action.Handler {
+  projection.docsUI.addActionHandler(new Action.Handler {
     import Actions._
 
     def getActions(target: AnyRef, sender: AnyRef) = Array(ExcludeFromSelection, Delete)

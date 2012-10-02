@@ -72,7 +72,7 @@ class DocIndexingMocksSetup {
       args match {
         case Array(doc: DocumentDomainObject) =>
           parentDocs(doc.getId).map {
-            case ParentDoc(docId, menuNo) => Array(Int box docId, Int box menuNo)
+            case ParentDoc(docId, menuNo) => Array(docId : JInteger, menuNo : JInteger)
           } |> { _.asJavaCollection } |> { coll => new java.util.LinkedList(coll) }
       }
   }

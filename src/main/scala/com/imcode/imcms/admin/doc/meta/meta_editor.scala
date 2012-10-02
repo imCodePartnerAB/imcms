@@ -139,11 +139,11 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStart)
         dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
         dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
-        dc.getMeta.setPublisherId(lifeCycle.publisher.map(p => Int box p.getId).orNull)
+        dc.getMeta.setPublisherId(lifeCycle.publisher.map(p => p.getId : JInteger).orNull)
         //???dc.setVersion(new DocumentVersion() state.versionNo)
         dc.getMeta.setCreatedDatetime(lifeCycle.created)
         dc.getMeta.setModifiedDatetime(lifeCycle.modified)
-        dc.getMeta.setCreatorId(lifeCycle.creator.map(c => Int box c.getId).orNull)
+        dc.getMeta.setCreatorId(lifeCycle.creator.map(c => c.getId : JInteger).orNull)
         //???dc.getMeta.setModifierId
       }
     }.merge(accessEditorOpt.map(_.collectValues)) {

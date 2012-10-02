@@ -42,7 +42,7 @@ package object vaadin {
     def value = getValue.asInstanceOf[A]
     def value_=(v: A): Unit = setValue(v)
 
-    def clear(implicit ev: A =:= String) { setValue("") }
+    def clear(implicit ev: A =:= String): Unit =  setValue("")
     def trim(implicit ev: A =:= String): String = value.trim
     def trimOpt(implicit ev: A =:= String): Option[String] = trim match {
       case "" => None
@@ -82,6 +82,7 @@ package object vaadin {
     def valueOpt: Option[A] = Option(value)
   }
 
+  // todo: itemsIds as Seq?
   trait GenericContainer[A <: ItemId] extends Container {
     def itemIds: JCollection[A] = getItemIds.asInstanceOf[JCollection[A]]
     def itemIds_=(ids: JCollection[A]) {
@@ -93,7 +94,6 @@ package object vaadin {
 
     def firstItemIdOpt: Option[A] = itemIds.asScala.headOption
   }
-
 
 
   /**
@@ -153,14 +153,13 @@ package object vaadin {
     case value => Some(fn(value))
   }
 
-  // todo: selection, not sec ???
+
   def whenSingle[A, B](seq: Seq[A])(fn: A => B): Option[B] = seq match {
     case Seq(a) => Some(fn(a))
     case _ => None
   }
 
-
-
+  def whenNotEmpty[A, B](seq: Seq[A])(fn: Seq[A] => B): Option[B] = if (seq.isEmpty) None else Some(fn(seq))
 
 
   implicit def applicationToImcmsApplication(app: Application) = app.asInstanceOf[ImcmsApplication]
