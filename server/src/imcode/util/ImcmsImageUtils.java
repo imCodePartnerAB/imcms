@@ -68,7 +68,17 @@ public class ImcmsImageUtils {
         if ( image.getSize() > 0 ) {
 
             if ( StringUtils.isNotBlank(image.getLinkUrl()) ) {
-                imageTagBuffer.append("<a href=\"").append(StringEscapeUtils.escapeHtml(image.getLinkUrl())).append("\"");
+                String linkUrl = image.getLinkUrl().trim() ;
+                try {
+                  if (linkUrl.matches("^\\d+$")) { // metaId
+                    linkUrl = request.getContextPath() + "/" + linkUrl ;
+                  } else if (linkUrl.indexOf(":") == -1 && !"".equals(request.getContextPath()) && linkUrl.startsWith("/") && !linkUrl.startsWith(request.getContextPath())) { // /pathOrMetaIdWithoutCp
+                    linkUrl = request.getContextPath() + linkUrl ;
+                  } else if (linkUrl.indexOf(":") == -1 && linkUrl.toLowerCase().matches("^[\\w].*")) { // alias no slashOrCp
+                    linkUrl = request.getContextPath() + "/" + linkUrl ;
+                  }
+                } catch (Exception ignore) {}
+                imageTagBuffer.append("<a href=\"").append(StringEscapeUtils.escapeHtml(linkUrl)).append("\"");
                 if ( !"".equals(image.getTarget()) ) {
                     imageTagBuffer.append(" target=\"").append(StringEscapeUtils.escapeHtml(image.getTarget())).append("\"");
                 }
