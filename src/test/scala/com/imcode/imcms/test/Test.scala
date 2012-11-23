@@ -8,7 +8,7 @@ import org.springframework.core.env.Environment
 import org.springframework.context.annotation._
 import java.lang.{Class, String}
 import org.springframework.context.ApplicationContext
-import com.imcode.imcms.test.config.{ProjectConfig}
+import com.imcode.imcms.test.config.{TestConfig}
 import org.springframework.context.support.{FileSystemXmlApplicationContext}
 import org.apache.commons.io.FileUtils
 import org.apache.solr.client.solrj.SolrServer
@@ -32,7 +32,7 @@ class Test extends TestDb with TestSolr {
   val env: Environment = spring.ctx.getBean(classOf[Environment])
 
   object spring {
-    val ctx = createCtx(classOf[ProjectConfig])
+    val ctx = createCtx(classOf[TestConfig])
 
     def createCtx(annotatedClass: Class[_]) = new AnnotationConfigApplicationContext(annotatedClass)
   }

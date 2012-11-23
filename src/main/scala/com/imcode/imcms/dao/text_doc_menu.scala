@@ -23,12 +23,7 @@ class MenuDao extends HibernateSupport {
     )
 
   
-  def saveMenu(menu: MenuDomainObject): MenuDomainObject = {
-    for ((_, menuItem) <- menu.getItemsMap.asScala)
-      menuItem.setTreeSortIndex(menuItem.getTreeSortKey.toString)
-
-    hibernate.saveOrUpdate(menu)
-  }
+  def saveMenu(menu: MenuDomainObject): MenuDomainObject = hibernate.saveOrUpdate(menu)
 
   
   def saveMenuHistory(menuHistory: MenuHistory) = hibernate.save(menuHistory)
@@ -56,5 +51,5 @@ class MenuDao extends HibernateSupport {
   }
 
   
-  def deleteMenu(menu: MenuDomainObject) = hibernate.delete(menu)
+  def deleteMenu(menu: MenuDomainObject): Unit = hibernate.delete(menu)
 }

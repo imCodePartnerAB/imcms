@@ -281,9 +281,9 @@ abstract class FilterableDocsContainer extends Container
     def getItemPropertyIds = propertyIds.asJava
 
     def getItemProperty(id: AnyRef) = FunctionProperty(id match {
-      case "doc.tbl.col.id" => doc.getId
-      case "doc.tbl.col.type" => doc.getDocumentTypeId
-      case "doc.tbl.col.alias" => doc.getAlias
+      case "doc.tbl.col.id" => () => doc.getId : JInteger
+      case "doc.tbl.col.type" => () => doc.getDocumentTypeId : JInteger
+      case "doc.tbl.col.alias" => () => doc.getAlias
       case "doc.tbl.col.status" =>
         () => doc.getPublicationStatus match {
           case Document.PublicationStatus.NEW => "doc.publication_status.new".i

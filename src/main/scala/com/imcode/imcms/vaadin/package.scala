@@ -25,11 +25,11 @@ package object vaadin {
 
   class ApplicationWrapper(app: Application) {
 
-    def context(): WebApplicationContext = app.getContext.asInstanceOf[WebApplicationContext]
+    def context: WebApplicationContext = app.getContext.asInstanceOf[WebApplicationContext]
 
-    def session(): HttpSession = context().getHttpSession
+    def session: HttpSession = context.getHttpSession
 
-    def servletContext(): ServletContext = session().getServletContext
+    def servletContext: ServletContext = session.getServletContext
   }
 
 
@@ -52,14 +52,6 @@ package object vaadin {
     def notBlank(implicit ev: A =:= String): Boolean = !isBlank
   }
 
-  case class FunctionProperty[A](valueFn: () => A)(implicit mf: Manifest[A]) extends Property {
-    val isReadOnly = true
-    val getType = mf.erasure
-    def setValue(newValue: AnyRef) = throw new UnsupportedOperationException
-    def setReadOnly(newStatus: Boolean): Unit = throw new UnsupportedOperationException
-    def getValue = valueFn().asInstanceOf[AnyRef]
-    override def toString = Option(getValue).map(_.toString).getOrElse("")
-  }
 
 //case class ByNameProperty[A >: Null <: AnyRef](byName: => A)(implicit mf: Manifest[A]) extends Property {
 //

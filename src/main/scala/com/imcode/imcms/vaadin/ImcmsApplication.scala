@@ -9,7 +9,7 @@ import com.imcode.imcms.vaadin.ui._
 
 trait ImcmsApplication extends com.vaadin.Application {
 
-  def user(): UserDomainObject = Utility.getLoggedOnUser(this.session())
+  def user(): UserDomainObject = Utility.getLoggedOnUser(this.session)
 
   /**
    * If permission is granted executes an action.

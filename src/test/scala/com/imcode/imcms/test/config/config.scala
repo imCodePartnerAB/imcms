@@ -13,7 +13,7 @@ import org.springframework.core.env.{StandardEnvironment, Environment}
 
 @Configuration
 @PropertySource(Array("classpath:test-server.properties"))
-class ProjectConfig {
+class TestConfig {
 
   var env: Environment = _
 

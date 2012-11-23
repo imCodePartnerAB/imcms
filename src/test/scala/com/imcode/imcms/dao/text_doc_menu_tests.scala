@@ -4,18 +4,17 @@ package imcms.dao
 import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
-import imcms.test._
-import fixtures.{DocItemFX, DocFX, VersionFX}
-import imcms.test.fixtures.UserFX.{mkSuperAdmin}
-import imcms.test.Test.{db}
+import com.imcode.imcms.test._
+import com.imcode.imcms.test.fixtures.{DocItemFX, DocFX, VersionFX}
+import com.imcode.imcms.test.fixtures.UserFX.{mkSuperAdmin}
+import com.imcode.imcms.test.Test.{db}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.api.{MenuHistory}
 import org.junit.Assert._
-import imcode.server.document.textdocument._
+import _root_.imcode.server.document.textdocument._
 
 @RunWith(classOf[JUnitRunner])
 class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {

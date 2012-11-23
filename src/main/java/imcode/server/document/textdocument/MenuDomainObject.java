@@ -141,7 +141,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     public Set getMenuItemsUnsorted() {
         HashSet set = new HashSet();
-        for (Iterator iterator = menuItems.values().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = menuItems.values().iterator(); iterator.hasNext(); ) {
             MenuItemDomainObject menuItem = (MenuItemDomainObject) iterator.next();
             if (null != menuItem.getDocument()) {
                 set.add(menuItem);
@@ -176,30 +176,28 @@ public class MenuDomainObject implements Cloneable, Serializable {
             generateSortKey(menuItem);
         }
 
-        menuItems.put(new Integer(menuItem.getDocumentId()), menuItem);
+        menuItems.put(menuItem.getDocumentId(), menuItem);
     }
 
     private void generateSortKey(MenuItemDomainObject menuItem) {
         Integer maxSortKey = getMaxSortKey();
         Integer sortKey;
         if (null != maxSortKey) {
-            sortKey = new Integer(maxSortKey.intValue() + DEFAULT_SORT_KEY_INCREMENT);
+            sortKey = maxSortKey.intValue() + DEFAULT_SORT_KEY_INCREMENT;
         } else {
-            sortKey = new Integer(DEFAULT_SORT_KEY);
+            sortKey = DEFAULT_SORT_KEY;
         }
         menuItem.setSortKey(sortKey);
     }
 
     private Integer getMaxSortKey() {
-        Collection menuItemSortKeys = CollectionUtils.collect(menuItems.values(), new Transformer() {
-            public Object transform(Object o) {
+        Collection<Integer> menuItemSortKeys = CollectionUtils.collect(menuItems.values(), new Transformer() {
+            public Integer transform(Object o) {
                 return ((MenuItemDomainObject) o).getSortKey();
             }
         });
-        if (menuItemSortKeys.isEmpty()) {
-            return null;
-        }
-        return (Integer) Collections.max(menuItemSortKeys);
+
+        return menuItemSortKeys.isEmpty() ? null : Collections.max(menuItemSortKeys);
     }
 
     private Comparator getMenuItemComparatorForSortOrder(int sortOrder) {

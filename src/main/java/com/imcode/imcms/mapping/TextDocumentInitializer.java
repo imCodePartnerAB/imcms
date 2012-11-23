@@ -117,8 +117,7 @@ public class TextDocumentInitializer {
     		GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, documentGetter);
     		
     		menuItem.setDocumentReference(gtr);
-    		menuItem.setTreeSortKey(new TreeSortKeyDomainObject(menuItem.getTreeSortIndex()));
-    	}    	
+    	}
     }
 
 
