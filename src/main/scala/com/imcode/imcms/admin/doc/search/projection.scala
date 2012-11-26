@@ -16,7 +16,6 @@ import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomai
 import PartialFunction.condOpt
 import com.vaadin.ui._
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
-import com.vaadin.terminal.{ExternalResource, Resource}
 import com.vaadin.data.{Property, Item, Container}
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
@@ -25,6 +24,8 @@ import com.imcode.imcms.admin.doc.{DocEditor, DocManager}
 import com.imcode.imcms.admin.access.user.UserSelectDialog
 import com.imcode.util.event.Publisher
 import com.imcode.imcms.api.{LuceneParsedQuery, Document}
+import com.vaadin.terminal.{FileResource, ExternalResource, Resource}
+import java.io.File
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
@@ -501,13 +502,35 @@ trait DocStatusItemIcon extends AbstractSelect {
   }
 }
 
+trait DocIdSelectStatusItemIcon extends AbstractSelect with GenericContainer[DocId] with ImcmsServicesSupport {
+  override def getItemIcon(itemId: AnyRef) = itemId match {
+    case docId: DocId =>
+      imcmsServices.getDocumentMapper.getDocument(docId) match {
+        case null => null
+        case doc =>
+          val app = getApplication
+          val fileBaseName = doc.getLifeCyclePhase.toString
+          val file = new File(app.context.getBaseDirectory, "imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
+
+          new FileResource(file, app)
+      }
+
+    case _ => null
+  }
+}
+
 // todo: check doc is not deleted from container
 trait DocTableItemIcon extends AbstractSelect with GenericContainer[DocId] {
   override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
     case docItem: FilterableDocsContainer#DocItem =>
       docItem.doc match {
         case null => null
-        case doc => new ExternalResource("imcms/eng/images/admin/status/%s.gif".format(doc.getLifeCyclePhase.toString))
+        case doc =>
+          val app = getApplication
+          val fileBaseName = doc.getLifeCyclePhase.toString
+          val file = new File(app.context.getBaseDirectory, "imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
+
+          new FileResource(file, app)
       }
 
     case _ => null

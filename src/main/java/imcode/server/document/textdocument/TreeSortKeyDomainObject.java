@@ -31,7 +31,7 @@ public class TreeSortKeyDomainObject implements Comparable, Serializable {
         }
         keys = ArrayUtils.toPrimitive(keyList.toArray( new Integer[keyList.size()] )) ;
 
-        setTreeSortKey(treeSortKey);
+        this.treeSortKey = treeSortKey;
     }
 
     public int getLevelCount() {
@@ -82,9 +82,5 @@ public class TreeSortKeyDomainObject implements Comparable, Serializable {
 
     public String getTreeSortKey() {
         return treeSortKey;
-    }
-
-    public void setTreeSortKey(String treeSortKey) {
-        this.treeSortKey = treeSortKey;
     }
 }
