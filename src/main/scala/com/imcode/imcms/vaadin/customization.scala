@@ -147,7 +147,7 @@ trait GenericSelect[A <: ItemId] extends AbstractSelect with GenericContainer[A]
 }
 
 
-trait SingleSelect[A <: ItemId] extends GenericSelect[A] with GenericProperty[A] {
+trait SingleSelect[A <: ItemId] extends GenericSelect[A] with NullableProperty[A] {
   setMultiSelect(false)
 
   def isSelected = value != null

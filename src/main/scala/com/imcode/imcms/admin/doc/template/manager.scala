@@ -108,7 +108,7 @@ class TemplateManager(app: ImcmsApplication) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.user.isSuperAdmin
+  def canManage = app.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage templates")
 
   def reload() {

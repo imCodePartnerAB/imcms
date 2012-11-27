@@ -56,7 +56,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.user.isSuperAdmin
+  def canManage = app.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage category types")
 
   /** Edit in a modal dialog. */

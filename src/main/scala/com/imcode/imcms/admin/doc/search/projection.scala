@@ -4,7 +4,8 @@ package admin.doc.search
 
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
-import scala.collection.immutable.{SortedSet, ListMap}
+import scala.collection.immutable.{ListMap}
+import scala.PartialFunction.condOpt
 
 import java.net.URL
 import java.util.concurrent.atomic.AtomicReference
@@ -13,7 +14,6 @@ import java.util.{Calendar, Date}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentTypeDomainObject, DocumentDomainObject}
-import PartialFunction.condOpt
 import com.vaadin.ui._
 import com.vaadin.ui.ComponentContainer.{ComponentAttachEvent, ComponentAttachListener}
 import com.vaadin.data.{Property, Item, Container}
@@ -92,7 +92,7 @@ class DocsProjection(val docsContainer: FilterableDocsContainer) extends Publish
         ui.removeComponent(0, 1)
         ui.addComponent(docsUI, 0, 1)
 
-        docsContainer.filter(solrQueryOpt, ui.getApplication.user)
+        docsContainer.filter(solrQueryOpt, ui.getApplication.imcmsUser)
     }
   }
 
@@ -296,14 +296,14 @@ abstract class FilterableDocsContainer extends Container
         () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
           case Nil => null
           case pair :: Nil =>
-            new Tree with GenericContainer[DocumentDomainObject] with NotSelectable with DocStatusItemIcon |>> { tree =>
+            new Tree with GenericContainer[DocumentDomainObject] with NotSelectable with DocSelectWithLifeCycleIcon |>> { tree =>
               val parentDoc = pair.getDocument
               tree.addItem(parentDoc)
               tree.setChildrenAllowed(parentDoc, false)
               tree.setItemCaption(parentDoc, "%s - %s" format (parentDoc.getId, parentDoc.getHeadline))
             }
 
-          case pairs => new Tree with GenericContainer[DocumentDomainObject] with NotSelectable with DocStatusItemIcon |>> { tree =>
+          case pairs => new Tree with GenericContainer[DocumentDomainObject] with NotSelectable with DocSelectWithLifeCycleIcon |>> { tree =>
             val root = new {}
             tree.addItem(root)
             tree.setItemCaption(root, pairs.size.toString)
@@ -322,13 +322,13 @@ abstract class FilterableDocsContainer extends Container
             imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).asScala.toList match {
               case List() => null
               case List(childDoc) =>
-                new Tree with GenericContainer[DocumentDomainObject] with DocStatusItemIcon with NotSelectable |>> { tree =>
+                new Tree with GenericContainer[DocumentDomainObject] with DocSelectWithLifeCycleIcon with NotSelectable |>> { tree =>
                   tree.addItem(childDoc)
                   tree.setChildrenAllowed(childDoc, false)
                   tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
                 }
 
-              case childDocs => new Tree with GenericContainer[DocumentDomainObject] with DocStatusItemIcon with NotSelectable |>> { tree =>
+              case childDocs => new Tree with GenericContainer[DocumentDomainObject] with DocSelectWithLifeCycleIcon with NotSelectable |>> { tree =>
                 val root = new {}
                 tree.addItem(root)
                 tree.setItemCaption(root, childDocs.size.toString)
@@ -493,7 +493,7 @@ class DocsUI(container: FilterableDocsContainer) extends Table(null, container)
 
 
 
-trait DocStatusItemIcon extends AbstractSelect {
+trait DocSelectWithLifeCycleIcon extends AbstractSelect {
   override def getItemIcon(itemId: AnyRef) = itemId match {
     case doc: DocumentDomainObject => new ExternalResource("imcms/eng/images/admin/status/%s.gif" format
       itemId.asInstanceOf[DocumentDomainObject].getLifeCyclePhase.toString)
@@ -502,7 +502,7 @@ trait DocStatusItemIcon extends AbstractSelect {
   }
 }
 
-trait DocIdSelectStatusItemIcon extends AbstractSelect with GenericContainer[DocId] with ImcmsServicesSupport {
+trait DocIdSelectWithLifeCycleIcon extends AbstractSelect with GenericContainer[DocId] with ImcmsServicesSupport {
   override def getItemIcon(itemId: AnyRef) = itemId match {
     case docId: DocId =>
       imcmsServices.getDocumentMapper.getDocument(docId) match {
@@ -953,7 +953,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
             case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "New file document"
             case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "New url document"
           }
-          val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.ui.getApplication.user)
+          val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.ui.getApplication.imcmsUser)
 
           projection.ui.topWindow.initAndShow(DocEditor.mkDocEditorDlg(newDoc, dlgCaption)) { dlg =>
             dlg.setOkHandler {
@@ -963,7 +963,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                 case Left(errors) => ui.topWindow.showErrorNotification(errors.mkString(","))
                 case Right((editedDoc, i18nMetas)) =>
                   try {
-                    imcmsServices.getDocumentMapper.saveNewDocument(editedDoc, i18nMetas.asJava, ui.getApplication.user)
+                    imcmsServices.getDocumentMapper.saveNewDocument(editedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser)
                     ui.topWindow.showInfoNotification("New document has been created")
                     projection.filter()
                   } catch {
@@ -988,7 +988,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
               docId <- docIds
               doc <- imcmsServices.getDocumentMapper.getDocument(docId) |> opt
             } {
-              imcmsServices.getDocumentMapper.deleteDocument(doc, projection.ui.getApplication.user)
+              imcmsServices.getDocumentMapper.deleteDocument(doc, projection.ui.getApplication.imcmsUser)
             }
             projection.ui.topWindow.showInfoNotification("Document(s) deleted")
           } catch {
@@ -1005,20 +1005,13 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
   }
 
   // todo: check select single doc
-  // todo: add embedded/popu view???
+  // todo: add embedded/popup view???
   // todo: remove buttons
   def showSelectedDoc() {
     whenSingle(projection.selection) { docId =>
-      val appURL = projection.ui.getApplication.getURL
-      val docURL = new URL(appURL.getProtocol, appURL.getHost, appURL.getPort, "/%d" format docId)
+      val docUrl = projection.ui.getApplication.imcmsDocUrl(docId)
 
-
-      projection.ui.topWindow.initAndShow(new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog, resizable = true) { dlg =>
-//          dlg.mainUI = new Embedded with FullSize |>> { browser =>
-//            browser.setType(Embedded.TYPE_BROWSER)
-//            browser.setSource(new ExternalResource(new URL("/" + docId))) // docURL
-//          }
-
+      new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog /*with Resizable*/ |>> { dlg =>
         dlg.mainUI = new VerticalLayout with FullSize |>> { lyt =>
           val mb = new MenuBar
           val mi = mb.addItem("Menu")
@@ -1026,7 +1019,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
           val emb = new Embedded with FullSize |>> { browser =>
             browser.setType(Embedded.TYPE_BROWSER)
-            browser.setSource(new ExternalResource(docURL)) //
+            browser.setSource(new ExternalResource(docUrl))
           }
 
           addComponentsTo(lyt, mb, emb)
@@ -1034,7 +1027,25 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
         }
 
         dlg.setSize(600, 600)
-      }
+      } |> projection.ui.topWindow.addWindow
+
+//      projection.ui.topWindow.initAndShow(new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog, resizable = true) { dlg =>
+//        dlg.mainUI = new VerticalLayout with FullSize |>> { lyt =>
+//          val mb = new MenuBar
+//          val mi = mb.addItem("Menu")
+//          1 to 10 foreach { mi addItem _.toString }
+//
+//          val emb = new Embedded with FullSize |>> { browser =>
+//            browser.setType(Embedded.TYPE_BROWSER)
+//            browser.setSource(new ExternalResource(docUrl))
+//          }
+//
+//          addComponentsTo(lyt, mb, emb)
+//          lyt.setExpandRatio(emb, 1.0f)
+//        }
+//
+//        dlg.setSize(600, 600)
+//      }
     }
   }
 
@@ -1042,7 +1053,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
     whenSingle(projection.selection) { docId =>
       // todo copy selected document VERSION, not working???
       // dialog with drop down???? -> version select
-      imcmsServices.getDocumentMapper.copyDocument(imcmsServices.getDocumentMapper.getWorkingDocument(docId), projection.ui.getApplication.user)
+      imcmsServices.getDocumentMapper.copyDocument(imcmsServices.getDocumentMapper.getWorkingDocument(docId), projection.ui.getApplication.imcmsUser)
       projection.filter()
       projection.ui.topWindow.showInfoNotification("Document has been copied")
     }
@@ -1065,7 +1076,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                 case Left(errors) => topWindow.showErrorNotification(errors.mkString(","))
                 case Right((editedDoc, i18nMetas)) =>
                   try {
-                    imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, ui.getApplication.user)
+                    imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser)
                     topWindow.showInfoNotification("Document has been saved")
                     projection.filter()
                   } catch {

@@ -66,19 +66,19 @@ trait CustomSizeDialog extends Dialog {
 trait YesButton { this: Dialog =>
   val btnYes = new Button("btn_yes".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  def setYesHandler(handler: => Unit): Unit = DialogUtil.wrapButtonClickHandler(this, btnYes, handler)
+  def setYesHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnYes, handler)
 }
 
 trait NoButton { this: Dialog =>
   val btnNo = new Button("btn_no".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/cancel.png")) }
 
-  def setNoHandler(handler: => Unit): Unit = DialogUtil.wrapButtonClickHandler(this, btnNo, handler)
+  def setNoHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnNo, handler)
 }
 
 trait OKButton { this: Dialog =>
   val btnOk = new Button("btn_ok".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  def setOkHandler(handler: => Unit): Unit = DialogUtil.wrapButtonClickHandler(this, btnOk, handler)
+  def setOkHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnOk, handler)
   def setOkCustomHandler(handler: => Unit): Unit = btnOk.addClickHandler(handler)
 }
 
@@ -86,7 +86,9 @@ trait OKButton { this: Dialog =>
 trait CancelButton { this: Dialog =>
   val btnCancel = new Button("btn_cancel".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
-  def setCancelHandler(handler: => Unit): Unit = DialogUtil.wrapButtonClickHandler(this, btnCancel, handler)
+  setCancelCustomHandler(close())
+
+  def setCancelHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnCancel, handler)
   def setCancelCustomHandler(handler: => Unit): Unit = btnCancel.addClickHandler(handler)
 }
 
@@ -174,7 +176,7 @@ trait NoMarginDialog { this: Dialog =>
   content.setMargin(false)
 }
 
-object DialogUtil extends Log4jLoggerSupport {
+object Dialog extends Log4jLoggerSupport {
 
   /**
    * Wraps button click handler: invokes original handler and closes dialog if there is no exception.

@@ -9,7 +9,11 @@ import com.imcode.imcms.vaadin.ui._
 
 trait ImcmsApplication extends com.vaadin.Application {
 
-  def user(): UserDomainObject = Utility.getLoggedOnUser(this.session)
+  def imcmsUser(): UserDomainObject = Utility.getLoggedOnUser(this.session)
+
+  def imcmsDocUrl(docId: DocId) = this.resourceUrl(docId.toString)
+
+  def imcmsDocUrl(docAlias: String) = this.resourceUrl(docAlias)
 
   /**
    * If permission is granted executes an action.

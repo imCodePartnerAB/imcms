@@ -1,5 +1,8 @@
 package com
 
+import java.util.concurrent.atomic.AtomicBoolean
+import scala.util.control.{Exception => Ex}
+
 package object imcode {
 
   import _root_.imcode.server.document.index.solr.SolrDocumentIndexService

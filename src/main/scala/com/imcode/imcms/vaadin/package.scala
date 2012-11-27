@@ -23,14 +23,7 @@ package object vaadin {
   type ItemId = AnyRef
   type ColumnId = AnyRef
 
-  class ApplicationWrapper(app: Application) {
 
-    def context: WebApplicationContext = app.getContext.asInstanceOf[WebApplicationContext]
-
-    def session: HttpSession = context.getHttpSession
-
-    def servletContext: ServletContext = session.getServletContext
-  }
 
 
   /**

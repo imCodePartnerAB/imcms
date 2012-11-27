@@ -172,7 +172,7 @@ class SysAdmin extends com.vaadin.Application with ImcmsApplication { app =>
 
   def init() {
     setTheme("imcms")
-    setLocale(new Locale(user().getLanguageIso639_2))
+    setLocale(new Locale(imcmsUser().getLanguageIso639_2))
     mainWindow.initManagersMenu()
     setMainWindow(mainWindow)
   }

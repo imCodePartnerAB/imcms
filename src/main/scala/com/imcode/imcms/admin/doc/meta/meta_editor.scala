@@ -85,7 +85,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
         case "Access" =>
           if (accessEditorOpt.isEmpty) accessEditorOpt =
-            Some(new AccessEditor(doc, ui.getApplication.user))
+            Some(new AccessEditor(doc, ui.getApplication.imcmsUser))
 
           ui.pnlMenuItem.setContent(accessEditorOpt.get.ui)
 
@@ -100,7 +100,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
           ui.pnlMenuItem.setContent(categoryEditorOpt.get.ui)
 
         case "Profile" =>
-          if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], ui.getApplication.user))
+          if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], ui.getApplication.imcmsUser))
 
           ui.pnlMenuItem.setContent(profileEditorOpt.get.ui)
 

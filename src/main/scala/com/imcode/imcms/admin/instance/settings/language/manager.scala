@@ -77,7 +77,7 @@ class LanguageManager(app: ImcmsApplication) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.user.isSuperAdmin
+  def canManage = app.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage languages")
 
   /** Edit in modal dialog. */

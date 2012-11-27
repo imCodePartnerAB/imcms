@@ -23,7 +23,7 @@ import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerato
 import com.vaadin.event.dd.acceptcriteria.{Not, AcceptAll, AcceptCriterion}
 import com.vaadin.data.util.{HierarchicalContainer}
 import scala.annotation.tailrec
-import admin.doc.search.{DocIdSelectStatusItemIcon, DocsProjectionDialog}
+import admin.doc.search.{DocIdSelectWithLifeCycleIcon, DocsProjectionDialog}
 
 class DocAdmin extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
 
@@ -114,7 +114,7 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
         case Left(errors) => wnd.showErrorNotification(errors.mkString(","))
         case Right((editedDoc, i18nMetas)) =>
           try {
-            imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, app.user)
+            imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, app.imcmsUser)
             wnd.showInfoNotification("Document has been saved")
           } catch {
             case e => wnd.showErrorNotification("Failed to save document", e.getStackTraceString)
@@ -147,7 +147,7 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
 
     lytButtons.btnSave.addClickHandler {
       menuEditor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, wnd.getApplication.user())
+        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, wnd.getApplication.imcmsUser())
       }
     }
   }
@@ -202,17 +202,16 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
   private var state = menu.clone()
 
-  val ui = new MenuEditorUI { ui =>
-
-    override def attach() {
-      init()
-    }
-
+  val ui = new MenuEditorUI |>> { ui =>
     ui.treeMenu.setItemDescriptionGenerator(new ItemDescriptionGenerator {
       def generateDescription(source: Component, itemId: AnyRef, propertyId: AnyRef) = "menu item tooltip"
     })
 
-    ui.miAddDocs.setCommandHandler {
+    ui.treeMenu.addValueChangeHandler {
+      doto(ui.miEditSelectedDoc, ui.miExcludeSelectedDoc, ui.miShowSelectedDoc) { _.setEnabled(ui.treeMenu.valueOpt.isDefined) }
+    }
+
+    ui.miIncludeDocs.setCommandHandler {
       ui.topWindow.initAndShow(new OkCancelDialog("Choose documents") with DocsProjectionDialog, resizable = true) { dlg =>
         dlg.setOkHandler {
           for {
@@ -229,6 +228,25 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
         }
 
         dlg.setSize(500, 600)
+      }
+    }
+
+    ui.miExcludeSelectedDoc.setCommandHandler {
+      for (docId <- ui.treeMenu.valueOpt) {
+        state.removeMenuItemByDocumentId(docId)
+        updateTreeMenuUI()
+      }
+    }
+
+    ui.miEditSelectedDoc.setCommandHandler {
+      for (docId <- ui.treeMenu.valueOpt) {
+        // todo: ???edit???
+      }
+    }
+
+    ui.miEditSelectedDoc.setCommandHandler {
+      for (docId <- ui.treeMenu.valueOpt) {
+        // todo: ???view???
       }
     }
 
@@ -337,18 +355,18 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
   resetValues()
 
   private def updateTreeMenuUI() {
-    val menuSortOrder = state.getSortOrder
-    val isMultilevel = menuSortOrder == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER
-    val manualSortAllowed = Set(
+    val sortOrder = state.getSortOrder
+    val isMultilevel = sortOrder == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER
+    val isManualSort = Set(
       MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER,
       MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED
-    ).contains(menuSortOrder)
+    ).contains(sortOrder)
 
     import ui.treeMenu
 
     treeMenu.removeAllItems()
-    treeMenu.setDragMode(if (manualSortAllowed) Tree.TreeDragMode.NODE else Tree.TreeDragMode.NONE)
-    treeMenu.setDropHandler(menuSortOrder match {
+    treeMenu.setDragMode(if (isManualSort) Tree.TreeDragMode.NODE else Tree.TreeDragMode.NONE)
+    treeMenu.setDropHandler(sortOrder match {
       case MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER => TreeMenuDropHandlers.multilevel
       case MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED => TreeMenuDropHandlers.singleLevel
       case _ => null
@@ -359,25 +377,15 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       val doc = menuItem.getDocument
       val docId = doc.getId
       val caption = docId+": "+doc.getHeadline
-//      val icon = doc.getPublicationStatus |> {
-//        case Document.PublicationStatus.APPROVED => "approved.gif"
-//        case Document.PublicationStatus.DISAPPROVED => "disapproved.gif"
-//        case Document.PublicationStatus.NEW => "new.gif"
-//      } |> { filename =>
-//        val app = ui.getApplication
-//        val file = new File(app.context.getBaseDirectory, "imcms/eng/images/admin/status/" + filename)
-//
-//        new FileResource(file, app)
-//      }
 
       treeMenu.addItem(docId, caption)
-      //treeMenu.setItemIcon(docId, icon)
       treeMenu.setChildrenAllowed(docId, isMultilevel)
       treeMenu.expandItem(docId)
     }
 
     if (isMultilevel) {
-      @tailrec def findParentMenuItem(menuIndex: String): Option[MenuItemDomainObject] = {
+      @tailrec
+      def findParentMenuItem(menuIndex: String): Option[MenuItemDomainObject] = {
         menuIndex.lastIndexOf('.') match {
           case -1 => None
           case  n =>
@@ -393,21 +401,15 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
         parentMenuItem <- findParentMenuItem(menuItem.getTreeSortIndex)
       } {
         treeMenu.setParent(menuItem.getDocumentId, parentMenuItem.getDocumentId)
-
       }
     }
   }
 
 
-  private val init: (() => Unit) = {
-    val initialized = new AtomicBoolean(false)
-
-    () => if (initialized.compareAndSet(false, true)) {
-      ui.cbSortOrder.setValue(state.getSortOrder)
-    }
+  def resetValues() {
+    state = menu.clone()
+    ui.cbSortOrder.setValue(state.getSortOrder)
   }
-
-  def resetValues() {}
 
   def collectValues(): ErrorsOrData = Right(state.clone())
 }
@@ -415,11 +417,13 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
 class MenuEditorUI extends VerticalLayout with Margin with FullSize {
   val mb = new MenuBar with FullWidth
-  val miAddDocs = mb.addItem("Add docs")
-  val miRemoveDocs = mb.addItem("Remove docs")
+  val miIncludeDocs = mb.addItem("Add")
+  val miExcludeSelectedDoc = mb.addItem("Remove")
+  val miShowSelectedDoc = mb.addItem("Show")
+  val miEditSelectedDoc = mb.addItem("Edit")
   val miHelp = mb.addItem("Help")
 
-  val treeMenu = new Tree with DocIdSelectStatusItemIcon with SingleSelect[DocId] with Selectable with Immediate with FullSize |>> {
+  val treeMenu = new Tree with DocIdSelectWithLifeCycleIcon with SingleSelect[DocId] with Selectable with Immediate with FullSize |>> {
     _.setContainerDataSource(new HierarchicalContainer)
   }
 
@@ -431,7 +435,7 @@ class MenuEditorUI extends VerticalLayout with Margin with FullSize {
       MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED -> "Modified date/time",
       MenuDomainObject.MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED -> "Published date/time",
       MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED -> "Manual",
-      MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER -> "Manual multilevel"
+      MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER -> "Manual - multilevel"
     ).foreach {
       case (id, caption) => cb.addItem(id: JInteger, caption)
     }
