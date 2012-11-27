@@ -7,6 +7,7 @@ import _root_.imcode.util.Utility
 import com.imcode.imcms.security.{PermissionDenied, PermissionGranted, Permission}
 import com.imcode.imcms.vaadin.ui._
 
+/* implicit */
 trait ImcmsApplication extends com.vaadin.Application {
 
   def imcmsUser(): UserDomainObject = Utility.getLoggedOnUser(this.session)

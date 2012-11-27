@@ -8,6 +8,7 @@ import javax.servlet.ServletContext
 import java.net.URL
 
 
+/* implicit */
 class ApplicationWrapper(app: Application) {
 
   def context: WebApplicationContext = app.getContext.asInstanceOf[WebApplicationContext]

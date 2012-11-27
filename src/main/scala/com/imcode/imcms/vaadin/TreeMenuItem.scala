@@ -6,7 +6,7 @@ import com.vaadin.terminal.Resource
 /** Tree item descriptor */
 class TreeMenuItem(val id: String = null, val icon: Resource = null) {
   val children: Seq[TreeMenuItem] = {
-    val isMenuItemType: Class[_] => Boolean = classOf[TreeMenuItem].isAssignableFrom
+    val isMenuItemType: (Class[_] => Boolean) = classOf[TreeMenuItem].isAssignableFrom
 
     getClass.getDeclaredMethods
       .filter(_.getReturnType |> isMenuItemType)
