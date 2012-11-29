@@ -9,7 +9,6 @@ import com.vaadin.terminal.gwt.server.HttpServletRequestListener
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog}
-import com.imcode.imcms.admin.doc.DocEditor
 import com.vaadin.event.dd.{DragAndDropEvent, DropHandler}
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation
 import com.vaadin.event.DataBoundTransferable
@@ -24,6 +23,7 @@ import com.vaadin.event.dd.acceptcriteria.{Not, AcceptAll, AcceptCriterion}
 import com.vaadin.data.util.{HierarchicalContainer}
 import scala.annotation.tailrec
 import admin.doc.search.{DocIdSelectWithLifeCycleIcon, DocsProjectionDialog}
+import admin.doc.{DocViewer, DocEditor}
 
 class DocAdmin extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
 
@@ -196,6 +196,7 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
 }
 
 
+// todo: ???revert btn (in save or in menu)???
 class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends Editor with ImcmsServicesSupport {
 
   type Data = MenuDomainObject
@@ -208,12 +209,14 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     })
 
     ui.treeMenu.addValueChangeHandler {
-      doto(ui.miEditSelectedDoc, ui.miExcludeSelectedDoc, ui.miShowSelectedDoc) { _.setEnabled(ui.treeMenu.valueOpt.isDefined) }
+      doto(ui.miEditSelectedDoc, ui.miExcludeSelectedDoc, ui.miShowSelectedDoc) {
+        _.setEnabled(ui.treeMenu.selectionOpt.isDefined)
+      }
     }
 
     ui.miIncludeDocs.setCommandHandler {
-      ui.topWindow.initAndShow(new OkCancelDialog("Choose documents") with DocsProjectionDialog, resizable = true) { dlg =>
-        dlg.setOkHandler {
+      ui.rootWindow.initAndShow(new OkCancelDialog("Choose documents") with DocsProjectionDialog, resizable = true) { dlg =>
+        dlg.setOkButtonHandler {
           for {
             docId <- dlg.projection.selection
             if !state.getItemsMap.containsKey(docId)
@@ -232,32 +235,54 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     ui.miExcludeSelectedDoc.setCommandHandler {
-      for (docId <- ui.treeMenu.valueOpt) {
+      for (docId <- ui.treeMenu.selectionOpt) {
         state.removeMenuItemByDocumentId(docId)
         updateTreeMenuUI()
       }
     }
 
     ui.miEditSelectedDoc.setCommandHandler {
-      for (docId <- ui.treeMenu.valueOpt) {
-        // todo: ???edit???
+      for (docId <- ui.treeMenu.selectionOpt) {
+        imcmsServices.getDocumentMapper.getDocument(docId) match {
+          case null =>
+            ui.rootWindow.showWarningNotification("Document does not exist")
+            state.removeMenuItemByDocumentId(docId)
+            updateTreeMenuUI()
+
+          case doc =>
+            DocEditor.mkDocEditorDialog(doc, "Edit document properties") |>> { dlg =>
+              dlg.setOkButtonHandler {
+                dlg.docEditor.collectValues() match {
+                  case Left(errors) => ui.rootWindow.showErrorNotification(errors.mkString(", "))
+                  case Right((modifiedDoc, i18nMetas)) =>
+                    try {
+                      imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser())
+                      updateTreeMenuUI()
+                    } catch {
+                      case e =>
+                        ui.rootWindow.showErrorNotification("Can't save document", e.getMessage)
+                        throw e
+                    }
+                }
+              }
+            } |> ui.rootWindow.addWindow
+        }
       }
     }
 
-    ui.miEditSelectedDoc.setCommandHandler {
-      for (docId <- ui.treeMenu.valueOpt) {
-        // todo: ???view???
+    ui.miShowSelectedDoc.setCommandHandler {
+      for (docId <- ui.treeMenu.selectionOpt) {
+        DocViewer.showDocViewDialog(ui, docId)
       }
     }
 
     ui.cbSortOrder.addValueChangeHandler {
-      state.setSortOrder(ui.cbSortOrder.value)
+      state.setSortOrder(ui.cbSortOrder.selection)
       updateTreeMenuUI()
     }
   }
 
   private object TreeMenuDropHandlers {
-
     private val tree = ui.treeMenu
     private val container = tree.getContainerDataSource.asInstanceOf[HierarchicalContainer]
 
@@ -405,10 +430,10 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
   }
 
-
   def resetValues() {
     state = menu.clone()
-    ui.cbSortOrder.setValue(state.getSortOrder)
+    ui.cbSortOrder.selection = state.getSortOrder
+    ui.treeMenu.selection = null
   }
 
   def collectValues(): ErrorsOrData = Right(state.clone())
@@ -420,10 +445,10 @@ class MenuEditorUI extends VerticalLayout with Margin with FullSize {
   val miIncludeDocs = mb.addItem("Add")
   val miExcludeSelectedDoc = mb.addItem("Remove")
   val miShowSelectedDoc = mb.addItem("Show")
-  val miEditSelectedDoc = mb.addItem("Edit")
+  val miEditSelectedDoc = mb.addItem("Properties")
   val miHelp = mb.addItem("Help")
 
-  val treeMenu = new Tree with DocIdSelectWithLifeCycleIcon with SingleSelect[DocId] with Selectable with Immediate with FullSize |>> {
+  val treeMenu = new Tree with AlwaysFireValueChange with DocIdSelectWithLifeCycleIcon with SingleSelect[DocId] with Selectable with Immediate with FullSize |>> {
     _.setContainerDataSource(new HierarchicalContainer)
   }
 

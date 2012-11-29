@@ -91,9 +91,9 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
         } yield role -> setTypes)(breakOut)
 
       if (availableRolesWithPermsSetTypes.isEmpty) {
-        ui.topWindow.showWarningNotification("No roles available")
+        ui.rootWindow.showWarningNotification("No roles available")
       } else {
-        ui.topWindow.initAndShow(new OkCancelDialog("Add role")) { dlg =>
+        ui.rootWindow.initAndShow(new OkCancelDialog("Add role")) { dlg =>
           val availableRoles = availableRolesWithPermsSetTypes.keySet
           dlg.mainUI = new AddRolePermSetDialogMainUI |>> { c =>
             availableRoles foreach { role => c.cbRole.addItem(role, role.getName) }
@@ -109,7 +109,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
 
             c.cbRole.value = availableRoles.head
 
-            dlg.setOkHandler {
+            dlg.setOkButtonHandler {
               val role = c.cbRole.value
               val setType = c.ogPermsSetType.value
 
@@ -124,9 +124,9 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     ui.perms.miRoleChangePermSet.setCommandHandler {
       whenSingle(ui.perms.tblRolesPermSets.value.asScala.toSeq) { role =>
         types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
-          case Nil => ui.topWindow.showWarningNotification("You are not allowed to edit this role")
+          case Nil => ui.rootWindow.showWarningNotification("You are not allowed to edit this role")
           case availableSetTypes =>
-            ui.topWindow.initAndShow(new OkCancelDialog("Change Role Permissions")) { dlg =>
+            ui.rootWindow.initAndShow(new OkCancelDialog("Change Role Permissions")) { dlg =>
               dlg.mainUI = new ChangeRolePermSetDialogMainUI |>> { c =>
                 c.lblRole.value = role.getName
 
@@ -138,7 +138,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
                   c.ogPermsSetType.setItemEnabled(setType, availableSetTypes contains setType)
                 }
 
-                dlg.setOkHandler {
+                dlg.setOkButtonHandler {
                   setRolePermSetType(role, c.ogPermsSetType.value)
                 }
               }
@@ -154,7 +154,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     }
 
     ui.perms.miEditPermSets.setCommandHandler {
-      ui.topWindow.initAndShow(new OkCancelDialog("Permissions")) { dlg =>
+      ui.rootWindow.initAndShow(new OkCancelDialog("Permissions")) { dlg =>
         dlg.mainUI = permSetsEditor.ui
       }
     }

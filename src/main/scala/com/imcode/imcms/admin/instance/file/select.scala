@@ -101,8 +101,8 @@ extends OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
     }
 
     ui.miFileUpload setCommandHandler {
-      ui.topWindow.initAndShow(new FileUploaderDialog("Upload file")) { dlg =>
-        dlg.setOkHandler {
+      ui.rootWindow.initAndShow(new FileUploaderDialog("Upload file")) { dlg =>
+        dlg.setOkButtonHandler {
           for {
             uploadedFile <- dlg.uploader.uploadedFile
             selection <- browser.selection
@@ -219,7 +219,7 @@ class ImagePicker(app: Application, browser: FileBrowser) {
   val preview = new EmbeddedPreview; preview.stubUI.value = "No Icon"
   val fileDialog = new FileDialog("Pick an image", browser) |>> { dlg =>
     dlg.preview.enabled = true
-    dlg.setOkHandler {
+    dlg.setOkButtonHandler {
       for (selection <- browser.selection; file <- selection.firstItem)
         preview.set(new Embedded("", new FileResource(file, app)))
     }

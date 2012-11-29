@@ -42,7 +42,7 @@ class CategoryManager(app: ImcmsApplication) {
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblCategories) { id =>
         app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected category?")) { dlg =>
-          dlg.setOkHandler {
+          dlg.setOkButtonHandler {
             app.privileged(permission) {
               Ex.allCatch.either(categoryMapper.getCategoryById(id.intValue) |> opt foreach categoryMapper.deleteCategoryFromDb) match {
                 case Right(_) =>
@@ -92,7 +92,7 @@ class CategoryManager(app: ImcmsApplication) {
           c.txaDescription.value = vo.getDescription |> opt getOrElse ""
           c.sltType.value = if (isNew) typesNames.head else vo.getType.getName
 
-          dlg.setOkHandler {
+          dlg.setOkButtonHandler {
             vo.clone |> { voc =>
               voc setName c.txtName.value.trim
               voc setDescription c.txaDescription.value.trim

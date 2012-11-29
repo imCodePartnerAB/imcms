@@ -152,7 +152,13 @@ trait SingleSelect[A <: ItemId] extends GenericSelect[A] with NullableProperty[A
 
   def isSelected = value != null
 
-  override def setMultiSelect(multiSelect: Boolean) {
+  def selection = value
+
+  def selection_=(v: A) { value = v }
+
+  def selectionOpt = valueOpt
+
+  override final def setMultiSelect(multiSelect: Boolean) {
     require(!multiSelect, "must be false")
     super.setMultiSelect(multiSelect)
   }

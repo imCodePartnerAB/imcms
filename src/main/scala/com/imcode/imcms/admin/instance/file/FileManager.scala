@@ -31,7 +31,7 @@ class FileManager(app: ImcmsApplication) {
           dlg.mainUI = dlgUI
           dlgUI.txtName.value = item.getName
 
-          dlg.setOkHandler {
+          dlg.setOkButtonHandler {
             val forbiddenChars = """?"\/:;%*|>>>"""
             val forbiddenCharsSet = forbiddenChars.toSet
             dlgUI.txtName.value.trim |> {
@@ -84,7 +84,7 @@ class FileManager(app: ImcmsApplication) {
           dlg.mainUI = textArea
           dlg.setSize(500, 500)
 
-          dlg.setOkHandler {
+          dlg.setOkButtonHandler {
             FileUtils.writeStringToFile(item, textArea.value)
           }
         }
@@ -94,7 +94,7 @@ class FileManager(app: ImcmsApplication) {
     ui.miFileUpload setCommandHandler {
       for (LocationSelection(dir, _) <- browser.selection) {
         app.getMainWindow.initAndShow(new FileUploaderDialog("file.upload.dlg.title".i)) { dlg =>
-          dlg.setOkHandler {
+          dlg.setOkButtonHandler {
             for {
               UploadedFile(_, _, file) <- dlg.uploader.uploadedFile
               destFile = new File(dir, dlg.uploader.saveAsName)
@@ -132,7 +132,7 @@ class FileManager(app: ImcmsApplication) {
           val forbiddenChars = """?"\/:;%*|>>>"""
           val forbiddenCharsSet = forbiddenChars.toSet
 
-          dlg.setOkHandler {
+          dlg.setOkButtonHandler {
             txtName.value.trim match {
               case name if name.isEmpty || name.head == '.' || name.exists(forbiddenCharsSet(_))  =>
                 val msg = "file.mgr.dlg.illegal.item.name.msg".f(forbiddenChars)
@@ -190,7 +190,7 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
 
   def delete() = for (selection <- browser.selection if selection.hasItems) {
     app.getMainWindow.initAndShow(new ConfirmationDialog("file.mgr.dlg.delete.confirm.msg".i)) { dlg =>
-      dlg.setOkHandler { asyncDeleteItems(selection.items) }
+      dlg.setOkButtonHandler { asyncDeleteItems(selection.items) }
     }
   }
 
@@ -256,7 +256,7 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
         }
       }
 
-      dlg.setCancelHandler {
+      dlg.setCancelButtonHandler {
         dlg.btnCancel.setEnabled(false)
         dlgUI.lblMsg.value = "dlg.progress.cancelling.msg".i
 
@@ -285,8 +285,8 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
           app.getMainWindow.initAndShow(new OkCancelErrorDialog("file.mgr.dlg.delete.item.err.msg".f(item.getName))) { dlg =>
             dlg.btnOk.setCaption("btn_skip".i)
 
-            dlg.setOkHandler { stateHandler ! ItemsState(remaining, processed) }
-            dlg.setCancelHandler { stateHandler ! ItemsState(Nil, processed) }
+            dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
+            dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
           }
         }
       }
@@ -306,7 +306,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
       val dirSelectBrowser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isSelectable = false))
 
       app.getMainWindow.initAndShow(new DirSelectionDialog("file.mgr.dlg.select.copy.dest.title".i, dirSelectBrowser, Seq(selection.dir)), resizable = true) { dlg =>
-        dlg.setOkHandler {
+        dlg.setOkButtonHandler {
           for {
             destLocation <- dirSelectBrowser.location
             destSelection <- dirSelectBrowser.selection
@@ -323,7 +323,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
       val dirSelectBrowser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isSelectable = false))
 
       app.getMainWindow.initAndShow(new DirSelectionDialog("file.mgr.dlg.select.move.dest.title", dirSelectBrowser, Seq(selection.dir)), resizable = true) { dlg =>
-        dlg.setOkHandler {
+        dlg.setOkButtonHandler {
           for {
             destLocation <- dirSelectBrowser.location
             destSelection <- dirSelectBrowser.selection
@@ -350,7 +350,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
         app.getMainWindow.showWarningNotification("file.mgr.copy.nop.warn.msg".i)
       } else {
         app.getMainWindow.initAndShow(new ConfirmationDialog("dlg.info.title".i, "file.mgr.dlg.copy.summary.msg".f(itemsState.processed.size, destDir.getName))) { dlg =>
-          dlg.setOkHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
+          dlg.setOkButtonHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
         }
       }
     }
@@ -404,7 +404,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
         }
       }
 
-      dlg.setCancelHandler {
+      dlg.setCancelButtonHandler {
         dlg.btnCancel.setEnabled(false)
         dlgUI.lblMsg.value = "dlg.progress.cancelling.msg".i
 
@@ -439,8 +439,8 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
                 dlg.btnOk.setCaption("btn_skip".i)
                 dlg.mainUI = new Label("file.mgr.dlg.copy.item.err.msg".f(item.getName)) with UndefinedSize
 
-                dlg.setOkHandler { stateHandler ! ItemsState(remaining, processed) }
-                dlg.setCancelHandler { stateHandler ! ItemsState(Nil, processed) }
+                dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
+                dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
               }
             }
           }
@@ -456,9 +456,9 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
               dlg.btnNo.setCaption("btn_skip".i)
 
               dlg.mainUI = dlgUI
-              dlg.setYesHandler { copyItem(dlgUI.txtName.value) }
-              dlg.setNoHandler { stateHandler ! ItemsState(remaining, processed) }
-              dlg.setCancelHandler { stateHandler ! ItemsState(Nil, processed) }
+              dlg.setYesButtonHandler { copyItem(dlgUI.txtName.value) }
+              dlg.setNoButtonHandler { stateHandler ! ItemsState(remaining, processed) }
+              dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
             }
           }
         }
@@ -486,8 +486,8 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
         app.getMainWindow.showWarningNotification("file.mgr.move.nop.warn.msg".i)
       } else {
         app.getMainWindow.initAndShow(new ConfirmationDialog("dlg.info.title".i, "file.mgr.dlg.move.summary.msg".f(itemsState.processed.size, destDir.getName))) { dlg =>
-          dlg.setOkHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
-          dlg.setCancelHandler { browser.reloadLocation() }
+          dlg.setOkButtonHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
+          dlg.setCancelButtonHandler { browser.reloadLocation() }
         }
       }
     }
@@ -541,7 +541,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
         }
       }
 
-      dlg.setCancelHandler {
+      dlg.setCancelButtonHandler {
         dlg.btnCancel.setEnabled(false)
         dlgUI.lblMsg.value = "dlg.progress.cancelling.msg".i
 
@@ -573,8 +573,8 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
           } catch {
             case e => app.synchronized {
               app.getMainWindow.initAndShow(new OkCancelErrorDialog("file.mgr.dlg.move.item.err.msg".f(item.getName))) { dlg =>
-                dlg.setOkHandler { stateHandler ! ItemsState(remaining, processed) }
-                dlg.setCancelHandler { stateHandler ! ItemsState(Nil, processed) }
+                dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
+                dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
               }
             }
           }
@@ -590,9 +590,9 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
               dlg.btnNo.setCaption("btn_skip".i)
 
               dlg.mainUI = dlgUI
-              dlg.setYesHandler { moveItem(dlgUI.txtName.value) }
-              dlg.setNoHandler { stateHandler ! ItemsState(remaining, processed) }
-              dlg.setCancelHandler { stateHandler ! ItemsState(Nil, processed) }
+              dlg.setYesButtonHandler { moveItem(dlgUI.txtName.value) }
+              dlg.setNoButtonHandler { stateHandler ! ItemsState(remaining, processed) }
+              dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
             }
           }
         }

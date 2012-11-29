@@ -35,7 +35,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblTypes) { id =>
         app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected category type?")) { dlg =>
-          dlg.setOkHandler {
+          dlg.setOkButtonHandler {
             app.privileged(permission) {
               Ex.allCatch.either(categoryMapper.getCategoryTypeById(id.intValue) |> opt foreach categoryMapper.deleteCategoryTypeFromDb) match {
                 case Right(_) =>
@@ -73,7 +73,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
         c.chkInherited.value = vo.isInherited //: JBoolean
         c.chkMultiSelect.value = vo.isMultiselect //: JBoolean
 
-        dlg.setOkHandler {
+        dlg.setOkButtonHandler {
           vo.clone() |> { voc =>
             voc setName c.txtName.value.trim
             voc setInherited c.chkInherited.booleanValue

@@ -7,11 +7,16 @@ import com.imcode._
 import com.imcode.imcms.vaadin._
 import com.vaadin.terminal.ThemeResource
 import com.vaadin.ui._
-//import com.vaadin.ui.AbstractComponent._
-//import com.vaadin.ui.GridLayout._
-//import com.vaadin.ui.Panel._
-//import com.vaadin.ui.Window._
 import scala.util.control.{Exception => Ex}
+
+
+trait Modal { this: Window =>
+  setModal(true)
+}
+
+trait NonModal { this: Window =>
+  setModal(false)
+}
 
 /**
  * Auto-adjustable size dialog window with full margin.
@@ -23,7 +28,7 @@ import scala.util.control.{Exception => Ex}
  *   -buttons bar UI (buttons) are centered.
  *   -size is adjusted automatically according to its content size.
  */
-class Dialog(caption: String = "") extends Window(caption) {
+class Dialog(caption: String = "") extends Window(caption) with Modal {
   protected val mainUISizeAssert: Component => Unit = Asserts.assertFixedSize
   protected val buttonsBarUISizeAssert: Component => Unit = Asserts.assertFixedSize
   protected val content = new GridLayout(1, 2) with Spacing with Margin
@@ -52,6 +57,7 @@ class Dialog(caption: String = "") extends Window(caption) {
 }
 
 
+
 /**
  * Size (both width and height) of this dialog MUST be set explicitly.
  */
@@ -66,30 +72,30 @@ trait CustomSizeDialog extends Dialog {
 trait YesButton { this: Dialog =>
   val btnYes = new Button("btn_yes".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  def setYesHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnYes, handler)
+  def setYesButtonHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnYes, handler)
 }
 
 trait NoButton { this: Dialog =>
   val btnNo = new Button("btn_no".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/cancel.png")) }
 
-  def setNoHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnNo, handler)
+  def setNoButtonHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnNo, handler)
 }
 
 trait OKButton { this: Dialog =>
   val btnOk = new Button("btn_ok".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  def setOkHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnOk, handler)
-  def setOkCustomHandler(handler: => Unit): Unit = btnOk.addClickHandler(handler)
+  def setOkButtonHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnOk, handler)
+  def setOkButtonCustomHandler(handler: => Unit): Unit = btnOk.addClickHandler(handler)
 }
 
 
 trait CancelButton { this: Dialog =>
   val btnCancel = new Button("btn_cancel".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
-  setCancelCustomHandler(close())
+  setCancelButtonCustomHandler(close())
 
-  def setCancelHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnCancel, handler)
-  def setCancelCustomHandler(handler: => Unit): Unit = btnCancel.addClickHandler(handler)
+  def setCancelButtonHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnCancel, handler)
+  def setCancelButtonCustomHandler(handler: => Unit): Unit = btnCancel.addClickHandler(handler)
 }
 
 /** Empty dialog window. */
@@ -101,7 +107,7 @@ class OKDialog(caption: String = "") extends Dialog(caption) with OKButton {
 class CancelDialog(caption: String = "") extends Dialog(caption) with CancelButton {
   buttonsBarUI = btnCancel
 
-  setCancelCustomHandler { close() }
+  setCancelButtonCustomHandler { close() }
 }
 
 
@@ -116,7 +122,7 @@ trait MsgLabel { this: Dialog =>
 class MsgDialog(caption: String = "", msg: String ="") extends OKDialog(caption) with MsgLabel {
   lblMessage.value = msg
 
-  setOkCustomHandler { close() }
+  setOkButtonCustomHandler { close() }
 }
 
 /** OKCancel dialog window. */
@@ -190,7 +196,7 @@ object Dialog extends Log4jLoggerSupport {
         case e =>
           using(new java.io.StringWriter) { w =>
             e.printStackTrace(new java.io.PrintWriter(w))
-            dialog.topWindow.showErrorNotification("Unexpected error: %s".format(e.getMessage), w.toString)
+            dialog.rootWindow.showErrorNotification("Unexpected error: %s".format(e.getMessage), w.toString)
           }
 
           logger.error("Dialog button click hander error", e)

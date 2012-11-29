@@ -113,31 +113,6 @@ package object ui {
     }
   }
 
-  class WindowWrapper(window: Window) {
-    def initAndShow[W <: Window](childWindow: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
-      init(childWindow)
-      childWindow.setModal(modal)
-      childWindow.setResizable(resizable)
-      childWindow.setDraggable(draggable)
-      window.addWindow(childWindow)
-    }
-
-    def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true): Unit =
-      initAndShow(window, modal, resizable, draggable) { _ => }
-
-    def showNotification(caption: String, description: String, notificationType: Int): Unit =
-      window.showNotification(caption, description, notificationType)
-
-    def showErrorNotification(caption: String, description: String = null): Unit =
-      window.showNotification(caption, description, Notification.TYPE_ERROR_MESSAGE)
-
-    def showWarningNotification(caption: String, description: String = null): Unit =
-      window.showNotification(caption, description, Notification.TYPE_WARNING_MESSAGE)
-
-    def showInfoNotification(caption: String, description: String = null): Unit =
-      window.showNotification(caption, description, Notification.TYPE_HUMANIZED_MESSAGE)
-  }
-
   class MenuBarWrapper(mb: MenuBar) {
     def addItem(caption: String, resource: Resource): MenuBar#MenuItem = mb.addItem(caption, resource, null)
     def addItem(caption: String): MenuBar#MenuItem = mb.addItem(caption, null)
@@ -153,21 +128,6 @@ package object ui {
       })
 
     def setCommandHandler(handler: => Unit): Unit = setCommandListener(_ => handler)
-  }
-
-
-  class ComponentWrapper(component: Component) {
-    def topWindow: Window = {
-      @tailrec def findTopWindowOf(window: Window): Window = window.getParent match {
-        case null => window
-        case parent => findTopWindowOf(parent)
-      }
-
-      component.getWindow match {
-        case null => null
-        case window => findTopWindowOf(window)
-      }
-    }
   }
 
   class ButtonWrapper(button: Button) {
@@ -258,6 +218,7 @@ package object ui {
   /**
    * Reload button is placed under the content with right alignment.
    */
+  @deprecated
   class ReloadableContentUI[T <: Component](val content: T) extends GridLayout(1,2) with Spacing {
     import com.imcode.imcms.vaadin.Theme.Icon._
 

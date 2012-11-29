@@ -37,7 +37,7 @@ class SessionCounterManager(app: ImcmsApplication) {
             c.calStart.value = sc.date
           }
 
-          dlg.setOkHandler {
+          dlg.setOkButtonHandler {
             app.privileged(permission) {
               Ex.allCatch.either(SessionCounter save SessionCounter(c.txtValue.value.toInt, c.calStart.value)) match {
                 case Right(_) =>
@@ -54,7 +54,7 @@ class SessionCounterManager(app: ImcmsApplication) {
     }
     ui.miReset setCommandHandler {
       app.getMainWindow.initAndShow(new ConfirmationDialog("Reset session counter?")) { dlg =>
-        dlg.setOkHandler {
+        dlg.setOkButtonHandler {
           app.privileged(permission) {
             Ex.allCatch.either(SessionCounter save SessionCounter(0, new Date)) match {
               case Right(_) =>

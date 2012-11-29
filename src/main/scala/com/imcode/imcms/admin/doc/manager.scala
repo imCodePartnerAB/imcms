@@ -19,6 +19,7 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.admin.doc.search._
 import com.imcode.imcms.api.{I18nMeta, I18nLanguage}
+import com.vaadin.terminal.ExternalResource
 
 // import _root_.com.imcode.imcms.mapping.ProfileMapper.SimpleProfile ????
 
@@ -28,62 +29,6 @@ object Actions {
   val Delete = new Action("doc.mgr.action.delete".i)
   val EditMeta = new Action("doc.mgr.action.edit_meta".i)
 }
-
-
-
-object DocEditor {
-  def mkContentEditor(doc: DocumentDomainObject): DocContentEditor = doc match {
-    case textDoc: TextDocumentDomainObject => new TextDocContentEditor(textDoc)
-    case fileDoc: FileDocumentDomainObject => new FileDocContentEditor(fileDoc)
-    case urlDoc: UrlDocumentDomainObject => new UrlDocContentEditor(urlDoc)
-    case _ => new UnsupportedDocContentEditor(doc)
-  }
-
-  def mkDocEditorDlg(doc: DocumentDomainObject, caption: String): DocEditorDlg = new DocEditorDlg(doc, caption) |>> {
-    _.setSize(500, 500)
-  }
-
-  // DocEditorUI tabs: content, properties
-  // saveDoc <- content, properties => Either[error, doc]
-}
-
-
-class DocEditorDlg(doc: DocumentDomainObject, caption: String) extends OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
-  val docEditor = new DocEditor(doc)
-
-  mainUI = docEditor.ui
-}
-
-class DocEditor(doc: DocumentDomainObject) extends Editor {
-
-  type Data = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
-
-  val metaEditor = new MetaEditor(doc)
-  val contentEditor = DocEditor.mkContentEditor(doc)
-
-  val ui= new TabSheet with FullSize |>> { ts =>
-    ts.addTab(metaEditor.ui, "Properties", null)
-    ts.addTab(contentEditor.ui, "Content", null)
-  }
-
-  def resetValues() {
-    metaEditor.resetValues()
-    contentEditor.resetValues()
-  }
-
-  def collectValues(): ErrorsOrData = (metaEditor.collectValues(), contentEditor.collectValues()) match {
-    case (Left(errors), _) => Left(errors)
-    case (_, Left(errors)) => Left(errors)
-    case (Right((metaDoc, i18nMetas)), Right(contentDoc)) =>
-      // todo: merge meta doc and content doc
-      Right((metaDoc, i18nMetas))
-  }
-}
-
-//class DocEditorUI extends TabSheet with FullSize
-
-
-
 
 class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
   val projection = new DocsProjection(new AllDocsContainer)
@@ -119,7 +64,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
           dlg.mainUI = mainUI
 
-          dlg.setOkHandler {
+          dlg.setOkButtonHandler {
             mainUI.txtName.trimOpt match {
               case Some(name) =>
                 // check name is not taken by a profile with other id

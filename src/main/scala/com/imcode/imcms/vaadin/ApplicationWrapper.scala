@@ -18,6 +18,6 @@ class ApplicationWrapper(app: Application) {
   def servletContext: ServletContext = session.getServletContext
 
   def resourceUrl(resourcePath: String): URL = app.getURL |> { appUrl =>
-    new URL(appUrl.getProtocol, appUrl.getHost, appUrl.getPort, "/%s/%s".format(servletContext.getContextPath, resourcePath))
+    new URL(appUrl.getProtocol, appUrl.getHost, appUrl.getPort, "%s/%s".format(servletContext.getContextPath, resourcePath))
   }
 }

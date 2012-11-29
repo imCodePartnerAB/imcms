@@ -20,12 +20,12 @@ import com.vaadin.data.{Property, Item, Container}
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.admin.doc.{DocEditor, DocManager}
 import com.imcode.imcms.admin.access.user.UserSelectDialog
 import com.imcode.util.event.Publisher
 import com.imcode.imcms.api.{LuceneParsedQuery, Document}
 import com.vaadin.terminal.{FileResource, ExternalResource, Resource}
 import java.io.File
+import admin.doc.{DocViewer, DocEditor, DocManager}
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
@@ -84,7 +84,7 @@ class DocsProjection(val docsContainer: FilterableDocsContainer) extends Publish
   def filter() {
     createQuery() match {
       case Left(throwable) =>
-        ui.topWindow.show(new ErrorDialog(throwable.getMessage.i))
+        ui.rootWindow.show(new ErrorDialog(throwable.getMessage.i))
 
       case Right(solrQueryOpt) =>
         println("Doc solr search query: " + solrQueryOpt)
@@ -826,8 +826,8 @@ trait UserListUISetup { this: UserListUI =>
   }
 
   btnAdd.addClickHandler {
-    this.topWindow.initAndShow(new OkCancelDialog(projectionDialogCaption) with UserSelectDialog) { dlg =>
-      dlg.setOkHandler {
+    this.rootWindow.initAndShow(new OkCancelDialog(projectionDialogCaption) with UserSelectDialog) { dlg =>
+      dlg.setOkButtonHandler {
         for (user <- dlg.search.selection) lstUsers.addItem(user.getId: JInteger, "#" + user.getLoginName)
       }
     }
@@ -955,19 +955,19 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
           }
           val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.ui.getApplication.imcmsUser)
 
-          projection.ui.topWindow.initAndShow(DocEditor.mkDocEditorDlg(newDoc, dlgCaption)) { dlg =>
-            dlg.setOkHandler {
+          projection.ui.rootWindow.initAndShow(DocEditor.mkDocEditorDialog(newDoc, dlgCaption)) { dlg =>
+            dlg.setOkButtonHandler {
               val ui = projection.ui
 
               dlg.docEditor.collectValues() match {
-                case Left(errors) => ui.topWindow.showErrorNotification(errors.mkString(","))
+                case Left(errors) => ui.rootWindow.showErrorNotification(errors.mkString(","))
                 case Right((editedDoc, i18nMetas)) =>
                   try {
                     imcmsServices.getDocumentMapper.saveNewDocument(editedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser)
-                    ui.topWindow.showInfoNotification("New document has been created")
+                    ui.rootWindow.showInfoNotification("New document has been created")
                     projection.filter()
                   } catch {
-                    case e => ui.topWindow.showErrorNotification("Failed to create new document", e.getStackTraceString)
+                    case e => ui.rootWindow.showErrorNotification("Failed to create new document", e.getStackTraceString)
                   }
               }
             }
@@ -981,8 +981,8 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   def deleteSelectedDocs() {
     whenNotEmpty(projection.selection) { docIds =>
-      projection.ui.topWindow.initAndShow(new ConfirmationDialog("Delete selected document(s)?")) { dlg =>
-        dlg.setOkHandler {
+      projection.ui.rootWindow.initAndShow(new ConfirmationDialog("Delete selected document(s)?")) { dlg =>
+        dlg.setOkButtonHandler {
           try {
             for {
               docId <- docIds
@@ -990,11 +990,11 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
             } {
               imcmsServices.getDocumentMapper.deleteDocument(doc, projection.ui.getApplication.imcmsUser)
             }
-            projection.ui.topWindow.showInfoNotification("Document(s) deleted")
+            projection.ui.rootWindow.showInfoNotification("Document(s) deleted")
           } catch {
             case e =>
               logger.error("Document delete error", e)
-              projection.ui.topWindow.showErrorNotification("Error deleging document(s)", e.getStackTraceString)
+              projection.ui.rootWindow.showErrorNotification("Error deleging document(s)", e.getStackTraceString)
           } finally {
             // todo: update ranges ???
             projection.filter()
@@ -1004,48 +1004,9 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
     }
   }
 
-  // todo: check select single doc
-  // todo: add embedded/popup view???
-  // todo: remove buttons
   def showSelectedDoc() {
     whenSingle(projection.selection) { docId =>
-      val docUrl = projection.ui.getApplication.imcmsDocUrl(docId)
-
-      new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog /*with Resizable*/ |>> { dlg =>
-        dlg.mainUI = new VerticalLayout with FullSize |>> { lyt =>
-          val mb = new MenuBar
-          val mi = mb.addItem("Menu")
-          1 to 10 foreach { mi addItem _.toString }
-
-          val emb = new Embedded with FullSize |>> { browser =>
-            browser.setType(Embedded.TYPE_BROWSER)
-            browser.setSource(new ExternalResource(docUrl))
-          }
-
-          addComponentsTo(lyt, mb, emb)
-          lyt.setExpandRatio(emb, 1.0f)
-        }
-
-        dlg.setSize(600, 600)
-      } |> projection.ui.topWindow.addWindow
-
-//      projection.ui.topWindow.initAndShow(new OKDialog("Doc content") with CustomSizeDialog with NoMarginDialog, resizable = true) { dlg =>
-//        dlg.mainUI = new VerticalLayout with FullSize |>> { lyt =>
-//          val mb = new MenuBar
-//          val mi = mb.addItem("Menu")
-//          1 to 10 foreach { mi addItem _.toString }
-//
-//          val emb = new Embedded with FullSize |>> { browser =>
-//            browser.setType(Embedded.TYPE_BROWSER)
-//            browser.setSource(new ExternalResource(docUrl))
-//          }
-//
-//          addComponentsTo(lyt, mb, emb)
-//          lyt.setExpandRatio(emb, 1.0f)
-//        }
-//
-//        dlg.setSize(600, 600)
-//      }
+      DocViewer.showDocViewDialog(projection.ui, docId)
     }
   }
 
@@ -1055,7 +1016,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
       // dialog with drop down???? -> version select
       imcmsServices.getDocumentMapper.copyDocument(imcmsServices.getDocumentMapper.getWorkingDocument(docId), projection.ui.getApplication.imcmsUser)
       projection.filter()
-      projection.ui.topWindow.showInfoNotification("Document has been copied")
+      projection.ui.rootWindow.showInfoNotification("Document has been copied")
     }
   }
 
@@ -1067,20 +1028,20 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
         case null =>
         case doc =>
           val ui = projection.ui
-          val topWindow = ui.topWindow
-          topWindow.initAndShow(DocEditor.mkDocEditorDlg(doc, "Edit document"), resizable = true) { dlg =>
+          val rootWindow = ui.rootWindow
+          rootWindow.initAndShow(DocEditor.mkDocEditorDialog(doc, "Edit document"), resizable = true) { dlg =>
             dlg.setSize(500, 500)
 
-            dlg.setOkHandler {
+            dlg.setOkButtonHandler {
               dlg.docEditor.collectValues() match {
-                case Left(errors) => topWindow.showErrorNotification(errors.mkString(","))
+                case Left(errors) => rootWindow.showErrorNotification(errors.mkString(","))
                 case Right((editedDoc, i18nMetas)) =>
                   try {
                     imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser)
-                    topWindow.showInfoNotification("Document has been saved")
+                    rootWindow.showInfoNotification("Document has been saved")
                     projection.filter()
                   } catch {
-                    case e => topWindow.showErrorNotification("Failed to save document", e.getStackTraceString)
+                    case e => rootWindow.showErrorNotification("Failed to save document", e.getStackTraceString)
                   }
               }
             }

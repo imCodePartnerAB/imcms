@@ -38,8 +38,8 @@ class UserSingleSelect {
   private val selectionRef = new AtomicReference(Option.empty[UserDomainObject])
   val ui = new UserSingleSelectUI |>> { ui =>
     ui.btnSelect.addClickHandler {
-      ui.topWindow.initAndShow(new OkCancelDialog("Select user") with UserSingleSelectDialog) { dlg =>
-        dlg.setOkHandler {
+      ui.rootWindow.initAndShow(new OkCancelDialog("Select user") with UserSingleSelectDialog) { dlg =>
+        dlg.setOkButtonHandler {
           selection = dlg.search.selection.headOption
         }
       }

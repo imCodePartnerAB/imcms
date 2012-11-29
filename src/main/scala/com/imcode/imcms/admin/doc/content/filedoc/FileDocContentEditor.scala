@@ -77,8 +77,8 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.tblFiles.setColumnAlignment("Default", Table.ALIGN_CENTER)
 
     ui.miUpload.setCommandHandler {
-      ui.topWindow.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
-        dlg.setOkHandler {
+      ui.rootWindow.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
+        dlg.setOkButtonHandler {
           for (UploadedFile(_, mimeType, file) <- dlg.uploader.uploadedFile) {
             val saveAsName = dlg.uploader.saveAsName
 
@@ -102,7 +102,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
             } |> {
               case Left(errMsg: String) =>
                 dlg.uploader.ui.txtSaveAsName.setComponentError(errMsg)
-                ui.topWindow.showErrorNotification(errMsg)
+                ui.rootWindow.showErrorNotification(errMsg)
 
               case Right(fdf: FileDocumentFile) =>
                 fdf.setFilename(saveAsName)
@@ -122,13 +122,13 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.miEditProperties.setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
-          ui.topWindow.showWarningNotification("Please select a file")
+          ui.rootWindow.showWarningNotification("Please select a file")
 
         case Seq(_, _, _*) =>
-          ui.topWindow.showWarningNotification("Can't edit multiple files", "Please select a single file")
+          ui.rootWindow.showWarningNotification("Can't edit multiple files", "Please select a single file")
 
         case Seq(fileId) =>
-          ui.topWindow.initAndShow(new OkCancelDialog("Edit file properties")) { dlg =>
+          ui.rootWindow.initAndShow(new OkCancelDialog("Edit file properties")) { dlg =>
             val fdf = values.fdfs(fileId)
             val editorUI = new FileDocFilePropertiesEditorUI |>> { eui =>
               eui.txtId.value = fdf.getId
@@ -148,7 +148,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
             }
 
             dlg.mainUI = editorUI
-            dlg.setOkHandler {
+            dlg.setOkButtonHandler {
               val errors = MMap.empty[AbstractComponent, ErrorMsg]
 
               editorUI.txtId.trimOpt match {
@@ -209,7 +209,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.miDelete setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
-          ui.topWindow.showWarningNotification("Please select file(s)")
+          ui.rootWindow.showWarningNotification("Please select file(s)")
 
         case fileIds =>
           val fdfs = values.fdfs filterKeys fileIds.toSet.andThen(!_)
@@ -218,7 +218,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
           values = Values(fdfs, defaultFdfId)
           sync()
-          ui.topWindow.showInfoNotification("Selected file(s) have been deleted")
+          ui.rootWindow.showInfoNotification("Selected file(s) have been deleted")
       }
     }
 
@@ -226,15 +226,15 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.miMarkAsDefault setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
-          ui.topWindow.showWarningNotification("Please select a file")
+          ui.rootWindow.showWarningNotification("Please select a file")
 
         case Seq(_, _, _*) =>
-          ui.topWindow.showWarningNotification("Please select a single file")
+          ui.rootWindow.showWarningNotification("Please select a single file")
 
         case Seq(fileId) =>
           values = values.copy(defaultFdfId = Some(fileId))
           sync()
-          ui.topWindow.showInfoNotification("File has been marked as default")
+          ui.rootWindow.showInfoNotification("File has been marked as default")
       }
     }
 

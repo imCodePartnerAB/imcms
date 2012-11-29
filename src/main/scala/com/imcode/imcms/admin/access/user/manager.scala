@@ -32,7 +32,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
           c.chkActivated.setValue(true)
 
-          dlg.setOkHandler {
+          dlg.setOkButtonHandler {
             new UserDomainObject |> { u =>
               u setActive c.chkActivated.booleanValue
               u setFirstName c.txtFirstName.value
@@ -72,7 +72,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
             c.sltUILanguage.select(user.getLanguageIso639_2)
 
-            dlg.setOkHandler {
+            dlg.setOkButtonHandler {
               user.setActive(c.chkActivated.booleanValue)
               user.setFirstName(c.txtFirstName.value)
               user.setLastName(c.txtLastName.value)

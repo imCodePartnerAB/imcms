@@ -31,7 +31,7 @@ class FileUploaderDialog(caption: String = "") extends OkCancelDialog(caption) {
   uploader.listen { btnOk setEnabled _.isInstanceOf[UploadSucceeded] }
   uploader.reset()
 
-  setCancelHandler {
+  setCancelButtonHandler {
     if (uploader.ui.upload.isUploading) {
       uploader.ui.upload.interruptUpload
     }
@@ -94,7 +94,7 @@ class FileUploader extends Publisher[UploadStatus] {
         ui.txtSaveAsName.setEnabled(false)
         ui.pgiBytesReceived.setEnabled(false)
         FileUtils.deleteQuietly(receiver.file)
-        ui.topWindow.showWarningNotification("file.upload.interrupted.warn.msg".i)
+        ui.rootWindow.showWarningNotification("file.upload.interrupted.warn.msg".i)
         notifyListeners(UploadFailed(ev))
       }
     })
