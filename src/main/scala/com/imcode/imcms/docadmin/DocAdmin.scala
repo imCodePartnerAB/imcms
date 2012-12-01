@@ -12,18 +12,19 @@ import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog}
 import com.vaadin.event.dd.{DragAndDropEvent, DropHandler}
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation
 import com.vaadin.event.DataBoundTransferable
-import com.vaadin.ui._
 import com.imcode.imcms.api.Document
 import com.vaadin.terminal.{FileResource, ExternalResource, Resource}
 import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
 import imcode.server.document.textdocument._
-import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerator}
 import com.vaadin.event.dd.acceptcriteria.{Not, AcceptAll, AcceptCriterion}
 import com.vaadin.data.util.{HierarchicalContainer}
 import scala.annotation.tailrec
 import admin.doc.search.{DocIdSelectWithLifeCycleIcon, DocsProjectionDialog}
 import admin.doc.{DocViewer, DocEditor}
+import com.vaadin.ui._
+import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerator}
+import java.util.concurrent.atomic.AtomicBoolean
+
 
 class DocAdmin extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
 
@@ -147,7 +148,7 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
 
     lytButtons.btnSave.addClickHandler {
       menuEditor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, wnd.getApplication.imcmsUser())
+        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, wnd.getApplication.imcmsUser)
       }
     }
   }
@@ -203,16 +204,28 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
   private var state = menu.clone()
 
-  val ui = new MenuEditorUI |>> { ui =>
-    ui.treeMenu.setItemDescriptionGenerator(new ItemDescriptionGenerator {
+  val ui = new MenuEditorUI { ui =>
+    override def attach() {
+      initEditor()
+    }
+
+    ui.ttMenu.setItemDescriptionGenerator(new ItemDescriptionGenerator {
       def generateDescription(source: Component, itemId: AnyRef, propertyId: AnyRef) = "menu item tooltip"
     })
 
-    ui.treeMenu.addValueChangeHandler {
+    ui.ttMenu.addValueChangeHandler {
       doto(ui.miEditSelectedDoc, ui.miExcludeSelectedDoc, ui.miShowSelectedDoc) {
-        _.setEnabled(ui.treeMenu.selectionOpt.isDefined)
+        _.setEnabled(ui.ttMenu.isSelected)
       }
     }
+
+    addContainerProperties(ui.ttMenu,
+      PropertyDescriptor[DocId]("doc.tbl.col.id".i),
+      PropertyDescriptor[String]("doc.tbl.col.headline".i),
+      PropertyDescriptor[String]("doc.tbl.col.alias".i),
+      PropertyDescriptor[String]("doc.tbl.col.type".i),
+      PropertyDescriptor[String]("doc.tbl.col.status".i)
+    )
 
     ui.miIncludeDocs.setCommandHandler {
       ui.rootWindow.initAndShow(new OkCancelDialog("Choose documents") with DocsProjectionDialog, resizable = true) { dlg =>
@@ -227,7 +240,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
             state.addMenuItemUnchecked(menuItem)
           }
 
-          updateTreeMenuUI()
+          updateMenuUI()
         }
 
         dlg.setSize(500, 600)
@@ -235,19 +248,19 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     ui.miExcludeSelectedDoc.setCommandHandler {
-      for (docId <- ui.treeMenu.selectionOpt) {
+      for (docId <- ui.ttMenu.selectionOpt) {
         state.removeMenuItemByDocumentId(docId)
-        updateTreeMenuUI()
+        updateMenuUI()
       }
     }
 
     ui.miEditSelectedDoc.setCommandHandler {
-      for (docId <- ui.treeMenu.selectionOpt) {
+      for (docId <- ui.ttMenu.selectionOpt) {
         imcmsServices.getDocumentMapper.getDocument(docId) match {
           case null =>
             ui.rootWindow.showWarningNotification("Document does not exist")
             state.removeMenuItemByDocumentId(docId)
-            updateTreeMenuUI()
+            updateMenuUI()
 
           case doc =>
             DocEditor.mkDocEditorDialog(doc, "Edit document properties") |>> { dlg =>
@@ -256,8 +269,8 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
                   case Left(errors) => ui.rootWindow.showErrorNotification(errors.mkString(", "))
                   case Right((modifiedDoc, i18nMetas)) =>
                     try {
-                      imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser())
-                      updateTreeMenuUI()
+                      imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser)
+                      updateMenuUI()
                     } catch {
                       case e =>
                         ui.rootWindow.showErrorNotification("Can't save document", e.getMessage)
@@ -271,23 +284,55 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     ui.miShowSelectedDoc.setCommandHandler {
-      for (docId <- ui.treeMenu.selectionOpt) {
+      for (docId <- ui.ttMenu.selectionOpt) {
         DocViewer.showDocViewDialog(ui, docId)
       }
     }
 
     ui.cbSortOrder.addValueChangeHandler {
       state.setSortOrder(ui.cbSortOrder.selection)
-      updateTreeMenuUI()
+      updateMenuUI()
     }
   }
 
-  private object TreeMenuDropHandlers {
-    private val tree = ui.treeMenu
-    private val container = tree.getContainerDataSource.asInstanceOf[HierarchicalContainer]
 
-    val singleLevel = new DropHandler {
-      private def updateItemsSortIndex() {
+  private object MenuDropHandlers {
+    private val container = ui.ttMenu.getContainerDataSource.asInstanceOf[HierarchicalContainer]
+
+    private abstract class AbstractDropHandler extends DropHandler {
+      def drop(event: DragAndDropEvent) {
+        val transferable = event.getTransferable.asInstanceOf[Table#TableTransferable]
+        val target = event.getTargetDetails.asInstanceOf[AbstractSelect#AbstractSelectTargetDetails]
+
+        val targetItemId = target.getItemIdOver
+        val sourceItemId = transferable.getItemId
+
+        target.getDropLocation match {
+          case VerticalDropLocation.TOP =>
+            val parentId = container.getParent(targetItemId)
+            container.setParent(sourceItemId, parentId)
+            container.moveAfterSibling(sourceItemId, targetItemId)
+            container.moveAfterSibling(targetItemId, sourceItemId)
+
+          case VerticalDropLocation.BOTTOM =>
+            val parentId = container.getParent(targetItemId)
+            container.setParent(sourceItemId, parentId)
+            container.moveAfterSibling(sourceItemId, targetItemId)
+
+          case VerticalDropLocation.MIDDLE =>
+            container.setParent(sourceItemId, targetItemId)
+        }
+
+        updateItemsSortIndex()
+      }
+
+      protected def updateItemsSortIndex()
+    }
+
+    val singleLevel: DropHandler = new AbstractDropHandler {
+      val getAcceptCriterion: AcceptCriterion = new Not(VerticalLocationIs.MIDDLE)
+
+      protected def updateItemsSortIndex() {
         val menuItems = state.getItemsMap
 
         for {
@@ -297,37 +342,12 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
           menuItems.get(docId) |> { _.setSortKey(index + 1) }
         }
       }
-
-      def getAcceptCriterion(): AcceptCriterion = new Not(VerticalLocationIs.MIDDLE)
-
-      def drop(event: DragAndDropEvent) {
-        event.getTransferable match {
-          case transferable if transferable.getSourceComponent != tree =>
-          case transferable =>
-            val target = event.getTargetDetails.asInstanceOf[Tree#TreeTargetDetails]
-            val sourceItemId = transferable.asInstanceOf[DataBoundTransferable].getItemId
-            val targetItemId = target.getItemIdOver
-
-            target.getDropLocation match {
-              case VerticalDropLocation.TOP =>
-                val parentId = container.getParent(targetItemId)
-                container.setParent(sourceItemId, parentId)
-                container.moveAfterSibling(sourceItemId, targetItemId)
-                container.moveAfterSibling(targetItemId, sourceItemId)
-
-              case VerticalDropLocation.BOTTOM =>
-                val parentId = container.getParent(targetItemId)
-                container.setParent(sourceItemId, parentId)
-                container.moveAfterSibling(sourceItemId, targetItemId)
-            }
-
-            updateItemsSortIndex()
-        }
-      }
     }
 
-    val multilevel = new DropHandler {
-      private def updateItemsTreeSortIndex() {
+    val multilevel: DropHandler = new AbstractDropHandler {
+      val getAcceptCriterion: AcceptCriterion = AcceptAll.get()
+
+      protected def updateItemsSortIndex() {
         def updateItemsTreeSortIndex(parentSortIndex: Option[String], nodes: JCollection[_]) {
           if (nodes != null) {
             for ((docId, index) <- nodes.asInstanceOf[JCollection[DocId]].asScala.zipWithIndex) {
@@ -343,43 +363,17 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
         updateItemsTreeSortIndex(None, container.rootItemIds())
       }
-
-      def getAcceptCriterion(): AcceptCriterion = AcceptAll.get()
-
-      def drop(event: DragAndDropEvent) {
-        event.getTransferable match {
-          case transferable if transferable.getSourceComponent != tree =>
-          case transferable =>
-            val target = event.getTargetDetails.asInstanceOf[Tree#TreeTargetDetails]
-            val sourceItemId = transferable.asInstanceOf[DataBoundTransferable].getItemId
-            val targetItemId = target.getItemIdOver
-
-            target.getDropLocation match {
-              case VerticalDropLocation.MIDDLE =>
-                tree.setParent(sourceItemId, targetItemId)
-
-              case VerticalDropLocation.TOP =>
-                val parentId = container.getParent(targetItemId)
-                container.setParent(sourceItemId, parentId)
-                container.moveAfterSibling(sourceItemId, targetItemId)
-                container.moveAfterSibling(targetItemId, sourceItemId)
-
-              case VerticalDropLocation.BOTTOM =>
-                val parentId = container.getParent(targetItemId)
-                container.setParent(sourceItemId, parentId)
-                container.moveAfterSibling(sourceItemId, targetItemId)
-            }
-
-            updateItemsTreeSortIndex()
-        }
-      }
     }
   }
 
 
-  resetValues()
+  private val initEditor: (() => Unit) = {
+    val initialized = new AtomicBoolean(false)
 
-  private def updateTreeMenuUI() {
+    () => if (initialized.compareAndSet(false, true)) resetValues()
+  }
+
+  private def updateMenuUI() {
     val sortOrder = state.getSortOrder
     val isMultilevel = sortOrder == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER
     val isManualSort = Set(
@@ -387,25 +381,25 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED
     ).contains(sortOrder)
 
-    import ui.treeMenu
+    import ui.ttMenu
 
-    treeMenu.removeAllItems()
-    treeMenu.setDragMode(if (isManualSort) Tree.TreeDragMode.NODE else Tree.TreeDragMode.NONE)
-    treeMenu.setDropHandler(sortOrder match {
-      case MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER => TreeMenuDropHandlers.multilevel
-      case MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED => TreeMenuDropHandlers.singleLevel
+    ttMenu.removeAllItems()
+    ttMenu.setDragMode(if (isManualSort) Table.TableDragMode.ROW else Table.TableDragMode.NONE)
+    ttMenu.setDropHandler(sortOrder match {
+      case MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER => MenuDropHandlers.multilevel
+      case MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED => MenuDropHandlers.singleLevel
       case _ => null
     })
+
 
     val menuItems = state.getMenuItems
     for (menuItem <- menuItems) {
       val doc = menuItem.getDocument
       val docId = doc.getId
-      val caption = docId+": "+doc.getHeadline
 
-      treeMenu.addItem(docId, caption)
-      treeMenu.setChildrenAllowed(docId, isMultilevel)
-      treeMenu.expandItem(docId)
+      ttMenu.addRow(docId, docId: JInteger, doc.getHeadline, doc.getAlias, doc.getDocumentType.getName.toLocalizedString(ui.getApplication.imcmsUser), doc.getLifeCyclePhase.toString)
+      ttMenu.setChildrenAllowed(docId, isMultilevel)
+      ttMenu.setCollapsed(docId, false)
     }
 
     if (isMultilevel) {
@@ -425,7 +419,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
         menuItem <- menuItems
         parentMenuItem <- findParentMenuItem(menuItem.getTreeSortIndex)
       } {
-        treeMenu.setParent(menuItem.getDocumentId, parentMenuItem.getDocumentId)
+        ttMenu.setParent(menuItem.getDocumentId, parentMenuItem.getDocumentId)
       }
     }
   }
@@ -433,7 +427,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
   def resetValues() {
     state = menu.clone()
     ui.cbSortOrder.selection = state.getSortOrder
-    ui.treeMenu.selection = null
+    ui.ttMenu.selection = null
   }
 
   def collectValues(): ErrorsOrData = Right(state.clone())
@@ -447,9 +441,9 @@ class MenuEditorUI extends VerticalLayout with Margin with FullSize {
   val miShowSelectedDoc = mb.addItem("Show")
   val miEditSelectedDoc = mb.addItem("Properties")
   val miHelp = mb.addItem("Help")
-
-  val treeMenu = new Tree with AlwaysFireValueChange with DocIdSelectWithLifeCycleIcon with SingleSelect[DocId] with Selectable with Immediate with FullSize |>> {
-    _.setContainerDataSource(new HierarchicalContainer)
+  val ttMenu = new TreeTable with AlwaysFireValueChange with DocIdSelectWithLifeCycleIcon with SingleSelect[DocId]
+                             with Selectable with Immediate with FullSize |>> { tt =>
+    tt.setRowHeaderMode(Table.ROW_HEADER_MODE_HIDDEN)
   }
 
   private val lytSort = new FormLayout
@@ -467,6 +461,6 @@ class MenuEditorUI extends VerticalLayout with Margin with FullSize {
   }
 
   lytSort.addComponent(cbSortOrder)
-  addComponentsTo(this, mb, lytSort, treeMenu)
-  setExpandRatio(treeMenu, 1f)
+  addComponentsTo(this, mb, lytSort, ttMenu)
+  setExpandRatio(ttMenu, 1f)
 }

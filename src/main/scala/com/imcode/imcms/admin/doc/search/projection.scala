@@ -513,6 +513,7 @@ trait DocIdSelectWithLifeCycleIcon extends AbstractSelect with GenericContainer[
           val file = new File(app.context.getBaseDirectory, "imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
 
           new FileResource(file, app)
+          //new ExternalResource("/imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
       }
 
     case _ => null
