@@ -25,7 +25,7 @@ import com.imcode.util.event.Publisher
 import com.imcode.imcms.api.{LuceneParsedQuery, Document}
 import com.vaadin.terminal.{FileResource, ExternalResource, Resource}
 import java.io.File
-import admin.doc.{DocViewer, DocEditor, DocManager}
+import com.imcode.imcms.admin.doc.{DocViewer, DocEditor, DocManager}
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1

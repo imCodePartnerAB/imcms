@@ -122,10 +122,14 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
           }
       }
     }
+
+    lytButtons.btnClose.addClickHandler {
+
+    }
   }
 
 
-  def mkMenuEditorWindow(docRef: DocRef, menuNo: Int): Window = new Window with ImcmsServicesSupport |>> { wnd =>
+  def mkMenuEditorWindow(docRef: DocRef, menuNo: Int): Window = new Window with ImcmsServicesSupport {// wnd =>
     val doc = app.imcmsServices.getDocumentMapper.getCustomDocument(docRef).asInstanceOf[TextDocumentDomainObject]
     val menu = doc.getMenu(menuNo)
     val menuEditor = new MenuEditor(doc, menu) |>> { me => me.ui.setSizeFull() }
@@ -144,11 +148,19 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
     addComponentsTo(wndContent, pnlEditor, lytButtons)
     wndContent.setExpandRatio(pnlEditor, 1f)
 
-    wnd.setContent(wndContent)
+    /*wnd.*/setContent(wndContent)
 
     lytButtons.btnSave.addClickHandler {
       menuEditor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, wnd.getApplication.imcmsUser)
+        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, /*wnd.*/getApplication.imcmsUser)
+      }
+    }
+
+    lytButtons.btnClose.addClickHandler {
+      new ExternalResource(/*wnd.*/getApplication.imcmsDocUrl(doc.getId)) |> { resource =>
+        /*wnd.*/open(resource)
+        //app.removeWindow(wnd)
+        //app.removeWindow(this)
       }
     }
   }
