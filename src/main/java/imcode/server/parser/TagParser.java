@@ -442,7 +442,7 @@ public class TagParser {
             String formatsAttribute = attributes.getProperty("formats", "");
             String[] formats = null != formatsAttribute ? formatsAttribute.split("\\W+") : null;
             request.setAttribute("document", documentRequest.getDocument());
-            request.setAttribute("textIndex", new Integer(no));
+            request.setAttribute("textIndex", no);
             String label = getLabel(attributes);
             request.setAttribute("label", label);
             request.setAttribute("content", result);
