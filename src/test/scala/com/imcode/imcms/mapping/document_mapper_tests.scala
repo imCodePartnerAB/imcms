@@ -259,8 +259,8 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
         assertNotNull(text)
         assertEquals(no, text.getNo)
-        assertEquals(loopNo, text.getContentRef.getLoopNo)
-        assertEquals(contentNo, text.getContentRef.getContentNo)
+        assertEquals(loopNo, text.getContentRef.loopNo)
+        assertEquals(contentNo, text.getContentRef.contentNo)
         assertEquals(textType, text.getType)
         assertEquals(textPrefix + no + "_%d:%d".format(loopNo, contentNo), text.getText)
 

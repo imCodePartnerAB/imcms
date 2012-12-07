@@ -96,11 +96,11 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
    * @return custom doc or null if doc does not exists
    */
   def getCustomDoc(docRef: DocRef, language: I18nLanguage) = {
-    getMeta(docRef.getDocId) match {
+    getMeta(docRef.docId) match {
       case null => null
       case meta =>
-        val versionInfo = getDocVersionInfo(docRef.getDocId)
-        val version = versionInfo.getVersion(docRef.getDocVersionNo)
+        val versionInfo = getDocVersionInfo(docRef.docId)
+        val version = versionInfo.getVersion(docRef.docVersionNo)
 
         docLoader.loadAndInitDocument(meta.clone, version.clone, language)
     }

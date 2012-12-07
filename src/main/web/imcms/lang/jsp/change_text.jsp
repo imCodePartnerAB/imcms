@@ -112,8 +112,8 @@ if (returnUrl != null) {
 ContentRef contentLoopRef = text.getContentRef();
 if (contentLoopRef != null) {
     %>
-    <input type="hidden" name="loop_no"  value="<%= contentLoopRef.getLoopNo() %>">
-    <input type="hidden" name="content_index"  value="<%= contentLoopRef.getContentNo() %>">
+    <input type="hidden" name="loop_no"  value="<%= contentLoopRef.loopNo() %>">
+    <input type="hidden" name="content_index"  value="<%= contentLoopRef.contentNo() %>">
     <%
 }
 %>

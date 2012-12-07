@@ -89,7 +89,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     val text = saveNewText(text="initial text", language = language)
     val updatedTextValue = "modified text"
     val updatedDocVersionNo = 1
-    val updatedDocRef = DocRef.of(text.getDocRef.getDocId, updatedDocVersionNo)
+    val updatedDocRef = DocRef.of(text.getDocRef.docId, updatedDocVersionNo)
 
     text.clone |> { textToUpdate =>
       textToUpdate.setText(updatedTextValue)

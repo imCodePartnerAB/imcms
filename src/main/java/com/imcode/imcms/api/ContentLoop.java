@@ -43,8 +43,8 @@ public class ContentLoop implements Serializable, Cloneable {
         }
 
         public Builder docRef(DocRef docRef) {
-            contentLoop.docId = docRef == null ? null : docRef.getDocId();
-            contentLoop.docVersionNo = docRef == null ? null : docRef.getDocVersionNo();
+            contentLoop.docId = docRef == null ? null : docRef.docId();
+            contentLoop.docVersionNo = docRef == null ? null : docRef.docVersionNo();
 
             return this;
         }

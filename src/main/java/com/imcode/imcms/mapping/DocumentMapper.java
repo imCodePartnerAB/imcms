@@ -375,7 +375,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveMenu(menu, user);
         } finally {
-            invalidateDocument(menu.getDocRef().getDocId());
+            invalidateDocument(menu.getDocRef().docId());
         }
     }
 
@@ -632,8 +632,8 @@ public class DocumentMapper implements DocumentGetter {
         // todo: put into resource file.
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        Meta meta = documentSaver.getMetaDao().getMeta(docRef.getDocId());
-        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docRef.getDocId());
+        Meta meta = documentSaver.getMetaDao().getMeta(docRef.docId());
+        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docRef.docId());
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         makeDocumentLookNew(meta, user);
@@ -832,7 +832,38 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveText(text, user);
         } finally {
-            invalidateDocument(text.getDocRef().getDocId());
+            invalidateDocument(text.getDocRef().docId());
+        }
+    }
+
+
+    /**
+     * Saves text and non-saved enclosing content loop the text may refer.
+     * Updates doc's last modified datetime.
+     * <p/>
+     * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
+     *
+     * @param texts - texts being saved
+     *
+     * @see com.imcode.imcms.servlet.admin.SaveText
+     * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
+     *
+     * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
+     */
+    public synchronized void saveTextDocTexts(Collection<TextDomainObject> texts, UserDomainObject user)
+            throws NoPermissionInternalException, DocumentSaveException {
+
+        try {
+            documentSaver.saveTexts(texts, user);
+        } finally {
+            Set<Integer> docIds = Sets.newHashSet();
+            for (TextDomainObject text: texts) {
+                docIds.add(text.getDocRef().docId());
+            }
+
+            for (Integer docId: docIds) {
+                invalidateDocument(docId);
+            }
         }
     }
 
@@ -850,7 +881,7 @@ public class DocumentMapper implements DocumentGetter {
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
             for (ImageDomainObject image: images) {
-                docIds.add(image.getDocRef().getDocId());
+                docIds.add(image.getDocRef().docId());
             }
 
             for (Integer docId: docIds) {
@@ -881,7 +912,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveImage(image, user);
         } finally {
-            invalidateDocument(image.getDocRef().getDocId());
+            invalidateDocument(image.getDocRef().docId());
         }
     }
 

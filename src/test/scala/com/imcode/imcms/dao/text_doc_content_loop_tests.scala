@@ -22,7 +22,7 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 //  }
 //
 //  case class ContentsDesc(count: Int, sort: ContentsSort.Value)
-//  case class ContentLoopDesc(loopId: Long, docRef: DocRef, contentLoopIdentity: ContentRef, contentsDesc: ContentsDesc)
+//  case class ContentLoopDesc(loopId: Long, docRef: DocRef, contentRefOpt: ContentRef, contentsDesc: ContentsDesc)
 //
 //  val loop0 = ContentLoopDesc(0, DocRef.of(1001, 0), new ContentRef(0, 0), ContentsDesc(count = 0, sort = ContentsSort.Asc))
 //  val loop1 = ContentLoopDesc(1, DocRef.of(1001, 0), new ContentRef(0, 1), ContentsDesc(count = 1, sort = ContentsSort.Asc))

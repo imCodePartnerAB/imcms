@@ -10,10 +10,10 @@ import com.imcode.imcms.api.{I18nLanguage, ImageHistory}
 
 object ImageUtil {
 
-  /** Inits Text docs images sources. */
+  /** Inits text docs images sources. */
   def initImagesSources(images: JList[ImageDomainObject]) = images |>> { _.asScala.foreach(initImageSource) }
 
-  /** Inits Text doc's image source. */
+  /** Inits text doc's image source. */
   def initImageSource(image: ImageDomainObject) = image |>> { _ =>
     for (url <- Option(image).map(_.getImageUrl).map(_.trim)) {
       image.setSource(
@@ -39,20 +39,19 @@ class ImageDao extends HibernateSupport {
   var languageDao: LanguageDao = _
 
   /**
-   * Please note that createImageIfNotExists merely creates an instance of ImageDomainObject not a database entry.
+   * Please note that createIfNotExists merely creates an instance of ImageDomainObject not a database entry.
    */
-  def getImages(docRef: DocRef, no: Int, contentLoopIdentity: Option[ContentRef],
-                    createImageIfNotExists: Boolean): JList[ImageDomainObject] = {
+  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentRef],
+                createIfNotExists: Boolean): JList[ImageDomainObject] = {
     for {
-      language <- languageDao.getAllLanguages().asScala
-      image <- PartialFunction.condOpt(getImage(docRef, no, language, contentLoopIdentity)) {
+      language <- languageDao.getAllLanguages.asScala
+      image <- PartialFunction.condOpt(getImage(docRef, no, language, contentRefOpt)) {
         case image if image != null => image
-        case _ if createImageIfNotExists => new ImageDomainObject |>> { img =>
+        case _ if createIfNotExists => new ImageDomainObject |>> { img =>
           img.setDocRef(docRef)
-          img.setName(no.toString)
-
+          img.setNo(no)
           img.setLanguage(language)
-          img.setContentRef(contentLoopIdentity.orNull)
+          img.setContentRef(contentRefOpt.orNull)
         }
       }
     } yield image
@@ -60,23 +59,23 @@ class ImageDao extends HibernateSupport {
 
 
 
-  def getImage(docRef: DocRef, no: Int, language: I18nLanguage, contentLoopRef: Option[ContentRef]) = {
-
-    val queryStr = if (contentLoopRef.isDefined)
-      """select i from Image i where i.docRef = :docRef and i.no = :no
-         and i.language = :language AND i.contentRef = :contentRef"""
-    else
-      """select i from Image i where i.docRef = :docRef and i.no = :no
-         and i.language = :language AND i.contentRef IS NULL"""
+  def getImage(docRef: DocRef, no: Int, language: I18nLanguage, contentRefOpt: Option[ContentRef]) = {
+    val queryStr =
+      if (contentRefOpt.isDefined)
+        """select i from Image i where i.docRef = :docRef and i.no = :no
+           and i.language = :language AND i.contentRef = :contentRef"""
+      else
+        """select i from Image i where i.docRef = :docRef and i.no = :no
+           and i.language = :language AND i.contentRef IS NULL"""
 
     hibernate.withCurrentSession { session =>
       session.createQuery(queryStr) |> { query =>
         query.setParameter("docRef", docRef)
-          .setParameter("no", "" + no)
+          .setParameter("no", no)
           .setParameter("language", language)
 
-        if (contentLoopRef.isDefined) {
-          query.setParameter("contentRef", contentLoopRef.get)
+        if (contentRefOpt.isDefined) {
+          query.setParameter("contentRef", contentRefOpt.get)
         }
 
         ImageUtil.initImageSource(query.uniqueResult.asInstanceOf[ImageDomainObject])

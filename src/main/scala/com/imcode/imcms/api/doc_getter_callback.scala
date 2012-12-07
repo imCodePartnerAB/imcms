@@ -17,7 +17,7 @@ object DocGetterCallbackUtil {
     val i18nSupport = services.getI18nSupport
     val defaultLanguage = i18nSupport.getDefaultLanguage
     val language = Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE))
-                   .map(i18nSupport.getByCode)
+                   .flatMap(code => i18nSupport.getByCode(code) |> opt)
                    .orElse(currentDocGetterCallback |> opt map (_.languages.selected))
                    .orElse(i18nSupport.getForHost(request.getServerName) |> opt)
                    .getOrElse(defaultLanguage)

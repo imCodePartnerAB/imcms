@@ -44,11 +44,11 @@ public class DocRef {
         return result;
     }
 
-    public int getDocId() {
+    public int docId() {
         return docId;
     }
 
-    public int getDocVersionNo() {
+    public int docVersionNo() {
         return docVersionNo;
     }
 

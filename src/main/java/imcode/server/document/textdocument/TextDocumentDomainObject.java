@@ -29,8 +29,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             this.itemNo = itemNo;
             this.contentRef = contentRef;
             this.hashCode = new HashCodeBuilder(17, 31).
-                    append(contentRef.getLoopNo()).
-                    append(contentRef.getContentNo()).
+                    append(contentRef.loopNo()).
+                    append(contentRef.contentNo()).
                     append(itemNo).
                     toHashCode();
         }
@@ -246,21 +246,21 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         if (key == null) {
             texts.put(no, newText);
         } else {
-            ContentLoop loop = getContentLoop(contentRef.getLoopNo());
+            ContentLoop loop = getContentLoop(contentRef.loopNo());
 
             if (loop == null) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Loop does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), contentRef.getLoopNo(), contentRef.getContentNo(), no)
+                        , getRef(), contentRef.loopNo(), contentRef.contentNo(), no)
                 );
             }
 
-            boolean contentExist = loop.findContent(contentRef.getContentNo()).isPresent();
+            boolean contentExist = loop.findContent(contentRef.contentNo()).isPresent();
 
             if (!contentExist) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Content does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), contentRef.getLoopNo(), contentRef.getContentNo(), no)
+                        , getRef(), contentRef.loopNo(), contentRef.contentNo(), no)
                 );
             }
 
@@ -348,21 +348,21 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         if (key == null) {
             images.put(no, newImage);
         } else {
-            ContentLoop loop = getContentLoop(contentRef.getLoopNo());
+            ContentLoop loop = getContentLoop(contentRef.loopNo());
 
             if (loop == null) {
                 throw new IllegalStateException(String.format(
                         "Invalid image. Loop does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), contentRef.getLoopNo(), contentRef.getContentNo(), no)
+                        , getRef(), contentRef.loopNo(), contentRef.contentNo(), no)
                 );
             }
 
-            boolean contentExist = loop.findContent(contentRef.getContentNo()).isPresent();
+            boolean contentExist = loop.findContent(contentRef.contentNo()).isPresent();
 
             if (!contentExist) {
                 throw new IllegalStateException(String.format(
                         "Invalid image. Content does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), contentRef.getLoopNo(), contentRef.getContentNo(), no)
+                        , getRef(), contentRef.loopNo(), contentRef.contentNo(), no)
                 );
             }
 

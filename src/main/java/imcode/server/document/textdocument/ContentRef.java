@@ -50,11 +50,11 @@ public class ContentRef implements Serializable, Cloneable {
                 '}';
     }
 
-    public int getLoopNo() {
+    public int loopNo() {
         return loopNo;
     }
 
-    public int getContentNo() {
+    public int contentNo() {
         return contentNo;
     }
 }

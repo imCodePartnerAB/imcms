@@ -21,9 +21,10 @@ import com.vaadin.data.util.{HierarchicalContainer}
 import scala.annotation.tailrec
 import admin.doc.search.{DocIdSelectWithLifeCycleIcon, DocsProjectionDialog}
 import admin.doc.{DocViewer, DocEditor}
-import com.vaadin.ui._
 import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerator}
 import java.util.concurrent.atomic.AtomicBoolean
+import dao.TextDao
+import com.vaadin.ui._
 
 
 class DocAdmin extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
@@ -71,7 +72,7 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
         case PathHandlers.DefaultDoc(docId) => mkDocEditorWindow(docId)
         case PathHandlers.CustomDoc(docId, docVersionNo) => mkDocEditorWindow(docId)
         case PathHandlers.Menu(docId, docVersionNo, menuNo) => mkMenuEditorWindow(DocRef.of(docId, docVersionNo), menuNo)
-        case PathHandlers.Text(docId, docVersionNo, textNo) => mkTextEditorWindow(docId)
+        case PathHandlers.Text(docId, docVersionNo, textNo) => mkTextEditorWindow(DocRef.of(docId, docVersionNo), textNo)
         case _ => null
       } |>> { window =>
         if (window != null) {
@@ -132,16 +133,16 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
   def mkMenuEditorWindow(docRef: DocRef, menuNo: Int): Window = new Window with ImcmsServicesSupport {// wnd =>
     val doc = app.imcmsServices.getDocumentMapper.getCustomDocument(docRef).asInstanceOf[TextDocumentDomainObject]
     val menu = doc.getMenu(menuNo)
-    val menuEditor = new MenuEditor(doc, menu) |>> { me => me.ui.setSizeFull() }
-    val pnlEditor = new Panel("Edit document %d menu no %d") with FullSize |>> { _.setWidth("800px") }
+    val editor = new MenuEditor(doc, menu) |>> { me => me.ui.setSizeFull() }
+    val pnlEditor = new Panel("Edit document %d menu no %d".format(docRef.docId, docRef.docVersionNo)) with FullSize |>> { _.setWidth("800px") }
     val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
       val btnClose = new Button("Close")
-      val btnSave = new Button("Save")
+      val btnSaveAndClose = new Button("Save & Close")
 
-      addComponentsTo(this, btnClose, btnSave)
+      addComponentsTo(this, btnClose, btnSaveAndClose)
     }
 
-    pnlEditor.setContent(menuEditor.ui)
+    pnlEditor.setContent(editor.ui)
 
     val wndContent = new VerticalLayout with MiddleCenterAlignment with Spacing with Margin with FullSize
 
@@ -150,8 +151,8 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
 
     /*wnd.*/setContent(wndContent)
 
-    lytButtons.btnSave.addClickHandler {
-      menuEditor.collectValues().right.get |> { menu =>
+    lytButtons.btnSaveAndClose.addClickHandler {
+      editor.collectValues().right.get |> { menu =>
         imcmsServices.getDocumentMapper.saveTextDocMenu(menu, /*wnd.*/getApplication.imcmsUser)
       }
     }
@@ -165,9 +166,47 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
     }
   }
 
-  def mkTextEditorWindow(docId: Int): Window = new Window |>> { wnd =>
-    wnd.addComponent(new Button("text"))
-    wnd.addComponent(new Button("save"))
+  def mkTextEditorWindow(docRef: DocRef, textNo: Int): Window = new Window with ImcmsServicesSupport {// wnd =>
+    val doc = app.imcmsServices.getDocumentMapper.getCustomDocument(docRef).asInstanceOf[TextDocumentDomainObject]
+    val textDao = app.imcmsServices.getSpringBean(classOf[TextDao])
+    val texts = textDao.getTexts(docRef, textNo, None, true)
+    val editor = new TextEditor(doc, texts.asScala)
+    val pnlEditor = new Panel("Edit document %d text no %d".format(docRef.docId, docRef.docVersionNo)) with FullSize |>> { _.setWidth("800px") }
+
+    val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
+      val btnClose = new Button("Close")
+      val btnSaveAndClose = new Button("Save & Close")
+
+      addComponentsTo(this, btnClose, btnSaveAndClose)
+    }
+
+    pnlEditor.setContent(editor.ui)
+
+    val wndContent = new VerticalLayout with MiddleCenterAlignment with Spacing with Margin with FullSize
+
+    addComponentsTo(wndContent, pnlEditor, lytButtons)
+    wndContent.setExpandRatio(pnlEditor, 1f)
+
+    /*wnd.*/setContent(wndContent)
+
+    lytButtons.btnSaveAndClose.addClickHandler {
+      editor.collectValues().right.get |> { texts =>
+        imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, /*wnd.*/getApplication.imcmsUser)
+        closeEditor()
+      }
+    }
+
+    lytButtons.btnClose.addClickHandler {
+      closeEditor()
+    }
+
+    private def closeEditor() {
+      new ExternalResource(/*wnd.*/getApplication.imcmsDocUrl(doc.getId)) |> { resource =>
+        /*wnd.*/open(resource)
+        //app.removeWindow(wnd)
+        //app.removeWindow(this)
+      }
+    }
   }
 
   def init() {
@@ -475,4 +514,59 @@ class MenuEditorUI extends VerticalLayout with Margin with FullSize {
   lytSort.addComponent(cbSortOrder)
   addComponentsTo(this, mb, lytSort, ttMenu)
   setExpandRatio(ttMenu, 1f)
+}
+
+
+class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) extends Editor {
+
+  type Data = Seq[TextDomainObject]
+
+  private var state: Seq[TextDomainObject] = _
+  private var textsUis: Seq[RichTextArea with GenericProperty[String]] = _
+
+  val ui = new TextEditorUI |>> { ui =>
+    ui.cbFormat.addValueChangeHandler {
+    }
+  }
+
+  resetValues()
+
+  def resetValues() {
+    state = texts.map(_.clone)
+    textsUis = state.map { text =>
+      new RichTextArea with GenericProperty[String] with FullSize |>> { rt =>
+        rt.value = text.getText
+      }
+    }
+
+    ui.tsTexts.removeAllComponents()
+
+    (state, textsUis).zipped.foreach { (text, textUi) =>
+      ui.tsTexts.addTab(textUi) |> { tab =>
+        tab.setCaption(text.getLanguage.getName)
+      }
+    }
+  }
+
+  def collectValues(): ErrorsOrData = {
+    (state, textsUis).zipped.foreach((text, textUi) => text.setText(textUi.value))
+    Right(state.map(_.clone))
+  }
+}
+
+
+class TextEditorUI extends VerticalLayout with Margin with FullSize {
+
+  val mb = new MenuBar with FullWidth
+  val miShowHistory = mb.addItem("Show history")
+  val miHelp = mb.addItem("Help")
+  val tsTexts = new TabSheet with FullSize
+  val cbFormat = new ComboBox("Format") with SingleSelect[JInteger] with NoNullSelection
+
+  private val lytFormat = new FormLayout
+
+  lytFormat.addComponent(cbFormat)
+
+  addComponentsTo(this, mb, lytFormat, tsTexts)
+  setExpandRatio(tsTexts, 1f)
 }

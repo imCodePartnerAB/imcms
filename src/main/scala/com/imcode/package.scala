@@ -34,6 +34,49 @@ package object imcode {
   }
 
 
+//  "value".
+//    |> (_.length).
+//    |> (_ * 2).
+//    |> (_.toString).
+//    |> (_.length).
+//    |> (_.toStrig)
+//
+//  "value"
+//    . |> (_.length)
+//    . |> (_ * 2)
+//    . |> (_.toString)
+//    . |> (_.length)
+//    . |> (_.toString)
+//
+//  "value"
+//    . |> { _.length }
+//    . |> { _ * 2 }
+//    . |> { _.toString }
+//    . |> { _.length }
+//    . |> { _.toString }
+//
+//  "value"
+//    . |> { v =>
+//      v.length
+//    } |> { v =>
+//      v * 2
+//    } |> { v =>
+//      v.toString
+//    } |> { v =>
+//      v.length
+//    }
+//
+//  "value"
+//    . |> {
+//      case v => v.length
+//    } |> {
+//      case v => v * 2
+//    } |> {
+//      case v => v.toString
+//    } |> {
+//      case v => v.length
+//    }
+
   // scala bug: 'import Option.{apply => opt}' - 'opt' can not be used as a function
   // scala> import Option.apply
   // import Option.apply

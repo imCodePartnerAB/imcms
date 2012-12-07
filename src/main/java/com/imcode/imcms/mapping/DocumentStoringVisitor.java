@@ -131,8 +131,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * @return FileDocumentFile filename
      */
     public static String getFilenameForFileDocumentFile(DocRef docRef, String fileId) {
-        int docId = docRef.getDocId();
-        int docVersionNo = docRef.getDocVersionNo();
+        int docId = docRef.docId();
+        int docVersionNo = docRef.docVersionNo();
 
         String filename = "" + docId;
 

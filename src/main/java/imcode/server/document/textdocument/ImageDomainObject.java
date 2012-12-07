@@ -263,6 +263,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return linkUrl;
     }
 
+    @Deprecated
     public void setName(String image_name) {
         this.no = image_name;
     }
@@ -748,7 +749,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return "ImageDomainObject{" +
                 "no='" + no + '\'' +
                 ", id=" + id +
-                ", contentRef=" + contentRef +
+                ", contentRefOpt=" + contentRef +
                 ", docRef=" + docRef +
                 '}';
     }

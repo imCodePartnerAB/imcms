@@ -80,6 +80,15 @@ public class DocumentSaver {
 
 
     @Transactional
+    public void saveTexts(Collection<TextDomainObject> texts, UserDomainObject user)
+            throws NoPermissionInternalException, DocumentSaveException {
+        for (TextDomainObject text : texts) {
+            saveText(text, user);
+        }
+    }
+
+
+    @Transactional
     public void saveMenu(MenuDomainObject menu, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(menu, user);
 
@@ -127,16 +136,16 @@ public class DocumentSaver {
             return null;
         }
 
-        ContentLoop loop = contentLoopDao.getLoop(docRef, contentRef.getLoopNo());
+        ContentLoop loop = contentLoopDao.getLoop(docRef, contentRef.loopNo());
 
         if (loop == null) {
             throw new IllegalStateException(String.format(
-                    "Content loop does not exists. Doc identity: %s, content loop no: %s.", docRef, contentRef.getLoopNo()));
+                    "Content loop does not exists. Doc identity: %s, content loop no: %s.", docRef, contentRef.loopNo()));
         }
 
-        if (loop.findContent(contentRef.getContentNo()).isPresent()) {
+        if (loop.findContent(contentRef.contentNo()).isPresent()) {
             throw new IllegalStateException(String.format(
-                    "Content does not exists. Doc identity :%s, content loop no: %s.", docRef, contentRef.getLoopNo()));
+                    "Content does not exists. Doc identity :%s, content loop no: %s.", docRef, contentRef.loopNo()));
         }
 
         loop = contentLoopDao.saveLoop(loop);

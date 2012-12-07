@@ -25,7 +25,14 @@
     ]]>
   </query>
 
-  <!-- Unique result -->
+    <!-- Collection -->
+  <query name="Text.getByDocRefAndNo">
+    <![CDATA[
+    SELECT t FROM Text t WHERE t.docRef = :docRef
+    ]]>
+  </query>
+
+    <!-- Unique result -->
   <query name="Text.getByDocRefAndNoAndLanguage">
     <![CDATA[
     SELECT t FROM Text t WHERE t.docRef = :docRef AND t.no = :no AND t.language = :language

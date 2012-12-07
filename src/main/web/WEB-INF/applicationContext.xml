@@ -68,10 +68,9 @@
     <bean id="dao" abstract="true" class="com.imcode.imcms.dao.HibernateSupport"
           p:sessionFactory-ref="sessionFactory"/>
 
-    <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao" parent="dao"
-          p:languageDao-ref="languageDao" p:sessionFactory-ref="sessionFactory"/>
+    <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao" parent="dao" p:languageDao-ref="languageDao"/>
 
-    <bean id="textDao" class="com.imcode.imcms.dao.TextDao" parent="dao"/>
+    <bean id="textDao" class="com.imcode.imcms.dao.TextDao" parent="dao" p:languageDao-ref="languageDao"/>
 
     <bean id="menuDao" class="com.imcode.imcms.dao.MenuDao" parent="dao"/>
 
