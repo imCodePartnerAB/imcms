@@ -207,7 +207,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       newDoc.setMenu(no, menu)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = TextDomainObject.builder().contentLoopIdentity(new ContentRef(loopNo, contentNo)).build()
+        val text = TextDomainObject.builder().contentRef(new ContentRef(loopNo, contentNo)).build()
         val image = new ImageDomainObject
 
         image.setContentRef(new ContentRef(loopNo, contentNo))

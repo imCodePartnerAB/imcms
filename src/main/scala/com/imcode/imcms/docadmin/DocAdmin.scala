@@ -517,6 +517,10 @@ class MenuEditorUI extends VerticalLayout with Margin with FullSize {
 }
 
 
+// todo: mk text if not exists
+// todo: check perms
+// todo: pick user lang at start
+// todo: pick a format + rows no
 class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) extends Editor {
 
   type Data = Seq[TextDomainObject]
@@ -524,10 +528,7 @@ class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) ex
   private var state: Seq[TextDomainObject] = _
   private var textsUis: Seq[RichTextArea with GenericProperty[String]] = _
 
-  val ui = new TextEditorUI |>> { ui =>
-    ui.cbFormat.addValueChangeHandler {
-    }
-  }
+  val ui = new TextEditorUI
 
   resetValues()
 
@@ -556,16 +557,12 @@ class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) ex
 
 
 class TextEditorUI extends VerticalLayout with Margin with FullSize {
-
   val mb = new MenuBar with FullWidth
   val miShowHistory = mb.addItem("Show history")
   val miHelp = mb.addItem("Help")
   val tsTexts = new TabSheet with FullSize
-  val cbFormat = new ComboBox("Format") with SingleSelect[JInteger] with NoNullSelection
 
   private val lytFormat = new FormLayout
-
-  lytFormat.addComponent(cbFormat)
 
   addComponentsTo(this, mb, lytFormat, tsTexts)
   setExpandRatio(tsTexts, 1f)

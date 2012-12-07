@@ -53,7 +53,7 @@ public class TextDomainObject implements Serializable, Cloneable {
             return this;
         }
 
-        public Builder contentLoopIdentity(ContentRef contentRef) {
+        public Builder contentRef(ContentRef contentRef) {
             textDomainObject.contentRef = contentRef;
             return this;
         }

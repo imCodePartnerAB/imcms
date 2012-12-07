@@ -70,7 +70,7 @@ class AbstractHibernateConfig {
   var dataSource: DataSource = _
 
   @Inject
-  var hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration = _
+  var hibernatePropertiesConfigurator: (org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration) = _
 
   @Bean(autowire = Autowire.BY_TYPE)
   def txManager = new org.springframework.orm.hibernate4.HibernateTransactionManager

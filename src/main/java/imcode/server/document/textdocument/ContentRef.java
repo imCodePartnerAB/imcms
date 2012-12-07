@@ -22,6 +22,10 @@ public class ContentRef implements Serializable, Cloneable {
         this.contentNo = contentNo;
     }
 
+    public static ContentRef of(int loopNo, int contentNo) {
+        return new ContentRef(loopNo, contentNo);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
