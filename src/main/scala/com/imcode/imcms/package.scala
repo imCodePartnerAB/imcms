@@ -39,7 +39,7 @@ package object imcms {
           }
       }
 
-      (locale, Ex.allCatch.opt(bundle.getString(key)) getOrElse "<#%s#>".format(key.split('.').last))
+      (locale, Ex.allCatch.opt(bundle.getString(key)).getOrElse("<#%s#>".format(key.split('.').last)))
     }
 
 

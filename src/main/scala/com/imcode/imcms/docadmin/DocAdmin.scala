@@ -8,12 +8,12 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog}
 import com.vaadin.event.dd.{DragAndDropEvent, DropHandler}
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation
 import com.vaadin.event.DataBoundTransferable
 import com.imcode.imcms.api.Document
 import com.vaadin.terminal.{FileResource, ExternalResource, Resource}
+import dialog.{ConfirmationDialog, OkCancelDialog}
 import java.io.File
 import imcode.server.document.textdocument._
 import com.vaadin.event.dd.acceptcriteria.{Not, AcceptAll, AcceptCriterion}
@@ -25,6 +25,7 @@ import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerato
 import java.util.concurrent.atomic.AtomicBoolean
 import dao.TextDao
 import com.vaadin.ui._
+import java.util.{Arrays, Collections}
 
 
 class DocAdmin extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
@@ -154,12 +155,27 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
     lytButtons.btnSaveAndClose.addClickHandler {
       editor.collectValues().right.get |> { menu =>
         imcmsServices.getDocumentMapper.saveTextDocMenu(menu, /*wnd.*/getApplication.imcmsUser)
+        this.showInfoNotification("Menu has been saved")
+        closeEditor()
       }
     }
 
     lytButtons.btnClose.addClickHandler {
-      new ExternalResource(/*wnd.*/getApplication.imcmsDocUrl(doc.getId)) |> { resource =>
-        /*wnd.*/open(resource)
+      val editedMenu = editor.collectValues().right.get
+      if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
+        closeEditor()
+      } else {
+        new ConfirmationDialog("Menu has been modified", "Close without saving?") |>> { dlg =>
+          dlg.setOkButtonHandler {
+            closeEditor()
+          }
+        } |> this.rootWindow.addWindow
+      }
+    }
+
+    private def closeEditor() {
+      new ExternalResource(getApplication.imcmsDocUrl(doc.getId)) |> { resource =>
+        open(resource)
         //app.removeWindow(wnd)
         //app.removeWindow(this)
       }
@@ -255,10 +271,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
   private var state = menu.clone()
 
-  val ui = new MenuEditorUI { ui =>
-    override def attach() {
-      initEditor()
-    }
+  val ui = new MenuEditorUI |>> { ui =>
 
     ui.ttMenu.setItemDescriptionGenerator(new ItemDescriptionGenerator {
       def generateDescription(source: Component, itemId: AnyRef, propertyId: AnyRef) = "menu item tooltip"
@@ -346,6 +359,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
   }
 
+  resetValues()
 
   private object MenuDropHandlers {
     private val container = ui.ttMenu.getContainerDataSource.asInstanceOf[HierarchicalContainer]
@@ -418,12 +432,6 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
   }
 
 
-  private val initEditor: (() => Unit) = {
-    val initialized = new AtomicBoolean(false)
-
-    () => if (initialized.compareAndSet(false, true)) resetValues()
-  }
-
   private def updateMenuUI() {
     val sortOrder = state.getSortOrder
     val isMultilevel = sortOrder == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER
@@ -447,8 +455,8 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     for (menuItem <- menuItems) {
       val doc = menuItem.getDocument
       val docId = doc.getId
-
-      ttMenu.addRow(docId, docId: JInteger, doc.getHeadline, doc.getAlias, doc.getDocumentType.getName.toLocalizedString(ui.getApplication.imcmsUser), doc.getLifeCyclePhase.toString)
+      // doc.getDocumentType.getName.toLocalizedString(ui.getApplication.imcmsUser)
+      ttMenu.addRow(docId, docId: JInteger, doc.getHeadline, doc.getAlias, doc.getDocumentType.getName.toLocalizedString("eng"), doc.getLifeCyclePhase.toString)
       ttMenu.setChildrenAllowed(docId, isMultilevel)
       ttMenu.setCollapsed(docId, false)
     }
@@ -526,7 +534,7 @@ class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) ex
   type Data = Seq[TextDomainObject]
 
   private var state: Seq[TextDomainObject] = _
-  private var textsUis: Seq[RichTextArea with GenericProperty[String]] = _
+  private var stateUis: Seq[RichTextArea with GenericProperty[String]] = _
 
   val ui = new TextEditorUI
 
@@ -534,7 +542,7 @@ class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) ex
 
   def resetValues() {
     state = texts.map(_.clone)
-    textsUis = state.map { text =>
+    stateUis = state.map { text =>
       new RichTextArea with GenericProperty[String] with FullSize |>> { rt =>
         rt.value = text.getText
       }
@@ -542,7 +550,7 @@ class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) ex
 
     ui.tsTexts.removeAllComponents()
 
-    (state, textsUis).zipped.foreach { (text, textUi) =>
+    (state, stateUis).zipped.foreach { (text, textUi) =>
       ui.tsTexts.addTab(textUi) |> { tab =>
         tab.setCaption(text.getLanguage.getName)
       }
@@ -550,7 +558,7 @@ class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) ex
   }
 
   def collectValues(): ErrorsOrData = {
-    (state, textsUis).zipped.foreach((text, textUi) => text.setText(textUi.value))
+    (state, stateUis).zipped.foreach { (text, textUi) => text.setText(textUi.value) }
     Right(state.map(_.clone))
   }
 }

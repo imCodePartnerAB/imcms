@@ -262,7 +262,7 @@ trait Required { this: Field =>
 
 
 
-object Asserts {
+object UiAsserts {
   def assertFixedSize(c: Component) {
     require(c.getWidthUnits != Sizeable.UNITS_PERCENTAGE, "Component width must not be difined in percentage.")
     require(c.getHeightUnits != Sizeable.UNITS_PERCENTAGE, "Component height must not be difined in percentage.")

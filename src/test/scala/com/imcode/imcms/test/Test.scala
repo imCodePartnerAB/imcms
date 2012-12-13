@@ -12,8 +12,8 @@ import com.imcode.imcms.test.config.{TestConfig}
 import org.springframework.context.support.{FileSystemXmlApplicationContext}
 import org.apache.commons.io.FileUtils
 import org.apache.solr.client.solrj.SolrServer
-import imcode.server.{Config, Imcms}
-import imcode.server.document.index.solr.{SolrServerFactory}
+import _root_.imcode.server.{Config, Imcms}
+import _root_.imcode.server.document.index.solr.{SolrServerFactory}
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 
 object Test extends Test
@@ -54,11 +54,11 @@ class Test extends TestDb with TestSolr {
       val BasicWithSql: Configurator = Basic andThen Sql
 
       def addAnnotatedClasses(annotatedClasses: Class[_]*)(configuration: Configuration) = configuration |>> { _ =>
-        annotatedClasses foreach configuration.addAnnotatedClass
+        annotatedClasses.foreach(configuration.addAnnotatedClass)
       }
 
       def addXmlFiles(xmlFiles: String*)(configuration: Configuration) = configuration |>> { _ =>
-        xmlFiles foreach { xmlFile => ClassLoader.getSystemResource(xmlFile).getFile |> configuration.addFile }
+        xmlFiles.foreach(xmlFile => ClassLoader.getSystemResource(xmlFile).getFile |> configuration.addFile)
       }
     }
   }
@@ -108,16 +108,15 @@ trait TestDb { test: Test =>
     import com.imcode.imcms.db.{DB, Schema}
 
     def createDataSource(urlType: DataSourceUrlType.Value = DataSourceUrlType.WithDBName,
-                         autocommit: DataSourceAutocommit.Value = DataSourceAutocommit.No) =
+                         autocommit: DataSourceAutocommit.Value = DataSourceAutocommit.No): BasicDataSource = {
 
       test.spring.ctx.getBean(classOf[BasicDataSource]) |>> { ds =>
-
         ds.setUrl(test.env.getRequiredProperty(
           if (urlType == DataSourceUrlType.WithDBName) "JdbcUrl" else "JdbcUrlWithoutDBName"))
 
         ds.setDefaultAutoCommit(autocommit == DataSourceAutocommit.Yes)
       }
-
+    }
 
     def recreate() {
       test.env.getRequiredProperty("DBName") |> { dbName =>

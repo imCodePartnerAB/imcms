@@ -23,9 +23,9 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.admin.access.user.UserSelectDialog
 import com.imcode.util.event.Publisher
 import com.imcode.imcms.api.{LuceneParsedQuery, Document}
-import com.vaadin.terminal.{FileResource, ExternalResource, Resource}
 import java.io.File
 import com.imcode.imcms.admin.doc.{DocViewer, DocEditor, DocManager}
+import com.vaadin.terminal.{ThemeResource, FileResource, ExternalResource, Resource}
 
 //    // alias VIEW -> 1003
 //    // status EDIT META -> http://imcms.dev.imcode.com/servlet/AdminDoc?meta_id=1003&flags=1
@@ -482,7 +482,8 @@ class CustomDocsContainer extends FilterableDocsContainer {
 
 class DocsUI(container: FilterableDocsContainer) extends Table(null, container)
     with MultiSelectBehavior[DocId]
-    with DocTableItemIcon with Selectable with Immediate {
+    with DocIdSelectWithLifeCycleIcon with Selectable with Immediate {
+    //with DocTableItemIcon with Selectable with Immediate {
 
   setColumnCollapsingAllowed(true)
   setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
@@ -493,50 +494,41 @@ class DocsUI(container: FilterableDocsContainer) extends Table(null, container)
 
 
 
-trait DocSelectWithLifeCycleIcon extends AbstractSelect {
-  override def getItemIcon(itemId: AnyRef) = itemId match {
-    case doc: DocumentDomainObject => new ExternalResource("imcms/eng/images/admin/status/%s.gif" format
-      itemId.asInstanceOf[DocumentDomainObject].getLifeCyclePhase.toString)
-
-    case _ => null
+trait DocSelectWithLifeCycleIcon extends AbstractSelect with GenericContainer[DocumentDomainObject] {
+  override def getItemIcon(itemId: AnyRef) = itemId.asInstanceOf[DocumentDomainObject] |> { doc =>
+    new ThemeResource("icons/docstatus/%s.gif".format(doc.getLifeCyclePhase.toString))
   }
 }
+
 
 trait DocIdSelectWithLifeCycleIcon extends AbstractSelect with GenericContainer[DocId] with ImcmsServicesSupport {
-  override def getItemIcon(itemId: AnyRef) = itemId match {
-    case docId: DocId =>
-      imcmsServices.getDocumentMapper.getDocument(docId) match {
-        case null => null
-        case doc =>
-          val app = getApplication
-          val fileBaseName = doc.getLifeCyclePhase.toString
-          val file = new File(app.context.getBaseDirectory, "imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
-
-          new FileResource(file, app)
-          //new ExternalResource("/imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
-      }
-
-    case _ => null
+  override def getItemIcon(itemId: AnyRef) = itemId.asInstanceOf[DocId] |> { docId =>
+    imcmsServices.getDocumentMapper.getDocument(docId) match {
+      case null => null
+      case doc => new ThemeResource("icons/docstatus/%s.gif".format(doc.getLifeCyclePhase.toString))
+    }
   }
 }
 
-// todo: check doc is not deleted from container
-trait DocTableItemIcon extends AbstractSelect with GenericContainer[DocId] {
-  override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
-    case docItem: FilterableDocsContainer#DocItem =>
-      docItem.doc match {
-        case null => null
-        case doc =>
-          val app = getApplication
-          val fileBaseName = doc.getLifeCyclePhase.toString
-          val file = new File(app.context.getBaseDirectory, "imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
-
-          new FileResource(file, app)
-      }
-
-    case _ => null
-  }
-}
+//// todo: check doc is not deleted from container
+//trait DocTableItemIcon extends AbstractSelect with GenericContainer[DocId] {
+//  override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
+//    case docItem: FilterableDocsContainer#DocItem =>
+//      docItem.doc match {
+//        case null => null
+//        case doc =>
+////          val app = getApplication
+//          val fileBaseName = doc.getLifeCyclePhase.toString
+////          val file = new File(app.context.getBaseDirectory, "imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
+////
+////          new FileResource(file, app)
+////          new ExternalResource("imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
+//          new ThemeResource("icons/docstatus/%s.gif".format(fileBaseName))
+//      }
+//
+//    case _ => null
+//  }
+//}
 
 
 class BasicFilter {
