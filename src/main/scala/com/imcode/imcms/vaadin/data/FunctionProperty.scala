@@ -1,4 +1,4 @@
-package com.imcode.imcms.vaadin
+package com.imcode.imcms.vaadin.data
 
 import com.vaadin.data.Property
 

@@ -5,14 +5,13 @@ package group
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import imcode.server.user._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.{_}
 import imcode.server.document.{TemplateGroupDomainObject}
-import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
 
 //todo: form check
 //todo: duplicate save check!
@@ -120,7 +119,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
 
 
 class TemplateGroupManagerUI extends VerticalLayout with Spacing with UndefinedSize {
-  import com.imcode.imcms.vaadin.Theme.Icon._
+  import Theme.Icon._
 
   val mb = new MenuBar
   val miNew = mb.addItem("Add new", New16)

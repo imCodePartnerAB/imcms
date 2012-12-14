@@ -6,13 +6,14 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import scala.collection.mutable.{Map => MMap}
 import com.vaadin.terminal.{Resource}
-import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.{_}
 import com.vaadin.data.util.FilesystemContainer
 import java.io.{FilenameFilter, File}
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 import imcode.server.Imcms
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
 
 
 /** Hierarchical filesystem (non-hidden dirs) container with a single root. */

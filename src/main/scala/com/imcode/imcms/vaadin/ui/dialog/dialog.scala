@@ -29,8 +29,8 @@ trait NonModal { this: Window =>
  *   -size is adjusted automatically according to its content size.
  */
 class Dialog(caption: String = "") extends Window(caption) with Modal {
-  protected val mainUISizeAssert: Component => Unit = UiAsserts.assertFixedSize
-  protected val buttonsBarUISizeAssert: Component => Unit = UiAsserts.assertFixedSize
+  protected val mainUISizeAssert: Component => Unit = UIAsserts.assertFixedSize
+  protected val buttonsBarUISizeAssert: Component => Unit = UIAsserts.assertFixedSize
   protected val content = new GridLayout(1, 2) with Spacing with Margin
 
   setContent(content)

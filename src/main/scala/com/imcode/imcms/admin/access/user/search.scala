@@ -7,11 +7,12 @@ import scala.collection.JavaConverters._
 
 import _root_.imcode.server.user._
 import com.imcode.util.event.Publisher
-import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
 
 
 trait UserSingleSelectDialog { this: OkCancelDialog =>

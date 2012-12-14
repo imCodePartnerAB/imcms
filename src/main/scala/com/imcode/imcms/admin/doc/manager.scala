@@ -17,7 +17,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.admin.doc.search._
+import com.imcode.imcms.admin.doc.projection._
 import com.imcode.imcms.api.{I18nMeta, I18nLanguage}
 import com.vaadin.terminal.ExternalResource
 

@@ -6,14 +6,14 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.user._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.{_}
 import imcode.server.document.{CategoryTypeDomainObject}
 import com.imcode.imcms.admin.doc.category.{CategoryTypeId}
 import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP }
 //todo:
 //fix: edit - multiselect - always on
 class CategoryTypeManager(app: ImcmsApplication) {
@@ -137,7 +137,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
 }
 
 class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSize {
-  import com.imcode.imcms.vaadin.Theme.Icon._
+  import Theme.Icon._
 
   val mb = new MenuBar
   val miNew = mb.addItem("Add new", New16)

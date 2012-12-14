@@ -4,9 +4,8 @@ package admin.doc.meta.access
 
 import scala.collection.breakOut
 import scala.collection.JavaConverters._
-import com.imcode.imcms.api._
 import imcode.server.user._
-import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.{_}
 import imcms.ImcmsServicesSupport
 import imcode.server.document.DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
 import imcode.server.document.textdocument.TextDocumentDomainObject
@@ -14,7 +13,7 @@ import imcode.server.document._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP }
 
 // Discuss
 //        Managed templates in groups:

@@ -4,10 +4,10 @@ package admin.doc.meta.profile
 
 import scala.collection.breakOut
 import scala.collection.JavaConversions._
-import com.imcode.imcms.api._
 import imcode.server.user._
 import imcode.server.document._
 import com.imcode.imcms.vaadin._
+import com.imcode.imcms.vaadin.ui._
 import imcms.ImcmsServicesSupport
 import textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.meta.access.{TextDocPermSetEditorUI, TextDocPermSetEditor}

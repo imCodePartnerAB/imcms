@@ -1,8 +1,8 @@
 package com.imcode.imcms.docadmin
 
 import javax.servlet._
-import imcode.util.Utility
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import _root_.imcode.util.Utility
 
 class DocAdminFilter extends Filter {
 

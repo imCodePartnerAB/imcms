@@ -7,9 +7,10 @@ import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
 import com.imcode.imcms.admin.doc.content.{UnsupportedDocContentEditor, UrlDocContentEditor, TextDocContentEditor, DocContentEditor}
 import com.imcode.imcms.api.{I18nMeta, I18nLanguage}
 import com.imcode.imcms.admin.doc.meta.MetaEditor
-import com.imcode.imcms.vaadin.{FullSize, Editor}
+import com.imcode.imcms.vaadin.{Editor}
 import com.imcode.imcms.vaadin.ui.dialog.{BottomMarginDialog, CustomSizeDialog, OkCancelDialog}
 import com.vaadin.ui.TabSheet
+import com.imcode.imcms.vaadin.ui.FullSize
 
 
 object DocEditor {

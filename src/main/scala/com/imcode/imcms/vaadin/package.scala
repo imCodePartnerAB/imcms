@@ -9,12 +9,9 @@ import com.vaadin.event.ItemClickEvent
 import com.vaadin.data.{Item, Container, Property}
 import com.vaadin.ui.Table.CellStyleGenerator
 import com.vaadin.ui._
-import com.vaadin.terminal.gwt.server.WebApplicationContext
-import javax.servlet.http.HttpSession
-import javax.servlet.ServletContext
-import com.vaadin.ui.Window.Notification
 import com.vaadin.data.Container.ItemSetChangeListener
 import com.vaadin.terminal.{Resource, UserError, Sizeable}
+import com.imcode.imcms.vaadin.data.{GenericProperty, PropertyDescriptor}
 
 package object vaadin {
 
@@ -22,28 +19,6 @@ package object vaadin {
   type PropertyValue = AnyRef
   type ItemId = AnyRef
   type ColumnId = AnyRef
-
-
-
-
-  /**
-   * Property value type.
-   *
-   * Adds type-checked access to property value.
-   */
-  trait GenericProperty[A <: PropertyValue] extends Property {
-    def value = getValue.asInstanceOf[A]
-    def value_=(v: A): Unit = setValue(v)
-
-    def clear(implicit ev: A =:= String): Unit =  setValue("")
-    def trim(implicit ev: A =:= String): String = value.trim
-    def trimOpt(implicit ev: A =:= String): Option[String] = trim match {
-      case "" => None
-      case v => Some(v)
-    }
-    def isBlank(implicit ev: A =:= String): Boolean = trim.isEmpty
-    def notBlank(implicit ev: A =:= String): Boolean = !isBlank
-  }
 
 
 //case class ByNameProperty[A >: Null <: AnyRef](byName: => A)(implicit mf: Manifest[A]) extends Property {
@@ -63,22 +38,9 @@ package object vaadin {
 
 // add memoized byNameProperty
 
-  trait NullableProperty[A <: PropertyValue] extends GenericProperty[A] {
-    def valueOpt: Option[A] = Option(value)
-  }
 
-  // todo: itemsIds as Seq?
-  trait GenericContainer[A <: ItemId] extends Container {
-    def itemIds: JCollection[A] = getItemIds.asInstanceOf[JCollection[A]]
-    def itemIds_=(ids: JCollection[A]) {
-      removeAllItems()
-      ids.asScala.foreach(addItem _)
-    }
 
-    def item(id: A): Item = getItem(id)
 
-    def firstItemIdOpt: Option[A] = itemIds.asScala.headOption
-  }
 
 
   /**
@@ -125,29 +87,7 @@ package object vaadin {
 
 
 
-
-//  def whenSelected[A, B](property: Property)(fn: A => B): Option[B] = property.getValue match {
-//    case null => None
-//    case value: A => Some(fn(value))
-//    case other => sys.error("Unexpected field value: %s." format other)
-//  }
-
-  def whenSelected[A <: AnyRef, B](property: GenericProperty[A] with AbstractSelect)(fn: A => B): Option[B] = property.value match {
-    case null => None
-    case value: JCollection[_] if value.isEmpty => None
-    case value => Some(fn(value))
-  }
-
-
-  def whenSingle[A, B](seq: Seq[A])(fn: A => B): Option[B] = seq match {
-    case Seq(a) => Some(fn(a))
-    case _ => None
-  }
-
-  def whenNotEmpty[A, B](seq: Seq[A])(fn: Seq[A] => B): Option[B] = if (seq.isEmpty) None else Some(fn(seq))
-
-
-  implicit def applicationToImcmsApplication(app: Application) = app.asInstanceOf[ImcmsApplication]
+  implicit def applicationToImcmsApplication(app: Application): ImcmsApplication = app.asInstanceOf[ImcmsApplication]
 
 
   implicit def wrapApplication(app: Application) = new ApplicationWrapper(app)
@@ -169,29 +109,6 @@ package object vaadin {
         def itemClick(event: ItemClickEvent): Unit = listener(event)
       })
   }
-
-  trait ContainerItemSetChangeNotifier extends Container.ItemSetChangeNotifier { container: Container =>
-
-    private var listeners = Set.empty[ItemSetChangeListener]
-
-    def removeListener(listener: ItemSetChangeListener) {
-      listeners -= listener
-    }
-
-    def addListener(listener: ItemSetChangeListener) {
-      listeners += listener
-    }
-
-    protected def notifyItemSetChanged() {
-      val event = new Container.ItemSetChangeEvent {
-        def getContainer = container
-      }
-
-      listeners.foreach(_ containerItemSetChange event)
-    }
-  }
-
-
 
 
   implicit def stringToUserError(string: String) = new UserError(string)

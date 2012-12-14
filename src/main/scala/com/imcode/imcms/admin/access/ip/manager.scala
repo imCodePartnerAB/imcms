@@ -1,20 +1,23 @@
 package com.imcode
-package imcms.admin.access.ip
+package imcms
+package admin.access.ip
 
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
-import imcms.security.{PermissionGranted, PermissionDenied}
-import imcms.dao.IPAccessDao
-import imcms.api.IPAccess
-import imcode.util.Utility.{ipLongToString, ipStringToLong}
+import _root_.imcode.server.Imcms
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
+import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
+import com.imcode.imcms.dao.IPAccessDao
+import com.imcode.imcms.api.IPAccess
+import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
 import com.vaadin.ui.Window.Notification
-import imcms.admin.access.user.UserSelectDialog
+import com.imcode.imcms.admin.access.user.UserSelectDialog
 import javax.persistence.{Id, Entity}
+import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.ImcmsApplication
 
 // todo: ipv4; add/handle ipv6?
 // todo: Should select user from user select!!
@@ -139,7 +142,7 @@ class IPAccessManager(app: ImcmsApplication) {
 } // class IPAccessManager
 
 class IPAccessManagerUI extends VerticalLayout with Spacing with UndefinedSize {
-  import com.imcode.imcms.vaadin.Theme.Icon._
+  import Theme.Icon._
 
   val mb = new MenuBar
   val miNew = mb.addItem("Add new", New16)

@@ -5,7 +5,7 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.{_}
 import imcms.security.{PermissionGranted, PermissionDenied}
 import imcms.dao.IPAccessDao
 import imcms.api.IPAccess
@@ -93,7 +93,7 @@ class SessionCounterManager(app: ImcmsApplication) {
 } // class SessionCounterManager
 
 class SessionCounterManagerUI extends VerticalLayout with Spacing with UndefinedSize {
-  import com.imcode.imcms.vaadin.Theme.Icon._
+  import Theme.Icon._
 
   val mb = new MenuBar
   val miEdit = mb.addItem("Edit", Edit16)

@@ -8,6 +8,7 @@ import com.imcode.imcms.servlet.superadmin.AdminSearchTerms
 import java.util.{Locale, Date}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data.PropertyDescriptor
 
 //import imcms.admin.chat.{MessageView, Chat}
 
@@ -15,7 +16,7 @@ import imcms.admin.access.user.{UserManager}
 import imcode.server.{Imcms}
 import com.vaadin.terminal.{ThemeResource, UserError}
 import com.imcode.imcms.vaadin._
-import com.imcode.imcms.vaadin.Theme.Icon
+import Theme.Icon
 
 
 class SysAdmin extends com.vaadin.Application with ImcmsApplication { app =>
@@ -213,7 +214,9 @@ class SysAdmin extends com.vaadin.Application with ImcmsApplication { app =>
 
 
   lazy val searchTerms = new TabSheet with FullSize {
-    addTab(new VerticalLayoutUI("Popular search terms") {
+    addTab(new VerticalLayout with Spacing with Margin {
+      setCaption("Popular search terms")
+
       val tblTerms = new Table {
         addContainerProperties(this, PropertyDescriptor[String]("Term"), PropertyDescriptor[String]("Count"))
         setPageLength(10)

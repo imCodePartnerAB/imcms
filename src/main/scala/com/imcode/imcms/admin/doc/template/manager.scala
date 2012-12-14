@@ -6,7 +6,7 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.user._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.{_}
 import com.vaadin.ui.Window.Notification
 import imcms.admin.instance.file._
 import org.apache.commons.io.FileUtils
@@ -14,6 +14,7 @@ import imcms.security.{PermissionDenied, PermissionGranted}
 import java.io.{FileInputStream, ByteArrayInputStream, File}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
 
 //todo: common internal ex handler???
 //todo: add related docs handling
@@ -141,7 +142,7 @@ class TemplateManager(app: ImcmsApplication) {
 }
 
 class TemplateManagerUI extends VerticalLayout with Spacing with UndefinedSize {
-  import com.imcode.imcms.vaadin.Theme.Icon._
+  import Theme.Icon._
 
   val mb = new MenuBar
   val miUpload = mb.addItem("Upload", New16, null)

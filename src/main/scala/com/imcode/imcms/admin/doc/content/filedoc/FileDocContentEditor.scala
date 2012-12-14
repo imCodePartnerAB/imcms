@@ -18,6 +18,7 @@ import scala.collection.immutable.ListMap
 import scala.collection.mutable.{Map => MMap}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.data.PropertyDescriptor
 
 /**
  * @param doc used as a read only value object to initialize editor.

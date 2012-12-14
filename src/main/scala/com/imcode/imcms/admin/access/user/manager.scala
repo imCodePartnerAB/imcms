@@ -3,11 +3,12 @@ package imcms
 package admin.access.user
 
 import imcode.server.user._
-import com.imcode.imcms.vaadin._
 import com.vaadin.ui._
 
+import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.data._
 
 import scala.collection.JavaConverters._
 
@@ -96,7 +97,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
 
 
 class UserManagerUI(val searchUI: Component) extends VerticalLayout with Spacing {
-  import com.imcode.imcms.vaadin.Theme.Icon._
+  import Theme.Icon._
 
   val mb = new MenuBar
   val miNew = mb.addItem("mi.new".i, New16)
