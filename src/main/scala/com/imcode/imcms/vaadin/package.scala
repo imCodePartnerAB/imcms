@@ -1,47 +1,14 @@
 package com.imcode
 package imcms
 
-import scala.collection.JavaConverters._
-
 import com.vaadin.Application
-import com.vaadin.data.Property.{ValueChangeNotifier, ValueChangeEvent, ValueChangeListener}
 import com.vaadin.event.ItemClickEvent
-import com.vaadin.data.{Item, Container, Property}
-import com.vaadin.ui.Table.CellStyleGenerator
+import com.vaadin.data.{Container, Property}
 import com.vaadin.ui._
-import com.vaadin.data.Container.ItemSetChangeListener
-import com.vaadin.terminal.{Resource, UserError, Sizeable}
-import com.imcode.imcms.vaadin.data.{GenericProperty, PropertyDescriptor}
+import com.vaadin.terminal.UserError
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor, ItemId, PropertyId, ColumnId}
 
 package object vaadin {
-
-  type PropertyId = AnyRef
-  type PropertyValue = AnyRef
-  type ItemId = AnyRef
-  type ColumnId = AnyRef
-
-
-//case class ByNameProperty[A >: Null <: AnyRef](byName: => A)(implicit mf: Manifest[A]) extends Property {
-//
-//  def setReadOnly(newStatus: Boolean) = throw new UnsupportedOperationException
-//
-//  val isReadOnly = true
-//
-//  val getType = mf.erasure
-//
-//  def setValue(newValue: AnyRef) = throw new UnsupportedOperationException
-//
-//  def getValue = byName //.asInstanceOf[AnyRef]
-//
-//  override def toString = ?(getValue) map { _.toString } getOrElse ""
-//}
-
-// add memoized byNameProperty
-
-
-
-
-
 
   /**
    * Component data type.
@@ -97,7 +64,7 @@ package object vaadin {
   implicit def wrapValueChangeNotifier(vcn: Property.ValueChangeNotifier) = new {
     def addValueChangeListener(listener: Property.ValueChangeEvent => Unit): Unit =
       vcn.addListener(new Property.ValueChangeListener {
-        def valueChange(event: ValueChangeEvent): Unit = listener(event)
+        def valueChange(event: Property.ValueChangeEvent): Unit = listener(event)
       })
 
     def addValueChangeHandler(handler: => Unit): Unit = addValueChangeListener(_ => handler)

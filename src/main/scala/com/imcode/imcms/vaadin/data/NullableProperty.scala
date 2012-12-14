@@ -1,6 +1,7 @@
-package com.imcode.imcms.vaadin
-package data
+package com.imcode.imcms.vaadin.data
 
-trait NullableProperty[A <: PropertyValue] extends GenericProperty[A] {
+import com.vaadin.data.Property
+
+trait NullableProperty[A <: PropertyValue] extends GenericProperty[A] { this: Property =>
   def valueOpt: Option[A] = Option(value)
 }

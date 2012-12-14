@@ -1,5 +1,4 @@
-package com.imcode.imcms.vaadin
-package data
+package com.imcode.imcms.vaadin.data
 
 import scala.collection.JavaConverters._
 import com.vaadin.data.{Item, Container}

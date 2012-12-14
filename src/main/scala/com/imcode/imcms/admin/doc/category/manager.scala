@@ -5,7 +5,7 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{_}
+import com.imcode.imcms.vaadin._
 import imcode.server.document.{CategoryDomainObject}
 import com.vaadin.ui.Window.Notification
 import imcms.admin.instance.file._

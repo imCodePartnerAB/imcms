@@ -1,6 +1,6 @@
 package com.imcode.imcms.vaadin.ui
 
-import com.imcode.imcms.vaadin._
+import com.imcode.imcms.vaadin.data.{ItemId, ColumnId}
 import com.vaadin.ui.Table
 import com.imcode.imcms.vaadin.data.GenericContainer
 
@@ -18,5 +18,5 @@ class TableWrapper[A <: ItemId](table: Table with GenericContainer[A]) {
   }
 
   def columnHeaders = table.getColumnHeaders.toList
-  def columnHeaders_=(headers: List[String]) { table setColumnHeaders headers.toArray }
+  def columnHeaders_=(headers: List[String]) { table.setColumnHeaders(headers.toArray) }
 }

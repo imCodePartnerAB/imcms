@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicReference
 import com.vaadin.terminal.Sizeable
 import com.vaadin.ui.Layout.AlignmentHandler
 import com.vaadin.data.{Property, Item}
-import com.imcode.imcms.vaadin.data.{NullableProperty, GenericContainer, GenericProperty}
+import com.imcode.imcms.vaadin.data.{NullableProperty, GenericContainer, GenericProperty, ItemId}
 
 package object ui {
 
@@ -339,7 +339,7 @@ package object ui {
   /**
    * <code>value<code> property always returns a collection.
    */
-  trait MultiSelectBehavior[A <: AnyRef] extends GenericSelect[A] with GenericProperty[JCollection[A]] {
+  trait MultiSelectBehavior[A <: ItemId] extends GenericSelect[A] with GenericProperty[JCollection[A]] {
 
     def selection: Seq[A] = value.asScala.toSeq
 
