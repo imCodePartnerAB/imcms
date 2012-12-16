@@ -20,6 +20,7 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.admin.doc.projection._
 import com.imcode.imcms.api.{I18nMeta, I18nLanguage}
 import com.vaadin.terminal.ExternalResource
+import imcode.server.user.UserDomainObject
 
 // import _root_.com.imcode.imcms.mapping.ProfileMapper.SimpleProfile ????
 
@@ -31,9 +32,9 @@ object Actions {
 }
 
 class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
-  val projection = new DocsProjection(new AllDocsContainer)
+  val projection = new DocsProjection(app.imcmsUser)
   val projectionOps = new DocsProjectionOps(projection)
-  val customDocs = new CustomDocs
+  val customDocs = new CustomDocs(app.imcmsUser)
 
   val docSelectionDlg = new OKDialog("doc.dlg_selection.caption".i) with CustomSizeDialog |>> { dlg =>
     dlg.mainUI = customDocs.ui
@@ -142,8 +143,8 @@ class DocManagerUI(searchUI: DocsProjectionUI) extends VerticalLayout with Spaci
 /**
  * Custom docs .
  */
-class CustomDocs {
-  val projection = new DocsProjection(new CustomDocsContainer)
+class CustomDocs(user: UserDomainObject) {
+  val projection = new DocsProjection(user)
   val ui = new CustomDocsUI(projection.ui)
 
   projection.docsUI.addActionHandler(new Action.Handler {

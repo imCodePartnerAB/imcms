@@ -8,10 +8,10 @@ import org.apache.solr.client.solrj.SolrQuery
 import com.imcode.imcms.api.I18nLanguage
 
 /**
- * This implementation of {@link DocumentIndexService} transforms and routes all calls
+ * This implementation of {@link DocumentIndex} transforms and routes all calls
  * to the wrapped instance of {@link SolrDocumentIndexService}.
  */
-class SolrDocumentIndexServiceWrapper(service: SolrDocumentIndexService, defaultLanguage: I18nLanguage) extends DocumentIndexService with Log4jLoggerSupport {
+class DocumentIndexImpl(val service: SolrDocumentIndexService, defaultLanguage: I18nLanguage) extends DocumentIndex with Log4jLoggerSupport {
 
   def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
     val queryString = query.getQuery.toString
@@ -48,9 +48,5 @@ class SolrDocumentIndexServiceWrapper(service: SolrDocumentIndexService, default
 
   def rebuild() {
     service.requestIndexRebuild()
-  }
-
-  def shutdown() {
-    service.shutdown()
   }
 }

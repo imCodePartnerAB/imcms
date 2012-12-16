@@ -26,7 +26,7 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
     private final Database database;
 
-    public LoggingDocumentIndex(Database database, DocumentIndexService documentIndex) {
+    public LoggingDocumentIndex(Database database, DocumentIndex documentIndex) {
         super(documentIndex);
         this.database = database;
     }

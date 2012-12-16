@@ -20,7 +20,7 @@ import org.apache.lucene.search.TermQuery;
  */
 public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
 
-    public PhaseQueryFixingDocumentIndex(DocumentIndexService index) {
+    public PhaseQueryFixingDocumentIndex(DocumentIndex index) {
         super(index);
     }
 

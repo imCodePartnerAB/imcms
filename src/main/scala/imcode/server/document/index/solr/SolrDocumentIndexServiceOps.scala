@@ -119,7 +119,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
 
     progressCallback(IndexRebuildProgress(rebuildStartMills, rebuildStartMills, docsCount, 0))
 
-    for (((docId, solrInputDocs), docNo) <- docsView.zip(Stream.from(1)); if solrInputDocs.nonEmpty) {
+    for { ((docId, solrInputDocs), docNo) <- docsView.zip(Stream.from(1)); if solrInputDocs.nonEmpty } {
       if (Thread.currentThread().isInterrupted) {
         solrServer.rollback()
         throw new InterruptedException()

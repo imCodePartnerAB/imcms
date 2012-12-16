@@ -2,6 +2,8 @@ package com.imcode
 package imcms
 package admin.doc.projection
 
+import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject}
@@ -9,7 +11,7 @@ import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 
 
 trait DocsProjectionDialog extends CustomSizeDialog { this: OkCancelDialog =>
-  val projection = new DocsProjection(new AllDocsContainer) |>> { _.docsUI.setMultiSelect(true) }
+  val projection = new DocsProjection(getApplication.imcmsUser) |>> { _.docsUI.setMultiSelect(true) }
   val ops = new DocsProjectionOps(projection)
 
   mainUI = new DocsProjectionDialogMainUI(projection.ui) |>> { ui =>
@@ -26,7 +28,7 @@ trait DocsProjectionDialog extends CustomSizeDialog { this: OkCancelDialog =>
       val isSingleSelection = selection.size == 1
       val isTextDocSelection = isSingleSelection &&
         (projection.docsUI.item(selection.head) match {
-          case docItem: FilterableDocsContainer#DocItem => docItem.doc.isInstanceOf[TextDocumentDomainObject]
+          case docItem: DocsContainer#DocItem => docItem.doc.isInstanceOf[TextDocumentDomainObject]
           case _ => false
         })
 

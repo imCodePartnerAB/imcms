@@ -17,9 +17,9 @@ trait ContainerItemSetChangeNotifier extends Container.ItemSetChangeNotifier { c
 
   protected def notifyItemSetChanged() {
     val event = new Container.ItemSetChangeEvent {
-      def getContainer = container
+      val getContainer = container
     }
 
-    listeners.foreach(_ containerItemSetChange event)
+    listeners.foreach(_.containerItemSetChange(event))
   }
 }

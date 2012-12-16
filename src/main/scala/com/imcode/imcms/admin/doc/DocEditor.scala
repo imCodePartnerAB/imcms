@@ -14,19 +14,13 @@ import com.imcode.imcms.vaadin.ui.FullSize
 
 
 object DocEditor {
+
   def mkContentEditor(doc: DocumentDomainObject): DocContentEditor = doc match {
     case textDoc: TextDocumentDomainObject => new TextDocContentEditor(textDoc)
     case fileDoc: FileDocumentDomainObject => new FileDocContentEditor(fileDoc)
     case urlDoc: UrlDocumentDomainObject => new UrlDocContentEditor(urlDoc)
     case _ => new UnsupportedDocContentEditor(doc)
   }
-
-  def mkDocEditorDialog(doc: DocumentDomainObject, caption: String): DocEditorDialog = new DocEditorDialog(doc, caption) |>> {
-    _.setSize(500, 500)
-  }
-
-  // DocEditorUI tabs: content, properties
-  // saveDoc <- content, properties => Either[error, doc]
 }
 
 
@@ -37,7 +31,7 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
   val metaEditor = new MetaEditor(doc)
   val contentEditor = DocEditor.mkContentEditor(doc)
 
-  val ui= new TabSheet with FullSize |>> { ts =>
+  val ui = new TabSheet with FullSize |>> { ts =>
     ts.addTab(metaEditor.ui, "Properties", null)
     ts.addTab(contentEditor.ui, "Content", null)
   }
@@ -58,8 +52,4 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
 
 //class DocEditorUI extends TabSheet with FullSize
 
-class DocEditorDialog(doc: DocumentDomainObject, caption: String) extends OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
-  val docEditor = new DocEditor(doc)
 
-  mainUI = docEditor.ui
-}

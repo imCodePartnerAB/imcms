@@ -10,12 +10,12 @@ import org.apache.solr.core.{SolrConfig, CoreContainer, SolrCore, CoreDescriptor
 
 object SolrServerFactory extends Log4jLoggerSupport {
 
-  def createHttpSolrServer(solrUrl: String) = new HttpSolrServer(solrUrl) with SolrServerShutdown |>> { solr =>
+  def createHttpSolrServer(solrUrl: String) = new HttpSolrServer(solrUrl) |>> { solr =>
     solr.setRequestWriter(new BinaryRequestWriter())
   }
 
 
-  def createEmbeddedSolrServer(solrHome: String, recreateDataDir: Boolean = false): EmbeddedSolrServer with SolrServerShutdown = {
+  def createEmbeddedSolrServer(solrHome: String, recreateDataDir: Boolean = false): EmbeddedSolrServer = {
     logger.info("Creating embedded SOLr server. Solr home: %s, recreateDataDir: %s.".format(solrHome, recreateDataDir))
 
     if (recreateDataDir) {
@@ -29,12 +29,12 @@ object SolrServerFactory extends Log4jLoggerSupport {
     }
 
     new CoreContainer(solrHome, new File(solrHome, "solr.xml")) |> { coreContainer =>
-      new EmbeddedSolrServer(coreContainer, "core") with SolrServerShutdown
+      new EmbeddedSolrServer(coreContainer, "core")
     }
   }
 
 
-  def createEmbeddedSolrServer(solrHome: String, dataDirPath: String, recreateDataDir: Boolean): EmbeddedSolrServer with SolrServerShutdown = {
+  def createEmbeddedSolrServer(solrHome: String, dataDirPath: String, recreateDataDir: Boolean): EmbeddedSolrServer = {
     val dataDir: File = if (dataDirPath.startsWith("/")) new File(dataDirPath) else new File(solrHome, "core/" + dataDirPath)
 
     if (recreateDataDir && dataDir.exists() && !FileUtils.deleteQuietly(dataDir)) {
@@ -50,7 +50,7 @@ object SolrServerFactory extends Log4jLoggerSupport {
         coreContainer.register(core, false)
       }
 
-      new EmbeddedSolrServer(coreContainer, "core") with SolrServerShutdown
+      new EmbeddedSolrServer(coreContainer, "core")
     }
   }
 }

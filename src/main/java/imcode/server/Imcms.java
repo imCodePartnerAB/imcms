@@ -196,7 +196,7 @@ public class Imcms {
         Prefs.flush();
 
         if (services != null) {
-            services.getDocumentMapper().getDocumentIndex().shutdown();
+            services.getDocumentMapper().getDocumentIndex().service().shutdown();
         }
 
         services = null;

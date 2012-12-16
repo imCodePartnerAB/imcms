@@ -13,7 +13,7 @@ package admin.doc.projection
 //// todo: check doc is not deleted from container
 //trait DocTableItemIcon extends AbstractSelect with GenericContainer[DocId] {
 //  override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
-//    case docItem: FilterableDocsContainer#DocItem =>
+//    case docItem: DocsContainer#DocItem =>
 //      docItem.doc match {
 //        case null => null
 //        case doc =>

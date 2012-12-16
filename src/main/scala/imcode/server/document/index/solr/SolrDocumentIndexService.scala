@@ -24,7 +24,7 @@ abstract class SolrDocumentIndexService extends Log4jLoggerSupport {
 object SolrDocumentIndexService {
   trait IndexRebuildTask {
     def future(): Future[_]
-    def progress(): Option[SolrDocumentIndexService.IndexRebuildProgress]
+    def progress(): Option[IndexRebuildProgress]
   }
 
   case class IndexRebuildProgress(startTimeMillis: Long, currentTimeMillis: Long, totalDocsCount: Int, indexedDocsCount: Int)

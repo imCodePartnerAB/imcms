@@ -20,7 +20,7 @@ import com.vaadin.event.dd.acceptcriteria.{Not, AcceptAll, AcceptCriterion}
 import com.vaadin.data.util.{HierarchicalContainer}
 import scala.annotation.tailrec
 import admin.doc.projection.{DocIdSelectWithLifeCycleIcon, DocsProjectionDialog}
-import admin.doc.{DocViewer, DocEditor}
+import com.imcode.imcms.admin.doc.{DocEditorDialog, DocViewer, DocEditor}
 import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerator}
 import java.util.concurrent.atomic.AtomicBoolean
 import dao.TextDao
@@ -328,7 +328,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
             updateMenuUI()
 
           case doc =>
-            DocEditor.mkDocEditorDialog(doc, "Edit document properties") |>> { dlg =>
+            new DocEditorDialog( "Edit document properties", doc) |>> { dlg =>
               dlg.setOkButtonHandler {
                 dlg.docEditor.collectValues() match {
                   case Left(errors) => ui.rootWindow.showErrorNotification(errors.mkString(", "))

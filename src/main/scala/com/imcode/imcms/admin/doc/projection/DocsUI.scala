@@ -7,7 +7,7 @@ import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.ui.{Immediate, Selectable, MultiSelectBehavior}
 
 
-class DocsUI(container: FilterableDocsContainer) extends Table(null, container)
+class DocsUI(container: DocsContainer) extends Table(null, container)
     with MultiSelectBehavior[DocId]
     with DocIdSelectWithLifeCycleIcon with Selectable with Immediate {
     //with DocTableItemIcon with Selectable with Immediate {

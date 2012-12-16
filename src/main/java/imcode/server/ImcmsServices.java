@@ -1,9 +1,7 @@
 package imcode.server ;
 
 import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.dao.MetaDao;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.DocumentIndexService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
@@ -18,10 +16,8 @@ import java.security.KeyStore;
 import java.text.Collator;
 import java.util.Date;
 
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.db.ProcedureExecutor;

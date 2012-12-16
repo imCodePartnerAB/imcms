@@ -4,8 +4,8 @@ import scala.collection.JavaConverters._
 import com.vaadin.data.{Item, Container}
 import com.imcode._
 
-// todo: itemsIds as Seq?
-trait GenericContainer[A <: ItemId] extends Container {
+// todo: ???itemsIds as Seq???
+trait GenericContainer[A <: ItemId] { this: Container =>
   def itemIds: JCollection[A] = getItemIds.asInstanceOf[JCollection[A]]
   def itemIds_=(ids: JCollection[A]) {
     removeAllItems()

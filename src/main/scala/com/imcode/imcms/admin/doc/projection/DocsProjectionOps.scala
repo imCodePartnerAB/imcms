@@ -4,7 +4,7 @@ package admin.doc.projection
 
 import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentTypeDomainObject, DocumentDomainObject}
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
-import com.imcode.imcms.admin.doc.{DocViewer, DocEditor}
+import com.imcode.imcms.admin.doc.{DocEditorDialog, DocViewer, DocEditor}
 import com.imcode.imcms.vaadin.ui.dialog.ConfirmationDialog
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
@@ -24,10 +24,10 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
           }
           val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.ui.getApplication.imcmsUser)
 
-          projection.ui.rootWindow.initAndShow(DocEditor.mkDocEditorDialog(newDoc, dlgCaption)) { dlg =>
-            dlg.setOkButtonHandler {
-              val ui = projection.ui
+          import projection.ui
 
+          new DocEditorDialog(dlgCaption, newDoc) |>> { dlg =>
+            dlg.setOkButtonHandler {
               dlg.docEditor.collectValues() match {
                 case Left(errors) => ui.rootWindow.showErrorNotification(errors.mkString(","))
                 case Right((editedDoc, i18nMetas)) =>
@@ -40,7 +40,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                   }
               }
             }
-          }
+          } |> ui.rootWindow.addWindow
 
         case _ =>
       }
@@ -96,17 +96,14 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
       imcmsServices.getDocumentMapper.getDocument(docId) match {
         case null =>
         case doc =>
-          val ui = projection.ui
-          val rootWindow = ui.rootWindow
-          rootWindow.initAndShow(DocEditor.mkDocEditorDialog(doc, "Edit document"), resizable = true) { dlg =>
-            dlg.setSize(500, 500)
-
+          val rootWindow = projection.ui.rootWindow
+          new DocEditorDialog("Edit document", doc) { dlg =>
             dlg.setOkButtonHandler {
               dlg.docEditor.collectValues() match {
                 case Left(errors) => rootWindow.showErrorNotification(errors.mkString(","))
                 case Right((editedDoc, i18nMetas)) =>
                   try {
-                    imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser)
+                    imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, rootWindow.getApplication.imcmsUser)
                     rootWindow.showInfoNotification("Document has been saved")
                     projection.filter()
                   } catch {
@@ -114,7 +111,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                   }
               }
             }
-          }
+          } |> rootWindow.addWindow
       }
     }
   }

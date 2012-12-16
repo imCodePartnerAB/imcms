@@ -6,7 +6,7 @@
  */
 package com.imcode.imcms.api;
 
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 
 public class BadQueryException extends Exception {
 

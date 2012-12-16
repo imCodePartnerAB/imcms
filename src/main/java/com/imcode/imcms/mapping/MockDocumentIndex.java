@@ -2,15 +2,15 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.DocumentIndexService;
 import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.index.IndexException;
+import imcode.server.document.index.solr.SolrDocumentIndexService;
 import imcode.server.user.UserDomainObject;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class MockDocumentIndex implements DocumentIndexService {
+public class MockDocumentIndex implements DocumentIndex {
 
     private boolean indexDocumentCalled;
     private boolean removeDocumentCalled;
@@ -48,6 +48,7 @@ public class MockDocumentIndex implements DocumentIndexService {
     }
 
     @Override
-    public void shutdown() {
+    public SolrDocumentIndexService service() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

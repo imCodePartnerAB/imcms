@@ -2,7 +2,6 @@ package imcode.server;
 
 import com.imcode.imcms.api.I18nSupport;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.DocumentIndexService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
@@ -19,7 +18,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.web.context.WebApplicationContext;

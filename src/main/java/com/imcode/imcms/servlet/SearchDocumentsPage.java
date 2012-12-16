@@ -26,7 +26,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -39,6 +39,8 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.util.BytesRef;
+
 //todo: check termRangeQueries
 public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderPage {
 
@@ -58,7 +60,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
     public static final String REQUEST_PARAMETER__DOCUMENT_TYPE_ID = "document_type_id";
 
     private static final int DEFAULT_DOCUMENTS_PER_PAGE = 10;
-    private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
+    private final static Logger log = Logger.getLogger(SearchDocumentsPage.class.getName());
 
     private String queryString;
     private String[] phases;
@@ -83,222 +85,224 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
     public static final String USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER = "published";
 
     public static final String DATE_TYPE__PUBLICATION_START = "publication_start";
-    public static final String DATE_TYPE__PUBLICATION_END = "publication_end" ;
+    public static final String DATE_TYPE__PUBLICATION_END = "publication_end";
     public static final String DATE_TYPE__CREATED = "created";
     public static final String DATE_TYPE__ARCHIVED = "archived";
     public static final String DATE_TYPE__MODIFIED = "modified";
 
     public SearchDocumentsPage() {
-        super( null, null );
+        super(null, null);
     }
 
-    public void updateFromRequest( HttpServletRequest request ) {
+    public void updateFromRequest(HttpServletRequest request) {
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
-        if ( documentFinder.isDocumentsSelectable() ) {
+        if (documentFinder.isDocumentsSelectable()) {
             try {
-                selectedDocument = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__SELECTED_DOCUMENT_ID ) ) );
-            } catch ( NumberFormatException nfe ) {
+                selectedDocument = documentMapper.getDocument(Integer.parseInt(request.getParameter(REQUEST_PARAMETER__SELECTED_DOCUMENT_ID)));
+            } catch (NumberFormatException nfe) {
             }
         }
 
-        firstDocumentIndex = Math.max( 0, NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX ) ) );
+        firstDocumentIndex = Math.max(0, NumberUtils.stringToInt(request.getParameter(REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX)));
 
-        boolean gotNewFirstDocumentIndex = Utility.parameterIsSet( request, REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX );
-        boolean notBrowsingResultList = !gotNewFirstDocumentIndex || documentsFound == null ;
-        if ( notBrowsingResultList ) {
-            phases = Utility.getParameterValues( request, REQUEST_PARAMETER__PHASE );
+        boolean gotNewFirstDocumentIndex = Utility.parameterIsSet(request, REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX);
+        boolean notBrowsingResultList = !gotNewFirstDocumentIndex || documentsFound == null;
+        if (notBrowsingResultList) {
+            phases = Utility.getParameterValues(request, REQUEST_PARAMETER__PHASE);
 
             documentTypeIds = Utility.getParameterInts(request, REQUEST_PARAMETER__DOCUMENT_TYPE_ID);
         }
 
-        String userDocumentsRestrictionParameter = request.getParameter( REQUEST_PARAMETER__USER_RESTRICTION );
-        if ( null != userDocumentsRestrictionParameter ) {
+        String userDocumentsRestrictionParameter = request.getParameter(REQUEST_PARAMETER__USER_RESTRICTION);
+        if (null != userDocumentsRestrictionParameter) {
             userDocumentsRestriction = userDocumentsRestrictionParameter;
         }
 
-        String dateTypeRestrictionParameter = request.getParameter( REQUEST_PARAMETER__DATE_TYPE );
-        if ( null != dateTypeRestrictionParameter ) {
+        String dateTypeRestrictionParameter = request.getParameter(REQUEST_PARAMETER__DATE_TYPE);
+        if (null != dateTypeRestrictionParameter) {
             dateTypeRestriction = dateTypeRestrictionParameter;
         }
 
         DateFormat dateFormat = createDateFormat();
-        String startDateParameter = request.getParameter( REQUEST_PARAMETER__START_DATE );
-        if ( null != startDateParameter ) {
+        String startDateParameter = request.getParameter(REQUEST_PARAMETER__START_DATE);
+        if (null != startDateParameter) {
             try {
-                startDate = dateFormat.parse( startDateParameter );
-            } catch ( java.text.ParseException pe ) {
+                startDate = dateFormat.parse(startDateParameter);
+            } catch (java.text.ParseException pe) {
                 startDate = null;
             }
         }
-        String endDateParameter = request.getParameter( REQUEST_PARAMETER__END_DATE );
-        if ( null != endDateParameter ) {
+        String endDateParameter = request.getParameter(REQUEST_PARAMETER__END_DATE);
+        if (null != endDateParameter) {
             try {
-                endDate = dateFormat.parse( endDateParameter );
-            } catch ( java.text.ParseException ignored ) {
+                endDate = dateFormat.parse(endDateParameter);
+            } catch (java.text.ParseException ignored) {
                 endDate = null;
             }
         }
 
-        String sortOrderParameter = request.getParameter( REQUEST_PARAMETER__SORT_ORDER );
-        if ( null != sortOrderParameter ) {
-            sortOrder = sortOrderParameter ;
-            Comparator documentComparator = AdminManager.getComparator( sortOrder );
-            documentFinder.setDocumentComparator( documentComparator );
+        String sortOrderParameter = request.getParameter(REQUEST_PARAMETER__SORT_ORDER);
+        if (null != sortOrderParameter) {
+            sortOrder = sortOrderParameter;
+            Comparator documentComparator = AdminManager.getComparator(sortOrder);
+            documentFinder.setDocumentComparator(documentComparator);
         }
 
         try {
-            documentsPerPage = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE ) );
-        } catch ( NumberFormatException ignored ) {}
-        if ( documentsPerPage <= 0 ) {
+            documentsPerPage = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__DOCUMENTS_PER_PAGE));
+        } catch (NumberFormatException ignored) {
+        }
+        if (documentsPerPage <= 0) {
             documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
         }
-        queryString = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__QUERY_STRING ) );
+        queryString = StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__QUERY_STRING));
 
-        query = createQuery( documentFinder, Utility.getLoggedOnUser( request ) );
+        query = createQuery(documentFinder, Utility.getLoggedOnUser(request));
     }
 
     private SimpleDateFormat createDateFormat() {
-        return new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
+        return new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
     }
 
-    private Query createQuery( DocumentFinder documentFinder, UserDomainObject user ) {
+    private Query createQuery(DocumentFinder documentFinder, UserDomainObject user) {
 
         BooleanQuery newQuery = new BooleanQuery();
-        if ( StringUtils.isNotBlank( queryString ) ) {
+        if (StringUtils.isNotBlank(queryString)) {
             try {
-                Query textQuery = documentFinder.parse( queryString );
-                newQuery.add( textQuery, Occur.MUST);
-            } catch ( ParseException e ) {
-                log.debug( e.getMessage() + " in search-string " + queryString, e );
+                Query textQuery = documentFinder.parse(queryString);
+                newQuery.add(textQuery, Occur.MUST);
+            } catch (ParseException e) {
+                log.debug(e.getMessage() + " in search-string " + queryString, e);
             }
         }
 
-        if ( null != phases && phases.length > 0 ) {
+        if (null != phases && phases.length > 0) {
             BooleanQuery phaseQueries = new BooleanQuery();
-            for ( int i = 0; i < phases.length; i++ ) {
+            for (int i = 0; i < phases.length; i++) {
                 String phase = phases[i];
-                Query phaseQuery = new TermQuery( new Term( DocumentIndex.FIELD__PHASE, phase ) );
-                phaseQueries.add( phaseQuery, Occur.SHOULD);
+                Query phaseQuery = new TermQuery(new Term(DocumentIndex.FIELD__PHASE, phase));
+                phaseQueries.add(phaseQuery, Occur.SHOULD);
             }
-            newQuery.add( phaseQueries, Occur.MUST );
+            newQuery.add(phaseQueries, Occur.MUST);
         }
 
-        if ( null != documentTypeIds && documentTypeIds.length > 0 ) {
+        if (null != documentTypeIds && documentTypeIds.length > 0) {
             BooleanQuery documentTypeQueries = new BooleanQuery();
-            for ( int i = 0; i < documentTypeIds.length; i++ ) {
+            for (int i = 0; i < documentTypeIds.length; i++) {
                 int documentTypeId = documentTypeIds[i];
-                Query documentTypeQuery = new TermQuery( new Term(DocumentIndex.FIELD__DOC_TYPE_ID, ""+documentTypeId)) ;
-                documentTypeQueries.add( documentTypeQuery, Occur.SHOULD );
+                Query documentTypeQuery = new TermQuery(new Term(DocumentIndex.FIELD__DOC_TYPE_ID, "" + documentTypeId));
+                documentTypeQueries.add(documentTypeQuery, Occur.SHOULD);
             }
-            newQuery.add( documentTypeQueries, Occur.MUST) ;
+            newQuery.add(documentTypeQueries, Occur.MUST);
         }
 
-        if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals( userDocumentsRestriction ) ) {
-            Query createdByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, "" + user.getId() ) );
-            newQuery.add( createdByUserQuery, Occur.MUST);
+        if (USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals(userDocumentsRestriction)) {
+            Query createdByUserQuery = new TermQuery(new Term(DocumentIndex.FIELD__CREATOR_ID, "" + user.getId()));
+            newQuery.add(createdByUserQuery, Occur.MUST);
         }
 
-        if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER.equals( userDocumentsRestriction ) ) {
-            Query publishedByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__PUBLISHER_ID, "" + user.getId() ) );
-            newQuery.add( publishedByUserQuery, Occur.MUST );
+        if (USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER.equals(userDocumentsRestriction)) {
+            Query publishedByUserQuery = new TermQuery(new Term(DocumentIndex.FIELD__PUBLISHER_ID, "" + user.getId()));
+            newQuery.add(publishedByUserQuery, Occur.MUST);
         }
 
-        if ( null != startDate || null != endDate ) {
-            Date luceneMinDate = new Date( 0 );
-            Date luceneMaxDate = new Date( 1000L * 365 * 24 * 60 * 60 * 1000 );
+        if (null != startDate || null != endDate) {
+            Date luceneMinDate = new Date(0);
+            Date luceneMaxDate = new Date(1000L * 365 * 24 * 60 * 60 * 1000);
             Date calculatedStartDate = null == startDate ? luceneMinDate : startDate;
-            Date calculatedEndDate = null == endDate ? luceneMaxDate : new Date( endDate.getTime() + DateUtils.MILLIS_IN_DAY );
+            Date calculatedEndDate = null == endDate ? luceneMaxDate : new Date(endDate.getTime() + DateUtils.MILLIS_IN_DAY);
 
             String dateField;
-            if ( DATE_TYPE__PUBLICATION_END.equals( dateTypeRestriction ) ) {
+            if (DATE_TYPE__PUBLICATION_END.equals(dateTypeRestriction)) {
                 dateField = DocumentIndex.FIELD__PUBLICATION_END_DATETIME;
-            } else if ( DATE_TYPE__ARCHIVED.equals( dateTypeRestriction ) ) {
+            } else if (DATE_TYPE__ARCHIVED.equals(dateTypeRestriction)) {
                 dateField = DocumentIndex.FIELD__ARCHIVED_DATETIME;
-            } else if ( DATE_TYPE__CREATED.equals( dateTypeRestriction ) ) {
+            } else if (DATE_TYPE__CREATED.equals(dateTypeRestriction)) {
                 dateField = DocumentIndex.FIELD__CREATED_DATETIME;
-            } else if ( DATE_TYPE__MODIFIED.equals( dateTypeRestriction ) ) {
+            } else if (DATE_TYPE__MODIFIED.equals(dateTypeRestriction)) {
                 dateField = DocumentIndex.FIELD__MODIFIED_DATETIME;
             } else {
                 dateField = DocumentIndex.FIELD__PUBLICATION_START_DATETIME;
             }
 
 //            Term lowerTerm = new Term( dateField, DateTools.dateToString(calculatedStartDate, DateTools.Resolution.MINUTE));
-            Term lowerTerm = new Term( dateField, solrDateFormat.format(calculatedStartDate));
+            Term lowerTerm = new Term(dateField, solrDateFormat.format(calculatedStartDate));
 //            Term upperTerm = new Term( dateField, DateTools.dateToString(calculatedEndDate, DateTools.Resolution.MINUTE) );
-            Term upperTerm = new Term( dateField, solrDateFormat.format(calculatedEndDate) );
+            Term upperTerm = new Term(dateField, solrDateFormat.format(calculatedEndDate));
 
+            // todo: fix
             TermRangeQuery publicationStartedQuery = new TermRangeQuery(dateField,
-                    solrDateFormat.format(calculatedStartDate),
-                    solrDateFormat.format(calculatedEndDate),
-                    true, true );
-            newQuery.add( publicationStartedQuery, Occur.MUST );
+                    new BytesRef(solrDateFormat.format(calculatedStartDate)),
+                    new BytesRef(solrDateFormat.format(calculatedEndDate)),
+                    true, true);
+            newQuery.add(publicationStartedQuery, Occur.MUST);
         }
 
-        if ( 0 == newQuery.getClauses().length ) {
+        if (0 == newQuery.getClauses().length) {
             return null;
         }
         return newQuery;
     }
 
-    protected boolean wasCanceled( HttpServletRequest request ) {
-        return documentFinder.isCancelable() && super.wasCanceled( request );
+    protected boolean wasCanceled(HttpServletRequest request) {
+        return documentFinder.isCancelable() && super.wasCanceled(request);
     }
 
-    protected void dispatchCancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        documentFinder.cancel( request, response );
+    protected void dispatchCancel(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        documentFinder.cancel(request, response);
     }
 
-    protected void dispatchOther( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+    protected void dispatchOther(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         DocumentDomainObject documentSelectedForEditing = null;
         try {
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            documentSelectedForEditing = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID ) ) );
-        } catch ( NumberFormatException nfe ) {
+            documentSelectedForEditing = documentMapper.getDocument(Integer.parseInt(request.getParameter(REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID)));
+        } catch (NumberFormatException nfe) {
         }
 
-        if ( null != documentSelectedForEditing ) {
-            goToEditDocumentInformation( request, response, documentSelectedForEditing );
-        } else if ( null != getSelectedDocument() ) {
-            documentFinder.selectDocument( getSelectedDocument());
+        if (null != documentSelectedForEditing) {
+            goToEditDocumentInformation(request, response, documentSelectedForEditing);
+        } else if (null != getSelectedDocument()) {
+            documentFinder.selectDocument(getSelectedDocument());
             documentFinder.dispatchReturn(request, response);
         } else {
-            documentFinder.forwardWithPage( request, response, this );
+            documentFinder.forwardWithPage(request, response, this);
         }
     }
 
-    private void goToEditDocumentInformation( HttpServletRequest request, HttpServletResponse response,
-                                              DocumentDomainObject documentSelectedForEditing ) throws IOException, ServletException {
+    private void goToEditDocumentInformation(HttpServletRequest request, HttpServletResponse response,
+                                             DocumentDomainObject documentSelectedForEditing) throws IOException, ServletException {
         DispatchCommand returnCommand = new DispatchCommand() {
-            public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                documentFinder.forwardWithPage( request, response, SearchDocumentsPage.this );
+            public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+                documentFinder.forwardWithPage(request, response, SearchDocumentsPage.this);
             }
         };
-        EditDocumentInformationPageFlow editDocumentInformationPageFlow = new EditDocumentInformationPageFlow( documentSelectedForEditing, returnCommand, new DocumentMapper.SaveEditedDocumentCommand() );
-        editDocumentInformationPageFlow.setAdminButtonsHidden( true );
-        editDocumentInformationPageFlow.dispatch( request, response );
+        EditDocumentInformationPageFlow editDocumentInformationPageFlow = new EditDocumentInformationPageFlow(documentSelectedForEditing, returnCommand, new DocumentMapper.SaveEditedDocumentCommand());
+        editDocumentInformationPageFlow.setAdminButtonsHidden(true);
+        editDocumentInformationPageFlow.dispatch(request, response);
     }
 
-    public String getParameterStringWithParameter( HttpServletRequest request,
-                                                   String parameterName, String parameterValue ) {
-        MultiMap parameters = getParameterMap( request );
-        parameters.put( parameterName, parameterValue );
-        return Utility.createQueryStringFromParameterMultiMap( parameters );
+    public String getParameterStringWithParameter(HttpServletRequest request,
+                                                  String parameterName, String parameterValue) {
+        MultiMap parameters = getParameterMap(request);
+        parameters.put(parameterName, parameterValue);
+        return Utility.createQueryStringFromParameterMultiMap(parameters);
     }
 
-    private MultiMap getParameterMap( HttpServletRequest request ) {
+    private MultiMap getParameterMap(HttpServletRequest request) {
         MultiMap parameters = new MultiHashMap();
         Page page = Page.fromRequest(request);
         String pageSessionNameFromRequest = page.getSessionAttributeName();
-        if ( null != pageSessionNameFromRequest ) {
-            parameters.put( Page.IN_REQUEST, pageSessionNameFromRequest );
+        if (null != pageSessionNameFromRequest) {
+            parameters.put(Page.IN_REQUEST, pageSessionNameFromRequest);
         }
         return parameters;
     }
 
     public String getPath(HttpServletRequest request) {
-        UserDomainObject user = Utility.getLoggedOnUser( request );
+        UserDomainObject user = Utility.getLoggedOnUser(request);
         return "/imcms/" + user.getLanguageIso639_2() + "/jsp/search_documents.jsp";
     }
 
@@ -306,7 +310,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
         return documentsFound;
     }
 
-    public void setDocumentsFound( List documentsFound ) {
+    public void setDocumentsFound(List documentsFound) {
         this.documentsFound = documentsFound;
     }
 
@@ -334,7 +338,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
         return documentFinder;
     }
 
-    public void setDocumentFinder( DocumentFinder documentFinder ) {
+    public void setDocumentFinder(DocumentFinder documentFinder) {
         this.documentFinder = documentFinder;
     }
 
@@ -343,17 +347,17 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
     }
 
     public String getFormattedStartDate() {
-        return formatDate( startDate );
+        return formatDate(startDate);
     }
 
     public String getFormattedEndDate() {
-        return formatDate( endDate );
+        return formatDate(endDate);
     }
 
-    private String formatDate( Date date ) {
+    private String formatDate(Date date) {
         DateFormat dateFormat = createDateFormat();
-        if ( null != date ) {
-            return dateFormat.format( date );
+        if (null != date) {
+            return dateFormat.format(date);
         } else {
             return "";
         }
@@ -374,7 +378,8 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
     public int[] getDocumentTypeIds() {
         return documentTypeIds;
     }
-    public JSCalendar getJSCalender (HttpServletRequest request) {
-        return new JSCalendar( Utility.getLoggedOnUser(request).getLanguageIso639_2(), request ) ;
+
+    public JSCalendar getJSCalender(HttpServletRequest request) {
+        return new JSCalendar(Utility.getLoggedOnUser(request).getLanguageIso639_2(), request);
     }
 }

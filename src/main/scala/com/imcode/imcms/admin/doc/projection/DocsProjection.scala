@@ -11,10 +11,12 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
 import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter.{AdvancedFilter, BasicFilter, DateRange, IdRange, DateRangeType}
+import imcode.server.user.UserDomainObject
 
-class DocsProjection(val docsContainer: FilterableDocsContainer) extends Publisher[Seq[DocId]] {
+class DocsProjection(user: => UserDomainObject) extends Publisher[Seq[DocId]] {
   val basicFilter = new BasicFilter
   val advancedFilter = new AdvancedFilter
+  val docsContainer = new DocsContainer(user)
   val docsUI = new DocsUI(docsContainer) with FullSize
   private val selectionRef = new AtomicReference(Seq.empty[DocId])
 
@@ -64,7 +66,9 @@ class DocsProjection(val docsContainer: FilterableDocsContainer) extends Publish
         ui.removeComponent(0, 1)
         ui.addComponent(docsUI, 0, 1)
 
-        docsContainer.filter(solrQueryOpt, ui.getApplication.imcmsUser)
+        docsContainer.setSolrQuery(if (solrQueryOpt.isDefined) solrQueryOpt else Some("*"))
+
+
     }
   }
 

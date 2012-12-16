@@ -11,7 +11,7 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.index.DocumentIndexService;
+import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -48,7 +48,8 @@ public class DocumentMapper implements DocumentGetter {
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
     private Database database;
-    private DocumentIndexService documentIndexService;
+
+    private DocumentIndex documentIndex;
 
     private ImcmsServices imcmsServices;
 
@@ -434,12 +435,12 @@ public class DocumentMapper implements DocumentGetter {
 
     public void invalidateDocument(int docId) {
         documentLoaderCachingProxy.removeDocFromCache(docId);
-        documentIndexService.indexDocuments(docId);
+        documentIndex.indexDocuments(docId);
     }
 
 
-    public DocumentIndexService getDocumentIndex() {
-        return documentIndexService;
+    public DocumentIndex getDocumentIndex() {
+        return documentIndex;
     }
 
     public List<Integer[]> getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
@@ -472,7 +473,7 @@ public class DocumentMapper implements DocumentGetter {
 
         documentSaver.getMetaDao().deleteDocument(document.getId());
         document.accept(new DocumentDeletingVisitor());
-        documentIndexService.removeDocument(document);
+        documentIndex.removeDocument(document);
 
         documentLoaderCachingProxy.removeDocFromCache(document.getId());
     }
@@ -916,8 +917,8 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public void setDocumentIndex(DocumentIndexService documentIndexService) {
-        this.documentIndexService = documentIndexService;
+    public void setDocumentIndex(DocumentIndex documentIndex) {
+        this.documentIndex = documentIndex;
     }
 
 

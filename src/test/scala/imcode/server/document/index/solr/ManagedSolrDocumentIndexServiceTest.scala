@@ -106,5 +106,5 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
 }
 
 
-
-class SolrServerWithShutdown extends EmbeddedSolrServer(null, null) with SolrServerShutdown
+// todo: check
+class SolrServerWithShutdown extends EmbeddedSolrServer(null, null)

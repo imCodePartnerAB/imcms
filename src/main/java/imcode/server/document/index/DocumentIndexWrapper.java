@@ -1,15 +1,16 @@
 package imcode.server.document.index;
 
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.index.solr.SolrDocumentIndexService;
 import imcode.server.user.UserDomainObject;
 
 import java.util.List;
 
-public class DocumentIndexWrapper implements DocumentIndexService {
+public class DocumentIndexWrapper implements DocumentIndex {
 
-    private final DocumentIndexService index;
+    private final DocumentIndex index;
 
-    public DocumentIndexWrapper(DocumentIndexService index) {
+    public DocumentIndexWrapper(DocumentIndex index) {
         this.index = index ;
     }
 
@@ -38,8 +39,7 @@ public class DocumentIndexWrapper implements DocumentIndexService {
         return index.search(query, searchingUser) ;
     }
 
-    @Override
-    public void shutdown() {
-        index.shutdown();
+    public SolrDocumentIndexService service() {
+        return index.service();
     }
 }

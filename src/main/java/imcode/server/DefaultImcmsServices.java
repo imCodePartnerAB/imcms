@@ -4,8 +4,9 @@ import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.*;
-import imcode.server.document.index.DocumentIndexServiceFactory;
+import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.DocumentIndexFactory;
+import imcode.server.document.index.DocumentIndexFactory$;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.Authenticator;
@@ -277,7 +278,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         documentMapper = new DocumentMapper(this, this.getDatabase());
 
-        DocumentIndexService documentIndexService = DocumentIndexServiceFactory.createService(this);
+        DocumentIndex documentIndexService = DocumentIndexFactory.create(this);
         documentMapper.setDocumentIndex(
                 new LoggingDocumentIndex(database,
                         new PhaseQueryFixingDocumentIndex(documentIndexService)));

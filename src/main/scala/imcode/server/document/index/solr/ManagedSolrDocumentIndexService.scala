@@ -20,8 +20,8 @@ import java.util.concurrent._
  * The business-logic, (like rebuild scheduling or index recovery) should be implemented on higher levels.
  */
 class ManagedSolrDocumentIndexService(
-    solrServerReader: SolrServer with SolrServerShutdown,
-    solrServerWriter: SolrServer with SolrServerShutdown,
+    solrServerReader: SolrServer,
+    solrServerWriter: SolrServer,
     serviceOps: SolrDocumentIndexServiceOps,
     serviceErrorHandler: ManagedSolrDocumentIndexService.ServiceError => Unit) extends SolrDocumentIndexService {
 

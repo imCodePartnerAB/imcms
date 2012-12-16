@@ -8,9 +8,9 @@ import _root_.imcode.server.document.index.solr._
 /**
  *
  */
-object DocumentIndexServiceFactory extends Log4jLoggerSupport {
+object DocumentIndexFactory extends Log4jLoggerSupport {
 
-  def createService(services: ImcmsServices): DocumentIndexService = services.getConfig |> { config =>
+  def create(services: ImcmsServices): DocumentIndex = services.getConfig |> { config =>
     (Option(config.getSolrUrl), Option(config.getSolrHome)) |> {
       case (Some(solrUrl), _) =>
         new ExternalSolrDocumentIndexService(solrUrl, solrUrl, createSolrDocumentIndexServiceOps(services))
@@ -23,7 +23,7 @@ object DocumentIndexServiceFactory extends Log4jLoggerSupport {
         logger.fatal(errMsg)
         throw new IllegalArgumentException(errMsg)
     } |> { service =>
-      new SolrDocumentIndexServiceWrapper(service, services.getI18nSupport.getDefaultLanguage)
+      new DocumentIndexImpl(service, services.getI18nSupport.getDefaultLanguage)
     }
   }
 

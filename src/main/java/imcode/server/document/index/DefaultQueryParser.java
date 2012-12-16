@@ -1,8 +1,8 @@
 package imcode.server.document.index;
 
 import java.util.Arrays;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
@@ -22,6 +22,6 @@ public class DefaultQueryParser implements QueryParser {
         BooleanClause.Occur[] flags = new BooleanClause.Occur[fields.length];
         Arrays.fill(flags, BooleanClause.Occur.SHOULD);
 
-        return MultiFieldQueryParser.parse(Version.LUCENE_36, queryString, fields, flags, new AnalyzerImpl());
+        return MultiFieldQueryParser.parse(Version.LUCENE_40, queryString, fields, flags, new AnalyzerImpl());
     }
 }
