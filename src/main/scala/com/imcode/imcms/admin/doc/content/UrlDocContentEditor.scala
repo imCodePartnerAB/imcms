@@ -37,8 +37,8 @@ class UrlDocContentEditorUI extends Panel("URL/Link".i) with FullSize {
   val txtCustomTarget = new TextField with FullWidth |>> { _.setInputPrompt("not specified") }
   setContent(content)
 
-  addComponentsTo(lytTarget, cbTarget, txtCustomTarget)
-  addComponentsTo(content, txtURL, lytTarget)
+  lytTarget.addComponents(cbTarget, txtCustomTarget)
+  content.addComponents(txtURL, lytTarget)
 
   lytTarget.setExpandRatio(txtCustomTarget, 1f)
 

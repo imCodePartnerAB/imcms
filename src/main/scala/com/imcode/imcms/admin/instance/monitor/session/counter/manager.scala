@@ -104,7 +104,7 @@ class SessionCounterManagerUI extends VerticalLayout with Spacing with Undefined
   val rc = new ReloadableContentUI(dataPanel)
 
   dataPanel.addComponent(dataUI)
-  addComponentsTo(this, mb, rc)
+  this.addComponents(mb, rc)
 }
 
 
@@ -112,5 +112,5 @@ class SessionCounterEditorUI extends FormLayout with UndefinedSize {
   val txtValue = new TextField("Value")
   val calStart = new DateField("Start date") with DayResolution
 
-  addComponentsTo(this, txtValue, calStart)
+  this.addComponents(txtValue, calStart)
 }

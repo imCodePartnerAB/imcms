@@ -113,14 +113,14 @@ class ProfileEditorUI(
     tsSettings.addTab(lytRestrictedOne, "Custom-One")
     tsSettings.addTab(lytRestrictedTwo, "Custom-Two")
 
-    addComponentsTo(lytDefault, cbDefaultTemplate, defaultPermSetEditorUI)
-    addComponentsTo(lytRestrictedOne, cbRestrictedOneDefaultTemplate, restrictedOnePermSetEditorUI)
-    addComponentsTo(lytRestrictedTwo, cbRestrictedTwoDefaultTemplate, restrictedTwoPermSetEditorUI)
+    lytDefault.addComponents(cbDefaultTemplate, defaultPermSetEditorUI)
+    lytRestrictedOne.addComponents(cbRestrictedOneDefaultTemplate, restrictedOnePermSetEditorUI)
+    lytRestrictedTwo.addComponents(cbRestrictedTwoDefaultTemplate, restrictedTwoPermSetEditorUI)
 
     content.addComponent(tsSettings)
 
     setContent(content)
   }
 
-  addComponentsTo(this, pnlSettings)
+  this.addComponents(pnlSettings)
 }

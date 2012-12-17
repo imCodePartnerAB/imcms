@@ -6,14 +6,14 @@ import com.imcode.util.event.Publisher
 import scala.collection.JavaConverters._
 import scala.util.control.{Exception => Ex}
 import java.util.concurrent.atomic.AtomicReference
-import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
+import com.imcode.imcms.vaadin.data._
 import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter.{AdvancedFilter, BasicFilter, DateRange, IdRange, DateRangeType}
-import imcode.server.user.UserDomainObject
+import _root_.imcode.server.user.UserDomainObject
 
-class DocsProjection(user: => UserDomainObject) extends Publisher[Seq[DocId]] {
+class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] {
   val basicFilter = new BasicFilter
   val advancedFilter = new AdvancedFilter
   val docsContainer = new DocsContainer(user)

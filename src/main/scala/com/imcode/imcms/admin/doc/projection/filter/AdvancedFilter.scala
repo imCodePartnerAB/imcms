@@ -3,8 +3,8 @@ package imcms
 package admin.doc.projection.filter
 
 import com.imcode.imcms.ImcmsServicesSupport
-import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 import com.vaadin.terminal.ExternalResource
 
 class AdvancedFilter extends ImcmsServicesSupport {

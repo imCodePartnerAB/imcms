@@ -11,7 +11,7 @@ import com.vaadin.ui.Window.Notification
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
 
 //todo delete in use message
 class RoleManager(app: ImcmsApplication) {
@@ -140,7 +140,7 @@ class RoleManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     CP[JInteger]("Id"),
     CP[String]("Name"))
 
-  addComponentsTo(this, mb, rc)
+  this.addComponents(mb, rc)
 }
 
 class RoleEditorUI extends FormLayout with UndefinedSize {
@@ -151,6 +151,6 @@ class RoleEditorUI extends FormLayout with UndefinedSize {
   val chkPermUseImagesFromArchive = new CheckBox("Permission to use images from image archive")
   val chkPermChangeImagesInArchive = new CheckBox("Permission to change images in image archive")
 
-  addComponentsTo(this, txtName, chkPermGetPasswordByEmail, chkPermAccessMyPages, chkPermUseImagesFromArchive,
+  this.addComponents(txtName, chkPermGetPasswordByEmail, chkPermAccessMyPages, chkPermUseImagesFromArchive,
       chkPermChangeImagesInArchive)
 }

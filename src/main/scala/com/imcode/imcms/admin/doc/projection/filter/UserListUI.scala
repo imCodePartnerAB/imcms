@@ -19,9 +19,9 @@ class UserListUI(caption: String = "") extends GridLayout(2, 2) {
   val btnRemove = new Button("-") with SmallStyle
   val lytButtons = new VerticalLayout with UndefinedSize
 
-  addComponentsTo(lytButtons, btnRemove, btnAdd)
+  lytButtons.addComponents(btnRemove, btnAdd)
   addComponent(chkEnabled, 0, 0, 1, 0)
-  addComponentsTo(this, lstUsers, lytButtons)
+  this.addComponents(lstUsers, lytButtons)
 
   setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
 }

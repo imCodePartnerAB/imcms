@@ -9,6 +9,7 @@ import _root_.imcode.server.document.DocumentTypeDomainObject
 import scala.PartialFunction._
 
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 
 class BasicFilter {
 

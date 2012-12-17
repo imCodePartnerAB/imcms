@@ -129,7 +129,7 @@ class MsgDialog(caption: String = "", msg: String ="") extends OKDialog(caption)
 class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton with CancelButton {
 
   val lytButtons = new GridLayout(2, 1) with Spacing {
-    addComponentsTo(this, btnOk, btnCancel)
+    this.addComponents( btnOk, btnCancel)
 
     setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)
     setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
@@ -142,7 +142,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton
 class YesNoCancelDialog(caption: String = "") extends Dialog(caption) with YesButton with NoButton with CancelButton {
 
   val lytButtons = new GridLayout(3, 1) with Spacing {
-    addComponentsTo(this, btnYes, btnNo, btnCancel)
+    this.addComponents( btnYes, btnNo, btnCancel)
 
     setComponentAlignment(btnYes, Alignment.MIDDLE_RIGHT)
     setComponentAlignment(btnNo, Alignment.MIDDLE_CENTER)

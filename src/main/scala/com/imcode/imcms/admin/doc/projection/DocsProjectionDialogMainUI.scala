@@ -19,6 +19,6 @@ class DocsProjectionDialogMainUI(docsProjectionUI: DocsProjectionUI) extends Ver
   val miShowSelectedDoc = mb.addItem("doc.mgr.mi.show".i)
   val miHelp = mb.addItem("doc.mgr.mi.help".i)
 
-  addComponentsTo(this, mb, docsProjectionUI)
+  this.addComponents(mb, docsProjectionUI)
   setExpandRatio(docsProjectionUI, 1f)
 }

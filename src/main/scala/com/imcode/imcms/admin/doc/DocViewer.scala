@@ -29,7 +29,7 @@ object DocViewer extends ImcmsServicesSupport {
           browser.setEnabled(false)
         }
 
-        addComponentsTo(lyt, mb, emb)
+        lyt.addComponents(mb, emb)
         lyt.setExpandRatio(emb, 1.0f)
       }
 

@@ -18,7 +18,7 @@ import scala.collection.immutable.ListMap
 import scala.collection.mutable.{Map => MMap}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.PropertyDescriptor
+import com.imcode.imcms.vaadin.data._
 
 /**
  * @param doc used as a read only value object to initialize editor.
@@ -295,7 +295,7 @@ class FileDocContentEditorUI extends VerticalLayout with Spacing with Margin wit
       PropertyDescriptor[String]("Name"))
   }
 
-  addComponentsTo(this, mb, tblFiles)
+  this.addComponents(mb, tblFiles)
   setExpandRatio(tblFiles, 1.0f)
 }
 
@@ -305,5 +305,5 @@ class FileDocFilePropertiesEditorUI extends FormLayout with UndefinedSize {
   val txtName = new TextField("Name") with Required
   val cbType = new ComboBox("Type") with Required with SingleSelect[String] with NoTextInput with NoNullSelection
 
-  addComponentsTo(this, txtId, txtName, cbType)
+  this.addComponents(txtId, txtName, cbType)
 }

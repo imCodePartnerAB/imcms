@@ -16,7 +16,7 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/search/advanced_form") wi
     val chkDisapproved = new CheckBox("doc.search.advanced.frm.fld.chk_status_disapproved".i)
     val chkExpired = new CheckBox("doc.search.advanced.frm.fld.chk_status_expired".i)
 
-    addComponentsTo(this, chkNew, chkPublished, chkUnpublished, chkApproved, chkDisapproved, chkExpired)
+    this.addComponents(chkNew, chkPublished, chkUnpublished, chkApproved, chkDisapproved, chkExpired)
   }
 
   val chkDates = new CheckBox("doc.search.advanced.frm.fld.chk_dates".i) with Immediate
@@ -26,7 +26,7 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/search/advanced_form") wi
     val drPublished = new DateRangeUI("doc.search.advanced.frm.fld.dr_published".i) with DateRangeUISetup
     val drExpired = new DateRangeUI("doc.search.advanced.frm.fld.dr_expired".i) with DateRangeUISetup
 
-    addComponentsTo(this, drCreated, drModified, drPublished, drExpired)
+    this.addComponents(drCreated, drModified, drPublished, drExpired)
   }
 
   val chkCategories = new CheckBox("doc.search.advanced.frm.fld.chk_categories".i) with Immediate
@@ -47,7 +47,7 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/search/advanced_form") wi
       "doc.search.advanced.frm.fld.cb_relationships_children.item.no_children"
     ).foreach(itemId => cbChildren.addItem(itemId, itemId.i))
 
-    addComponentsTo(this, cbParents, cbChildren)
+    this.addComponents(cbParents, cbChildren)
   }
 
   val chkMaintainers = new CheckBox("doc.search.advanced.frm.fld.chk_maintainers".i) with Immediate
@@ -60,10 +60,10 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/search/advanced_form") wi
       val projectionDialogCaption = "doc.search.advanced.dlg_select_publishers.caption".i
     }
 
-    addComponentsTo(this, ulCreators, ulPublishers)
+    this.addComponents(ulCreators, ulPublishers)
   }
 
-  addNamedComponents(this,
+  this.addNamedComponents(
     "doc.search.advanced.frm.fld.chk_status" -> chkStatus,
     "doc.search.advanced.frm.fld.status" -> lytStatus,
     "doc.search.advanced.frm.fld.chk_dates" -> chkDates,

@@ -21,7 +21,7 @@ import org.apache.solr.client.solrj.SolrQuery
  * Docs container.
  */
 class DocsContainer(
-  user: => UserDomainObject,
+  user: UserDomainObject,
   private var solrQuery: Option[String] = None,
   private var visibleDocsFilter: Option[Set[DocId]] = None)
     extends Container

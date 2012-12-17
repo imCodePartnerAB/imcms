@@ -11,7 +11,7 @@ import imcode.server.document.{TemplateGroupDomainObject}
 import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
 
 //todo: form check
 //todo: duplicate save check!
@@ -134,7 +134,7 @@ class TemplateGroupManagerUI extends VerticalLayout with Spacing with UndefinedS
     CP[String]("Name"),
     CP[JInteger]("Templates count"))
 
-  addComponentsTo(this, mb, rc)
+  this.addComponents(mb, rc)
 }
 
 class TemplateGroupEditorUI extends FormLayout with UndefinedSize {
@@ -142,5 +142,5 @@ class TemplateGroupEditorUI extends FormLayout with UndefinedSize {
   val txtName = new TextField("Name") with Required
   val twsTemplates = new TwinSelect[String]("Templates")
 
-  addComponentsTo(this, txtId, txtName, twsTemplates)
+  this.addComponents(txtId, txtName, twsTemplates)
 }

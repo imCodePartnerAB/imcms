@@ -14,7 +14,7 @@ import java.io.File
 import imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{GenericProperty, PropertyDescriptor => CP}
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
 
 /**
  * Category manager.
@@ -175,7 +175,7 @@ class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     CP[String]("Icon"),
     CP[String]("Type"))
 
-  addComponentsTo(this, mb, rc)
+  this.addComponents(mb, rc)
 }
 
 
@@ -191,6 +191,6 @@ class CategoryEditorUI(val imagePickerUI: ImagePickerUI) extends FormLayout with
 
   val sltType = new Select("Type") with GenericProperty[String] with Required with NoNullSelection
 
-  addComponentsTo(this, txtId, txtName, sltType, imagePickerUI, txaDescription)
+  this.addComponents(txtId, txtName, sltType, imagePickerUI, txaDescription)
   imagePickerUI.setCaption("Icon")
 }

@@ -87,8 +87,8 @@ class SearchSettingsEditorUI extends VerticalLayout with Spacing with FullWidth 
     val content = new VerticalLayout with FullWidth with Margin
     val lytBar = new HorizontalLayout with UndefinedSize
 
-    addComponentsTo(lytBar, keywords.txtKeyword, keywords.btnAdd, keywords.btnRemove)
-    addComponentsTo(content, lytBar, keywords.lstKeywords)
+    lytBar.addComponents(keywords.txtKeyword, keywords.btnAdd, keywords.btnRemove)
+    content.addComponents(lytBar, keywords.lstKeywords)
     setContent(content)
   }
 
@@ -98,5 +98,5 @@ class SearchSettingsEditorUI extends VerticalLayout with Spacing with FullWidth 
     setContent(content)
   }
 
-  addComponentsTo(this, pnlKeywords, pnlMisc)
+  this.addComponents(pnlKeywords, pnlMisc)
 }

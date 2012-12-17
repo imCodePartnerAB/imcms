@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 import imcode.server.Imcms
 import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
 
 
 /** Hierarchical filesystem (non-hidden dirs) container with a single root. */
@@ -270,7 +270,7 @@ class FileBrowserUI extends VerticalLayout with Spacing with FullSize {
   spLocation.setFirstComponent(accLocationTrees)
   spLocation.setSplitPosition(15)
 
-  addComponentsTo(this, spLocation, lblSelectionPath)
+  this.addComponents(spLocation, lblSelectionPath)
   setExpandRatio(spLocation, 1.0f)
 }
 

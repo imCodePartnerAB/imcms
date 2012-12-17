@@ -13,16 +13,16 @@ import imcode.server.document._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP }
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
 
 // Discuss
 //        Managed templates in groups:
 //          if checked??? is it used somewhere/somehow
 //
-//        if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )) {
+//        if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(radioButtonDocumentPermissionSetType, roleId, document )) {
 //            return Html.radio(name, value, checked ) ;
 //        } else {
-//            return checked ? Html.hidden( name, value )+"X" : "O" ;
+//            return checked ? Html.hidden(name, value )+"X" : "O" ;
 //        }
 
 // if (user.canDefineRestrictedOneFor(document))
@@ -68,9 +68,9 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
   private val permSetsEditor = new DocPermSetsEditor(doc, user)
 
   // Check if current user can change permission set for the role
-  // if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document ))
+  // if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(radioButtonDocumentPermissionSetType, roleId, document ))
   // This can be defined perd doc, so - change must be single select!!
-  // TODO: Check!! ??? Mapped roles might contain: if ( DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) || RoleId.SUPERADMIN.equals(roleId)
+  // TODO: Check!! ??? Mapped roles might contain: if (DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) || RoleId.SUPERADMIN.equals(roleId)
   // TODO: !!!
     // security
     // ui.lytRestrictedPermSets.btnEditRestrictedOnePermSet setReadOnly !user.canDefineRestrictedOneFor(doc)
@@ -260,7 +260,7 @@ class AccessEditorUI extends VerticalLayout with Spacing with FullWidth {
   private val pnlRights = new Panel("Rights") with FullWidth {
     val content = new VerticalLayout with Spacing with Margin with FullWidth
 
-    addComponentsTo(content, perms.mb, perms.tblRolesPermSets)
+    content.addComponents(perms.mb, perms.tblRolesPermSets)
 
     setContent(content)
   }
@@ -268,11 +268,11 @@ class AccessEditorUI extends VerticalLayout with Spacing with FullWidth {
   private val pnlMisc = new Panel("Misc") with FullWidth {
     val content = new VerticalLayout with Spacing with Margin
 
-    addComponentsTo(content, misc.chkShowToUnauthorizedUser, misc.chkShareWithOtherAdmins)
+    content.addComponents(misc.chkShowToUnauthorizedUser, misc.chkShareWithOtherAdmins)
     setContent(content)
   }
 
-  addComponentsTo(this, pnlRights, pnlMisc)
+  this.addComponents(pnlRights, pnlMisc)
 }
 
 
@@ -310,7 +310,7 @@ private class AddRolePermSetDialogMainUI extends FormLayout with UndefinedSize {
     ogPermsSetType.addItem(setType, PermSetTypeName(setType))
   }
 
-  addComponentsTo(this, cbRole, ogPermsSetType)
+  this.addComponents(cbRole, ogPermsSetType)
 }
 
 /**
@@ -324,7 +324,7 @@ private class ChangeRolePermSetDialogMainUI extends FormLayout with UndefinedSiz
     ogPermsSetType.addItem(setType, PermSetTypeName(setType))
   }
 
-  addComponentsTo(this, lblRole, ogPermsSetType)
+  this.addComponents(lblRole, ogPermsSetType)
 }
 
 
@@ -418,7 +418,7 @@ class NonTextDocPermSetEditorUI extends VerticalLayout with UndefinedSize {
 
   addComponent(content)
   setComponentAlignment(content, Alignment.MIDDLE_CENTER)
-  addComponentsTo(content, chkViewContent, chkEditContent, chkEditMeta, chkEditPermissions)
+  content.addComponents(chkViewContent, chkEditContent, chkEditMeta, chkEditPermissions)
 }
 
 
@@ -443,7 +443,7 @@ class TextDocPermSetEditorUI extends VerticalLayout with UndefinedSize {
 
   addComponent(content)
   setComponentAlignment(content, Alignment.MIDDLE_CENTER)
-  addComponentsTo(content, chkViewContent, chkEditMeta, chkEditPermissions, chkEditTexts, chkEditIncludes, chkEditMenus, chkEditTemplates, tcsCreateDocsOfTypes, tcsUseTemplatesFromTemplateGroups)
+  content.addComponents(chkViewContent, chkEditMeta, chkEditPermissions, chkEditTexts, chkEditIncludes, chkEditMenus, chkEditTemplates, tcsCreateDocsOfTypes, tcsUseTemplatesFromTemplateGroups)
 }
 
 
@@ -507,7 +507,7 @@ class DocPermSetsEditorUI extends VerticalLayout with UndefinedSize with Spacing
   val tsSets = new TabSheet with UndefinedSize
   val chkRestrictedOneIsMorePrivilegedThanRestrictedTwo = new CheckBox("Custom-One is more privileged that Custom-Two")
 
-  addComponentsTo(this, tsSets, chkRestrictedOneIsMorePrivilegedThanRestrictedTwo)
+  this.addComponents(tsSets, chkRestrictedOneIsMorePrivilegedThanRestrictedTwo)
 }
 
 

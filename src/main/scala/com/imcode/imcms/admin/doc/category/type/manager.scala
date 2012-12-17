@@ -4,16 +4,15 @@ package imcms.admin.doc.category.`type`
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import imcode.server.user._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{_}
+import com.imcode.imcms.vaadin._
 import imcode.server.document.{CategoryTypeDomainObject}
 import com.imcode.imcms.admin.doc.category.{CategoryTypeId}
 import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP }
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
 //todo:
 //fix: edit - multiselect - always on
 class CategoryTypeManager(app: ImcmsApplication) {
@@ -154,7 +153,7 @@ class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSi
     CP[JBoolean]("Inherited to new documents?"),
     CP[JBoolean]("Used by image archive?"))
 
-  addComponentsTo(this, mb, rc)
+  this.addComponents(mb, rc)
 }
 
 
@@ -165,5 +164,5 @@ class CategoryTypeEditorUI extends FormLayout with UndefinedSize {
   val chkInherited = new CheckBox("Inherited to new documents")
   val chkImageArchive = new CheckBox("Used by image archive")
 
-  addComponentsTo(this, txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
+  this.addComponents(txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
 }

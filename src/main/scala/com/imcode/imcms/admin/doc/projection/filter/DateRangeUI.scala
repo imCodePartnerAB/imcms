@@ -18,5 +18,5 @@ class DateRangeUI(caption: String = "") extends HorizontalLayout with Spacing wi
 
   setCaption(caption)
 
-  addComponentsTo(this, cbRangeType, dtFrom, dtTo)
+  this.addComponents(cbRangeType, dtFrom, dtTo)
 }

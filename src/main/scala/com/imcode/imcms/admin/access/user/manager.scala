@@ -104,7 +104,7 @@ class UserManagerUI(val searchUI: Component) extends VerticalLayout with Spacing
   val miEdit = mb.addItem("mi.edit".i, Edit16)
   val miHelp = mb.addItem("mi.help".i, Help16)
 
-  addComponentsTo(this, mb, searchUI)
+  this.addComponents(mb, searchUI)
 }
 
 
@@ -133,7 +133,7 @@ class UserEditorUI extends FormLayout with UndefinedSize {
   }
 
   val lytLogin = new HorizontalLayoutUI("user.editor.frm.fld.account".i) with UndefinedSize {
-    addComponentsTo(this, txtLogin, chkActivated)
+    this.addComponents(txtLogin, chkActivated)
     setComponentAlignment(chkActivated, Alignment.BOTTOM_LEFT)
   }
 
@@ -145,5 +145,5 @@ class UserEditorUI extends FormLayout with UndefinedSize {
 
   doto(txtLogin, txtPassword, txtVerifyPassword, txtEmail) { _ setRequired true }
 
-  addComponentsTo(this, lytLogin, lytPassword, lytName, txtEmail, sltUILanguage, tcsRoles, lytContacts)
+  this.addComponents(lytLogin, lytPassword, lytName, txtEmail, sltUILanguage, tcsRoles, lytContacts)
 }

@@ -22,14 +22,14 @@ import java.io.{OutputStream, FileOutputStream, File}
 import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import com.imcode.imcms.vaadin._
 import com.vaadin.ui._
-;
+import com.imcode.imcms.vaadin.ui._
 
 class MessageView(sender: String, message: String) extends VerticalLayout {
   val lytHeader = new HorizontalLayout {
     val lblSender = new Label(sender) {setWidth("100%")}
     val lblDetails = new Label("Sent: " + (new Date).toString)
 
-    addComponentsTo(this, lblSender, lblDetails)
+    this.addComponents(lblSender, lblDetails)
     //setExpandRatio(lblSender, 1.0f)
 
     setWidth("100%")
@@ -39,16 +39,13 @@ class MessageView(sender: String, message: String) extends VerticalLayout {
 
   val lblText = new Label(message) {setWidth("100%")}
 
-  addComponentsTo(this, lytHeader, lblText)
+  this.addComponents(lytHeader, lblText)
   setWidth("100%")
   setHeight(null)
 }
 
-class MessagesPanel extends Panel(new VerticalLayout{setSpacing(true)}) {
+class MessagesPanel extends Panel(new VerticalLayout{setSpacing(true)}) with FullSize with Scrollable {
   //setStyle(Panel.STYLE_LIGHT)
-
-  setScrollable(true)
-  setSizeFull
 
   def addMessage(msg: MessageView) = synchronized {
     getComponentIterator.toList |> { components =>
@@ -66,14 +63,14 @@ class Chat extends VerticalLayout {
   val btnSend = new Button("Send") { setHeight("100%") }
 
   val lytMessage = new HorizontalLayout {
-    addComponentsTo(this, txaText, btnSend)
+    this.addComponents(txaText, btnSend)
     setExpandRatio(txaText, 1.0f)
     setWidth("100%")
     setHeight("50px")
   }
 
   setSpacing(true)
-  addComponentsTo(this, pnlMessages, lytMessage)
+  this.addComponents(pnlMessages, lytMessage)
   setExpandRatio(pnlMessages, 1.0f)
   setSizeFull
 }

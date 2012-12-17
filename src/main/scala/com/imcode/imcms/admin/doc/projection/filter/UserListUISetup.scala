@@ -5,8 +5,8 @@ package admin.doc.projection.filter
 import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.UserSelectDialog
 import com.imcode.imcms.vaadin.ui.dialog.OkCancelDialog
-import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 
 trait UserListUISetup { this: UserListUI =>
   val projectionDialogCaption: String

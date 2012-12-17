@@ -7,8 +7,8 @@ import scala.collection.JavaConverters._
 
 import _root_.imcode.server.user._
 import com.imcode.util.event.Publisher
-import com.imcode.imcms.vaadin._
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
@@ -68,7 +68,7 @@ class UserSingleSelectUI extends HorizontalLayout with Spacing with UndefinedSiz
   val btnSelect = new Button("select") with SmallStyle
   val btnClear = new Button("clear") with SmallStyle
 
-  addComponentsTo(this, lblName, btnSelect, btnClear)
+  this.addComponents(lblName, btnSelect, btnClear)
 }
 
 
@@ -92,7 +92,7 @@ class UserSearch(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainOb
   }
 
   val ui = new GridLayout(1, 2) |>> { ui =>
-    addComponentsTo(ui, searchForm.ui, searchResult)
+    ui.addComponents(searchForm.ui, searchResult)
   }
 
   searchResult.addValueChangeHandler {
@@ -210,10 +210,10 @@ class UserSearchFormUI extends CustomLayout("admin/access/user/search/form") wit
     val btnReset = new Button("btn_reset".i) with SmallStyle
     val btnSearch = new Button("btn_search".i) with SmallStyle
 
-    addComponentsTo(this, btnReset, btnSearch)
+    this.addComponents(btnReset, btnSearch)
   }
 
-  addNamedComponents(this,
+  this.addNamedComponents(
     "admin.access.user.search.frm.fld.chk_text" -> chkText,
     "admin.access.user.search.frm.fld.text" -> txtText,
     "admin.access.user.search.frm.fld.chk_roles" -> chkRoles,

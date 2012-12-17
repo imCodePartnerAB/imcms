@@ -8,10 +8,11 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject}
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+import _root_.imcode.server.user.UserDomainObject
 
 
-trait DocsProjectionDialog extends CustomSizeDialog { this: OkCancelDialog =>
-  val projection = new DocsProjection(getApplication.imcmsUser) |>> { _.docsUI.setMultiSelect(true) }
+class DocsProjectionDialog(caption: String, user: UserDomainObject) extends OkCancelDialog with CustomSizeDialog {
+  val projection = new DocsProjection(user) |>> { _.docsUI.setMultiSelect(true) }
   val ops = new DocsProjectionOps(projection)
 
   mainUI = new DocsProjectionDialogMainUI(projection.ui) |>> { ui =>
@@ -39,6 +40,9 @@ trait DocsProjectionDialog extends CustomSizeDialog { this: OkCancelDialog =>
       doto(ui.miNew, ui.miNewFileDoc, ui.miNewTextDoc, ui.miNewUrlDoc) { mi => mi.setEnabled(isTextDocSelection) }
     }
   }
+
+
+  this.setSize(500, 600)
 
   projection.listen { selection =>
     btnOk.setEnabled(selection.nonEmpty)

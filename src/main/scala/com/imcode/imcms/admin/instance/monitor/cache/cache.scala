@@ -9,7 +9,7 @@ import imcms.api.DocumentVersion
 import imcode.server.document.DocumentTypeDomainObject
 import imcms.mapping.{DocLoaderCachingProxy}
 import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.data.{GenericProperty, PropertyDescriptor}
+import com.imcode.imcms.vaadin.data._
 
 class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Margin with Spacing {
   val tblMetas = new Table("Metas") with GenericProperty[JInteger] with Selectable with Immediate {
@@ -41,7 +41,7 @@ class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Ma
   val btnReload = new Button("Reload") with LinkStyle
 
   private val lytTables = new GridLayout(2,2) with Spacing {
-    addComponentsTo(this, tblMetas, tblDocs, tblVersions, tblLanguages)
+    this.addComponents(tblMetas, tblDocs, tblVersions, tblLanguages)
   }
 
   def reload() {

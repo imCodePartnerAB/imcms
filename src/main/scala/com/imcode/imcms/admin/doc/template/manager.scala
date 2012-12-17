@@ -14,7 +14,7 @@ import imcms.security.{PermissionDenied, PermissionGranted}
 import java.io.{FileInputStream, ByteArrayInputStream, File}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
 
 //todo: common internal ex handler???
 //todo: add related docs handling
@@ -160,7 +160,7 @@ class TemplateManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     CP[String]("Type"),
     CP[JInteger]("Document count using this template"))
 
-  addComponentsTo(this, mb, rc)
+  this.addComponents(mb, rc)
 }
 
 

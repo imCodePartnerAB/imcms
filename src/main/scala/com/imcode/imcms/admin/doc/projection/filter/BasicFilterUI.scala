@@ -14,7 +14,7 @@ class BasicFilterUI extends CustomLayout("admin/doc/search/basic_form") with Ful
     val txtStart = new TextField { setColumns(5) }
     val txtEnd = new TextField { setColumns(5) }
 
-    addComponentsTo(this, txtStart, txtEnd)
+    this.addComponents(txtStart, txtEnd)
   }
 
   val chkText = new CheckBox("doc.search.basic.frm.fld.chk_text".i) with Immediate with ExposeValueChange
@@ -28,7 +28,7 @@ class BasicFilterUI extends CustomLayout("admin/doc/search/basic_form") with Ful
     val chkURL = new CheckBox("doc.search.basic.frm.fld.chk_type_url".i)
     val chkProfile = new CheckBox("doc.search.basic.frm.fld.chk_type_profile".i)
 
-    addComponentsTo(this, chkText, chkFile, chkHtml, chkURL, new Label(" | ") with UndefinedSize,  chkProfile)
+    this.addComponents(chkText, chkFile, chkHtml, chkURL, new Label(" | ") with UndefinedSize,  chkProfile)
   }
 
   val chkAdvanced = new CheckBox("doc.search.basic.frm.fld.chk_advanced".i) with Immediate with ExposeValueChange
@@ -50,10 +50,10 @@ class BasicFilterUI extends CustomLayout("admin/doc/search/basic_form") with Ful
     val btnReset = new Button("btn_reset".i) with SmallStyle
     val btnFilter = new Button("btn_search".i) with SmallStyle
 
-    addComponentsTo(this, btnReset, btnFilter)
+    this.addComponents(btnReset, btnFilter)
   }
 
-  addNamedComponents(this,
+  this.addNamedComponents(
     "doc.search.basic.frm.fld.chk_range" -> chkIdRange,
     "doc.search.basic.frm.fld.range" -> lytIdRange,
     "doc.search.basic.frm.fld.chk_text" -> chkText,

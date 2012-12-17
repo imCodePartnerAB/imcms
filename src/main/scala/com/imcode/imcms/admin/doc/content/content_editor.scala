@@ -82,7 +82,7 @@ class UnsupportedDocContentEditorUI extends Panel("Unsupported".i) with FullWidt
 
   setContent(content)
 
-  addComponentsTo(content, lblInfo)
+  content.addComponents(lblInfo)
 }
 
 
@@ -102,13 +102,13 @@ class NewTextDocContentEditorUI extends VerticalLayout with FullSize with Spacin
     val txtText1 = new TextField("No 1")
     val txtText2 = new TextField("No 2")
 
-    addComponentsTo(this, txtText1, txtText2)
+    this.addComponents(txtText1, txtText2)
   }
 
   val chkCopyI18nMetaTextsToTextFields = new CheckBox("Copy link heading & subheading to text 1 & text 2 in page")
                                            with Immediate
   val tsTexts = new TabSheet with UndefinedSize with FullSize
 
-  addComponentsTo(this, chkCopyI18nMetaTextsToTextFields, tsTexts)
+  this.addComponents(chkCopyI18nMetaTextsToTextFields, tsTexts)
   setExpandRatio(tsTexts, 1.0f)
 }

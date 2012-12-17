@@ -18,10 +18,10 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends Panel(caption) with 
     val lstAvailable = new ListSelect("Available") with MultiSelect[T] with Immediate
     val lstChosen = new ListSelect("Chosen") with MultiSelect[T] with Immediate
     val lytButtons = new VerticalLayout |>> { lyt =>
-      addComponentsTo(lyt, btnAdd, btnRemove)
+      lyt.addComponents(btnAdd, btnRemove)
     }
 
-    addComponentsTo(content, lstChosen, lytButtons, lstAvailable)
+  content.addComponents(lstChosen, lytButtons, lstAvailable)
     content.setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
 
     doto(lstAvailable, lstChosen) { l =>

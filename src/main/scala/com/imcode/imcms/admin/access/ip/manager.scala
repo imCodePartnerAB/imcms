@@ -16,8 +16,9 @@ import com.imcode.imcms.admin.access.user.UserSelectDialog
 import javax.persistence.{Id, Entity}
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.ImcmsApplication
+import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog, ConfirmationDialog}
 
 // todo: ipv4; add/handle ipv6?
 // todo: Should select user from user select!!
@@ -158,7 +159,7 @@ class IPAccessManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     CP[String]("IP range from"),
     CP[String]("IP range to"))
 
-  addComponentsTo(this, mb, rc)
+  this.addComponents(mb, rc)
 }
 
 
@@ -167,7 +168,7 @@ class IPAccessEditorUI extends FormLayout with UndefinedSize {
     val txtLoginName = new TextField  { setInputPrompt("No user selected") }    // with ReadOnly
     val btnChoose = new Button("...") { setStyleName("small") }
 
-    addComponentsTo(this, txtLoginName, btnChoose)
+    this.addComponents(txtLoginName, btnChoose)
     setCaption("User")
   }
 
@@ -176,5 +177,5 @@ class IPAccessEditorUI extends FormLayout with UndefinedSize {
   val txtFrom = new TextField("From")
   val txtTo = new TextField("To")
 
-  addComponentsTo(this, txtId, userPickerUI, txtFrom, txtTo)
+  this.addComponents(txtId, userPickerUI, txtFrom, txtTo)
 }

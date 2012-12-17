@@ -1,15 +1,15 @@
 package com.imcode
 package imcms
 package admin.doc.meta.category
-import com.imcode.imcms.vaadin.ui._
+
+import java.util.Collections
 import scala.collection.JavaConverters._
 
+import com.vaadin.ui._
 import com.imcode.imcms.api._
 import com.imcode.imcms.vaadin._
-
-import com.vaadin.ui._
-import java.util.Collections
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 
 /**
  * Doc's categories editor.
@@ -47,7 +47,7 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
   val ui = new GridLayout(2, 1) with Spacing |>> { ui =>
     for ((chkCType, sltCategories) <- typeCategoriesUIs) {
-      addComponentsTo(ui, chkCType, sltCategories)
+      ui.addComponents(chkCType, sltCategories)
     }
   }
 

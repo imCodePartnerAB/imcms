@@ -8,7 +8,7 @@ import com.imcode.imcms.servlet.superadmin.AdminSearchTerms
 import java.util.{Locale, Date}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.data.PropertyDescriptor
+import com.imcode.imcms.vaadin.data._
 
 //import imcms.admin.chat.{MessageView, Chat}
 
@@ -237,10 +237,10 @@ class SysAdmin extends com.vaadin.Application with ImcmsApplication { app =>
         //calTo.setStyle("calendar")
         calTo.setResolution(DateField.RESOLUTION_DAY)
 
-        addComponentsTo(this, calFrom, calTo, btnReload)
+        this.addComponents(calFrom, calTo, btnReload)
       }
 
-      addComponentsTo(this, tblTerms, lytBar)
+      this.addComponents(tblTerms, lytBar)
 
       def reload() {
         val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue.asInstanceOf[Date],

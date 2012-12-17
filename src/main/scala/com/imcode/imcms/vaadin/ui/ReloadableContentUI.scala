@@ -15,7 +15,7 @@ class ReloadableContentUI[T <: Component](val content: T) extends GridLayout(1,2
     setIcon(Reload16)
   }
 
-  addComponentsTo(this, content, btnReload)
+  this.addComponents( content, btnReload)
   setComponentAlignment(content, Alignment.TOP_LEFT)
   setComponentAlignment(btnReload, Alignment.BOTTOM_RIGHT)
 }

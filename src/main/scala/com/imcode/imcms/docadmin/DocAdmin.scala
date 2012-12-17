@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import dao.TextDao
 import com.vaadin.ui._
 import java.util.{Arrays, Collections}
-import com.imcode.imcms.vaadin.data.{GenericProperty, PropertyDescriptor}
+import com.imcode.imcms.vaadin.data._
 
 
 class DocAdmin extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
@@ -96,7 +96,7 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
       val btnClose = new Button("Close")
       val btnSave = new Button("Save")
 
-      addComponentsTo(this, btnClose, btnSave)
+      this.addComponents( btnClose, btnSave)
     }
 
     val docEditor = new DocEditor(doc)
@@ -141,14 +141,14 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
       val btnClose = new Button("Close")
       val btnSaveAndClose = new Button("Save & Close")
 
-      addComponentsTo(this, btnClose, btnSaveAndClose)
+      this.addComponents( btnClose, btnSaveAndClose)
     }
 
     pnlEditor.setContent(editor.ui)
 
     val wndContent = new VerticalLayout with MiddleCenterAlignment with Spacing with Margin with FullSize
 
-    addComponentsTo(wndContent, pnlEditor, lytButtons)
+    wndContent.addComponents(pnlEditor, lytButtons)
     wndContent.setExpandRatio(pnlEditor, 1f)
 
     /*wnd.*/setContent(wndContent)
@@ -194,14 +194,14 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
       val btnClose = new Button("Close")
       val btnSaveAndClose = new Button("Save & Close")
 
-      addComponentsTo(this, btnClose, btnSaveAndClose)
+      this.addComponents( btnClose, btnSaveAndClose)
     }
 
     pnlEditor.setContent(editor.ui)
 
     val wndContent = new VerticalLayout with MiddleCenterAlignment with Spacing with Margin with FullSize
 
-    addComponentsTo(wndContent, pnlEditor, lytButtons)
+    wndContent.addComponents(pnlEditor, lytButtons)
     wndContent.setExpandRatio(pnlEditor, 1f)
 
     /*wnd.*/setContent(wndContent)
@@ -293,7 +293,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     )
 
     ui.miIncludeDocs.setCommandHandler {
-      ui.rootWindow.initAndShow(new OkCancelDialog("Choose documents") with DocsProjectionDialog, resizable = true) { dlg =>
+      new DocsProjectionDialog("Choose documents", ui.getApplication.imcmsUser) |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
             docId <- dlg.projection.selection
@@ -307,9 +307,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
           updateMenuUI()
         }
-
-        dlg.setSize(500, 600)
-      }
+      } |> ui.rootWindow.addWindow
     }
 
     ui.miExcludeSelectedDoc.setCommandHandler {
@@ -521,7 +519,7 @@ class MenuEditorUI extends VerticalLayout with Margin with FullSize {
   }
 
   lytSort.addComponent(cbSortOrder)
-  addComponentsTo(this, mb, lytSort, ttMenu)
+  this.addComponents( mb, lytSort, ttMenu)
   setExpandRatio(ttMenu, 1f)
 }
 
@@ -573,6 +571,6 @@ class TextEditorUI extends VerticalLayout with Margin with FullSize {
 
   private val lytFormat = new FormLayout
 
-  addComponentsTo(this, mb, lytFormat, tsTexts)
+  this.addComponents( mb, lytFormat, tsTexts)
   setExpandRatio(tsTexts, 1f)
 }

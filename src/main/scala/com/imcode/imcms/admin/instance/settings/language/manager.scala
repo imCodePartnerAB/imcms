@@ -12,7 +12,7 @@ import imcms.api.I18nLanguage
 import imcms.dao.{SystemDao, LanguageDao}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
+import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
 
 //todo delete in use message
 class LanguageManager(app: ImcmsApplication) {
@@ -168,7 +168,7 @@ class LanguageManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     CP[String]("Enabled"),
     CP[String]("Default"))
 
-  addComponentsTo(this, mb, rc)
+  this.addComponents(mb, rc)
 }
 
 class LanguageEditorUI extends FormLayout with UndefinedSize {
@@ -178,7 +178,7 @@ class LanguageEditorUI extends FormLayout with UndefinedSize {
   val txtNativeName = new TextField("Native name")
   val chkEnabled = new CheckBox("Enabled")
 
-  addComponentsTo(this, txtId, txtCode, txtName, txtNativeName, chkEnabled)
+  this.addComponents(txtId, txtCode, txtName, txtNativeName, chkEnabled)
 }
 
 
@@ -192,7 +192,7 @@ class LanguageEditorUI extends FormLayout with UndefinedSize {
 //  val txtNativeName = new TextField("Native name")
 //  val chkEnabled = new CheckBox("Enabled")
 //
-//  addNamedComponents(this,
+//  addNamedComponentsTo(this,
 //    "txtId" -> txtId,
 //    "txtCode" -> txtCode,
 //    "txtName" -> txtName,

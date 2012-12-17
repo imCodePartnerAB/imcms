@@ -38,6 +38,10 @@ package object ui {
 
   implicit def wrapComponent(c: Component) = new ComponentWrapper(c)
 
+  implicit def wrapComponentContainer(cc: ComponentContainer) = new ComponentContainerWrapper(cc)
+
+  implicit def wrapCustomLayout(cl: CustomLayout) = new CustomLayoutWrapper(cl)
+
   implicit def wrapWindow(window: Window) = new WindowWrapper(window)
 
   implicit def wrapMenuBar(mb: MenuBar) = new MenuBarWrapper(mb)

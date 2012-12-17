@@ -10,6 +10,7 @@ import _root_.imcode.server.user.UserDomainObject
 import java.util.Date
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 
 // todo: ??? remember lytDate.chkEnd date when uncheked ???
 class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
@@ -85,7 +86,7 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
     val calDate = new PopupDateField with MinuteResolution with Now
     val lblBy = new Label("by") with UndefinedSize
 
-    addComponentsTo(this, calDate, lblBy, ussUI)
+    this.addComponents(calDate, lblBy, ussUI)
   }
 
   object info {
@@ -119,7 +120,7 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
     val content = new FormLayout with Margin with FullWidth
     setContent(content)
 
-    addComponentsTo(content, info.dCreated, info.dModified)
+    content.addComponents(info.dCreated, info.dModified)
   }
 
   private val pnlPublication = new Panel("Publication") with FullWidth {
@@ -129,11 +130,11 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
     val lytDate = new GridLayout(2, 2) with Spacing {
       setCaption("Date")
 
-      addComponentsTo(this, publication.chkStart, publication.calStart, publication.chkEnd, publication.calEnd)
+      this.addComponents(publication.chkStart, publication.calStart, publication.chkEnd, publication.calEnd)
     }
 
-    addComponentsTo(content, publication.sltStatus, publication.sltVersion, lytDate, publication.ussPublisher.ui)
+    content.addComponents(publication.sltStatus, publication.sltVersion, lytDate, publication.ussPublisher.ui)
   }
 
-  addComponentsTo(this, pnlInfo, pnlPublication)
+  this.addComponents(pnlInfo, pnlPublication)
 }

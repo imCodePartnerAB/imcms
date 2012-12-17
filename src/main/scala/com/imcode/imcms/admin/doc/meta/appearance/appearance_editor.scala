@@ -16,6 +16,7 @@ import com.vaadin.data.Validator
 import com.vaadin.data.Validator.InvalidValueException
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 
 
 /**
@@ -71,7 +72,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
     ui.pnlLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
 
     for ((_, chkLanguage, i18nMetaEditorUI) <- i18nMetasUIs) {
-      addComponentsTo(ui.pnlLanguages.lytI18nMetas, chkLanguage, i18nMetaEditorUI)
+      ui.pnlLanguages.lytI18nMetas.addComponents(chkLanguage, i18nMetaEditorUI)
     }
 
     ui.pnlAlias.txtAlias.addValidator(new Validator {
@@ -179,7 +180,7 @@ class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
     private val lytShowMode = new FormLayout with FullWidth
     lytShowMode.addComponent(cbShowMode)
 
-    addComponentsTo(layout, lytI18nMetas, lytShowMode)
+    layout.addComponents(lytI18nMetas, lytShowMode)
     setContent(layout)
   }
 
@@ -198,11 +199,11 @@ class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
       _.setInputPrompt("alternate page name")
     }
 
-    addComponentsTo(layout, txtAlias)
+    layout.addComponents(txtAlias)
     setContent(layout)
   }
 
-  addComponentsTo(this, pnlLanguages, pnlLinkTarget, pnlAlias)
+  this.addComponents(pnlLanguages, pnlLinkTarget, pnlAlias)
 }
 
 /**
@@ -216,5 +217,5 @@ class I18nMetaEditorUI extends FormLayout with FullWidth {
 
   val embLinkImage = new TextField("Link image") with FullWidth
 
-  addComponentsTo(this, txtTitle, txaMenuText, embLinkImage)
+  this.addComponents(txtTitle, txaMenuText, embLinkImage)
 }

@@ -134,7 +134,7 @@ class DocManagerUI(searchUI: DocsProjectionUI) extends VerticalLayout with Spaci
 
   val miProfileEditName = miProfile.addItem("doc.mgr.mi.profile.edit_name".i)
 
-  addComponentsTo(this, mb, searchUI)
+  this.addComponents(mb, searchUI)
   setExpandRatio(searchUI, 1.0f)
 }
 
@@ -165,7 +165,7 @@ class CustomDocsUI(projectionUI: Component) extends VerticalLayout with Spacing 
   val mb = new MenuBar
   val miDoc = mb.addItem("doc.selection.mi.doc".i)
 
-  addComponentsTo(this, mb, projectionUI)
+  this.addComponents(mb, projectionUI)
   setExpandRatio(projectionUI, 1.0f)
 }
 
