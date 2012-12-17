@@ -656,6 +656,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             DatabaseCommand databaseCommand = new CompositeDatabaseCommand(new DatabaseCommand[] {
                     new DeleteWhereColumnsEqualDatabaseCommand("roles_rights", "role_id", "" + role.getId()),
                     new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "role_id", "" + role.getId()),
+                    new DeleteWhereColumnsEqualDatabaseCommand("useradmin_role_crossref", "role_id", "" + role.getId()),
                     new DeleteWhereColumnsEqualDatabaseCommand("roles", "role_id", "" + role.getId()),
             });
             services.getDatabase().execute(databaseCommand);

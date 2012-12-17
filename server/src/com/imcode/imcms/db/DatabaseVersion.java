@@ -1,6 +1,6 @@
 package com.imcode.imcms.db;
 
-public class DatabaseVersion implements Comparable {
+public class DatabaseVersion implements Comparable<DatabaseVersion> {
 
     private final int majorVersion ;
     private final int minorVersion ;
@@ -10,11 +10,10 @@ public class DatabaseVersion implements Comparable {
         this.minorVersion = minorVersion;
     }
 
-    public int compareTo(Object o) {
-        DatabaseVersion other = (DatabaseVersion) o ;
-        int result = new Integer(majorVersion).compareTo(new Integer(other.majorVersion));
+    public int compareTo(DatabaseVersion other) {
+        int result = Integer.valueOf(majorVersion).compareTo(other.majorVersion);
         if (0 == result) {
-            result = new Integer(minorVersion).compareTo(new Integer(other.minorVersion));
+            result = Integer.valueOf(minorVersion).compareTo(other.minorVersion);
         }
         return result ;
     }
