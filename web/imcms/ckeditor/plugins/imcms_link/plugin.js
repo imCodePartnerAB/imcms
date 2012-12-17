@@ -12,7 +12,7 @@
 				selection.unlock(true) ;
 				selectedText = selection.getNative().createRange().text ;
 			} else {
-				selectedText = selection.getNative() ;
+				selectedText = selection.getNative().toString();
 			}
 
 			// Fill in all the relevant fields if there's already one link selected.
@@ -79,10 +79,14 @@
                 //console.log('link.href (before): ' + (!link ? 'null' : link.getAttribute('href'))) ;
 
                 if (!link) { // If the <a/> tag doesn't exists in the editor - create it.
-                    if ('' == selectedText) {
-                        selectedText = returnLink.TITLE || returnLink.HREF ;
-                    }
-                    link = CKEDITOR.dom.element.createFromHtml('<a>' + selectedText + '</a>') ;
+                    var selectedElement = selection.getSelectedElement();
+                    var content = selectedText !== ''
+                        ? selectedText
+                        : (selectedElement && selectedElement.is('img'))
+                            ? selectedElement.getOuterHtml()
+                            : (returnLink.TITLE || returnLink.HREF);
+
+                    link = CKEDITOR.dom.element.createFromHtml('<a>' + content + '</a>') ;
                     link.setAttribute('href', returnLink.HREF) ;
                     editor.insertElement(link) ;
                     //console.log('link (not exist) - Created: ' + link) ;
