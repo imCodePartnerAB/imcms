@@ -17,15 +17,14 @@ import java.{util => ju}
 import com.imcode.imcms.vaadin.data.FunctionProperty
 import org.apache.solr.client.solrj.SolrQuery
 
-/**
- * Docs container.
- */
-class DocsContainer(
+
+class IndexedDocsContainer(
   user: UserDomainObject,
   private var solrQuery: Option[String] = None,
-  private var visibleDocsFilter: Option[Set[DocId]] = None)
-    extends Container
+  private var visibleDocsFilter: Option[Set[DocId]] = None
+  ) extends Container
     with GenericContainer[DocId]
+    with IndexedDocsContainerItem
     with ReadOnlyContainer
     with Container.Ordered
     with Container.Sortable
@@ -65,14 +64,97 @@ class DocsContainer(
     }
   }
 
+  // todo: fix
+  private def updateVisibleDocsIds() {
+    visibleDocsIds = (solrQuery, visibleDocsFilter) match {
+      case (None, _) => ju.Collections.emptyList()
+      case (_, Some(ids)) if ids.isEmpty => ju.Collections.emptyList()
+      case (Some(query), None) => imcmsServices.getDocumentMapper.getDocumentIndex.service().search(new SolrQuery(query), user).asScala.map(_.getMeta.getId).asJavaCollection
+      case (Some(query), Some(ids)) => imcmsServices.getDocumentMapper.getDocumentIndex.service().search(new SolrQuery(query), user).asScala.map(_.getMeta.getId).asJavaCollection
+    }
+
+    notifyItemSetChanged()
+  }
+
+
+  /**
+   * Returns full (non filtered) inclusive docs range of this container.
+   *
+   * @return Some(range) or None if there is no docs in this container.
+   */
+  def visibleDocsRange: Option[(DocId, DocId)] = visibleDocsFilter match {
+    case Some(ids) => if (ids.isEmpty) None else Some(ids.min, ids.max)
+    case _ => imcmsServices.getDocumentMapper.getDocumentIdRange |> { idsRange =>
+      Some(idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
+    }
+  }
+
+  override val getContainerPropertyIds = propertyIds.asJava
+
+  override def getType(propertyId: AnyRef) = propertyIdToType(propertyId.asInstanceOf[String])
+
+  override def getItem(itemId: AnyRef): DocItem = DocItem(itemId.asInstanceOf[DocId])
+
+  override def getContainerProperty(itemId: AnyRef, propertyId: AnyRef) = getItem(itemId).getItemProperty(propertyId)
+
+  override def containsId(itemId: AnyRef) = getItemIds.contains(itemId)
+
+  override def size = getItemIds.size
+
+  override def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef) = null
+
+  override def addItemAfter(previousItemId: AnyRef) = null
+
+  override def isLastId(itemId: AnyRef) = itemId == lastItemId
+
+  override def isFirstId(itemId: AnyRef) = itemId == firstItemId
+
+  // extremely ineffective prototype
+  override def lastItemId = itemIds.asScala.lastOption.orNull
+
+  // extremely ineffective prototype
+  override def firstItemId = itemIds.asScala.headOption.orNull
+
+  // extremely ineffective prototype
+  override def prevItemId(itemId: AnyRef) = itemIds.asScala.toIndexedSeq |> { seq =>
+    seq.indexOf(itemId.asInstanceOf[DocId]) match {
+      case index if index > 0 => seq(index - 1)
+      case _ => null
+    }
+  }
+
+  // extremely ineffective prototype
+  override def nextItemId(itemId: AnyRef) = itemIds.asScala.toIndexedSeq |> { seq =>
+    seq.indexOf(itemId.asInstanceOf[DocId]) match {
+      case index if index < (size - 1) => seq(index + 1)
+      case _ => null
+    }
+  }
+
+  override def sort(propertyId: Array[AnyRef], ascending: Array[Boolean]) {}
+
+  override val getSortableContainerPropertyIds: JCollection[_] = ju.Arrays.asList(
+    "doc.tbl.col.id",
+    "doc.tbl.col.type",
+    "doc.tbl.col.status",
+    "doc.tbl.col.alias"
+  )
+
+  override def getItemIds: JCollection[_] = visibleDocsIds
+}
+
+
+
+trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
+
   case class DocItem(docId: DocId) extends Item with ReadOnlyItem {
 
     lazy val doc = imcmsServices.getDocumentMapper.getDocument(docId)
     //def doc() = imcmsServices.getDocumentMapper.getDocument(docId)
 
-    val getItemPropertyIds: JCollection[_] = propertyIds.asJava
+    override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
-    def getItemProperty(id: AnyRef) = FunctionProperty(id match {
+    override def getItemProperty(id: AnyRef) = FunctionProperty(id match {
       case "doc.tbl.col.id" => () => doc.getId : JInteger
       case "doc.tbl.col.type" => () => doc.getDocumentTypeId : JInteger
       case "doc.tbl.col.alias" => () => doc.getAlias
@@ -139,84 +221,4 @@ class DocsContainer(
         }
     })
   }
-
-  // todo: fix
-  private def updateVisibleDocsIds() {
-    visibleDocsIds = (solrQuery, visibleDocsFilter) match {
-      case (None, _) => ju.Collections.emptyList()
-      case (_, Some(ids)) if ids.isEmpty => ju.Collections.emptyList()
-      case (Some(query), None) => imcmsServices.getDocumentMapper.getDocumentIndex.service().search(new SolrQuery(query), user).asScala.map(_.getMeta.getId).asJavaCollection
-      case (Some(query), Some(ids)) => imcmsServices.getDocumentMapper.getDocumentIndex.service().search(new SolrQuery(query), user).asScala.map(_.getMeta.getId).asJavaCollection
-    }
-
-    notifyItemSetChanged()
-  }
-
-
-  /**
-   * Returns full (non filtered) inclusive docs range of this container.
-   *
-   * @return Some(range) or None if there is no docs in this container.
-   */
-  def idRange: Option[(DocId, DocId)] = visibleDocsFilter match {
-    case Some(ids) => if (ids.isEmpty) None else Some(ids.min, ids.max)
-    case _ => imcmsServices.getDocumentMapper.getDocumentIdRange |> { idsRange =>
-      Some(idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
-    }
-  }
-
-  val getContainerPropertyIds = propertyIds.asJava
-
-  def getType(propertyId: AnyRef) = propertyIdToType(propertyId.asInstanceOf[String])
-
-  def getItem(itemId: AnyRef): DocItem = DocItem(itemId.asInstanceOf[DocId])
-
-  def getContainerProperty(itemId: AnyRef, propertyId: AnyRef) = getItem(itemId).getItemProperty(propertyId)
-
-  def containsId(itemId: AnyRef) = getItemIds.contains(itemId)
-
-  def size = getItemIds.size
-
-  def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef) = null
-
-  def addItemAfter(previousItemId: AnyRef) = null
-
-  def isLastId(itemId: AnyRef) = itemId == lastItemId
-
-  def isFirstId(itemId: AnyRef) = itemId == firstItemId
-
-  // extremely ineffective prototype
-  def lastItemId = itemIds.asScala.lastOption.orNull
-
-  // extremely ineffective prototype
-  def firstItemId = itemIds.asScala.headOption.orNull
-
-  // extremely ineffective prototype
-  def prevItemId(itemId: AnyRef) = itemIds.asScala.toIndexedSeq |> { seq =>
-    seq.indexOf(itemId.asInstanceOf[DocId]) match {
-      case index if index > 0 => seq(index - 1)
-      case _ => null
-    }
-  }
-
-  // extremely ineffective prototype
-  def nextItemId(itemId: AnyRef) = itemIds.asScala.toIndexedSeq |> { seq =>
-    seq.indexOf(itemId.asInstanceOf[DocId]) match {
-      case index if index < (size - 1) => seq(index + 1)
-      case _ => null
-    }
-  }
-
-  // sortable impl
-  def sort(propertyId: Array[AnyRef], ascending: Array[Boolean]) {}
-
-  // sortable impl
-  val getSortableContainerPropertyIds: JCollection[_] = ju.Arrays.asList(
-    "doc.tbl.col.id",
-    "doc.tbl.col.type",
-    "doc.tbl.col.status",
-    "doc.tbl.col.alias"
-  )
-
-  def getItemIds: JCollection[_] = visibleDocsIds
 }

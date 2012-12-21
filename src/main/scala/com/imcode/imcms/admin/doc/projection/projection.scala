@@ -10,27 +10,6 @@ package admin.doc.projection
 // >>> Html.getLinkedStatusIconTemplate(document, user, request )
 
 
-//// todo: check doc is not deleted from container
-//trait DocTableItemIcon extends AbstractSelect with GenericContainer[DocId] {
-//  override def getItemIcon(itemId: AnyRef) = item(itemId.asInstanceOf[DocId]) match {
-//    case docItem: DocsContainer#DocItem =>
-//      docItem.doc match {
-//        case null => null
-//        case doc =>
-////          val app = getApplication
-//          val fileBaseName = doc.getLifeCyclePhase.toString
-////          val file = new File(app.context.getBaseDirectory, "imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
-////
-////          new FileResource(file, app)
-////          new ExternalResource("imcms/eng/images/admin/status/%s.gif".format(fileBaseName))
-//          new ThemeResource("icons/docstatus/%s.gif".format(fileBaseName))
-//      }
-//
-//    case _ => null
-//  }
-//}
-
-
 //trait DocSelectDialog extends CustomSizeDialog { this: OkCancelDialog =>
 //  val search = new DocsProjection(new AllDocsContainer)
 //

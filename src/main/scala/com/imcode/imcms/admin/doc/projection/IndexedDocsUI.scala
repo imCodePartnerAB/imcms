@@ -7,14 +7,13 @@ import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.ui.{Immediate, Selectable, MultiSelectBehavior}
 
 
-class DocsUI(container: DocsContainer) extends Table(null, container)
+class IndexedDocsUI(container: IndexedDocsContainer) extends Table(null, container)
     with MultiSelectBehavior[DocId]
     with DocIdSelectWithLifeCycleIcon with Selectable with Immediate {
-    //with DocTableItemIcon with Selectable with Immediate {
 
   setColumnCollapsingAllowed(true)
   setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
 
-  setColumnHeaders(container.getContainerPropertyIds.asScala.map(_.toString.i).toArray)
+  setColumnHeaders(container.getContainerPropertyIds.asScala.map(_.i).toArray)
   Seq("doc.tbl.col.parents", "doc.tbl.col.children").foreach { setColumnCollapsed(_, true) }
 }

@@ -1,23 +1,23 @@
 package imcode.server.document.index.service.impl
 
 import com.imcode._
+import com.imcode.imcms.api.I18nLanguage
 import com.imcode.imcms.mapping.DocumentMapper
+import _root_.imcode.server.document.DocumentDomainObject
+import _root_.imcode.server.document.index.DocumentIndex
+import _root_.imcode.server.user.UserDomainObject
+import _root_.imcode.server.document.index.service.{IndexRebuildProgress}
 import scala.collection.SeqView
 import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
-import com.imcode.imcms.api.I18nLanguage
 import org.apache.solr.common.util.DateUtil
 import java.lang.{InterruptedException, Thread}
-import imcode.server.document.DocumentDomainObject
-import imcode.server.document.index.DocumentIndex
-import imcode.server.user.UserDomainObject
 import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.common.params.SolrParams
 import java.util.Date
-import imcode.server.document.index.service.{IndexRebuildProgress}
 
 /**
- * SOLr document index operations.
+ * Document index service low level operations.
  *
  * The instance of this class is thread save.
  */

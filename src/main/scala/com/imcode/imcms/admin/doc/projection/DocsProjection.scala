@@ -16,8 +16,8 @@ import _root_.imcode.server.user.UserDomainObject
 class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] {
   val basicFilter = new BasicFilter
   val advancedFilter = new AdvancedFilter
-  val docsContainer = new DocsContainer(user)
-  val docsUI = new DocsUI(docsContainer) with FullSize
+  val docsContainer = new IndexedDocsContainer(user)
+  val docsUI = new IndexedDocsUI(docsContainer) with FullSize
   private val selectionRef = new AtomicReference(Seq.empty[DocId])
 
   val ui = new DocsProjectionUI(basicFilter.ui, advancedFilter.ui, docsUI) { ui =>
@@ -52,7 +52,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] {
 
 
   def update() {
-    basicFilter.setIdRangeInputPrompt(docsContainer.idRange)
+    basicFilter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange)
   }
 
   def filter() {

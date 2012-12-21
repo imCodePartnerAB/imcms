@@ -7,11 +7,11 @@ trait ContainerItemSetChangeNotifier extends Container.ItemSetChangeNotifier { c
 
   private var listeners = Set.empty[ItemSetChangeListener]
 
-  def removeListener(listener: ItemSetChangeListener) {
+  override def removeListener(listener: ItemSetChangeListener) {
     listeners -= listener
   }
 
-  def addListener(listener: ItemSetChangeListener) {
+  override def addListener(listener: ItemSetChangeListener) {
     listeners += listener
   }
 

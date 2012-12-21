@@ -32,7 +32,7 @@ class BasicFilter {
     }
   }
 
-  def setIdRangeInputPrompt(range: Option[(DocId, DocId)]) {
+  def setVisibleDocsRangeInputPrompt(range: Option[(DocId, DocId)]) {
     range.map { case (start, end) => (start.toString, end.toString) }.getOrElse ("", "") |> {
       case (start, end) =>
         ui.lytIdRange.txtStart.setInputPrompt(start)
