@@ -17,8 +17,9 @@ package object imcms {
   type CategoryId = JInteger
   type MenuItemId = String
   type FileId = String
-
   type ErrorMsg = String
+  // Zero based index
+  type Ix = JInteger
 
 
 

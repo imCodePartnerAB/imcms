@@ -13,12 +13,12 @@ import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter.{AdvancedFilter, BasicFilter, DateRange, IdRange, DateRangeType}
 import _root_.imcode.server.user.UserDomainObject
 
-class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] {
+class DocsProjection(user: UserDomainObject) extends Publisher[Seq[Ix]] {
   val basicFilter = new BasicFilter
   val advancedFilter = new AdvancedFilter
   val docsContainer = new IndexedDocsContainer(user)
   val docsUI = new IndexedDocsUI(docsContainer) with FullSize
-  private val selectionRef = new AtomicReference(Seq.empty[DocId])
+  private val selectionRef = new AtomicReference(Seq.empty[Ix])
 
   val ui = new DocsProjectionUI(basicFilter.ui, advancedFilter.ui, docsUI) { ui =>
     val basicFilterUI = basicFilter.ui
@@ -46,39 +46,37 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] {
   def reset() {
     basicFilter.reset()
     advancedFilter.reset()
-    update()
+    updateUI()
     filter()
   }
 
 
-  def update() {
+  // todo: make private, should be called using listener
+  def updateUI() {
     basicFilter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange)
   }
 
   def filter() {
-    createQuery() match {
+    createSolrQuery() match {
       case Left(throwable) =>
+        docsContainer.setSolrQueryOpt(None)
         ui.rootWindow.show(new ErrorDialog(throwable.getMessage.i))
 
-      case Right(solrQueryOpt) =>
-        println("Doc solr search query: " + solrQueryOpt)
-
+      case Right(solrQuery) =>
         ui.removeComponent(0, 1)
         ui.addComponent(docsUI, 0, 1)
 
-        docsContainer.setSolrQuery(if (solrQueryOpt.isDefined) solrQueryOpt else Some("*"))
-
-
+        docsContainer.setSolrQueryOpt(Some(solrQuery))
     }
   }
 
 
   /**
-   * Creates and returns query string.
+   * Creates and returns Solr query string.
    *
-   * @return query string.
+   * @return query Solr query string.
    */
-  def createQuery(): Throwable Either Option[String] = Ex.allCatch.either {
+  def createSolrQuery(): Throwable Either String = Ex.allCatch.either {
     val basicFormUI = basicFilter.ui
     val advancedFormUI = advancedFilter.ui
 
@@ -189,11 +187,12 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] {
       typesOpt.map(_.mkString("type:(", " OR ", ")")),
       statusesOpt.map(_.mkString("status:(", " OR ", ")"))
     ).flatten match {
-      case Nil => None
-      case terms => Some(terms.mkString(" "))
+      case Nil => "*:*"
+      case terms => terms.mkString(" ")
     }
-  } // def createQuery()
+  } // def createSolrQuery()
 
+  // todo: verify
   def selection: Seq[DocId] = selectionRef.get
 
   override def notifyListeners(): Unit = notifyListeners(selection)

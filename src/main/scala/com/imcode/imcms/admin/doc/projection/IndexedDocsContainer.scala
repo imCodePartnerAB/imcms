@@ -3,7 +3,7 @@ package imcms
 package admin.doc.projection
 
 import com.vaadin.data.{Item, Container}
-import com.imcode.imcms.api.Document
+import com.imcode.imcms.api.{I18nLanguage, Document}
 import com.vaadin.ui.{Tree, Component}
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.ui._
@@ -18,59 +18,66 @@ import com.imcode.imcms.vaadin.data.FunctionProperty
 import org.apache.solr.client.solrj.SolrQuery
 
 
+// todo - fix: ineffective
 class IndexedDocsContainer(
   user: UserDomainObject,
-  private var solrQuery: Option[String] = None,
-  private var visibleDocsFilter: Option[Set[DocId]] = None
+  private var solrQueryOpt: Option[String] = None,
+  private var visibleDocsFilterOpt: Option[Set[DocId]] = None
   ) extends Container
-    with GenericContainer[DocId]
+    with GenericContainer[Ix]
     with IndexedDocsContainerItem
     with ReadOnlyContainer
-    with Container.Ordered
     with Container.Sortable
     with ContainerItemSetChangeNotifier
     with ImcmsServicesSupport {
 
   private val propertyIdToType = ListMap(
+    "doc.tbl.col.ix" -> classOf[Ix],
     "doc.tbl.col.id" -> classOf[DocId],
     "doc.tbl.col.type" -> classOf[JInteger],
+    "doc.tbl.col.language" -> classOf[I18nLanguage],  // todo: when multi-language support is enabled
     "doc.tbl.col.status" -> classOf[String],
     "doc.tbl.col.alias" -> classOf[String],
     "doc.tbl.col.parents" -> classOf[Component],
     "doc.tbl.col.children" -> classOf[Component]
+    // todo: version when version support is enabled
+    // todo: parents, children <-> referenced, references
   )
 
   private val propertyIds = propertyIdToType.keys.toList
 
-  private var docsIds: ListSet[DocId] = ListSet.empty
+  private var visibleDocs = Array.empty[DocumentDomainObject]
 
-  private var visibleDocsIds: JCollection[DocId] = ju.Collections.emptyList[DocId]
+  def getVisibleDocsFilterOpt: Option[Set[DocId]] = visibleDocsFilterOpt
 
-  def getVisibleDocsFilter: Option[Set[DocId]] = visibleDocsFilter
-
-  def setVisibleDocsFilter(visibleItemsFilter: Option[Set[DocId]]) {
-    if (this.visibleDocsFilter != visibleItemsFilter) {
-      this.visibleDocsFilter = visibleItemsFilter
+  def setVisibleDocsFilterOpt(visibleItemsFilterOpt: Option[Set[DocId]]) {
+    if (this.visibleDocsFilterOpt != visibleItemsFilterOpt) {
+      this.visibleDocsFilterOpt = visibleItemsFilterOpt
       updateVisibleDocsIds()
     }
   }
 
-  def getSolrQuery: Option[String] = solrQuery
+  def getSolrQueryOpt: Option[String] = solrQueryOpt
 
-  def setSolrQuery(solrQuery: Option[String]) {
-    if (solrQuery != this.solrQuery) {
-      this.solrQuery = solrQuery
-      updateVisibleDocsIds()
+  def setSolrQueryOpt(solrQueryOpt: Option[String]) {
+    (this.solrQueryOpt, solrQueryOpt) match {
+      case (None, None) =>
+      case _ =>
+        this.solrQueryOpt = solrQueryOpt
+        updateVisibleDocsIds()
     }
   }
 
-  // todo: fix
   private def updateVisibleDocsIds() {
-    visibleDocsIds = (solrQuery, visibleDocsFilter) match {
-      case (None, _) => ju.Collections.emptyList()
-      case (_, Some(ids)) if ids.isEmpty => ju.Collections.emptyList()
-      case (Some(query), None) => imcmsServices.getDocumentMapper.getDocumentIndex.service().search(new SolrQuery(query), user).asScala.map(_.getMeta.getId).asJavaCollection
-      case (Some(query), Some(ids)) => imcmsServices.getDocumentMapper.getDocumentIndex.service().search(new SolrQuery(query), user).asScala.map(_.getMeta.getId).asJavaCollection
+    visibleDocs = (solrQueryOpt, visibleDocsFilterOpt) match {
+      case (None, _) => Array.empty
+      case (_, Some(ids)) if ids.isEmpty => Array.empty
+      case (Some(solrQuery), None) =>
+        val solrParams = new SolrQuery(solrQuery)//.setFilterQueries(CommonParams.FQ, "language:"+imcmsServices.getI18nSupport.getDefaultLanguage.getCode)
+        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrParams, user).toArray(Array.empty[DocumentDomainObject])
+      case (Some(solrQuery), Some(ids)) =>
+        val solrParams = new SolrQuery(solrQuery)//.set(CommonParams.FQ, "language:"+imcmsServices.getI18nSupport.getDefaultLanguage.getCode)
+        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrParams, user).toArray(Array.empty[DocumentDomainObject])
     }
 
     notifyItemSetChanged()
@@ -82,7 +89,8 @@ class IndexedDocsContainer(
    *
    * @return Some(range) or None if there is no docs in this container.
    */
-  def visibleDocsRange: Option[(DocId, DocId)] = visibleDocsFilter match {
+  // todo ???query form index???
+  def visibleDocsRange: Option[(DocId, DocId)] = visibleDocsFilterOpt match {
     case Some(ids) => if (ids.isEmpty) None else Some(ids.min, ids.max)
     case _ => imcmsServices.getDocumentMapper.getDocumentIdRange |> { idsRange =>
       Some(idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
@@ -93,70 +101,76 @@ class IndexedDocsContainer(
 
   override def getType(propertyId: AnyRef) = propertyIdToType(propertyId.asInstanceOf[String])
 
-  override def getItem(itemId: AnyRef): DocItem = DocItem(itemId.asInstanceOf[DocId])
-
   override def getContainerProperty(itemId: AnyRef, propertyId: AnyRef) = getItem(itemId).getItemProperty(propertyId)
 
-  override def containsId(itemId: AnyRef) = getItemIds.contains(itemId)
+  override def size: Int = visibleDocs.size
 
-  override def size = getItemIds.size
+  override def getItemIds: JCollection[_] = visibleDocs.indices.asJavaCollection
 
-  override def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef) = null
-
-  override def addItemAfter(previousItemId: AnyRef) = null
-
-  override def isLastId(itemId: AnyRef) = itemId == lastItemId
-
-  override def isFirstId(itemId: AnyRef) = itemId == firstItemId
-
-  // extremely ineffective prototype
-  override def lastItemId = itemIds.asScala.lastOption.orNull
-
-  // extremely ineffective prototype
-  override def firstItemId = itemIds.asScala.headOption.orNull
-
-  // extremely ineffective prototype
-  override def prevItemId(itemId: AnyRef) = itemIds.asScala.toIndexedSeq |> { seq =>
-    seq.indexOf(itemId.asInstanceOf[DocId]) match {
-      case index if index > 0 => seq(index - 1)
-      case _ => null
-    }
+  override def containsId(itemId: AnyRef): Boolean = itemId match {
+    case ix: Ix => visibleDocs.isDefinedAt(ix)
+    case _ => false
   }
 
-  // extremely ineffective prototype
-  override def nextItemId(itemId: AnyRef) = itemIds.asScala.toIndexedSeq |> { seq =>
-    seq.indexOf(itemId.asInstanceOf[DocId]) match {
-      case index if index < (size - 1) => seq(index + 1)
-      case _ => null
-    }
+  override def isFirstId(itemId: AnyRef): Boolean = itemId match {
+    case ix: Ix if visibleDocs.nonEmpty => ix == 0
+    case _ => false
   }
 
+  override def isLastId(itemId: AnyRef): Boolean = itemId match {
+    case ix: Ix if visibleDocs.nonEmpty => ix == visibleDocs.size - 1
+    case _ => false
+  }
+
+  override def firstItemId: Ix = if (visibleDocs.isEmpty) null else 0
+
+  override def lastItemId: Ix = if (visibleDocs.isEmpty) null else visibleDocs.length - 1
+
+  override def prevItemId(itemId: AnyRef): Ix = itemId match {
+    case ix: Ix if visibleDocs.indices.lift(ix - 1).isDefined => ix - 1
+    case _ => null
+  }
+
+  override def nextItemId(itemId: AnyRef): Ix = itemId match {
+    case ix: Ix if visibleDocs.indices.lift(ix + 1).isDefined => ix + 1
+    case _ => null
+  }
+
+  override def getItem(itemId: AnyRef): DocItem = itemId match {
+    case ix: Ix if visibleDocs.lift(ix).isDefined => DocItem(ix, visibleDocs(ix))
+    case _ => null
+  }
+
+  // todo implement
   override def sort(propertyId: Array[AnyRef], ascending: Array[Boolean]) {}
 
+  // todo implement
   override val getSortableContainerPropertyIds: JCollection[_] = ju.Arrays.asList(
     "doc.tbl.col.id",
+    "doc.tbl.col.language",
     "doc.tbl.col.type",
     "doc.tbl.col.status",
     "doc.tbl.col.alias"
   )
 
-  override def getItemIds: JCollection[_] = visibleDocsIds
+  override def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef): Item = throw new UnsupportedOperationException
+
+  override def addItemAfter(previousItemId: AnyRef): Item = throw new UnsupportedOperationException
 }
 
 
 
 trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
 
-  case class DocItem(docId: DocId) extends Item with ReadOnlyItem {
-
-    lazy val doc = imcmsServices.getDocumentMapper.getDocument(docId)
-    //def doc() = imcmsServices.getDocumentMapper.getDocument(docId)
+  case class DocItem(ix: Ix, doc: DocumentDomainObject) extends Item with ReadOnlyItem {
 
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
     override def getItemProperty(id: AnyRef) = FunctionProperty(id match {
+      case "doc.tbl.col.ix" => () => ix
       case "doc.tbl.col.id" => () => doc.getId : JInteger
       case "doc.tbl.col.type" => () => doc.getDocumentTypeId : JInteger
+      case "doc.tbl.col.language" => () => doc.getLanguage
       case "doc.tbl.col.alias" => () => doc.getAlias
       case "doc.tbl.col.status" =>
         () => doc.getPublicationStatus match {

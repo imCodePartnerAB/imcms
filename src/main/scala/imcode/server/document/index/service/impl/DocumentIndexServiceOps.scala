@@ -74,7 +74,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
     val solrDocs = solrServer.query(solrParams).getResults
 
     new java.util.LinkedList[DocumentDomainObject] |>> { docs =>
-      for (solrDocId <- 0.until(solrDocs.size)) {
+      for (solrDocId <- 0 until solrDocs.size) {
         val solrDoc = solrDocs.get(solrDocId)
         val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
         //val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
@@ -110,7 +110,6 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   @throws(classOf[InterruptedException])
   @throws(classOf[SolrInputDocumentCreateException])
   def rebuildIndex(solrServer: SolrServer)(progressCallback: IndexRebuildProgress => Unit) {
-
     logger.trace("Rebuilding index.")
     val docsView = mkSolrInputDocsView()
     val docsCount = docsView.length

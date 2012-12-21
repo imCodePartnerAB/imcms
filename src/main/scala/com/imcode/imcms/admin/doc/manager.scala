@@ -104,7 +104,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         action match {
           case IncludeToSelection =>
             customDocs.projection.docsContainer.addItem(target)
-            customDocs.projection.update()
+            customDocs.projection.updateUI()
             customDocs.projection.filter()
           case _ =>
         }

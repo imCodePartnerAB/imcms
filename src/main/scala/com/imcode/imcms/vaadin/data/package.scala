@@ -1,4 +1,5 @@
-package com.imcode.imcms.vaadin
+package com.imcode
+package imcms.vaadin
 
 import com.vaadin.data.{Property, Container}
 
