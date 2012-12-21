@@ -13,8 +13,8 @@ import org.springframework.context.support.{FileSystemXmlApplicationContext}
 import org.apache.commons.io.FileUtils
 import org.apache.solr.client.solrj.SolrServer
 import _root_.imcode.server.{Config, Imcms}
-import _root_.imcode.server.document.index.solr.{SolrServerFactory}
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
+import imcode.server.document.index.service.SolrServerFactory
 
 object Test extends Test
 

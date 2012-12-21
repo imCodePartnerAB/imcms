@@ -5,7 +5,7 @@ import scala.util.control.{Exception => Ex}
 
 package object imcode {
 
-  import _root_.imcode.server.document.index.solr.SolrDocumentIndexService
+  import _root_.imcode.server.document.index.service.DocumentIndexService
   import scala.util.control.{Exception => Ex}
 
   type JBoolean = java.lang.Boolean
@@ -177,9 +177,9 @@ package object imcode {
       override def toString = "ManagedResource[_ <: java.io.Closeable]"
     }
 
-    implicit def ssManagedResource[R <: SolrDocumentIndexService] = new ManagedResource[R] {
+    implicit def ssManagedResource[R <: DocumentIndexService] = new ManagedResource[R] {
       def close(resource: R) { resource.shutdown() }
-      override def toString = "ManagedResource[_ <: SolrDocumentIndexService]"
+      override def toString = "ManagedResource[_ <: DocumentIndexService]"
     }
 
 //    implicit def stShutdownManagedResource[R <: { def shutdown() }](r: R) = new ManagedResource[R] {

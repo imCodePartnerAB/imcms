@@ -1,4 +1,4 @@
-package imcode.server.document.index.solr
+package imcode.server.document.index.service
 
 import com.imcode._
 import org.junit.Assert._
@@ -15,18 +15,19 @@ import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.mockito.invocation.InvocationOnMock
+import imcode.server.document.index.service.impl.{DocumentIndexServiceOps, ManagedSolrDocumentIndexService}
 
 @RunWith(classOf[JUnitRunner])
 class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 
   Test.initLogging()
 
-  val ops: SolrDocumentIndexServiceOps = {
+  val ops: DocumentIndexServiceOps = {
     val ms = new DocIndexingMocksSetup
 
     ms.addDocuments(DocFX.mkTextDocs(DocFX.DefaultId, 10))
 
-    new SolrDocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
+    new DocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
   }
 
 
@@ -38,7 +39,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
 
       try {
         1001 to 1010 foreach { id =>
-          service.requestIndexUpdate(SolrDocumentIndexService.AddDocsToIndex(id))
+          service.requestIndexUpdate(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)
@@ -52,7 +53,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
     "update (write) documents with provided ids to the solr index untill failure" in {
       val solrServerReader = mock[SolrServerWithShutdown]
       val solrServerWriter = mock[SolrServerWithShutdown]
-      val opsMock = mock[SolrDocumentIndexServiceOps]
+      val opsMock = mock[DocumentIndexServiceOps]
       var serviceErrors = Vector.empty[ManagedSolrDocumentIndexService.ServiceError]
       val service = new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, opsMock, serviceErrors :+= _)
 
@@ -66,7 +67,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
 
       try {
         1001 to 1010 foreach { id =>
-          service.requestIndexUpdate(SolrDocumentIndexService.AddDocsToIndex(id))
+          service.requestIndexUpdate(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)
@@ -92,7 +93,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
         Thread.sleep(1000)
 
         1001 to 1010 foreach { id =>
-          service.requestIndexUpdate(SolrDocumentIndexService.AddDocsToIndex(id))
+          service.requestIndexUpdate(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)

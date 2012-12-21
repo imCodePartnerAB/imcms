@@ -14,11 +14,11 @@ import org.mockito.Mockito.{mock => _, _}
 import org.mockito.stubbing.Answer
 import org.mockito.invocation.InvocationOnMock
 import com.imcode.imcms.mapping.DocumentMapper.TextDocumentMenuIndexPair
-import imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexer}
 import imcode.server.ImcmsServices
 import com.imcode.imcms.test._
 import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
 import java.util.LinkedList
+import imcode.server.document.index.service.impl.{DocumentIndexer, DocumentContentIndexer}
 
 
 class DocIndexingMocksSetup {

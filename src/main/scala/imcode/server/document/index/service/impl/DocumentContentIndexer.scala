@@ -1,4 +1,4 @@
-package imcode.server.document.index.solr
+package imcode.server.document.index.service.impl
 
 import com.imcode._
 import scala.collection.JavaConverters._

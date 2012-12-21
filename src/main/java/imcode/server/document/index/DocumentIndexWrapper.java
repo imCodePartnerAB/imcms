@@ -1,7 +1,7 @@
 package imcode.server.document.index;
 
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.index.solr.SolrDocumentIndexService;
+import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
 
 import java.util.List;
@@ -22,15 +22,6 @@ public class DocumentIndexWrapper implements DocumentIndex {
         index.rebuild();
     }
 
-    public void removeDocuments(int docId) throws IndexException {
-        index.removeDocuments(docId);
-    }
-
-    public void indexDocuments(int docId) throws IndexException {
-        index.indexDocuments(docId);
-    }
-
-
     public void removeDocument(DocumentDomainObject document) throws IndexException {
         index.removeDocument(document);
     }
@@ -39,7 +30,17 @@ public class DocumentIndexWrapper implements DocumentIndex {
         return index.search(query, searchingUser) ;
     }
 
-    public SolrDocumentIndexService service() {
+    public DocumentIndexService service() {
         return index.service();
+    }
+
+    @Override
+    public void indexDocument(int docId) throws IndexException {
+        index.indexDocument(docId);
+    }
+
+    @Override
+    public void removeDocument(int docId) throws IndexException {
+        index.removeDocument(docId);
     }
 }

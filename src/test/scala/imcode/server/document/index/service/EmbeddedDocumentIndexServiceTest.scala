@@ -1,4 +1,4 @@
-package imcode.server.document.index.solr
+package imcode.server.document.index.service
 
 import com.imcode._
 import scala.collection.JavaConverters._
@@ -15,37 +15,38 @@ import com.imcode.imcms.test._
 import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX, LanguageFX, UserFX}
 import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import _root_.imcode.server.document.index.{DocIndexingMocksSetup}
+import imcode.server.document.index.service.impl.{DocumentIndexServiceOps, EmbeddedDocumentIndexService}
 
 @RunWith(classOf[JUnitRunner])
-class EmbeddedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
+class EmbeddedDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 
   Test.initLogging()
 
-  val ops: SolrDocumentIndexServiceOps = {
+  val ops: DocumentIndexServiceOps = {
     val ms = new DocIndexingMocksSetup
 
     ms.addDocuments(DocFX.mkTextDocs(DocFX.DefaultId, 10))
     ms.addCategories(CategoryFX.mkCategories() :_*)
 
-    new SolrDocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
+    new DocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
   }
 
-  "EmbeddedSolrDocumentIndexService" should {
+  "EmbeddedDocumentIndexService" should {
     "index all documents" in {
       Test.solr.recreateHome()
 
-      using(new EmbeddedSolrDocumentIndexService(Test.solr.home, ops)) { service =>
+      using(new EmbeddedDocumentIndexService(Test.solr.home, ops)) { service =>
         val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin)
         assertTrue("No docs", docs.isEmpty)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          service.requestIndexUpdate(SolrDocumentIndexService.AddDocsToIndex(metaId))
+          service.requestIndexUpdate(AddDocToIndex(metaId))
         }
 
         Thread.sleep(1000)
       }
 
-      using(new EmbeddedSolrDocumentIndexService(Test.solr.home, ops)) { service =>
+      using(new EmbeddedDocumentIndexService(Test.solr.home, ops)) { service =>
         val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin)
         assertEquals("Found docs", 20, docs.size())
 
@@ -57,14 +58,14 @@ class EmbeddedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterA
     }
 
     "rebuild index" in {
-      using(new EmbeddedSolrDocumentIndexService(Test.solr.home, ops)) { service =>
+      using(new EmbeddedDocumentIndexService(Test.solr.home, ops)) { service =>
         service.requestIndexRebuild().get |> { task =>
           task.future.get()
         }
       }
 
 
-      using(new EmbeddedSolrDocumentIndexService(Test.solr.home, ops)) { service =>
+      using(new EmbeddedDocumentIndexService(Test.solr.home, ops)) { service =>
         val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin)
         assertEquals("Found docs", 20, docs.size())
 

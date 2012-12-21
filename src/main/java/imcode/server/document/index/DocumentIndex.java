@@ -1,7 +1,7 @@
 package imcode.server.document.index;
 
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.index.solr.SolrDocumentIndexService;
+import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
 
 import java.util.List;
@@ -54,26 +54,26 @@ public interface DocumentIndex {
     void removeDocument(DocumentDomainObject document) throws IndexException;
 
     /**
-     * Adds default document(s) to index.
+     * Adds default document to index.
      *
-     * @param metaId
+     * @param docId
      * @throws IndexException
      * @since 6.0
      */
-    void indexDocuments(int metaId) throws IndexException;
+    void indexDocument(int docId) throws IndexException;
 
     /**
-     * Removes default document(s) from index.
+     * Removes default document from index.
      *
-     * @param metaId
+     * @param docId
      * @throws IndexException
      * @since 6.0
      */
-    void removeDocuments(int metaId) throws IndexException;
+    void removeDocument(int docId) throws IndexException;
 
     /**
-     * Underlying Solr service.
+     * Underlying service.
      * @since 6.0
      */
-    SolrDocumentIndexService service();
+    DocumentIndexService service();
 }

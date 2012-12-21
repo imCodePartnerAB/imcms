@@ -1,4 +1,4 @@
-package imcode.server.document.index.solr
+package imcode.server.document.index.service.impl
 
 import com.imcode._
 import com.imcode.imcms.mapping.DocumentMapper
@@ -9,18 +9,19 @@ import com.imcode.imcms.api.I18nLanguage
 import org.apache.solr.common.util.DateUtil
 import java.lang.{InterruptedException, Thread}
 import imcode.server.document.DocumentDomainObject
-import imcode.server.document.index.{DocumentIndex}
+import imcode.server.document.index.DocumentIndex
 import imcode.server.user.UserDomainObject
-import org.apache.solr.client.solrj.{SolrServer}
+import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.common.params.SolrParams
 import java.util.Date
+import imcode.server.document.index.service.{IndexRebuildProgress}
 
 /**
  * SOLr document index operations.
  *
  * The instance of this class is thread save.
  */
-class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) extends Log4jLoggerSupport {
+class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) extends Log4jLoggerSupport {
   type DocId = Int
 
   @throws(classOf[SolrInputDocumentCreateException])
@@ -55,7 +56,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
   }
 
 
-  // consider using other data structure
+  // todo: consider using other data structure
   @throws(classOf[SolrInputDocumentCreateException])
   def mkSolrInputDocsView(): SeqView[(DocId, Seq[SolrInputDocument]), Seq[_]] =
     documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala |> { languages =>
@@ -108,8 +109,7 @@ class SolrDocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexe
 
   @throws(classOf[InterruptedException])
   @throws(classOf[SolrInputDocumentCreateException])
-  def rebuildIndex(solrServer: SolrServer)(progressCallback: SolrDocumentIndexService.IndexRebuildProgress => Unit) {
-    import SolrDocumentIndexService.IndexRebuildProgress
+  def rebuildIndex(solrServer: SolrServer)(progressCallback: IndexRebuildProgress => Unit) {
 
     logger.trace("Rebuilding index.")
     val docsView = mkSolrInputDocsView()

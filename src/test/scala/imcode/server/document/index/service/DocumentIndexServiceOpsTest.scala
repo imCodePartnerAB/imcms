@@ -1,4 +1,4 @@
-package imcode.server.document.index.solr
+package imcode.server.document.index.service
 
 import com.imcode._
 import org.junit.Assert._
@@ -14,20 +14,21 @@ import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar._
 import com.imcode.imcms.test._
 import java.lang.{InterruptedException, Thread}
+import imcode.server.document.index.service.impl.DocumentIndexServiceOps
 
 @RunWith(classOf[JUnitRunner])
-class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
+class DocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 
-  val ops: SolrDocumentIndexServiceOps = {
+  val ops: DocumentIndexServiceOps = {
     val ms = new DocIndexingMocksSetup
 
     ms.addDocuments(DocFX.mkTextDocs(DocFX.DefaultId, 10))
 
-    new SolrDocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
+    new DocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
   }
 
   // ??? printed to out ???
-  "SolrDocumentIndexServiceOps" should {
+  "DocumentIndexServiceOps" should {
     "create an empty Seq of SolrInputDocument" in {
       ops.mkSolrInputDocs(DocFX.VacantId) |> { solrInputDocs =>
         assertTrue("No solrInputDocs", solrInputDocs.isEmpty)
@@ -70,8 +71,6 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
   // ??? printed to out ???
   "running index rebuild" should {
     "index all docs" in {
-      import SolrDocumentIndexService.IndexRebuildProgress
-
       val solrServerMock = mock[SolrServer]
       var progress = Vector.empty[IndexRebuildProgress]
 
@@ -84,8 +83,6 @@ class SolrDocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll wi
     }
 
     "index half of docs when running thread is interrupted and throw an InterruptedException" in {
-      import SolrDocumentIndexService.IndexRebuildProgress
-
       val solrServerMock = mock[SolrServer]
       var progress = Vector.empty[IndexRebuildProgress]
 

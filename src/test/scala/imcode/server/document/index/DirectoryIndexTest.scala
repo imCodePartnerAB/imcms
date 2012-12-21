@@ -21,8 +21,8 @@ import java.io.File
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.apache.solr.core.{SolrCore, CoreDescriptor, CoreContainer}
 import org.apache.solr.client.solrj.SolrQuery
-import imcode.server.document.index.solr.{DocumentContentIndexer, DocumentIndexer}
 import imcode.server.document.textdocument.{DocRef, ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
+import imcode.server.document.index.service.impl.{DocumentIndexer, DocumentContentIndexer}
 
 @RunWith(classOf[JUnitRunner])
 class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {

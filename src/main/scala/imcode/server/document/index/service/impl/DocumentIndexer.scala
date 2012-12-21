@@ -1,4 +1,4 @@
-package imcode.server.document.index.solr
+package imcode.server.document.index.service.impl
 
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings

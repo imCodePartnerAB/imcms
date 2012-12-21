@@ -3,17 +3,16 @@ package imcode.server.document.index
 import com.imcode._
 import imcode.server.user.UserDomainObject
 import imcode.server.document.DocumentDomainObject
-import imcode.server.document.index.solr.SolrDocumentIndexService
+import imcode.server.document.index.service.{DeleteDocFromIndex, AddDocToIndex, DocumentIndexService}
 import org.apache.solr.client.solrj.SolrQuery
 import com.imcode.imcms.api.I18nLanguage
 
 /**
- * This implementation of {@link DocumentIndex} transforms and routes all calls
- * to the wrapped instance of {@link SolrDocumentIndexService}.
+ * {@link DocumentIndex} implementation.
  */
-class DocumentIndexImpl(val service: SolrDocumentIndexService, defaultLanguage: I18nLanguage) extends DocumentIndex with Log4jLoggerSupport {
+class DocumentIndexImpl(val service: DocumentIndexService, defaultLanguage: I18nLanguage) extends DocumentIndex with Log4jLoggerSupport {
 
-  def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
+  override def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
     val queryString = query.getQuery.toString
 
     if (logger.isDebugEnabled) {
@@ -30,23 +29,23 @@ class DocumentIndexImpl(val service: SolrDocumentIndexService, defaultLanguage: 
     service.search(solrQuery, searchingUser)
   }
 
-  def indexDocuments(docId: Int) {
-    service.requestIndexUpdate(SolrDocumentIndexService.AddDocsToIndex(docId))
-  }
-
-  def removeDocuments(docId: Int) {
-    service.requestIndexUpdate(SolrDocumentIndexService.DeleteDocsFromIndex(docId))
-  }
-
-  def indexDocument(document: DocumentDomainObject) {
-    indexDocuments(document.getId)
-  }
-
-  def removeDocument(document: DocumentDomainObject) {
-    removeDocuments(document.getId)
-  }
-
-  def rebuild() {
+  override def rebuild() {
     service.requestIndexRebuild()
+  }
+
+  override def indexDocument(document: DocumentDomainObject) {
+    indexDocument(document.getId)
+  }
+
+  override def removeDocument(document: DocumentDomainObject) {
+    removeDocument(document.getId)
+  }
+
+  override def indexDocument(docId: Int) {
+    service.requestIndexUpdate(AddDocToIndex(docId))
+  }
+
+  override def removeDocument(docId: Int) {
+    service.requestIndexUpdate(DeleteDocFromIndex(docId))
   }
 }

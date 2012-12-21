@@ -1,17 +1,17 @@
-package imcode.server.document.index.solr
+package imcode.server.document.index.service.impl
 
 import _root_.com.imcode._
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
-import org.apache.solr.client.solrj.{SolrServer}
+import _root_.imcode.server.document.index.service._
+import org.apache.solr.client.solrj.SolrServer
 import java.lang.{InterruptedException, Thread}
 import org.apache.solr.common.params.SolrParams
 import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
-import imcode.server.document.index.solr.SolrDocumentIndexService.IndexRebuildTask
 import java.util.concurrent._
 
 /**
- * Implements all SolrDocumentIndexService functionality.
+ * Implements all DocumentIndexService functionality.
  * Ensures that update and rebuild never run concurrently.
  *
  * Indexing (ops) errors are wrapped and published asynchronously as ManagedSolrDocumentIndexService.IndexError events.
@@ -22,16 +22,16 @@ import java.util.concurrent._
 class ManagedSolrDocumentIndexService(
     solrServerReader: SolrServer,
     solrServerWriter: SolrServer,
-    serviceOps: SolrDocumentIndexServiceOps,
-    serviceErrorHandler: ManagedSolrDocumentIndexService.ServiceError => Unit) extends SolrDocumentIndexService {
+    serviceOps: DocumentIndexServiceOps,
+    serviceErrorHandler: ManagedSolrDocumentIndexService.ServiceError => Unit) extends DocumentIndexService {
 
   private val lock = new AnyRef
   private val shutdownRef = new AtomicBoolean(false)
   private val indexRebuildThreadRef = new AtomicReference[Thread]
   private val indexUpdateThreadRef = new AtomicReference[Thread]
-  private val indexUpdateRequests = new LinkedBlockingQueue[SolrDocumentIndexService.IndexUpdateRequest](1000)
+  private val indexUpdateRequests = new LinkedBlockingQueue[IndexUpdateRequest](1000)
   private val indexWriteErrorRef = new AtomicReference[ManagedSolrDocumentIndexService.IndexWriteError]
-  private val indexRebuildTaskRef = new AtomicReference[SolrDocumentIndexService.IndexRebuildTask]
+  private val indexRebuildTaskRef = new AtomicReference[IndexRebuildTask]
 
 
   /**
@@ -41,7 +41,7 @@ class ManagedSolrDocumentIndexService(
    * An existing index-update-thread is stopped before rebuilding happens and a new index-update-thread is started
    * immediately after running index-rebuild-thread is terminated without errors.
    */
-  def requestIndexRebuild(): Option[SolrDocumentIndexService.IndexRebuildTask] = lock.synchronized {
+  def requestIndexRebuild(): Option[IndexRebuildTask] = lock.synchronized {
     logger.info("attempting to start new document-index-rebuild thread.")
 
     (shutdownRef.get(), indexWriteErrorRef.get(), indexRebuildThreadRef.get(), indexRebuildTask()) match {
@@ -61,14 +61,14 @@ class ManagedSolrDocumentIndexService(
 
       case _ =>
         new IndexRebuildTask {
-          val progressRef = new AtomicReference[SolrDocumentIndexService.IndexRebuildProgress]
+          val progressRef = new AtomicReference[IndexRebuildProgress]
           val futureTask = new FutureTask[Unit](Threads.mkCallable {
             serviceOps.rebuildIndex(solrServerWriter) { progress =>
               progressRef.set(progress)
             }
           })
 
-          def progress(): Option[SolrDocumentIndexService.IndexRebuildProgress] = Option(progressRef.get())
+          def progress(): Option[IndexRebuildProgress] = Option(progressRef.get())
 
           def future(): Future[_] = futureTask
         } |>> indexRebuildTaskRef.set |>> { indexRebuildTaskImpl =>
@@ -151,8 +151,8 @@ class ManagedSolrDocumentIndexService(
             try {
               while (true) {
                 indexUpdateRequests.take() match {
-                  case SolrDocumentIndexService.AddDocsToIndex(docId) => serviceOps.addDocsToIndex(solrServerWriter, docId)
-                  case SolrDocumentIndexService.DeleteDocsFromIndex(docId) => serviceOps.deleteDocsFromIndex(solrServerWriter, docId)
+                  case AddDocToIndex(docId) => serviceOps.addDocsToIndex(solrServerWriter, docId)
+                  case DeleteDocFromIndex(docId) => serviceOps.deleteDocsFromIndex(solrServerWriter, docId)
                 }
               }
             } catch {
@@ -189,7 +189,7 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  def requestIndexUpdate(request: SolrDocumentIndexService.IndexUpdateRequest) {
+  def requestIndexUpdate(request: IndexUpdateRequest) {
     Threads.spawnDaemon {
       shutdownRef.get() match {
         case true =>
@@ -236,21 +236,21 @@ class ManagedSolrDocumentIndexService(
     }
   }
 
-  def indexRebuildTask(): Option[SolrDocumentIndexService.IndexRebuildTask] = Option(indexRebuildTaskRef.get)
+  def indexRebuildTask(): Option[IndexRebuildTask] = Option(indexRebuildTaskRef.get)
 }
 
 
 object ManagedSolrDocumentIndexService {
   sealed abstract class ServiceError {
-    val service: SolrDocumentIndexService
+    val service: DocumentIndexService
     val error: Throwable
   }
 
   abstract class IndexWriteError extends ServiceError
 
-  case class IndexUpdateError(service: SolrDocumentIndexService, error: Throwable) extends IndexWriteError
-  case class IndexRebuildError(service: SolrDocumentIndexService, error: Throwable) extends IndexWriteError
-  case class IndexSearchError(service: SolrDocumentIndexService, error: Throwable) extends ServiceError
+  case class IndexUpdateError(service: DocumentIndexService, error: Throwable) extends IndexWriteError
+  case class IndexRebuildError(service: DocumentIndexService, error: Throwable) extends IndexWriteError
+  case class IndexSearchError(service: DocumentIndexService, error: Throwable) extends ServiceError
 }
 
 

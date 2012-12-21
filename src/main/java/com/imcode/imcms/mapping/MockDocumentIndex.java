@@ -4,7 +4,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.index.IndexException;
-import imcode.server.document.index.solr.SolrDocumentIndexService;
+import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
 
 import java.util.Arrays;
@@ -16,14 +16,6 @@ public class MockDocumentIndex implements DocumentIndex {
     private boolean removeDocumentCalled;
 
     public void indexDocument(DocumentDomainObject document) throws IndexException {
-        this.indexDocumentCalled = true;
-    }
-
-    public void removeDocuments(int docId) throws IndexException {
-        this.removeDocumentCalled = true;
-    }
-
-    public void indexDocuments(int docId) throws IndexException {
         this.indexDocumentCalled = true;
     }
 
@@ -48,7 +40,17 @@ public class MockDocumentIndex implements DocumentIndex {
     }
 
     @Override
-    public SolrDocumentIndexService service() {
+    public DocumentIndexService service() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void indexDocument(int docId) throws IndexException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void removeDocument(int docId) throws IndexException {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
