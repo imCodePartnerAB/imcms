@@ -89,7 +89,7 @@ class DocumentContentIndexer extends Log4jLoggerSupport {
           indexDoc.addField(DocumentIndex.FIELD__TEXT, content)
         }
       } catch {
-        case e => logger.error("Unable to index content of file-doc-file '%s'".format(file), e);
+        case e => logger.error("Unable to index content of file-doc-file '%s'".format(file), e)
       }
     }
   }
@@ -103,7 +103,7 @@ class DocumentContentIndexer extends Log4jLoggerSupport {
           logger.trace("Stripped html to plain text: '%s' -> '%s'".format(htmlText, stripped))
         }
       } catch {
-        case e => logger.error("Unable to strip html '%s'".format(htmlText), e);
+        case e => logger.error("Unable to strip html '%s'".format(htmlText), e)
 
         htmlText
       }

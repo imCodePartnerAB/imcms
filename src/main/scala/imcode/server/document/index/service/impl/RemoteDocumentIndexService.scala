@@ -1,11 +1,12 @@
 package imcode.server.document.index.service.impl
 
 import com.imcode._
+import org.apache.solr.common.params.SolrParams
+import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service._
-import org.apache.solr.common.params.SolrParams
-import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
+import org.apache.solr.client.solrj.response.QueryResponse
 
 class RemoteDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serviceOps: DocumentIndexServiceOps)
     extends DocumentIndexService {
@@ -42,34 +43,40 @@ class RemoteDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serv
   newManagedService() |> serviceRef.set
 
 
-  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
-    serviceRef.get().search(solrParams, searchingUser)
-
-
-  def requestIndexUpdate(request: IndexUpdateRequest) {
-    serviceRef.get().requestIndexUpdate(request)
-  }
-
-
-  def requestIndexRebuild(): Option[IndexRebuildTask] = serviceRef.get().requestIndexRebuild()
-
-
-  def indexRebuildTask(): Option[IndexRebuildTask] = serviceRef.get().indexRebuildTask()
-
-
-  def shutdown(): Unit = lock.synchronized {
-    if (shutdownRef.compareAndSet(false, true)) {
-      logger.info("Attempting to shtting down the service.")
-      serviceRef.getAndSet(NoOpDocumentIndexService).shutdown()
-      logger.info("Service has been shut down.")
-    }
-  }
-
-
   private def newManagedService(): ManagedSolrDocumentIndexService = {
     val solrServerReader = SolrServerFactory.createHttpSolrServer(solrReadUrl)
     val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrWriteUrl)
 
     new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, serviceOps, serviceErrorHandler)
+  }
+
+
+  override def query(solrParams: SolrParams): QueryResponse = {
+    serviceRef.get().query(solrParams)
+  }
+
+
+  override def search(solrParams: SolrParams, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
+    serviceRef.get().search(solrParams, searchingUser)
+  }
+
+
+  override def requestIndexUpdate(request: IndexUpdateRequest) {
+    serviceRef.get().requestIndexUpdate(request)
+  }
+
+
+  override def requestIndexRebuild(): Option[IndexRebuildTask] = serviceRef.get().requestIndexRebuild()
+
+
+  override def indexRebuildTask(): Option[IndexRebuildTask] = serviceRef.get().indexRebuildTask()
+
+
+  override def shutdown(): Unit = lock.synchronized {
+    if (shutdownRef.compareAndSet(false, true)) {
+      logger.info("Attempting to shtting down the service.")
+      serviceRef.getAndSet(NoOpDocumentIndexService).shutdown()
+      logger.info("Service has been shut down.")
+    }
   }
 }

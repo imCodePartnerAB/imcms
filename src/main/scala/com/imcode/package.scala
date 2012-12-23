@@ -20,6 +20,7 @@ package object imcode {
   type JList[A <: AnyRef] = java.util.List[A]
   type JSet[A <: AnyRef] = java.util.Set[A]
   type JMap[A <: AnyRef, B <: AnyRef] = java.util.Map[A, B]
+  type JIterator[A <: AnyRef] = java.util.Iterator[A]
 
   class Piper[A](a: A) {
     def |>[B](f: A => B): B = f(a)

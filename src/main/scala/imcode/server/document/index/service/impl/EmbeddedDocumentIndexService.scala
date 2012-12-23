@@ -6,6 +6,7 @@ import _root_.imcode.server.document.DocumentDomainObject
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 import org.apache.solr.common.params.SolrParams
 import imcode.server.document.index.service._
+import org.apache.solr.client.solrj.response.QueryResponse
 
 /**
  * Delegates all invocations to the ManagedSolrDocumentIndexService instance.
@@ -46,33 +47,39 @@ class EmbeddedDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
   newManagedService(recreateDataDir = false) |> serviceRef.set
 
 
-  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] =
+  private def newManagedService(recreateDataDir: Boolean): ManagedSolrDocumentIndexService = {
+    val solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome, recreateDataDir)
+
+    new ManagedSolrDocumentIndexService(solrServer, solrServer, serviceOps, serviceErrorHandler)
+  }
+
+
+  override def query(solrParams: SolrParams): QueryResponse = {
+    serviceRef.get().query(solrParams)
+  }
+
+
+  override def search(solrParams: SolrParams, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
     serviceRef.get().search(solrParams, searchingUser)
+  }
 
 
-  def requestIndexUpdate(request: IndexUpdateRequest) {
+  override def requestIndexUpdate(request: IndexUpdateRequest) {
     serviceRef.get().requestIndexUpdate(request)
   }
 
 
-  def requestIndexRebuild(): Option[IndexRebuildTask] = serviceRef.get().requestIndexRebuild()
+  override def requestIndexRebuild(): Option[IndexRebuildTask] = serviceRef.get().requestIndexRebuild()
 
 
-  def indexRebuildTask(): Option[IndexRebuildTask] = serviceRef.get().indexRebuildTask()
+  override def indexRebuildTask(): Option[IndexRebuildTask] = serviceRef.get().indexRebuildTask()
 
 
-  def shutdown(): Unit = lock.synchronized {
+  override def shutdown(): Unit = lock.synchronized {
     if (shutdownRef.compareAndSet(false, true)) {
       logger.info("Attempting to shtting down the service.")
       serviceRef.getAndSet(NoOpDocumentIndexService).shutdown()
       logger.info("Service has been shut down.")
     }
-  }
-
-
-  private def newManagedService(recreateDataDir: Boolean): ManagedSolrDocumentIndexService = {
-    val solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome, recreateDataDir)
-
-    new ManagedSolrDocumentIndexService(solrServer, solrServer, serviceOps, serviceErrorHandler)
   }
 }

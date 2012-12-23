@@ -3,6 +3,9 @@ package imcode.server.document.index;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.params.SolrParams;
+import java.util.Iterator;
 
 import java.util.List;
 
@@ -45,6 +48,15 @@ public interface DocumentIndex {
     String FIELD__CHILD_ID = "child_id";
     String FIELD__HAS_CHILDREN = "has_children";
 
+    /**
+     * Searches for documents.
+     * Use {@link #search(org.apache.solr.common.params.SolrParams, imcode.server.user.UserDomainObject)} instead.
+     * @param query
+     * @param searchingUser
+     * @return
+     * @throws IndexException
+     */
+    @Deprecated
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
     void rebuild() throws IndexException;
@@ -52,6 +64,20 @@ public interface DocumentIndex {
     void indexDocument(DocumentDomainObject document) throws IndexException;
 
     void removeDocument(DocumentDomainObject document) throws IndexException;
+
+    /**
+     * @param solrParams
+     * @return SOLr query response
+     * @since 6.0
+     */
+    QueryResponse query(SolrParams solrParams);
+
+    /**
+     * @return found documents
+     * @throws IndexException
+     * @since 6.0
+     */
+    Iterator<DocumentDomainObject> search(SolrParams solrParams, UserDomainObject searchingUser) throws IndexException;
 
     /**
      * Adds default document to index.
@@ -72,7 +98,9 @@ public interface DocumentIndex {
     void removeDocument(int docId) throws IndexException;
 
     /**
-     * Underlying service.
+     * Returns underlying service.
+     *
+     * @return underlying service
      * @since 6.0
      */
     DocumentIndexService service();

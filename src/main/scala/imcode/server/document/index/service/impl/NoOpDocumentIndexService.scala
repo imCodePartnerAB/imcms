@@ -1,21 +1,22 @@
 package imcode.server.document.index.service.impl
 
-import com.imcode._
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service.{IndexRebuildTask, IndexUpdateRequest, DocumentIndexService}
-import java.util.Collections
 import org.apache.solr.common.params.SolrParams
+import org.apache.solr.client.solrj.response.QueryResponse
 
 object NoOpDocumentIndexService extends DocumentIndexService {
 
-  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] = Collections.emptyList()
+  def query(solrParams: SolrParams): QueryResponse = new QueryResponse()
 
-  def requestIndexUpdate(request: IndexUpdateRequest) {}
+  override def search(solrParams: SolrParams, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = Iterator.empty
 
-  def requestIndexRebuild(): Option[IndexRebuildTask] = None
+  override def requestIndexUpdate(request: IndexUpdateRequest) {}
 
-  def indexRebuildTask(): Option[IndexRebuildTask] = None
+  override def requestIndexRebuild(): Option[IndexRebuildTask] = None
 
-  def shutdown() {}
+  override def indexRebuildTask(): Option[IndexRebuildTask] = None
+
+  override def shutdown() {}
 }

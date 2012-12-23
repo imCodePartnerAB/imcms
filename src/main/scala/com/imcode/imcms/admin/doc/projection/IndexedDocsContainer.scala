@@ -74,10 +74,10 @@ class IndexedDocsContainer(
       case (_, Some(ids)) if ids.isEmpty => Array.empty
       case (Some(solrQuery), None) =>
         val solrParams = new SolrQuery(solrQuery)//.setFilterQueries(CommonParams.FQ, "language:"+imcmsServices.getI18nSupport.getDefaultLanguage.getCode)
-        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrParams, user).toArray(Array.empty[DocumentDomainObject])
+        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrParams, user).toArray
       case (Some(solrQuery), Some(ids)) =>
         val solrParams = new SolrQuery(solrQuery)//.set(CommonParams.FQ, "language:"+imcmsServices.getI18nSupport.getDefaultLanguage.getCode)
-        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrParams, user).toArray(Array.empty[DocumentDomainObject])
+        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrParams, user).toArray
     }
 
     notifyItemSetChanged()

@@ -48,11 +48,11 @@ class EmbeddedDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
 
       using(new EmbeddedDocumentIndexService(Test.solr.home, ops)) { service =>
         val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin)
-        assertEquals("Found docs", 20, docs.size())
+        assertEquals("Found docs", 20, docs.size)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
           val docs = service.search(new SolrQuery("meta_id:" + metaId), UserFX.mkSuperAdmin)
-          assertEquals("Found docs", 2, docs.size())
+          assertEquals("Found docs", 2, docs.size)
         }
       }
     }
@@ -67,11 +67,11 @@ class EmbeddedDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
 
       using(new EmbeddedDocumentIndexService(Test.solr.home, ops)) { service =>
         val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin)
-        assertEquals("Found docs", 20, docs.size())
+        assertEquals("Found docs", 20, docs.size)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
           val docs = service.search(new SolrQuery("meta_id:"+metaId), UserFX.mkSuperAdmin)
-          assertEquals("Found docs", 2, docs.size())
+          assertEquals("Found docs", 2, docs.size)
         }
       }
     }

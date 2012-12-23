@@ -15,6 +15,7 @@ import java.lang.{InterruptedException, Thread}
 import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.common.params.SolrParams
 import java.util.Date
+import org.apache.solr.client.solrj.response.QueryResponse
 
 /**
  * Document index service low level operations.
@@ -25,12 +26,13 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   type DocId = Int
 
   @throws(classOf[SolrInputDocumentCreateException])
-  def withExceptionWrapper[A](body: => A): A =
+  def withExceptionWrapper[A](body: => A): A = {
     try {
       body
     } catch {
       case e: Throwable => throw new SolrInputDocumentCreateException(e)
     }
+  }
 
   @throws(classOf[SolrInputDocumentCreateException])
   def mkSolrInputDocs(docId: Int): Seq[SolrInputDocument] = withExceptionWrapper {
@@ -58,34 +60,41 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
   // todo: consider using other data structure
   @throws(classOf[SolrInputDocumentCreateException])
-  def mkSolrInputDocsView(): SeqView[(DocId, Seq[SolrInputDocument]), Seq[_]] =
+  def mkSolrInputDocsView(): SeqView[(DocId, Seq[SolrInputDocument]), Seq[_]] = {
     documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala |> { languages =>
       documentMapper.getAllDocumentIds.asScala.view.map(docId => docId.toInt -> mkSolrInputDocs(docId, languages))
     }
+  }
 
 
   def mkSolrDocsDeleteQuery(docId: Int): String = "%s:%d".format(DocumentIndex.FIELD__META_ID, docId)
 
-  def search(solrServer: SolrServer, solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
+
+  def search(solrServer: SolrServer, solrParams: SolrParams, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
     if (logger.isDebugEnabled) {
       logger.debug("Searching using solrParams: %s, searchingUser: %s.".format(solrParams, searchingUser))
     }
 
     val solrDocs = solrServer.query(solrParams).getResults
 
-    new java.util.LinkedList[DocumentDomainObject] |>> { docs =>
-      for (solrDocId <- 0 until solrDocs.size) {
-        val solrDoc = solrDocs.get(solrDocId)
-        val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
-        //val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
-        val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).asInstanceOf[String]
-        val doc = documentMapper.getDefaultDocument(docId, languageCode)
+    for {
+      solrDoc <- solrDocs.iterator.asScala
+      //docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
+      //languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).asInstanceOf[String]
+      docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
+      languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).toString
+      doc = documentMapper.getDefaultDocument(docId, languageCode)
+      if doc != null && searchingUser.canSearchFor(doc)
+    } yield doc
+  }
 
-        if (doc != null && searchingUser.canSearchFor(doc)) {
-          docs.add(doc)
-        }
-      }
+
+  def query(solrServer: SolrServer, solrParams: SolrParams): QueryResponse = {
+    if (logger.isDebugEnabled) {
+      logger.debug("Searching using solrParams: %s.".format(solrParams))
     }
+
+    solrServer.query(solrParams)
   }
 
 

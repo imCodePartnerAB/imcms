@@ -9,6 +9,7 @@ import java.lang.{InterruptedException, Thread}
 import org.apache.solr.common.params.SolrParams
 import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
 import java.util.concurrent._
+import org.apache.solr.client.solrj.response.QueryResponse
 
 /**
  * Implements all DocumentIndexService functionality.
@@ -41,7 +42,7 @@ class ManagedSolrDocumentIndexService(
    * An existing index-update-thread is stopped before rebuilding happens and a new index-update-thread is started
    * immediately after running index-rebuild-thread is terminated without errors.
    */
-  def requestIndexRebuild(): Option[IndexRebuildTask] = lock.synchronized {
+  override def requestIndexRebuild(): Option[IndexRebuildTask] = lock.synchronized {
     logger.info("attempting to start new document-index-rebuild thread.")
 
     (shutdownRef.get(), indexWriteErrorRef.get(), indexRebuildThreadRef.get(), indexRebuildTask()) match {
@@ -204,7 +205,12 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  def search(solrParams: SolrParams, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
+  override def query(solrParams: SolrParams): QueryResponse = {
+    serviceOps.query(solrServerReader, solrParams)
+  }
+
+
+  override def search(solrParams: SolrParams, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
     try {
       serviceOps.search(solrServerReader, solrParams, searchingUser)
     } catch {
@@ -213,12 +219,12 @@ class ManagedSolrDocumentIndexService(
         Threads.spawnDaemon {
           serviceErrorHandler(ManagedSolrDocumentIndexService.IndexSearchError(ManagedSolrDocumentIndexService.this, e))
         }
-        java.util.Collections.emptyList()
+        Iterator.empty
     }
   }
 
 
-  def shutdown(): Unit = lock.synchronized {
+  override def shutdown(): Unit = lock.synchronized {
     if (shutdownRef.compareAndSet(false, true)) {
       logger.info("Attempting to shut down the service.")
       try {
@@ -236,7 +242,7 @@ class ManagedSolrDocumentIndexService(
     }
   }
 
-  def indexRebuildTask(): Option[IndexRebuildTask] = Option(indexRebuildTaskRef.get)
+  override def indexRebuildTask(): Option[IndexRebuildTask] = Option(indexRebuildTaskRef.get)
 }
 
 

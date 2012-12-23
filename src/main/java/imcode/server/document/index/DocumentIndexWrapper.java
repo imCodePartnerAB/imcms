@@ -3,7 +3,10 @@ package imcode.server.document.index;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.params.SolrParams;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class DocumentIndexWrapper implements DocumentIndex {
@@ -27,7 +30,12 @@ public class DocumentIndexWrapper implements DocumentIndex {
     }
 
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
-        return index.search(query, searchingUser) ;
+        return index.search(query, searchingUser);
+    }
+
+    @Override
+    public Iterator<DocumentDomainObject> search(SolrParams solrParams, UserDomainObject searchingUser) throws IndexException {
+        return index.search(solrParams, searchingUser);
     }
 
     public DocumentIndexService service() {
@@ -42,5 +50,10 @@ public class DocumentIndexWrapper implements DocumentIndex {
     @Override
     public void removeDocument(int docId) throws IndexException {
         index.removeDocument(docId);
+    }
+
+    @Override
+    public QueryResponse query(SolrParams solrParams) {
+        return index.query(solrParams);
     }
 }
