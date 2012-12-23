@@ -132,7 +132,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             languagesStates.put(Imcms.getServices().getI18nSupport().getDefaultLanguage(), true);
         }
 
-        Integer docId = document.getIdValue();
+        Integer docId = document.getMetaId();
         MetaDao metaDao = Imcms.getServices().getSpringBean(MetaDao.class);
 
         if (docId == null) {

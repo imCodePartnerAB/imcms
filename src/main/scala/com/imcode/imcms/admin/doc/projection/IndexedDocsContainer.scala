@@ -17,11 +17,9 @@ import java.{util => ju}
 import com.imcode.imcms.vaadin.data.FunctionProperty
 import org.apache.solr.client.solrj.SolrQuery
 
-
-// todo - fix: ineffective
 class IndexedDocsContainer(
   user: UserDomainObject,
-  private var solrQueryOpt: Option[String] = None,
+  private var solrQueryOpt: Option[SolrQuery] = None,
   private var visibleDocsFilterOpt: Option[Set[DocId]] = None
   ) extends Container
     with GenericContainer[Ix]
@@ -57,14 +55,12 @@ class IndexedDocsContainer(
     }
   }
 
-  def getSolrQueryOpt: Option[String] = solrQueryOpt
+  def getSolrQueryOpt: Option[SolrQuery] = solrQueryOpt
 
-  def setSolrQueryOpt(solrQueryOpt: Option[String]) {
-    (this.solrQueryOpt, solrQueryOpt) match {
-      case (None, None) =>
-      case _ =>
-        this.solrQueryOpt = solrQueryOpt
-        updateVisibleDocsIds()
+  def setSolrQueryOpt(solrQueryOpt: Option[SolrQuery]) {
+    if (this.solrQueryOpt.isDefined || solrQueryOpt.isDefined) {
+      this.solrQueryOpt = solrQueryOpt
+      updateVisibleDocsIds()
     }
   }
 
@@ -73,11 +69,10 @@ class IndexedDocsContainer(
       case (None, _) => Array.empty
       case (_, Some(ids)) if ids.isEmpty => Array.empty
       case (Some(solrQuery), None) =>
-        val solrParams = new SolrQuery(solrQuery)//.setFilterQueries(CommonParams.FQ, "language:"+imcmsServices.getI18nSupport.getDefaultLanguage.getCode)
-        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrParams, user).toArray
+        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrQuery, user).toArray
       case (Some(solrQuery), Some(ids)) =>
-        val solrParams = new SolrQuery(solrQuery)//.set(CommonParams.FQ, "language:"+imcmsServices.getI18nSupport.getDefaultLanguage.getCode)
-        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrParams, user).toArray
+        // todo: apply visible docs filter
+        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrQuery, user).toArray
     }
 
     notifyItemSetChanged()
@@ -89,7 +84,6 @@ class IndexedDocsContainer(
    *
    * @return Some(range) or None if there is no docs in this container.
    */
-  // todo ???query form index???
   def visibleDocsRange: Option[(DocId, DocId)] = visibleDocsFilterOpt match {
     case Some(ids) => if (ids.isEmpty) None else Some(ids.min, ids.max)
     case _ => imcmsServices.getDocumentMapper.getDocumentIdRange |> { idsRange =>

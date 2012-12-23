@@ -121,7 +121,7 @@ class DirectoryIndexFixture {
                      texts: Option[Seq[TextDomainObject]] = None,
                      images: Option[Seq[ImageDomainObject]] = None) {
 
-    val docId = doc.getIdValue ensuring (_ != null, "document id must be set")
+    val docId = doc.getMetaId ensuring (_ != null, "document id must be set")
 
     when(documentMapperMock.getDefaultDocument(docId)).thenReturn(doc)
     when(documentMapperMock.getI18nMetas(docId)).thenReturn(

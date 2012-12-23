@@ -115,7 +115,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public DocRef getRef() {
-        return getVersionNo() == null || getIdValue() == null ? null : DocRef.of(getIdValue(), getVersionNo());
+        return getVersionNo() == null || getMetaId() == null ? null : DocRef.of(getMetaId(), getVersionNo());
     }
 
 
@@ -217,11 +217,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public int getId() {
-        Integer id = getIdValue();
+        Integer id = getMetaId();
         return id == null ? ID_NEW : id;
     }
 
-    public Integer getIdValue() {
+    public Integer getMetaId() {
         return meta.getId();
     }
 

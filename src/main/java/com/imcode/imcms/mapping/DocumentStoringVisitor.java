@@ -201,7 +201,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void updateDocumentI18nMeta(DocumentDomainObject doc, UserDomainObject user) {
         metaDao.deleteI18nMeta(doc.getId(), doc.getLanguage().getId());
 
-        I18nMeta i18nMeta = I18nMeta.builder(doc.getI18nMeta()).id(null).docId(doc.getIdValue()).language(doc.getLanguage()).build();
+        I18nMeta i18nMeta = I18nMeta.builder(doc.getI18nMeta()).id(null).docId(doc.getMetaId()).language(doc.getLanguage()).build();
 
         metaDao.saveI18nMeta(i18nMeta);
     }
@@ -268,7 +268,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     public void updateTextDocumentIncludes(TextDocumentDomainObject doc) {
-        Integer docId = doc.getIdValue();
+        Integer docId = doc.getMetaId();
 
         metaDao.deleteIncludes(docId);
 
@@ -286,7 +286,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, UserDomainObject user) {
-        Integer docId = textDocument.getIdValue();
+        Integer docId = textDocument.getMetaId();
 
         TemplateNames templateNames = textDocument.getTemplateNames();
 

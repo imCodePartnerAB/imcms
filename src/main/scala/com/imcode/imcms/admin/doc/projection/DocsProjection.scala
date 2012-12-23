@@ -11,14 +11,17 @@ import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
 import com.imcode.imcms.vaadin.data._
 import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter.{AdvancedFilter, BasicFilter, DateRange, IdRange, DateRangeType}
+import org.apache.solr.client.solrj.SolrQuery
 import _root_.imcode.server.user.UserDomainObject
 
-class DocsProjection(user: UserDomainObject) extends Publisher[Seq[Ix]] {
+
+// todo Projection: DocId -> DocRef !!!!!!
+class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] with Log4jLoggerSupport {
   val basicFilter = new BasicFilter
   val advancedFilter = new AdvancedFilter
   val docsContainer = new IndexedDocsContainer(user)
   val docsUI = new IndexedDocsUI(docsContainer) with FullSize
-  private val selectionRef = new AtomicReference(Seq.empty[Ix])
+  private val selectionRef = new AtomicReference(Seq.empty[DocId])
 
   val ui = new DocsProjectionUI(basicFilter.ui, advancedFilter.ui, docsUI) { ui =>
     val basicFilterUI = basicFilter.ui
@@ -38,7 +41,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[Ix]] {
   }
 
   docsUI.addValueChangeHandler {
-    selectionRef.set(docsUI.value.asScala.toSeq)
+    selectionRef.set(docsUI.value.asScala.toSeq.map(docsContainer.getItem(_).doc.getMetaId))
     notifyListeners()
   }
 
@@ -76,29 +79,29 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[Ix]] {
    *
    * @return query Solr query string.
    */
-  def createSolrQuery(): Throwable Either String = Ex.allCatch.either {
+  def createSolrQuery(): Throwable Either SolrQuery = Ex.allCatch.either {
     val basicFormUI = basicFilter.ui
     val advancedFormUI = advancedFilter.ui
 
     val idRangeOpt =
       if (basicFormUI.chkIdRange.isUnchecked) None
       else {
-        val start = condOpt(basicFormUI.lytIdRange.txtStart.trim) {
+        val startOpt = condOpt(basicFormUI.lytIdRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
             case IntNum(start) => start
             case _ => sys.error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
           }
         }
 
-        val end = condOpt(basicFormUI.lytIdRange.txtStart.trim) {
+        val endOpt = condOpt(basicFormUI.lytIdRange.txtEnd.trim) {
           case value if value.nonEmpty => value match {
             case IntNum(end) => end
             case _ => sys.error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
           }
         }
 
-        whenOpt(start.isDefined || end.isDefined) {
-          IdRange(start, end)
+        whenOpt(startOpt.isDefined || endOpt.isDefined) {
+          IdRange(startOpt, endOpt)
         }
       }
 
@@ -182,13 +185,19 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[Ix]] {
     val publishersOpt: Option[List[String]] = None
 
     List(
-      idRangeOpt.map(range => "range:[%s TO %s]".format(range.start.getOrElse("*"), range.end.getOrElse("*"))),
+      idRangeOpt.map(range => "meta_id:[%s TO %s]".format(range.start.getOrElse("*"), range.end.getOrElse("*"))),
       textOpt.map("text:" + _),
       typesOpt.map(_.mkString("type:(", " OR ", ")")),
       statusesOpt.map(_.mkString("status:(", " OR ", ")"))
-    ).flatten match {
+    ).flatten |> {
       case Nil => "*:*"
       case terms => terms.mkString(" ")
+    } |> { q =>
+      if (logger.isDebugEnabled) {
+        logger.debug("SOLr projection query: %s.".format(q))
+      }
+
+      new SolrQuery(q)
     }
   } // def createSolrQuery()
 
