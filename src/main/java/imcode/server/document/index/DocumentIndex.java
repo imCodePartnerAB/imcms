@@ -3,8 +3,8 @@ package imcode.server.document.index;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.params.SolrParams;
 import java.util.Iterator;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public interface DocumentIndex {
 
     /**
      * Searches for documents.
-     * Use {@link #search(org.apache.solr.common.params.SolrParams, imcode.server.user.UserDomainObject)} instead.
+     * Use {@link #search(org.apache.solr.client.solrj.SolrQuery, imcode.server.user.UserDomainObject)} instead.
      * @param query
      * @param searchingUser
      * @return
@@ -66,18 +66,18 @@ public interface DocumentIndex {
     void removeDocument(DocumentDomainObject document) throws IndexException;
 
     /**
-     * @param solrParams
+     * @param solrQuery
      * @return SOLr query response
      * @since 6.0
      */
-    QueryResponse query(SolrParams solrParams);
+    QueryResponse query(SolrQuery solrQuery);
 
     /**
      * @return found documents
      * @throws IndexException
      * @since 6.0
      */
-    Iterator<DocumentDomainObject> search(SolrParams solrParams, UserDomainObject searchingUser) throws IndexException;
+    Iterator<DocumentDomainObject> search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException;
 
     /**
      * Adds default document to index.

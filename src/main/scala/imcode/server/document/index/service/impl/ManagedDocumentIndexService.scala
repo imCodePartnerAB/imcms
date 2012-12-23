@@ -4,12 +4,11 @@ import _root_.com.imcode._
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service._
-import org.apache.solr.client.solrj.SolrServer
+import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
+import org.apache.solr.client.solrj.response.QueryResponse
 import java.lang.{InterruptedException, Thread}
-import org.apache.solr.common.params.SolrParams
 import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
 import java.util.concurrent._
-import org.apache.solr.client.solrj.response.QueryResponse
 
 /**
  * Implements all DocumentIndexService functionality.
@@ -205,17 +204,17 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  override def query(solrParams: SolrParams): QueryResponse = {
-    serviceOps.query(solrServerReader, solrParams)
+  override def query(solrQuery: SolrQuery): QueryResponse = {
+    serviceOps.query(solrServerReader, solrQuery)
   }
 
 
-  override def search(solrParams: SolrParams, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
+  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
     try {
-      serviceOps.search(solrServerReader, solrParams, searchingUser)
+      serviceOps.search(solrServerReader, solrQuery, searchingUser)
     } catch {
       case e =>
-        logger.error("Search error. solrParams: %s, searchingUser: %s".format(solrParams, searchingUser), e)
+        logger.error("Search error. solrParams: %s, searchingUser: %s".format(solrQuery, searchingUser), e)
         Threads.spawnDaemon {
           serviceErrorHandler(ManagedSolrDocumentIndexService.IndexSearchError(ManagedSolrDocumentIndexService.this, e))
         }

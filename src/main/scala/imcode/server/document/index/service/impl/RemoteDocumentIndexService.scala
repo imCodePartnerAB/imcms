@@ -1,12 +1,12 @@
 package imcode.server.document.index.service.impl
 
 import com.imcode._
-import org.apache.solr.common.params.SolrParams
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service._
 import org.apache.solr.client.solrj.response.QueryResponse
+import org.apache.solr.client.solrj.SolrQuery
 
 class RemoteDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serviceOps: DocumentIndexServiceOps)
     extends DocumentIndexService {
@@ -51,13 +51,13 @@ class RemoteDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serv
   }
 
 
-  override def query(solrParams: SolrParams): QueryResponse = {
-    serviceRef.get().query(solrParams)
+  override def query(solrQuery: SolrQuery): QueryResponse = {
+    serviceRef.get().query(solrQuery)
   }
 
 
-  override def search(solrParams: SolrParams, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
-    serviceRef.get().search(solrParams, searchingUser)
+  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
+    serviceRef.get().search(solrQuery, searchingUser)
   }
 
 

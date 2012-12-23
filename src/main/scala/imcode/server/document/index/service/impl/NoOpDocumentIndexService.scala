@@ -3,14 +3,14 @@ package imcode.server.document.index.service.impl
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service.{IndexRebuildTask, IndexUpdateRequest, DocumentIndexService}
-import org.apache.solr.common.params.SolrParams
 import org.apache.solr.client.solrj.response.QueryResponse
+import org.apache.solr.client.solrj.SolrQuery
 
 object NoOpDocumentIndexService extends DocumentIndexService {
 
-  def query(solrParams: SolrParams): QueryResponse = new QueryResponse()
+  def query(solrQuery: SolrQuery): QueryResponse = new QueryResponse()
 
-  override def search(solrParams: SolrParams, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = Iterator.empty
+  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = Iterator.empty
 
   override def requestIndexUpdate(request: IndexUpdateRequest) {}
 

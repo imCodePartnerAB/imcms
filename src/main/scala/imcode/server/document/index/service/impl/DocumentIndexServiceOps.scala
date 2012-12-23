@@ -12,8 +12,7 @@ import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.common.util.DateUtil
 import java.lang.{InterruptedException, Thread}
-import org.apache.solr.client.solrj.SolrServer
-import org.apache.solr.common.params.SolrParams
+import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import java.util.Date
 import org.apache.solr.client.solrj.response.QueryResponse
 
@@ -70,12 +69,12 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   def mkSolrDocsDeleteQuery(docId: Int): String = "%s:%d".format(DocumentIndex.FIELD__META_ID, docId)
 
 
-  def search(solrServer: SolrServer, solrParams: SolrParams, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
+  def search(solrServer: SolrServer, solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
     if (logger.isDebugEnabled) {
-      logger.debug("Searching using solrParams: %s, searchingUser: %s.".format(solrParams, searchingUser))
+      logger.debug("Searching using solrQuery: %s, searchingUser: %s.".format(solrQuery, searchingUser))
     }
 
-    val solrDocs = solrServer.query(solrParams).getResults
+    val solrDocs = solrServer.query(solrQuery).getResults
 
     for {
       solrDoc <- solrDocs.iterator.asScala
@@ -89,12 +88,12 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   }
 
 
-  def query(solrServer: SolrServer, solrParams: SolrParams): QueryResponse = {
+  def query(solrServer: SolrServer, solrQuery: SolrQuery): QueryResponse = {
     if (logger.isDebugEnabled) {
-      logger.debug("Searching using solrParams: %s.".format(solrParams))
+      logger.debug("Searching using solrQuery: %s.".format(solrQuery))
     }
 
-    solrServer.query(solrParams)
+    solrServer.query(solrQuery)
   }
 
 

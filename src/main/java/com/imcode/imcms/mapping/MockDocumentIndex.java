@@ -6,6 +6,7 @@ import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.index.IndexException;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
 
@@ -43,7 +44,7 @@ public class MockDocumentIndex implements DocumentIndex {
     }
 
     @Override
-    public Iterator<DocumentDomainObject> search(SolrParams solrParams, UserDomainObject searchingUser) throws IndexException {
+    public Iterator<DocumentDomainObject> search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -63,7 +64,7 @@ public class MockDocumentIndex implements DocumentIndex {
     }
 
     @Override
-    public QueryResponse query(SolrParams solrParams) {
+    public QueryResponse query(SolrQuery solrQuery) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
