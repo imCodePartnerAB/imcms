@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
+import com.imcode.imcms.api.DocRef;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;

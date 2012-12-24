@@ -6,8 +6,7 @@ import _root_.imcode.server.document.DocumentDomainObject
 import _root_.net.sf.ehcache.config.CacheConfiguration
 import _root_.net.sf.ehcache.{Ehcache, CacheManager, Element, Cache}
 import scala.collection.JavaConverters._
-import com.imcode.imcms.api.{DocumentVersionInfo, Meta, I18nLanguage}
-import imcode.server.document.textdocument.DocRef
+import com.imcode.imcms.api.{DocRef, DocumentVersionInfo, Meta, I18nLanguage}
 
 
 class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLanguage], size: Int) {

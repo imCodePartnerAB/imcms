@@ -1,4 +1,6 @@
-package imcode.server.document.textdocument;
+package com.imcode.imcms.api;
+
+import com.google.common.base.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -24,6 +26,14 @@ public class DocRef {
         return new DocRef(docId, docVersionNo);
     }
 
+    public int docId() {
+        return docId;
+    }
+
+    public int docVersionNo() {
+        return docVersionNo;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -39,24 +49,11 @@ public class DocRef {
 
     @Override
     public int hashCode() {
-        int result = docId;
-        result = 31 * result + docVersionNo;
-        return result;
-    }
-
-    public int docId() {
-        return docId;
-    }
-
-    public int docVersionNo() {
-        return docVersionNo;
+        return Objects.hashCode(docId, docVersionNo);
     }
 
     @Override
     public String toString() {
-        return "DocRef{" +
-                "docId=" + docId +
-                ", docVersionNo=" + docVersionNo +
-                '}';
+        return Objects.toStringHelper(this).add("docId", docId).add("docVersionNo", docVersionNo()).toString();
     }
 }

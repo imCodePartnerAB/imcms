@@ -5,11 +5,10 @@ import imcode.server.document.DocumentDomainObject
 import org.apache.commons.lang.StringUtils
 import org.springframework.transaction.annotation.Transactional
 
-import com.imcode.imcms.api.{DocumentProperty, Meta, I18nMeta, I18nLanguage}
+import com.imcode.imcms.api._
 import com.imcode.imcms.mapping.orm.{FileReference, HtmlReference, Include, TemplateNames, UrlReference}
 import imcode.server.user.UserDomainObject
 import java.util.Date
-import imcode.server.document.textdocument.DocRef
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class MetaDao extends HibernateSupport {

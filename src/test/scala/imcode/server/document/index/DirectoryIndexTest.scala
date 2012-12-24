@@ -15,13 +15,13 @@ import com.imcode._
 import org.mockito.stubbing.Answer
 import imcode.server.document.CategoryDomainObject
 import org.mockito.invocation.InvocationOnMock
-import com.imcode.imcms.api.{DocumentVersion, I18nMeta}
+import com.imcode.imcms.api.{DocRef, DocumentVersion, I18nMeta}
 import scala.collection.JavaConverters._
 import java.io.File
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.apache.solr.core.{SolrCore, CoreDescriptor, CoreContainer}
 import org.apache.solr.client.solrj.SolrQuery
-import imcode.server.document.textdocument.{DocRef, ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
+import imcode.server.document.textdocument.{ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
 import imcode.server.document.index.service.impl.{DocumentIndexer, DocumentContentIndexer}
 
 @RunWith(classOf[JUnitRunner])

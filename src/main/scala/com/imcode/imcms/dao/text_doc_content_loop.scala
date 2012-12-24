@@ -4,8 +4,7 @@ package imcms.dao
 import scala.collection.JavaConverters._
 import org.springframework.transaction.annotation.Transactional
 
-import com.imcode.imcms.api.ContentLoop
-import imcode.server.document.textdocument.DocRef
+import com.imcode.imcms.api.{DocRef, ContentLoop}
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class ContentLoopDao extends HibernateSupport {

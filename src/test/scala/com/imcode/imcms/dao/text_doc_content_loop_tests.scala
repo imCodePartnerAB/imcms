@@ -11,8 +11,7 @@ import com.imcode.imcms.test.Test
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.api.{ContentLoop}
-import imcode.server.document.textdocument.{DocRef}
+import com.imcode.imcms.api.{DocRef, ContentLoop}
 
 @RunWith(classOf[JUnitRunner])
 class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {

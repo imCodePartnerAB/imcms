@@ -14,10 +14,10 @@ import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.context.annotation.Bean._
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
-import com.imcode.imcms.api.{SystemProperty, I18nLanguage, TextHistory}
+import com.imcode.imcms.api.{DocRef, SystemProperty, I18nLanguage, TextHistory}
 
 import org.scalatest.fixture
-import imcode.server.document.textdocument.{DocRef, ContentRef, TextDomainObject}
+import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
 
 @RunWith(classOf[JUnitRunner])
 class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAndAfter {

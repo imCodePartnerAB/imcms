@@ -12,7 +12,7 @@ import com.imcode.imcms.test.Test.{db}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.api.{MenuHistory}
+import com.imcode.imcms.api.{DocRef, MenuHistory}
 import org.junit.Assert._
 import _root_.imcode.server.document.textdocument._
 

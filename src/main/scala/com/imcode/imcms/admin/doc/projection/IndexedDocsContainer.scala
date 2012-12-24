@@ -20,7 +20,7 @@ import org.apache.solr.client.solrj.SolrQuery
 class IndexedDocsContainer(
   user: UserDomainObject,
   private var solrQueryOpt: Option[SolrQuery] = None,
-  private var visibleDocsFilterOpt: Option[Set[DocId]] = None
+  private var visibleDocsFilterOpt: Option[Set[DocId]] = None  // I18nDocRef, Doc
   ) extends Container
     with GenericContainer[Ix]
     with IndexedDocsContainerItem
@@ -80,9 +80,9 @@ class IndexedDocsContainer(
 
 
   /**
-   * Returns full (non filtered) inclusive docs range of this container.
+   * Returns inclusive range of visible docs ids.
    *
-   * @return Some(range) or None if there is no docs in this container.
+   * @return Some(range) or None if there are no visible docs in this container.
    */
   def visibleDocsRange: Option[(DocId, DocId)] = visibleDocsFilterOpt match {
     case Some(ids) => if (ids.isEmpty) None else Some(ids.min, ids.max)

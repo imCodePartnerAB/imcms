@@ -1,29 +1,22 @@
 package com.imcode
 package imcms.dao
 
-import imcode.server.user.UserDomainObject
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import imcms.test.fixtures.UserFX.{mkSuperAdmin}
-import org.scalatest.matchers.MustMatchers
 import imcms.test.Test.{db}
-import org.scalatest.{WordSpec, BeforeAndAfter, FunSuite, BeforeAndAfterAll}
+import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
-import org.springframework.context.annotation.Bean._
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
 import com.imcode.imcms.api._
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 import com.imcode.imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
 import org.junit.Assert._
-import java.lang.Integer
-import com.google.common.collect.Maps
-import java.util.{HashMap, HashSet, Date}
+import java.util.{Date}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.test.fixtures.{UserFX, DocFX}
 import org.joda.time.DateTime
-import imcode.server.document.textdocument.DocRef
 
 @RunWith(classOf[JUnitRunner])
 class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {

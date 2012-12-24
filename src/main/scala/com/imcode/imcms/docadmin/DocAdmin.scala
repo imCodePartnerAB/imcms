@@ -11,7 +11,7 @@ import com.imcode.imcms.vaadin.ui._
 import com.vaadin.event.dd.{DragAndDropEvent, DropHandler}
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation
 import com.vaadin.event.DataBoundTransferable
-import com.imcode.imcms.api.Document
+import com.imcode.imcms.api.{DocRef, Document}
 import com.vaadin.terminal.{FileResource, ExternalResource, Resource}
 import dialog.{ConfirmationDialog, OkCancelDialog}
 import java.io.File
@@ -292,11 +292,13 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       PropertyDescriptor[String]("doc.tbl.col.status".i)
     )
 
+    // todo: ??? search for current language + default version ???
     ui.miIncludeDocs.setCommandHandler {
       new DocsProjectionDialog("Choose documents", ui.getApplication.imcmsUser) |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
-            docId <- dlg.projection.selection
+            doc <- dlg.projection.selection
+            docId = doc.getId
             if !state.getItemsMap.containsKey(docId)
             doc <- imcmsServices.getDocumentMapper.getDefaultDocument(docId) |> opt
           } {

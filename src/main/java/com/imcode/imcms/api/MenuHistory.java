@@ -1,6 +1,5 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.DocRef;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.user.UserDomainObject;

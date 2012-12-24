@@ -56,7 +56,6 @@ public interface DocumentIndex {
      * @return
      * @throws IndexException
      */
-    @Deprecated
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
     void rebuild() throws IndexException;

@@ -7,6 +7,7 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.vaadin.terminal.ExternalResource
 import com.vaadin.ui.{Component, Embedded, MenuBar, VerticalLayout}
+import imcode.server.document.DocumentDomainObject
 
 object DocViewer extends ImcmsServicesSupport {
   // todo: ??? loading indicator

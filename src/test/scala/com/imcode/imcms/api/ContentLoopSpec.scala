@@ -6,7 +6,6 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{OneInstancePerTest, BeforeAndAfter, WordSpec, FunSuite}
 import org.junit.Assert._
-import imcode.server.document.textdocument.DocRef
 import com.imcode.imcms.test.fixtures.{DocItemFX, DocRefFX}
 
 @RunWith(classOf[JUnitRunner])

@@ -3,7 +3,6 @@ package com.imcode.imcms.api;
 import com.google.common.base.Optional;
 import com.imcode.imcms.util.P;
 import com.imcode.imcms.util.P2;
-import imcode.server.document.textdocument.DocRef;
 import org.hibernate.annotations.IndexColumn;
 
 import java.io.Serializable;

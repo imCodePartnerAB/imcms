@@ -12,16 +12,17 @@ import com.imcode.imcms.vaadin.data._
 import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter.{AdvancedFilter, BasicFilter, DateRange, IdRange, DateRangeType}
 import org.apache.solr.client.solrj.SolrQuery
+import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
+import _root_.imcode.server.document.index.DocumentIndex
 
 
-// todo Projection: DocId -> DocRef !!!!!!
-class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] with Log4jLoggerSupport {
+class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport {
   val basicFilter = new BasicFilter
   val advancedFilter = new AdvancedFilter
   val docsContainer = new IndexedDocsContainer(user)
   val docsUI = new IndexedDocsUI(docsContainer) with FullSize
-  private val selectionRef = new AtomicReference(Seq.empty[DocId])
+  private val selectionRef = new AtomicReference(Seq.empty[DocumentDomainObject])
 
   val ui = new DocsProjectionUI(basicFilter.ui, advancedFilter.ui, docsUI) { ui =>
     val basicFilterUI = basicFilter.ui
@@ -31,7 +32,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] with 
       if (!basicFilterUI.chkAdvanced.booleanValue) ui.isAdvancedFilterVisible = false
     }
 
-    basicFilterUI.lytButtons.btnFilter.addClickHandler { filter() }
+    basicFilterUI.lytButtons.btnFilter.addClickHandler { reload() }
     basicFilterUI.lytButtons.btnReset.addClickHandler { reset() }
 
     override def attach() {
@@ -41,7 +42,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] with 
   }
 
   docsUI.addValueChangeHandler {
-    selectionRef.set(docsUI.value.asScala.toSeq.map(docsContainer.getItem(_).doc.getMetaId))
+    selectionRef.set(docsUI.value.asScala.map(docsContainer.getItem(_).doc).toSeq)
     notifyListeners()
   }
 
@@ -50,7 +51,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] with 
     basicFilter.reset()
     advancedFilter.reset()
     updateUI()
-    filter()
+    reload()
   }
 
 
@@ -59,7 +60,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] with 
     basicFilter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange)
   }
 
-  def filter() {
+  def reload() {
     createSolrQuery() match {
       case Left(throwable) =>
         docsContainer.setSolrQueryOpt(None)
@@ -185,7 +186,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] with 
     val publishersOpt: Option[List[String]] = None
 
     List(
-      idRangeOpt.map(range => "meta_id:[%s TO %s]".format(range.start.getOrElse("*"), range.end.getOrElse("*"))),
+      idRangeOpt.map(range => "%s:[%s TO %s]".format(DocumentIndex.FIELD__META_ID, range.start.getOrElse("*"), range.end.getOrElse("*"))),
       textOpt.map("text:" + _),
       typesOpt.map(_.mkString("type:(", " OR ", ")")),
       statusesOpt.map(_.mkString("status:(", " OR ", ")"))
@@ -201,8 +202,8 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocId]] with 
     }
   } // def createSolrQuery()
 
-  // todo: verify
-  def selection: Seq[DocId] = selectionRef.get
+
+  def selection: Seq[DocumentDomainObject] = selectionRef.get
 
   override def notifyListeners(): Unit = notifyListeners(selection)
 }

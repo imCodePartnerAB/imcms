@@ -5,8 +5,8 @@ package fixtures
 import scala.collection.JavaConverters._
 import imcode.server.user.{UserDomainObject, RoleId}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject, DocumentPermissionSetTypeDomainObject}
-import com.imcode.imcms.api.{I18nMeta, I18nLanguage, I18nSupport}
-import imcode.server.document.textdocument.{DocRef, TextDomainObject, TextDocumentDomainObject}
+import com.imcode.imcms.api.{DocRef, I18nMeta, I18nLanguage, I18nSupport}
+import imcode.server.document.textdocument.{TextDomainObject, TextDocumentDomainObject}
 
 object DocFX {
   val Seq(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth) = 1001 to 1010

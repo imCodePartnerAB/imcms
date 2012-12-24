@@ -7,7 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{WordSpec}
 import DocumentStoringVisitor.getFilenameForFileDocumentFile
 import imcms.api.DocumentVersion.WORKING_VERSION_NO
-import imcode.server.document.textdocument.DocRef
+import com.imcode.imcms.api.DocRef
 
 @RunWith(classOf[JUnitRunner])
 class FilenameSpec extends WordSpec {

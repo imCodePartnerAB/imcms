@@ -2,11 +2,10 @@ package com.imcode
 package imcms.dao
 
 import scala.collection.JavaConverters._
-import com.imcode.imcms.api.I18nLanguage
-import com.imcode.imcms.api.TextHistory
+import com.imcode.imcms.api.{DocRef, I18nLanguage, TextHistory}
 
 import org.springframework.transaction.annotation.Transactional
-import imcode.server.document.textdocument.{ContentRef, DocRef, TextDomainObject}
+import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class TextDao extends HibernateSupport {

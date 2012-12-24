@@ -19,7 +19,7 @@ import com.imcode.imcms.test.Test
 import com.imcode.imcms.test.fixtures.LanguageFX
 import com.imcode.imcms.mapping.{DocumentSaver, DocumentStoringVisitor, DocumentMapper}
 import com.imcode.imcms.mapping.DocumentMapper.SaveOpts
-import com.imcode.imcms.api.{I18nMeta, ContentLoop, I18nSupport}
+import com.imcode.imcms.api.{DocRef, I18nMeta, ContentLoop, I18nSupport}
 import com.imcode.imcms.api.TextDocument.TextField
 
 @RunWith(classOf[JUnitRunner])

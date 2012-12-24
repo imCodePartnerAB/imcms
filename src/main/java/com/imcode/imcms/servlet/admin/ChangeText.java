@@ -3,7 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.Imcms;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.ContentRef;
-import imcode.server.document.textdocument.DocRef;
+import com.imcode.imcms.api.DocRef;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;

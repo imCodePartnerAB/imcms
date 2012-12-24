@@ -27,11 +27,7 @@ class DocsProjectionDialog(caption: String, user: UserDomainObject) extends OkCa
 
     projection.listen { selection =>
       val isSingleSelection = selection.size == 1
-      val isTextDocSelection = isSingleSelection &&
-        (projection.docsUI.item(selection.head) match {
-          case docItem: IndexedDocsContainer#DocItem => docItem.doc.isInstanceOf[TextDocumentDomainObject]
-          case _ => false
-        })
+      val isTextDocSelection = isSingleSelection &&  selection.head.isInstanceOf[TextDocumentDomainObject]
 
       ui.miDeleteSelectedDocs.setEnabled(selection.nonEmpty)
 

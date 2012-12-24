@@ -6,7 +6,6 @@ import imcode.server.document.DocumentDomainObject
 import imcode.server.user.UserDomainObject
 import javax.servlet.http.HttpServletRequest
 import imcode.server.{Imcms, ImcmsServices, ImcmsConstants}
-import imcode.server.document.textdocument.DocRef
 
 
 object DocGetterCallbackUtil {

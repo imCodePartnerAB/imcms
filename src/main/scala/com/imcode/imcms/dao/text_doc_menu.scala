@@ -4,9 +4,9 @@ package imcms.dao
 import scala.collection.JavaConverters._
 import org.springframework.transaction.annotation.Transactional
 
-import com.imcode.imcms.api.MenuHistory
+import com.imcode.imcms.api.{DocRef, MenuHistory}
 import org.hibernate.{ScrollMode, CacheMode}
-import imcode.server.document.textdocument.{DocRef, MenuDomainObject}
+import imcode.server.document.textdocument.{MenuDomainObject}
 
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))

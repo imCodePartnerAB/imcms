@@ -1,5 +1,6 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.imcms.api.DocRef;
 import imcode.server.user.UserDomainObject;
 
 import java.io.Serializable;

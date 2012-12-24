@@ -3,7 +3,7 @@
  */
 package com.imcode.imcms.mapping.orm;
 
-import imcode.server.document.textdocument.DocRef;
+import com.imcode.imcms.api.DocRef;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

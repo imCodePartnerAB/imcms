@@ -5,7 +5,7 @@ import scala.collection.JavaConverters._
 
 import org.springframework.transaction.annotation.Transactional
 import imcode.server.document.textdocument._
-import com.imcode.imcms.api.{I18nLanguage, ImageHistory}
+import com.imcode.imcms.api.{DocRef, I18nLanguage, ImageHistory}
 
 
 object ImageUtil {
