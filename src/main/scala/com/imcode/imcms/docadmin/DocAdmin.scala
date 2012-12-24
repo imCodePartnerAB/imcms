@@ -29,7 +29,7 @@ import java.util.{Arrays, Collections}
 import com.imcode.imcms.vaadin.data._
 
 
-class DocAdmin extends com.vaadin.Application with HttpServletRequestListener with ImcmsApplication with ImcmsServicesSupport { app =>
+class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*/ with ImcmsApplication with ImcmsServicesSupport { app =>
 
   // extractors
   private object PathHandlers {
@@ -232,36 +232,36 @@ class DocAdmin extends com.vaadin.Application with HttpServletRequestListener wi
     setMainWindow(mainWindow)
   }
 
-  def onRequestStart(request: HttpServletRequest, response: HttpServletResponse) {
-    println("[Start of request");
-    println(" Query string: " + request.getQueryString)
-    println(" Path: " + request.getPathInfo)
-    println(" URI: " + request.getRequestURI)
-    println(" URL: " + request.getRequestURL.toString)
-
-//    for {
-//      (IntNum(docId), IntNum(menuNo)) <- Option(request.getParameter("doc_id"), request.getParameter("menu_no"))
-//      doc @ (si_900 : TextDocumentDomainObject) <- Option(imcmsServices.getDocumentMapper.getDocument(docId))
-//      menu <- Option(doc.getMenu(menuNo))
-//    } {
-//      val pnlAdmin = new Panel
-//      pnlAdmin.setSize(600, 600)
+//  def onRequestStart(request: HttpServletRequest, response: HttpServletResponse) {
+//    println("[Start of request");
+//    println(" Query string: " + request.getQueryString)
+//    println(" Path: " + request.getPathInfo)
+//    println(" URI: " + request.getRequestURI)
+//    println(" URL: " + request.getRequestURL.toString)
 //
-//      val menuEditor = new MenuEditor(doc, menu)
-//      mainWindow.getContent.asInstanceOf[VerticalLayout] |> { lyt =>
-//        lyt.removeAllComponents()
-//        lyt.addComponent(menuEditor.ui)
-//        lyt.asInstanceOf[VerticalLayout].setComponentAlignment(menuEditor.ui, Alignment.MIDDLE_CENTER)
-//      }
-
-      //setLogoutURL("/test.jsp")
-      //"AdminDoc?meta_id=" + parentDocument.getId + "&flags=" + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + parentMenuIndex
-//    }
-  }
-
-  def onRequestEnd(request: HttpServletRequest, response: HttpServletResponse) {
-    println(" End of request]")
-  }
+////    for {
+////      (IntNum(docId), IntNum(menuNo)) <- Option(request.getParameter("doc_id"), request.getParameter("menu_no"))
+////      doc @ (si_900 : TextDocumentDomainObject) <- Option(imcmsServices.getDocumentMapper.getDocument(docId))
+////      menu <- Option(doc.getMenu(menuNo))
+////    } {
+////      val pnlAdmin = new Panel
+////      pnlAdmin.setSize(600, 600)
+////
+////      val menuEditor = new MenuEditor(doc, menu)
+////      mainWindow.getContent.asInstanceOf[VerticalLayout] |> { lyt =>
+////        lyt.removeAllComponents()
+////        lyt.addComponent(menuEditor.ui)
+////        lyt.asInstanceOf[VerticalLayout].setComponentAlignment(menuEditor.ui, Alignment.MIDDLE_CENTER)
+////      }
+//
+//      //setLogoutURL("/test.jsp")
+//      //"AdminDoc?meta_id=" + parentDocument.getId + "&flags=" + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + parentMenuIndex
+////    }
+//  }
+//
+//  def onRequestEnd(request: HttpServletRequest, response: HttpServletResponse) {
+//    println(" End of request]")
+//  }
 }
 
 
@@ -285,11 +285,11 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     addContainerProperties(ui.ttMenu,
-      PropertyDescriptor[DocId]("doc.tbl.col.id".i),
-      PropertyDescriptor[String]("doc.tbl.col.headline".i),
-      PropertyDescriptor[String]("doc.tbl.col.alias".i),
-      PropertyDescriptor[String]("doc.tbl.col.type".i),
-      PropertyDescriptor[String]("doc.tbl.col.status".i)
+      PropertyDescriptor[DocId]("docs_projection.tbl.column_id.id".i),
+      PropertyDescriptor[String]("docs_projection.tbl.column_id.headline".i),
+      PropertyDescriptor[String]("docs_projection.tbl.column_id.alias".i),
+      PropertyDescriptor[String]("docs_projection.tbl.column_id.type".i),
+      PropertyDescriptor[String]("docs_projection.tbl.column_id.status".i)
     )
 
     // todo: ??? search for current language + default version ???

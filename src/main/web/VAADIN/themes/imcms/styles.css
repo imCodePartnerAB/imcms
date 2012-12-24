@@ -19,45 +19,45 @@
 }
 
 table#user_search,
-table#doc_search_basic,
-table#doc_search_advanced {
+table#docs_projection_basic_filter,
+table#docs_projection_advanced_filter {
     border: solid 1px #a9a9a9;
     border-collapse: collapse;
 }
 
 table#user_search,
-table#doc_search_basic {
+table#docs_projection_basic_filter {
     background: #fffff0;
     margin-bottom: 1px;
 }
 
-table#doc_search_advanced {
+table#docs_projection_advanced_filter {
     background: #e0ffff;
     margin-top: -1px;
 }
 
 table#user_search th,
-table#doc_search_basic th,
-table#doc_search_advanced th {
+table#docs_projection_basic_filter th,
+table#docs_projection_advanced_filter th {
     text-align: left;
     width: 100px;
 }
 
 table#user_search th,
-table#doc_search_basic th {
+table#docs_projection_basic_filter th {
     background: #f5f5dc;
 }
 
-table#doc_search_advanced th {
+table#docs_projection_advanced_filter th {
     background: #add8e6;
 }
 
 table#user_search td,
 table#user_search th,
-table#doc_search_basic td,
-table#doc_search_basic th,
-table#doc_search_advanced td,
-table#doc_search_advanced th {
+table#docs_projection_basic_filter td,
+table#docs_projection_basic_filter th,
+table#docs_projection_advanced_filter td,
+table#docs_projection_advanced_filter th {
     padding: 0.3em;
     border: solid 1px #a9a9a9;
     border-left: none;
@@ -65,16 +65,16 @@ table#doc_search_advanced th {
 }
 
 
-table#doc_search_basic th.advanced {
+table#docs_projection_basic_filter th.advanced {
     background: #add8e6;
 }
 
-table#doc_search_basic td.advanced {
+table#docs_projection_basic_filter td.advanced {
     background: #e0ffff;
 }
 
 table#user_search #buttons,
-table#doc_search_basic #buttons {
+table#docs_projection_basic_filter #buttons {
     border-left: solid 1px #a9a9a9;
 }
 

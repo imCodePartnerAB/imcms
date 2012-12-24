@@ -20,7 +20,7 @@ import org.apache.solr.client.solrj.SolrQuery
 class IndexedDocsContainer(
   user: UserDomainObject,
   private var solrQueryOpt: Option[SolrQuery] = None,
-  private var visibleDocsFilterOpt: Option[Set[DocId]] = None  // I18nDocRef, Doc
+  private var visibleDocsFilterOpt: Option[Set[DocId]] = None  // todo: I18nDocRef, Doc
   ) extends Container
     with GenericContainer[Ix]
     with IndexedDocsContainerItem
@@ -30,14 +30,14 @@ class IndexedDocsContainer(
     with ImcmsServicesSupport {
 
   private val propertyIdToType = ListMap(
-    "doc.tbl.col.ix" -> classOf[Ix],
-    "doc.tbl.col.id" -> classOf[DocId],
-    "doc.tbl.col.type" -> classOf[JInteger],
-    "doc.tbl.col.language" -> classOf[I18nLanguage],  // todo: when multi-language support is enabled
-    "doc.tbl.col.status" -> classOf[String],
-    "doc.tbl.col.alias" -> classOf[String],
-    "doc.tbl.col.parents" -> classOf[Component],
-    "doc.tbl.col.children" -> classOf[Component]
+    "docs_projection.tbl.column_id.ix" -> classOf[Ix],
+    "docs_projection.tbl.column_id.id" -> classOf[DocId],
+    "docs_projection.tbl.column_id.type" -> classOf[JInteger],
+    "docs_projection.tbl.column_id.language" -> classOf[I18nLanguage],  // todo: when multi-language support is enabled
+    "docs_projection.tbl.column_id.status" -> classOf[String],
+    "docs_projection.tbl.column_id.alias" -> classOf[String],
+    "docs_projection.tbl.column_id.parents" -> classOf[Component],
+    "docs_projection.tbl.column_id.children" -> classOf[Component]
     // todo: version when version support is enabled
     // todo: parents, children <-> referenced, references
   )
@@ -140,11 +140,11 @@ class IndexedDocsContainer(
 
   // todo implement
   override val getSortableContainerPropertyIds: JCollection[_] = ju.Arrays.asList(
-    "doc.tbl.col.id",
-    "doc.tbl.col.language",
-    "doc.tbl.col.type",
-    "doc.tbl.col.status",
-    "doc.tbl.col.alias"
+    "docs_projection.tbl.column_id.id",
+    "docs_projection.tbl.column_id.language",
+    "docs_projection.tbl.column_id.type",
+    "docs_projection.tbl.column_id.status",
+    "docs_projection.tbl.column_id.alias"
   )
 
   override def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef): Item = throw new UnsupportedOperationException
@@ -161,19 +161,19 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
     override def getItemProperty(id: AnyRef) = FunctionProperty(id match {
-      case "doc.tbl.col.ix" => () => ix
-      case "doc.tbl.col.id" => () => doc.getId : JInteger
-      case "doc.tbl.col.type" => () => doc.getDocumentTypeId : JInteger
-      case "doc.tbl.col.language" => () => doc.getLanguage
-      case "doc.tbl.col.alias" => () => doc.getAlias
-      case "doc.tbl.col.status" =>
+      case "docs_projection.tbl.column_id.ix" => () => ix
+      case "docs_projection.tbl.column_id.id" => () => doc.getId : JInteger
+      case "docs_projection.tbl.column_id.type" => () => doc.getDocumentTypeId : JInteger
+      case "docs_projection.tbl.column_id.language" => () => doc.getLanguage
+      case "docs_projection.tbl.column_id.alias" => () => doc.getAlias
+      case "docs_projection.tbl.column_id.status" =>
         () => doc.getPublicationStatus match {
           case Document.PublicationStatus.NEW => "doc.publication_status.new".i
           case Document.PublicationStatus.APPROVED => "doc.publication_status.approved".i
           case Document.PublicationStatus.DISAPPROVED => "doc.publication_status.disapproved".i
         }
 
-      case "doc.tbl.col.parents" =>
+      case "docs_projection.tbl.column_id.parents" =>
         () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
           case Nil => null
           case pair :: Nil =>
@@ -198,7 +198,7 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
             }
         }
 
-      case "doc.tbl.col.children" =>
+      case "docs_projection.tbl.column_id.children" =>
         () => doc match {
           case textDoc: TextDocumentDomainObject =>
             imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).asScala.toList match {

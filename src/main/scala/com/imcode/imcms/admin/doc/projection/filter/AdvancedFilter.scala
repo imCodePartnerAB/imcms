@@ -14,13 +14,9 @@ class AdvancedFilter extends ImcmsServicesSupport {
   ui.chkDates.addValueChangeHandler { toggleDates() }
   ui.chkRelationships.addValueChangeHandler { toggleRelationships() }
   ui.chkMaintainers.addValueChangeHandler { toggleMaintainers() }
-  ui.chkStatus.addValueChangeHandler { toggleStatus() }
 
   def reset() {
-    doto(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers, ui.chkStatus) {
-      _.uncheck()
-    }
-    doto(ui.lytStatus.chkNew, ui.lytStatus.chkPublished, ui.lytStatus.chkUnpublished, ui.lytStatus.chkApproved, ui.lytStatus.chkDisapproved, ui.lytStatus.chkExpired) {
+    doto(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers) {
       _.uncheck()
     }
 
@@ -38,7 +34,6 @@ class AdvancedFilter extends ImcmsServicesSupport {
     toggleMaintainers()
     toggleRelationships()
     toggleDates()
-    toggleStatus()
 
     for {
       categoryType <- imcmsServices.getCategoryMapper.getAllCategoryTypes
@@ -49,13 +44,12 @@ class AdvancedFilter extends ImcmsServicesSupport {
       Option(category.getImageUrl).foreach(url => ui.tcsCategories.setItemIcon(category, new ExternalResource(url)))
     }
 
-    ui.lytRelationships.cbParents.value = "doc.search.advanced.frm.fld.cb_relationships_parents.item.undefined"
-    ui.lytRelationships.cbChildren.value = "doc.search.advanced.frm.fld.cb_relationships_children.item.undefined"
+    ui.lytRelationships.cbParents.value = "docs_projection.advanced_filter_lyt.cb_relationships_parents.item.undefined"
+    ui.lytRelationships.cbChildren.value = "docs_projection.advanced_filter_lyt.cb_relationships_children.item.undefined"
   }
 
-  private def toggleCategories() = FilterFormUtil.toggle(ui, "doc.search.advanced.frm.fld.categories", ui.chkCategories, ui.tcsCategories)
-  private def toggleMaintainers() = FilterFormUtil.toggle(ui, "doc.search.advanced.frm.fld.maintainers", ui.chkMaintainers, ui.lytMaintainers)
-  private def toggleRelationships() = FilterFormUtil.toggle(ui, "doc.search.advanced.frm.fld.relationships", ui.chkRelationships, ui.lytRelationships)
-  private def toggleDates() = FilterFormUtil.toggle(ui, "doc.search.advanced.frm.fld.dates", ui.chkDates, ui.lytDates)
-  private def toggleStatus() = FilterFormUtil.toggle(ui, "doc.search.advanced.frm.fld.status", ui.chkStatus, ui.lytStatus)
+  private def toggleCategories() = FilterFormUtil.toggle(ui, "docs_projection.advanced_filter_lyt.categories", ui.chkCategories, ui.tcsCategories)
+  private def toggleMaintainers() = FilterFormUtil.toggle(ui, "docs_projection.advanced_filter_lyt.maintainers", ui.chkMaintainers, ui.lytMaintainers)
+  private def toggleRelationships() = FilterFormUtil.toggle(ui, "docs_projection.advanced_filter_lyt.relationships", ui.chkRelationships, ui.lytRelationships)
+  private def toggleDates() = FilterFormUtil.toggle(ui, "docs_projection.advanced_filter_lyt.dates", ui.chkDates, ui.lytDates)
 }

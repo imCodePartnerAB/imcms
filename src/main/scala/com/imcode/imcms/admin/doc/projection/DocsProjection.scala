@@ -15,6 +15,7 @@ import org.apache.solr.client.solrj.SolrQuery
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
+import org.apache.commons.lang.StringUtils
 
 
 class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport {
@@ -90,14 +91,14 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
         val startOpt = condOpt(basicFormUI.lytIdRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
             case IntNum(start) => start
-            case _ => sys.error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
+            case _ => sys.error("docs_projection.dlg_param_validation_err.msg.illegal_range_value")
           }
         }
 
         val endOpt = condOpt(basicFormUI.lytIdRange.txtEnd.trim) {
           case value if value.nonEmpty => value match {
             case IntNum(end) => end
-            case _ => sys.error("doc.search.dlg_param_validation_err.msg.illegal_range_value")
+            case _ => sys.error("docs_projection.dlg_param_validation_err.msg.illegal_range_value")
           }
         }
 
@@ -121,29 +122,30 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
 
         Map(chkFile -> "file",
             chkText -> "text",
-            chkHtml -> "html"
+            chkHtml -> "html",
+            chkUrl -> "url"
         ).filterKeys(_.isChecked).values.toList match {
           case Nil => None
           case values => Some(values)
         }
-    }
+      }
 
     val statusesOpt: Option[List[String]] =
-      if (advancedFormUI.chkStatus.isUnchecked) None
+      if (basicFormUI.chkStatus.isUnchecked) None
       else {
-      import advancedFormUI.lytStatus._
+        import basicFormUI.lytStatus._
 
         Map(chkNew -> "new",
             chkPublished -> "published",
             chkUnpublished -> "unpublished",
             chkApproved -> "approved",
             chkDisapproved -> "disapproved",
-            chkExpired -> "expired"
+            chkExpired -> "expired"       // archived
         ).filterKeys(_.isChecked).values.toList match {
           case Nil => None
           case values => Some(values)
         }
-    }
+      }
 
     val datesOpt: Option[Map[String, DateRange]] =
       if (advancedFormUI.chkDates.isUnchecked) None
@@ -185,20 +187,38 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
     val creatorsOpt: Option[List[String]] = None
     val publishersOpt: Option[List[String]] = None
 
+    def escape(text: String): String = {
+      val SOLR_SPECIAL_CHARACTERS = Array("+", "-", "&", "|", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":", "\\", "/")
+      val SOLR_REPLACEMENT_CHARACTERS = Array("\\+", "\\-", "\\&", "\\|", "\\!", "\\(", "\\)", "\\{", "\\}", "\\[", "\\]", "\\^", "\\\"", "\\~", "\\*", "\\?", "\\:", "\\\\", "\\/")
+
+      StringUtils.replaceEach(text, SOLR_SPECIAL_CHARACTERS, SOLR_REPLACEMENT_CHARACTERS)
+    }
+
     List(
-      idRangeOpt.map(range => "%s:[%s TO %s]".format(DocumentIndex.FIELD__META_ID, range.start.getOrElse("*"), range.end.getOrElse("*"))),
-      textOpt.map("text:" + _),
+      textOpt.map { text =>
+        val escapedText = escape(text)
+
+        Seq(DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE, DocumentIndex.FIELD__META_TEXT,
+            DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS, DocumentIndex.FIELD__TEXT
+        ).map(field => """%s:*"%s"*""".format(field, escapedText)).mkString("+(", " OR " ,")")
+      },
       typesOpt.map(_.mkString("type:(", " OR ", ")")),
       statusesOpt.map(_.mkString("status:(", " OR ", ")"))
     ).flatten |> {
       case Nil => "*:*"
-      case terms => terms.mkString(" ")
-    } |> { q =>
-      if (logger.isDebugEnabled) {
-        logger.debug("SOLr projection query: %s.".format(q))
-      }
+      case terms => terms.mkString(" AND ")
+    } |> { solrQueryStirng =>
+      if (logger.isDebugEnabled) logger.debug("Projection SOLr query string: %s.".format(solrQueryStirng))
 
-      new SolrQuery(q)
+      new SolrQuery(solrQueryStirng)
+    } |>> { solrQuery =>
+      for (idRange <- idRangeOpt) {
+        solrQuery.addFilterQuery(
+          "%s:[%s TO %s]".format(DocumentIndex.FIELD__META_ID, idRange.start.getOrElse("*"), idRange.end.getOrElse("*"))
+        )
+      }
+    } |>> { solrQuery =>
+      if (logger.isDebugEnabled) logger.debug("Projection final SOLr query: %s.".format(solrQuery))
     }
   } // def createSolrQuery()
 
@@ -207,3 +227,10 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
 
   override def notifyListeners(): Unit = notifyListeners(selection)
 }
+
+//DocumentIndex.FIELD__META_ID,
+//DocumentIndex.FIELD__META_HEADLINE,
+//DocumentIndex.FIELD__META_TEXT,
+//DocumentIndex.FIELD__TEXT,
+//DocumentIndex.FIELD__KEYWORD,
+//DocumentIndex.FIELD__ALIAS

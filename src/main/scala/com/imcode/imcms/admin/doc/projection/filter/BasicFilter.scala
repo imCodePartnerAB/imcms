@@ -2,7 +2,6 @@ package com.imcode
 package imcms
 package admin.doc.projection.filter
 
-import com.imcode.imcms.vaadin.ui.FilterFormUtil
 import com.vaadin.ui.Label
 
 import _root_.imcode.server.document.DocumentTypeDomainObject
@@ -15,16 +14,20 @@ class BasicFilter {
 
   val ui: BasicFilterUI = new BasicFilterUI |>> { ui =>
     ui.chkIdRange.addValueChangeHandler {
-      FilterFormUtil.toggle(ui, "doc.search.basic.frm.fld.range", ui.chkIdRange, ui.lytIdRange,
+      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.range", ui.chkIdRange, ui.lytIdRange,
         new Label("%s - %s".format(Option(ui.lytIdRange.txtStart.getInputPrompt).getOrElse(""), Option(ui.lytIdRange.txtEnd.getInputPrompt).getOrElse(""))))
     }
 
     ui.chkText.addValueChangeHandler {
-      FilterFormUtil.toggle(ui, "doc.search.basic.frm.fld.text", ui.chkText, ui.txtText)
+      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.text", ui.chkText, ui.txtText)
     }
 
     ui.chkType.addValueChangeHandler {
-      FilterFormUtil.toggle(ui, "doc.search.basic.frm.fld.type", ui.chkType, ui.lytType)
+      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.type", ui.chkType, ui.lytType)
+    }
+
+    ui.chkStatus.addValueChangeHandler  {
+      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.status", ui.chkStatus, ui.lytStatus)
     }
 
     ui.chkAdvanced.addValueChangeHandler {
@@ -48,7 +51,14 @@ class BasicFilter {
     ui.chkText.checked = values.text.isDefined
     ui.chkType.checked = values.docType.isDefined
     ui.chkAdvanced.checked = values.advanced.isDefined
-    doto(ui.chkIdRange, ui.chkText, ui.chkType, ui.chkAdvanced)(_ fireValueChange true)
+    doto(ui.chkIdRange, ui.chkText, ui.chkType, ui.chkStatus, ui.chkAdvanced) {
+      //_.fireValueChange(true)
+      _.uncheck()
+    }
+
+    doto(ui.lytStatus.chkNew, ui.lytStatus.chkPublished, ui.lytStatus.chkUnpublished, ui.lytStatus.chkApproved, ui.lytStatus.chkDisapproved, ui.lytStatus.chkExpired) {
+      _.uncheck()
+    }
 
     ui.txtText.value = values.text.getOrElse("")
 
@@ -66,8 +76,8 @@ class BasicFilter {
 
     // todo: DEMO, replace with real values when spec is complete
     ui.lytAdvanced.cbTypes.removeAllItems()
-    Seq("doc.search.basic.frm.fld.cb_advanced_type.custom", "doc.search.basic.frm.fld.cb_advanced_type.last_xxx", "doc.search.basic.frm.fld.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId, itemId.i))
-    ui.lytAdvanced.cbTypes.value = values.advanced.getOrElse("doc.search.basic.frm.fld.cb_advanced_type.custom")
+    Seq("docs_projection.basic_filter_lyt.cb_advanced_type.custom", "docs_projection.basic_filter_lyt.cb_advanced_type.last_xxx", "docs_projection.basic_filter_lyt.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId, itemId.i))
+    ui.lytAdvanced.cbTypes.value = values.advanced.getOrElse("docs_projection.basic_filter_lyt.cb_advanced_type.custom")
   }
 
   // todo: return Error Either State

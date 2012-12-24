@@ -2,42 +2,54 @@ package com.imcode
 package imcms
 package admin.doc.projection.filter
 
-import com.imcode.imcms.vaadin._
-import com.imcode.imcms.vaadin.ui._
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.ui._
 
 
-class BasicFilterUI extends CustomLayout("admin/doc/search/basic_form") with FullWidth {
+class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") with FullWidth {
 
-  val chkIdRange = new CheckBox("doc.search.basic.frm.fld.chk_range".i) with Immediate with ExposeValueChange
+  val chkIdRange = new CheckBox("docs_projection.basic_filter_lyt.chk_range".i) with Immediate with ExposeValueChange
   val lytIdRange = new HorizontalLayout with Spacing with UndefinedSize {
     val txtStart = new TextField { setColumns(5) }
     val txtEnd = new TextField { setColumns(5) }
+    val lblSeparator = new Label("-")
 
-    this.addComponents(txtStart, txtEnd)
+    this.addComponents(txtStart, lblSeparator, txtEnd)
   }
 
-  val chkText = new CheckBox("doc.search.basic.frm.fld.chk_text".i) with Immediate with ExposeValueChange
-  val txtText = new TextField { setInputPrompt("doc.search.basic.frm.fld.txt_text.prompt".i) }
+  val chkText = new CheckBox("docs_projection.basic_filter_lyt.chk_text".i) with Immediate with ExposeValueChange
+  val txtText = new TextField with FullWidth |>> { _.setInputPrompt("docs_projection.basic_filter_lyt.txt_text.prompt".i) }
 
-  val chkType = new CheckBox("doc.search.basic.frm.fld.chk_type".i) with Immediate with ExposeValueChange
+  val chkType = new CheckBox("docs_projection.basic_filter_lyt.chk_type".i) with Immediate with ExposeValueChange
   val lytType = new HorizontalLayout with UndefinedSize with Spacing {
-    val chkText = new CheckBox("doc.search.basic.frm.fld.chk_type_text".i)
-    val chkFile = new CheckBox("doc.search.basic.frm.fld.chk_type_file".i)
-    val chkHtml = new CheckBox("doc.search.basic.frm.fld.chk_type_html".i)
-    val chkURL = new CheckBox("doc.search.basic.frm.fld.chk_type_url".i)
-    val chkProfile = new CheckBox("doc.search.basic.frm.fld.chk_type_profile".i)
-
-    this.addComponents(chkText, chkFile, chkHtml, chkURL, new Label(" | ") with UndefinedSize,  chkProfile)
+    val chkText = new CheckBox("docs_projection.basic_filter_lyt.chk_type_text".i)
+    val chkFile = new CheckBox("docs_projection.basic_filter_lyt.chk_type_file".i)
+    val chkHtml = new CheckBox("docs_projection.basic_filter_lyt.chk_type_html".i)
+    val chkUrl = new CheckBox("docs_projection.basic_filter_lyt.chk_type_url".i)
+    //val chkProfile = new CheckBox("docs_projection.basic_filter_lyt.chk_type_profile".i)
+    //this.addComponents(chkText, chkFile, chkHtml, chkUrl, new Label(" | ") with UndefinedSize,  chkProfile)
+    this.addComponents(chkText, chkFile, chkHtml, chkUrl)
   }
 
-  val chkAdvanced = new CheckBox("doc.search.basic.frm.fld.chk_advanced".i) with Immediate with ExposeValueChange
+  val chkStatus = new CheckBox("docs_projection.basic_filter_lyt.chk_status".i) with Immediate with ExposeValueChange
+  val lytStatus = new HorizontalLayout with Spacing with UndefinedSize {
+    val chkNew = new CheckBox("docs_projection.basic_filter_lyt.chk_status_new".i)
+    val chkPublished = new CheckBox("docs_projection.basic_filter_lyt.chk_status_published".i)
+    val chkUnpublished = new CheckBox("docs_projection.basic_filter_lyt.chk_status_unpublished".i)
+    val chkApproved = new CheckBox("docs_projection.basic_filter_lyt.chk_status_approved".i)
+    val chkDisapproved = new CheckBox("docs_projection.basic_filter_lyt.chk_status_disapproved".i)
+    val chkExpired = new CheckBox("docs_projection.basic_filter_lyt.chk_status_expired".i)
+
+    this.addComponents(chkNew, chkPublished, chkUnpublished, chkApproved, chkDisapproved, chkExpired)
+  }
+
+  val chkAdvanced = new CheckBox("docs_projection.basic_filter_lyt.chk_advanced".i) with Immediate with ExposeValueChange
 
   val lytAdvanced = new HorizontalLayout with UndefinedSize with Spacing {
     val cbTypes = new ComboBox with NoNullSelection with SingleSelect[String] with Immediate
     val btnCustomize = new Button("...") with SmallStyle
-    val btnSaveAs = new Button("doc.search.basic.frm.fld.btn_advanced_save_as".i) with SmallStyle with Disabled
-    val btnDelete = new Button("doc.search.basic.frm.fld.btn_advanced_delete".i) with SmallStyle with Disabled
+    val btnSaveAs = new Button("docs_projection.basic_filter_lyt.btn_advanced_save_as".i) with SmallStyle with Disabled
+    val btnDelete = new Button("docs_projection.basic_filter_lyt.btn_advanced_delete".i) with SmallStyle with Disabled
 
     doto(cbTypes, btnCustomize, btnSaveAs, btnDelete) { component =>
       addComponent(component)
@@ -54,15 +66,16 @@ class BasicFilterUI extends CustomLayout("admin/doc/search/basic_form") with Ful
   }
 
   this.addNamedComponents(
-    "doc.search.basic.frm.fld.chk_range" -> chkIdRange,
-    "doc.search.basic.frm.fld.range" -> lytIdRange,
-    "doc.search.basic.frm.fld.chk_text" -> chkText,
-    "doc.search.basic.frm.fld.text" -> txtText,
-    "doc.search.basic.frm.fld.chk_type" -> chkType,
-    "doc.search.basic.frm.fld.type" -> lytType,
-    "doc.search.basic.frm.fld.chk_advanced" -> chkAdvanced,
-    "doc.search.basic.frm.fld.advanced" -> lytAdvanced,
-    "doc.search.basic.frm.fld.buttons" -> lytButtons
+    "docs_projection.basic_filter_lyt.chk_range" -> chkIdRange,
+    "docs_projection.basic_filter_lyt.range" -> lytIdRange,
+    "docs_projection.basic_filter_lyt.chk_text" -> chkText,
+    "docs_projection.basic_filter_lyt.text" -> txtText,
+    "docs_projection.basic_filter_lyt.chk_type" -> chkType,
+    "docs_projection.basic_filter_lyt.type" -> lytType,
+    "docs_projection.basic_filter_lyt.chk_status" -> chkStatus,
+    "docs_projection.basic_filter_lyt.status" -> lytStatus,
+    "docs_projection.basic_filter_lyt.chk_advanced" -> chkAdvanced,
+    "docs_projection.basic_filter_lyt.advanced" -> lytAdvanced,
+    "docs_projection.basic_filter_lyt.buttons" -> lytButtons
   )
 }
-
