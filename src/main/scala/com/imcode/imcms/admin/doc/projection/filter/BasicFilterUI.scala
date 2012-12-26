@@ -18,7 +18,7 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
   }
 
   val chkText = new CheckBox("docs_projection.basic_filter_lyt.chk_text".i) with Immediate with ExposeValueChange
-  val txtText = new TextField with FullWidth |>> { _.setInputPrompt("docs_projection.basic_filter_lyt.txt_text.prompt".i) }
+  val txtText = new TextField |>> { _.setInputPrompt("docs_projection.basic_filter_lyt.txt_text.prompt".i) }
 
   val chkType = new CheckBox("docs_projection.basic_filter_lyt.chk_type".i) with Immediate with ExposeValueChange
   val lytType = new HorizontalLayout with UndefinedSize with Spacing {
@@ -31,16 +31,16 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     this.addComponents(chkText, chkFile, chkHtml, chkUrl)
   }
 
-  val chkStatus = new CheckBox("docs_projection.basic_filter_lyt.chk_status".i) with Immediate with ExposeValueChange
-  val lytStatus = new HorizontalLayout with Spacing with UndefinedSize {
-    val chkNew = new CheckBox("docs_projection.basic_filter_lyt.chk_status_new".i)
-    val chkPublished = new CheckBox("docs_projection.basic_filter_lyt.chk_status_published".i)
-    val chkUnpublished = new CheckBox("docs_projection.basic_filter_lyt.chk_status_unpublished".i)
-    val chkApproved = new CheckBox("docs_projection.basic_filter_lyt.chk_status_approved".i)
-    val chkDisapproved = new CheckBox("docs_projection.basic_filter_lyt.chk_status_disapproved".i)
-    val chkExpired = new CheckBox("docs_projection.basic_filter_lyt.chk_status_expired".i)
+  val chkStatus = new CheckBox("docs_projection.basic_filter_lyt.chk_phase".i) with Immediate with ExposeValueChange
+  val lytPhases = new HorizontalLayout with Spacing with UndefinedSize {
+    val chkNew = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_new".i)
+    val chkApproved = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_approved".i)
+    val chkDisapproved = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_disapproved".i)
+    val chkPublished = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_published".i)
+    val chkArchived = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_archived".i)
+    val chkUnpublished = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_unpublished".i)
 
-    this.addComponents(chkNew, chkPublished, chkUnpublished, chkApproved, chkDisapproved, chkExpired)
+    this.addComponents(chkNew, chkApproved, chkDisapproved, chkPublished, chkArchived, chkUnpublished)
   }
 
   val chkAdvanced = new CheckBox("docs_projection.basic_filter_lyt.chk_advanced".i) with Immediate with ExposeValueChange
@@ -72,8 +72,8 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     "docs_projection.basic_filter_lyt.text" -> txtText,
     "docs_projection.basic_filter_lyt.chk_type" -> chkType,
     "docs_projection.basic_filter_lyt.type" -> lytType,
-    "docs_projection.basic_filter_lyt.chk_status" -> chkStatus,
-    "docs_projection.basic_filter_lyt.status" -> lytStatus,
+    "docs_projection.basic_filter_lyt.chk_phase" -> chkStatus,
+    "docs_projection.basic_filter_lyt.status" -> lytPhases,
     "docs_projection.basic_filter_lyt.chk_advanced" -> chkAdvanced,
     "docs_projection.basic_filter_lyt.advanced" -> lytAdvanced,
     "docs_projection.basic_filter_lyt.buttons" -> lytButtons

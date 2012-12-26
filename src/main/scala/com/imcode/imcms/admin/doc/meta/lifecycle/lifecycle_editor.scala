@@ -109,8 +109,10 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
     val sltVersion = new Select("Version") with SingleSelect[DocVersionNo] with NoNullSelection
 
     val calStart = new PopupDateField with MinuteResolution with Now
+    val calArchive = new PopupDateField with MinuteResolution
     val calEnd = new PopupDateField with MinuteResolution
     val chkStart = new CheckBox("start") with Checked with ReadOnly // decoration, always read-only
+    val chkArchive = new CheckBox("archive") with Immediate with AlwaysFireValueChange
     val chkEnd = new CheckBox("end") with Immediate with AlwaysFireValueChange
 
     ussPublisher.ui.setCaption("Publisher")
@@ -130,7 +132,11 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
     val lytDate = new GridLayout(2, 2) with Spacing {
       setCaption("Date")
 
-      this.addComponents(publication.chkStart, publication.calStart, publication.chkEnd, publication.calEnd)
+      this.addComponents(
+        publication.chkStart, publication.calStart,
+        publication.chkArchive, publication.calArchive,
+        publication.chkEnd, publication.calEnd
+      )
     }
 
     content.addComponents(publication.sltStatus, publication.sltVersion, lytDate, publication.ussPublisher.ui)

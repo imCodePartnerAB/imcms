@@ -180,10 +180,6 @@ public class Meta implements Serializable, Cloneable {
     @Column(name = "target", nullable = false)
     private String target;
 
-    /**
-     * Deprecated with no replacement.
-     */
-    @Deprecated
     @Column(name = "archived_datetime", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date archivedDatetime;
@@ -451,18 +447,10 @@ public class Meta implements Serializable, Cloneable {
         this.target = target;
     }
 
-    /**
-     * Deprecated with no replacement.
-     */
-    @Deprecated
     public Date getArchivedDatetime() {
         return archivedDatetime;
     }
 
-    /**
-     * Deprecated with no replacement.
-     */
-    @Deprecated
     public void setArchivedDatetime(Date archivedDatetime) {
         this.archivedDatetime = archivedDatetime;
     }

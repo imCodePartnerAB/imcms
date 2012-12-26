@@ -12,7 +12,7 @@ import com.imcode.imcms.vaadin.data._
 import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter.{AdvancedFilter, BasicFilter, DateRange, IdRange, DateRangeType}
 import org.apache.solr.client.solrj.SolrQuery
-import _root_.imcode.server.document.DocumentDomainObject
+import imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject, DocumentDomainObject}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
 import org.apache.commons.lang.StringUtils
@@ -115,33 +115,33 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
       }
 
 
-    val typesOpt: Option[List[String]] =
+    val typesOpt: Option[List[Int]] =
       if (basicFormUI.chkType.isUnchecked) None
       else {
         import basicFormUI.lytType._
 
-        Map(chkFile -> "file",
-            chkText -> "text",
-            chkHtml -> "html",
-            chkUrl -> "url"
+        Map(chkFile -> DocumentTypeDomainObject.FILE_ID,
+            chkText -> DocumentTypeDomainObject.TEXT_ID,
+            chkHtml -> DocumentTypeDomainObject.HTML_ID,
+            chkUrl -> DocumentTypeDomainObject.URL_ID
         ).filterKeys(_.isChecked).values.toList match {
           case Nil => None
           case values => Some(values)
         }
       }
 
-    val statusesOpt: Option[List[String]] =
+    val phasesOpt: Option[Seq[LifeCyclePhase]] =
       if (basicFormUI.chkStatus.isUnchecked) None
       else {
-        import basicFormUI.lytStatus._
+        import basicFormUI.lytPhases._
 
-        Map(chkNew -> "new",
-            chkPublished -> "published",
-            chkUnpublished -> "unpublished",
-            chkApproved -> "approved",
-            chkDisapproved -> "disapproved",
-            chkExpired -> "expired"       // archived
-        ).filterKeys(_.isChecked).values.toList match {
+        Map(chkNew -> LifeCyclePhase.NEW,
+            chkPublished -> LifeCyclePhase.PUBLISHED,
+            chkUnpublished -> LifeCyclePhase.UNPUBLISHED,
+            chkApproved -> LifeCyclePhase.APPROVED,
+            chkDisapproved -> LifeCyclePhase.DISAPPROVED,
+            chkArchived -> LifeCyclePhase.ARCHIVED
+        ).filterKeys(_.isChecked).values.toSeq match {
           case Nil => None
           case values => Some(values)
         }
@@ -200,10 +200,10 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
 
         Seq(DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE, DocumentIndex.FIELD__META_TEXT,
             DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS, DocumentIndex.FIELD__TEXT
-        ).map(field => """%s:*"%s"*""".format(field, escapedText)).mkString("+(", " OR " ,")")
-      },
-      typesOpt.map(_.mkString("type:(", " OR ", ")")),
-      statusesOpt.map(_.mkString("status:(", " OR ", ")"))
+        ).map(field => """%s:"%s"*""".format(field, escapedText)).mkString("(", " OR " ,")")
+      }//,
+      //typesOpt.map(_.mkString("type:(", " OR ", ")")),
+      //statusesOpt.map(_.mkString("status:(", " OR ", ")"))
     ).flatten |> {
       case Nil => "*:*"
       case terms => terms.mkString(" AND ")
@@ -217,7 +217,15 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
           "%s:[%s TO %s]".format(DocumentIndex.FIELD__META_ID, idRange.start.getOrElse("*"), idRange.end.getOrElse("*"))
         )
       }
+
+      for (types <- typesOpt) {
+        solrQuery.addFilterQuery(
+          "%s:%s".format(DocumentIndex.FIELD__DOC_TYPE_ID, types.mkString("(", " OR " ,")"))
+        )
+      }
     } |>> { solrQuery =>
+
+      solrQuery.setRows(20)
       if (logger.isDebugEnabled) logger.debug("Projection final SOLr query: %s.".format(solrQuery))
     }
   } // def createSolrQuery()
@@ -227,10 +235,3 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
 
   override def notifyListeners(): Unit = notifyListeners(selection)
 }
-
-//DocumentIndex.FIELD__META_ID,
-//DocumentIndex.FIELD__META_HEADLINE,
-//DocumentIndex.FIELD__META_TEXT,
-//DocumentIndex.FIELD__TEXT,
-//DocumentIndex.FIELD__KEYWORD,
-//DocumentIndex.FIELD__ALIAS
