@@ -16,8 +16,8 @@ import org.apache.lucene.search.TermQuery;
 /**
  * Rewrites queries containing {@link DocumentIndex#FIELD__PHASE} fields with
  * combination of {@link DocumentIndex#FIELD__STATUS} and date ranges.
- * 
- * @see imcode.server.document.LifeCyclePhase#asQuery(java.util.Date) 
+ *
+ * @see imcode.server.document.LifeCyclePhase#asQuery(java.util.Date)
  */
 public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
 
@@ -25,7 +25,7 @@ public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
         super(index);
     }
 
-    
+
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return super.search(fixQuery(query), searchingUser);
     }
@@ -36,26 +36,26 @@ public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
     }
 
     Query fixQuery(Query query) {
-        if (query instanceof BooleanQuery ) {
-            BooleanQuery booleanQuery = (BooleanQuery) query ;
+        if (query instanceof BooleanQuery) {
+            BooleanQuery booleanQuery = (BooleanQuery) query;
             BooleanClause[] clauses = booleanQuery.getClauses();
-            for ( BooleanClause clause : clauses ) {
+            for (BooleanClause clause : clauses) {
                 clause.setQuery(fixQuery(clause.getQuery()));
             }
-        } else if ( query instanceof TermQuery ) {
+        } else if (query instanceof TermQuery) {
             TermQuery termQuery = (TermQuery) query;
             Term term = termQuery.getTerm();
-            if ( DocumentIndex.FIELD__PHASE.equals(term.field())) {
-                LifeCyclePhase[] allPhases = LifeCyclePhase.ALL ;
+            if (DocumentIndex.FIELD__PHASE.equals(term.field())) {
+                LifeCyclePhase[] allPhases = LifeCyclePhase.ALL;
                 Date now = new Date();
-                for ( LifeCyclePhase phase : allPhases ) {
-                    if ( phase.toString().equals(term.text()) ) {
+                for (LifeCyclePhase phase : allPhases) {
+                    if (phase.toString().equals(term.text())) {
                         return phase.asQuery(now);
                     }
                 }
             }
         }
-        
-        return query ;
+
+        return query;
     }
 }

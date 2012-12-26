@@ -131,7 +131,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
       }
 
     val phasesOpt: Option[Seq[LifeCyclePhase]] =
-      if (basicFormUI.chkStatus.isUnchecked) None
+      if (basicFormUI.chkPhase.isUnchecked) None
       else {
         import basicFormUI.lytPhases._
 
@@ -200,13 +200,13 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
 
         Seq(DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE, DocumentIndex.FIELD__META_TEXT,
             DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS, DocumentIndex.FIELD__TEXT
-        ).map(field => """%s:"%s"*""".format(field, escapedText)).mkString("(", " OR " ,")")
+        ).map(field => """%s:"%s"*""".format(field, escapedText)).mkString(" ")
       }//,
       //typesOpt.map(_.mkString("type:(", " OR ", ")")),
       //statusesOpt.map(_.mkString("status:(", " OR ", ")"))
     ).flatten |> {
       case Nil => "*:*"
-      case terms => terms.mkString(" AND ")
+      case terms => terms.mkString(" ")
     } |> { solrQueryStirng =>
       if (logger.isDebugEnabled) logger.debug("Projection SOLr query string: %s.".format(solrQueryStirng))
 
@@ -220,11 +220,28 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
 
       for (types <- typesOpt) {
         solrQuery.addFilterQuery(
-          "%s:%s".format(DocumentIndex.FIELD__DOC_TYPE_ID, types.mkString("(", " OR " ,")"))
+          "%s:%s".format(DocumentIndex.FIELD__DOC_TYPE_ID, types.mkString(" "))
+        )
+      }
+
+      for (phases <- phasesOpt) {
+//        val queries = phases.map {
+//          case LifeCyclePhase.NEW =>
+//          case LifeCyclePhase.PUBLISHED,
+//          case LifeCyclePhase.UNPUBLISHED,
+//          case LifeCyclePhase.APPROVED,
+//          case LifeCyclePhase.DISAPPROVED,
+//          case LifeCyclePhase.ARCHIVED
+//        }
+
+        val now = new java.util.Date
+        val queries = phases.map(_.asQuery(now)).mkString("((", ") (" ,"))")
+
+        solrQuery.addFilterQuery(
+          queries
         )
       }
     } |>> { solrQuery =>
-
       solrQuery.setRows(20)
       if (logger.isDebugEnabled) logger.debug("Projection final SOLr query: %s.".format(solrQuery))
     }

@@ -26,8 +26,8 @@ class BasicFilter {
       FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.type", ui.chkType, ui.lytType)
     }
 
-    ui.chkStatus.addValueChangeHandler  {
-      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.status", ui.chkStatus, ui.lytPhases)
+    ui.chkPhase.addValueChangeHandler  {
+      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.status", ui.chkPhase, ui.lytPhases)
     }
 
     ui.chkAdvanced.addValueChangeHandler {
@@ -51,7 +51,7 @@ class BasicFilter {
     ui.chkText.checked = values.text.isDefined
     ui.chkType.checked = values.docType.isDefined
     ui.chkAdvanced.checked = values.advanced.isDefined
-    doto(ui.chkIdRange, ui.chkText, ui.chkType, ui.chkStatus, ui.chkAdvanced) {
+    doto(ui.chkIdRange, ui.chkText, ui.chkType, ui.chkPhase, ui.chkAdvanced) {
       //_.fireValueChange(true)
       _.check()
     }

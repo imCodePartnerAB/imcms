@@ -42,7 +42,7 @@ public interface DocumentIndex {
      * This field is not stored in an index and can not be used in direct SOLr queries.
      * Queries using this field must be rewritten using combination of {@link #FIELD__STATUS} and lifecycle dates
      * intervals before submission to SOLr.
-     * @see PhaseQueryFixingDocumentIndex
+     * @see imcode.server.PhaseQueryFixingDocumentIndex
      */
     String FIELD__PHASE = "phase" ;
     String FIELD__MIME_TYPE = "mime_type";

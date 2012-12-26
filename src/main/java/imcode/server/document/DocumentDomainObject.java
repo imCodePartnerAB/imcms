@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import scala.Option$;
 
 /**
  * Parent of all imCMS document types.
@@ -153,18 +154,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return document;
     }
 
-    /**
-     * Deprecated with no replacement.
-     */
-    @Deprecated
     public Date getArchivedDatetime() {
         return meta.getArchivedDatetime();
     }
 
-    /**
-     * Deprecated with no replacement.
-     */
-    @Deprecated
     public void setArchivedDatetime(Date v) {
         meta.setArchivedDatetime(v);
     }
@@ -187,6 +180,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     /**
      * Returns the last user who modified this document.
+     *
      * @return the last user who modified this document or null is there is no associated user.
      */
     public Integer getModifierId() {
@@ -352,7 +346,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public boolean isArchived() {
-        return hasBeenArchivedAtTime(new Date());
+        return hasBeenArchivedAtTime(meta, new Date());
     }
 
     public boolean isLinkableByOtherUsers() {
@@ -372,15 +366,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public boolean isPublished() {
-        return isPublishedAtTime(new Date());
+        return isPublishedAtTime(meta, new Date());
     }
 
     public boolean isActive() {
-        return isActiveAtTime(new Date());
+        return isActiveAtTime(meta, new Date());
     }
 
-    private boolean isActiveAtTime(Date now) {
-        return isPublishedAtTime(now) && !hasBeenArchivedAtTime(now);
+    private static boolean isActiveAtTime(Meta meta, Date now) {
+        return isPublishedAtTime(meta, now) && !hasBeenArchivedAtTime(meta, now);
     }
 
     public boolean isSearchDisabled() {
@@ -431,7 +425,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return getId();
     }
 
-    private boolean hasBeenArchivedAtTime(Date time) {
+    private static boolean hasBeenArchivedAtTime(Meta meta, Date time) {
         Date archivedDatetime = meta.getArchivedDatetime();
         return archivedDatetime != null && archivedDatetime.before(time);
     }
@@ -446,32 +440,27 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setDocumentPermissionSetTypeForRoleId(RoleId roleId,
                                                       DocumentPermissionSetTypeDomainObject permissionSetType) {
-        getRolePermissionMappings().setPermissionSetTypeForRole(roleId,
-                permissionSetType);
+        getRolePermissionMappings().setPermissionSetTypeForRole(roleId, permissionSetType);
     }
 
-    public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeForRoleId(
-            RoleId roleId) {
+    public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeForRoleId(RoleId roleId) {
         return getRolePermissionMappings().getPermissionSetTypeForRole(roleId);
     }
 
-    private boolean isPublishedAtTime(Date date) {
-        boolean statusIsApproved = Document.PublicationStatus.APPROVED
-                .equals(meta.getPublicationStatus());
-        return statusIsApproved && publicationHasStartedAtTime(date)
-                && !publicationHasEndedAtTime(date);
+    private static boolean isPublishedAtTime(Meta meta, Date date) {
+        boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(meta.getPublicationStatus());
+
+        return statusIsApproved && publicationHasStartedAtTime(meta, date) && !publicationHasEndedAtTime(meta, date);
     }
 
-    private boolean publicationHasStartedAtTime(Date date) {
+    private static boolean publicationHasStartedAtTime(Meta meta, Date date) {
         Date publicationStartDatetime = meta.getPublicationStartDatetime();
-        return publicationStartDatetime != null
-                && publicationStartDatetime.before(date);
+        return publicationStartDatetime != null && publicationStartDatetime.before(date);
     }
 
-    private boolean publicationHasEndedAtTime(Date date) {
+    private static boolean publicationHasEndedAtTime(Meta meta, Date date) {
         Date publicationEndDatetime = meta.getPublicationEndDatetime();
-        return publicationEndDatetime != null
-                && publicationEndDatetime.before(date);
+        return publicationEndDatetime != null && publicationEndDatetime.before(date);
     }
 
     public DocumentPermissionSets getPermissionSets() {
@@ -485,22 +474,24 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public abstract void accept(DocumentVisitor documentVisitor);
 
     public LifeCyclePhase getLifeCyclePhase() {
-        return getLifeCyclePhaseAtTime(new Date());
+        return getLifeCyclePhaseAtTime(this, new Date());
     }
 
-    LifeCyclePhase getLifeCyclePhaseAtTime(Date time) {
+    public static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
         LifeCyclePhase lifeCyclePhase;
+        Meta meta = doc.getMeta();
+        if (meta == null) return LifeCyclePhase.NEW;
+
         Document.PublicationStatus publicationStatus = meta.getPublicationStatus();
-        if (Document.PublicationStatus.NEW.equals(publicationStatus)) {
+        if (publicationStatus == Document.PublicationStatus.NEW) {
             lifeCyclePhase = LifeCyclePhase.NEW;
-        } else if (Document.PublicationStatus.DISAPPROVED
-                .equals(publicationStatus)) {
+        } else if (publicationStatus == Document.PublicationStatus.DISAPPROVED) {
             lifeCyclePhase = LifeCyclePhase.DISAPPROVED;
         } else {
-            if (publicationHasEndedAtTime(time)) {
+            if (publicationHasEndedAtTime(meta, time)) {
                 lifeCyclePhase = LifeCyclePhase.UNPUBLISHED;
-            } else if (publicationHasStartedAtTime(time)) {
-                if (hasBeenArchivedAtTime(time)) {
+            } else if (publicationHasStartedAtTime(meta, time)) {
+                if (hasBeenArchivedAtTime(meta, time)) {
                     lifeCyclePhase = LifeCyclePhase.ARCHIVED;
                 } else {
                     lifeCyclePhase = LifeCyclePhase.PUBLISHED;
@@ -509,6 +500,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 lifeCyclePhase = LifeCyclePhase.APPROVED;
             }
         }
+
         return lifeCyclePhase;
     }
 

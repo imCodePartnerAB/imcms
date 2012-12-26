@@ -50,7 +50,7 @@ package object imcms {
 
     /**
      * @param arg first format arg
-     * @param @args rest param args
+     * @param args rest param args
      * @return formatted resource bundle i18n value corresponding to the
      */
     def f(arg: Any, args: Any*) = localeAndValue match {

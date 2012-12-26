@@ -11,6 +11,8 @@ import java.util.Date
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import imcode.server.document.textdocument.TextDocumentDomainObject
+import com.vaadin.terminal.ThemeResource
 
 // todo: ??? remember lytDate.chkEnd date when uncheked ???
 class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
@@ -30,6 +32,27 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   val ui = new LifeCycleEditorUI |>> { ui =>
     ui.publication.chkEnd.addValueChangeHandler {
       ui.publication.calEnd.setEnabled(ui.publication.chkEnd.checked)
+      updatePhase()
+    }
+
+    ui.publication.chkArchive.addValueChangeHandler {
+      ui.publication.calArchive.setEnabled(ui.publication.chkArchive.checked)
+      updatePhase()
+    }
+
+    ui.publication.sltStatus.addValueChangeHandler {
+      updatePhase()
+    }
+
+    ui.publication.calStart.addValueChangeHandler {
+      updatePhase()
+    }
+
+    ui.publication.calEnd.addValueChangeHandler {
+      updatePhase()
+    }
+    ui.publication.calArchive.addValueChangeHandler {
+      updatePhase()
     }
   }
 
@@ -53,13 +76,30 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     ui.publication.sltVersion.setItemCaption(DocumentVersion.WORKING_VERSION_NO, "doc.version.working".i)
     ui.publication.sltVersion.select(defaultVersionNo)
 
-    // publication status
     ui.publication.sltStatus.select(meta.getPublicationStatus)
 
-    // dates
     ui.publication.calStart.value = meta.getPublicationStartDatetime |> opt getOrElse new Date
     ui.publication.calEnd.value = meta.getPublicationEndDatetime
+    ui.publication.calArchive.value = meta.getArchivedDatetime
+
     ui.publication.chkEnd.checked = meta.getPublicationEndDatetime != null
+    ui.publication.chkArchive.checked = meta.getPublicationEndDatetime != null
+
+    updatePhase()
+  }
+
+  private def updatePhase() {
+    val doc = new TextDocumentDomainObject() |>> { doc =>
+      doc.setPublicationStartDatetime(ui.publication.calStart.value)
+      doc.setPublicationEndDatetime(if (ui.publication.chkEnd.checked) ui.publication.calEnd.value else null)
+      doc.setArchivedDatetime(if (ui.publication.chkArchive.checked) ui.publication.calArchive.value else null)
+      doc.setPublicationStatus(ui.publication.sltStatus.value)
+    }
+
+    val phase = doc.getLifeCyclePhase
+
+    ui.publication.lblPhase.setCaption("doc.publication.phase.id.%s".format(phase).i)
+    ui.publication.lblPhase.setIcon(new ThemeResource("icons/docstatus/%s.gif".format(phase)))
   }
 
   def collectValues(): ErrorsOrData = Right(
@@ -98,19 +138,28 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
   }
 
   object publication {
+    val lblPhase = new Label
     val ussPublisher = new UserSingleSelect
 
-    val sltStatus = new Select("Status") with SingleSelect[Document.PublicationStatus] with NoNullSelection {
-      addItem(Document.PublicationStatus.NEW, "New")
-      addItem(Document.PublicationStatus.APPROVED, "Approved")
-      addItem(Document.PublicationStatus.DISAPPROVED, "Disapproved")
+    val sltStatus = new Select("doc.publication.status.select".i) with SingleSelect[Document.PublicationStatus] with NoNullSelection with Immediate {
+      addItem(Document.PublicationStatus.NEW, "doc.publication.status.id.new".i, new ThemeResource("icons/docstatus/new.gif"))
+      addItem(Document.PublicationStatus.APPROVED, "doc.publication.status.id.approved".i, new ThemeResource("icons/docstatus/approved.gif"))
+      addItem(Document.PublicationStatus.DISAPPROVED, "doc.publication.status.id.disapproved".i, new ThemeResource("icons/docstatus/disapproved.gif"))
+//
+//      override def getItemIcon(itemId: AnyRef): ThemeResource = itemId.asInstanceOf[Document.PublicationStatus] |> { status =>
+//        new ThemeResource("icons/docstatus/%s.gif".format(status))
+//      }
+//
+//      override def getItemCaption(itemId: AnyRef): String = itemId.asInstanceOf[Document.PublicationStatus] |> { status =>
+//        "doc.publication.status.id.%s".format(status).i
+//      }
     }
 
     val sltVersion = new Select("Version") with SingleSelect[DocVersionNo] with NoNullSelection
 
-    val calStart = new PopupDateField with MinuteResolution with Now
-    val calArchive = new PopupDateField with MinuteResolution
-    val calEnd = new PopupDateField with MinuteResolution
+    val calStart = new PopupDateField with MinuteResolution with Immediate with Now
+    val calArchive = new PopupDateField with MinuteResolution with Immediate
+    val calEnd = new PopupDateField with MinuteResolution with Immediate
     val chkStart = new CheckBox("start") with Checked with ReadOnly // decoration, always read-only
     val chkArchive = new CheckBox("archive") with Immediate with AlwaysFireValueChange
     val chkEnd = new CheckBox("end") with Immediate with AlwaysFireValueChange
@@ -139,7 +188,12 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
       )
     }
 
-    content.addComponents(publication.sltStatus, publication.sltVersion, lytDate, publication.ussPublisher.ui)
+    private val lytPhase = new HorizontalLayout |>> { lyt =>
+      lyt.setCaption("Stage")
+      lyt.addComponent(publication.lblPhase)
+    }
+
+    content.addComponents(lytPhase, publication.sltStatus, publication.sltVersion, lytDate, publication.ussPublisher.ui)
   }
 
   this.addComponents(pnlInfo, pnlPublication)

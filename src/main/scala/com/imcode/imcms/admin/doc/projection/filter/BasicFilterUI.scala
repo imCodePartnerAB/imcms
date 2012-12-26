@@ -31,16 +31,16 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     this.addComponents(chkText, chkFile, chkHtml, chkUrl)
   }
 
-  val chkStatus = new CheckBox("docs_projection.basic_filter_lyt.chk_phase".i) with Immediate with ExposeValueChange
+  val chkPhase = new CheckBox("docs_projection.basic_filter_lyt.chk_phase".i) with Immediate with ExposeValueChange
   val lytPhases = new HorizontalLayout with Spacing with UndefinedSize {
     val chkNew = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_new".i)
-    val chkApproved = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_approved".i)
     val chkDisapproved = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_disapproved".i)
+    val chkApproved = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_approved".i)
     val chkPublished = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_published".i)
     val chkArchived = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_archived".i)
     val chkUnpublished = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_unpublished".i)
 
-    this.addComponents(chkNew, chkApproved, chkDisapproved, chkPublished, chkArchived, chkUnpublished)
+    this.addComponents(chkNew, chkDisapproved, chkApproved, chkPublished, chkArchived, chkUnpublished)
   }
 
   val chkAdvanced = new CheckBox("docs_projection.basic_filter_lyt.chk_advanced".i) with Immediate with ExposeValueChange
@@ -72,7 +72,7 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     "docs_projection.basic_filter_lyt.text" -> txtText,
     "docs_projection.basic_filter_lyt.chk_type" -> chkType,
     "docs_projection.basic_filter_lyt.type" -> lytType,
-    "docs_projection.basic_filter_lyt.chk_phase" -> chkStatus,
+    "docs_projection.basic_filter_lyt.chk_phase" -> chkPhase,
     "docs_projection.basic_filter_lyt.status" -> lytPhases,
     "docs_projection.basic_filter_lyt.chk_advanced" -> chkAdvanced,
     "docs_projection.basic_filter_lyt.advanced" -> lytAdvanced,

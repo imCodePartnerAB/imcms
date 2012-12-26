@@ -5,7 +5,7 @@ package vaadin
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
-import com.vaadin.terminal.Sizeable
+import com.vaadin.terminal.{Resource, Sizeable}
 import com.vaadin.ui.Layout.AlignmentHandler
 import com.vaadin.data.{Property, Item}
 import com.imcode.imcms.vaadin.data.{NullableProperty, GenericContainer, GenericProperty, ItemId}
@@ -293,8 +293,9 @@ package object ui {
   }
 
   trait GenericSelect[A <: ItemId] extends AbstractSelect with GenericContainer[A] {
-    def addItem(id: A, caption: String): Item = addItem(id) |>> { _ =>
+    def addItem(id: A, caption: String, icon: Resource = null): Item = addItem(id) |>> { _ =>
       setItemCaption(id, caption)
+      setItemIcon(id, icon)
     }
 
     def isSelected: Boolean
