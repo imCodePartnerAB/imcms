@@ -50,8 +50,8 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
   private var profileEditorOpt = Option.empty[ProfileEditor]
 
   val ui = new MetaEditorUI |>> { ui =>
-    ui.treeMenu.addItem("Appearance")
     ui.treeMenu.addItem("Life cycle")
+    ui.treeMenu.addItem("Appearance")
     ui.treeMenu.addItem("Access")
     ui.treeMenu.addItem("Search")
     ui.treeMenu.addItem("Categories")
@@ -108,8 +108,8 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
       }
     }
 
-    ui.sp.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE)
-    ui.treeMenu.select("Appearance")
+    ui.sp.setSplitPosition(20, Sizeable.UNITS_PERCENTAGE)
+    ui.treeMenu.select("Life cycle")
   } // ui
 
   def collectValues(): ErrorsOrData = {

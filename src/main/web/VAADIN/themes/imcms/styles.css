@@ -18,6 +18,12 @@
     width: 100%;
 }
 
+.im-separated-element-top {
+    border-top: solid 1px #a9a9a9;
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
 table#user_search,
 table#docs_projection_basic_filter,
 table#docs_projection_advanced_filter {

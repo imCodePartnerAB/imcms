@@ -50,7 +50,7 @@ public abstract class LifeCyclePhase {
     };
 
     public static final LifeCyclePhase[] ALL = new LifeCyclePhase[]{
-            NEW, APPROVED, DISAPPROVED,
+            NEW, DISAPPROVED, APPROVED,
             PUBLISHED, ARCHIVED, UNPUBLISHED
     };
 

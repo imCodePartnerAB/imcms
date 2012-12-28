@@ -77,7 +77,7 @@ public class TestDocumentDomainObject extends TestCase {
     }
 
     private void assertLifeCyclePhase(LifeCyclePhase lifeCyclePhase) {
-        assertEquals( lifeCyclePhase, document.getLifeCyclePhaseAtTime(new Date(1)) );
+        assertEquals( lifeCyclePhase, document.getLifeCyclePhaseAtTime(document, new Date(1)) );
     }
 
     public void testGetDocumentProperties() throws Exception {

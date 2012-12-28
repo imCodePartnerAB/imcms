@@ -13,7 +13,7 @@ class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCanc
 
   mainUI = docEditor.ui
 
-  this.setSize(500, 500)
+  this.setSize(600, 400)
 }
 
 
