@@ -16,7 +16,7 @@
         <solr.version>4.0.0</solr.version>
         <slf4j.version>1.7.2</slf4j.version>
         <scala.version>2.9.2</scala.version>
-        <springframework.version>3.1.2.RELEASE</springframework.version>
+        <springframework.version>3.2.0.RELEASE</springframework.version>
 
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
@@ -361,7 +361,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>4.1.6.Final</version>
+            <version>4.1.9.Final</version>
         </dependency>
 
         <dependency>
@@ -373,7 +373,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>4.3.0.Final</version>
+            <version>4.3.1.Final</version>
         </dependency>
 
         <dependency>
@@ -421,7 +421,7 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
+            <version>1.2.17</version>
 
             <exclusions>
                 <exclusion>
@@ -695,11 +695,9 @@
         </repository>
 
         <repository>
-            <id>com.springsource.repository.maven.release</id>
-            <url>http://maven.springframework.org/release/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+            <id>springsource-repo</id>
+            <name>SpringSource Repository</name>
+            <url>http://repo.springsource.org/release</url>
         </repository>
     </repositories>
 
@@ -733,12 +731,11 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <!--<version>3.1.0</version>-->
-                <version>3.0.1</version>
+                <version>3.1.0</version>
                 <configuration>
                     <jvmArgs>
                         <!-- ...-Xss64m...-->
-                        <jvmArg>-Xms64m</jvmArg>
+                        <jvmArg>-Xms1024m</jvmArg>
                         <jvmArg>-Xmx1024m</jvmArg>
                     </jvmArgs>
                     <args>
