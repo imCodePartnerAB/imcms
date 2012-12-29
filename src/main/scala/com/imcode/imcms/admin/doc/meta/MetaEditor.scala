@@ -42,18 +42,23 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
   private var profileEditorOpt = Option.empty[ProfileEditor]
 
   val ui = new MetaEditorUI |>> { ui =>
-    ui.treeMenu.addItem("doc_meta_editor.menu_item.life_cycle", "doc_meta_editor.menu_item.life_cycle".i)
-    ui.treeMenu.addItem("doc_meta_editor.menu_item.appearance", "doc_meta_editor.menu_item.appearance".i)
-    ui.treeMenu.addItem("doc_meta_editor.menu_item.access", "doc_meta_editor.menu_item.access".i)
-    ui.treeMenu.addItem("doc_meta_editor.menu_item.search", "doc_meta_editor.menu_item.search".i)
-    ui.treeMenu.addItem("doc_meta_editor.menu_item.categories", "doc_meta_editor.menu_item.categories".i)
+    ui.treeEditors.addItem("doc_meta_editor.menu_item.life_cycle", "doc_meta_editor.menu_item.life_cycle".i)
+    ui.treeEditors.addItem("doc_meta_editor.menu_item.appearance", "doc_meta_editor.menu_item.appearance".i)
+    ui.treeEditors.addItem("doc_meta_editor.menu_item.access", "doc_meta_editor.menu_item.access".i)
+    ui.treeEditors.addItem("doc_meta_editor.menu_item.search", "doc_meta_editor.menu_item.search".i)
+    ui.treeEditors.addItem("doc_meta_editor.menu_item.categories", "doc_meta_editor.menu_item.categories".i)
 
     // According to v.4.x.x may be defined for text docs only
     // todo: disable profile tag =or= add lable =not supported/available =or= show empty page instead of editor
-    if (doc.isInstanceOf[TextDocumentDomainObject]) ui.treeMenu.addItem("doc_meta_editor.menu_item.profile", "doc_meta_editor.menu_item.profile".i)
+    if (doc.isInstanceOf[TextDocumentDomainObject]) ui.treeEditors.addItem("doc_meta_editor.menu_item.profile", "doc_meta_editor.menu_item.profile".i)
 
-    ui.treeMenu.addValueChangeHandler {
-      ui.treeMenu.getValue match {
+    ui.treeEditors.addValueChangeHandler {
+      ui.treeEditors.value match {
+        case "doc_meta_editor.menu_item.life_cycle" =>
+          if (lifeCycleEditorOpt.isEmpty) lifeCycleEditorOpt = Some(new LifeCycleEditor(doc.getMeta))
+
+          ui.pnlCurrentEditor.setContent(lifeCycleEditorOpt.get.ui)
+
         case "doc_meta_editor.menu_item.appearance" =>
           if (appearanceEditorOpt.isEmpty) {
             val i18nMetas: Map[I18nLanguage, I18nMeta] = Option(doc.getMetaId) match {
@@ -68,40 +73,34 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
             )
           }
 
-          ui.pnlMenuItem.setContent(appearanceEditorOpt.get.ui)
-
-        case "doc_meta_editor.menu_item.life_cycle" =>
-          if (lifeCycleEditorOpt.isEmpty) lifeCycleEditorOpt = Some(new LifeCycleEditor(doc.getMeta))
-
-          ui.pnlMenuItem.setContent(lifeCycleEditorOpt.get.ui)
+          ui.pnlCurrentEditor.setContent(appearanceEditorOpt.get.ui)
 
         case "doc_meta_editor.menu_item.access" =>
-          if (accessEditorOpt.isEmpty) accessEditorOpt =
-            Some(new AccessEditor(doc, ui.getApplication.imcmsUser))
+          if (accessEditorOpt.isEmpty) accessEditorOpt = Some(new AccessEditor(doc, ui.getApplication.imcmsUser))
 
-          ui.pnlMenuItem.setContent(accessEditorOpt.get.ui)
+          ui.pnlCurrentEditor.setContent(accessEditorOpt.get.ui)
 
-        case "doc_meta_editor.menu_item.access" =>
+        case "doc_meta_editor.menu_item.search" =>
           if (searchSettingsEditorOpt.isEmpty) searchSettingsEditorOpt = Some(new SearchSettingsEditor(doc.getMeta))
 
-          ui.pnlMenuItem.setContent(searchSettingsEditorOpt.get.ui)
+          ui.pnlCurrentEditor.setContent(searchSettingsEditorOpt.get.ui)
 
         case "doc_meta_editor.menu_item.categories" =>
           if (categoryEditorOpt.isEmpty) categoryEditorOpt = Some(new CategoryEditor(doc.getMeta))
 
-          ui.pnlMenuItem.setContent(categoryEditorOpt.get.ui)
+          ui.pnlCurrentEditor.setContent(categoryEditorOpt.get.ui)
 
         case "doc_meta_editor.menu_item.profile" =>
           if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], ui.getApplication.imcmsUser))
 
-          ui.pnlMenuItem.setContent(profileEditorOpt.get.ui)
+          ui.pnlCurrentEditor.setContent(profileEditorOpt.get.ui)
 
         case _ =>
       }
     }
 
     ui.sp.setSplitPosition(20, Sizeable.UNITS_PERCENTAGE)
-    ui.treeMenu.select("doc_meta_editor.menu_item.life_cycle")
+    ui.treeEditors.select("doc_meta_editor.menu_item.life_cycle")
   } // ui
 
   def collectValues(): ErrorsOrData = {
