@@ -32,17 +32,6 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
       addItem(Document.PublicationStatus.NEW, "doc_publication_status_name.new".i)
       addItem(Document.PublicationStatus.DISAPPROVED, "doc_publication_status_name.disapproved".i)
       addItem(Document.PublicationStatus.APPROVED, "doc_publication_status_name.approved".i)
-//      addItem(Document.PublicationStatus.NEW, "doc_publication_status_name.new".i, new ThemeResource("icons/docstatus/new.gif"))
-//      addItem(Document.PublicationStatus.APPROVED, "doc_publication_status_name.approved".i, new ThemeResource("icons/docstatus/approved.gif"))
-//      addItem(Document.PublicationStatus.DISAPPROVED, "doc_publication_status_name.disapproved".i, new ThemeResource("icons/docstatus/disapproved.gif"))
-//
-//      override def getItemIcon(itemId: AnyRef): ThemeResource = itemId.asInstanceOf[Document.PublicationStatus] |> { status =>
-//        new ThemeResource("icons/docstatus/%s.gif".format(status))
-//      }
-//
-//      override def getItemCaption(itemId: AnyRef): String = itemId.asInstanceOf[Document.PublicationStatus] |> { status =>
-//        "doc_publication_status_name.%s".format(status).i
-//      }
     }
 
     val lytPhase = new HorizontalLayout with Spacing with UndefinedSize |>> { lyt =>

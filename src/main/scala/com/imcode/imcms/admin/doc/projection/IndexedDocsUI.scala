@@ -16,7 +16,7 @@ class IndexedDocsUI(container: IndexedDocsContainer) extends Table(null, contain
   setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY)
 
   setColumnHeaders(container.getContainerPropertyIds.asScala.map(_.i).toArray)
-  Seq("docs_projection.tbl_column_name.parents", "docs_projection.tbl_column_name.children").foreach { setColumnCollapsed(_, true) }
+  Seq("docs_projection.tbl_column.parents", "docs_projection.tbl_column.children").foreach { setColumnCollapsed(_, true) }
 
   override def getItemIcon(itemId: AnyRef): ThemeResource = container.getItem(itemId) match {
     case null => null

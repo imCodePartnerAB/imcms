@@ -30,14 +30,14 @@ class IndexedDocsContainer(
     with ImcmsServicesSupport {
 
   private val propertyIdToType = ListMap(
-    "docs_projection.tbl_column_name.ix" -> classOf[Ix],
-    "docs_projection.tbl_column_name.id" -> classOf[DocId],
-    "docs_projection.tbl_column_name.type" -> classOf[JInteger],
-    "docs_projection.tbl_column_name.language" -> classOf[I18nLanguage],  // todo: when multi-language support is enabled
-    "docs_projection.tbl_column_name.phase" -> classOf[String],
-    "docs_projection.tbl_column_name.alias" -> classOf[String],
-    "docs_projection.tbl_column_name.parents" -> classOf[Component],
-    "docs_projection.tbl_column_name.children" -> classOf[Component]
+    "docs_projection.tbl_column.ix" -> classOf[Ix],
+    "docs_projection.tbl_column.id" -> classOf[DocId],
+    "docs_projection.tbl_column.type" -> classOf[JInteger],
+    "docs_projection.tbl_column.language" -> classOf[I18nLanguage],  // todo: when multi-language support is enabled
+    "docs_projection.tbl_column.phase" -> classOf[String],
+    "docs_projection.tbl_column.alias" -> classOf[String],
+    "docs_projection.tbl_column.parents" -> classOf[Component],
+    "docs_projection.tbl_column.children" -> classOf[Component]
     // todo: version when version support is enabled
     // todo: parents, children <-> referenced, references
   )
@@ -140,11 +140,11 @@ class IndexedDocsContainer(
 
   // todo implement
   override val getSortableContainerPropertyIds: JCollection[_] = ju.Arrays.asList(
-    "docs_projection.tbl_column_name.id",
-    "docs_projection.tbl_column_name.language",
-    "docs_projection.tbl_column_name.type",
-    "docs_projection.tbl_column_name.status",
-    "docs_projection.tbl_column_name.alias"
+    "docs_projection.tbl_column.id",
+    "docs_projection.tbl_column.language",
+    "docs_projection.tbl_column.type",
+    "docs_projection.tbl_column.status",
+    "docs_projection.tbl_column.alias"
   )
 
   override def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef): Item = throw new UnsupportedOperationException
@@ -161,14 +161,14 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
     override def getItemProperty(id: AnyRef) = FunctionProperty(id match {
-      case "docs_projection.tbl_column_name.ix" => () => ix + 1 : JInteger
-      case "docs_projection.tbl_column_name.id" => () => doc.getId : JInteger
-      case "docs_projection.tbl_column_name.type" => () => doc.getDocumentTypeId : JInteger
-      case "docs_projection.tbl_column_name.language" => () => doc.getLanguage
-      case "docs_projection.tbl_column_name.alias" => () => doc.getAlias
-      case "docs_projection.tbl_column_name.phase" => () => "doc_publication_phase_name.%s".format(doc.getLifeCyclePhase).i
+      case "docs_projection.tbl_column.ix" => () => ix + 1 : JInteger
+      case "docs_projection.tbl_column.id" => () => doc.getId : JInteger
+      case "docs_projection.tbl_column.type" => () => doc.getDocumentTypeId : JInteger
+      case "docs_projection.tbl_column.language" => () => doc.getLanguage
+      case "docs_projection.tbl_column.alias" => () => doc.getAlias
+      case "docs_projection.tbl_column.phase" => () => "doc_publication_phase_name.%s".format(doc.getLifeCyclePhase).i
 
-      case "docs_projection.tbl_column_name.parents" =>
+      case "docs_projection.tbl_column.parents" =>
         () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
           case Nil => null
           case pair :: Nil =>
@@ -193,7 +193,7 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
             }
         }
 
-      case "docs_projection.tbl_column_name.children" =>
+      case "docs_projection.tbl_column.children" =>
         () => doc match {
           case textDoc: TextDocumentDomainObject =>
             imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).asScala.toList match {

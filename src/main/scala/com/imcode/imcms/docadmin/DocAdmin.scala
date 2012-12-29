@@ -285,11 +285,11 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     addContainerProperties(ui.ttMenu,
-      PropertyDescriptor[DocId]("docs_projection.tbl_column_name.id".i),
-      PropertyDescriptor[String]("docs_projection.tbl_column_name.headline".i),
-      PropertyDescriptor[String]("docs_projection.tbl_column_name.alias".i),
-      PropertyDescriptor[String]("docs_projection.tbl_column_name.type".i),
-      PropertyDescriptor[String]("docs_projection.tbl_column_name.status".i)
+      PropertyDescriptor[DocId]("docs_projection.tbl_column.id".i),
+      PropertyDescriptor[String]("docs_projection.tbl_column.headline".i),
+      PropertyDescriptor[String]("docs_projection.tbl_column.alias".i),
+      PropertyDescriptor[String]("docs_projection.tbl_column.type".i),
+      PropertyDescriptor[String]("docs_projection.tbl_column.status".i)
     )
 
     // todo: ??? search for current language + default version ???

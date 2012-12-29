@@ -4,7 +4,6 @@ package admin.doc.meta
 
 import scala.collection.JavaConverters._
 
-import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.document.{DocumentDomainObject}
 
@@ -16,21 +15,14 @@ import com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
 import com.imcode.imcms.admin.doc.meta.appearance.AppearanceEditor
 import com.imcode.imcms.admin.doc.meta.lifecycle.LifeCycleEditor
 import com.imcode.imcms.admin.doc.meta.category.CategoryEditor
-
-import com.vaadin.terminal.{Sizeable, ExternalResource}
-import com.vaadin.data.Validator
-import com.vaadin.data.Validator.InvalidValueException
-import com.vaadin.ui._
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
-
+import com.vaadin.terminal.Sizeable
 
 /**
  * Doc's meta editor.
  *
  * @param doc used to initialize editor's values. It is never modified.
  */
-// todo: i18n
+// todo: i18n editors
 // todo: appearance: alias prefix should be set to context path
 // todo: appearance: alias check unique while typing
 // todo: appearance: I18nMetaEditorUI link image instead of text
@@ -50,19 +42,19 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
   private var profileEditorOpt = Option.empty[ProfileEditor]
 
   val ui = new MetaEditorUI |>> { ui =>
-    ui.treeMenu.addItem("Life cycle")
-    ui.treeMenu.addItem("Appearance")
-    ui.treeMenu.addItem("Access")
-    ui.treeMenu.addItem("Search")
-    ui.treeMenu.addItem("Categories")
+    ui.treeMenu.addItem("doc_meta_editor.menu_item.life_cycle", "doc_meta_editor.menu_item.life_cycle".i)
+    ui.treeMenu.addItem("doc_meta_editor.menu_item.appearance", "doc_meta_editor.menu_item.appearance".i)
+    ui.treeMenu.addItem("doc_meta_editor.menu_item.access", "doc_meta_editor.menu_item.access".i)
+    ui.treeMenu.addItem("doc_meta_editor.menu_item.search", "doc_meta_editor.menu_item.search".i)
+    ui.treeMenu.addItem("doc_meta_editor.menu_item.categories", "doc_meta_editor.menu_item.categories".i)
 
     // According to v.4.x.x may be defined for text docs only
     // todo: disable profile tag =or= add lable =not supported/available =or= show empty page instead of editor
-    if (doc.isInstanceOf[TextDocumentDomainObject]) ui.treeMenu.addItem("Profile")
+    if (doc.isInstanceOf[TextDocumentDomainObject]) ui.treeMenu.addItem("doc_meta_editor.menu_item.profile", "doc_meta_editor.menu_item.profile".i)
 
     ui.treeMenu.addValueChangeHandler {
       ui.treeMenu.getValue match {
-        case "Appearance" =>
+        case "doc_meta_editor.menu_item.appearance" =>
           if (appearanceEditorOpt.isEmpty) {
             val i18nMetas: Map[I18nLanguage, I18nMeta] = Option(doc.getMetaId) match {
               case Some(id) =>
@@ -78,28 +70,28 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
           ui.pnlMenuItem.setContent(appearanceEditorOpt.get.ui)
 
-        case "Life cycle" =>
+        case "doc_meta_editor.menu_item.life_cycle" =>
           if (lifeCycleEditorOpt.isEmpty) lifeCycleEditorOpt = Some(new LifeCycleEditor(doc.getMeta))
 
           ui.pnlMenuItem.setContent(lifeCycleEditorOpt.get.ui)
 
-        case "Access" =>
+        case "doc_meta_editor.menu_item.access" =>
           if (accessEditorOpt.isEmpty) accessEditorOpt =
             Some(new AccessEditor(doc, ui.getApplication.imcmsUser))
 
           ui.pnlMenuItem.setContent(accessEditorOpt.get.ui)
 
-        case "Search" =>
+        case "doc_meta_editor.menu_item.access" =>
           if (searchSettingsEditorOpt.isEmpty) searchSettingsEditorOpt = Some(new SearchSettingsEditor(doc.getMeta))
 
           ui.pnlMenuItem.setContent(searchSettingsEditorOpt.get.ui)
 
-        case "Categories" =>
+        case "doc_meta_editor.menu_item.categories" =>
           if (categoryEditorOpt.isEmpty) categoryEditorOpt = Some(new CategoryEditor(doc.getMeta))
 
           ui.pnlMenuItem.setContent(categoryEditorOpt.get.ui)
 
-        case "Profile" =>
+        case "doc_meta_editor.menu_item.profile" =>
           if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], ui.getApplication.imcmsUser))
 
           ui.pnlMenuItem.setContent(profileEditorOpt.get.ui)
@@ -109,7 +101,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     }
 
     ui.sp.setSplitPosition(20, Sizeable.UNITS_PERCENTAGE)
-    ui.treeMenu.select("Life cycle")
+    ui.treeMenu.select("doc_meta_editor.menu_item.life_cycle")
   } // ui
 
   def collectValues(): ErrorsOrData = {
@@ -179,22 +171,4 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
   } // data
 
   def resetValues() {}
-}
-
-
-/**
- * Editor UI's main component is a horizontal split panel.
- * -Left component - navigation tree.
- * -Right component - scrollable panel.
- */
-class MetaEditorUI extends VerticalLayout with FullSize with NoMargin {
-
-  val sp = new HorizontalSplitPanel with FullSize
-  val treeMenu = new Tree with SingleSelect[MenuItemId] with NoChildrenAllowed with Immediate
-  val pnlMenuItem = new Panel with LightStyle with FullSize
-
-  sp.setFirstComponent(treeMenu)
-  sp.setSecondComponent(pnlMenuItem)
-
-  addComponent(sp)
 }
