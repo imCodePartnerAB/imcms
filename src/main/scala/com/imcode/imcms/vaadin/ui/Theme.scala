@@ -2,6 +2,7 @@ package com.imcode
 package imcms.vaadin
 
 import com.vaadin.terminal.{ThemeResource => TR}
+import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
 
 object Theme {
   implicit val stringToThemeResource = new TR(_:String)
@@ -30,6 +31,11 @@ object Theme {
       val TabTemplates32: TR = "icons/16/document-ppt.png"
       val TabConf32: TR = "icons/16/document-txt.png"
       val TabLogs32: TR = "icons/16/document.png"
+    }
+
+    object Doc {
+      def phase(lifeCyclePhase: LifeCyclePhase): TR = "icons/docstatus/%s.gif".format(lifeCyclePhase)
+      def phase(doc: DocumentDomainObject): TR = if (doc == null) null else phase(doc.getLifeCyclePhase)
     }
   }
 }

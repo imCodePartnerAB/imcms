@@ -11,9 +11,10 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/projection/advanced_filte
     val drCreated = new DateRangeUI("docs_projection.advanced_filter_lyt.dr_created".i) with DateRangeUISetup
     val drModified = new DateRangeUI("docs_projection.advanced_filter_lyt.dr_modified".i) with DateRangeUISetup
     val drPublished = new DateRangeUI("docs_projection.advanced_filter_lyt.dr_published".i) with DateRangeUISetup
+    val drArchived = new DateRangeUI("docs_projection.advanced_filter_lyt.dr_archived".i) with DateRangeUISetup
     val drExpired = new DateRangeUI("docs_projection.advanced_filter_lyt.dr_expired".i) with DateRangeUISetup
 
-    this.addComponents(drCreated, drModified, drPublished, drExpired)
+    this.addComponents(drCreated, drModified, drPublished, drArchived, drExpired)
   }
 
   val chkCategories = new CheckBox("docs_projection.advanced_filter_lyt.chk_categories".i) with Immediate

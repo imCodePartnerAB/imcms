@@ -8,13 +8,3 @@ package admin.doc.projection
 //    // ref -> DocumentReferences! 3 -> http://imcms.dev.imcode.com/servlet/DocumentReferences?returnurl=ListDocuments%3Fstart%3D1001%26end%3D1031%26showspan%3D%2BLista%2B&id=1001
 //    // children LIST DOCS -> 1023 - Testdoc-swe -> http://imcms.dev.imcode.com/servlet/ListDocuments?start=1023&end=1023
 // >>> Html.getLinkedStatusIconTemplate(document, user, request )
-
-
-//trait DocSelectDialog extends CustomSizeDialog { this: OkCancelDialog =>
-//  val search = new DocsProjection(new AllDocsContainer)
-//
-//  mainUI = search.ui
-//
-//  search.listen { btnOk setEnabled _.nonEmpty }
-//  search.notifyListeners()
-//}

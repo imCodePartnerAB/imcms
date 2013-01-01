@@ -4,11 +4,11 @@ package admin.doc.projection.filter
 
 // todo: I18n is not properly implemented - should not be static
 object DateRangeType extends Enumeration {
-  val Undefined = Value("dr.cb_type.item.undefined".i)
-  val Custom = Value("dr.cb_type.item.custom".i)
-  val Day = Value("dr.cb_type.item.day".i)
-  val Week = Value("dr.cb_type.item.week".i)
-  val Month = Value("dr.cb_type.item.month".i)
-  val Quarter = Value("dr.cb_type.item.quarter".i)
-  val Year = Value("dr.cb_type.item.year".i)
+  val Undefined = Value("date_range.cb_type.item.undefined".i)
+  val Custom = Value("date_range.cb_type.item.custom".i)
+  val Day = Value("date_range.cb_type.item.day".i)
+  val Week = Value("date_range.cb_type.item.week".i)
+  val Month = Value("date_range.cb_type.item.month".i)
+  val Quarter = Value("date_range.cb_type.item.quarter".i)
+  val Year = Value("date_range.cb_type.item.year".i)
 }

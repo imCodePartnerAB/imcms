@@ -15,6 +15,7 @@ import java.lang.{InterruptedException, Thread}
 import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import java.util.Date
 import org.apache.solr.client.solrj.response.QueryResponse
+import java.net.URLDecoder
 
 /**
  * Document index service low level operations.
@@ -57,7 +58,6 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   }
 
 
-  // todo: consider using other data structure
   @throws(classOf[SolrInputDocumentCreateException])
   def mkSolrInputDocsView(): SeqView[(DocId, Seq[SolrInputDocument]), Seq[_]] = {
     documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala |> { languages =>
@@ -71,7 +71,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
   def search(solrServer: SolrServer, solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
     if (logger.isDebugEnabled) {
-      logger.debug("Searching using solrQuery: %s, searchingUser: %s.".format(solrQuery, searchingUser))
+      logger.debug("Searching using solrQuery: %s, searchingUser: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8"), searchingUser))
     }
 
     val solrDocs = solrServer.query(solrQuery).getResults

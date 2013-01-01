@@ -93,7 +93,7 @@ class SysAdmin extends com.vaadin.Application with ImcmsApplication { app =>
       def addMenuItem(parentItem: TreeMenuItem, item: TreeMenuItem) {
         hspManagers.menu.addItem(item)
         hspManagers.menu.setParent(item, parentItem)
-        hspManagers.menu.setItemCaption(item, item.id |> I18n.i)
+        hspManagers.menu.setItemCaption(item, item.id |> I18nResource.i)
         hspManagers.menu.setItemIcon(item, item.icon)
 
         item.children |> { children =>

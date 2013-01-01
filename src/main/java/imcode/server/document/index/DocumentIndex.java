@@ -40,7 +40,7 @@ public interface DocumentIndex {
     String FIELD__STATUS = "status";
     /**
      * This field is not stored in an index and can not be used in direct SOLr queries.
-     * Queries using this field must be rewritten using combination of {@link #FIELD__STATUS} and lifecycle dates
+     * Queries containing this field must be rewritten using combination of {@link #FIELD__STATUS} and lifecycle dates
      * intervals before submission to SOLr.
      * @see imcode.server.PhaseQueryFixingDocumentIndex
      */

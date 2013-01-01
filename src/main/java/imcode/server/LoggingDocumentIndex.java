@@ -22,6 +22,9 @@ import org.apache.lucene.search.TermQuery;
 import com.imcode.db.Database;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 
+/**
+ * Logs queries {@link #LOGGED_FIELDS} parameters values into DB.
+ */
 public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
     private final Database database;

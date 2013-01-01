@@ -51,7 +51,7 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     val btnSaveAs = new Button("docs_projection.basic_filter_lyt.btn_advanced_save_as".i) with SmallStyle with Disabled
     val btnDelete = new Button("docs_projection.basic_filter_lyt.btn_advanced_delete".i) with SmallStyle with Disabled
 
-    doto(cbTypes, btnCustomize, btnSaveAs, btnDelete) { component =>
+    doto(cbTypes, btnCustomize/*, btnSaveAs, btnDelete*/) { component =>
       addComponent(component)
       setComponentAlignment(component, Alignment.MIDDLE_LEFT)
     }

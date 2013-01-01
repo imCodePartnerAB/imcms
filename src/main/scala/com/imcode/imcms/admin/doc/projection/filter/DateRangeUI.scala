@@ -3,7 +3,6 @@ package imcms
 package admin.doc.projection.filter
 
 import com.vaadin.ui.{PopupDateField, ComboBox, HorizontalLayout}
-import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data.GenericProperty
 
@@ -13,8 +12,8 @@ class DateRangeUI(caption: String = "") extends HorizontalLayout with Spacing wi
   val dtFrom = new PopupDateField with DayResolution
   val dtTo = new PopupDateField with DayResolution
 
-  dtFrom.setInputPrompt("dr.dt_from.prompt".i)
-  dtTo.setInputPrompt("dr.dt_to.prompt".i)
+  dtFrom.setInputPrompt("date_range.dt_from.prompt".i)
+  dtTo.setInputPrompt("date_range.dt_to.prompt".i)
 
   setCaption(caption)
 

@@ -21,5 +21,5 @@ package object imcms {
   // Zero based index
   type Ix = JInteger
 
-  implicit def stringToI18n(string: String) = new I18n(string)
+  implicit def stringToI18n(string: String) = new I18nResource(string)
 }

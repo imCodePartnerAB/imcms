@@ -1,12 +1,12 @@
 package com.imcode
 package imcms
-package admin.doc.projection
+package admin.doc
 
 import com.vaadin.ui.{MenuBar, VerticalLayout}
-import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.admin.doc.projection.DocsProjectionUI
 
-class DocsProjectionDialogMainUI(docsProjectionUI: DocsProjectionUI) extends VerticalLayout with Spacing with FullSize {
+class DocSelectDialogMainUI(docsProjectionUI: DocsProjectionUI) extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar with FullWidth
   val miNew = mb.addItem("doc.mgr.mi.new".i)
   val miNewTextDoc = miNew.addItem("doc.mgr.mi.new.text_doc".i)

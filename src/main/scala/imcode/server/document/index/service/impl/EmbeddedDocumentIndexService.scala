@@ -28,7 +28,7 @@ class EmbeddedDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
           logger.info("Index error has occuerd. Managed service instance have to be replaced.", indexError.error)
           service.shutdown()
 
-          if (shutdownRef.get()) {
+          if (shutdownRef.get) {
             logger.info("New managed service instance will not be created - service has been shout down.")
           } else {
             logger.info("Creating new instance of managed service. Data directory will be recreated.")
@@ -54,25 +54,21 @@ class EmbeddedDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
   }
 
 
-  override def query(solrQuery: SolrQuery): QueryResponse = {
-    serviceRef.get().query(solrQuery)
-  }
+  override def query(solrQuery: SolrQuery): QueryResponse = serviceRef.get.query(solrQuery)
 
 
   override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
-    serviceRef.get().search(solrQuery, searchingUser)
+    serviceRef.get.search(solrQuery, searchingUser)
   }
 
 
-  override def requestIndexUpdate(request: IndexUpdateRequest) {
-    serviceRef.get().requestIndexUpdate(request)
-  }
+  override def requestIndexUpdate(request: IndexUpdateRequest): Unit = serviceRef.get.requestIndexUpdate(request)
 
 
-  override def requestIndexRebuild(): Option[IndexRebuildTask] = serviceRef.get().requestIndexRebuild()
+  override def requestIndexRebuild(): Option[IndexRebuildTask] = serviceRef.get.requestIndexRebuild()
 
 
-  override def indexRebuildTask(): Option[IndexRebuildTask] = serviceRef.get().indexRebuildTask()
+  override def indexRebuildTask(): Option[IndexRebuildTask] = serviceRef.get.indexRebuildTask()
 
 
   override def shutdown(): Unit = lock.synchronized {

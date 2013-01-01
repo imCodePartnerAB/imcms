@@ -16,6 +16,9 @@ import imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject, Documen
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
 import org.apache.commons.lang.StringUtils
+import java.net.URLDecoder
+import org.apache.solr.common.util.DateUtil
+import java.util.Date
 
 
 class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport {
@@ -154,15 +157,28 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
 
         val datesMap =
           for {
-            (name, dr) <- Map("created" -> drCreated, "modified" -> drModified, "published" -> drPublished, "expired" -> drExpired)
+            (field, dr) <- Map(
+              DocumentIndex.FIELD__CREATED_DATETIME -> drCreated,
+              DocumentIndex.FIELD__MODIFIED_DATETIME -> drModified,
+              DocumentIndex.FIELD__PUBLICATION_START_DATETIME -> drPublished,
+              DocumentIndex.FIELD__ACTIVATED_DATETIME -> drArchived,
+              DocumentIndex.FIELD__PUBLICATION_END_DATETIME -> drExpired
+            )
             if dr.cbRangeType.value != DateRangeType.Undefined
-            start = Option(dr.dtFrom.value)
-            end = Option(dr.dtTo.value)
+            start = dr.dtFrom.valueOpt
+            end = dr.dtTo.valueOpt
             if start.isDefined || end.isDefined
+          } yield {
+            val startFixed = start.map { dt =>
+              new org.joda.time.DateTime(dt).withMillisOfDay(0).toDate
+            }
 
-            // todo: check start/end value
-          } yield
-            name -> DateRange(start, end)
+            val endFixed = end.map { dt =>
+              new org.joda.time.DateTime(dt).plusDays(1).withMillisOfDay(0).minus(1).toDate
+            }
+
+            field -> DateRange(startFixed, endFixed)
+          }
 
         if (datesMap.isEmpty) None else Some(datesMap.toMap)
       }
@@ -200,7 +216,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
 
         Seq(DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE, DocumentIndex.FIELD__META_TEXT,
             DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS, DocumentIndex.FIELD__TEXT
-        ).map(field => """%s:"%s"*""".format(field, escapedText)).mkString(" ")
+        ).map(field => """%s:"%s*"""".format(field, escapedText)).mkString(" ")
       }//,
       //typesOpt.map(_.mkString("type:(", " OR ", ")")),
       //statusesOpt.map(_.mkString("status:(", " OR ", ")"))
@@ -208,13 +224,13 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
       case Nil => "*:*"
       case terms => terms.mkString(" ")
     } |> { solrQueryStirng =>
-      if (logger.isDebugEnabled) logger.debug("Projection SOLr query string: %s.".format(solrQueryStirng))
+      if (logger.isDebugEnabled) logger.debug("Projection SOLr query Q parameter value: %s.".format(solrQueryStirng))
 
       new SolrQuery(solrQueryStirng)
     } |>> { solrQuery =>
-      for (idRange <- idRangeOpt) {
+      for (IdRange(start, end) <- idRangeOpt) {
         solrQuery.addFilterQuery(
-          "%s:[%s TO %s]".format(DocumentIndex.FIELD__META_ID, idRange.start.getOrElse("*"), idRange.end.getOrElse("*"))
+          "%s:[%s TO %s]".format(DocumentIndex.FIELD__META_ID, start.getOrElse("*"), end.getOrElse("*"))
         )
       }
 
@@ -225,25 +241,29 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
       }
 
       for (phases <- phasesOpt) {
-//        val queries = phases.map {
-//          case LifeCyclePhase.NEW =>
-//          case LifeCyclePhase.PUBLISHED,
-//          case LifeCyclePhase.UNPUBLISHED,
-//          case LifeCyclePhase.APPROVED,
-//          case LifeCyclePhase.DISAPPROVED,
-//          case LifeCyclePhase.ARCHIVED
-//        }
-
         val now = new java.util.Date
-        val queries = phases.map(_.asQuery(now)).mkString("((", ") (" ,"))")
+        val phasesFilterQuery = phases.map(_.asQuery(now)) match {
+          case Seq(query) => query.toString
+          case queries => queries.mkString("((", ") (" ,"))")
+        }
 
-        solrQuery.addFilterQuery(
-          queries
+        solrQuery.addFilterQuery(phasesFilterQuery)
+      }
+
+      for {
+        dates <- datesOpt
+        dateFormat = DateUtil.getThreadLocalDateFormat
+        (field, DateRange(from, to)) <- dates
+      } {
+        solrQuery.addFilterQuery("%s:[%s TO %s]".format(field,
+          from.map(dateFormat.format).getOrElse("*"),
+          to.map(dateFormat.format).getOrElse("*"))
         )
       }
     } |>> { solrQuery =>
       solrQuery.setRows(20)
-      if (logger.isDebugEnabled) logger.debug("Projection final SOLr query: %s.".format(solrQuery))
+      if (logger.isDebugEnabled)
+        logger.debug("Projection SOLr query: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8")))
     }
   } // def createSolrQuery()
 

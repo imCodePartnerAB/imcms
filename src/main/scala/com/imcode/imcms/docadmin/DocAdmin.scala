@@ -19,14 +19,16 @@ import imcode.server.document.textdocument._
 import com.vaadin.event.dd.acceptcriteria.{Not, AcceptAll, AcceptCriterion}
 import com.vaadin.data.util.{HierarchicalContainer}
 import scala.annotation.tailrec
-import admin.doc.projection.{DocIdSelectWithLifeCycleIcon, DocsProjectionDialog}
-import com.imcode.imcms.admin.doc.{DocEditorDialog, DocViewer, DocEditor}
+import admin.doc.projection.{DocIdSelectWithLifeCycleIcon}
+import com.imcode.imcms.admin.doc.{DocSelectDialog, DocEditorDialog, DocViewer, DocEditor}
 import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerator}
 import java.util.concurrent.atomic.AtomicBoolean
 import dao.TextDao
 import com.vaadin.ui._
 import java.util.{Arrays, Collections}
 import com.imcode.imcms.vaadin.data._
+
+
 
 
 class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*/ with ImcmsApplication with ImcmsServicesSupport { app =>
@@ -294,7 +296,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
     // todo: ??? search for current language + default version ???
     ui.miIncludeDocs.setCommandHandler {
-      new DocsProjectionDialog("Choose documents", ui.getApplication.imcmsUser) |>> { dlg =>
+      new DocSelectDialog("Choose documents", ui.getApplication.imcmsUser) |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
             doc <- dlg.projection.selection

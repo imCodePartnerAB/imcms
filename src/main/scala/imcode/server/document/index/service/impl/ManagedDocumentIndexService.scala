@@ -44,7 +44,7 @@ class ManagedSolrDocumentIndexService(
   override def requestIndexRebuild(): Option[IndexRebuildTask] = lock.synchronized {
     logger.info("attempting to start new document-index-rebuild thread.")
 
-    (shutdownRef.get(), indexWriteErrorRef.get(), indexRebuildThreadRef.get(), indexRebuildTask()) match {
+    (shutdownRef.get, indexWriteErrorRef.get, indexRebuildThreadRef.get, indexRebuildTask()) match {
       case (shutdown@true, _, _, currentIndexRebuildTask) =>
         logger.info("new document-index-rebuild thread can not be started - service is shut down.")
         currentIndexRebuildTask
@@ -68,7 +68,7 @@ class ManagedSolrDocumentIndexService(
             }
           })
 
-          def progress(): Option[IndexRebuildProgress] = Option(progressRef.get())
+          def progress(): Option[IndexRebuildProgress] = Option(progressRef.get)
 
           def future(): Future[_] = futureTask
         } |>> indexRebuildTaskRef.set |>> { indexRebuildTaskImpl =>
@@ -80,7 +80,7 @@ class ManagedSolrDocumentIndexService(
                 indexRebuildTaskImpl.futureTask.run()
                 if (!indexRebuildTaskImpl.futureTask.isCancelled) {
                   try {
-                    indexRebuildTaskImpl.futureTask.get()
+                    indexRebuildTaskImpl.futureTask.get
                   } catch {
                     case e: ExecutionException => throw e.getCause
                     case e => throw e
@@ -129,7 +129,7 @@ class ManagedSolrDocumentIndexService(
   private def startNewIndexUpdateThread(): Unit = lock.synchronized {
     logger.info("attempting to start new document-index-update thread.")
 
-    (shutdownRef.get(), indexWriteErrorRef.get(), indexRebuildThreadRef.get(), indexUpdateThreadRef.get()) match {
+    (shutdownRef.get, indexWriteErrorRef.get, indexRebuildThreadRef.get, indexUpdateThreadRef.get) match {
       case (shutdown@true, _, _, _) =>
         logger.info("new document-index-update thread can not be started - service is shut down.")
 
@@ -180,23 +180,23 @@ class ManagedSolrDocumentIndexService(
 
 
   private def interruptIndexUpdateThreadAndAwaitTermination() {
-    Threads.interruptAndAwaitTermination(indexUpdateThreadRef.get())
+    Threads.interruptAndAwaitTermination(indexUpdateThreadRef.get)
   }
 
 
   private def interruptIndexRebuildThreadAndAwaitTermination() {
-    Threads.interruptAndAwaitTermination(indexRebuildThreadRef.get())
+    Threads.interruptAndAwaitTermination(indexRebuildThreadRef.get)
   }
 
 
   def requestIndexUpdate(request: IndexUpdateRequest) {
     Threads.spawnDaemon {
-      shutdownRef.get() match {
+      shutdownRef.get match {
         case true =>
           logger.warn("Can't submit index update request [%s], server is shut down.".format(request))
 
         case _ =>
-          // publish query is full???
+          // todo: publish query is full???
           if (indexUpdateRequests.offer(request)) startNewIndexUpdateThread()
           else logger.error("Can't submit index update request [s], requests query is full.".format(request))
       }

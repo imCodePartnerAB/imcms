@@ -1,4 +1,5 @@
-package com.imcode.imcms
+package com.imcode
+package imcms
 
 import java.util.{ListResourceBundle, ResourceBundle, Locale}
 import org.apache.log4j.Logger
@@ -7,14 +8,14 @@ import scala.util.control.{Exception => Ex}
 import _root_.imcode.server.Imcms
 
 
-object I18n {
+object I18nResource {
   def i(key: String): String = key.i
   def f(arg: Any, args: Any*)(key: String): String = key.f(arg, args)
 }
 
 
 // implicit
-class I18n(key: String) {
+class I18nResource(key: String) {
   private val localeAndValue: (Locale, String) = {
     val locale = Imcms.getUser |> opt match {
       case Some(user) => new Locale(user.getLanguageIso639_2)
@@ -36,7 +37,7 @@ class I18n(key: String) {
 
 
   /**
-   * @return resource bundle i18n value corresponding to the key
+   * @return resource bundle value corresponding to the key
    */
   def i: String = localeAndValue._2
 
@@ -44,7 +45,7 @@ class I18n(key: String) {
   /**
    * @param arg first format arg
    * @param args rest param args
-   * @return formatted resource bundle i18n value corresponding to the
+   * @return formatted resource bundle value corresponding to the key
    */
   def f(arg: Any, args: Any*): String = localeAndValue match {
     case (locale, value) => new MessageFormat(value, locale).format((arg +: args.toArray).map(_.asInstanceOf[AnyRef]))

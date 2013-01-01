@@ -4,7 +4,7 @@ package admin.doc.projection
 
 import com.vaadin.data.{Item, Container}
 import com.imcode.imcms.api.{I18nLanguage, Document}
-import com.vaadin.ui.{Tree, Component}
+import com.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.ui._
 
@@ -14,8 +14,11 @@ import _root_.imcode.server.user.UserDomainObject
 import scala.collection.immutable.{ListSet, ListMap}
 import scala.collection.JavaConverters._
 import java.{util => ju}
-import com.imcode.imcms.vaadin.data.FunctionProperty
 import org.apache.solr.client.solrj.SolrQuery
+import com.imcode.imcms.vaadin.Theme
+import java.util.Date
+import scala.Some
+import com.imcode.imcms.vaadin.data.FunctionProperty
 
 class IndexedDocsContainer(
   user: UserDomainObject,
@@ -31,11 +34,20 @@ class IndexedDocsContainer(
 
   private val propertyIdToType = ListMap(
     "docs_projection.tbl_column.ix" -> classOf[Ix],
-    "docs_projection.tbl_column.id" -> classOf[DocId],
-    "docs_projection.tbl_column.type" -> classOf[JInteger],
-    "docs_projection.tbl_column.language" -> classOf[I18nLanguage],  // todo: when multi-language support is enabled
+    "docs_projection.tbl_column.id" -> classOf[Component],
     "docs_projection.tbl_column.phase" -> classOf[String],
+    "docs_projection.tbl_column.type" -> classOf[JInteger],
     "docs_projection.tbl_column.alias" -> classOf[String],
+    "docs_projection.tbl_column.headline" -> classOf[String],
+    "docs_projection.tbl_column.language" -> classOf[I18nLanguage],  // todo: when multi-language support is enabled
+
+    "docs_projection.tbl_column.created_dt" -> classOf[String],
+    "docs_projection.tbl_column.modified_dt" -> classOf[String],
+
+    "docs_projection.tbl_column.publish_dt" -> classOf[String],
+    "docs_projection.tbl_column.archive_dt" -> classOf[String],
+    "docs_projection.tbl_column.expire_dt" -> classOf[String],
+
     "docs_projection.tbl_column.parents" -> classOf[Component],
     "docs_projection.tbl_column.children" -> classOf[Component]
     // todo: version when version support is enabled
@@ -144,7 +156,8 @@ class IndexedDocsContainer(
     "docs_projection.tbl_column.language",
     "docs_projection.tbl_column.type",
     "docs_projection.tbl_column.status",
-    "docs_projection.tbl_column.alias"
+    "docs_projection.tbl_column.alias",
+    "docs_projection.tbl_column.headline"
   )
 
   override def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef): Item = throw new UnsupportedOperationException
@@ -158,15 +171,31 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
 
   case class DocItem(ix: Ix, doc: DocumentDomainObject) extends Item with ReadOnlyItem {
 
+    private def formatDt(dt: Date) = Option(dt).map(dt => "%1$td.%1$tm.%1$tY %1$tH:%1$tM".format(dt)).getOrElse("")
+
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
     override def getItemProperty(id: AnyRef) = FunctionProperty(id match {
       case "docs_projection.tbl_column.ix" => () => ix + 1 : JInteger
-      case "docs_projection.tbl_column.id" => () => doc.getId : JInteger
+      case "docs_projection.tbl_column.id" => () => {
+        val label = new Label with UndefinedSize |>> { lbl =>
+          lbl.setCaption((doc.getId.toString))
+          lbl.setIcon(Theme.Icon.Doc.phase(doc))
+        }
+        new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
+      }
+
+      case "docs_projection.tbl_column.headline" => () => doc.getHeadline
       case "docs_projection.tbl_column.type" => () => doc.getDocumentTypeId : JInteger
       case "docs_projection.tbl_column.language" => () => doc.getLanguage
       case "docs_projection.tbl_column.alias" => () => doc.getAlias
       case "docs_projection.tbl_column.phase" => () => "doc_publication_phase_name.%s".format(doc.getLifeCyclePhase).i
+      case "docs_projection.tbl_column.created_dt" => () => formatDt(doc.getCreatedDatetime)
+      case "docs_projection.tbl_column.modified_dt" => () => formatDt(doc.getModifiedDatetime)
+
+      case "docs_projection.tbl_column.publish_dt" => () => formatDt(doc.getPublicationStartDatetime)
+      case "docs_projection.tbl_column.archive_dt" => () => formatDt(doc.getArchivedDatetime)
+      case "docs_projection.tbl_column.expire_dt" => () => formatDt(doc.getPublicationEndDatetime)
 
       case "docs_projection.tbl_column.parents" =>
         () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
