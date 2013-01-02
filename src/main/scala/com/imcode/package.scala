@@ -112,12 +112,17 @@ package object imcode {
     case Some((r, next)) => r :: unfold(next)(f)
   }
 
-  def whenSingle[A, B](seq: Seq[A])(fn: A => B): Option[B] = seq match {
-    case Seq(a) => Some(fn(a))
-    case _ => None
+  def whenSingle[A, T[A] <: Traversable[A], B](traversable: T[A])(f: A => B): Option[B] = {
+    whenOpt(traversable.size == 1) {
+      f(traversable.head)
+    }
   }
 
-  def whenNotEmpty[A, B](seq: Seq[A])(fn: Seq[A] => B): Option[B] = if (seq.isEmpty) None else Some(fn(seq))
+  def whenNotEmpty[A, T[A] <: Traversable[A], B](traversable: T[A])(f: T[A] => B): Option[B] = {
+    whenOpt(traversable.nonEmpty) {
+      f(traversable)
+    }
+  }
 
 
   // scala bug: package methods overloading does not work

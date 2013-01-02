@@ -10,7 +10,7 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
 import com.imcode.imcms.vaadin.data._
 import scala.PartialFunction._
-import com.imcode.imcms.admin.doc.projection.filter.{AdvancedFilter, BasicFilter, DateRange, IdRange, DateRangeType}
+import com.imcode.imcms.admin.doc.projection.filter._
 import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject, DocumentDomainObject}
 import _root_.imcode.server.user.UserDomainObject
@@ -18,7 +18,8 @@ import _root_.imcode.server.document.index.DocumentIndex
 import org.apache.commons.lang.StringUtils
 import java.net.URLDecoder
 import org.apache.solr.common.util.DateUtil
-import java.util.Date
+import com.imcode.imcms.admin.doc.projection.filter.DateRange
+import com.imcode.imcms.admin.doc.projection.filter.IdRange
 
 
 class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport {
@@ -180,28 +181,49 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
             field -> DateRange(startFixed, endFixed)
           }
 
-        if (datesMap.isEmpty) None else Some(datesMap.toMap)
+        whenNotEmpty(datesMap)(_.toMap)
       }
 
-//    // Not yet defined how to make such query
-//    val relationshipsOpt =
-//      if (advancedFormUI.chkRelationships.isUnchecked) None
-//      else {
-//        val parentsOpt = advancedFormUI.lytRelationships.cbParents.value
-//        val chidrenOpt = advancedFormUI.lytRelationships.cbChildren.value
-//      }
 
-    val categoriesOpt: Option[List[String]] =
-      if (advancedFormUI.chkCategories.isUnchecked) None
+    val relationshipOpt: Option[Relationship] =
+      if (advancedFormUI.chkRelationships.isUnchecked) None
       else {
-        advancedFormUI.tcsCategories.getItemIds.asInstanceOf[JCollection[String]].asScala.toList match {
-          case Nil => None
-          case values => Some(values)
+        val hasParents = PartialFunction.condOpt(advancedFormUI.lytRelationships.cbParents.value) {
+          case "docs_projection.advanced_filter_lyt.cb_relationships_parents.item.has_parents" => true
+          case "docs_projection.advanced_filter_lyt.cb_relationships_parents.item.no_parents" => false
+        }
+
+        val hasChildren = PartialFunction.condOpt(advancedFormUI.lytRelationships.cbChildren.value) {
+          case "docs_projection.advanced_filter_lyt.cb_relationships_children.item.has_children" => true
+          case "docs_projection.advanced_filter_lyt.cb_relationships_children.item.no_children" => false
+        }
+
+        whenOpt(hasParents.isDefined || hasChildren.isDefined) {
+          Relationship(hasParents, hasChildren)
         }
       }
 
-    val creatorsOpt: Option[List[String]] = None
-    val publishersOpt: Option[List[String]] = None
+    val categoriesOpt: Option[Seq[String]] =
+      if (advancedFormUI.chkCategories.isUnchecked) None
+      else {
+        whenNotEmpty(advancedFormUI.tcsCategories.getItemIds.asInstanceOf[JCollection[String]].asScala.toSeq)(identity)
+      }
+
+    val maintainersOpt: Option[Maintainers] =
+      if (advancedFormUI.chkMaintainers.isUnchecked) None
+      else {
+        val creators: Option[Seq[UserId]] =
+          if (advancedFormUI.lytMaintainers.ulCreators.chkEnabled.isUnchecked) None
+          else whenNotEmpty(advancedFormUI.lytMaintainers.ulCreators.lstUsers.itemIds.asScala.toSeq)(identity)
+
+        val publishers: Option[Seq[UserId]] =
+          if (advancedFormUI.lytMaintainers.ulPublishers.chkEnabled.isUnchecked) None
+          else whenNotEmpty(advancedFormUI.lytMaintainers.ulPublishers.lstUsers.itemIds.asScala.toSeq)(identity)
+
+        whenOpt(creators.isDefined || publishers.isDefined) {
+          Maintainers(creators, publishers)
+        }
+      }
 
     def escape(text: String): String = {
       val SOLR_SPECIAL_CHARACTERS = Array("+", "-", "&", "|", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":", "\\", "/")
@@ -216,10 +238,8 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
 
         Seq(DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE, DocumentIndex.FIELD__META_TEXT,
             DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS, DocumentIndex.FIELD__TEXT
-        ).map(field => """%s:"%s*"""".format(field, escapedText)).mkString(" ")
-      }//,
-      //typesOpt.map(_.mkString("type:(", " OR ", ")")),
-      //statusesOpt.map(_.mkString("status:(", " OR ", ")"))
+        ).map(field => """%s:"%s"""".format(field, escapedText)).mkString(" ")
+      }
     ).flatten |> {
       case Nil => "*:*"
       case terms => terms.mkString(" ")
@@ -259,6 +279,30 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
           from.map(dateFormat.format).getOrElse("*"),
           to.map(dateFormat.format).getOrElse("*"))
         )
+      }
+
+      for (Relationship(hasParents, hasChildren) <- relationshipOpt) {
+        hasParents.foreach { value =>
+          solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_PARENTS, value))
+        }
+
+        hasChildren.foreach { value =>
+          solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_CHILDREN, value))
+        }
+      }
+
+      for (categories <- categoriesOpt) {
+        solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__CATEGORY_ID, categories.mkString(" ")))
+      }
+
+      for (Maintainers(creators, publishers) <- maintainersOpt) {
+        creators.foreach { creators =>
+          solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__CREATOR_ID, creators.mkString(" ")))
+        }
+
+        publishers.foreach { publishers =>
+          solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__PUBLISHER_ID, publishers.mkString(" ")))
+        }
       }
     } |>> { solrQuery =>
       solrQuery.setRows(20)

@@ -21,7 +21,7 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/projection/advanced_filte
   val tcsCategories = new TwinColSelect with TCSDefaultI18n
 
   val chkRelationships = new CheckBox("docs_projection.advanced_filter_lyt.chk_relationships".i) with Immediate
-  val lytRelationships = new HorizontalLayout with Spacing with UndefinedSize {
+  val lytRelationships = new FormLayout with UndefinedSize {
     val cbParents = new ComboBox("docs_projection.advanced_filter_lyt.chk_relationships_parents".i) with SingleSelect[String] with NoNullSelection
     val cbChildren = new ComboBox("docs_projection.advanced_filter_lyt.chk_relationships_children".i) with SingleSelect[String] with NoNullSelection
 
