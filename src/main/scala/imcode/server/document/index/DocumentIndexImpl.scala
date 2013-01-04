@@ -19,8 +19,8 @@ class DocumentIndexImpl(val service: DocumentIndexService, defaultLanguage: I18n
 
   // todo: ???Use request language???
   override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): JIterator[DocumentDomainObject] = {
-    if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE) == null) {
-      solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE, defaultLanguage.getCode))
+    if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE) == null) {
+      solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, defaultLanguage.getCode))
     }
 
     service.search(solrQuery, searchingUser).asJava

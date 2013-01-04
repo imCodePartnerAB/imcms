@@ -37,7 +37,7 @@ class DocumentIndexer(
     indexDoc.addField(DocumentIndex.FIELD__ID, "%d_%s".format(docId, languageCode))
     indexDoc.addField(DocumentIndex.FIELD__TIMESTAMP, new Date)
     indexDoc.addField(DocumentIndex.FIELD__META_ID, docId)
-    indexDoc.addField(DocumentIndex.FIELD__LANGUAGE, languageCode)
+    indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, languageCode)
 
     doc.getI18nMeta |> { l =>
       val headline = l.getHeadline

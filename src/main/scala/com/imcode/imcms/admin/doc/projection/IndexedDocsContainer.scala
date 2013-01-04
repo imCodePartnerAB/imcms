@@ -35,11 +35,11 @@ class IndexedDocsContainer(
   private val propertyIdToType = ListMap(
     "docs_projection.tbl_column.ix" -> classOf[Ix],
     "docs_projection.tbl_column.id" -> classOf[Component],
+    "docs_projection.tbl_column.language" -> classOf[Component],
     "docs_projection.tbl_column.phase" -> classOf[String],
     "docs_projection.tbl_column.type" -> classOf[JInteger],
     "docs_projection.tbl_column.alias" -> classOf[String],
     "docs_projection.tbl_column.headline" -> classOf[String],
-    "docs_projection.tbl_column.language" -> classOf[I18nLanguage],  // todo: when multi-language support is enabled
 
     "docs_projection.tbl_column.created_dt" -> classOf[String],
     "docs_projection.tbl_column.modified_dt" -> classOf[String],
@@ -179,15 +179,25 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
       case "docs_projection.tbl_column.ix" => () => ix + 1 : JInteger
       case "docs_projection.tbl_column.id" => () => {
         val label = new Label with UndefinedSize |>> { lbl =>
-          lbl.setCaption((doc.getId.toString))
+          lbl.setCaption(doc.getId.toString)
           lbl.setIcon(Theme.Icon.Doc.phase(doc))
         }
+
         new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
       }
 
       case "docs_projection.tbl_column.headline" => () => doc.getHeadline
       case "docs_projection.tbl_column.type" => () => doc.getDocumentTypeId : JInteger
-      case "docs_projection.tbl_column.language" => () => doc.getLanguage
+      case "docs_projection.tbl_column.language" => () => {
+        val label = new Label with UndefinedSize |>> { lbl =>
+          val language = doc.getLanguage
+          lbl.setCaption(language.getNativeName)
+          lbl.setIcon(Theme.Icon.Language.flag(language))
+        }
+
+        new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
+      }
+
       case "docs_projection.tbl_column.alias" => () => doc.getAlias
       case "docs_projection.tbl_column.phase" => () => "doc_publication_phase_name.%s".format(doc.getLifeCyclePhase).i
       case "docs_projection.tbl_column.created_dt" => () => formatDt(doc.getCreatedDatetime)

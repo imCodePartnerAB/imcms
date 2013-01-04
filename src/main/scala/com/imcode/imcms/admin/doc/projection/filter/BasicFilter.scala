@@ -2,15 +2,19 @@ package com.imcode
 package imcms
 package admin.doc.projection.filter
 
-import com.vaadin.ui.Label
+import scala.collection.JavaConverters._
+
+import com.vaadin.ui.{CheckBox, Label}
 
 import _root_.imcode.server.document.DocumentTypeDomainObject
 import scala.PartialFunction._
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.Theme
+import com.imcode.imcms.api.I18nLanguage
 
-class BasicFilter {
+class BasicFilter extends ImcmsServicesSupport {
 
   val ui: BasicFilterUI = new BasicFilterUI |>> { ui =>
     ui.chkIdRange.addValueChangeHandler {
@@ -23,11 +27,15 @@ class BasicFilter {
     }
 
     ui.chkType.addValueChangeHandler {
-      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.type", ui.chkType, ui.lytType)
+      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.types", ui.chkType, ui.lytTypes)
     }
 
     ui.chkPhase.addValueChangeHandler  {
-      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.status", ui.chkPhase, ui.lytPhases)
+      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.phases", ui.chkPhase, ui.lytPhases)
+    }
+
+    ui.chkLanguage.addValueChangeHandler  {
+      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.languages", ui.chkLanguage, ui.lytLanguages)
     }
 
     ui.chkAdvanced.addValueChangeHandler {
@@ -51,6 +59,7 @@ class BasicFilter {
     ui.chkText.checked = values.text.isDefined
     ui.chkType.checked = values.docType.isDefined
     ui.chkAdvanced.checked = values.advanced.isDefined
+    ui.chkLanguage.checked = true
     doto(ui.chkIdRange, ui.chkText, ui.chkType, ui.chkPhase, ui.chkAdvanced) {
       //_.fireValueChange(true)
       _.check()
@@ -70,14 +79,25 @@ class BasicFilter {
         ui.lytIdRange.txtEnd.value = end
     }
 
-    ui.lytType.chkText.checked = values.docType.map(_(DocumentTypeDomainObject.TEXT)).getOrElse(false)
-    ui.lytType.chkFile.checked = values.docType.map(_(DocumentTypeDomainObject.FILE)).getOrElse(false)
-    ui.lytType.chkHtml.checked = values.docType.map(_(DocumentTypeDomainObject.HTML)).getOrElse(false)
+    ui.lytTypes.chkText.checked = values.docType.map(_(DocumentTypeDomainObject.TEXT)).getOrElse(false)
+    ui.lytTypes.chkFile.checked = values.docType.map(_(DocumentTypeDomainObject.FILE)).getOrElse(false)
+    ui.lytTypes.chkHtml.checked = values.docType.map(_(DocumentTypeDomainObject.HTML)).getOrElse(false)
 
     // todo: DEMO, replace with real values when spec is complete
     ui.lytAdvanced.cbTypes.removeAllItems()
     Seq("docs_projection.basic_filter_lyt.cb_advanced_type.custom", "docs_projection.basic_filter_lyt.cb_advanced_type.last_xxx", "docs_projection.basic_filter_lyt.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId, itemId.i))
     ui.lytAdvanced.cbTypes.value = values.advanced.getOrElse("docs_projection.basic_filter_lyt.cb_advanced_type.custom")
+
+    ui.lytLanguages.removeAllComponents()
+    for (language <- imcmsServices.getI18nSupport.getLanguages.asScala) {
+      val chkLanguage = new CheckBox(language.getNativeName) with GenericData[I18nLanguage] |>> { chk =>
+        chk.setIcon(Theme.Icon.Language.flag(language))
+        chk.data = language
+        chk.checked = language |> imcmsServices.getI18nSupport.isDefault
+      }
+
+      ui.lytLanguages.addComponent(chkLanguage)
+    }
   }
 
   // todo: return Error Either State
@@ -93,9 +113,9 @@ class BasicFilter {
 
     docType = whenOpt(ui.chkType.isChecked) {
       Set(
-        whenOpt(ui.lytType.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
-        whenOpt(ui.lytType.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
-        whenOpt(ui.lytType.chkHtml.isChecked) { DocumentTypeDomainObject.HTML }
+        whenOpt(ui.lytTypes.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
+        whenOpt(ui.lytTypes.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
+        whenOpt(ui.lytTypes.chkHtml.isChecked) { DocumentTypeDomainObject.HTML }
       ).flatten
     },
 

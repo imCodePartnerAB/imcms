@@ -13,7 +13,7 @@ public interface DocumentIndex {
 
     String FIELD__ID = "id";
     String FIELD__TIMESTAMP = "timestamp";
-    String FIELD__LANGUAGE = "language";
+    String FIELD__LANGUAGE_CODE = "language";
     String FIELD__DOC_TYPE_ID = "doc_type_id";
     String FIELD__IMAGE_LINK_URL = "image_link_url";
     String FIELD__NONSTRIPPED_TEXT = "nonstripped_text";

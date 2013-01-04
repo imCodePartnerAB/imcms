@@ -20,6 +20,8 @@ import java.net.URLDecoder
 import org.apache.solr.common.util.DateUtil
 import com.imcode.imcms.admin.doc.projection.filter.DateRange
 import com.imcode.imcms.admin.doc.projection.filter.IdRange
+import com.imcode.imcms.api.I18nLanguage
+import com.vaadin.ui.CheckBox
 
 
 class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport {
@@ -122,7 +124,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
     val typesOpt: Option[List[Int]] =
       if (basicFormUI.chkType.isUnchecked) None
       else {
-        import basicFormUI.lytType._
+        import basicFormUI.lytTypes._
 
         Map(chkFile -> DocumentTypeDomainObject.FILE_ID,
             chkText -> DocumentTypeDomainObject.TEXT_ID,
@@ -225,6 +227,20 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
         }
       }
 
+    val languagesOpt: Option[Seq[I18nLanguage]] =
+      if (basicFormUI.chkLanguage.isUnchecked) None
+      else {
+        val languages = (
+          for {
+            _chk@(chkLanguage: CheckBox with GenericData[I18nLanguage]) <- basicFormUI.lytLanguages.getComponentIterator.asScala
+            if chkLanguage.isChecked
+          } yield
+            chkLanguage.data
+        ).toSeq
+
+        whenNotEmpty(languages)(identity)
+      }
+
     def escape(text: String): String = {
       val SOLR_SPECIAL_CHARACTERS = Array("+", "-", "&", "|", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":", "\\", "/")
       val SOLR_REPLACEMENT_CHARACTERS = Array("\\+", "\\-", "\\&", "\\|", "\\!", "\\(", "\\)", "\\{", "\\}", "\\[", "\\]", "\\^", "\\\"", "\\~", "\\*", "\\?", "\\:", "\\\\", "\\/")
@@ -303,6 +319,10 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
         publishers.foreach { publishers =>
           solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__PUBLISHER_ID, publishers.mkString(" ")))
         }
+      }
+
+      for (languages <- languagesOpt) {
+        solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__LANGUAGE_CODE, languages.map(_.getCode).mkString(" ")))
       }
     } |>> { solrQuery =>
       solrQuery.setRows(20)

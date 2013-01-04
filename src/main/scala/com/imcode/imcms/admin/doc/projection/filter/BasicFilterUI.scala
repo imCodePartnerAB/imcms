@@ -4,6 +4,8 @@ package admin.doc.projection.filter
 
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.Theme
+import imcode.server.document.LifeCyclePhase
 
 
 class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") with FullWidth {
@@ -21,7 +23,7 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
   val txtText = new TextField |>> { _.setInputPrompt("docs_projection.basic_filter_lyt.txt_text.prompt".i) }
 
   val chkType = new CheckBox("docs_projection.basic_filter_lyt.chk_type".i) with Immediate with ExposeValueChange
-  val lytType = new HorizontalLayout with UndefinedSize with Spacing {
+  val lytTypes = new HorizontalLayout with UndefinedSize with Spacing {
     val chkText = new CheckBox("docs_projection.basic_filter_lyt.chk_type_text".i)
     val chkFile = new CheckBox("docs_projection.basic_filter_lyt.chk_type_file".i)
     val chkHtml = new CheckBox("docs_projection.basic_filter_lyt.chk_type_html".i)
@@ -33,12 +35,12 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
 
   val chkPhase = new CheckBox("docs_projection.basic_filter_lyt.chk_phase".i) with Immediate with ExposeValueChange
   val lytPhases = new HorizontalLayout with Spacing with UndefinedSize {
-    val chkNew = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_new".i)
-    val chkDisapproved = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_disapproved".i)
-    val chkApproved = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_approved".i)
-    val chkPublished = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_published".i)
-    val chkArchived = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_archived".i)
-    val chkUnpublished = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_unpublished".i)
+    val chkNew = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_new".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.NEW)) }
+    val chkDisapproved = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_disapproved".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.DISAPPROVED)) }
+    val chkApproved = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_approved".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.APPROVED)) }
+    val chkPublished = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_published".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.PUBLISHED)) }
+    val chkArchived = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_archived".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.ARCHIVED)) }
+    val chkUnpublished = new CheckBox("docs_projection.basic_filter_lyt.chk_phase_unpublished".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.UNPUBLISHED)) }
 
     this.addComponents(chkNew, chkDisapproved, chkApproved, chkPublished, chkArchived, chkUnpublished)
   }
@@ -57,6 +59,8 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     }
   }
 
+  val chkLanguage = new CheckBox("docs_projection.basic_filter_lyt.chk_language".i) with Immediate
+  val lytLanguages = new HorizontalLayout with UndefinedSize with Spacing {}
 
   val lytButtons = new HorizontalLayout with UndefinedSize with Spacing {
     val btnReset = new Button("btn_reset".i) with SmallStyle
@@ -71,9 +75,13 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     "docs_projection.basic_filter_lyt.chk_text" -> chkText,
     "docs_projection.basic_filter_lyt.text" -> txtText,
     "docs_projection.basic_filter_lyt.chk_type" -> chkType,
-    "docs_projection.basic_filter_lyt.type" -> lytType,
+    "docs_projection.basic_filter_lyt.types" -> lytTypes,
     "docs_projection.basic_filter_lyt.chk_phase" -> chkPhase,
-    "docs_projection.basic_filter_lyt.status" -> lytPhases,
+    "docs_projection.basic_filter_lyt.phases" -> lytPhases,
+
+    "docs_projection.basic_filter_lyt.chk_language" -> chkLanguage,
+    "docs_projection.basic_filter_lyt.languages" -> lytLanguages,
+
     "docs_projection.basic_filter_lyt.chk_advanced" -> chkAdvanced,
     "docs_projection.basic_filter_lyt.advanced" -> lytAdvanced,
     "docs_projection.basic_filter_lyt.buttons" -> lytButtons

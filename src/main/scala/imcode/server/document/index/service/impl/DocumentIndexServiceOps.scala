@@ -79,9 +79,9 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
     for {
       solrDoc <- solrDocs.iterator.asScala
       //docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
-      //languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).asInstanceOf[String]
+      //languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).asInstanceOf[String]
       docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
-      languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE).toString
+      languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
       doc = documentMapper.getDefaultDocument(docId, languageCode)
       if doc != null && searchingUser.canSearchFor(doc)
     } yield doc
