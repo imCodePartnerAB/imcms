@@ -11,7 +11,7 @@ package object data {
 
   def addContainerProperties(container: Container, descriptors: PropertyDescriptor[_]*): Unit =
     descriptors.foreach { pd =>
-      container.addContainerProperty(pd.id, pd.clazz, pd.defaultValue)
+      container.addContainerProperty(pd.id, pd.runtimeClass, pd.defaultValue)
     }
 
 

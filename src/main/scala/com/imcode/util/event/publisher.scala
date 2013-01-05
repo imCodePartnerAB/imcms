@@ -10,5 +10,5 @@ trait Publisher[T] {
 
   def notifyListeners(ev: T): Unit = for (l <- listeners) l(ev)
 
-  def notifyListeners(): Unit = ???
+  def notifyListeners(): Unit = ?!?
 }

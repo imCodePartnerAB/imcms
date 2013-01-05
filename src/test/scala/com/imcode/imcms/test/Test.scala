@@ -15,6 +15,7 @@ import org.apache.solr.client.solrj.SolrServer
 import _root_.imcode.server.{Config, Imcms}
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import imcode.server.document.index.service.SolrServerFactory
+import scala.reflect.ClassTag
 
 object Test extends Test
 
@@ -182,5 +183,5 @@ trait TestSolr { test: Test =>
 
 
 object SpringUtils {
-  def bean[A:ClassManifest](ctx: ApplicationContext): A = ctx.getBean(classManifest[A].erasure.asInstanceOf[Class[A]])
+  def bean[A:ClassTag](ctx: ApplicationContext): A = ctx.getBean(scala.reflect.classTag[A].runtimeClass.asInstanceOf[Class[A]])
 }

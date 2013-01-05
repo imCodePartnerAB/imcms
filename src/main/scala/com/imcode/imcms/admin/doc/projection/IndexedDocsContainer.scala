@@ -19,6 +19,7 @@ import com.imcode.imcms.vaadin.Theme
 import java.util.Date
 import scala.Some
 import com.imcode.imcms.vaadin.data.FunctionProperty
+import imcode.server.Imcms
 
 class IndexedDocsContainer(
   user: UserDomainObject,
@@ -37,7 +38,7 @@ class IndexedDocsContainer(
     "docs_projection.tbl_column.id" -> classOf[Component],
     "docs_projection.tbl_column.language" -> classOf[Component],
     "docs_projection.tbl_column.phase" -> classOf[String],
-    "docs_projection.tbl_column.type" -> classOf[JInteger],
+    "docs_projection.tbl_column.type" -> classOf[String],
     "docs_projection.tbl_column.alias" -> classOf[String],
     "docs_projection.tbl_column.headline" -> classOf[String],
 
@@ -187,7 +188,7 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
       }
 
       case "docs_projection.tbl_column.headline" => () => doc.getHeadline
-      case "docs_projection.tbl_column.type" => () => doc.getDocumentTypeId : JInteger
+      case "docs_projection.tbl_column.type" => () => doc.getDocumentType.getName.toLocalizedString(Imcms.getUser)
       case "docs_projection.tbl_column.language" => () => {
         val label = new Label with UndefinedSize |>> { lbl =>
           val language = doc.getLanguage

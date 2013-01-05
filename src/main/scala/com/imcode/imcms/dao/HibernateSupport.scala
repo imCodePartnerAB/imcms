@@ -2,6 +2,7 @@ package com.imcode
 package imcms.dao
 
 import org.hibernate._
+import scala.reflect.ClassTag
 
 trait HibernateSupport {
 
@@ -64,8 +65,8 @@ trait HibernateSupport {
       runNamedQueryWithNamedParams(queryName, namedParam, namedParams: _*)(_.uniqueResult().asInstanceOf[A])
 
 
-    def listAll[A <: AnyRef : ClassManifest](): JList[A]  = withCurrentSession {
-      _.createCriteria(classManifest[A].erasure).list().asInstanceOf[JList[A]]
+    def listAll[A <: AnyRef : ClassTag](): JList[A]  = withCurrentSession {
+      _.createCriteria(scala.reflect.classTag[A].runtimeClass).list().asInstanceOf[JList[A]]
     }
 
     def listByQuery[A <: AnyRef](queryString: String, ps: Any*): JList[A] =
@@ -101,8 +102,8 @@ trait HibernateSupport {
     def bulkUpdateBySqlQuery(queryString: String, ps: Any*): Int =
       runSqlQuery(queryString, ps: _*)(_.executeUpdate())
 
-    def get[A: ClassManifest](id: java.io.Serializable): A = withCurrentSession {
-      _.get(classManifest[A].erasure, id).asInstanceOf[A]
+    def get[A: ClassTag](id: java.io.Serializable): A = withCurrentSession {
+      _.get(scala.reflect.classTag[A].runtimeClass, id).asInstanceOf[A]
     }
 
     def save[A <: AnyRef](obj: A): A = withCurrentSession { session =>
@@ -126,7 +127,7 @@ object HibernateSupport {
 
   import org.hibernate.transform.ResultTransformer
 
-  abstract class HibernateResultTransformer[+A <: AnyRef : ClassManifest] {
+  abstract class HibernateResultTransformer[+A <: AnyRef : ClassTag] {
     def transformer: ResultTransformer
 
     override def toString = "HibernateResultTransformer[%s]" format classManifest[A].erasure
@@ -138,7 +139,7 @@ object HibernateSupport {
   }
 
 
-  class HibernateArrayResultTransformer[E <: AnyRef : ClassManifest] extends HibernateResultTransformer[Array[E]] {
+  class HibernateArrayResultTransformer[E <: AnyRef : ClassTag] extends HibernateResultTransformer[Array[E]] {
     def transformer = new ResultTransformer with ResultTransformerBase {
       def transformTuple(tuple: Array[AnyRef], aliases: Array[String]) = Array.ofDim[E](tuple.size) |>> { arr =>
         for ((n, i) <- tuple.zipWithIndex) arr(i) = n.asInstanceOf[E]
@@ -147,7 +148,7 @@ object HibernateSupport {
   }
 
 
-  class HibernateSingleColumnTransformer[A <: AnyRef : ClassManifest] extends HibernateResultTransformer[A] {
+  class HibernateSingleColumnTransformer[A <: AnyRef : ClassTag] extends HibernateResultTransformer[A] {
     def transformer = new ResultTransformer with ResultTransformerBase {
       def transformTuple(tuple: Array[AnyRef], aliases: Array[String]) = tuple(0)
     }

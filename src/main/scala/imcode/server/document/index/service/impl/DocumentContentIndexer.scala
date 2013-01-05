@@ -89,7 +89,7 @@ class DocumentContentIndexer extends Log4jLoggerSupport {
           indexDoc.addField(DocumentIndex.FIELD__TEXT, content)
         }
       } catch {
-        case e => logger.error("Unable to index content of file-doc-file '%s'".format(file), e)
+        case e: Throwable => logger.error("Unable to index content of file-doc-file '%s'".format(file), e)
       }
     }
   }

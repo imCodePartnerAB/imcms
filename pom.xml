@@ -15,7 +15,7 @@
 
         <solr.version>4.0.0</solr.version>
         <slf4j.version>1.7.2</slf4j.version>
-        <scala.version>2.9.2</scala.version>
+        <scala.version>2.10.0</scala.version>
         <springframework.version>3.2.0.RELEASE</springframework.version>
 
         <jetty.port>9090</jetty.port>
@@ -588,6 +588,12 @@
             <version>${scala.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-actors</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+
         <!--<dependency>-->
         <!--<groupId>org.scala-lang</groupId>-->
         <!--<artifactId>scala-swing</artifactId>-->
@@ -604,7 +610,7 @@
         <dependency>
             <groupId>org.scalacheck</groupId>
             <artifactId>scalacheck_${scala.version}</artifactId>
-            <version>1.9</version>
+            <version>1.10.0</version>
             <scope>test</scope>
         </dependency>
 

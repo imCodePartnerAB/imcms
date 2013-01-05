@@ -25,7 +25,7 @@ class I18nResource(key: String) {
     val bundle = try {
       ResourceBundle.getBundle("ui", locale)
     } catch {
-      case e =>
+      case e: Throwable =>
         Logger.getLogger(getClass).error("Can't retrieve resource bundle for locale %s".format(locale.getDisplayName), e)
         new ListResourceBundle {
           def getContents = Array(Array())

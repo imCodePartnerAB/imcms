@@ -92,7 +92,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
               case None =>
                 val id = (
-                  for ((IntNum(id), _) <- values.fdfs) yield id
+                  for ((AnyInt(id), _) <- values.fdfs) yield id
                 ) |> { ids =>
                   if (ids.isEmpty) 1 else ids.max + 1
                 } |> {

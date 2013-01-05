@@ -96,14 +96,14 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
       else {
         val startOpt = condOpt(basicFormUI.lytIdRange.txtStart.trim) {
           case value if value.nonEmpty => value match {
-            case IntNum(start) => start
+            case AnyInt(start) => start
             case _ => sys.error("docs_projection.dlg_param_validation_err.msg.illegal_range_value")
           }
         }
 
         val endOpt = condOpt(basicFormUI.lytIdRange.txtEnd.trim) {
           case value if value.nonEmpty => value match {
-            case IntNum(end) => end
+            case AnyInt(end) => end
             case _ => sys.error("docs_projection.dlg_param_validation_err.msg.illegal_range_value")
           }
         }

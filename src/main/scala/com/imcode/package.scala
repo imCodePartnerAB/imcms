@@ -1,12 +1,8 @@
 package com
 
-import java.util.concurrent.atomic.AtomicBoolean
 import scala.util.control.{Exception => Ex}
 
 package object imcode {
-
-  import _root_.imcode.server.document.index.service.DocumentIndexService
-  import scala.util.control.{Exception => Ex}
 
   type JBoolean = java.lang.Boolean
   type JByte = java.lang.Byte
@@ -22,18 +18,17 @@ package object imcode {
   type JMap[A <: AnyRef, B <: AnyRef] = java.util.Map[A, B]
   type JIterator[A <: AnyRef] = java.util.Iterator[A]
 
-  class Piper[A](a: A) {
+
+  def ?!? : Nothing = new Exception().getStackTrace()(1) |> { se =>
+    sys.error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
+  }
+
+
+  implicit class Piper[A](a: A) {
     def |>[B](f: A => B): B = f(a)
 
     def |>>(f: A => Any): A = { f(a); a }
   }
-
-  implicit def any2Piper[A](a: A) = new Piper(a)
-
-  def ??? = new Exception().getStackTrace()(1) |> { se =>
-    sys.error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
-  }
-
 
 //  "value".
 //    |> (_.length).
@@ -140,59 +135,24 @@ package object imcode {
 
 
   /** extractor */
-  object IntNum {
+  object AnyInt {
     def unapply(s: String): Option[Int] = Ex.catching(classOf[NumberFormatException]).opt(s.toInt)
   }
 
 
   /** extractor */
   object PosInt {
-    def unapply(s: String): Option[Int] = IntNum.unapply(s).filter(_ >= 0)
+    def unapply(s: String): Option[Int] = AnyInt.unapply(s).filter(_ >= 0)
   }
 
 
   /** extractor */
   object NegInt {
-    def unapply(s: String): Option[Int] = IntNum.unapply(s).filter(_ < 0)
+    def unapply(s: String): Option[Int] = AnyInt.unapply(s).filter(_ < 0)
   }
 
 
-  //?? delete ??
 
-  //implicit val orderingJInteger = new Ordering[JInteger] { def compare(i1: JInteger, i2: JInteger) = i1 compareTo i2 }
-
-  //def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
-
-
-
-
-
-
-  trait ManagedResource[R] {
-    def close(resource: R)
-  }
-
-  object ManagedResource {
-    implicit def stCloseManagedResource[R <: { def close() }](r: R) = new ManagedResource[R] {
-      def close(resource: R) { resource.close() }
-      override def toString = "ManagedResource[_ <: def close()]"
-    }
-
-    implicit def ioManagedResource[R <: java.io.Closeable] = new ManagedResource[R] {
-      def close(resource: R) { resource.close() }
-      override def toString = "ManagedResource[_ <: java.io.Closeable]"
-    }
-
-    implicit def ssManagedResource[R <: DocumentIndexService] = new ManagedResource[R] {
-      def close(resource: R) { resource.shutdown() }
-      override def toString = "ManagedResource[_ <: DocumentIndexService]"
-    }
-
-//    implicit def stShutdownManagedResource[R <: { def shutdown() }](r: R) = new ManagedResource[R] {
-//      def close(resource: R) { resource.shutdown() }
-//      override def toString = "ManagedResource[_ <: def shutdown()]"
-//    }
-  }
 
 
   def using[R: ManagedResource, A](resource: R)(f: R => A): A =
@@ -203,17 +163,6 @@ package object imcode {
         Ex.allCatch(implicitly[ManagedResource[R]].close(resource))
       }
     }
-
-  /** Creates zero arity fn from by-name parameter. */
-  //def toF[A](byName: => A): () => A = byName _
-
-//  def bmap[A](test: => Boolean)(byName: => A): List[A] = {
-//    import collection.mutable.ListBuffer
-//
-//    val ret = new ListBuffer[A]
-//    while (test) ret += byName
-//    ret.toList
-//  }
 
   /**
    * Converts camel-case string into underscore.

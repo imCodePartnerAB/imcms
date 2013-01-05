@@ -29,7 +29,7 @@ object DocGetterCallbackUtil {
         if !user.isDefaultUser
       } yield {
         val docId: Int = docIdentity match {
-          case IntNum(n) => n
+          case AnyInt(n) => n
           case _ =>
             Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity) |> opt getOrElse {
               sys.error("Document with identity %s does not exists." format docIdentity)
@@ -37,7 +37,7 @@ object DocGetterCallbackUtil {
         }
 
         docVersionNoStr match {
-          case IntNum(DocumentVersion.WORKING_VERSION_NO) => WorkingDocGetterCallback(callbackLanguages, docId)
+          case AnyInt(DocumentVersion.WORKING_VERSION_NO) => WorkingDocGetterCallback(callbackLanguages, docId)
           case PosInt(docVersionNo) => CustomDocGetterCallback(callbackLanguages, docId, docVersionNo)
           case _ =>
             sys.error("Invalid document version value: %s." format docIdentity)

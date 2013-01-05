@@ -35,12 +35,12 @@ object Theme {
     }
 
     object Doc {
-      def phase(lifeCyclePhase: LifeCyclePhase): TR = "icons/doc_status/%s.gif".format(lifeCyclePhase)
+      def phase(lifeCyclePhase: LifeCyclePhase): TR = s"icons/doc_status/${lifeCyclePhase}.gif"
       def phase(doc: DocumentDomainObject): TR = if (doc == null) null else phase(doc.getLifeCyclePhase)
     }
 
     object Language {
-      def flag(language: I18nLanguage): TR = "icons/language_flag/%s.gif".format(language.getCode)
+      def flag(language: I18nLanguage): TR = s"icons/language_flag/${language.getCode}.gif"
     }
   }
 }

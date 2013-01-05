@@ -1,5 +1,7 @@
 package com.imcode.imcms.vaadin.data
 
+import scala.reflect.ClassTag
+
 /**
  * A container property.
  *
@@ -7,6 +9,6 @@ package com.imcode.imcms.vaadin.data
  * @param id container property id
  * @param defaultValue container property default value
  */
-case class PropertyDescriptor[A <: PropertyValue : ClassManifest](id: AnyRef, defaultValue: A = null) {
-  val clazz = classManifest[A].erasure
+case class PropertyDescriptor[A <: PropertyValue : ClassTag](id: AnyRef, defaultValue: A = null) {
+  val runtimeClass = scala.reflect.classTag[A].runtimeClass
 }

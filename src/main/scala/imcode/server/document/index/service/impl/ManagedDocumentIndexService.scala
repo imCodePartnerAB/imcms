@@ -50,13 +50,11 @@ class ManagedSolrDocumentIndexService(
         currentIndexRebuildTask
 
       case (_, indexWriteError, _, currentIndexRebuildTask) if indexWriteError != null =>
-        logger.info("new document-index-rebuild thread can not be started - previous index write attempt has failed with error [%s]."
-          .format(indexWriteError))
+        logger.info(s"new document-index-rebuild thread can not be started - previous index write attempt has failed with error [$indexWriteError].")
         currentIndexRebuildTask
 
       case (_, _, indexRebuildThread, currentIndexRebuildTask) if Threads.notTerminated(indexRebuildThread) =>
-        logger.info("new document-index-rebuild thread can not be started - document-index-rebuild thread [%s] is allready running."
-          .format(indexRebuildThread))
+        logger.info(s"new document-index-rebuild thread can not be started - document-index-rebuild thread [$indexRebuildThread] is allready running.")
         currentIndexRebuildTask
 
       case _ =>
@@ -93,7 +91,7 @@ class ManagedSolrDocumentIndexService(
                 }
               } catch {
                 case _: InterruptedException =>
-                  logger.trace("document-index-rebuild thread [%s] was interrupted".format(indexRebuildThread))
+                  logger.trace(s"document-index-rebuild thread [$indexRebuildThread] was interrupted")
                   Threads.spawnDaemon {
                     indexRebuildThread.join()
                     startNewIndexUpdateThread()
@@ -101,19 +99,19 @@ class ManagedSolrDocumentIndexService(
 
                 case e =>
                   val writeError = ManagedSolrDocumentIndexService.IndexRebuildError(ManagedSolrDocumentIndexService.this, e)
-                  logger.error("Error in document-index-rebuild thread [%s].".format(indexRebuildThread), e)
+                  logger.error(s"Error in document-index-rebuild thread [$indexRebuildThread].", e)
                   indexWriteErrorRef.set(writeError)
                   Threads.spawnDaemon {
                     serviceErrorHandler(writeError)
                   }
               } finally {
-                logger.info("document-index-rebuild thread [%s] is about to terminate.".format(indexRebuildThread))
+                logger.info(s"document-index-rebuild thread [$indexRebuildThread] is about to terminate.")
               }
             }
           } |>> indexRebuildThreadRef.set |>> { indexRebuildThread =>
-            indexRebuildThread.setName("document-index-rebuild-" + indexRebuildThread.getId)
+            indexRebuildThread.setName(s"document-index-rebuild-${indexRebuildThread.getId}")
             indexRebuildThread.start()
-            logger.info("new document-index-rebuild thread [%s] has been started".format(indexRebuildThread))
+            logger.info(s"new document-index-rebuild thread [$indexRebuildThread] has been started")
           }
         } |> opt
     }
@@ -134,16 +132,13 @@ class ManagedSolrDocumentIndexService(
         logger.info("new document-index-update thread can not be started - service is shut down.")
 
       case (_, indexWriteError, _, _) if indexWriteError != null =>
-        logger.info("new document-index-update thread can not be started - previous index write attempt has failed [%s]."
-          .format(indexWriteError))
+        logger.info(s"new document-index-update thread can not be started - previous index write attempt has failed [$indexWriteError].")
 
       case (_, _, indexRebuildThread, _) if Threads.notTerminated(indexRebuildThread) =>
-        logger.info("new document-index-update thread can not be started while document-index-rebuild thread [%s] is running."
-          .format(indexRebuildThread))
+        logger.info(s"new document-index-update thread can not be started while document-index-rebuild thread [$indexRebuildThread] is running.")
 
       case (_, _, _, indexUpdateThread) if Threads.notTerminated(indexUpdateThread) =>
-        logger.info("new document-index-update thread can not be started - document-index-update thread [%s] is allready running."
-          .format(indexUpdateThread))
+        logger.info(s"new document-index-update thread can not be started - document-index-update thread [$indexUpdateThread] is allready running.")
 
       case _ =>
         new Thread { indexUpdateThread =>
@@ -157,23 +152,23 @@ class ManagedSolrDocumentIndexService(
               }
             } catch {
               case e: InterruptedException =>
-                logger.trace("document-index-update thread [%s] was interrupted".format(indexUpdateThread))
+                logger.trace(s"document-index-update thread [$indexUpdateThread] was interrupted")
 
               case e =>
                 val writeError = ManagedSolrDocumentIndexService.IndexUpdateError(ManagedSolrDocumentIndexService.this, e)
-                logger.error("error in document-index-update thread [%s].".format(indexUpdateThread), e)
+                logger.error(s"error in document-index-update thread [$indexUpdateThread].", e)
                 indexWriteErrorRef.set(writeError)
                 Threads.spawnDaemon {
                   serviceErrorHandler(writeError)
                 }
             } finally {
-              logger.info("document-index-update thread [%s] is about to terminate.".format(indexUpdateThread))
+              logger.info(s"document-index-update thread [$indexUpdateThread] is about to terminate.")
             }
           }
         } |>> indexUpdateThreadRef.set |>> { indexUpdateThread =>
-          indexUpdateThread.setName("document-index-update-" + indexUpdateThread.getId)
+          indexUpdateThread.setName(s"document-index-update-${indexUpdateThread.getId}")
           indexUpdateThread.start()
-          logger.info("new document-index-update thread [%s] has been started".format(indexUpdateThread))
+          logger.info(s"new document-index-update thread [$indexUpdateThread] has been started")
         }
     }
   }
@@ -193,12 +188,12 @@ class ManagedSolrDocumentIndexService(
     Threads.spawnDaemon {
       shutdownRef.get match {
         case true =>
-          logger.warn("Can't submit index update request [%s], server is shut down.".format(request))
+          logger.error(s"Can't submit index update request [$request], server is shut down.")
 
         case _ =>
           // todo: publish query is full???
           if (indexUpdateRequests.offer(request)) startNewIndexUpdateThread()
-          else logger.error("Can't submit index update request [s], requests query is full.".format(request))
+          else logger.error(s"Can't submit index update request [$request], requests query is full.")
       }
     }
   }
@@ -213,8 +208,8 @@ class ManagedSolrDocumentIndexService(
     try {
       serviceOps.search(solrServerReader, solrQuery, searchingUser)
     } catch {
-      case e =>
-        logger.error("Search error. solrParams: %s, searchingUser: %s".format(solrQuery, searchingUser), e)
+      case e: Throwable =>
+        logger.error(s"Search error. solrParams: $solrQuery, searchingUser: $searchingUser", e)
         Threads.spawnDaemon {
           serviceErrorHandler(ManagedSolrDocumentIndexService.IndexSearchError(ManagedSolrDocumentIndexService.this, e))
         }
@@ -234,7 +229,7 @@ class ManagedSolrDocumentIndexService(
         solrServerWriter.shutdown()
         logger.info("Service has been shut down.")
       } catch {
-        case e =>
+        case e: Throwable =>
           logger.error("An error occured while shutting down the service.", e)
           throw e
       }

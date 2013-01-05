@@ -42,26 +42,26 @@ class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*
 
     object DefaultDoc {
       def unapply(value: String): Option[Int] = PartialFunction.condOpt(value) {
-        case DefaultDocRe(IntNum(docId)) => docId
+        case DefaultDocRe(AnyInt(docId)) => docId
       }
     }
 
     object CustomDoc {
       def unapply(value: String): Option[(Int, Int)] = PartialFunction.condOpt(value) {
-        case CustomDocRe(IntNum(docId), IntNum(docVersionNo)) => (docId, docVersionNo)
+        case CustomDocRe(AnyInt(docId), AnyInt(docVersionNo)) => (docId, docVersionNo)
       }
     }
 
 
     object Menu {
       def unapply(value: String): Option[(Int, Int, Int)] = PartialFunction.condOpt(value) {
-        case MenuRe(IntNum(docId), IntNum(docVersion), IntNum(menuNo)) => (docId, docVersion, menuNo)
+        case MenuRe(AnyInt(docId), AnyInt(docVersion), AnyInt(menuNo)) => (docId, docVersion, menuNo)
       }
     }
 
     object Text {
       def unapply(value: String): Option[(Int, Int, Int)] = PartialFunction.condOpt(value) {
-        case TextRe(IntNum(docId), IntNum(docVersion), IntNum(textNo)) => (docId, docVersion, textNo)
+        case TextRe(AnyInt(docId), AnyInt(docVersion), AnyInt(textNo)) => (docId, docVersion, textNo)
       }
     }
   }

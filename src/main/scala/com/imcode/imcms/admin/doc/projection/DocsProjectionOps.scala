@@ -9,14 +9,15 @@ import com.imcode.imcms.vaadin.ui.dialog.ConfirmationDialog
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import scala.collection.JavaConverters._
+import scala.reflect.ClassTag
 
 // todo: add callbacks???
 class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport with Log4jLoggerSupport {
 
-  def mkDocOfType[T <: DocumentDomainObject : ClassManifest] {
+  def mkDocOfType[T <: DocumentDomainObject : ClassTag] {
     PartialFunction.condOpt(projection.selection) {
       case Seq(selectedDoc: TextDocumentDomainObject) =>
-        val (newDocType, dlgCaption) = classManifest[T].erasure match {
+        val (newDocType, dlgCaption) = scala.reflect.classTag[T].runtimeClass match {
           case c if c == classOf[TextDocumentDomainObject] => DocumentTypeDomainObject.TEXT_ID -> "New text document"
           case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "New file document"
           case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "New url document"
