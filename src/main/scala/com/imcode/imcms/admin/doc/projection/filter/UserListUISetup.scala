@@ -3,8 +3,7 @@ package imcms
 package admin.doc.projection.filter
 
 import scala.collection.JavaConverters._
-import com.imcode.imcms.admin.access.user.UserSelectDialog
-import com.imcode.imcms.vaadin.ui.dialog.OkCancelDialog
+import com.imcode.imcms.admin.access.user.{UserMultiSelectDialog}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 
@@ -16,7 +15,7 @@ trait UserListUISetup { this: UserListUI =>
   }
 
   btnAdd.addClickHandler {
-    new OkCancelDialog(projectionDialogCaption) with UserSelectDialog |>> { dlg =>
+    new UserMultiSelectDialog |>> { dlg =>
       dlg.setOkButtonHandler {
         for (user <- dlg.search.selection) lstUsers.addItem(user.getId: JInteger, "#" + user.getLoginName)
       }

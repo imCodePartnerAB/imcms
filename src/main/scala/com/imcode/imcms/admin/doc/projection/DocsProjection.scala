@@ -191,13 +191,13 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
       if (advancedFormUI.chkRelationships.isUnchecked) None
       else {
         val hasParents = PartialFunction.condOpt(advancedFormUI.lytRelationships.cbParents.value) {
-          case "docs_projection.advanced_filter_lyt.cb_relationships_parents.item.has_parents" => true
-          case "docs_projection.advanced_filter_lyt.cb_relationships_parents.item.no_parents" => false
+          case "docs_projection.advanced_filter.cb_relationships_parents.item.has_parents" => true
+          case "docs_projection.advanced_filter.cb_relationships_parents.item.no_parents" => false
         }
 
         val hasChildren = PartialFunction.condOpt(advancedFormUI.lytRelationships.cbChildren.value) {
-          case "docs_projection.advanced_filter_lyt.cb_relationships_children.item.has_children" => true
-          case "docs_projection.advanced_filter_lyt.cb_relationships_children.item.no_children" => false
+          case "docs_projection.advanced_filter.cb_relationships_children.item.has_children" => true
+          case "docs_projection.advanced_filter.cb_relationships_children.item.no_children" => false
         }
 
         whenOpt(hasParents.isDefined || hasChildren.isDefined) {

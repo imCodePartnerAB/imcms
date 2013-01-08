@@ -33,7 +33,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   val ui = new LifeCycleEditorUI |>> { ui =>
     for (phase <- LifeCyclePhase.ALL) {
       new Label with UndefinedSize |>> { lbl =>
-        lbl.setCaption("doc_publication_phase_name.%s".format(phase).i)
+        lbl.setCaption("doc_publication_phase.%s".format(phase).i)
         lbl.setIcon(Theme.Icon.Doc.phase(phase))
       } |> ui.publication.lytPhase.addComponent
     }

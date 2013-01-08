@@ -15,7 +15,7 @@ class IndexedDocsUI(container: IndexedDocsContainer) extends Table(null, contain
 
   setColumnCollapsingAllowed(true)
 
-  Seq("docs_projection.tbl_column.parents", "docs_projection.tbl_column.children").foreach {
+  Seq("docs_projection.container_property.parents", "docs_projection.container_property.children").foreach {
     setColumnCollapsed(_, true)
   }
 }

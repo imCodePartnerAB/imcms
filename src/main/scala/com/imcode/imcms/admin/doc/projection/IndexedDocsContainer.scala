@@ -34,23 +34,23 @@ class IndexedDocsContainer(
     with ImcmsServicesSupport {
 
   private val propertyIdToType = ListMap(
-    "docs_projection.tbl_column.ix" -> classOf[Ix],
-    "docs_projection.tbl_column.id" -> classOf[Component],
-    "docs_projection.tbl_column.language" -> classOf[Component],
-    "docs_projection.tbl_column.phase" -> classOf[String],
-    "docs_projection.tbl_column.type" -> classOf[String],
-    "docs_projection.tbl_column.alias" -> classOf[String],
-    "docs_projection.tbl_column.headline" -> classOf[String],
+    "docs_projection.container_property.ix" -> classOf[Ix],
+    "docs_projection.container_property.id" -> classOf[Component],
+    "docs_projection.container_property.language" -> classOf[Component],
+    "docs_projection.container_property.phase" -> classOf[String],
+    "docs_projection.container_property.type" -> classOf[String],
+    "docs_projection.container_property.alias" -> classOf[String],
+    "docs_projection.container_property.headline" -> classOf[String],
 
-    "docs_projection.tbl_column.created_dt" -> classOf[String],
-    "docs_projection.tbl_column.modified_dt" -> classOf[String],
+    "docs_projection.container_property.created_dt" -> classOf[String],
+    "docs_projection.container_property.modified_dt" -> classOf[String],
 
-    "docs_projection.tbl_column.publish_dt" -> classOf[String],
-    "docs_projection.tbl_column.archive_dt" -> classOf[String],
-    "docs_projection.tbl_column.expire_dt" -> classOf[String],
+    "docs_projection.container_property.publish_dt" -> classOf[String],
+    "docs_projection.container_property.archive_dt" -> classOf[String],
+    "docs_projection.container_property.expire_dt" -> classOf[String],
 
-    "docs_projection.tbl_column.parents" -> classOf[Component],
-    "docs_projection.tbl_column.children" -> classOf[Component]
+    "docs_projection.container_property.parents" -> classOf[Component],
+    "docs_projection.container_property.children" -> classOf[Component]
     // todo: version when version support is enabled
     // todo: parents, children <-> referenced, references
   )
@@ -153,12 +153,12 @@ class IndexedDocsContainer(
 
   // todo implement
   override val getSortableContainerPropertyIds: JCollection[_] = ju.Arrays.asList(
-    "docs_projection.tbl_column.id",
-    "docs_projection.tbl_column.language",
-    "docs_projection.tbl_column.type",
-    "docs_projection.tbl_column.status",
-    "docs_projection.tbl_column.alias",
-    "docs_projection.tbl_column.headline"
+    "docs_projection.container_property.id",
+    "docs_projection.container_property.language",
+    "docs_projection.container_property.type",
+    "docs_projection.container_property.status",
+    "docs_projection.container_property.alias",
+    "docs_projection.container_property.headline"
   )
 
   override def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef): Item = throw new UnsupportedOperationException
@@ -177,8 +177,8 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
     override def getItemProperty(id: AnyRef) = FunctionProperty(id match {
-      case "docs_projection.tbl_column.ix" => () => ix + 1 : JInteger
-      case "docs_projection.tbl_column.id" => () => {
+      case "docs_projection.container_property.ix" => () => ix + 1 : JInteger
+      case "docs_projection.container_property.id" => () => {
         val label = new Label with UndefinedSize |>> { lbl =>
           lbl.setCaption(doc.getId.toString)
           lbl.setIcon(Theme.Icon.Doc.phase(doc))
@@ -187,9 +187,9 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
         new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
       }
 
-      case "docs_projection.tbl_column.headline" => () => doc.getHeadline
-      case "docs_projection.tbl_column.type" => () => doc.getDocumentType.getName.toLocalizedString(Imcms.getUser)
-      case "docs_projection.tbl_column.language" => () => {
+      case "docs_projection.container_property.headline" => () => doc.getHeadline
+      case "docs_projection.container_property.type" => () => doc.getDocumentType.getName.toLocalizedString(Imcms.getUser)
+      case "docs_projection.container_property.language" => () => {
         val label = new Label with UndefinedSize |>> { lbl =>
           val language = doc.getLanguage
           lbl.setCaption(language.getNativeName)
@@ -199,16 +199,16 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
         new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
       }
 
-      case "docs_projection.tbl_column.alias" => () => doc.getAlias
-      case "docs_projection.tbl_column.phase" => () => "doc_publication_phase_name.%s".format(doc.getLifeCyclePhase).i
-      case "docs_projection.tbl_column.created_dt" => () => formatDt(doc.getCreatedDatetime)
-      case "docs_projection.tbl_column.modified_dt" => () => formatDt(doc.getModifiedDatetime)
+      case "docs_projection.container_property.alias" => () => doc.getAlias
+      case "docs_projection.container_property.phase" => () => "doc_publication_phase.%s".format(doc.getLifeCyclePhase).i
+      case "docs_projection.container_property.created_dt" => () => formatDt(doc.getCreatedDatetime)
+      case "docs_projection.container_property.modified_dt" => () => formatDt(doc.getModifiedDatetime)
 
-      case "docs_projection.tbl_column.publish_dt" => () => formatDt(doc.getPublicationStartDatetime)
-      case "docs_projection.tbl_column.archive_dt" => () => formatDt(doc.getArchivedDatetime)
-      case "docs_projection.tbl_column.expire_dt" => () => formatDt(doc.getPublicationEndDatetime)
+      case "docs_projection.container_property.publish_dt" => () => formatDt(doc.getPublicationStartDatetime)
+      case "docs_projection.container_property.archive_dt" => () => formatDt(doc.getArchivedDatetime)
+      case "docs_projection.container_property.expire_dt" => () => formatDt(doc.getPublicationEndDatetime)
 
-      case "docs_projection.tbl_column.parents" =>
+      case "docs_projection.container_property.parents" =>
         () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
           case Nil => null
           case pair :: Nil =>
@@ -233,7 +233,7 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
             }
         }
 
-      case "docs_projection.tbl_column.children" =>
+      case "docs_projection.container_property.children" =>
         () => doc match {
           case textDoc: TextDocumentDomainObject =>
             imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).asScala.toList match {

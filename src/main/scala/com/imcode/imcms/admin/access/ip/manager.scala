@@ -12,7 +12,7 @@ import com.imcode.imcms.dao.IPAccessDao
 import com.imcode.imcms.api.IPAccess
 import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
 import com.vaadin.ui.Window.Notification
-import com.imcode.imcms.admin.access.user.UserSelectDialog
+import com.imcode.imcms.admin.access.user.{UserSingleSelectDialog, UserSelectDialog}
 import javax.persistence.{Id, Entity}
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
@@ -84,11 +84,11 @@ class IPAccessManager(app: ImcmsApplication) {
         c.txtFrom.value = vo.getStart |> opt map toDDN getOrElse ""
         c.txtTo.value = vo.getEnd |> opt map toDDN getOrElse ""
         c.userPickerUI.btnChoose.addClickHandler {
-          app.getMainWindow.initAndShow(new OkCancelDialog("Choose user") with UserSelectDialog) { userSelectDlg =>
-            userSelectDlg.setOkButtonHandler {
-              c.userPickerUI.txtLoginName.value = userSelectDlg.search.selection.head.getLoginName
+          new UserSingleSelectDialog |>> { dlg =>
+            dlg.setOkButtonHandler {
+              c.userPickerUI.txtLoginName.value = dlg.search.selection.head.getLoginName
             }
-          }
+          } |> app.getMainWindow.addWindow
         }
 
         dlg.setOkButtonHandler {

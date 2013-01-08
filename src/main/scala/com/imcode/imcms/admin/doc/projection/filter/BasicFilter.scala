@@ -18,24 +18,24 @@ class BasicFilter extends ImcmsServicesSupport {
 
   val ui: BasicFilterUI = new BasicFilterUI |>> { ui =>
     ui.chkIdRange.addValueChangeHandler {
-      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.range", ui.chkIdRange, ui.lytIdRange,
+      ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.range", ui.chkIdRange, ui.lytIdRange,
         new Label("%s - %s".format(Option(ui.lytIdRange.txtStart.getInputPrompt).getOrElse(""), Option(ui.lytIdRange.txtEnd.getInputPrompt).getOrElse(""))))
     }
 
     ui.chkText.addValueChangeHandler {
-      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.text", ui.chkText, ui.txtText)
+      ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.text", ui.chkText, ui.txtText)
     }
 
     ui.chkType.addValueChangeHandler {
-      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.types", ui.chkType, ui.lytTypes)
+      ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.types", ui.chkType, ui.lytTypes)
     }
 
     ui.chkPhase.addValueChangeHandler  {
-      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.phases", ui.chkPhase, ui.lytPhases)
+      ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.phases", ui.chkPhase, ui.lytPhases)
     }
 
     ui.chkLanguage.addValueChangeHandler  {
-      FilterFormUtil.toggle(ui, "docs_projection.basic_filter_lyt.languages", ui.chkLanguage, ui.lytLanguages)
+      ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.languages", ui.chkLanguage, ui.lytLanguages)
     }
 
     ui.chkAdvanced.addValueChangeHandler {
@@ -85,8 +85,8 @@ class BasicFilter extends ImcmsServicesSupport {
 
     // todo: DEMO, replace with real values when spec is complete
     ui.lytAdvanced.cbTypes.removeAllItems()
-    Seq("docs_projection.basic_filter_lyt.cb_advanced_type.custom", "docs_projection.basic_filter_lyt.cb_advanced_type.last_xxx", "docs_projection.basic_filter_lyt.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId, itemId.i))
-    ui.lytAdvanced.cbTypes.value = values.advanced.getOrElse("docs_projection.basic_filter_lyt.cb_advanced_type.custom")
+    Seq("docs_projection.basic_filter.cb_advanced_type.custom", "docs_projection.basic_filter.cb_advanced_type.last_xxx", "docs_projection.basic_filter.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId, itemId.i))
+    ui.lytAdvanced.cbTypes.value = values.advanced.getOrElse("docs_projection.basic_filter.cb_advanced_type.custom")
 
     ui.lytLanguages.removeAllComponents()
     for (language <- imcmsServices.getI18nSupport.getLanguages.asScala) {

@@ -44,12 +44,12 @@ class AdvancedFilter extends ImcmsServicesSupport {
       Option(category.getImageUrl).foreach(url => ui.tcsCategories.setItemIcon(category, new ExternalResource(url)))
     }
 
-    ui.lytRelationships.cbParents.value = "docs_projection.advanced_filter_lyt.cb_relationships_parents.item.undefined"
-    ui.lytRelationships.cbChildren.value = "docs_projection.advanced_filter_lyt.cb_relationships_children.item.undefined"
+    ui.lytRelationships.cbParents.value = "docs_projection.advanced_filter.cb_relationships_parents.item.undefined"
+    ui.lytRelationships.cbChildren.value = "docs_projection.advanced_filter.cb_relationships_children.item.undefined"
   }
 
-  private def toggleCategories() = FilterFormUtil.toggle(ui, "docs_projection.advanced_filter_lyt.categories", ui.chkCategories, ui.tcsCategories)
-  private def toggleMaintainers() = FilterFormUtil.toggle(ui, "docs_projection.advanced_filter_lyt.maintainers", ui.chkMaintainers, ui.lytMaintainers)
-  private def toggleRelationships() = FilterFormUtil.toggle(ui, "docs_projection.advanced_filter_lyt.relationships", ui.chkRelationships, ui.lytRelationships)
-  private def toggleDates() = FilterFormUtil.toggle(ui, "docs_projection.advanced_filter_lyt.dates", ui.chkDates, ui.lytDates)
+  private def toggleCategories() = ProjectionFilterUtil.toggle(ui, "docs_projection.advanced_filter.categories", ui.chkCategories, ui.tcsCategories)
+  private def toggleMaintainers() = ProjectionFilterUtil.toggle(ui, "docs_projection.advanced_filter.maintainers", ui.chkMaintainers, ui.lytMaintainers)
+  private def toggleRelationships() = ProjectionFilterUtil.toggle(ui, "docs_projection.advanced_filter.relationships", ui.chkRelationships, ui.lytRelationships)
+  private def toggleDates() = ProjectionFilterUtil.toggle(ui, "docs_projection.advanced_filter.dates", ui.chkDates, ui.lytDates)
 }

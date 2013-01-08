@@ -11,10 +11,11 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
 
 import scala.collection.JavaConverters._
+import com.imcode.imcms.admin.access.user.projection.UsersProjection
 
 // todo add security check, add editAndSave, add external UI
 class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
-  private val search = new UserSearch
+  private val search = new UsersProjection
 
   val ui = new UserManagerUI(search.ui) |>> { ui =>
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper

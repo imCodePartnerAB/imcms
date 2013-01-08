@@ -28,10 +28,10 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
   object publication {
     val ussPublisher = new UserSingleSelect
 
-    val sltStatus = new Select("doc_publication_status_select".i) with SingleSelect[Document.PublicationStatus] with NoNullSelection with Immediate {
-      addItem(Document.PublicationStatus.NEW, "doc_publication_status_name.new".i)
-      addItem(Document.PublicationStatus.DISAPPROVED, "doc_publication_status_name.disapproved".i)
-      addItem(Document.PublicationStatus.APPROVED, "doc_publication_status_name.approved".i)
+    val sltStatus = new Select("doc_publication_status".i) with SingleSelect[Document.PublicationStatus] with NoNullSelection with Immediate {
+      addItem(Document.PublicationStatus.NEW, "doc_publication_status.new".i)
+      addItem(Document.PublicationStatus.DISAPPROVED, "doc_publication_status.disapproved".i)
+      addItem(Document.PublicationStatus.APPROVED, "doc_publication_status.approved".i)
     }
 
     val lytPhase = new HorizontalLayout with Spacing with UndefinedSize |>> { lyt =>

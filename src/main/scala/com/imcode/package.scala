@@ -19,38 +19,21 @@ package object imcode {
   type JIterator[A <: AnyRef] = java.util.Iterator[A]
 
 
-  def ?!? : Nothing = new Exception().getStackTrace()(1) |> { se =>
-    sys.error("Not implemented: %s.%s".format(se.getClassName, se.getMethodName))
+  implicit class TernaryOperator(condition: Boolean) {
+    def ?[A](thenExp: => A) = new IfThenElse[A](thenExp)
+
+    class IfThenElse[A](thenExp: => A) {
+      def |[U >: A](elseExp: => U): U = if (condition) thenExp else elseExp
+    }
   }
 
 
-  implicit class Piper[A](a: A) {
+  implicit class PipeOperators[A](a: A) {
     def |>[B](f: A => B): B = f(a)
 
     def |>>(f: A => Any): A = { f(a); a }
   }
 
-//  "value".
-//    |> (_.length).
-//    |> (_ * 2).
-//    |> (_.toString).
-//    |> (_.length).
-//    |> (_.toStrig)
-//
-//  "value"
-//    . |> (_.length)
-//    . |> (_ * 2)
-//    . |> (_.toString)
-//    . |> (_.length)
-//    . |> (_.toString)
-//
-//  "value"
-//    . |> { _.length }
-//    . |> { _ * 2 }
-//    . |> { _.toString }
-//    . |> { _.length }
-//    . |> { _.toString }
-//
 //  "value"
 //    . |> { v =>
 //      v.length
@@ -97,7 +80,7 @@ package object imcode {
   def whenOpt[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
 
   def doto[A](exp: A, exps: A*)(f: A => Any) {
-    exp +: exps foreach f
+    (exp +: exps).foreach(f)
   }
 
 
@@ -152,9 +135,6 @@ package object imcode {
   }
 
 
-
-
-
   def using[R: ManagedResource, A](resource: R)(f: R => A): A =
     try {
       f(resource)
@@ -164,25 +144,27 @@ package object imcode {
       }
     }
 
+
+
+
   /**
    * Converts camel-case string into underscore.
    * ex: IPAccess => ip_access, SearchTerms => search_terms, mrX => mr_x, iBot => i_bot
    */
-  @deprecated("prototype")
   def camelCaseToUnderscore(s: String): String = {
     def camelCaseToUnderscore(chars: List[Char]): List[Char] =
-      chars span (c => c.isLower || !c.isLetter) match {
+      chars.span(c => c.isLower || !c.isLetter) match {
         case (lowers, Nil) => lowers
-        case (Nil, rest) => (rest span (_.isUpper) : @unchecked) match {
-          case (u :: Nil, rest) => camelCaseToUnderscore(u.toLower :: rest)
-          case (uppers @ (u1 :: u2 :: _), rest) =>
-            if (rest.isEmpty) uppers map (_.toLower)
-            else uppers.init.map(_.toLower) ++ ('_' :: camelCaseToUnderscore(uppers.last.toLower :: rest))
+        case (Nil, rest) => (rest.span(_.isUpper) : @unchecked) match {
+          case (u :: Nil, rest2) => camelCaseToUnderscore(u.toLower :: rest2)
+          case (uppers@(u1 :: u2 :: _), rest2) =>
+            if (rest2.isEmpty) uppers.map(_.toLower)
+            else uppers.init.map(_.toLower) ++ ('_' :: camelCaseToUnderscore(uppers.last.toLower :: rest2))
         }
         case (lowers, rest) => lowers ++ ('_' :: camelCaseToUnderscore(rest))
       }
 
-    camelCaseToUnderscore(s.toList) mkString
+    camelCaseToUnderscore(s.toList).mkString
   }
 
 //class Default[T](init: => T) { def value = init }

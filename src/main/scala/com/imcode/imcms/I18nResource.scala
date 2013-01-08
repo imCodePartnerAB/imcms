@@ -16,7 +16,7 @@ object I18nResource {
 
 // implicit
 class I18nResource(key: String) {
-  private val localeAndValue: (Locale, String) = {
+  private val localeAndResource: (Locale, String) = {
     val locale = Imcms.getUser |> opt match {
       case Some(user) => new Locale(user.getLanguageIso639_2)
       case _ => Locale.getDefault
@@ -26,28 +26,28 @@ class I18nResource(key: String) {
       ResourceBundle.getBundle("ui", locale)
     } catch {
       case e: Throwable =>
-        Logger.getLogger(getClass).error("Can't retrieve resource bundle for locale %s".format(locale.getDisplayName), e)
+        Logger.getLogger(getClass).error(s"Can't retrieve resource bundle for locale ${locale.getDisplayName}.", e)
         new ListResourceBundle {
           def getContents = Array(Array())
         }
     }
 
-    (locale, Ex.allCatch.opt(bundle.getString(key)).getOrElse("<#%s#>".format(key.split('.').last)))
+    (locale, Ex.allCatch.opt(bundle.getString(key)).getOrElse(s"<#${key.split('.').last}#>"))
   }
 
 
   /**
    * @return resource bundle value corresponding to the key
    */
-  def i: String = localeAndValue._2
+  def i: String = localeAndResource._2
 
 
   /**
    * @param arg first format arg
    * @param args rest param args
-   * @return formatted resource bundle value corresponding to the key
+   * @return formatted resource value corresponding to the key
    */
-  def f(arg: Any, args: Any*): String = localeAndValue match {
+  def f(arg: Any, args: Any*): String = localeAndResource match {
     case (locale, value) => new MessageFormat(value, locale).format((arg +: args.toArray).map(_.asInstanceOf[AnyRef]))
   }
 }
