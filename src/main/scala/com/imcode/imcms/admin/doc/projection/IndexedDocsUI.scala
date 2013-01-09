@@ -18,4 +18,6 @@ class IndexedDocsUI(container: IndexedDocsContainer) extends Table(null, contain
   Seq("docs_projection.container_property.parents", "docs_projection.container_property.children").foreach {
     setColumnCollapsed(_, true)
   }
+
+  addStyleName("striped")
 }

@@ -57,17 +57,13 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
   def reset() {
     basicFilter.reset()
     advancedFilter.reset()
-    updateUI()
     reload()
   }
 
 
-  // todo: make private, should be called using listener
-  def updateUI() {
-    basicFilter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange)
-  }
-
   def reload() {
+    basicFilter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange)
+
     createSolrQuery() match {
       case Left(throwable) =>
         docsContainer.setSolrQueryOpt(None)

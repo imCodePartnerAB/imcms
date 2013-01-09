@@ -21,18 +21,19 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
   private val selectionRef = new AtomicReference(Seq.empty[UserDomainObject])
 
   private val filter = new UserFilter
-  private val filteredUsersUI = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable {
-    addContainerProperties(this,
-      CP[UserId]("user.tbl.col.id"),
-      CP[String]("user.tbl.col.login"),
-      CP[String]("user.tbl.col.first_name"),
-      CP[String]("user.tbl.col.last_name"),
-      CP[JBoolean]("user.tbl.col.is_superadmin"),
-      CP[JBoolean]("user.tbl.col.is_active"))
+  private val filteredUsersUI = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable |>> { tbl =>
+    addContainerProperties(tbl,
+      CP[UserId]("users_projection.container_property.id"),
+      CP[String]("users_projection.container_property.login"),
+      CP[String]("users_projection.container_property.first_name"),
+      CP[String]("users_projection.container_property.last_name"),
+      CP[JBoolean]("users_projection.container_property.is_superadmin"),
+      CP[JBoolean]("users_projection.container_property.is_active"))
 
-    setMultiSelect(multiSelect)
+    tbl.setMultiSelect(multiSelect)
 
-    setColumnHeaders(getContainerPropertyIds.asScala.map(_.toString.i).toArray)
+    tbl.setColumnHeaders(tbl.getContainerPropertyIds.asScala.map(_.toString.i).toArray)
+    tbl.addStyleName("striped")
   }
 
   val ui = new GridLayout(1, 2) |>> { ui =>
@@ -57,21 +58,21 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
 
   def reload() {
     val matchesAlways = Function.const(true)_
-    val state = filter.getValues()
+    val state = filter.getValues
 
-    val matchesText: UserDomainObject => Boolean =
+    val matchesText: (UserDomainObject => Boolean) =
       state.text match {
         case Some(text) if text.nonEmpty => { _.getLoginName.contains(text) }
         case _ => matchesAlways
       }
 
-    val matchesRoles: UserDomainObject => Boolean =
+    val matchesRoles: (UserDomainObject => Boolean) =
       state.roles match {
         case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(filter.ui.tcsRoles.value.asScala.toSeq).nonEmpty }
         case _ => matchesAlways
       }
 
-    val matchesShowInactive: UserDomainObject => Boolean =
+    val matchesShowInactive: (UserDomainObject => Boolean) =
       if (state.isShowInactive) matchesAlways else { _.isActive }
 
     val matchesAll = (user: UserDomainObject) => List(matchesText, matchesRoles, matchesShowInactive) forall (_ apply user)
@@ -91,12 +92,11 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
           user.isActive : JBoolean
         ),
         userId)
-
     }
   }
 
-  /** Search result selected users */
+
   def selection: Seq[UserDomainObject] = selectionRef.get
 
-  override def notifyListeners() = notifyListeners(selection)
+  override def notifyListeners(): Unit = notifyListeners(selection)
 }

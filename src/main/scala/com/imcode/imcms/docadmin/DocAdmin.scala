@@ -287,7 +287,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     addContainerProperties(ui.ttMenu,
-      PropertyDescriptor[DocId]("docs_projection.container_property.id".i),
+      PropertyDescriptor[DocId]("docs_projection.container_property.meta_id".i),
       PropertyDescriptor[String]("docs_projection.container_property.headline".i),
       PropertyDescriptor[String]("docs_projection.container_property.alias".i),
       PropertyDescriptor[String]("docs_projection.container_property.type".i),

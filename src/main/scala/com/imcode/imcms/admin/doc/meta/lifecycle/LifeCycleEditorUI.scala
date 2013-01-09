@@ -36,7 +36,7 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
 
     val lytPhase = new HorizontalLayout with Spacing with UndefinedSize |>> { lyt =>
       lyt.setCaption("Status")
-      lyt.setStyleName("im-separated-element-top");
+      lyt.setStyleName("im-border-top-doc_lifecycle")
     }
 
     val sltVersion = new Select("Version") with SingleSelect[DocVersionNo] with NoNullSelection

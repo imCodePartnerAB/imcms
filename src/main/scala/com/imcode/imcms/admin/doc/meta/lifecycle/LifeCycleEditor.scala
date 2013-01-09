@@ -15,36 +15,40 @@ import _root_.imcode.server.document.LifeCyclePhase
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 
-// todo: ??? remember lytDate.chkEnd date when uncheked ???
+
 class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
   case class Data(
     publicationStatus: Document.PublicationStatus,
-    publicationStart: Date,
-    publicationEnd: Option[Date],
+    publicationStartDt: Date,
+    archiveDt: Option[Date],
+    publicationEndDt: Option[Date],
     publisher: Option[UserDomainObject],
     versionNo: Int,
-    created: Date,
-    modified: Date,
+    createdDt: Date,
+    modifiedDt: Date,
     creator: Option[UserDomainObject],
     modifier: Option[UserDomainObject]
   )
 
+
   val ui = new LifeCycleEditorUI |>> { ui =>
     for (phase <- LifeCyclePhase.ALL) {
       new Label with UndefinedSize |>> { lbl =>
-        lbl.setCaption("doc_publication_phase.%s".format(phase).i)
+        lbl.setCaption(s"doc_publication_phase.$phase".i)
         lbl.setIcon(Theme.Icon.Doc.phase(phase))
       } |> ui.publication.lytPhase.addComponent
     }
 
     ui.publication.chkEnd.addValueChangeHandler {
       ui.publication.calEnd.setEnabled(ui.publication.chkEnd.checked)
+
       updatePhase()
     }
 
     ui.publication.chkArchive.addValueChangeHandler {
       ui.publication.calArchive.setEnabled(ui.publication.chkArchive.checked)
+
       updatePhase()
     }
 
@@ -64,6 +68,8 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
       updatePhase()
     }
   }
+
+  resetValues()
 
   def resetValues() {
     // version
@@ -100,8 +106,8 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   private def updatePhase() {
     val doc = new TextDocumentDomainObject() |>> { doc =>
       doc.setPublicationStartDatetime(ui.publication.calStart.value)
-      doc.setPublicationEndDatetime(if (ui.publication.chkEnd.checked) ui.publication.calEnd.value else null)
-      doc.setArchivedDatetime(if (ui.publication.chkArchive.checked) ui.publication.calArchive.value else null)
+      doc.setPublicationEndDatetime(ui.publication.chkEnd.checked ? ui.publication.calEnd.value | null)
+      doc.setArchivedDatetime(ui.publication.chkArchive.checked ? ui.publication.calArchive.value | null)
       doc.setPublicationStatus(ui.publication.sltStatus.value)
     }
 
@@ -112,19 +118,34 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     }
   }
 
-  def collectValues(): ErrorsOrData = Right(
-    Data(
-      ui.publication.sltStatus.value,
-      ui.publication.calStart.value,
-      ui.publication.calEnd.valueOpt,
-      ui.info.ussCreator.selection,
-      ui.publication.sltVersion.value.intValue,
-      ui.info.dCreated.calDate.value,
-      ui.info.dModified.calDate.value,
-      ui.info.ussCreator.selection,
-      ui.info.ussModifier.selection
-    )
-  )
+  def collectValues(): ErrorsOrData = {
+    val errors = scala.collection.mutable.Buffer.empty[String]
 
-  resetValues()
+    if (ui.publication.chkArchive.checked && ui.publication.calArchive.valueOpt.isEmpty) {
+      errors.append("Document archive is enabled but date is not specified")
+    }
+
+    if (ui.publication.chkEnd.checked && ui.publication.calEnd.valueOpt.isEmpty) {
+      errors.append("Document expiration is enabled but date is not specified")
+    }
+
+    if (errors.nonEmpty) {
+      Left(errors.toSeq)
+    } else {
+      Right(
+        Data(
+          ui.publication.sltStatus.value,
+          ui.publication.calStart.value,
+          ui.publication.chkArchive.checked ? Some(ui.publication.calArchive.value) | None,
+          ui.publication.chkEnd.checked ? Some(ui.publication.calEnd.value) | None,
+          ui.info.ussCreator.selection,
+          ui.publication.sltVersion.value.intValue,
+          ui.info.dCreated.calDate.value,
+          ui.info.dModified.calDate.value,
+          ui.info.ussCreator.selection,
+          ui.info.ussModifier.selection
+        )
+      )
+    }
+  }
 }

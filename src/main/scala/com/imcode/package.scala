@@ -19,11 +19,24 @@ package object imcode {
   type JIterator[A <: AnyRef] = java.util.Iterator[A]
 
 
-  implicit class TernaryOperator(condition: Boolean) {
-    def ?[A](thenExp: => A) = new IfThenElse[A](thenExp)
+  def using[R : ManagedResource, A](resource: R)(f: R => A): A = {
+    try {
+      f(resource)
+    } finally {
+      if (resource != null)
+        Ex.allCatch(implicitly[ManagedResource[R]].close(resource))
+    }
+  }
 
-    class IfThenElse[A](thenExp: => A) {
-      def |[U >: A](elseExp: => U): U = if (condition) thenExp else elseExp
+
+  /**
+   * Emulates Java ternary operator in the form {@code condition ? trueExpression | elseExpression}.
+   */
+  implicit class TernaryOperator(condition: Boolean) {
+    def ?[A](thenExpression: => A) = new IfThenElse[A](thenExpression)
+
+    class IfThenElse[A](thenExpression: => A) {
+      def |[U >: A](elseExpression: => U): U = if (condition) thenExpression else elseExpression
     }
   }
 
@@ -84,7 +97,6 @@ package object imcode {
   }
 
 
-  // move to collections
   def unfold[A, B](init: A)(f: A => Option[(B, A)]): List[B] = f(init) match {
     case None => Nil
     case Some((r, next)) => r :: unfold(next)(f)
@@ -133,16 +145,6 @@ package object imcode {
   object NegInt {
     def unapply(s: String): Option[Int] = AnyInt.unapply(s).filter(_ < 0)
   }
-
-
-  def using[R: ManagedResource, A](resource: R)(f: R => A): A =
-    try {
-      f(resource)
-    } finally {
-      if (resource != null) {
-        Ex.allCatch(implicitly[ManagedResource[R]].close(resource))
-      }
-    }
 
 
 

@@ -10,6 +10,4 @@ abstract class UserSelectDialog(caption: String, multiSelect: Boolean) extends O
 
   search.listen(selection => btnOk.setEnabled(selection.nonEmpty))
   search.notifyListeners()
-
-  this.setSize(500, 600)
 }

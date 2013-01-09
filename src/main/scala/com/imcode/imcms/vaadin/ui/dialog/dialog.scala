@@ -84,7 +84,7 @@ trait NoButton { this: Dialog =>
 trait OKButton { this: Dialog =>
   val btnOk = new Button("btn_ok".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  def setOkButtonHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnOk, handler)
+  def setOkButtonHandler(handler: => Any): Unit = Dialog.wrapButtonClickHandler(this, btnOk, handler)
   def setOkButtonCustomHandler(handler: => Unit): Unit = btnOk.addClickHandler(handler)
 }
 
@@ -187,17 +187,16 @@ object Dialog extends Log4jLoggerSupport {
   /**
    * Wraps button click handler: invokes original handler and closes dialog if there is no exception.
    */
-  def wrapButtonClickHandler(dialog: Dialog, button: Button, handler: => Unit) {
+  def wrapButtonClickHandler(dialog: Dialog, button: Button, handler: => Any) {
     button.addClickHandler {
       try {
-        handler
-        dialog.close()
+        handler match {
+          case false =>
+          case _ => dialog.close()
+        }
       } catch {
-        case e =>
-          using(new java.io.StringWriter) { w =>
-            e.printStackTrace(new java.io.PrintWriter(w))
-            dialog.rootWindow.showErrorNotification("Unexpected error: %s".format(e.getMessage), w.toString)
-          }
+        case e: Throwable =>
+          dialog.rootWindow.showErrorNotification(s"Unexpected error: ${e.getMessage}", e.getStackTraceString)
 
           logger.error("Dialog button click hander error", e)
 

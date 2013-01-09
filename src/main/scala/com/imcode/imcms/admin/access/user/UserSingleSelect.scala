@@ -24,8 +24,8 @@ class UserSingleSelect {
   def selection_=(userOpt: Option[UserDomainObject]) {
     ui.btnClear.setEnabled(userOpt.isDefined)
     ui.lblName.value = userOpt match {
-      case Some(user) => s"[ ${user.getLoginName} ]"
-      case _ => "[ not selected ]"
+      case Some(user) => s"[ <b>${user.getLoginName}</b> ]"
+      case _ => "[ <i>not selected</i> ]"
     }
 
     selectionRef.set(userOpt)

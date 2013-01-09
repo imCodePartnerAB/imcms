@@ -72,8 +72,8 @@ class SearchSettingsEditorUI extends VerticalLayout with Spacing with FullWidth 
       setRows(10)
       setColumns(10)
     }
-    val btnAdd = new Button("+")
-    val btnRemove = new Button("-")
+    val btnAdd = new Button("+") with SmallStyle
+    val btnRemove = new Button("-") with SmallStyle
     val txtKeyword = new TextField {
       setInputPrompt("New keyword")
     }
@@ -85,7 +85,7 @@ class SearchSettingsEditorUI extends VerticalLayout with Spacing with FullWidth 
 
   private val pnlKeywords = new Panel("Keywords") with FullWidth {
     val content = new VerticalLayout with FullWidth with Margin
-    val lytBar = new HorizontalLayout with UndefinedSize
+    val lytBar = new HorizontalLayout with MiddleLeftAlignment with UndefinedSize
 
     lytBar.addComponents(keywords.txtKeyword, keywords.btnAdd, keywords.btnRemove)
     content.addComponents(lytBar, keywords.lstKeywords)

@@ -2,27 +2,23 @@ package com.imcode
 package imcms
 package admin.doc
 
-import _root_.imcode.server.document._
-import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 
 import scala.collection.JavaConverters._
 
 import com.vaadin.event.Action
-import com.imcode.imcms.admin.doc.meta.MetaEditor
 import com.imcode.imcms.mapping.ProfileMapper
-import com.imcode.imcms.admin.doc.content._
-import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
 
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.admin.doc.projection._
-import com.imcode.imcms.api.{I18nMeta, I18nLanguage}
-import com.vaadin.terminal.ExternalResource
-import imcode.server.user.UserDomainObject
 
-// import _root_.com.imcode.imcms.mapping.ProfileMapper.SimpleProfile ????
+import _root_.imcode.server.user.UserDomainObject
+import _root_.imcode.server.document._
+import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+
+// todo: ??? profile -> import _root_.com.imcode.imcms.mapping.ProfileMapper.SimpleProfile
 
 object Actions {
   val IncludeToSelection = new Action("doc.mgr.action.include_to_selection".i)
@@ -104,11 +100,21 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         action match {
           case IncludeToSelection =>
             customDocs.projection.docsContainer.addItem(target)
-            customDocs.projection.updateUI()
             customDocs.projection.reload()
           case _ =>
         }
     })
+
+    projection.listen { docs =>
+      val isSingle = docs.size == 1
+      val isSelected = docs.nonEmpty
+
+      ui.miNew.setEnabled(isSingle && docs.head.isInstanceOf[TextDocumentDomainObject])
+      ui.miCopy.setEnabled(isSingle)
+      ui.miEdit.setEnabled(isSingle)
+      ui.miShow.setEnabled(isSingle)
+      ui.miDelete.setEnabled(isSelected)
+    }
   }
 }
 
@@ -167,45 +173,6 @@ class CustomDocsUI(projectionUI: Component) extends VerticalLayout with Spacing 
 
   this.addComponents(mb, projectionUI)
   setExpandRatio(projectionUI, 1.0f)
-}
-
-
-// New doc flow's first page
-// dialog???
-
-/**
- * Creates and returns document which inherits parent doc.
- */
-class NewDocFactory(parentDoc: Option[DocumentDomainObject]) extends ImcmsServicesSupport {
-
-  val ui = new NewDocFactoryUI |>> { ui =>
-
-  }
-
-  //def doc = /*if copy*/ if (true) imcmsServices.getDocumentMapper.copyDocument(parentDoc)
-}
-
-class NewDocFactoryUI extends GridLayout(3, 3) with UndefinedSize {
-
-  // copy, profile, iinheritance
-//  val btnSelectProfile = new Button("...")
-//  val btnSelectNamedProfile = new Button("...")
-//  val btnSelectForCopy = new Button("...")
-  val txtProfileDoc = new TextField
-  val cbNamedProfileDoc = new TextField
-  val txtCopyDoc = new TextField
-
-
-  val ogProfile = new OptionGroup
-  val ogNamedProfile = new OptionGroup
-  val ogCopy = new OptionGroup
-
-  val cbDocTypeType = new ComboBox
-  val cbNamedProfileType = new ComboBox
-  val cbCopyType = new ComboBox
-
-//  addComponents(this,
-//    ogProfile, txtParentDoc, cb)
 }
 
 

@@ -34,11 +34,11 @@ class IndexedDocsContainer(
     with ImcmsServicesSupport {
 
   private val propertyIdToType = ListMap(
-    "docs_projection.container_property.ix" -> classOf[Ix],
-    "docs_projection.container_property.id" -> classOf[Component],
-    "docs_projection.container_property.language" -> classOf[Component],
+    "docs_projection.container_property.index" -> classOf[Ix],
+    "docs_projection.container_property.meta_id" -> classOf[Component],
     "docs_projection.container_property.phase" -> classOf[String],
     "docs_projection.container_property.type" -> classOf[String],
+    "docs_projection.container_property.language" -> classOf[Component],
     "docs_projection.container_property.alias" -> classOf[String],
     "docs_projection.container_property.headline" -> classOf[String],
 
@@ -153,7 +153,7 @@ class IndexedDocsContainer(
 
   // todo implement
   override val getSortableContainerPropertyIds: JCollection[_] = ju.Arrays.asList(
-    "docs_projection.container_property.id",
+    "docs_projection.container_property.meta_id",
     "docs_projection.container_property.language",
     "docs_projection.container_property.type",
     "docs_projection.container_property.status",
@@ -177,8 +177,8 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
     override def getItemProperty(id: AnyRef) = FunctionProperty(id match {
-      case "docs_projection.container_property.ix" => () => ix + 1 : JInteger
-      case "docs_projection.container_property.id" => () => {
+      case "docs_projection.container_property.index" => () => ix + 1 : JInteger
+      case "docs_projection.container_property.meta_id" => () => {
         val label = new Label with UndefinedSize |>> { lbl =>
           lbl.setCaption(doc.getId.toString)
           lbl.setIcon(Theme.Icon.Doc.phase(doc))

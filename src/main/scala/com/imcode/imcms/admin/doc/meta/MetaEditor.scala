@@ -100,24 +100,31 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     }
 
     ui.sp.setSplitPosition(20, Sizeable.UNITS_PERCENTAGE)
-    ui.treeEditors.select("doc_meta_editor.menu_item.life_cycle")
   } // ui
 
+  resetValues()
+
   def collectValues(): ErrorsOrData = {
-    case class UberData(uberData: ErrorsOrData) {
-      def merge[B](childDataOpt: => Option[Either[Seq[ErrorMsg], B]])(fn: (Data, B) => Data): UberData =
-        childDataOpt match {
+    case class Collector(errorsOrData: ErrorsOrData) {
+      def merge[A](subEditorErrorsOrDataOpt: => Option[Seq[ErrorMsg] Either A])(fn: (Data, A) => Data): Collector = {
+        subEditorErrorsOrDataOpt match {
           case None => this
-          case Some(Right(_)) if uberData.isLeft => this
-          case Some(Right(childValue)) => UberData(Right(fn(uberData.right.get, childValue)))
-          case Some(Left(childErrorMsgs)) if uberData.isRight => UberData(Left(childErrorMsgs))
-          case Some(Left(childErrorMsgs)) => UberData(Left(uberData.left.get ++ childErrorMsgs))
+          case Some(subEditorErrorsOrData) => subEditorErrorsOrData match {
+            case Right(_) if errorsOrData.isLeft => this
+            case Right(subEditorData) => Collector(Right(fn(errorsOrData.right.get, subEditorData)))
+            case Left(subEditorErrors) if errorsOrData.isRight => Collector(Left(subEditorErrors))
+            case Left(subEditorErrors) => Collector(Left(errorsOrData.left.get ++ subEditorErrors))
+          }
         }
+      }
     }
 
-    UberData(
-      Right(doc.clone, Map.empty[I18nLanguage, I18nMeta])
-    ).merge(appearanceEditorOpt.map(_.collectValues())) {
+    val dc = doc.clone()
+    val i18nMetas = Map(dc.getLanguage -> dc.getI18nMeta)
+
+    Collector(
+      Right((dc, i18nMetas))
+    ).merge(appearanceEditorOpt.map(_.collectValues)) {
       case ((dc, _), appearance) => (dc, appearance.i18nMetas) |>> { _ =>
         dc.getMeta.setEnabledLanguages(appearance.enabledLanguages.asJava)
         dc.getMeta.setI18nShowMode(appearance.disabledLanguageShowSetting)
@@ -125,20 +132,20 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         dc.getMeta.setTarget(appearance.target)
       }
     }.merge(lifeCycleEditorOpt.map(_.collectValues())) {
-      case (uberData @ (dc, _), lifeCycle) => uberData |>> { _ =>
+      case (data@(dc, _), lifeCycle) => data |>> { _ =>
         dc.getMeta.setPublicationStatus(lifeCycle.publicationStatus)
-        dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStart)
-        dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
-        dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEnd.orNull)
+        dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStartDt)
+        dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEndDt.orNull)
+        dc.getMeta.setArchivedDatetime(lifeCycle.archiveDt.orNull)
         dc.getMeta.setPublisherId(lifeCycle.publisher.map(p => p.getId : JInteger).orNull)
         //???dc.setVersion(new DocumentVersion() state.versionNo)
-        dc.getMeta.setCreatedDatetime(lifeCycle.created)
-        dc.getMeta.setModifiedDatetime(lifeCycle.modified)
+        dc.getMeta.setCreatedDatetime(lifeCycle.createdDt)
+        dc.getMeta.setModifiedDatetime(lifeCycle.modifiedDt)
         dc.getMeta.setCreatorId(lifeCycle.creator.map(c => c.getId : JInteger).orNull)
         //???dc.getMeta.setModifierId
       }
     }.merge(accessEditorOpt.map(_.collectValues)) {
-      case (uberData @ (dc, _), permissions) => uberData |>> { _ =>
+      case (data@(dc, _), permissions) => data |>> { _ =>
         dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
         dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)
         dc.getPermissionSets.setRestricted2(permissions.restrictedTwoPermSet)
@@ -147,11 +154,11 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
       }
     }.merge(categoryEditorOpt.map(_.collectValues)) {
-      case (uberData @ (dc, _), categories) => uberData |>> { _ =>
+      case (data@(dc, _), categories) => data |>> { _ =>
         dc.setCategoryIds(categories.categoriesIds.asJava)
       }
     }.merge(profileEditorOpt.map(_.collectValues)) {
-      case (uberData @ (tdc: TextDocumentDomainObject, _), profile) => uberData |>> { _ =>
+      case (data@(tdc: TextDocumentDomainObject, _), profile) => data |>> { _ =>
         tdc.setDefaultTemplateId(profile.defaultTemplate)
         tdc.getPermissionSetsForNewDocuments.setRestricted1(profile.restrictedOnePermSet)
         tdc.getPermissionSetsForNewDocuments.setRestricted2(profile.restrictedTwoPermSet)
@@ -159,8 +166,8 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         tdc.setDefaultTemplateIdForRestricted2(profile.restrictedTwoTemplate)
       }
 
-      case (uberData, _) => uberData
-    }.uberData
+      case (data, _) => data
+    }.errorsOrData
     //      //// ?????????????????????????????????????
     //      ////    ui.cbDefaultTemplate.value,
     //      ////    restrictedOnePermSet, // ??? clone
@@ -169,5 +176,14 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     //      ////    ui.cbRestrictedTwoDefaultTemplate
   } // data
 
-  def resetValues() {}
+  def resetValues() {
+    appearanceEditorOpt = None
+    lifeCycleEditorOpt = None
+    accessEditorOpt = None
+    searchSettingsEditorOpt = None
+    categoryEditorOpt = None
+    profileEditorOpt = None
+
+    ui.treeEditors.value = "doc_meta_editor.menu_item.life_cycle"
+  }
 }

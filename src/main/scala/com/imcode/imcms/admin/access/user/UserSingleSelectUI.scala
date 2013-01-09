@@ -6,7 +6,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 
 class UserSingleSelectUI extends HorizontalLayout with Spacing with UndefinedSize {
-  val lblName = new Label with UndefinedSize
+  val lblName = new Label with UndefinedSize |>> { _.setContentMode(Label.CONTENT_XHTML) }
   val btnSelect = new Button("select") with SmallStyle
   val btnClear = new Button("clear") with SmallStyle
 

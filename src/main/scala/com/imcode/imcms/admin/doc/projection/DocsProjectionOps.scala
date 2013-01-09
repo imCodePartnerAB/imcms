@@ -11,7 +11,7 @@ import com.imcode.imcms.vaadin.ui._
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 
-// todo: add callbacks???
+
 class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport with Log4jLoggerSupport {
 
   def mkDocOfType[T <: DocumentDomainObject : ClassTag] {
@@ -30,15 +30,14 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
         new DocEditorDialog(dlgCaption, newDoc) |>> { dlg =>
           dlg.setOkButtonHandler {
             dlg.docEditor.collectValues() match {
-              case Left(errors) => ui.rootWindow.showErrorNotification(errors.mkString(","))
+              case Left(errors) =>
+                ui.rootWindow.showErrorNotification(errors.mkString(","))
+                false
+
               case Right((editedDoc, i18nMetas)) =>
-                try {
-                  imcmsServices.getDocumentMapper.saveNewDocument(editedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser)
-                  ui.rootWindow.showInfoNotification("New document has been created")
-                  projection.reload()
-                } catch {
-                  case e => ui.rootWindow.showErrorNotification("Failed to create new document", e.getStackTraceString)
-                }
+                imcmsServices.getDocumentMapper.saveNewDocument(editedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser)
+                ui.rootWindow.showInfoNotification("New document has been created")
+                projection.reload()
             }
           }
         } |> ui.rootWindow.addWindow
@@ -88,15 +87,14 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
       new DocEditorDialog("Edit document", doc) { dlg =>
         dlg.setOkButtonHandler {
           dlg.docEditor.collectValues() match {
-            case Left(errors) => rootWindow.showErrorNotification(errors.mkString(","))
+            case Left(errors) =>
+              rootWindow.showErrorNotification("Unable to save document", errors.mkString(", "))
+              false
+
             case Right((editedDoc, i18nMetas)) =>
-              try {
-                imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, rootWindow.getApplication.imcmsUser)
-                rootWindow.showInfoNotification("Document has been saved")
-                projection.reload()
-              } catch {
-                case e => rootWindow.showErrorNotification("Failed to save document", e.getStackTraceString)
-              }
+              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, rootWindow.getApplication.imcmsUser)
+              rootWindow.showInfoNotification("Document has been saved")
+              projection.reload()
           }
         }
       } |> rootWindow.addWindow

@@ -22,7 +22,7 @@ class DocSelectDialog(caption: String, user: UserDomainObject) extends OkCancelD
     ui.miCopySelectedDoc.setCommandHandler { projectionOps.copySelectedDoc() }
     ui.miDeleteSelectedDocs.setCommandHandler { projectionOps.deleteSelectedDocs() }
     ui.miShowSelectedDoc.setCommandHandler { projectionOps.showSelectedDoc() }
-    ui.miHelp.setCommandHandler { /* show help in modal dialog */ }
+    ui.miHelp.setCommandHandler { /* todo: ??? show help in modal dialog ??? */ }
 
     projection.listen { selection =>
       val isSingleSelection = selection.size == 1

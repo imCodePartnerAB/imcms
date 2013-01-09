@@ -115,7 +115,8 @@ class BasicFilter extends ImcmsServicesSupport {
       Set(
         whenOpt(ui.lytTypes.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
         whenOpt(ui.lytTypes.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
-        whenOpt(ui.lytTypes.chkHtml.isChecked) { DocumentTypeDomainObject.HTML }
+        whenOpt(ui.lytTypes.chkHtml.isChecked) { DocumentTypeDomainObject.HTML },
+        whenOpt(ui.lytTypes.chkUrl.isChecked) { DocumentTypeDomainObject.URL }
       ).flatten
     },
 

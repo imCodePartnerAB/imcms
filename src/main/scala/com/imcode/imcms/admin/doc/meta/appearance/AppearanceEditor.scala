@@ -11,12 +11,9 @@ import com.imcode.imcms.api._
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.dao.MetaDao
 
-import com.vaadin.terminal.{ExternalResource}
 import com.vaadin.data.Validator
 import com.vaadin.data.Validator.InvalidValueException
-import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.data._
 
 
 /**
@@ -44,7 +41,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
   )
 
   // i18nMetas sorted by language (default always first) and native name
-  private val i18nMetasUIs: Seq[(I18nLanguage, CheckBox, I18nMetaEditorUI)] = {
+  private val i18nMetaEditorUIs: Seq[I18nMetaEditorUI] = {
     val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage
     val languages = imcmsServices.getI18nSupport.getLanguages.asScala.sortWith {
       case (l1, _) if l1 == defaultLanguage => true
@@ -54,16 +51,8 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
 
     for (language <- languages)
     yield {
-      val chkLanguage = new CheckBox(language.getNativeName) with Immediate with AlwaysFireValueChange
-      val i18nMetaEditorUI = new I18nMetaEditorUI
-
-      chkLanguage.addValueChangeHandler {
-        i18nMetaEditorUI.setVisible(chkLanguage.isChecked)
-      }
-
-      chkLanguage.setIcon(new ExternalResource("/imcms/images/icons/flags_iso_639_1/%s.gif" format language.getCode))
-
-      (language, chkLanguage, i18nMetaEditorUI)
+      val caption = language.getNativeName + ((language == defaultLanguage) ? " (default)" |  "")
+      new I18nMetaEditorUI(language, caption)
     }
   }
 
@@ -71,8 +60,8 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
     ui.pnlLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
     ui.pnlLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
 
-    for ((_, chkLanguage, i18nMetaEditorUI) <- i18nMetasUIs) {
-      ui.pnlLanguages.lytI18nMetas.addComponents(chkLanguage, i18nMetaEditorUI)
+    for (i18nMetaEditorUI <- i18nMetaEditorUIs) {
+      ui.pnlLanguages.lytI18nMetas.addComponent(i18nMetaEditorUI)
     }
 
     ui.pnlAlias.txtAlias.addValidator(new Validator {
@@ -99,38 +88,44 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
     .left.map(e => Seq(e.getMessage))
     .right.map { _ =>
       Data(
-        i18nMetasUIs.map {
-          case (language, chkBox, i18nMetaEditorUI) =>
-            language -> (I18nMeta.builder() |> { builder =>
-              builder.id(i18nMetas.get(language).map(_.getId).orNull)
-                .docId(meta.getId)
-                .language(language)
-                .headline(i18nMetaEditorUI.txtTitle.trim)
-                .menuImageURL(i18nMetaEditorUI.embLinkImage.trim)
-                .menuText(i18nMetaEditorUI.txaMenuText.trim)
-                .build()
-            })
+        i18nMetaEditorUIs.collect {
+          case i18nMetaEditorUI if i18nMetaEditorUI.chkEnabled.checked =>
+            val language = i18nMetaEditorUI.language
+            val i18nMeta = I18nMeta.builder()
+              .id(i18nMetas.get(language).map(_.getId).orNull)
+              .docId(meta.getId)
+              .language(language)
+              .headline(i18nMetaEditorUI.txtTitle.trim)
+              .menuImageURL(i18nMetaEditorUI.embLinkImage.trim)
+              .menuText(i18nMetaEditorUI.txaMenuText.trim)
+              .build()
+
+            language -> i18nMeta
+        }(breakOut),
+
+        i18nMetaEditorUIs.collect {
+          case i18nMetaEditorUI if i18nMetaEditorUI.chkEnabled.checked => i18nMetaEditorUI.language
         } (breakOut),
-        i18nMetasUIs.collect { case (language, chkBox, _) if chkBox.isChecked => language } (breakOut),
+
         ui.pnlLanguages.cbShowMode.value,
         ui.pnlAlias.txtAlias.trimOpt,
         ui.pnlLinkTarget.cbTarget.value
       )
-    } // data
+    }
 
 
   // Default language checkbox is be always checked.
   def resetValues() {
     val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage
 
-    for ((language, chkBox, i18nMetaEditorUI) <- i18nMetasUIs) {
-      val isDefaultLanguage = language == defaultLanguage
+    for (i18nMetaEditorUI <- i18nMetaEditorUIs) {
+      val isDefaultLanguage = i18nMetaEditorUI.language == defaultLanguage
 
-      chkBox.setReadOnly(false)
-      chkBox.checked = isDefaultLanguage || meta.getEnabledLanguages.contains(language)
-      chkBox.setReadOnly(isDefaultLanguage)
+      i18nMetaEditorUI.chkEnabled.setReadOnly(false)
+      i18nMetaEditorUI.chkEnabled.checked = isDefaultLanguage || meta.getEnabledLanguages.contains(language)
+      i18nMetaEditorUI.chkEnabled.setReadOnly(isDefaultLanguage)
 
-      i18nMetas.get(language) match {
+      i18nMetas.get(i18nMetaEditorUI.language) match {
         case Some(i18nMeta) =>
           i18nMetaEditorUI.txtTitle.value = i18nMeta.getHeadline
           i18nMetaEditorUI.txaMenuText.value = i18nMeta.getMenuText
@@ -170,52 +165,3 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
 }
 
 
-class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
-  val pnlLanguages = new Panel("Languages") with FullWidth {
-    val layout = new VerticalLayout with Spacing with Margin with FullWidth
-
-    val lytI18nMetas = new VerticalLayout with Spacing with FullWidth
-    val cbShowMode = new ComboBox("When language is disabled") with SingleSelect[Meta.DisabledLanguageShowSetting] with NoNullSelection
-
-    private val lytShowMode = new FormLayout with FullWidth
-    lytShowMode.addComponent(cbShowMode)
-
-    layout.addComponents(lytI18nMetas, lytShowMode)
-    setContent(layout)
-  }
-
-  val pnlLinkTarget = new Panel("Link action") with FullWidth {
-    val layout = new FormLayout with Margin with FullWidth
-    val cbTarget = new ComboBox("Show in") with SingleSelect[String] with NoNullSelection
-
-    layout.addComponent(cbTarget)
-    setContent(layout)
-  }
-
-
-  val pnlAlias = new Panel("Alias") with FullWidth {
-    val layout = new FormLayout with Margin with FullWidth
-    val txtAlias = new TextField("http://host/") with FullWidth |>> {
-      _.setInputPrompt("alternate page name")
-    }
-
-    layout.addComponents(txtAlias)
-    setContent(layout)
-  }
-
-  this.addComponents(pnlLanguages, pnlLinkTarget, pnlAlias)
-}
-
-/**
- * I18nMeta editor.
- */
-class I18nMetaEditorUI extends FormLayout with FullWidth {
-  val txtTitle = new TextField("Title") with FullWidth
-  val txaMenuText = new TextArea("Menu text") with FullWidth {
-    setRows(3)
-  }
-
-  val embLinkImage = new TextField("Link image") with FullWidth
-
-  this.addComponents(txtTitle, txaMenuText, embLinkImage)
-}

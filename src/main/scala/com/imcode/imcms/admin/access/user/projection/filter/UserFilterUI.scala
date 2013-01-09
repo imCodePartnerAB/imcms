@@ -8,15 +8,15 @@ import imcode.server.user.RoleId
 
 
 class UserFilterUI extends CustomLayout("admin/access/user/projection/filter") with UndefinedSize {
-  val chkText = new CheckBox("user.search.frm.fld.chk_text".i) with ExposeValueChange with Immediate
+  val chkText = new CheckBox("users_projection.filter.chk_text".i) with ExposeValueChange with Immediate
   val txtText = new TextField {
-    setInputPrompt("user.search.frm.fld.txt_text.prompt".i)
-    setDescription("user.search.frm.fld.txt_text.tooltip".i)
+    setInputPrompt("users_projection.filter.txt_text.prompt".i)
+    setDescription("users_projection.filter.txt_text.tooltip".i)
   }
 
-  val chkRoles = new CheckBox("user.search.frm.fld.chk_roles".i) with ExposeValueChange with Immediate
+  val chkRoles = new CheckBox("users_projection.filter.chk_roles".i) with ExposeValueChange with Immediate
   val tcsRoles = new TwinColSelect with MultiSelect[RoleId] with TCSDefaultI18n
-  val chkShowInactive = new CheckBox("user.search.frm.fld.chk_show_inactive".i) with ExposeValueChange with Immediate
+  val chkShowInactive = new CheckBox("users_projection.filter.chk_show_inactive".i) with ExposeValueChange with Immediate
   val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
     val btnReset = new Button("btn_reset".i) with SmallStyle
     val btnFilter = new Button("btn_search".i) with SmallStyle
