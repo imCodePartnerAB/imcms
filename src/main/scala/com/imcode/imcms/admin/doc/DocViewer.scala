@@ -17,7 +17,7 @@ object DocViewer extends ImcmsServicesSupport {
   def showDocViewDialog(ui: Component, docId: DocId) {
     val docUrl = ui.getApplication.imcmsDocUrl(docId)
 
-    new OKDialog("Document") with CustomSizeDialog with BottomMarginDialog /*with Resizable*/ |>> { dlg =>
+    new OKDialog("Document") with CustomSizeDialog with BottomContentMarginDialog /*with Resizable*/ |>> { dlg =>
       dlg.mainUI = new VerticalLayout with FullSize |>> { lyt =>
         val mb = new MenuBar
         val mi = mb.addItem("Menu")

@@ -337,7 +337,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Updates existing document.
      *
-     * See {@link #saveNewDocument(imcode.server.document.DocumentDomainObject, java.util.Map, imcode.server.user.UserDomainObject)}
+     * See {@link #saveDocument(imcode.server.document.DocumentDomainObject, java.util.Map, imcode.server.user.UserDomainObject)}
      * to learn more about parameters.
      *
      * @since 6.0

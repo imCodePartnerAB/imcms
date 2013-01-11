@@ -109,12 +109,13 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
       val isSingle = docs.size == 1
       val isSelected = docs.nonEmpty
 
-      ui.miNew.setEnabled(isSingle && docs.head.isInstanceOf[TextDocumentDomainObject])
       ui.miCopy.setEnabled(isSingle)
       ui.miEdit.setEnabled(isSingle)
       ui.miShow.setEnabled(isSingle)
       ui.miDelete.setEnabled(isSelected)
     }
+
+    projection.notifyListeners()
   }
 }
 

@@ -75,7 +75,7 @@ class TemplateManager(app: ImcmsApplication) {
     }
     ui.miEditContent setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
-        app.getMainWindow.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoMarginDialog) { dlg =>
+        app.getMainWindow.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoContentMarginDialog) { dlg =>
           dlg.mainUI = new TemplateContentEditorUI |>> { c =>
             c.txaContent.value = templateMapper.getTemplateData(name)
           }

@@ -2,25 +2,33 @@ package com.imcode
 package imcms
 package admin.doc.projection
 
-import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentTypeDomainObject, DocumentDomainObject}
+import imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.{DocEditorDialog, DocViewer, DocEditor}
-import com.imcode.imcms.vaadin.ui.dialog.ConfirmationDialog
+import com.imcode.imcms.vaadin.ui.dialog.{InformationDialog, ConfirmationDialog}
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
+import com.imcode.imcms.mapping.DocumentMapper
 
-
+/**
+ * Common operations associated with docs projections such as edit, view, delete etc.
+ *
+ * @param projection
+ */
+// todo: allow edit several at once
+// todo: check permissions
 class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport with Log4jLoggerSupport {
 
   def mkDocOfType[T <: DocumentDomainObject : ClassTag] {
-    PartialFunction.condOpt(projection.selection) {
+    projection.selection |> {
       case Seq(selectedDoc: TextDocumentDomainObject) =>
         val (newDocType, dlgCaption) = scala.reflect.classTag[T].runtimeClass match {
-          case c if c == classOf[TextDocumentDomainObject] => DocumentTypeDomainObject.TEXT_ID -> "New text document"
-          case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "New file document"
-          case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "New url document"
+          case c if c == classOf[TextDocumentDomainObject] => DocumentTypeDomainObject.TEXT_ID -> "New Text Document"
+          case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "New File Document"
+          case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "New Url Document"
+          case c if c == classOf[HtmlDocumentDomainObject] => DocumentTypeDomainObject.HTML_ID -> "New Html Document"
         }
 
         val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.ui.getApplication.imcmsUser)
@@ -31,16 +39,24 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
           dlg.setOkButtonHandler {
             dlg.docEditor.collectValues() match {
               case Left(errors) =>
-                ui.rootWindow.showErrorNotification(errors.mkString(","))
-                false
+                ui.rootWindow.showErrorNotification(errors.mkString(", "))
 
               case Right((editedDoc, i18nMetas)) =>
-                imcmsServices.getDocumentMapper.saveNewDocument(editedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser)
-                ui.rootWindow.showInfoNotification("New document has been created")
+                imcmsServices.getDocumentMapper.saveNewDocument(
+                  editedDoc,
+                  i18nMetas.asJava,
+                  java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields),
+                  ui.getApplication.imcmsUser
+                )
+                ui.rootWindow.showInfoNotification("New document has been saved")
                 projection.reload()
+                dlg.close()
             }
           }
         } |> ui.rootWindow.addWindow
+
+      case _ =>
+        new InformationDialog("Please select a text document/profile") |>> projection.ui.rootWindow.addWindow
     }
   }
 
@@ -51,12 +67,9 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
         dlg.setOkButtonHandler {
           try {
             docs.foreach(doc => imcmsServices.getDocumentMapper.deleteDocument(doc, projection.ui.getApplication.imcmsUser))
-          } catch {
-            case e =>
-              logger.error("Document delete error", e)
-              projection.ui.rootWindow.showErrorNotification("Error deleging document(s)", e.getStackTraceString)
+            dlg.rootWindow.showInfoNotification("Documents has been deleted")
+            dlg.close()
           } finally {
-            // todo: update ranges ???
             projection.reload()
           }
         }
@@ -64,11 +77,13 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
     }
   }
 
+
   def showSelectedDoc() {
     whenSingle(projection.selection) { doc =>
       DocViewer.showDocViewDialog(projection.ui, doc.getId)
     }
   }
+
 
   def copySelectedDoc() {
     whenSingle(projection.selection) { doc =>
@@ -78,23 +93,22 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
     }
   }
 
-  // todo: allow change several at once???
-  // todo: permissions
+
   def editSelectedDoc() {
     whenSingle(projection.selection) { doc =>
       val rootWindow = projection.ui.rootWindow
 
-      new DocEditorDialog("Edit document", doc) { dlg =>
+      new DocEditorDialog("Edit document", doc) |>> { dlg =>
         dlg.setOkButtonHandler {
           dlg.docEditor.collectValues() match {
             case Left(errors) =>
               rootWindow.showErrorNotification("Unable to save document", errors.mkString(", "))
-              false
 
             case Right((editedDoc, i18nMetas)) =>
               imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, rootWindow.getApplication.imcmsUser)
               rootWindow.showInfoNotification("Document has been saved")
               projection.reload()
+              dlg.close()
           }
         }
       } |> rootWindow.addWindow

@@ -84,18 +84,16 @@ trait NoButton { this: Dialog =>
 trait OKButton { this: Dialog =>
   val btnOk = new Button("btn_ok".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  def setOkButtonHandler(handler: => Any): Unit = Dialog.wrapButtonClickHandler(this, btnOk, handler)
-  def setOkButtonCustomHandler(handler: => Unit): Unit = btnOk.addClickHandler(handler)
+  def setOkButtonHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnOk, handler)
 }
 
 
 trait CancelButton { this: Dialog =>
   val btnCancel = new Button("btn_cancel".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
-  setCancelButtonCustomHandler(close())
+  setCancelButtonHandler(close())
 
   def setCancelButtonHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnCancel, handler)
-  def setCancelButtonCustomHandler(handler: => Unit): Unit = btnCancel.addClickHandler(handler)
 }
 
 /** Empty dialog window. */
@@ -107,7 +105,7 @@ class OKDialog(caption: String = "") extends Dialog(caption) with OKButton {
 class CancelDialog(caption: String = "") extends Dialog(caption) with CancelButton {
   buttonsBarUI = btnCancel
 
-  setCancelButtonCustomHandler { close() }
+  setCancelButtonHandler { close() }
 }
 
 
@@ -122,7 +120,7 @@ trait MsgLabel { this: Dialog =>
 class MsgDialog(caption: String = "", msg: String ="") extends OKDialog(caption) with MsgLabel {
   lblMessage.value = msg
 
-  setOkButtonCustomHandler { close() }
+  setOkButtonHandler { close() }
 }
 
 /** OKCancel dialog window. */
@@ -174,29 +172,26 @@ class OkCancelErrorDialog(msg: String = "") extends OkCancelDialog("dlg.err.titl
   lblMessage.value = msg
 }
 
-trait BottomMarginDialog { this: Dialog =>
+trait BottomContentMarginDialog { this: Dialog =>
   content.setMargin(false, false, true, false)
 }
 
-trait NoMarginDialog { this: Dialog =>
+trait NoContentMarginDialog { this: Dialog =>
   content.setMargin(false)
 }
 
 object Dialog extends Log4jLoggerSupport {
 
   /**
-   * Wraps button click handler: invokes original handler and closes dialog if there is no exception.
+   * Wraps button click handler: shows "server error" message in case of an error.
    */
-  def wrapButtonClickHandler(dialog: Dialog, button: Button, handler: => Any) {
+  def wrapButtonClickHandler(dialog: Dialog, button: Button, handler: => Unit) {
     button.addClickHandler {
       try {
-        handler match {
-          case false =>
-          case _ => dialog.close()
-        }
+        handler
       } catch {
         case e: Throwable =>
-          dialog.rootWindow.showErrorNotification(s"Unexpected error: ${e.getMessage}", e.getStackTraceString)
+          dialog.rootWindow.showErrorNotification(s"Server Error: ${e.getMessage}")
 
           logger.error("Dialog button click hander error", e)
 
