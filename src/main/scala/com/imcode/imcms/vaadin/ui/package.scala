@@ -7,11 +7,11 @@ import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
 import com.vaadin.terminal.{Resource, Sizeable}
 import com.vaadin.ui.Layout.AlignmentHandler
-import com.vaadin.data.{Property, Item}
-import com.imcode.imcms.vaadin.data.{NullableProperty, GenericContainer, GenericProperty, ItemId}
+import com.vaadin.data.Item
+import com.imcode.imcms.vaadin.data._
+
 
 package object ui {
-
 
   def whenSelected[A <: AnyRef, B](select: AbstractSelect with GenericProperty[A])(fn: A => B): Option[B] = select.value match {
     case null => None
@@ -19,22 +19,22 @@ package object ui {
     case value => Some(fn(value))
   }
 
-  /**
-   * Some Vaadin's components such as TextFields, Labels, etc can act as as wrappers for other
-   * components of the same type.
-   * Ensures setValue and getValue are always called directly on wrapped property, not on wrapper itself.
-   */
-  trait WrappedPropertyValue extends Property with Property.Viewer {
-    abstract override def setValue(value: AnyRef): Unit = getPropertyDataSource match {
-      case null => super.setValue(value)
-      case property => property.setValue(value)
+  def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {
+    def menuSelected(mi: MenuBar#MenuItem): Unit = handler(mi)
+  }
+
+  implicit def fn0ToMenuCommand(f: () => Unit) = menuCommand { _ => f() }
+
+
+  implicit def fnToTableCellStyleGenerator(fn: (ItemId,  PropertyId) => String ) =
+    new Table.CellStyleGenerator {
+      def getStyle(itemId: AnyRef, propertyId: AnyRef) = fn(itemId, propertyId)
     }
 
-    abstract override def getValue(): AnyRef = getPropertyDataSource match {
-      case null => super.getValue()
-      case property => property.getValue()
+  implicit def fnToTableColumnGenerator(fn: (Table, ItemId, ColumnId) => AnyRef) =
+    new Table.ColumnGenerator {
+      def generateCell(source: Table, itemId: ItemId, columnId: AnyRef) = fn(source, itemId, columnId)
     }
-  }
 
   implicit def wrapComponent(c: Component) = new ComponentWrapper(c)
 

@@ -170,21 +170,21 @@ package object imcode {
     camelCaseToUnderscore(s.toList).mkString
   }
 
-//class Default[T](init: => T) { def value = init }
+//  class Default[T](init: => T) { def value = init }
 //
-//object Default {
-//  final class Ops[A >: Null](value: A)(implicit default: Default[A]) {
-//    def orDefault = if (value != null) value else default.value
+//  object Default {
+//    import scala.reflect.ClassTag
+//
+//    implicit final class Ops[A >: Null : Default](value: A) {
+//      def orDefault = if (value != null) value else implicitly[Default[A]].value
+//    }
+//
+//    implicit object defaultString extends Default("")
+//    implicit object defaultJInteger extends Default[java.lang.Integer](0)
+//
+//    implicit def defaultList[A] = new Default[List[A]](List.empty)
+//    implicit def defaultMap[A, B] = new Default[Map[A, B]](Map.empty)
+//    implicit def defaultArray[A : ClassTag] = new Default[Array[A]](Array())
 //  }
-//
-//  implicit def mkOps[A >: Null : Default](value: A) = new Ops(value)
-//
-//  implicit object defaultString extends Default("")
-//  implicit object defaultJInteger extends Default[java.lang.Integer](0)
-//
-//  implicit def defaultList[A] = new Default[List[A]](List.empty)
-//  implicit def defaultMap[A, B] = new Default[Map[A, B]](Map.empty)
-//  implicit def defaultArray[A : ClassManifest] = new Default[Array[A]](Array())
-//}
 
 }

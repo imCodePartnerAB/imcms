@@ -1,33 +1,12 @@
 package com.imcode
 package imcms
-package admin.doc.content
+package admin.doc.content.urldoc
 
-import _root_.imcode.server.document.UrlDocumentDomainObject
-import com.imcode.imcms.vaadin._
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.ui._
 
-class UrlDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor {
-  type Data = UrlDocumentDomainObject
 
-  val ui = new UrlDocContentEditorUI
 
-  resetValues()
-
-  def resetValues() {
-    ui.txtURL.value = "http://"
-  }
-
-  def collectValues() = doc.clone() |>> { clone =>
-    clone.setUrl(ui.txtURL.value)
-    clone.setTarget(ui.cbTarget.value)
-  } |> Right.apply
-}
-
-/**
- * URL document editor UI
- */
 class UrlDocContentEditorUI extends Panel("URL/Link".i) with FullSize {
   private val content = new FormLayout with Margin with FullSize
   private val lytTarget = new HorizontalLayout with Spacing with FullWidth |>> { _.setCaption("Open In") }

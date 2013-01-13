@@ -3,14 +3,15 @@ package imcms.admin.doc
 
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentDomainObject}
-import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
-import com.imcode.imcms.admin.doc.content.{UnsupportedDocContentEditor, UrlDocContentEditor, DocContentEditor}
 import com.imcode.imcms.api.{I18nMeta, I18nLanguage}
 import com.imcode.imcms.admin.doc.meta.MetaEditor
 import com.imcode.imcms.vaadin.Editor
 import com.vaadin.ui.TabSheet
 import com.imcode.imcms.vaadin.ui.FullSize
+import com.imcode.imcms.admin.doc.content.{UnsupportedDocContentEditor}
 import com.imcode.imcms.admin.doc.content.textdoc.NewTextDocContentEditor
+import com.imcode.imcms.admin.doc.content.urldoc.UrlDocContentEditor
+import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
 
 
 class DocEditor(doc: DocumentDomainObject) extends Editor {

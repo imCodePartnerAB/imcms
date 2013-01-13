@@ -4,7 +4,7 @@ package admin.doc.projection
 
 import imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
-import com.imcode.imcms.admin.doc.{DocEditorDialog, DocViewer, DocEditor}
+import com.imcode.imcms.admin.doc.{DocEditorDialog, DocViewer}
 import com.imcode.imcms.vaadin.ui.dialog.{InformationDialog, ConfirmationDialog}
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
@@ -48,7 +48,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                     java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)
 
                   case _ =>
-                    java.util.EnumSet.noneOf(DocumentMapper.SaveOpts)
+                    java.util.EnumSet.noneOf(classOf[DocumentMapper.SaveOpts])
                 }
 
                 imcmsServices.getDocumentMapper.saveNewDocument(

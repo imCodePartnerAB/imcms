@@ -23,4 +23,21 @@ package object data {
 
     def addValueChangeHandler(handler: => Unit): Unit = addValueChangeListener(_ => handler)
   }
+
+  /**
+   * Some Vaadin's components such as TextFields, Labels, etc can act as as wrappers for other
+   * components of the same type.
+   * Ensures setValue and getValue are always called directly on wrapped property, not on wrapper itself.
+   */
+  trait WrappedPropertyValue extends Property with Property.Viewer {
+    abstract override def setValue(value: AnyRef): Unit = getPropertyDataSource match {
+      case null => super.setValue(value)
+      case property => property.setValue(value)
+    }
+
+    abstract override def getValue(): AnyRef = getPropertyDataSource match {
+      case null => super.getValue()
+      case property => property.getValue()
+    }
+  }
 }

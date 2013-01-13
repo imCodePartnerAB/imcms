@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 import imcode.server.Imcms
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
 
 
@@ -39,7 +40,7 @@ object LocationItemsFilter {
   import scala.util.matching.Regex
 
   /** Creates a compund filter from a sequence of filters. */
-  def apply(filter: File => Boolean, filters: File => Boolean*) = (file: File) => filter +: filters forall { _ apply file }
+  def apply(filter: File => Boolean, filters: (File => Boolean)*) = (file: File) => filter +: filters forall { _ apply file }
 
   val notHidden = apply(!_.isHidden)
 
@@ -47,7 +48,7 @@ object LocationItemsFilter {
 
   def nameRE(re: Regex)(fsNode: File) = re.unapplySeq(fsNode.getName).isDefined
 
-  def fileWithExt(ext: String, exts: String*) = nameRE("""(?i).*\.(%s)""".format(ext +: exts mkString("|")).r)_
+  def fileWithExt(ext: String, exts: String*) = nameRE("""(?i).*\.(%s)""".format((ext +: exts).mkString("|")).r)_
 
   val imageFile = fileWithExt("png", "gif", "jpg", "jpeg")
 
@@ -132,7 +133,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
     val locationTree = new LocationTree(locationRoot)
     val locationItems = new LocationItems(conf.itemsFilter, isSelectable, isMultiSelect)
 
-    locationTree.ui addValueChangeHandler {
+    locationTree.ui.addValueChangeHandler {
       locationTree.ui.value |> opt match {
         case Some(dir) =>
           locationItems.reload(dir)
@@ -151,7 +152,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       }
     }
 
-    locationItems.ui addValueChangeHandler { updateSelection(locationTree, locationItems) }
+    locationItems.ui.addValueChangeHandler { updateSelection(locationTree, locationItems) }
 
     locationItems.ui.addItemClickListener {
       case e if e.isDoubleClick => e.getItemId match {
