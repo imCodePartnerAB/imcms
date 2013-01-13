@@ -11,6 +11,7 @@ class NewTextDocContentEditor(doc: TextDocumentDomainObject, metaEditor: MetaEdi
   type Data = TextDocumentDomainObject
 
   val ui = new NewTextDocContentEditorUI |>> { ui =>
+
   } //ui
 
   def resetValues() {}

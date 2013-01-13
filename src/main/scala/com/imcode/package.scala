@@ -1,5 +1,6 @@
 package com
 
+import scala.language.higherKinds
 import scala.util.control.{Exception => Ex}
 
 package object imcode {
@@ -35,7 +36,7 @@ package object imcode {
   implicit class TernaryOperator(condition: Boolean) {
     def ?[A](thenExpression: => A) = new IfThenElse[A](thenExpression)
 
-    class IfThenElse[A](thenExpression: => A) {
+    class IfThenElse[+A](thenExpression: => A) {
       def |[U >: A](elseExpression: => U): U = if (condition) thenExpression else elseExpression
     }
   }

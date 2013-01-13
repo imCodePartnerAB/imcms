@@ -11,6 +11,7 @@ import com.imcode.imcms.vaadin.ui._
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import com.imcode.imcms.mapping.DocumentMapper
+import com.imcode.imcms.admin.doc.content.textdoc.NewTextDocContentEditor
 
 /**
  * Common operations associated with docs projections such as edit, view, delete etc.
@@ -42,10 +43,18 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                 ui.rootWindow.showErrorNotification(errors.mkString(", "))
 
               case Right((editedDoc, i18nMetas)) =>
+                val saveOpts = dlg.docEditor match {
+                  case editor: NewTextDocContentEditor if editor.ui.chkCopyI18nMetaTextsToTextFields.checked =>
+                    java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)
+
+                  case _ =>
+                    java.util.EnumSet.noneOf(DocumentMapper.SaveOpts)
+                }
+
                 imcmsServices.getDocumentMapper.saveNewDocument(
                   editedDoc,
                   i18nMetas.asJava,
-                  java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields),
+                  saveOpts,
                   ui.getApplication.imcmsUser
                 )
                 ui.rootWindow.showInfoNotification("New document has been saved")

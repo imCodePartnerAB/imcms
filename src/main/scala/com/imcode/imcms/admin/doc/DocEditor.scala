@@ -4,7 +4,7 @@ package imcms.admin.doc
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentDomainObject}
 import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
-import com.imcode.imcms.admin.doc.content.{UnavailableDocContentEditor, UrlDocContentEditor, DocContentEditor}
+import com.imcode.imcms.admin.doc.content.{UnsupportedDocContentEditor, UrlDocContentEditor, DocContentEditor}
 import com.imcode.imcms.api.{I18nMeta, I18nLanguage}
 import com.imcode.imcms.admin.doc.meta.MetaEditor
 import com.imcode.imcms.vaadin.Editor
@@ -22,7 +22,7 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
     case textDoc: TextDocumentDomainObject if textDoc.getMetaId == null => new NewTextDocContentEditor(textDoc, metaEditor)
     case fileDoc: FileDocumentDomainObject => new FileDocContentEditor(fileDoc)
     case urlDoc: UrlDocumentDomainObject => new UrlDocContentEditor(urlDoc)
-    case _ => new UnavailableDocContentEditor(doc)
+    case _ => new UnsupportedDocContentEditor(doc)
   }
 
   val ui = new TabSheet with FullSize |>> { ts =>

@@ -3,11 +3,11 @@ package com.imcode.imcms.admin.doc.content
 import imcode.server.document.DocumentDomainObject
 
 
-class UnavailableDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor {
+class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor {
 
   type Data = DocumentDomainObject
 
-  val ui = new UnavailableDocContentEditorUI
+  val ui = new UnsuppotedDocContentEditorUI
 
   def resetValues() {}
 
