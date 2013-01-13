@@ -2,7 +2,7 @@ package com.imcode
 package imcms.admin.doc.template
 
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcode.server.user._
 import imcode.server.{Imcms}
@@ -14,7 +14,7 @@ import imcms.security.{PermissionDenied, PermissionGranted}
 import java.io.{FileInputStream, ByteArrayInputStream, File}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.data._
 
 //todo: common internal ex handler???
 //todo: add related docs handling
@@ -115,7 +115,7 @@ class TemplateManager(app: ImcmsApplication) {
   def reload() {
     ui.tblTemplates.removeAllItems
     for {
-      vo <- templateMapper.getAllTemplates
+      vo <- templateMapper.getAllTemplates.asScala
       name = vo.getName
       fileRE(_, ext) = vo.getFileName
     } ui.tblTemplates.addItem(Array[AnyRef](name, ext, Int box templateMapper.getCountOfDocumentsUsingTemplate(vo)), name)
@@ -156,9 +156,9 @@ class TemplateManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val rc = new ReloadableContentUI(tblTemplates)
 
   addContainerProperties(tblTemplates,
-    CP[String]("Name"),
-    CP[String]("Type"),
-    CP[JInteger]("Document count using this template"))
+    PropertyDescriptor[String]("Name"),
+    PropertyDescriptor[String]("Type"),
+    PropertyDescriptor[JInteger]("Document count using this template"))
 
   this.addComponents(mb, rc)
 }

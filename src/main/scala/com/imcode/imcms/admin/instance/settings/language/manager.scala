@@ -2,7 +2,7 @@ package com.imcode
 package imcms.admin.instance.settings.language
 
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin.{_}
@@ -12,7 +12,7 @@ import imcms.api.I18nLanguage
 import imcms.dao.{SystemDao, LanguageDao}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.data._
 
 //todo delete in use message
 class LanguageManager(app: ImcmsApplication) {
@@ -20,11 +20,11 @@ class LanguageManager(app: ImcmsApplication) {
   private val systemDao = Imcms.getServices.getSpringBean(classOf[SystemDao])
 
   val ui = new LanguageManagerUI |>> { ui =>
-    ui.rc.btnReload addClickHandler { reload() }
-    ui.tblLanguages addValueChangeHandler { handleSelection() }
+    ui.rc.btnReload.addClickHandler { reload() }
+    ui.tblLanguages.addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommandHandler { editAndSave(I18nLanguage.builder().build()) }
-    ui.miEdit setCommandHandler {
+    ui.miNew.setCommandHandler { editAndSave(I18nLanguage.builder().build()) }
+    ui.miEdit.setCommandHandler {
       whenSelected(ui.tblLanguages) { id =>
         languageDao.getById(id) match {
           case null => reload()
@@ -32,7 +32,7 @@ class LanguageManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miDelete setCommandHandler {
+    ui.miDelete.setCommandHandler {
       whenSelected(ui.tblLanguages) { id =>
         app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected language?")) { dlg =>
           dlg.setOkButtonHandler {
@@ -51,7 +51,7 @@ class LanguageManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miSetDefault setCommandHandler {
+    ui.miSetDefault.setCommandHandler {
       whenSelected(ui.tblLanguages) { id =>
         app.getMainWindow.initAndShow(new ConfirmationDialog("Change default language?")) { dlg =>
           dlg.setOkButtonHandler {
@@ -85,11 +85,11 @@ class LanguageManager(app: ImcmsApplication) {
   private def editAndSave(vo: I18nLanguage) {
     val id = vo.getId
     val isNew = id == null
-    val dialogTitle = if(isNew) "Create new language" else "edit Language"
+    val dialogTitle = isNew ? "Create new language" | "edit Language"
 
     app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
       dlg.mainUI = new LanguageEditorUI |>> { c =>
-        c.txtId.value = if (isNew) "" else id.toString
+        c.txtId.value = isNew ? "" | id.toString
         c.txtCode.value = vo.getCode |> opt getOrElse ""
         c.txtName.value = vo.getName |> opt getOrElse ""
         c.txtNativeName.value = vo.getNativeName |> opt getOrElse ""
@@ -126,16 +126,16 @@ class LanguageManager(app: ImcmsApplication) {
   def reload() {
     ui.tblLanguages.removeAllItems
 
-    val default = Int box systemDao.getProperty("DefaultLanguageId").getValue.toInt
+    val default: JInteger = systemDao.getProperty("DefaultLanguageId").getValue.toInt
     for {
-      vo <- languageDao.getAllLanguages
+      vo <- languageDao.getAllLanguages.asScala
       id = vo.getId
-      isDefault = Boolean box (default == id.intValue)
-    } ui.tblLanguages.addItem(Array[AnyRef](id, vo.getCode, vo.getName, vo.getNativeName, Boolean box vo.isEnabled, isDefault), id)
+      isDefault: JBoolean = default == id.intValue
+    } ui.tblLanguages.addItem(Array[AnyRef](id, vo.getCode, vo.getName, vo.getNativeName, vo.isEnabled: JBoolean, isDefault), id)
 
     canManage |> { value =>
       ui.tblLanguages.setSelectable(value)
-      doto(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }
+      doto(ui.miNew, ui.miEdit, ui.miDelete) { _.setEnabled(value) }
     }
 
     handleSelection()
@@ -143,7 +143,7 @@ class LanguageManager(app: ImcmsApplication) {
 
   private def handleSelection() {
     (canManage && ui.tblLanguages.isSelected) |> { enabled =>
-      doto(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+      doto(ui.miEdit, ui.miDelete) { _.setEnabled(enabled) }
     }
   }
 } // class LanguageManager
@@ -161,12 +161,12 @@ class LanguageManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val rc = new ReloadableContentUI(tblLanguages)
 
   addContainerProperties(tblLanguages,
-    CP[JInteger]("Id"),
-    CP[String]("Code"),
-    CP[String]("Name"),
-    CP[String]("Native name"),
-    CP[String]("Enabled"),
-    CP[String]("Default"))
+    PropertyDescriptor[JInteger]("Id"),
+    PropertyDescriptor[String]("Code"),
+    PropertyDescriptor[String]("Name"),
+    PropertyDescriptor[String]("Native name"),
+    PropertyDescriptor[String]("Enabled"),
+    PropertyDescriptor[String]("Default"))
 
   this.addComponents(mb, rc)
 }

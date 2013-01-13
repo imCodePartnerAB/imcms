@@ -2,7 +2,7 @@ package com.imcode
 package imcms.admin.instance.settings.property
 
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.{_}
 import imcms.security.{PermissionGranted, PermissionDenied}

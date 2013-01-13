@@ -96,7 +96,26 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
+            <version>1.2.17</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.jms</groupId>
+                    <artifactId>jms</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jmx</groupId>
+                    <artifactId>jmxri</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jdmk</groupId>
+                    <artifactId>jmxtools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.mail</groupId>
+                    <artifactId>mail</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- End of logging configuration -->
 
@@ -416,31 +435,6 @@
             <groupId>net.sourceforge.jtds</groupId>
             <artifactId>jtds</artifactId>
             <version>1.2.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.jms</groupId>
-                    <artifactId>jms</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jmx</groupId>
-                    <artifactId>jmxri</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jdmk</groupId>
-                    <artifactId>jmxtools</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.mail</groupId>
-                    <artifactId>mail</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!--<dependency>-->
@@ -1048,39 +1042,37 @@
             </plugin>
 
             <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>build-helper-maven-plugin</artifactId>
-              <version>1.7</version>
-              <executions>
-                <execution>
-                  <id>add-source</id>
-                  <phase>generate-sources</phase>
-                  <goals>
-                    <goal>add-source</goal>
-                  </goals>
-                  <configuration>
-                    <sources>
-                      <source>src/main/scala</source>
-                    </sources>
-                  </configuration>
-                </execution>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/scala</source>
+                            </sources>
+                        </configuration>
+                    </execution>
 
-                  <execution>
-                    <id>add-test-source</id>
-                    <phase>generate-test-sources</phase>
-                    <goals>
-                      <goal>add-test-source</goal>
-                    </goals>
-                    <configuration>
-                      <sources>
-                        <source>src/test/scala</source>
-                      </sources>
-                    </configuration>
-                  </execution>
-
-              </executions>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/scala</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-
         </plugins>
     </build>
 
@@ -1107,5 +1099,4 @@
         <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</developerConnection>
         <url></url>
     </scm>
-
 </project>

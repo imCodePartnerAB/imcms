@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReference
 import com.imcode.imcms.admin.access.user.projection.filter.UserFilter
 import com.vaadin.ui.{GridLayout, Table}
 
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.ui._
 
 import _root_.imcode.server.user.UserDomainObject
@@ -23,12 +23,12 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
   private val filter = new UserFilter
   private val filteredUsersUI = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable |>> { tbl =>
     addContainerProperties(tbl,
-      CP[UserId]("users_projection.container_property.id"),
-      CP[String]("users_projection.container_property.login"),
-      CP[String]("users_projection.container_property.first_name"),
-      CP[String]("users_projection.container_property.last_name"),
-      CP[JBoolean]("users_projection.container_property.is_superadmin"),
-      CP[JBoolean]("users_projection.container_property.is_active"))
+      PropertyDescriptor[UserId]("users_projection.container_property.id"),
+      PropertyDescriptor[String]("users_projection.container_property.login"),
+      PropertyDescriptor[String]("users_projection.container_property.first_name"),
+      PropertyDescriptor[String]("users_projection.container_property.last_name"),
+      PropertyDescriptor[JBoolean]("users_projection.container_property.is_superadmin"),
+      PropertyDescriptor[JBoolean]("users_projection.container_property.is_active"))
 
     tbl.setMultiSelect(multiSelect)
 

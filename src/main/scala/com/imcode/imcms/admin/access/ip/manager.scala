@@ -3,14 +3,11 @@ package imcms
 package admin.access.ip
 
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
-import _root_.imcode.server.Imcms
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP}
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.dao.IPAccessDao
 import com.imcode.imcms.api.IPAccess
-import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
 import com.vaadin.ui.Window.Notification
 import com.imcode.imcms.admin.access.user.{UserSingleSelectDialog, UserSelectDialog}
 import javax.persistence.{Id, Entity}
@@ -19,6 +16,8 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.ImcmsApplication
 import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog, ConfirmationDialog}
+import _root_.imcode.server.Imcms
+import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
 
 // todo: ipv4; add/handle ipv6?
 // todo: Should select user from user select!!
@@ -122,7 +121,7 @@ class IPAccessManager(app: ImcmsApplication) {
   def reload() {
     ui.tblIP.removeAllItems
     for {
-      vo <- ipAccessDao.getAll.toList
+      vo <- ipAccessDao.getAll.asScala
       id = vo.getId
       user = roleMapper getUser vo.getUserId.intValue
     } ui.tblIP.addItem(Array[AnyRef](id, user.getLoginName, toDDN(vo.getStart), toDDN(vo.getEnd)), id)
@@ -154,10 +153,10 @@ class IPAccessManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val rc = new ReloadableContentUI(tblIP)
 
   addContainerProperties(tblIP,
-    CP[JInteger]("Id"),
-    CP[String]("Name"),
-    CP[String]("IP range from"),
-    CP[String]("IP range to"))
+    PropertyDescriptor[JInteger]("Id"),
+    PropertyDescriptor[String]("Name"),
+    PropertyDescriptor[String]("IP range from"),
+    PropertyDescriptor[String]("IP range to"))
 
   this.addComponents(mb, rc)
 }

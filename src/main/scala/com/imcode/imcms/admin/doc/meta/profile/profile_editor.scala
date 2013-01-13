@@ -3,7 +3,7 @@ package imcms
 package admin.doc.meta.profile
 
 import scala.collection.breakOut
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import imcode.server.user._
 import imcode.server.document._
 import com.imcode.imcms.vaadin._
@@ -70,7 +70,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
   }
 
   private def resetTemplatesValues() {
-    val templatesNames = imcmsServices.getTemplateMapper.getAllTemplates.map(_.getName)
+    val templatesNames = imcmsServices.getTemplateMapper.getAllTemplates.asScala.map(_.getName)
     val defaultTemplateNameOpt = templatesNames.headOption
 
     def setTemplatesNamesAsComboBoxItems(cb: ComboBox with SingleSelect[String], selectedTemplateName: String) {

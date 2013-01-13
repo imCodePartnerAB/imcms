@@ -4,14 +4,14 @@ package imcms.admin.access.role
 import _root_.imcode.server.{Imcms}
 import _root_.imcode.server.user.{RoleId, RoleDomainObject}
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin._
 import com.vaadin.ui.Window.Notification
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.data._
 
 //todo delete in use message
 class RoleManager(app: ImcmsApplication) {
@@ -137,8 +137,8 @@ class RoleManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val rc = new ReloadableContentUI(tblRoles)
 
   addContainerProperties(tblRoles,
-    CP[JInteger]("Id"),
-    CP[String]("Name"))
+    PropertyDescriptor[JInteger]("Id"),
+    PropertyDescriptor[String]("Name"))
 
   this.addComponents(mb, rc)
 }

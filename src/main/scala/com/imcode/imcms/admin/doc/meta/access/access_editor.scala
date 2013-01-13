@@ -13,7 +13,7 @@ import imcode.server.document._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.data._
 
 // Discuss
 //        Managed templates in groups:
@@ -241,7 +241,7 @@ class AccessEditorUI extends VerticalLayout with Spacing with FullWidth {
       tbl.setPageLength(7)
 
       addContainerProperties(tbl,
-        CP[RolePermSet](RolePermSetPropertyId))
+        PropertyDescriptor[RolePermSet](RolePermSetPropertyId))
 
       tbl.setColumnHeader(RolePermSetPropertyId, "Role")
 

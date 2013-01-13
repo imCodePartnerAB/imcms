@@ -2,7 +2,7 @@ package com.imcode
 package imcms.admin.doc.category.`type`
 
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
@@ -12,7 +12,7 @@ import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.data._
 //todo:
 //fix: edit - multiselect - always on
 class CategoryTypeManager(app: ImcmsApplication) {
@@ -147,11 +147,11 @@ class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSi
   val rc = new ReloadableContentUI(tblTypes)
 
   addContainerProperties(tblTypes,
-    CP[JInteger]("Id"),
-    CP[String]("Name"),
-    CP[JBoolean]("Multi select?"),
-    CP[JBoolean]("Inherited to new documents?"),
-    CP[JBoolean]("Used by image archive?"))
+    PropertyDescriptor[JInteger]("Id"),
+    PropertyDescriptor[String]("Name"),
+    PropertyDescriptor[JBoolean]("Multi select?"),
+    PropertyDescriptor[JBoolean]("Inherited to new documents?"),
+    PropertyDescriptor[JBoolean]("Used by image archive?"))
 
   this.addComponents(mb, rc)
 }

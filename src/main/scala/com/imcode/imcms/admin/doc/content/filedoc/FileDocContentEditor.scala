@@ -1,7 +1,6 @@
 package com.imcode
 package imcms
-package admin.doc.content
-package filedoc
+package admin.doc.content.filedoc
 
 import com.imcode._
 import com.imcode.imcms._
@@ -13,12 +12,13 @@ import imcode.server.document.FileDocumentDomainObject
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
 import imcode.util.io.FileInputStreamSource
 import scala.collection.breakOut
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.collection.immutable.ListMap
 import scala.collection.mutable.{Map => MMap}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.admin.doc.content.DocContentEditor
+
 
 /**
  * @param doc used as a read only value object to initialize editor.
@@ -31,7 +31,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
   private case class Values(fdfs: Map[FileId, FileDocumentFile], defaultFdfId: Option[FileId])
   private var values = Values(
-    doc.getFiles.map { case (id, fdf) => id -> fdf.clone } (breakOut),
+    doc.getFiles.asScala.map { case (id, fdf) => id -> fdf.clone } (breakOut),
     Option(doc.getDefaultFileId)
   )
 
@@ -247,7 +247,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
       Left(Seq("Document must contain at least one file."))
     } else {
       Right(doc.clone.asInstanceOf[FileDocumentDomainObject] |>> { clone =>
-        for ((fileId, _) <- clone.getFiles) {
+        for ((fileId, _) <- clone.getFiles.asScala) {
           clone.removeFile(fileId)
         }
 
@@ -276,34 +276,6 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 }
 
 
-/**
- * File document editor UI
- * File document is `container` which may contain one or more related or unrelated files.
- * If there is more than one file then one of them must be set as default.
- * Default file content is returned when an user clicks on a doc link in a browser.
- */
-class FileDocContentEditorUI extends VerticalLayout with Spacing with Margin with FullSize {
-  val mb = new MenuBar
-  val miUpload = mb.addItem("Upload", null)
-  val miEditProperties = mb.addItem("Edit properties", null)
-  val miDelete = mb.addItem("Delete", null)
-  val miMarkAsDefault = mb.addItem("Mark as default", null)
-
-  val tblFiles = new Table with MultiSelect[FileId] with Selectable with Immediate with FullSize {
-    addContainerProperties(this,
-      PropertyDescriptor[FileId]("Id"),
-      PropertyDescriptor[String]("Name"))
-  }
-
-  this.addComponents(mb, tblFiles)
-  setExpandRatio(tblFiles, 1.0f)
-}
 
 
-class FileDocFilePropertiesEditorUI extends FormLayout with UndefinedSize {
-  val txtId = new TextField("Id") with Required
-  val txtName = new TextField("Name") with Required
-  val cbType = new ComboBox("Type") with Required with SingleSelect[String] with NoTextInput with NoNullSelection
 
-  this.addComponents(txtId, txtName, cbType)
-}

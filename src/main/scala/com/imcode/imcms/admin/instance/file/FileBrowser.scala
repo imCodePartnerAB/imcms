@@ -14,7 +14,7 @@ import com.imcode.util.event.Publisher
 import imcode.server.Imcms
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.event._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.data._
 
 
 /** Hierarchical filesystem (non-hidden dirs) container with a single root. */
@@ -308,10 +308,10 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
     ui.setMultiSelect(multiSelect)
 
     addContainerProperties(ui,
-      CP[String]("file.browser.items.col.name".i),
-      CP[String]("file.browser.items.col.modified".i),
-      CP[String]("file.browser.items.col.size".i),
-      CP[String]("file.browser.items.col.kind".i))
+      PropertyDescriptor[String]("file.browser.items.col.name".i),
+      PropertyDescriptor[String]("file.browser.items.col.modified".i),
+      PropertyDescriptor[String]("file.browser.items.col.size".i),
+      PropertyDescriptor[String]("file.browser.items.col.kind".i))
 
     import Table._
     ui.setColumnAlignments(Array(ALIGN_LEFT, ALIGN_RIGHT, ALIGN_RIGHT, ALIGN_RIGHT))

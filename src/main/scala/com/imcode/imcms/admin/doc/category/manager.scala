@@ -2,7 +2,7 @@ package com.imcode
 package imcms.admin.doc.category
 
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
@@ -14,7 +14,7 @@ import java.io.File
 import imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.data._
 
 /**
  * Category manager.
@@ -137,7 +137,7 @@ class CategoryManager(app: ImcmsApplication) {
   def reload() {
     ui.tblCategories.removeAllItems
     for {
-      vo <- categoryMapper.getAllCategories
+      vo <- categoryMapper.getAllCategories.asScala
       id = Int box vo.getId
     } ui.tblCategories.addItem(Array[AnyRef](id, vo.getName, vo.getDescription, vo.getImageUrl, vo.getType.getName), id)
 
@@ -169,11 +169,11 @@ class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val rc = new ReloadableContentUI(tblCategories)
 
   addContainerProperties(tblCategories,
-    CP[JInteger]("Id"),
-    CP[String]("Name"),
-    CP[String]("Description"),
-    CP[String]("Icon"),
-    CP[String]("Type"))
+    PropertyDescriptor[JInteger]("Id"),
+    PropertyDescriptor[String]("Name"),
+    PropertyDescriptor[String]("Description"),
+    PropertyDescriptor[String]("Icon"),
+    PropertyDescriptor[String]("Type"))
 
   this.addComponents(mb, rc)
 }

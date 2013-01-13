@@ -3,7 +3,7 @@ package imcms.admin.doc.template
 package group
 
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin.{_}
@@ -11,7 +11,7 @@ import imcode.server.document.{TemplateGroupDomainObject}
 import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.data.{PropertyDescriptor => CP, _}
+import com.imcode.imcms.vaadin.data._
 
 //todo: form check
 //todo: duplicate save check!
@@ -20,11 +20,11 @@ class TemplateGroupManager(app: ImcmsApplication) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
 
   val ui = new TemplateGroupManagerUI |>> { ui =>
-    ui.rc.btnReload addClickHandler { reload() }
-    ui.tblGroups addValueChangeHandler { handleSelection() }
+    ui.rc.btnReload.addClickHandler { reload() }
+    ui.tblGroups.addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommandHandler { editAndSave(new TemplateGroupDomainObject(0, null)) }
-    ui.miEdit setCommandHandler {
+    ui.miNew.setCommandHandler { editAndSave(new TemplateGroupDomainObject(0, null)) }
+    ui.miEdit.setCommandHandler {
       whenSelected(ui.tblGroups) { id =>
         templateMapper.getTemplateGroupById(id.intValue) match {
           case null => reload()
@@ -32,7 +32,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miDelete setCommandHandler {
+    ui.miDelete.setCommandHandler {
       whenSelected(ui.tblGroups) { id =>
         app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected template group?")) { dlg =>
           dlg.setOkButtonHandler {
@@ -63,14 +63,14 @@ class TemplateGroupManager(app: ImcmsApplication) {
   private def editAndSave(vo: TemplateGroupDomainObject) {
     val id = vo.getId
     val isNew = id == 0
-    val dialogTitle = if(isNew) "Create new template group" else "Edit template group"
+    val dialogTitle = isNew ? "Create new template group" | "Edit template group"
 
     app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
       dlg.mainUI = new TemplateGroupEditorUI |>> { c =>
-        c.txtId.value = if (isNew) "" else id.toString
+        c.txtId.value = isNew ? "" | id.toString
         c.txtName.value = vo.getName |> opt getOrElse ""
-        templateMapper.getTemplatesInGroup(vo) foreach (c.twsTemplates addChosenItem _.getName)
-        templateMapper.getTemplatesNotInGroup(vo) foreach (c.twsTemplates addAvailableItem _.getName)
+        templateMapper.getTemplatesInGroup(vo).asScala.foreach(template => c.twsTemplates.addChosenItem(template.getName))
+        templateMapper.getTemplatesNotInGroup(vo).asScala.foreach(template => c.twsTemplates.addAvailableItem(template.getName))
 
         dlg.setOkButtonHandler {
           app.privileged(permission) {
@@ -81,11 +81,13 @@ class TemplateGroupManager(app: ImcmsApplication) {
               templateMapper.renameTemplateGroup(voc, c.txtName.value)
             }
 
-            templateMapper.getTemplatesInGroup(voc) foreach { templateMapper.removeTemplateFromGroup(_, voc) }
+            templateMapper.getTemplatesInGroup(voc).asScala.foreach { template =>
+              templateMapper.removeTemplateFromGroup(template, voc)
+            }
 
             for {
               name <- c.twsTemplates.chosenItemIds
-              template <- Option(templateMapper.getTemplateByName(name))
+              template <- templateMapper.getTemplateByName(name) |> opt
             } templateMapper.addTemplateToGroup(template, voc)
 
             reload()
@@ -99,12 +101,12 @@ class TemplateGroupManager(app: ImcmsApplication) {
     ui.tblGroups.removeAllItems
     for {
       vo <- templateMapper.getAllTemplateGroups
-      id = Int box vo.getId
-    } ui.tblGroups.addItem(Array[AnyRef](id, vo.getName, Int box templateMapper.getTemplatesInGroup(vo).length), id)
+      id = vo.getId : JInteger
+    } ui.tblGroups.addItem(Array[AnyRef](id, vo.getName, templateMapper.getTemplatesInGroup(vo).size : JInteger), id)
 
     canManage |> { value =>
       ui.tblGroups.setSelectable(value)
-      doto[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }   //ui.mb,
+      doto[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _.setEnabled(value) }   //ui.mb,
     }
 
     handleSelection()
@@ -112,7 +114,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
 
   private def handleSelection() {
     (canManage && ui.tblGroups.isSelected) |> { enabled =>
-      doto(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+      doto(ui.miEdit, ui.miDelete) { _.setEnabled(enabled) }
     }
   }
 }
@@ -130,9 +132,9 @@ class TemplateGroupManagerUI extends VerticalLayout with Spacing with UndefinedS
   val rc = new ReloadableContentUI(tblGroups)
 
   addContainerProperties(tblGroups,
-    CP[JInteger]("Id"),
-    CP[String]("Name"),
-    CP[JInteger]("Templates count"))
+    PropertyDescriptor[JInteger]("Id"),
+    PropertyDescriptor[String]("Name"),
+    PropertyDescriptor[JInteger]("Templates count"))
 
   this.addComponents(mb, rc)
 }
