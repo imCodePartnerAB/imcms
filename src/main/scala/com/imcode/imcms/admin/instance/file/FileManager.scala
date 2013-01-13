@@ -99,7 +99,7 @@ class FileManager(app: ImcmsApplication) {
               UploadedFile(_, _, file) <- dlg.uploader.uploadedFile
               destFile = new File(dir, dlg.uploader.saveAsName)
             } {
-              if (destFile.exists && !dlg.uploader.isOverwrite) {
+              if (destFile.exists && !dlg.uploader.mayOverwrite) {
                 app.getMainWindow.show(new MsgDialog("file.mgr.dlg.upload.item.exist.title".i, "file.mgr.dlg.upload.item.exist.msg".i))
                 sys.error("File %s allready exists" format destFile.getCanonicalPath)
               } else {

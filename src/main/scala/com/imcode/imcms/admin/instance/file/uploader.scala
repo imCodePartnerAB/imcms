@@ -2,9 +2,7 @@ package com.imcode
 package imcms
 package admin.instance.file
 
-import scala.collection.JavaConverters._
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin._
 import com.imcode.util.event.Publisher
 import java.io._
 import org.apache.commons.io.FileUtils
@@ -23,17 +21,22 @@ case class UploadSucceeded(event: Upload.SucceededEvent, uploadedFile: UploadedF
 case class UploadFailed(event: Upload.FailedEvent) extends UploadStatus
 
 
+/**
+ * Client code should implement save logic in setOkButtonHandler.
+ *
+ * @param caption
+ */
 class FileUploaderDialog(caption: String = "") extends OkCancelDialog(caption) {
   val uploader = new FileUploader
 
   mainUI = uploader.ui
 
-  uploader.listen { btnOk setEnabled _.isInstanceOf[UploadSucceeded] }
+  uploader.listen { status => btnOk.setEnabled(status.isInstanceOf[UploadSucceeded]) }
   uploader.reset()
 
   setCancelButtonHandler {
     if (uploader.ui.upload.isUploading) {
-      uploader.ui.upload.interruptUpload
+      uploader.ui.upload.interruptUpload()
     }
   }
 }
@@ -42,11 +45,8 @@ class FileUploaderDialog(caption: String = "") extends OkCancelDialog(caption) {
 /**
  * Uploads a file chosen by a user into system-dependent default temporary-file directory.
  */
-// opts?:
-// allows edit original filename
-// allows overwrite existing file with the same filename
-// upload receiver
-
+// todo: ??? opts: mayEditFilename, mayOverwrite ???
+// todo: ??? set custom upload receiver ???
 class FileUploader extends Publisher[UploadStatus] {
   private val uploadedFileOptRef = Atoms.OptRef[UploadedFile]
 
@@ -54,9 +54,9 @@ class FileUploader extends Publisher[UploadStatus] {
    * This function transforms uploaded file name to a save-as-name.
    * For ex. can be used to remove file extension, replace spaces and/or non ASCII characters.
    *
-   * By default returns unmodifed (original) filename.
+   * By default returns unmodified (original) filename.
    */
-  var fileNameToSaveAsName = identity[String]_
+  var fileNameToSaveAsName: (String => String) = identity
 
   val ui = new FileUploaderUI |>> { ui =>
     // Temp file based receiver
@@ -65,12 +65,12 @@ class FileUploader extends Publisher[UploadStatus] {
         _.deleteOnExit()
       }
 
-      def receiveUpload(filename: String, mimeType: String) = new FileOutputStream(file)
+      override def receiveUpload(filename: String, mimeType: String): OutputStream = new FileOutputStream(file)
     }
 
     ui.upload.setReceiver(receiver)
     ui.upload.addListener(new Upload.StartedListener {
-      def uploadStarted(ev: Upload.StartedEvent) = {
+      def uploadStarted(ev: Upload.StartedEvent) {
         reset()
         updateDisabled(ui.txtSaveAsName) { txtSaveAsName =>
           txtSaveAsName.value = fileNameToSaveAsName(ev.getFilename)
@@ -112,8 +112,10 @@ class FileUploader extends Publisher[UploadStatus] {
     })
   }
 
-  //todo: delete uploaded file???
+  reset()
+
   def reset() {
+    uploadedFileOptRef.get.foreach(uploadedFile => FileUtils.deleteQuietly(uploadedFile.file))
     uploadedFileOptRef.set(None)
     updateDisabled(ui.chkOverwrite) { _.value = false }
     updateDisabled(ui.txtSaveAsName) { saveAsName =>
@@ -128,14 +130,19 @@ class FileUploader extends Publisher[UploadStatus] {
     notifyListeners(UploadReseted)
   }
 
-  def uploadedFile = uploadedFileOptRef.get
+  def uploadedFile: Option[File] = uploadedFileOptRef.get
 
-  def saveAsName = ui.txtSaveAsName.trim
+  def saveAsName: String = ui.txtSaveAsName.trim
 
-  def isOverwrite = ui.chkOverwrite.booleanValue
-
-  // init
-  reset()
+  def mayOverwrite: Boolean = ui.chkOverwrite.checked
+//  def mayOverwrite_=(value: Boolean) {
+//    if (value) {
+//      ui.chkOverwrite.setEnabled(true)
+//    } else {
+//      ui.chkOverwrite.uncheck()
+//      ui.chkOverwrite.setEnabled(false)
+//    }
+//  }
 }
 
 
@@ -148,5 +155,5 @@ class FileUploaderUI extends FormLayout with UndefinedSize {
   upload.setButtonCaption("...")
   this.addComponents(upload, pgiBytesReceived, txtSaveAsName, chkOverwrite)
 
-  txtSaveAsName.setRequiredError("achtung")
+  txtSaveAsName.setRequiredError("required")
 }

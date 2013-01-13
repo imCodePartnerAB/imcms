@@ -21,6 +21,10 @@ import com.imcode.imcms.admin.doc.content.DocContentEditor
 
 
 /**
+ * File document is a `container` which may contain one or more related or unrelated files.
+ * If there is more than one file then one of them must be set as default.
+ * Default file content is returned when an user clicks on a doc link in a web browser.
+ *
  * @param doc used as a read only value object to initialize editor.
  */
 class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEditor with ImcmsServicesSupport {
@@ -41,7 +45,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
       .map { case Array(mimeType, displayName) => mimeType -> displayName } (breakOut)
 
   private def findFDFByName(name: String, ignoreCase: Boolean = true): Option[FileDocumentFile] = {
-    val namePredicate: String => Boolean = if (ignoreCase) name.equalsIgnoreCase else (name ==)
+    def namePredicate(fileName: String) = ignoreCase ? name.equalsIgnoreCase(fileName) | name.equals(fileName)
 
     values.fdfs.collectFirst {
       case (_, fdf) if namePredicate(fdf.getFilename) => fdf
@@ -86,7 +90,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
             findFDFByName(saveAsName) |> {
               case _ if saveAsName.isEmpty => Left("Name is required")
 
-              case Some(fdf) if !dlg.uploader.isOverwrite => Left("File with such name allready exists")
+              case Some(fdf) if !dlg.uploader.mayOverwrite => Left("File with such name allready exists")
 
               case Some(fdf) => Right(fdf) // return new instance?
 
@@ -136,7 +140,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
               eui.txtName.value = fdf.getFilename
 
               for ((mimeType, displayName) <- mimeTypes) {
-                eui.cbType.addItem(mimeType, "%s (%s)".format(displayName, mimeType))
+                eui.cbType.addItem(mimeType, s"$displayName ($mimeType)")
               }
 
               val mimeType = fdf.getMimeType
