@@ -15,6 +15,7 @@ import imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.vaadin.server.FileResource
 
 /**
  * Category manager.
@@ -23,7 +24,7 @@ import com.imcode.imcms.vaadin.data._
  */
 //todo: edit - image can not be null
 //todo: delete in use message
-class CategoryManager(app: ImcmsApplication) {
+class CategoryManager(app: ImcmsUI) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val ui: CategoryManagerUI = new CategoryManagerUI |>> { ui =>
@@ -42,7 +43,7 @@ class CategoryManager(app: ImcmsApplication) {
 
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblCategories) { id =>
-        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected category?")) { dlg =>
+        new ConfirmationDialog("Delete selected category?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
               Ex.allCatch.either(categoryMapper.getCategoryById(id.intValue) |> opt foreach categoryMapper.deleteCategoryFromDb) match {
@@ -56,7 +57,7 @@ class CategoryManager(app: ImcmsApplication) {
               reload()
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
   } // val ui
@@ -82,9 +83,9 @@ class CategoryManager(app: ImcmsApplication) {
       val imageFile = for {
         url <- Option(vo.getImageUrl)
         file = new File(Imcms.getPath, "WEB-INF/" + url) if file.isFile
-      } imagePicker.preview.set(new Embedded("", new FileResource(file, app)))
+      } imagePicker.preview.set(new Embedded("", new FileResource(file)))
 
-      app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+      new OkCancelDialog(dialogTitle) |>> { dlg =>
         dlg.mainUI = new CategoryEditorUI(imagePicker.ui) |>> { c =>
           typesNames foreach { c.sltType addItem _ }
 
@@ -130,7 +131,7 @@ class CategoryManager(app: ImcmsApplication) {
             }
           }
         }
-      } // initAndShow
+      } |> UI.getCurrent.addWindow
     }
   } // editAndSave
 

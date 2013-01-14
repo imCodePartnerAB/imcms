@@ -27,7 +27,7 @@ object Actions {
   val EditMeta = new Action("doc.mgr.action.edit_meta".i)
 }
 
-class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
+class DocManager(app: ImcmsUI) extends ImcmsServicesSupport {
   val projection = new DocsProjection(app.imcmsUser)
   val projectionOps = new DocsProjectionOps(projection)
   val customDocs = new CustomDocs(app.imcmsUser)
@@ -55,7 +55,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
         val profileMapper = new ProfileMapper(imcmsServices.getDatabase)
         val profileOpt = profileMapper.getAll.asScala.find(_.getDocumentName == docIdStr)
 
-        app.getMainWindow.initAndShow(new OkCancelDialog("Edit profile name")) { dlg =>
+        new OkCancelDialog("Edit profile name") |>> { dlg =>
           val mainUI = new DocProfileNameEditorUI
           mainUI.txtName.value = profileOpt.map(_.getName).getOrElse("")
 
@@ -83,7 +83,7 @@ class DocManager(app: ImcmsApplication) extends ImcmsServicesSupport {
                 }
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
 

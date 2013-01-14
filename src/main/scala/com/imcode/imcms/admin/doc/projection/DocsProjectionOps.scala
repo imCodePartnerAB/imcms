@@ -12,6 +12,7 @@ import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import com.imcode.imcms.mapping.DocumentMapper
 import com.imcode.imcms.admin.doc.content.textdoc.NewTextDocContentEditor
+import com.vaadin.ui.UI
 
 /**
  * Common operations associated with docs projections such as edit, view, delete etc.
@@ -32,7 +33,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
           case c if c == classOf[HtmlDocumentDomainObject] => DocumentTypeDomainObject.HTML_ID -> "New Html Document"
         }
 
-        val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.ui.getApplication.imcmsUser)
+        val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, UI.getCurrent.imcmsUser)
 
         import projection.ui
 
@@ -55,7 +56,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                   editedDoc,
                   i18nMetas.asJava,
                   saveOpts,
-                  ui.getApplication.imcmsUser
+                  UI.getCurrent.imcmsUser
                 )
                 ui.rootWindow.showInfoNotification("New document has been saved")
                 projection.reload()
@@ -75,7 +76,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
       new ConfirmationDialog("Delete selected document(s)?") |>> { dlg =>
         dlg.setOkButtonHandler {
           try {
-            docs.foreach(doc => imcmsServices.getDocumentMapper.deleteDocument(doc, projection.ui.getApplication.imcmsUser))
+            docs.foreach(doc => imcmsServices.getDocumentMapper.deleteDocument(doc, UI.getCurrent.imcmsUser))
             dlg.rootWindow.showInfoNotification("Documents has been deleted")
             dlg.close()
           } finally {
@@ -96,7 +97,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   def copySelectedDoc() {
     whenSingle(projection.selection) { doc =>
-      imcmsServices.getDocumentMapper.copyDocument(doc, projection.ui.getApplication.imcmsUser)
+      imcmsServices.getDocumentMapper.copyDocument(doc, UI.getCurrent.imcmsUser)
       projection.reload()
       projection.ui.rootWindow.showInfoNotification("Document has been copied")
     }
@@ -114,7 +115,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
               rootWindow.showErrorNotification("Unable to save document", errors.mkString(", "))
 
             case Right((editedDoc, i18nMetas)) =>
-              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, rootWindow.getApplication.imcmsUser)
+              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, UI.getCurrent.imcmsUser)
               rootWindow.showInfoNotification("Document has been saved")
               projection.reload()
               dlg.close()

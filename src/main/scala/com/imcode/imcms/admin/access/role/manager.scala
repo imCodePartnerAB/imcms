@@ -14,7 +14,7 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
 
 //todo delete in use message
-class RoleManager(app: ImcmsApplication) {
+class RoleManager(app: ImcmsUI) {
   private def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
   val ui = new RoleManagerUI |>> { ui =>
@@ -30,9 +30,9 @@ class RoleManager(app: ImcmsApplication) {
         }
       }
     }
-    ui.miDelete setCommandHandler {
+    ui.miDelete.setCommandHandler {
       whenSelected(ui.tblRoles) { id =>
-        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected role?")) { dlg =>
+        new ConfirmationDialog("Delete selected role?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
               Ex.allCatch.either(roleMapper.getRole(id) |> opt foreach roleMapper.deleteRole) match {
@@ -46,7 +46,7 @@ class RoleManager(app: ImcmsApplication) {
               reload()
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
   }
@@ -63,7 +63,7 @@ class RoleManager(app: ImcmsApplication) {
     val isNew = id.intValue == 0
     val dialogTitle = if(isNew) "Create new role" else "Edit role"
 
-    app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+    new OkCancelDialog(dialogTitle) |>> { dlg =>
       dlg.mainUI = new RoleEditorUI |>> { c =>
         val permsToChkBoxes = Map(
             RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> c.chkPermChangeImagesInArchive,
@@ -99,7 +99,7 @@ class RoleManager(app: ImcmsApplication) {
           }
         }
       }
-    }
+    } |> UI.getCurrent.addWindow
   }
 
   def reload() {

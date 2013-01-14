@@ -14,14 +14,14 @@ import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.projection.UsersProjection
 
 // todo add security check, add editAndSave, add external UI
-class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
+class UserManager(app: ImcmsUI) extends ImcmsServicesSupport {
   private val search = new UsersProjection
 
   val ui = new UserManagerUI(search.ui) |>> { ui =>
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
-    ui.miNew setCommandHandler {
-      app.getMainWindow.initAndShow(new OkCancelDialog("user.dlg.new.caption".i)) { dlg =>
+    ui.miNew.setCommandHandler {
+      new OkCancelDialog("user.dlg.new.caption".i) |>> { dlg =>
         dlg.mainUI = new UserEditorUI |>> { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
             c.tcsRoles.addItem(role.getId, role.getName)
@@ -49,12 +49,12 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
             }
           }
         }
-      }
+      } |> UI.getCurrent.addWindow
     }
 
-    ui.miEdit setCommandHandler {
+    ui.miEdit.setCommandHandler {
       whenSingle(search.selection) { user =>
-        app.getMainWindow.initAndShow(new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName))) { dlg =>
+        new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName)) |>> { dlg =>
           dlg.mainUI = new UserEditorUI |>> { c =>
             c.chkActivated setValue user.isActive
             c.txtFirstName setValue user.getFirstName
@@ -87,7 +87,7 @@ class UserManager(app: ImcmsApplication) extends ImcmsServicesSupport {
               search.reset()
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
 

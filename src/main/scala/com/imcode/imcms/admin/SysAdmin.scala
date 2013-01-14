@@ -9,17 +9,18 @@ import java.util.{Locale, Date}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
-
-//import imcms.admin.chat.{MessageView, Chat}
-
+import com.vaadin.server.VaadinRequest
+import com.imcode.imcms.vaadin.Theme
 import imcms.admin.access.user.{UserManager}
 import imcode.server.{Imcms}
-import com.vaadin.terminal.{ThemeResource, UserError}
 import com.imcode.imcms.vaadin._
 import Theme.Icon
+import com.vaadin.annotations.PreserveOnRefresh
 
-
-class SysAdmin extends com.vaadin.Application with ImcmsApplication { app =>
+// todo: rename theme - name collision
+@PreserveOnRefresh
+@com.vaadin.annotations.Theme("imcms")
+class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
 
   // superadmin access:
   // ------------------
@@ -139,11 +140,10 @@ class SysAdmin extends com.vaadin.Application with ImcmsApplication { app =>
 
 
 
-  def init() {
-    setTheme("imcms")
+  override def init(request: VaadinRequest) {
     setLocale(new Locale(imcmsUser.getLanguageIso639_2))
     mainWindow.initManagersMenu()
-    setMainWindow(mainWindow)
+    setContent(mainWindow)
   }
 
 

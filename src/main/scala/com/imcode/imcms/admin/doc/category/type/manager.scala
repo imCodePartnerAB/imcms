@@ -15,7 +15,7 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
 //todo:
 //fix: edit - multiselect - always on
-class CategoryTypeManager(app: ImcmsApplication) {
+class CategoryTypeManager(app: ImcmsUI) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val ui = new CategoryTypeManagerUI |>> { ui =>
@@ -33,7 +33,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
     }
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblTypes) { id =>
-        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected category type?")) { dlg =>
+        new ConfirmationDialog("Delete selected category type?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
               Ex.allCatch.either(categoryMapper.getCategoryTypeById(id.intValue) |> opt foreach categoryMapper.deleteCategoryTypeFromDb) match {
@@ -47,7 +47,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
               reload()
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
   } // val ui
@@ -64,7 +64,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
     val isNew = id == 0
     val dialogTitle = if(isNew) "Create new category type" else "Edit category type"
 
-    app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+    new OkCancelDialog(dialogTitle) |>> { dlg =>
       dlg.mainUI = new CategoryTypeEditorUI |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = vo.getName |> opt getOrElse ""
@@ -110,7 +110,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
           }
         }
       }
-    }
+    } |> UI.getCurrent.addWindow
   } // editAndSave
 
   def reload() {

@@ -15,7 +15,8 @@ import com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
 import com.imcode.imcms.admin.doc.meta.appearance.AppearanceEditor
 import com.imcode.imcms.admin.doc.meta.lifecycle.LifeCycleEditor
 import com.imcode.imcms.admin.doc.meta.category.CategoryEditor
-import com.vaadin.terminal.Sizeable
+import com.vaadin.ui.UI
+import com.vaadin.server.Sizeable
 
 /**
  * Doc's meta editor.
@@ -76,7 +77,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
           ui.pnlCurrentEditor.setContent(appearanceEditorOpt.get.ui)
 
         case "doc_meta_editor.menu_item.access" =>
-          if (accessEditorOpt.isEmpty) accessEditorOpt = Some(new AccessEditor(doc, ui.getApplication.imcmsUser))
+          if (accessEditorOpt.isEmpty) accessEditorOpt = Some(new AccessEditor(doc, UI.getCurrent.imcmsUser))
 
           ui.pnlCurrentEditor.setContent(accessEditorOpt.get.ui)
 
@@ -91,7 +92,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
           ui.pnlCurrentEditor.setContent(categoryEditorOpt.get.ui)
 
         case "doc_meta_editor.menu_item.profile" =>
-          if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], ui.getApplication.imcmsUser))
+          if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], UI.getCurrent.imcmsUser))
 
           ui.pnlCurrentEditor.setContent(profileEditorOpt.get.ui)
 

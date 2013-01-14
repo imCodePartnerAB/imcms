@@ -114,27 +114,39 @@
         <!--</user-data-constraint>-->
     <!--</security-constraint>-->
 
+    <!--<servlet>-->
+        <!--<servlet-name>vaadin-sysadmin</servlet-name>-->
+        <!--<servlet-class>-->
+            <!--com.vaadin.terminal.gwt.server.ApplicationServlet-->
+        <!--</servlet-class>-->
+        <!--<init-param>-->
+            <!--<param-name>application</param-name>-->
+            <!--<param-value>com.imcode.imcms.admin.SysAdmin</param-value>-->
+        <!--</init-param>-->
+    <!--</servlet>-->
+
     <servlet>
         <servlet-name>vaadin-sysadmin</servlet-name>
         <servlet-class>
-            com.vaadin.terminal.gwt.server.ApplicationServlet
+            com.vaadin.server.VaadinServlet
         </servlet-class>
+
         <init-param>
-            <param-name>application</param-name>
+            <param-name>UI</param-name>
             <param-value>com.imcode.imcms.admin.SysAdmin</param-value>
         </init-param>
     </servlet>
 
-    <servlet>
-        <servlet-name>vaadin-docadmin</servlet-name>
-        <servlet-class>
-            com.vaadin.terminal.gwt.server.ApplicationServlet
-        </servlet-class>
-        <init-param>
-            <param-name>application</param-name>
-            <param-value>com.imcode.imcms.docadmin.DocAdmin</param-value>
-        </init-param>
-    </servlet>
+    <!--<servlet>-->
+        <!--<servlet-name>vaadin-docadmin</servlet-name>-->
+        <!--<servlet-class>-->
+            <!--com.vaadin.terminal.gwt.server.ApplicationServlet-->
+        <!--</servlet-class>-->
+        <!--<init-param>-->
+            <!--<param-name>application</param-name>-->
+            <!--<param-value>com.imcode.imcms.docadmin.DocAdmin</param-value>-->
+        <!--</init-param>-->
+    <!--</servlet>-->
 
     <servlet>
         <servlet-name>web</servlet-name>

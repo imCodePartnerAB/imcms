@@ -14,6 +14,8 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.admin.doc.meta.access.RolePermSet
+import com.imcode.imcms.vaadin.data.PropertyDescriptor
 
 // Discuss
 //        Managed templates in groups:
@@ -92,7 +94,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
       if (availableRolesWithPermsSetTypes.isEmpty) {
         ui.rootWindow.showWarningNotification("No roles available")
       } else {
-        ui.rootWindow.initAndShow(new OkCancelDialog("Add role")) { dlg =>
+        new OkCancelDialog("Add role") |>> { dlg =>
           val availableRoles = availableRolesWithPermsSetTypes.keySet
           dlg.mainUI = new AddRolePermSetDialogMainUI |>> { c =>
             availableRoles foreach { role => c.cbRole.addItem(role, role.getName) }
@@ -115,7 +117,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
               addRolePermSetType(role, setType)
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
 
@@ -125,7 +127,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
         types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
           case Nil => ui.rootWindow.showWarningNotification("You are not allowed to edit this role")
           case availableSetTypes =>
-            ui.rootWindow.initAndShow(new OkCancelDialog("Change Role Permissions")) { dlg =>
+            new OkCancelDialog("Change Role Permissions") |>> { dlg =>
               dlg.mainUI = new ChangeRolePermSetDialogMainUI |>> { c =>
                 c.lblRole.value = role.getName
 
@@ -141,7 +143,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
                   setRolePermSetType(role, c.ogPermsSetType.value)
                 }
               }
-            }
+            } |> UI.getCurrent.addWindow
         }
       }
     }
@@ -153,9 +155,9 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     }
 
     ui.perms.miEditPermSets.setCommandHandler {
-      ui.rootWindow.initAndShow(new OkCancelDialog("Permissions")) { dlg =>
+      new OkCancelDialog("Permissions") |>> { dlg =>
         dlg.mainUI = permSetsEditor.ui
-      }
+      } |> UI.getCurrent.addWindow
     }
   }
 

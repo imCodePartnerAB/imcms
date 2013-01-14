@@ -15,7 +15,7 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
 
 //todo delete in use message
-class LanguageManager(app: ImcmsApplication) {
+class LanguageManager(app: ImcmsUI) {
   private val languageDao = Imcms.getServices.getSpringBean(classOf[LanguageDao])
   private val systemDao = Imcms.getServices.getSpringBean(classOf[SystemDao])
 
@@ -34,7 +34,7 @@ class LanguageManager(app: ImcmsApplication) {
     }
     ui.miDelete.setCommandHandler {
       whenSelected(ui.tblLanguages) { id =>
-        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected language?")) { dlg =>
+        new ConfirmationDialog("Delete selected language?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
               Ex.allCatch.either(languageDao.deleteLanguage(id)) match {
@@ -48,12 +48,12 @@ class LanguageManager(app: ImcmsApplication) {
               reload()
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
     ui.miSetDefault.setCommandHandler {
       whenSelected(ui.tblLanguages) { id =>
-        app.getMainWindow.initAndShow(new ConfirmationDialog("Change default language?")) { dlg =>
+        new ConfirmationDialog("Change default language?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
               val property = systemDao.getProperty("DefaultLanguageId")
@@ -70,7 +70,7 @@ class LanguageManager(app: ImcmsApplication) {
               reload()
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
   }
@@ -87,7 +87,7 @@ class LanguageManager(app: ImcmsApplication) {
     val isNew = id == null
     val dialogTitle = isNew ? "Create new language" | "edit Language"
 
-    app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+    new OkCancelDialog(dialogTitle) |>> { dlg =>
       dlg.mainUI = new LanguageEditorUI |>> { c =>
         c.txtId.value = isNew ? "" | id.toString
         c.txtCode.value = vo.getCode |> opt getOrElse ""
@@ -120,7 +120,7 @@ class LanguageManager(app: ImcmsApplication) {
           }
         }
       }
-    }
+    } |> UI.getCurrent.addWindow
   } // editAndSave
 
   def reload() {

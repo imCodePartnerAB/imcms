@@ -16,8 +16,8 @@ package object data {
 
 
   implicit def wrapValueChangeNotifier(vcn: Property.ValueChangeNotifier) = new {
-    def addValueChangeListener(listener: Property.ValueChangeEvent => Unit): Unit =
-      vcn.addListener(new Property.ValueChangeListener {
+    def addValueChangeListener(listener: (Property.ValueChangeEvent => Unit)): Unit =
+      vcn.addValueChangeListener(new Property.ValueChangeListener {
         def valueChange(event: Property.ValueChangeEvent): Unit = listener(event)
       })
 

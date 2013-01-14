@@ -4,10 +4,8 @@ package vaadin.ui
 package dialog
 
 import com.imcode._
-import com.imcode.imcms.vaadin._
-import com.vaadin.terminal.ThemeResource
 import com.vaadin.ui._
-import scala.util.control.{Exception => Ex}
+import com.vaadin.server.ThemeResource
 
 
 trait Modal { this: Window =>
@@ -16,6 +14,10 @@ trait Modal { this: Window =>
 
 trait NonModal { this: Window =>
   setModal(false)
+}
+
+trait Resizable { this: Window =>
+  setResizable(true)
 }
 
 /**
@@ -34,6 +36,7 @@ class Dialog(caption: String = "") extends Window(caption) with Modal {
   protected val content = new GridLayout(1, 2) with Spacing with Margin
 
   setContent(content)
+  setResizable(false)
 
   def mainUI = content.getComponent(0, 0)
   def mainUI_=(component: Component) {

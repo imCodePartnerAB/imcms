@@ -14,7 +14,7 @@ import javax.persistence.{Id, Entity}
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
-import com.imcode.imcms.vaadin.ImcmsApplication
+import com.imcode.imcms.vaadin.ImcmsUI
 import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog, ConfirmationDialog}
 import _root_.imcode.server.Imcms
 import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
@@ -24,18 +24,18 @@ import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
 // todo: reload in case of internal error
 // help: "Users from a specific IP number or an interval of numbers are given direct access to the system (so that the user does not have to log in)."
 
-class IPAccessManager(app: ImcmsApplication) {
+class IPAccessManager(app: ImcmsUI) {
   private val ipAccessDao = Imcms.getServices.getSpringBean(classOf[IPAccessDao])
   private val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
   private val toDDN = ((_:String).toLong) andThen ipLongToString
   private val fromDDN = ipStringToLong(_:String).toString
 
   val ui = new IPAccessManagerUI |>> { ui =>
-    ui.rc.btnReload addClickHandler { reload() }
-    ui.tblIP addValueChangeHandler { handleSelection() }
+    ui.rc.btnReload.addClickHandler { reload() }
+    ui.tblIP.addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommandHandler { editAndSave(new IPAccess) }
-    ui.miEdit setCommandHandler {
+    ui.miNew.setCommandHandler { editAndSave(new IPAccess) }
+    ui.miEdit.setCommandHandler {
       whenSelected(ui.tblIP) { id =>
         ipAccessDao.get(id) match {
           case null => reload()
@@ -45,7 +45,7 @@ class IPAccessManager(app: ImcmsApplication) {
     }
     ui.miDelete setCommandHandler {
       whenSelected(ui.tblIP) { id =>
-        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected IP access?")) { dlg =>
+        new ConfirmationDialog("Delete selected IP access?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
               Ex.allCatch.either(ipAccessDao delete id) match {
@@ -58,7 +58,7 @@ class IPAccessManager(app: ImcmsApplication) {
               }
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
   }
@@ -75,7 +75,7 @@ class IPAccessManager(app: ImcmsApplication) {
     val isNew = id == null
     val dialogTitle = if(isNew) "Create new IP access" else "Edit IP access"
 
-    app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+    new OkCancelDialog(dialogTitle) |>> { dlg =>
       dlg.mainUI = new IPAccessEditorUI |>> { c =>
 
         c.txtId.value = if (isNew) "" else id.toString
@@ -114,7 +114,7 @@ class IPAccessManager(app: ImcmsApplication) {
           }
         }
       }
-    }
+    }  |> UI.getCurrent.addWindow
   } // editAndSave
 
 

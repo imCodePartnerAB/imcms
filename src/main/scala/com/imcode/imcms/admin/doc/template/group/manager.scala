@@ -16,7 +16,7 @@ import com.imcode.imcms.vaadin.data._
 //todo: form check
 //todo: duplicate save check!
 //todo: internal error check
-class TemplateGroupManager(app: ImcmsApplication) {
+class TemplateGroupManager(app: ImcmsUI) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
 
   val ui = new TemplateGroupManagerUI |>> { ui =>
@@ -34,7 +34,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
     }
     ui.miDelete.setCommandHandler {
       whenSelected(ui.tblGroups) { id =>
-        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected template group?")) { dlg =>
+        new ConfirmationDialog("Delete selected template group?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
               Ex.allCatch.either(templateMapper deleteTemplateGroup id.intValue) match {
@@ -48,7 +48,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
               reload()
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
   } // ui
@@ -65,7 +65,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
     val isNew = id == 0
     val dialogTitle = isNew ? "Create new template group" | "Edit template group"
 
-    app.getMainWindow.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+    new OkCancelDialog(dialogTitle) |>> { dlg =>
       dlg.mainUI = new TemplateGroupEditorUI |>> { c =>
         c.txtId.value = isNew ? "" | id.toString
         c.txtName.value = vo.getName |> opt getOrElse ""
@@ -94,7 +94,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
           }
         }
       }
-    }
+    } |> UI.getCurrent.addWindow
   }
 
   def reload() {

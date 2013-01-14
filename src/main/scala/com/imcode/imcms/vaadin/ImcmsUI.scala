@@ -8,8 +8,9 @@ import com.imcode.imcms.security.{PermissionDenied, PermissionGranted, Permissio
 import com.imcode.imcms.vaadin.ui._
 
 /* implicit */
-trait ImcmsApplication extends com.vaadin.Application {
+trait ImcmsUI extends com.vaadin.ui.UI {
 
+  // todo: fix
   def imcmsUser: UserDomainObject = Utility.getLoggedOnUser(this.session)
 
   def imcmsDocUrl(docId: DocId) = this.resourceUrl(docId.toString)

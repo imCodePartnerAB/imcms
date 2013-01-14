@@ -26,11 +26,11 @@ object SessionCounter {
   }
 }
 
-class SessionCounterManager(app: ImcmsApplication) {
+class SessionCounterManager(app: ImcmsUI) {
   val ui = new SessionCounterManagerUI |>> { ui =>
-    ui.rc.btnReload addClickHandler { reload() }
-    ui.miEdit setCommandHandler {
-      app.getMainWindow.initAndShow(new OkCancelDialog("Edit session counter")) { dlg =>
+    ui.rc.btnReload.addClickHandler { reload() }
+    ui.miEdit.setCommandHandler {
+      new OkCancelDialog("Edit session counter") |>> { dlg =>
         dlg.mainUI = new SessionCounterEditorUI |>> { c =>
           SessionCounter.get |> { sc =>
             c.txtValue.value = sc.value.toString
@@ -50,10 +50,10 @@ class SessionCounterManager(app: ImcmsApplication) {
             }
           }
         }
-      }
+      } |> UI.getCurrent.addWindow
     }
-    ui.miReset setCommandHandler {
-      app.getMainWindow.initAndShow(new ConfirmationDialog("Reset session counter?")) { dlg =>
+    ui.miReset.setCommandHandler {
+      new ConfirmationDialog("Reset session counter?") |>> { dlg =>
         dlg.setOkButtonHandler {
           app.privileged(permission) {
             Ex.allCatch.either(SessionCounter save SessionCounter(0, new Date)) match {
@@ -66,7 +66,7 @@ class SessionCounterManager(app: ImcmsApplication) {
             }
           }
         }
-      }
+      } |> UI.getCurrent.addWindow
     }
   } // ui
 

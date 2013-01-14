@@ -12,8 +12,9 @@ import scala.concurrent.ops.{spawn}
 import com.vaadin.terminal.{UserError, FileResource}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.vaadin.server.UserError
 
-class FileManager(app: ImcmsApplication) {
+class FileManager(app: ImcmsUI) {
   val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))
 
   val preview = new FilePreview(browser) |>> { preview =>
@@ -24,7 +25,7 @@ class FileManager(app: ImcmsApplication) {
 
     ui.miEditRename setCommandHandler {
       for (LocationSelection(dir, Seq(item)) <- browser.selection; if item.isFile) {
-        app.getMainWindow.initAndShow(new OkCancelDialog("file.mgr.dlg.rename.item.title".f(item.getName))) { dlg =>
+        new OkCancelDialog("file.mgr.dlg.rename.item.title".f(item.getName)) |>> { dlg =>
           dlg.btnOk.setCaption("file.mgr.dlg.transfer.item.btn.rename".i)
 
           val dlgUI = new ItemRenameDialogUI
@@ -54,7 +55,7 @@ class FileManager(app: ImcmsApplication) {
 
             app.getMainWindow.showInfoNotification("file.mgr.rename.item.info.msg".i)
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
 
@@ -77,7 +78,7 @@ class FileManager(app: ImcmsApplication) {
 
     ui.miFileEdit setCommandHandler {
       for (LocationSelection(_, Seq(item)) <- browser.selection; if item.isFile) {
-        app.getMainWindow.initAndShow(new OkCancelDialog("file.edit.dlg.title".f(item)) with CustomSizeDialog, resizable = true) { dlg =>
+        new OkCancelDialog("file.edit.dlg.title".f(item)) with CustomSizeDialog with Resizable { dlg =>
           dlg.btnOk.setCaption("btn_save".i)
 
           val textArea = new TextArea("", scala.io.Source.fromFile(item).mkString) with FullSize
@@ -87,13 +88,13 @@ class FileManager(app: ImcmsApplication) {
           dlg.setOkButtonHandler {
             FileUtils.writeStringToFile(item, textArea.value)
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
 
     ui.miFileUpload setCommandHandler {
       for (LocationSelection(dir, _) <- browser.selection) {
-        app.getMainWindow.initAndShow(new FileUploaderDialog("file.upload.dlg.title".i)) { dlg =>
+        new FileUploaderDialog("file.upload.dlg.title".i) |>> { dlg =>
           dlg.setOkButtonHandler {
             for {
               UploadedFile(_, _, file) <- dlg.uploader.uploadedFile
@@ -108,22 +109,22 @@ class FileManager(app: ImcmsApplication) {
               }
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
 
-    ui.miFileDownload setCommandHandler {
-      for (LocationSelection(_, Seq(item)) <- browser.selection; if item.isFile)
-        FileOps.download(app, item)
+    ui.miFileDownload.setCommandHandler {
+      for (LocationSelection(_, Seq(item)) <- browser.selection if item.isFile)
+        FileOps.download(item)
     }
 
-    ui.miViewReload setCommandHandler { browser.reloadLocation(preserveTreeSelection = true) }
+    ui.miViewReload.setCommandHandler { browser.reloadLocation(preserveTreeSelection = true) }
 
-    ui.miViewPreview setCommandHandler { preview.enabled = !preview.enabled }
+    ui.miViewPreview.setCommandHandler { preview.enabled = !preview.enabled }
 
-    ui.miNewDir setCommandHandler {
+    ui.miNewDir.setCommandHandler {
       for (selection <- browser.selection) {
-        app.getMainWindow.initAndShow(new OkCancelDialog("file.mgr.dlg.new_dir.title".i)) { dlg =>
+        new OkCancelDialog("file.mgr.dlg.new_dir.title".i) |>> { dlg =>
           val txtName = new TextField("file.mgr.dlg.new_dir.frm.fld.name".i)
           val lblMsg = new Label with UndefinedSize
           dlg.mainUI = new FormLayout with UndefinedSize { this.addComponents(lblMsg, txtName) }
@@ -145,7 +146,7 @@ class FileManager(app: ImcmsApplication) {
                 browser.reloadLocation()
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
   }
@@ -186,12 +187,12 @@ class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends 
 case class ItemsState(remaining: Seq[File], processed: Seq[File])
 
 
-class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
+class ItemsDeleteHelper(app: ImcmsUI, browser: FileBrowser) {
 
   def delete() = for (selection <- browser.selection if selection.hasItems) {
-    app.getMainWindow.initAndShow(new ConfirmationDialog("file.mgr.dlg.delete.confirm.msg".i)) { dlg =>
+    new ConfirmationDialog("file.mgr.dlg.delete.confirm.msg".i) |>> { dlg =>
       dlg.setOkButtonHandler { asyncDeleteItems(selection.items) }
-    }
+    } |> UI.getCurrent.addWindow
   }
 
   private def asyncDeleteItems(items: Seq[File]) {
@@ -212,7 +213,7 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
       app.getMainWindow.showErrorNotification("An error occured while deleting items", msg.toString)
     }
 
-    app.getMainWindow.initAndShow(new CancelDialog("dlg.progress.title".i)) { dlg =>
+    new CancelDialog("dlg.progress.title".i) |>> { dlg =>
       val dlgUI = new ItemsDeleteProgressDialogUI
       dlg.mainUI = dlgUI
       dlgUI.lblMsg.value = "file.mgr.dlg.delete.progress.prepare.msg".i
@@ -265,7 +266,7 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
 
       DeleteActor ! ItemsState(items, Nil)
       DeleteActor.start()
-    }
+    } |> UI.getCurrent.addWindow
   }
 
   /**
@@ -282,12 +283,12 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
         stateHandler ! ItemsState(remaining, item +: processed)
       } catch {
         case e: Throwable => app.synchronized {
-          app.getMainWindow.initAndShow(new OkCancelErrorDialog("file.mgr.dlg.delete.item.err.msg".f(item.getName))) { dlg =>
+          new OkCancelErrorDialog("file.mgr.dlg.delete.item.err.msg".f(item.getName)) |>> { dlg =>
             dlg.btnOk.setCaption("btn_skip".i)
 
             dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
             dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
-          }
+          } |> UI.getCurrent.addWindow
         }
       }
 
@@ -298,21 +299,21 @@ class ItemsDeleteHelper(app: ImcmsApplication, browser: FileBrowser) {
 
 
 // todo: refactor - merge duplicated code
-class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
+class ItemsTransferHelper(app: ImcmsUI, browser: FileBrowser) {
 
   def copy() {
     // refactor into dest dir selection method??
     for (selection <- browser.selection if selection.hasItems) {
       val dirSelectBrowser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isSelectable = false))
 
-      app.getMainWindow.initAndShow(new DirSelectionDialog("file.mgr.dlg.select.copy.dest.title".i, dirSelectBrowser, Seq(selection.dir)), resizable = true) { dlg =>
+      new DirSelectionDialog("file.mgr.dlg.select.copy.dest.title".i, dirSelectBrowser, Seq(selection.dir)) with Resizable |>>  { dlg =>
         dlg.setOkButtonHandler {
           for {
             destLocation <- dirSelectBrowser.location
             destSelection <- dirSelectBrowser.selection
           } asyncCopyItems(destLocation._1.root, destSelection.dir, selection.items)
         }
-      }
+      } |> UI.getCurrent.addWindow
     }
   }
 
@@ -322,14 +323,14 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
     for (selection <- browser.selection if selection.hasItems) {
       val dirSelectBrowser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isSelectable = false))
 
-      app.getMainWindow.initAndShow(new DirSelectionDialog("file.mgr.dlg.select.move.dest.title", dirSelectBrowser, Seq(selection.dir)), resizable = true) { dlg =>
+      new DirSelectionDialog("file.mgr.dlg.select.move.dest.title", dirSelectBrowser, Seq(selection.dir)) with Resizable |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
             destLocation <- dirSelectBrowser.location
             destSelection <- dirSelectBrowser.selection
           } asyncMoveItems(destLocation._1.root, destSelection.dir, selection.items)
         }
-      }
+      } |> UI.getCurrent.addWindow
     }
   }
 
@@ -349,9 +350,9 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
       if (itemsState.processed.isEmpty) {
         app.getMainWindow.showWarningNotification("file.mgr.copy.nop.warn.msg".i)
       } else {
-        app.getMainWindow.initAndShow(new ConfirmationDialog("dlg.info.title".i, "file.mgr.dlg.copy.summary.msg".f(itemsState.processed.size, destDir.getName))) { dlg =>
+        new ConfirmationDialog("dlg.info.title".i, "file.mgr.dlg.copy.summary.msg".f(itemsState.processed.size, destDir.getName)) |>> { dlg =>
           dlg.setOkButtonHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
     // no i18n
@@ -360,7 +361,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
       app.getMainWindow.showErrorNotification("An error occured while copying items", msg.toString)
     }
 
-    app.getMainWindow.initAndShow(new CancelDialog("dlg.progress.title".i)) { dlg =>
+    new CancelDialog("dlg.progress.title".i) |>> { dlg =>
       val dlgUI = new ItemsTransferProgressDialogUI
 
       dlg.mainUI = dlgUI
@@ -413,7 +414,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 
       CopyActor ! ItemsState(items, Nil)
       CopyActor.start()
-    }
+    } |> UI.getCurrent.addWindow
   }
 
   /**
@@ -435,18 +436,18 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
             case e: Throwable => app.synchronized {
-              app.getMainWindow.initAndShow(new OkCancelErrorDialog("Unable to copy")) { dlg =>
+              new OkCancelErrorDialog("Unable to copy") |>> { dlg =>
                 dlg.btnOk.setCaption("btn_skip".i)
                 dlg.mainUI = new Label("file.mgr.dlg.copy.item.err.msg".f(item.getName)) with UndefinedSize
 
                 dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
-              }
+              } |> UI.getCurrent.addWindow
             }
           }
         } else {
           app.synchronized {
-            app.getMainWindow.initAndShow(new YesNoCancelDialog("file.mgr.dlg.copy.item.issue.title".i)) { dlg =>
+            new YesNoCancelDialog("file.mgr.dlg.copy.item.issue.title".i) |>> { dlg =>
               val dlgUI = new ItemRenameDialogUI |>> { dlgUI =>
                 dlgUI.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
                 dlgUI.txtName.value = destItemName
@@ -459,7 +460,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
               dlg.setYesButtonHandler { copyItem(dlgUI.txtName.value) }
               dlg.setNoButtonHandler { stateHandler ! ItemsState(remaining, processed) }
               dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
-            }
+            } |> UI.getCurrent.addWindow
           }
         }
       }
@@ -485,10 +486,10 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
       if (itemsState.processed.isEmpty) {
         app.getMainWindow.showWarningNotification("file.mgr.move.nop.warn.msg".i)
       } else {
-        app.getMainWindow.initAndShow(new ConfirmationDialog("dlg.info.title".i, "file.mgr.dlg.move.summary.msg".f(itemsState.processed.size, destDir.getName))) { dlg =>
+        new ConfirmationDialog("dlg.info.title".i, "file.mgr.dlg.move.summary.msg".f(itemsState.processed.size, destDir.getName)) |>> { dlg =>
           dlg.setOkButtonHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
           dlg.setCancelButtonHandler { browser.reloadLocation() }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
     // no i18n
@@ -497,7 +498,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
       app.getMainWindow.showErrorNotification("An error occured while moving items", msg.toString)
     }
 
-    app.getMainWindow.initAndShow(new CancelDialog("dlg.progress.title".i)) { dlg =>
+    new CancelDialog("dlg.progress.title".i) |>> { dlg =>
       val dlgUI = new ItemsTransferProgressDialogUI
 
       dlg.mainUI = dlgUI
@@ -550,7 +551,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
 
       MoveActor ! ItemsState(items, Nil)
       MoveActor.start()
-    }
+    } |> UI.getCurrent.addWindow
   }
 
   /**
@@ -572,15 +573,15 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
             case e: Throwable => app.synchronized {
-              app.getMainWindow.initAndShow(new OkCancelErrorDialog("file.mgr.dlg.move.item.err.msg".f(item.getName))) { dlg =>
+              new OkCancelErrorDialog("file.mgr.dlg.move.item.err.msg".f(item.getName)) |>> { dlg =>
                 dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
-              }
+              } |> UI.getCurrent.addWindow
             }
           }
         } else {
           app.synchronized {
-            app.getMainWindow.initAndShow(new YesNoCancelDialog("file.mgr.dlg.move.item.issue.title".i)) { dlg =>
+            new YesNoCancelDialog("file.mgr.dlg.move.item.issue.title".i) |>> { dlg =>
               val dlgUI = new ItemRenameDialogUI |>> { dlgUI =>
                 dlgUI.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
                 dlgUI.txtName.value = destItemName
@@ -593,7 +594,7 @@ class ItemsTransferHelper(app: ImcmsApplication, browser: FileBrowser) {
               dlg.setYesButtonHandler { moveItem(dlgUI.txtName.value) }
               dlg.setNoButtonHandler { stateHandler ! ItemsState(remaining, processed) }
               dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
-            }
+            } |> UI.getCurrent.addWindow
           }
         }
       }

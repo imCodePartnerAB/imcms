@@ -2,8 +2,10 @@ package com.imcode
 package imcms
 package docadmin
 
+/*
+
 import com.imcode.imcms.vaadin._
-import com.imcode.imcms.vaadin.ImcmsApplication
+import com.imcode.imcms.vaadin.ImcmsUI
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener
 import scala.collection.JavaConverters._
@@ -31,7 +33,7 @@ import com.imcode.imcms.vaadin.data._
 
 
 
-class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*/ with ImcmsApplication with ImcmsServicesSupport { app =>
+class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*/ with ImcmsUI with ImcmsServicesSupport { app =>
 
   // extractors
   private object PathHandlers {
@@ -578,3 +580,5 @@ class TextEditorUI extends VerticalLayout with Margin with FullSize {
   this.addComponents( mb, lytFormat, tsTexts)
   setExpandRatio(tsTexts, 1f)
 }
+
+*/

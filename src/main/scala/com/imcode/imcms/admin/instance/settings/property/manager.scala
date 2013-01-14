@@ -15,12 +15,12 @@ import com.imcode.imcms.vaadin.ui.dialog._
 //todo: move to system dir + monitor
 // todo: updateReadOnly ->
 
-class PropertyManagerManager(app: ImcmsApplication) {
+class PropertyManagerManager(app: ImcmsUI) {
 
   val ui = new PropertyManagerUI |>> { ui =>
-    ui.rc.btnReload addClickHandler { reload() }
-    ui.miEdit setCommandHandler {
-      app.getMainWindow.initAndShow(new OkCancelDialog("Edit system properties")) { dlg =>
+    ui.rc.btnReload.addClickHandler { reload() }
+    ui.miEdit.setCommandHandler {
+      new OkCancelDialog("Edit system properties") |>> { dlg =>
         dlg.mainUI = new PropertyEditorUI |>> { eui =>
           Imcms.getServices.getSystemData |> { d =>
             eui.txtStartPageNumber.value = d.getStartDocument.toString
@@ -53,7 +53,7 @@ class PropertyManagerManager(app: ImcmsApplication) {
             }
           }
         }
-      }
+      } |> UI.getCurrent.addWindow
     }
   }
 

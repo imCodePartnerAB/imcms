@@ -41,7 +41,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
   private lazy val mimeTypes: ListMap[MimeType, DisplayName] =
     imcmsServices.getDocumentMapper
-      .getAllMimeTypesWithDescriptions(ui.getApplication.imcmsUser)
+      .getAllMimeTypesWithDescriptions(UI.getCurrent.imcmsUser)
       .map { case Array(mimeType, displayName) => mimeType -> displayName } (breakOut)
 
   private def findFDFByName(name: String, ignoreCase: Boolean = true): Option[FileDocumentFile] = {

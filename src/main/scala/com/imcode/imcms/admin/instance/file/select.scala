@@ -3,16 +3,16 @@ package imcms
 package admin.instance.file
 
 import scala.collection.JavaConverters._
-import com.imcode.imcms.vaadin._
 import java.io.{File}
 import com.imcode.util.event.Publisher
 import java.util.concurrent.atomic.AtomicBoolean
-import com.vaadin.Application
-import com.vaadin.terminal._
 import org.apache.commons.io.FileUtils
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.vaadin.server._
+import com.vaadin.shared.ui.BorderStyle
+import com.imcode.imcms.admin.instance.file.LocationSelection
 
 /**
  * Common file operations used in file manager and preview.
@@ -36,36 +36,36 @@ object FileOps {
   def isDirectlyShowable(file: File) = directlyShowableExts contains extString(file)
   def isContentShowable(file: File) = contentShowableExts contains extString(file)
 
-
-  def download(app: Application, file: File) =
-    app.getMainWindow.open(
-      new FileResource(file, app) {
-        override def getStream() = super.getStream |>> { ds =>
-          ds.setParameter("Content-Disposition", """attachment; filename="%s"""" format file.getName)
-        }
+  // todo: fix
+  def download(file: File) = {
+    new FileResource(file) {
+      override def getStream() = super.getStream |>> { ds =>
+        ds.setParameter("Content-Disposition", s"""attachment; filename="${file.getName}" """)
       }
-    )
+    } |> Page.getCurrent.open(_: Resource, "", 500, 500, BorderStyle.DEFAULT)
+  }
 
-
-  def showContent(app: Application, file: File) =
-    app.getMainWindow.initAndShow(new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog, resizable = true) { dlg =>
+  // todo: fix
+  def showContent(file: File) =
+    new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog with Resizable |>> { dlg =>
       dlg.mainUI = new TextArea("", scala.io.Source.fromFile(file).mkString) with ReadOnly with FullSize
       dlg.setSize(500, 500)
-    }
+    } |> UI.getCurrent.addWindow
 
-
-  def showDirectly(app: Application, file: File) =
-    app.getMainWindow.initAndShow(new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog, resizable = true) { dlg =>
+  // todo: fix
+  def showDirectly(file: File) =
+    new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog with Resizable |>> { dlg =>
       dlg.mainUI = new Embedded("", new FileResource(file, app))
       dlg.setSize(500, 500)
-    }
+    } |> UI.getCurrent.addWindow
 
 
-  def default(app: Application, file: File) {
+  // todo: fix
+  def default(file: File) {
     val op = if (isDirectlyShowable(file)) showDirectly _
              else if (isContentShowable(file)) showContent _
              else download _
-    op(app, file)
+    op(file)
   }
 }
 
@@ -96,12 +96,12 @@ extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDi
   val preview = new FilePreview(browser)
 
   mainUI = new FileDialogUI(browser.ui, preview.ui) |>> { ui =>
-    ui.miViewPreview setCommandHandler {
+    ui.miViewPreview.setCommandHandler {
       preview.enabled = !preview.enabled
     }
 
-    ui.miFileUpload setCommandHandler {
-      ui.rootWindow.initAndShow(new FileUploaderDialog("Upload file")) { dlg =>
+    ui.miFileUpload.setCommandHandler {
+      new FileUploaderDialog("Upload file") |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
             uploadedFile <- dlg.uploader.uploadedFile
@@ -117,7 +117,7 @@ extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDi
             }
           }
         }
-      }
+      } |> UI.getCurrent.addWindow
     }
   }
 
@@ -162,13 +162,12 @@ class FilePreview(browser: FileBrowser) {
   val preview = new EmbeddedPreview
   val ui = new FilePreviewUI(preview.ui)
 
-  browser listen { ev =>
+  browser.listen { ev =>
     if (enabled) ev match {
       case Some(LocationSelection(_, Seq(item))) if item.isFile =>
-        val app = ui.getApplication
         val caption = if (FileOps.isShowable(item)) "file.preview.act.show".i
                       else "file.browser.preview.act.download".i
-        val iconResource = if (FileOps.isDirectlyShowable(item)) new FileResource(item, app)
+        val iconResource = if (FileOps.isDirectlyShowable(item)) new FileResource(item)
                            else new ThemeResource("images/noncommercial/%s.png".format(
                              FileOps.extString(item) match {
                                case ext @ ("txt" | "pdf") => ext
@@ -178,7 +177,7 @@ class FilePreview(browser: FileBrowser) {
 
         ui.btnAction.setEnabled(true)
         ui.btnAction.setCaption(caption)
-        ui.btnAction.addClickHandler { FileOps.default(app, item) }
+        ui.btnAction.addClickHandler { FileOps.default(item) }
         preview.set(new Embedded("", iconResource))
 
       case _ =>
@@ -189,7 +188,7 @@ class FilePreview(browser: FileBrowser) {
     }
   }
 
-  preview listen { ui.btnAction setEnabled _.isDefined }
+  preview.listen { ui.btnAction setEnabled _.isDefined }
   preview.notifyListeners()
   enabled = false
 
@@ -230,10 +229,10 @@ class ImagePicker(app: Application, browser: FileBrowser) {
       preview.clear()
     }
 
-    ui.btnChoose addClickHandler { app.getMainWindow.show(fileDialog, resizable = true) }
+    ui.btnChoose.addClickHandler { app.getMainWindow.show(fileDialog, resizable = true) }
   }
 
-  preview listen { ui.btnRemove setEnabled _.isDefined }
+  preview.listen { ui.btnRemove setEnabled _.isDefined }
   preview.notifyListeners()
 }
 

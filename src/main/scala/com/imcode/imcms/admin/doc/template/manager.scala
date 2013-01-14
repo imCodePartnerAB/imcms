@@ -19,14 +19,14 @@ import com.imcode.imcms.vaadin.data._
 //todo: common internal ex handler???
 //todo: add related docs handling
 //-upload fialog and save as handling
-class TemplateManager(app: ImcmsApplication) {
+class TemplateManager(app: ImcmsUI) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
   private val fileRE = """(?i)(.+?)(?:\.(\w+))?""".r // filename, (optional extension)
 
   val ui = new TemplateManagerUI |>> { ui =>
     ui.tblTemplates addValueChangeHandler { handleSelection() }
-    ui.miUpload setCommandHandler {
-      app.getMainWindow.initAndShow(new FileUploaderDialog("Upload template file")) { dlg =>
+    ui.miUpload.setCommandHandler {
+      new FileUploaderDialog("Upload template file") |>> { dlg =>
         // strips filename extension, trims and replaces spaces with underscores
         dlg.uploader.fileNameToSaveAsName = fileRE.unapplySeq(_:String).map(_.head.trim.replaceAll("""\s""", "_")).get
         dlg.setOkButtonHandler {
@@ -53,11 +53,11 @@ class TemplateManager(app: ImcmsApplication) {
             }
           }
         }
-      }
+      } |> UI.getCurrent.addWindow
     }
-    ui.miRename setCommandHandler {
+    ui.miRename.setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
-        app.getMainWindow.initAndShow(new OkCancelDialog("Rename template")) { dlg =>
+        new OkCancelDialog("Rename template") |>> { dlg =>
           val fileRenameUI = new TemplateRenameUI |>> { c =>
             c.txtName.value = name
           }
@@ -70,24 +70,24 @@ class TemplateManager(app: ImcmsApplication) {
 
             reload()
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
-    ui.miEditContent setCommandHandler {
+    ui.miEditContent.setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
-        app.getMainWindow.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoContentMarginDialog) { dlg =>
+        new Dialog("Template file content") with CustomSizeDialog with NoContentMarginDialog |>> { dlg =>
           dlg.mainUI = new TemplateContentEditorUI |>> { c =>
             c.txaContent.value = templateMapper.getTemplateData(name)
           }
 
-          dlg setWidth "600px"
-          dlg setHeight "800px"
-        }
+          dlg.setWidth("600px")
+          dlg.setHeight("800px")
+        } |> UI.getCurrent.addWindow
       }
     }
-    ui.miDelete setCommandHandler {
+    ui.miDelete.setCommandHandler {
       whenSelected(ui.tblTemplates) { name =>
-        app.getMainWindow.initAndShow(new ConfirmationDialog("Delete selected template?")) { dlg =>
+        new ConfirmationDialog("Delete selected template?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
               Ex.allCatch.either(Option(templateMapper getTemplateByName name) foreach templateMapper.deleteTemplate) match {
@@ -101,7 +101,7 @@ class TemplateManager(app: ImcmsApplication) {
               reload()
             }
           }
-        }
+        } |> UI.getCurrent.addWindow
       }
     }
   }

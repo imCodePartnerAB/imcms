@@ -17,6 +17,7 @@
         <slf4j.version>1.7.2</slf4j.version>
         <scala.version>2.10.0</scala.version>
         <springframework.version>3.2.0.RELEASE</springframework.version>
+        <vaadin.version>7.0.0.beta11</vaadin.version>
 
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
@@ -340,16 +341,38 @@
         </dependency>
         <!-- imCode Internal Repository dependencies -->
 
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin</artifactId>
-            <version>6.8.5</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.vaadin</groupId>-->
+            <!--<artifactId>vaadin</artifactId>-->
+            <!--<version>6.8.5</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.vaadin.addons</groupId>-->
+            <!--<artifactId>refresher</artifactId>-->
+            <!--<version>1.0.0</version>-->
+        <!--</dependency>-->
 
         <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>refresher</artifactId>
-            <version>1.0.0</version>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-server</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-client-compiled</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-client</artifactId>
+            <version>${vaadin.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <version>${vaadin.version}</version>
         </dependency>
 
         <dependency>

@@ -21,7 +21,7 @@ import org.apache.solr.common.util.DateUtil
 import com.imcode.imcms.admin.doc.projection.filter.DateRange
 import com.imcode.imcms.admin.doc.projection.filter.IdRange
 import com.imcode.imcms.api.I18nLanguage
-import com.vaadin.ui.CheckBox
+import com.vaadin.ui.{UI, CheckBox}
 
 
 class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport {
@@ -67,7 +67,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
     createSolrQuery() match {
       case Left(throwable) =>
         docsContainer.setSolrQueryOpt(None)
-        ui.rootWindow.show(new ErrorDialog(throwable.getMessage.i))
+        new ErrorDialog(throwable.getMessage.i) |> UI.getCurrent.addWindow
 
       case Right(solrQuery) =>
         ui.removeComponent(0, 1)

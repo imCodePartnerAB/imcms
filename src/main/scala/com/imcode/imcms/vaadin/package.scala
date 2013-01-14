@@ -1,14 +1,14 @@
 package com.imcode
 package imcms
 
-import com.vaadin.Application
-import com.vaadin.terminal.UserError
+import com.vaadin.ui.UI
+import com.vaadin.server.UserError
 
 package object vaadin {
 
   implicit def stringToUserError(string: String): UserError = new UserError(string)
 
-  implicit def applicationToImcmsApplication(app: Application): ImcmsApplication = app.asInstanceOf[ImcmsApplication]
+  implicit def uiToImcmsUI(ui: UI): ImcmsUI = ui.asInstanceOf[ImcmsUI]
 
-  implicit def wrapApplication(app: Application) = new ApplicationWrapper(app)
+  implicit def wrapUI(ui: UI) = new UIWrapper(ui)
 }

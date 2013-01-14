@@ -1,21 +1,9 @@
 package com.imcode.imcms.vaadin.ui
 
-import com.vaadin.ui.Window
-import com.vaadin.ui.Window.Notification
+import com.vaadin.ui.{Notification, Window}
 
 /* implicit */
 class WindowWrapper(window: Window) {
-
-  def initAndShow[W <: Window](childWindow: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
-    init(childWindow)
-    childWindow.setModal(modal)
-    childWindow.setResizable(resizable)
-    childWindow.setDraggable(draggable)
-    window.addWindow(childWindow)
-  }
-
-  def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true): Unit =
-    initAndShow(window, modal, resizable, draggable) { _ => }
 
   def showNotification(caption: String, description: String, notificationType: Int): Unit =
     window.showNotification(caption, description, notificationType)
