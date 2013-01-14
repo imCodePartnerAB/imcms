@@ -332,16 +332,35 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
     }
 
     for (file <- files.sortWith((f1, f2) => f1.getName.compareToIgnoreCase(f2.getName) < 0) if filter(file)) {
-      val (size, units) = file.length match {
-        case size if size < baseFn(1) => (0, "KB")
-        case size if size < baseFn(2) => (size / base, "KB")
-        case size if size < baseFn(3) => (size / base, "MB")
-        case size => (size / base, "GB")
-      }
-
-      ui.addItem(Array[AnyRef](file.getName, lastModified(file), "%d %s".format(size, units), "file.browser.items.col.kind.file".i), file)
+      ui.addItem(
+        Array[AnyRef](
+          file.getName, lastModified(file), FileProperties.sizeAsString(file), "file.browser.items.col.kind.file".i
+        ),
+        file)
     }
   }
 
   def selection = ui.value.asScala.toSeq
+}
+
+
+object FileProperties {
+
+  private def powOf1024(pow: Int) = java.lang.Math.pow(1024, pow).toLong
+  private val bytesInKb = powOf1024(1)
+  private val bytesInMb = powOf1024(2)
+  private val bytesInGb = powOf1024(3)
+
+  def sizeAsString(file: File): String = sizeAsString(file.length)
+
+  def sizeAsString(bytesInFile: Long): String = {
+    val (size, units) = bytesInFile match {
+      case bytesCount if bytesCount < bytesInKb => (0, "KB")
+      case bytesCount if bytesCount < bytesInMb => (bytesCount / bytesInKb, "KB")
+      case bytesCount if bytesCount < bytesInGb => (bytesCount / bytesInMb, "MB")
+      case bytesCount => (bytesCount / bytesInGb, "GB")
+    }
+
+    s"$size $units"
+  }
 }

@@ -15,7 +15,7 @@ import com.imcode.imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
 import org.junit.Assert._
 import java.util.{Date}
 import scala.collection.JavaConverters._
-import com.imcode.imcms.test.fixtures.{UserFX, DocFX}
+import com.imcode.imcms.test.fixtures.{DocRefFX, UserFX, DocFX}
 import org.joda.time.DateTime
 
 @RunWith(classOf[JUnitRunner])
@@ -52,7 +52,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
   } |> metaDao.saveMeta
 
 
-  "MetaDao.getMeta" should {
+  ".getMeta" should {
     "return meta when it exists" in {
       val newMeta = createMeta()
       val meta = metaDao.getMeta(newMeta.getId)
@@ -68,19 +68,40 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
   }
 
 
-  "MetaDao.touch should update meta and version" in {
-    val dt = new DateTime(2012, 12, 10, 13, 30).toDate;
-    val meta = createMeta()
-    val version = versionDao.createVersion(meta.getId, UserFX.mkSuperAdmin.getId)
+  ".touch" should {
+    "update meta and version" in {
+      val dt = new DateTime(2012, 12, 10, 13, 30).toDate
+      val meta = createMeta()
+      val version = versionDao.createVersion(meta.getId, UserFX.mkSuperAdmin.getId)
 
-    metaDao.touch(DocRef.of(meta.getId, 0), UserFX.mkDefaultUser, dt)
+      metaDao.touch(DocRef.of(meta.getId, 0), UserFX.mkDefaultUser, dt)
 
-    val updatedMeta = metaDao.getMeta(meta.getId)
-    val updatedVersion = versionDao.getVersion(meta.getId, 0)
+      val updatedMeta = metaDao.getMeta(meta.getId)
+      val updatedVersion = versionDao.getVersion(meta.getId, 0)
 
-    assertEquals("meta modified datetime", dt, updatedMeta.getModifiedDatetime)
-    assertEquals("version modified datetime", dt, updatedVersion.getModifiedDt)
-    assertEquals("version modified by", UserFX.mkDefaultUser.getId, updatedVersion.getModifiedBy)
+      assertEquals("meta modified datetime", dt, updatedMeta.getModifiedDatetime)
+      assertEquals("version modified datetime", dt, updatedVersion.getModifiedDt)
+      assertEquals("version modified by", UserFX.mkDefaultUser.getId, updatedVersion.getModifiedBy)
+    }
+  }
+
+  ".deleteFileReferences" in {
+    val docRef = DocRefFX.Default
+    metaDao.deleteFileReferences(docRef)
+  }
+
+  ".saveFileReferences" in {
+    val docRef = DocRefFX.Default
+    val fileRef = new FileReference |>> { ref =>
+      ref.setDocRef(docRef)
+    }
+
+    metaDao.saveFileReference(fileRef)
+  }
+
+  ".getFileReferences" in {
+    val docRef = DocRefFX.Default
+    metaDao.getFileReferences(docRef)
   }
 
 }

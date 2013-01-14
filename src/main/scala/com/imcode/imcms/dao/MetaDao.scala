@@ -146,7 +146,7 @@ class MetaDao extends HibernateSupport {
   def saveFileReference(fileRef: FileReference) = hibernate.saveOrUpdate(fileRef)
 
 
-  def deleteFileReferences(docRef: DocRef) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
+  def deleteFileReferences(docRef: DocRef): Int = hibernate.bulkUpdateByNamedQueryAndNamedParams(
     "FileDoc.deleteAllReferences", "docRef" -> docRef
   )
 

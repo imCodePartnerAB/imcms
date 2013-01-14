@@ -5,12 +5,7 @@ package com.imcode.imcms.mapping.orm;
 
 import com.imcode.imcms.api.DocRef;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 //ORDER BY default_variant DESC, variant_name
 
@@ -40,6 +35,10 @@ public class FileReference {
     @Column(name = "variant_name")
     private String fileId;
 
+    @Embedded
+    @AttributeOverrides(
+            @AttributeOverride(name="docId", column = @Column(name="meta_id"))
+    )
     private DocRef docRef;
 
     public String getFilename() {

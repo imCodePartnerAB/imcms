@@ -14,7 +14,7 @@ class UrlDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor
   resetValues()
 
   def resetValues() {
-    ui.txtURL.value = "http://"
+    ui.txtURL.value = doc.getUrl
   }
 
   def collectValues() = doc.clone() |>> { clone =>

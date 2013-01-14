@@ -4,7 +4,7 @@ package admin.doc.content.filedoc
 
 import com.imcode._
 import com.imcode.imcms._
-import com.imcode.imcms.admin.instance.file.{UploadedFile, FileUploaderDialog}
+import com.imcode.imcms.admin.instance.file.{FileProperties, UploadedFile, FileUploaderDialog}
 import com.imcode.imcms.vaadin._
 import com.vaadin.ui._
 import com.vaadin.ui.Table.ColumnGenerator
@@ -64,9 +64,8 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     })
 
     ui.tblFiles.addGeneratedColumn("Size", new ColumnGenerator {
-      // todo: calculate size, add unit (kb, mb, etc)
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef): String =
-        values.fdfs(itemId.asInstanceOf[FileId]).getInputStreamSource.getSize.toString
+        values.fdfs(itemId.asInstanceOf[FileId]).getInputStreamSource.getSize |> FileProperties.sizeAsString
     })
 
     ui.tblFiles.addGeneratedColumn("Default", new ColumnGenerator {
@@ -82,7 +81,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.tblFiles.setColumnAlignment("Default", Table.ALIGN_CENTER)
 
     ui.miUpload.setCommandHandler {
-      ui.rootWindow.initAndShow(new FileUploaderDialog("Add file")) { dlg =>
+      new FileUploaderDialog("Add file") |>> { dlg =>
         dlg.setOkButtonHandler {
           for (UploadedFile(_, mimeType, file) <- dlg.uploader.uploadedFile) {
             val saveAsName = dlg.uploader.saveAsName
@@ -92,16 +91,17 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
               case Some(fdf) if !dlg.uploader.mayOverwrite => Left("File with such name allready exists")
 
-              case Some(fdf) => Right(fdf) // return new instance?
+              // todo: ??? return new instance ???
+              case Some(fdf) => Right(fdf)
 
               case None =>
                 val id = (
-                  for ((AnyInt(id), _) <- values.fdfs) yield id
-                ) |> { ids =>
-                  if (ids.isEmpty) 1 else ids.max + 1
-                } |> {
-                  _.toString
-                }
+                    for ((AnyInt(id), _) <- values.fdfs) yield id
+                  ) |> { ids =>
+                    if (ids.isEmpty) 1 else ids.max + 1
+                  } |> {
+                    _.toString
+                  }
 
                 new FileDocumentFile |>> { _.setId(id) } |> Right.apply
             } |> {
@@ -114,14 +114,14 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                 fdf.setMimeType(mimeType)
                 fdf.setInputStreamSource(new FileInputStreamSource(file))
 
-                values = Values(values.fdfs.updated(fdf.getId, fdf), values.defaultFdfId orElse Some(fdf.getId))
+                values = Values(values.fdfs.updated(fdf.getId, fdf), values.defaultFdfId.orElse(Some(fdf.getId)))
 
                 sync()
                 dlg.close()
             }
           }
         }
-      }
+      } |> ui.rootWindow.addWindow
     } // ui.miUpload.setCommandHandler
 
     ui.miEditProperties.setCommandHandler {
@@ -133,7 +133,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
           ui.rootWindow.showWarningNotification("Can't edit multiple files", "Please select a single file")
 
         case Seq(fileId) =>
-          ui.rootWindow.initAndShow(new OkCancelDialog("Edit file properties")) { dlg =>
+          new OkCancelDialog("Edit file properties") |>> { dlg =>
             val fdf = values.fdfs(fileId)
             val editorUI = new FileDocFilePropertiesEditorUI |>> { eui =>
               eui.txtId.value = fdf.getId
@@ -188,7 +188,6 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                   component.setComponentError(errMsg)
                 }
               } else {
-                // todo: mixin trait: so we can delete temp file??
                 // if id has changed, update doc filemap
                 val newId = editorUI.txtId.trim
                 val fdfs = values.fdfs - fileId + (newId -> fdf)
@@ -207,11 +206,11 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                 dlg.close()
               }
             }
-          }
+          } |> ui.rootWindow.addWindow
       }
     }
 
-    ui.miDelete setCommandHandler {
+    ui.miDelete.setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
           ui.rootWindow.showWarningNotification("Please select file(s)")
@@ -228,7 +227,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     }
 
 
-    ui.miMarkAsDefault setCommandHandler {
+    ui.miMarkAsDefault.setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
           ui.rootWindow.showWarningNotification("Please select a file")
@@ -266,6 +265,11 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
 
   def resetValues() {
+    values = Values(
+      doc.getFiles.asScala.map { case (id, fdf) => id -> fdf.clone } (breakOut),
+      Option(doc.getDefaultFileId)
+    )
+
     sync()
   }
 
@@ -278,8 +282,3 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     }
   }
 }
-
-
-
-
-

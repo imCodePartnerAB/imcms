@@ -22,7 +22,7 @@ case class UploadFailed(event: Upload.FailedEvent) extends UploadStatus
 
 
 /**
- * Client code should implement save logic in setOkButtonHandler.
+ * Client code should implement uploaded file save logic.
  *
  * @param caption
  */
@@ -31,14 +31,18 @@ class FileUploaderDialog(caption: String = "") extends OkCancelDialog(caption) {
 
   mainUI = uploader.ui
 
-  uploader.listen { status => btnOk.setEnabled(status.isInstanceOf[UploadSucceeded]) }
-  uploader.reset()
-
   setCancelButtonHandler {
     if (uploader.ui.upload.isUploading) {
       uploader.ui.upload.interruptUpload()
     }
+
+    uploader.deleteUploadedFile()
+
+    close()
   }
+
+  uploader.listen { status => btnOk.setEnabled(status.isInstanceOf[UploadSucceeded]) }
+  uploader.reset()
 }
 
 
@@ -115,8 +119,7 @@ class FileUploader extends Publisher[UploadStatus] {
   reset()
 
   def reset() {
-    uploadedFileOptRef.get.foreach(uploadedFile => FileUtils.deleteQuietly(uploadedFile.file))
-    uploadedFileOptRef.set(None)
+    deleteUploadedFile()
     updateDisabled(ui.chkOverwrite) { _.value = false }
     updateDisabled(ui.txtSaveAsName) { saveAsName =>
       ui.txtSaveAsName.value = ""
@@ -130,7 +133,7 @@ class FileUploader extends Publisher[UploadStatus] {
     notifyListeners(UploadReseted)
   }
 
-  def uploadedFile: Option[File] = uploadedFileOptRef.get
+  def uploadedFile: Option[UploadedFile] = uploadedFileOptRef.get
 
   def saveAsName: String = ui.txtSaveAsName.trim
 
@@ -143,6 +146,12 @@ class FileUploader extends Publisher[UploadStatus] {
 //      ui.chkOverwrite.setEnabled(false)
 //    }
 //  }
+
+  def deleteUploadedFile() {
+    for (uploadedFile <- uploadedFileOptRef.getAndSet(None)) {
+      FileUtils.deleteQuietly(uploadedFile.file)
+    }
+  }
 }
 
 
