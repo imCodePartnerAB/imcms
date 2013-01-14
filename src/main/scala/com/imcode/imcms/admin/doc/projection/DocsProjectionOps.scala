@@ -8,11 +8,13 @@ import com.imcode.imcms.admin.doc.{DocEditorDialog, DocViewer}
 import com.imcode.imcms.vaadin.ui.dialog.{InformationDialog, ConfirmationDialog}
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.server._
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import com.imcode.imcms.mapping.DocumentMapper
 import com.imcode.imcms.admin.doc.content.textdoc.NewTextDocContentEditor
 import com.vaadin.ui.UI
+import com.vaadin.server.Page
 
 /**
  * Common operations associated with docs projections such as edit, view, delete etc.
@@ -41,7 +43,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
           dlg.setOkButtonHandler {
             dlg.docEditor.collectValues() match {
               case Left(errors) =>
-                ui.rootWindow.showErrorNotification(errors.mkString(", "))
+                Page.getCurrent..showErrorNotification(errors.mkString(", "))
 
               case Right((editedDoc, i18nMetas)) =>
                 val saveOpts = dlg.docEditor match {
@@ -58,15 +60,15 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                   saveOpts,
                   UI.getCurrent.imcmsUser
                 )
-                ui.rootWindow.showInfoNotification("New document has been saved")
+                Page.getCurrent.showInfoNotification("New document has been saved")
                 projection.reload()
                 dlg.close()
             }
           }
-        } |> ui.rootWindow.addWindow
+        } |> UI.getCurrent.addWindow
 
       case _ =>
-        new InformationDialog("Please select a text document/profile") |>> projection.ui.rootWindow.addWindow
+        new InformationDialog("Please select a text document/profile") |>> UI.getCurrent.addWindow
     }
   }
 
@@ -77,13 +79,13 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
         dlg.setOkButtonHandler {
           try {
             docs.foreach(doc => imcmsServices.getDocumentMapper.deleteDocument(doc, UI.getCurrent.imcmsUser))
-            dlg.rootWindow.showInfoNotification("Documents has been deleted")
+            Page.getCurrent.showInfoNotification("Documents has been deleted")
             dlg.close()
           } finally {
             projection.reload()
           }
         }
-      } |> projection.ui.rootWindow.addWindow
+      } |> UI.getCurrent.addWindow
     }
   }
 
@@ -99,29 +101,29 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
     whenSingle(projection.selection) { doc =>
       imcmsServices.getDocumentMapper.copyDocument(doc, UI.getCurrent.imcmsUser)
       projection.reload()
-      projection.ui.rootWindow.showInfoNotification("Document has been copied")
+      Page.getCurrent.showInfoNotification("Document has been copied")
     }
   }
 
 
   def editSelectedDoc() {
     whenSingle(projection.selection) { doc =>
-      val rootWindow = projection.ui.rootWindow
+      val page = Page.getCurrent
 
       new DocEditorDialog("Edit document", doc) |>> { dlg =>
         dlg.setOkButtonHandler {
           dlg.docEditor.collectValues() match {
             case Left(errors) =>
-              rootWindow.showErrorNotification("Unable to save document", errors.mkString(", "))
+              page.showErrorNotification("Unable to save document", errors.mkString(", "))
 
             case Right((editedDoc, i18nMetas)) =>
               imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, UI.getCurrent.imcmsUser)
-              rootWindow.showInfoNotification("Document has been saved")
+              page.showInfoNotification("Document has been saved")
               projection.reload()
               dlg.close()
           }
         }
-      } |> rootWindow.addWindow
+      } |> UI.getCurrent.addWindow
     }
   }
 }

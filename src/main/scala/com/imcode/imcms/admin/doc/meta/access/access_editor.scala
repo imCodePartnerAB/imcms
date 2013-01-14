@@ -16,6 +16,7 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.admin.doc.meta.access.RolePermSet
 import com.imcode.imcms.vaadin.data.PropertyDescriptor
+import com.vaadin.server.Page
 
 // Discuss
 //        Managed templates in groups:
@@ -92,7 +93,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
         } yield role -> setTypes)(breakOut)
 
       if (availableRolesWithPermsSetTypes.isEmpty) {
-        ui.rootWindow.showWarningNotification("No roles available")
+        Page.getCurrent.showWarningNotification("No roles available")
       } else {
         new OkCancelDialog("Add role") |>> { dlg =>
           val availableRoles = availableRolesWithPermsSetTypes.keySet
@@ -125,7 +126,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     ui.perms.miRoleChangePermSet.setCommandHandler {
       whenSingle(ui.perms.tblRolesPermSets.value.asScala.toSeq) { role =>
         types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
-          case Nil => ui.rootWindow.showWarningNotification("You are not allowed to edit this role")
+          case Nil => Page.getCurrent.showWarningNotification("You are not allowed to edit this role")
           case availableSetTypes =>
             new OkCancelDialog("Change Role Permissions") |>> { dlg =>
               dlg.mainUI = new ChangeRolePermSetDialogMainUI |>> { c =>

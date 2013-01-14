@@ -36,7 +36,7 @@ object DocViewer extends ImcmsServicesSupport {
       dlg.setSize(600, 600)
       dlg.setOkButtonHandler({})
 
-    } |> ui.rootWindow.addWindow
+    } |> UI.getCurrent.addWindow
   }
 
   // def openDoc(ui: Component, doc: DocumentDomainObject) {}

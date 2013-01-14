@@ -5,7 +5,8 @@ package dialog
 
 import com.imcode._
 import com.vaadin.ui._
-import com.vaadin.server.ThemeResource
+import com.vaadin.server.{Page, ThemeResource}
+import com.imcode.imcms.vaadin.server._
 
 
 trait Modal { this: Window =>
@@ -194,7 +195,7 @@ object Dialog extends Log4jLoggerSupport {
         handler
       } catch {
         case e: Throwable =>
-          dialog.rootWindow.showErrorNotification(s"Server Error: ${e.getMessage}")
+          Page.getCurrent.showErrorNotification(s"Server Error: ${e.getMessage}")
 
           logger.error("Dialog button click hander error", e)
 

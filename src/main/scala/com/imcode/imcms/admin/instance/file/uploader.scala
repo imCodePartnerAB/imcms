@@ -8,6 +8,8 @@ import java.io._
 import org.apache.commons.io.FileUtils
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.server._
+import com.vaadin.server.Page
 
 
 case class UploadedFile(name: String, mimeType: String, file: File)
@@ -98,7 +100,7 @@ class FileUploader extends Publisher[UploadStatus] {
         ui.txtSaveAsName.setEnabled(false)
         ui.pgiBytesReceived.setEnabled(false)
         FileUtils.deleteQuietly(receiver.file)
-        ui.rootWindow.showWarningNotification("file.upload.interrupted.warn.msg".i)
+        Page.getCurrent.showWarningNotification("file.upload.interrupted.warn.msg".i)
         notifyListeners(UploadFailed(ev))
       }
     })

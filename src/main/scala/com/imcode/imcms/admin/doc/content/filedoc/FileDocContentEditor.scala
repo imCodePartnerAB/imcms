@@ -16,8 +16,10 @@ import scala.collection.JavaConverters._
 import scala.collection.immutable.ListMap
 import scala.collection.mutable.{Map => MMap}
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.admin.doc.content.DocContentEditor
+import com.vaadin.server.Page
 
 
 /**
@@ -107,7 +109,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
             } |> {
               case Left(errMsg: String) =>
                 dlg.uploader.ui.txtSaveAsName.setComponentError(errMsg)
-                ui.rootWindow.showErrorNotification(errMsg)
+                Page.getCurrent.showErrorNotification(errMsg)
 
               case Right(fdf: FileDocumentFile) =>
                 fdf.setFilename(saveAsName)
@@ -121,16 +123,16 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
             }
           }
         }
-      } |> ui.rootWindow.addWindow
+      } |> UI.getCurrent.addWindow
     } // ui.miUpload.setCommandHandler
 
     ui.miEditProperties.setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
-          ui.rootWindow.showWarningNotification("Please select a file")
+          Page.getCurrent.showWarningNotification("Please select a file")
 
         case Seq(_, _, _*) =>
-          ui.rootWindow.showWarningNotification("Can't edit multiple files", "Please select a single file")
+          Page.getCurrent.showWarningNotification("Can't edit multiple files", "Please select a single file")
 
         case Seq(fileId) =>
           new OkCancelDialog("Edit file properties") |>> { dlg =>
@@ -206,14 +208,14 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                 dlg.close()
               }
             }
-          } |> ui.rootWindow.addWindow
+          } |> UI.getCurrent.addWindow
       }
     }
 
     ui.miDelete.setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
-          ui.rootWindow.showWarningNotification("Please select file(s)")
+          Page.getCurrent.showWarningNotification("Please select file(s)")
 
         case fileIds =>
           val fdfs = values.fdfs filterKeys fileIds.toSet.andThen(!_)
@@ -222,7 +224,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
           values = Values(fdfs, defaultFdfId)
           sync()
-          ui.rootWindow.showInfoNotification("Selected file(s) have been deleted")
+          Page.getCurrent.showInfoNotification("Selected file(s) have been deleted")
       }
     }
 
@@ -230,15 +232,15 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     ui.miMarkAsDefault.setCommandHandler {
       ui.tblFiles.selection match {
         case Nil =>
-          ui.rootWindow.showWarningNotification("Please select a file")
+          Page.getCurrent.showWarningNotification("Please select a file")
 
         case Seq(_, _, _*) =>
-          ui.rootWindow.showWarningNotification("Please select a single file")
+          Page.getCurrent.showWarningNotification("Please select a single file")
 
         case Seq(fileId) =>
           values = values.copy(defaultFdfId = Some(fileId))
           sync()
-          ui.rootWindow.showInfoNotification("File has been marked as default")
+          Page.getCurrent.showInfoNotification("File has been marked as default")
       }
     }
 
