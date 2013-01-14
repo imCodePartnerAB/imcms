@@ -13,6 +13,8 @@ import imcms.dao.{SystemDao, LanguageDao}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.server._
+import com.vaadin.server.Page
 
 //todo delete in use message
 class LanguageManager(app: ImcmsUI) {
@@ -39,9 +41,9 @@ class LanguageManager(app: ImcmsUI) {
             app.privileged(permission) {
               Ex.allCatch.either(languageDao.deleteLanguage(id)) match {
                 case Right(_) =>
-                  app.getMainWindow.showInfoNotification("Language has been deleted")
+                  Page.getCurrent.showInfoNotification("Language has been deleted")
                 case Left(ex) =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -61,9 +63,9 @@ class LanguageManager(app: ImcmsUI) {
 
               Ex.allCatch.either(systemDao saveProperty property) match {
                 case Right(_) =>
-                  app.getMainWindow.showInfoNotification("Default language has been changed")
+                  Page.getCurrent.showInfoNotification("Default language has been changed")
                 case Left(ex) =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -78,7 +80,7 @@ class LanguageManager(app: ImcmsUI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.imcmsUser.isSuperAdmin
+  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage languages")
 
   /** Edit in modal dialog. */
@@ -107,11 +109,11 @@ class LanguageManager(app: ImcmsUI) {
               Ex.allCatch.either(languageDao saveLanguage voc.build()) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
-                  app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
+                  Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
                   throw ex
                 case _ =>
-                  (if (isNew) "New language access has been created" else "Language access has been updated") |> { msg =>
-                    app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
+                  (isNew ? "New language access has been created" | "Language access has been updated") |> { msg =>
+                    Page.getCurrent.showIngoNotification(msg)
                   }
 
                   reload()

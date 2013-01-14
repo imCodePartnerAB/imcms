@@ -8,7 +8,6 @@ import com.vaadin.ui._
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.dao.IPAccessDao
 import com.imcode.imcms.api.IPAccess
-import com.vaadin.ui.Window.Notification
 import com.imcode.imcms.admin.access.user.{UserSingleSelectDialog, UserSelectDialog}
 import javax.persistence.{Id, Entity}
 import com.imcode.imcms.vaadin._
@@ -18,6 +17,8 @@ import com.imcode.imcms.vaadin.ImcmsUI
 import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog, ConfirmationDialog}
 import _root_.imcode.server.Imcms
 import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
+import com.vaadin.server.Page
+import com.imcode.imcms.vaadin.server._
 
 // todo: ipv4; add/handle ipv6?
 // todo: Should select user from user select!!
@@ -50,10 +51,10 @@ class IPAccessManager(app: ImcmsUI) {
             app.privileged(permission) {
               Ex.allCatch.either(ipAccessDao delete id) match {
                 case Right(_) =>
-                  app.getMainWindow.showInfoNotification("IP access has been deleted")
+                  Page.getCurrent.showInfoNotification("IP access has been deleted")
                   reload()
                 case Left(ex) =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   throw ex
               }
             }
@@ -66,7 +67,7 @@ class IPAccessManager(app: ImcmsUI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.imcmsUser.isSuperAdmin
+  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage IP access")
 
   /** Edit in modal dialog. */
@@ -87,7 +88,7 @@ class IPAccessManager(app: ImcmsUI) {
             dlg.setOkButtonHandler {
               c.userPickerUI.txtLoginName.value = dlg.search.selection.head.getLoginName
             }
-          } |> app.getMainWindow.addWindow
+          } |> UI.getCurrent.addWindow
         }
 
         dlg.setOkButtonHandler {
@@ -101,11 +102,11 @@ class IPAccessManager(app: ImcmsUI) {
               Ex.allCatch.either(ipAccessDao save voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
-                  app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
+                  Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
                   throw ex
                 case _ =>
                   (if (isNew) "New IP access has been created" else "IP access has been updated") |> { msg =>
-                    app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
+                    Page.getCurrent.showInfoNotification(msg)
                   }
 
                   reload()

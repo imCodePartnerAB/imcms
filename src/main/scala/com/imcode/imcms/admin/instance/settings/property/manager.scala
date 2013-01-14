@@ -11,6 +11,8 @@ import com.vaadin.ui.Window.Notification
 import imcode.server.{SystemData, Imcms}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.server._
+import com.vaadin.server.Page
 
 //todo: move to system dir + monitor
 // todo: updateReadOnly ->
@@ -44,10 +46,10 @@ class PropertyManagerManager(app: ImcmsUI) {
 
               Ex.allCatch.either(Imcms.getServices.setSystemData(systemData)) match {
                 case Right(_) =>
-                  app.getMainWindow.showInfoNotification("System properties has been updated")
+                  Page.getCurrent.showInfoNotification("System properties has been updated")
                   reload()
                 case Left(ex) =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   throw ex
               }
             }
@@ -60,7 +62,7 @@ class PropertyManagerManager(app: ImcmsUI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.imcmsUser.isSuperAdmin
+  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage system properties")
 
   def reload() {

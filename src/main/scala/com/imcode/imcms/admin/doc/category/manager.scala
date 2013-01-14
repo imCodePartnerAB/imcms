@@ -15,7 +15,8 @@ import imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
-import com.vaadin.server.FileResource
+import com.imcode.imcms.vaadin.server._
+import com.vaadin.server.{Page, FileResource}
 
 /**
  * Category manager.
@@ -48,9 +49,9 @@ class CategoryManager(app: ImcmsUI) {
             app.privileged(permission) {
               Ex.allCatch.either(categoryMapper.getCategoryById(id.intValue) |> opt foreach categoryMapper.deleteCategoryFromDb) match {
                 case Right(_) =>
-                  app.getMainWindow.showInfoNotification("Category has been deleted")
+                  Page.getCurrent.showInfoNotification("Category has been deleted")
                 case Left(ex) =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -65,15 +66,15 @@ class CategoryManager(app: ImcmsUI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.imcmsUser.isSuperAdmin
+  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage categories")
 
   /** Edit in modal dialog. */
   private def editAndSave(vo: CategoryDomainObject) {
-    val typesNames = categoryMapper.getAllCategoryTypes map (_.getName)
+    val typesNames = categoryMapper.getAllCategoryTypes.map(_.getName)
 
     if (typesNames.isEmpty) {
-      app.getMainWindow.showNotification("Please create at least one category type.", Notification.TYPE_WARNING_MESSAGE)
+      Page.getCurrent.showWarningNotification("Please create at least one category type.")
     } else {
       val id = vo.getId
       val isNew = id == 0
@@ -110,7 +111,7 @@ class CategoryManager(app: ImcmsUI) {
               }
 
               validationError foreach { msg =>
-                app.getMainWindow.showNotification(msg, Notification.TYPE_WARNING_MESSAGE)
+                Page.getCurrent.showWarningNotification(msg)
                 sys.error(msg)
               }
 
@@ -118,11 +119,11 @@ class CategoryManager(app: ImcmsUI) {
                 Ex.allCatch.either(categoryMapper saveCategory voc) match {
                   case Left(ex) =>
                     // todo: log ex, provide custom dialog with details -> show stack
-                    app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
+                    Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
                     throw ex
                   case _ =>
-                    (if (isNew) "New category type has been created" else "Category type has been updated") |> { msg =>
-                      app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
+                    (isNew ? "New category type has been created" | "Category type has been updated") |> { msg =>
+                      Page.getCurrent.showInfoNotification(msg)
                     }
 
                     reload()

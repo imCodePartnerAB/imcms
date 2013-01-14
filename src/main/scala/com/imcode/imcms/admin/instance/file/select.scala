@@ -13,6 +13,7 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.vaadin.server._
 import com.vaadin.shared.ui.BorderStyle
 import com.imcode.imcms.admin.instance.file.LocationSelection
+import com.imcode.imcms.vaadin.server._
 
 /**
  * Common file operations used in file manager and preview.
@@ -216,7 +217,7 @@ class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) w
  */
 class ImagePicker(app: Application, browser: FileBrowser) {
   val preview = new EmbeddedPreview; preview.stubUI.value = "No Icon"
-  val fileDialog = new FileDialog("Pick an image", browser) |>> { dlg =>
+  val fileDialog = new FileDialog("Pick an image", browser) with Resizable |>> { dlg =>
     dlg.preview.enabled = true
     dlg.setOkButtonHandler {
       for (selection <- browser.selection; file <- selection.firstItem)
@@ -229,7 +230,7 @@ class ImagePicker(app: Application, browser: FileBrowser) {
       preview.clear()
     }
 
-    ui.btnChoose.addClickHandler { app.getMainWindow.show(fileDialog, resizable = true) }
+    ui.btnChoose.addClickHandler { UI.getCurrent.addWindow(fileDialog) }
   }
 
   preview.listen { ui.btnRemove setEnabled _.isDefined }

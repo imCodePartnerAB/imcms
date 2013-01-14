@@ -13,10 +13,12 @@ import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.admin.doc.projection._
+import com.imcode.imcms.vaadin.server._
 
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+import com.vaadin.server.Page
 
 // todo: ??? profile -> import _root_.com.imcode.imcms.mapping.ProfileMapper.SimpleProfile
 
@@ -32,14 +34,14 @@ class DocManager(app: ImcmsUI) extends ImcmsServicesSupport {
   val projectionOps = new DocsProjectionOps(projection)
   val customDocs = new CustomDocs(app.imcmsUser)
 
-  val docSelectionDlg = new OKDialog("doc.dlg_selection.caption".i) with CustomSizeDialog |>> { dlg =>
+  val docSelectionDlg = new OKDialog("doc.dlg_selection.caption".i) with CustomSizeDialog with Resizable with NonModal |>> { dlg =>
     dlg.mainUI = customDocs.ui
     dlg.setSize(500, 500)
   }
 
   val ui = new DocManagerUI(projection.ui) |>> { ui =>
     ui.miSelectionShow.setCommandHandler {
-      app.getMainWindow.show(docSelectionDlg, modal = false, resizable = true)
+      UI.getCurrent.addWindow(docSelectionDlg)
     }
 
     ui.miShow.setCommandHandler { projectionOps.showSelectedDoc() }
@@ -69,17 +71,17 @@ class DocManager(app: ImcmsUI) extends ImcmsServicesSupport {
                 profileOpt match {
                   case Some(profile: ProfileMapper.SimpleProfile) =>
                     profileMapper.update(new ProfileMapper.SimpleProfile(profile.getId.toString, name, profile.getDocumentName))
-                    app.getMainWindow.showInfoNotification("Profile name is updated")
+                    Page.getCurrent.showInfoNotification("Profile name is updated")
 
                   case _ =>
                     profileMapper.create(new ProfileMapper.SimpleProfile(null, name, docIdStr))
-                    app.getMainWindow.showInfoNotification("Profile name is assigned")
+                    Page.getCurrent.showInfoNotification("Profile name is assigned")
                 }
 
               case _ =>
                 for (profile <- profileOpt) {
                   profileMapper.delete(profile.getId)
-                  app.getMainWindow.showInfoNotification("Profile name is removed")
+                  Page.getCurrent.showInfoNotification("Profile name is removed")
                 }
             }
           }

@@ -13,6 +13,9 @@ import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.server._
+import com.vaadin.server.Page
+
 //todo:
 //fix: edit - multiselect - always on
 class CategoryTypeManager(app: ImcmsUI) {
@@ -38,9 +41,9 @@ class CategoryTypeManager(app: ImcmsUI) {
             app.privileged(permission) {
               Ex.allCatch.either(categoryMapper.getCategoryTypeById(id.intValue) |> opt foreach categoryMapper.deleteCategoryTypeFromDb) match {
                 case Right(_) =>
-                  app.getMainWindow.showInfoNotification("Category type has been deleted")
+                  Page.getCurrent.showInfoNotification("Category type has been deleted")
                 case Left(ex) =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -55,7 +58,7 @@ class CategoryTypeManager(app: ImcmsUI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.imcmsUser.isSuperAdmin
+  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage category types")
 
   /** Edit in a modal dialog. */
@@ -89,7 +92,7 @@ class CategoryTypeManager(app: ImcmsUI) {
             }
 
             validationError foreach { msg =>
-              app.getMainWindow.showNotification(msg, Notification.TYPE_WARNING_MESSAGE)
+              Page.getCurrent.showWarningNotification(msg)
               sys.error(msg)
             }
 
@@ -97,11 +100,11 @@ class CategoryTypeManager(app: ImcmsUI) {
               Ex.allCatch.either(categoryMapper saveCategoryType voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
-                  app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
+                  Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
                   throw ex
                 case _ =>
-                  (if (isNew) "New category type has been created" else "Category type has been updated") |> { msg =>
-                    app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
+                  (isNew ? "New category type has been created" | "Category type has been updated") |> { msg =>
+                    Page.getCurrent.showInfoNotification(msg)
                   }
 
                   reload()

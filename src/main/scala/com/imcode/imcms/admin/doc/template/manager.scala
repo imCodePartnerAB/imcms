@@ -15,6 +15,8 @@ import java.io.{FileInputStream, ByteArrayInputStream, File}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.server._
+import com.vaadin.server.Page
 
 //todo: common internal ex handler???
 //todo: add related docs handling
@@ -41,13 +43,13 @@ class TemplateManager(app: ImcmsUI) {
                   FileUtils.deleteQuietly(uploadedFile.file)
                   reload() // ok
                 case -1 =>
-                  app.getMainWindow.showErrorNotification("Template with such name allready exists")
+                  Page.getCurrent.showErrorNotification("Template with such name allready exists")
                   sys.error("File exists")
                 case -2 =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   sys.error("IO error")
                 case n =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   sys.error("Unknown error")
               }
             }
@@ -92,9 +94,9 @@ class TemplateManager(app: ImcmsUI) {
             app.privileged(permission) {
               Ex.allCatch.either(Option(templateMapper getTemplateByName name) foreach templateMapper.deleteTemplate) match {
                 case Right(_) =>
-                  app.getMainWindow.showInfoNotification("Template has been deleted")
+                  Page.getCurrent.showInfoNotification("Template has been deleted")
                 case Left(ex) =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -109,7 +111,7 @@ class TemplateManager(app: ImcmsUI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.imcmsUser.isSuperAdmin
+  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage templates")
 
   def reload() {

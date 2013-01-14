@@ -42,8 +42,6 @@ package object ui {
 
   implicit def wrapCustomLayout(cl: CustomLayout) = new CustomLayoutWrapper(cl)
 
-  implicit def wrapWindow(window: Window) = new WindowWrapper(window)
-
   implicit def wrapMenuBar(mb: MenuBar) = new MenuBarWrapper(mb)
 
   implicit def wrapMenuItem(mi: MenuBar#MenuItem) = new MenuItemWrapper(mi)

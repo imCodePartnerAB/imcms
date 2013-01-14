@@ -14,6 +14,8 @@ import com.vaadin.ui.Window.Notification
 import java.util.Date
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.server._
+import com.vaadin.server.Page
 
 case class SessionCounter(value: Int, date: Date)
 
@@ -41,10 +43,10 @@ class SessionCounterManager(app: ImcmsUI) {
             app.privileged(permission) {
               Ex.allCatch.either(SessionCounter save SessionCounter(c.txtValue.value.toInt, c.calStart.value)) match {
                 case Right(_) =>
-                  app.getMainWindow.showInfoNotification("Session counter has been updated")
+                  Page.getCurrent.showInfoNotification("Session counter has been updated")
                   reload()
                 case Left(ex) =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   throw ex
               }
             }
@@ -58,10 +60,10 @@ class SessionCounterManager(app: ImcmsUI) {
           app.privileged(permission) {
             Ex.allCatch.either(SessionCounter save SessionCounter(0, new Date)) match {
               case Right(_) =>
-                app.getMainWindow.showInfoNotification("Session counter has been reseted")
+                Page.getCurrent.showInfoNotification("Session counter has been reseted")
                 reload()
               case Left(ex) =>
-                app.getMainWindow.showErrorNotification("Internal error")
+                Page.getCurrent.showErrorNotification("Internal error")
                 throw ex
             }
           }
@@ -73,7 +75,7 @@ class SessionCounterManager(app: ImcmsUI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.imcmsUser.isSuperAdmin
+  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage session counter")
 
   def reload() {

@@ -21,4 +21,13 @@ class UIWrapper(ui: com.vaadin.ui.UI) {
 //    (null : URL) |> { appUrl =>
 //    new URL(appUrl.getProtocol, appUrl.getHost, appUrl.getPort, s"{$servletContext.getContextPath}/$resourcePath")
 //  }
+
+  def withLock(body: => Unit) {
+    ui.getSession.lock()
+    try {
+      body
+    } finally {
+      ui.getSession.unlock()
+    }
+  }
 }

@@ -12,6 +12,8 @@ import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.server._
+import com.vaadin.server.Page
 
 //todo: form check
 //todo: duplicate save check!
@@ -39,9 +41,9 @@ class TemplateGroupManager(app: ImcmsUI) {
             app.privileged(permission) {
               Ex.allCatch.either(templateMapper deleteTemplateGroup id.intValue) match {
                 case Right(_) =>
-                  app.getMainWindow.showInfoNotification("Template group has been deleted")
+                  Page.getCurrent.showInfoNotification("Template group has been deleted")
                 case Left(ex) =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -56,7 +58,7 @@ class TemplateGroupManager(app: ImcmsUI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.imcmsUser.isSuperAdmin
+  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage template groups")
 
   /** Edit in a modal dialog. */

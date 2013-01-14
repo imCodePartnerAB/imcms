@@ -7,11 +7,12 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin._
-import com.vaadin.ui.Window.Notification
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.vaadin.server.Page
+import com.imcode.imcms.vaadin.server._
 
 //todo delete in use message
 class RoleManager(app: ImcmsUI) {
@@ -37,9 +38,9 @@ class RoleManager(app: ImcmsUI) {
             app.privileged(permission) {
               Ex.allCatch.either(roleMapper.getRole(id) |> opt foreach roleMapper.deleteRole) match {
                 case Right(_) =>
-                  app.getMainWindow.showInfoNotification("Role has been deleted")
+                  Page.getCurrent.showInfoNotification("Role has been deleted")
                 case Left(ex) =>
-                  app.getMainWindow.showErrorNotification("Internal error")
+                  Page.getCurrent.showErrorNotification("Internal error")
                   throw ex
               }
 
@@ -54,7 +55,7 @@ class RoleManager(app: ImcmsUI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = app.imcmsUser.isSuperAdmin
+  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage roles")
 
   /** Edit in modal dialog. */
@@ -86,11 +87,11 @@ class RoleManager(app: ImcmsUI) {
               Ex.allCatch.either(roleMapper saveRole voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
-                  app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
+                  Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
                   throw ex
                 case _ =>
                   (if (isNew) "New role has been created" else "Role has been updated") |> { msg =>
-                    app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
+                    Page.getCurrent.showInfoNotification(msg)
                   }
 
                   reload()
