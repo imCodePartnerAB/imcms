@@ -1,4 +1,4 @@
-package com.imcode.imcms.docadmin
+package com.imcode.imcms.admin
 
 import javax.servlet._
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}

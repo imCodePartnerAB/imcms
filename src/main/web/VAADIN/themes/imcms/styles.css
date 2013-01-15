@@ -18,11 +18,10 @@
     width: 100%;
 }
 
-/* workaround - used only for status separation doc lifecycle editor */
+/* workaround - used only for status separation in doc lifecycle editor */
 /* todo: remove, fixed in vaadin-7*/
 .im-border-top-doc_lifecycle {
     border-top: solid 1px #a9a9a9;
-    /*padding-left: 5px;*/
     padding-top: 5px;
 }
 

@@ -1,20 +1,12 @@
 package com.imcode
 package imcms
-package docadmin
-
-/*
+package admin
 
 import com.imcode.imcms.vaadin._
-import com.imcode.imcms.vaadin.ImcmsUI
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import com.vaadin.terminal.gwt.server.HttpServletRequestListener
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.ui._
 import com.vaadin.event.dd.{DragAndDropEvent, DropHandler}
-import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation
-import com.vaadin.event.DataBoundTransferable
 import com.imcode.imcms.api.{DocRef, Document}
-import com.vaadin.terminal.{FileResource, ExternalResource, Resource}
 import dialog.{ConfirmationDialog, OkCancelDialog}
 import java.io.File
 import imcode.server.document.textdocument._
@@ -24,16 +16,17 @@ import scala.annotation.tailrec
 import admin.doc.projection.{DocIdSelectWithLifeCycleIcon}
 import com.imcode.imcms.admin.doc.{DocSelectDialog, DocEditorDialog, DocViewer, DocEditor}
 import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerator}
-import java.util.concurrent.atomic.AtomicBoolean
 import dao.TextDao
 import com.vaadin.ui._
-import java.util.{Arrays, Collections}
+import java.util.{Locale, Arrays, Collections}
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.server._
+import com.vaadin.server.{Page, VaadinRequest, ExternalResource}
+import com.vaadin.shared.ui.dd.VerticalDropLocation
 
 
-
-class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*/ with ImcmsUI with ImcmsServicesSupport { app =>
+@com.vaadin.annotations.Theme("imcms")
+class DocAdmin extends UI with ImcmsServicesSupport { app =>
 
   // extractors
   private object PathHandlers {
@@ -68,29 +61,8 @@ class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*
     }
   }
 
-  val mainWindow = new Window {
-  }
-
-  override def getWindow(name: String): Window = super.getWindow(name) match {
-    case window if window != null => window
-    case _ =>
-      name |> {
-        case PathHandlers.DefaultDoc(docId) => mkDocEditorWindow(docId)
-        case PathHandlers.CustomDoc(docId, docVersionNo) => mkDocEditorWindow(docId)
-        case PathHandlers.Menu(docId, docVersionNo, menuNo) => mkMenuEditorWindow(DocRef.of(docId, docVersionNo), menuNo)
-        case PathHandlers.Text(docId, docVersionNo, textNo) => mkTextEditorWindow(DocRef.of(docId, docVersionNo), textNo)
-        case _ => null
-      } |>> { window =>
-        if (window != null) {
-          window.setName(name)
-          addWindow(window)
-        }
-      }
-  }
-
-
   def mkDocEditorWindow(docId: Int): Window = new Window |>> { wnd =>
-    val doc = app.imcmsServices.getDocumentMapper.getDocument(docId)
+    val doc = imcmsServices.getDocumentMapper.getDocument(docId)
     val lytEditor = new VerticalLayout with Spacing with Margin with FullHeight |>> { lyt =>
       lyt.setWidth("800px")
     }
@@ -119,13 +91,13 @@ class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*
 
     lytButtons.btnSave.addClickHandler {
       docEditor.collectValues() match {
-        case Left(errors) => wnd.showErrorNotification(errors.mkString(","))
+        case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(","))
         case Right((editedDoc, i18nMetas)) =>
           try {
             imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, app.imcmsUser)
-            wnd.showInfoNotification("Document has been saved")
+            Page.getCurrent.showInfoNotification("Document has been saved")
           } catch {
-            case e => wnd.showErrorNotification("Failed to save document", e.getStackTraceString)
+            case e => Page.getCurrent.showErrorNotification("Failed to save document", e.getStackTraceString)
           }
       }
     }
@@ -159,8 +131,8 @@ class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*
 
     lytButtons.btnSaveAndClose.addClickHandler {
       editor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, /*wnd.*/getApplication.imcmsUser)
-        this.showInfoNotification("Menu has been saved")
+        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, UI.getCurrent.imcmsUser)
+        Page.getCurrent.showInfoNotification("Menu has been saved")
         closeEditor()
       }
     }
@@ -174,16 +146,16 @@ class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*
           dlg.setOkButtonHandler {
             closeEditor()
           }
-        } |> this.rootWindow.addWindow
+        } |> UI.getCurrent.addWindow
       }
     }
 
     private def closeEditor() {
-      new ExternalResource(getApplication.imcmsDocUrl(doc.getId)) |> { resource =>
-        open(resource)
-        //app.removeWindow(wnd)
-        //app.removeWindow(this)
-      }
+//      new ExternalResource(getApplication.imcmsDocUrl(doc.getId)) |> { resource =>
+//        open(resource)
+//        //app.removeWindow(wnd)
+//        //app.removeWindow(this)
+//      }
     }
   }
 
@@ -212,7 +184,7 @@ class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*
 
     lytButtons.btnSaveAndClose.addClickHandler {
       editor.collectValues().right.get |> { texts =>
-        imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, /*wnd.*/getApplication.imcmsUser)
+        imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, UI.getCurrent.imcmsUser)
         closeEditor()
       }
     }
@@ -222,18 +194,18 @@ class DocAdmin extends com.vaadin.Application /*with HttpServletRequestListener*
     }
 
     private def closeEditor() {
-      new ExternalResource(/*wnd.*/getApplication.imcmsDocUrl(doc.getId)) |> { resource =>
-        /*wnd.*/open(resource)
-        //app.removeWindow(wnd)
-        //app.removeWindow(this)
-      }
+//      new ExternalResource(/*wnd.*/getApplication.imcmsDocUrl(doc.getId)) |> { resource =>
+//        /*wnd.*/open(resource)
+//        //app.removeWindow(wnd)
+//        //app.removeWindow(this)
+//      }
     }
   }
 
-  def init() {
-    setTheme("imcms")
-//    setLocale(new Locale(user.getLanguageIso639_2))
-    setMainWindow(mainWindow)
+
+  override def init(request: VaadinRequest) {
+    setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
+    //setContent()
   }
 
 //  def onRequestStart(request: HttpServletRequest, response: HttpServletResponse) {
@@ -298,7 +270,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
     // todo: ??? search for current language + default version ???
     ui.miIncludeDocs.setCommandHandler {
-      new DocSelectDialog("Choose documents", ui.getApplication.imcmsUser) |>> { dlg =>
+      new DocSelectDialog("Choose documents", UI.getCurrent.imcmsUser) |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
             doc <- dlg.projection.selection
@@ -313,7 +285,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
           updateMenuUI()
         }
-      } |> ui.rootWindow.addWindow
+      } |> UI.getCurrent.addWindow
     }
 
     ui.miExcludeSelectedDoc.setCommandHandler {
@@ -327,7 +299,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       for (docId <- ui.ttMenu.selectionOpt) {
         imcmsServices.getDocumentMapper.getDocument(docId) match {
           case null =>
-            ui.rootWindow.showWarningNotification("Document does not exist")
+            Page.getCurrent.showWarningNotification("Document does not exist")
             state.removeMenuItemByDocumentId(docId)
             updateMenuUI()
 
@@ -335,19 +307,19 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
             new DocEditorDialog( "Edit document properties", doc) |>> { dlg =>
               dlg.setOkButtonHandler {
                 dlg.docEditor.collectValues() match {
-                  case Left(errors) => ui.rootWindow.showErrorNotification(errors.mkString(", "))
+                  case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(", "))
                   case Right((modifiedDoc, i18nMetas)) =>
                     try {
-                      imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.asJava, ui.getApplication.imcmsUser)
+                      imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.asJava, UI.getCurrent.imcmsUser)
                       updateMenuUI()
                     } catch {
                       case e =>
-                        ui.rootWindow.showErrorNotification("Can't save document", e.getMessage)
+                        Page.getCurrent.showErrorNotification("Can't save document", e.getMessage)
                         throw e
                     }
                 }
               }
-            } |> ui.rootWindow.addWindow
+            } |> UI.getCurrent.addWindow
         }
       }
     }
@@ -505,9 +477,9 @@ class MenuEditorUI extends VerticalLayout with Margin with FullSize {
   val miShowSelectedDoc = mb.addItem("Show")
   val miEditSelectedDoc = mb.addItem("Properties")
   val miHelp = mb.addItem("Help")
-  val ttMenu = new TreeTable with AlwaysFireValueChange with DocIdSelectWithLifeCycleIcon with SingleSelect[DocId]
+  val ttMenu = new TreeTable with AlwaysFireValueChange[AnyRef] with DocIdSelectWithLifeCycleIcon with SingleSelect[DocId]
                              with Selectable with Immediate with FullSize |>> { tt =>
-    tt.setRowHeaderMode(Table.ROW_HEADER_MODE_HIDDEN)
+    tt.setRowHeaderMode(Table.RowHeaderMode.HIDDEN)
   }
 
   private val lytSort = new FormLayout
@@ -539,7 +511,7 @@ class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) ex
   type Data = Seq[TextDomainObject]
 
   private var state: Seq[TextDomainObject] = _
-  private var stateUis: Seq[RichTextArea with GenericProperty[String]] = _
+  private var stateUis: Seq[RichTextArea] = _
 
   val ui = new TextEditorUI
 
@@ -548,7 +520,7 @@ class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) ex
   def resetValues() {
     state = texts.map(_.clone)
     stateUis = state.map { text =>
-      new RichTextArea with GenericProperty[String] with FullSize |>> { rt =>
+      new RichTextArea with FullSize |>> { rt =>
         rt.value = text.getText
       }
     }
@@ -581,4 +553,9 @@ class TextEditorUI extends VerticalLayout with Margin with FullSize {
   setExpandRatio(tsTexts, 1f)
 }
 
-*/
+//case PathHandlers.DefaultDoc(docId) => mkDocEditorWindow(docId)
+//case PathHandlers.CustomDoc(docId, docVersionNo) => mkDocEditorWindow(docId)
+//case PathHandlers.Menu(docId, docVersionNo, menuNo) => mkMenuEditorWindow(DocRef.of(docId, docVersionNo), menuNo)
+//case PathHandlers.Text(docId, docVersionNo, textNo) => mkTextEditorWindow(DocRef.of(docId, docVersionNo), textNo)
+//case _ => null
+

@@ -188,6 +188,7 @@ package object ui {
    * By default a fields does not fire ValueChangeEvent when assigned value equals to existing.
    * This traits overrides default behavior and always fires ValueChangeEvent on value change.
    */
+  // todo: remove type
   trait AlwaysFireValueChange[T <: AnyRef] extends AbstractField[T] {
     override def setValue(value: T) {
       if (getValue == value) super.fireValueChange(true)
@@ -286,7 +287,7 @@ package object ui {
       super.setMultiSelect(multiSelect)
     }
 
-    def isSelected: Boolean = getGenericValue != null
+    def isSelected: Boolean = selectionOpt.isDefined
 
     def selection: A = getGenericValue
 
@@ -294,6 +295,7 @@ package object ui {
 
     def selectionOpt: Option[A] = Option(getGenericValue)
   }
+
 
   trait MultiSelect[A <: TItemId] extends SelectWithGenericItemId[A] with GenericProperty[JCollection[A]] {
     setMultiSelect(true)
