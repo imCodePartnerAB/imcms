@@ -1,8 +1,8 @@
 package com.imcode
 package imcms.vaadin
 
-import com.vaadin.terminal.Resource
 import java.lang.reflect.{Method, Modifier}
+import com.vaadin.server.Resource
 
 /** Tree item descriptor */
 class TreeMenuItem(val id: String = null, val icon: Resource = null) {

@@ -9,7 +9,7 @@ import com.imcode.imcms.vaadin.ui._
 class MetaEditorUI extends CustomComponent with FullSize {
 
   val sp = new HorizontalSplitPanel with FullSize
-  val treeEditors = new Tree with SingleSelect[MenuItemId] with NoChildrenAllowed with Immediate with AlwaysFireValueChange
+  val treeEditors = new Tree with SingleSelect[MenuItemId] with NoChildrenAllowed with Immediate with AlwaysFireValueChange[MenuItemId]
   val pnlCurrentEditor = new Panel with LightStyle with FullSize
 
   sp.setFirstComponent(treeEditors)

@@ -10,12 +10,12 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.VaadinRequest
-import com.imcode.imcms.vaadin.Theme
 import imcms.admin.access.user.{UserManager}
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 import Theme.Icon
 import com.vaadin.annotations.PreserveOnRefresh
+import com.vaadin.data.Property
 
 // todo: rename theme - name collision
 @PreserveOnRefresh
@@ -108,7 +108,7 @@ class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
         hspManagers.menu.expandItemsRecursively(item)
       }
 
-      hspManagers.menu.addValueChangeListener { e =>
+      hspManagers.menu.addValueChangeListener { e: Property.ValueChangeEvent =>
         hspManagers.content.removeAllComponents()
         hspManagers.content.addComponent(
           e.getProperty.getValue |> {
@@ -150,18 +150,16 @@ class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
   def NA(id: Any) = new Panel(id.toString) {
     setIcon(Icon.Tab32)
 
-    addComponent(new Label("NOT AVAILABLE"))
+    setContent(new Label("NOT AVAILABLE"))
   }
 
 
   val labelAbout = new Panel("About") {
-    getContent |> {
-      case c: VerticalLayout =>
-        c.setMargin(true)
-        c.setSpacing(true)
-    }
+    private val lyt = new VerticalLayout with Spacing with Margin
 
-    addComponent(new Label("""
+    setContent(lyt)
+
+    lyt.addComponent(new Label("""
                    |Welcome to the imCMS new admin UI prototype -
                    | please pick a task from the menu. Note that some views are not (yet) available.
                    |""".stripMargin))

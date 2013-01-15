@@ -6,7 +6,6 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin.{_}
-import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionGranted, PermissionDenied}
 import imcms.api.I18nLanguage
 import imcms.dao.{SystemDao, LanguageDao}
@@ -113,7 +112,7 @@ class LanguageManager(app: ImcmsUI) {
                   throw ex
                 case _ =>
                   (isNew ? "New language access has been created" | "Language access has been updated") |> { msg =>
-                    Page.getCurrent.showIngoNotification(msg)
+                    Page.getCurrent.showInfoNotification(msg)
                   }
 
                   reload()

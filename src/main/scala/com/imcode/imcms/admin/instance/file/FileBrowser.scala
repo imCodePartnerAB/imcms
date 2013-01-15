@@ -5,7 +5,6 @@ package admin.instance.file
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import scala.collection.mutable.{Map => MMap}
-import com.vaadin.terminal.{Resource}
 import com.imcode.imcms.vaadin.{_}
 import com.vaadin.data.util.FilesystemContainer
 import java.io.{FilenameFilter, File}
@@ -15,6 +14,8 @@ import imcode.server.Imcms
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.data._
+import com.vaadin.server.Resource
+import com.vaadin.event.ItemClickEvent
 
 
 /** Hierarchical filesystem (non-hidden dirs) container with a single root. */
@@ -115,8 +116,8 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   private val selectionRef = new AtomicReference(Option.empty[LocationSelection])
 
   val ui = new FileBrowserUI |>> { ui =>
-    ui.accLocationTrees.addListener(new TabSheet.SelectedTabChangeListener {
-      def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
+    ui.accLocationTrees.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener {
+      def selectedTabChange(e: TabSheet.SelectedTabChangeEvent) {
         val locationOpt = tabsToLocations.get(e.getTabSheet.getSelectedTab)
         locationRef.set(locationOpt)
 
@@ -154,13 +155,13 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
     locationItems.ui.addValueChangeHandler { updateSelection(locationTree, locationItems) }
 
-    locationItems.ui.addItemClickListener {
-      case e if e.isDoubleClick => e.getItemId match {
-        case item: File if item.isDirectory => locationTree.selection = item
-        case _ =>
+    locationItems.ui.addItemClickListener { event: ItemClickEvent =>
+      if (event.isDoubleClick) {
+        event.getItemId match {
+          case item: File if item.isDirectory => locationTree.selection = item
+          case _ =>
+        }
       }
-
-      case _ =>
     }
 
     locationTree.reload()
@@ -314,7 +315,7 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
       PropertyDescriptor[String]("file.browser.items.col.kind".i))
 
     import Table._
-    ui.setColumnAlignments(Array(ALIGN_LEFT, ALIGN_RIGHT, ALIGN_RIGHT, ALIGN_RIGHT))
+    ui.setColumnAlignments(Align.LEFT, Align.RIGHT, Align.RIGHT, Align.RIGHT)
     ui.setRowHeaderMode(ROW_HEADER_MODE_ICON_ONLY);
   }
 

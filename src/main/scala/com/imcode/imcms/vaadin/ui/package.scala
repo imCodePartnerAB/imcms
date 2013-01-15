@@ -5,10 +5,11 @@ package vaadin
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
-import com.vaadin.terminal.{Resource, Sizeable}
 import com.vaadin.ui.Layout.AlignmentHandler
 import com.vaadin.data.Item
 import com.imcode.imcms.vaadin.data._
+import com.vaadin.server.{Sizeable, Resource}
+import com.vaadin.ui.themes.{ChameleonTheme, BaseTheme}
 
 
 package object ui {
@@ -19,11 +20,17 @@ package object ui {
     case value => Some(fn(value))
   }
 
-  def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {
+  def menuCommand(handler: (MenuBar#MenuItem => Unit)) = new MenuBar.Command {
     def menuSelected(mi: MenuBar#MenuItem): Unit = handler(mi)
   }
 
-  implicit def fn0ToMenuCommand(f: () => Unit) = menuCommand { _ => f() }
+  implicit def fnToButtonClickListener(fn: (Button.ClickEvent => Any)): Button.ClickListener = {
+    new Button.ClickListener {
+      def buttonClick(event: Button.ClickEvent): Unit = fn(event)
+    }
+  }
+
+  implicit def fn0ToMenuCommand(fn: (() => Unit)) = menuCommand { _ => fn() }
 
 
   implicit def fnToTableCellStyleGenerator(fn: (ItemId,  PropertyId) => String ) =
@@ -50,27 +57,28 @@ package object ui {
 
   implicit def wrapTable[A <: ItemId](table: Table with GenericContainer[A]) = new TableWrapper[A](table)
 
-  /** Text field value type is always String */
-  implicit def wrapTextField(textField: TextField) = new TextField(textField) with GenericProperty[String] with WrappedPropertyValue
+//  /** Text field value type is always String */
+//  implicit def wrapTextField(textField: TextField) = new TextField(textField) with GenericProperty[String] with WrappedPropertyValue
+//
+//  /** Password field value type is always String */
+//  implicit def wrapPasswordField(field: PasswordField) = new PasswordField(field) with GenericProperty[String] with WrappedPropertyValue
+//
+//  /** Text area field value type is always String */
+//  implicit def wrapTextArea(textArea: TextArea) = new TextArea(textArea) with GenericProperty[String] with WrappedPropertyValue
+//
+//  /** Label value type is always String */
+//  implicit def wrapLabel(label: Label) = new Label(label) with GenericProperty[String] with WrappedPropertyValue
+//
+//
+//
+//  /** Date field value type is always Date */
+//  implicit def wrapDateField(dateField: DateField) = new DateField(dateField) with NullableProperty[java.util.Date] with WrappedPropertyValue
 
-  /** Password field value type is always String */
-  implicit def wrapPasswordField(field: PasswordField) = new PasswordField(field) with GenericProperty[String] with WrappedPropertyValue
+  implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBoxWrapper(checkBox)
 
-  /** Text area field value type is always String */
-  implicit def wrapTextArea(textArea: TextArea) = new TextArea(textArea) with GenericProperty[String] with WrappedPropertyValue
-
-  /** Label value type is always String */
-  implicit def wrapLabel(label: Label) = new Label(label) with GenericProperty[String] with WrappedPropertyValue
-
-
-  /** Checkbox value type is always JBoolean */
-  implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBox("", checkBox) with CheckBoxWrapper with GenericProperty[JBoolean] with WrappedPropertyValue
-
-  /** Date field value type is always Date */
-  implicit def wrapDateField(dateField: DateField) = new DateField(dateField) with NullableProperty[java.util.Date] with WrappedPropertyValue
 
   implicit def wrapSizeable(sizeable: Sizeable) = new {
-    def setSize(width: Float, height: Float, units: Int = Sizeable.UNITS_PIXELS) {
+    def setSize(width: Float, height: Float, units: Sizeable.Unit = Sizeable.Unit.PIXELS) {
       sizeable.setWidth(width, units)
       sizeable.setHeight(height, units)
     }
@@ -79,18 +87,6 @@ package object ui {
       sizeable.setWidth(width)
       sizeable.setHeight(height)
     }
-  }
-
-
-  trait CheckBoxWrapper { this: CheckBox =>
-    def isChecked: Boolean = checked
-    def isUnchecked: Boolean = !isChecked
-
-    def checked: Boolean = booleanValue
-    def checked_=(value: Boolean): Unit = setValue(value.asInstanceOf[AnyRef])
-
-    def check() { checked = true }
-    def uncheck() { checked = false }
   }
 
 
@@ -190,7 +186,7 @@ package object ui {
     override def fireClick(): Unit = super.fireClick()
   }
 
-  trait ExposeValueChange extends AbstractField {
+  trait ExposeValueChange[A] extends AbstractField[A] {
     override def fireValueChange(repaintIsNotNeeded: Boolean = true): Unit = super.fireValueChange(repaintIsNotNeeded)
   }
 
@@ -208,18 +204,18 @@ package object ui {
    * By default a fields does not fire ValueChangeEvent when assigned value equals to existing.
    * This traits overrides default behavior and always fires ValueChangeEvent on value change.
    */
-  trait AlwaysFireValueChange extends AbstractField {
-    override def setValue(value: AnyRef) {
+  trait AlwaysFireValueChange[T <: AnyRef] extends AbstractField[T] {
+    override def setValue(value: T) {
       if (getValue == value) super.fireValueChange(true)
       else super.setValue(value)
     }
   }
 
-  trait Margin { this: Layout =>
+  trait Margin { this: Layout.MarginHandler =>
     setMargin(true)
   }
 
-  trait NoMargin { this: Layout =>
+  trait NoMargin { this: Layout.MarginHandler =>
     setMargin(false)
   }
 
@@ -235,11 +231,6 @@ package object ui {
     setSizeUndefined()
   }
 
-
-  trait Scrollable { this: com.vaadin.terminal.Scrollable =>
-    setScrollable(true)
-  }
-
   trait FullSize { this: AbstractComponent =>
     setSizeFull()
   }
@@ -252,17 +243,20 @@ package object ui {
     setHeight("100%")
   }
 
+  // todo: fix
   trait LinkStyle { this: Button =>
-    setStyleName(Button.STYLE_LINK)
+    setStyleName(BaseTheme.BUTTON_LINK)
   }
 
+  // todo: fix
   trait SmallStyle { this: Button =>
-    setStyleName("small")
+    setStyleName(ChameleonTheme.BUTTON_SMALL)
   }
 
+  // todo: fix
   @deprecated
   trait LightStyle { this: Panel =>
-    setStyleName(Panel.STYLE_LIGHT)
+    setStyleName(ChameleonTheme.PANEL_LIGHT)
   }
 
   trait Immediate { this: AbstractComponent =>
@@ -300,7 +294,7 @@ package object ui {
   }
 
 
-  trait SingleSelect[A <: ItemId] extends GenericSelect[A] with NullableProperty[A] {
+  trait SingleSelect[A <: ItemId] extends GenericSelect[A] with GenericProperty[A] {
     setMultiSelect(false)
 
     def isSelected = value != null
@@ -405,7 +399,7 @@ package object ui {
     setResolution(DateField.RESOLUTION_MIN)
   }
 
-  trait Required { this: Field =>
+  trait Required { this: Field[_] =>
     setRequired(true)
   }
 

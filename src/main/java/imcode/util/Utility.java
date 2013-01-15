@@ -1,7 +1,5 @@
 package imcode.util;
 
-import com.vaadin.Application;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -469,10 +467,7 @@ public class Utility {
             user.setCurrentContextPath( req.getContextPath() );
         }
 
-        // Close all vaadin applications associated with a session.
-        for (Application app: WebApplicationContext.getApplicationContext(session).getApplications()) {
-            app.close();
-        }
+        // todo: ??? Close all vaadin applications associated with a session ???
     }
 
     public static void makeUserLoggedOut(HttpServletRequest req) {

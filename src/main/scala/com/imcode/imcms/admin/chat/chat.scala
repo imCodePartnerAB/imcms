@@ -1,28 +1,11 @@
 package com.imcode
 package imcms.admin.chat
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
-import com.vaadin.event.ItemClickEvent
-import com.vaadin.terminal.gwt.server.WebApplicationContext
-import com.vaadin.data.Property
-import com.vaadin.data.Property._
-import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
-import imcms.api.{CategoryType, SystemProperty, IPAccess, Document}
-import imcms.mapping.CategoryMapper
-import imcms.servlet.superadmin.AdminSearchTerms
-import com.imcode.imcms.api.Document.PublicationStatus
-import com.vaadin.terminal.UserError
-import imcode.util.Utility
-import imcode.server.user._
-import imcode.server.{SystemData, Imcms}
-import java.util.{Date, Collection => JCollection}
-import com.vaadin.ui.Layout.MarginInfo
-import java.io.{OutputStream, FileOutputStream, File}
-import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
-import com.imcode.imcms.vaadin._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
+import java.util.Date
 
 class MessageView(sender: String, message: String) extends VerticalLayout {
   val lytHeader = new HorizontalLayout {
@@ -44,15 +27,15 @@ class MessageView(sender: String, message: String) extends VerticalLayout {
   setHeight(null)
 }
 
-class MessagesPanel extends Panel(new VerticalLayout{setSpacing(true)}) with FullSize with Scrollable {
+class MessagesPanel extends Panel(new VerticalLayout{setSpacing(true)}) with FullSize {
   //setStyle(Panel.STYLE_LIGHT)
 
   def addMessage(msg: MessageView) = synchronized {
-    getComponentIterator.toList |> { components =>
-      if (components.length > 3) removeComponent(components.head)
-    }
-
-    addComponent(msg)
+//    getComponentIterator.toList |> { components =>
+//      if (components.length > 3) removeComponent(components.head)
+//    }
+//
+//    addComponent(msg)
   }
   
 }

@@ -14,6 +14,7 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.admin.doc.projection._
 import com.imcode.imcms.vaadin.server._
+import com.imcode.imcms.vaadin.data._
 
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document._

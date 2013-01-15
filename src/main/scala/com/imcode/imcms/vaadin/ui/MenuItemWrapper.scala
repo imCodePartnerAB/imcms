@@ -1,7 +1,8 @@
 package com.imcode.imcms.vaadin.ui
 
 import com.vaadin.ui.MenuBar
-import com.vaadin.terminal.Resource
+import com.vaadin.server.Resource
+
 
 // implicit
 class MenuItemWrapper(mi: MenuBar#MenuItem) {

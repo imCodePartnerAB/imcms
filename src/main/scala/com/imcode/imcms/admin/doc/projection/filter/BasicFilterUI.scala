@@ -10,7 +10,7 @@ import imcode.server.document.LifeCyclePhase
 
 class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") with FullWidth {
 
-  val chkIdRange = new CheckBox("docs_projection.basic_filter.chk_range".i) with Immediate with ExposeValueChange
+  val chkIdRange = new CheckBox("docs_projection.basic_filter.chk_range".i) with ExposeValueChange[Boolean] with Immediate
   val lytIdRange = new HorizontalLayout with Spacing with UndefinedSize {
     val txtStart = new TextField { setColumns(5) }
     val txtEnd = new TextField { setColumns(5) }
@@ -19,10 +19,10 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     this.addComponents(txtStart, lblSeparator, txtEnd)
   }
 
-  val chkText = new CheckBox("docs_projection.basic_filter.chk_text".i) with Immediate with ExposeValueChange
+  val chkText = new CheckBox("docs_projection.basic_filter.chk_text".i) with ExposeValueChange[Boolean] with Immediate
   val txtText = new TextField |>> { _.setInputPrompt("docs_projection.basic_filter.txt_text.prompt".i) }
 
-  val chkType = new CheckBox("docs_projection.basic_filter.chk_type".i) with Immediate with ExposeValueChange
+  val chkType = new CheckBox("docs_projection.basic_filter.chk_type".i) with ExposeValueChange[Boolean] with Immediate
   val lytTypes = new HorizontalLayout with UndefinedSize with Spacing {
     val chkText = new CheckBox("docs_projection.basic_filter.chk_type_text".i)
     val chkFile = new CheckBox("docs_projection.basic_filter.chk_type_file".i)
@@ -33,7 +33,7 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     this.addComponents(chkText, chkFile, chkHtml, chkUrl)
   }
 
-  val chkPhase = new CheckBox("docs_projection.basic_filter.chk_phase".i) with Immediate with ExposeValueChange
+  val chkPhase = new CheckBox("docs_projection.basic_filter.chk_phase".i) with ExposeValueChange[Boolean] with Immediate
   val lytPhases = new HorizontalLayout with Spacing with UndefinedSize {
     val chkNew = new CheckBox("docs_projection.basic_filter.chk_phase_new".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.NEW)) }
     val chkDisapproved = new CheckBox("docs_projection.basic_filter.chk_phase_disapproved".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.DISAPPROVED)) }
@@ -45,7 +45,7 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     this.addComponents(chkNew, chkDisapproved, chkApproved, chkPublished, chkArchived, chkUnpublished)
   }
 
-  val chkAdvanced = new CheckBox("docs_projection.basic_filter.chk_advanced".i) with Immediate with ExposeValueChange
+  val chkAdvanced = new CheckBox("docs_projection.basic_filter.chk_advanced".i) with ExposeValueChange[Boolean] with Immediate
 
   val lytAdvanced = new HorizontalLayout with UndefinedSize with Spacing {
     val cbTypes = new ComboBox with NoNullSelection with SingleSelect[String] with Immediate

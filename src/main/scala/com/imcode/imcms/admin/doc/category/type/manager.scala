@@ -8,7 +8,6 @@ import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 import imcode.server.document.{CategoryTypeDomainObject}
 import com.imcode.imcms.admin.doc.category.{CategoryTypeId}
-import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._

@@ -5,7 +5,7 @@ package vaadin
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.Utility
 import com.imcode.imcms.security.{PermissionDenied, PermissionGranted, Permission}
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.server._
 
 /* implicit */
 trait ImcmsUI extends com.vaadin.ui.UI {
@@ -25,7 +25,7 @@ trait ImcmsUI extends com.vaadin.ui.UI {
     permission match {
       case PermissionGranted => action
       case PermissionDenied(reason) =>
-        getMainWindow.showErrorNotification(reason)
+        getPage.showErrorNotification(reason)
         sys.error(reason)
     }
   }

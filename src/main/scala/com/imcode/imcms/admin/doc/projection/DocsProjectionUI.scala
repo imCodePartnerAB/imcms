@@ -4,14 +4,14 @@ package admin.doc.projection
 
 import com.imcode.imcms.admin.doc.projection.filter.{AdvancedFilterUI, BasicFilterUI}
 import com.vaadin.ui.{Panel, GridLayout}
-import com.imcode.imcms.vaadin.ui.{LightStyle, Scrollable, FullSize}
+import com.imcode.imcms.vaadin.ui.{LightStyle, FullSize}
 
 class DocsProjectionUI(
     basicFilterUI: BasicFilterUI,
     advancedFilterUI: AdvancedFilterUI,
     docsUI: IndexedDocsUI) extends GridLayout(1, 2) with FullSize {
 
-  private val pnlAdvancedFilterForm = new Panel with Scrollable with FullSize with LightStyle {
+  private val pnlAdvancedFilterForm = new Panel with FullSize with LightStyle {
     setContent(advancedFilterUI)
   }
 

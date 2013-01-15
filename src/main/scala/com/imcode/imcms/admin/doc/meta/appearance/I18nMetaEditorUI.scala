@@ -13,7 +13,7 @@ class I18nMetaEditorUI(val language: I18nLanguage, caption: String) extends Cust
     lyt.setEnabled(false)
   }
 
-  val chkEnabled = new CheckBox(caption) with Immediate with AlwaysFireValueChange |>> { chk =>
+  val chkEnabled = new CheckBox(caption) with Immediate with AlwaysFireValueChange[JBoolean] |>> { chk =>
     chk.setIcon(Theme.Icon.Language.flag(language))
     chk.addValueChangeHandler {
       lytContent.setEnabled(chk.booleanValue)

@@ -4,10 +4,9 @@ import com.vaadin.event.ItemClickEvent
 
 package object event {
 
-  implicit def wrapItemClickNotifier(notifier: ItemClickEvent.ItemClickNotifier) = new {
-    def addItemClickListener(listener: ItemClickEvent => Unit): Unit =
-      notifier.addListener(new ItemClickEvent.ItemClickListener {
-        def itemClick(event: ItemClickEvent): Unit = listener(event)
-      })
+  implicit def fnToItemClickListener(fn: (ItemClickEvent => Any)): ItemClickEvent.ItemClickListener = {
+    new ItemClickEvent.ItemClickListener {
+        def itemClick(event: ItemClickEvent): Unit = fn(event)
+    }
   }
 }

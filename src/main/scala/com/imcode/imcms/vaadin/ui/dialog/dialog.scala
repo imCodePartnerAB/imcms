@@ -7,6 +7,8 @@ import com.imcode._
 import com.vaadin.ui._
 import com.vaadin.server.{Page, ThemeResource}
 import com.imcode.imcms.vaadin.server._
+import com.imcode.imcms.vaadin.data._
+import com.vaadin.shared.ui.MarginInfo
 
 
 trait Modal { this: Window =>
@@ -177,7 +179,7 @@ class OkCancelErrorDialog(msg: String = "") extends OkCancelDialog("dlg.err.titl
 }
 
 trait BottomContentMarginDialog { this: Dialog =>
-  content.setMargin(false, false, true, false)
+  content.setMargin(new MarginInfo(false, false, true, false))
 }
 
 trait NoContentMarginDialog { this: Dialog =>

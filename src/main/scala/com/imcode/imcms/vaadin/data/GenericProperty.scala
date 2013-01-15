@@ -7,11 +7,13 @@ import com.vaadin.data.Property
  *
  * Adds type-checked access to property value.
  */
-trait GenericProperty[A <: PropertyValue] { this: Property =>
-  def value = getValue.asInstanceOf[A]
+trait GenericProperty[A <: PropertyValue] { this: Property[A] =>
+  def value = getValue
   def value_=(v: A): Unit = setValue(v)
 
-  def clear(implicit ev: A =:= String): Unit = setValue("")
+  def valueOpt: Option[A] = Option(value)
+
+  def clear(implicit ev: A =:= String): Unit = { value = "".asInstanceOf[A] }
   def trim(implicit ev: A =:= String): String = value.trim
   def trimOpt(implicit ev: A =:= String): Option[String] = trim match {
     case "" => None

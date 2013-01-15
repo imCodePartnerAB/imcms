@@ -6,6 +6,7 @@ import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.{UserMultiSelectDialog}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.vaadin.ui.UI
 
 trait UserListUISetup { this: UserListUI =>
   val projectionDialogCaption: String
@@ -19,7 +20,7 @@ trait UserListUISetup { this: UserListUI =>
       dlg.setOkButtonHandler {
         for (user <- dlg.search.selection) lstUsers.addItem(user.getId: JInteger, "#" + user.getLoginName)
       }
-    } |> this.rootWindow.addWindow
+    } |> UI.getCurrent.addWindow
   }
 
   btnRemove.addClickHandler {

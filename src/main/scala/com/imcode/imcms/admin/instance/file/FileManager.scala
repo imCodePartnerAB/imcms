@@ -9,8 +9,9 @@ import java.io.File
 import org.apache.commons.io.FileUtils
 import actors.Actor
 import scala.concurrent.ops.{spawn}
-import com.vaadin.terminal.{UserError, FileResource}
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.vaadin.server.{Page, UserError}
 
@@ -73,7 +74,7 @@ class FileManager(app: ImcmsUI) {
 
     ui.miFileShow setCommandHandler {
       for (LocationSelection(_, Seq(item)) <- browser.selection; if item.isFile && FileOps.isShowable(item))
-        FileOps.default(app, item)
+        FileOps.default(item)
     }
 
     ui.miFileEdit setCommandHandler {

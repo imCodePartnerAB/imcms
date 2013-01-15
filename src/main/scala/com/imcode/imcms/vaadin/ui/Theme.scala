@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.vaadin
 
-import com.vaadin.terminal.{ThemeResource => TR}
+import com.vaadin.server.{ThemeResource => TR}
 import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
 import com.imcode.imcms.api.I18nLanguage
 

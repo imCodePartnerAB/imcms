@@ -14,6 +14,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.admin.doc.meta.access.RolePermSet
 import com.imcode.imcms.vaadin.data.PropertyDescriptor
 import com.vaadin.server.Page

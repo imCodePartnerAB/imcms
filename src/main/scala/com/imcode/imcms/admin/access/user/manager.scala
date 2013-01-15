@@ -120,7 +120,7 @@ class UserEditorUI extends FormLayout with UndefinedSize {
   val txtLastName = new TextField("user.editor.frm.fld.txt_last_name".i)
   val chkActivated = new CheckBox("user.editor.frm.fld.chk_activated".i)
   val tcsRoles = new TwinColSelect("user.editor.frm.fld.tcs_roles".i) with MultiSelect[RoleId] with TCSDefaultI18n
-  val sltUILanguage = new Select("user.editor.frm.fld.interface_language".i) with GenericProperty[String] with NoNullSelection
+  val sltUILanguage = new ComboBox("user.editor.frm.fld.interface_language".i) with GenericProperty[String] with NoNullSelection
   val txtEmail = new TextField("user.editor.frm.fld.email".i)
 
   val lytPassword = new HorizontalLayoutUI("user.editor.frm.fld.password".i) with UndefinedSize {

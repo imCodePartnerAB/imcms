@@ -14,6 +14,7 @@ import com.imcode.imcms.dao.MetaDao
 import com.vaadin.data.Validator
 import com.vaadin.data.Validator.InvalidValueException
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 
 
 /**

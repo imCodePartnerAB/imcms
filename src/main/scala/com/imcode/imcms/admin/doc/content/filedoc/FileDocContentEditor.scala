@@ -17,6 +17,7 @@ import scala.collection.immutable.ListMap
 import scala.collection.mutable.{Map => MMap}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.admin.doc.content.DocContentEditor
 import com.vaadin.server.Page

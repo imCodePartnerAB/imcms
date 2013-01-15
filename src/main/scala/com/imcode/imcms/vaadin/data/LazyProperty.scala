@@ -6,8 +6,8 @@ object LazyProperty {
   def apply[A <: PropertyValue : ClassTag](byName: => A): LazyProperty[A] = new LazyProperty(byName)
 }
 
-class LazyProperty[A <: PropertyValue : ClassTag](byName: => A) extends AbstractProperty[A] with ReadOnlyProperty {
-  def getValue: AnyRef = byName.asInstanceOf[AnyRef]
+class LazyProperty[A <: PropertyValue : ClassTag](byName: => A) extends AbstractProperty[A] with ReadOnlyProperty[A] {
+  def getValue: A = byName
 }
 
 

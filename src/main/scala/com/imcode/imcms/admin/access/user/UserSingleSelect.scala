@@ -4,7 +4,8 @@ package admin.access.user
 
 import java.util.concurrent.atomic.AtomicReference
 import _root_.imcode.server.user.UserDomainObject
-
+import com.vaadin.ui.UI
+import com.imcode.imcms.vaadin.data._
 
 class UserSingleSelect {
   private val selectionRef = new AtomicReference(Option.empty[UserDomainObject])
@@ -14,7 +15,7 @@ class UserSingleSelect {
         dlg.setOkButtonHandler {
           selection = dlg.search.selection.headOption
         }
-      } |> ui.rootWindow.addWindow
+      } |> UI.getCurrent.addWindow
     }
 
     ui.btnClear.addClickHandler { selection = None }

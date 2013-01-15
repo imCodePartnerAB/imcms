@@ -6,10 +6,9 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.{_}
 import imcms.security.{PermissionGranted, PermissionDenied}
-import imcode.util.Utility.{ipLongToString, ipStringToLong}
-import com.vaadin.ui.Window.Notification
-import imcode.server.{SystemData, Imcms}
+import imcode.server.Imcms
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.Page
@@ -93,7 +92,7 @@ class PropertyManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val dataPanel = new Panel(new VerticalLayout with UndefinedSize with Margin) with UndefinedSize
   val rc = new ReloadableContentUI(dataPanel)
 
-  dataPanel.addComponent(dataUI)
+  dataPanel.setContent(dataUI)
   this.addComponents(mb, rc)
 }
 

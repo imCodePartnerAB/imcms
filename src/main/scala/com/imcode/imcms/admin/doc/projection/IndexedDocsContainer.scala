@@ -176,7 +176,7 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
 
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
-    override def getItemProperty(id: AnyRef) = FunctionProperty(id match {
+    override def getItemProperty(id: AnyRef) = FunctionProperty[AnyRef](id match {
       case "docs_projection.container_property.index" => () => ix + 1 : JInteger
       case "docs_projection.container_property.meta_id" => () => {
         val label = new Label with UndefinedSize |>> { lbl =>

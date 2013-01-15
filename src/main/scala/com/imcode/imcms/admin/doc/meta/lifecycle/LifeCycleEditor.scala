@@ -10,7 +10,6 @@ import java.util.Date
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
-import com.vaadin.terminal.ThemeResource
 import _root_.imcode.server.document.LifeCyclePhase
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject

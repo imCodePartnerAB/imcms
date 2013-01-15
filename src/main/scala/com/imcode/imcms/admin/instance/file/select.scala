@@ -10,8 +10,9 @@ import org.apache.commons.io.FileUtils
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.data._
 import com.vaadin.server._
-import com.vaadin.shared.ui.BorderStyle
+import com.vaadin.shared.ui.{MarginInfo, BorderStyle}
 import com.imcode.imcms.admin.instance.file.LocationSelection
 import com.imcode.imcms.vaadin.server._
 
@@ -43,7 +44,9 @@ object FileOps {
       override def getStream() = super.getStream |>> { ds =>
         ds.setParameter("Content-Disposition", s"""attachment; filename="${file.getName}" """)
       }
-    } |> Page.getCurrent.open(_: Resource, "", 500, 500, BorderStyle.DEFAULT)
+    } |> { resource =>
+      Page.getCurrent.open(resource, "", 500, 500, BorderStyle.DEFAULT)
+    }
   }
 
   // todo: fix
@@ -56,7 +59,7 @@ object FileOps {
   // todo: fix
   def showDirectly(file: File) =
     new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog with Resizable |>> { dlg =>
-      dlg.mainUI = new Embedded("", new FileResource(file, app))
+      dlg.mainUI = new Embedded("", new FileResource(file))
       dlg.setSize(500, 500)
     } |> UI.getCurrent.addWindow
 
@@ -148,7 +151,7 @@ class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends G
   this.addComponents(browserUI, previewUI)
 
   setComponentAlignment(previewUI, Alignment.MIDDLE_CENTER)
-  previewUI.setMargin(false, true, false, true)
+  previewUI.setMargin(new MarginInfo(false, true, false, true))
 
   setColumnExpandRatio(0, 1f)
   setRowExpandRatio(1, 1f)
@@ -212,16 +215,15 @@ class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) w
 /**
  * Allows to choose an image using FileDialog.
  *
- * @param app reference to enclosing application
  * @param browser browser with preconfigured location(s)
  */
-class ImagePicker(app: Application, browser: FileBrowser) {
+class ImagePicker(browser: FileBrowser) {
   val preview = new EmbeddedPreview; preview.stubUI.value = "No Icon"
   val fileDialog = new FileDialog("Pick an image", browser) with Resizable |>> { dlg =>
     dlg.preview.enabled = true
     dlg.setOkButtonHandler {
       for (selection <- browser.selection; file <- selection.firstItem)
-        preview.set(new Embedded("", new FileResource(file, app)))
+        preview.set(new Embedded("", new FileResource(file)))
     }
   }
 

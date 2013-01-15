@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.server._
+import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.Page
 
 

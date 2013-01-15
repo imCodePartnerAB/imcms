@@ -11,7 +11,7 @@ import com.imcode.imcms.vaadin.ui._
  * Component for managing listByNamedParams of users.
  */
 class UserListUI(caption: String = "") extends GridLayout(2, 2) {
-  val chkEnabled = new CheckBox(caption) with Immediate with ExposeValueChange
+  val chkEnabled = new CheckBox(caption) with ExposeValueChange[Boolean] with Immediate
   val lstUsers = new ListSelect with MultiSelectBehavior[UserId] with NoNullSelection {
     setColumns(20)
   }

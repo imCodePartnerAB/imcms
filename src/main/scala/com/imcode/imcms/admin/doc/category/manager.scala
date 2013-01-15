@@ -7,9 +7,7 @@ import com.vaadin.ui._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 import imcode.server.document.{CategoryDomainObject}
-import com.vaadin.ui.Window.Notification
 import imcms.admin.instance.file._
-import com.vaadin.terminal.FileResource
 import java.io.File
 import imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
@@ -80,7 +78,7 @@ class CategoryManager(app: ImcmsUI) {
       val isNew = id == 0
       val dialogTitle = if(isNew) "Create new category" else "Edit category"
       val browser = ImcmsFileBrowser.addImagesLocation(new FileBrowser)
-      val imagePicker = new ImagePicker(app, browser)
+      val imagePicker = new ImagePicker(browser)
       val imageFile = for {
         url <- Option(vo.getImageUrl)
         file = new File(Imcms.getPath, "WEB-INF/" + url) if file.isFile
@@ -191,7 +189,7 @@ class CategoryEditorUI(val imagePickerUI: ImagePickerUI) extends FormLayout with
     t.setColumns(11)
   }
 
-  val sltType = new Select("Type") with GenericProperty[String] with Required with NoNullSelection
+  val sltType = new ComboBox("Type") with GenericProperty[String] with Required with NoNullSelection
 
   this.addComponents(txtId, txtName, sltType, imagePickerUI, txaDescription)
   imagePickerUI.setCaption("Icon")

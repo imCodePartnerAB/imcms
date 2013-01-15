@@ -37,13 +37,11 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
         val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, UI.getCurrent.imcmsUser)
 
-        import projection.ui
-
         new DocEditorDialog(dlgCaption, newDoc) |>> { dlg =>
           dlg.setOkButtonHandler {
             dlg.docEditor.collectValues() match {
               case Left(errors) =>
-                Page.getCurrent..showErrorNotification(errors.mkString(", "))
+                Page.getCurrent.showErrorNotification(errors.mkString(", "))
 
               case Right((editedDoc, i18nMetas)) =>
                 val saveOpts = dlg.docEditor match {

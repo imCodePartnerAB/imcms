@@ -40,7 +40,7 @@ class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
     val lblAlias = new Label with UndefinedSize {
       override def attach() {
         super.attach()
-        getApplication.servletContext.getContextPath |> {
+        UI.getCurrent.servletContext.getContextPath |> {
           case "" | "/" => "/"
           case path => s"$path/"
         } |> setCaption

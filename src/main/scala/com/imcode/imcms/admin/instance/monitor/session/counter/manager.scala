@@ -10,9 +10,9 @@ import imcms.security.{PermissionGranted, PermissionDenied}
 import imcms.dao.IPAccessDao
 import imcms.api.IPAccess
 import imcode.util.Utility.{ipLongToString, ipStringToLong}
-import com.vaadin.ui.Window.Notification
 import java.util.Date
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.Page
@@ -105,7 +105,7 @@ class SessionCounterManagerUI extends VerticalLayout with Spacing with Undefined
   val dataPanel = new Panel(new VerticalLayout with UndefinedSize with Margin) with UndefinedSize
   val rc = new ReloadableContentUI(dataPanel)
 
-  dataPanel.addComponent(dataUI)
+  dataPanel.setContent(dataUI)
   this.addComponents(mb, rc)
 }
 
