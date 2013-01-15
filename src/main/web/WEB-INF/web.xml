@@ -6,7 +6,8 @@
         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
         id="imCMS"
-        version="2.5">
+        version="2.5"
+        metadata-complete="true">
 
     <context-param>
         <description>Vaadin production mode</description>
@@ -114,16 +115,6 @@
         <!--</user-data-constraint>-->
     <!--</security-constraint>-->
 
-    <!--<servlet>-->
-        <!--<servlet-name>vaadin-sysadmin</servlet-name>-->
-        <!--<servlet-class>-->
-            <!--com.vaadin.terminal.gwt.server.ApplicationServlet-->
-        <!--</servlet-class>-->
-        <!--<init-param>-->
-            <!--<param-name>application</param-name>-->
-            <!--<param-value>com.imcode.imcms.admin.SysAdmin</param-value>-->
-        <!--</init-param>-->
-    <!--</servlet>-->
 
     <servlet>
         <servlet-name>vaadin-sysadmin</servlet-name>

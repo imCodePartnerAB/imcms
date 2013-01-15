@@ -17,9 +17,9 @@ import Theme.Icon
 import com.vaadin.annotations.PreserveOnRefresh
 import com.vaadin.data.Property.ValueChangeEvent
 
-// todo: rename theme - name collision
+// todo: rename Theme class - name collision
 @PreserveOnRefresh
-//@com.vaadin.annotations.Theme("imcms")
+@com.vaadin.annotations.Theme("imcms")
 class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
 
   // superadmin access:

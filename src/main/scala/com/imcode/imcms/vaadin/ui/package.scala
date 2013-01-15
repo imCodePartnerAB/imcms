@@ -10,6 +10,7 @@ import com.vaadin.data.{Item}
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.{Sizeable, Resource}
 import com.vaadin.ui.themes.{ChameleonTheme, BaseTheme}
+import com.vaadin.shared.ui.datefield.Resolution
 
 
 package object ui {
@@ -17,7 +18,7 @@ package object ui {
   def whenSelected[A <: AnyRef, B](select: AbstractSelect with GenericProperty[A])(fn: A => B): Option[B] = select.value match {
     case null => None
     case value: JCollection[_] if value.isEmpty => None
-    case value => Some(fn(value.asInstanceOf[A]))
+    case value => Some(fn(value))
   }
 
   def menuCommand(handler: (MenuBar#MenuItem => Unit)) = new MenuBar.Command {
@@ -56,23 +57,6 @@ package object ui {
   implicit def wrapButton(button: Button) = new ButtonWrapper(button)
 
   implicit def wrapTable[A <: TItemId](table: Table with ContainerWithGenericItemId[A]) = new TableWrapper[A](table)
-
-//  /** Text field value type is always String */
-//  implicit def wrapTextField(textField: TextField) = new TextField(textField) with GenericProperty[String] with WrappedPropertyValue
-//
-//  /** Password field value type is always String */
-//  implicit def wrapPasswordField(field: PasswordField) = new PasswordField(field) with GenericProperty[String] with WrappedPropertyValue
-//
-//  /** Text area field value type is always String */
-//  implicit def wrapTextArea(textArea: TextArea) = new TextArea(textArea) with GenericProperty[String] with WrappedPropertyValue
-//
-//  /** Label value type is always String */
-//  implicit def wrapLabel(label: Label) = new Label(label) with GenericProperty[String] with WrappedPropertyValue
-//
-//
-//
-//  /** Date field value type is always Date */
-//  implicit def wrapDateField(dateField: DateField) = new DateField(dateField) with NullableProperty[java.util.Date] with WrappedPropertyValue
 
   implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBoxWrapper(checkBox)
 
@@ -250,7 +234,7 @@ package object ui {
 
   // todo: fix
   trait SmallStyle { this: Button =>
-    setStyleName(ChameleonTheme.BUTTON_SMALL)
+    addStyleName(ChameleonTheme.BUTTON_SMALL)
   }
 
   // todo: fix
@@ -372,19 +356,19 @@ package object ui {
   }
 
   trait YearResolution { this: DateField =>
-    setResolution(DateField.RESOLUTION_YEAR)
+    setResolution(Resolution.YEAR)
   }
 
   trait MonthResolution { this: DateField =>
-    setResolution(DateField.RESOLUTION_MONTH)
+    setResolution(Resolution.MONTH)
   }
 
   trait DayResolution { this: DateField =>
-    setResolution(DateField.RESOLUTION_DAY)
+    setResolution(Resolution.DAY)
   }
 
   trait MinuteResolution { this: DateField =>
-    setResolution(DateField.RESOLUTION_MIN)
+    setResolution(Resolution.MINUTE)
   }
 
   trait Required { this: Field[_] =>

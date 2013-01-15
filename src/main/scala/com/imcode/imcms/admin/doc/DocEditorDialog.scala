@@ -4,10 +4,11 @@ package admin.doc
 
 import _root_.imcode.server.document.DocumentDomainObject
 import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog.{BottomContentMarginDialog, CustomSizeDialog, OkCancelDialog}
+import com.imcode.imcms.vaadin.ui.dialog.{Resizable, BottomContentMarginDialog, CustomSizeDialog, OkCancelDialog}
 
 
-class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDialog {
+class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCancelDialog(caption)
+    with CustomSizeDialog with BottomContentMarginDialog with Resizable {
 
   val docEditor = new DocEditor(doc)
 
