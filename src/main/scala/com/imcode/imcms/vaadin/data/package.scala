@@ -1,9 +1,11 @@
 package com.imcode
-package imcms.vaadin
+package imcms
+package vaadin
 
 import com.vaadin.data.{Property, Container}
 
-package object data {
+package object data extends LowPriorityPropertyImplicits {
+
   type PropertyId = AnyRef
   type PropertyValue = AnyRef
   type ItemId = AnyRef
@@ -25,33 +27,40 @@ package object data {
     def addValueChangeHandler(handler: => Unit): Unit = vcn.addValueChangeListener { _: Property.ValueChangeEvent => handler }
   }
 
+  trait GenericProperty[A <: AnyRef] extends Property[AnyRef] {
+    protected def getGenericValue(): A = getValue.asInstanceOf[A]
+    protected def setGenericValue(value: A) { setValue(value) }
+  }
 
-//  /**
-//   * Some Vaadin's components such as TextFields, Labels, etc can act as as wrappers for other
-//   * components of the same type.
-//   * Ensures setValue and getValue are always called directly on wrapped property, not on wrapper itself.
-//   */
-//  trait WrappedPropertyValue[A <: PropertyValue] extends Property with Property.Viewer {
-//    abstract override def setValue(value: AnyRef): Unit = getPropertyDataSource match {
-//      case null => super.setValue(value)
-//      case property => property.setValue(value)
-//    }
-//
-//    abstract override def getValue(): AnyRef = getPropertyDataSource match {
-//      case null => super.getValue()
-//      case property => property.getValue()
-//    }
-//  }
-
-  implicit class GenericPropertyWrapper[A <: PropertyValue](property: Property[A]) extends Property[A] with GenericProperty[A] {
-    def getValue: A = ???
-
-    def setValue(newValue: A) { ??? }
-
-    def getType: Class[_ <: A] = ???
-
-    def isReadOnly: Boolean = ???
-
-    def setReadOnly(newStatus: Boolean) { ??? }
+  implicit def mkGenericPropertyOps[A <: AnyRef](genericProperty: GenericProperty[A]): PropertyOps[A] = {
+    new PropertyOps(genericProperty.asInstanceOf[Property[A]])
   }
 }
+
+
+class LowPriorityPropertyImplicits {
+
+  class PropertyOps[A <: AnyRef](property: Property[A]) {
+    def value = property.getValue
+    def value_=(v: A): Unit = property.setValue(v)
+
+    def valueOpt: Option[A] = Option(value)
+
+    def clear(implicit ev: A =:= String): Unit = value = "".asInstanceOf[A]
+    def trim(implicit ev: A =:= String): String = value.trim
+    def trimOpt(implicit ev: A =:= String): Option[String] = trim match {
+      case "" => None
+      case v => Some(v)
+    }
+    def isBlank(implicit ev: A =:= String): Boolean = trim.isEmpty
+    def notBlank(implicit ev: A =:= String): Boolean = !isBlank
+  }
+
+  implicit def mkPropertyOps[A <: AnyRef](property: Property[A]): PropertyOps[A] = new PropertyOps(property)
+}
+
+//
+//class PropertyImplicits extends LowPriorityPropertyImplicits {
+//
+//
+//}

@@ -41,7 +41,7 @@ class UserManager(app: ImcmsUI) extends ImcmsServicesSupport {
               u setLastName c.txtLastName.value
               u setLoginName c.txtLogin.value
               u setPassword c.txtPassword.value
-              u setRoleIds c.tcsRoles.value.asScala.toSeq.toArray
+              u setRoleIds c.tcsRoles.value.asScala.toArray
               u setLanguageIso639_2 c.sltUILanguage.value
 
               roleMapper.addUser(u)
@@ -120,7 +120,7 @@ class UserEditorUI extends FormLayout with UndefinedSize {
   val txtLastName = new TextField("user.editor.frm.fld.txt_last_name".i)
   val chkActivated = new CheckBox("user.editor.frm.fld.chk_activated".i)
   val tcsRoles = new TwinColSelect("user.editor.frm.fld.tcs_roles".i) with MultiSelect[RoleId] with TCSDefaultI18n
-  val sltUILanguage = new ComboBox("user.editor.frm.fld.interface_language".i) with GenericProperty[String] with NoNullSelection
+  val sltUILanguage = new ComboBox("user.editor.frm.fld.interface_language".i) with SingleSelect[String] with NoNullSelection
   val txtEmail = new TextField("user.editor.frm.fld.email".i)
 
   val lytPassword = new HorizontalLayoutUI("user.editor.frm.fld.password".i) with UndefinedSize {

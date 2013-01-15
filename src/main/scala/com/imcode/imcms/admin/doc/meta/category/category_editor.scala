@@ -23,13 +23,13 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
   private val initialValues = Data(meta.getCategoryIds.asScala.toSet)
 
-  private val typeCategoriesUIs: Seq[(CheckBox with ExposeValueChange[Boolean], MultiSelectBehavior[CategoryId])] =
+  private val typeCategoriesUIs: Seq[(CheckBox with ExposeValueChange[JBoolean], MultiSelectBehavior[CategoryId])] =
     for {
       cType <- imcmsServices.getCategoryMapper.getAllCategoryTypes.toSeq
       categories = imcmsServices.getCategoryMapper.getAllCategoriesOfType(cType)
       if categories.nonEmpty
     } yield {
-      val chkCType = new CheckBox(cType.getName) with ExposeValueChange[Boolean] with Immediate
+      val chkCType = new CheckBox(cType.getName) with ExposeValueChange[JBoolean] with Immediate
       val sltCategories =
         if (cType.isMultiselect) new TwinColSelect with MultiSelectBehavior[CategoryId]
         else new ComboBox with MultiSelectBehavior[CategoryId] with NoNullSelection

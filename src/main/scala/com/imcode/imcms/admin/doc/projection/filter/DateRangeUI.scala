@@ -8,7 +8,7 @@ import com.imcode.imcms.vaadin.data.GenericProperty
 
 
 class DateRangeUI(caption: String = "") extends HorizontalLayout with Spacing with UndefinedSize {
-  val cbRangeType = new ComboBox with GenericProperty[DateRangeType.Value] with NoNullSelection with Immediate
+  val cbRangeType = new ComboBox with SingleSelect[DateRangeType.Value] with NoNullSelection with Immediate
   val dtFrom = new PopupDateField with DayResolution
   val dtTo = new PopupDateField with DayResolution
 

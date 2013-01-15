@@ -189,7 +189,7 @@ class CategoryEditorUI(val imagePickerUI: ImagePickerUI) extends FormLayout with
     t.setColumns(11)
   }
 
-  val sltType = new ComboBox("Type") with GenericProperty[String] with Required with NoNullSelection
+  val sltType = new ComboBox("Type") with SingleSelect[String] with Required with NoNullSelection
 
   this.addComponents(txtId, txtName, sltType, imagePickerUI, txaDescription)
   imagePickerUI.setCaption("Icon")

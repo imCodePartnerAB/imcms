@@ -18,6 +18,7 @@ import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.admin.doc.meta.access.RolePermSet
 import com.imcode.imcms.vaadin.data.PropertyDescriptor
 import com.vaadin.server.Page
+import com.vaadin.data.Property
 
 // Discuss
 //        Managed templates in groups:
@@ -203,7 +204,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
   private def setRolePermSetType(role: RoleDomainObject, setType: DocumentPermissionSetTypeDomainObject) {
     ui.perms.tblRolesPermSets.item(role)
       .getItemProperty(RolePermSetPropertyId)
-      .setValue(RolePermSet(role, setType))
+      .asInstanceOf[Property[RolePermSet]].value = RolePermSet(role, setType)
   }
 
 

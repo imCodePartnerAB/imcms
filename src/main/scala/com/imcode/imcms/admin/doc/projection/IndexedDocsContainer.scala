@@ -20,6 +20,7 @@ import java.util.Date
 import scala.Some
 import com.imcode.imcms.vaadin.data.FunctionProperty
 import imcode.server.Imcms
+import com.vaadin.data.Container.ItemSetChangeListener
 
 class IndexedDocsContainer(
   user: UserDomainObject,
@@ -164,6 +165,10 @@ class IndexedDocsContainer(
   override def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef): Item = throw new UnsupportedOperationException
 
   override def addItemAfter(previousItemId: AnyRef): Item = throw new UnsupportedOperationException
+
+  def addItemSetChangeListener(listener: ItemSetChangeListener) {}
+
+  def removeItemSetChangeListener(listener: ItemSetChangeListener) {}
 }
 
 

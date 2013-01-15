@@ -6,7 +6,7 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
 import com.vaadin.ui.Layout.AlignmentHandler
-import com.vaadin.data.Item
+import com.vaadin.data.{Property, Item}
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.{Sizeable, Resource}
 import com.vaadin.ui.themes.{ChameleonTheme, BaseTheme}
@@ -17,7 +17,7 @@ package object ui {
   def whenSelected[A <: AnyRef, B](select: AbstractSelect with GenericProperty[A])(fn: A => B): Option[B] = select.value match {
     case null => None
     case value: JCollection[_] if value.isEmpty => None
-    case value => Some(fn(value))
+    case value => Some(fn(value.asInstanceOf[A]))
   }
 
   def menuCommand(handler: (MenuBar#MenuItem => Unit)) = new MenuBar.Command {
@@ -35,7 +35,7 @@ package object ui {
 
   implicit def fnToTableCellStyleGenerator(fn: (ItemId,  PropertyId) => String ) =
     new Table.CellStyleGenerator {
-      def getStyle(itemId: AnyRef, propertyId: AnyRef) = fn(itemId, propertyId)
+      def getStyle(table: Table, itemId: AnyRef, propertyId: AnyRef) = fn(itemId, propertyId)
     }
 
   implicit def fnToTableColumnGenerator(fn: (Table, ItemId, ColumnId) => AnyRef) =
@@ -297,18 +297,18 @@ package object ui {
   trait SingleSelect[A <: ItemId] extends GenericSelect[A] with GenericProperty[A] {
     setMultiSelect(false)
 
-    def isSelected = value != null
-
-    def selection = value
-
-    def selection_=(v: A) { value = v }
-
-    def selectionOpt = valueOpt
-
     override final def setMultiSelect(multiSelect: Boolean) {
       require(!multiSelect, "must be false")
       super.setMultiSelect(multiSelect)
     }
+
+    def isSelected: Boolean = getGenericValue != null
+
+    def selection: A = getGenericValue
+
+    def selection_=(v: A) { setGenericValue(v) }
+
+    def selectionOpt: Option[A] = Option(getGenericValue)
   }
 
   trait MultiSelect[A <: ItemId] extends GenericSelect[A] with GenericProperty[JCollection[A]] {
@@ -319,15 +319,15 @@ package object ui {
       super.setMultiSelect(multiSelect)
     }
 
-    def isSelected: Boolean = value.asScala.nonEmpty
+    def isSelected: Boolean = getGenericValue.asScala.nonEmpty
 
-    def selection: Seq[A] = value.asScala.toSeq
+    def selection: Seq[A] = getGenericValue.asScala.toSeq
 
-    def selection_=(v: Seq[A]) { value = v.asJava }
+    def selection_=(v: Seq[A]) { setGenericValue(v.asJava) }
 
     def selection_=(v: A) { selection = Option(v).toSeq }
 
-    def firstOpt: Option[A] = value.asScala.headOption
+    def firstOpt: Option[A] = getGenericValue.asScala.headOption
   }
 
 
@@ -338,21 +338,25 @@ package object ui {
    */
   trait MultiSelectBehavior[A <: ItemId] extends GenericSelect[A] with GenericProperty[JCollection[A]] {
 
-    def selection: Seq[A] = value.asScala.toSeq
+    def selection: Seq[A] = getGenericValue.asScala.toSeq
 
-    def selection_=(v: Seq[A]) { value = v.asJava }
+    def selection_=(v: Seq[A]) { setGenericValue(v.asJava) }
 
     def selection_=(v: A) { selection = Option(v).toSeq }
 
-    def firstOpt: Option[A] = value.asScala.headOption
+    def firstOpt: Option[A] = getGenericValue.asScala.headOption
 
-    def isSelected: Boolean = value.asScala.nonEmpty
+    def isSelected: Boolean = getGenericValue.asScala.nonEmpty
 
-    override def value: JCollection[A] = getValue |> { v =>
-      if (isMultiSelect) v.asInstanceOf[JCollection[A]] else Option(v.asInstanceOf[A]).toSeq.asJavaCollection
+    abstract override def getValue(): AnyRef = super.getValue |> { v =>
+      isMultiSelect ? v.asInstanceOf[JCollection[A]] | Option(v.asInstanceOf[A]).toSeq.asJavaCollection
     }
 
-    override def value_=(v: JCollection[A]): Unit = super.setValue(if (isMultiSelect) v else v.asScala.headOption.orNull)
+    abstract override def setValue(value: AnyRef) {
+      value.asInstanceOf[JCollection[A]] |> { coll =>
+        super.setValue(isMultiSelect ? coll | coll.asScala.headOption.orNull)
+      }
+    }
 
     //  /**
     //   * @return collection of selected items or empty collection if there is no selected item(s).
