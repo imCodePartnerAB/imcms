@@ -674,13 +674,13 @@
     <servlet-mapping>
         <servlet-name>vaadin-sysadmin</servlet-name>
         <url-pattern>/sysadmin/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>vaadin-docadmin</servlet-name>
-        <url-pattern>/docadmin/*</url-pattern>
         <url-pattern>/VAADIN/*</url-pattern>
     </servlet-mapping>
+
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>vaadin-docadmin</servlet-name>-->
+        <!--<url-pattern>/docadmin/*</url-pattern>        -->
+    <!--</servlet-mapping>-->
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>

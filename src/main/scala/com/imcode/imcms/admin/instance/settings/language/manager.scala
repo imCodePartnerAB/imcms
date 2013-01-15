@@ -131,8 +131,10 @@ class LanguageManager(app: ImcmsUI) {
     for {
       vo <- languageDao.getAllLanguages.asScala
       id = vo.getId
-      isDefault: JBoolean = default == id.intValue
-    } ui.tblLanguages.addItem(Array[AnyRef](id, vo.getCode, vo.getName, vo.getNativeName, vo.isEnabled: JBoolean, isDefault), id)
+      isDefault = default == id.intValue
+    } ui.tblLanguages.addItem(
+      Array[AnyRef](id, vo.getCode, vo.getName, vo.getNativeName, vo.isEnabled: JBoolean, isDefault: JBoolean),
+      id)
 
     canManage |> { value =>
       ui.tblLanguages.setSelectable(value)
@@ -166,8 +168,8 @@ class LanguageManagerUI extends VerticalLayout with Spacing with UndefinedSize {
     PropertyDescriptor[String]("Code"),
     PropertyDescriptor[String]("Name"),
     PropertyDescriptor[String]("Native name"),
-    PropertyDescriptor[String]("Enabled"),
-    PropertyDescriptor[String]("Default"))
+    PropertyDescriptor[JBoolean]("Enabled"),
+    PropertyDescriptor[JBoolean]("Default"))
 
   this.addComponents(mb, rc)
 }

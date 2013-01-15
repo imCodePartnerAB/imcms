@@ -6,10 +6,10 @@ import com.vaadin.data.{Property, Container}
 
 package object data extends LowPriorityPropertyImplicits {
 
-  type PropertyId = AnyRef
-  type PropertyValue = AnyRef
-  type ItemId = AnyRef
-  type ColumnId = AnyRef
+  type TPropertyId = AnyRef
+  type TPropertyValue = AnyRef
+  type TItemId = AnyRef
+  type TColumnId = AnyRef
 
   def addContainerProperties(container: Container, descriptors: PropertyDescriptor[_]*): Unit =
     descriptors.foreach { pd =>
@@ -38,7 +38,7 @@ package object data extends LowPriorityPropertyImplicits {
 }
 
 
-class LowPriorityPropertyImplicits {
+trait LowPriorityPropertyImplicits {
 
   class PropertyOps[A <: AnyRef](property: Property[A]) {
     def value = property.getValue
@@ -58,9 +58,3 @@ class LowPriorityPropertyImplicits {
 
   implicit def mkPropertyOps[A <: AnyRef](property: Property[A]): PropertyOps[A] = new PropertyOps(property)
 }
-
-//
-//class PropertyImplicits extends LowPriorityPropertyImplicits {
-//
-//
-//}

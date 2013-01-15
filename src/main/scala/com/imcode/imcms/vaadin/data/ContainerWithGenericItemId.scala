@@ -5,7 +5,7 @@ import com.vaadin.data.{Item, Container}
 import com.imcode._
 
 // todo: ???itemsIds as Seq???
-trait GenericContainer[A <: ItemId] { this: Container =>
+trait ContainerWithGenericItemId[A <: TItemId] { this: Container =>
   def itemIds: JCollection[A] = getItemIds.asInstanceOf[JCollection[A]]
   def itemIds_=(ids: JCollection[A]) {
     removeAllItems()

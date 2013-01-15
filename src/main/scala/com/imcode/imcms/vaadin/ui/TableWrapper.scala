@@ -1,16 +1,15 @@
 package com.imcode.imcms.vaadin.ui
 
-import com.imcode.imcms.vaadin.data.{ItemId, ColumnId}
+import com.imcode.imcms.vaadin.data.{ContainerWithGenericItemId, TItemId, TColumnId}
 import com.vaadin.ui.Table
-import com.imcode.imcms.vaadin.data.GenericContainer
 
 // implicit
-class TableWrapper[A <: ItemId](table: Table with GenericContainer[A]) {
+class TableWrapper[A <: TItemId](table: Table with ContainerWithGenericItemId[A]) {
   def addRow(itemId: A, cells: AnyRef*): AnyRef = table.addItem(cells.toArray, itemId)
   def addRowWithAutoId(cell: AnyRef, cells: AnyRef*): AnyRef = addRow(null.asInstanceOf[A], (cell +: cells) : _*)
 
   object generatedColumn {
-    def update(columnId: ColumnId, generator: (Table, A, ColumnId) => AnyRef) {
+    def update(columnId: TColumnId, generator: (Table, A, TColumnId) => AnyRef) {
       table.addGeneratedColumn(columnId,
         new Table.ColumnGenerator {
           def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = generator(source, itemId.asInstanceOf[A], columnId)

@@ -9,6 +9,6 @@ import scala.reflect.ClassTag
  * @param id container property id
  * @param defaultValue container property default value
  */
-case class PropertyDescriptor[A <: PropertyValue : ClassTag](id: AnyRef, defaultValue: A = null) {
+case class PropertyDescriptor[A <: TPropertyValue : ClassTag](id: AnyRef, defaultValue: A = null) {
   val runtimeClass = scala.reflect.classTag[A].runtimeClass
 }

@@ -15,11 +15,11 @@ import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 import Theme.Icon
 import com.vaadin.annotations.PreserveOnRefresh
-import com.vaadin.data.Property
+import com.vaadin.data.Property.ValueChangeEvent
 
 // todo: rename theme - name collision
 @PreserveOnRefresh
-@com.vaadin.annotations.Theme("imcms")
+//@com.vaadin.annotations.Theme("imcms")
 class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
 
   // superadmin access:
@@ -72,7 +72,7 @@ class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
   }
 
 
-  val mainWindow = new Window {
+  val pnlUIContent = new Panel with FullSize {
     val hspManagers = new HorizontalSplitPanel with FullSize {
       val menu = new Tree with Immediate
       val content = new VerticalLayout with FullSize with Margin
@@ -88,7 +88,7 @@ class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
       p.setSplitPosition(85)
     }
 
-    setContent(content)
+    setContent(hspManagers)
 
     def initManagersMenu() {
       def addMenuItem(parentItem: TreeMenuItem, item: TreeMenuItem) {
@@ -108,7 +108,7 @@ class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
         hspManagers.menu.expandItemsRecursively(item)
       }
 
-      hspManagers.menu.addValueChangeListener { e: Property.ValueChangeEvent =>
+      hspManagers.menu.addValueChangeListener { e: ValueChangeEvent =>
         hspManagers.content.removeAllComponents()
         hspManagers.content.addComponent(
           e.getProperty.getValue |> {
@@ -142,8 +142,8 @@ class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
 
   override def init(request: VaadinRequest) {
     setLocale(new Locale(imcmsUser.getLanguageIso639_2))
-    mainWindow.initManagersMenu()
-    setContent(mainWindow)
+    pnlUIContent.initManagersMenu()
+    setContent(pnlUIContent)
   }
 
 

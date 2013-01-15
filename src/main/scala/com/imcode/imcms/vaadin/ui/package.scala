@@ -6,7 +6,7 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
 import com.vaadin.ui.Layout.AlignmentHandler
-import com.vaadin.data.{Property, Item}
+import com.vaadin.data.{Item}
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.{Sizeable, Resource}
 import com.vaadin.ui.themes.{ChameleonTheme, BaseTheme}
@@ -33,14 +33,14 @@ package object ui {
   implicit def fn0ToMenuCommand(fn: (() => Unit)) = menuCommand { _ => fn() }
 
 
-  implicit def fnToTableCellStyleGenerator(fn: (ItemId,  PropertyId) => String ) =
+  implicit def fnToTableCellStyleGenerator(fn: (TItemId,  TPropertyId) => String ) =
     new Table.CellStyleGenerator {
       def getStyle(table: Table, itemId: AnyRef, propertyId: AnyRef) = fn(itemId, propertyId)
     }
 
-  implicit def fnToTableColumnGenerator(fn: (Table, ItemId, ColumnId) => AnyRef) =
+  implicit def fnToTableColumnGenerator(fn: (Table, TItemId, TColumnId) => AnyRef) =
     new Table.ColumnGenerator {
-      def generateCell(source: Table, itemId: ItemId, columnId: AnyRef) = fn(source, itemId, columnId)
+      def generateCell(source: Table, itemId: TItemId, columnId: AnyRef) = fn(source, itemId, columnId)
     }
 
   implicit def wrapComponent(c: Component) = new ComponentWrapper(c)
@@ -55,7 +55,7 @@ package object ui {
 
   implicit def wrapButton(button: Button) = new ButtonWrapper(button)
 
-  implicit def wrapTable[A <: ItemId](table: Table with GenericContainer[A]) = new TableWrapper[A](table)
+  implicit def wrapTable[A <: TItemId](table: Table with ContainerWithGenericItemId[A]) = new TableWrapper[A](table)
 
 //  /** Text field value type is always String */
 //  implicit def wrapTextField(textField: TextField) = new TextField(textField) with GenericProperty[String] with WrappedPropertyValue
@@ -284,17 +284,17 @@ package object ui {
     setNullSelectionAllowed(false)
   }
 
-  trait GenericSelect[A <: ItemId] extends AbstractSelect with GenericContainer[A] {
+  trait SelectWithGenericItemId[A <: TItemId] extends AbstractSelect with ContainerWithGenericItemId[A] {
     def addItem(id: A, caption: String, icon: Resource = null): Item = addItem(id) |>> { _ =>
       setItemCaption(id, caption)
       setItemIcon(id, icon)
     }
-
+    // todo: move to sel ops
     def isSelected: Boolean
   }
 
 
-  trait SingleSelect[A <: ItemId] extends GenericSelect[A] with GenericProperty[A] {
+  trait SingleSelect[A <: TItemId] extends SelectWithGenericItemId[A] with GenericProperty[A] {
     setMultiSelect(false)
 
     override final def setMultiSelect(multiSelect: Boolean) {
@@ -311,7 +311,7 @@ package object ui {
     def selectionOpt: Option[A] = Option(getGenericValue)
   }
 
-  trait MultiSelect[A <: ItemId] extends GenericSelect[A] with GenericProperty[JCollection[A]] {
+  trait MultiSelect[A <: TItemId] extends SelectWithGenericItemId[A] with GenericProperty[JCollection[A]] {
     setMultiSelect(true)
 
     override def setMultiSelect(multiSelect: Boolean) {
@@ -336,51 +336,35 @@ package object ui {
   /**
    * <code>value<code> property always returns a collection.
    */
-  trait MultiSelectBehavior[A <: ItemId] extends GenericSelect[A] with GenericProperty[JCollection[A]] {
+  // todo: ??? Multiselect'Read'Behavior ???
+  trait MultiSelectBehavior[A <: TItemId] extends SelectWithGenericItemId[A] with GenericProperty[JCollection[A]] {
 
     def selection: Seq[A] = getGenericValue.asScala.toSeq
-
     def selection_=(v: Seq[A]) { setGenericValue(v.asJava) }
-
-    def selection_=(v: A) { selection = Option(v).toSeq }
-
-    def firstOpt: Option[A] = getGenericValue.asScala.headOption
 
     def isSelected: Boolean = getGenericValue.asScala.nonEmpty
 
-    abstract override def getValue(): AnyRef = super.getValue |> { v =>
-      isMultiSelect ? v.asInstanceOf[JCollection[A]] | Option(v.asInstanceOf[A]).toSeq.asJavaCollection
+    /**
+     * @return collection of selected items or empty collection if there is no selected item(s).
+     */
+    final override def getValue(): AnyRef = super.getValue |> { value =>
+      isMultiSelect ? value | Option(value).toSeq.asJavaCollection
     }
 
-    abstract override def setValue(value: AnyRef) {
-      value.asInstanceOf[JCollection[A]] |> { coll =>
-        super.setValue(isMultiSelect ? coll | coll.asScala.headOption.orNull)
-      }
+    final override def setValue(value: AnyRef) {
+      super.setValue(
+        value match {
+          case null => isMultiSelect ? java.util.Collections.emptyList | null
+          case coll: JCollection[_] => isMultiSelect ? value | coll.asScala.headOption.orNull
+          case _ => isMultiSelect ? java.util.Collections.singletonList(value) | value
+        }
+      )
     }
 
-    //  /**
-    //   * @return collection of selected items or empty collection if there is no selected item(s).
-    //   */
-    //  final override def getValue(): AnyRef = super.getValue |> { v =>
-    //    println (">>>>>>>>>> " + v)
-    //    val x = if (isMultiSelect) v else Option(v).toSeq.asJavaCollection
-    //    x
-    //  }
-    //
+    //  ?????????????????????????????????????????????????????????
     //  final override def setMultiSelect(multiSelect: Boolean) =
     //    if (value.isEmpty) super.setMultiSelect(multiSelect)
     //    else throw new IllegalStateException("Multi-select value can not be changed on non-empty select.")
-    //
-    //
-    //  final override def setValue(v: AnyRef) {
-    //    super.setValue(
-    //      v match {
-    //        case null => if (isMultiSelect) Collections.emptyList[AnyRef] else null
-    //        case coll: JCollection[_] => if (isMultiSelect) coll else coll.asScala.headOption.orNull
-    //        case _ => if (isMultiSelect) Collections.singletonList(v) else v
-    //      }
-    //    )
-    //  }
   }
 
   trait Now { this: DateField =>

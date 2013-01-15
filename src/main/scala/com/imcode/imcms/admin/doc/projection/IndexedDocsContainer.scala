@@ -27,7 +27,7 @@ class IndexedDocsContainer(
   private var solrQueryOpt: Option[SolrQuery] = None,
   private var visibleDocsFilterOpt: Option[Set[DocId]] = None  // todo: I18nDocRef, Doc
   ) extends Container
-    with GenericContainer[Ix]
+    with ContainerWithGenericItemId[Ix]
     with IndexedDocsContainerItem
     with ReadOnlyContainer
     with Container.Sortable
@@ -217,7 +217,7 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
         () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
           case Nil => null
           case pair :: Nil =>
-            new Tree with GenericContainer[DocumentDomainObject] with NotSelectable with DocSelectWithLifeCycleIcon |>> { tree =>
+            new Tree with ContainerWithGenericItemId[DocumentDomainObject] with NotSelectable with DocSelectWithLifeCycleIcon |>> { tree =>
               val parentDoc = pair.getDocument
               tree.addItem(parentDoc)
               tree.setChildrenAllowed(parentDoc, false)
@@ -225,7 +225,7 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
             }
 
           case pairs =>
-            new Tree with GenericContainer[DocumentDomainObject] with NotSelectable with DocSelectWithLifeCycleIcon |>> { tree =>
+            new Tree with ContainerWithGenericItemId[DocumentDomainObject] with NotSelectable with DocSelectWithLifeCycleIcon |>> { tree =>
               val root = new {}
               tree.addItem(root)
               tree.setItemCaption(root, pairs.size.toString)
@@ -244,14 +244,14 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
             imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).asScala.toList match {
               case List() => null
               case List(childDoc) =>
-                new Tree with GenericContainer[DocumentDomainObject] with DocSelectWithLifeCycleIcon with NotSelectable |>> { tree =>
+                new Tree with ContainerWithGenericItemId[DocumentDomainObject] with DocSelectWithLifeCycleIcon with NotSelectable |>> { tree =>
                   tree.addItem(childDoc)
                   tree.setChildrenAllowed(childDoc, false)
                   tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
                 }
 
               case childDocs =>
-                new Tree with GenericContainer[DocumentDomainObject] with DocSelectWithLifeCycleIcon with NotSelectable |>> { tree =>
+                new Tree with ContainerWithGenericItemId[DocumentDomainObject] with DocSelectWithLifeCycleIcon with NotSelectable |>> { tree =>
                   val root = new {}
                   tree.addItem(root)
                   tree.setItemCaption(root, childDocs.size.toString)
