@@ -84,7 +84,7 @@
 
         <echo message="${version}" file="${versionfile}"/>
 
-        <copy todir="${webroot}" filtering="true">
+        <copy todir="${webroot}" filtering="true" encoding="utf-8">
             <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
         </copy>
 
