@@ -15,7 +15,7 @@ import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.vaadin.server.{Page, UserError}
 
-class FileManager(app: ImcmsUI) {
+class FileManager(app: UI) {
   val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))
 
   val preview = new FilePreview(browser) |>> { preview =>
@@ -188,7 +188,7 @@ class FileManagerUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends 
 case class ItemsState(remaining: Seq[File], processed: Seq[File])
 
 
-class ItemsDeleteHelper(app: ImcmsUI, browser: FileBrowser) {
+class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
 
   def delete() = for (selection <- browser.selection if selection.hasItems) {
     new ConfirmationDialog("file.mgr.dlg.delete.confirm.msg".i) |>> { dlg =>
@@ -300,7 +300,7 @@ class ItemsDeleteHelper(app: ImcmsUI, browser: FileBrowser) {
 
 
 // todo: refactor - merge duplicated code
-class ItemsTransferHelper(app: ImcmsUI, browser: FileBrowser) {
+class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 
   def copy() {
     // refactor into dest dir selection method??

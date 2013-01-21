@@ -1,4 +1,4 @@
-<%@ page
+    <%@ page
         import="imcode.server.document.textdocument.TextDocumentDomainObject, imcode.server.user.UserDomainObject, imcode.util.Utility, imcode.server.parser.ParserParameters" %>
 <%
     ParserParameters parserParameters = ParserParameters.fromRequest(request);
@@ -10,7 +10,7 @@
     String content = (String) request.getAttribute("content");
     UserDomainObject user = parserParameters.getDocumentRequest().getUser();
 
-    String editorUrl = String.format("%s/docadmin/menu-%d-%d-%d", request.getContextPath(), document.getId(), document.getVersionNo(), menuIndex);
+    String editorUrl = String.format("%s/docadmin/menu?docId=%d&menuNo=%d", request.getContextPath(), document.getId(), menuIndex);
 %>
 
 <a href="<%=editorUrl%>" class="imcms_label">

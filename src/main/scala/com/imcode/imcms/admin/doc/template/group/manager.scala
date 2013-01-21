@@ -18,7 +18,7 @@ import com.vaadin.server.Page
 //todo: form check
 //todo: duplicate save check!
 //todo: internal error check
-class TemplateGroupManager(app: ImcmsUI) {
+class TemplateGroupManager(app: UI) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
 
   val ui = new TemplateGroupManagerUI |>> { ui =>

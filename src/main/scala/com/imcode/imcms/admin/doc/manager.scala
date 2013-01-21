@@ -30,7 +30,7 @@ object Actions {
   val EditMeta = new Action("doc.mgr.action.edit_meta".i)
 }
 
-class DocManager(app: ImcmsUI) extends ImcmsServicesSupport {
+class DocManager(app: UI) extends ImcmsServicesSupport {
   val projection = new DocsProjection(app.imcmsUser)
   val projectionOps = new DocsProjectionOps(projection)
   val customDocs = new CustomDocs(app.imcmsUser)

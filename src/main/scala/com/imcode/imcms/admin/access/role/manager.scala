@@ -15,7 +15,7 @@ import com.vaadin.server.Page
 import com.imcode.imcms.vaadin.server._
 
 //todo delete in use message
-class RoleManager(app: ImcmsUI) {
+class RoleManager(app: UI) {
   private def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
   val ui = new RoleManagerUI |>> { ui =>

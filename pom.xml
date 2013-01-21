@@ -27,24 +27,24 @@
 
         <javac.source>1.6</javac.source>
         <javac.target>1.6</javac.target>
+        <!-- The following javac options might be overridden in profiles  -->
+        <javac.deprecation>false</javac.deprecation>
+        <javac.args></javac.args>
 
         <solr.version>4.0.0</solr.version>
         <slf4j.version>1.7.2</slf4j.version>
         <scala.version>2.10.0</scala.version>
         <springframework.version>3.2.0.RELEASE</springframework.version>
-        <vaadin.version>7.0.0.beta11</vaadin.version>
+        <vaadin.version>7.0.0.rc1</vaadin.version>
 
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
-        <jetty.version>8.1.5.v20120716</jetty.version>
+        <jetty.version>8.1.8.v20121106</jetty.version>
         <jetty.contextPath>/${project.artifactId}-${project.version}</jetty.contextPath>
 
         <build.webapp.dir>${project.build.directory}/${project.build.finalName}</build.webapp.dir>
-
-        <javac.deprecation>false</javac.deprecation>
-        <javac.args></javac.args>
 
         <artifact.log4j.threshold>info</artifact.log4j.threshold>
         <artifact.log4j.hibernate.level>error</artifact.log4j.hibernate.level>

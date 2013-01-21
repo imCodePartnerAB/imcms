@@ -25,49 +25,44 @@ import com.vaadin.server.{Page, VaadinRequest, ExternalResource}
 import com.vaadin.shared.ui.dd.VerticalDropLocation
 
 
+// Todo: check permissions
+// Doc edit, etc
 @com.vaadin.annotations.Theme("imcms")
 class DocAdmin extends UI with ImcmsServicesSupport { app =>
 
-  // extractors
-  private object PathHandlers {
-    private val DefaultDocRe = """0*(\d+)""".r
-    private val CustomDocRe = """0*(\d+)-0*(\d+)""".r
-    private val MenuRe = """menu-0*(\d+)-0*(\d+)-0*(\d+)""".r
-    private val TextRe = """text-0*(\d+)-0*(\d+)-0*(\d+)""".r
+  sealed trait MappedRequest { def request: VaadinRequest }
+  case class EditWorkingDoc(request: VaadinRequest, docId: Int) extends MappedRequest
+  case class EditWorkingDocMenu(request: VaadinRequest, docId: Int, menuNo: Int) extends MappedRequest
+  case class EditWorkingDocText(request: VaadinRequest, docId: Int, textNo: Int) extends MappedRequest
 
-    object DefaultDoc {
-      def unapply(value: String): Option[Int] = PartialFunction.condOpt(value) {
-        case DefaultDocRe(AnyInt(docId)) => docId
-      }
-    }
+  object MappedRequest {
+    def apply(request: VaadinRequest): Option[MappedRequest] = {
+      import PartialFunction.condOpt
 
-    object CustomDoc {
-      def unapply(value: String): Option[(Int, Int)] = PartialFunction.condOpt(value) {
-        case CustomDocRe(AnyInt(docId), AnyInt(docVersionNo)) => (docId, docVersionNo)
-      }
-    }
+      val pathInfo = request.getPathInfo
 
-
-    object Menu {
-      def unapply(value: String): Option[(Int, Int, Int)] = PartialFunction.condOpt(value) {
-        case MenuRe(AnyInt(docId), AnyInt(docVersion), AnyInt(menuNo)) => (docId, docVersion, menuNo)
-      }
-    }
-
-    object Text {
-      def unapply(value: String): Option[(Int, Int, Int)] = PartialFunction.condOpt(value) {
-        case TextRe(AnyInt(docId), AnyInt(docVersion), AnyInt(textNo)) => (docId, docVersion, textNo)
+      condOpt((pathInfo, request.getParameter("docId"))) {
+        case (null, AnyInt(docId)) => EditWorkingDoc(request, docId)
+      } orElse {
+        condOpt((pathInfo, request.getParameter("docId"), request.getParameter("menuNo"))) {
+          case ("/menu", AnyInt(docId), AnyInt(menuNo)) => EditWorkingDocMenu(request, docId, menuNo)
+        }
+      } orElse {
+        condOpt((pathInfo, request.getParameter("docId"), request.getParameter("textNo"))) {
+          case ("/text", AnyInt(docId), AnyInt(menuNo)) => EditWorkingDocText(request, docId, menuNo)
+        }
       }
     }
   }
 
-  def mkDocEditorWindow(docId: Int): Window = new Window |>> { wnd =>
+
+  def mkWorkingDocEditorComponent(mappedRequest: EditWorkingDoc) = new Panel with FullSize |>> { pnl =>
+    val docId = mappedRequest.docId
     val doc = imcmsServices.getDocumentMapper.getDocument(docId)
-    val lytEditor = new VerticalLayout with Spacing with Margin with FullHeight |>> { lyt =>
-      lyt.setWidth("800px")
+    val lytEditor = new VerticalLayout with Spacing with Margin |>> {
+      _.setSize(900, 700)
     }
 
-    val lblTitle = new Label("Document " + docId) with UndefinedSize
     val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
       val btnClose = new Button("Close")
       val btnSave = new Button("Save")
@@ -77,17 +72,17 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
 
     val docEditor = new DocEditor(doc)
 
-    lytEditor.addComponent(lblTitle)
+    lytEditor.addComponent(new Panel(s"Document ${mappedRequest.docId}"))
     lytEditor.addComponent(docEditor.ui)
     lytEditor.addComponent(lytButtons)
     lytEditor.setExpandRatio(docEditor.ui, 1.0f)
     lytEditor.setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
 
-    val windowContent = new VerticalLayout with FullSize
-    windowContent.addComponent(lytEditor)
-    windowContent.setComponentAlignment(lytEditor, Alignment.MIDDLE_CENTER)
+    val content = new VerticalLayout with Margin with FullSize
+    content.addComponent(lytEditor)
+    content.setComponentAlignment(lytEditor, Alignment.MIDDLE_CENTER)
 
-    wnd.setContent(windowContent)
+    pnl.setContent(content)
 
     lytButtons.btnSave.addClickHandler {
       docEditor.collectValues() match {
@@ -96,6 +91,7 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
           try {
             imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, app.imcmsUser)
             Page.getCurrent.showInfoNotification("Document has been saved")
+            Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
           } catch {
             case e => Page.getCurrent.showErrorNotification("Failed to save document", e.getStackTraceString)
           }
@@ -103,7 +99,7 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
     }
 
     lytButtons.btnClose.addClickHandler {
-
+      Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
     }
   }
 
@@ -202,41 +198,34 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
     }
   }
 
-
+  // todo: doc - unapply @ bounds to matched object, not the result
   override def init(request: VaadinRequest) {
     setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
-    //setContent()
+
+    val mrOpt = MappedRequest(request)
+    val cmp = mrOpt collect {
+      case mappedRequest: EditWorkingDoc => mkWorkingDocEditorComponent(mappedRequest)
+      //case mappedRequest: EditWorkingDocMenu =>
+      //case mappedRequest: EditWorkingDocText =>
+    } getOrElse new Label("N/A")
+
+    setContent(cmp)
+
+//    setContent(new FormLayout(
+//        new Label(request.getPathInfo) |>> { _.setCaption("Request path info") },
+//      new Label(request.getParameterMap.toString) |>> { _.setCaption("Request parameter map") },
+//      new Label(request.getCharacterEncoding) |>> { _.setCaption("Request character encoding") },
+//      new Label(request.getContextPath) |>> { _.setCaption("Request context path") },
+//      new Label(request.getService.getServiceName) |>> { _.setCaption("Service name") },
+//      new Label(request.getService.getBaseDirectory.getPath) |>> { _.setCaption("Base dir") },
+//      // WTF?
+//      new Label(request.getService.getStaticFileLocation(request)) |>> { _.setCaption("Static file location") }
+//    ))
   }
 
-//  def onRequestStart(request: HttpServletRequest, response: HttpServletResponse) {
-//    println("[Start of request");
-//    println(" Query string: " + request.getQueryString)
-//    println(" Path: " + request.getPathInfo)
-//    println(" URI: " + request.getRequestURI)
-//    println(" URL: " + request.getRequestURL.toString)
-//
-////    for {
-////      (IntNum(docId), IntNum(menuNo)) <- Option(request.getParameter("doc_id"), request.getParameter("menu_no"))
-////      doc @ (si_900 : TextDocumentDomainObject) <- Option(imcmsServices.getDocumentMapper.getDocument(docId))
-////      menu <- Option(doc.getMenu(menuNo))
-////    } {
-////      val pnlAdmin = new Panel
-////      pnlAdmin.setSize(600, 600)
-////
-////      val menuEditor = new MenuEditor(doc, menu)
-////      mainWindow.getContent.asInstanceOf[VerticalLayout] |> { lyt =>
-////        lyt.removeAllComponents()
-////        lyt.addComponent(menuEditor.ui)
-////        lyt.asInstanceOf[VerticalLayout].setComponentAlignment(menuEditor.ui, Alignment.MIDDLE_CENTER)
-////      }
-//
 //      //setLogoutURL("/test.jsp")
 //      //"AdminDoc?meta_id=" + parentDocument.getId + "&flags=" + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + parentMenuIndex
 ////    }
-//  }
-//
-//  def onRequestEnd(request: HttpServletRequest, response: HttpServletResponse) {
-//    println(" End of request]")
 //  }
 }
 

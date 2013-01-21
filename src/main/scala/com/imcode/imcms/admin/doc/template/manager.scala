@@ -20,7 +20,7 @@ import com.vaadin.server.Page
 //todo: common internal ex handler???
 //todo: add related docs handling
 //-upload fialog and save as handling
-class TemplateManager(app: ImcmsUI) {
+class TemplateManager(app: UI) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
   private val fileRE = """(?i)(.+?)(?:\.(\w+))?""".r // filename, (optional extension)
 

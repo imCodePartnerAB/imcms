@@ -6,16 +6,17 @@ import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.Utility
 import com.imcode.imcms.security.{PermissionDenied, PermissionGranted, Permission}
 import com.imcode.imcms.vaadin.server._
+import com.vaadin.ui.UI
 
 /* implicit */
-trait ImcmsUI extends com.vaadin.ui.UI {
+class ImcmsUIOps(ui: UI) {
 
   // todo: fix
-  def imcmsUser: UserDomainObject = Utility.getLoggedOnUser(this.session)
+  def imcmsUser: UserDomainObject = Utility.getLoggedOnUser(ui.session)
 
-  def imcmsDocUrl(docId: DocId) = this.resourceUrl(docId.toString)
+  def imcmsDocUrl(docId: DocId) = ui.resourceUrl(docId.toString)
 
-  def imcmsDocUrl(docAlias: String) = this.resourceUrl(docAlias)
+  def imcmsDocUrl(docAlias: String) = ui.resourceUrl(docAlias)
 
   /**
    * If permission is granted executes an action.
@@ -25,7 +26,7 @@ trait ImcmsUI extends com.vaadin.ui.UI {
     permission match {
       case PermissionGranted => action
       case PermissionDenied(reason) =>
-        getPage.showErrorNotification(reason)
+        ui.getPage.showErrorNotification(reason)
         sys.error(reason)
     }
   }

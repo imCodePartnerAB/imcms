@@ -28,7 +28,7 @@ object SessionCounter {
   }
 }
 
-class SessionCounterManager(app: ImcmsUI) {
+class SessionCounterManager(app: UI) {
   val ui = new SessionCounterManagerUI |>> { ui =>
     ui.rc.btnReload.addClickHandler { reload() }
     ui.miEdit.setCommandHandler {

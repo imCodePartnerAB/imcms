@@ -16,7 +16,7 @@ import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.Page
 
 //todo delete in use message
-class LanguageManager(app: ImcmsUI) {
+class LanguageManager(app: UI) {
   private val languageDao = Imcms.getServices.getSpringBean(classOf[LanguageDao])
   private val systemDao = Imcms.getServices.getSpringBean(classOf[SystemDao])
 

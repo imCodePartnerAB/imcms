@@ -20,7 +20,7 @@ import com.vaadin.data.Property.ValueChangeEvent
 // todo: rename Theme class - name collision
 @PreserveOnRefresh
 @com.vaadin.annotations.Theme("imcms")
-class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
+class SysAdmin extends com.vaadin.ui.UI { app =>
 
   // superadmin access:
   // ------------------
@@ -141,7 +141,7 @@ class SysAdmin extends com.vaadin.ui.UI with ImcmsUI { app =>
 
 
   override def init(request: VaadinRequest) {
-    setLocale(new Locale(imcmsUser.getLanguageIso639_2))
+    setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
     pnlUIContent.initManagersMenu()
     setContent(pnlUIContent)
   }

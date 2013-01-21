@@ -13,7 +13,7 @@ import javax.persistence.{Id, Entity}
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
-import com.imcode.imcms.vaadin.ImcmsUI
+import com.imcode.imcms.vaadin.ImcmsUIOps
 import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog, ConfirmationDialog}
 import _root_.imcode.server.Imcms
 import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
@@ -25,7 +25,7 @@ import com.imcode.imcms.vaadin.server._
 // todo: reload in case of internal error
 // help: "Users from a specific IP number or an interval of numbers are given direct access to the system (so that the user does not have to log in)."
 
-class IPAccessManager(app: ImcmsUI) {
+class IPAccessManager(app: UI) {
   private val ipAccessDao = Imcms.getServices.getSpringBean(classOf[IPAccessDao])
   private val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
   private val toDDN = ((_:String).toLong) andThen ipLongToString

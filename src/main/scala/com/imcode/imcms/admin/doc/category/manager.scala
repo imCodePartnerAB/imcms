@@ -23,7 +23,7 @@ import com.vaadin.server.{Page, FileResource}
  */
 //todo: edit - image can not be null
 //todo: delete in use message
-class CategoryManager(app: ImcmsUI) {
+class CategoryManager(app: UI) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val ui: CategoryManagerUI = new CategoryManagerUI |>> { ui =>

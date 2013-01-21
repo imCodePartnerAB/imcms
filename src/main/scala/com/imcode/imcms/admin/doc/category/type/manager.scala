@@ -17,7 +17,7 @@ import com.vaadin.server.Page
 
 //todo:
 //fix: edit - multiselect - always on
-class CategoryTypeManager(app: ImcmsUI) {
+class CategoryTypeManager(app: UI) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val ui = new CategoryTypeManagerUI |>> { ui =>

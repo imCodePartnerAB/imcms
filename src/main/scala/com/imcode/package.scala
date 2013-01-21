@@ -1,7 +1,7 @@
 package com
 
 import scala.language.higherKinds
-import scala.util.control.{Exception => Ex}
+import scala.util.Try
 
 package object imcode {
 
@@ -25,13 +25,13 @@ package object imcode {
       f(resource)
     } finally {
       if (resource != null)
-        Ex.allCatch(implicitly[ManagedResource[R]].close(resource))
+        Try(implicitly[ManagedResource[R]].close(resource))
     }
   }
 
 
   /**
-   * Emulates Java ternary operator in the form {@code condition ? trueExpression | elseExpression}.
+   * Emulates Java ternary operator in the form {@code condition ? thenExpression | elseExpression}.
    */
   implicit class TernaryOperator(condition: Boolean) {
     def ?[A](thenExpression: => A) = new IfThenElse[A](thenExpression)
@@ -132,7 +132,7 @@ package object imcode {
 
   /** extractor */
   object AnyInt {
-    def unapply(s: String): Option[Int] = Ex.catching(classOf[NumberFormatException]).opt(s.toInt)
+    def unapply(s: String): Option[Int] = Try(s.toInt).toOption
   }
 
 

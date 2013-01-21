@@ -14,7 +14,7 @@ import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.projection.UsersProjection
 
 // todo add security check, add editAndSave, add external UI
-class UserManager(app: ImcmsUI) extends ImcmsServicesSupport {
+class UserManager(app: UI) extends ImcmsServicesSupport {
   private val search = new UsersProjection
 
   val ui = new UserManagerUI(search.ui) |>> { ui =>

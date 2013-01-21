@@ -16,7 +16,7 @@ import com.vaadin.server.Page
 //todo: move to system dir + monitor
 // todo: updateReadOnly ->
 
-class PropertyManagerManager(app: ImcmsUI) {
+class PropertyManagerManager(app: UI) {
 
   val ui = new PropertyManagerUI |>> { ui =>
     ui.rc.btnReload.addClickHandler { reload() }
