@@ -185,6 +185,6 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     categoryEditorOpt = None
     profileEditorOpt = None
 
-    ui.treeEditors.value = "doc_meta_editor.menu_item.life_cycle"
+    ui.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
   }
 }

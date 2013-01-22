@@ -681,12 +681,12 @@
     <servlet-mapping>
         <servlet-name>vaadin-sysadmin</servlet-name>
         <url-pattern>/sysadmin/*</url-pattern>
-        <url-pattern>/VAADIN/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>vaadin-docadmin</servlet-name>
         <url-pattern>/docadmin/*</url-pattern>
+        <url-pattern>/VAADIN/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

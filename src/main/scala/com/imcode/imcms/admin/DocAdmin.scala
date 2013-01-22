@@ -21,7 +21,7 @@ import com.vaadin.ui._
 import java.util.{Locale, Arrays, Collections}
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.server._
-import com.vaadin.server.{Page, VaadinRequest, ExternalResource}
+import com.vaadin.server.{VaadinService, Page, VaadinRequest, ExternalResource}
 import com.vaadin.shared.ui.dd.VerticalDropLocation
 
 
@@ -30,62 +30,43 @@ import com.vaadin.shared.ui.dd.VerticalDropLocation
 @com.vaadin.annotations.Theme("imcms")
 class DocAdmin extends UI with ImcmsServicesSupport { app =>
 
-  sealed trait MappedRequest { def request: VaadinRequest }
-  case class EditWorkingDoc(request: VaadinRequest, docId: Int) extends MappedRequest
-  case class EditWorkingDocMenu(request: VaadinRequest, docId: Int, menuNo: Int) extends MappedRequest
-  case class EditWorkingDocText(request: VaadinRequest, docId: Int, textNo: Int) extends MappedRequest
+  sealed trait MappedRequest { def vaadinRequest: VaadinRequest }
+  case class EditWorkingDoc(vaadinRequest: VaadinRequest, docId: Int) extends MappedRequest
+  case class EditWorkingDocMenu(vaadinRequest: VaadinRequest, docId: Int, menuNo: Int) extends MappedRequest
+  case class EditWorkingDocText(vaadinRequest: VaadinRequest, docId: Int, textNo: Int) extends MappedRequest
 
   object MappedRequest {
-    def apply(request: VaadinRequest): Option[MappedRequest] = {
+    def apply(vaadinRequest: VaadinRequest): Option[MappedRequest] = {
       import PartialFunction.condOpt
 
-      val pathInfo = request.getPathInfo
+      val pathInfo = vaadinRequest.getPathInfo
 
-      condOpt((pathInfo, request.getParameter("docId"))) {
-        case (null, AnyInt(docId)) => EditWorkingDoc(request, docId)
+      condOpt((pathInfo, vaadinRequest.getParameter("docId"))) {
+        case (null, AnyInt(docId)) => EditWorkingDoc(vaadinRequest, docId)
       } orElse {
-        condOpt((pathInfo, request.getParameter("docId"), request.getParameter("menuNo"))) {
-          case ("/menu", AnyInt(docId), AnyInt(menuNo)) => EditWorkingDocMenu(request, docId, menuNo)
+        condOpt((pathInfo, vaadinRequest.getParameter("docId"), vaadinRequest.getParameter("menuNo"))) {
+          case ("/menu", AnyInt(docId), AnyInt(menuNo)) => EditWorkingDocMenu(vaadinRequest, docId, menuNo)
         }
       } orElse {
-        condOpt((pathInfo, request.getParameter("docId"), request.getParameter("textNo"))) {
-          case ("/text", AnyInt(docId), AnyInt(menuNo)) => EditWorkingDocText(request, docId, menuNo)
+        condOpt((pathInfo, vaadinRequest.getParameter("docId"), vaadinRequest.getParameter("textNo"))) {
+          case ("/text", AnyInt(docId), AnyInt(menuNo)) => EditWorkingDocText(vaadinRequest, docId, menuNo)
         }
       }
     }
   }
 
 
-  def mkWorkingDocEditorComponent(mappedRequest: EditWorkingDoc) = new Panel with FullSize |>> { pnl =>
+  def mkWorkingDocEditorComponent(mappedRequest: EditWorkingDoc) = new FullScreenEditorUI(s"Document ${mappedRequest.docId}") |>> { ui =>
     val docId = mappedRequest.docId
     val doc = imcmsServices.getDocumentMapper.getDocument(docId)
-    val lytEditor = new VerticalLayout with Spacing with Margin |>> {
-      _.setSize(900, 700)
-    }
+    val editor = new DocEditor(doc)
 
-    val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
-      val btnClose = new Button("Close")
-      val btnSave = new Button("Save")
+    ui.mainUI = editor.ui
 
-      this.addComponents( btnClose, btnSave)
-    }
+    editor.ui.setSize(900, 600)
 
-    val docEditor = new DocEditor(doc)
-
-    lytEditor.addComponent(new Panel(s"Document ${mappedRequest.docId}"))
-    lytEditor.addComponent(docEditor.ui)
-    lytEditor.addComponent(lytButtons)
-    lytEditor.setExpandRatio(docEditor.ui, 1.0f)
-    lytEditor.setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
-
-    val content = new VerticalLayout with Margin with FullSize
-    content.addComponent(lytEditor)
-    content.setComponentAlignment(lytEditor, Alignment.MIDDLE_CENTER)
-
-    pnl.setContent(content)
-
-    lytButtons.btnSave.addClickHandler {
-      docEditor.collectValues() match {
+    ui.buttons.btnSave.addClickHandler {
+      editor.collectValues() match {
         case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(","))
         case Right((editedDoc, i18nMetas)) =>
           try {
@@ -98,34 +79,29 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
       }
     }
 
-    lytButtons.btnClose.addClickHandler {
+    ui.buttons.btnClose.addClickHandler {
       Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
+    }
+
+    Page.getCurrent.getUriFragment.|>(opt).map(_.toLowerCase).foreach {
+      case "info" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
+      case "access" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.access"
+      case "appearance" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
+      case "content" => editor.ui.setSelectedTab(1)
+      case _ =>
     }
   }
 
 
-  def mkMenuEditorWindow(docRef: DocRef, menuNo: Int): Window = new Window with ImcmsServicesSupport {// wnd =>
-    val doc = app.imcmsServices.getDocumentMapper.getCustomDocument(docRef).asInstanceOf[TextDocumentDomainObject]
-    val menu = doc.getMenu(menuNo)
+  def mkWorkingDocMenuEditorComponent(mappedRequest: EditWorkingDocMenu) = new FullScreenEditorUI(s"Document ${mappedRequest.docId} menu no ${mappedRequest.menuNo}") |>> { ui =>
+    val doc = imcmsServices.getDocumentMapper.getDefaultDocument(mappedRequest.docId).asInstanceOf[TextDocumentDomainObject]
+    val menu = doc.getMenu(mappedRequest.menuNo)
     val editor = new MenuEditor(doc, menu) |>> { me => me.ui.setSizeFull() }
-    val pnlEditor = new Panel("Edit document %d menu no %d".format(docRef.docId, docRef.docVersionNo)) with FullSize |>> { _.setWidth("800px") }
-    val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
-      val btnClose = new Button("Close")
-      val btnSaveAndClose = new Button("Save & Close")
 
-      this.addComponents( btnClose, btnSaveAndClose)
-    }
+    ui.mainUI = editor.ui
+    editor.ui.setSize(900, 600)
 
-    pnlEditor.setContent(editor.ui)
-
-    val wndContent = new VerticalLayout with MiddleCenterAlignment with Spacing with Margin with FullSize
-
-    wndContent.addComponents(pnlEditor, lytButtons)
-    wndContent.setExpandRatio(pnlEditor, 1f)
-
-    /*wnd.*/setContent(wndContent)
-
-    lytButtons.btnSaveAndClose.addClickHandler {
+    ui.buttons.btnSaveAndClose.addClickHandler {
       editor.collectValues().right.get |> { menu =>
         imcmsServices.getDocumentMapper.saveTextDocMenu(menu, UI.getCurrent.imcmsUser)
         Page.getCurrent.showInfoNotification("Menu has been saved")
@@ -133,7 +109,7 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
       }
     }
 
-    lytButtons.btnClose.addClickHandler {
+    ui.buttons.btnClose.addClickHandler {
       val editedMenu = editor.collectValues().right.get
       if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
         closeEditor()
@@ -146,70 +122,52 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
       }
     }
 
-    private def closeEditor() {
-//      new ExternalResource(getApplication.imcmsDocUrl(doc.getId)) |> { resource =>
-//        open(resource)
-//        //app.removeWindow(wnd)
-//        //app.removeWindow(this)
-//      }
+    def closeEditor() {
+      Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
     }
   }
 
-  def mkTextEditorWindow(docRef: DocRef, textNo: Int): Window = new Window with ImcmsServicesSupport {// wnd =>
-    val doc = app.imcmsServices.getDocumentMapper.getCustomDocument(docRef).asInstanceOf[TextDocumentDomainObject]
+
+
+
+  def mkWorkingDocTextEditorComponent(mappedRequest: EditWorkingDocText) = new FullScreenEditorUI(s"Document ${mappedRequest.docId} text no ${mappedRequest.textNo}") |>> { ui =>
+    val doc = app.imcmsServices.getDocumentMapper.getWorkingDocument(mappedRequest.docId).asInstanceOf[TextDocumentDomainObject]
     val textDao = app.imcmsServices.getSpringBean(classOf[TextDao])
-    val texts = textDao.getTexts(docRef, textNo, None, true)
+    val texts = textDao.getTexts(DocRef.of(mappedRequest.docId, 0), mappedRequest.textNo, None, true)
     val editor = new TextEditor(doc, texts.asScala)
-    val pnlEditor = new Panel("Edit document %d text no %d".format(docRef.docId, docRef.docVersionNo)) with FullSize |>> { _.setWidth("800px") }
 
-    val lytButtons = new HorizontalLayout with Spacing with UndefinedSize {
-      val btnClose = new Button("Close")
-      val btnSaveAndClose = new Button("Save & Close")
+    ui.mainUI = editor.ui
+    editor.ui.setSize(900, 600)
 
-      this.addComponents( btnClose, btnSaveAndClose)
-    }
-
-    pnlEditor.setContent(editor.ui)
-
-    val wndContent = new VerticalLayout with MiddleCenterAlignment with Spacing with Margin with FullSize
-
-    wndContent.addComponents(pnlEditor, lytButtons)
-    wndContent.setExpandRatio(pnlEditor, 1f)
-
-    /*wnd.*/setContent(wndContent)
-
-    lytButtons.btnSaveAndClose.addClickHandler {
+    ui.buttons.btnSaveAndClose.addClickHandler {
       editor.collectValues().right.get |> { texts =>
         imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, UI.getCurrent.imcmsUser)
         closeEditor()
       }
     }
 
-    lytButtons.btnClose.addClickHandler {
+    ui.buttons.btnClose.addClickHandler {
       closeEditor()
     }
 
-    private def closeEditor() {
-//      new ExternalResource(/*wnd.*/getApplication.imcmsDocUrl(doc.getId)) |> { resource =>
-//        /*wnd.*/open(resource)
-//        //app.removeWindow(wnd)
-//        //app.removeWindow(this)
-//      }
+    def closeEditor() {
+      Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
     }
   }
 
   // todo: doc - unapply @ bounds to matched object, not the result
+  // todo: ??? pass requests from filter ???
   override def init(request: VaadinRequest) {
     setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
 
-    val mrOpt = MappedRequest(request)
-    val cmp = mrOpt collect {
+    MappedRequest(request).map {
       case mappedRequest: EditWorkingDoc => mkWorkingDocEditorComponent(mappedRequest)
-      //case mappedRequest: EditWorkingDocMenu =>
-      //case mappedRequest: EditWorkingDocText =>
-    } getOrElse new Label("N/A")
-
-    setContent(cmp)
+      case mappedRequest: EditWorkingDocMenu => mkWorkingDocMenuEditorComponent(mappedRequest)
+      case mappedRequest: EditWorkingDocText => mkWorkingDocTextEditorComponent(mappedRequest)
+    } match {
+      case Some(component) => setContent(component)
+      case _ => setContent(new Label("N/A"))
+    }
 
 //    setContent(new FormLayout(
 //        new Label(request.getPathInfo) |>> { _.setCaption("Request path info") },
@@ -222,11 +180,6 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
 //      new Label(request.getService.getStaticFileLocation(request)) |>> { _.setCaption("Static file location") }
 //    ))
   }
-
-//      //setLogoutURL("/test.jsp")
-//      //"AdminDoc?meta_id=" + parentDocument.getId + "&flags=" + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + parentMenuIndex
-////    }
-//  }
 }
 
 
@@ -459,7 +412,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 }
 
 
-class MenuEditorUI extends VerticalLayout with Margin with FullSize {
+class MenuEditorUI extends VerticalLayout with FullSize {
   val mb = new MenuBar with FullWidth
   val miIncludeDocs = mb.addItem("Add")
   val miExcludeSelectedDoc = mb.addItem("Remove")
@@ -530,7 +483,7 @@ class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) ex
 }
 
 
-class TextEditorUI extends VerticalLayout with Margin with FullSize {
+class TextEditorUI extends VerticalLayout with FullSize {
   val mb = new MenuBar with FullWidth
   val miShowHistory = mb.addItem("Show history")
   val miHelp = mb.addItem("Help")
@@ -542,9 +495,35 @@ class TextEditorUI extends VerticalLayout with Margin with FullSize {
   setExpandRatio(tsTexts, 1f)
 }
 
-//case PathHandlers.DefaultDoc(docId) => mkDocEditorWindow(docId)
-//case PathHandlers.CustomDoc(docId, docVersionNo) => mkDocEditorWindow(docId)
-//case PathHandlers.Menu(docId, docVersionNo, menuNo) => mkMenuEditorWindow(DocRef.of(docId, docVersionNo), menuNo)
-//case PathHandlers.Text(docId, docVersionNo, textNo) => mkTextEditorWindow(DocRef.of(docId, docVersionNo), textNo)
-//case _ => null
 
+
+class FullScreenEditorUI(caption: String) extends CustomComponent with FullSize {
+  private val lytContent = new VerticalLayout with FullSize
+  private val lytComponents = new GridLayout(1, 3) with Spacing with Margin with UndefinedSize
+  private val pnlCaption = new Panel(caption) with FullHeight
+  private val lytButtons = new HorizontalLayout with Spacing with UndefinedSize
+
+  lytContent.addComponent(lytComponents)
+  lytContent.setComponentAlignment(lytComponents, Alignment.MIDDLE_CENTER)
+  setCompositionRoot(lytContent)
+
+  object buttons {
+    val btnSave = new Button("Save")
+    val btnSaveAndClose = new Button("Save & Close")
+    val btnClose = new Button("Close")
+  }
+
+  lytButtons.addComponents(buttons.btnSave, buttons.btnSaveAndClose, buttons.btnClose)
+
+  lytComponents.addComponent(pnlCaption, 0, 0)
+  lytComponents.addComponent(lytButtons, 0, 2)
+  lytComponents.setComponentAlignment(lytButtons, Alignment.TOP_CENTER)
+
+  def mainUI: Component = lytComponents.getComponent(0, 1)
+  def mainUI_=(component: Component) {
+    lytComponents.removeComponent(0, 1)
+    lytComponents.addComponent(component, 0, 1)
+
+    lytComponents.setComponentAlignment(component, Alignment.TOP_CENTER)
+  }
+}
