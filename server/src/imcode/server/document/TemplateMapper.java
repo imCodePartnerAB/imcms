@@ -173,7 +173,11 @@ public class TemplateMapper {
     }
 
     public DocumentDomainObject[] getDocumentsUsingTemplate( TemplateDomainObject template ) {
-        String[][] temp = (String[][]) database.execute(new SqlQueryCommand("select td.meta_id, meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_name = ? order by td.meta_id", new String[]{template.getName()}, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        String[][] temp = (String[][]) database.execute(new SqlQueryCommand("" +
+                "SELECT td.meta_id, m.meta_headline\n" +
+                "FROM text_docs td JOIN meta m ON td.meta_id = m.meta_id\n" +
+                "WHERE td.template_name = ? OR td.default_template = ? OR td.default_template_1 = ? OR td.default_template_2 = ?\n" +
+                "ORDER BY td.meta_id", new String[]{ template.getName(), template.getName(), template.getName(), template.getName() }, Utility.STRING_ARRAY_ARRAY_HANDLER));
         DocumentMapper documentMapper = services.getDocumentMapper();
         DocumentDomainObject[] documents = new DocumentDomainObject[temp.length];
         for ( int i = 0; i < documents.length; i++ ) {
@@ -267,9 +271,12 @@ public class TemplateMapper {
     public void replaceAllUsagesOfTemplate( TemplateDomainObject template, TemplateDomainObject newTemplate ) {
         if ( null != template && null != newTemplate ) {
             DocumentDomainObject[] documentsUsingTemplate = getDocumentsUsingTemplate(template);
-            String sqlStr = "update text_docs set template_name = ? where template_name = ?";
-            final Object[] parameters = new String[]{"" + newTemplate.getName(), "" + template.getName()};
-            database.execute(new SqlUpdateCommand(sqlStr, parameters));
+            String[] columns = { "template_name", "default_template", "default_template_1", "default_template_2" } ;
+            for (String columnName : columns) {
+                String sqlStr = "UPDATE text_docs SET " + columnName + " = ? WHERE " + columnName + " = ?";
+                final Object[] parameters = new String[]{"" + newTemplate.getName(), "" + template.getName()};
+                database.execute(new SqlUpdateCommand(sqlStr, parameters));
+            }
             for ( DocumentDomainObject document : documentsUsingTemplate ) {
                 services.getDocumentMapper().invalidateDocument(document);
             }
