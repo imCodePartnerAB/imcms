@@ -91,7 +91,8 @@ try {
 	<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/redmond/jquery-ui.css" />
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script>
-	<script src="<%= cp %>/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+	<script type="text/javascript" src="<%= cp %>/imcms/$language/scripts/imcms_admin.js.jsp"></script>
+	<script type="text/javascript" src="<%= cp %>/imcms/$language/scripts/imcms_jquery.textarea.js"></script>
 	<script type="text/javascript" src="<%= cp %>/imcms/ckeditor/ckeditor.js"></script>
 	<script type="text/javascript" src="<%= cp %>/imcms/ckeditor/plugins/imcms_integration/init.js.jsp"></script>
 
@@ -247,9 +248,9 @@ if (null != textEditPage.getReturnUrl() && !"".equals(textEditPage.getReturnUrl(
 	<td colspan="2" class="imcmsAdmForm">
 	<div id="editor"><%
 	if (1 == rows) { %>
-	<input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
+	<input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%; font: 11px 'Courier New', Courier, monospace;" /><%
 	} else { %>
-	<textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width:<%= width > 0 ? (width + 6) + "px" : "100%" %>;"><%=
+	<textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width:<%= width > 0 ? (width + 6) + "px" : "100%" %>; font: 11px 'Courier New', Courier, monospace;"><%=
 	StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
 	} %>
 	</div></td>
@@ -522,6 +523,22 @@ jQuery(document).ready(function($) {<%
 	
 	initSessionChecker($) ;
 	
+	if ($.browser.msie && $.browser.version < 9) {
+		window.setTimeout(function() {
+			var $viewSourceBtn = $('a.cke_button_source') ;
+			$viewSourceBtn.live('click', function() {
+				$('#infoIeSource').remove() ;
+				$('#format_type_text').click().parent().parent().append('<div id="infoIeSource"><i><%= isSwe ?
+				"Redigera källa fungerar inte klokt i IE 7/8. Använd text-läget i editorn." :
+				"Edit source doesn\'t work properly in IE 7/8. Use the text mode in the editor." %></i></div>'); return false ;
+			}) ;
+		}, 500) ;
+	}
+	
+}) ;
+
+jQ(document).ready(function($) {
+	$('#txtField').tabby() ;
 }) ;
 
 <%--
