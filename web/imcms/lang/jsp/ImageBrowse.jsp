@@ -17,8 +17,7 @@
 	contentType="text/html; charset=UTF-8"
   pageEncoding="UTF-8"
 	
-%>
-<%@taglib prefix="vel" uri="imcmsvelocity"
+%><%@taglib prefix="vel" uri="imcmsvelocity"
 %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%!
 
@@ -66,7 +65,6 @@ String cp = request.getContextPath() ;
             var imageDiv = document.getElementById("imageDiv"+<%=uploadedImageIndex%>);
             if (imageCB && imageDiv) {
                 imageCB.checked = true;
-                imageCB.scrollIntoView(false);
                 imageDiv.scrollIntoView(false);
             }
         });
