@@ -17,7 +17,8 @@
 	contentType="text/html; charset=UTF-8"
   pageEncoding="UTF-8"
 	
-%><%@taglib prefix="vel" uri="imcmsvelocity"
+%>
+<%@taglib prefix="vel" uri="imcmsvelocity"
 %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%!
 
@@ -36,6 +37,12 @@ File currentDirectory = imageBrowsePage.getCurrentDirectory() ;
 
 File imagesRoot = Imcms.getServices().getConfig().getImagePath() ;
 List<File> images = imageBrowsePage.getImagesList() ;
+Integer uploadedImageIndex = (
+       request.getMethod().equalsIgnoreCase("post")
+    && request.getParameter(ImageBrowse.REQUEST_PARAMETER__UPLOAD_BUTTON) != null
+    && imageBrowsePage.getErrorMessage() == null
+    && imageBrowsePage.getCurrentImage() != null
+    ) ? images.indexOf(imageBrowsePage.getCurrentImage()) : null;
 
 String cp = request.getContextPath() ;
 
@@ -50,6 +57,21 @@ String cp = request.getContextPath() ;
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp" />
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+
+<%if (uploadedImageIndex != null) {%>
+    <script>
+        // -vs- window.onload
+        jQ(function() {
+            var imageCB = document.getElementById("imageCB"+<%=uploadedImageIndex%>);
+            var imageDiv = document.getElementById("imageDiv"+<%=uploadedImageIndex%>);
+            if (imageCB && imageDiv) {
+                imageCB.checked = true;
+                imageCB.scrollIntoView(false);
+                imageDiv.scrollIntoView(false);
+            }
+        });
+    </script>
+<%}%>
 
 </head>
 <body style="margin-bottom:0 !important;<%= fromEditor ? " overflow:auto;" : "" %>"<%= fromEditor ? " scroll=\"auto\"" : "" %>>

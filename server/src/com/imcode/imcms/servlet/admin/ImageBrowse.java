@@ -120,7 +120,7 @@ public class ImageBrowse extends HttpServlet {
 
         ImageBrowserPage page = new ImageBrowserPage( selectedDirectory, selectedImage );
         if ( null != request.getParameter( REQUEST_PARAMETER__UPLOAD_BUTTON ) ) {
-            upload( request, selectedDirectory, page );
+            upload(request, selectedDirectory, page);
         }
         
         if (fileNotImageError) {
@@ -317,6 +317,10 @@ public class ImageBrowse extends HttpServlet {
 
         public void setCurrentImage( File currentImage ) {
             this.currentImage = currentImage;
+        }
+
+        public File getCurrentImage() {
+            return currentImage;
         }
     }
 }

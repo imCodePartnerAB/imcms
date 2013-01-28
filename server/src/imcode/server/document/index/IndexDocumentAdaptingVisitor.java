@@ -79,12 +79,15 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         String string = text.getText();
 
         if (text.getType() != TextDomainObject.TEXT_TYPE_HTML) {
+            InputStream in = IOUtils.toInputStream(string);
             try {
-                String stripped = tikaHtml.parseToString(IOUtils.toInputStream(string));
+                String stripped = tikaHtml.parseToString(in);
                 log.trace(String.format("Stripped html to plain text: '%s' -> '%s'", string, stripped));
                 string = stripped;
             } catch (Exception e) {
                 log.error(String.format("Unable to strip html '%s'", string), e);
+            } finally {
+                IOUtils.closeQuietly(in);
             }
         }
 
@@ -135,11 +138,15 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         metadata.set(Metadata.CONTENT_DISPOSITION, file.getFilename());
         metadata.set(Metadata.CONTENT_TYPE, file.getMimeType());
 
+        InputStream in = null;
         try {
-            String content = tikaAutodetect.parseToString(file.getInputStreamSource().getInputStream());
+            in = file.getInputStreamSource().getInputStream();
+            String content = tikaAutodetect.parseToString(in);
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, content));
         } catch (Exception e) {
             log.error(String.format("Unable to index content of file-doc-file '%s'", file), e);
+        } finally {
+            IOUtils.closeQuietly(in);
         }
     }
 }
