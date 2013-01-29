@@ -126,7 +126,7 @@ class MetaDaoTestConfig {
         classOf[Meta],
         classOf[I18nMeta],
         classOf[DocumentVersion],
-        classOf[I18nLanguage],
+        classOf[ContentLanguage],
         classOf[CategoryDomainObject],
         classOf[CategoryTypeDomainObject],
         classOf[FileReference],

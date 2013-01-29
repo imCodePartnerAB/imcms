@@ -5,23 +5,23 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.ContentLanguage;
+import com.imcode.imcms.api.I18nContentSupport;
 import org.springframework.web.servlet.LocaleResolver;
 
-import com.imcode.imcms.api.I18nLanguage;
 import imcode.server.Imcms;
 
 public class ImcmsLocaleResolver implements LocaleResolver {
     public Locale resolveLocale(HttpServletRequest request) {
-        return new Locale(Imcms.getUser().getDocGetterCallback().languages().selected().getCode());
+        return new Locale(Imcms.getUser().getDocGetterCallback().contentLanguages().preferred().getCode());
     }
 
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
-        I18nSupport i18nSupport = Imcms.getServices().getI18nSupport();
+        I18nContentSupport i18nContentSupport = Imcms.getServices().getI18nContentSupport();
 
-        I18nLanguage language = i18nSupport.getByCode(locale.getLanguage());
+        ContentLanguage language = i18nContentSupport.getByCode(locale.getLanguage());
         if (language == null) {
-            language = i18nSupport.getDefaultLanguage();
+            language = i18nContentSupport.getDefaultLanguage();
         }
 
         //Imcms.getUser().getDocGetterCallback().setLanguage(language);

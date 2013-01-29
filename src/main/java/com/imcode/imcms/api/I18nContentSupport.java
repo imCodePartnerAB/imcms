@@ -3,7 +3,6 @@ package com.imcode.imcms.api;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,19 +11,19 @@ import java.util.Map;
  *
  * @see com.imcode.imcms.servlet.ImcmsFilter
  */
-public class I18nSupport {
+public class I18nContentSupport {
 
-    final private I18nLanguage defaultLanguage;
+    final private ContentLanguage defaultLanguage;
 
-    final private Map<String, I18nLanguage> languagesByCodes;
+    final private Map<String, ContentLanguage> languagesByCodes;
 
-    final private Map<String, I18nLanguage> languagesByHosts;
+    final private Map<String, ContentLanguage> languagesByHosts;
 
-    final private List<I18nLanguage> languages;
+    final private List<ContentLanguage> languages;
 
-    final private Map<Integer, I18nLanguage> languagesByIds;
+    final private Map<Integer, ContentLanguage> languagesByIds;
 
-    public I18nSupport(Map<String, I18nLanguage> languagesByCodes, Map<String, I18nLanguage> languagesByHosts, I18nLanguage defaultLanguage) {
+    public I18nContentSupport(Map<String, ContentLanguage> languagesByCodes, Map<String, ContentLanguage> languagesByHosts, ContentLanguage defaultLanguage) {
         this.languagesByCodes = languagesByCodes;
         this.languagesByHosts = languagesByHosts;
         this.defaultLanguage = defaultLanguage;
@@ -33,34 +32,34 @@ public class I18nSupport {
         languagesByIds = Maps.newHashMap();
 
 
-        for (I18nLanguage language: languagesByCodes.values()) {
+        for (ContentLanguage language: languagesByCodes.values()) {
             languages.add(language);
             languagesByIds.put(language.getId(), language);
         }
     }
 
 
-    public I18nLanguage getDefaultLanguage() {
+    public ContentLanguage getDefaultLanguage() {
         return defaultLanguage;
     }
 
-    public List<I18nLanguage> getLanguages() {
+    public List<ContentLanguage> getLanguages() {
         return languages;
     }
 
-    public I18nLanguage getByCode(String code) {
+    public ContentLanguage getByCode(String code) {
         return languagesByCodes.get(code);
     }
 
-    public I18nLanguage getById(Integer id) {
+    public ContentLanguage getById(Integer id) {
         return languagesByIds.get(id);
     }
 
-    public boolean isDefault(I18nLanguage language) {
+    public boolean isDefault(ContentLanguage language) {
         return defaultLanguage.equals(language);
     }
 
-    public I18nLanguage getForHost(String host) {
+    public ContentLanguage getForHost(String host) {
         return languagesByHosts.get(host);
     }
 }

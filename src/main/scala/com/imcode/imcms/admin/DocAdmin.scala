@@ -6,7 +6,7 @@ import com.imcode.imcms.vaadin._
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.ui._
 import com.vaadin.event.dd.{DragAndDropEvent, DropHandler}
-import com.imcode.imcms.api.{DocRef, Document}
+import com.imcode.imcms.api.{ContentLanguage, DocumentVersion, DocRef, Document}
 import dialog.{ConfirmationDialog, OkCancelDialog}
 import java.io.File
 import imcode.server.document.textdocument._
@@ -23,6 +23,9 @@ import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.{VaadinService, Page, VaadinRequest, ExternalResource}
 import com.vaadin.shared.ui.dd.VerticalDropLocation
+import scala.reflect.internal.Trees.Try
+import scala.util.Try
+import imcode.server.Imcms
 
 
 // Todo: check permissions
@@ -56,6 +59,35 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   }
 
 
+  // todo: doc - unapply @ bounds to matched object, not the result
+  // todo: ??? pass requests from filter ???
+  override def init(request: VaadinRequest) {
+    setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
+
+    MappedRequest(request).map {
+      case mappedRequest: EditWorkingDoc => mkWorkingDocEditorComponent(mappedRequest)
+      case mappedRequest: EditWorkingDocMenu => mkWorkingDocMenuEditorComponent(mappedRequest)
+      case mappedRequest: EditWorkingDocText => mkWorkingDocTextEditorComponent(mappedRequest)
+    } match {
+      case Some(component) => setContent(component)
+      case _ => setContent(new Label("N/A"))
+    }
+
+    //    setContent(new FormLayout(
+    //        new Label(request.getPathInfo) |>> { _.setCaption("Request path info") },
+    //      new Label(request.getParameterMap.toString) |>> { _.setCaption("Request parameter map") },
+    //      new Label(request.getCharacterEncoding) |>> { _.setCaption("Request character encoding") },
+    //      new Label(request.getContextPath) |>> { _.setCaption("Request context path") },
+    //      new Label(request.getService.getServiceName) |>> { _.setCaption("Service name") },
+    //      new Label(request.getService.getBaseDirectory.getPath) |>> { _.setCaption("Base dir") },
+    //      // WTF?
+    //      new Label(request.getService.getStaticFileLocation(request)) |>> { _.setCaption("Static file location") }
+    //    ))
+  }
+
+
+  //
+  //
   def mkWorkingDocEditorComponent(mappedRequest: EditWorkingDoc) = new FullScreenEditorUI(s"Document ${mappedRequest.docId}") |>> { ui =>
     val docId = mappedRequest.docId
     val doc = imcmsServices.getDocumentMapper.getDocument(docId)
@@ -129,11 +161,138 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
 
 
 
+  // [+] Text can be inside or outside of a content loop
+  // [+] Request params: rows, mode, formats, optionally content loop, filter, label
+  // [-] Load doc and check permissions
+  // TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentMapper.getDocument(documentId);
+  // TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(textDocument);
+  //
+  // if (!textDocumentPermissionSet.getEditTexts()) {    // Checking to see if user may edit this
+  //    AdminDoc.adminDoc(documentId, user, request, res, getServletContext());
+  //
+  //    return;
+  // }
 
+  // [~] Select or create text in current language, set editor label
+  //  int textIndex = Integer.parseInt(request.getParameter("txt"));
+  //  String label = null == request.getParameter("label") ? "" : request.getParameter("label");
+  //
+  //  I18nLanguage language = Imcms.getUser().getDocGetterCallback().languages().preferred();
+  //  TextDomainObject text = contentRef == null
+  //  ? textDocument.getText(textIndex)
+  //    : textDocument.getText(textIndex, contentRef);
+  //
+  //  Integer metaId = textDocument.getId();
+  //
+  //  if (text == null) {
+  //    text = new TextDomainObject();
+  //    text.setDocRef(DocRef.of(metaId, textDocument.getVersionNo()));
+  //    text.setNo(textIndex);
+  //    text.setLanguage(language);
+  //    text.setType(TextDomainObject.TEXT_TYPE_HTML);
+  //    text.setContentRef(contentRef);
+  //  }
+
+  // [+] editor/text formats
+//  boolean showModeEditor = formats.isEmpty();
+//  boolean showModeText   = formats.contains("text") || showModeEditor;
+//  boolean showModeHtml   = formats.contains("html") || formats.contains("none") || showModeEditor ;
+//  boolean editorHidden   = getCookie("imcms_hide_editor", request).equals("true") ;
+//  int rows = (request.getParameter("rows") != null && request.getParameter("rows").matches("^\\d+$")) ? Integer.parseInt(request.getParameter("rows")) : 0 ;
+//
+//  if (rows > 0) {
+//    showModeEditor = false;
+//  }
+//
+//  [-]
+//  Cookie?
+  // <title><? templates/sv/change_text.html/1 ?></title>
+  //         <script src="<%= request.getContextPath() %>/imcms/$language/scripts/imcms_admin.js.jsp"
+  //
+  //     <% if (showModeEditor && !editorHidden) { %>
+  //            JS XINA
+
+  // if TEXT_TYPE == text type html && !editor hidden
+//  String returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
+//  if (returnUrl != null) {
+//    %>
+//    <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__RETURN_URL%>" value="<%=returnUrl%>">
+//      <%
+//        }
+//        %>
+
+  // History / RESTORE
+  // if rows == 1 show text field, else text area if rows not defined default to 25
+  // NB! showModeEditor = false if rows > 0
+  //
+  // ?????? editorHidden - show originail i.e. w/o editoc controls ??? ?????
+
+  // [-] Save text
+  // -check permissionSet.getEditTexts()
+  // -save text
+  // -imcref.updateMainLog("Text " + txt_no + " in [" + meta_id + "] modified by user: [" + user.getFullName()+ "]");
+  // - handle save exs:
+  //  try {
+  //    documentMapper.saveTextDocText(text, user);
+  //  } catch (NoPermissionToEditDocumentException e) {
+  //    throw new ShouldHaveCheckedPermissionsEarlierException(e);
+  //  } catch (NoPermissionToAddDocumentToMenuException e) {
+  //    throw new ConcurrentDocumentModificationException(e);
+  //  } catch (DocumentSaveException e) {
+  //    throw new ShouldNotBeThrownException(e);
+  //  }
+
+  // [-] Fix edit_text.jsp - location, language, loop attrs.
+  // [-] Delete ChangeText servet
+  // [-] Delete SaveText servet
+  // [-] Delete change_text.jsp + resources
+  // [-] Remove Xina, install CKEditor
+  // [-]
+  //
+  //
+  //
+  //
+  //
+  //
+  //
   def mkWorkingDocTextEditorComponent(mappedRequest: EditWorkingDocText) = new FullScreenEditorUI(s"Document ${mappedRequest.docId} text no ${mappedRequest.textNo}") |>> { ui =>
+    val formats = mappedRequest.vaadinRequest.getParameterMap.get("format") match {
+      case null => Set.empty[String]
+      case array => array.toSet
+    }
+
+    val rowsCountOpt = mappedRequest.vaadinRequest.getParameter("rows") |> {
+      case  PosInt(rows) => Some(rows)
+      case _ => None
+    }
+
+    val showModeText = formats.isEmpty || formats.contains("text")
+    val showModeHtml = formats.isEmpty || formats.contains("html") || formats.contains("none")
+    val showModeEditor = formats.isEmpty && rowsCountOpt.isEmpty
+
+    val ContentRefEx = """(\d+)_(\d+)""".r
+    val contentRefOpt = mappedRequest.vaadinRequest.getParameter("contentRef") match {
+      case ContentRefEx(loopNo, contentNo) => ContentRef.of(loopNo.toInt, contentNo.toInt) |> opt
+      case _ => None
+    }
+
+    val labelOpt = mappedRequest.vaadinRequest.getParameter("label") |> opt map (_.trim) filter (_.length > 0)
+
+
+    val docIdOpt = mappedRequest.vaadinRequest.getParameter("docId") |> Try(_.toInt).toOption
+    val textNoOpt = mappedRequest.vaadinRequest.getParameter("textNo") |> Try(_.toInt).toOption
+
+    val textDao = imcmsServices.getSpringBean(classOf[TextDao])
+    val texts = textDao.getTexts(DocRef.of(docIdOpt, DocumentVersion.WORKING_VERSION_NO), contentRefOpt, createIfNotExists = true)
+
+    for (text <- texts.asScala if text.getId == null) {
+      text.setType(TextDomainObject.TEXT_TYPE_HTML)
+    }
+
+    // Current language
+    val userLanguage = Imcms.getUser.getDocGetterCallback.contentLanguages.preferred
+
     val doc = app.imcmsServices.getDocumentMapper.getWorkingDocument(mappedRequest.docId).asInstanceOf[TextDocumentDomainObject]
-    val textDao = app.imcmsServices.getSpringBean(classOf[TextDao])
-    val texts = textDao.getTexts(DocRef.of(mappedRequest.docId, 0), mappedRequest.textNo, None, true)
     val editor = new TextEditor(doc, texts.asScala)
 
     ui.mainUI = editor.ui
@@ -153,32 +312,6 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
     def closeEditor() {
       Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
     }
-  }
-
-  // todo: doc - unapply @ bounds to matched object, not the result
-  // todo: ??? pass requests from filter ???
-  override def init(request: VaadinRequest) {
-    setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
-
-    MappedRequest(request).map {
-      case mappedRequest: EditWorkingDoc => mkWorkingDocEditorComponent(mappedRequest)
-      case mappedRequest: EditWorkingDocMenu => mkWorkingDocMenuEditorComponent(mappedRequest)
-      case mappedRequest: EditWorkingDocText => mkWorkingDocTextEditorComponent(mappedRequest)
-    } match {
-      case Some(component) => setContent(component)
-      case _ => setContent(new Label("N/A"))
-    }
-
-//    setContent(new FormLayout(
-//        new Label(request.getPathInfo) |>> { _.setCaption("Request path info") },
-//      new Label(request.getParameterMap.toString) |>> { _.setCaption("Request parameter map") },
-//      new Label(request.getCharacterEncoding) |>> { _.setCaption("Request character encoding") },
-//      new Label(request.getContextPath) |>> { _.setCaption("Request context path") },
-//      new Label(request.getService.getServiceName) |>> { _.setCaption("Service name") },
-//      new Label(request.getService.getBaseDirectory.getPath) |>> { _.setCaption("Base dir") },
-//      // WTF?
-//      new Label(request.getService.getStaticFileLocation(request)) |>> { _.setCaption("Static file location") }
-//    ))
   }
 }
 
@@ -448,7 +581,10 @@ class MenuEditorUI extends VerticalLayout with FullSize {
 // todo: check perms
 // todo: pick user lang at start
 // todo: pick a format + rows no
-class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) extends Editor {
+
+case class TextEditorSettings(linesCountOpt: Option[Int], formatOpt: Option[String])
+
+class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) extends Editor with ImcmsServicesSupport {
 
   type Data = Seq[TextDomainObject]
 
@@ -486,8 +622,10 @@ class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) ex
 class TextEditorUI extends VerticalLayout with FullSize {
   val mb = new MenuBar with FullWidth
   val miShowHistory = mb.addItem("Show history")
+  val miRestore = mb.addItem("Restore")
   val miHelp = mb.addItem("Help")
   val tsTexts = new TabSheet with FullSize
+  val
 
   private val lytFormat = new FormLayout
 

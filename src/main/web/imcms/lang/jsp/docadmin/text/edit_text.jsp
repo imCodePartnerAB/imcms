@@ -1,13 +1,13 @@
-<%@ page import="imcode.server.document.DocumentDomainObject,
+<%@ page import="com.imcode.imcms.api.Content,
+                 com.imcode.imcms.api.ContentLoop,
+                 imcode.server.Imcms,
+                 imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Html,
                  imcode.util.Utility,
-                 org.apache.commons.lang.StringEscapeUtils,
-                 org.apache.commons.lang.math.NumberUtils,
-                 java.net.URLEncoder,
                  org.apache.commons.lang.StringUtils" %>
-<%@ page import="com.imcode.imcms.api.ContentLoop" %>
-<%@ page import="com.imcode.imcms.api.Content" %>
+<%@ page import="org.apache.commons.lang.math.NumberUtils" %>
+<%@ page import="java.net.URLEncoder" %>
 <%
 
     DocumentDomainObject document = (DocumentDomainObject) request.getAttribute("document");
@@ -18,14 +18,15 @@
     String[] formats = (String[]) request.getAttribute("formats");
     UserDomainObject user = Utility.getLoggedOnUser(request);
 
-    String url = request.getContextPath() + "/servlet/ChangeText?meta_id=" + document.getId() + "&txt=" + textIndex;
+    //String url = request.getContextPath() + "/servlet/ChangeText?meta_id=" + document.getId() + "&txt=" + textIndex;
+    String url = request.getContextPath() + "/docadim/text?docId=" + document.getId() + "&textNo=" + textIndex;
     if (null != label) {
-        url += "&label=" + URLEncoder.encode(Html.removeTags(label));
+        url += "&label=" + URLEncoder.encode(Html.removeTags(label), Imcms.UTF_8_ENCODING);
     }
     if (null != formats) {
         for (String format : formats) {
             if (StringUtils.isNotBlank(format)) {
-                url += "&format=" + URLEncoder.encode(format);
+                url += "&format=" + URLEncoder.encode(format, Imcms.UTF_8_ENCODING);
             }
         }
     }
@@ -38,21 +39,17 @@
     if (loopContent != null) {
         ContentLoop loop = (ContentLoop) request.getAttribute("tag.text.loop");
 
-        url += "&loop_no=" + loop.getNo() + "&content_index=" + loopContent.getNo();
+        url += String.format("contentRef=%d_%d", loop.getNo(), loopContent.getNo());
     }
-
-
-    String editorUrl = String.format("%s/docadmin/text-%d-%d-%d", request.getContextPath(), document.getId(), document.getVersionNo(), textIndex);
-
 %>
 
-<a href="<%=editorUrl%>" class="imcms_label">
+<a href="<%=url%>" class="imcms_label">
     <%=label%>
     <img src="<%=request.getContextPath()%>/imcms/<%=user.getLanguageIso639_2()%>/images/admin/red.gif" border="0"/>
 </a>
 
 <%= content %>
 
-<a href="<%=editorUrl%>">
+<a href="<%=url%>">
     <img src="<%=request.getContextPath()%>/imcms/<%=user.getLanguageIso639_2()%>/images/admin/ico_txt.gif" border="0"/>
 </a>

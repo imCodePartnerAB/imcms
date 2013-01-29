@@ -5,7 +5,7 @@ package fixtures
 import scala.collection.JavaConverters._
 import imcode.server.user.{UserDomainObject, RoleId}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject, DocumentPermissionSetTypeDomainObject}
-import com.imcode.imcms.api.{DocRef, I18nMeta, I18nLanguage, I18nSupport}
+import com.imcode.imcms.api.{DocRef, I18nMeta, ContentLanguage, I18nContentSupport}
 import imcode.server.document.textdocument.{TextDomainObject, TextDocumentDomainObject}
 
 object DocFX {
@@ -23,7 +23,7 @@ object DocFX {
   def mkDefaultTextDocEn: TextDocumentDomainObject = mkTextDoc(DocFX.DefaultId, LanguageFX.mkEnglish)
   def mkDefaultTextDocSe: TextDocumentDomainObject = mkTextDoc(DocFX.DefaultId, LanguageFX.mkSwedish)
 
-  def mkTextDoc(docId: Int, language: I18nLanguage): TextDocumentDomainObject = new TextDocumentDomainObject |>> { doc =>
+  def mkTextDoc(docId: Int, language: ContentLanguage): TextDocumentDomainObject = new TextDocumentDomainObject |>> { doc =>
     doc.setId(docId)
     doc.setCreatorId(100)
     doc.setPublisherId(200)
@@ -62,7 +62,7 @@ object DocFX {
     }
   }
 
-  def mkTextDocs(startDocId: Int = DefaultId, count: Int = 10, languages: Seq[I18nLanguage] = LanguageFX.mkLanguages): Seq[TextDocumentDomainObject] =
+  def mkTextDocs(startDocId: Int = DefaultId, count: Int = 10, languages: Seq[ContentLanguage] = LanguageFX.mkLanguages): Seq[TextDocumentDomainObject] =
     for {
       docId <- startDocId until (startDocId + count) toSeq;
       language <- languages
@@ -108,12 +108,12 @@ object LanguageFX {
   val HostNameEn = "imcode.com"
   val HostNameSe = "imcode.se"
 
-  def mkEnglish: I18nLanguage = I18nLanguage.builder().id(1).code("en").name("English").nativeName("English").enabled(true).build
-  def mkSwedish: I18nLanguage = I18nLanguage.builder().id(2).code("sv").name("Swedish").nativeName("Svenska").enabled(true).build
+  def mkEnglish: ContentLanguage = ContentLanguage.builder().id(1).code("en").name("English").nativeName("English").enabled(true).build
+  def mkSwedish: ContentLanguage = ContentLanguage.builder().id(2).code("sv").name("Swedish").nativeName("Svenska").enabled(true).build
 
-  def mkLanguages: Seq[I18nLanguage] = Seq(mkEnglish, mkSwedish)
+  def mkLanguages: Seq[ContentLanguage] = Seq(mkEnglish, mkSwedish)
 
-  def mkI18nSupport(defaultLanguage: I18nLanguage = mkEnglish): I18nSupport = new I18nSupport(
+  def mkI18nSupport(defaultLanguage: ContentLanguage = mkEnglish): I18nContentSupport = new I18nContentSupport(
     mkLanguages.map(l => l.getCode -> l).toMap.asJava,
     Map(HostNameEn -> mkEnglish, HostNameSe -> mkSwedish).asJava,
     defaultLanguage

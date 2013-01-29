@@ -12,7 +12,7 @@ import scala.PartialFunction._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.Theme
-import com.imcode.imcms.api.I18nLanguage
+import com.imcode.imcms.api.ContentLanguage
 
 class BasicFilter extends ImcmsServicesSupport {
 
@@ -89,11 +89,11 @@ class BasicFilter extends ImcmsServicesSupport {
     ui.lytAdvanced.cbTypes.value = values.advanced.getOrElse("docs_projection.basic_filter.cb_advanced_type.custom")
 
     ui.lytLanguages.removeAllComponents()
-    for (language <- imcmsServices.getI18nSupport.getLanguages.asScala) {
-      val chkLanguage = new CheckBox(language.getNativeName) with GenericData[I18nLanguage] |>> { chk =>
+    for (language <- imcmsServices.getI18nContentSupport.getLanguages.asScala) {
+      val chkLanguage = new CheckBox(language.getNativeName) with GenericData[ContentLanguage] |>> { chk =>
         chk.setIcon(Theme.Icon.Language.flag(language))
         chk.data = language
-        chk.checked = language |> imcmsServices.getI18nSupport.isDefault
+        chk.checked = language |> imcmsServices.getI18nContentSupport.isDefault
       }
 
       ui.lytLanguages.addComponent(chkLanguage)

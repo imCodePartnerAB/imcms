@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import imcms.api.{SystemProperty, I18nLanguage}
+import imcms.api.{SystemProperty, ContentLanguage}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -43,7 +43,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     assertNull("Language with id %d does not exists." format id, languageDao.getById(3))
     assertNull("Language with code %s does not exists." format code, languageDao.getByCode(code))
 
-    val builder = I18nLanguage.builder()
+    val builder = ContentLanguage.builder()
 
     builder.code(code)
     builder.name("Estonain")
@@ -58,7 +58,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     val language = languageDao.getById(1)
     assertTrue("Language is enabled.", language.isEnabled.booleanValue)
 
-    val updatedLanguage = new I18nLanguage.Builder(language).enabled(false).build()
+    val updatedLanguage = new ContentLanguage.Builder(language).enabled(false).build()
     languageDao.saveLanguage(updatedLanguage)
 
     val languageFromDb = languageDao.getById(1)
@@ -116,7 +116,7 @@ class LanguageDaoSuiteConfig {
     Function.chain(Seq(
       Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       Test.hibernate.configurators.BasicWithSql,
-      Test.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty], classOf[I18nLanguage]),
+      Test.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty], classOf[ContentLanguage]),
       Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/I18nLanguage.hbm.xml")
     ))
 }

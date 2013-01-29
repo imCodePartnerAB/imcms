@@ -6,9 +6,9 @@ public class I18nDisabledException extends I18nException {
 
 	private DocumentDomainObject document;
 	
-	private I18nLanguage language;
+	private ContentLanguage language;
 	
-	public I18nDisabledException(DocumentDomainObject document, I18nLanguage language) {
+	public I18nDisabledException(DocumentDomainObject document, ContentLanguage language) {
 		this.document = document;
 		this.language = language;
 	}
@@ -21,11 +21,11 @@ public class I18nDisabledException extends I18nException {
 		this.document = document;
 	}
 
-	public I18nLanguage getLanguage() {
+	public ContentLanguage getLanguage() {
 		return language;
 	}
 
-	public void setLanguage(I18nLanguage language) {
+	public void setLanguage(ContentLanguage language) {
 		this.language = language;
 	}
 }

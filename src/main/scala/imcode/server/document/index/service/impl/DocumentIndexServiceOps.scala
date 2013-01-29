@@ -1,7 +1,7 @@
 package imcode.server.document.index.service.impl
 
 import com.imcode._
-import com.imcode.imcms.api.I18nLanguage
+import com.imcode.imcms.api.ContentLanguage
 import com.imcode.imcms.mapping.DocumentMapper
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
@@ -36,12 +36,12 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
   @throws(classOf[SolrInputDocumentCreateException])
   def mkSolrInputDocs(docId: Int): Seq[SolrInputDocument] = withExceptionWrapper {
-    mkSolrInputDocs(docId, documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala)
+    mkSolrInputDocs(docId, documentMapper.getImcmsServices.getI18nContentSupport.getLanguages.asScala)
   }
 
 
   @throws(classOf[SolrInputDocumentCreateException])
-  def mkSolrInputDocs(docId: Int, languages: Seq[I18nLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
+  def mkSolrInputDocs(docId: Int, languages: Seq[ContentLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
     val solrInputDocs = for {
       language <- languages
       doc <- Option(documentMapper.getDefaultDocument(docId, language))
@@ -60,7 +60,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
   @throws(classOf[SolrInputDocumentCreateException])
   def mkSolrInputDocsView(): SeqView[(DocId, Seq[SolrInputDocument]), Seq[_]] = {
-    documentMapper.getImcmsServices.getI18nSupport.getLanguages.asScala |> { languages =>
+    documentMapper.getImcmsServices.getI18nContentSupport.getLanguages.asScala |> { languages =>
       documentMapper.getAllDocumentIds.asScala.view.map(docId => docId.toInt -> mkSolrInputDocs(docId, languages))
     }
   }

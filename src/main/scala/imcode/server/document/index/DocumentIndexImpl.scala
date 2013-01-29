@@ -5,7 +5,7 @@ import imcode.server.user.UserDomainObject
 import imcode.server.document.DocumentDomainObject
 import imcode.server.document.index.service.{DeleteDocFromIndex, AddDocToIndex, DocumentIndexService}
 import org.apache.solr.client.solrj.SolrQuery
-import com.imcode.imcms.api.I18nLanguage
+import com.imcode.imcms.api.ContentLanguage
 import scala.collection.JavaConverters._
 import org.apache.solr.client.solrj.response.QueryResponse
 import com.google.common.collect.Lists
@@ -13,7 +13,7 @@ import com.google.common.collect.Lists
 /**
  * {@link DocumentIndex} implementation.
  */
-class DocumentIndexImpl(val service: DocumentIndexService, defaultLanguage: I18nLanguage) extends DocumentIndex with Log4jLoggerSupport {
+class DocumentIndexImpl(val service: DocumentIndexService, defaultLanguage: ContentLanguage) extends DocumentIndex with Log4jLoggerSupport {
 
   override def query(solrQuery: SolrQuery): QueryResponse = service.query(solrQuery)
 

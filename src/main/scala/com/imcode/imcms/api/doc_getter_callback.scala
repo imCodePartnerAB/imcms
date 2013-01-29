@@ -5,48 +5,55 @@ import com.imcode.imcms.mapping.DocumentMapper
 import imcode.server.document.DocumentDomainObject
 import imcode.server.user.UserDomainObject
 import javax.servlet.http.HttpServletRequest
-import imcode.server.{Imcms, ImcmsServices, ImcmsConstants}
+import imcode.server.{ImcmsServices, ImcmsConstants}
+import org.apache.commons.lang.StringUtils
 
 
-object DocGetterCallbackUtil {
+object DocGetterCallbacks {
+
+  private sealed trait DocVersionType
+  private case class WorkingVersion() extends DocVersionType
+  private case class DefaultVersion() extends DocVersionType
+  private case class CustomVersion(no: Int) extends DocVersionType
+
+  private object DocVersionType {
+    def unapply(string: String): Option[DocVersionType] =
+      StringUtils.trimToEmpty(string).toLowerCase |> PartialFunction.condOpt {
+        case DocumentVersion.DEFAULT_VERSION_NAME => DefaultVersion
+        case DocumentVersion.WORKING_VERSION_NAME => WorkingVersion
+        case PosInt(no) if no == DocumentVersion.WORKING_VERSION_NO => WorkingVersion
+        case PosInt(no) => CustomVersion(no)
+      }
+  }
 
   /** Creates callback and sets it to a user. */
   def updateUserDocGetterCallback(request: HttpServletRequest, services: ImcmsServices, user: UserDomainObject) {
     val currentDocGetterCallback = user.getDocGetterCallback
-    val i18nSupport = services.getI18nSupport
-    val defaultLanguage = i18nSupport.getDefaultLanguage
-    val language = Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE))
-                   .flatMap(code => i18nSupport.getByCode(code) |> opt)
-                   .orElse(currentDocGetterCallback |> opt map (_.languages.selected))
-                   .orElse(i18nSupport.getForHost(request.getServerName) |> opt)
+    val i18nContentSupport = services.getI18nContentSupport
+    val defaultLanguage = i18nContentSupport.getDefaultLanguage
+    val preferredLanguage = Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE))
+                   .flatMap(code => i18nContentSupport.getByCode(code) |> opt)
+                   .orElse(currentDocGetterCallback |> opt map (_.contentLanguages.preferred))
+                   .orElse(i18nContentSupport.getForHost(request.getServerName) |> opt)
                    .getOrElse(defaultLanguage)
 
-    val callbackLanguages = CallbackLanguages(language, defaultLanguage)
+    val contentLanguages = ContentLanguages(preferredLanguage, defaultLanguage)
     val docGetterCallback =
       (for {
-        docIdentity <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID))
-        docVersionNoStr <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION))
+        PosInt(docId) <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID))
+        DocVersionType(docVersionType) <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION))
         if !user.isDefaultUser
       } yield {
-        val docId: Int = docIdentity match {
-          case AnyInt(n) => n
-          case _ =>
-            Imcms.getServices.getDocumentMapper.toDocumentId(docIdentity) |> opt getOrElse {
-              sys.error("Document with identity %s does not exists." format docIdentity)
-            }
-        }
-
-        docVersionNoStr match {
-          case AnyInt(DocumentVersion.WORKING_VERSION_NO) => WorkingDocGetterCallback(callbackLanguages, docId)
-          case PosInt(docVersionNo) => CustomDocGetterCallback(callbackLanguages, docId, docVersionNo)
-          case _ =>
-            sys.error("Invalid document version value: %s." format docIdentity)
+        docVersionType match {
+          case WorkingVersion => WorkingDocGetterCallback(contentLanguages, docId)
+          case DefaultVersion => DefaultDocGetterCallback(contentLanguages)
+          case CustomVersion(docVersionNo) => CustomDocGetterCallback(contentLanguages, docId, docVersionNo)
         }
       }) getOrElse {
         currentDocGetterCallback match {
-          case docGetterCallback: CustomDocGetterCallback => docGetterCallback.copy(callbackLanguages)
-          case docGetterCallback: WorkingDocGetterCallback => docGetterCallback.copy(callbackLanguages)
-          case _ => DefaultDocGetterCallback(callbackLanguages)
+          case docGetterCallback: CustomDocGetterCallback => docGetterCallback.copy(contentLanguages)
+          case docGetterCallback: WorkingDocGetterCallback => docGetterCallback.copy(contentLanguages)
+          case _ => DefaultDocGetterCallback(contentLanguages)
         }
       }
 
@@ -69,19 +76,19 @@ object DocGetterCallbackUtil {
  * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(Integer)
  */
 trait DocGetterCallback {
-  def languages: CallbackLanguages
+  def contentLanguages: ContentLanguages
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper): DocumentDomainObject
 }
 
-case class DefaultDocGetterCallback(languages: CallbackLanguages) extends DocGetterCallback {
+case class DefaultDocGetterCallback(contentLanguages: ContentLanguages) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    docMapper.getDefaultDocument(docId, languages.selected) match {
-      case doc if doc != null && !languages.selectedIsDefault && user.isSuperAdmin =>
+    docMapper.getDefaultDocument(docId, contentLanguages.preferred) match {
+      case doc if doc != null && !contentLanguages.preferredIsDefault && user.isSuperAdmin =>
         val meta = doc.getMeta
 
-        if (!meta.getEnabledLanguages.contains(languages.selected)) {
+        if (!meta.getEnabledLanguages.contains(contentLanguages.preferred)) {
           if (meta.getDisabledLanguageShowSetting == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE)
-            docMapper.getDefaultDocument(docId, languages.default)
+            docMapper.getDefaultDocument(docId, contentLanguages.default)
           else
             null
         } else doc
@@ -90,18 +97,18 @@ case class DefaultDocGetterCallback(languages: CallbackLanguages) extends DocGet
     }
 }
 
-case class WorkingDocGetterCallback(languages: CallbackLanguages, selectedDocId: Int) extends DocGetterCallback {
+case class WorkingDocGetterCallback(contentLanguages: ContentLanguages, selectedDocId: Int) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    if (selectedDocId == docId) docMapper.getWorkingDocument(docId, languages.selected)
-    else DefaultDocGetterCallback(languages).getDoc(docId, user, docMapper)
+    if (selectedDocId == docId) docMapper.getWorkingDocument(docId, contentLanguages.preferred)
+    else DefaultDocGetterCallback(contentLanguages).getDoc(docId, user, docMapper)
 }
 
-case class CustomDocGetterCallback(languages: CallbackLanguages, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
+case class CustomDocGetterCallback(contentLanguages: ContentLanguages, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    if (selectedDocId == docId) docMapper.getCustomDocument(DocRef.of(selectedDocId, selectedDocVersionNo), languages.selected)
-    else DefaultDocGetterCallback(languages).getDoc(docId, user, docMapper)
+    if (selectedDocId == docId) docMapper.getCustomDocument(DocRef.of(selectedDocId, selectedDocVersionNo), contentLanguages.preferred)
+    else DefaultDocGetterCallback(contentLanguages).getDoc(docId, user, docMapper)
 }
 
-case class CallbackLanguages(selected: I18nLanguage, default: I18nLanguage) {
-  val selectedIsDefault = selected == default
+case class ContentLanguages(preferred: ContentLanguage, default: ContentLanguage) {
+  val preferredIsDefault = preferred == default
 }

@@ -47,7 +47,7 @@ public class ImageArchiveTag extends BodyTagSupport {
                 archiveUri = redirectTo;
             }
 
-            String currentLocale = Imcms.getUser().getDocGetterCallback().languages().selected().getCode();
+            String currentLocale = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred().getCode();
             request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, new Locale(currentLocale));
             if (user.canAccess(document)) {
                 String iframe = "<iframe src='" + archiveUri +"' ";

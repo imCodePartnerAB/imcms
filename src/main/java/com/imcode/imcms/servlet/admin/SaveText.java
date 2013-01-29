@@ -70,7 +70,7 @@ public final class SaveText extends HttpServlet {
 
             Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
             Integer contentNo = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);
-            ContentRef contentRef = (loopNo == null || contentNo == null) ? null : new ContentRef(loopNo, contentNo);
+            ContentRef contentRef = (loopNo == null || contentNo == null) ? null : ContentRef.of(loopNo, contentNo);
 
             TextDomainObject text = contentRef == null
                     ? document.getText(txt_no)
@@ -80,7 +80,7 @@ public final class SaveText extends HttpServlet {
 
             text.setNo(txt_no);
             text.setDocRef(document.getRef());
-            text.setLanguage(Imcms.getUser().getDocGetterCallback().languages().selected());
+            text.setLanguage(Imcms.getUser().getDocGetterCallback().contentLanguages().preferred());
             text.setText(text_string);
             text.setType(text_format);
             text.setContentRef(contentRef);

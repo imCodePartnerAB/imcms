@@ -6,10 +6,10 @@ import _root_.imcode.server.document.DocumentDomainObject
 import _root_.net.sf.ehcache.config.CacheConfiguration
 import _root_.net.sf.ehcache.{Ehcache, CacheManager, Element, Cache}
 import scala.collection.JavaConverters._
-import com.imcode.imcms.api.{DocRef, DocumentVersionInfo, Meta, I18nLanguage}
+import com.imcode.imcms.api.{DocRef, DocumentVersionInfo, Meta, ContentLanguage}
 
 
-class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLanguage], size: Int) {
+class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[ContentLanguage], size: Int) {
 
   val cacheManager = CacheManager.create()
 
@@ -64,7 +64,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
   /**
    * @return working doc or null if doc does not exists
    */
-  def getWorkingDoc(docId: DocId, language: I18nLanguage): DocumentDomainObject =
+  def getWorkingDoc(docId: DocId, language: ContentLanguage): DocumentDomainObject =
     workingDocs.getOrPut(DocCacheKey(docId, language.getId)) {
       getMeta(docId) match {
         case null => null
@@ -79,7 +79,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
   /**
    * @return default doc or null if doc does not exists
    */
-  def getDefaultDoc(docId: DocId, language: I18nLanguage): DocumentDomainObject =
+  def getDefaultDoc(docId: DocId, language: ContentLanguage): DocumentDomainObject =
     defaultDocs.getOrPut(DocCacheKey(docId, language.getId)) {
       getMeta(docId) match {
         case null => null
@@ -94,7 +94,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[I18nLang
   /**
    * @return custom doc or null if doc does not exists
    */
-  def getCustomDoc(docRef: DocRef, language: I18nLanguage) = {
+  def getCustomDoc(docRef: DocRef, language: ContentLanguage) = {
     getMeta(docRef.docId) match {
       case null => null
       case meta =>

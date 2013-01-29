@@ -17,7 +17,7 @@
 
         <mapping class="com.imcode.imcms.api.SystemProperty"/>
         <mapping class="com.imcode.imcms.api.I18nMeta"/>
-        <mapping class="com.imcode.imcms.api.I18nLanguage"/>
+        <mapping class="com.imcode.imcms.api.ContentLanguage"/>
         <mapping class="com.imcode.imcms.api.TextHistory"/>
         <mapping class="com.imcode.imcms.api.ImageHistory"/>
         <mapping class="com.imcode.imcms.api.MenuHistory"/>

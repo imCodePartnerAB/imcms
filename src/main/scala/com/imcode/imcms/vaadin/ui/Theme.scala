@@ -3,7 +3,7 @@ package imcms.vaadin
 
 import com.vaadin.server.{ThemeResource => TR}
 import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
-import com.imcode.imcms.api.I18nLanguage
+import com.imcode.imcms.api.ContentLanguage
 
 object Theme {
   implicit val stringToThemeResource = new TR(_:String)
@@ -40,7 +40,7 @@ object Theme {
     }
 
     object Language {
-      def flag(language: I18nLanguage): TR = s"icons/language_flag/${language.getCode}.gif"
+      def flag(language: ContentLanguage): TR = s"icons/language_flag/${language.getCode}.gif"
     }
   }
 }

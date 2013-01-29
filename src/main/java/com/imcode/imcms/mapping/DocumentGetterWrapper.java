@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.ContentLanguage;
 import imcode.server.document.DocumentDomainObject;
 
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class DocumentGetterWrapper implements DocumentGetter {
         return documentGetter.getDocument(documentId) ;
     }
     
-   public DocumentDomainObject getDefaultDocument(int documentId, I18nLanguage language) {
+   public DocumentDomainObject getDefaultDocument(int documentId, ContentLanguage language) {
         return documentGetter.getDefaultDocument(documentId, language);
    }
 

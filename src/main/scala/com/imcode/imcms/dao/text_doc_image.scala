@@ -5,7 +5,7 @@ import scala.collection.JavaConverters._
 
 import org.springframework.transaction.annotation.Transactional
 import imcode.server.document.textdocument._
-import com.imcode.imcms.api.{DocRef, I18nLanguage, ImageHistory}
+import com.imcode.imcms.api.{DocRef, ContentLanguage, ImageHistory}
 
 
 object ImageUtil {
@@ -59,7 +59,7 @@ class ImageDao extends HibernateSupport {
 
 
 
-  def getImage(docRef: DocRef, no: Int, language: I18nLanguage, contentRefOpt: Option[ContentRef]) = {
+  def getImage(docRef: DocRef, no: Int, language: ContentLanguage, contentRefOpt: Option[ContentRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
         """select i from Image i where i.docRef = :docRef and i.no = :no
@@ -96,7 +96,7 @@ class ImageDao extends HibernateSupport {
     ) |> ImageUtil.initImagesSources
 
 
-  def getImages(docRef: DocRef, language: I18nLanguage): JList[ImageDomainObject] =
+  def getImages(docRef: DocRef, language: ContentLanguage): JList[ImageDomainObject] =
      hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
        "Image.getByDocRefAndLanguage",
        "docRef" -> docRef, "language" -> language
@@ -104,7 +104,7 @@ class ImageDao extends HibernateSupport {
 
 
 
-  def deleteImages(docRef: DocRef, language: I18nLanguage): Int =
+  def deleteImages(docRef: DocRef, language: ContentLanguage): Int =
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
       "Image.deleteImagesByDocRefAndLanguage", "docRef" -> docRef, "language" -> language
     )

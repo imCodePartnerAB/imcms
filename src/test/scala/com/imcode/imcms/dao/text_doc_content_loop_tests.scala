@@ -23,10 +23,10 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 //  case class ContentsDesc(count: Int, sort: ContentsSort.Value)
 //  case class ContentLoopDesc(loopId: Long, docRef: DocRef, contentRefOpt: ContentRef, contentsDesc: ContentsDesc)
 //
-//  val loop0 = ContentLoopDesc(0, DocRef.of(1001, 0), new ContentRef(0, 0), ContentsDesc(count = 0, sort = ContentsSort.Asc))
-//  val loop1 = ContentLoopDesc(1, DocRef.of(1001, 0), new ContentRef(0, 1), ContentsDesc(count = 1, sort = ContentsSort.Asc))
-//  val loop2 = ContentLoopDesc(2, DocRef.of(1001, 0), new ContentRef(0, 2), ContentsDesc(count = 2, sort = ContentsSort.Asc))
-//  val loop3 = ContentLoopDesc(3, DocRef.of(1001, 0), new ContentRef(0, 3), ContentsDesc(count = 3, sort = ContentsSort.Desc))
+//  val loop0 = ContentLoopDesc(0, DocRef.of(1001, 0), ContentRef.of(0, 0), ContentsDesc(count = 0, sort = ContentsSort.Asc))
+//  val loop1 = ContentLoopDesc(1, DocRef.of(1001, 0), ContentRef.of(0, 1), ContentsDesc(count = 1, sort = ContentsSort.Asc))
+//  val loop2 = ContentLoopDesc(2, DocRef.of(1001, 0), ContentRef.of(0, 2), ContentsDesc(count = 2, sort = ContentsSort.Asc))
+//  val loop3 = ContentLoopDesc(3, DocRef.of(1001, 0), ContentRef.of(0, 3), ContentsDesc(count = 3, sort = ContentsSort.Desc))
 
   var contentLoopDao: ContentLoopDao = _
 

@@ -1,12 +1,11 @@
 package imcode.server;
 
-import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.I18nContentSupport;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexFactory;
-import imcode.server.document.index.DocumentIndexFactory$;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.Authenticator;
@@ -104,7 +103,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
-    private I18nSupport i18nSupport;
+    private I18nContentSupport i18nContentSupport;
     private ApplicationContext applicationContext;
 
 
@@ -126,13 +125,13 @@ public class DefaultImcmsServices implements ImcmsServices {
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
                                 ApplicationContext applicationContext,
-                                I18nSupport i18nSupport) {
+                                I18nContentSupport i18nContentSupport) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
         this.applicationContext = applicationContext;
-        this.i18nSupport = i18nSupport;
+        this.i18nContentSupport = i18nContentSupport;
 
         initConfig(props);
         initSso();
@@ -869,12 +868,12 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.documentMapper = documentMapper;
     }
 
-    public I18nSupport getI18nSupport() {
-        return i18nSupport;
+    public I18nContentSupport getI18nContentSupport() {
+        return i18nContentSupport;
     }
 
-    public void setI18nSupport(I18nSupport i18nSupport) {
-        this.i18nSupport = i18nSupport;
+    public void setI18nContentSupport(I18nContentSupport i18nContentSupport) {
+        this.i18nContentSupport = i18nContentSupport;
     }
 
     @Override

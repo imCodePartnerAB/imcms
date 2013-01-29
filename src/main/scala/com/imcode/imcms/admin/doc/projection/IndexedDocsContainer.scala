@@ -3,7 +3,7 @@ package imcms
 package admin.doc.projection
 
 import com.vaadin.data.{Item, Container}
-import com.imcode.imcms.api.{I18nLanguage, Document}
+import com.imcode.imcms.api.{ContentLanguage, Document}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.ui._

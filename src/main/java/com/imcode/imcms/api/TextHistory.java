@@ -30,7 +30,7 @@ public class TextHistory {
      */
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private I18nLanguage language;
+    private ContentLanguage language;
 
 
     @Column(name = "user_id")
@@ -106,11 +106,11 @@ public class TextHistory {
         this.id = id;
     }
 
-    public I18nLanguage getLanguage() {
+    public ContentLanguage getLanguage() {
         return language;
     }
 
-    public void setLanguage(I18nLanguage language) {
+    public void setLanguage(ContentLanguage language) {
         this.language = language;
     }
 

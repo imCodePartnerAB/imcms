@@ -1,15 +1,15 @@
 <%@ page
 
-	import="com.imcode.imcms.servlet.admin.ChangeText,
+	import="com.imcode.imcms.api.ContentManagementSystem,
+	        com.imcode.imcms.api.ContentLanguage,
+	        com.imcode.imcms.mapping.DocumentMapper,
+	        com.imcode.imcms.servlet.admin.ChangeText,
 	        imcode.server.Imcms,
+	        imcode.server.ImcmsConstants,
 	        imcode.server.LanguageMapper,
+	        imcode.server.document.textdocument.ContentRef,
 	        imcode.server.document.textdocument.TextDomainObject,
-	        imcode.util.Utility,
-	        org.apache.commons.lang.StringEscapeUtils,
-	        java.util.ArrayList,
-	        java.util.Arrays,
-	        java.util.List,
-	        com.imcode.imcms.api.ContentManagementSystem"
+	        imcode.util.Utility"
 
     contentType="text/html; charset=UTF-8"
 
@@ -25,13 +25,14 @@ private String getCookie( String name, HttpServletRequest request ) {
 	String retVal = "" ;
 	Cookie[] cookies = request.getCookies() ;
 	if (cookies != null) {
-		for (int i = 0; i < cookies.length; i++) {
-			if (cookies[i].getName().equals(name)) {
-				retVal = cookies[i].getValue() ;
-				break ;
-			}
-		}
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(name)) {
+                retVal = cookie.getValue();
+                break;
+            }
+        }
 	}
+
 	return retVal ;
 }
 
@@ -68,16 +69,15 @@ try {
  *         Get languages                                                                     *
  ******************************************************************************************* */
 
-List<I18nLanguage> languages = Imcms.getServices().getI18nSupport().getLanguages();
-I18nLanguage defaultLanguage = Imcms.getServices().getI18nSupport().getDefaultLanguage();
-I18nLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().languages().selected();
+List<ContentLanguage> languages = Imcms.getServices().getI18nContentSupport().getLanguages();
+ContentLanguage defaultLanguage = Imcms.getServices().getI18nContentSupport().getDefaultLanguage();
+ContentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
 
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 TextDomainObject text = textEditPage.getText();
 %>
-<%@page import="com.imcode.imcms.api.I18nLanguage, imcode.server.document.DocumentDomainObject, com.imcode.imcms.mapping.DocumentMapper"%>
-<%@ page import="imcode.server.ImcmsConstants" %>
-<%@ page import="imcode.server.document.textdocument.ContentRef" %>
+<%@page import="org.apache.commons.lang.StringEscapeUtils, java.util.ArrayList, java.util.Arrays"%>
+<%@ page import="java.util.List" %>
 <vel:velocity>
 <html>
 <head>
@@ -193,7 +193,7 @@ if (null != languages) { %>
         ""
     );
 
-	for (I18nLanguage lang: languages) {
+	for (ContentLanguage lang: languages) {
 		String langCode       = lang.getCode() ;
 		String langName       = lang.getName() ;
 		String langNameNative = lang.getNativeName() ;

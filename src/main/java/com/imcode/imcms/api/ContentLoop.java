@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.imcode.imcms.util.P;
 import com.imcode.imcms.util.P2;
@@ -164,12 +165,7 @@ public class ContentLoop implements Serializable, Cloneable {
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (no != null ? no.hashCode() : 0);
-        result = 31 * result + (docId != null ? docId.hashCode() : 0);
-        result = 31 * result + (docVersionNo != null ? docVersionNo.hashCode() : 0);
-        result = 31 * result + (contents != null ? contents.hashCode() : 0);
-        return result;
+        return Objects.hashCode(id, no, docId, docVersionNo, contents);
     }
 
     public DocRef getDocRef() {

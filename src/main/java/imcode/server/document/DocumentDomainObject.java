@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import scala.Option$;
 
 /**
  * Parent of all imCMS document types.
@@ -148,7 +147,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 throw new IllegalArgumentException(errorMessage);
         }
 
-        document.setLanguage(Imcms.getServices().getI18nSupport().getDefaultLanguage());
+        document.setLanguage(Imcms.getServices().getI18nContentSupport().getDefaultLanguage());
         document.setVersion(new DocumentVersion(null, 0, null, new Date()));
 
         return document;
@@ -540,11 +539,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         this.meta = meta.clone();
     }
 
-    public I18nLanguage getLanguage() {
+    public ContentLanguage getLanguage() {
         return i18nMeta.getLanguage();
     }
 
-    public void setLanguage(I18nLanguage language) {
+    public void setLanguage(ContentLanguage language) {
         setI18nMeta(I18nMeta.builder(getI18nMeta()).language(language).build());
     }
 

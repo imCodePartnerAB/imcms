@@ -1,6 +1,6 @@
 package imcode.server ;
 
-import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.I18nContentSupport;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -112,7 +112,7 @@ public interface ImcmsServices {
     
     KerberosLoginService getKerberosLoginService();
 
-    I18nSupport getI18nSupport();
+    I18nContentSupport getI18nContentSupport();
 
     <T> T getSpringBean(Class<T> requiredType);
 

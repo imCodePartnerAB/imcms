@@ -20,15 +20,15 @@
   
   <!-- Unique -->
   <query name="I18nLanguage.getByCode">
-    <![CDATA[
-	  select l from I18nLanguage l where l.code = :code   
+      <![CDATA[
+	  select l from ContentLanguage l where l.code = :code
     ]]>
   </query>
 
   <!-- Unique -->
   <query name="I18nLanguage.getById">
-    <![CDATA[
-	  select l from I18nLanguage l where l.id = :id   
+      <![CDATA[
+	  select l from ContentLanguage l where l.id = :id
     ]]>
   </query>
   

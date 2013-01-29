@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.api.ContentLanguage;
 import imcode.server.Imcms;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.ContentRef;
@@ -16,7 +17,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 /**
@@ -39,11 +39,9 @@ public class ChangeText extends HttpServlet {
 
         Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);
-        ContentRef contentRef = loopNo == null || contentNo == null ? null : new ContentRef(loopNo, contentNo);
+        ContentRef contentRef = loopNo == null || contentNo == null ? null : ContentRef.of(loopNo, contentNo);
 
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentMapper.getDocument(
-                documentId);
-
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentMapper.getDocument(documentId);
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(textDocument);
 
         if (!textDocumentPermissionSet.getEditTexts()) {    // Checking to see if user may edit this
@@ -55,7 +53,7 @@ public class ChangeText extends HttpServlet {
         int textIndex = Integer.parseInt(request.getParameter("txt"));
         String label = null == request.getParameter("label") ? "" : request.getParameter("label");
 
-        I18nLanguage language = Imcms.getUser().getDocGetterCallback().languages().selected();
+        ContentLanguage language = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
         TextDomainObject text = contentRef == null
                 ? textDocument.getText(textIndex)
                 : textDocument.getText(textIndex, contentRef);

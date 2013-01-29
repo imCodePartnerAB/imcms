@@ -19,7 +19,7 @@ import com.imcode.imcms.test.Test
 import com.imcode.imcms.test.fixtures.LanguageFX
 import com.imcode.imcms.mapping.{DocumentSaver, DocumentStoringVisitor, DocumentMapper}
 import com.imcode.imcms.mapping.DocumentMapper.SaveOpts
-import com.imcode.imcms.api.{DocRef, I18nMeta, ContentLoop, I18nSupport}
+import com.imcode.imcms.api.{DocRef, I18nMeta, ContentLoop, I18nContentSupport}
 import com.imcode.imcms.api.TextDocument.TextField
 
 @RunWith(classOf[JUnitRunner])
@@ -28,14 +28,14 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   var docMapper: DocumentMapper = _
   var admin: UserDomainObject = _
   var user: UserDomainObject = _
-  var i18nSupport: I18nSupport = _
+  var i18nContentSupport: I18nContentSupport = _
 
   override def beforeAll() = withLogFailure {
     Test.db.recreate()
     Test.solr.recreateHome()
     Test.imcms.init(start = true, prepareDbOnStart = true)
 
-    i18nSupport = Imcms.getServices.getI18nSupport
+    i18nContentSupport = Imcms.getServices.getI18nContentSupport
     docMapper = Imcms.getServices.getDocumentMapper
     admin = Imcms.getServices.verifyUser("admin", "admin")
     user = Imcms.getServices.verifyUser("user", "user")
@@ -56,7 +56,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val headlinePrefix = "headline_"
     val menuTextPrefix = "menu_text_"
 
-    val i18nMetas = i18nSupport.getLanguages.asScala.map { language =>
+    val i18nMetas = i18nContentSupport.getLanguages.asScala.map { language =>
       val i18nMeta = I18nMeta.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
@@ -72,7 +72,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       EnumSet.noneOf(classOf[DocumentMapper.SaveOpts]),
       admin).getMeta.getId
 
-    i18nSupport.getLanguages.asScala.map { language =>
+    i18nContentSupport.getLanguages.asScala.map { language =>
       val doc = docMapper.getDefaultDocument(id, language).asInstanceOf[TextDocumentDomainObject]
 
       assertEquals(headlinePrefix + language.getCode, doc.getHeadline)
@@ -93,7 +93,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val headlinePrefix = "headline_"
     val menuTextPrefix = "menu_text_"
 
-    val i18nMetas = i18nSupport.getLanguages.asScala.map { language =>
+    val i18nMetas = i18nContentSupport.getLanguages.asScala.map { language =>
       val i18nMeta = I18nMeta.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
@@ -109,7 +109,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields),
       admin).getMeta.getId
 
-    i18nSupport.getLanguages.asScala.map { language =>
+    i18nContentSupport.getLanguages.asScala.map { language =>
       val doc = docMapper.getDefaultDocument(id, language).asInstanceOf[TextDocumentDomainObject]
 
       assertEquals(headlinePrefix + language.getCode, doc.getHeadline)
@@ -207,10 +207,10 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       newDoc.setMenu(no, menu)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = TextDomainObject.builder().contentRef(new ContentRef(loopNo, contentNo)).build()
+        val text = TextDomainObject.builder().contentRef(ContentRef.of(loopNo, contentNo)).build()
         val image = new ImageDomainObject
 
-        image.setContentRef(new ContentRef(loopNo, contentNo))
+        image.setContentRef(ContentRef.of(loopNo, contentNo))
 
         text.setText(textPrefix + no + "_%d:%d".format(loopNo, contentNo))
         text.setType(textType)
@@ -254,8 +254,8 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
                    menuItems.values.asScala.map(_.getDocumentId).toSet)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = savedDoc.getText(no, new ContentRef(loopNo, contentNo))
-        val image = savedDoc.getImage(no, new ContentRef(loopNo, contentNo))
+        val text = savedDoc.getText(no, ContentRef.of(loopNo, contentNo))
+        val image = savedDoc.getImage(no, ContentRef.of(loopNo, contentNo))
 
         assertNotNull(text)
         assertEquals(no, text.getNo)
@@ -423,7 +423,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 //        DocumentDomainObject menuItemDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
 //        List<I18nMeta> labels = new LinkedList<I18nMeta>();
 //
-//        for (I18nLanguage lang: i18nSupport.getAllLanguages()) {
+//        for (I18nLanguage lang: i18nContentSupport.getAllLanguages()) {
 //            I18nMeta l = new I18nMeta();
 //
 //            l.setHeadline(":headline in:" + lang.getCode());
@@ -443,7 +443,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 //
 //
 //        DocGetterCallback docRequestInfo = new DocGetterCallback.WorkingDocRequestHandler(admin);
-//        docRequestInfo.setLanguage(i18nSupport.getDefaultLanguage());
+//        docRequestInfo.setLanguage(i18nContentSupport.getDefaultLanguage());
 //        Imcms.setGetDocumentCallback(docRequestInfo);
 //
 //        menu = parentDoc.getMenu(menuNo);
@@ -467,7 +467,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("copy text doc") {
     //TextDocumentDomainObject doc = saveNewTextDocumentFn();
-    for (l <- Imcms.getServices.getI18nSupport.getLanguages.asScala) {
+    for (l <- Imcms.getServices.getI18nContentSupport.getLanguages.asScala) {
       val doc = docMapper.getDocument(1001).asInstanceOf[TextDocumentDomainObject]
       assertNotNull(doc)
     }
@@ -479,7 +479,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     assertNotSame(doc.getId, docCopyId)
 
-    for (l <- Imcms.getServices.getI18nSupport.getLanguages.asScala.toList) {
+    for (l <- Imcms.getServices.getI18nContentSupport.getLanguages.asScala.toList) {
       val doc = docMapper.getDocument(docCopyId)
       assertNotNull(doc)
     }
@@ -538,7 +538,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val docId = docMapper.saveNewDocument(doc, admin).getId
     val vi = docMapper.getDocumentVersionInfo(docId)
 
-    doc = docMapper.getDefaultDocument(docId, i18nSupport.getDefaultLanguage)
+    doc = docMapper.getDefaultDocument(docId, i18nContentSupport.getDefaultLanguage)
 
     assertNotNull("New document exists",  doc)
     assertEquals("Default version of a new document is 0.", doc.getVersion.getNo, new JInteger(0))
@@ -549,7 +549,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     docMapper.changeDocumentDefaultVersion(docId, 1, admin)
 
-    doc = docMapper.getDefaultDocument(docId, i18nSupport.getDefaultLanguage)
+    doc = docMapper.getDefaultDocument(docId, i18nContentSupport.getDefaultLanguage)
 
     assertEquals("Default version of a document is 1.", doc.getVersion.getNo, new JInteger(1))
   }
@@ -769,7 +769,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
 
   def getMainWorkingDocumentInDefaultLanguage(assertDocExists: Boolean) = {
-    val doc = docMapper.getCustomDocument(DocRef.of(1001, 0), i18nSupport.getDefaultLanguage)
+    val doc = docMapper.getCustomDocument(DocRef.of(1001, 0), i18nContentSupport.getDefaultLanguage)
 
     if (assertDocExists) {
       assertNotNull(doc)

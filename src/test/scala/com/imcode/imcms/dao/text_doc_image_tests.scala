@@ -12,7 +12,7 @@ import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
-import com.imcode.imcms.api.{DocRef, ImageHistory, I18nLanguage}
+import com.imcode.imcms.api.{DocRef, ImageHistory, ContentLanguage}
 import com.imcode.imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish}
 import imcode.server.document.textdocument.{ContentRef, ImageDomainObject}
 
@@ -42,7 +42,7 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter 
   }
 
   test("get text doc's images by doc ref and no inside content loop") {
-    val images = imageDao.getImages(DocRef.of(1001, 0), 1, Some(new ContentRef(1, 1)), false)
+    val images = imageDao.getImages(DocRef.of(1001, 0), 1, Some(ContentRef.of(1, 1)), false)
     assertEquals(2, images.size)
   }
 
@@ -100,7 +100,7 @@ class ImageDaoSuiteConfig {
       Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       Test.hibernate.configurators.BasicWithSql,
       Test.hibernate.configurators.addAnnotatedClasses(
-        classOf[I18nLanguage],
+        classOf[ContentLanguage],
         classOf[ImageDomainObject],
         classOf[ImageHistory]
       ),

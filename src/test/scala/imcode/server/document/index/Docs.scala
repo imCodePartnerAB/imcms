@@ -4,7 +4,7 @@ import com.imcode._
 import scala.collection.JavaConverters._
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.user.RoleId
-import com.imcode.imcms.api.I18nLanguage
+import com.imcode.imcms.api.ContentLanguage
 import org.scalatest.mock.MockitoSugar._
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
 import scala.collection.mutable.{Map => MMap}
@@ -38,7 +38,7 @@ class DocIndexingMocksSetup {
 
   when(documentMapperMock.getImcmsServices).thenReturn(servicesMock)
 
-  when(servicesMock.getI18nSupport).thenReturn(LanguageFX.mkI18nSupport())
+  when(servicesMock.getI18nContentSupport).thenReturn(LanguageFX.mkI18nSupport())
 
   when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer { args: Array[AnyRef] =>
     val availableCategories = for {
@@ -50,9 +50,9 @@ class DocIndexingMocksSetup {
   }
 
 
-  when(documentMapperMock.getDefaultDocument(anyInt, any[I18nLanguage])).thenAnswer { args: Array[AnyRef] =>
+  when(documentMapperMock.getDefaultDocument(anyInt, any[ContentLanguage])).thenAnswer { args: Array[AnyRef] =>
     args match {
-      case Array(id: JInteger, language: I18nLanguage) => docs(id)(language.getCode)
+      case Array(id: JInteger, language: ContentLanguage) => docs(id)(language.getCode)
     }
   }
 

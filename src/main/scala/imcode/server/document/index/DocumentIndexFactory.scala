@@ -24,7 +24,7 @@ object DocumentIndexFactory extends Log4jLoggerSupport {
         logger.fatal(errMsg)
         throw new IllegalArgumentException(errMsg)
     } |> { service =>
-      new DocumentIndexImpl(service, services.getI18nSupport.getDefaultLanguage)
+      new DocumentIndexImpl(service, services.getI18nContentSupport.getDefaultLanguage)
     }
   }
 

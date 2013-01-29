@@ -31,11 +31,11 @@ import com.imcode.imcms.vaadin.data._
  * @param meta doc's Meta
  * @param i18nMetas doc's i18nMeta-s
  */
-class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) extends Editor with ImcmsServicesSupport {
+class AppearanceEditor(meta: Meta, i18nMetas: Map[ContentLanguage, I18nMeta]) extends Editor with ImcmsServicesSupport {
 
   case class Data(
-    i18nMetas: Map[I18nLanguage, I18nMeta],
-    enabledLanguages: Set[I18nLanguage],
+    i18nMetas: Map[ContentLanguage, I18nMeta],
+    enabledLanguages: Set[ContentLanguage],
     disabledLanguageShowSetting: Meta.DisabledLanguageShowSetting,
     alias: Option[String],
     target: String
@@ -43,8 +43,8 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
 
   // i18nMetas sorted by language (default always first) and native name
   private val i18nMetaEditorUIs: Seq[I18nMetaEditorUI] = {
-    val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage
-    val languages = imcmsServices.getI18nSupport.getLanguages.asScala.sortWith {
+    val defaultLanguage = imcmsServices.getI18nContentSupport.getDefaultLanguage
+    val languages = imcmsServices.getI18nContentSupport.getLanguages.asScala.sortWith {
       case (l1, _) if l1 == defaultLanguage => true
       case (_, l2) if l2 == defaultLanguage => false
       case (l1, l2) => l1.getNativeName < l2.getNativeName
@@ -117,7 +117,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[I18nLanguage, I18nMeta]) exten
 
   // Default language checkbox is be always checked.
   def resetValues() {
-    val defaultLanguage = imcmsServices.getI18nSupport.getDefaultLanguage
+    val defaultLanguage = imcmsServices.getI18nContentSupport.getDefaultLanguage
 
     for (i18nMetaEditorUI <- i18nMetaEditorUIs) {
       val isDefaultLanguage = i18nMetaEditorUI.language == defaultLanguage

@@ -24,7 +24,7 @@ import _root_.imcode.server.document._
 import _root_.imcode.server.document.FileDocumentDomainObject.FileDocumentFile
 import _root_.imcode.util.io.FileInputStreamSource
 import _root_.imcode.server.document.textdocument.{MenuDomainObject, TextDocumentDomainObject, ImageDomainObject, TextDomainObject}
-import com.imcode.imcms.api.{I18nLanguage, I18nMeta, DocumentVersion, DocumentVersionInfo}
+import com.imcode.imcms.api.{ContentLanguage, I18nMeta, DocumentVersion, DocumentVersionInfo}
 import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX, LanguageFX}
 import imcode.server.document.index.service.impl.DocumentIndexer
 

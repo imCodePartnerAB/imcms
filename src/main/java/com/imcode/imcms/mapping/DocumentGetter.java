@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.ContentLanguage;
 import imcode.server.document.DocumentDomainObject;
 
 import java.util.Collection;
@@ -26,7 +26,7 @@ public interface DocumentGetter {
      * @param metaId
      * @return
      */
-    DocumentDomainObject getDefaultDocument(int metaId, I18nLanguage language);
+    DocumentDomainObject getDefaultDocument(int metaId, ContentLanguage language);
 
     DocumentDomainObject getDefaultDocument(int metaId);
 }

@@ -237,17 +237,17 @@ public class Imcms {
      * Creates and initializes I18N support.
      * Reads languages from the database.
      */
-    private static I18nSupport createI18nSupport() {
+    private static I18nContentSupport createI18nSupport() {
         logger.info("Creating i18n support.");
 
         LanguageDao languageDao = applicationContext.getBean(LanguageDao.class);
         SystemDao systemDao = applicationContext.getBean(SystemDao.class);
         SystemProperty languageIdProperty = systemDao.getProperty("DefaultLanguageId");
 
-        Map<String, I18nLanguage> languagesByCodes = Maps.newHashMap();
-        Map<String, I18nLanguage> languagesByHosts = Maps.newHashMap();
+        Map<String, ContentLanguage> languagesByCodes = Maps.newHashMap();
+        Map<String, ContentLanguage> languagesByHosts = Maps.newHashMap();
 
-        for (I18nLanguage language: languageDao.getAllLanguages()) {
+        for (ContentLanguage language: languageDao.getAllLanguages()) {
             languagesByCodes.put(language.getCode(), language);
         }
 
@@ -265,7 +265,7 @@ public class Imcms {
 
 
         String languageId = languageIdProperty.getValue();
-        I18nLanguage defaultLanguage = languageDao.getById(Integer.parseInt(languageId));
+        ContentLanguage defaultLanguage = languageDao.getById(Integer.parseInt(languageId));
 
         if (defaultLanguage == null) {
             String msg = String.format("I18n configuration error. Default language can not be set. There is no language with id %s.", languageId);
@@ -290,7 +290,7 @@ public class Imcms {
 
             logger.info("I18n configuration: language code [" + languageCode + "] mapped to host(s) [" + value + "].");
 
-            I18nLanguage language = languagesByCodes.get(languageCode);
+            ContentLanguage language = languagesByCodes.get(languageCode);
 
             if (language == null) {
                 String msg = "I18n configuration error. Language with code [" + languageCode + "] is not defined in database.";
@@ -306,7 +306,7 @@ public class Imcms {
         }
 
 
-        return new I18nSupport(languagesByCodes, languagesByHosts, defaultLanguage);
+        return new I18nContentSupport(languagesByCodes, languagesByHosts, defaultLanguage);
     }
 
     /**

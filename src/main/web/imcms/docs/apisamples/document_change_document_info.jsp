@@ -5,7 +5,7 @@
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
-    I18nLanguage language = I18nSupport.getCurrentLanguage(); 
+    ContentLanguage language = I18nContentSupport.getCurrentLanguage();
 
     document.setHeadline(language, "Test headline text");
     document.setMenuText(language, "Test menu text");

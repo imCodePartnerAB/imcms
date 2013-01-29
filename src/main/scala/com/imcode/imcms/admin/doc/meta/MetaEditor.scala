@@ -33,7 +33,7 @@ import com.vaadin.server.Sizeable
 //   if this doc has custom target, then adds this target to the targets combo-box as a last item
 class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSupport {
 
-  type Data = (DocumentDomainObject, Map[I18nLanguage, I18nMeta])
+  type Data = (DocumentDomainObject, Map[ContentLanguage, I18nMeta])
 
   private var appearanceEditorOpt = Option.empty[AppearanceEditor]
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
@@ -62,7 +62,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
         case "doc_meta_editor.menu_item.appearance" =>
           if (appearanceEditorOpt.isEmpty) {
-            val i18nMetas: Map[I18nLanguage, I18nMeta] = Option(doc.getMetaId) match {
+            val i18nMetas: Map[ContentLanguage, I18nMeta] = Option(doc.getMetaId) match {
               case Some(id) =>
                 imcmsServices.getDocumentMapper.getI18nMetas(id).asScala.map(m => m.getLanguage -> m).toMap
               case _ =>

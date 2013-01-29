@@ -14,7 +14,7 @@ import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.context.annotation.Bean._
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
-import com.imcode.imcms.api.{DocRef, SystemProperty, I18nLanguage, TextHistory}
+import com.imcode.imcms.api.{DocRef, SystemProperty, ContentLanguage, TextHistory}
 
 import org.scalatest.fixture
 import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
@@ -22,7 +22,7 @@ import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
 @RunWith(classOf[JUnitRunner])
 class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
-  type FixtureParam = I18nLanguage
+  type FixtureParam = ContentLanguage
 
 	var textDao: TextDao = _
 
@@ -55,7 +55,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       contentRefOpt: Option[ContentRef] = None,
       no: Int = Default.no,
       text: String = Default.text,
-      language: I18nLanguage) =
+      language: ContentLanguage) =
 
     TextDomainObject.builder().docRef(DocRef.of(docId, docVersionNo)).no(no).text(text).language(language) |> { builder =>
       contentRefOpt.foreach(builder.contentRef)
@@ -110,7 +110,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
 
   test("delete text") { () =>
-    val contentRef = new ContentRef(100, 1)
+    val contentRef = ContentRef.of(100, 1)
     val contentRefOpts = Seq(None, Some(contentRef))
     val nos = 0 until 5
 
@@ -238,7 +238,7 @@ class TextDaoSuiteConfig {
       Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       Test.hibernate.configurators.BasicWithSql,
       Test.hibernate.configurators.addAnnotatedClasses(
-        classOf[I18nLanguage],
+        classOf[ContentLanguage],
         classOf[TextDomainObject],
         classOf[TextHistory]
       ),

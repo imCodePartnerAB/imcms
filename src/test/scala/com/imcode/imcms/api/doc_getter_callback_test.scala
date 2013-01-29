@@ -17,10 +17,10 @@ import imcode.server.{ImcmsServices, Imcms, ImcmsConstants}
 @RunWith(classOf[JUnitRunner])
 class DocGetterCallbackSuite extends FunSuite {
 
-  val i18nSupport = LanguageFX.mkI18nSupport()
+  val i18nContentSupport = LanguageFX.mkI18nSupport()
   val services = mock(classOf[ImcmsServices])
 
-  when(services.getI18nSupport).thenReturn(i18nSupport)
+  when(services.getI18nContentSupport).thenReturn(i18nContentSupport)
 
   test("default user - no params") {
     val request = MockitoSugar.mock[HttpServletRequest]
@@ -30,7 +30,7 @@ class DocGetterCallbackSuite extends FunSuite {
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn null
 
-    DocGetterCallbackUtil.updateUserDocGetterCallback(request, services, user)
+    DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
   }
 
@@ -42,10 +42,10 @@ class DocGetterCallbackSuite extends FunSuite {
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn null
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn null
 
-    DocGetterCallbackUtil.updateUserDocGetterCallback(request, services, user)
+    DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
 
-    assertEquals(LanguageFX.mkSwedish, user.getDocGetterCallback.languages.selected)
+    assertEquals(LanguageFX.mkSwedish, user.getDocGetterCallback.contentLanguages.preferred)
   }
 
   test("default user requesting working version") {
@@ -56,7 +56,7 @@ class DocGetterCallbackSuite extends FunSuite {
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "0"
 
-    DocGetterCallbackUtil.updateUserDocGetterCallback(request, services, user)
+    DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
   }
 
@@ -68,7 +68,7 @@ class DocGetterCallbackSuite extends FunSuite {
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "2"
 
-    DocGetterCallbackUtil.updateUserDocGetterCallback(request, services, user)
+    DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
   }
 
@@ -80,7 +80,7 @@ class DocGetterCallbackSuite extends FunSuite {
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "0"
 
-    DocGetterCallbackUtil.updateUserDocGetterCallback(request, services, user)
+    DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
 
     assertDGC[WorkingDocGetterCallback](user.getDocGetterCallback)
     val gdc = user.getDocGetterCallback.asInstanceOf[WorkingDocGetterCallback]
@@ -96,7 +96,7 @@ class DocGetterCallbackSuite extends FunSuite {
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
     when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "2"
 
-    DocGetterCallbackUtil.updateUserDocGetterCallback(request, services, user)
+    DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
 
     assertDGC[CustomDocGetterCallback](user.getDocGetterCallback)
     val gdc = user.getDocGetterCallback.asInstanceOf[CustomDocGetterCallback]

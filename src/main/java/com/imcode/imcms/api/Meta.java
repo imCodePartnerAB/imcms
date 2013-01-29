@@ -279,7 +279,7 @@ public class Meta implements Serializable, Cloneable {
             joinColumns = @JoinColumn(name = "doc_id"),
             inverseJoinColumns = @JoinColumn(name = "language_id")
     )
-    private Set<I18nLanguage> enabledLanguages = new HashSet<I18nLanguage>();
+    private Set<ContentLanguage> enabledLanguages = new HashSet<ContentLanguage>();
 
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -323,7 +323,7 @@ public class Meta implements Serializable, Cloneable {
             clone.categoryIds = new HashSet<Integer>(categoryIds);
 
             clone.keywords = new HashSet<String>(keywords);
-            clone.enabledLanguages = new HashSet<I18nLanguage>(enabledLanguages);
+            clone.enabledLanguages = new HashSet<ContentLanguage>(enabledLanguages);
 
             if (permissionSets != null) {
                 clone.permissionSets = permissionSets.clone();
@@ -570,12 +570,12 @@ public class Meta implements Serializable, Cloneable {
         this.disabledLanguageShowSetting = disabledLanguageShowSetting;
     }
 
-    public Set<I18nLanguage> getEnabledLanguages() {
+    public Set<ContentLanguage> getEnabledLanguages() {
         return enabledLanguages;
     }
 
-    public void setEnabledLanguages(Set<I18nLanguage> languages) {
-        this.enabledLanguages = languages != null ? languages : new HashSet<I18nLanguage>();
+    public void setEnabledLanguages(Set<ContentLanguage> languages) {
+        this.enabledLanguages = languages != null ? languages : new HashSet<ContentLanguage>();
     }
 
     // Transient properties

@@ -20,6 +20,8 @@ import javax.persistence.TemporalType;
 public class DocumentVersion implements Cloneable {
 
     public static final int WORKING_VERSION_NO = 0;
+    public static final String WORKING_VERSION_NAME = "working";
+    public static final String DEFAULT_VERSION_NAME = "default";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

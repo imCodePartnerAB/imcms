@@ -53,10 +53,10 @@ DocumentVersion version = document.getVersion();
 /* *******************************************************************************************
  *         Get languages                                                                     *
  ******************************************************************************************* */
-List<I18nLanguage> languages = Imcms.getServices().getI18nSupport().getLanguages();
-Set<I18nLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
-I18nLanguage defaultLanguage = Imcms.getServices().getI18nSupport().getDefaultLanguage();
-I18nLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().languages().selected();
+List<ContentLanguage> languages = Imcms.getServices().getI18nContentSupport().getLanguages();
+Set<ContentLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
+ContentLanguage defaultLanguage = Imcms.getServices().getI18nContentSupport().getDefaultLanguage();
+ContentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
 
 /* *******************************************************************************************
  *         BROWSER SNIFFER                                                                   *
@@ -146,7 +146,7 @@ if (null != languages) { %>
 	<tr><%
 	int iCount = 0 ;
 	int languagesPerRow = 7 ;
-	for (I18nLanguage lang: languages ) {
+	for (ContentLanguage lang: languages ) {
 		String langCode       = lang.getCode() ;
 		String langName       = lang.getName() ;
 		String langNameNative = lang.getNativeName() ;

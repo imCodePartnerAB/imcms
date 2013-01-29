@@ -1,5 +1,6 @@
 package imcode.server.user;
 
+import com.imcode.imcms.api.ContentLanguage;
 import com.imcode.imcms.api.DocGetterCallback;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
@@ -22,7 +23,6 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
-import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.Meta;
 
 public class UserDomainObject implements Cloneable, Serializable {
@@ -756,7 +756,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
     
     private boolean languageIsActive(DocumentDomainObject document) {
-    	I18nLanguage currentLanguage = getDocGetterCallback().languages().selected();
+    	ContentLanguage currentLanguage = getDocGetterCallback().contentLanguages().preferred();
     	Meta meta = document.getMeta();
     	boolean enabled = meta.getEnabledLanguages().contains(currentLanguage);
     	

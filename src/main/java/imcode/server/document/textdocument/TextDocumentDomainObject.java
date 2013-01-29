@@ -169,7 +169,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @return TextDomainObject or null if text can not be found.
      */
     public TextDomainObject getText(int textNo, ContentRef contentRef) {
-        return loopTexts.get(new ContentLoopItemKey(textNo, contentRef));
+        return contentRef == null ? texts.get(textNo) : loopTexts.get(new ContentLoopItemKey(textNo, contentRef));
     }
 
     /**

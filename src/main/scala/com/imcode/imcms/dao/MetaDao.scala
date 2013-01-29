@@ -49,7 +49,7 @@ class MetaDao extends HibernateSupport {
     "value" -> alias.toLowerCase
   )
 
-  def getI18nMeta(docId: Int, language: I18nLanguage): I18nMeta =
+  def getI18nMeta(docId: Int, language: ContentLanguage): I18nMeta =
     hibernate.getByNamedQueryAndNamedParams[I18nMeta](
       "I18nMeta.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
     ) |> opt getOrElse I18nMeta.builder() |> {

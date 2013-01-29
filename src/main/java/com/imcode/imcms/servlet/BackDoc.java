@@ -1,9 +1,9 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.CallbackLanguages;
+import com.imcode.imcms.api.ContentLanguages;
 import com.imcode.imcms.api.DefaultDocGetterCallback;
 import com.imcode.imcms.api.DocGetterCallback;
-import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.I18nContentSupport;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -47,9 +47,9 @@ public class BackDoc extends HttpServlet {
         if (null != lastTextDocument ) {
             redirectToDocumentId( req, res, lastTextDocument.getId() );
         } else {
-            I18nSupport i18nSupport = imcref.getI18nSupport();
-            CallbackLanguages params = new CallbackLanguages(i18nSupport.getDefaultLanguage(), i18nSupport.getDefaultLanguage());
-            DocGetterCallback callback = new DefaultDocGetterCallback(params);
+            I18nContentSupport i18nContentSupport = imcref.getI18nContentSupport();
+            ContentLanguages contentLanguages = new ContentLanguages(i18nContentSupport.getDefaultLanguage(), i18nContentSupport.getDefaultLanguage());
+            DocGetterCallback callback = new DefaultDocGetterCallback(contentLanguages);
             Imcms.getUser().setDocGetterCallback(callback);
             redirectToDocumentId( req, res, imcref.getSystemData().getStartDocument() );
         }

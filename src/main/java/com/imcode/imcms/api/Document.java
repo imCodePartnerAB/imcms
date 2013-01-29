@@ -12,7 +12,6 @@ import imcode.server.user.RoleId;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +20,6 @@ import org.apache.log4j.Logger;
 
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.util.ChainableReversibleNullComparator;
-import com.imcode.util.CountingIterator;
 
 public class Document implements Serializable {
 
@@ -135,7 +133,7 @@ public class Document implements Serializable {
 
     }
 
-    public I18nLanguage getLanguage() {
+    public ContentLanguage getLanguage() {
         return internalDocument.getLanguage();
     }
     

@@ -1,5 +1,6 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.imcms.api.ContentLanguage;
 import com.imcode.imcms.api.DocRef;
 import imcode.util.Parser;
 
@@ -9,8 +10,6 @@ import javax.persistence.*;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-
-import com.imcode.imcms.api.I18nLanguage;
 
 /**
  * Text doc's text field.
@@ -49,7 +48,7 @@ public class TextDomainObject implements Serializable, Cloneable {
             return this;
         }
 
-        public Builder language(I18nLanguage language) {
+        public Builder language(ContentLanguage language) {
             textDomainObject.language = language;
             return this;
         }
@@ -91,7 +90,7 @@ public class TextDomainObject implements Serializable, Cloneable {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private I18nLanguage language;
+    private ContentLanguage language;
 
     public TextDomainObject() {
         this("");
@@ -225,11 +224,11 @@ public class TextDomainObject implements Serializable, Cloneable {
         this.id = id;
     }
 
-    public I18nLanguage getLanguage() {
+    public ContentLanguage getLanguage() {
         return language;
     }
 
-    public void setLanguage(I18nLanguage language) {
+    public void setLanguage(ContentLanguage language) {
         this.language = language;
     }
 

@@ -74,7 +74,7 @@ public class DocumentLoader {
      * @param language
      * @return
      */
-    public DocumentDomainObject loadAndInitDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
+    public DocumentDomainObject loadAndInitDocument(Meta meta, DocumentVersion version, ContentLanguage language) {
         return initDocument(createDocument(meta, version, language));
     }
 
@@ -82,7 +82,7 @@ public class DocumentLoader {
     /**
      * Creates document instance.
      */
-    private DocumentDomainObject createDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
+    private DocumentDomainObject createDocument(Meta meta, DocumentVersion version, ContentLanguage language) {
         I18nMeta i18nMeta = metaDao.getI18nMeta(meta.getId(), language);
 
         if (i18nMeta == null) {

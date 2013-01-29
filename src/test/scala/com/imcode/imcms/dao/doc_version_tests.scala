@@ -169,7 +169,7 @@ class DocVersionDaoSuiteConfig {
         classOf[Meta],
         classOf[I18nMeta],
         classOf[DocumentVersion],
-        classOf[I18nLanguage],
+        classOf[ContentLanguage],
         classOf[DocumentProperty],
         classOf[CategoryDomainObject],
         classOf[CategoryTypeDomainObject],
