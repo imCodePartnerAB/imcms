@@ -9,17 +9,23 @@
           imcode.server.document.textdocument.ImageDomainObject.CropRegion,
           imcode.server.document.textdocument.ImageSource,
           imcode.server.document.textdocument.TextDocumentDomainObject,
+          imcode.server.Imcms,
+          imcode.server.ImcmsConstants,
           imcode.server.user.UserDomainObject,
           imcode.util.Html,
           imcode.util.ImcmsImageUtils,
           imcode.util.Utility,
           imcode.util.image.Format,
+          java.net.URLEncoder,
+          java.util.Properties,
           org.apache.commons.lang.StringEscapeUtils,
-          org.apache.commons.lang.StringUtils, java.util.Properties, imcode.server.ImcmsConstants"
+          org.apache.commons.lang.StringUtils"
 
 	contentType="text/html; charset=UTF-8"
 
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><%!
+%><%@taglib prefix="vel" uri="imcmsvelocity"
+%><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
+%><%!
 
 final static int GUI_INNER_WIDTH = 900 ;
 
@@ -35,11 +41,32 @@ final static int GUI_INNER_WIDTH = 900 ;
     UserDomainObject user = Utility.getLoggedOnUser( request );
     CropRegion cropRegion = image.getCropRegion();
 
+String queryString = "" ;
+boolean activateUseFixedBtn = (imageEditPage.getMaxWidth() > 0 || imageEditPage.getMaxHeight() > 0) ;
+
+if (activateUseFixedBtn) {
+	Object[] args = {
+					((null != imageEditPage.getDocument()) ? imageEditPage.getDocument().getId() : 0),
+					imageEditPage.getImageIndex(),
+					URLEncoder.encode(imageEditPage.getLabel(), Imcms.UTF_8_ENCODING),
+					((imageEditPage.getMaxWidth() > 0) ? imageEditPage.getMaxWidth() : imageEditPage.getForcedWidth()),
+					((imageEditPage.getMaxHeight() > 0) ? imageEditPage.getMaxHeight() : imageEditPage.getForcedHeight())
+	} ;
+	queryString = String.format(
+					"?meta_id=%s" +
+					"&amp;img=%s" +
+					"&amp;label=%s" +
+					"&amp;width=%s" +
+					"&amp;height=%s" +
+					"&amp;max-width=0" +
+					"&amp;max-height=0", args) ;
+}
+
 %><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <vel:velocity>
 <html>
 <head>
-<title><? templates/sv/change_img.html/1 ?></title>
+<title><fmt:message key="templates/sv/change_img.html/1" /></title>
 
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/imcms/css/imcms_admin.css.jsp">
 <script src="<%=request.getContextPath()%>/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
@@ -230,7 +257,7 @@ function resetCrop() {
 <div id="outer_container">
 	<div id="inner_container">
 #gui_outer_start()
-#gui_head( "<? global/imcms_administration ?>" )
+#gui_head( "<fmt:message key="global/imcms_administration" />" )
 <form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher" onsubmit="checkLinkType();">
 <%= Page.htmlHidden(request) %>
 <input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID %>" value="<%= image.getArchiveImageId() %>"/>
@@ -253,9 +280,9 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
         <td>
         <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td><input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/back ?>"></td>
+            <td><input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<fmt:message key="global/back" />"></td>
             <td>&nbsp;</td>
-            <td><input type="button" value="<? templates/sv/change_img.html/2002 ?>" title="<? templates/sv/change_img.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('ImageAdmin')"></td>
+            <td><input type="button" value="<fmt:message key="templates/sv/change_img.html/2002" />" title="<fmt:message key="templates/sv/change_img.html/2003" />" class="imcmsFormBtn" onClick="openHelpW('ImageAdmin')"></td>
         </tr>
         </table></td>
         <td>&nbsp;</td>
@@ -317,13 +344,13 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
                 <td><input type="submit" <%
                     %>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON %>" <%
                     %>class="imcmsFormBtnSmall" style="width:200px" <%
-                    %>value="<? templates/sv/change_img.html/2010 ?>"></td>
+                    %>value="<fmt:message key="templates/sv/change_img.html/2010" />"></td>
                 <% } %>
                 <% if (ImageEditPage.allowChooseFile(user)) { %>
 				<td><input type="submit" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>" <%
 						%>class="imcmsFormBtnSmall" style="width:200px" <%
-						%>value="<? templates/sv/change_img.html/2004 ?>" ></td>
+						%>value="<fmt:message key="templates/sv/change_img.html/2004" />" ></td>
                 <% } %>
 			</tr>
 			</table>
@@ -334,7 +361,7 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
             <td colspan="2">#gui_hr( "blue" )</td>
         </tr>
         <tr>
-            <td nowrap><? templates/sv/change_img.html/12 ?></td>
+            <td nowrap><fmt:message key="templates/sv/change_img.html/12" /></td>
             <td>
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
             <tr>
@@ -347,7 +374,7 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
             </table></td>
         </tr>
         <tr>
-            <td nowrap><? templates/sv/change_img.html/14 ?></td>
+            <td nowrap><fmt:message key="templates/sv/change_img.html/14" /></td>
             <td><input type="text" <%
 								%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>" <%
 								%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>" <%
@@ -355,27 +382,27 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
 						StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
         </tr>
 				<tr>
-					<td nowrap><? templates/sv/change_img.html/16 ?></td>
+					<td nowrap><fmt:message key="templates/sv/change_img.html/16" /></td>
 					<td>
 					<table border="0" cellspacing="0" cellpadding="0">
 					<tr>
 						<td><% 
                         if (imageEditPage.getMaxWidth() > 0) {
-                            %><? templates/sv/change_img.html/4012 ?><%
+                            %><fmt:message key="templates/sv/change_img.html/4012" /><%
                         } else {
-                            %><? templates/sv/change_img.html/17 ?><%
+                            %><fmt:message key="templates/sv/change_img.html/17" /><%
                         }
                         %></td>
 						<td>&nbsp;</td>
 						<td><%
                         if (imageEditPage.getMaxHeight() > 0) {
-                            %><? templates/sv/change_img.html/4013 ?><%
+                            %><fmt:message key="templates/sv/change_img.html/4013" /><%
                         } else {
-                            %><? templates/sv/change_img.html/18 ?><%
+                            %><fmt:message key="templates/sv/change_img.html/18" /><%
                         }
                         %></td>
 						<td>&nbsp;</td>
-						<td><? templates/sv/change_img.html/19 ?></td>
+						<td><fmt:message key="templates/sv/change_img.html/19" /></td>
 						<td>&nbsp;</td>
 						<td>&nbsp;</td>
 					</tr>
@@ -402,29 +429,37 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
 						%>size="4" maxlength="4" value="<%= image.getBorder() %>"></td>
 						<td>&nbsp;</td>
 						<td><input type="submit" name="<%= ImageEditPage.REQUEST_PARAMETER__PREVIEW_BUTTON %>" 
-                                   class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/2006 ?>"/></td>
+                                   class="imcmsFormBtnSmall" value="<fmt:message key="templates/sv/change_img.html/2006" />"/></td>
 					</tr>
 					</table></td>
+        </tr>
+        <% if (activateUseFixedBtn) { %>
+				<tr>
+					<td>&nbsp;</td>
+					<td><input type="button" onclick="document.location = '<%= request.getContextPath() + "/servlet/ChangeImage" + queryString %>'; return false"
+					           class="imcmsFormBtnSmall" value="<fmt:message key="templates/sv/change_img.html/use_fixed_btn_text" />"/> &nbsp;
+						<span class="imcmsAdmDim"><fmt:message key="templates/sv/change_img.html/use_fixed_info" /></span></td>
 				</tr>
+        <% } %>
         <% if (!image.isEmpty()) { %>
             <tr height="38">
-                <td nowrap><? templates/sv/change_img.html/4003 ?></td>
+                <td nowrap><fmt:message key="templates/sv/change_img.html/4003" /></td>
                 <td id="crop_cell">
                     <% if (cropRegion.isValid()) { %>
                         <table cellspacing="0" cellpadding="0" border="0">
                             <tr>
                                 <td>
-                                    <label for="crop_x1"><b><? templates/sv/change_img.html/4004 ?></b></label>
+                                    <label for="crop_x1"><b><fmt:message key="templates/sv/change_img.html/4004" /></b></label>
                                 </td>
                                 <td>
-                                    <label for="crop_y1"><b><? templates/sv/change_img.html/4005 ?></b></label>
+                                    <label for="crop_y1"><b><fmt:message key="templates/sv/change_img.html/4005" /></b></label>
                                 </td>
                                 <td>&nbsp;&nbsp;</td>
                                 <td>
-                                    <label for="crop_x2"><b><? templates/sv/change_img.html/4006 ?></b></label>
+                                    <label for="crop_x2"><b><fmt:message key="templates/sv/change_img.html/4006" /></b></label>
                                 </td>
                                 <td>
-                                    <label for="crop_y2"><b><? templates/sv/change_img.html/4007 ?></b></label>
+                                    <label for="crop_y2"><b><fmt:message key="templates/sv/change_img.html/4007" /></b></label>
                                 </td>
                                 <td>&nbsp;&nbsp;</td>
                                 <td></td>
@@ -440,11 +475,11 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
                                 <td>&nbsp;&nbsp;</td>
                                 <td>
                                     <input type="submit" name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_CROP_IMAGE %>" 
-                                           class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/4002 ?>"/>
+                                           class="imcmsFormBtnSmall" value="<fmt:message key="templates/sv/change_img.html/4002" />"/>
                                 </td>
                                 <td>&nbsp;</td>
                                 <td>
-                                    <input type="button" class="imcmsFormBtnSmall" onclick="resetCrop();" value="<? templates/sv/change_img.html/4008 ?>"/>
+                                    <input type="button" class="imcmsFormBtnSmall" onclick="resetCrop();" value="<fmt:message key="templates/sv/change_img.html/4008" />"/>
                                 </td>
                             </tr>
                         </table>
@@ -452,7 +487,7 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
                     
                     <input id="crop_btn" type="submit" name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_CROP_IMAGE %>"
                            style='<%= (cropRegion.isValid() ? "display:none;" : "") %>' 
-                           class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/4002 ?>"/>
+                           class="imcmsFormBtnSmall" value="<fmt:message key="templates/sv/change_img.html/4002" />"/>
                 </td>
             </tr>
         <% } %>
@@ -461,11 +496,11 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
                 <table cellspacing="0" cellpadding="0" border="0">
                     <% if (cropRegion.isValid()) { %>
                     <tr id="croppedSizeLabel">
-                        <td height="25"><? templates/sv/change_img.html/4010 ?></td>
+                        <td height="25"><fmt:message key="templates/sv/change_img.html/4010" /></td>
                     </tr>
                     <% } %>
                     <tr>
-                        <td height="25"><? templates/sv/change_img.html/4011 ?></td>
+                        <td height="25"><fmt:message key="templates/sv/change_img.html/4011" /></td>
                     </tr>
                 </table>
             </td>
@@ -488,7 +523,7 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
         </tr>
         
         <tr>
-            <td nowrap><label for="format"><? templates/sv/change_img.html/4009 ?></label></td>
+            <td nowrap><label for="format"><fmt:message key="templates/sv/change_img.html/4009" /></label></td>
             <td>
                 <select id="format" name="<%= ImageEditPage.REQUEST_PARAMETER__FORMAT %>">
                     <% for (Format format : ImageEditPage.ALLOWED_FORMATS) { %>
@@ -500,7 +535,7 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
             </td>
         </tr>
         <tr>
-            <td nowrap><? templates/sv/change_img.html/25 ?></td>
+            <td nowrap><fmt:message key="templates/sv/change_img.html/25" /></td>
             <td>
             <table border="0" cellspacing="0" cellpadding="0">
             <tr>
@@ -509,32 +544,32 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
 								%>id="<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>" <%
 								%>size="4" maxlength="4" value="<%= image.getVerticalSpace() %>"></td>
                 <td>&nbsp;</td>
-                <td><? templates/sv/change_img.html/27 ?></td>
+                <td><fmt:message key="templates/sv/change_img.html/27" /></td>
                 <td>&nbsp; &nbsp;</td>
                 <td><input type="text" <%
 								%>name="<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>" <%
 								%>id="<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>" <%
 								%>size="4" maxlength="4" value="<%= image.getHorizontalSpace() %>"></td>
                 <td>&nbsp;</td>
-                <td><? templates/sv/change_img.html/29 ?></td>
+                <td><fmt:message key="templates/sv/change_img.html/29" /></td>
             </tr>
             </table></td>
         </tr>
         <tr>
-            <td nowrap><? templates/sv/change_img.html/30 ?></td>
+            <td nowrap><fmt:message key="templates/sv/change_img.html/30" /></td>
             <td>
 						<select name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" size="1"><%
 							String align = image.getAlign() ; %>
-							<option value="" <%      if (StringUtils.isBlank(align)) { %> selected <% } %>><? templates/sv/change_img.html/31 ?></option>
-							<option value="top" <%       if ("top".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/33 ?></option>
-							<option value="middle" <%    if ("middle".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/34 ?></option>
-							<option value="bottom" <%    if ("bottom".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/35 ?></option>
-							<option value="left" <%      if ("left".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/39 ?></option>
-							<option value="right" <%     if ("right".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/40 ?></option>
+							<option value="" <%      if (StringUtils.isBlank(align)) { %> selected <% } %>><fmt:message key="templates/sv/change_img.html/31" /></option>
+							<option value="top" <%       if ("top".equalsIgnoreCase(align)) { %> selected <% } %>><fmt:message key="templates/sv/change_img.html/33" /></option>
+							<option value="middle" <%    if ("middle".equalsIgnoreCase(align)) { %> selected <% } %>><fmt:message key="templates/sv/change_img.html/34" /></option>
+							<option value="bottom" <%    if ("bottom".equalsIgnoreCase(align)) { %> selected <% } %>><fmt:message key="templates/sv/change_img.html/35" /></option>
+							<option value="left" <%      if ("left".equalsIgnoreCase(align)) { %> selected <% } %>><fmt:message key="templates/sv/change_img.html/39" /></option>
+							<option value="right" <%     if ("right".equalsIgnoreCase(align)) { %> selected <% } %>><fmt:message key="templates/sv/change_img.html/40" /></option>
 						</select></td>
         </tr>
         <tr>
-            <td nowrap><? templates/sv/change_img.html/41 ?></td>
+            <td nowrap><fmt:message key="templates/sv/change_img.html/41" /></td>
             <td><input type="text" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>" <%
 						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>" <%
@@ -543,26 +578,26 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
         </tr>
         <% if (imageEditPage.isLinkable()) { %>
         <tr>
-            <td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/change_img.html/43/1 ?>" )</td>
+            <td colspan="2">&nbsp;<br>#gui_heading( "<fmt:message key="templates/sv/change_img.html/43/1" />" )</td>
         </tr>
         <tr>
             <td nowrap>
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
             <tr>
-                <td rowspan="2" nowrap><? templates/sv/change_img.html/44 ?></td>
+                <td rowspan="2" nowrap><fmt:message key="templates/sv/change_img.html/44" /></td>
                 <td><input type="radio" name="linkType" id="linkType0" value="0" onClick="changeLinkType(0);"></td>
-                <td><label for="linkType0"><? templates/sv/change_img.html/4000 ?></label></td>
+                <td><label for="linkType0"><fmt:message key="templates/sv/change_img.html/4000" /></label></td>
             </tr>
             <tr>
                 <td><input type="radio" name="linkType" id="linkType1" value="1" onClick="changeLinkType(1);"></td>
-                <td><label for="linkType1"><? templates/sv/change_img.html/4001 ?></label></td>
+                <td><label for="linkType1"><fmt:message key="templates/sv/change_img.html/4001" /></label></td>
             </tr>
             </table></td>
             <td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_URL %>" size="92" maxlength="255" style="width: 100%" value="<%=
 						StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLinkUrl())) %>" onFocus="checkLinkOnFocus()" onBlur="checkLinkOnBlur()"></td>
         </tr>
         <tr>
-            <td nowrap><? templates/sv/change_img.html/46 ?></td>
+            <td nowrap><fmt:message key="templates/sv/change_img.html/46" /></td>
             <td>
             <table border="0" cellspacing="0" cellpadding="0">
             <tr>
@@ -574,11 +609,11 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
 									boolean targetParent = "_parent".equalsIgnoreCase(target);
 									boolean targetSelf   = "_self".equalsIgnoreCase(target) || StringUtils.isWhitespace(target);
 									boolean targetOther  = !(targetTop || targetBlank || targetParent || targetSelf) ; %>
-									<option value="_top" <% if (targetTop) { %> selected<% } %>><? templates/sv/change_img.html/47 ?></option>
-									<option value="_blank" <% if (targetBlank) { %> selected<% } %>><? templates/sv/change_img.html/48 ?></option>
-									<option value="_parent" <% if (targetParent) { %> selected<% } %>><? templates/sv/change_img.html/49 ?></option>
-									<option value="_self" <% if (targetSelf) { %> selected<% } %>><? templates/sv/change_img.html/50 ?></option>
-									<option <% if (targetOther) { %> selected<% } %>><? templates/sv/change_img.html/51 ?></option>
+									<option value="_top" <% if (targetTop) { %> selected<% } %>><fmt:message key="templates/sv/change_img.html/47" /></option>
+									<option value="_blank" <% if (targetBlank) { %> selected<% } %>><fmt:message key="templates/sv/change_img.html/48" /></option>
+									<option value="_parent" <% if (targetParent) { %> selected<% } %>><fmt:message key="templates/sv/change_img.html/49" /></option>
+									<option value="_self" <% if (targetSelf) { %> selected<% } %>><fmt:message key="templates/sv/change_img.html/50" /></option>
+									<option <% if (targetOther) { %> selected<% } %>><fmt:message key="templates/sv/change_img.html/51" /></option>
 								</select></td>
                 <td>&nbsp;&nbsp;</td>
                 <td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_TARGET %>" size="10" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(targetOther ? target : "") %>"></td>
@@ -591,10 +626,10 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
         </tr>
         <tr>
             <td colspan="2" align="right">
-            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="  <? templates/sv/change_img.html/2006 ?>  ">
-            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__OK_BUTTON %>" value="  <? templates/sv/change_img.html/2007 ?>  ">
-            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__DELETE_BUTTON %>" value="  <? templates/sv/change_img.html/2009 ?>  ">
-            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value=" <? templates/sv/change_img.html/2008 ?> "></td>
+            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="  <fmt:message key="templates/sv/change_img.html/2006" />  ">
+            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__OK_BUTTON %>" value="  <fmt:message key="templates/sv/change_img.html/2007" />  ">
+            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__DELETE_BUTTON %>" value="  <fmt:message key="templates/sv/change_img.html/2009" />  ">
+            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value=" <fmt:message key="templates/sv/change_img.html/2008" /> "></td>
         </tr>
         <tr>
             <td style="padding:0; width:170px;"><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="170" height="1" alt=""></td>
