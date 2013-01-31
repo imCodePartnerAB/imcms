@@ -95,6 +95,7 @@
                     //console.log('link (exist): ' + link) ;
                 }
                 link.removeAttribute('_cke_saved_href') ;
+                link.removeAttribute('data-cke-saved-href') ;
 
                 //console.log('link.href (after): ' + link.getAttribute('href')) ;
 

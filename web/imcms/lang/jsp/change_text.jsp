@@ -530,7 +530,7 @@ jQuery(document).ready(function($) {<%
 				$('#infoIeSource').remove() ;
 				$('#format_type_text').click().parent().parent().append('<div id="infoIeSource"><i><%= isSwe ?
 				"Redigera källa fungerar inte klokt i IE 7/8. Använd text-läget i editorn." :
-				"Edit source doesn\'t work properly in IE 7/8. Use the text mode in the editor." %></i></div>'); return false ;
+				"Edit source doesn\\'t work properly in IE 7/8. Use the text mode in the editor." %></i></div>'); return false ;
 			}) ;
 		}, 500) ;
 	}
