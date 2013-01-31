@@ -25,6 +25,8 @@ object Theme {
     val Done32: TR = Ok32
     val File16: TR = "icons/16/document.png"
     val Folder16: TR = "icons/16/folder.png"
+    val TextFormatPlain: TR = "icons/16/document-txt.png"
+    val TextFormatHtml: TR = "icons/16/document-web.png"
 
     object Browser {
       val TabHome32: TR = "icons/16/document-web.png"

@@ -12,13 +12,13 @@ import org.apache.commons.lang.StringUtils
 object DocGetterCallbacks {
 
   private sealed trait DocVersionType
-  private case class WorkingVersion() extends DocVersionType
-  private case class DefaultVersion() extends DocVersionType
+  private case object WorkingVersion extends DocVersionType
+  private case object DefaultVersion extends DocVersionType
   private case class CustomVersion(no: Int) extends DocVersionType
 
   private object DocVersionType {
     def unapply(string: String): Option[DocVersionType] =
-      StringUtils.trimToEmpty(string).toLowerCase |> PartialFunction.condOpt {
+      PartialFunction.condOpt(StringUtils.trimToEmpty(string).toLowerCase) {
         case DocumentVersion.DEFAULT_VERSION_NAME => DefaultVersion
         case DocumentVersion.WORKING_VERSION_NAME => WorkingVersion
         case PosInt(no) if no == DocumentVersion.WORKING_VERSION_NO => WorkingVersion

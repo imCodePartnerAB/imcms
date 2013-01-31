@@ -23,9 +23,12 @@ import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.{VaadinService, Page, VaadinRequest, ExternalResource}
 import com.vaadin.shared.ui.dd.VerticalDropLocation
-import scala.reflect.internal.Trees.Try
-import scala.util.Try
 import imcode.server.Imcms
+import imcode.server.user.UserDomainObject
+import imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
+import imcode.server.document.NoPermissionToEditDocumentException
+import com.imcode.imcms.mapping.DocumentSaveException
+import java.util.EnumSet
 
 
 // Todo: check permissions
@@ -173,7 +176,7 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   //    return;
   // }
 
-  // [~] Select or create text in current language, set editor label
+  // [+] Select or create text in current language, set editor label
   //  int textIndex = Integer.parseInt(request.getParameter("txt"));
   //  String label = null == request.getParameter("label") ? "" : request.getParameter("label");
   //
@@ -221,13 +224,15 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
 //        }
 //        %>
 
+  // [-]
   // History / RESTORE
+  // [-]
   // if rows == 1 show text field, else text area if rows not defined default to 25
   // NB! showModeEditor = false if rows > 0
   //
-  // ?????? editorHidden - show originail i.e. w/o editoc controls ??? ?????
+  // ?????? editorHidden - show original i.e. w/o editoc controls ??? ?????
 
-  // [-] Save text
+  // [+] Save text
   // -check permissionSet.getEditTexts()
   // -save text
   // -imcref.updateMainLog("Text " + txt_no + " in [" + meta_id + "] modified by user: [" + user.getFullName()+ "]");
@@ -247,14 +252,6 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   // [-] Delete SaveText servet
   // [-] Delete change_text.jsp + resources
   // [-] Remove Xina, install CKEditor
-  // [-]
-  //
-  //
-  //
-  //
-  //
-  //
-  //
   def mkWorkingDocTextEditorComponent(mappedRequest: EditWorkingDocText) = new FullScreenEditorUI(s"Document ${mappedRequest.docId} text no ${mappedRequest.textNo}") |>> { ui =>
     val formats = mappedRequest.vaadinRequest.getParameterMap.get("format") match {
       case null => Set.empty[String]
@@ -279,30 +276,30 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
     val labelOpt = mappedRequest.vaadinRequest.getParameter("label") |> opt map (_.trim) filter (_.length > 0)
 
 
-    val docIdOpt = mappedRequest.vaadinRequest.getParameter("docId") |> Try(_.toInt).toOption
-    val textNoOpt = mappedRequest.vaadinRequest.getParameter("textNo") |> Try(_.toInt).toOption
+    val docIdOpt = mappedRequest.vaadinRequest.getParameter("docId") |> PosInt.unapply
+    val textNoOpt = mappedRequest.vaadinRequest.getParameter("textNo") |> PosInt.unapply
 
     val textDao = imcmsServices.getSpringBean(classOf[TextDao])
-    val texts = textDao.getTexts(DocRef.of(docIdOpt, DocumentVersion.WORKING_VERSION_NO), contentRefOpt, createIfNotExists = true)
+    val texts = textDao.getTexts(DocRef.of(docIdOpt.get, DocumentVersion.WORKING_VERSION_NO), textNoOpt.get, contentRefOpt, createIfNotExists = true)
 
-    for (text <- texts.asScala if text.getId == null) {
+    for (text <- texts.asScala if text.getDocRef == null) {
       text.setType(TextDomainObject.TEXT_TYPE_HTML)
     }
 
     // Current language
-    val userLanguage = Imcms.getUser.getDocGetterCallback.contentLanguages.preferred
+    val preferredLanguage = Imcms.getUser.getDocGetterCallback.contentLanguages.preferred
 
     val doc = app.imcmsServices.getDocumentMapper.getWorkingDocument(mappedRequest.docId).asInstanceOf[TextDocumentDomainObject]
-    val editor = new TextEditor(doc, texts.asScala)
+    val editor = new TextEditor(texts.asScala, TextEditorSettings(Html, true))
 
     ui.mainUI = editor.ui
     editor.ui.setSize(900, 600)
 
+    ui.buttons.btnSave.addClickHandler {
+      save(closeAfterSave = false)
+    }
     ui.buttons.btnSaveAndClose.addClickHandler {
-      editor.collectValues().right.get |> { texts =>
-        imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, UI.getCurrent.imcmsUser)
-        closeEditor()
-      }
+      save(closeAfterSave = true)
     }
 
     ui.buttons.btnClose.addClickHandler {
@@ -311,6 +308,22 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
 
     def closeEditor() {
       Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
+    }
+
+    def save(closeAfterSave: Boolean) {
+      editor.collectValues().right.get |> { texts =>
+        // -check permissionSet.getEditTexts()
+        try {
+          imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, UI.getCurrent.imcmsUser)
+          val user = new UserDomainObject() // fixme
+          imcmsServices.updateMainLog(s"Text ${textNoOpt.get} in [${docIdOpt.get}] modified by user: [${user.getFullName}]");
+          if (closeAfterSave) closeEditor()
+        } catch {
+          case e: NoPermissionToEditDocumentException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
+          case e: NoPermissionToAddDocumentToMenuException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
+          case e: DocumentSaveException => throw new ShouldNotBeThrownException(e)
+        }
+      }
     }
   }
 }
@@ -577,59 +590,119 @@ class MenuEditorUI extends VerticalLayout with FullSize {
 }
 
 
-// todo: mk text if not exists
-// todo: check perms
-// todo: pick user lang at start
-// todo: pick a format + rows no
+sealed trait TextFormat { def formatType: TextDomainObject.FormatType }
+case object Html extends TextFormat { val formatType = TextDomainObject.FormatType.HTML }
+case object PlainSingleLine extends TextFormat { val formatType = TextDomainObject.FormatType.PLAIN }
+case object PlainMultiLine extends TextFormat { val formatType = TextDomainObject.FormatType.PLAIN }
 
-case class TextEditorSettings(linesCountOpt: Option[Int], formatOpt: Option[String])
+case class TextEditorSettings(format: TextFormat, canChangeFormat: Boolean)
 
-class TextEditor(doc: TextDocumentDomainObject, texts: Seq[TextDomainObject]) extends Editor with ImcmsServicesSupport {
+class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorSettings) extends Editor with ImcmsServicesSupport {
 
   type Data = Seq[TextDomainObject]
 
-  private var state: Seq[TextDomainObject] = _
-  private var stateUis: Seq[RichTextArea] = _
+  private case class TextState(text: TextDomainObject, textUI: AbstractField[String])
 
-  val ui = new TextEditorUI
+  private var states: Seq[TextState] = _
+
+  val ui = new TextEditorUI |>> { ui =>
+    if (!settings.canChangeFormat) {
+      ui.miFormatHtml.setEnabled(settings.format.formatType == TextDomainObject.FormatType.HTML)
+      ui.miFormatPlain.setEnabled(settings.format.formatType == TextDomainObject.FormatType.PLAIN)
+    }
+
+    ui.miFormatHtml.setCommandHandler { setFormatType(TextDomainObject.FormatType.HTML) }
+    ui.miFormatPlain.setCommandHandler { setFormatType(TextDomainObject.FormatType.PLAIN) }
+  }
 
   resetValues()
 
-  def resetValues() {
-    state = texts.map(_.clone)
-    stateUis = state.map { text =>
-      new RichTextArea with FullSize |>> { rt =>
-        rt.value = text.getText
+  private def getTexts(): Seq[TextDomainObject] = {
+    if (states == null) {
+      texts.map(_.clone())
+    } else {
+      states.map {
+        case TextState(text, textUI) => text.clone() |>> { _.setText(textUI.getValue) }
       }
+    }
+  }
+
+  private def setFormatType(formatType: TextDomainObject.FormatType) {
+    formatType match {
+      case TextDomainObject.FormatType.HTML =>
+        ui.miFormatHtml.setChecked(true)
+        ui.miFormatPlain.setChecked(false)
+
+      case TextDomainObject.FormatType.PLAIN =>
+        ui.miFormatHtml.setChecked(false)
+        ui.miFormatPlain.setChecked(true)
+    }
+
+    val selectedTabPositionOpt =
+      for {
+        component <- ui.tsTexts.getSelectedTab |> opt
+        tab <- ui.tsTexts.getTab(component) |> opt
+      } yield ui.tsTexts.getTabPosition(tab)
+
+    val tabIndex = ui.tsTexts.getTabIndex
+
+    states = texts.map { text =>
+      TextState(
+        text,
+        formatType |> {
+          case TextDomainObject.FormatType.HTML => new RichTextArea with FullSize
+          case _ => settings.format match {
+            case PlainSingleLine => new TextField
+            case _ => new TextArea with FullSize
+          }
+        } |>> { textUI =>
+          textUI.value = text.getText
+        }
+      )
     }
 
     ui.tsTexts.removeAllComponents()
 
-    (state, stateUis).zipped.foreach { (text, textUi) =>
-      ui.tsTexts.addTab(textUi) |> { tab =>
+    for (TextState(text, textUI) <- states) {
+      ui.tsTexts.addTab(textUI) |> { tab =>
         tab.setCaption(text.getLanguage.getName)
+        tab.setIcon(Theme.Icon.Language.flag(text.getLanguage))
       }
+    }
+
+    selectedTabPositionOpt.foreach(ui.tsTexts.setSelectedTab)
+
+    formatType |> {
+      case TextDomainObject.FormatType.HTML => ("Format: HTML", Theme.Icon.TextFormatHtml)
+      case _ => ("Format: Plain text", Theme.Icon.TextFormatPlain)
+    } |> {
+      case (formatTypeName, formatTypeIcon) =>
+        ui.lblStatus.setCaption(formatTypeName)
+        ui.lblStatus.setIcon(formatTypeIcon)
     }
   }
 
+  def resetValues() {
+    setFormatType(settings.format.formatType)
+  }
+
   def collectValues(): ErrorsOrData = {
-    (state, stateUis).zipped.foreach { (text, textUi) => text.setText(textUi.value) }
-    Right(state.map(_.clone))
+    Right(getTexts())
   }
 }
 
 
-class TextEditorUI extends VerticalLayout with FullSize {
+class TextEditorUI extends VerticalLayout with Spacing with FullSize {
   val mb = new MenuBar with FullWidth
-  val miShowHistory = mb.addItem("Show history")
-  val miRestore = mb.addItem("Restore")
+  val miFormat = mb.addItem("Format")
+  val miFormatHtml = miFormat.addItem("HTML") |>> { _.setCheckable(true) }
+  val miFormatPlain = miFormat.addItem("Plain text")|>> { _.setCheckable(true) }
+  val miHistory = mb.addItem("History")
   val miHelp = mb.addItem("Help")
   val tsTexts = new TabSheet with FullSize
-  val
+  val lblStatus = new Label
 
-  private val lytFormat = new FormLayout
-
-  this.addComponents( mb, lytFormat, tsTexts)
+  this.addComponents(mb, tsTexts, lblStatus)
   setExpandRatio(tsTexts, 1f)
 }
 

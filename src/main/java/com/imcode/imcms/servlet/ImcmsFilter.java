@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.DocGetterCallbacks$;
+import com.imcode.imcms.api.DocGetterCallbacks;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -114,7 +114,7 @@ public class ImcmsFilter implements Filter {
                 Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
                 Imcms.setUser(user);
-                DocGetterCallbacks$.updateUserDocGetterCallback(request, Imcms.getServices(), user);
+                DocGetterCallbacks.updateUserDocGetterCallback(request, Imcms.getServices(), user);
 
                 Utility.initRequestWithApi(request, user);
 
