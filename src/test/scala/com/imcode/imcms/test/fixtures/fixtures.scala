@@ -100,7 +100,7 @@ object UserFX {
   def mkDefaultUser: UserDomainObject = mkUser(2, RoleId.USERS)
 
   def mkUser(id: Int, roleIds: RoleId*): UserDomainObject = new UserDomainObject(id) |>> { user =>
-    roleIds foreach user.addRoleId
+    roleIds.foreach(user.addRoleId)
   }
 }
 

@@ -17,7 +17,7 @@ package object data extends LowPriorityPropertyImplicits {
     }
 
 
-  implicit def fnToPropertyValueChangeListener(fn: (Property.ValueChangeEvent => Any)): Property.ValueChangeListener = {
+  implicit def fnToPropertyValueChangeListener(fn: Property.ValueChangeEvent => Any): Property.ValueChangeListener = {
     new Property.ValueChangeListener {
       def valueChange(event: Property.ValueChangeEvent): Unit = fn(event)
     }

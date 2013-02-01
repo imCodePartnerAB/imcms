@@ -100,7 +100,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
         new OkCancelDialog("Add role") |>> { dlg =>
           val availableRoles = availableRolesWithPermsSetTypes.keySet
           dlg.mainUI = new AddRolePermSetDialogMainUI |>> { c =>
-            availableRoles foreach { role => c.cbRole.addItem(role, role.getName) }
+            availableRoles.foreach { role => c.cbRole.addItem(role, role.getName) }
 
             c.cbRole.addValueChangeHandler {
               val availablePermSetTypes = availableRolesWithPermsSetTypes(c.cbRole.value)

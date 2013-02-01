@@ -29,6 +29,7 @@ import imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarl
 import imcode.server.document.NoPermissionToEditDocumentException
 import com.imcode.imcms.mapping.DocumentSaveException
 import java.util.EnumSet
+import org.apache.commons.lang3.{StringEscapeUtils, StringUtils}
 
 
 // Todo: check permissions
@@ -203,6 +204,7 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
 //  boolean editorHidden   = getCookie("imcms_hide_editor", request).equals("true") ;
 //  int rows = (request.getParameter("rows") != null && request.getParameter("rows").matches("^\\d+$")) ? Integer.parseInt(request.getParameter("rows")) : 0 ;
 //
+// [-]
 //  if (rows > 0) {
 //    showModeEditor = false;
 //  }
@@ -252,7 +254,29 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   // [-] Delete SaveText servet
   // [-] Delete change_text.jsp + resources
   // [-] Remove Xina, install CKEditor
-  def mkWorkingDocTextEditorComponent(mappedRequest: EditWorkingDocText) = new FullScreenEditorUI(s"Document ${mappedRequest.docId} text no ${mappedRequest.textNo}") |>> { ui =>
+  //
+  // [-] Detect type using text format
+  // [-] Escape HTML
+/*
+        <div id="editor"><%
+	        if (rows == 1) { %>
+	          <input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
+	        } else { %>
+            <textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width: 100%;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
+	        } %>
+        </div>
+   */
+  // [+] label
+  // [-] validate
+  // [!] Return URL
+  def mkWorkingDocTextEditorComponent(mappedRequest: EditWorkingDocText) = new FullScreenEditorUI() |>> { ui =>
+    val title = mappedRequest.vaadinRequest.getParameter("label").trimToNull match {
+      case null => s"Document ${mappedRequest.docId} text no ${mappedRequest.textNo}"
+      case label => label |> StringEscapeUtils.escapeHtml4
+    }
+
+    ui.setTitle(title)
+
     val formats = mappedRequest.vaadinRequest.getParameterMap.get("format") match {
       case null => Set.empty[String]
       case array => array.toSet
@@ -267,13 +291,13 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
     val showModeHtml = formats.isEmpty || formats.contains("html") || formats.contains("none")
     val showModeEditor = formats.isEmpty && rowsCountOpt.isEmpty
 
-    val ContentRefEx = """(\d+)_(\d+)""".r
+    val ContentRefExt = """(\d+)_(\d+)""".r
     val contentRefOpt = mappedRequest.vaadinRequest.getParameter("contentRef") match {
-      case ContentRefEx(loopNo, contentNo) => ContentRef.of(loopNo.toInt, contentNo.toInt) |> opt
+      case ContentRefExt(loopNo, contentNo) => ContentRef.of(loopNo.toInt, contentNo.toInt).asOption
       case _ => None
     }
 
-    val labelOpt = mappedRequest.vaadinRequest.getParameter("label") |> opt map (_.trim) filter (_.length > 0)
+
 
 
     val docIdOpt = mappedRequest.vaadinRequest.getParameter("docId") |> PosInt.unapply
@@ -315,7 +339,7 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
         // -check permissionSet.getEditTexts()
         try {
           imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, UI.getCurrent.imcmsUser)
-          val user = new UserDomainObject() // fixme
+          val user = new UserDomainObject() // todo: fixme
           imcmsServices.updateMainLog(s"Text ${textNoOpt.get} in [${docIdOpt.get}] modified by user: [${user.getFullName}]");
           if (closeAfterSave) closeEditor()
         } catch {
@@ -364,7 +388,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
             doc <- dlg.projection.selection
             docId = doc.getId
             if !state.getItemsMap.containsKey(docId)
-            doc <- imcmsServices.getDocumentMapper.getDefaultDocument(docId) |> opt
+            doc <- imcmsServices.getDocumentMapper.getDefaultDocument(docId).asOption
           } {
             val docRef = imcmsServices.getDocumentMapper.getDocumentReference(doc)
             val menuItem = new MenuItemDomainObject(docRef)
@@ -466,7 +490,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
         val menuItems = state.getItemsMap
 
         for {
-          nodes <- container.rootItemIds() |> opt
+          nodes <- container.rootItemIds().asOption
           (docId, index) <- nodes.asInstanceOf[JCollection[DocId]].asScala.zipWithIndex
         } {
           menuItems.get(docId) |> { _.setSortKey(index + 1) }
@@ -640,8 +664,8 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorSettings) ext
 
     val selectedTabPositionOpt =
       for {
-        component <- ui.tsTexts.getSelectedTab |> opt
-        tab <- ui.tsTexts.getTab(component) |> opt
+        component <- ui.tsTexts.getSelectedTab.asOption
+        tab <- ui.tsTexts.getTab(component).asOption
       } yield ui.tsTexts.getTabPosition(tab)
 
     val tabIndex = ui.tsTexts.getTabIndex
@@ -708,10 +732,10 @@ class TextEditorUI extends VerticalLayout with Spacing with FullSize {
 
 
 
-class FullScreenEditorUI(caption: String) extends CustomComponent with FullSize {
+class FullScreenEditorUI(title: String = null) extends CustomComponent with FullSize {
   private val lytContent = new VerticalLayout with FullSize
   private val lytComponents = new GridLayout(1, 3) with Spacing with Margin with UndefinedSize
-  private val pnlCaption = new Panel(caption) with FullHeight
+  private val pnlTitle = new Panel(title) with FullHeight
   private val lytButtons = new HorizontalLayout with Spacing with UndefinedSize
 
   lytContent.addComponent(lytComponents)
@@ -726,7 +750,7 @@ class FullScreenEditorUI(caption: String) extends CustomComponent with FullSize 
 
   lytButtons.addComponents(buttons.btnSave, buttons.btnSaveAndClose, buttons.btnClose)
 
-  lytComponents.addComponent(pnlCaption, 0, 0)
+  lytComponents.addComponent(pnlTitle, 0, 0)
   lytComponents.addComponent(lytButtons, 0, 2)
   lytComponents.setComponentAlignment(lytButtons, Alignment.TOP_CENTER)
 
@@ -736,5 +760,9 @@ class FullScreenEditorUI(caption: String) extends CustomComponent with FullSize 
     lytComponents.addComponent(component, 0, 1)
 
     lytComponents.setComponentAlignment(component, Alignment.TOP_CENTER)
+  }
+
+  def setTitle(title: String) {
+    pnlTitle.setCaption(title)
   }
 }

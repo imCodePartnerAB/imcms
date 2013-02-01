@@ -196,7 +196,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       val image = new ImageDomainObject
       val menu = new MenuDomainObject
 
-      menus(no).getMenuItems foreach { menuItem =>
+      menus(no).getMenuItems.foreach { menuItem =>
         menu.addMenuItem(new MenuItemDomainObject(new GetterDocumentReference(menuItem.getDocumentId, docMapper)))
       }
 

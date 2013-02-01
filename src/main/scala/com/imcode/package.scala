@@ -20,15 +20,26 @@ package object imcode {
   type JIterator[A <: AnyRef] = java.util.Iterator[A]
 
 
-  def using[R : ManagedResource, A](resource: R)(f: R => A): A = {
+  def using[R : ManagedResource, A](resource: R)(fn: R => A): A = {
     try {
-      f(resource)
+      fn(resource)
     } finally {
       if (resource != null)
         Try(implicitly[ManagedResource[R]].close(resource))
     }
   }
 
+
+  implicit class NullableOps[A <: AnyRef](nullable: A) {
+    def asOption: Option[A] = Option(nullable)
+  }
+
+
+  implicit class StringOps(string: String) {
+    def trimToNull: String = string.trimToOption.orNull
+    def trimToEmpty: String = string.asOption.map(_.trim).getOrElse("")
+    def trimToOption: Option[String] = string.asOption.map(_.trim).filter(_.length > 0)
+  }
 
   /**
    * Emulates Java ternary operator in the form {@code condition ? thenExpression | elseExpression}.
@@ -43,9 +54,9 @@ package object imcode {
 
 
   implicit class PipeOperators[A](a: A) {
-    def |>[B](f: A => B): B = f(a)
+    def |>[B](fn: A => B): B = fn(a)
 
-    def |>>(f: A => Any): A = { f(a); a }
+    def |>>(fn: A => Any): A = { fn(a); a }
   }
 
 //  "value"
@@ -93,25 +104,25 @@ package object imcode {
 
   def whenOpt[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
 
-  def doto[A](exp: A, exps: A*)(f: A => Any) {
-    (exp +: exps).foreach(f)
+  def doto[A](exp: A, exps: A*)(fn: A => Any) {
+    (exp +: exps).foreach(fn)
   }
 
 
-  def unfold[A, B](init: A)(f: A => Option[(B, A)]): List[B] = f(init) match {
+  def unfold[A, B](init: A)(fn: A => Option[(B, A)]): List[B] = fn(init) match {
     case None => Nil
-    case Some((r, next)) => r :: unfold(next)(f)
+    case Some((r, next)) => r :: unfold(next)(fn)
   }
 
-  def whenSingle[A, T[A] <: Traversable[A], B](traversable: T[A])(f: A => B): Option[B] = {
+  def whenSingle[A, T[A] <: Traversable[A], B](traversable: T[A])(fn: A => B): Option[B] = {
     whenOpt(traversable.size == 1) {
-      f(traversable.head)
+      fn(traversable.head)
     }
   }
 
-  def whenNotEmpty[A, T[A] <: Traversable[A], B](traversable: T[A])(f: T[A] => B): Option[B] = {
+  def whenNotEmpty[A, T[A] <: Traversable[A], B](traversable: T[A])(fn: T[A] => B): Option[B] = {
     whenOpt(traversable.nonEmpty) {
-      f(traversable)
+      fn(traversable)
     }
   }
 
@@ -125,8 +136,8 @@ package object imcode {
     def Ref[A <: AnyRef] = new AtomicReference[A]
     def Ref[A <: AnyRef](value: A) = new AtomicReference(value)
 
-    def swap[A](ref: AtomicReference[A])(f: A => A): A = ref.get |> f |>> ref.set
-    def swap[A](f: A => A)(ref: AtomicReference[A]): A = swap(ref)(f)
+    def swap[A](ref: AtomicReference[A])(fn: A => A): A = ref.get |> fn |>> ref.set
+    def swap[A](fn: A => A)(ref: AtomicReference[A]): A = swap(ref)(fn)
   }
 
 

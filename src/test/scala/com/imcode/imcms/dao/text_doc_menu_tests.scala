@@ -47,7 +47,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
     menuDao.getMenus(DocRef.of(docId, docVersionNo)) |>> { _.asScala |> { menus =>
       if (assertNotEmpty) {
         assertTrue("menus exist", menus.nonEmpty)
-        menus foreach { menu =>
+        menus.foreach { menu =>
           assertEquals("docRef", DocRef.of(docId, docVersionNo), menu.getDocRef)
         }
       }}

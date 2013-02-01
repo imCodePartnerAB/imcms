@@ -76,7 +76,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
     def setTemplatesNamesAsComboBoxItems(cb: ComboBox with SingleSelect[String], selectedTemplateName: String) {
       cb.removeAllItems()
       templatesNames.foreach(cb.addItem)
-      defaultTemplateNameOpt.orElse(Option(selectedTemplateName)).foreach(cb.select)
+      defaultTemplateNameOpt.orElse(selectedTemplateName.asOption).foreach(cb.select)
     }
 
     setTemplatesNamesAsComboBoxItems(ui.cbDefaultTemplate, doc.getDefaultTemplateName)

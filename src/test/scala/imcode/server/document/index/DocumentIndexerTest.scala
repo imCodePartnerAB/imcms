@@ -145,7 +145,7 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       for (file <- Test.dir("src/test/resources/test-file-doc-files").listFiles) {
         val fdf = new FileDocumentFile |>> { fdf =>
           fdf.setInputStreamSource(new FileInputStreamSource(file))
-          fdf.setMimeType("");
+          fdf.setMimeType("")
         }
 
         new FileDocumentDomainObject |>> { d =>

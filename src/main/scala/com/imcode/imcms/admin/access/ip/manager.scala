@@ -80,9 +80,12 @@ class IPAccessManager(app: UI) {
       dlg.mainUI = new IPAccessEditorUI |>> { c =>
 
         c.txtId.value = if (isNew) "" else id.toString
-        c.userPickerUI.txtLoginName.value = (vo.getUserId |> opt map { roleMapper getUser _.intValue } map { _.getLoginName } getOrElse "")
-        c.txtFrom.value = vo.getStart |> opt map toDDN getOrElse ""
-        c.txtTo.value = vo.getEnd |> opt map toDDN getOrElse ""
+        c.userPickerUI.txtLoginName.value = vo.getUserId.asOption
+          .map(userId => roleMapper.getUser(userId.intValue))
+          .map(user => user.getLoginName).getOrElse("")
+
+        c.txtFrom.value = vo.getStart.asOption.map(toDDN).getOrElse("")
+        c.txtTo.value = vo.getEnd.asOption.map(toDDN).getOrElse("")
         c.userPickerUI.btnChoose.addClickHandler {
           new UserSingleSelectDialog |>> { dlg =>
             dlg.setOkButtonHandler {

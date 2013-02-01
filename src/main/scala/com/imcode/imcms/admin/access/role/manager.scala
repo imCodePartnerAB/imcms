@@ -36,7 +36,7 @@ class RoleManager(app: UI) {
         new ConfirmationDialog("Delete selected role?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
-              Ex.allCatch.either(roleMapper.getRole(id) |> opt foreach roleMapper.deleteRole) match {
+              Ex.allCatch.either(roleMapper.getRole(id).asOption.foreach(roleMapper.deleteRole)) match {
                 case Right(_) =>
                   Page.getCurrent.showInfoNotification("Role has been deleted")
                 case Left(ex) =>

@@ -81,7 +81,7 @@ class CategoryMapper extends HibernateSupport {
   @throws(classOf[CategoryAlreadyExistsException])
   def saveCategory(category: CategoryDomainObject): CategoryDomainObject = {
     if (category.getId == 0) {
-      getCategoryByTypeAndName(category.getType, category.getName) |> opt foreach { categoryInDb =>
+      getCategoryByTypeAndName(category.getType, category.getName).asOption.foreach { categoryInDb =>
         throw new CategoryAlreadyExistsException("A category with name \"" + category.getName
                                                  + "\" already exists in category type \""
                                                  + category.getType.getName
@@ -95,7 +95,7 @@ class CategoryMapper extends HibernateSupport {
   def getCategories(categoryIds: JCollection[JInteger]): JSet[CategoryDomainObject] = {
     val categories = for {
       categoryId <- categoryIds.asScala
-      category <- Option(getCategoryById(categoryId))
+      category <- getCategoryById(categoryId).asOption
     } yield category
 
     categories.toSet.asJava

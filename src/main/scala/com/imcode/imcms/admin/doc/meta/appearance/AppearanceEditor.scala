@@ -52,7 +52,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[ContentLanguage, I18nMeta]) ex
 
     for (language <- languages)
     yield {
-      val caption = language.getNativeName + ((language == defaultLanguage) ? " (default)" |  "")
+      val caption = language.getNativeName + (if (language == defaultLanguage) " (default)" else "")
       new I18nMetaEditorUI(language, caption)
     }
   }
@@ -139,9 +139,8 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[ContentLanguage, I18nMeta]) ex
       }
     }
 
-    val alias = Option(meta.getAlias)
-    ui.pnlAlias.txtAlias.setInputPrompt(Option(meta.getId).map(_.toString).orNull)
-    ui.pnlAlias.txtAlias.value = alias.getOrElse("")
+    ui.pnlAlias.txtAlias.setInputPrompt(meta.getId.asOption.map(_.toString).orNull)
+    ui.pnlAlias.txtAlias.value = meta.getAlias.trimToEmpty
     ui.pnlLanguages.cbShowMode.select(meta.getI18nShowSetting)
 
     for ((target, targetCaption) <- ListMap("_self" -> "Same frame", "_blank" -> "New window", "_top" -> "Replace all")) {

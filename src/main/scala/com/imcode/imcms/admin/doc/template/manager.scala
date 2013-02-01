@@ -91,7 +91,7 @@ class TemplateManager(app: UI) {
         new ConfirmationDialog("Delete selected template?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
-              Ex.allCatch.either(Option(templateMapper getTemplateByName name) foreach templateMapper.deleteTemplate) match {
+              Ex.allCatch.either(templateMapper.getTemplateByName(name).asOption.foreach(templateMapper.deleteTemplate)) match {
                 case Right(_) =>
                   Page.getCurrent.showInfoNotification("Template has been deleted")
                 case Left(ex) =>
@@ -136,7 +136,7 @@ class TemplateManager(app: UI) {
       doto(miDownload, miRename, miEditContent, miDelete) { _ setEnabled enabled }
     }
 
-    miDocuments.setEnabled(Option(tblTemplates.value) map { name =>
+    miDocuments.setEnabled(tblTemplates.value.asOption.map { name =>
       templateMapper.getCountOfDocumentsUsingTemplate(templateMapper.getTemplateByName(name)) > 0
     } getOrElse false)
   }

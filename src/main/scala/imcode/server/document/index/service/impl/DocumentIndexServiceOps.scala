@@ -44,7 +44,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   def mkSolrInputDocs(docId: Int, languages: Seq[ContentLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
     val solrInputDocs = for {
       language <- languages
-      doc <- Option(documentMapper.getDefaultDocument(docId, language))
+      doc <- documentMapper.getDefaultDocument(docId, language).asOption
     } yield documentIndexer.index(doc)
 
 

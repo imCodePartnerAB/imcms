@@ -17,7 +17,7 @@ object I18nResource {
 // implicit
 class I18nResource(key: String) {
   private val localeAndResource: (Locale, String) = {
-    val locale = Imcms.getUser |> opt match {
+    val locale = Imcms.getUser.asOption match {
       case Some(user) => new Locale(user.getLanguageIso639_2)
       case _ => Locale.getDefault
     }

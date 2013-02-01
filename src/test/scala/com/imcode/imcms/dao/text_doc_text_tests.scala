@@ -72,7 +72,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       assertEquals("Saved text no", no, savedVO.getNo)
       assertEquals("Saved text text", text, savedVO.getText)
       assertEquals("Saved text language", language, savedVO.getLanguage)
-      assertEquals("Saved text contentRef", contentRefOpt, Option(savedVO.getContentRef))
+      assertEquals("Saved text contentRef", contentRefOpt, savedVO.getContentRef.asOption)
     }
 
 

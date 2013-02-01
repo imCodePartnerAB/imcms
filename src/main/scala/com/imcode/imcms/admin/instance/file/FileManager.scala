@@ -236,7 +236,7 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
                   dlgUI.pi.setValue((max - remaining.size) / max)
                 }
 
-                val parentName = Option(item.getParentFile) map (_.getName) getOrElse "."
+                val parentName = item.getParentFile.asOption.map(_.getName).getOrElse(".")
                 dlgUI.lblMsg.value = "file.mgr.dlg.delete.progress.msg".f(item.getName, parentName)
               }
 

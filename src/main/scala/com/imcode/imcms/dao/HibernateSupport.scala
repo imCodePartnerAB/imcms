@@ -19,7 +19,7 @@ trait HibernateSupport {
     type NamedParam = (String, Any)
 
 
-    def withCurrentSession[A](f: Session => A): A =  f(sessionFactory.getCurrentSession)
+    def withCurrentSession[A](fn: Session => A): A = fn(sessionFactory.getCurrentSession)
 
 
     def flush(): Unit = withCurrentSession { _.flush() }
@@ -34,24 +34,24 @@ trait HibernateSupport {
     }
 
 
-    def runSqlQuery[A](queryString: String, ps: Any*)(f: SQLQuery => A): A = withCurrentSession {
-      _.createSQLQuery(queryString) |> setParams(ps: _*) |> f
+    def runSqlQuery[A](queryString: String, ps: Any*)(fn: SQLQuery => A): A = withCurrentSession {
+      _.createSQLQuery(queryString) |> setParams(ps: _*) |> fn
     }
 
-    def runQuery[A](queryString: String, ps: Any*)(f: Query => A): A = withCurrentSession {
-      _.createQuery(queryString) |> setParams(ps: _*) |> f
+    def runQuery[A](queryString: String, ps: Any*)(fn: Query => A): A = withCurrentSession {
+      _.createQuery(queryString) |> setParams(ps: _*) |> fn
     }
 
-    def runQueryWithNamedParams[A](queryString: String, nameParam: NamedParam, namedParams: NamedParam*)(f: Query => A): A = withCurrentSession {
-      _.createQuery(queryString) |> setNamedParams(nameParam, namedParams: _*) |> f
+    def runQueryWithNamedParams[A](queryString: String, nameParam: NamedParam, namedParams: NamedParam*)(fn: Query => A): A = withCurrentSession {
+      _.createQuery(queryString) |> setNamedParams(nameParam, namedParams: _*) |> fn
     }
 
-    def runNamedQuery[A](queryName: String, ps: Any*)(f: Query => A): A = withCurrentSession {
-      _.getNamedQuery(queryName) |> setParams(ps: _*) |> f
+    def runNamedQuery[A](queryName: String, ps: Any*)(fn: Query => A): A = withCurrentSession {
+      _.getNamedQuery(queryName) |> setParams(ps: _*) |> fn
     }
 
-    def runNamedQueryWithNamedParams[A](queryName: String, namedParam: NamedParam, namedParams: NamedParam*)(f: Query => A): A = withCurrentSession {
-      _.getNamedQuery(queryName) |> setNamedParams(namedParam, namedParams: _*) |> f
+    def runNamedQueryWithNamedParams[A](queryName: String, namedParam: NamedParam, namedParams: NamedParam*)(fn: Query => A): A = withCurrentSession {
+      _.getNamedQuery(queryName) |> setNamedParams(namedParam, namedParams: _*) |> fn
     }
 
 

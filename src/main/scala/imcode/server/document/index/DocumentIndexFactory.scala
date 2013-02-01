@@ -12,7 +12,7 @@ import scala.Some
 object DocumentIndexFactory extends Log4jLoggerSupport {
 
   def create(services: ImcmsServices): DocumentIndex = services.getConfig |> { config =>
-    (Option(config.getSolrUrl), Option(config.getSolrHome)) |> {
+    (config.getSolrUrl.asOption, config.getSolrHome.asOption) |> {
       case (Some(solrUrl), _) =>
         new RemoteDocumentIndexService(solrUrl, solrUrl, createDocumentIndexServiceOps(services))
 

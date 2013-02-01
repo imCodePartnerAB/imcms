@@ -11,18 +11,18 @@ package object test {
       throw t
     } apply block
 
-  implicit def smiToAnswer[A](f: InvocationOnMock => A): Answer[A] =
+  implicit def smiToAnswer[A](fn: InvocationOnMock => A): Answer[A] =
     new Answer[A] {
-      def answer(invocation: InvocationOnMock): A = f(invocation)
+      def answer(invocation: InvocationOnMock): A = fn(invocation)
     }
 
-  implicit def argsToAnswer[A](f: Array[AnyRef] => A): Answer[A] =
+  implicit def argsToAnswer[A](fn: Array[AnyRef] => A): Answer[A] =
     new Answer[A] {
-      def answer(invocation: InvocationOnMock): A = f(invocation.getArguments)
+      def answer(invocation: InvocationOnMock): A = fn(invocation.getArguments)
     }
 
-  implicit def fn0ToAnswer[A](f: () => A): Answer[A] =
+  implicit def fn0ToAnswer[A](fn: () => A): Answer[A] =
     new Answer[A] {
-      def answer(invocation: InvocationOnMock): A = f()
+      def answer(invocation: InvocationOnMock): A = fn()
     }
 }

@@ -131,7 +131,7 @@ trait TestDb { test: Test =>
 
     def runScripts(script: String, scripts: String*) {
       new DB(createDataSource(autocommit=DataSourceAutocommit.Yes)) |> { db =>
-        db.runScripts(script +: scripts map test.path)
+        db.runScripts((script +: scripts).map(test.path))
       }
     }
 

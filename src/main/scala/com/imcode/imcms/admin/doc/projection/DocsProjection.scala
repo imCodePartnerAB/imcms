@@ -15,7 +15,7 @@ import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject, DocumentDomainObject}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import java.net.URLDecoder
 import org.apache.solr.common.util.DateUtil
 import com.imcode.imcms.admin.doc.projection.filter.DateRange

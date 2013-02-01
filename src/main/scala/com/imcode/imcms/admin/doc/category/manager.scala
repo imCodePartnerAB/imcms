@@ -45,7 +45,7 @@ class CategoryManager(app: UI) {
         new ConfirmationDialog("Delete selected category?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
-              Ex.allCatch.either(categoryMapper.getCategoryById(id.intValue) |> opt foreach categoryMapper.deleteCategoryFromDb) match {
+              Ex.allCatch.either(categoryMapper.getCategoryById(id.intValue).asOption.foreach(categoryMapper.deleteCategoryFromDb)) match {
                 case Right(_) =>
                   Page.getCurrent.showInfoNotification("Category has been deleted")
                 case Left(ex) =>
@@ -80,18 +80,18 @@ class CategoryManager(app: UI) {
       val browser = ImcmsFileBrowser.addImagesLocation(new FileBrowser)
       val imagePicker = new ImagePicker(browser)
       val imageFile = for {
-        url <- Option(vo.getImageUrl)
+        url <- vo.getImageUrl.asOption
         file = new File(Imcms.getPath, "WEB-INF/" + url) if file.isFile
       } imagePicker.preview.set(new Embedded("", new FileResource(file)))
 
       new OkCancelDialog(dialogTitle) |>> { dlg =>
         dlg.mainUI = new CategoryEditorUI(imagePicker.ui) |>> { c =>
-          typesNames foreach { c.sltType addItem _ }
+          typesNames.foreach { c.sltType addItem _ }
 
-          c.txtId.value = if (isNew) "" else id.toString
-          c.txtName.value = vo.getName |> opt getOrElse ""
-          c.txaDescription.value = vo.getDescription |> opt getOrElse ""
-          c.sltType.value = if (isNew) typesNames.head else vo.getType.getName
+          c.txtId.value = isNew ? "" | id.toString
+          c.txtName.value = vo.getName.trimToEmpty
+          c.txaDescription.value = vo.getDescription.trimToEmpty
+          c.sltType.value = isNew ? typesNames.head | vo.getType.getName
 
           dlg.setOkButtonHandler {
             vo.clone |> { voc =>
@@ -102,13 +102,13 @@ class CategoryManager(app: UI) {
               // todo: move validate into separate fn
               val validationError: Option[String] = voc.getName match {
                 case "" => Some("Category name is not set")
-                case name => categoryMapper.getCategoryByTypeAndName(voc.getType, name) |> opt collect {
+                case name => categoryMapper.getCategoryByTypeAndName(voc.getType, name).asOption.collect {
                   case category if category.getId != voc.getId =>
                     "Category with such name and type already exists"
                 }
               }
 
-              validationError foreach { msg =>
+              validationError.foreach { msg =>
                 Page.getCurrent.showWarningNotification(msg)
                 sys.error(msg)
               }

@@ -31,8 +31,8 @@ object FileOps {
 
   val showableExt = directlyShowableExts | contentShowableExts
 
-  def ext(file: File) = extRE.unapplySeq(file.getName) map { _.head.toLowerCase }
-  def extString(file: File) = ext(file) getOrElse ""
+  def ext(file: File): Option[String] = extRE.unapplySeq(file.getName).map(_.head.toLowerCase)
+  def extString(file: File) = ext(file).getOrElse("")
 
   def isShowable(file: File) = showableExt contains extString(file)
   def isDirectlyShowable(file: File) = directlyShowableExts contains extString(file)

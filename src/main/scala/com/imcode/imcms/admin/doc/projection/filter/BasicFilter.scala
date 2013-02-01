@@ -19,7 +19,8 @@ class BasicFilter extends ImcmsServicesSupport {
   val ui: BasicFilterUI = new BasicFilterUI |>> { ui =>
     ui.chkIdRange.addValueChangeHandler {
       ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.range", ui.chkIdRange, ui.lytIdRange,
-        new Label("%s - %s".format(Option(ui.lytIdRange.txtStart.getInputPrompt).getOrElse(""), Option(ui.lytIdRange.txtEnd.getInputPrompt).getOrElse(""))))
+        new Label("%s - %s".format(ui.lytIdRange.txtStart.getInputPrompt.trimToEmpty, ui.lytIdRange.txtEnd.getInputPrompt.trimToEmpty))
+      )
     }
 
     ui.chkText.addValueChangeHandler {

@@ -81,9 +81,9 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
         versionInfo.getVersions.asScala.map(_.getNo) -> versionInfo.getDefaultVersion.getNo
     }
 
-    ui.info.ussCreator.selection = Option(meta.getCreatorId).map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
+    ui.info.ussCreator.selection = meta.getCreatorId.asOption.map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
     ui.info.ussModifier.selection = None
-    ui.publication.ussPublisher.selection = Option(meta.getPublisherId).map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
+    ui.publication.ussPublisher.selection = meta.getPublisherId.asOption.map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
 
     ui.publication.sltVersion.removeAllItems()
     versionsNos.foreach(no => ui.publication.sltVersion.addItem(no, no.toString))
@@ -92,7 +92,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
     ui.publication.sltStatus.select(meta.getPublicationStatus)
 
-    ui.publication.calStart.value = meta.getPublicationStartDatetime |> opt getOrElse new Date
+    ui.publication.calStart.value = meta.getPublicationStartDatetime.asOption.getOrElse(new Date)
     ui.publication.calEnd.value = meta.getPublicationEndDatetime
     ui.publication.calArchive.value = meta.getArchivedDatetime
 

@@ -101,7 +101,7 @@ class DocIndexingMocksSetup {
   }
 
   def addDocuments(docs: Seq[DocumentDomainObject]) = this |>> { _ =>
-    docs foreach addDocument
+    docs.foreach(addDocument)
   }
 
   // getDocumentMenuPairsContainingDocument

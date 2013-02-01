@@ -25,13 +25,13 @@ package object ui {
     def menuSelected(mi: MenuBar#MenuItem): Unit = handler(mi)
   }
 
-  implicit def fnToButtonClickListener(fn: (Button.ClickEvent => Any)): Button.ClickListener = {
+  implicit def fnToButtonClickListener(fn: Button.ClickEvent => Any): Button.ClickListener = {
     new Button.ClickListener {
       def buttonClick(event: Button.ClickEvent): Unit = fn(event)
     }
   }
 
-  implicit def fn0ToMenuCommand(fn: (() => Unit)) = menuCommand { _ => fn() }
+  implicit def fn0ToMenuCommand(fn: () => Unit) = menuCommand { _ => fn() }
 
 
   implicit def fnToTableCellStyleGenerator(fn: (TItemId,  TPropertyId) => String ) =
@@ -74,19 +74,19 @@ package object ui {
   }
 
 
-  def updateDisabled[A <: Component](component: A)(f: A => Unit) {
+  def updateDisabled[A <: Component](component: A)(fn: A => Unit) {
     component.setEnabled(true)
     try {
-      f(component)
+      fn(component)
     } finally {
       component.setEnabled(false)
     }
   }
 
-  def updateReadOnly[A <: Component](component: A)(f: A => Unit) {
+  def updateReadOnly[A <: Component](component: A)(fn: A => Unit) {
     component.setReadOnly(false)
     try {
-      f(component)
+      fn(component)
     } finally {
       component.setReadOnly(true)
     }
@@ -101,7 +101,7 @@ package object ui {
 
     override def addListener(listener: Button.ClickListener) {
       clickListenerRef.synchronized {
-        for (currentListener <- clickListenerRef.getAndSet(listener |> opt)) {
+        for (currentListener <- clickListenerRef.getAndSet(listener.asOption)) {
           super.removeListener(currentListener)
         }
 

@@ -52,14 +52,16 @@ class MetaDao extends HibernateSupport {
   def getI18nMeta(docId: Int, language: ContentLanguage): I18nMeta =
     hibernate.getByNamedQueryAndNamedParams[I18nMeta](
       "I18nMeta.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
-    ) |> opt getOrElse I18nMeta.builder() |> {
-      _.docId(docId)
-       .language(language)
-       .headline("")
-       .menuText("")
-       .menuImageURL("")
-       .build()
-    }
+    ).asOption.getOrElse(
+      I18nMeta.builder() |> {
+        _.docId(docId)
+         .language(language)
+         .headline("")
+         .menuText("")
+         .menuImageURL("")
+         .build()
+      }
+    )
 
 
   def getI18nMetas(docId: Int): JList[I18nMeta] = hibernate.listByNamedQueryAndNamedParams(
@@ -85,13 +87,15 @@ class MetaDao extends HibernateSupport {
   }
 
 
-  def insertPropertyIfNotExists(docId: Int, name: String, value: String): Boolean =
+  def insertPropertyIfNotExists(docId: Int, name: String, value: String): Boolean = {
     hibernate.getByNamedQueryAndNamedParams[DocumentProperty](
       "DocumentProperty.getProperty", "docId" -> docId, "name" -> name
-    ) |> opt getOrElse new DocumentProperty |>> { property =>
-      property.setDocId(docId)
-      property.setName(name)
-    } match {
+    ).asOption.getOrElse(
+      new DocumentProperty |>> { property =>
+        property.setDocId(docId)
+        property.setName(name)
+      }
+    ) match {
       case property if StringUtils.isBlank(property.getValue) =>
         property.setValue(value)
         hibernate.saveOrUpdate(property)
@@ -99,6 +103,8 @@ class MetaDao extends HibernateSupport {
 
       case _ => false
     }
+  }
+
 
 
   def saveMeta(meta: Meta) = hibernate.saveOrUpdate(meta)
@@ -183,7 +189,7 @@ class MetaDao extends HibernateSupport {
   )
 
 
-  def getDocIdByAliasOpt(alias: String) = getAliasProperty(alias) |> opt map(_.getDocId.toInt)
+  def getDocIdByAliasOpt(alias: String) = getAliasProperty(alias).asOption.map(_.getDocId.toInt)
 
 
   def deleteDocument(docId: Int): Unit = hibernate.withCurrentSession { session =>
@@ -219,7 +225,9 @@ class MetaDao extends HibernateSupport {
       "DELETE FROM imcms_doc_keywords WHERE doc_id = ?",
       "DELETE FROM imcms_doc_versions WHERE doc_id = ?",
       "DELETE FROM meta WHERE meta_id = ?"
-    ) foreach { session.createSQLQuery(_).setParameter(0, docId).executeUpdate() }
+    ).foreach { sql =>
+      session.createSQLQuery(sql).setParameter(0, docId).executeUpdate()
+    }
   }
 
 

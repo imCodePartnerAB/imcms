@@ -91,9 +91,9 @@ class LanguageManager(app: UI) {
     new OkCancelDialog(dialogTitle) |>> { dlg =>
       dlg.mainUI = new LanguageEditorUI |>> { c =>
         c.txtId.value = isNew ? "" | id.toString
-        c.txtCode.value = vo.getCode |> opt getOrElse ""
-        c.txtName.value = vo.getName |> opt getOrElse ""
-        c.txtNativeName.value = vo.getNativeName |> opt getOrElse ""
+        c.txtCode.value = vo.getCode.trimToEmpty
+        c.txtName.value = vo.getName.trimToEmpty
+        c.txtNativeName.value = vo.getNativeName.trimToEmpty
         c.chkEnabled.value = vo.isEnabled
 
         dlg.setOkButtonHandler {

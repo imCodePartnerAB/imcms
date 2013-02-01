@@ -15,7 +15,7 @@ object ImageUtil {
 
   /** Inits text doc's image source. */
   def initImageSource(image: ImageDomainObject) = image |>> { _ =>
-    for (url <- Option(image).map(_.getImageUrl).map(_.trim)) {
+    for (url <- image.asOption.map(_.getImageUrl).map(_.trim)) {
       image.setSource(
         image.getType.intValue match {
           case ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT =>

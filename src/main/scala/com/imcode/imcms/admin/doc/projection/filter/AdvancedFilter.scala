@@ -42,7 +42,7 @@ class AdvancedFilter extends ImcmsServicesSupport {
     } {
       ui.tcsCategories.addItem(category)
       ui.tcsCategories.setItemCaption(category, categoryType.getName + ":" + category.getName)
-      Option(category.getImageUrl).foreach(url => ui.tcsCategories.setItemIcon(category, new ExternalResource(url)))
+      category.getImageUrl.asOption.foreach(url => ui.tcsCategories.setItemIcon(category, new ExternalResource(url)))
     }
 
     ui.lytRelationships.cbParents.value = "docs_projection.advanced_filter.cb_relationships_parents.item.undefined"

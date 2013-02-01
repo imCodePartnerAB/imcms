@@ -70,7 +70,7 @@ class TemplateGroupManager(app: UI) {
     new OkCancelDialog(dialogTitle) |>> { dlg =>
       dlg.mainUI = new TemplateGroupEditorUI |>> { c =>
         c.txtId.value = isNew ? "" | id.toString
-        c.txtName.value = vo.getName |> opt getOrElse ""
+        c.txtName.value = vo.getName.trimToEmpty
         templateMapper.getTemplatesInGroup(vo).asScala.foreach(template => c.twsTemplates.addChosenItem(template.getName))
         templateMapper.getTemplatesNotInGroup(vo).asScala.foreach(template => c.twsTemplates.addAvailableItem(template.getName))
 
@@ -89,7 +89,7 @@ class TemplateGroupManager(app: UI) {
 
             for {
               name <- c.twsTemplates.chosenItemIds
-              template <- templateMapper.getTemplateByName(name) |> opt
+              template <- templateMapper.getTemplateByName(name).asOption
             } templateMapper.addTemplateToGroup(template, voc)
 
             reload()

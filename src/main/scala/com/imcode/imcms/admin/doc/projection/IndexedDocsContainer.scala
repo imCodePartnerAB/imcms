@@ -177,7 +177,7 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
 
   case class DocItem(ix: Ix, doc: DocumentDomainObject) extends Item with ReadOnlyItem {
 
-    private def formatDt(dt: Date) = Option(dt).map(dt => "%1$td.%1$tm.%1$tY %1$tH:%1$tM".format(dt)).getOrElse("")
+    private def formatDt(dt: Date) = dt.asOption.map(dt => "%1$td.%1$tm.%1$tY %1$tH:%1$tM".format(dt)).getOrElse("")
 
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 

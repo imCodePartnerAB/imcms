@@ -18,7 +18,7 @@ object DocGetterCallbacks {
 
   private object DocVersionType {
     def unapply(string: String): Option[DocVersionType] =
-      PartialFunction.condOpt(StringUtils.trimToEmpty(string).toLowerCase) {
+      PartialFunction.condOpt(string.trimToEmpty.toLowerCase) {
         case DocumentVersion.DEFAULT_VERSION_NAME => DefaultVersion
         case DocumentVersion.WORKING_VERSION_NAME => WorkingVersion
         case PosInt(no) if no == DocumentVersion.WORKING_VERSION_NO => WorkingVersion
@@ -31,17 +31,17 @@ object DocGetterCallbacks {
     val currentDocGetterCallback = user.getDocGetterCallback
     val i18nContentSupport = services.getI18nContentSupport
     val defaultLanguage = i18nContentSupport.getDefaultLanguage
-    val preferredLanguage = Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE))
-                   .flatMap(code => i18nContentSupport.getByCode(code) |> opt)
-                   .orElse(currentDocGetterCallback |> opt map (_.contentLanguages.preferred))
-                   .orElse(i18nContentSupport.getForHost(request.getServerName) |> opt)
+    val preferredLanguage = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE).asOption
+                   .flatMap(code => i18nContentSupport.getByCode(code).asOption)
+                   .orElse(currentDocGetterCallback.asOption.map(_.contentLanguages.preferred))
+                   .orElse(i18nContentSupport.getForHost(request.getServerName).asOption)
                    .getOrElse(defaultLanguage)
 
     val contentLanguages = ContentLanguages(preferredLanguage, defaultLanguage)
     val docGetterCallback =
       (for {
-        PosInt(docId) <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID))
-        DocVersionType(docVersionType) <- Option(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION))
+        PosInt(docId) <- request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID).asOption
+        DocVersionType(docVersionType) <- request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION).asOption
         if !user.isDefaultUser
       } yield {
         docVersionType match {

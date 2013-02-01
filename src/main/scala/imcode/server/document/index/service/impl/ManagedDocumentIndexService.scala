@@ -66,7 +66,7 @@ class ManagedSolrDocumentIndexService(
             }
           })
 
-          def progress(): Option[IndexRebuildProgress] = Option(progressRef.get)
+          def progress(): Option[IndexRebuildProgress] = progressRef.get.asOption
 
           def future(): Future[_] = futureTask
         } |>> indexRebuildTaskRef.set |>> { indexRebuildTaskImpl =>
@@ -236,7 +236,7 @@ class ManagedSolrDocumentIndexService(
     }
   }
 
-  override def indexRebuildTask(): Option[IndexRebuildTask] = Option(indexRebuildTaskRef.get)
+  override def indexRebuildTask(): Option[IndexRebuildTask] = indexRebuildTaskRef.get.asOption
 }
 
 

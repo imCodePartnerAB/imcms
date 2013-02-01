@@ -77,7 +77,7 @@ class DocumentContentIndexer extends Log4jLoggerSupport {
 
 
   def indexFileDoc(doc: FileDocumentDomainObject, indexDoc: SolrInputDocument): SolrInputDocument = indexDoc |>> { _ =>
-    doc.getDefaultFile |> opt foreach { file =>
+    doc.getDefaultFile.asOption.foreach { file =>
       indexDoc.addField(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType)
 //      val metadata = new Metadata |>> { m =>
 //        m.set(HttpHeaders.CONTENT_DISPOSITION, file.getFilename)

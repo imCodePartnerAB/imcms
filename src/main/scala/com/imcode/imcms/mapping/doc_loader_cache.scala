@@ -117,7 +117,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[ContentL
       defaultDocs.remove(key)
     }
 
-    for (alias: String <- Option(idsToAliases.get(docId))) {
+    for (alias: String <- idsToAliases.get(docId).asOption) {
       idsToAliases.remove(docId)
       aliasesToIds.remove(alias)
     }

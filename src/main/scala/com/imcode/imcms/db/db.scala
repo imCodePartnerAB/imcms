@@ -48,7 +48,7 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
               for (diff <- diffsChain) {
                 logger.info("The following diff will be applied: %s." format diff)
 
-                runScripts(diff.scripts map scriptFullPath)
+                runScripts(diff.scripts.map(scriptFullPath))
                 updateVersion(diff.to)
               }
 
@@ -67,7 +67,7 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
       logger.info("Database is empty and need to be initialized.")
       logger.info("The following init will be applied: %s." format schema.init)
 
-      runScripts(schema.init.scripts map scriptFullPath)
+      runScripts(schema.init.scripts.map(scriptFullPath))
       updateVersion(schema.init.version)
 
       logger.info("Database has been initialized.")

@@ -39,7 +39,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
   private case class Values(fdfs: Map[FileId, FileDocumentFile], defaultFdfId: Option[FileId])
   private var values = Values(
     doc.getFiles.asScala.map { case (id, fdf) => id -> fdf.clone } (breakOut),
-    Option(doc.getDefaultFileId)
+    doc.getDefaultFileId.asOption
   )
 
   private lazy val mimeTypes: ListMap[MimeType, DisplayName] =
@@ -270,7 +270,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
   def resetValues() {
     values = Values(
       doc.getFiles.asScala.map { case (id, fdf) => id -> fdf.clone } (breakOut),
-      Option(doc.getDefaultFileId)
+      doc.getDefaultFileId.asOption
     )
 
     sync()
