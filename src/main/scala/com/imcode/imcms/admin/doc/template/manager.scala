@@ -6,7 +6,6 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcode.server.user._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{_}
 import imcms.admin.instance.file._
 import org.apache.commons.io.FileUtils
 import imcms.security.{PermissionDenied, PermissionGranted}

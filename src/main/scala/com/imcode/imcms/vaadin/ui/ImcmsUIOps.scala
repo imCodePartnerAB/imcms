@@ -1,12 +1,12 @@
-package com.imcode
-package imcms
-package vaadin
+package com.imcode.imcms.vaadin.ui
 
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.Utility
 import com.imcode.imcms.security.{PermissionDenied, PermissionGranted, Permission}
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.ui.UI
+import com.imcode.imcms._
+import com.imcode.imcms.security.PermissionDenied
 
 /* implicit */
 class ImcmsUIOps(ui: UI) {

@@ -15,7 +15,7 @@ import scala.collection.immutable.{ListSet, ListMap}
 import scala.collection.JavaConverters._
 import java.{util => ju}
 import org.apache.solr.client.solrj.SolrQuery
-import com.imcode.imcms.vaadin.Theme
+import com.imcode.imcms.vaadin.ui.Theme
 import java.util.Date
 import scala.Some
 import com.imcode.imcms.vaadin.data.FunctionProperty

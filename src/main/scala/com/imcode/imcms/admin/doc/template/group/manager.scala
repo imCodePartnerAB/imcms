@@ -6,7 +6,6 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{_}
 import imcode.server.document.{TemplateGroupDomainObject}
 import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._

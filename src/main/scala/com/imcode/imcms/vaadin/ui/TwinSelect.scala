@@ -1,12 +1,10 @@
 package com.imcode
 package imcms
-package vaadin
-package ui
+package vaadin.ui
 
 import scala.collection.JavaConverters._
-import com.imcode.imcms.vaadin._
-import com.imcode._
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 
 class TwinSelect[T <: AnyRef](caption: String = "") extends Panel(caption) with LightStyle {
     private val content = new GridLayout(3, 1)

@@ -3,7 +3,7 @@ package imcms.admin.instance.monitor.cache
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin._
+
 import java.util.Date
 import imcms.api.DocumentVersion
 import imcode.server.document.DocumentTypeDomainObject

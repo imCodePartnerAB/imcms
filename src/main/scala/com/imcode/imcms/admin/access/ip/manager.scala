@@ -10,15 +10,16 @@ import com.imcode.imcms.dao.IPAccessDao
 import com.imcode.imcms.api.IPAccess
 import com.imcode.imcms.admin.access.user.{UserSingleSelectDialog, UserSelectDialog}
 import javax.persistence.{Id, Entity}
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
-import com.imcode.imcms.vaadin.ImcmsUIOps
 import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog, ConfirmationDialog}
 import _root_.imcode.server.Imcms
 import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
 import com.vaadin.server.Page
 import com.imcode.imcms.vaadin.server._
+import com.imcode.imcms.security.PermissionDenied
+import com.imcode.imcms.vaadin.data.PropertyDescriptor
 
 // todo: ipv4; add/handle ipv6?
 // todo: Should select user from user select!!

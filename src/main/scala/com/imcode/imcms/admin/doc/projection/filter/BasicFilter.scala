@@ -11,7 +11,6 @@ import scala.PartialFunction._
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
-import com.imcode.imcms.vaadin.Theme
 import com.imcode.imcms.api.ContentLanguage
 
 class BasicFilter extends ImcmsServicesSupport {

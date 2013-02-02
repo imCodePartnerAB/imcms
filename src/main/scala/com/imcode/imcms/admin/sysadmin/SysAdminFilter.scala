@@ -1,5 +1,4 @@
-package com.imcode
-package imcms.admin
+package com.imcode.imcms.admin.sysadmin
 
 import javax.servlet._
 import imcode.util.Utility

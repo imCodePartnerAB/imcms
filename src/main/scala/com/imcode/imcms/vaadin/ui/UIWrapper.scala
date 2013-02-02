@@ -1,5 +1,5 @@
 package com.imcode
-package imcms.vaadin
+package imcms.vaadin.ui
 
 import javax.servlet.http.HttpSession
 import javax.servlet.ServletContext

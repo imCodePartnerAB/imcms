@@ -3,7 +3,7 @@ package imcms
 package admin.doc.projection.filter
 
 import java.util.{Calendar, Date}
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 

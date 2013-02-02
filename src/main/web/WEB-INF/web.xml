@@ -47,7 +47,7 @@
 
         <display-name>SysAdmin Filter</display-name>
         <filter-name>SysAdminFilter</filter-name>
-        <filter-class>com.imcode.imcms.admin.SysAdminFilter</filter-class>
+        <filter-class>com.imcode.imcms.admin.sysadmin.SysAdminFilter</filter-class>
     </filter>
 
     <filter>
@@ -57,7 +57,7 @@
 
         <display-name>DocAdmin Filter</display-name>
         <filter-name>DocAdminFilter</filter-name>
-        <filter-class>com.imcode.imcms.admin.DocAdminFilter</filter-class>
+        <filter-class>com.imcode.imcms.admin.docadmin.DocAdminFilter</filter-class>
     </filter>
 
     <filter>
@@ -139,7 +139,7 @@
 
         <init-param>
             <param-name>UI</param-name>
-            <param-value>com.imcode.imcms.admin.SysAdmin</param-value>
+            <param-value>com.imcode.imcms.admin.sysadmin.SysAdmin</param-value>
         </init-param>
     </servlet>
 
@@ -151,7 +151,7 @@
 
         <init-param>
             <param-name>UI</param-name>
-            <param-value>com.imcode.imcms.admin.DocAdmin</param-value>
+            <param-value>com.imcode.imcms.admin.docadmin.DocAdmin</param-value>
         </init-param>
     </servlet>
 

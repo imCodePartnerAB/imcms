@@ -1,6 +1,6 @@
 package com.imcode
 package imcms
-package admin
+package admin.sysadmin
 
 import scala.collection.JavaConverters._
 import com.imcode._
@@ -10,12 +10,14 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.VaadinRequest
-import imcms.admin.access.user.{UserManager}
-import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin._
+import imcms.admin.access.user.UserManager
+import imcode.server.Imcms
+
 import Theme.Icon
 import com.vaadin.annotations.PreserveOnRefresh
 import com.vaadin.data.Property.ValueChangeEvent
+import com.imcode.imcms.I18nResource
+import com.imcode.imcms.vaadin.{OrderedMethod, TreeMenuItem}
 
 // todo: rename Theme class - name collision
 @PreserveOnRefresh

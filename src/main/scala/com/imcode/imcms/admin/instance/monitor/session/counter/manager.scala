@@ -5,7 +5,6 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin.{_}
 import imcms.security.{PermissionGranted, PermissionDenied}
 import imcms.dao.IPAccessDao
 import imcms.api.IPAccess

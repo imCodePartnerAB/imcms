@@ -4,7 +4,7 @@ package admin.instance.file
 
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin._
+
 import java.io.File
 import org.apache.commons.io.FileUtils
 import actors.Actor

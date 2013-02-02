@@ -4,7 +4,6 @@ package admin.doc.projection.filter
 
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.Theme
 import imcode.server.document.LifeCyclePhase
 
 

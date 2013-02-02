@@ -1,8 +1,6 @@
 package com.imcode.imcms.vaadin.ui
 
 import com.vaadin.ui.{Alignment, Button, GridLayout, Component}
-import com.imcode.imcms.vaadin._
-import com.imcode.imcms.vaadin.Theme
 
 /**
  * Reload button is placed under the content with right alignment.

@@ -15,6 +15,11 @@ import com.vaadin.shared.ui.datefield.Resolution
 
 package object ui {
 
+  implicit def wrapUI(ui: UI) = new UIWrapper(ui)
+
+  implicit def mkImcmsUIOps(ui: UI): ImcmsUIOps = new ImcmsUIOps(ui)
+
+
   def whenSelected[A <: AnyRef, B](select: AbstractSelect with GenericProperty[A])(fn: A => B): Option[B] = select.value match {
     case null => None
     case value: JCollection[_] if value.isEmpty => None

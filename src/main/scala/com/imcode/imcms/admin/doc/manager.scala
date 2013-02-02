@@ -9,7 +9,7 @@ import com.vaadin.event.Action
 import com.imcode.imcms.mapping.ProfileMapper
 
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.admin.doc.projection._

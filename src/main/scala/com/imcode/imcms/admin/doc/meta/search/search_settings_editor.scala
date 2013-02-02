@@ -4,10 +4,11 @@ package admin.doc.meta.search
 
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api.Meta
-import com.imcode.imcms.vaadin._
+
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.Editor
 
 /**
  * Doc's search settings editor.

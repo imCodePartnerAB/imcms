@@ -5,7 +5,6 @@ package admin.instance.file
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import scala.collection.mutable.{Map => MMap}
-import com.imcode.imcms.vaadin.{_}
 import com.vaadin.data.util.FilesystemContainer
 import java.io.{FilenameFilter, File}
 import java.util.concurrent.atomic.AtomicReference

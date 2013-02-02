@@ -5,7 +5,7 @@ package admin.doc.meta.lifecycle
 import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.{UserSingleSelectUI, UserSingleSelect}
 import com.imcode.imcms.api.{DocumentVersion, Document, Meta}
-import com.imcode.imcms.vaadin._
+
 import java.util.Date
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
@@ -13,6 +13,7 @@ import com.imcode.imcms.vaadin.data._
 import _root_.imcode.server.document.LifeCyclePhase
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+import com.imcode.imcms.vaadin.Editor
 
 
 class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {

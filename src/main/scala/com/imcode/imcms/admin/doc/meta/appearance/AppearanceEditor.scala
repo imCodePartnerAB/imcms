@@ -8,13 +8,14 @@ import scala.collection.immutable.ListMap
 import scala.util.control.{Exception => Ex}
 
 import com.imcode.imcms.api._
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.dao.MetaDao
 
 import com.vaadin.data.Validator
 import com.vaadin.data.Validator.InvalidValueException
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.Editor
 
 
 /**

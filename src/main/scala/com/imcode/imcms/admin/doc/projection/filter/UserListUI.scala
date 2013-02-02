@@ -3,7 +3,7 @@ package imcms
 package admin.doc.projection.filter
 
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.vaadin.ui._
 
 

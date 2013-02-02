@@ -6,7 +6,7 @@ import imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.{DocEditorDialog, DocViewer}
 import com.imcode.imcms.vaadin.ui.dialog.{InformationDialog, ConfirmationDialog}
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.server._
 import scala.collection.JavaConverters._

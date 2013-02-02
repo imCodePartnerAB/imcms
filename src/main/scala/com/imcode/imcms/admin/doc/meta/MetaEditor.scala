@@ -8,7 +8,8 @@ import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.document.{DocumentDomainObject}
 
 import com.imcode.imcms.api._
-import com.imcode.imcms.vaadin._
+import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.admin.doc.meta.access.AccessEditor
 import com.imcode.imcms.admin.doc.meta.search.SearchSettingsEditor
 import com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
@@ -17,6 +18,7 @@ import com.imcode.imcms.admin.doc.meta.lifecycle.LifeCycleEditor
 import com.imcode.imcms.admin.doc.meta.category.CategoryEditor
 import com.vaadin.ui.UI
 import com.vaadin.server.Sizeable
+import com.imcode.imcms.vaadin.Editor
 
 /**
  * Doc's meta editor.

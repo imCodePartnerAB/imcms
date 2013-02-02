@@ -4,7 +4,7 @@ package admin.doc.meta.appearance
 
 import com.imcode.imcms.api._
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.vaadin.ui._
 
 

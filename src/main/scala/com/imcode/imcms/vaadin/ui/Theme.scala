@@ -1,10 +1,11 @@
 package com.imcode
-package imcms.vaadin
+package imcms.vaadin.ui
 
 import com.vaadin.server.{ThemeResource => TR}
 import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
 import com.imcode.imcms.api.ContentLanguage
 
+// todo: refactor, change package ???
 object Theme {
   implicit val stringToThemeResource = new TR(_:String)
 

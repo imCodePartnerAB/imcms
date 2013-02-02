@@ -2,7 +2,7 @@ package com.imcode
 package imcms.admin.doc
 
 import com.imcode.imcms._
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.vaadin.ui._

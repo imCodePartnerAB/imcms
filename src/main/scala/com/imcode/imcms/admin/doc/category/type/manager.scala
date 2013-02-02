@@ -5,7 +5,7 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin._
+
 import imcode.server.document.{CategoryTypeDomainObject}
 import com.imcode.imcms.admin.doc.category.{CategoryTypeId}
 import imcms.security.{PermissionDenied, PermissionGranted}

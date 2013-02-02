@@ -6,7 +6,7 @@ import _root_.imcode.server.user.{RoleId, RoleDomainObject}
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._

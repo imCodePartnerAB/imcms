@@ -13,8 +13,6 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server._
 import com.vaadin.shared.ui.{MarginInfo, BorderStyle}
-import com.imcode.imcms.admin.instance.file.LocationSelection
-import com.imcode.imcms.vaadin.server._
 
 /**
  * Common file operations used in file manager and preview.

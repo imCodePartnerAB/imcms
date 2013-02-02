@@ -6,7 +6,6 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.api.ContentLanguage
-import com.imcode.imcms.vaadin.Theme
 
 class I18nMetaEditorUI(val language: ContentLanguage, caption: String) extends CustomLayout("admin/doc/meta/appearance/i18n_meta") with FullWidth {
   private val lytContent = new FormLayout |>> { lyt =>

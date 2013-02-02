@@ -6,12 +6,14 @@ import scala.collection.breakOut
 import scala.collection.JavaConverters._
 import imcode.server.user._
 import imcode.server.document._
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.data._
 import imcms.ImcmsServicesSupport
 import textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.meta.access.{TextDocPermSetEditorUI, TextDocPermSetEditor}
 import com.vaadin.ui._
+import com.imcode.imcms.vaadin.Editor
 
 
 // todo: check: ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)

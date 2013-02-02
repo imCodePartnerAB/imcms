@@ -5,7 +5,7 @@ package admin.doc.content.filedoc
 import com.imcode._
 import com.imcode.imcms._
 import com.imcode.imcms.admin.instance.file.{FileProperties, UploadedFile, FileUploaderDialog}
-import com.imcode.imcms.vaadin._
+
 import com.vaadin.ui._
 import com.vaadin.ui.Table.ColumnGenerator
 import imcode.server.document.FileDocumentDomainObject

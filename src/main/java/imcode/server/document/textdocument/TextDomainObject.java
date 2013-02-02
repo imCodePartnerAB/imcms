@@ -18,8 +18,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name = "imcms_text_doc_texts")
 public class TextDomainObject implements Serializable, Cloneable {
 
-    public enum FormatType {
-        PLAIN, HTML;
+    public enum Format {
+        PLAIN, HTML
     }
 
     public static final class Builder {
@@ -73,11 +73,9 @@ public class TextDomainObject implements Serializable, Cloneable {
     }
 
     /** Plain text, with linebreaks. */
-    @Deprecated
     public final static int TEXT_TYPE_PLAIN = 0;
 
     /** HTML-code. */
-    @Deprecated
     public final static int TEXT_TYPE_HTML = 1;
 
     @Id

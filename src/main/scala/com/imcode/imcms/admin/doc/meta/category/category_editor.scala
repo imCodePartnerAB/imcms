@@ -7,9 +7,10 @@ import scala.collection.JavaConverters._
 
 import com.vaadin.ui._
 import com.imcode.imcms.api._
-import com.imcode.imcms.vaadin._
+
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.Editor
 
 /**
  * Doc's categories editor.
