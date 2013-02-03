@@ -366,13 +366,3 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
     }
   }
 }
-
-
-
-
-
-
-
-
-
-

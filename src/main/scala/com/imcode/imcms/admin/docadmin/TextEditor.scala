@@ -7,6 +7,7 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import imcode.server.document.textdocument.TextDomainObject
 import com.imcode.imcms.vaadin.Editor
+import com.vaadin.server.Page
 
 class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorSettings) extends Editor with ImcmsServicesSupport {
 
@@ -24,6 +25,9 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorSettings) ext
 
     ui.miFormatHtml.setCommandHandler { setFormat(TextDomainObject.Format.HTML) }
     ui.miFormatPlain.setCommandHandler { setFormat(TextDomainObject.Format.PLAIN) }
+    ui.miHelp.setCommand {
+      new TextHistoryDialog("Restore text", currentText) |> UI.getCurrent.addWindow
+    }
   }
 
   resetValues()
@@ -35,6 +39,18 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorSettings) ext
       states.map {
         case TextState(text, textUI) => text.clone() |>> { _.setText(textUI.getValue) }
       }
+    }
+  }
+
+  private def currentText: TextDomainObject = {
+    val selectedTabPositionOpt =
+      for {
+        component <- ui.tsTexts.getSelectedTab.asOption
+        tab <- ui.tsTexts.getTab(component).asOption
+      } yield ui.tsTexts.getTabPosition(tab)
+
+    states(selectedTabPositionOpt.get) |> {
+      case TextState(text, textUI) => text.clone() |>> { _.setText(textUI.value) }
     }
   }
 
