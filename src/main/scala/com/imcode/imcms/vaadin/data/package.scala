@@ -17,7 +17,7 @@ package object data extends LowPriorityPropertyImplicits {
     }
 
 
-  implicit def fnToPropertyValueChangeListener(fn: Property.ValueChangeEvent => Any): Property.ValueChangeListener = {
+  implicit def fnToPropertyValueChangeListener(fn: Property.ValueChangeEvent => Unit): Property.ValueChangeListener = {
     new Property.ValueChangeListener {
       def valueChange(event: Property.ValueChangeEvent): Unit = fn(event)
     }
@@ -27,6 +27,7 @@ package object data extends LowPriorityPropertyImplicits {
     def addValueChangeHandler(handler: => Unit): Unit = vcn.addValueChangeListener { _: Property.ValueChangeEvent => handler }
   }
 
+  /** takes precedence over LowPriorityPropertyImplicits.mkPropertyOps */
   implicit def mkGenericPropertyOps[A <: AnyRef](genericProperty: GenericProperty[A]): PropertyOps[A] = {
     new PropertyOps(genericProperty.asInstanceOf[Property[A]])
   }

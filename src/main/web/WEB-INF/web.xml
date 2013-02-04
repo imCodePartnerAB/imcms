@@ -107,7 +107,7 @@
 
     <filter-mapping>
         <filter-name>DocAdminFilter</filter-name>
-        <url-pattern>/sysadmin/*</url-pattern>
+        <url-pattern>/docadmin/*</url-pattern>
     </filter-mapping>
 
     <!--<security-constraint>-->

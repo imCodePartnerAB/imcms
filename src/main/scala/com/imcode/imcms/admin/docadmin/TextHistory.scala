@@ -18,17 +18,17 @@ class TextHistory(text: TextDomainObject) extends ImcmsServicesSupport {
   private val textDao = imcmsServices.getSpringBean(classOf[TextDao])
 
   val ui = new TextHistoryUI(s"Document history") |>> { ui =>
-    def values(id: Long = 0, dateTime: DateTime = DateTime.now()): Stream[(Long, Option[Date], Date)] = {
+    def rows(id: Long = 0, dateTime: DateTime = DateTime.now()): Stream[(Long, Option[Date], Date)] = {
       val nextId = id + 1
       val date = dateTime.toDate
 
       id % 10 match {
-        case 0 => (id, Some(date), date) #:: values(nextId, dateTime.minusDays(1))
-        case _ => (id, None,       date) #:: values(nextId, dateTime.minusHours(1))
+        case 0 => (id, Some(date), date) #:: rows(nextId, dateTime.minusDays(1))
+        case _ => (id, None,       date) #:: rows(nextId, dateTime.minusHours(1))
       }
     }
 
-    values().take(100).foreach {
+    rows().take(100).foreach {
       case (id, dateOpt, time) => ui.tblHistoryDetails.addRow(
         id,
         dateOpt.map(_.formatted("%1$td.%1$tm.%1$tY")).orNull,

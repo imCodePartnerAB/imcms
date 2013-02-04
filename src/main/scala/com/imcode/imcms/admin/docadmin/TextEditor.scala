@@ -7,7 +7,7 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import imcode.server.document.textdocument.TextDomainObject
 import com.imcode.imcms.vaadin.Editor
-import com.vaadin.server.Page
+
 
 class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorSettings) extends Editor with ImcmsServicesSupport {
 

@@ -2,71 +2,55 @@ package com.imcode
 package imcms
 package admin.docadmin
 
-
+import java.util.Locale
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.ui._
-import com.vaadin.event.dd.{DragAndDropEvent, DropHandler}
-import com.imcode.imcms.api.{ContentLanguage, DocumentVersion, DocRef, Document}
-import dialog.{ConfirmationDialog, OkCancelDialog}
-import java.io.File
-import imcode.server.document.textdocument._
-import com.vaadin.event.dd.acceptcriteria.{Not, AcceptAll, AcceptCriterion}
-import com.vaadin.data.util.HierarchicalContainer
-import scala.annotation.tailrec
-import com.imcode.imcms.admin.doc.{DocSelectDialog, DocEditorDialog, DocViewer, DocEditor}
-import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerator}
+import com.imcode.imcms.api.{DocumentVersion, DocRef}
+import com.imcode.imcms.admin.doc.DocEditor
 import com.vaadin.ui._
-import java.util.{Locale, Arrays, Collections}
-import com.imcode.imcms.vaadin.data._
+import com.vaadin.server.{Page, VaadinRequest}
 import com.imcode.imcms.vaadin.server._
-import com.vaadin.server.{VaadinService, Page, VaadinRequest, ExternalResource}
-import com.vaadin.shared.ui.dd.VerticalDropLocation
-import imcode.server.Imcms
-import imcode.server.user.UserDomainObject
-import imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
-import imcode.server.document.NoPermissionToEditDocumentException
+import com.imcode.imcms.vaadin.ui.dialog.ConfirmationDialog
 import com.imcode.imcms.mapping.DocumentSaveException
-import java.util.EnumSet
-import org.apache.commons.lang3.{StringEscapeUtils, StringUtils}
 import com.imcode.imcms.ImcmsServicesSupport
-import com.imcode._
-import scala.Some
-import com.imcode.imcms.admin.docadmin.TextEditorSettings
-import com.imcode.imcms.vaadin.data.PropertyDescriptor
-import scala.Some
-import com.imcode.imcms.admin.docadmin.TextEditorSettings
-import com.imcode.imcms.vaadin.data.PropertyDescriptor
 import com.imcode.imcms.dao.TextDao
-import com.imcode.imcms.admin.doc.projection.DocIdSelectWithLifeCycleIcon
+import org.apache.commons.lang3.StringEscapeUtils
+import _root_.imcode.server.document.textdocument._
+import _root_.imcode.server.Imcms
+import _root_.imcode.server.user.UserDomainObject
+import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
+import imcode.server.document.{DocumentDomainObject, NoPermissionToEditDocumentException}
 
 
-// Todo: check permissions
-// Doc edit, etc
 @com.vaadin.annotations.Theme("imcms")
 class DocAdmin extends UI with ImcmsServicesSupport { app =>
 
-  sealed trait MappedRequest { def vaadinRequest: VaadinRequest }
-  case class EditWorkingDoc(vaadinRequest: VaadinRequest, docId: Int) extends MappedRequest
-  case class EditWorkingDocMenu(vaadinRequest: VaadinRequest, docId: Int, menuNo: Int) extends MappedRequest
-  case class EditWorkingDocText(vaadinRequest: VaadinRequest, docId: Int, textNo: Int) extends MappedRequest
+  private def mkContent(request: VaadinRequest): Component = {
+    import PartialFunction.condOpt
 
-  object MappedRequest {
-    def apply(vaadinRequest: VaadinRequest): Option[MappedRequest] = {
-      import PartialFunction.condOpt
+    val pathInfo = request.getPathInfo
+    val docOpt =
+      for {
+        docId <- request.getParameter("docId") |> PosInt.unapply
+        doc <- imcmsServices.getDocumentMapper.getDocument(docId).asOption
+      } yield doc
 
-      val pathInfo = vaadinRequest.getPathInfo
-
-      condOpt((pathInfo, vaadinRequest.getParameter("docId"))) {
-        case (null, AnyInt(docId)) => EditWorkingDoc(vaadinRequest, docId)
+    docOpt.flatMap { doc =>
+      condOpt(pathInfo) {
+        case null | "/" => mkWorkingDocEditorComponent(request, doc)
       } orElse {
-        condOpt((pathInfo, vaadinRequest.getParameter("docId"), vaadinRequest.getParameter("menuNo"))) {
-          case ("/menu", AnyInt(docId), AnyInt(menuNo)) => EditWorkingDocMenu(vaadinRequest, docId, menuNo)
+        condOpt(pathInfo, doc, request.getParameter("menuNo")) {
+          case ("/menu", textDoc: TextDocumentDomainObject, PosInt(menuNo)) =>
+            mkWorkingDocMenuEditorComponent(request, textDoc, menuNo)
         }
       } orElse {
-        condOpt((pathInfo, vaadinRequest.getParameter("docId"), vaadinRequest.getParameter("textNo"))) {
-          case ("/text", AnyInt(docId), AnyInt(menuNo)) => EditWorkingDocText(vaadinRequest, docId, menuNo)
+        condOpt(pathInfo, doc, request.getParameter("textNo")) {
+          case ("/text", textDoc: TextDocumentDomainObject, PosInt(textNo)) =>
+            mkWorkingDocTextEditorComponent(request, textDoc, textNo)
         }
       }
+    } getOrElse {
+      new Label("N/A")
     }
   }
 
@@ -76,33 +60,11 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   override def init(request: VaadinRequest) {
     setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
 
-    MappedRequest(request).map {
-      case mappedRequest: EditWorkingDoc => mkWorkingDocEditorComponent(mappedRequest)
-      case mappedRequest: EditWorkingDocMenu => mkWorkingDocMenuEditorComponent(mappedRequest)
-      case mappedRequest: EditWorkingDocText => mkWorkingDocTextEditorComponent(mappedRequest)
-    } match {
-      case Some(component) => setContent(component)
-      case _ => setContent(new Label("N/A"))
-    }
-
-    //    setContent(new FormLayout(
-    //        new Label(request.getPathInfo) |>> { _.setCaption("Request path info") },
-    //      new Label(request.getParameterMap.toString) |>> { _.setCaption("Request parameter map") },
-    //      new Label(request.getCharacterEncoding) |>> { _.setCaption("Request character encoding") },
-    //      new Label(request.getContextPath) |>> { _.setCaption("Request context path") },
-    //      new Label(request.getService.getServiceName) |>> { _.setCaption("Service name") },
-    //      new Label(request.getService.getBaseDirectory.getPath) |>> { _.setCaption("Base dir") },
-    //      // WTF?
-    //      new Label(request.getService.getStaticFileLocation(request)) |>> { _.setCaption("Static file location") }
-    //    ))
+    setContent(mkContent(request))
   }
 
 
-  //
-  //
-  def mkWorkingDocEditorComponent(mappedRequest: EditWorkingDoc) = new FullScreenEditorUI(s"Document ${mappedRequest.docId}") |>> { ui =>
-    val docId = mappedRequest.docId
-    val doc = imcmsServices.getDocumentMapper.getDocument(docId)
+  def mkWorkingDocEditorComponent(request: VaadinRequest, doc: DocumentDomainObject) = new FullScreenEditorUI(s"Document ${doc.getId}") |>> { ui =>
     val editor = new DocEditor(doc)
 
     ui.mainUI = editor.ui
@@ -137,9 +99,8 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   }
 
 
-  def mkWorkingDocMenuEditorComponent(mappedRequest: EditWorkingDocMenu) = new FullScreenEditorUI(s"Document ${mappedRequest.docId} menu no ${mappedRequest.menuNo}") |>> { ui =>
-    val doc = imcmsServices.getDocumentMapper.getDefaultDocument(mappedRequest.docId).asInstanceOf[TextDocumentDomainObject]
-    val menu = doc.getMenu(mappedRequest.menuNo)
+  def mkWorkingDocMenuEditorComponent(request: VaadinRequest, doc: TextDocumentDomainObject, menuNo: Int) = new FullScreenEditorUI(s"Document ${doc.getId} menu no ${menuNo}") |>> { ui =>
+    val menu = doc.getMenu(menuNo)
     val editor = new MenuEditor(doc, menu) |>> { me => me.ui.setSizeFull() }
 
     ui.mainUI = editor.ui
@@ -278,20 +239,20 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   // [-] validate
   // [!] Return URL
   // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
-  def mkWorkingDocTextEditorComponent(mappedRequest: EditWorkingDocText) = new FullScreenEditorUI() |>> { ui =>
-    val title = mappedRequest.vaadinRequest.getParameter("label").trimToNull match {
-      case null => s"Document ${mappedRequest.docId} text no ${mappedRequest.textNo}"
+  def mkWorkingDocTextEditorComponent(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int) = new FullScreenEditorUI() |>> { ui =>
+    val title = request.getParameter("label").trimToNull match {
+      case null => s"Document ${doc.getId} text no ${textNo}"
       case label => label |> StringEscapeUtils.escapeHtml4
     }
 
     ui.setTitle(title)
 
-    val formats = mappedRequest.vaadinRequest.getParameterMap.get("format") match {
+    val formats = request.getParameterMap.get("format") match {
       case null => Set.empty[String]
       case array => array.toSet
     }
 
-    val rowsCountOpt = mappedRequest.vaadinRequest.getParameter("rows") |> {
+    val rowsCountOpt = request.getParameter("rows") |> {
       case  PosInt(rows) => Some(rows)
       case _ => None
     }
@@ -301,19 +262,13 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
     val showModeEditor = formats.isEmpty && rowsCountOpt.isEmpty
 
     val ContentRefExt = """(\d+)_(\d+)""".r
-    val contentRefOpt = mappedRequest.vaadinRequest.getParameter("contentRef") match {
+    val contentRefOpt = request.getParameter("contentRef") match {
       case ContentRefExt(loopNo, contentNo) => ContentRef.of(loopNo.toInt, contentNo.toInt).asOption
       case _ => None
     }
 
-
-
-
-    val docIdOpt = mappedRequest.vaadinRequest.getParameter("docId") |> PosInt.unapply
-    val textNoOpt = mappedRequest.vaadinRequest.getParameter("textNo") |> PosInt.unapply
-
     val textDao = imcmsServices.getSpringBean(classOf[TextDao])
-    val texts = textDao.getTexts(DocRef.of(docIdOpt.get, DocumentVersion.WORKING_VERSION_NO), textNoOpt.get, contentRefOpt, createIfNotExists = true)
+    val texts = textDao.getTexts(DocRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
 
     for (text <- texts.asScala if text.getDocRef == null) {
       text.setType(TextDomainObject.TEXT_TYPE_HTML)
@@ -322,7 +277,6 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
     // Current language
     val preferredLanguage = Imcms.getUser.getDocGetterCallback.contentLanguages.preferred
 
-    val doc = app.imcmsServices.getDocumentMapper.getWorkingDocument(mappedRequest.docId).asInstanceOf[TextDocumentDomainObject]
     val (format, canChangeFormat) = (showModeText, showModeHtml) match {
       case (true, false) => (TextDomainObject.Format.PLAIN, false)
       case (false, true) => (TextDomainObject.Format.HTML, false)

@@ -109,9 +109,9 @@ package object imcode {
   }
 
 
-  def unfold[A, B](init: A)(fn: A => Option[(B, A)]): List[B] = fn(init) match {
-    case None => Nil
-    case Some((r, next)) => r :: unfold(next)(fn)
+  def unfold[A, B](init: A)(fn: A => Option[(B, A)]): Stream[B] = fn(init) match {
+    case None => Stream.empty
+    case Some((r, next)) => r #:: unfold(next)(fn)
   }
 
   def whenSingle[A, T[A] <: Traversable[A], B](traversable: T[A])(fn: A => B): Option[B] = {
@@ -143,19 +143,19 @@ package object imcode {
 
   /** extractor */
   object AnyInt {
-    def unapply(s: String): Option[Int] = Try(s.toInt).toOption
+    def unapply(string: String): Option[Int] = Try(string.toInt).toOption
   }
 
 
   /** extractor */
   object PosInt {
-    def unapply(s: String): Option[Int] = AnyInt.unapply(s).filter(_ >= 0)
+    def unapply(string: String): Option[Int] = AnyInt.unapply(string).filter(_ >= 0)
   }
 
 
   /** extractor */
   object NegInt {
-    def unapply(s: String): Option[Int] = AnyInt.unapply(s).filter(_ < 0)
+    def unapply(string: String): Option[Int] = AnyInt.unapply(string).filter(_ < 0)
   }
 
 
