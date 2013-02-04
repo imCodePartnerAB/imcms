@@ -25,7 +25,7 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorSettings) ext
 
     ui.miFormatHtml.setCommandHandler { setFormat(TextDomainObject.Format.HTML) }
     ui.miFormatPlain.setCommandHandler { setFormat(TextDomainObject.Format.PLAIN) }
-    ui.miHelp.setCommand {
+    ui.miHistory.setCommandHandler {
       new TextHistoryDialog("Restore text", currentText) |> UI.getCurrent.addWindow
     }
   }
