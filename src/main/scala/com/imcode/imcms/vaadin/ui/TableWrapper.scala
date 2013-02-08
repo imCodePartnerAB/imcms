@@ -1,10 +1,10 @@
 package com.imcode.imcms.vaadin.ui
 
-import com.imcode.imcms.vaadin.data.{ContainerWithGenericItemId, TItemId, TColumnId}
+import com.imcode.imcms.vaadin.data.{ContainerWithTypedItemId, TItemId, TColumnId}
 import com.vaadin.ui.Table
 
 // implicit
-class TableWrapper[A <: TItemId](table: Table with ContainerWithGenericItemId[A]) {
+class TableWrapper[A <: TItemId](table: Table with ContainerWithTypedItemId[A]) {
   def addRow(itemId: A, cells: AnyRef*): AnyRef = table.addItem(cells.toArray, itemId)
   def addRowWithAutoId(cell: AnyRef, cells: AnyRef*): AnyRef = addRow(null.asInstanceOf[A], (cell +: cells) : _*)
 

@@ -25,6 +25,14 @@ import org.apache.commons.lang.UnhandledException;
 
 import com.imcode.imcms.api.Meta;
 
+import javax.persistence.*;
+
+/**
+ * JPA mapping (currently) does not replace or extend functionality provided by ImcmsAuthenticatorAndUserAndRoleMapper.
+ * Must not be used for updates.
+ */
+@Entity(name = "User")
+@Table(name = "users")
 public class UserDomainObject implements Cloneable, Serializable {
 
     /**
@@ -62,48 +70,85 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public static final int DEFAULT_USER_ID = 2;
 
+    @Id
+    @Column(name = "user_id")
     protected int id;
 
+    @Column(name = "login_name")
     private String loginName = "" ;
+
+    @Column(name = "login_password")
     private String password;
+
+    @Column(name = "first_name")
     private String firstName = "";
+
+    @Column(name = "last_name")
     private String lastName = "";
+
     private String title = "";
     private String company = "";
     private String address = "";
     private String city = "";
     private String zip = "";
     private String country = "";
+
+    @Transient
     private String province = "";
+
+    @Column(name = "email")
     private String emailAddress = "";
     private boolean active = true;
+
+    @Column(name = "create_date")
     private Date createDate;
 
+    @Column(name = "language")
     private String languageIso639_2;
 
+    @Transient
     private TemplateGroupDomainObject templateGroup;
 
+    @Column(name = "external")
     private boolean imcmsExternal;
 
+    @Transient
     private HashSet phoneNumbers = new HashSet();
-    
+
+    @Transient
     RoleIds roleIds = UserDomainObject.createRolesSetWithUserRole();
+
+    @Transient
     protected RoleIds userAdminRoleIds = new RoleIds();
 
     /** Http session id.*/
+    @Column(name = "session_id")
     private String sessionId;
 
+    @Transient
     private boolean authenticatedByIp;
+
+    /**
+     * FIXME - Kludge to get context path into template methods *
+     */
+    @Transient
+    private String currentContextPath;
 
     /**
      * @since 4.0.7
      */
+    @Enumerated
+    @Column(name = "login_password_is_encrypted")
     private PasswordType passwordType = PasswordType.UNENCRYPTED;
 
     /**
      * @since 4.0.7
      */
+    @Transient
     private PasswordReset passwordReset = null;
+
+    @Transient
+    private volatile DocGetterCallback docGetterCallbackRef;
 
     public UserDomainObject() {}
 
@@ -130,11 +175,6 @@ public class UserDomainObject implements Cloneable, Serializable {
             throw new UnhandledException(e);
         }
     }
-
-    /**
-     * FIXME - Kludge to get context path into template methods *
-     */
-    private String currentContextPath;
 
     /**
      * get user-id
@@ -304,8 +344,6 @@ public class UserDomainObject implements Cloneable, Serializable {
     public void setEmailAddress( String emailAddress ) {
         this.emailAddress = emailAddress;
     }
-
-    private volatile DocGetterCallback docGetterCallbackRef;
 
     /**
      * @return document getter callback associated with this user.

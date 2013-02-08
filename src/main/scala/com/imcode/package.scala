@@ -102,7 +102,7 @@ package object imcode {
   //               "foo" |> opt
   def opt[A](value: A) = Option(value)
 
-  def whenOpt[A](exp: Boolean)(byName: => A): Option[A] = PartialFunction.condOpt(exp) { case true => byName }
+  def whenOpt[A](exp: Boolean)(value: => A): Option[A] = PartialFunction.condOpt(exp) { case true => value }
 
   def doto[A](exp: A, exps: A*)(fn: A => Any) {
     (exp +: exps).foreach(fn)

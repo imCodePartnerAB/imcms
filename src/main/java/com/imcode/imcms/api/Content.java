@@ -11,6 +11,7 @@ import java.io.Serializable;
  * @see com.imcode.imcms.api.ContentLoop
  */
 @Embeddable
+@Access(AccessType.FIELD)
 public class Content implements Serializable, Cloneable {
 
     public static final class Builder {
@@ -47,8 +48,6 @@ public class Content implements Serializable, Cloneable {
         return new Builder(content);
     }
 
-
-    @Column(name = "no")
     private int no;
 
     private boolean enabled = true;
@@ -102,4 +101,3 @@ public class Content implements Serializable, Cloneable {
         return result;
     }
 }
-

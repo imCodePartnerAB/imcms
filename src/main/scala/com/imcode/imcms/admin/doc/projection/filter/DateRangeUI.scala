@@ -4,7 +4,7 @@ package admin.doc.projection.filter
 
 import com.vaadin.ui.{PopupDateField, ComboBox, HorizontalLayout}
 import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.data.GenericProperty
+import com.imcode.imcms.vaadin.data.TypedProperty
 
 
 class DateRangeUI(caption: String = "") extends HorizontalLayout with Spacing with UndefinedSize {

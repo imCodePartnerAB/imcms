@@ -90,7 +90,7 @@ class BasicFilter extends ImcmsServicesSupport {
 
     ui.lytLanguages.removeAllComponents()
     for (language <- imcmsServices.getI18nContentSupport.getLanguages.asScala) {
-      val chkLanguage = new CheckBox(language.getNativeName) with GenericData[ContentLanguage] |>> { chk =>
+      val chkLanguage = new CheckBox(language.getNativeName) with TypedData[ContentLanguage] |>> { chk =>
         chk.setIcon(Theme.Icon.Language.flag(language))
         chk.data = language
         chk.checked = language |> imcmsServices.getI18nContentSupport.isDefault

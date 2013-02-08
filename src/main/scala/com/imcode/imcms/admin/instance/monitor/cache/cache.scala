@@ -12,7 +12,7 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 
 class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Margin with Spacing {
-  val tblMetas = new Table("Metas") with GenericProperty[JInteger] with Selectable with Immediate {
+  val tblMetas = new Table("Metas") with TypedProperty[JInteger] with Selectable with Immediate {
     addContainerProperties(this,
       PropertyDescriptor[JInteger]("Id"),
       PropertyDescriptor[String]("Type"),

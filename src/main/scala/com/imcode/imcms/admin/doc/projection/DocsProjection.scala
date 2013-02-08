@@ -228,7 +228,7 @@ class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomai
       else {
         val languages = (
           for {
-            _chk@(chkLanguage: CheckBox with GenericData[ContentLanguage]) <- basicFormUI.lytLanguages.getComponentIterator.asScala
+            _chk@(chkLanguage: CheckBox with TypedData[ContentLanguage]) <- basicFormUI.lytLanguages.getComponentIterator.asScala
             if chkLanguage.isChecked
           } yield
             chkLanguage.data

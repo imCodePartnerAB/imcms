@@ -20,7 +20,7 @@ package object ui {
   implicit def mkImcmsUIOps(ui: UI): ImcmsUIOps = new ImcmsUIOps(ui)
 
 
-  def whenSelected[A <: AnyRef, B](select: AbstractSelect with GenericProperty[A])(fn: A => B): Option[B] = select.value match {
+  def whenSelected[A <: AnyRef, B](select: AbstractSelect with TypedProperty[A])(fn: A => B): Option[B] = select.value match {
     case null => None
     case value: JCollection[_] if value.isEmpty => None
     case value => Some(fn(value))
@@ -61,7 +61,7 @@ package object ui {
 
   implicit def wrapButton(button: Button) = new ButtonWrapper(button)
 
-  implicit def wrapTable[A <: TItemId](table: Table with ContainerWithGenericItemId[A]) = new TableWrapper[A](table)
+  implicit def wrapTable[A <: TItemId](table: Table with ContainerWithTypedItemId[A]) = new TableWrapper[A](table)
 
   implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBoxWrapper(checkBox)
 
@@ -274,7 +274,7 @@ package object ui {
     setNullSelectionAllowed(false)
   }
 
-  trait SelectWithGenericItemId[A <: TItemId] extends AbstractSelect with ContainerWithGenericItemId[A] {
+  trait SelectWithTypedItemId[A <: TItemId] extends AbstractSelect with ContainerWithTypedItemId[A] {
     def addItem(id: A, caption: String, icon: Resource = null): Item = addItem(id) |>> { _ =>
       setItemCaption(id, caption)
       setItemIcon(id, icon)
@@ -284,7 +284,7 @@ package object ui {
   }
 
 
-  trait SingleSelect[A <: TItemId] extends SelectWithGenericItemId[A] with GenericProperty[A] {
+  trait SingleSelect[A <: TItemId] extends SelectWithTypedItemId[A] with TypedProperty[A] {
     setMultiSelect(false)
 
     override final def setMultiSelect(multiSelect: Boolean) {
@@ -294,15 +294,15 @@ package object ui {
 
     def isSelected: Boolean = selectionOpt.isDefined
 
-    def selection: A = getGenericValue
+    def selection: A = getValue()//getTypedValue
 
-    def selection_=(v: A) { setGenericValue(v) }
+    def selection_=(v: A) { setValue(v) }
 
-    def selectionOpt: Option[A] = Option(getGenericValue)
+    def selectionOpt: Option[A] = Option(getValue()) //Option(getTypedValue)
   }
 
 
-  trait MultiSelect[A <: TItemId] extends SelectWithGenericItemId[A] with GenericProperty[JCollection[A]] {
+  trait MultiSelect[A <: TItemId] extends SelectWithTypedItemId[A] with TypedProperty[JCollection[A]] {
     setMultiSelect(true)
 
     override def setMultiSelect(multiSelect: Boolean) {
@@ -310,15 +310,15 @@ package object ui {
       super.setMultiSelect(multiSelect)
     }
 
-    def isSelected: Boolean = getGenericValue.asScala.nonEmpty
+    def isSelected: Boolean = getValue().asScala.nonEmpty //getTypedValue.asScala.nonEmpty
 
-    def selection: Seq[A] = getGenericValue.asScala.toSeq
+    def selection: Seq[A] = getValue.asScala.toSeq //getTypedValue.asScala.toSeq
 
-    def selection_=(v: Seq[A]) { setGenericValue(v.asJava) }
+    def selection_=(v: Seq[A]) { setValue(v.asJava) }
 
     def selection_=(v: A) { selection = Option(v).toSeq }
 
-    def firstOpt: Option[A] = getGenericValue.asScala.headOption
+    def firstOpt: Option[A] = getValue.asScala.headOption //getTypedValue.asScala.headOption
   }
 
 
@@ -328,18 +328,18 @@ package object ui {
    * <code>value<code> property always returns a collection.
    */
   // todo: ??? Multiselect'Read'Behavior ???
-  trait MultiSelectBehavior[A <: TItemId] extends SelectWithGenericItemId[A] with GenericProperty[JCollection[A]] {
+  trait MultiSelectBehavior[A <: TItemId] extends SelectWithTypedItemId[A] with TypedProperty[JCollection[A]] {
 
-    def selection: Seq[A] = getGenericValue.asScala.toSeq
-    def selection_=(v: Seq[A]) { setGenericValue(v.asJava) }
+    def selection: Seq[A] = getValue().asScala.toSeq //getTypedValue.asScala.toSeq
+    def selection_=(v: Seq[A]) { setValue(v.asJava) }
 
-    def isSelected: Boolean = getGenericValue.asScala.nonEmpty
+    def isSelected: Boolean = getValue().asScala.nonEmpty //getTypedValue.asScala.nonEmpty
 
     /**
      * @return collection of selected items or empty collection if there is no selected item(s).
      */
-    final override def getValue(): AnyRef = super.getValue |> { value =>
-      isMultiSelect ? value | Option(value).toSeq.asJavaCollection
+    final override def getValue(): JCollection[A] = super.getValue |> { value =>
+      isMultiSelect ? value | value.asInstanceOf[A].asOption.toSeq.asJavaCollection
     }
 
     final override def setValue(value: AnyRef) {

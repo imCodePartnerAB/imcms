@@ -1,5 +1,6 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.imcms.admin.docadmin.TextHistoryEntry;
 import com.imcode.imcms.api.ContentLanguage;
 import com.imcode.imcms.api.DocRef;
 import imcode.util.Parser;

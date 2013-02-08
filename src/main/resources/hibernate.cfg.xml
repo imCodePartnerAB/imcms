@@ -24,10 +24,12 @@
         <mapping class="com.imcode.imcms.api.IPAccess"/>
 
 
+
         <mapping class="com.imcode.imcms.api.DocumentVersion"/>
         <mapping class="com.imcode.imcms.api.DocumentProperty"/>
         <mapping class="com.imcode.imcms.api.ContentLoop"/>
 
+        <mapping class="imcode.server.user.UserDomainObject"/>
         <mapping class="imcode.server.document.textdocument.ImageDomainObject"/>
         <mapping class="imcode.server.document.textdocument.TextDomainObject"/>
         <mapping class="imcode.server.document.textdocument.MenuDomainObject"/>

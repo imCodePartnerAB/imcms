@@ -4,7 +4,6 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.imcode.imcms.util.P;
 import com.imcode.imcms.util.P2;
-import org.hibernate.annotations.IndexColumn;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -112,7 +111,7 @@ public class ContentLoop implements Serializable, Cloneable {
                     @JoinColumn(name = "loop_no", referencedColumnName = "no")
             }
     )
-    @IndexColumn(name = "order_no") // content index
+    @OrderColumn(name = "order_no")
     private List<Content> contents = new LinkedList<Content>();
 
     protected ContentLoop() {

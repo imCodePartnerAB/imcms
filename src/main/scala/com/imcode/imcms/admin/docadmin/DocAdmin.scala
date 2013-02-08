@@ -19,11 +19,20 @@ import _root_.imcode.server.document.textdocument._
 import _root_.imcode.server.Imcms
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
-import imcode.server.document.{DocumentDomainObject, NoPermissionToEditDocumentException}
+import _root_.imcode.server.document.{DocumentDomainObject, NoPermissionToEditDocumentException}
 
 
 @com.vaadin.annotations.Theme("imcms")
 class DocAdmin extends UI with ImcmsServicesSupport { app =>
+
+  // todo: doc - unapply @ bounds to matched object, not the result
+  // todo: ??? pass requests from filter ???
+  override def init(request: VaadinRequest) {
+    setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
+
+    setContent(mkContent(request))
+  }
+
 
   private def mkContent(request: VaadinRequest): Component = {
     import PartialFunction.condOpt
@@ -55,15 +64,6 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   }
 
 
-  // todo: doc - unapply @ bounds to matched object, not the result
-  // todo: ??? pass requests from filter ???
-  override def init(request: VaadinRequest) {
-    setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
-
-    setContent(mkContent(request))
-  }
-
-
   def mkWorkingDocEditorComponent(request: VaadinRequest, doc: DocumentDomainObject) = new FullScreenEditorUI(s"Document ${doc.getId}") |>> { ui =>
     val editor = new DocEditor(doc)
 
@@ -89,7 +89,7 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
       Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
     }
 
-    Page.getCurrent.getUriFragment.|>(opt).map(_.toLowerCase).foreach {
+    Page.getCurrent.getUriFragment.asOption.map(_.toLowerCase).foreach {
       case "info" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
       case "access" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.access"
       case "appearance" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
@@ -238,6 +238,14 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   // [+] label
   // [-] validate
   // [!] Return URL
+  // check ImcmsConstants.REQUEST_PARAM__RETURN_URL
+  //if (returnURL != null) {
+  //res.sendRedirect(returnURL);
+  //} else {
+  //res.sendRedirect("AdminDoc?meta_id=" + meta_id + "&flags="
+  //+ imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS);
+  //}
+
   // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
   def mkWorkingDocTextEditorComponent(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int) = new FullScreenEditorUI() |>> { ui =>
     val title = request.getParameter("label").trimToNull match {
@@ -309,7 +317,7 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
         try {
           imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, UI.getCurrent.imcmsUser)
           val user = new UserDomainObject() // todo: fixme
-          imcmsServices.updateMainLog(s"Text ${textNoOpt.get} in [${docIdOpt.get}] modified by user: [${user.getFullName}]");
+          imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
           if (closeAfterSave) closeEditor()
         } catch {
           case e: NoPermissionToEditDocumentException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
