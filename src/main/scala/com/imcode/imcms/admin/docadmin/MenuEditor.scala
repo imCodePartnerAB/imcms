@@ -64,6 +64,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
           }
 
           updateMenuUI()
+          dlg.close()
         }
       } |> UI.getCurrent.addWindow
     }
@@ -92,6 +93,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
                     try {
                       imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.asJava, UI.getCurrent.imcmsUser)
                       updateMenuUI()
+                      dlg.close()
                     } catch {
                       case e =>
                         Page.getCurrent.showErrorNotification("Can't save document", e.getMessage)

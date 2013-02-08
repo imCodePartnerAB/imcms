@@ -10,8 +10,8 @@ import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
 
 
-class DocSelectDialog(caption: String, user: UserDomainObject) extends OkCancelDialog with CustomSizeDialog {
-  val projection = new DocsProjection(user) |>> { _.docsUI.setMultiSelect(true) }
+class DocSelectDialog(caption: String, user: UserDomainObject, multiSelect: Boolean = true) extends OkCancelDialog with CustomSizeDialog with Resizable {
+  val projection = new DocsProjection(user, multiSelect = multiSelect)
   val projectionOps = new DocsProjectionOps(projection)
 
   mainUI = new DocSelectDialogMainUI(projection.ui) |>> { ui =>
@@ -37,7 +37,7 @@ class DocSelectDialog(caption: String, user: UserDomainObject) extends OkCancelD
   }
 
 
-  this.setSize(500, 600)
+  this.setSize(700, 600)
 
   projection.listen { selection => btnOk.setEnabled(selection.nonEmpty) }
   projection.notifyListeners()

@@ -24,11 +24,11 @@ import com.imcode.imcms.api.ContentLanguage
 import com.vaadin.ui.{UI, CheckBox}
 
 
-class DocsProjection(user: UserDomainObject) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport {
+class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport {
   val basicFilter = new BasicFilter
   val advancedFilter = new AdvancedFilter
   val docsContainer = new IndexedDocsContainer(user)
-  val docsUI = new IndexedDocsUI(docsContainer) with FullSize
+  val docsUI = new IndexedDocsUI(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
   private val selectionRef = new AtomicReference(Seq.empty[DocumentDomainObject])
 
   val ui = new DocsProjectionUI(basicFilter.ui, advancedFilter.ui, docsUI) { ui =>

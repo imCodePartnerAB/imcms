@@ -6,7 +6,7 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
 import com.vaadin.ui.Layout.AlignmentHandler
-import com.vaadin.data.{Item}
+import com.vaadin.data.{Item, Property}
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.{Sizeable, Resource}
 import com.vaadin.ui.themes.{ChameleonTheme, BaseTheme}
@@ -294,11 +294,11 @@ package object ui {
 
     def isSelected: Boolean = selectionOpt.isDefined
 
-    def selection: A = getValue()//getTypedValue
+    def selection: A = getTypedValue
 
     def selection_=(v: A) { setValue(v) }
 
-    def selectionOpt: Option[A] = Option(getValue()) //Option(getTypedValue)
+    def selectionOpt: Option[A] = getTypedValue.asOption
   }
 
 
@@ -310,15 +310,15 @@ package object ui {
       super.setMultiSelect(multiSelect)
     }
 
-    def isSelected: Boolean = getValue().asScala.nonEmpty //getTypedValue.asScala.nonEmpty
+    def isSelected: Boolean = getTypedValue.asScala.nonEmpty
 
-    def selection: Seq[A] = getValue.asScala.toSeq //getTypedValue.asScala.toSeq
+    def selection: Seq[A] = getTypedValue.asScala.toSeq
 
     def selection_=(v: Seq[A]) { setValue(v.asJava) }
 
     def selection_=(v: A) { selection = Option(v).toSeq }
 
-    def firstOpt: Option[A] = getValue.asScala.headOption //getTypedValue.asScala.headOption
+    def firstOpt: Option[A] = getTypedValue.asScala.headOption
   }
 
 
@@ -330,16 +330,17 @@ package object ui {
   // todo: ??? Multiselect'Read'Behavior ???
   trait MultiSelectBehavior[A <: TItemId] extends SelectWithTypedItemId[A] with TypedProperty[JCollection[A]] {
 
-    def selection: Seq[A] = getValue().asScala.toSeq //getTypedValue.asScala.toSeq
+    def selection: Seq[A] = getTypedValue.asScala.toSeq
     def selection_=(v: Seq[A]) { setValue(v.asJava) }
 
-    def isSelected: Boolean = getValue().asScala.nonEmpty //getTypedValue.asScala.nonEmpty
+    def isSelected: Boolean = getTypedValue.asScala.nonEmpty
 
     /**
      * @return collection of selected items or empty collection if there is no selected item(s).
      */
-    final override def getValue(): JCollection[A] = super.getValue |> { value =>
-      isMultiSelect ? value | value.asInstanceOf[A].asOption.toSeq.asJavaCollection
+    final override def getValue(): JCollection[A] = super.getValue() |> { value =>
+      if (isMultiSelect) value.asInstanceOf[JCollection[A]]
+      else value.asInstanceOf[A].asOption.toSeq.asJavaCollection
     }
 
     final override def setValue(value: AnyRef) {
