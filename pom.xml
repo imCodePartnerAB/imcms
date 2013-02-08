@@ -34,7 +34,7 @@
         <solr.version>4.0.0</solr.version>
         <slf4j.version>1.7.2</slf4j.version>
         <scala.version>2.10.0</scala.version>
-        <springframework.version>3.2.1.RELEASE</springframework.version>
+        <springframework.version>3.2.0.RELEASE</springframework.version>
         <vaadin.version>7.0.0</vaadin.version>
 
         <jetty.port>9090</jetty.port>
@@ -548,6 +548,12 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${springframework.version}</version>
         </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>org.springframework.transaction</artifactId>-->
+            <!--<version>3.2.1.RELEASE</version>-->
+        <!--</dependency>-->
 
         <!--<dependency>-->
         <!--<groupId>org.aspectj</groupId>-->
