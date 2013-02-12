@@ -1,15 +1,18 @@
-package com.imcode.imcms
+package com.imcode
+package imcms
 
 import scala.util.control.{Exception => Ex}
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
+import scala.util.{Try, Failure}
 
 package object test {
   def withLogFailure[T](block: => T) =
-    Ex.allCatch.withApply[T] { t =>
-      t.printStackTrace
-      throw t
-    } apply block
+    try {
+      block
+    } catch {
+      case t: Throwable => t.printStackTrace()
+    }
 
   implicit def smiToAnswer[A](fn: InvocationOnMock => A): Answer[A] =
     new Answer[A] {

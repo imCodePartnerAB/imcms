@@ -21,6 +21,10 @@ import com.vaadin.event.dd.acceptcriteria.{AcceptAll, Not, AcceptCriterion}
 import scala.collection.JavaConverters._
 
 
+// refers to check:
+// [-]inc_adminlinks.jsp
+// [-]NoPermissionsToAddToDocumentException
+
 // todo: ???revert btn (in save or in menu)???
 class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends Editor with ImcmsServicesSupport {
 
@@ -29,7 +33,6 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
   private var state = menu.clone()
 
   val ui = new MenuEditorUI |>> { ui =>
-
     ui.ttMenu.setItemDescriptionGenerator(new ItemDescriptionGenerator {
       def generateDescription(source: Component, itemId: AnyRef, propertyId: AnyRef) = "menu item tooltip"
     })
@@ -95,7 +98,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
                       updateMenuUI()
                       dlg.close()
                     } catch {
-                      case e =>
+                      case e: Throwable =>
                         Page.getCurrent.showErrorNotification("Can't save document", e.getMessage)
                         throw e
                     }

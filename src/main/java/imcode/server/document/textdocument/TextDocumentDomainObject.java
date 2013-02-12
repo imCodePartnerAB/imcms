@@ -147,13 +147,18 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return includesMap.get(includeIndex);
     }
 
-
-    public MenuDomainObject getMenu(int menuIndex) {
-        MenuDomainObject menu = menus.get(menuIndex);
+    /**
+     * Returns menu.
+     * If menu does not exists creates and adds menu to this document.
+     * @param menuNo
+     * @return Menu
+     */
+    public MenuDomainObject getMenu(int menuNo) {
+        MenuDomainObject menu = menus.get(menuNo);
 
         if (null == menu) {
-            menu = new MenuDomainObject();
-            setMenu(menuIndex, menu);
+            setMenu(menuNo, new MenuDomainObject());
+            menus.get(menuNo);
         }
 
         return menu;
@@ -202,7 +207,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         includesMap.put(includeIndex, includedDocumentId);
     }
 
-
+    /**
+     * @param no
+     * @param menu
+     * @return a copy of added menu.
+     */
     public MenuDomainObject setMenu(int no, MenuDomainObject menu) {
         MenuDomainObject newMenu = menu.clone();
         MenuDomainObject oldMenu = menus.get(no);

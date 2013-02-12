@@ -61,7 +61,7 @@ class DocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll with B
 
     "produce SOLr delete query for every document meta id" in {
       for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-        expect("meta_id:"+metaId, "valid SOLr delete query") {
+        expectResult("meta_id:"+metaId, "valid SOLr delete query") {
           ops.mkSolrDocsDeleteQuery(metaId)
         }
       }

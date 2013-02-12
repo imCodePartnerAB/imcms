@@ -45,7 +45,7 @@ class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll w
     }
 
     "delete all [3] existing text doc's includes" in {
-      expect(3) {
+      expectResult(3) {
         metaDao.deleteIncludes(1001)
       }
 

@@ -4,7 +4,7 @@ package imcms.vaadin.ui
 import javax.servlet.http.HttpSession
 import javax.servlet.ServletContext
 import java.net.URL
-import com.vaadin.server.WrappedHttpSession
+import com.vaadin.server.{VaadinServlet, VaadinService, WrappedHttpSession}
 
 
 /* implicit */
@@ -17,10 +17,11 @@ class UIWrapper(ui: com.vaadin.ui.UI) {
   def servletContext: ServletContext = session.getServletContext
 
   // todo: fix
-  def resourceUrl(resourcePath: String): URL = ???
-//    (null : URL) |> { appUrl =>
-//    new URL(appUrl.getProtocol, appUrl.getHost, appUrl.getPort, s"{$servletContext.getContextPath}/$resourcePath")
-//  }
+  def resourceUrl(resourcePath: String): URL = (null : URL) |> { appUrl =>
+
+    //VaadinServlet.getCurrent.getServletContext
+    new URL(appUrl.getProtocol, appUrl.getHost, appUrl.getPort, s"{$servletContext.getContextPath}/$resourcePath")
+  }
 
   def withLock(body: => Unit) {
     ui.getSession.lock()

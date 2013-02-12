@@ -12,7 +12,7 @@
     <context-param>
         <description>Vaadin production mode</description>
         <param-name>productionMode</param-name>
-        <param-value>true</param-value>
+        <param-value>false</param-value>
     </context-param>
 
     <context-param>
@@ -232,11 +232,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.ChangeMenu</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.ChangeMenu</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeText</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.ChangeText</servlet-class>
     </servlet>
@@ -259,11 +254,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.GetDoc</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.GetDoc</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.GetExistingDoc</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.GetExistingDoc</servlet-class>
     </servlet>
 
     <servlet>
@@ -497,11 +487,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.ChangeMenu</servlet-name>
-        <url-pattern>/servlet/ChangeMenu</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeText</servlet-name>
         <url-pattern>/servlet/ChangeText</url-pattern>
     </servlet-mapping>
@@ -529,11 +514,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.GetDoc</servlet-name>
         <url-pattern>/GetDoc</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.GetExistingDoc</servlet-name>
-        <url-pattern>/servlet/GetExistingDoc</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

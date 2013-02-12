@@ -130,27 +130,27 @@ object HibernateSupport {
   abstract class HibernateResultTransformer[+A <: AnyRef : ClassTag] {
     def transformer: ResultTransformer
 
-    override def toString = "HibernateResultTransformer[%s]" format classManifest[A].erasure
+    override def toString = "HibernateResultTransformer[%s]".format(scala.reflect.classTag[A].runtimeClass)
   }
 
 
-  trait ResultTransformerBase { this: ResultTransformer =>
+  trait IdentityResultTransformer { this: ResultTransformer =>
     def transformList(collection: JList[_]): JList[_] = collection
   }
 
 
   class HibernateArrayResultTransformer[E <: AnyRef : ClassTag] extends HibernateResultTransformer[Array[E]] {
-    def transformer = new ResultTransformer with ResultTransformerBase {
-      def transformTuple(tuple: Array[AnyRef], aliases: Array[String]) = Array.ofDim[E](tuple.size) |>> { arr =>
-        for ((n, i) <- tuple.zipWithIndex) arr(i) = n.asInstanceOf[E]
+    def transformer = new ResultTransformer with IdentityResultTransformer {
+      def transformTuple(tuple: Array[AnyRef], aliases: Array[String]): Array[E] = Array.ofDim[E](tuple.size) |>> { arr =>
+        for ((element, i) <- tuple.zipWithIndex) arr(i) = element.asInstanceOf[E]
       }
     }
   }
 
 
   class HibernateSingleColumnTransformer[A <: AnyRef : ClassTag] extends HibernateResultTransformer[A] {
-    def transformer = new ResultTransformer with ResultTransformerBase {
-      def transformTuple(tuple: Array[AnyRef], aliases: Array[String]) = tuple(0)
+    def transformer = new ResultTransformer with IdentityResultTransformer {
+      def transformTuple(tuple: Array[AnyRef], aliases: Array[String]): A = tuple(0).asInstanceOf[A]
     }
   }
 

@@ -78,7 +78,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       assertEquals(headlinePrefix + language.getCode, doc.getHeadline)
       assertEquals(menuTextPrefix + language.getCode, doc.getMenuText)
 
-      expect(0, "texts in a doc") {
+      expectResult(0, "texts in a doc") {
         doc.getTexts.size
       }
     }
@@ -115,7 +115,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       assertEquals(headlinePrefix + language.getCode, doc.getHeadline)
       assertEquals(menuTextPrefix + language.getCode, doc.getMenuText)
 
-      expect(2, "texts in a doc") {
+      expectResult(2, "texts in a doc") {
         doc.getTexts.size
       }
 
@@ -226,7 +226,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       val loop = savedDoc.getContentLoop(loopNo);
       assertNotNull(loop)
 
-      expect(loop.getContents.size, "contents in the loop")(loopNo)
+      expectResult(loop.getContents.size, "contents in the loop")(loopNo)
 
       for (contentNo <- 0 until loopNo) {
         assertTrue(loop.getContents.asScala.find(_.getNo == contentNo).isDefined)
@@ -679,7 +679,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     textDO.setLanguage(doc.getLanguage)
     textDO.setNo(no)
 
-    expect(null, "Text field does not exists") {
+    expectResult(null, "Text field does not exists") {
       doc.getText(no)
     }
 

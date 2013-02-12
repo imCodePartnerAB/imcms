@@ -123,7 +123,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
         language = language)
 
     for (language <- mkLanguages)
-      expect(nos.size * contentRefOpts.size, "texts count inside and outside of content loop") {
+      expectResult(nos.size * contentRefOpts.size, "texts count inside and outside of content loop") {
         textDao.deleteTexts(DocRef.of(Default.docId, Default.docVersionNo), language)
       }
   }
@@ -146,7 +146,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     for (versionNo <- versionNos) {
       val texts = textDao.getTexts(DocRef.of(Default.docId, versionNo))
 
-      expect(nos.size * mkLanguages.size) { texts.size }
+      expectResult(nos.size * mkLanguages.size) { texts.size }
     }
   }
 
@@ -190,13 +190,13 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     for (versionNo <- versionNos; language <- mkLanguages) {
       val texts = textDao.getTexts(DocRef.of(Default.docId, versionNo), language).asScala
 
-      expect(nos.size * contentRefOpts.size) { texts.size }
+      expectResult(nos.size * contentRefOpts.size) { texts.size }
 
-      expect(nos.size, "Texts count outsude content loop") {
+      expectResult(nos.size, "Texts count outsude content loop") {
         texts.count(_.getContentRef == null)
       }
 
-      expect(nos.size, "Texts count inside content loop") {
+      expectResult(nos.size, "Texts count inside content loop") {
         texts.count(text => text.getContentRef != null && text.getContentRef == contentRef)
       }
     }

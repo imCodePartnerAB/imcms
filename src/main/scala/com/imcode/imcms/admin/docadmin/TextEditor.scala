@@ -9,7 +9,7 @@ import imcode.server.document.textdocument.TextDomainObject
 import com.imcode.imcms.vaadin.Editor
 
 
-class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorSettings) extends Editor with ImcmsServicesSupport {
+class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) extends Editor with ImcmsServicesSupport {
 
   type Data = Seq[TextDomainObject]
 

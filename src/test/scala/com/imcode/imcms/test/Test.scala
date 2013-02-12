@@ -21,7 +21,9 @@ object Test extends Test
 
 class Test extends TestDb with TestSolr {
 
-  val basedir: String = ClassLoader.getSystemResource("test-log4j.xml") match {
+  val classLoader = Thread.currentThread.getContextClassLoader
+
+  val basedir: String = classLoader.getResource("test-log4j.xml") match {
     case null => sys.error("Not configured")
     case url => new File(url.getFile).getParentFile.getParentFile.getParentFile.getCanonicalPath
   }
@@ -59,7 +61,7 @@ class Test extends TestDb with TestSolr {
       }
 
       def addXmlFiles(xmlFiles: String*)(configuration: Configuration) = configuration |>> { _ =>
-        xmlFiles.foreach(xmlFile => ClassLoader.getSystemResource(xmlFile).getFile |> configuration.addFile)
+        xmlFiles.foreach(xmlFile => classLoader.getResource(xmlFile).getFile |> configuration.addFile)
       }
     }
   }
@@ -183,5 +185,5 @@ trait TestSolr { test: Test =>
 
 
 object SpringUtils {
-  def bean[A:ClassTag](ctx: ApplicationContext): A = ctx.getBean(scala.reflect.classTag[A].runtimeClass.asInstanceOf[Class[A]])
+  def bean[A : ClassTag](ctx: ApplicationContext): A = ctx.getBean(scala.reflect.classTag[A].runtimeClass.asInstanceOf[Class[A]])
 }

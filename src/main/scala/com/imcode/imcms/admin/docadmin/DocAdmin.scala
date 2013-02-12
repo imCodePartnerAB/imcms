@@ -8,7 +8,7 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.api.{DocumentVersion, DocRef}
 import com.imcode.imcms.admin.doc.DocEditor
 import com.vaadin.ui._
-import com.vaadin.server.{Page, VaadinRequest}
+import com.vaadin.server._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.ui.dialog.ConfirmationDialog
 import com.imcode.imcms.mapping.DocumentSaveException
@@ -16,14 +16,26 @@ import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.dao.TextDao
 import org.apache.commons.lang3.StringEscapeUtils
 import _root_.imcode.server.document.textdocument._
-import _root_.imcode.server.Imcms
+import imcode.server.{ImcmsConstants, Imcms}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
 import _root_.imcode.server.document.{DocumentDomainObject, NoPermissionToEditDocumentException}
+import com.imcode.imcms.admin.docadmin.TextEditorParameters
+import scala.Some
 
+// Deleted legacy "Menu Editing files"
+// [+] MenuEditPage
+// [-] DocumentCreator +
+//   [-] CreateTextDocumentPageFlow
+//   ... relatives
+// [+] GetExistingDoc - permissions checks
+// [+] change_menu.jsp
+// [+] ChangeMenu
+// ---------------------------------------------------------------------------------------------------------------------
+// Includes???
 
 @com.vaadin.annotations.Theme("imcms")
-class DocAdmin extends UI with ImcmsServicesSupport { app =>
+class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { app =>
 
   // todo: doc - unapply @ bounds to matched object, not the result
   // todo: ??? pass requests from filter ???
@@ -37,6 +49,7 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   private def mkContent(request: VaadinRequest): Component = {
     import PartialFunction.condOpt
 
+    val contextPath = VaadinServlet.getCurrent.getServletContext.getContextPath
     val pathInfo = request.getPathInfo
     val docOpt =
       for {
@@ -44,13 +57,23 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
         doc <- imcmsServices.getDocumentMapper.getDocument(docId).asOption
       } yield doc
 
+    val titleOpt = request.getParameter("label").trimToOption
+    val returnUrlOpt = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
+
     docOpt.flatMap { doc =>
+      val docId = doc.getId
+
       condOpt(pathInfo) {
         case null | "/" => mkWorkingDocEditorComponent(request, doc)
       } orElse {
         condOpt(pathInfo, doc, request.getParameter("menuNo")) {
           case ("/menu", textDoc: TextDocumentDomainObject, PosInt(menuNo)) =>
-            mkWorkingDocMenuEditorComponent(request, textDoc, menuNo)
+            val title = titleOpt.getOrElse(s"Document ${docId} menu #${menuNo}")
+            val returnUrl = returnUrlOpt.getOrElse(
+              s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
+            )
+
+            mkWorkingDocMenuEditorComponent(MenuEditorParameters(textDoc, menuNo, title, returnUrl))
         }
       } orElse {
         condOpt(pathInfo, doc, request.getParameter("textNo")) {
@@ -99,19 +122,22 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
   }
 
 
-  def mkWorkingDocMenuEditorComponent(request: VaadinRequest, doc: TextDocumentDomainObject, menuNo: Int) = new FullScreenEditorUI(s"Document ${doc.getId} menu no ${menuNo}") |>> { ui =>
-    val menu = doc.getMenu(menuNo)
-    val editor = new MenuEditor(doc, menu) |>> { me => me.ui.setSizeFull() }
+  def mkWorkingDocMenuEditorComponent(params: MenuEditorParameters) = new FullScreenEditorUI(params.title) |>> { ui =>
+    val doc = params.doc
+    val docId = doc.getId
+    val menuNo = params.menuNo
+    val menu = params.doc.getMenu(menuNo)
+
+    val editor = new MenuEditor(doc, menu) |>> { _.ui.setSize(900, 600) }
 
     ui.mainUI = editor.ui
-    editor.ui.setSize(900, 600)
+
+    ui.buttons.btnClose.addClickHandler {
+      save(close = false)
+    }
 
     ui.buttons.btnSaveAndClose.addClickHandler {
-      editor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, UI.getCurrent.imcmsUser)
-        Page.getCurrent.showInfoNotification("Menu has been saved")
-        closeEditor()
-      }
+      save(close = true)
     }
 
     ui.buttons.btnClose.addClickHandler {
@@ -128,7 +154,18 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
     }
 
     def closeEditor() {
-      Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
+      Page.getCurrent.open(params.returnUrl, "_self")
+    }
+
+    def save(close: Boolean) {
+      editor.collectValues().right.get |> { menu =>
+        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, UI.getCurrent.imcmsUser)
+        Page.getCurrent.showInfoNotification("Menu has been saved")
+
+        if (close) {
+          Page.getCurrent.open(params.returnUrl, "_self")
+        }
+      }
     }
   }
 
@@ -291,7 +328,7 @@ class DocAdmin extends UI with ImcmsServicesSupport { app =>
       case _ => (TextDomainObject.Format.values()(texts.asScala.head.getType), true)
     }
 
-    val editor = new TextEditor(texts.asScala, TextEditorSettings(format, rowsCountOpt, canChangeFormat, showModeEditor))
+    val editor = new TextEditor(texts.asScala, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))
 
     ui.mainUI = editor.ui
     editor.ui.setSize(900, 600)

@@ -3,12 +3,14 @@ package imcms.test
 package fixtures
 
 import scala.collection.JavaConverters._
-import imcode.server.user.{UserDomainObject, RoleId}
-import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject, DocumentPermissionSetTypeDomainObject}
-import com.imcode.imcms.api.{DocRef, I18nMeta, ContentLanguage, I18nContentSupport}
+import imcode.server.user.RoleId
+import imcode.server.document.DocumentPermissionSetTypeDomainObject
+import com.imcode.imcms.api.{I18nMeta, ContentLanguage}
 import imcode.server.document.textdocument.{TextDomainObject, TextDocumentDomainObject}
 
+
 object DocFX {
+
   val Seq(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth) = 1001 to 1010
 
   // default doc/meta id - this doc/meta or an entity which have doc/meta id field always exists (or re-created) before each test.
@@ -67,65 +69,4 @@ object DocFX {
       docId <- startDocId until (startDocId + count) toSeq;
       language <- languages
     } yield mkTextDoc(docId, language)
-}
-
-object VersionFX {
-  val Seq(zero, one, two, three, four, five, six, seven, eight, nine, ten) = 0 to 10
-
-  val DefaultNo = 0
-
-  val NewNo = Int.MaxValue / 2
-
-  val VacantNo = Int.MaxValue
-}
-
-
-object DocRefFX {
-  val Default: DocRef = DocRef.of(DocFX.DefaultId, VersionFX.DefaultNo)
-}
-
-
-object DocItemFX {
-  val Seq(zero, one, two, three, four, five, six, seven, eight, nine, ten) = 0 to 10
-
-  val DefaultNo = 0
-
-  val NewNo = Int.MaxValue / 2
-
-  val VacantNo = Int.MaxValue
-}
-
-object UserFX {
-  def mkSuperAdmin: UserDomainObject = mkUser(0, RoleId.SUPERADMIN)
-  def mkDefaultUser: UserDomainObject = mkUser(2, RoleId.USERS)
-
-  def mkUser(id: Int, roleIds: RoleId*): UserDomainObject = new UserDomainObject(id) |>> { user =>
-    roleIds.foreach(user.addRoleId)
-  }
-}
-
-object LanguageFX {
-  val HostNameEn = "imcode.com"
-  val HostNameSe = "imcode.se"
-
-  def mkEnglish: ContentLanguage = ContentLanguage.builder().id(1).code("en").name("English").nativeName("English").enabled(true).build
-  def mkSwedish: ContentLanguage = ContentLanguage.builder().id(2).code("sv").name("Swedish").nativeName("Svenska").enabled(true).build
-
-  def mkLanguages: Seq[ContentLanguage] = Seq(mkEnglish, mkSwedish)
-
-  def mkI18nSupport(defaultLanguage: ContentLanguage = mkEnglish): I18nContentSupport = new I18nContentSupport(
-    mkLanguages.map(l => l.getCode -> l).toMap.asJava,
-    Map(HostNameEn -> mkEnglish, HostNameSe -> mkSwedish).asJava,
-    defaultLanguage
-  )
-}
-
-object CategoryFX {
-  def mkCategories(starId: Int = 0, count: Int = 10): Seq[CategoryDomainObject] =
-    for (id <- starId until (starId + count))
-    yield new CategoryDomainObject |>> { c =>
-      c.setId(id)
-      c.setName("category_" + id)
-      c.setType(new CategoryTypeDomainObject(id, "category_type_" + id, id + 1, id % 2 == 0))
-    }
 }

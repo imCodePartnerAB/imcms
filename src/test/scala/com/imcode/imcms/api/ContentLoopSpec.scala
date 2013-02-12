@@ -11,7 +11,7 @@ import com.imcode.imcms.test.fixtures.{DocItemFX, DocRefFX}
 @RunWith(classOf[JUnitRunner])
 class ContentLoopSpec extends WordSpec with BeforeAndAfter {
 
-  val Default = new {
+  val LoopFx = new {
     val FirstContentIndex = 0
     val LastContentIndex = 9
     val VacantContentIndex = 10
@@ -20,9 +20,9 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
     val NextContentNo = 10
   }
 
-  def mkContentLoop(id: JLong = null, no: JInteger = DocItemFX.DefaultNo, docRef: DocRef = DocRefFX.Default, contentsCount: Int = Default.ContentsCount) =
+  def mkContentLoop(id: JLong = null, no: JInteger = DocItemFX.DefaultNo, docRef: DocRef = DocRefFX.Default, contentsCount: Int = LoopFx.ContentsCount) =
     ContentLoop.builder().id(id).no(no).docRef(docRef) |>> { builder =>
-      0 until contentsCount foreach builder.addContent
+      (0 until contentsCount).foreach(builder.addContent)
     } build()
 
 
@@ -73,15 +73,15 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
       loop.addFirstContent() |> { loopAndContent =>
         val updatedLoop = loopAndContent._1
         val newContent = loopAndContent._2
-        val expectedNewContentNo = Default.NextContentNo
+        val expectedNewContentNo = LoopFx.NextContentNo
         val expectedNewContentIndex = 0
 
-        assertEquals(Default.ContentsCount, loop.getContents.size)
+        assertEquals(LoopFx.ContentsCount, loop.getContents.size)
 
         assertNotSame(loop, updatedLoop)
 
-        assertEquals(Default.ContentsCount + 1, updatedLoop.getContents.size)
-        assertEquals(Default.ContentsCount + 1, updatedLoop.getContents.asScala.count(_.isEnabled))
+        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getContents.size)
+        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getContents.asScala.count(_.isEnabled))
 
         assertEquals(expectedNewContentNo, newContent.getNo)
 
@@ -100,16 +100,16 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
       loop.addLastContent() |> { loopAndContent =>
         val updatedLoop = loopAndContent._1
         val newContent = loopAndContent._2
-        val expectedNewContentNo = Default.NextContentNo
+        val expectedNewContentNo = LoopFx.NextContentNo
         val expectedNewContentIndex = 10
 
-        assertEquals(Default.ContentsCount, loop.getContents.size)
-        assertEquals(Default.ContentsCount, loop.getContents.asScala.count(_.isEnabled))
+        assertEquals(LoopFx.ContentsCount, loop.getContents.size)
+        assertEquals(LoopFx.ContentsCount, loop.getContents.asScala.count(_.isEnabled))
 
         assertNotSame(loop, updatedLoop)
 
-        assertEquals(Default.ContentsCount + 1, updatedLoop.getContents.size)
-        assertEquals(Default.ContentsCount + 1, updatedLoop.getContents.asScala.count(_.isEnabled))
+        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getContents.size)
+        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getContents.asScala.count(_.isEnabled))
 
         assertEquals(expectedNewContentNo, newContent.getNo)
 
@@ -127,7 +127,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
         val loop = mkContentLoop()
 
         intercept[IndexOutOfBoundsException] {
-          loop.addContentBefore(Default.VacantContentIndex)
+          loop.addContentBefore(LoopFx.VacantContentIndex)
         }
       }
     }
@@ -135,13 +135,40 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
     "exists" should {
       "return updated content and inserted content" in {
         mkContentLoop() |> { loop =>
-          loop.addContentBefore(Default.LastContentIndex) |> { loopAndContent =>
+          loop.addContentBefore(LoopFx.LastContentIndex) |> { loopAndContent =>
             val contents = loopAndContent._1.getContents
             val content = loopAndContent._2
 
-            assertEquals(Default.ContentsCount + 1, contents.size)
-            assertEquals(Default.NextContentNo, content.getNo)
-            assertSame(content, contents.get(Default.LastContentIndex))
+            assertEquals(LoopFx.ContentsCount + 1, contents.size)
+            assertEquals(LoopFx.NextContentNo, content.getNo)
+            assertSame(content, contents.get(LoopFx.LastContentIndex))
+          }
+        }
+      }
+    }
+  }
+
+
+  "Delete content" which {
+    "does not exist" should {
+      "throw IndexOutOfBoundsException" in {
+        val loop = mkContentLoop()
+
+        intercept[IndexOutOfBoundsException] {
+          loop.disableContent(LoopFx.VacantContentIndex)
+        }
+      }
+    }
+
+    "exists" should {
+      "return updated loop" in {
+        mkContentLoop() |> { loop =>
+          assertTrue("content exists", loop.findContent(5).isPresent)
+
+          loop.deleteContent(5) |> { updatedLoop =>
+            val contents = updatedLoop.getContents.asScala
+            assertEquals(LoopFx.ContentsCount - 1, contents.size)
+            assertFalse("content exists", updatedLoop.findContent(5).isPresent)
           }
         }
       }
@@ -155,7 +182,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
         val loop = mkContentLoop()
 
         intercept[IndexOutOfBoundsException] {
-          loop.addContentAfter(Default.VacantContentIndex)
+          loop.addContentAfter(LoopFx.VacantContentIndex)
         }
       }
     }
@@ -163,13 +190,13 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
     "exists" should {
       "return updated content and inserted content" in {
         mkContentLoop() |> { loop =>
-          loop.addContentAfter(Default.FirstContentIndex) |> { loopAndContent =>
+          loop.addContentAfter(LoopFx.FirstContentIndex) |> { loopAndContent =>
             val contents = loopAndContent._1.getContents
             val content = loopAndContent._2
 
-            assertEquals(Default.ContentsCount + 1, contents.size)
-            assertEquals(Default.NextContentNo, content.getNo)
-            assertSame(content, contents.get(Default.FirstContentIndex + 1))
+            assertEquals(LoopFx.ContentsCount + 1, contents.size)
+            assertEquals(LoopFx.NextContentNo, content.getNo)
+            assertSame(content, contents.get(LoopFx.FirstContentIndex + 1))
           }
         }
       }
@@ -183,7 +210,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
         val loop = mkContentLoop()
 
         intercept[IndexOutOfBoundsException] {
-          loop.disableContent(Default.VacantContentIndex)
+          loop.disableContent(LoopFx.VacantContentIndex)
         }
       }
     }
@@ -193,7 +220,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
         mkContentLoop() |> { loop =>
           loop.disableContent(5) |> { updatedLoop =>
             val contents = updatedLoop.getContents.asScala
-            assertEquals(Default.ContentsCount - 1, contents.count(_.isEnabled))
+            assertEquals(LoopFx.ContentsCount - 1, contents.count(_.isEnabled))
 
             contents.zipWithIndex.filter { case (content, _) => !content.isEnabled } |> { disabledContents =>
               assertEquals(1, disabledContents.size)
@@ -212,7 +239,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
         val loop = mkContentLoop()
 
         intercept[IndexOutOfBoundsException] {
-          loop.enableContent(Default.VacantContentIndex)
+          loop.enableContent(LoopFx.VacantContentIndex)
         }
       }
     }
@@ -244,7 +271,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
       val loop = mkContentLoop()
 
       intercept[IndexOutOfBoundsException] {
-        loop.moveContentForward(Default.VacantContentIndex)
+        loop.moveContentForward(LoopFx.VacantContentIndex)
       }
     }
   }
@@ -254,7 +281,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
     "return the loop unchanged" when {
       "the content is the last" in {
         mkContentLoop() |> { loop =>
-          assertEquals(loop, loop.moveContentForward(Default.LastContentIndex))
+          assertEquals(loop, loop.moveContentForward(LoopFx.LastContentIndex))
         }
       }
 
@@ -305,17 +332,17 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
       val loop = mkContentLoop()
 
       intercept[IndexOutOfBoundsException] {
-        loop.moveContentBackward(Default.VacantContentIndex)
+        loop.moveContentBackward(LoopFx.VacantContentIndex)
       }
     }
   }
 
 
-  "Move exissing content backward" should {
+  "Move existing content backward" should {
     "return the loop unchanged" when {
       "the content is the first" in {
         val loop = mkContentLoop()
-        val updatedLoop = loop.moveContentBackward(Default.FirstContentIndex)
+        val updatedLoop = loop.moveContentBackward(LoopFx.FirstContentIndex)
 
         assertEquals(loop, updatedLoop)
       }
@@ -367,7 +394,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
       val loop = mkContentLoop()
 
       intercept[IndexOutOfBoundsException] {
-        loop.moveContentTop(Default.VacantContentIndex)
+        loop.moveContentTop(LoopFx.VacantContentIndex)
       }
     }
   }
@@ -399,17 +426,17 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
       val loop = mkContentLoop()
 
       intercept[IndexOutOfBoundsException] {
-        loop.moveContentBottom(Default.VacantContentIndex)
+        loop.moveContentBottom(LoopFx.VacantContentIndex)
       }
     }
   }
 
 
   "Move existing content bottom" should {
-    "return a loop unchaned" when {
-      "the content is allready at the bottom" in {
+    "return a loop unchanged" when {
+      "the content is already at the bottom" in {
         val loop = mkContentLoop()
-        val updatedLoop = loop.moveContentBottom(Default.LastContentIndex)
+        val updatedLoop = loop.moveContentBottom(LoopFx.LastContentIndex)
 
         assertEquals(loop, updatedLoop)
       }
@@ -420,8 +447,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfter {
       val loop = mkContentLoop()
       val updatedLoop = loop.moveContentBottom(5)
 
-      assertEquals(loop.getContents.get(5), updatedLoop.getContents.get(Default.LastContentIndex))
-      assertEquals(loop.getContents.get(Default.LastContentIndex), updatedLoop.getContents.get(Default.LastContentIndex - 1))
+      assertEquals(loop.getContents.get(5), updatedLoop.getContents.get(LoopFx.LastContentIndex))
+      assertEquals(loop.getContents.get(LoopFx.LastContentIndex), updatedLoop.getContents.get(LoopFx.LastContentIndex - 1))
     }
   }
 }

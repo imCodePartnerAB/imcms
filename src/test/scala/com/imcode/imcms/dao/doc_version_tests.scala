@@ -59,7 +59,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
     }
 
     "return [null] when the version does *not* exist" in {
-      expect(null) {
+      expectResult(null) {
         getVersion(1002, 0, assertExists = false)
       }
     }
@@ -85,7 +85,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
 
   ".changeDefaultVersion" should {
     "change version when changing it to an existing version" in {
-      given("default version is [0]")
+      Given("default version is [0]")
       val version0 = getVersion(1001, 0)
       val version1 = getVersion(1001, 1)
 
@@ -94,10 +94,10 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
         assert(version0 === defaultVersion)
       }
 
-      when("change it from 0 to 1")
+      When("change it from 0 to 1")
       versionDao.changeDefaultVersion(version1, UserFX.mkSuperAdmin)
 
-      then("default version should eq [version 1]")
+      Then("default version should eq [version 1]")
       versionDao.getDefaultVersion(1001) |> { defaultVersion =>
         assert(defaultVersion != null)
         assert(version1 === defaultVersion)

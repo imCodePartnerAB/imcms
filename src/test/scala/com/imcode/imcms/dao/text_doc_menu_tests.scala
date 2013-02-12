@@ -62,7 +62,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
     assertEquals("menus count", 4, menuNos.size)
 
     for (menu <- menus) {
-      expect(menu.getNo.intValue, "Items count in a menu") {
+      expectResult(menu.getNo.intValue, "Items count in a menu") {
         menu.getItemsMap.size
       }
     }

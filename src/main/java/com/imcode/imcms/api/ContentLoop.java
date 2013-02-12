@@ -13,9 +13,6 @@ import java.util.List;
 import javax.persistence.*;
 
 /**
- * ContentLoop does not provide methods for content removing since it has no ability to check
- * whether a content is being referenced by other document items (such as texts or images).
- * <p/>
  * Content 'index' corresponds to absolute context position in a loop starting from zero.
  * Content 'no' is a unique content identifier in a loop which is assigned (incremented) automatically
  * when a new content is added into the loop.
@@ -24,6 +21,7 @@ import javax.persistence.*;
 @Table(name = "imcms_text_doc_content_loops")
 public class ContentLoop implements Serializable, Cloneable {
 
+    /** Non Thread Safe */
     public static final class Builder {
 
         private ContentLoop contentLoop;
@@ -54,7 +52,7 @@ public class ContentLoop implements Serializable, Cloneable {
         }
 
         public Builder addContent(int contentIndex) {
-            Content content = Content.builder().no(contentLoop.contents.size()).build();
+            Content content = Content.builder().no(contentLoop.nextContentNo++).build();
             contentLoop.contents.add(contentIndex, content);
 
             return this;
@@ -73,6 +71,12 @@ public class ContentLoop implements Serializable, Cloneable {
         public Builder moveContent(int fromIndex, int toIndex) {
             Content content = contentLoop.contents.remove(fromIndex);
             contentLoop.contents.add(toIndex, content);
+
+            return this;
+        }
+
+        public Builder deleteContent(int contentIndex) {
+            contentLoop.contents.remove(contentIndex);
 
             return this;
         }
@@ -102,6 +106,12 @@ public class ContentLoop implements Serializable, Cloneable {
     @Column(name = "doc_version_no")
     private Integer docVersionNo;
 
+    @Column(name = "next_content_no")
+    private int nextContentNo;
+
+    @Version
+    private int version;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "imcms_text_doc_contents",
@@ -111,7 +121,7 @@ public class ContentLoop implements Serializable, Cloneable {
                     @JoinColumn(name = "loop_no", referencedColumnName = "no")
             }
     )
-    @OrderColumn(name = "order_no")
+    @OrderColumn(name = "ix")
     private List<Content> contents = new LinkedList<Content>();
 
     protected ContentLoop() {
@@ -123,6 +133,10 @@ public class ContentLoop implements Serializable, Cloneable {
 
     public Integer getNo() {
         return no;
+    }
+
+    public int getVersion() {
+        return version;
     }
 
     @Override
@@ -197,6 +211,16 @@ public class ContentLoop implements Serializable, Cloneable {
         return P.of(contentLoop, contents.get(contents.size() - 1));
     }
 
+    /**
+     * @throws IndexOutOfBoundsException
+     */
+    public ContentLoop deleteContent(int contentIndex) {
+        return builder(this).deleteContent(contentIndex).build();
+    }
+
+    /**
+     * @throws IndexOutOfBoundsException
+     */
     public P2<ContentLoop, Content> addContentAfter(int contentIndex) {
         int newContentIndex = contentIndex + 1;
         ContentLoop contentLoop = builder(this).addContent(newContentIndex).build();
@@ -204,6 +228,9 @@ public class ContentLoop implements Serializable, Cloneable {
         return P.of(contentLoop, contentLoop.contents.get(newContentIndex));
     }
 
+    /**
+     * @throws IndexOutOfBoundsException
+     */
     public P2<ContentLoop, Content> addContentBefore(int contentIndex) {
         Content throwExIfNotExists = contents.get(contentIndex);
         ContentLoop contentLoop = builder(this).addContent(contentIndex).build();
@@ -211,6 +238,9 @@ public class ContentLoop implements Serializable, Cloneable {
         return P.of(contentLoop, contentLoop.contents.get(contentIndex));
     }
 
+    /**
+     * @throws IndexOutOfBoundsException
+     */
     public ContentLoop moveContentBackward(int contentIndex, boolean skipDisabled) {
         Content throwExIfNotExists = contents.get(contentIndex);
 
@@ -224,14 +254,23 @@ public class ContentLoop implements Serializable, Cloneable {
         return this;
     }
 
+    /**
+     * @throws IndexOutOfBoundsException
+     */
     public ContentLoop moveContentBackward(int contentIndex) {
         return moveContentBackward(contentIndex, true);
     }
 
+    /**
+     * @throws IndexOutOfBoundsException
+     */
     public ContentLoop moveContentForward(int contentIndex) {
         return moveContentForward(contentIndex, true);
     }
 
+    /**
+     * @throws IndexOutOfBoundsException
+     */
     public ContentLoop moveContentForward(int contentIndex, boolean skipDisabled) {
         Content throwExIfNotExists = contents.get(contentIndex);
         for (int i = contentIndex + 1; i < contents.size(); i++) {
@@ -244,7 +283,9 @@ public class ContentLoop implements Serializable, Cloneable {
         return this;
     }
 
-
+    /**
+     * @throws IndexOutOfBoundsException
+     */
     public ContentLoop moveContentTop(int contentIndex) {
         Content throwExIfNotExists = contents.get(contentIndex);
 
@@ -253,6 +294,9 @@ public class ContentLoop implements Serializable, Cloneable {
                 : builder(this).moveContent(contentIndex, 0).build();
     }
 
+    /**
+     * @throws IndexOutOfBoundsException
+     */
     public ContentLoop moveContentBottom(int contentIndex) {
         Content throwExIfNotExists = contents.get(contentIndex);
         int lastIndex = contents.size() - 1;
@@ -263,11 +307,16 @@ public class ContentLoop implements Serializable, Cloneable {
     }
 
 
-
+    /**
+     * @throws IndexOutOfBoundsException
+     */
     public ContentLoop disableContent(int contentIndex) {
         return ContentLoop.builder(this).disableContent(contentIndex).build();
     }
 
+    /**
+     * @throws IndexOutOfBoundsException
+     */
     public ContentLoop enableContent(int contentIndex) {
         return ContentLoop.builder(this).enableContent(contentIndex).build();
     }

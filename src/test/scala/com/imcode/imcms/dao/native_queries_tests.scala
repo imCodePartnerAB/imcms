@@ -28,16 +28,16 @@ class NativeQueriesSuite extends WordSpec with BeforeAndAfter with BeforeAndAfte
   }
 
 
-  "getAllMimeTypes" in {
+  ".getAllMimeTypes" in {
     val mimeTypes = nativeQueriesDao.getAllMimeTypes()
 
-    expect(MimeTypeCountInEveryLanguage * 2, "Mime type count") {
+    expectResult(MimeTypeCountInEveryLanguage * 2, "Mime type count") {
       mimeTypes.size()
     }
   }
 
 
-  "getAllMimeTypesWithDescriptions" in {
+  ".getAllMimeTypesWithDescriptions" in {
     for (language <- Seq("eng", "swe")) {
       val names = for (Array(name, description) <- nativeQueriesDao.getAllMimeTypesWithDescriptions(language).asScala) yield name
       assert(names.size === MimeTypeCountInEveryLanguage, "Mime type count in %s".format(language))
@@ -45,7 +45,7 @@ class NativeQueriesSuite extends WordSpec with BeforeAndAfter with BeforeAndAfte
   }
 
 
-  "getParentDocumentAndMenuIdsForDocument" in {
+  ".getParentDocumentAndMenuIdsForDocument" in {
     val menusItems = nativeQueriesDao.getParentDocumentAndMenuIdsForDocument(1001).asScala
     val docMenus = menusItems.foldLeft(Map.empty[Int, Seq[Int]].withDefaultValue(Seq.empty)) {
       case (map, Array(docId, menuId)) => docId.toInt |> { id =>
@@ -53,23 +53,23 @@ class NativeQueriesSuite extends WordSpec with BeforeAndAfter with BeforeAndAfte
       }
     }
 
-    expect(3, "Menu items count")(docMenus.size)
+    expectResult(3, "Menu items count")(docMenus.size)
   }
 
 
-  "getDocumentsWithPermissionsForRole" in {
-    expect(1001) {
+  ".getDocumentsWithPermissionsForRole" in {
+    expectResult(1001) {
       nativeQueriesDao.getDocumentsWithPermissionsForRole(2).get(0)
     }
   }
 
 
-  "getAllDocumentTypeIdsAndNamesInUsersLanguage" in {
+  ".getAllDocumentTypeIdsAndNamesInUsersLanguage" in {
     nativeQueriesDao.getAllDocumentTypeIdsAndNamesInUsersLanguage("eng")
   }
 
 
-  "getDocumentMenuPairsContainingDocument" in {
+  ".getDocumentMenuPairsContainingDocument" in {
     nativeQueriesDao.getDocumentMenuPairsContainingDocument(1001)
   }
 }

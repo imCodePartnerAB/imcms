@@ -32,7 +32,6 @@ import com.imcode.imcms.mapping.DocumentMapper;
 /**
  * New document page flow factory.
  *
- * @see com.imcode.imcms.servlet.admin.MenuEditPage
  * @see com.imcode.imcms.servlet.superadmin.AdminManager
  */
 public class DocumentCreator {
