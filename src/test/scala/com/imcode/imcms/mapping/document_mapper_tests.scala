@@ -19,7 +19,7 @@ import com.imcode.imcms.test.Test
 import com.imcode.imcms.test.fixtures.LanguageFX
 import com.imcode.imcms.mapping.{DocumentSaver, DocumentStoringVisitor, DocumentMapper}
 import com.imcode.imcms.mapping.DocumentMapper.SaveOpts
-import com.imcode.imcms.api.{DocRef, I18nMeta, ContentLoop, I18nContentSupport}
+import com.imcode.imcms.api.{DocRef, I18nMeta, ContentLoop, DocumentI18nSupport}
 import com.imcode.imcms.api.TextDocument.TextField
 
 @RunWith(classOf[JUnitRunner])
@@ -28,7 +28,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   var docMapper: DocumentMapper = _
   var admin: UserDomainObject = _
   var user: UserDomainObject = _
-  var i18nContentSupport: I18nContentSupport = _
+  var i18nContentSupport: DocumentI18nSupport = _
 
   override def beforeAll() = withLogFailure {
     Test.db.recreate()

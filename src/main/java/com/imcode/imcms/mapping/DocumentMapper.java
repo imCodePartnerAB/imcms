@@ -232,7 +232,7 @@ public class DocumentMapper implements DocumentGetter {
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
         T docClone = (T) doc.clone();
-        ContentLanguage language = docClone.getLanguage();
+        DocumentLanguage language = docClone.getLanguage();
 
         if (language == null) {
             language = imcmsServices.getI18nContentSupport().getDefaultLanguage();
@@ -241,7 +241,7 @@ public class DocumentMapper implements DocumentGetter {
 
         I18nMeta i18nMeta = I18nMeta.builder(docClone.getI18nMeta()).language(language).build();
 
-        Map<ContentLanguage, I18nMeta> i18nMetas = new HashMap<ContentLanguage, I18nMeta>();
+        Map<DocumentLanguage, I18nMeta> i18nMetas = new HashMap<DocumentLanguage, I18nMeta>();
         i18nMetas.put(language, i18nMeta);
 
         return saveNewDocument(doc, i18nMetas, user);
@@ -268,7 +268,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<ContentLanguage, I18nMeta> i18nMetas,
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, I18nMeta> i18nMetas,
                                                               EnumSet<SaveOpts> directives,
                                                               final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
@@ -281,7 +281,7 @@ public class DocumentMapper implements DocumentGetter {
         T docClone = (T) doc.clone();
         List<I18nMeta> i18nMetasList = new LinkedList<I18nMeta>();
 
-        for (Map.Entry<ContentLanguage, I18nMeta> e : i18nMetas.entrySet()) {
+        for (Map.Entry<DocumentLanguage, I18nMeta> e : i18nMetas.entrySet()) {
             i18nMetasList.add(e.getValue().clone());
         }
 
@@ -311,7 +311,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<ContentLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         return saveNewDocument(doc, i18nMetas, EnumSet.noneOf(SaveOpts.class), user);
@@ -324,10 +324,10 @@ public class DocumentMapper implements DocumentGetter {
     public void saveDocument(final DocumentDomainObject doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
         DocumentDomainObject docClone = doc.clone();
-        ContentLanguage language = docClone.getLanguage();
+        DocumentLanguage language = docClone.getLanguage();
         I18nMeta i18nMeta = docClone.getI18nMeta();
 
-        Map<ContentLanguage, I18nMeta> i18nMetas = new HashMap<ContentLanguage, I18nMeta>();
+        Map<DocumentLanguage, I18nMeta> i18nMetas = new HashMap<DocumentLanguage, I18nMeta>();
         i18nMetas.put(language, i18nMeta);
 
         saveDocument(doc, i18nMetas, user);
@@ -342,13 +342,13 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveDocument(final DocumentDomainObject doc, Map<ContentLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
+    public void saveDocument(final DocumentDomainObject doc, Map<DocumentLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
         List<I18nMeta> i18nMetasClone = new LinkedList<I18nMeta>();
 
-        for (Map.Entry<ContentLanguage, I18nMeta> e : i18nMetas.entrySet()) {
+        for (Map.Entry<DocumentLanguage, I18nMeta> e : i18nMetas.entrySet()) {
             i18nMetasClone.add(e.getValue().clone());
         }
 
@@ -394,7 +394,7 @@ public class DocumentMapper implements DocumentGetter {
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
-        for (ContentLanguage language : imcmsServices.getI18nContentSupport().getLanguages()) {
+        for (DocumentLanguage language : imcmsServices.getI18nContentSupport().getLanguages()) {
             DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO), language);
             docs.add(doc);
         }
@@ -642,7 +642,7 @@ public class DocumentMapper implements DocumentGetter {
         meta.removeAlis();
 
         for (I18nMeta i18nMeta : i18nMetas) {
-            ContentLanguage language = i18nMeta.getLanguage();
+            DocumentLanguage language = i18nMeta.getLanguage();
             DocumentDomainObject doc = getCustomDocument(docRef, language).clone();
 
             doc.accept(new DocIdentityCleanerVisitor());
@@ -734,7 +734,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return working document
      * @since 6.0
      */
-    public DocumentDomainObject getWorkingDocument(int docId, ContentLanguage language) {
+    public DocumentDomainObject getWorkingDocument(int docId, DocumentLanguage language) {
         return documentLoaderCachingProxy.getWorkingDoc(docId, language);
     }
 
@@ -744,7 +744,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return default document
      * @since 6.0
      */
-    public DocumentDomainObject getDefaultDocument(int docId, ContentLanguage language) {
+    public DocumentDomainObject getDefaultDocument(int docId, DocumentLanguage language) {
         return documentLoaderCachingProxy.getDefaultDoc(docId, language);
     }
 
@@ -769,7 +769,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return custom document
      * @since 6.0
      */
-    public DocumentDomainObject getCustomDocument(DocRef docRef, ContentLanguage language) {
+    public DocumentDomainObject getCustomDocument(DocRef docRef, DocumentLanguage language) {
         return documentLoaderCachingProxy.getCustomDoc(docRef, language);
     }
 
@@ -929,7 +929,7 @@ public class DocumentMapper implements DocumentGetter {
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
         UserDomainObject user = Imcms.getUser();
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
-        ContentLanguage language = callback != null
+        DocumentLanguage language = callback != null
                 ? callback.contentLanguages().preferred()
                 : imcmsServices.getI18nContentSupport().getDefaultLanguage();
 
@@ -974,7 +974,7 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public I18nMeta getI18nMeta(int docId, ContentLanguage language) {
+    public I18nMeta getI18nMeta(int docId, DocumentLanguage language) {
         return documentSaver.getMetaDao().getI18nMeta(docId, language);
     }
 
@@ -1019,7 +1019,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         @Override
-        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<ContentLanguage, I18nMeta> labelsMap, EnumSet<SaveOpts> saveParams, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<DocumentLanguage, I18nMeta> labelsMap, EnumSet<SaveOpts> saveParams, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveDocument(document, labelsMap, user);
         }
     }

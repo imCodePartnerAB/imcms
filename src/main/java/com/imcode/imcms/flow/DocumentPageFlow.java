@@ -1,6 +1,6 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.api.ContentLanguage;
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -71,7 +71,7 @@ public abstract class DocumentPageFlow extends PageFlow {
 
         public void saveDocumentWithI18nSupport(
                 DocumentDomainObject document,
-                Map<ContentLanguage, I18nMeta> labelsMap,
+                Map<DocumentLanguage, I18nMeta> labelsMap,
                 EnumSet<DocumentMapper.SaveOpts> directiveses,
                 UserDomainObject user)
                throws NoPermissionInternalException, DocumentSaveException {

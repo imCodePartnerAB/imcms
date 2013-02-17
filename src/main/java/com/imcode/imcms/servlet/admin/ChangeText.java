@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.ContentLanguage;
+import com.imcode.imcms.api.DocumentLanguage;
 import imcode.server.Imcms;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.ContentRef;
@@ -53,7 +53,7 @@ public class ChangeText extends HttpServlet {
         int textIndex = Integer.parseInt(request.getParameter("txt"));
         String label = null == request.getParameter("label") ? "" : request.getParameter("label");
 
-        ContentLanguage language = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
+        DocumentLanguage language = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
         TextDomainObject text = contentRef == null
                 ? textDocument.getText(textIndex)
                 : textDocument.getText(textIndex, contentRef);

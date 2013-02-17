@@ -19,10 +19,8 @@ class MenuEditorUI extends VerticalLayout with FullSize {
     tt.setRowHeaderMode(Table.RowHeaderMode.HIDDEN)
   }
 
-  private val lytSort = new FormLayout
-
-  val cbSortOrder = new ComboBox("Sort order") with SingleSelect[JInteger] with Immediate with NoNullSelection |>> { cb =>
-    List(
+  val cbSortOrder = new ComboBox("Sort order") with AlwaysFireValueChange[AnyRef] with SingleSelect[JInteger] with Immediate with NoNullSelection |>> { cb =>
+    Seq(
       MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE -> "Title",
       MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED -> "Modified date/time",
       MenuDomainObject.MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED -> "Published date/time",
@@ -33,7 +31,10 @@ class MenuEditorUI extends VerticalLayout with FullSize {
     }
   }
 
-  lytSort.addComponent(cbSortOrder)
-  this.addComponents( mb, lytSort, ttMenu)
+  private val lytSort = new FormLayout |>> { lyt =>
+    lyt.addComponent(cbSortOrder)
+  }
+
+  this.addComponents(mb, lytSort, ttMenu)
   setExpandRatio(ttMenu, 1f)
 }

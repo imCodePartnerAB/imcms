@@ -4,14 +4,14 @@ import com.google.common.base.Objects;
 
 public class I18nDocRef {
     private final DocRef docRef;
-    private final ContentLanguage language;
+    private final DocumentLanguage language;
 
-    public I18nDocRef(DocRef docRef, ContentLanguage language) {
+    public I18nDocRef(DocRef docRef, DocumentLanguage language) {
         this.docRef = docRef;
         this.language = language;
     }
 
-    public static I18nDocRef of(DocRef docRef, ContentLanguage language) {
+    public static I18nDocRef of(DocRef docRef, DocumentLanguage language) {
         return new I18nDocRef(docRef, language);
     }
 
@@ -19,7 +19,7 @@ public class I18nDocRef {
         return docRef;
     }
 
-    ContentLanguage language() {
+    DocumentLanguage language() {
         return language;
     }
 

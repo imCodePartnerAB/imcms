@@ -2,7 +2,7 @@
 	
 	import="com.imcode.imcms.api.DocumentVersion,
 	        com.imcode.imcms.api.DocumentVersionInfo,
-	        com.imcode.imcms.api.ContentLanguage,
+	        com.imcode.imcms.api.DocumentLanguage,
 	        com.imcode.imcms.mapping.DocumentMapper,
 	        com.imcode.imcms.servlet.AdminPanelServlet,
 	        com.imcode.imcms.servlet.admin.AdminDoc,
@@ -156,10 +156,10 @@ DocumentVersion version = document.getVersion();
 /* *******************************************************************************************
 *         Get languages                                                                     *
 ******************************************************************************************* */
-List<ContentLanguage> languages = Imcms.getServices().getI18nContentSupport().getLanguages();
-Set<ContentLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
-ContentLanguage defaultLanguage = Imcms.getServices().getI18nContentSupport().getDefaultLanguage();
-ContentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
+List<DocumentLanguage> languages = Imcms.getServices().getI18nContentSupport().getLanguages();
+Set<DocumentLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
+DocumentLanguage defaultLanguage = Imcms.getServices().getI18nContentSupport().getDefaultLanguage();
+DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
 
 
 
@@ -183,7 +183,7 @@ if ("adminPanelHtml".equals(get)) { %>
                 <ul>
                     <li id="statusIcon"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></li><%
                 boolean hasManyLanguages = (languages.size() > 6) ;
-                for (ContentLanguage lang: languages) {
+                for (DocumentLanguage lang: languages) {
                     String langCode       = lang.getCode() ;
                     String langName       = lang.getName() ;
                     String langNameNative = lang.getNativeName() ;

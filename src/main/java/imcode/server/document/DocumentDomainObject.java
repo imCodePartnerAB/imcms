@@ -539,11 +539,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         this.meta = meta.clone();
     }
 
-    public ContentLanguage getLanguage() {
+    public DocumentLanguage getLanguage() {
         return i18nMeta.getLanguage();
     }
 
-    public void setLanguage(ContentLanguage language) {
+    public void setLanguage(DocumentLanguage language) {
         setI18nMeta(I18nMeta.builder(getI18nMeta()).language(language).build());
     }
 

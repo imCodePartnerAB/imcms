@@ -10,13 +10,20 @@ import _root_.imcode.server.document.DocumentDomainObject
  * requestXXX methods are expected to execute asynchronously.
  */
 abstract class DocumentIndexService extends Log4jLoggerSupport {
+
   def query(solrQuery: SolrQuery): QueryResponse
+
   def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject]
+
   def requestIndexUpdate(request: IndexUpdateRequest)
-  def requestIndexRebuild(): Option[IndexRebuildTask]
-  def indexRebuildTask(): Option[IndexRebuildTask]
+
+  def requestIndexRebuild(): IndexRebuildTask
+
+  def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask]
+
   def shutdown()
 }
+
 
 object DocumentIndexService {
   implicit def toManagedResource[R <: DocumentIndexService] = new ManagedResource[R] {

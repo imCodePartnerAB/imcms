@@ -1,7 +1,7 @@
 package imcode.server.document.index.service.impl
 
 import com.imcode._
-import com.imcode.imcms.api.ContentLanguage
+import com.imcode.imcms.api.DocumentLanguage
 import com.imcode.imcms.mapping.DocumentMapper
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
@@ -41,7 +41,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
 
   @throws(classOf[SolrInputDocumentCreateException])
-  def mkSolrInputDocs(docId: Int, languages: Seq[ContentLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
+  def mkSolrInputDocs(docId: Int, languages: Seq[DocumentLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
     val solrInputDocs = for {
       language <- languages
       doc <- documentMapper.getDefaultDocument(docId, language).asOption
@@ -90,7 +90,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
   def query(solrServer: SolrServer, solrQuery: SolrQuery): QueryResponse = {
     if (logger.isDebugEnabled) {
-      logger.debug("Searching using solrQuery: %s.".format(solrQuery))
+      logger.debug(s"Searching using solrQuery: $solrQuery.")
     }
 
     solrServer.query(solrQuery)
@@ -127,13 +127,13 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
     progressCallback(IndexRebuildProgress(rebuildStartMills, rebuildStartMills, docsCount, 0))
 
     for { ((docId, solrInputDocs), docNo) <- docsView.zip(Stream.from(1)); if solrInputDocs.nonEmpty } {
-      if (Thread.currentThread().isInterrupted) {
+      if (Thread.interrupted()) {
         solrServer.rollback()
         throw new InterruptedException()
       }
       solrServer.add(solrInputDocs.asJava)
       if (logger.isTraceEnabled) {
-        logger.trace("Added input docs [%s] to index.".format(solrInputDocs))
+        logger.trace(s"Added input docs [$solrInputDocs] to index.")
       }
 
       progressCallback(IndexRebuildProgress(rebuildStartMills, new Date().getTime, docsCount, docNo))
@@ -142,6 +142,6 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
     logger.trace("Deleting old documents from the index.")
     solrServer.deleteByQuery("timestamp:{* TO %s}".format(DateUtil.getThreadLocalDateFormat.format(rebuildStartDt)))
     solrServer.commit()
-    logger.trace("Reinfexing is complete.")
+    logger.trace("Index rebuild is complete.")
   }
 }

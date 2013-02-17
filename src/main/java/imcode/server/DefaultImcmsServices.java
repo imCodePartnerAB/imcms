@@ -1,6 +1,6 @@
 package imcode.server;
 
-import com.imcode.imcms.api.I18nContentSupport;
+import com.imcode.imcms.api.DocumentI18nSupport;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
@@ -103,7 +103,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
-    private I18nContentSupport i18nContentSupport;
+    private DocumentI18nSupport i18nContentSupport;
     private ApplicationContext applicationContext;
 
 
@@ -125,7 +125,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
                                 ApplicationContext applicationContext,
-                                I18nContentSupport i18nContentSupport) {
+                                DocumentI18nSupport i18nContentSupport) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
@@ -868,11 +868,11 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.documentMapper = documentMapper;
     }
 
-    public I18nContentSupport getI18nContentSupport() {
+    public DocumentI18nSupport getI18nContentSupport() {
         return i18nContentSupport;
     }
 
-    public void setI18nContentSupport(I18nContentSupport i18nContentSupport) {
+    public void setI18nContentSupport(DocumentI18nSupport i18nContentSupport) {
         this.i18nContentSupport = i18nContentSupport;
     }
 

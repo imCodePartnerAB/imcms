@@ -1,7 +1,7 @@
 <%@ page
 
 	import="com.imcode.imcms.api.ContentManagementSystem,
-	        com.imcode.imcms.api.ContentLanguage,
+	        com.imcode.imcms.api.DocumentLanguage,
 	        com.imcode.imcms.mapping.DocumentMapper,
 	        com.imcode.imcms.servlet.admin.ChangeText,
 	        imcode.server.Imcms,
@@ -69,9 +69,9 @@ try {
  *         Get languages                                                                     *
  ******************************************************************************************* */
 
-List<ContentLanguage> languages = Imcms.getServices().getI18nContentSupport().getLanguages();
-ContentLanguage defaultLanguage = Imcms.getServices().getI18nContentSupport().getDefaultLanguage();
-ContentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
+List<DocumentLanguage> languages = Imcms.getServices().getI18nContentSupport().getLanguages();
+DocumentLanguage defaultLanguage = Imcms.getServices().getI18nContentSupport().getDefaultLanguage();
+DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
 
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 TextDomainObject text = textEditPage.getText();
@@ -193,7 +193,7 @@ if (null != languages) { %>
         ""
     );
 
-	for (ContentLanguage lang: languages) {
+	for (DocumentLanguage lang: languages) {
 		String langCode       = lang.getCode() ;
 		String langName       = lang.getName() ;
 		String langNameNative = lang.getNativeName() ;

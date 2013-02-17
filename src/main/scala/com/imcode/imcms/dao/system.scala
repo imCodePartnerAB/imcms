@@ -2,7 +2,7 @@ package com.imcode
 package imcms.dao
 
 import org.springframework.transaction.annotation.Transactional
-import com.imcode.imcms.api.{ContentLanguage, SystemProperty, IPAccess}
+import com.imcode.imcms.api.{DocumentLanguage, SystemProperty, IPAccess}
 
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
@@ -36,17 +36,17 @@ class IPAccessDao extends HibernateSupport {
 class LanguageDao extends HibernateSupport {
 
 
-  def getAllLanguages(): JList[ContentLanguage] = hibernate.listAll()
+  def getAllLanguages(): JList[DocumentLanguage] = hibernate.listAll()
 
 
-  def getById(id: JInteger): ContentLanguage = hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getById", "id" -> id)
+  def getById(id: JInteger): DocumentLanguage = hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getById", "id" -> id)
 
 
-  def getByCode(code: String): ContentLanguage =
+  def getByCode(code: String): DocumentLanguage =
     hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getByCode", "code" -> code)
 
 
-  def saveLanguage(language: ContentLanguage): ContentLanguage = language.clone() |> hibernate.saveOrUpdate
+  def saveLanguage(language: DocumentLanguage): DocumentLanguage = language.clone() |> hibernate.saveOrUpdate
 
 
   def deleteLanguage(id: JInteger) =

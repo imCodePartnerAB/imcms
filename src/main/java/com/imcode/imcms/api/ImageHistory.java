@@ -81,7 +81,7 @@ public class ImageHistory {
      */
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private ContentLanguage language;
+    private DocumentLanguage language;
 
 
     @Column(name = "user_id")
@@ -250,11 +250,11 @@ public class ImageHistory {
         this.contentRef = contentRef;
     }
 
-    public ContentLanguage getLanguage() {
+    public DocumentLanguage getLanguage() {
         return language;
     }
 
-    public void setLanguage(ContentLanguage language) {
+    public void setLanguage(DocumentLanguage language) {
         this.language = language;
     }
 

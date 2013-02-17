@@ -23,14 +23,6 @@ import _root_.imcode.server.document.{DocumentDomainObject, NoPermissionToEditDo
 import com.imcode.imcms.admin.docadmin.TextEditorParameters
 import scala.Some
 
-// Deleted legacy "Menu Editing files"
-// [+] MenuEditPage
-// [-] DocumentCreator +
-//   [-] CreateTextDocumentPageFlow
-//   ... relatives
-// [+] GetExistingDoc - permissions checks
-// [+] change_menu.jsp
-// [+] ChangeMenu
 // ---------------------------------------------------------------------------------------------------------------------
 // Includes???
 
@@ -87,7 +79,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   }
 
 
-  def mkWorkingDocEditorComponent(request: VaadinRequest, doc: DocumentDomainObject) = new FullScreenEditorUI(s"Document ${doc.getId}") |>> { ui =>
+  def mkWorkingDocEditorComponent(request: VaadinRequest, doc: DocumentDomainObject) = new EditorContainerUI(s"Document ${doc.getId}") |>> { ui =>
     val editor = new DocEditor(doc)
 
     ui.mainUI = editor.ui
@@ -122,7 +114,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   }
 
 
-  def mkWorkingDocMenuEditorComponent(params: MenuEditorParameters) = new FullScreenEditorUI(params.title) |>> { ui =>
+  def mkWorkingDocMenuEditorComponent(params: MenuEditorParameters) = new EditorContainerUI(params.title) |>> { ui =>
     val doc = params.doc
     val docId = doc.getId
     val menuNo = params.menuNo
@@ -131,6 +123,10 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
     val editor = new MenuEditor(doc, menu) |>> { _.ui.setSize(900, 600) }
 
     ui.mainUI = editor.ui
+
+    ui.buttons.btnReset.addClickHandler {
+      editor.resetValues()
+    }
 
     ui.buttons.btnClose.addClickHandler {
       save(close = false)
@@ -148,6 +144,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
         new ConfirmationDialog("Menu has been modified", "Close without saving?") |>> { dlg =>
           dlg.setOkButtonHandler {
             closeEditor()
+            dlg.close()
           }
         } |> UI.getCurrent.addWindow
       }
@@ -284,7 +281,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   //}
 
   // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
-  def mkWorkingDocTextEditorComponent(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int) = new FullScreenEditorUI() |>> { ui =>
+  def mkWorkingDocTextEditorComponent(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int) = new EditorContainerUI() |>> { ui =>
     val title = request.getParameter("label").trimToNull match {
       case null => s"Document ${doc.getId} text no ${textNo}"
       case label => label |> StringEscapeUtils.escapeHtml4

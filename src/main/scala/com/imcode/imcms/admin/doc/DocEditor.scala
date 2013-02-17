@@ -3,7 +3,7 @@ package imcms.admin.doc
 
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentDomainObject}
-import com.imcode.imcms.api.{I18nMeta, ContentLanguage}
+import com.imcode.imcms.api.{I18nMeta, DocumentLanguage}
 import com.imcode.imcms.admin.doc.meta.MetaEditor
 import com.imcode.imcms.vaadin.Editor
 import com.vaadin.ui.TabSheet
@@ -16,7 +16,7 @@ import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
 
 class DocEditor(doc: DocumentDomainObject) extends Editor {
 
-  type Data = (DocumentDomainObject, Map[ContentLanguage, I18nMeta])
+  type Data = (DocumentDomainObject, Map[DocumentLanguage, I18nMeta])
 
   val metaEditor = new MetaEditor(doc)
   val contentEditor = doc match {

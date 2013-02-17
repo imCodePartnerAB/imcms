@@ -6,14 +6,14 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "imcms_languages")
-public final class ContentLanguage implements Serializable, Cloneable {
+public final class DocumentLanguage implements Serializable, Cloneable {
                     //
     public static final class Builder {
-        private ContentLanguage contentLanguage = new ContentLanguage();
+        private DocumentLanguage documentLanguage = new DocumentLanguage();
 
         public Builder() {}
 
-        public Builder(ContentLanguage language) {
+        public Builder(DocumentLanguage language) {
             id(language.id);
             enabled(language.enabled);
             code(language.code);
@@ -22,40 +22,40 @@ public final class ContentLanguage implements Serializable, Cloneable {
         }
 
         public Builder id(Integer id) {
-            contentLanguage.id = id;
+            documentLanguage.id = id;
             return this;
         }
 
         public Builder enabled(boolean enabled) {
-            contentLanguage.enabled = enabled;
+            documentLanguage.enabled = enabled;
             return this;
         }
 
         public Builder code(String code) {
-            contentLanguage.code = code;
+            documentLanguage.code = code;
             return this;
         }
 
         public Builder name(String name) {
-            contentLanguage.name = name;
+            documentLanguage.name = name;
             return this;
         }
 
         public Builder nativeName(String nativeName) {
-            contentLanguage.nativeName = nativeName;
+            documentLanguage.nativeName = nativeName;
             return this;
         }
 
-        public ContentLanguage build() {
-            ContentLanguage newContentLanguage = new ContentLanguage();
+        public DocumentLanguage build() {
+            DocumentLanguage newDocumentLanguage = new DocumentLanguage();
 
-            newContentLanguage.id = contentLanguage.id;
-            newContentLanguage.code = contentLanguage.code;
-            newContentLanguage.name = contentLanguage.name;
-            newContentLanguage.nativeName = contentLanguage.nativeName;
-            newContentLanguage.enabled = contentLanguage.enabled;
+            newDocumentLanguage.id = documentLanguage.id;
+            newDocumentLanguage.code = documentLanguage.code;
+            newDocumentLanguage.name = documentLanguage.name;
+            newDocumentLanguage.nativeName = documentLanguage.nativeName;
+            newDocumentLanguage.enabled = documentLanguage.enabled;
 
-            return newContentLanguage;
+            return newDocumentLanguage;
         }
     }
 
@@ -63,8 +63,8 @@ public final class ContentLanguage implements Serializable, Cloneable {
         return new Builder();
     }
 
-    public static Builder builder(ContentLanguage contentLanguage) {
-        return new Builder(contentLanguage);
+    public static Builder builder(DocumentLanguage documentLanguage) {
+        return new Builder(documentLanguage);
     }
 
     @Id
@@ -80,15 +80,15 @@ public final class ContentLanguage implements Serializable, Cloneable {
     @Column(name = "native_name")
     private String nativeName;
 
-    protected ContentLanguage() {
+    protected DocumentLanguage() {
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ContentLanguage)) return false;
+        if (!(o instanceof DocumentLanguage)) return false;
 
-        ContentLanguage language = (ContentLanguage) o;
+        DocumentLanguage language = (DocumentLanguage) o;
 
         if (enabled != language.enabled) return false;
         if (code != null ? !code.equals(language.code) : language.code != null) return false;
@@ -115,9 +115,9 @@ public final class ContentLanguage implements Serializable, Cloneable {
     }
 
     @Override
-    public ContentLanguage clone() {
+    public DocumentLanguage clone() {
         try {
-            return (ContentLanguage)super.clone();
+            return (DocumentLanguage)super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }

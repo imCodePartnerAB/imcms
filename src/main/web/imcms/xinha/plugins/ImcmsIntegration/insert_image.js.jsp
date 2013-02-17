@@ -1,7 +1,7 @@
 <%@ page import="
          com.imcode.imcms.servlet.admin.ImageEditPage,
          com.imcode.imcms.servlet.admin.EditImage,
-         com.imcode.imcms.api.ContentLanguage,
+         com.imcode.imcms.api.DocumentLanguage,
          imcode.server.Imcms"%><%@page contentType="text/javascript" %>
 Xinha.prototype._insertImage = function(image)
 {
@@ -18,7 +18,7 @@ Xinha.prototype._insertImage = function(image)
     if ( image )
     {
         <%
-        ContentLanguage lang = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
+        DocumentLanguage lang = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
         String suffix = "_" + lang.getCode();
         %>
 

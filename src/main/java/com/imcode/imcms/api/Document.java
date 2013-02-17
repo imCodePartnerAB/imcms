@@ -133,7 +133,7 @@ public class Document implements Serializable {
 
     }
 
-    public ContentLanguage getLanguage() {
+    public DocumentLanguage getLanguage() {
         return internalDocument.getLanguage();
     }
     

@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.api.ContentLanguage;
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -625,7 +625,7 @@ public class AdminManager extends HttpServlet {
         }
 
         @Override
-        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<ContentLanguage, I18nMeta> labelsMap, EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<DocumentLanguage, I18nMeta> labelsMap, EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
                 throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveNewDocument(document, labelsMap, directiveses, user);
         }

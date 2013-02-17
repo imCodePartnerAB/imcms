@@ -3,7 +3,7 @@ package imcms.vaadin.ui
 
 import com.vaadin.server.{ThemeResource => TR}
 import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
-import com.imcode.imcms.api.ContentLanguage
+import com.imcode.imcms.api.DocumentLanguage
 
 // todo: refactor, change package ???
 object Theme {
@@ -43,7 +43,7 @@ object Theme {
     }
 
     object Language {
-      def flag(language: ContentLanguage): TR = s"icons/language_flag/${language.getCode}.gif"
+      def flag(language: DocumentLanguage): TR = s"icons/language_flag/${language.getCode}.gif"
     }
   }
 }

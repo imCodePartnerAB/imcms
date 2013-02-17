@@ -108,12 +108,6 @@ package object imcode {
     (exp +: exps).foreach(fn)
   }
 
-
-  def unfold[A, B](init: A)(fn: A => Option[(B, A)]): Stream[B] = fn(init) match {
-    case None => Stream.empty
-    case Some((r, next)) => r #:: unfold(next)(fn)
-  }
-
   def whenSingle[A, T[A] <: Traversable[A], B](traversable: T[A])(fn: A => B): Option[B] = {
     whenOpt(traversable.size == 1) {
       fn(traversable.head)
@@ -125,21 +119,6 @@ package object imcode {
       fn(traversable)
     }
   }
-
-
-  // scala bug: package methods overloading does not work
-  object Atoms {
-    import java.util.concurrent.atomic.AtomicReference
-
-    def OptRef[A] = new AtomicReference(Option.empty[A])
-    def OptRef[A](value: A) = new AtomicReference(Option(value))
-    def Ref[A <: AnyRef] = new AtomicReference[A]
-    def Ref[A <: AnyRef](value: A) = new AtomicReference(value)
-
-    def swap[A](ref: AtomicReference[A])(fn: A => A): A = ref.get |> fn |>> ref.set
-    def swap[A](fn: A => A)(ref: AtomicReference[A]): A = swap(ref)(fn)
-  }
-
 
   /** extractor */
   object AnyInt {
@@ -158,29 +137,8 @@ package object imcode {
     def unapply(string: String): Option[Int] = AnyInt.unapply(string).filter(_ < 0)
   }
 
-
-
-
-  /**
-   * Converts camel-case string into underscore.
-   * ex: IPAccess => ip_access, SearchTerms => search_terms, mrX => mr_x, iBot => i_bot
-   */
-  def camelCaseToUnderscore(s: String): String = {
-    def camelCaseToUnderscore(chars: List[Char]): List[Char] =
-      chars.span(c => c.isLower || !c.isLetter) match {
-        case (lowers, Nil) => lowers
-        case (Nil, rest) => (rest.span(_.isUpper) : @unchecked) match {
-          case (u :: Nil, rest2) => camelCaseToUnderscore(u.toLower :: rest2)
-          case (uppers@(u1 :: u2 :: _), rest2) =>
-            if (rest2.isEmpty) uppers.map(_.toLower)
-            else uppers.init.map(_.toLower) ++ ('_' :: camelCaseToUnderscore(uppers.last.toLower :: rest2))
-        }
-        case (lowers, rest) => lowers ++ ('_' :: camelCaseToUnderscore(rest))
-      }
-
-    camelCaseToUnderscore(s.toList).mkString
-  }
-
+//  `type class`
+//
 //  class Default[T](init: => T) { def value = init }
 //
 //  object Default {

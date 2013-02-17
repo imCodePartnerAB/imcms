@@ -6,7 +6,7 @@ import org.apache.solr.client.solrj.impl.{BinaryRequestWriter, HttpSolrServer}
 import java.io.File
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.apache.commons.io.FileUtils
-import org.apache.solr.core.{SolrConfig, CoreContainer, SolrCore, CoreDescriptor}
+import org.apache.solr.core.{CoreContainer, CoreDescriptor}
 
 object SolrServerFactory extends Log4jLoggerSupport {
 
@@ -16,12 +16,12 @@ object SolrServerFactory extends Log4jLoggerSupport {
 
 
   def createEmbeddedSolrServer(solrHome: String, recreateDataDir: Boolean = false): EmbeddedSolrServer = {
-    logger.info("Creating embedded SOLr server. Solr home: %s, recreateDataDir: %s.".format(solrHome, recreateDataDir))
+    logger.info(s"Creating embedded SOLr server. Solr home: $solrHome, recreateDataDir: $recreateDataDir.")
 
     if (recreateDataDir) {
       new File(solrHome, "core/data") |> { dataDir =>
         if (dataDir.exists() && !FileUtils.deleteQuietly(dataDir)) {
-          val msg = "Unable to delete SOLr data dir %s.".format(dataDir)
+          val msg = s"Unable to delete SOLr data dir $dataDir."
           logger.fatal(msg)
           sys.error(msg)
         }
@@ -38,7 +38,7 @@ object SolrServerFactory extends Log4jLoggerSupport {
     val dataDir: File = if (dataDirPath.startsWith("/")) new File(dataDirPath) else new File(solrHome, "core/" + dataDirPath)
 
     if (recreateDataDir && dataDir.exists() && !FileUtils.deleteQuietly(dataDir)) {
-      val msg = "Unable to delete SOLr data dir %s.".format(dataDir)
+      val msg =s"Unable to delete SOLr data dir $dataDir."
       logger.fatal(msg)
       sys.error(msg)
     }

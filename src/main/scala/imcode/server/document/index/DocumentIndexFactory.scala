@@ -4,7 +4,6 @@ import com.imcode._
 import com.imcode.Log4jLoggerSupport
 import _root_.imcode.server.ImcmsServices
 import imcode.server.document.index.service.impl._
-import scala.Some
 
 /**
  *
@@ -12,15 +11,19 @@ import scala.Some
 object DocumentIndexFactory extends Log4jLoggerSupport {
 
   def create(services: ImcmsServices): DocumentIndex = services.getConfig |> { config =>
-    (config.getSolrUrl.asOption, config.getSolrHome.asOption) |> {
+    (config.getSolrUrl.trimToOption, config.getSolrHome.trimToOption) |> {
       case (Some(solrUrl), _) =>
         new RemoteDocumentIndexService(solrUrl, solrUrl, createDocumentIndexServiceOps(services))
 
       case (_, Some(solrHome)) =>
-        new EmbeddedDocumentIndexService(solrHome, createDocumentIndexServiceOps(services))
+        new InternalDocumentIndexService(solrHome, createDocumentIndexServiceOps(services))
 
       case _ =>
-        val errMsg = "Configuration error. Config.solrUrl or Config.solrHome is not set."
+        val errMsg = """|Configuration error. Unable to create DocumentIndex.\n
+                        |Neither Config.solrUrl nor Config.solrHome is set.\n
+                        |Set Config.solrUrl for remote SOLr server or Config.solrHome for internal SOLr server.\n
+                        |If both are set then Config.solrUrl takes precedence and Config.solrHome is ignored.
+                     """.stripMargin
         logger.fatal(errMsg)
         throw new IllegalArgumentException(errMsg)
     } |> { service =>

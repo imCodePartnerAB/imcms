@@ -25,10 +25,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <javac.source>1.6</javac.source>
-        <javac.target>1.6</javac.target>
-        <!-- The following javac options might be overridden in profiles  -->
-        <javac.deprecation>false</javac.deprecation>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
+        <maven.compiler.showWarnings>false</maven.compiler.showWarnings>
+
         <javac.args></javac.args>
 
         <solr.version>4.0.0</solr.version>
@@ -60,7 +61,7 @@
                 <artifact.log4j.threshold>all</artifact.log4j.threshold>
 
                 <javac.args>-Xlint</javac.args>
-                <javac.deprecation>true</javac.deprecation>
+                <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
             </properties>
         </profile>
 
@@ -72,7 +73,7 @@
                 <artifact.log4j.threshold>debug</artifact.log4j.threshold>
 
                 <javac.args>-Xlint</javac.args>
-                <javac.deprecation>true</javac.deprecation>
+                <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
             </properties>
         </profile>
     </profiles>
@@ -145,7 +146,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
+            <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
 
@@ -177,7 +178,7 @@
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
-            <version>1.2</version>
+            <version>1.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -1030,19 +1031,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.0</version>
                 <configuration>
-                    <source>${javac.source}</source>
-                    <target>${javac.target}</target>
                     <excludes>
                         <exclude>**/Test*.java</exclude>
                         <exclude>**/*TestCase.java</exclude>
                     </excludes>
-                    <showWarnings>true</showWarnings>
-                    <debug>true</debug>
-                    <fork>true</fork>
                     <compilerVersion>1.6</compilerVersion>
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
-                    <showDeprecation>${javac.deprecation}</showDeprecation>
                     <compilerArgument>${javac.args}</compilerArgument>
                 </configuration>
             </plugin>

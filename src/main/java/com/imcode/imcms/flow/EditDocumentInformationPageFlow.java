@@ -1,6 +1,6 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.api.ContentLanguage;
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
@@ -102,9 +102,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     private boolean adminButtonsHidden;
 
     /** Document languages enabled/disabled states. */
-    private Map<ContentLanguage, Boolean> languagesStates = new HashMap<ContentLanguage, Boolean>();
+    private Map<DocumentLanguage, Boolean> languagesStates = new HashMap<DocumentLanguage, Boolean>();
 
-    private Map<ContentLanguage, I18nMeta> i18nMetasMap = new HashMap<ContentLanguage, I18nMeta>();
+    private Map<DocumentLanguage, I18nMeta> i18nMetasMap = new HashMap<DocumentLanguage, I18nMeta>();
 
 
     public EditDocumentInformationPageFlow(DocumentDomainObject document, DispatchCommand returnCommand,
@@ -112,13 +112,13 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         
         super(document, returnCommand, saveDocumentCommand);
 
-        Set<ContentLanguage> availableLanguages = new HashSet<ContentLanguage>(Imcms.getServices().getI18nContentSupport().getLanguages());
+        Set<DocumentLanguage> availableLanguages = new HashSet<DocumentLanguage>(Imcms.getServices().getI18nContentSupport().getLanguages());
 
-        for (ContentLanguage language: availableLanguages) {
+        for (DocumentLanguage language: availableLanguages) {
             languagesStates.put(language, false);
         }
 
-        for (ContentLanguage language: document.getMeta().getEnabledLanguages()) {
+        for (DocumentLanguage language: document.getMeta().getEnabledLanguages()) {
             languagesStates.put(language, true);
         }
 
@@ -136,11 +136,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         MetaDao metaDao = Imcms.getServices().getSpringBean(MetaDao.class);
 
         if (docId == null) {
-            for (ContentLanguage language: availableLanguages) {
+            for (DocumentLanguage language: availableLanguages) {
                 i18nMetasMap.put(language, I18nMeta.builder().docId(docId).language(language).build());
             }
         } else {
-            for (ContentLanguage language: availableLanguages) {
+            for (DocumentLanguage language: availableLanguages) {
                 I18nMeta i18nMeta = metaDao.getI18nMeta(docId, language);
                 if (i18nMeta == null) {
                     i18nMeta = I18nMeta.builder().docId(docId).language(language).build();
@@ -213,7 +213,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             throw new IllegalStateException("i18nCode request parameter is blank.");
         }
 
-        final ContentLanguage language = Imcms.getServices().getI18nContentSupport().getByCode(i18nCode);
+        final DocumentLanguage language = Imcms.getServices().getI18nContentSupport().getByCode(i18nCode);
 
         if (language == null) {
             throw new IllegalArgumentException(String.format("Language with code %s does not exists.", i18nCode));
@@ -325,8 +325,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         final CategoryMapper categoryMapper = service.getCategoryMapper();
         final DocumentMapper documentMapper = service.getDocumentMapper();
 
-        for (Map.Entry<ContentLanguage, I18nMeta> entry: i18nMetasMap.entrySet()) {
-            ContentLanguage language = entry.getKey();
+        for (Map.Entry<DocumentLanguage, I18nMeta> entry: i18nMetasMap.entrySet()) {
+            DocumentLanguage language = entry.getKey();
         	String suffix = "_" + language.getCode();
 
             String headline = request.getParameter(REQUEST_PARAMETER__HEADLINE + suffix);
@@ -344,12 +344,12 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         document.setI18nMeta(i18nMetasMap.get(document.getLanguage()));
 
-        Set<ContentLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
+        Set<DocumentLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
 
         enabledLanguages.clear();
 
-        for (Map.Entry<ContentLanguage, Boolean> state: languagesStates.entrySet()) {
-            ContentLanguage language = state.getKey();
+        for (Map.Entry<DocumentLanguage, Boolean> state: languagesStates.entrySet()) {
+            DocumentLanguage language = state.getKey();
         	String suffix = "_" + language.getCode();
             boolean enabled = request.getParameter(REQUEST_PARAMETER__ENABLED_I18N + suffix) != null;
             
@@ -534,10 +534,10 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         private static final String REQUEST_ATTRIBUTE__DOCUMENT_INFORMATION_PAGE = "documentInformationPage";
         private DocumentDomainObject document;
-        private Map<ContentLanguage, Boolean> languagesStates;
+        private Map<DocumentLanguage, Boolean> languagesStates;
         private boolean adminButtonsHidden;
         private Set errors;
-        private Map<ContentLanguage, I18nMeta> i18nMetasMap;
+        private Map<DocumentLanguage, I18nMeta> i18nMetasMap;
 
         public DocumentInformationPage( DocumentDomainObject document, boolean adminButtonsHidden, Set errors ) {
             this.document = document;
@@ -545,11 +545,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             this.errors = errors;
         }
 
-        public Map<ContentLanguage, I18nMeta> getLabelsMap() {
+        public Map<DocumentLanguage, I18nMeta> getLabelsMap() {
             return i18nMetasMap;
         }
 
-        public void setLabelsMap(Map<ContentLanguage, I18nMeta> i18nMetasMap) {
+        public void setLabelsMap(Map<DocumentLanguage, I18nMeta> i18nMetasMap) {
             this.i18nMetasMap = i18nMetasMap;
         }
 
@@ -578,11 +578,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             return errors;
         }
 
-        public Map<ContentLanguage, Boolean> getLanguagesStates() {
+        public Map<DocumentLanguage, Boolean> getLanguagesStates() {
             return languagesStates;
         }
 
-        public void setLanguagesStates(Map<ContentLanguage, Boolean> languagesStates) {
+        public void setLanguagesStates(Map<DocumentLanguage, Boolean> languagesStates) {
             this.languagesStates = languagesStates;
         }
     }

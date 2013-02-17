@@ -20,7 +20,7 @@ import java.net.URLDecoder
 import org.apache.solr.common.util.DateUtil
 import com.imcode.imcms.admin.doc.projection.filter.DateRange
 import com.imcode.imcms.admin.doc.projection.filter.IdRange
-import com.imcode.imcms.api.ContentLanguage
+import com.imcode.imcms.api.DocumentLanguage
 import com.vaadin.ui.{UI, CheckBox}
 
 
@@ -223,12 +223,12 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
         }
       }
 
-    val languagesOpt: Option[Seq[ContentLanguage]] =
+    val languagesOpt: Option[Seq[DocumentLanguage]] =
       if (basicFormUI.chkLanguage.isUnchecked) None
       else {
         val languages = (
           for {
-            _chk@(chkLanguage: CheckBox with TypedData[ContentLanguage]) <- basicFormUI.lytLanguages.getComponentIterator.asScala
+            _chk@(chkLanguage: CheckBox with TypedData[DocumentLanguage]) <- basicFormUI.lytLanguages.getComponentIterator.asScala
             if chkLanguage.isChecked
           } yield
             chkLanguage.data

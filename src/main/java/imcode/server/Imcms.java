@@ -162,7 +162,7 @@ public class Imcms {
                 fileLoader,
                 new DefaultProcedureExecutor(database, fileLoader),
                 applicationContext,
-                createI18nSupport());
+                createDocumentI18nSupport());
 
         services.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
         return services;
@@ -234,20 +234,20 @@ public class Imcms {
     }
 
     /**
-     * Creates and initializes I18N support.
+     * Creates and initializes Document I18N support.
      * Reads languages from the database.
      */
-    private static I18nContentSupport createI18nSupport() {
+    private static DocumentI18nSupport createDocumentI18nSupport() {
         logger.info("Creating i18n support.");
 
         LanguageDao languageDao = applicationContext.getBean(LanguageDao.class);
         SystemDao systemDao = applicationContext.getBean(SystemDao.class);
         SystemProperty languageIdProperty = systemDao.getProperty("DefaultLanguageId");
 
-        Map<String, ContentLanguage> languagesByCodes = Maps.newHashMap();
-        Map<String, ContentLanguage> languagesByHosts = Maps.newHashMap();
+        Map<String, DocumentLanguage> languagesByCodes = Maps.newHashMap();
+        Map<String, DocumentLanguage> languagesByHosts = Maps.newHashMap();
 
-        for (ContentLanguage language: languageDao.getAllLanguages()) {
+        for (DocumentLanguage language: languageDao.getAllLanguages()) {
             languagesByCodes.put(language.getCode(), language);
         }
 
@@ -265,7 +265,7 @@ public class Imcms {
 
 
         String languageId = languageIdProperty.getValue();
-        ContentLanguage defaultLanguage = languageDao.getById(Integer.parseInt(languageId));
+        DocumentLanguage defaultLanguage = languageDao.getById(Integer.parseInt(languageId));
 
         if (defaultLanguage == null) {
             String msg = String.format("I18n configuration error. Default language can not be set. There is no language with id %s.", languageId);
@@ -290,7 +290,7 @@ public class Imcms {
 
             logger.info("I18n configuration: language code [" + languageCode + "] mapped to host(s) [" + value + "].");
 
-            ContentLanguage language = languagesByCodes.get(languageCode);
+            DocumentLanguage language = languagesByCodes.get(languageCode);
 
             if (language == null) {
                 String msg = "I18n configuration error. Language with code [" + languageCode + "] is not defined in database.";
@@ -306,7 +306,7 @@ public class Imcms {
         }
 
 
-        return new I18nContentSupport(languagesByCodes, languagesByHosts, defaultLanguage);
+        return new DocumentI18nSupport(languagesByCodes, languagesByHosts, defaultLanguage);
     }
 
     /**

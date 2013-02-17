@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
-import com.imcode.imcms.api.ContentLanguage;
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocRef;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
@@ -56,7 +56,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
             return this;
         }
 
-        public Builder language(ContentLanguage language) {
+        public Builder language(DocumentLanguage language) {
             imageDomainObject.language = language;
             return this;
         }
@@ -154,7 +154,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
      */
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private ContentLanguage language;
+    private DocumentLanguage language;
 
     public String getName() {
         return no;
@@ -440,11 +440,11 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 .toHashCode();
     }
 
-    public ContentLanguage getLanguage() {
+    public DocumentLanguage getLanguage() {
         return language;
     }
 
-    public void setLanguage(ContentLanguage language) {
+    public void setLanguage(DocumentLanguage language) {
         this.language = language;
     }
 

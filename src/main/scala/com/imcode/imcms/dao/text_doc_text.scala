@@ -2,7 +2,7 @@ package com.imcode
 package imcms.dao
 
 import scala.collection.JavaConverters._
-import com.imcode.imcms.api.{DocRef, ContentLanguage, TextHistory}
+import com.imcode.imcms.api.{DocRef, DocumentLanguage, TextHistory}
 
 import org.springframework.transaction.annotation.Transactional
 import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
@@ -40,7 +40,7 @@ class TextDao extends HibernateSupport {
   def getTextById(id: Long): TextDomainObject = hibernate.get[TextDomainObject](id)
 
 
-  def deleteTexts(docRef: DocRef, language: ContentLanguage): Int =
+  def deleteTexts(docRef: DocRef, language: DocumentLanguage): Int =
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
       "Text.deleteTextsByDocRefAndLanguage",
       "docRef" -> docRef, "language" -> language
@@ -65,14 +65,14 @@ class TextDao extends HibernateSupport {
   /**
    * Returns text fields for the same doc, version and language.
    */
-  def getTexts(docRef: DocRef, language: ContentLanguage): JList[TextDomainObject] =
+  def getTexts(docRef: DocRef, language: DocumentLanguage): JList[TextDomainObject] =
     hibernate.listByNamedQueryAndNamedParams(
       "Text.getByDocRefAndLanguage",
       "docRef" -> docRef, "language" -> language
     )
 
 
-  def getText(docRef: DocRef, no: Int, language: ContentLanguage, contentRefOpt: Option[ContentRef]) = {
+  def getText(docRef: DocRef, no: Int, language: DocumentLanguage, contentRefOpt: Option[ContentRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
         """select t from Text t where t.docRef = :docRef and t.no = :no

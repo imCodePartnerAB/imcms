@@ -13,7 +13,6 @@ import imcode.server.document.index.DocIndexingMocksSetup
 import com.imcode.imcms.test.fixtures.DocFX
 import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.common.SolrInputDocument
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.mockito.invocation.InvocationOnMock
 import imcode.server.document.index.service.impl.{DocumentIndexServiceOps, ManagedSolrDocumentIndexService}
 
@@ -33,13 +32,14 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
 
   "ManagedSolrDocumentIndexService" should {
     "update (write) all documents with provided ids into the solr index" in {
-      val solrServerReader = mock[SolrServerWithShutdown]
-      val solrServerWriter = mock[SolrServerWithShutdown]
+      val solrServerReader = mock[SolrServer]
+      val solrServerWriter = mock[SolrServer]
       val service = new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops, _ => ())
 
       try {
-        1001 to 1010 foreach { id =>
-          service.requestIndexUpdate(AddDocToIndex(id))
+        1001 to 1010 foreach {
+          id =>
+            service.requestIndexUpdate(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)
@@ -51,10 +51,10 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
     }
 
     "update (write) documents with provided ids to the solr index untill failure" in {
-      val solrServerReader = mock[SolrServerWithShutdown]
-      val solrServerWriter = mock[SolrServerWithShutdown]
+      val solrServerReader = mock[SolrServer]
+      val solrServerWriter = mock[SolrServer]
       val opsMock = mock[DocumentIndexServiceOps]
-      var serviceErrors = Vector.empty[ManagedSolrDocumentIndexService.ServiceError]
+      var serviceErrors = Vector.empty[ManagedSolrDocumentIndexService.ServiceFailure]
       val service = new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, opsMock, serviceErrors :+= _)
 
       when(opsMock.addDocsToIndex(any(classOf[SolrServer]), anyInt())).thenAnswer {
@@ -66,8 +66,9 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       }
 
       try {
-        1001 to 1010 foreach { id =>
-          service.requestIndexUpdate(AddDocToIndex(id))
+        1001 to 1010 foreach {
+          id =>
+            service.requestIndexUpdate(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)
@@ -78,13 +79,13 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       verify(solrServerWriter, times(5)).add(anyCollectionOf(classOf[SolrInputDocument]))
 
       assertEquals("Errors count reported during indexing", 1, serviceErrors.length)
-      assertTrue("Error is an instance of IndexUpdateError", serviceErrors.head.isInstanceOf[ManagedSolrDocumentIndexService.IndexUpdateError])
+      assertTrue("Error is an instance of IndexUpdateFailure", serviceErrors.head.isInstanceOf[ManagedSolrDocumentIndexService.IndexUpdateFailure])
     }
 
     "rebuild (write) all documents with provided ids into the solr index" in {
-      val solrServerReader = mock[SolrServerWithShutdown]
-      val solrServerWriter = mock[SolrServerWithShutdown]
-      var serviceErrors = Vector.empty[ManagedSolrDocumentIndexService.ServiceError]
+      val solrServerReader = mock[SolrServer]
+      val solrServerWriter = mock[SolrServer]
+      var serviceErrors = Vector.empty[ManagedSolrDocumentIndexService.ServiceFailure]
       val service = new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops, serviceErrors :+= _)
 
       try {
@@ -92,8 +93,9 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
 
         Thread.sleep(1000)
 
-        1001 to 1010 foreach { id =>
-          service.requestIndexUpdate(AddDocToIndex(id))
+        1001 to 1010 foreach {
+          id =>
+            service.requestIndexUpdate(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)
@@ -105,7 +107,3 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
     }
   }
 }
-
-
-// todo: check
-class SolrServerWithShutdown extends EmbeddedSolrServer(null, null)

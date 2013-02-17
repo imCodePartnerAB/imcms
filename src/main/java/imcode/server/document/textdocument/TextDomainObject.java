@@ -1,6 +1,6 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.ContentLanguage;
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocRef;
 import imcode.util.Parser;
 
@@ -52,7 +52,7 @@ public class TextDomainObject implements Serializable, Cloneable {
             return this;
         }
 
-        public Builder language(ContentLanguage language) {
+        public Builder language(DocumentLanguage language) {
             textDomainObject.language = language;
             return this;
         }
@@ -94,7 +94,7 @@ public class TextDomainObject implements Serializable, Cloneable {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private ContentLanguage language;
+    private DocumentLanguage language;
 
     public TextDomainObject() {
         this("");
@@ -228,11 +228,11 @@ public class TextDomainObject implements Serializable, Cloneable {
         this.id = id;
     }
 
-    public ContentLanguage getLanguage() {
+    public DocumentLanguage getLanguage() {
         return language;
     }
 
-    public void setLanguage(ContentLanguage language) {
+    public void setLanguage(DocumentLanguage language) {
         this.language = language;
     }
 

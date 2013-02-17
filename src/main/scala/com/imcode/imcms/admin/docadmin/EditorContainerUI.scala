@@ -6,7 +6,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 
 
-class FullScreenEditorUI(title: String = null) extends CustomComponent with FullSize {
+class EditorContainerUI(title: String = null) extends CustomComponent with FullSize {
   private val lytContent = new VerticalLayout with FullSize
   private val lytComponents = new GridLayout(1, 3) with Spacing with Margin with UndefinedSize
   private val pnlTitle = new Panel(title) with FullHeight
@@ -20,9 +20,10 @@ class FullScreenEditorUI(title: String = null) extends CustomComponent with Full
     val btnSave = new Button("Save")
     val btnSaveAndClose = new Button("Save & Close")
     val btnClose = new Button("Close")
+    val btnReset = new Button("Reset")
   }
 
-  lytButtons.addComponents(buttons.btnSave, buttons.btnSaveAndClose, buttons.btnClose)
+  lytButtons.addComponents(buttons.btnSave, buttons.btnSaveAndClose, buttons.btnClose, buttons.btnReset)
 
   lytComponents.addComponent(pnlTitle, 0, 0)
   lytComponents.addComponent(lytButtons, 0, 2)

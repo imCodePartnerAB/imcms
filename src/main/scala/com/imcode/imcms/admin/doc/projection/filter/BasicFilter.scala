@@ -11,7 +11,7 @@ import scala.PartialFunction._
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
-import com.imcode.imcms.api.ContentLanguage
+import com.imcode.imcms.api.DocumentLanguage
 
 class BasicFilter extends ImcmsServicesSupport {
 
@@ -90,7 +90,7 @@ class BasicFilter extends ImcmsServicesSupport {
 
     ui.lytLanguages.removeAllComponents()
     for (language <- imcmsServices.getI18nContentSupport.getLanguages.asScala) {
-      val chkLanguage = new CheckBox(language.getNativeName) with TypedData[ContentLanguage] |>> { chk =>
+      val chkLanguage = new CheckBox(language.getNativeName) with TypedData[DocumentLanguage] |>> { chk =>
         chk.setIcon(Theme.Icon.Language.flag(language))
         chk.data = language
         chk.checked = language |> imcmsServices.getI18nContentSupport.isDefault

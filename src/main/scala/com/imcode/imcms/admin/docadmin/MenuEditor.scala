@@ -22,10 +22,16 @@ import scala.collection.JavaConverters._
 
 
 // refers to check:
+// Deleted legacy "Menu Editing files"
+// [+] MenuEditPage
+// [-] DocumentCreator +
+//   [-] CreateTextDocumentPageFlow
+//   ... relatives
+// [+] GetExistingDoc - permissions checks
+// [+] change_menu.jsp
+// [+] ChangeMenu
 // [-]inc_adminlinks.jsp
 // [-]NoPermissionsToAddToDocumentException
-
-// todo: ???revert btn (in save or in menu)???
 class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends Editor with ImcmsServicesSupport {
 
   type Data = MenuDomainObject

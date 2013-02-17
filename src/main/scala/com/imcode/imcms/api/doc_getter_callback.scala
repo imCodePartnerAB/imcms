@@ -6,7 +6,6 @@ import imcode.server.document.DocumentDomainObject
 import imcode.server.user.UserDomainObject
 import javax.servlet.http.HttpServletRequest
 import imcode.server.{ImcmsServices, ImcmsConstants}
-import org.apache.commons.lang.StringUtils
 
 
 object DocGetterCallbacks {
@@ -33,11 +32,11 @@ object DocGetterCallbacks {
     val defaultLanguage = i18nContentSupport.getDefaultLanguage
     val preferredLanguage = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE).asOption
                    .flatMap(code => i18nContentSupport.getByCode(code).asOption)
-                   .orElse(currentDocGetterCallback.asOption.map(_.contentLanguages.preferred))
+                   .orElse(currentDocGetterCallback.asOption.map(_.documentLanguages.preferred))
                    .orElse(i18nContentSupport.getForHost(request.getServerName).asOption)
                    .getOrElse(defaultLanguage)
 
-    val contentLanguages = ContentLanguages(preferredLanguage, defaultLanguage)
+    val documentLanguages = DocumentLanguages(preferredLanguage, defaultLanguage)
     val docGetterCallback =
       (for {
         PosInt(docId) <- request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID).asOption
@@ -45,15 +44,15 @@ object DocGetterCallbacks {
         if !user.isDefaultUser
       } yield {
         docVersionType match {
-          case WorkingVersion => WorkingDocGetterCallback(contentLanguages, docId)
-          case DefaultVersion => DefaultDocGetterCallback(contentLanguages)
-          case CustomVersion(docVersionNo) => CustomDocGetterCallback(contentLanguages, docId, docVersionNo)
+          case WorkingVersion => WorkingDocGetterCallback(documentLanguages, docId)
+          case DefaultVersion => DefaultDocGetterCallback(documentLanguages)
+          case CustomVersion(docVersionNo) => CustomDocGetterCallback(documentLanguages, docId, docVersionNo)
         }
       }) getOrElse {
         currentDocGetterCallback match {
-          case docGetterCallback: CustomDocGetterCallback => docGetterCallback.copy(contentLanguages)
-          case docGetterCallback: WorkingDocGetterCallback => docGetterCallback.copy(contentLanguages)
-          case _ => DefaultDocGetterCallback(contentLanguages)
+          case docGetterCallback: CustomDocGetterCallback => docGetterCallback.copy(documentLanguages)
+          case docGetterCallback: WorkingDocGetterCallback => docGetterCallback.copy(documentLanguages)
+          case _ => DefaultDocGetterCallback(documentLanguages)
         }
       }
 
@@ -76,19 +75,19 @@ object DocGetterCallbacks {
  * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(Integer)
  */
 trait DocGetterCallback {
-  def contentLanguages: ContentLanguages
+  def documentLanguages: DocumentLanguages
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper): DocumentDomainObject
 }
 
-case class DefaultDocGetterCallback(contentLanguages: ContentLanguages) extends DocGetterCallback {
+case class DefaultDocGetterCallback(documentLanguages: DocumentLanguages) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    docMapper.getDefaultDocument(docId, contentLanguages.preferred) match {
-      case doc if doc != null && !contentLanguages.preferredIsDefault && user.isSuperAdmin =>
+    docMapper.getDefaultDocument(docId, documentLanguages.preferred) match {
+      case doc if doc != null && !documentLanguages.preferredIsDefault && user.isSuperAdmin =>
         val meta = doc.getMeta
 
-        if (!meta.getEnabledLanguages.contains(contentLanguages.preferred)) {
+        if (!meta.getEnabledLanguages.contains(documentLanguages.preferred)) {
           if (meta.getDisabledLanguageShowSetting == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE)
-            docMapper.getDefaultDocument(docId, contentLanguages.default)
+            docMapper.getDefaultDocument(docId, documentLanguages.default)
           else
             null
         } else doc
@@ -97,18 +96,18 @@ case class DefaultDocGetterCallback(contentLanguages: ContentLanguages) extends 
     }
 }
 
-case class WorkingDocGetterCallback(contentLanguages: ContentLanguages, selectedDocId: Int) extends DocGetterCallback {
+case class WorkingDocGetterCallback(documentLanguages: DocumentLanguages, selectedDocId: Int) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    if (selectedDocId == docId) docMapper.getWorkingDocument(docId, contentLanguages.preferred)
-    else DefaultDocGetterCallback(contentLanguages).getDoc(docId, user, docMapper)
+    if (selectedDocId == docId) docMapper.getWorkingDocument(docId, documentLanguages.preferred)
+    else DefaultDocGetterCallback(documentLanguages).getDoc(docId, user, docMapper)
 }
 
-case class CustomDocGetterCallback(contentLanguages: ContentLanguages, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
+case class CustomDocGetterCallback(documentLanguages: DocumentLanguages, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
   def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    if (selectedDocId == docId) docMapper.getCustomDocument(DocRef.of(selectedDocId, selectedDocVersionNo), contentLanguages.preferred)
-    else DefaultDocGetterCallback(contentLanguages).getDoc(docId, user, docMapper)
+    if (selectedDocId == docId) docMapper.getCustomDocument(DocRef.of(selectedDocId, selectedDocVersionNo), documentLanguages.preferred)
+    else DefaultDocGetterCallback(documentLanguages).getDoc(docId, user, docMapper)
 }
 
-case class ContentLanguages(preferred: ContentLanguage, default: ContentLanguage) {
+case class DocumentLanguages(preferred: DocumentLanguage, default: DocumentLanguage) {
   val preferredIsDefault = preferred == default
 }

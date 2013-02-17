@@ -159,7 +159,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     @Transactional
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, UserDomainObject user) {
         TextDao textDao = services.getSpringBean(TextDao.class);
-        ContentLanguage language = textDocument.getLanguage();
+        DocumentLanguage language = textDocument.getLanguage();
 
         textDao.deleteTexts(textDocument.getRef(), language);
         textDao.flush();
@@ -243,7 +243,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     @Transactional
     void updateTextDocumentImages(TextDocumentDomainObject doc, UserDomainObject user) {
         ImageDao imageDao = services.getSpringBean(ImageDao.class);
-        ContentLanguage language = doc.getLanguage();
+        DocumentLanguage language = doc.getLanguage();
 
         imageDao.deleteImages(doc.getRef(), language);
         imageDao.flush();

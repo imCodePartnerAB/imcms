@@ -1,6 +1,6 @@
 package imcode.server.document.index.service.impl
 
-import _root_.com.imcode._
+import com.imcode._
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service._
@@ -9,6 +9,8 @@ import org.apache.solr.client.solrj.response.QueryResponse
 import java.lang.{InterruptedException, Thread}
 import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
 import java.util.concurrent._
+import com.imcode.imcms.api.{ServiceErrorException, ServiceUnavailableException}
+import com.imcode.util.Threads
 
 /**
  * Implements all DocumentIndexService functionality.
@@ -23,14 +25,14 @@ class ManagedSolrDocumentIndexService(
     solrServerReader: SolrServer,
     solrServerWriter: SolrServer,
     serviceOps: DocumentIndexServiceOps,
-    serviceErrorHandler: ManagedSolrDocumentIndexService.ServiceError => Unit) extends DocumentIndexService {
+    serviceErrorHandler: ManagedSolrDocumentIndexService.ServiceFailure => Unit) extends DocumentIndexService {
 
   private val lock = new AnyRef
   private val shutdownRef = new AtomicBoolean(false)
   private val indexRebuildThreadRef = new AtomicReference[Thread]
   private val indexUpdateThreadRef = new AtomicReference[Thread]
   private val indexUpdateRequests = new LinkedBlockingQueue[IndexUpdateRequest](1000)
-  private val indexWriteErrorRef = new AtomicReference[ManagedSolrDocumentIndexService.IndexWriteError]
+  private val indexWriteFailureRef = new AtomicReference[ManagedSolrDocumentIndexService.IndexWriteFailure]
   private val indexRebuildTaskRef = new AtomicReference[IndexRebuildTask]
 
 
@@ -40,80 +42,86 @@ class ManagedSolrDocumentIndexService(
    *
    * An existing index-update-thread is stopped before rebuilding happens and a new index-update-thread is started
    * immediately after running index-rebuild-thread is terminated without errors.
+   *
+   * @throws IllegalStateException in case of an internal error or if the service is shut down.
    */
-  override def requestIndexRebuild(): Option[IndexRebuildTask] = lock.synchronized {
+  override def requestIndexRebuild(): IndexRebuildTask = lock.synchronized {
     logger.info("attempting to start new document-index-rebuild thread.")
 
-    (shutdownRef.get, indexWriteErrorRef.get, indexRebuildThreadRef.get, indexRebuildTask()) match {
-      case (shutdown@true, _, _, currentIndexRebuildTask) =>
-        logger.info("new document-index-rebuild thread can not be started - service is shut down.")
-        currentIndexRebuildTask
+    (shutdownRef.get, indexWriteFailureRef.get, indexRebuildThreadRef.get, indexRebuildTaskRef.get()) match {
+      case (shutdown@true, _, _, _) =>
+        logger.error("new document-index-rebuild thread can not be started - service is shut down.")
+        throw new IllegalStateException("Service is shut down")
 
-      case (_, indexWriteError, _, currentIndexRebuildTask) if indexWriteError != null =>
-        logger.info(s"new document-index-rebuild thread can not be started - previous index write attempt has failed with error [$indexWriteError].")
-        currentIndexRebuildTask
+      case (_, indexWriteFailure, _, _) if indexWriteFailure != null =>
+        logger.error(s"new document-index-rebuild thread can not be started - previous index write attempt has failed with error [$indexWriteFailure].")
+        throw new ServiceUnavailableException("Index write error", indexWriteFailure.exception)
 
-      case (_, _, indexRebuildThread, currentIndexRebuildTask) if Threads.notTerminated(indexRebuildThread) =>
-        logger.info(s"new document-index-rebuild thread can not be started - document-index-rebuild thread [$indexRebuildThread] is allready running.")
-        currentIndexRebuildTask
+      case (_, _, indexRebuildThread, indexRebuildTask) if Threads.notTerminated(indexRebuildThread) =>
+        logger.info(s"new document-index-rebuild thread can not be started - document-index-rebuild thread [$indexRebuildThread] is already running.")
+        indexRebuildTask
 
       case _ =>
-        new IndexRebuildTask {
-          val progressRef = new AtomicReference[IndexRebuildProgress]
-          val futureTask = new FutureTask[Unit](Threads.mkCallable {
-            serviceOps.rebuildIndex(solrServerWriter) { progress =>
-              progressRef.set(progress)
+        startNewIndexRebuildThread()
+    }
+  }
+
+
+  private def startNewIndexRebuildThread(): IndexRebuildTask = {
+    new IndexRebuildTask {
+      val progressRef = new AtomicReference[IndexRebuildProgress]
+      val futureTask = new FutureTask[Unit](Threads.mkCallable {
+        serviceOps.rebuildIndex(solrServerWriter) { progress =>
+          progressRef.set(progress)
+        }
+      })
+
+      def progress(): Option[IndexRebuildProgress] = progressRef.get.asOption
+
+      def future(): Future[_] = futureTask
+    } |>> indexRebuildTaskRef.set |>> { indexRebuildTaskImpl =>
+      new Thread { indexRebuildThread =>
+        private def submitStartNewIndexUpdateThread(): Unit = Threads.spawnDaemon {
+          indexRebuildThread.join()
+          startNewIndexUpdateThread()
+        }
+
+        override def run() {
+          try {
+            interruptIndexUpdateThreadAndAwaitTermination()
+            indexUpdateRequests.clear()
+            indexRebuildTaskImpl.futureTask |> { futureTask =>
+              futureTask.run()
+              futureTask.get()
             }
-          })
 
-          def progress(): Option[IndexRebuildProgress] = progressRef.get.asOption
+            submitStartNewIndexUpdateThread()
+          } catch {
+            case _: InterruptedException =>
+              logger.debug(s"document-index-rebuild thread [$indexRebuildThread] was interrupted")
+              submitStartNewIndexUpdateThread()
 
-          def future(): Future[_] = futureTask
-        } |>> indexRebuildTaskRef.set |>> { indexRebuildTaskImpl =>
-          new Thread { indexRebuildThread =>
-            override def run() {
-              try {
-                interruptIndexUpdateThreadAndAwaitTermination()
-                indexUpdateRequests.clear()
-                indexRebuildTaskImpl.futureTask.run()
-                if (!indexRebuildTaskImpl.futureTask.isCancelled) {
-                  try {
-                    indexRebuildTaskImpl.futureTask.get
-                  } catch {
-                    case e: ExecutionException => throw e.getCause
-                    case e => throw e
-                  }
-                }
+            case _: CancellationException =>
+              logger.debug(s"document-index-rebuild task was cancelled. document-index-rebuild thread: [$indexRebuildThread].")
+              submitStartNewIndexUpdateThread()
 
-                Threads.spawnDaemon {
-                  indexRebuildThread.join()
-                  startNewIndexUpdateThread()
-                }
-              } catch {
-                case _: InterruptedException =>
-                  logger.trace(s"document-index-rebuild thread [$indexRebuildThread] was interrupted")
-                  Threads.spawnDaemon {
-                    indexRebuildThread.join()
-                    startNewIndexUpdateThread()
-                  }
-
-                case e =>
-                  val writeError = ManagedSolrDocumentIndexService.IndexRebuildError(ManagedSolrDocumentIndexService.this, e)
-                  logger.error(s"Error in document-index-rebuild thread [$indexRebuildThread].", e)
-                  indexWriteErrorRef.set(writeError)
-                  Threads.spawnDaemon {
-                    serviceErrorHandler(writeError)
-                  }
-              } finally {
-                logger.info(s"document-index-rebuild thread [$indexRebuildThread] is about to terminate.")
+            case e: ExecutionException =>
+              val cause = e.getCause
+              val writeFailure = ManagedSolrDocumentIndexService.IndexRebuildFailure(ManagedSolrDocumentIndexService.this, cause)
+              logger.error(s"document-index-rebuild task has failed. document-index-rebuild thread: [$indexRebuildThread].", cause)
+              indexWriteFailureRef.set(writeFailure)
+              Threads.spawnDaemon {
+                serviceErrorHandler(writeFailure)
               }
-            }
-          } |>> indexRebuildThreadRef.set |>> { indexRebuildThread =>
-            indexRebuildThread.setName(s"document-index-rebuild-${indexRebuildThread.getId}")
-            indexRebuildThread.start()
-            logger.info(s"new document-index-rebuild thread [$indexRebuildThread] has been started")
+          } finally {
+            logger.info(s"document-index-rebuild thread [$indexRebuildThread] is about to terminate.")
           }
-        } |> opt
+        }
+      } |>> indexRebuildThreadRef.set |>> { indexRebuildThread =>
+        indexRebuildThread.setName(s"document-index-rebuild-${indexRebuildThread.getId}")
+        indexRebuildThread.start()
+        logger.info(s"new document-index-rebuild thread [$indexRebuildThread] has been started")
+      }
     }
   }
 
@@ -127,18 +135,18 @@ class ManagedSolrDocumentIndexService(
   private def startNewIndexUpdateThread(): Unit = lock.synchronized {
     logger.info("attempting to start new document-index-update thread.")
 
-    (shutdownRef.get, indexWriteErrorRef.get, indexRebuildThreadRef.get, indexUpdateThreadRef.get) match {
+    (shutdownRef.get, indexWriteFailureRef.get, indexRebuildThreadRef.get, indexUpdateThreadRef.get) match {
       case (shutdown@true, _, _, _) =>
-        logger.info("new document-index-update thread can not be started - service is shut down.")
+        logger.error("new document-index-update thread can not be started - service is shut down.")
 
-      case (_, indexWriteError, _, _) if indexWriteError != null =>
-        logger.info(s"new document-index-update thread can not be started - previous index write attempt has failed [$indexWriteError].")
+      case (_, indexWriteFailure, _, _) if indexWriteFailure != null =>
+        logger.error(s"new document-index-update thread can not be started - previous index write attempt has failed [$indexWriteFailure].")
 
       case (_, _, indexRebuildThread, _) if Threads.notTerminated(indexRebuildThread) =>
         logger.info(s"new document-index-update thread can not be started while document-index-rebuild thread [$indexRebuildThread] is running.")
 
       case (_, _, _, indexUpdateThread) if Threads.notTerminated(indexUpdateThread) =>
-        logger.info(s"new document-index-update thread can not be started - document-index-update thread [$indexUpdateThread] is allready running.")
+        logger.info(s"new document-index-update thread can not be started - document-index-update thread [$indexUpdateThread] is already running.")
 
       case _ =>
         new Thread { indexUpdateThread =>
@@ -151,15 +159,15 @@ class ManagedSolrDocumentIndexService(
                 }
               }
             } catch {
-              case e: InterruptedException =>
-                logger.trace(s"document-index-update thread [$indexUpdateThread] was interrupted")
+              case _: InterruptedException =>
+                logger.debug(s"document-index-update thread [$indexUpdateThread] was interrupted")
 
               case e =>
-                val writeError = ManagedSolrDocumentIndexService.IndexUpdateError(ManagedSolrDocumentIndexService.this, e)
+                val writeFailure = ManagedSolrDocumentIndexService.IndexUpdateFailure(ManagedSolrDocumentIndexService.this, e)
                 logger.error(s"error in document-index-update thread [$indexUpdateThread].", e)
-                indexWriteErrorRef.set(writeError)
+                indexWriteFailureRef.set(writeFailure)
                 Threads.spawnDaemon {
-                  serviceErrorHandler(writeError)
+                  serviceErrorHandler(writeFailure)
                 }
             } finally {
               logger.info(s"document-index-update thread [$indexUpdateThread] is about to terminate.")
@@ -184,17 +192,19 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  def requestIndexUpdate(request: IndexUpdateRequest) {
-    Threads.spawnDaemon {
-      shutdownRef.get match {
-        case true =>
-          logger.error(s"Can't submit index update request [$request], server is shut down.")
+  def requestIndexUpdate(request: IndexUpdateRequest): Unit = lock.synchronized {
+    if (shutdownRef.get()) {
+      throw new IllegalStateException(s"Can't submit index update request [$request], server is shut down.")
+    }
 
-        case _ =>
-          // todo: publish query is full???
-          if (indexUpdateRequests.offer(request)) startNewIndexUpdateThread()
-          else logger.error(s"Can't submit index update request [$request], requests query is full.")
-      }
+    if (!indexUpdateRequests.offer(request)) {
+      val errorMsg = s"Can't submit index update request [$request], requests query is full."
+      logger.error(errorMsg)
+      throw new ServiceErrorException(errorMsg)
+    }
+
+    Threads.spawnDaemon {
+      startNewIndexUpdateThread()
     }
   }
 
@@ -211,9 +221,10 @@ class ManagedSolrDocumentIndexService(
       case e: Throwable =>
         logger.error(s"Search error. solrParams: $solrQuery, searchingUser: $searchingUser", e)
         Threads.spawnDaemon {
-          serviceErrorHandler(ManagedSolrDocumentIndexService.IndexSearchError(ManagedSolrDocumentIndexService.this, e))
+          serviceErrorHandler(ManagedSolrDocumentIndexService.IndexSearchFailure(ManagedSolrDocumentIndexService.this, e))
         }
-        Iterator.empty
+
+        throw e
     }
   }
 
@@ -230,59 +241,29 @@ class ManagedSolrDocumentIndexService(
         logger.info("Service has been shut down.")
       } catch {
         case e: Throwable =>
-          logger.error("An error occured while shutting down the service.", e)
+          logger.error("An error occurred while shutting down the service.", e)
           throw e
       }
     }
   }
 
-  override def indexRebuildTask(): Option[IndexRebuildTask] = indexRebuildTaskRef.get.asOption
+
+  override def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask] = indexRebuildTaskRef.get.asOption
 }
 
 
 object ManagedSolrDocumentIndexService {
-  sealed abstract class ServiceError {
+
+  sealed abstract class ServiceFailure {
     val service: DocumentIndexService
-    val error: Throwable
+    val exception: Throwable
   }
 
-  abstract class IndexWriteError extends ServiceError
+  abstract class IndexWriteFailure extends ServiceFailure
 
-  case class IndexUpdateError(service: DocumentIndexService, error: Throwable) extends IndexWriteError
-  case class IndexRebuildError(service: DocumentIndexService, error: Throwable) extends IndexWriteError
-  case class IndexSearchError(service: DocumentIndexService, error: Throwable) extends ServiceError
+  case class IndexUpdateFailure(service: DocumentIndexService, exception: Throwable) extends IndexWriteFailure
+  case class IndexRebuildFailure(service: DocumentIndexService, exception: Throwable) extends IndexWriteFailure
+  case class IndexSearchFailure(service: DocumentIndexService, exception: Throwable) extends ServiceFailure
 }
 
 
-object Threads {
-
-  def mkThread(runBody: => Unit): Thread =
-    new Thread {
-      override def run() {
-        runBody
-      }
-    }
-
-  def mkRunnable(runBody: => Unit): Runnable =
-    new Runnable {
-      def run() { runBody }
-    }
-
-  def mkCallable[A](callBody: => A): Callable[A]  =
-    new Callable[A] {
-      def call(): A = callBody
-    }
-
-  def spawn(runBody: => Unit): Thread = mkThread(runBody) |>> { t => t.start() }
-  def spawnDaemon(runBody: => Unit): Thread = mkThread(runBody) |>> { t => t.setDaemon(true); t.start() }
-
-  def terminated(thread: Thread): Boolean = thread == null || thread.getState == Thread.State.TERMINATED
-  def notTerminated(thread: Thread): Boolean = !terminated(thread)
-
-  def interruptAndAwaitTermination(thread: Thread) {
-    if (thread != null) {
-      thread.interrupt()
-      thread.join()
-    }
-  }
-}

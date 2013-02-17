@@ -6,7 +6,7 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
 import imcms.security.{PermissionGranted, PermissionDenied}
-import imcms.api.ContentLanguage
+import imcms.api.DocumentLanguage
 import imcms.dao.{SystemDao, LanguageDao}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
@@ -23,7 +23,7 @@ class LanguageManager(app: UI) {
     ui.rc.btnReload.addClickHandler { reload() }
     ui.tblLanguages.addValueChangeHandler { handleSelection() }
 
-    ui.miNew.setCommandHandler { editAndSave(ContentLanguage.builder().build()) }
+    ui.miNew.setCommandHandler { editAndSave(DocumentLanguage.builder().build()) }
     ui.miEdit.setCommandHandler {
       whenSelected(ui.tblLanguages) { id =>
         languageDao.getById(id) match {
@@ -82,7 +82,7 @@ class LanguageManager(app: UI) {
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage languages")
 
   /** Edit in modal dialog. */
-  private def editAndSave(vo: ContentLanguage) {
+  private def editAndSave(vo: DocumentLanguage) {
     val id = vo.getId
     val isNew = id == null
     val dialogTitle = isNew ? "Create new language" | "edit Language"
@@ -96,7 +96,7 @@ class LanguageManager(app: UI) {
         c.chkEnabled.value = vo.isEnabled
 
         dlg.setOkButtonHandler {
-          ContentLanguage.builder() |> { voc =>
+          DocumentLanguage.builder() |> { voc =>
             // todo: validate
             voc.code(c.txtCode.value)
             voc.name(c.txtName.value)

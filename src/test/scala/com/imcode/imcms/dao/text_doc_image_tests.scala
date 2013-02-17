@@ -12,7 +12,7 @@ import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
-import com.imcode.imcms.api.{DocRef, ImageHistory, ContentLanguage}
+import com.imcode.imcms.api.{DocRef, ImageHistory, DocumentLanguage}
 import com.imcode.imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish}
 import imcode.server.document.textdocument.{ContentRef, ImageDomainObject}
 
@@ -100,7 +100,7 @@ class ImageDaoSuiteConfig {
       Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       Test.hibernate.configurators.BasicWithSql,
       Test.hibernate.configurators.addAnnotatedClasses(
-        classOf[ContentLanguage],
+        classOf[DocumentLanguage],
         classOf[ImageDomainObject],
         classOf[ImageHistory]
       ),

@@ -5,7 +5,7 @@ package fixtures
 import scala.collection.JavaConverters._
 import imcode.server.user.RoleId
 import imcode.server.document.DocumentPermissionSetTypeDomainObject
-import com.imcode.imcms.api.{I18nMeta, ContentLanguage}
+import com.imcode.imcms.api.{I18nMeta, DocumentLanguage}
 import imcode.server.document.textdocument.{TextDomainObject, TextDocumentDomainObject}
 
 
@@ -25,7 +25,7 @@ object DocFX {
   def mkDefaultTextDocEn: TextDocumentDomainObject = mkTextDoc(DocFX.DefaultId, LanguageFX.mkEnglish)
   def mkDefaultTextDocSe: TextDocumentDomainObject = mkTextDoc(DocFX.DefaultId, LanguageFX.mkSwedish)
 
-  def mkTextDoc(docId: Int, language: ContentLanguage): TextDocumentDomainObject = new TextDocumentDomainObject |>> { doc =>
+  def mkTextDoc(docId: Int, language: DocumentLanguage): TextDocumentDomainObject = new TextDocumentDomainObject |>> { doc =>
     doc.setId(docId)
     doc.setCreatorId(100)
     doc.setPublisherId(200)
@@ -64,7 +64,7 @@ object DocFX {
     }
   }
 
-  def mkTextDocs(startDocId: Int = DefaultId, count: Int = 10, languages: Seq[ContentLanguage] = LanguageFX.mkLanguages): Seq[TextDocumentDomainObject] =
+  def mkTextDocs(startDocId: Int = DefaultId, count: Int = 10, languages: Seq[DocumentLanguage] = LanguageFX.mkLanguages): Seq[TextDocumentDomainObject] =
     for {
       docId <- startDocId until (startDocId + count) toSeq;
       language <- languages

@@ -32,11 +32,11 @@ import com.imcode.imcms.vaadin.Editor
  * @param meta doc's Meta
  * @param i18nMetas doc's i18nMeta-s
  */
-class AppearanceEditor(meta: Meta, i18nMetas: Map[ContentLanguage, I18nMeta]) extends Editor with ImcmsServicesSupport {
+class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) extends Editor with ImcmsServicesSupport {
 
   case class Data(
-    i18nMetas: Map[ContentLanguage, I18nMeta],
-    enabledLanguages: Set[ContentLanguage],
+    i18nMetas: Map[DocumentLanguage, I18nMeta],
+    enabledLanguages: Set[DocumentLanguage],
     disabledLanguageShowSetting: Meta.DisabledLanguageShowSetting,
     alias: Option[String],
     target: String

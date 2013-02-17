@@ -14,7 +14,7 @@ import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.context.annotation.Bean._
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
-import com.imcode.imcms.api.{DocRef, SystemProperty, ContentLanguage, TextHistory}
+import com.imcode.imcms.api.{DocRef, SystemProperty, DocumentLanguage, TextHistory}
 
 import org.scalatest.fixture
 import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
@@ -22,7 +22,7 @@ import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
 @RunWith(classOf[JUnitRunner])
 class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
-  type FixtureParam = ContentLanguage
+  type FixtureParam = DocumentLanguage
 
 	var textDao: TextDao = _
 
@@ -55,7 +55,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       contentRefOpt: Option[ContentRef] = None,
       no: Int = Default.no,
       text: String = Default.text,
-      language: ContentLanguage) =
+      language: DocumentLanguage) =
 
     TextDomainObject.builder().docRef(DocRef.of(docId, docVersionNo)).no(no).text(text).language(language) |> { builder =>
       contentRefOpt.foreach(builder.contentRef)
@@ -238,7 +238,7 @@ class TextDaoSuiteConfig {
       Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       Test.hibernate.configurators.BasicWithSql,
       Test.hibernate.configurators.addAnnotatedClasses(
-        classOf[ContentLanguage],
+        classOf[DocumentLanguage],
         classOf[TextDomainObject],
         classOf[TextHistory]
       ),

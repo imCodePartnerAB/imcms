@@ -4,9 +4,9 @@ package admin.doc.meta.appearance
 
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.api.ContentLanguage
+import com.imcode.imcms.api.DocumentLanguage
 
-class I18nMetaEditorUI(val language: ContentLanguage, caption: String) extends CustomLayout("admin/doc/meta/appearance/i18n_meta") with FullWidth {
+class I18nMetaEditorUI(val language: DocumentLanguage, caption: String) extends CustomLayout("admin/doc/meta/appearance/i18n_meta") with FullWidth {
   private val lytContent = new FormLayout
 
   val chkEnabled = new CheckBox(caption) |>> { chk =>
