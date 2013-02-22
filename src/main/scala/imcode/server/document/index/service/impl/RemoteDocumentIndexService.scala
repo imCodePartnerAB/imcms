@@ -13,15 +13,15 @@ class RemoteDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serv
 
   private val lock = new AnyRef
   private val shutdownRef: AtomicBoolean = new AtomicBoolean(false)
-  private val serviceRef: AtomicReference[DocumentIndexService] = new AtomicReference(UnavailableDocumentIndexService)
+  private val serviceRef: AtomicReference[DocumentIndexService] = new AtomicReference(NoOpDocumentIndexService)
   private val serviceErrorHandler: ManagedSolrDocumentIndexService.ServiceFailure => Unit = {
     case indexError if indexError.exception.isInstanceOf[SolrInputDocumentCreateException] =>
       // ignore
     case indexError =>
       // replace service
       indexError.service |> { service => lock.synchronized {
-        if (serviceRef.compareAndSet(service, UnavailableDocumentIndexService)) {
-          logger.info("Index error has occuerd. Managed service instance have to be replaced.", indexError.exception)
+        if (serviceRef.compareAndSet(service, NoOpDocumentIndexService)) {
+          logger.info("Index error has occurred. Managed service instance have to be replaced.", indexError.exception)
           service.shutdown()
 
           if (shutdownRef.get) {
@@ -75,7 +75,7 @@ class RemoteDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serv
   override def shutdown(): Unit = lock.synchronized {
     if (shutdownRef.compareAndSet(false, true)) {
       logger.info("Attempting to shtting down the service.")
-      serviceRef.getAndSet(UnavailableDocumentIndexService).shutdown()
+      serviceRef.getAndSet(NoOpDocumentIndexService).shutdown()
       logger.info("Service has been shut down.")
     }
   }

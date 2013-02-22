@@ -44,8 +44,8 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                 Page.getCurrent.showErrorNotification(errors.mkString(", "))
 
               case Right((editedDoc, i18nMetas)) =>
-                val saveOpts = dlg.docEditor match {
-                  case editor: NewTextDocContentEditor if editor.ui.chkCopyI18nMetaTextsToTextFields.checked =>
+                val saveOpts = dlg.docEditor.contentEditor match {
+                  case contentEditor: NewTextDocContentEditor if contentEditor.ui.chkCopyI18nMetaTextsToTextFields.checked =>
                     java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)
 
                   case _ =>

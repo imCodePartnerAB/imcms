@@ -11,6 +11,7 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.Page
+import com.imcode.util.Atomics
 
 
 case class UploadedFile(name: String, mimeType: String, file: File)
@@ -55,7 +56,7 @@ class FileUploaderDialog(caption: String = "") extends OkCancelDialog(caption) {
 // todo: ??? opts: mayEditFilename, mayOverwrite ???
 // todo: ??? set custom upload receiver ???
 class FileUploader extends Publisher[UploadStatus] {
-  private val uploadedFileOptRef = Atoms.OptRef[UploadedFile]
+  private val uploadedFileOptRef = Atomics.OptionReference[UploadedFile]
 
   /**
    * This function transforms uploaded file name to a save-as-name.

@@ -402,7 +402,7 @@ class TextDocPermSetEditor(
     ps.setEditIncludes(ui.chkEditIncludes.checked)
 
     ps.setAllowedDocumentTypeIds(new java.util.HashSet(ui.tcsCreateDocsOfTypes.itemIds))
-    ps.setAllowedTemplateGroupIds(ui.tcsUseTemplatesFromTemplateGroups.itemIds.asScala.map(Int box _.getId).toSet.asJava)
+    ps.setAllowedTemplateGroupIds(ui.tcsUseTemplatesFromTemplateGroups.itemIds.asScala.map(_.getId: JInteger).toSet.asJava)
   } |> Right.apply
 }
 

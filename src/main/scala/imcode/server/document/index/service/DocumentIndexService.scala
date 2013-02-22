@@ -17,7 +17,7 @@ abstract class DocumentIndexService extends Log4jLoggerSupport {
 
   def requestIndexUpdate(request: IndexUpdateRequest)
 
-  def requestIndexRebuild(): IndexRebuildTask
+  def requestIndexRebuild(): Option[IndexRebuildTask]
 
   def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask]
 

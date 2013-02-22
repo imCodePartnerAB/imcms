@@ -5,8 +5,8 @@ import com.vaadin.ui.Table
 
 // implicit
 class TableWrapper[A <: TItemId](table: Table with ContainerWithTypedItemId[A]) {
-  def addRow(itemId: A, cells: AnyRef*): AnyRef = table.addItem(cells.toArray, itemId)
-  def addRowWithAutoId(cell: AnyRef, cells: AnyRef*): AnyRef = addRow(null.asInstanceOf[A], (cell +: cells) : _*)
+  def addRow(itemId: A, column: AnyRef, columns: AnyRef*): AnyRef = table.addItem((column +: columns).toArray, itemId)
+  def addRowWithAutoId(column: AnyRef, columns: AnyRef*): AnyRef = table.addItem((column +: columns).toArray, null)
 
   object generatedColumn {
     def update(columnId: TColumnId, generator: (Table, A, TColumnId) => AnyRef) {
@@ -18,6 +18,6 @@ class TableWrapper[A <: TItemId](table: Table with ContainerWithTypedItemId[A]) 
     }
   }
 
-  def columnHeaders = table.getColumnHeaders.toSeq
+  def columnHeaders: Seq[String] = table.getColumnHeaders.toSeq
   def columnHeaders_=(headers: Seq[String]) { table.setColumnHeaders(headers.toArray) }
 }

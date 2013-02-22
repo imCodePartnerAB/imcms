@@ -12,7 +12,7 @@ import com.vaadin.data.Property
  * @tparam A property value type
  */
 trait TypedProperty[A <: AnyRef] { this: Property[AnyRef] =>
-  protected def getTypedValue(): A = getValue.asInstanceOf[A]
+  protected def getTypedValue: A = getValue.asInstanceOf[A]
 }
 
 //trait TypedProperty[A <: AnyRef] extends Property[AnyRef] {

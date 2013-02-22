@@ -45,7 +45,7 @@ class DocGetterCallbackSuite extends FunSuite {
     DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
 
-    assertEquals(LanguageFX.mkSwedish, user.getDocGetterCallback.contentLanguages.preferred)
+    assertEquals(LanguageFX.mkSwedish, user.getDocGetterCallback.documentLanguages.preferred)
   }
 
   test("default user requesting working version") {

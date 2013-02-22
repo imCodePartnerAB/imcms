@@ -13,5 +13,6 @@ trait ContainerWithTypedItemId[A <: TItemId] { this: Container =>
 
   def item(id: A): Item = getItem(id)
 
+  //abstract override def firstItemId: A = itemIds.asScala.head
   def firstItemIdOpt: Option[A] = itemIds.asScala.headOption
 }

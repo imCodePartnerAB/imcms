@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 import imcode.server.document.index.service._
 import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.SolrQuery
+import imcode.server.document.index.service.impl.ManagedSolrDocumentIndexService.{IndexSearchFailure, IndexWriteFailure}
 
 /**
  * Delegates all invocations to the ManagedSolrDocumentIndexService instance.
@@ -17,15 +18,17 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
 
   private val lock = new AnyRef
   private val shutdownRef: AtomicBoolean = new AtomicBoolean(false)
-  private val serviceRef: AtomicReference[DocumentIndexService] = new AtomicReference(UnavailableDocumentIndexService)
-  private val serviceErrorHandler: (ManagedSolrDocumentIndexService.ServiceFailure => Unit) = {
-    case indexError if indexError.exception.isInstanceOf[SolrInputDocumentCreateException] =>
-      // ignore
-    case indexError =>
+  private val serviceRef: AtomicReference[DocumentIndexService] = new AtomicReference(NoOpDocumentIndexService)
+  private val serviceFailureHandler: (ManagedSolrDocumentIndexService.ServiceFailure => Unit) = {
+    case failure: IndexSearchFailure =>
+      // ignore ???
+    case failure: IndexWriteFailure if failure.exception.isInstanceOf[SolrInputDocumentCreateException] =>
+      // ignore ???
+    case failure: IndexWriteFailure =>
       // replace service
-      indexError.service |> { service => lock.synchronized {
-        if (serviceRef.compareAndSet(service, UnavailableDocumentIndexService)) {
-          logger.info("Index error has occurred. Managed service instance have to be replaced.", indexError.exception)
+      failure.service |> { service => lock.synchronized {
+        if (serviceRef.compareAndSet(service, NoOpDocumentIndexService)) {
+          logger.info("Index error has occurred. Managed service instance have to be replaced.", failure.exception)
           service.shutdown()
 
           if (shutdownRef.get) {
@@ -50,7 +53,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
   private def newManagedService(recreateDataDir: Boolean): ManagedSolrDocumentIndexService = {
     val solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome, recreateDataDir)
 
-    new ManagedSolrDocumentIndexService(solrServer, solrServer, serviceOps, serviceErrorHandler)
+    new ManagedSolrDocumentIndexService(solrServer, solrServer, serviceOps, serviceFailureHandler)
   }
 
 
@@ -74,7 +77,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
   override def shutdown(): Unit = lock.synchronized {
     if (shutdownRef.compareAndSet(false, true)) {
       logger.info("Attempting to shut down the service.")
-      serviceRef.getAndSet(UnavailableDocumentIndexService).shutdown()
+      serviceRef.getAndSet(NoOpDocumentIndexService).shutdown()
       logger.info("Service has been shut down.")
     }
   }

@@ -279,8 +279,10 @@ package object ui {
       setItemCaption(id, caption)
       setItemIcon(id, icon)
     }
+
     // todo: move to sel ops
     def isSelected: Boolean
+    def selectFirst(): Unit
   }
 
 
@@ -292,8 +294,13 @@ package object ui {
       super.setMultiSelect(multiSelect)
     }
 
-    def isSelected: Boolean = selectionOpt.isDefined
+    override def isSelected: Boolean = selectionOpt.isDefined
 
+    override def selectFirst() {
+      firstItemIdOpt.foreach(id => selection = id)
+    }
+
+    // remove??? use value instead ???
     def selection: A = getTypedValue
 
     def selection_=(v: A) { setValue(v) }
@@ -310,7 +317,11 @@ package object ui {
       super.setMultiSelect(multiSelect)
     }
 
-    def isSelected: Boolean = getTypedValue.asScala.nonEmpty
+    override def isSelected: Boolean = getTypedValue.asScala.nonEmpty
+
+    override def selectFirst() {
+      selection = firstItemIdOpt.toSeq
+    }
 
     def selection: Seq[A] = getTypedValue.asScala.toSeq
 
@@ -322,8 +333,6 @@ package object ui {
   }
 
 
-
-
   /**
    * <code>value<code> property always returns a collection.
    */
@@ -333,12 +342,16 @@ package object ui {
     def selection: Seq[A] = getTypedValue.asScala.toSeq
     def selection_=(v: Seq[A]) { setValue(v.asJava) }
 
-    def isSelected: Boolean = getTypedValue.asScala.nonEmpty
+    override def isSelected: Boolean = getTypedValue.asScala.nonEmpty
+
+    override def selectFirst() {
+      selection = firstItemIdOpt.toSeq
+    }
 
     /**
      * @return collection of selected items or empty collection if there is no selected item(s).
      */
-    final override def getValue(): JCollection[A] = super.getValue() |> { value =>
+    final override def getValue: JCollection[A] = super.getValue |> { value =>
       if (isMultiSelect) value.asInstanceOf[JCollection[A]]
       else value.asInstanceOf[A].asOption.toSeq.asJavaCollection
     }

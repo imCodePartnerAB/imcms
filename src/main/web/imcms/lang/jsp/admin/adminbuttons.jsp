@@ -56,7 +56,7 @@ DocumentVersion version = document.getVersion();
 List<DocumentLanguage> languages = Imcms.getServices().getI18nContentSupport().getLanguages();
 Set<DocumentLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
 DocumentLanguage defaultLanguage = Imcms.getServices().getI18nContentSupport().getDefaultLanguage();
-DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
+DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
 
 /* *******************************************************************************************
  *         BROWSER SNIFFER                                                                   *
