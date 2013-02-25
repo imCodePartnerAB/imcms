@@ -358,6 +358,18 @@ public class DocumentMapper implements DocumentGetter {
         return documentIds;
     }
 
+
+    public int[] getAllDocumentIdsForIndexing() {
+        String[] params = new String[0];
+        String[] documentIdStrings = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT meta_id FROM meta ORDER BY meta_id DESC, doc_type ASC", params, Utility.STRING_ARRAY_HANDLER));
+        int[] documentIds = new int[documentIdStrings.length];
+        for (int i = 0; i < documentIdStrings.length; i++) {
+            documentIds[i] = Integer.parseInt(documentIdStrings[i]);
+        }
+        return documentIds;
+    }
+
+
     public Set<String> getAllDocumentAlias() {
         Set<String> allDocumentAlias = new HashSet<String>();
         String[] allAlias = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT value FROM document_properties where key_name = ? ORDER BY value", new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS}, Utility.STRING_ARRAY_HANDLER));

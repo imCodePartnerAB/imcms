@@ -8,7 +8,7 @@ import java.util.Collection;
 public interface DocumentGetter {
     
     /** Return a list of documents <em>in the same order</em> as the documentIds */ 
-    List getDocuments(Collection documentIds);
+    List<DocumentDomainObject> getDocuments(Collection documentIds);
 
     DocumentDomainObject getDocument(Integer documentId);
 }

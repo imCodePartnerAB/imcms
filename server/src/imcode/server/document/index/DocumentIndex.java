@@ -33,7 +33,7 @@ public interface DocumentIndex {
     String FIELD__PUBLICATION_END_DATETIME = "publication_end_datetime";
     String FIELD__PUBLICATION_START_DATETIME = "publication_start_datetime";
     String FIELD__STATUS = "status";
-    String FIELD__PHASE = "phase" ;
+    String FIELD__PHASE = "phase";
     String FIELD__MIME_TYPE = "mime_type";
     String FIELD__CREATOR_ID = "creator_id";
     String FIELD__PUBLISHER_ID = "publisher_id";
@@ -41,12 +41,12 @@ public interface DocumentIndex {
     String FIELD__ALIAS = "alias";
     String FIELD__TEMPLATE = "template";
     String FIELD__CHILD_ID = "child_id";
-    
-    void indexDocument( DocumentDomainObject document ) throws IndexException ;
 
-    void removeDocument( DocumentDomainObject document ) throws IndexException;
+    void indexDocument(DocumentDomainObject document) throws IndexException;
 
-    List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
+    void removeDocument(DocumentDomainObject document) throws IndexException;
+
+    List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
     void rebuild() throws IndexException;
 }

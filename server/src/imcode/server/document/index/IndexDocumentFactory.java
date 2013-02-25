@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.taglibs.standard.tei.DeclareTEI;
 import org.apache.tika.Tika;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;

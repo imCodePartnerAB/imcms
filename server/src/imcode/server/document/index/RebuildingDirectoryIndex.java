@@ -26,7 +26,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     private final Timer scheduledIndexRebuildTimer = new Timer(true);
     private IndexRebuildTimerTask currentIndexRebuildTimerTask ;
 
-    private DirectoryIndex index = new NullDirectoryIndex();
+    private volatile DirectoryIndex index = new NullDirectoryIndex();
 
     public RebuildingDirectoryIndex(File indexParentDirectory, float indexRebuildSchedulePeriodInMinutes,
                                     IndexDocumentFactory indexDocumentFactory) {
@@ -116,11 +116,9 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     }
 
     private static void sortFilesByLastModifiedWithLatestFirst(File[] indexDirectories) {
-        Arrays.sort(indexDirectories, new Comparator() {
-            public int compare(Object o1, Object o2) {
-                File f1 = (File) o1;
-                File f2 = (File) o2;
-                return new Long(f2.lastModified()).compareTo(new Long(f1.lastModified()));
+        Arrays.sort(indexDirectories, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                return Long.valueOf(f2.lastModified()).compareTo(f1.lastModified());
             }
         });
     }
@@ -129,36 +127,38 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         return new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING).format(nextExecutionTime);
     }
 
-    public void indexDocument(DocumentDomainObject document) {
+    public synchronized void indexDocument(DocumentDomainObject document) {
         log.debug("Adding document.");
         backgroundIndexBuilder.addDocument(document);
         try {
             index.indexDocument(document);
         } catch ( IndexException e ) {
-            rebuildBecauseOfError("Failed to add document " + document.getId() + " to index.", e);
+            log.error("Failed to add document " + document.getId() + " to index.", e);
+            //rebuildBecauseOfError("Failed to add document " + document.getId() + " to index.", e);
         }
     }
 
-    public void removeDocument(DocumentDomainObject document) {
+    public synchronized void removeDocument(DocumentDomainObject document) {
         log.debug("Removing document.");
         backgroundIndexBuilder.removeDocument(document);
         try {
             index.removeDocument(document);
         } catch ( IndexException e ) {
-            rebuildBecauseOfError("Failed to remove document " + document.getId() + " from index.", e);
+            log.error("Failed to remove document " + document.getId() + " from index.", e);
+            //rebuildBecauseOfError("Failed to remove document " + document.getId() + " from index.", e);
         }
     }
 
-    public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
+    public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         try {
-            List documents = index.search(query, searchingUser);
-            if ( index.isInconsistent() ) {
-                rebuildBecauseOfError("Index is inconsistent.", null);
-            }
+            List<DocumentDomainObject> documents = index.search(query, searchingUser);
+//            if ( index.isInconsistent() ) {
+//                rebuildBecauseOfError("Index is inconsistent.", null);
+//            }
             return documents;
         } catch ( IndexException ex ) {
             rebuildBecauseOfError("Search failed.", ex);
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 

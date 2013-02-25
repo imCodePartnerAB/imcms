@@ -80,16 +80,12 @@ public class BackgroundIndexBuilder {
         rememberIndexParentDirectoryLastModified();
     }
 
-    public synchronized void addDocument(DocumentDomainObject document) {
-        if ( null != indexBuildingThread ) {
-            indexBuildingThread.addDocument(document);
-        }
+    public synchronized boolean addDocument(DocumentDomainObject document) {
+        return indexBuildingThread != null && indexBuildingThread.addDocument(document);
     }
 
-    public synchronized void removeDocument(DocumentDomainObject document) {
-        if ( null != indexBuildingThread ) {
-            indexBuildingThread.removeDocument(document);
-        }
+    public synchronized boolean removeDocument(DocumentDomainObject document) {
+        return indexBuildingThread != null && indexBuildingThread.removeDocument(document);
     }
 
     private static File getNewIndexDirectory(File indexParentDirectory) {
