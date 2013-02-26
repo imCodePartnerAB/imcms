@@ -48,7 +48,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
             Integer textIndex = textEntry.getKey();
             TextDomainObject text = textEntry.getValue();
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText()));
-            String htmlStrippedText = stripHtml(text);
+            String htmlStrippedText = stripHtml(textDocument, text);
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, htmlStrippedText));
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText));
         }
@@ -75,17 +75,17 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 //        return string;
 //    }
 
-    private String stripHtml(TextDomainObject text) {
+    private String stripHtml(TextDocumentDomainObject textDocument, TextDomainObject text) {
         String string = text.getText();
 
         if (text.getType() != TextDomainObject.TEXT_TYPE_HTML) {
             InputStream in = IOUtils.toInputStream(string);
             try {
                 String stripped = tikaHtml.parseToString(in);
-                log.trace(String.format("Stripped html to plain text: '%s' -> '%s'", string, stripped));
+                log.trace(String.format("Text doc id: %d. Stripped html to plain text: '%s' -> '%s'", textDocument.getId(), string, stripped));
                 string = stripped;
             } catch (Exception e) {
-                log.error(String.format("Unable to strip html '%s'", string), e);
+                log.error(String.format("Text doc id: %d. Unable to strip html '%s'", textDocument.getId(), string), e);
             } finally {
                 IOUtils.closeQuietly(in);
             }
@@ -100,7 +100,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
             return;
         }
         indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType()));
-        indexFileContents(file);
+        indexFileContents(fileDocument, file);
     }
 
 //    private final static Map EXTRACTORS = new HashMap(ArrayUtils.toMap(new Object[][] {
@@ -133,7 +133,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 //        }
 //    }
 
-    private void indexFileContents(FileDocumentDomainObject.FileDocumentFile file) {
+    private void indexFileContents(FileDocumentDomainObject fileDocument, FileDocumentDomainObject.FileDocumentFile file) {
         Metadata metadata = new Metadata();
         metadata.set(Metadata.CONTENT_DISPOSITION, file.getFilename());
         metadata.set(Metadata.CONTENT_TYPE, file.getMimeType());
@@ -144,7 +144,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
             String content = tikaAutodetect.parseToString(in);
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, content));
         } catch (Exception e) {
-            log.error(String.format("Unable to index content of file-doc-file '%s'", file), e);
+            log.error(String.format("File doc id: %d. Unable to index content of file-doc-file '%s'", fileDocument.getId(), file), e);
         } finally {
             IOUtils.closeQuietly(in);
         }

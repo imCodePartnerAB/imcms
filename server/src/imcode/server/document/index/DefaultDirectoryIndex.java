@@ -170,7 +170,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
             if (indexingLogSchedule.isTime()) {
                 logIndexingProgress(i, documentIds.length, indexingLogSchedule.getStopWatch().getTime());
             }
-            Thread.yield(); // To make sure other threads with the same priority get a chance to run something once in a while.
+            //Thread.yield(); // To make sure other threads with the same priority get a chance to run something once in a while.
         }
 
         logIndexingCompleted(documentIds.length, indexingLogSchedule.getStopWatch());

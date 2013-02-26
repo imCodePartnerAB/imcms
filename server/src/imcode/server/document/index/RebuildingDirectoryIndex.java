@@ -13,6 +13,7 @@ import org.apache.lucene.search.Sort;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -24,25 +25,25 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     private final BackgroundIndexBuilder backgroundIndexBuilder;
     private final long indexRebuildSchedulePeriodInMilliseconds;
     private final Timer scheduledIndexRebuildTimer = new Timer(true);
-    private IndexRebuildTimerTask currentIndexRebuildTimerTask ;
+    private IndexRebuildTimerTask currentIndexRebuildTimerTask;
 
     private volatile DirectoryIndex index = new NullDirectoryIndex();
 
     public RebuildingDirectoryIndex(File indexParentDirectory, float indexRebuildSchedulePeriodInMinutes,
                                     IndexDocumentFactory indexDocumentFactory) {
-        indexRebuildSchedulePeriodInMilliseconds = (long) ( indexRebuildSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE );
+        indexRebuildSchedulePeriodInMilliseconds = (long) (indexRebuildSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE);
         backgroundIndexBuilder = new BackgroundIndexBuilder(indexParentDirectory, this, indexDocumentFactory);
 
         File indexDirectory = findLatestIndexDirectory(indexParentDirectory);
         long indexModifiedTime = 0;
-        if ( null != indexDirectory ) {
+        if (null != indexDirectory) {
             indexModifiedTime = indexDirectory.lastModified();
             index = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
         } else {
             rebuildBecauseOfError("No existing index.", null);
         }
 
-        if ( isSchedulingIndexRebuilds() ) {
+        if (isSchedulingIndexRebuilds()) {
             log.info("First index rebuild scheduled at " + formatDatetime(restartIndexRebuildScheduling(indexModifiedTime)));
         } else {
             log.info("Scheduling of index rebuilds is disabled.");
@@ -50,12 +51,12 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     }
 
     private synchronized Date restartIndexRebuildScheduling(long indexModifiedTime) {
-        if ( !isSchedulingIndexRebuilds() ) {
-            return null ;
+        if (!isSchedulingIndexRebuilds()) {
+            return null;
         }
         long time = System.currentTimeMillis();
         Date nextTime = new Date(indexModifiedTime + indexRebuildSchedulePeriodInMilliseconds);
-        if ( nextTime.getTime() < time ) {
+        if (nextTime.getTime() < time) {
             nextTime.setTime(time);
         }
         restartIndexRebuildScheduling(nextTime);
@@ -64,15 +65,15 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
 
     private synchronized void restartIndexRebuildScheduling(Date nextTime) {
         if (null != currentIndexRebuildTimerTask) {
-            currentIndexRebuildTimerTask.cancel() ;
-            log.trace("Canceled existing index rebuild timer task.") ;
+            currentIndexRebuildTimerTask.cancel();
+            log.trace("Canceled existing index rebuild timer task.");
         }
         try {
-            log.debug("Restarting scheduling of index rebuilds. First rebuild at "+formatDatetime(nextTime)+".") ;
+            log.debug("Restarting scheduling of index rebuilds. First rebuild at " + formatDatetime(nextTime) + ".");
             backgroundIndexBuilder.touchIndexParentDirectory();
             currentIndexRebuildTimerTask = new IndexRebuildTimerTask(indexRebuildSchedulePeriodInMilliseconds, backgroundIndexBuilder);
             scheduledIndexRebuildTimer.scheduleAtFixedRate(currentIndexRebuildTimerTask, nextTime, indexRebuildSchedulePeriodInMilliseconds);
-        } catch ( IllegalStateException ise ) {
+        } catch (IllegalStateException ise) {
             log.error("Failed to start index rebuild scheduling.", ise);
         }
     }
@@ -83,21 +84,21 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
 
     static File findLatestIndexDirectory(File indexParentDirectory) {
         try {
-            if ( indexParentDirectory.exists() && !indexParentDirectory.isDirectory() ) {
+            if (indexParentDirectory.exists() && !indexParentDirectory.isDirectory()) {
                 log.debug("Deleting non-directory " + indexParentDirectory);
                 FileUtils.forceDelete(indexParentDirectory);
             }
-            if ( !indexParentDirectory.exists() ) {
+            if (!indexParentDirectory.exists()) {
                 log.debug("Creating directory " + indexParentDirectory);
                 FileUtils.forceMkdir(indexParentDirectory);
             }
             File[] indexDirectories = indexParentDirectory.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
             sortFilesByLastModifiedWithLatestFirst(indexDirectories);
             File indexDirectory = null;
-            for ( int i = 0; i < indexDirectories.length; i++ ) {
+            for (int i = 0; i < indexDirectories.length; i++) {
                 File directory = indexDirectories[i];
-                if ( IndexReader.indexExists(directory) ) {
-                    if ( null == indexDirectory ) {
+                if (IndexReader.indexExists(directory)) {
+                    if (null == indexDirectory) {
                         log.debug("Found index in directory " + directory);
                         indexDirectory = directory;
                     } else {
@@ -110,7 +111,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
                 }
             }
             return indexDirectory;
-        } catch ( IOException ioe ) {
+        } catch (IOException ioe) {
             throw new IndexException(ioe);
         }
     }
@@ -132,9 +133,11 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         backgroundIndexBuilder.addDocument(document);
         try {
             index.indexDocument(document);
-        } catch ( IndexException e ) {
+        } catch (IndexException e) {
             log.error("Failed to add document " + document.getId() + " to index.", e);
             //rebuildBecauseOfError("Failed to add document " + document.getId() + " to index.", e);
+        } catch (Exception e) {
+            log.error(String.format("Failed to add document %d to index.", document.getId()), e);
         }
     }
 
@@ -143,33 +146,52 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         backgroundIndexBuilder.removeDocument(document);
         try {
             index.removeDocument(document);
-        } catch ( IndexException e ) {
+        } catch (IndexException e) {
             log.error("Failed to remove document " + document.getId() + " from index.", e);
             //rebuildBecauseOfError("Failed to remove document " + document.getId() + " from index.", e);
+        } catch (Exception e) {
+            log.error(String.format("Failed to remove document %d from index.", document.getId()), e);
         }
     }
 
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
+        return search(query, searchingUser, 1);
+    }
+
+
+    private List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int retryCount) throws IndexException {
         try {
             List<DocumentDomainObject> documents = index.search(query, searchingUser);
 //            if ( index.isInconsistent() ) {
 //                rebuildBecauseOfError("Index is inconsistent.", null);
 //            }
             return documents;
-        } catch ( IndexException ex ) {
-            rebuildBecauseOfError("Search failed.", ex);
+        } catch (IndexException ex) {
+            if (ex.getCause() instanceof FileNotFoundException) {
+                log.error("Index directory does not exists. Index swapped?", ex.getCause());
+                if (retryCount > 0) {
+                    log.debug(String.format("Retrying search: Query: %s, User: %s", query, searchingUser));
+                    search(query, searchingUser, retryCount - 1);
+                }
+            } else {
+                rebuildBecauseOfError(String.format("Search failed. Query: %s, User: %s", query, searchingUser), ex);
+            }
+
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.error(String.format("Search failed. Query: %s, User: %s", query, searchingUser), e);
             return Collections.emptyList();
         }
     }
 
     private void rebuildBecauseOfError(String message, IndexException ex) {
-        log.error(message+" Starting index rebuild.", ex);
+        log.error(message + " Starting index rebuild.", ex);
         rebuild();
     }
 
     public void rebuild() {
         if (isSchedulingIndexRebuilds()) {
-            restartIndexRebuildScheduling(new Date()) ;
+            restartIndexRebuildScheduling(new Date());
         } else {
             backgroundIndexBuilder.start();
         }
@@ -178,7 +200,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     void notifyRebuildComplete(DirectoryIndex newIndex) {
         DirectoryIndex oldIndex = index;
         index = newIndex;
-        if (!oldIndex.equals(index) ) {
+        if (!oldIndex.equals(index)) {
             oldIndex.delete();
         }
     }
@@ -199,7 +221,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         public void removeDocument(DocumentDomainObject document) throws IndexException {
         }
 
-        public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
+        public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
             return Collections.EMPTY_LIST;
         }
 

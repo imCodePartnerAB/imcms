@@ -31,4 +31,13 @@ public class SimpleDocumentQuery implements DocumentQuery {
     public boolean isLogged() {
         return logged;
     }
+
+    @Override
+    public String toString() {
+        return "SimpleDocumentQuery{" +
+                "query=" + query +
+                ", sort=" + sort +
+                ", logged=" + logged +
+                '}';
+    }
 }
