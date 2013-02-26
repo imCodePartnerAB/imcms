@@ -62,6 +62,7 @@ public interface DocumentIndex {
      * @return
      * @throws IndexException
      */
+    @Deprecated
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
     void rebuild() throws IndexException;
@@ -82,7 +83,7 @@ public interface DocumentIndex {
      * @throws IndexException
      * @since 6.0
      */
-    Iterator<DocumentDomainObject> search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException;
+    List<DocumentDomainObject> search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException;
 
     /**
      * Adds default document to index.

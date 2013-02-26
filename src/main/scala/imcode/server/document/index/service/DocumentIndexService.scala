@@ -1,23 +1,24 @@
 package imcode.server.document.index.service
 
-import com.imcode.{ManagedResource, Log4jLoggerSupport}
+import com.imcode.{ManagedResource, Log4jLoggerSupport, JList}
 import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.SolrQuery
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
+import scala.util.Try
 
 /**
  * requestXXX methods are expected to execute asynchronously.
  */
-abstract class DocumentIndexService extends Log4jLoggerSupport {
+trait DocumentIndexService extends Log4jLoggerSupport {
 
-  def query(solrQuery: SolrQuery): QueryResponse
+  def query(solrQuery: SolrQuery): Try[QueryResponse]
 
-  def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject]
+  def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[JList[DocumentDomainObject]]
 
   def requestIndexUpdate(request: IndexUpdateRequest)
 
-  def requestIndexRebuild(): Option[IndexRebuildTask]
+  def requestIndexRebuild(): Try[IndexRebuildTask]
 
   def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask]
 

@@ -18,7 +18,7 @@ import _root_.imcode.server.document.index.{DocIndexingMocksSetup}
 import imcode.server.document.index.service.impl.{DocumentIndexServiceOps, InternalDocumentIndexService}
 
 @RunWith(classOf[JUnitRunner])
-class EmbeddedDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
+class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 
   Test.initLogging()
 
@@ -36,7 +36,7 @@ class EmbeddedDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
       Test.solr.recreateHome()
 
       using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin)
+        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
         assertTrue("No docs", docs.isEmpty)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
@@ -47,11 +47,11 @@ class EmbeddedDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
       }
 
       using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin)
+        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
         assertEquals("Found docs", 20, docs.size)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          val docs = service.search(new SolrQuery("meta_id:" + metaId), UserFX.mkSuperAdmin)
+          val docs = service.search(new SolrQuery("meta_id:" + metaId), UserFX.mkSuperAdmin).get
           assertEquals("Found docs", 2, docs.size)
         }
       }
@@ -66,11 +66,11 @@ class EmbeddedDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
 
 
       using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin)
+        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
         assertEquals("Found docs", 20, docs.size)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          val docs = service.search(new SolrQuery("meta_id:"+metaId), UserFX.mkSuperAdmin)
+          val docs = service.search(new SolrQuery("meta_id:"+metaId), UserFX.mkSuperAdmin).get
           assertEquals("Found docs", 2, docs.size)
         }
       }

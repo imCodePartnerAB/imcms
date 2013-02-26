@@ -1,5 +1,6 @@
 package imcode.server;
 
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.*;
 import imcode.server.user.UserDomainObject;
 
@@ -34,7 +35,7 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
         this.database = database;
     }
 
-    public List search(DocumentQuery documentQuery, UserDomainObject searchingUser) throws IndexException {
+    public List<DocumentDomainObject> search(DocumentQuery documentQuery, UserDomainObject searchingUser) throws IndexException {
         Query query = documentQuery.getQuery();
         logTerms(getTerms(query));
         return super.search(documentQuery, searchingUser);
@@ -48,43 +49,43 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
     private void logTerms(Collection<String> terms) {
         Timestamp timestamp = new Timestamp(new Date().getTime());
-        for ( String term : terms ) {
-            database.execute(new InsertIntoTableDatabaseCommand("document_search_log", new Object[][] {
-                    { "datetime", timestamp },
-                    { "term", term }
-            })) ;
+        for (String term : terms) {
+            database.execute(new InsertIntoTableDatabaseCommand("document_search_log", new Object[][]{
+                    {"datetime", timestamp},
+                    {"term", term}
+            }));
         }
     }
 
     private void getTerms(Query query, Collection<String> terms) {
-        if ( query instanceof BooleanQuery ) {
-            BooleanQuery booleanQuery = (BooleanQuery) query ;
+        if (query instanceof BooleanQuery) {
+            BooleanQuery booleanQuery = (BooleanQuery) query;
             BooleanClause[] clauses = booleanQuery.getClauses();
-            for ( BooleanClause clause : clauses ) {
+            for (BooleanClause clause : clauses) {
                 if (clause.getOccur() != BooleanClause.Occur.MUST_NOT) {
                     getTerms(clause.getQuery(), terms);
                 }
             }
-        } else if ( query instanceof TermQuery ) {
+        } else if (query instanceof TermQuery) {
             TermQuery termQuery = (TermQuery) query;
             addTerm(terms, termQuery.getTerm());
-        } else if ( query instanceof MultiTermQuery ) {
+        } else if (query instanceof MultiTermQuery) {
             MultiTermQuery multiTermQuery = (MultiTermQuery) query;
             //todo: check - method is removed - how to WA
             //addTerm(terms, multiTermQuery.getTerm());
-        } else if ( query instanceof PrefixQuery ) {
+        } else if (query instanceof PrefixQuery) {
             PrefixQuery prefixQuery = (PrefixQuery) query;
             addTerm(terms, prefixQuery.getPrefix());
         }
     }
 
-    private final static Set LOGGED_FIELDS = new HashSet(Arrays.asList(new String[] {
+    private final static Set LOGGED_FIELDS = new HashSet(Arrays.asList(new String[]{
             DocumentIndex.FIELD__META_HEADLINE,
             DocumentIndex.FIELD__META_TEXT,
             DocumentIndex.FIELD__TEXT,
             DocumentIndex.FIELD__ALIAS,
             DocumentIndex.FIELD__KEYWORD,
-    } ));
+    }));
 
     private void addTerm(Collection<String> terms, Term term) {
         if (LOGGED_FIELDS.contains(term.field())) {

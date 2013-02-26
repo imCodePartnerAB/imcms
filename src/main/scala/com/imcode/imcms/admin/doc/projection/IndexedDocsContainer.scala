@@ -34,6 +34,10 @@ class IndexedDocsContainer(
     with ContainerItemSetChangeNotifier
     with ImcmsServicesSupport {
 
+  private implicit class JListOps(jList: JList[_]) {
+    def nonEmpty: Boolean = !jList.isEmpty
+  }
+
   private val propertyIdToType = ListMap(
     "docs_projection.container_property.index" -> classOf[Ix],
     "docs_projection.container_property.meta_id" -> classOf[Component],
@@ -58,7 +62,7 @@ class IndexedDocsContainer(
 
   private val propertyIds = propertyIdToType.keys.toList
 
-  private var visibleDocs = Array.empty[DocumentDomainObject]
+  private var visibleDocs = java.util.Collections.emptyList[DocumentDomainObject]
 
   def getVisibleDocsFilterOpt: Option[Set[DocId]] = visibleDocsFilterOpt
 
@@ -80,13 +84,13 @@ class IndexedDocsContainer(
 
   private def updateVisibleDocsIds() {
     visibleDocs = (solrQueryOpt, visibleDocsFilterOpt) match {
-      case (None, _) => Array.empty
-      case (_, Some(ids)) if ids.isEmpty => Array.empty
+      case (None, _) => java.util.Collections.emptyList()
+      case (_, Some(ids)) if ids.isEmpty => java.util.Collections.emptyList()
       case (Some(solrQuery), None) =>
-        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrQuery, user).toArray
+        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrQuery, user).get
       case (Some(solrQuery), Some(ids)) =>
         // todo: apply visible docs filter
-        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrQuery, user).toArray
+        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrQuery, user).get
     }
 
     notifyItemSetChanged()
@@ -113,10 +117,13 @@ class IndexedDocsContainer(
 
   override def size: Int = visibleDocs.size
 
-  override def getItemIds: JCollection[_] = visibleDocs.indices.asJavaCollection
+  override def getItemIds: JCollection[_] = new java.util.AbstractList[Ix] {
+    def get(index: Int): Ix = index
+    def size(): Int = IndexedDocsContainer.this.size
+  }
 
   override def containsId(itemId: AnyRef): Boolean = itemId match {
-    case ix: Ix => visibleDocs.isDefinedAt(ix)
+    case ix: Ix if visibleDocs.nonEmpty => ix >= 0 && ix < size
     case _ => false
   }
 
@@ -132,20 +139,20 @@ class IndexedDocsContainer(
 
   override def firstItemId: Ix = if (visibleDocs.isEmpty) null else 0
 
-  override def lastItemId: Ix = if (visibleDocs.isEmpty) null else visibleDocs.length - 1
+  override def lastItemId: Ix = if (visibleDocs.isEmpty) null else visibleDocs.size - 1
 
   override def prevItemId(itemId: AnyRef): Ix = itemId match {
-    case ix: Ix if visibleDocs.indices.lift(ix - 1).isDefined => ix - 1
+    case ix: Ix if containsId(ix - 1 : JInteger) => ix - 1
     case _ => null
   }
 
   override def nextItemId(itemId: AnyRef): Ix = itemId match {
-    case ix: Ix if visibleDocs.indices.lift(ix + 1).isDefined => ix + 1
+    case ix: Ix if containsId(ix + 1 : JInteger) => ix + 1
     case _ => null
   }
 
   override def getItem(itemId: AnyRef): DocItem = itemId match {
-    case ix: Ix if visibleDocs.lift(ix).isDefined => DocItem(ix, visibleDocs(ix))
+    case ix: Ix if containsId(ix) => DocItem(ix, visibleDocs.get(ix))
     case _ => null
   }
 

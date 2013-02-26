@@ -23,7 +23,9 @@ import java.net.URLDecoder
  * The instance of this class is thread save.
  */
 class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) extends Log4jLoggerSupport {
+
   type DocId = Int
+
 
   @throws(classOf[SolrInputDocumentCreateException])
   def withExceptionWrapper[A](body: => A): A = {
@@ -33,6 +35,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
       case e: Throwable => throw new SolrInputDocumentCreateException(e)
     }
   }
+
 
   @throws(classOf[SolrInputDocumentCreateException])
   def mkSolrInputDocs(docId: Int): Seq[SolrInputDocument] = withExceptionWrapper {
@@ -69,28 +72,30 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   def mkSolrDocsDeleteQuery(docId: Int): String = "%s:%d".format(DocumentIndex.FIELD__META_ID, docId)
 
 
-  def search(solrServer: SolrServer, solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
+  // todo: add filter query - can search for
+  def search(solrServer: SolrServer, solrQuery: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
     if (logger.isDebugEnabled) {
       logger.debug("Searching using solrQuery: %s, searchingUser: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8"), searchingUser))
     }
 
     val solrDocs = solrServer.query(solrQuery).getResults
 
-    for {
-      solrDoc <- solrDocs.iterator.asScala
-      //docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).asInstanceOf[Int]
-      //languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).asInstanceOf[String]
-      docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
-      languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
-      doc = documentMapper.getDefaultDocument(docId, languageCode)
-      if doc != null && searchingUser.canSearchFor(doc)
-    } yield doc
+    new java.util.AbstractList[DocumentDomainObject] {
+      def size(): Int = solrDocs.size()
+
+      def get(index: Int): DocumentDomainObject = {
+        val solrDoc = solrDocs.get(index)
+        val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
+        val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
+        documentMapper.getDefaultDocument(docId, languageCode)
+      }
+    }
   }
 
 
   def query(solrServer: SolrServer, solrQuery: SolrQuery): QueryResponse = {
     if (logger.isDebugEnabled) {
-      logger.debug(s"Searching using solrQuery: $solrQuery.")
+      logger.debug("Searching using solrQuery: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8")))
     }
 
     solrServer.query(solrQuery)
@@ -131,11 +136,9 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
         solrServer.rollback()
         throw new InterruptedException()
       }
-      solrServer.add(solrInputDocs.asJava)
-      if (logger.isTraceEnabled) {
-        logger.trace(s"Added input docs [$solrInputDocs] to index.")
-      }
 
+      solrServer.add(solrInputDocs.asJava)
+      logger.trace(s"Added input docs [$solrInputDocs] to index.")
       progressCallback(IndexRebuildProgress(rebuildStartMills, new Date().getTime, docsCount, docNo))
     }
 

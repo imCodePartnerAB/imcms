@@ -30,12 +30,12 @@ public class DocumentIndexWrapper implements DocumentIndex {
         index.removeDocument(document);
     }
 
-    public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
+    public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return index.search(query, searchingUser);
     }
 
     @Override
-    public Iterator<DocumentDomainObject> search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
+    public List<DocumentDomainObject> search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
         return index.search(solrQuery, searchingUser);
     }
 

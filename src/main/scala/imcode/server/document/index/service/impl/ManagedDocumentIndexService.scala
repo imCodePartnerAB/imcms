@@ -10,6 +10,8 @@ import java.lang.{InterruptedException, Thread}
 import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
 import java.util.concurrent._
 import com.imcode.util.Threads
+import scala.util.{Failure, Success, Try}
+import com.imcode.imcms.api.ServiceUnavailableException
 
 /**
  * Implements all DocumentIndexService functionality.
@@ -42,24 +44,25 @@ class ManagedSolrDocumentIndexService(
    * An existing index-update-thread is stopped before rebuilding happens and a new index-update-thread is started
    * immediately after running index-rebuild-thread is terminated without errors.
    */
-  override def requestIndexRebuild(): Option[IndexRebuildTask] = lock.synchronized {
+  override def requestIndexRebuild(): Try[IndexRebuildTask] = lock.synchronized {
     logger.info("attempting to start new document-index-rebuild thread.")
 
-    (shutdownRef.get, indexWriteFailureRef.get, indexRebuildThreadRef.get, currentIndexRebuildTaskOpt()) match {
+    (shutdownRef.get, indexWriteFailureRef.get, indexRebuildThreadRef.get, indexRebuildTaskRef.get()) match {
       case (shutdown@true, _, _, _) =>
-        logger.error("new document-index-rebuild thread can not be started - service is shut down.")
-        None
+        val errorMsg = "new document-index-rebuild thread can not be started - service is shut down."
+        logger.error(errorMsg)
+        Failure(new ServiceUnavailableException(errorMsg))
 
       case (_, indexWriteFailure, _, _) if indexWriteFailure != null =>
         logger.error(s"new document-index-rebuild thread can not be started - previous index write attempt has failed with error [$indexWriteFailure].")
-        None
+        Failure(indexWriteFailure.exception)
 
-      case (_, _, indexRebuildThread, indexRebuildTaskOpt) if Threads.notTerminated(indexRebuildThread) =>
+      case (_, _, indexRebuildThread, indexRebuildTask) if Threads.notTerminated(indexRebuildThread) =>
         logger.info(s"new document-index-rebuild thread can not be started - document-index-rebuild thread [$indexRebuildThread] is already running.")
-        indexRebuildTaskOpt
+        Success(indexRebuildTask)
 
       case _ =>
-        Some(startNewIndexRebuildThread())
+        Try(startNewIndexRebuildThread())
     }
   }
 
@@ -115,6 +118,7 @@ class ManagedSolrDocumentIndexService(
           }
         }
       } |>> indexRebuildThreadRef.set |>> { indexRebuildThread =>
+        indexRebuildThread.setDaemon(true)
         indexRebuildThread.setName(s"document-index-rebuild-${indexRebuildThread.getId}")
         indexRebuildThread.start()
         logger.info(s"new document-index-rebuild thread [$indexRebuildThread] has been started")
@@ -171,6 +175,7 @@ class ManagedSolrDocumentIndexService(
             }
           }
         } |>> indexUpdateThreadRef.set |>> { indexUpdateThread =>
+          indexUpdateThread.setDaemon(true)
           indexUpdateThread.setName(s"document-index-update-${indexUpdateThread.getId}")
           indexUpdateThread.start()
           logger.info(s"new document-index-update thread [$indexUpdateThread] has been started")
@@ -189,7 +194,7 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  def requestIndexUpdate(request: IndexUpdateRequest) {
+  override def requestIndexUpdate(request: IndexUpdateRequest) {
     Threads.spawnDaemon {
       lock.synchronized {
         if (!shutdownRef.get()) {
@@ -205,32 +210,24 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  override def query(solrQuery: SolrQuery): QueryResponse = {
-    try {
-      serviceOps.query(solrServerReader, solrQuery)
-    } catch {
-      case e: Throwable =>
-        logger.error(s"Search error. solrQuery: $solrQuery", e)
-        Threads.spawnDaemon {
-          serviceFailureHandler(ManagedSolrDocumentIndexService.IndexSearchFailure(ManagedSolrDocumentIndexService.this, e))
-        }
-
-        new QueryResponse()
-    }
+  override def query(solrQuery: SolrQuery): Try[QueryResponse] = Try(serviceOps.query(solrServerReader, solrQuery)) |>> {
+    case _: Success[_] =>
+    case Failure(e) =>
+      logger.error(s"Search error. solrQuery: $solrQuery", e)
+      Threads.spawnDaemon {
+        serviceFailureHandler(ManagedSolrDocumentIndexService.IndexSearchFailure(ManagedSolrDocumentIndexService.this, e))
+      }
   }
 
 
-  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
-    try {
-      serviceOps.search(solrServerReader, solrQuery, searchingUser)
-    } catch {
-      case e: Throwable =>
+  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[JList[DocumentDomainObject]] = {
+    Try(serviceOps.search(solrServerReader, solrQuery, searchingUser)) |>> {
+      case _: Success[_] =>
+      case Failure(e) =>
         logger.error(s"Search error. solrQuery: $solrQuery, searchingUser: $searchingUser", e)
         Threads.spawnDaemon {
           serviceFailureHandler(ManagedSolrDocumentIndexService.IndexSearchFailure(ManagedSolrDocumentIndexService.this, e))
         }
-
-        Iterator.empty
     }
   }
 
@@ -271,5 +268,3 @@ object ManagedSolrDocumentIndexService {
   case class IndexRebuildFailure(service: DocumentIndexService, exception: Throwable) extends IndexWriteFailure
   case class IndexSearchFailure(service: DocumentIndexService, exception: Throwable) extends ServiceFailure
 }
-
-

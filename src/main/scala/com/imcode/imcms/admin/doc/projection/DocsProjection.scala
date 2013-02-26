@@ -4,7 +4,6 @@ package admin.doc.projection
 
 import com.imcode.util.event.Publisher
 import scala.collection.JavaConverters._
-import scala.util.control.{Exception => Ex}
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
@@ -22,6 +21,7 @@ import com.imcode.imcms.admin.doc.projection.filter.DateRange
 import com.imcode.imcms.admin.doc.projection.filter.IdRange
 import com.imcode.imcms.api.DocumentLanguage
 import com.vaadin.ui.{UI, CheckBox}
+import scala.util.{Try, Failure, Success}
 
 
 class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport {
@@ -65,11 +65,11 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
     basicFilter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange)
 
     createSolrQuery() match {
-      case Left(throwable) =>
+      case Failure(throwable) =>
         docsContainer.setSolrQueryOpt(None)
         new ErrorDialog(throwable.getMessage.i) |> UI.getCurrent.addWindow
 
-      case Right(solrQuery) =>
+      case Success(solrQuery) =>
         ui.removeComponent(0, 1)
         ui.addComponent(docsUI, 0, 1)
 
@@ -83,7 +83,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
    *
    * @return query Solr query string.
    */
-  def createSolrQuery(): Throwable Either SolrQuery = Ex.allCatch.either {
+  def createSolrQuery(): Try[SolrQuery] = Try {
     val basicFormUI = basicFilter.ui
     val advancedFormUI = advancedFilter.ui
 
@@ -246,7 +246,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
 
     List(
       textOpt.map { text =>
-        val escapedText = escape(text)
+        val escapedText = text // escape(text)
 
         Seq(DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE, DocumentIndex.FIELD__META_TEXT,
             DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS, DocumentIndex.FIELD__TEXT

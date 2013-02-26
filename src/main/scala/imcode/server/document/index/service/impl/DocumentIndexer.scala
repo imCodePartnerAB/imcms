@@ -34,7 +34,7 @@ class DocumentIndexer(
     val docId = doc.getId
     val languageCode = doc.getLanguage.getCode
 
-    indexDoc.addField(DocumentIndex.FIELD__ID, "%d_%s".format(docId, languageCode))
+    indexDoc.addField(DocumentIndex.FIELD__ID, s"${docId}_$languageCode")
     indexDoc.addField(DocumentIndex.FIELD__TIMESTAMP, new Date)
     indexDoc.addField(DocumentIndex.FIELD__META_ID, docId)
     indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, languageCode)
@@ -101,7 +101,7 @@ class DocumentIndexer(
     try {
       contentIndexer.index(doc, indexDoc)
     } catch {
-      case e =>
+      case e: Throwable =>
         logger.error("Failed to index doc's content. Doc id: %d, language: %s, type: %s".
             format(docId, doc.getLanguage, doc.getDocumentType), e)
     }

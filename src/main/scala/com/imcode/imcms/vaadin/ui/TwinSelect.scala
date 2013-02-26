@@ -67,6 +67,6 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends Panel(caption) with 
       listSelect.setItemCaption(itemId, caption)
     }
 
-    def setRows(count: Int): Unit = doto(lstAvailable, lstChosen) { _ setRows count }
-    def setColumns(count: Int): Unit = doto(lstAvailable, lstChosen) { _ setColumns count }
+    def setRows(count: Int): Unit = doto(lstAvailable, lstChosen) { _.setRows(count) }
+    def setColumns(count: Int): Unit = doto(lstAvailable, lstChosen) { _.setColumns(count) }
   }

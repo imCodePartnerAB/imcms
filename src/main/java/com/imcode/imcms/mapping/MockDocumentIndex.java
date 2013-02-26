@@ -28,7 +28,7 @@ public class MockDocumentIndex implements DocumentIndex {
     }
 
 
-    public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
+    public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return Arrays.asList(new DocumentDomainObject[0]);
     }
 
@@ -44,7 +44,7 @@ public class MockDocumentIndex implements DocumentIndex {
     }
 
     @Override
-    public Iterator<DocumentDomainObject> search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
+    public List<DocumentDomainObject> search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

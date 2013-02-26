@@ -8,6 +8,7 @@ import imcode.server.document.index.service._
 import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.index.service.impl.ManagedSolrDocumentIndexService.{IndexSearchFailure, IndexWriteFailure}
+import scala.util.Try
 
 /**
  * Delegates all invocations to the ManagedSolrDocumentIndexService instance.
@@ -18,7 +19,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
 
   private val lock = new AnyRef
   private val shutdownRef: AtomicBoolean = new AtomicBoolean(false)
-  private val serviceRef: AtomicReference[DocumentIndexService] = new AtomicReference(NoOpDocumentIndexService)
+  private val serviceRef: AtomicReference[DocumentIndexService] = new AtomicReference(UnavailableDocumentIndexService)
   private val serviceFailureHandler: (ManagedSolrDocumentIndexService.ServiceFailure => Unit) = {
     case failure: IndexSearchFailure =>
       // ignore ???
@@ -27,7 +28,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
     case failure: IndexWriteFailure =>
       // replace service
       failure.service |> { service => lock.synchronized {
-        if (serviceRef.compareAndSet(service, NoOpDocumentIndexService)) {
+        if (serviceRef.compareAndSet(service, UnavailableDocumentIndexService)) {
           logger.info("Index error has occurred. Managed service instance have to be replaced.", failure.exception)
           service.shutdown()
 
@@ -57,10 +58,10 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
   }
 
 
-  override def query(solrQuery: SolrQuery): QueryResponse = serviceRef.get.query(solrQuery)
+  override def query(solrQuery: SolrQuery): Try[QueryResponse] = serviceRef.get.query(solrQuery)
 
 
-  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Iterator[DocumentDomainObject] = {
+  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[JList[DocumentDomainObject]] = {
     serviceRef.get.search(solrQuery, searchingUser)
   }
 
@@ -68,7 +69,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
   override def requestIndexUpdate(request: IndexUpdateRequest): Unit = serviceRef.get.requestIndexUpdate(request)
 
 
-  override def requestIndexRebuild(): Option[IndexRebuildTask] = serviceRef.get.requestIndexRebuild()
+  override def requestIndexRebuild(): Try[IndexRebuildTask] = serviceRef.get.requestIndexRebuild()
 
 
   override def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask] = serviceRef.get.currentIndexRebuildTaskOpt()
@@ -77,7 +78,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
   override def shutdown(): Unit = lock.synchronized {
     if (shutdownRef.compareAndSet(false, true)) {
       logger.info("Attempting to shut down the service.")
-      serviceRef.getAndSet(NoOpDocumentIndexService).shutdown()
+      serviceRef.getAndSet(UnavailableDocumentIndexService).shutdown()
       logger.info("Service has been shut down.")
     }
   }

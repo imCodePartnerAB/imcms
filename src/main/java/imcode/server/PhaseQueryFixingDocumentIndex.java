@@ -1,5 +1,6 @@
 package imcode.server;
 
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.document.index.*;
 import imcode.server.user.UserDomainObject;
@@ -26,7 +27,7 @@ public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
     }
 
 
-    public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
+    public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return super.search(fixQuery(query), searchingUser);
     }
 

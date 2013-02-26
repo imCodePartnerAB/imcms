@@ -6,24 +6,23 @@ import imcode.server.document.DocumentDomainObject
 import imcode.server.document.index.service.{DeleteDocFromIndex, AddDocToIndex, DocumentIndexService}
 import org.apache.solr.client.solrj.SolrQuery
 import com.imcode.imcms.api.DocumentLanguage
-import scala.collection.JavaConverters._
 import org.apache.solr.client.solrj.response.QueryResponse
-import com.google.common.collect.Lists
+
 
 /**
  * {@link DocumentIndex} implementation.
  */
 class DocumentIndexImpl(val service: DocumentIndexService, defaultDocumentLanguage: DocumentLanguage) extends DocumentIndex with Log4jLoggerSupport {
 
-  override def query(solrQuery: SolrQuery): QueryResponse = service.query(solrQuery)
+  override def query(solrQuery: SolrQuery): QueryResponse = service.query(solrQuery).get
 
   // todo: ???Use request language???
-  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): JIterator[DocumentDomainObject] = {
+  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
     if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE) == null) {
       solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, defaultDocumentLanguage.getCode))
     }
 
-    service.search(solrQuery, searchingUser).asJava
+    service.search(solrQuery, searchingUser).get
   }
 
   @deprecated
@@ -36,7 +35,7 @@ class DocumentIndexImpl(val service: DocumentIndexService, defaultDocumentLangua
 
     val solrQuery = new SolrQuery(queryString)
 
-    Lists.newArrayList(search(solrQuery, searchingUser))
+    search(solrQuery, searchingUser)
   }
 
   override def rebuild() {
