@@ -1,6 +1,6 @@
 package imcode.server.document.index.service
 
-import com.imcode.{ManagedResource, Log4jLoggerSupport, JList}
+import com.imcode._
 import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.SolrQuery
 import _root_.imcode.server.user.UserDomainObject

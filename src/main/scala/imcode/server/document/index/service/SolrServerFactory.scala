@@ -1,7 +1,6 @@
 package imcode.server.document.index.service
 
 import com.imcode._
-import com.imcode.Log4jLoggerSupport
 import org.apache.solr.client.solrj.impl.{BinaryRequestWriter, HttpSolrServer}
 import java.io.File
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer

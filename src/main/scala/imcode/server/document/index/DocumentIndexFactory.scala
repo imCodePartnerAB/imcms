@@ -1,7 +1,6 @@
 package imcode.server.document.index
 
 import com.imcode._
-import com.imcode.Log4jLoggerSupport
 import _root_.imcode.server.ImcmsServices
 import imcode.server.document.index.service.impl._
 

@@ -1,6 +1,6 @@
 package imcode.server.document.index.service.impl
 
-import _root_.com.imcode._
+import com.imcode._
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
@@ -10,7 +10,6 @@ import org.apache.solr.client.solrj.{SolrServerException, SolrQuery}
 import imcode.server.document.index.service.impl.ManagedSolrDocumentIndexService.{IndexSearchFailure, IndexWriteFailure}
 import scala.util.Try
 import org.apache.solr.common.SolrException
-import java.io.IOException
 
 /**
  * Delegates all invocations to the ManagedSolrDocumentIndexService instance.
@@ -47,7 +46,6 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
       }
   }
 
-
   newManagedService(recreateDataDir = false) |> serviceRef.set
 
 
@@ -72,30 +70,23 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
     }
   }
 
-
   private def newManagedService(recreateDataDir: Boolean): ManagedSolrDocumentIndexService = {
     val solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome, recreateDataDir)
 
     new ManagedSolrDocumentIndexService(solrServer, solrServer, serviceOps, serviceFailureHandler)
   }
 
-
   override def query(solrQuery: SolrQuery): Try[QueryResponse] = serviceRef.get.query(solrQuery)
-
 
   override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[JList[DocumentDomainObject]] = {
     serviceRef.get.search(solrQuery, searchingUser)
   }
 
-
   override def requestIndexUpdate(request: IndexUpdateRequest): Unit = serviceRef.get.requestIndexUpdate(request)
-
 
   override def requestIndexRebuild(): Try[IndexRebuildTask] = serviceRef.get.requestIndexRebuild()
 
-
   override def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask] = serviceRef.get.currentIndexRebuildTaskOpt()
-
 
   override def shutdown(): Unit = lock.synchronized {
     if (shutdownRef.compareAndSet(false, true)) {
