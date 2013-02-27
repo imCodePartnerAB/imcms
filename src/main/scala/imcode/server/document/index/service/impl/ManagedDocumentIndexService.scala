@@ -239,12 +239,18 @@ class ManagedSolrDocumentIndexService(
         interruptIndexUpdateThreadAndAwaitTermination()
         interruptIndexRebuildThreadAndAwaitTermination()
 
-        solrServerReader.shutdown()
-        solrServerWriter.shutdown()
+        PartialFunction.condOpt(Try(solrServerReader.shutdown())) {
+          case Failure(e) => logger.warn("An error occurred while shutting down SolrServer reader.", e)
+        }
+
+        PartialFunction.condOpt(Try(solrServerWriter.shutdown())) {
+          case Failure(e) => logger.warn("An error occurred while shutting down SolrServer writer.", e)
+        }
+
         logger.info("Service has been shut down.")
       } catch {
         case e: Throwable =>
-          logger.error("An error occurred while shutting down the service.", e)
+          logger.warn("An error occurred while shutting down the service.", e)
           throw e
       }
     }
@@ -258,13 +264,13 @@ class ManagedSolrDocumentIndexService(
 object ManagedSolrDocumentIndexService {
 
   sealed abstract class ServiceFailure {
-    val service: DocumentIndexService
+    val service: ManagedSolrDocumentIndexService
     val exception: Throwable
   }
 
   abstract class IndexWriteFailure extends ServiceFailure
 
-  case class IndexUpdateFailure(service: DocumentIndexService, exception: Throwable) extends IndexWriteFailure
-  case class IndexRebuildFailure(service: DocumentIndexService, exception: Throwable) extends IndexWriteFailure
-  case class IndexSearchFailure(service: DocumentIndexService, exception: Throwable) extends ServiceFailure
+  case class IndexUpdateFailure(service: ManagedSolrDocumentIndexService, exception: Throwable) extends IndexWriteFailure
+  case class IndexRebuildFailure(service: ManagedSolrDocumentIndexService, exception: Throwable) extends IndexWriteFailure
+  case class IndexSearchFailure(service: ManagedSolrDocumentIndexService, exception: Throwable) extends ServiceFailure
 }

@@ -16,6 +16,7 @@ import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX, LanguageFX, UserFX}
 import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import _root_.imcode.server.document.index.{DocIndexingMocksSetup}
 import imcode.server.document.index.service.impl.{DocumentIndexServiceOps, InternalDocumentIndexService}
+import scala.util.{Try, Failure, Success}
 
 @RunWith(classOf[JUnitRunner])
 class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
@@ -70,8 +71,50 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
         assertEquals("Found docs", 20, docs.size)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          val docs = service.search(new SolrQuery("meta_id:"+metaId), UserFX.mkSuperAdmin).get
+          val docs = service.search(new SolrQuery(s"meta_id:$metaId"), UserFX.mkSuperAdmin).get
           assertEquals("Found docs", 2, docs.size)
+        }
+      }
+    }
+
+    "recreate and rebuild index when index is corrupted" in {
+      Test.solr.recreateHome()
+
+      using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
+        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
+        assertTrue("No docs", docs.isEmpty)
+
+        for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
+          service.requestIndexUpdate(AddDocToIndex(metaId))
+          if (metaId == DocFX.DefaultId + 5) {
+            Test.solr.recreateHome()
+          }
+        }
+
+        Thread.sleep(1000)
+
+        val docs2 = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
+        assertEquals("Found docs", 20, docs2.size)
+      }
+    }
+
+    "read failure test" in {
+      Test.solr.recreateHome()
+
+      using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
+        service.requestIndexRebuild().get |> { task =>
+          task.future.get()
+        }
+
+        service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get |> { docs =>
+          assertEquals("Found docs", 20, docs.size)
+        }
+
+        //Test.solr.recreateHome()
+
+        service.search(new SolrQuery("nnn:uuu").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin) match {
+          case Failure(error) =>
+          case _ =>
         }
       }
     }

@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 /**
  * Document i18n meta.
+ * todo: rename to MetaContent
  */
 @Entity
 @Table(name = "imcms_doc_i18n_meta")
