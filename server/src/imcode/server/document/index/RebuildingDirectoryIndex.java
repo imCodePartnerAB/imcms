@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -37,6 +39,30 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         File indexDirectory = findLatestIndexDirectory(indexParentDirectory);
         long indexModifiedTime = 0;
         if (null != indexDirectory) {
+            Directory directory = null;
+            try {
+                log.info("Checking for directory lock.");
+                directory = FSDirectory.getDirectory(indexDirectory, false);
+                if (!IndexReader.isLocked(directory)) {
+                    log.info("Directory is not not locked.");
+                } else {
+                    log.info("Directory is locked. Attempting to unlock");
+                    IndexReader.unlock(directory);
+                }
+            } catch (IOException e) {
+                log.fatal(String.format("An error occurred while unlocking directory. %s.", indexDirectory), e);
+                throw new IndexException(e);
+            } finally {
+                try {
+                    if (directory != null) {
+                        directory.close();
+                    }
+                } catch (IOException e) {
+                    log.fatal(String.format("An error occurred while unlocking directory. %s.", indexDirectory), e);
+                    throw new IndexException(e);
+                }
+            }
+
             indexModifiedTime = indexDirectory.lastModified();
             index = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
         } else {
