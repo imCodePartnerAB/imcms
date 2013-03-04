@@ -72,6 +72,13 @@ File currentDirectory = imageBrowsePage.getCurrentDirectory() ;
 
 File imagesRoot = Imcms.getServices().getConfig().getImagePath() ;
 List<File> images = new ArrayList<File>(imageBrowsePage.getImagesList()) ; // Can't modify an AbstractList
+Integer uploadedImageIndex = (
+       request.getMethod().equalsIgnoreCase("post")
+    && request.getParameter(ImageBrowse.REQUEST_PARAMETER__UPLOAD_BUTTON) != null
+    && imageBrowsePage.getErrorMessage() == null
+    && imageBrowsePage.getCurrentImage() != null
+    ) ? images.indexOf(imageBrowsePage.getCurrentImage())
+      : null;
 List<File> lastModImages = null ;
 if (images.size() > LAST_MOD_COUNT_ON_TOP_ACTIVATED_ON_COUNT) {
 	Collections.sort(images, LastModifiedFileComparator.LASTMODIFIED_REVERSE) ;
@@ -184,6 +191,43 @@ jQuery(document).ready(function($) {
  *         END LAZY LOAD FIX                                                                 *
  ******************************************************************************************* */
 --%>
+
+<%--
+    Selects uploaded image thumbnail.
+    If uploaded image thumbnail is not shown in 'recently added images' section then thumbnail is scrolled into view.
+--%>
+<%
+    if (uploadedImageIndex != null) {
+        if (hasNewImagesFirst) {
+            %>
+            <script>
+                // -vs- window.onload ???
+                jQ(function() {
+                    var imageCB = document.getElementById("imageCB0");
+                    if (imageCB) {
+                        imageCB.checked = true;
+                    }
+                });
+            </script>
+            <%
+        } else {
+            %>
+            <script>
+                // -vs- window.onload ???
+                jQ(function() {
+                    var imageCB = document.getElementById("imageCB"+<%=uploadedImageIndex%>);
+                    var imageDiv = document.getElementById("imageDiv"+<%=uploadedImageIndex%>);
+                    if (imageCB && imageDiv) {
+                        imageCB.checked = true;
+                        imageCB.scrollIntoView(false);
+                        imageDiv.scrollIntoView(false);
+                    }
+                });
+            </script>
+            <%
+        }
+    }
+%>
 
 </head>
 <body style="margin-bottom:0 !important;<%= fromEditor ? " overflow:auto;" : "" %>"<%= fromEditor ? " scroll=\"auto\"" : "" %>>
@@ -393,49 +437,9 @@ try {
 #gui_bottom()
 #gui_outer_end()
 
-<%
-
-if (null != imageBrowsePage.getImageUrl()) {
-
-	ImageDomainObject iDO = new ImageDomainObject() ;
-    iDO.setFormat(Format.PNG);
-	ImagesPathRelativePathImageSource imageSource = new ImagesPathRelativePathImageSource(imageBrowsePage.getImageUrl()) ;
-	iDO.setSourceAndClearSize(imageSource) ;
-	String previewSrc = ImcmsImageUtils.getImageUrl(null, iDO, cp) ;%>
-<div align="center" id="previewDiv">
-	<img src="<%= previewSrc %>" alt="" />
-</div>
-<script type="text/javascript">
-jQ(document).ready(function($) {
-	var $actImg = null ;
-	$('img.previewImage').each(function() {
-		if ($(this).attr('src') == '<%= previewSrc %>') {
-			$actImg = $(this) ;
-		}
-	}) ;<%--
-	console.log('$actImg: ' + $actImg + ', ' + $actImg.length) ;--%>
-	if (1 == $actImg.length) {
-		var id = $actImg.attr('longdesc') ;
-		$('#imageCB' + id).attr('checked', 'checked') ;<%--
-		console.log('CB: ' + $('#imageCB' + id)) ;--%>
-	}
-}) ;
-</script><%
-}
-
-%>
-
 </vel:velocity>
 <script type="text/javascript">
 <!--
-if (document.getElementById) {
-	if (document.getElementById("previewDiv")) {
-		if (!/\./.test(document.getElementById("previewDiv").innerHTML.toString())) {
-			document.getElementById("previewDiv").style.display = "none" ;
-		}
-	}
-}
-
 var pai = "\\.(GIF|JPE?G|PNG)$";
 
 function isImageFile(file) {
