@@ -267,9 +267,9 @@ if (null != imageBrowsePage.getLabel() ) { %>
 	<td style="padding-left:25px;">
 	<b><%= images.size() + " " %><fmt:message key="install/htdocs/sv/jsp/ImageBrowse.html/7" /></b>
 	<span class="imcmsAdmDim" style="padding-left:20px;">
-		Double click image to use. Single click to select.<%
+		<fmt:message key="image_browser.usage"/><%
 		if (hasNewImagesFirst) { %>
-		Yellow marked images on top are the last added ones.<%
+		<fmt:message key="image_browser.recent" /><%
 		} %>
 	</span></td>
 </tr>
