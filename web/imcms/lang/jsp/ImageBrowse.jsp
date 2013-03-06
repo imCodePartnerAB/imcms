@@ -235,7 +235,7 @@ jQuery(document).ready(function($) {
 
 #gui_outer_start()
 #gui_head("<fmt:message key="global/imcms_administration" />")
-<form action="ImageBrowse" method="POST" enctype="multipart/form-data">
+<form action="ImageBrowse" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
 <input type="hidden" id="dir" name="dir" value="<%= ("\\" + FileUtility.relativizeFile( Imcms.getServices().getConfig().getImagePath().getParentFile(), currentDirectory ).toString()).replace("\\", "/") %>" />
 <input type="hidden" name="editor_image" value="<%= request.getParameter("editor_image") %>" />
 <input type="hidden" name="<%= ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER %>" value="<%=HttpSessionUtils.getSessionAttributeNameFromRequest(request, ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER)%>" /><%

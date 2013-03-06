@@ -135,6 +135,7 @@ public class ImageBrowse extends HttpServlet {
         File imagesRoot = Imcms.getServices().getConfig().getImagePath();
         FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
         if ( null != fileItem ) {
+            LOG.info("Uploaded file: " + fileItem.getName());
             File destinationFile = new File( selectedDirectory, fileItem.getName() );
             boolean underImagesRoot = FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() );
             boolean hasImageExtension = new ImageExtensionFilenameFilter().accept( destinationFile, destinationFile.getName() );
