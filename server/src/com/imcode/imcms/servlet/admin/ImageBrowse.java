@@ -10,6 +10,7 @@ import imcode.util.io.FileUtility;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -165,6 +166,9 @@ public class ImageBrowse extends HttpServlet {
                 	
                 	if (validImage) {
                         LOG.info("Saving uploaded file: " + destinationFile.getCanonicalFile());
+                        String name = new String(fileItem.getName().getBytes(), Charset.forName("UTF-8"));
+                        LOG.info("Filename check: " + name + ", " + new File(selectedDirectory, name).getCanonicalPath());
+
                 	    FileUtils.copyFile(tempFile, destinationFile);
                         page.setCurrentImage( destinationFile ) ;
                 	} else {
