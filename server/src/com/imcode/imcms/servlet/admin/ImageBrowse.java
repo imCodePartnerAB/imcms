@@ -137,9 +137,7 @@ public class ImageBrowse extends HttpServlet {
         File imagesRoot = Imcms.getServices().getConfig().getImagePath();
         FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
         if ( null != fileItem ) {
-//            LOG.info("Filename: " + fileItem.getName() + " normalized?: " +  Normalizer.isNormalized(fileItem.getName(), Normalizer.Form.NFKC));
-//            LOG.info("Before/After: " + fileItem.getName().length() + " / " +  Normalizer.normalize(fileItem.getName(), Normalizer.Form.NFKC).length());
-            String fileName = fileItem.getName();// Normalizer.normalize(fileItem.getName(), Normalizer.Form.NFKC);
+            String fileName = fileItem.getName();
             File destinationFile = new File(selectedDirectory, fileName);
             boolean underImagesRoot = FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() );
             boolean hasImageExtension = new ImageExtensionFilenameFilter().accept( destinationFile, destinationFile.getName() );
