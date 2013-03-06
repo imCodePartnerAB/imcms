@@ -136,9 +136,8 @@ public class ImageBrowse extends HttpServlet {
         File imagesRoot = Imcms.getServices().getConfig().getImagePath();
         FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
         if ( null != fileItem ) {
-            LOG.info("Uploaded file: " + fileItem.getName());
-            String name = new String(fileItem.getName().getBytes(), Charset.forName("UTF-8"));
-            File destinationFile = new File( selectedDirectory, name);
+            String fileName = fileItem.getName();
+            File destinationFile = new File(selectedDirectory, fileName);
             boolean underImagesRoot = FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() );
             boolean hasImageExtension = new ImageExtensionFilenameFilter().accept( destinationFile, destinationFile.getName() );
             if (!hasImageExtension) {
@@ -166,7 +165,7 @@ public class ImageBrowse extends HttpServlet {
                 	}
                 	
                 	if (validImage) {
-                        LOG.info("Saving uploaded file: " + destinationFile.getCanonicalFile());
+                        LOG.info(String.format("Saving uploaded file %s into %s.", fileName, destinationFile.getCanonicalFile()));
                         FileUtils.copyFile(tempFile, destinationFile);
                         page.setCurrentImage( destinationFile ) ;
                 	} else {

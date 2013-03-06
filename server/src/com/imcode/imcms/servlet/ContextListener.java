@@ -11,6 +11,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.File;
+import java.util.Map;
+import java.util.Set;
 
 public class ContextListener implements ServletContextListener {
 
@@ -63,21 +65,16 @@ public class ContextListener implements ServletContextListener {
     }
 
     private void logPlatformInfo(ServletContext application, Logger log) {
-
         log.info("Servlet Engine: " + application.getServerInfo());
-        String[] systemPropertyNames = new String[] {
-                "java.version",
-                "java.vendor",
-                "java.class.path",
-                "os.name",
-                "os.arch",
-                "os.version",
-        };
-        for ( int i = 0; i < systemPropertyNames.length; i++ ) {
-            String systemPropertyName = systemPropertyNames[i];
-            log.info(systemPropertyName + ": " + System.getProperty(systemPropertyName));
+        log.info("System properties:");
+        for (String name : System.getProperties().stringPropertyNames()) {
+            log.info(name + ": " + System.getProperty(name));
         }
 
+        log.info("Environment:");
+        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+            log.info(entry.getKey() + ": " + entry.getValue());
+        }
     }
 
 }
