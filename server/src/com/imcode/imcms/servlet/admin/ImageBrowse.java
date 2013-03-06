@@ -164,6 +164,7 @@ public class ImageBrowse extends HttpServlet {
                 	}
                 	
                 	if (validImage) {
+                        LOG.info("Saving uploaded file: " + destinationFile.getCanonicalFile());
                 	    FileUtils.copyFile(tempFile, destinationFile);
                         page.setCurrentImage( destinationFile ) ;
                 	} else {
