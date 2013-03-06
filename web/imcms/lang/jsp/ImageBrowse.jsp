@@ -219,7 +219,6 @@ jQuery(document).ready(function($) {
                     var imageDiv = document.getElementById("imageDiv"+<%=uploadedImageIndex%>);
                     if (imageCB && imageDiv) {
                         imageCB.checked = true;
-                        imageCB.scrollIntoView(false);
                         imageDiv.scrollIntoView(false);
                     }
                 });
