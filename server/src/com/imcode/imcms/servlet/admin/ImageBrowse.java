@@ -137,7 +137,8 @@ public class ImageBrowse extends HttpServlet {
         FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
         if ( null != fileItem ) {
             LOG.info("Uploaded file: " + fileItem.getName());
-            File destinationFile = new File( selectedDirectory, fileItem.getName() );
+            String name = new String(fileItem.getName().getBytes(), Charset.forName("UTF-8"));
+            File destinationFile = new File( selectedDirectory, name);
             boolean underImagesRoot = FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() );
             boolean hasImageExtension = new ImageExtensionFilenameFilter().accept( destinationFile, destinationFile.getName() );
             if (!hasImageExtension) {
@@ -166,10 +167,7 @@ public class ImageBrowse extends HttpServlet {
                 	
                 	if (validImage) {
                         LOG.info("Saving uploaded file: " + destinationFile.getCanonicalFile());
-                        String name = new String(fileItem.getName().getBytes(), Charset.forName("UTF-8"));
-                        LOG.info("Filename check: " + name + ", " + new File(selectedDirectory, name).getCanonicalPath());
-
-                	    FileUtils.copyFile(tempFile, destinationFile);
+                        FileUtils.copyFile(tempFile, destinationFile);
                         page.setCurrentImage( destinationFile ) ;
                 	} else {
                 	    page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
