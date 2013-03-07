@@ -17,7 +17,8 @@ public class TestUtility extends TestCase {
     }
 
     public void testIsValidEmail() throws Exception {
-        assertTrue(Utility.isValidEmail( "test@test.test") ) ;
+        assertTrue(Utility.isValidEmail( "test@test.se") ) ;
+        assertTrue(Utility.isValidEmail( "test@imcode.se.org.com") ) ;
         assertFalse( Utility.isValidEmail( "test" ) );
     }
 
