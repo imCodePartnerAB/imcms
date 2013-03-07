@@ -169,9 +169,9 @@ image-size-cache-objects = 10000
 
 # Comma separated list of mime types
 # Since 4.2.4
-index-disabled-file-mimes=
+index-disabled-file-mimes =
 
 # Comma separated list of filename extensions
 # Since 4.2.4
-index-disabled-file-extensions=
+index-disabled-file-extensions =
 

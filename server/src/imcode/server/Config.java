@@ -1,5 +1,6 @@
 package imcode.server;
 
+import org.apache.commons.collections.EnumerationUtils;
 import org.apache.commons.lang.StringUtils;
 
 import imcode.server.user.RoleId;
@@ -418,17 +419,8 @@ public class Config {
     }
 
     public void setIndexDisabledFileExtensions(String indexDisabledFileExtensions) {
-        String[] tokens = indexDisabledFileExtensions == null
-                ? new String[]{}
-                : indexDisabledFileExtensions.split(",");
-
-        Set<String> set = new LinkedHashSet<String>();
-        for (String token : tokens) {
-            set.add(token.trim().toLowerCase());
-        }
-
         this.indexDisabledFileExtensions = indexDisabledFileExtensions;
-        this.indexDisabledFileExtensionsSet = set;
+        this.indexDisabledFileExtensionsSet = distinctLowerCased(splitCommaSeparatedString(indexDisabledFileExtensions));
     }
 
     public Set<String> getIndexDisabledFileExtensionsAsSet() {
@@ -444,16 +436,28 @@ public class Config {
     }
 
     public void setIndexDisabledFileMimes(String indexDisabledFileMimes) {
-        String[] tokens = indexDisabledFileMimes == null
-                ? new String[]{}
-                : indexDisabledFileMimes.split(",");
+        this.indexDisabledFileMimes = indexDisabledFileMimes;
+        this.indexDisabledFileMimesSet = distinctLowerCased(splitCommaSeparatedString(indexDisabledFileMimes));
+    }
 
-        Set<String> set = new LinkedHashSet<String>();
-        for (String token : tokens) {
-            set.add(token.trim().toLowerCase());
+    private static List<String> splitCommaSeparatedString(String string) {
+        StringTokenizer st = new StringTokenizer(StringUtils.trimToEmpty(string), " \t\n\r\f,");
+        List<String> tokens = new LinkedList<String>();
+
+        while (st.hasMoreTokens()) {
+            tokens.add(st.nextToken());
         }
 
-        this.indexDisabledFileMimes = indexDisabledFileMimes;
-        this.indexDisabledFileMimesSet = set;
+        return tokens;
+    }
+
+    private static Set<String> distinctLowerCased(List<String> strings) {
+        Set<String> distinctStrings = new LinkedHashSet<String>();
+
+        for (String string : strings) {
+            distinctStrings.add(string.toLowerCase());
+        }
+
+        return Collections.unmodifiableSet(distinctStrings);
     }
 }

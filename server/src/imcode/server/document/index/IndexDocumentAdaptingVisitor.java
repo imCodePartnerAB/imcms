@@ -105,7 +105,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 
         if (config.getIndexDisabledFileExtensionsAsSet().contains(ext)
                 || config.getIndexDisabledFileMimesAsSet().contains(mime)) {
-            log.info(String.format("File %s will not be indexed. Index is disable for extension %s or MIME %s.", file.getFilename(), ext, mime));
+            log.info(String.format("File [%s] will not be indexed. Index is disabled for filename extension [%s] or MIME [%s].", file.getFilename(), ext, mime));
         } else {
             indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__MIME_TYPE, mime));
             indexFileContents(fileDocument, file);
