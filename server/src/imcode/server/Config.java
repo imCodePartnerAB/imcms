@@ -6,9 +6,7 @@ import imcode.server.user.RoleId;
 
 import java.io.File;
 import java.security.KeyStore;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.nio.charset.Charset;
 
 public class Config {
@@ -56,6 +54,10 @@ public class Config {
     private String loginPasswordEncryptionSalt;
     private boolean loginPasswordEncryptionEnabled;
     private boolean superadminLoginPasswordResetAllowed;
+    private String indexDisabledFileExtensions;
+    private String indexDisabledFileMimes;
+    private Set<String> indexDisabledFileExtensionsSet = Collections.emptySet();
+    private Set<String> indexDisabledFileMimesSet = Collections.emptySet();
 
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
@@ -409,5 +411,49 @@ public class Config {
 
     public void setImageSizeCacheObjects(int imageSizeCacheObjects) {
         this.imageSizeCacheObjects = imageSizeCacheObjects;
+    }
+
+    public String getIndexDisabledFileExtensions() {
+        return indexDisabledFileExtensions;
+    }
+
+    public void setIndexDisabledFileExtensions(String indexDisabledFileExtensions) {
+        String[] tokens = indexDisabledFileExtensions == null
+                ? new String[]{}
+                : indexDisabledFileExtensions.split(",");
+
+        Set<String> set = new LinkedHashSet<String>();
+        for (String token : tokens) {
+            set.add(token.trim().toLowerCase());
+        }
+
+        this.indexDisabledFileExtensions = indexDisabledFileExtensions;
+        this.indexDisabledFileExtensionsSet = set;
+    }
+
+    public Set<String> getIndexDisabledFileExtensionsAsSet() {
+        return indexDisabledFileExtensionsSet;
+    }
+
+    public String getIndexDisabledFileMimes() {
+        return indexDisabledFileMimes;
+    }
+
+    public Set<String> getIndexDisabledFileMimesAsSet() {
+        return indexDisabledFileMimesSet;
+    }
+
+    public void setIndexDisabledFileMimes(String indexDisabledFileMimes) {
+        String[] tokens = indexDisabledFileMimes == null
+                ? new String[]{}
+                : indexDisabledFileMimes.split(",");
+
+        Set<String> set = new LinkedHashSet<String>();
+        for (String token : tokens) {
+            set.add(token.trim().toLowerCase());
+        }
+
+        this.indexDisabledFileMimes = indexDisabledFileMimes;
+        this.indexDisabledFileMimesSet = set;
     }
 }

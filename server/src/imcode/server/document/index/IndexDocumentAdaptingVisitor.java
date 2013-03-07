@@ -1,6 +1,7 @@
 package imcode.server.document.index;
 
-import com.imcode.imcms.servlet.tags.MenuTag;
+import imcode.server.Config;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -8,18 +9,16 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.tika.Tika;
 import org.apache.tika.metadata.Metadata;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 
 class IndexDocumentAdaptingVisitor extends DocumentVisitor {
@@ -99,8 +98,18 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         if ( null == file ) {
             return;
         }
-        indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType()));
-        indexFileContents(fileDocument, file);
+
+        String ext = StringUtils.trimToEmpty(FilenameUtils.getExtension(file.getFilename())).toLowerCase();
+        String mime = StringUtils.trimToEmpty(file.getMimeType()).toLowerCase();
+        Config config = Imcms.getServices().getConfig();
+
+        if (config.getIndexDisabledFileExtensionsAsSet().contains(ext)
+                || config.getIndexDisabledFileMimesAsSet().contains(mime)) {
+            log.info(String.format("File %s will not be indexed. Index is disable for extension %s or MIME %s.", file.getFilename(), ext, mime));
+        } else {
+            indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__MIME_TYPE, mime));
+            indexFileContents(fileDocument, file);
+        }
     }
 
 //    private final static Map EXTRACTORS = new HashMap(ArrayUtils.toMap(new Object[][] {
