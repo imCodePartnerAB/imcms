@@ -37,7 +37,7 @@ public class BackgroundIndexBuilder {
             touchIndexParentDirectory();
 
             if ( null != indexBuildingThread && indexBuildingThread.isAlive() ) {
-                log.debug("Ignoring request to build new index. Already in progress.");
+                log.info("Ignoring request to build new index. Already in progress.");
                 return;
             }
 
@@ -47,12 +47,12 @@ public class BackgroundIndexBuilder {
                 return;
             }
 
-            log.debug("Created directory "+indexDirectory);
+            log.info("Created directory "+indexDirectory);
             
             rememberIndexParentDirectoryLastModified();
 
             try {
-                log.debug("Starting index rebuild thread.") ;
+                log.info("Starting index rebuild thread.") ;
                 indexBuildingThread = new IndexBuildingThread(this, indexDirectory, indexDocumentFactory);
                 indexBuildingThread.start();
             } catch ( IllegalThreadStateException itse ) {

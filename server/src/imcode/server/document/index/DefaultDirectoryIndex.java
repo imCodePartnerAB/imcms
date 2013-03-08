@@ -178,7 +178,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     private void logIndexingStarting(int documentCount) {
-        log.debug("Building index of all " + documentCount + " documents");
+        log.info("Building index of all " + documentCount + " documents");
     }
 
     private void logIndexingProgress(int documentsCompleted, int numberOfDocuments, long elapsedTime) {
@@ -194,7 +194,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         long time = indexingStopWatch.getTime();
         String humanReadableTime = HumanReadable.getHumanReadableTimeSpan(time);
         long timePerDocument = time / numberOfDocuments;
-        log.debug("Indexed " + numberOfDocuments + " documents in " + humanReadableTime + ". " + timePerDocument + "ms per document.");
+        log.info("Indexed " + numberOfDocuments + " documents in " + humanReadableTime + ". " + timePerDocument + "ms per document.");
     }
 
     private void optimizeIndex(IndexWriter indexWriter) throws IOException {
@@ -211,7 +211,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
     public void delete() {
         try {
-            log.debug("Deleting index directory " + directory);
+            log.info("Deleting index directory " + directory);
             FileUtils.forceDelete(directory);
         } catch (IOException e) {
             throw new IndexException(e);

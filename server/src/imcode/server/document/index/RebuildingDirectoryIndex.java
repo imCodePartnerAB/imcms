@@ -95,7 +95,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
             log.trace("Canceled existing index rebuild timer task.");
         }
         try {
-            log.debug("Restarting scheduling of index rebuilds. First rebuild at " + formatDatetime(nextTime) + ".");
+            log.info("Restarting scheduling of index rebuilds. First rebuild at " + formatDatetime(nextTime) + ".");
             backgroundIndexBuilder.touchIndexParentDirectory();
             currentIndexRebuildTimerTask = new IndexRebuildTimerTask(indexRebuildSchedulePeriodInMilliseconds, backgroundIndexBuilder);
             scheduledIndexRebuildTimer.scheduleAtFixedRate(currentIndexRebuildTimerTask, nextTime, indexRebuildSchedulePeriodInMilliseconds);
@@ -111,11 +111,11 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     static File findLatestIndexDirectory(File indexParentDirectory) {
         try {
             if (indexParentDirectory.exists() && !indexParentDirectory.isDirectory()) {
-                log.debug("Deleting non-directory " + indexParentDirectory);
+                log.info("Deleting non-directory " + indexParentDirectory);
                 FileUtils.forceDelete(indexParentDirectory);
             }
             if (!indexParentDirectory.exists()) {
-                log.debug("Creating directory " + indexParentDirectory);
+                log.info("Creating directory " + indexParentDirectory);
                 FileUtils.forceMkdir(indexParentDirectory);
             }
             File[] indexDirectories = indexParentDirectory.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
@@ -125,14 +125,14 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
                 File directory = indexDirectories[i];
                 if (IndexReader.indexExists(directory)) {
                     if (null == indexDirectory) {
-                        log.debug("Found index in directory " + directory);
+                        log.info("Found index in directory " + directory);
                         indexDirectory = directory;
                     } else {
-                        log.debug("Deleting old index directory " + directory);
+                        log.info("Deleting old index directory " + directory);
                         FileUtils.forceDelete(directory);
                     }
                 } else {
-                    log.debug("Deleting non-index directory " + directory);
+                    log.info("Deleting non-index directory " + directory);
                     FileUtils.forceDelete(directory);
                 }
             }
