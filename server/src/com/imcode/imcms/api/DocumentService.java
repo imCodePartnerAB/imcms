@@ -340,6 +340,33 @@ public class DocumentService {
         }
     }
 
+	/**
+	 * Searches for documentids using given query, don't take current user into account
+	 * @param query search query to look for documents with
+	 * @return a list of documents found
+	 * @throws SearchException
+	 * @see com.imcode.imcms.api.LuceneParsedQuery
+	 */
+	public List getDocumentIds(final SearchQuery query) throws SearchException {
+	    try {
+		    return getDocumentMapper().getDocumentIndex().search(new DocumentQuery() {
+		        public Query getQuery() {
+		            return query.getQuery();
+		        }
+
+		        public Sort getSort() {
+		            return query.getSort();
+		        }
+
+		        public boolean isLogged() {
+		            return query.isLogged();
+		        }
+		    });
+	    } catch ( RuntimeException e ) {
+	        throw new SearchException(e);
+	    }
+	}
+
     /**
      * Searches for documents using given query, takes into account current cms user
      * @param query search query to look for documents with

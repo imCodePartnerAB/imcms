@@ -2,8 +2,6 @@ package imcode.server.document.index;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
 
 import java.util.List;
 
@@ -47,6 +45,8 @@ public interface DocumentIndex {
     void removeDocument(DocumentDomainObject document) throws IndexException;
 
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
+
+	List<Integer> search(DocumentQuery query) throws IndexException;
 
     void rebuild() throws IndexException;
 }
