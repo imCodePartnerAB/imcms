@@ -46,7 +46,5 @@ public interface DocumentIndex {
 
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
-	List<Integer> search(DocumentQuery query) throws IndexException;
-
     void rebuild() throws IndexException;
 }
