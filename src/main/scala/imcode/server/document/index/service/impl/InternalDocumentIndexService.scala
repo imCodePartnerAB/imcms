@@ -6,7 +6,7 @@ import _root_.imcode.server.document.DocumentDomainObject
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 import imcode.server.document.index.service._
 import org.apache.solr.client.solrj.response.QueryResponse
-import org.apache.solr.client.solrj.{SolrServerException, SolrQuery}
+import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.index.service.impl.ManagedSolrDocumentIndexService.{IndexSearchFailure, IndexWriteFailure}
 import scala.util.Try
 import org.apache.solr.common.SolrException

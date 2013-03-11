@@ -2,8 +2,8 @@ package imcode.server.document.index
 
 import com.imcode._
 import _root_.imcode.server.ImcmsServices
-import imcode.server.document.index.service.impl._
-import imcode.server.document.FileDocumentDomainObject
+import _root_.imcode.server.document.index.service.impl._
+import _root_.imcode.server.document.FileDocumentDomainObject
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.io.FilenameUtils
 
@@ -15,10 +15,10 @@ object DocumentIndexFactory extends Log4jLoggerSupport {
   def create(services: ImcmsServices): DocumentIndex = services.getConfig |> { config =>
     (config.getSolrUrl.trimToOption, config.getSolrHome.trimToOption) |> {
       case (Some(solrUrl), _) =>
-        new RemoteDocumentIndexService(solrUrl, solrUrl, createDocumentIndexServiceOps(services))
+        new RemoteDocumentIndexService(solrUrl, solrUrl, createDocumentIndexServiceOps(services)) with IndexRebuildScheduler
 
       case (_, Some(solrHome)) =>
-        new InternalDocumentIndexService(solrHome, createDocumentIndexServiceOps(services))
+        new InternalDocumentIndexService(solrHome, createDocumentIndexServiceOps(services)) with IndexRebuildScheduler
 
       case _ =>
         val errMsg = """|Configuration error. Unable to create DocumentIndex.\n
@@ -29,6 +29,7 @@ object DocumentIndexFactory extends Log4jLoggerSupport {
         logger.fatal(errMsg)
         throw new IllegalArgumentException(errMsg)
     } |> { service =>
+      service.setRebuildIntervalInMinutes(config.getIndexingSchedulePeriodInMinutes.toInt |> opt)
       new DocumentIndexImpl(service, services.getI18nContentSupport.getDefaultLanguage)
     }
   }
