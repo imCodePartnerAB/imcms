@@ -179,3 +179,11 @@ login-password-reset-lifespan =
 # Any non-true value or absence of value is treated as false.
 # Since 4.0.7
 superadmin-login-password-reset-allowed =
+
+# Comma separated list of mime types
+# Since 4.2.4
+index-disabled-file-mimes =
+
+# Comma separated list of filename extensions
+# Since 4.2.4
+index-disabled-file-extensions =

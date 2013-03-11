@@ -6,23 +6,22 @@ import imcode.server.document.DocumentDomainObject
 import imcode.server.document.index.service.{DeleteDocFromIndex, AddDocToIndex, DocumentIndexService}
 import org.apache.solr.client.solrj.SolrQuery
 import com.imcode.imcms.api.DocumentLanguage
-import org.apache.solr.client.solrj.response.QueryResponse
+import java.util.Collections
 
 
 /**
  * {@link DocumentIndex} implementation.
  */
-class DocumentIndexImpl(val service: DocumentIndexService, defaultDocumentLanguage: DocumentLanguage) extends DocumentIndex with Log4jLoggerSupport {
+class DocumentIndexImpl(override val service: DocumentIndexService, defaultDocumentLanguage: DocumentLanguage) extends DocumentIndex with Log4jLoggerSupport {
 
-  override def query(solrQuery: SolrQuery): QueryResponse = service.query(solrQuery).get
-
-  // todo: ???Use request language???
+  // todo: move language rewrite into wrapper???
   override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
-    if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE) == null) {
+    if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE) == null ||
+        !solrQuery.getFilterQueries.exists(query => query.contains(s"${DocumentIndex.FIELD__LANGUAGE_CODE}:"))) {
       solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, defaultDocumentLanguage.getCode))
     }
 
-    service.search(solrQuery, searchingUser).get
+    service.search(solrQuery, searchingUser).getOrElse(Collections.emptyList())
   }
 
   @deprecated

@@ -52,9 +52,4 @@ public class DocumentIndexWrapper implements DocumentIndex {
     public void removeDocument(int docId) throws IndexException {
         index.removeDocument(docId);
     }
-
-    @Override
-    public QueryResponse query(SolrQuery solrQuery) {
-        return index.query(solrQuery);
-    }
 }

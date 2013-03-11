@@ -3,6 +3,7 @@ package imcode.server;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -69,6 +70,11 @@ public class Config {
     private String ssoJaasPrincipalPassword;
     private boolean ssoUseLocalKrbConfig;
     private boolean ssoKerberosDebug;
+
+    private String indexDisabledFileExtensions;
+    private String indexDisabledFileMimes;
+    private Set<String> indexDisabledFileExtensionsSet = Collections.emptySet();
+    private Set<String> indexDisabledFileMimesSet = Collections.emptySet();
 
 
     public String getWorkaroundUriEncoding() {
@@ -371,5 +377,53 @@ public class Config {
 
     public void setSsoUseLocalKrbConfig(boolean ssoUseLocalKrbConfig) {
         this.ssoUseLocalKrbConfig = ssoUseLocalKrbConfig;
+    }
+
+
+    public String getIndexDisabledFileExtensions() {
+        return indexDisabledFileExtensions;
+    }
+
+    public void setIndexDisabledFileExtensions(String indexDisabledFileExtensions) {
+        this.indexDisabledFileExtensions = indexDisabledFileExtensions;
+        this.indexDisabledFileExtensionsSet = distinctLowerCased(splitCommaSeparatedString(indexDisabledFileExtensions));
+    }
+
+    public Set<String> getIndexDisabledFileExtensionsAsSet() {
+        return indexDisabledFileExtensionsSet;
+    }
+
+    public String getIndexDisabledFileMimes() {
+        return indexDisabledFileMimes;
+    }
+
+    public Set<String> getIndexDisabledFileMimesAsSet() {
+        return indexDisabledFileMimesSet;
+    }
+
+    public void setIndexDisabledFileMimes(String indexDisabledFileMimes) {
+        this.indexDisabledFileMimes = indexDisabledFileMimes;
+        this.indexDisabledFileMimesSet = distinctLowerCased(splitCommaSeparatedString(indexDisabledFileMimes));
+    }
+
+    private static List<String> splitCommaSeparatedString(String string) {
+        StringTokenizer st = new StringTokenizer(StringUtils.trimToEmpty(string), " \t\n\r\f,");
+        List<String> tokens = new LinkedList<String>();
+
+        while (st.hasMoreTokens()) {
+            tokens.add(st.nextToken());
+        }
+
+        return tokens;
+    }
+
+    private static Set<String> distinctLowerCased(List<String> strings) {
+        Set<String> distinctStrings = new LinkedHashSet<String>();
+
+        for (String string : strings) {
+            distinctStrings.add(string.toLowerCase());
+        }
+
+        return Collections.unmodifiableSet(distinctStrings);
     }
 }

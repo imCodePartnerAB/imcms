@@ -62,9 +62,4 @@ public class MockDocumentIndex implements DocumentIndex {
     public void removeDocument(int docId) throws IndexException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
-
-    @Override
-    public QueryResponse query(SolrQuery solrQuery) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 }

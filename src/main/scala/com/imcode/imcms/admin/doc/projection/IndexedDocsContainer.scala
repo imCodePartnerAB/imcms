@@ -13,7 +13,7 @@ import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
 import scala.collection.immutable.{ListSet, ListMap}
 import scala.collection.JavaConverters._
-import java.{util => ju}
+import java.util.Arrays
 import org.apache.solr.client.solrj.SolrQuery
 import com.imcode.imcms.vaadin.ui.Theme
 import java.util.Date
@@ -160,7 +160,7 @@ class IndexedDocsContainer(
   override def sort(propertyId: Array[AnyRef], ascending: Array[Boolean]) {}
 
   // todo implement
-  override val getSortableContainerPropertyIds: JCollection[_] = ju.Arrays.asList(
+  override val getSortableContainerPropertyIds: JCollection[_] = Arrays.asList(
     "docs_projection.container_property.meta_id",
     "docs_projection.container_property.language",
     "docs_projection.container_property.type",

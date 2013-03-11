@@ -72,13 +72,6 @@ public interface DocumentIndex {
     void removeDocument(DocumentDomainObject document) throws IndexException;
 
     /**
-     * @param solrQuery
-     * @return SOLr query response
-     * @since 6.0
-     */
-    QueryResponse query(SolrQuery solrQuery);
-
-    /**
      * @return found documents
      * @throws IndexException
      * @since 6.0
