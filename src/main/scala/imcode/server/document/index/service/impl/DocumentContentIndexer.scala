@@ -14,7 +14,7 @@ import java.io.InputStream
 import org.apache.tika.Tika
 import imcode.server.document.index.DocumentIndex
 
-class DocumentContentIndexer extends Log4jLoggerSupport {
+class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDocumentFile => Boolean) extends Log4jLoggerSupport {
 
   private val tikaAutodetect = new Tika() |>> { tika =>
     tika.setMaxStringLength(-1)
@@ -77,7 +77,7 @@ class DocumentContentIndexer extends Log4jLoggerSupport {
 
 
   def indexFileDoc(doc: FileDocumentDomainObject, indexDoc: SolrInputDocument): SolrInputDocument = indexDoc |>> { _ =>
-    doc.getDefaultFile.asOption.foreach { file =>
+    for (file <- doc.getDefaultFile.asOption if fileDocFileFilter(file)) {
       indexDoc.addField(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType)
 //      val metadata = new Metadata |>> { m =>
 //        m.set(HttpHeaders.CONTENT_DISPOSITION, file.getFilename)
