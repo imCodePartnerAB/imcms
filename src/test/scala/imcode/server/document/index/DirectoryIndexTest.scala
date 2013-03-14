@@ -112,7 +112,7 @@ class DirectoryIndexFixture {
   val docIndexer = new DocumentIndexer |>> { di =>
     di.documentMapper = documentMapperMock
     di.categoryMapper = categoryMapperMock
-    di.contentIndexer = new DocumentContentIndexer
+    di.contentIndexer = new DocumentContentIndexer(_ => true)
   }
 
 

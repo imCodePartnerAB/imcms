@@ -15,11 +15,20 @@ import java.util.Collections
 class DocumentIndexImpl(override val service: DocumentIndexService, defaultDocumentLanguage: DocumentLanguage) extends DocumentIndex with Log4jLoggerSupport {
 
   // todo: move language rewrite into wrapper???
+  // todo: replace canSearchFor with filter queries
   override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
     if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE) == null ||
         !solrQuery.getFilterQueries.exists(query => query.contains(s"${DocumentIndex.FIELD__LANGUAGE_CODE}:"))) {
       solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, defaultDocumentLanguage.getCode))
     }
+
+    // part of UserDomainObject#canSearchFor using
+    if (!searchingUser.isSuperAdmin) {
+      solrQuery.addFilterQuery(s"${DocumentIndex.FIELD__SEARCH_ENABLED}:true")
+      solrQuery.addFilterQuery()
+    }
+
+    if (solrQuery.getRows == null) solrQuery.setRows(Integer.MAX_VALUE)
 
     service.search(solrQuery, searchingUser).getOrElse(Collections.emptyList())
   }

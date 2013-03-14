@@ -81,7 +81,7 @@ class DocIndexingMocksSetup {
   val docIndexer = new DocumentIndexer |>> { di =>
     di.documentMapper = documentMapperMock
     di.categoryMapper = categoryMapperMock
-    di.contentIndexer = new DocumentContentIndexer
+    di.contentIndexer = new DocumentContentIndexer(_ => true)
   }
 
   // DocumentIndexer uses category id, name and type id, name as string index fields

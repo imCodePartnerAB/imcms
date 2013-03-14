@@ -54,6 +54,8 @@ public interface DocumentIndex {
     String FIELD__CHILD_ID = "child_id";
     String FIELD__HAS_CHILDREN = "has_children";
 
+    String FIELD__SEARCH_ENABLED = "search_enabled";
+
     /**
      * Searches for documents.
      * Use {@link #search(org.apache.solr.client.solrj.SolrQuery, imcode.server.user.UserDomainObject)} instead.

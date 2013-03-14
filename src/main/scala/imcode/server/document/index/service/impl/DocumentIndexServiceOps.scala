@@ -16,12 +16,15 @@ import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import java.util.Date
 import org.apache.solr.client.solrj.response.QueryResponse
 import java.net.URLDecoder
+import imcode.server.document
+import java.util
 
 /**
  * Document index service low level operations.
  *
  * The instance of this class is thread save.
  */
+// todo: replace indexed doc filtering with filter queries at higher level
 class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) extends Log4jLoggerSupport {
 
   type DocId = Int
@@ -72,24 +75,23 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   def mkSolrDocsDeleteQuery(docId: Int): String = "%s:%d".format(DocumentIndex.FIELD__META_ID, docId)
 
 
-  // todo: add filter query - can search for
   def search(solrServer: SolrServer, solrQuery: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
     if (logger.isDebugEnabled) {
       logger.debug("Searching using solrQuery: %s, searchingUser: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8"), searchingUser))
     }
 
-    val solrDocs = solrServer.query(solrQuery).getResults
+    val docs = new util.LinkedList[DocumentDomainObject]
 
-    new java.util.AbstractList[DocumentDomainObject] {
-      def size(): Int = solrDocs.size()
-
-      def get(index: Int): DocumentDomainObject = {
-        val solrDoc = solrDocs.get(index)
-        val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
-        val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
-        documentMapper.getDefaultDocument(docId, languageCode)
-      }
+    for {
+      solrDoc <- solrServer.query(solrQuery).getResults.iterator().asScala
+      docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
+      languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
+      doc <- documentMapper.getDefaultDocument(docId, languageCode).asOption
+    } {
+      docs.add(doc)
     }
+
+    docs
   }
 
 

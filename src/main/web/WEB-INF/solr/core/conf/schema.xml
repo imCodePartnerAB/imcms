@@ -86,6 +86,9 @@
             in -OR- queries
          -->
         <field name="meta_id" type="text_general" indexed="true" stored="true" required="true"/>
+        <field name="search_enabled" type="boolean" indexed="true" stored="false" required="true"/>
+
+
         <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="meta_headline" type="string" indexed="true" stored="false"/>
         <field name="meta_headline_keyword" type="text_general" indexed="true" stored="false"/>

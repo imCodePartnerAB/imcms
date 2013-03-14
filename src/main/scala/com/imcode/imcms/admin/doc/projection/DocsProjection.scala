@@ -321,7 +321,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
         solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__LANGUAGE_CODE, languages.map(_.getCode).mkString(" ")))
       }
     } |>> { solrQuery =>
-      solrQuery.setRows(20)
+      //solrQuery.setRows(20)
       if (logger.isDebugEnabled)
         logger.debug("Projection SOLr query: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8")))
     }

@@ -751,20 +751,12 @@ public class UserDomainObject implements Cloneable, Serializable {
         return canEdit || linkableByOtherUsers;
     }
 
-    public boolean canSearchFor( DocumentDomainObject document ) {
-        boolean canSearchForDocument = false;
-        if ( document.isSearchDisabled() ) {
-            if ( isSuperAdmin() ) {
-                canSearchForDocument = true;
-            }
-        } else {
-            if ( document.isPublished() ) {
-                canSearchForDocument = document.isLinkedForUnauthorizedUsers() || canAccess( document );
-            } else {
-                canSearchForDocument = canEdit( document );
-            }
-        }
-        return canSearchForDocument;
+    public boolean canSearchFor(DocumentDomainObject document) {
+        return
+            isSuperAdmin()
+            || (!document.isSearchDisabled()
+                && (canEdit(document)
+                    || (document.isPublished() && (document.isLinkedForUnauthorizedUsers() || canAccess(document)))));
     }
 
     public boolean canEditDocumentInformationFor( DocumentDomainObject document ) {
