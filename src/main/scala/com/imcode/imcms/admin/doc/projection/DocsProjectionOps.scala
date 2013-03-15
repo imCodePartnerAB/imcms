@@ -17,7 +17,7 @@ import com.vaadin.ui.UI
 import com.vaadin.server.Page
 
 /**
- * Common operations associated with docs projections such as edit, view, delete etc.
+ * Common operations associated with docs projection [selection] such as edit, view, delete etc.
  *
  * @param projection
  */

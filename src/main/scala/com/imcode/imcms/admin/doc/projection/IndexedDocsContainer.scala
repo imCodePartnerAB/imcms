@@ -180,21 +180,17 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
 
   case class DocItem(ix: Ix, doc: DocumentDomainObject) extends Item with ReadOnlyItem {
 
-    println(s">>>>>>>>> $ix, ${doc.getId}, ${doc.getLanguage}")
-
     private def formatDt(dt: Date) = dt.asOption.map(dt => "%1$td.%1$tm.%1$tY %1$tH:%1$tM".format(dt)).getOrElse("")
 
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
     override def getItemProperty(id: AnyRef) = FunctionProperty[AnyRef](id match {
-      case "docs_projection.container_property.index" => () => (ix + 1 : JInteger) |>> { i => println(s">>> 'index' ix: $ix, index: $i, docId: ${doc.getId}, lang: ${doc.getLanguage}") }
+      case "docs_projection.container_property.index" => () => ix + 1 : JInteger
       case "docs_projection.container_property.meta_id" => () => {
         val label = new Label with UndefinedSize |>> { lbl =>
           lbl.setCaption(doc.getId.toString)
           lbl.setIcon(Theme.Icon.Doc.phase(doc))
         }
-
-        println(s">>> 'meta_id': docId: ${doc.getId}, lang: ${doc.getLanguage}")
 
         new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
       }
@@ -207,8 +203,6 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
           lbl.setCaption(language.getNativeName)
           lbl.setIcon(Theme.Icon.Language.flag(language))
         }
-
-        println(s">>> 'language': docId: ${doc.getId}, lang: ${doc.getLanguage}")
 
         new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
       }

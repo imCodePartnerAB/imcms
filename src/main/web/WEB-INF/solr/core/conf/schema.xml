@@ -82,16 +82,15 @@
 
         <!--
             Should be of type int.
-            Unfortunately some imCMS query builders do not check value type before using this field
-            in -OR- queries
+            Unfortunately some legacy imCMS clients use this field in queries with text value.
          -->
-        <field name="meta_id" type="text_general" indexed="true" stored="true" required="true"/>
+        <field name="meta_id" type="string" indexed="true" stored="true" required="true"/>
         <field name="search_enabled" type="boolean" indexed="true" stored="false" required="true"/>
 
 
         <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
-        <field name="meta_headline" type="string" indexed="true" stored="false"/>
-        <field name="meta_headline_keyword" type="text_general" indexed="true" stored="false"/>
+        <field name="meta_headline" type="text_general" indexed="true" stored="false"/>
+        <field name="meta_headline_keyword" type="string" indexed="true" stored="false"/>
         <field name="meta_text" type="string" indexed="true" stored="false"/>
         <field name="doc_type_id" type="int" indexed="true" stored="false"/>
         <field name="creator_id" type="int" indexed="true" stored="false"/>
@@ -124,7 +123,7 @@
         <field name="nonstripped_text" type="text_general" indexed="true" stored="false" multiValued="true"/>
         <!--text-doc field + also used as prefix + textNo to index the same text field -->
         <!-- todo: solr strip ???: HTMLStripCharFilterFactory -->
-        <field name="text" type="text_general" indexed="true" stored="true" multiValued="true"/>
+        <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
         <field name="child_id" type="int" indexed="false" stored="true" multiValued="true"/>
         <field name="has_children" type="boolean" indexed="true" stored="false"/>
         <field name="image_link_url" type="text_general" indexed="true" stored="false" multiValued="true"/>
