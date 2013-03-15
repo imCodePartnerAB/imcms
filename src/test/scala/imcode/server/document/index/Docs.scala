@@ -38,7 +38,7 @@ class DocIndexingMocksSetup {
 
   when(documentMapperMock.getImcmsServices).thenReturn(servicesMock)
 
-  when(servicesMock.getI18nContentSupport).thenReturn(LanguageFX.mkI18nSupport())
+  when(servicesMock.getDocumentI18nSupport).thenReturn(LanguageFX.mkI18nSupport())
 
   when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer { args: Array[AnyRef] =>
     val availableCategories = for {

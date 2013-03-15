@@ -868,7 +868,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.documentMapper = documentMapper;
     }
 
-    public DocumentI18nSupport getI18nContentSupport() {
+    public DocumentI18nSupport getDocumentI18nSupport() {
         return i18nContentSupport;
     }
 

@@ -35,7 +35,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     Test.solr.recreateHome()
     Test.imcms.init(start = true, prepareDbOnStart = true)
 
-    i18nContentSupport = Imcms.getServices.getI18nContentSupport
+    i18nContentSupport = Imcms.getServices.getDocumentI18nSupport
     docMapper = Imcms.getServices.getDocumentMapper
     admin = Imcms.getServices.verifyUser("admin", "admin")
     user = Imcms.getServices.verifyUser("user", "user")
@@ -467,7 +467,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("copy text doc") {
     //TextDocumentDomainObject doc = saveNewTextDocumentFn();
-    for (l <- Imcms.getServices.getI18nContentSupport.getLanguages.asScala) {
+    for (l <- Imcms.getServices.getDocumentI18nSupport.getLanguages.asScala) {
       val doc = docMapper.getDocument(1001).asInstanceOf[TextDocumentDomainObject]
       assertNotNull(doc)
     }
@@ -479,7 +479,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     assertNotSame(doc.getId, docCopyId)
 
-    for (l <- Imcms.getServices.getI18nContentSupport.getLanguages.asScala.toList) {
+    for (l <- Imcms.getServices.getDocumentI18nSupport.getLanguages.asScala.toList) {
       val doc = docMapper.getDocument(docCopyId)
       assertNotNull(doc)
     }

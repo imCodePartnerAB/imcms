@@ -44,8 +44,8 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
 
   // i18nMetas sorted by language (default always first) and native name
   private val i18nMetaEditorUIs: Seq[I18nMetaEditorUI] = {
-    val defaultLanguage = imcmsServices.getI18nContentSupport.getDefaultLanguage
-    val languages = imcmsServices.getI18nContentSupport.getLanguages.asScala.sortWith {
+    val defaultLanguage = imcmsServices.getDocumentI18nSupport.getDefaultLanguage
+    val languages = imcmsServices.getDocumentI18nSupport.getLanguages.asScala.sortWith {
       case (l1, _) if l1 == defaultLanguage => true
       case (_, l2) if l2 == defaultLanguage => false
       case (l1, l2) => l1.getNativeName < l2.getNativeName
@@ -80,7 +80,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
 
       def validate(value: AnyRef) {
         for (docId <- findDocIdByAlias()) {
-          throw new InvalidValueException("this alias is allredy taken by doc %d."format(docId))
+          throw new InvalidValueException("this alias is already taken by doc %d."format(docId))
         }
       }
     })
@@ -118,13 +118,13 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
 
   // Default language checkbox is be always checked.
   def resetValues() {
-    val defaultLanguage = imcmsServices.getI18nContentSupport.getDefaultLanguage
+    val defaultLanguage = imcmsServices.getDocumentI18nSupport.getDefaultLanguage
 
     for (i18nMetaEditorUI <- i18nMetaEditorUIs) {
       val isDefaultLanguage = i18nMetaEditorUI.language == defaultLanguage
 
       i18nMetaEditorUI.chkEnabled.setReadOnly(false)
-      i18nMetaEditorUI.chkEnabled.checked = isDefaultLanguage || meta.getEnabledLanguages.contains(language)
+      i18nMetaEditorUI.chkEnabled.checked = isDefaultLanguage || meta.getEnabledLanguages.contains(i18nMetaEditorUI.language)
       i18nMetaEditorUI.chkEnabled.setReadOnly(isDefaultLanguage)
 
       i18nMetas.get(i18nMetaEditorUI.language) match {

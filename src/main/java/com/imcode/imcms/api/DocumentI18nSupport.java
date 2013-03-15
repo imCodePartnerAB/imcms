@@ -48,7 +48,7 @@ public class DocumentI18nSupport {
     }
 
     public DocumentLanguage getByCode(String code) {
-        return languagesByCodes.get(code);
+        return languagesByCodes.get(code.toLowerCase());
     }
 
     public DocumentLanguage getById(Integer id) {
@@ -60,6 +60,6 @@ public class DocumentI18nSupport {
     }
 
     public DocumentLanguage getForHost(String host) {
-        return languagesByHosts.get(host);
+        return languagesByHosts.get(host.toLowerCase());
     }
 }

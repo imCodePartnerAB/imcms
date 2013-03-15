@@ -112,7 +112,7 @@ public interface ImcmsServices {
     
     KerberosLoginService getKerberosLoginService();
 
-    DocumentI18nSupport getI18nContentSupport();
+    DocumentI18nSupport getDocumentI18nSupport();
 
     <T> T getSpringBean(Class<T> requiredType);
 

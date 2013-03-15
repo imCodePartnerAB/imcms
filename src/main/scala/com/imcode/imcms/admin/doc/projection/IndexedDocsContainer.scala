@@ -20,7 +20,6 @@ import java.util.Date
 import scala.Some
 import com.imcode.imcms.vaadin.data.FunctionProperty
 import imcode.server.Imcms
-import com.vaadin.data.Container.ItemSetChangeListener
 
 class IndexedDocsContainer(
   user: UserDomainObject,
@@ -115,6 +114,7 @@ class IndexedDocsContainer(
 
   override def getContainerProperty(itemId: AnyRef, propertyId: AnyRef) = getItem(itemId).getItemProperty(propertyId)
 
+  @transient
   override def size: Int = visibleDocs.size
 
   override def getItemIds: JCollection[_] = new java.util.AbstractList[Ix] {
@@ -152,7 +152,7 @@ class IndexedDocsContainer(
   }
 
   override def getItem(itemId: AnyRef): DocItem = itemId match {
-    case ix: Ix if containsId(ix) => DocItem(ix, visibleDocs.get(ix))
+      case ix: Ix if containsId(ix) => DocItem(ix, visibleDocs.get(ix))
     case _ => null
   }
 
@@ -172,10 +172,6 @@ class IndexedDocsContainer(
   override def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef): Item = throw new UnsupportedOperationException
 
   override def addItemAfter(previousItemId: AnyRef): Item = throw new UnsupportedOperationException
-
-  def addItemSetChangeListener(listener: ItemSetChangeListener) {}
-
-  def removeItemSetChangeListener(listener: ItemSetChangeListener) {}
 }
 
 
@@ -184,17 +180,21 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
 
   case class DocItem(ix: Ix, doc: DocumentDomainObject) extends Item with ReadOnlyItem {
 
+    println(s">>>>>>>>> $ix, ${doc.getId}, ${doc.getLanguage}")
+
     private def formatDt(dt: Date) = dt.asOption.map(dt => "%1$td.%1$tm.%1$tY %1$tH:%1$tM".format(dt)).getOrElse("")
 
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
     override def getItemProperty(id: AnyRef) = FunctionProperty[AnyRef](id match {
-      case "docs_projection.container_property.index" => () => ix + 1 : JInteger
+      case "docs_projection.container_property.index" => () => (ix + 1 : JInteger) |>> { i => println(s">>> 'index' ix: $ix, index: $i, docId: ${doc.getId}, lang: ${doc.getLanguage}") }
       case "docs_projection.container_property.meta_id" => () => {
         val label = new Label with UndefinedSize |>> { lbl =>
           lbl.setCaption(doc.getId.toString)
           lbl.setIcon(Theme.Icon.Doc.phase(doc))
         }
+
+        println(s">>> 'meta_id': docId: ${doc.getId}, lang: ${doc.getLanguage}")
 
         new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
       }
@@ -207,6 +207,8 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
           lbl.setCaption(language.getNativeName)
           lbl.setIcon(Theme.Icon.Language.flag(language))
         }
+
+        println(s">>> 'language': docId: ${doc.getId}, lang: ${doc.getLanguage}")
 
         new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
       }

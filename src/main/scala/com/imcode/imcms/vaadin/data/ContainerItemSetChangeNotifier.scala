@@ -5,6 +5,7 @@ import com.vaadin.data.Container.ItemSetChangeListener
 
 trait ContainerItemSetChangeNotifier extends Container.ItemSetChangeNotifier { container: Container =>
 
+  @transient
   private var listeners = Set.empty[ItemSetChangeListener]
 
   override def removeListener(listener: ItemSetChangeListener) {
@@ -13,6 +14,14 @@ trait ContainerItemSetChangeNotifier extends Container.ItemSetChangeNotifier { c
 
   override def addListener(listener: ItemSetChangeListener) {
     listeners += listener
+  }
+
+  override def addItemSetChangeListener(listener: ItemSetChangeListener) {
+    addListener(listener)
+  }
+
+  override def removeItemSetChangeListener(listener: ItemSetChangeListener) {
+    removeListener(listener)
   }
 
   protected def notifyItemSetChanged() {

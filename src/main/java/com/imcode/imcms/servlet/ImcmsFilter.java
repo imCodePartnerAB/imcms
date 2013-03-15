@@ -153,8 +153,6 @@ public class ImcmsFilter implements Filter {
     /**
      * Initializes Imcms and attempts to starts Imcms.
      *
-     * Also creates ImcmsModeListener which changes delegateFilter according to Imcms mode. 
-     *
      * @param filterConfig
      * @throws ServletException
      */

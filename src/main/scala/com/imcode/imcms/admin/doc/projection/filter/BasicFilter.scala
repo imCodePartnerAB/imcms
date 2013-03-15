@@ -89,11 +89,11 @@ class BasicFilter extends ImcmsServicesSupport {
     ui.lytAdvanced.cbTypes.value = values.advanced.getOrElse("docs_projection.basic_filter.cb_advanced_type.custom")
 
     ui.lytLanguages.removeAllComponents()
-    for (language <- imcmsServices.getI18nContentSupport.getLanguages.asScala) {
+    for (language <- imcmsServices.getDocumentI18nSupport.getLanguages.asScala) {
       val chkLanguage = new CheckBox(language.getNativeName) with TypedData[DocumentLanguage] |>> { chk =>
         chk.setIcon(Theme.Icon.Language.flag(language))
         chk.data = language
-        chk.checked = language |> imcmsServices.getI18nContentSupport.isDefault
+        chk.checked = language |> imcmsServices.getDocumentI18nSupport.isDefault
       }
 
       ui.lytLanguages.addComponent(chkLanguage)

@@ -257,7 +257,7 @@ public class MockImcmsServices implements ImcmsServices {
 		return null;
 	}
 
-    public DocumentI18nSupport getI18nContentSupport() {
+    public DocumentI18nSupport getDocumentI18nSupport() {
         return null;
     }
 }

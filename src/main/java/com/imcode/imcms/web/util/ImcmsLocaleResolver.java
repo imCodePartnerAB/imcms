@@ -17,7 +17,7 @@ public class ImcmsLocaleResolver implements LocaleResolver {
     }
 
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
-        DocumentI18nSupport i18nContentSupport = Imcms.getServices().getI18nContentSupport();
+        DocumentI18nSupport i18nContentSupport = Imcms.getServices().getDocumentI18nSupport();
 
         DocumentLanguage language = i18nContentSupport.getByCode(locale.getLanguage());
         if (language == null) {

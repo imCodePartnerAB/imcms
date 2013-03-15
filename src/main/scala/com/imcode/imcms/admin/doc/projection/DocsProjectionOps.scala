@@ -108,7 +108,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
     whenSingle(projection.selection) { doc =>
       val page = Page.getCurrent
 
-      new DocEditorDialog("Edit document", doc) |>> { dlg =>
+      new DocEditorDialog(s"Edit document ${doc.getId}", doc) |>> { dlg =>
         dlg.setOkButtonHandler {
           dlg.docEditor.collectValues() match {
             case Left(errors) =>

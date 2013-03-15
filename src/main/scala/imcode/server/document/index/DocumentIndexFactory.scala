@@ -30,7 +30,7 @@ object DocumentIndexFactory extends Log4jLoggerSupport {
         throw new IllegalArgumentException(errMsg)
     } |> { service =>
       service.setRebuildIntervalInMinutes(config.getIndexingSchedulePeriodInMinutes.toInt |> opt)
-      new DocumentIndexImpl(service, services.getI18nContentSupport.getDefaultLanguage)
+      new DocumentIndexImpl(service, services.getDocumentI18nSupport.getDefaultLanguage)
     }
   }
 

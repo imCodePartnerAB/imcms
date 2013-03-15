@@ -69,8 +69,8 @@ try {
  *         Get languages                                                                     *
  ******************************************************************************************* */
 
-List<DocumentLanguage> languages = Imcms.getServices().getI18nContentSupport().getLanguages();
-DocumentLanguage defaultLanguage = Imcms.getServices().getI18nContentSupport().getDefaultLanguage();
+List<DocumentLanguage> languages = Imcms.getServices().getDocumentI18nSupport().getLanguages();
+DocumentLanguage defaultLanguage = Imcms.getServices().getDocumentI18nSupport().getDefaultLanguage();
 DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
 
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();

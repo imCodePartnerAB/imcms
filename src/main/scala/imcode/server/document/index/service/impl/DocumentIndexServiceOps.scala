@@ -42,7 +42,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
   @throws(classOf[SolrInputDocumentCreateException])
   def mkSolrInputDocs(docId: Int): Seq[SolrInputDocument] = withExceptionWrapper {
-    mkSolrInputDocs(docId, documentMapper.getImcmsServices.getI18nContentSupport.getLanguages.asScala)
+    mkSolrInputDocs(docId, documentMapper.getImcmsServices.getDocumentI18nSupport.getLanguages.asScala)
   }
 
 
@@ -66,7 +66,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
   @throws(classOf[SolrInputDocumentCreateException])
   def mkSolrInputDocsView(): SeqView[(DocId, Seq[SolrInputDocument]), Seq[_]] = {
-    documentMapper.getImcmsServices.getI18nContentSupport.getLanguages.asScala |> { languages =>
+    documentMapper.getImcmsServices.getDocumentI18nSupport.getLanguages.asScala |> { languages =>
       documentMapper.getAllDocumentIds.asScala.view.map(docId => docId.toInt -> mkSolrInputDocs(docId, languages))
     }
   }

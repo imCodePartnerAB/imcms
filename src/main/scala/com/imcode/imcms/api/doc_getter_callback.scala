@@ -28,12 +28,12 @@ object DocGetterCallbacks {
   /** Creates callback and sets it to a user. */
   def updateUserDocGetterCallback(request: HttpServletRequest, services: ImcmsServices, user: UserDomainObject) {
     val currentDocGetterCallback = user.getDocGetterCallback
-    val i18nContentSupport = services.getI18nContentSupport
-    val defaultLanguage = i18nContentSupport.getDefaultLanguage
-    val preferredLanguage = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE).asOption
-                   .flatMap(code => i18nContentSupport.getByCode(code).asOption)
+    val docI18nSupport = services.getDocumentI18nSupport
+    val defaultLanguage = docI18nSupport.getDefaultLanguage
+    val preferredLanguage = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE).trimToOption
+                   .flatMap(code => docI18nSupport.getByCode(code).asOption)
                    .orElse(currentDocGetterCallback.asOption.map(_.documentLanguages.preferred))
-                   .orElse(i18nContentSupport.getForHost(request.getServerName).asOption)
+                   .orElse(docI18nSupport.getForHost(request.getServerName).asOption)
                    .getOrElse(defaultLanguage)
 
     val documentLanguages = DocumentLanguages(preferredLanguage, defaultLanguage)
@@ -50,8 +50,8 @@ object DocGetterCallbacks {
         }
       }) getOrElse {
         currentDocGetterCallback match {
-          case docGetterCallback: CustomDocGetterCallback => docGetterCallback.copy(documentLanguages)
-          case docGetterCallback: WorkingDocGetterCallback => docGetterCallback.copy(documentLanguages)
+          case customDocGetterCallback: CustomDocGetterCallback => customDocGetterCallback.copy(documentLanguages)
+          case workingDocGetterCallback: WorkingDocGetterCallback => workingDocGetterCallback.copy(documentLanguages)
           case _ => DefaultDocGetterCallback(documentLanguages)
         }
       }
