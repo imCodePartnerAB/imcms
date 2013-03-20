@@ -63,7 +63,7 @@ class DocumentIndexer(
 
     indexDoc.addField(DocumentIndex.FIELD__STATUS, doc.getPublicationStatus.asInt())
 
-    for (category <- categoryMapper.getCategories(doc.getCategoryIds).asScala) {
+    for (category <- categoryMapper.getCategories(doc.getCategoryIds).iterator.asScala) {
       indexDoc.addField(DocumentIndex.FIELD__CATEGORY, category.getName)
       indexDoc.addField(DocumentIndex.FIELD__CATEGORY_ID, category.getId)
 
@@ -72,12 +72,12 @@ class DocumentIndexer(
       indexDoc.addField(DocumentIndex.FIELD__CATEGORY_TYPE_ID, categoryType.getId)
     }
 
-    for (documentKeyword <- doc.getKeywords.asScala) {
+    for (documentKeyword <- doc.getKeywords.iterator.asScala) {
         indexDoc.addField(DocumentIndex.FIELD__KEYWORD, documentKeyword)
     }
 
     documentMapper.getParentDocumentAndMenuIdsForDocument(doc) |> { parentDocumentAndMenuIds =>
-      for (Array(parentId, menuId) <- parentDocumentAndMenuIds.asScala) {
+      for (Array(parentId, menuId) <- parentDocumentAndMenuIds.iterator.asScala) {
         indexDoc.addField(DocumentIndex.FIELD__PARENT_ID, parentId)
         indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId)
       }
@@ -89,9 +89,6 @@ class DocumentIndexer(
 
     for ((key, value) <- doc.getProperties.asScala) {
       indexDoc.addField(DocumentIndex.FIELD__PROPERTY_PREFIX + key, value)
-      // Legacy document property indexing support: property name as field name -> property value as field value.
-      // See also schema.xml * field
-      // indexDoc.addField(key, value)
     }
 
     val roleIdMappings: RoleIdToDocumentPermissionSetTypeMappings = doc.getRoleIdsMappedToDocumentPermissionSetTypes

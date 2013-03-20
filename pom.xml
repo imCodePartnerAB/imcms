@@ -32,10 +32,10 @@
 
         <javac.args></javac.args>
 
-        <solr.version>4.1.0</solr.version>
+        <solr.version>4.2.0</solr.version>
         <slf4j.version>1.7.2</slf4j.version>
         <scala.version>2.10.0</scala.version>
-        <springframework.version>3.2.1.RELEASE</springframework.version>
+        <springframework.version>3.2.2.RELEASE</springframework.version>
         <vaadin.version>7.0.0</vaadin.version>
 
         <jetty.port>9090</jetty.port>
@@ -290,15 +290,9 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.3</version>
         </dependency>
 
         <dependency>
@@ -367,6 +361,12 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
             <version>${vaadin.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>

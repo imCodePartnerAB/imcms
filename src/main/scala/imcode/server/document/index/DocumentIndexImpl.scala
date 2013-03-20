@@ -25,7 +25,6 @@ class DocumentIndexImpl(override val service: DocumentIndexService, defaultDocum
     // part of UserDomainObject#canSearchFor using
     if (!searchingUser.isSuperAdmin) {
       solrQuery.addFilterQuery(s"${DocumentIndex.FIELD__SEARCH_ENABLED}:true")
-      solrQuery.addFilterQuery()
     }
 
     if (solrQuery.getRows == null) solrQuery.setRows(Integer.MAX_VALUE)
@@ -42,6 +41,13 @@ class DocumentIndexImpl(override val service: DocumentIndexService, defaultDocum
     }
 
     val solrQuery = new SolrQuery(queryString)
+    for {
+      sortField <- query.getSort.getSort
+      field <- sortField.getField.asOption
+    } {
+      solrQuery.addSort(field, if (sortField.getReverse) SolrQuery.ORDER.desc else SolrQuery.ORDER.asc)
+      sortField.getReverse
+    }
 
     search(solrQuery, searchingUser)
   }

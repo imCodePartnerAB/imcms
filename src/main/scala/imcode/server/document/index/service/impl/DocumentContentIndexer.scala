@@ -20,18 +20,6 @@ class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDoc
     tika.setMaxStringLength(-1)
   }
 
-  private val tikaHtml: Tika = {
-    val parser = new HtmlParser
-    val detector = new Detector {
-      val mediaType = MediaType.parse("text/html")
-
-      def detect(input: InputStream, metadata: Metadata): MediaType = mediaType
-    }
-
-    new Tika(detector, parser) |>> { tika =>
-      tika.setMaxStringLength(-1)
-    }
-  }
 
   def index(doc: DocumentDomainObject, indexDox: SolrInputDocument): SolrInputDocument = {
     doc match {
@@ -53,11 +41,9 @@ class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDoc
     val menus = doc.getMenus.values.asScala
 
     for (text <- texts) {
-      val htmlStrippedText = stripHtml(text)
-
-      indexDoc.addField(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText)
-      indexDoc.addField(DocumentIndex.FIELD__TEXT, htmlStrippedText)
-      indexDoc.addField(DocumentIndex.FIELD__TEXT + text.getNo, htmlStrippedText)
+      indexDoc.addField(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text)
+      indexDoc.addField(DocumentIndex.FIELD__TEXT, text)
+      indexDoc.addField(DocumentIndex.FIELD__TEXT + text.getNo, text)
     }
 
     for (image <- images) {
@@ -92,20 +78,5 @@ class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDoc
         case e: Throwable => logger.error(s"Unable to index content of file-doc-file '$file'.", e)
       }
     }
-  }
-
-
-  private def stripHtml(tdo: TextDomainObject): String = tdo.getText |> {
-    case text if tdo.getType != TextDomainObject.TEXT_TYPE_HTML => text
-    case htmlText =>
-      try {
-        tikaHtml.parseToString(IOUtils.toInputStream(htmlText)) |>> { stripped =>
-          logger.trace(s"Stripped html to plain text: '$htmlText' -> '$stripped'.")
-        }
-      } catch {
-        case e: Throwable => logger.error(s"Unable to strip html '$htmlText'.", e)
-
-        htmlText
-      }
   }
 }

@@ -31,14 +31,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.ConnectTimeoutException;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.HeadMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
@@ -329,22 +331,23 @@ public class LinkCheck extends HttpServlet {
 
         private void checkUrl( String url ) {
             log.debug( "checkUrl(" + url + ")" );
-            HttpClient httpClient = new HttpClient();
-            httpClient.setConnectionTimeout( CONNECTION_TIMEOUT_MILLISECONDS );
-            httpClient.setTimeout( READ_TIMEOUT_MILLISECONDS );
-            HttpMethod httpMethod;
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpHead httpMethod;
+            HttpParams params = httpClient.getParams();
+            HttpConnectionParams.setConnectionTimeout(params, CONNECTION_TIMEOUT_MILLISECONDS);
+            HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT_MILLISECONDS );
             try {
-                httpMethod = new HeadMethod( url );
+                httpMethod = new HttpHead( url );
             } catch ( Exception e ) {
                 checkable = false ;
                 return;
             }
-            httpMethod.setRequestHeader( HTTP_REQUEST_HEADER__USER_AGENT, USER_AGENT );
+            httpMethod.setHeader(HTTP_REQUEST_HEADER__USER_AGENT, USER_AGENT);
             try {
-                int status = httpClient.executeMethod( httpMethod );
+                int status = httpClient.execute( httpMethod ).getStatusLine().getStatusCode();
                 hostFound = true;
                 hostReachable = true;
-                httpMethod.releaseConnection();
+                //httpMethod.releaseConnection();
                 if ( HttpStatus.SC_OK == status ) {
                     ok = true;
                 }
@@ -355,9 +358,9 @@ public class LinkCheck extends HttpServlet {
                 hostFound = true;
             } catch ( ConnectException e ) {
                 hostFound = true;
-            } catch ( HttpException e ) {
-                hostFound = true;
-                hostReachable = true;
+//            } catch ( HttpException e ) {
+//                hostFound = true;
+//                hostReachable = true;
             } catch ( IOException e ) {
                 log.warn( "Unknown IOException in LinkCheck.", e );
             }

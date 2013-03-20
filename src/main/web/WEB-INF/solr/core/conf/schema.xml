@@ -121,9 +121,7 @@
         <!--                 -->
         <field name="template" type="text_general" indexed="true" stored="false"/>
         <field name="nonstripped_text" type="text_general" indexed="true" stored="false" multiValued="true"/>
-        <!--text-doc field + also used as prefix + textNo to index the same text field -->
-        <!-- todo: solr strip ???: HTMLStripCharFilterFactory -->
-        <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+        <field name="text" type="text_general_html_strip" indexed="true" stored="false" multiValued="true"/>
         <field name="child_id" type="int" indexed="false" stored="true" multiValued="true"/>
         <field name="has_children" type="boolean" indexed="true" stored="false"/>
         <field name="image_link_url" type="text_general" indexed="true" stored="false" multiValued="true"/>
@@ -136,7 +134,7 @@
 
         <dynamicField name="property.*" type="text_general" indexed="true" stored="false"/>
         <!-- text-doc field, name: text+textNo (including text in a loop) -->
-        <dynamicField name="text*" type="text_general" indexed="true" stored="false" multiValued="true"/>
+        <dynamicField name="text*" type="text_general_html_strip" indexed="true" stored="false" multiValued="true"/>
 
         <!-- uncomment the following to ignore any fields that don't already match an existing
              field name or dynamic field, rather than reporting them as an error.
@@ -347,6 +345,15 @@
                 <!--<filter class="solr.LowerCaseFilterFactory"/>-->
             <!--</analyzer>-->
         <!--</fieldType>-->
+
+        <fieldType name="text_general_html_strip" class="solr.TextField">
+            <analyzer>
+                <charFilter class="solr.HTMLStripCharFilterFactory"/>
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
     </types>
 
 </schema>
