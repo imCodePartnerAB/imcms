@@ -11,35 +11,28 @@ import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Deprecated
 public class ImageHandling extends HttpServlet {
@@ -53,7 +46,7 @@ public class ImageHandling extends HttpServlet {
 	
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.9) Gecko/20071025 Firefox/2.0.0.9";
 	
-	private static final HttpClient HTTP_CLIENT = new HttpClient(new MultiThreadedHttpConnectionManager());
+	private static final HttpClient HTTP_CLIENT = new DefaultHttpClient(new ThreadSafeClientConnManager());
 	
 	private static final List<String> ALLOWED_PATHS = new ArrayList<String>();
 	
@@ -260,14 +253,14 @@ public class ImageHandling extends HttpServlet {
 	}
 	
 	private static File retrieveExternalFile(String url) {
-		GetMethod fileGet = new GetMethod(url);
-		fileGet.addRequestHeader("User-Agent", USER_AGENT);
-		
+        HttpGet fileGet = new HttpGet(url);
+        fileGet.addHeader("User-Agent", USER_AGENT);
+
 		try {
-			int responseCode = HTTP_CLIENT.executeMethod(fileGet);
+            HttpResponse response = HTTP_CLIENT.execute(fileGet);
 			
-			if (responseCode != HttpStatus.SC_OK) {
-				drainInput(fileGet.getResponseBodyAsStream());
+			if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+				drainInput(response.getEntity().getContent());
 				
 				return null;
 			}
@@ -276,7 +269,7 @@ public class ImageHandling extends HttpServlet {
 			InputStream input = null;
 			OutputStream output = null;
 			try {
-				input = fileGet.getResponseBodyAsStream();
+				input = response.getEntity().getContent();
 				output = new BufferedOutputStream(new FileOutputStream(file));
 				
 				IOUtils.copy(input, output);

@@ -347,7 +347,7 @@ public class LinkCheck extends HttpServlet {
                 int status = httpClient.execute( httpMethod ).getStatusLine().getStatusCode();
                 hostFound = true;
                 hostReachable = true;
-                //httpMethod.releaseConnection();
+                httpMethod.releaseConnection();
                 if ( HttpStatus.SC_OK == status ) {
                     ok = true;
                 }

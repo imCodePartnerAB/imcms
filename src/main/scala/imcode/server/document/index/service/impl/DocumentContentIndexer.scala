@@ -16,7 +16,7 @@ import imcode.server.document.index.DocumentIndex
 
 class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDocumentFile => Boolean) extends Log4jLoggerSupport {
 
-  private val tikaAutodetect = new Tika() |>> { tika =>
+  private val tika = new Tika() |>> { tika =>
     tika.setMaxStringLength(-1)
   }
 
@@ -65,17 +65,17 @@ class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDoc
   def indexFileDoc(doc: FileDocumentDomainObject, indexDoc: SolrInputDocument): SolrInputDocument = indexDoc |>> { _ =>
     for (file <- doc.getDefaultFile.asOption if fileDocFileFilter(file)) {
       indexDoc.addField(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType)
-//      val metadata = new Metadata |>> { m =>
-//        m.set(HttpHeaders.CONTENT_DISPOSITION, file.getFilename)
-//        m.set(HttpHeaders.CONTENT_TYPE, file.getMimeType)
-//      }
+      val metadata = new Metadata |>> { m =>
+        m.set(HttpHeaders.CONTENT_DISPOSITION, file.getFilename)
+        m.set(HttpHeaders.CONTENT_TYPE, file.getMimeType)
+      }
 
       try {
-        tikaAutodetect.parseToString(file.getInputStreamSource.getInputStream) |> { content =>
+        tika.parseToString(file.getInputStreamSource.getInputStream, metadata) |> { content =>
           indexDoc.addField(DocumentIndex.FIELD__TEXT, content)
         }
       } catch {
-        case e: Throwable => logger.error(s"Unable to index content of file-doc-file '$file'.", e)
+        case e: Throwable => logger.error(s"Unable to index doc ${doc.getId} file '$file'.", e)
       }
     }
   }

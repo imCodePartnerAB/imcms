@@ -15,15 +15,17 @@
         <param-value>false</param-value>
     </context-param>
 
-    <context-param>
-        <param-name>log4jConfigLocation</param-name>
-        <param-value>WEB-INF/conf/log4j.xml</param-value>
-    </context-param>
-
     <display-name>imCMS</display-name>
 
+    <!--
+     imCMS setup:
+     com.imcode.imcms.servlet.ImcmsLog4jConfigListener must be registered first.
+     com.imcode.imcms.servlet.mcmsInitListener must be registered immediately next to
+        org.springframework.web.context.ContextLoaderListener.
+    -->
+
     <listener>
-        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+        <listener-class>com.imcode.imcms.servlet.ImcmsLog4jConfigListener</listener-class>
     </listener>
 
     <listener>
@@ -31,7 +33,7 @@
     </listener>
 
     <listener>
-        <listener-class>com.imcode.imcms.servlet.ImcmsContextListener</listener-class>
+        <listener-class>com.imcode.imcms.servlet.ImcmsInitListener</listener-class>
     </listener>
 
     <filter>
