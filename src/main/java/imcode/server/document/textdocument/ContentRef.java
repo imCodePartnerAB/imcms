@@ -54,12 +54,11 @@ public class ContentRef implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ContentRef)) return false;
+        return this == o || (o instanceof ContentRef && equals((ContentRef) o));
+    }
 
-        ContentRef that = (ContentRef) o;
-
-        return loopNo == that.contentNo && contentNo == that.contentNo;
+    private boolean equals(ContentRef that) {
+        return loopNo == that.loopNo && contentNo == that.contentNo;
     }
 
     @Override

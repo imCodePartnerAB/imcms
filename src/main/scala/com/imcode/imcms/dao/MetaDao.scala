@@ -116,8 +116,8 @@ class MetaDao extends HibernateSupport {
   def saveInclude(include: Include) = hibernate.saveOrUpdate(include)
 
 
-  def deleteHtmlReference(docRef: DocRef) = hibernate.bulkUpdate(
-    "delete HtmlReference r where r.docRef = ?", docRef
+  def deleteHtmlReference(docRef: DocRef) = hibernate.bulkUpdateByNamedParams(
+    "delete from HtmlReference r where r.docRef = :docRef", "docRef" -> docRef
   )
 
 

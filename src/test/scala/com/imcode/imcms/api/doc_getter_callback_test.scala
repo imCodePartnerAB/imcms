@@ -13,6 +13,7 @@ import org.mockito.Mockito._
 import javax.servlet.http.HttpServletRequest
 import org.scalatest.mock.MockitoSugar
 import imcode.server.{ImcmsServices, Imcms, ImcmsConstants}
+import reflect.ClassTag
 
 @RunWith(classOf[JUnitRunner])
 class DocGetterCallbackSuite extends FunSuite {
@@ -26,9 +27,10 @@ class DocGetterCallbackSuite extends FunSuite {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkDefaultUser
 
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn null
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn null
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(null)
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn(null)
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn(null)
+    when(request.getServerName).thenReturn("127.0.0.1")
 
     DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
@@ -38,9 +40,9 @@ class DocGetterCallbackSuite extends FunSuite {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkDefaultUser
 
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn LanguageFX.mkSwedish.getCode
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn null
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn null
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(LanguageFX.mkSwedish.getCode)
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn(null)
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn(null)
 
     DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
@@ -52,9 +54,10 @@ class DocGetterCallbackSuite extends FunSuite {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkDefaultUser
 
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "0"
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(null)
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn("1001")
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("0")
+    when(request.getServerName).thenReturn("127.0.0.1")
 
     DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
@@ -64,9 +67,10 @@ class DocGetterCallbackSuite extends FunSuite {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkDefaultUser
 
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "2"
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(null)
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn("1001")
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("2")
+    when(request.getServerName).thenReturn("127.0.0.1")
 
     DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
     assertDGC[DefaultDocGetterCallback](user.getDocGetterCallback)
@@ -76,9 +80,10 @@ class DocGetterCallbackSuite extends FunSuite {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkSuperAdmin
 
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "0"
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(null)
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn("1001")
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("0")
+    when(request.getServerName).thenReturn("127.0.0.1")
 
     DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
 
@@ -92,9 +97,10 @@ class DocGetterCallbackSuite extends FunSuite {
     val request = MockitoSugar.mock[HttpServletRequest]
     val user = UserFX.mkSuperAdmin
 
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)) thenReturn null
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)) thenReturn "1001"
-    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)) thenReturn "2"
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(null)
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn("1001")
+    when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("2")
+    when(request.getServerName).thenReturn("127.0.0.1")
 
     DocGetterCallbacks.updateUserDocGetterCallback(request, services, user)
 
@@ -105,8 +111,8 @@ class DocGetterCallbackSuite extends FunSuite {
     assertEquals(2, gdc.selectedDocVersionNo)
   }
 
-  def assertDGC[A <: DocGetterCallback](dgc: DocGetterCallback)(implicit mf: Manifest[A]) {
+  def assertDGC[A <: DocGetterCallback](dgc: DocGetterCallback)(implicit mf: ClassTag[A]) {
     assertNotNull(dgc)
-    assertEquals(mf.erasure, dgc.getClass)
+    assertEquals(mf.runtimeClass, dgc.getClass)
   }
 }

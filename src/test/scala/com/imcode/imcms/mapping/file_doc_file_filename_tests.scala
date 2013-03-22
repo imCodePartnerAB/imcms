@@ -43,7 +43,7 @@ class FilenameSpec extends WordSpec {
 
     "doc version is not a working version and file id is a blank" should {
       "be 'docId_docVersionNo'" in {
-        expectResult("1001_3") {
+        expectResult("1001_30") {
           getFilenameForFileDocumentFile(DocRef.of(1001, 30), null)
         }
 

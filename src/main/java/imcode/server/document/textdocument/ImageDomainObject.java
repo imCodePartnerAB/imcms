@@ -52,7 +52,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
         }
 
         public Builder no(Integer no) {
-            imageDomainObject.no = no.toString();
+            imageDomainObject.no = no;
             return this;
         }
 
@@ -93,7 +93,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
     /**
      * Image order no in a text doc.
      */
-    private String no = "";
+    private Integer no;
 
 
     private int width;
@@ -157,7 +157,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
     private DocumentLanguage language;
 
     public String getName() {
-        return no;
+        return no.toString();
     }
 
     public ImageSize getDisplayImageSize() {
@@ -266,7 +266,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     @Deprecated
     public void setName(String image_name) {
-        this.no = image_name;
+        this.no = Integer.parseInt(image_name);
     }
 
     public void setWidth(int image_width) {
@@ -491,11 +491,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     @Deprecated
     public void setIndex(Integer index) {
-        if (index == null) {
-            no = null;
-        } else {
-            no = index.toString();
-        }
+        this.no = index;
     }
 
 
