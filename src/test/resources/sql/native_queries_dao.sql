@@ -45,8 +45,8 @@ CREATE TABLE `imcms_text_doc_menu_items` (
   CONSTRAINT `fk__imcms_text_doc_menu_items__menu` FOREIGN KEY (`menu_id`) REFERENCES `imcms_text_doc_menus` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-insert into imcms_text_doc_menus (doc_id, doc_version_no, no, sort_order)
-values (1001, 1, 1, 1), (1002, 1, 1, 1), (1003, 1, 1, 1);
+insert into imcms_text_doc_menus (id, doc_id, doc_version_no, no, sort_order)
+values (1, 1001, 1, 1, 1), (2, 1002, 1, 1, 1), (3, 1003, 1, 1, 1);
 
 insert into imcms_text_doc_menu_items (menu_id, to_doc_id, manual_sort_order, tree_sort_index)
 values (1, 1001, 1, 1), (2, 1001, 1, 1), (3, 1001, 1, 1);
