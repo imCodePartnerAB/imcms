@@ -16,6 +16,9 @@ import java.util.Map;
 
 public class ImcmsLog4jConfigListener implements ServletContextListener {
 
+    // all occurrences of ${com.imcode.imcms.path} must be replaced with real WEB_APP root path.
+    private static String WEBAPP_ROOT_RE = "(?i)\\$\\{\\s*com\\.imcode\\.imcms\\.path\\s*\\}";
+
     public void contextInitialized(ServletContextEvent event) {
         ServletContext servletContext = event.getServletContext();
         File webappRoot = new File(servletContext.getRealPath("/"));
@@ -28,7 +31,7 @@ public class ImcmsLog4jConfigListener implements ServletContextListener {
         try {
             String log4jConf = FileUtils
                     .readFileToString(log4jConfFile, "utf-8")
-                    .replaceAll("(?i)\\$\\{webapp\\.root\\}", webappRoot.getCanonicalPath());
+                    .replaceAll(WEBAPP_ROOT_RE, webappRoot.getCanonicalPath());
 
             Reader log4jConfReader = new StringReader(log4jConf);
 
