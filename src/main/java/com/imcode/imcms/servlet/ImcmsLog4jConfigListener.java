@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 public class ImcmsLog4jConfigListener implements ServletContextListener {
 
@@ -31,7 +32,7 @@ public class ImcmsLog4jConfigListener implements ServletContextListener {
         try {
             String log4jConf = FileUtils
                     .readFileToString(log4jConfFile, "utf-8")
-                    .replaceAll(WEBAPP_ROOT_RE, webappRoot.getCanonicalPath());
+                    .replaceAll(WEBAPP_ROOT_RE, Matcher.quoteReplacement(webappRoot.getCanonicalPath()));
 
             Reader log4jConfReader = new StringReader(log4jConf);
 
