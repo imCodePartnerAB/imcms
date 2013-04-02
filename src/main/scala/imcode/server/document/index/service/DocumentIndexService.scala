@@ -8,7 +8,7 @@ import _root_.imcode.server.document.DocumentDomainObject
 import scala.util.Try
 
 /**
- * requestXXX methods are expected to execute asynchronously.
+ *
  */
 trait DocumentIndexService extends Log4jLoggerSupport {
 
@@ -16,11 +16,15 @@ trait DocumentIndexService extends Log4jLoggerSupport {
 
   def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[JList[DocumentDomainObject]]
 
-  def requestIndexUpdate(request: IndexUpdateRequest)
+  def update(request: IndexUpdateOp)
 
-  def requestIndexRebuild(): Try[IndexRebuildTask]
+  def rebuild(): Try[IndexRebuildTask]
 
-  def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask]
+  def rebuildIfEmpty(): Option[IndexRebuildTask] = {
+    if (query(new SolrQuery("*:*")).get.getResults.isEmpty) Some(rebuild().get) else None
+  }
+
+  def currentRebuildTaskOpt(): Option[IndexRebuildTask]
 
   def shutdown()
 }

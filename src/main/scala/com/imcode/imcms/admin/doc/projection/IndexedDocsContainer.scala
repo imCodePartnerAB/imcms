@@ -86,10 +86,10 @@ class IndexedDocsContainer(
       case (None, _) => java.util.Collections.emptyList()
       case (_, Some(ids)) if ids.isEmpty => java.util.Collections.emptyList()
       case (Some(solrQuery), None) =>
-        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrQuery, user).get
+        imcmsServices.getDocumentMapper.getDocumentIndex.getService().search(solrQuery, user).get
       case (Some(solrQuery), Some(ids)) =>
         // todo: apply visible docs filter
-        imcmsServices.getDocumentMapper.getDocumentIndex.service().search(solrQuery, user).get
+        imcmsServices.getDocumentMapper.getDocumentIndex.getService().search(solrQuery, user).get
     }
 
     notifyItemSetChanged()

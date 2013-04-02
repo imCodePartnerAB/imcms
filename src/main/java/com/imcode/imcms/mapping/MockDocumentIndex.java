@@ -49,7 +49,7 @@ public class MockDocumentIndex implements DocumentIndex {
     }
 
     @Override
-    public DocumentIndexService service() {
+    public DocumentIndexService getService() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

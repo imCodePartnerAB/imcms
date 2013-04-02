@@ -103,7 +103,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
-    private DocumentI18nSupport i18nContentSupport;
+    private DocumentI18nSupport documentI18nSupport;
     private ApplicationContext applicationContext;
 
 
@@ -125,13 +125,13 @@ public class DefaultImcmsServices implements ImcmsServices {
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
                                 ApplicationContext applicationContext,
-                                DocumentI18nSupport i18nContentSupport) {
+                                DocumentI18nSupport documentI18nSupport) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
         this.applicationContext = applicationContext;
-        this.i18nContentSupport = i18nContentSupport;
+        this.documentI18nSupport = documentI18nSupport;
 
         initConfig(props);
         initSso();
@@ -869,11 +869,11 @@ public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public DocumentI18nSupport getDocumentI18nSupport() {
-        return i18nContentSupport;
+        return documentI18nSupport;
     }
 
-    public void setI18nContentSupport(DocumentI18nSupport i18nContentSupport) {
-        this.i18nContentSupport = i18nContentSupport;
+    public void setDocumentI18nSupport(DocumentI18nSupport documentI18nSupport) {
+        this.documentI18nSupport = documentI18nSupport;
     }
 
     @Override

@@ -32,7 +32,7 @@ public class ImcmsLog4jConfigListener implements ServletContextListener {
         try {
             String log4jConf = FileUtils
                     .readFileToString(log4jConfFile, "utf-8")
-                    .replaceAll(WEBAPP_ROOT_RE, Matcher.quoteReplacement(webappRoot.getCanonicalPath()));
+                    .replaceAll(WEBAPP_ROOT_RE, Matcher.quoteReplacement(webappRoot.getAbsolutePath()));
 
             Reader log4jConfReader = new StringReader(log4jConf);
 

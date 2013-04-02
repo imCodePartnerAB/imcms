@@ -38,7 +38,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
 
       try {
         1001 to 1010 foreach { id =>
-          service.requestIndexUpdate(AddDocToIndex(id))
+          service.update(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)
@@ -66,7 +66,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
 
       try {
         1001 to 1010 foreach { id =>
-          service.requestIndexUpdate(AddDocToIndex(id))
+          service.update(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)
@@ -87,12 +87,12 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       val service = new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops, serviceErrors :+= _)
 
       try {
-        service.requestIndexRebuild()
+        service.rebuild()
 
         Thread.sleep(1000)
 
         1001 to 1010 foreach { id =>
-          service.requestIndexUpdate(AddDocToIndex(id))
+          service.update(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)

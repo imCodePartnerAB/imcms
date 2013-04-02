@@ -23,11 +23,11 @@ class RemoteDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serv
 
   def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[JList[DocumentDomainObject]] = ???
 
-  def requestIndexUpdate(request: IndexUpdateRequest) {}
+  def update(request: IndexUpdateOp) {}
 
-  def requestIndexRebuild(): Try[IndexRebuildTask] = ???
+  def rebuild(): Try[IndexRebuildTask] = ???
 
-  def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask] = ???
+  def currentRebuildTaskOpt(): Option[IndexRebuildTask] = ???
 
   def shutdown() {}
 }

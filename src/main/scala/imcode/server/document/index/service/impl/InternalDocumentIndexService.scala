@@ -62,7 +62,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
         logger.info("Creating new instance of managed service. Data directory will be recreated.")
         newManagedService(recreateDataDir = true) |> { newService =>
           serviceRef.set(newService)
-          newService.requestIndexRebuild()
+          newService.rebuild()
         }
 
         logger.info("New managed service instance has been created.")
@@ -82,11 +82,11 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
     serviceRef.get.search(solrQuery, searchingUser)
   }
 
-  override def requestIndexUpdate(request: IndexUpdateRequest): Unit = serviceRef.get.requestIndexUpdate(request)
+  override def update(request: IndexUpdateOp): Unit = serviceRef.get.update(request)
 
-  override def requestIndexRebuild(): Try[IndexRebuildTask] = serviceRef.get.requestIndexRebuild()
+  override def rebuild(): Try[IndexRebuildTask] = serviceRef.get.rebuild()
 
-  override def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask] = serviceRef.get.currentIndexRebuildTaskOpt()
+  override def currentRebuildTaskOpt(): Option[IndexRebuildTask] = serviceRef.get.currentRebuildTaskOpt()
 
   override def shutdown(): Unit = lock.synchronized {
     if (shutdownRef.compareAndSet(false, true)) {

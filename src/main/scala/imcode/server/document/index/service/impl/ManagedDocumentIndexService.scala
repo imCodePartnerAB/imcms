@@ -32,7 +32,7 @@ class ManagedSolrDocumentIndexService(
   private val shutdownRef = new AtomicBoolean(false)
   private val indexRebuildThreadRef = new AtomicReference[Thread]
   private val indexUpdateThreadRef = new AtomicReference[Thread]
-  private val indexUpdateRequests = new LinkedBlockingQueue[IndexUpdateRequest](1000)
+  private val indexUpdateRequests = new LinkedBlockingQueue[IndexUpdateOp](1000)
   private val indexWriteFailureRef = new AtomicReference[ManagedSolrDocumentIndexService.IndexWriteFailure]
   private val indexRebuildTaskRef = new AtomicReference[IndexRebuildTask]
 
@@ -44,7 +44,7 @@ class ManagedSolrDocumentIndexService(
    * An existing index-update-thread is stopped before rebuilding happens and a new index-update-thread is started
    * immediately after running index-rebuild-thread is terminated without errors.
    */
-  override def requestIndexRebuild(): Try[IndexRebuildTask] = lock.synchronized {
+  override def rebuild(): Try[IndexRebuildTask] = lock.synchronized {
     logger.info("attempting to start new document-index-rebuild thread.")
 
     (shutdownRef.get, indexWriteFailureRef.get, indexRebuildThreadRef.get, indexRebuildTaskRef.get()) match {
@@ -194,7 +194,7 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  override def requestIndexUpdate(request: IndexUpdateRequest) {
+  override def update(request: IndexUpdateOp) {
     Threads.spawnDaemon {
       lock.synchronized {
         if (!shutdownRef.get()) {
@@ -257,7 +257,7 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  override def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask] = indexRebuildTaskRef.get.asOption
+  override def currentRebuildTaskOpt(): Option[IndexRebuildTask] = indexRebuildTaskRef.get.asOption
 }
 
 

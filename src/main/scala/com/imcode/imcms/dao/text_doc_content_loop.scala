@@ -38,7 +38,9 @@ class ContentLoopDao extends HibernateSupport {
 
 
   def getNextLoopNo(docRef: DocRef): Int = hibernate.getByQuery[JInteger](
-      "select max(l.no) from ContentLoop l where l.docId = ? and l.docVersionNo = ?", docRef.docId, docRef.docVersionNo
+      "select max(l.no) from ContentLoop l where l.docId = ?1 and l.docVersionNo = ?2",
+      1 -> docRef.docId,
+      2 -> docRef.docVersionNo
     ) match {
       case null => 0
       case n => n.intValue + 1

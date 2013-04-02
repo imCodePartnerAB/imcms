@@ -9,7 +9,7 @@ trait HibernateSupport {
   @scala.reflect.BeanProperty
   var sessionFactory: SessionFactory = _
 
-  @deprecated
+  /* exposes method for java API */
   def flush(): Unit = hibernate.flush()
 
   object hibernate {
@@ -17,13 +17,11 @@ trait HibernateSupport {
     import HibernateSupport.HibernateResultTransformer
 
     type NamedParam = (String, Any)
-
+    type PositionalParam = (Int, Any)
 
     def withCurrentSession[A](fn: Session => A): A = fn(sessionFactory.getCurrentSession)
 
-
     def flush(): Unit = withCurrentSession { _.flush() }
-
 
     private def setParams[Q <: Query](ps: Any*)(query: Q): Q = query |>> { _ =>
       for ((param, position) <- ps.zipWithIndex) query.setParameter(position, param.asInstanceOf[AnyRef])
@@ -33,13 +31,22 @@ trait HibernateSupport {
       for ((name, value) <- namedParam +: namedParams) query.setParameter(name, value.asInstanceOf[AnyRef])
     }
 
+    // See positional params difference in JPQL and HQL
+    // http://docs.jboss.org/hibernate/orm/4.2/devguide/en-US/html/ch11.html#d5e2915
+    private def setPositionalParams[Q <: Query](params: PositionalParam*)(query: Q): Q = query |>> { _ =>
+      for ((position, value) <- params) query.setParameter(position.toString, value.asInstanceOf[AnyRef])
+    }
 
     def runSqlQuery[A](queryString: String, ps: Any*)(fn: SQLQuery => A): A = withCurrentSession {
       _.createSQLQuery(queryString) |> setParams(ps: _*) |> fn
     }
 
-    def runQuery[A](queryString: String, ps: Any*)(fn: Query => A): A = withCurrentSession {
-      _.createQuery(queryString) |> setParams(ps: _*) |> fn
+//    def runQuery[A](queryString: String, ps: Any*)(fn: Query => A): A = withCurrentSession {
+//      _.createQuery(queryString) |> setParams(ps: _*) |> fn
+//    }
+
+    def runQuery[A](queryString: String, ps: PositionalParam*)(fn: Query => A): A = withCurrentSession {
+      _.createQuery(queryString) |> setPositionalParams(ps: _*) |> fn
     }
 
     def runQueryWithNamedParams[A](queryString: String, nameParam: NamedParam, namedParams: NamedParam*)(fn: Query => A): A = withCurrentSession {
@@ -55,8 +62,8 @@ trait HibernateSupport {
     }
 
 
-    def getByQuery[A](queryString: String, ps: Any*): A =
-      runQuery(queryString, ps: _*)(_.uniqueResult().asInstanceOf[A])
+    def getByQuery[A](queryString: String, params: PositionalParam*): A =
+      runQuery(queryString, params: _*)(_.uniqueResult().asInstanceOf[A])
 
     def getByNamedQuery[A](queryName: String, ps: Any*): A =
       runNamedQuery(queryName, ps: _*)(_.uniqueResult().asInstanceOf[A])
@@ -69,7 +76,7 @@ trait HibernateSupport {
       _.createCriteria(scala.reflect.classTag[A].runtimeClass).list().asInstanceOf[JList[A]]
     }
 
-    def listByQuery[A <: AnyRef](queryString: String, ps: Any*): JList[A] =
+    def listByQuery[A <: AnyRef](queryString: String, ps: PositionalParam*): JList[A] =
       runQuery(queryString, ps: _*)(_.list().asInstanceOf[JList[A]])
 
     def listByQueryAndNamedParams[A <: AnyRef](queryString: String, namedParam: NamedParam, namedParams: NamedParam*): JList[A] =
@@ -87,7 +94,7 @@ trait HibernateSupport {
         query.list().asInstanceOf[JList[A]]
       }
 
-    def bulkUpdate(queryString: String, ps: Any*): Int =
+    def bulkUpdate(queryString: String, ps: PositionalParam*): Int =
       runQuery(queryString, ps: _*)(_.executeUpdate())
 
     def bulkUpdateByNamedParams(queryString: String, namedParam: NamedParam, namedParams: NamedParam*): Int =

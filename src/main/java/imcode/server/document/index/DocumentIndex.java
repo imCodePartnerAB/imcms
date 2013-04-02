@@ -104,5 +104,5 @@ public interface DocumentIndex {
      * @return underlying service
      * @since 6.0
      */
-    DocumentIndexService service();
+    DocumentIndexService getService();
 }

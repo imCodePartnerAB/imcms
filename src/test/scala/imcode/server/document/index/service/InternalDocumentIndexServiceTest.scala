@@ -41,7 +41,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
         assertTrue("No docs", docs.isEmpty)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          service.requestIndexUpdate(AddDocToIndex(metaId))
+          service.update(AddDocToIndex(metaId))
         }
 
         Thread.sleep(1000)
@@ -60,7 +60,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
 
     "rebuild index" in {
       using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
-        service.requestIndexRebuild().get |> { task =>
+        service.rebuild().get |> { task =>
           task.future.get()
         }
       }
@@ -85,7 +85,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
         assertTrue("No docs", docs.isEmpty)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          service.requestIndexUpdate(AddDocToIndex(metaId))
+          service.update(AddDocToIndex(metaId))
           if (metaId == DocFX.DefaultId + 5) {
             Test.solr.recreateHome()
           }
@@ -102,7 +102,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
       Test.solr.recreateHome()
 
       using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
-        service.requestIndexRebuild().get |> { task =>
+        service.rebuild().get |> { task =>
           task.future.get()
         }
 

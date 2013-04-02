@@ -125,6 +125,9 @@ public class Imcms {
             }
 
             services = createServices();
+            if (services.getDocumentMapper().getDocumentIndex().getService().rebuildIfEmpty().isDefined()) {
+                logger.info("Document index is empty, initiated index rebuild.");
+            }
         } catch (Exception e) {
             String msg = "Application could not be started. Please see the log file in WEB-INF/logs/ for details.";
             logger.error(msg, e);
@@ -196,7 +199,7 @@ public class Imcms {
         Prefs.flush();
 
         if (services != null) {
-            services.getDocumentMapper().getDocumentIndex().service().shutdown();
+            services.getDocumentMapper().getDocumentIndex().getService().shutdown();
         }
 
         services = null;

@@ -34,7 +34,7 @@ trait IndexRebuildScheduler { this: DocumentIndexService =>
       executor.scheduleWithFixedDelay(
         Threads.mkRunnable {
           logger.info("Running scheduled index rebuild.")
-          requestIndexRebuild().foreach { indexRebuildTask =>
+          rebuild().foreach { indexRebuildTask =>
             try {
               indexRebuildTask.future.get
               logger.info(s"Scheduled index rebuild task has finished. Next scheduled run in $interval minutes.")

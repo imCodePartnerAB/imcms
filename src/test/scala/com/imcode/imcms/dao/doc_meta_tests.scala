@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.Test
 import com.imcode.imcms.api._
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
-import com.imcode.imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
+import imcms.mapping.orm.{Include, HtmlReference, UrlReference, FileReference}
 import org.junit.Assert._
 import java.util.{Date}
 import scala.collection.JavaConverters._
@@ -104,6 +104,16 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
     metaDao.getFileReferences(docRef)
   }
 
+
+  ".getIncludes" in {
+    val docRef = DocRefFX.Default
+    metaDao.getIncludes(docRef.docId)
+  }
+
+  ".deleteIncludes" in {
+    val docRef = DocRefFX.Default
+    metaDao.deleteIncludes(docRef.docId)
+  }
 }
 
 
@@ -131,7 +141,8 @@ class MetaDaoTestConfig {
         classOf[CategoryTypeDomainObject],
         classOf[FileReference],
         classOf[UrlReference],
-        classOf[HtmlReference]
+        classOf[HtmlReference],
+        classOf[Include]
       ),
       Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
     ))

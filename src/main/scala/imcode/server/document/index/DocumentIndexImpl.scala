@@ -12,7 +12,7 @@ import java.util.Collections
 /**
  * {@link DocumentIndex} implementation.
  */
-class DocumentIndexImpl(override val service: DocumentIndexService, defaultDocumentLanguage: DocumentLanguage) extends DocumentIndex with Log4jLoggerSupport {
+class DocumentIndexImpl(service: DocumentIndexService, defaultDocumentLanguage: DocumentLanguage) extends DocumentIndex with Log4jLoggerSupport {
 
   // todo: move language rewrite into wrapper???
   // todo: replace canSearchFor with filter queries
@@ -53,7 +53,7 @@ class DocumentIndexImpl(override val service: DocumentIndexService, defaultDocum
   }
 
   override def rebuild() {
-    service.requestIndexRebuild()
+    service.rebuild()
   }
 
   override def indexDocument(document: DocumentDomainObject) {
@@ -65,10 +65,12 @@ class DocumentIndexImpl(override val service: DocumentIndexService, defaultDocum
   }
 
   override def indexDocument(docId: Int) {
-    service.requestIndexUpdate(AddDocToIndex(docId))
+    service.update(AddDocToIndex(docId))
   }
 
   override def removeDocument(docId: Int) {
-    service.requestIndexUpdate(DeleteDocFromIndex(docId))
+    service.update(DeleteDocFromIndex(docId))
   }
+
+  override def getService(): DocumentIndexService = service
 }

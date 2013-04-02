@@ -11,7 +11,7 @@ class SystemDao extends HibernateSupport {
   def getProperties(): JList[SystemProperty] = hibernate.listAll()
 
   def getProperty(name: String): SystemProperty = hibernate.getByQuery(
-    "SELECT p FROM SystemProperty p WHERE p.name = ?", name)
+    "SELECT p FROM SystemProperty p WHERE p.name = ?1", 1 -> name)
 
   def saveProperty(property: SystemProperty) = hibernate.saveOrUpdate(property)
 }

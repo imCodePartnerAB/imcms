@@ -2,7 +2,7 @@ package imcode.server.document.index.service.impl
 
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
-import _root_.imcode.server.document.index.service.{IndexRebuildTask, IndexUpdateRequest, DocumentIndexService}
+import _root_.imcode.server.document.index.service.{IndexRebuildTask, IndexUpdateOp, DocumentIndexService}
 import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.SolrQuery
 import scala.util.{Try, Failure}
@@ -14,11 +14,11 @@ object UnavailableDocumentIndexService extends DocumentIndexService {
 
   override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[com.imcode.JList[DocumentDomainObject]] = Failure(new ServiceUnavailableException())
 
-  override def requestIndexUpdate(request: IndexUpdateRequest) {}
+  override def update(request: IndexUpdateOp) {}
 
-  override def requestIndexRebuild(): Try[IndexRebuildTask] = Failure(new ServiceUnavailableException())
+  override def rebuild(): Try[IndexRebuildTask] = Failure(new ServiceUnavailableException())
 
-  override def currentIndexRebuildTaskOpt(): Option[IndexRebuildTask] = None
+  override def currentRebuildTaskOpt(): Option[IndexRebuildTask] = None
 
   override def shutdown() {}
 }
