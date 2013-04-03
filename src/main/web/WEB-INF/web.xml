@@ -132,6 +132,10 @@
         <!--</user-data-constraint>-->
     <!--</security-constraint>-->
 
+    <servlet>
+        <servlet-name>AdapterServlet</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.AdapterServlet</servlet-class>
+    </servlet>
 
     <servlet>
         <servlet-name>vaadin-sysadmin</servlet-name>
@@ -407,6 +411,11 @@
         <servlet-name>com.imcode.imcms.servlet.PasswordReset</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.PasswordReset</servlet-class>
     </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AdapterServlet</servlet-name>
+        <url-pattern>/servlet/ChangeMenu</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>web</servlet-name>
