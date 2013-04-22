@@ -81,83 +81,77 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private volatile Long id;
 
     @Transient
-    private ImageSource source = new NullImageSource();
+    private volatile ImageSource source = new NullImageSource();
 
-    private DocRef docRef;
+    private volatile DocRef docRef;
 
-    private ContentRef contentRef;
+    private volatile ContentRef contentRef;
 
-    /**
-     * Image order no in a text doc.
-     */
-    private Integer no;
+    private volatile Integer no;
 
 
-    private int width;
-    private int height;
-    private int border;
-    private String align = "";
+    private volatile int width;
+    private volatile int height;
+    private volatile int border;
+    private volatile String align = "";
 
     @Column(name = "alt_text")
-    private String alternateText = "";
+    private volatile String alternateText = "";
 
     @Column(name = "low_scr")
-    private String lowResolutionUrl = "";
+    private volatile String lowResolutionUrl = "";
 
     @Column(name = "v_space")
-    private int verticalSpace;
+    private volatile int verticalSpace;
 
     @Column(name = "h_space")
-    private int horizontalSpace;
-    private String target = "";
+    private volatile int horizontalSpace;
+    private volatile String target = "";
 
     @Column(name = "linkurl")
-    private String linkUrl = "";
+    private volatile String linkUrl = "";
 
     @Column(name = "imgurl")
-    private String imageUrl = "";
+    private volatile String imageUrl = "";
 
     @Column(name = "image_name", nullable = false, length = IMAGE_NAME_LENGTH)
-    private String imageName = "";
+    private volatile String imageName = "";
 
-    private Integer type;
+    private volatile Integer type;
 
     @Column(name = "archive_image_id")
-    private Long archiveImageId;
+    private volatile Long archiveImageId;
 
     @Column(name = "format", nullable = false)
-    private short format;
+    private volatile short format;
 
     @Column(name = "crop_x1", nullable = false)
-    private int cropX1;
+    private volatile int cropX1;
 
     @Column(name = "crop_y1", nullable = false)
-    private int cropY1;
+    private volatile int cropY1;
 
     @Column(name = "crop_x2", nullable = false)
-    private int cropX2;
+    private volatile int cropX2;
 
     @Column(name = "crop_y2", nullable = false)
-    private int cropY2;
+    private volatile int cropY2;
 
     @Column(name = "rotate_angle", nullable = false)
-    private short rotateAngle;
+    private volatile short rotateAngle;
 
     @Column(name = "gen_file", length = GEN_FILE_LENGTH)
-    private String generatedFilename;
+    private volatile String generatedFilename;
 
-    /**
-     * i18n support
-     */
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private DocumentLanguage language;
+    private volatile DocumentLanguage language;
 
     public String getName() {
-        return no.toString();
+        return no == null ? "" : no.toString();
     }
 
     public ImageSize getDisplayImageSize() {
@@ -746,7 +740,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return "ImageDomainObject{" +
                 "no='" + no + '\'' +
                 ", id=" + id +
-                ", contentRefOpt=" + contentRef +
+                ", contentRef=" + contentRef +
                 ", docRef=" + docRef +
                 '}';
     }

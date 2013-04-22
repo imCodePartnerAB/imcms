@@ -186,7 +186,7 @@ public class ContentLoop implements Serializable, Cloneable {
     }
 
     public Optional<P2<Content, Integer>> findContent(int contentNo) {
-        for (int i = 0; i < contents.size(); i++) {
+        for (int i = 0, k = contents.size(); i < k; i++) {
             Content content = contents.get(i);
             if (content.getNo() == contentNo) return Optional.of(P.of(content, i));
         }

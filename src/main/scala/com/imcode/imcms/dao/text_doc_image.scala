@@ -39,7 +39,7 @@ class ImageDao extends HibernateSupport {
   var languageDao: LanguageDao = _
 
   /**
-   * Please note that createIfNotExists merely creates an instance of ImageDomainObject not a database entry.
+   * Please note that createIfNotExists creates an instance of ImageDomainObject not a database entry.
    */
   def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentRef],
                 createIfNotExists: Boolean): JList[ImageDomainObject] = {

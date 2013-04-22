@@ -30,9 +30,10 @@ public class ImcmsLog4jConfigListener implements ServletContextListener {
         }
 
         try {
+            String webappRootPath = webappRoot.getCanonicalPath().replaceAll("\\\\", "/");
             String log4jConf = FileUtils
                     .readFileToString(log4jConfFile, "utf-8")
-                    .replaceAll(WEBAPP_ROOT_RE, Matcher.quoteReplacement(webappRoot.getAbsolutePath()));
+                    .replaceAll(WEBAPP_ROOT_RE, Matcher.quoteReplacement(webappRootPath));
 
             Reader log4jConfReader = new StringReader(log4jConf);
 

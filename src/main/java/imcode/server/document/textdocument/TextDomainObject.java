@@ -80,21 +80,21 @@ public class TextDomainObject implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private volatile Long id;
 
     /** Text filed no in a document. */
-    private Integer no;
+    private volatile Integer no;
 
-    String text;
+    private volatile String text;
 
-    int type;
+    private volatile int type;
 
-    private DocRef docRef;
-    private ContentRef contentRef;
+    private volatile DocRef docRef;
+    private volatile ContentRef contentRef;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private DocumentLanguage language;
+    private volatile DocumentLanguage language;
 
     public TextDomainObject() {
         this("");

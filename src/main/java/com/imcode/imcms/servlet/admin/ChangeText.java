@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.google.common.base.Optional;
 import com.imcode.imcms.api.DocumentLanguage;
 import imcode.server.Imcms;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
@@ -34,12 +35,7 @@ public class ChangeText extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser(request);
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         int documentId = Integer.parseInt(request.getParameter("meta_id"));
-        String loopNoStr = request.getParameter("loop_no");
-        String contentIndexStr = request.getParameter("content_index");
-
-        Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
-        Integer contentNo = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);
-        ContentRef contentRef = loopNo == null || contentNo == null ? null : ContentRef.of(loopNo, contentNo);
+        Optional<ContentRef> contentRefOpt = ContentRef.of(request.getParameter("loop_no"), request.getParameter("content_no"));
 
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentMapper.getDocument(documentId);
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(textDocument);
@@ -54,9 +50,9 @@ public class ChangeText extends HttpServlet {
         String label = null == request.getParameter("label") ? "" : request.getParameter("label");
 
         DocumentLanguage language = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
-        TextDomainObject text = contentRef == null
+        TextDomainObject text = contentRefOpt.isPresent()
                 ? textDocument.getText(textIndex)
-                : textDocument.getText(textIndex, contentRef);
+                : textDocument.getText(textIndex, contentRefOpt.get());
 
         Integer metaId = textDocument.getId();
 
@@ -66,7 +62,7 @@ public class ChangeText extends HttpServlet {
             text.setNo(textIndex);
             text.setLanguage(language);
             text.setType(TextDomainObject.TEXT_TYPE_HTML);
-            text.setContentRef(contentRef);
+            text.setContentRef(contentRefOpt.orNull());
         }
 
         TextEditPage page = new TextEditPage(documentId, textIndex, text, label);

@@ -49,24 +49,24 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Images outside of loops.
      */
-    private Map<Integer, ImageDomainObject> images = new HashMap<Integer, ImageDomainObject>();
+    private volatile Map<Integer, ImageDomainObject> images = new HashMap<Integer, ImageDomainObject>();
 
     /**
      * Texts outside of loops.
      */
-    private Map<Integer, TextDomainObject> texts = new HashMap<Integer, TextDomainObject>();
+    private volatile Map<Integer, TextDomainObject> texts = new HashMap<Integer, TextDomainObject>();
 
     /**
      * Texts in loops.
      */
-    private Map<ContentLoopItemKey, TextDomainObject> loopTexts
+    private volatile Map<ContentLoopItemKey, TextDomainObject> loopTexts
             = new HashMap<ContentLoopItemKey, TextDomainObject>();
 
 
     /**
      * Images in loops.
      */
-    private Map<ContentLoopItemKey, ImageDomainObject> loopImages
+    private volatile Map<ContentLoopItemKey, ImageDomainObject> loopImages
             = new HashMap<ContentLoopItemKey, ImageDomainObject>();
 
 
@@ -77,26 +77,26 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * <p/>
      * Map value is an included doc's id.
      */
-    private Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
+    private volatile Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
 
     /**
      * Menus map.
      * <p/>
      * Map index is a menu's no in this document.
      */
-    private Map<Integer, MenuDomainObject> menus = new HashMap<Integer, MenuDomainObject>();
+    private volatile Map<Integer, MenuDomainObject> menus = new HashMap<Integer, MenuDomainObject>();
 
     /**
      * Template names.
      */
-    private TemplateNames templateNames = new TemplateNames();
+    private volatile TemplateNames templateNames = new TemplateNames();
 
     /**
      * Content loops.
      * <p/>
      * Map key is a content's no in this document.
      */
-    private Map<Integer, ContentLoop> contentLoops = new HashMap<Integer, ContentLoop>();
+    private volatile Map<Integer, ContentLoop> contentLoops = new HashMap<Integer, ContentLoop>();
 
 
     public TextDocumentDomainObject() {

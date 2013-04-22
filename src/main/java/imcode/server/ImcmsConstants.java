@@ -76,10 +76,10 @@ public interface ImcmsConstants {
     public static final String REQUEST_PARAM__DOC_ID = "meta_id";
     
     /** Doc's language code. */
-    public static final String REQUEST_PARAM__DOC_LANGUAGE = "lng";
+    public static final String REQUEST_PARAM__DOC_LANGUAGE = "lang";
 
     /** Doc's version no. */
-    public static final String REQUEST_PARAM__DOC_VERSION = "vsn";
+    public static final String REQUEST_PARAM__DOC_VERSION = "ver";
 
     /** Overrides default return URL which is used when a user leaves the editor or an add-on page. */
     public static final String REQUEST_PARAM__RETURN_URL = "imcms.return.url";
