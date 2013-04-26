@@ -13,6 +13,9 @@ import java.util.TreeMap
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class NativeQueriesDao extends HibernateSupport {
 
+  // required by separate compilation
+  import HibernateSupport.HibernateResultTransformer
+
   def getAllMimeTypes(): JList[String] = hibernate.listBySqlQuery(
     "SELECT mime FROM mime_types WHERE mime_id > 0 ORDER BY mime_id"
   )

@@ -660,7 +660,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     assertEquals(info.getVersionsCount + 1, infoNew.getVersionsCount)
     assertEquals(infoNew.getLatestVersion.getNo, expectedNewVersionNo)
 
-    val docNew = docMapper.getCustomDocument(DocRef.of(doc.getId, expectedNewVersionNo))
+    val docNew = docMapper.getCustomDocument[DocumentDomainObject](DocRef.of(doc.getId, expectedNewVersionNo))
     // instance of FileDocumentDomainObject
     assertNotNull(docNew)
     assertEquals(doc.getId, docNew.getId)

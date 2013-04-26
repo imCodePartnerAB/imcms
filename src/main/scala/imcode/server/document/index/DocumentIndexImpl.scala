@@ -42,7 +42,8 @@ class DocumentIndexImpl(service: DocumentIndexService, defaultDocumentLanguage: 
 
     val solrQuery = new SolrQuery(queryString)
     for {
-      sortField <- query.getSort.getSort
+      sort <- query.getSort.asOption
+      sortField <- sort.getSort
       field <- sortField.getField.asOption
     } {
       solrQuery.addSort(field, if (sortField.getReverse) SolrQuery.ORDER.desc else SolrQuery.ORDER.asc)

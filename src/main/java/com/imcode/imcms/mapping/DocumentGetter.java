@@ -19,14 +19,14 @@ public interface DocumentGetter {
      * @param metaId document's meta id.
      *
      */
-    DocumentDomainObject getDocument(int metaId);
+    <T extends DocumentDomainObject> T getDocument(int metaId);
 
     /**
      * Returns default document
      * @param metaId
      * @return
      */
-    DocumentDomainObject getDefaultDocument(int metaId, DocumentLanguage language);
+    <T extends DocumentDomainObject> T getDefaultDocument(int metaId, DocumentLanguage language);
 
-    DocumentDomainObject getDefaultDocument(int metaId);
+    <T extends DocumentDomainObject> T getDefaultDocument(int metaId);
 }

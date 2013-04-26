@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import imcode.server.document.DocumentDomainObject;
 import imcode.util.CompositeList;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
+@Deprecated
 public class FragmentingDocumentGetter extends DocumentGetterWrapper {
 
     private static final int DOCUMENTS_PER_FRAGMENT = 50;
@@ -20,18 +22,18 @@ public class FragmentingDocumentGetter extends DocumentGetterWrapper {
         super(documentGetter);
     }
 
-    public List getDocuments(final Collection documentIds) {
+    public List<DocumentDomainObject> getDocuments(final Collection<Integer> documentIds) {
         if (documentIds.isEmpty()) {
-            return Collections.EMPTY_LIST ;
+            return Collections.emptyList() ;
         }
-        List documentIdList = new ArrayList(documentIds) ;
+        List<Integer> documentIdList = new ArrayList<Integer>(documentIds) ;
         CompositeList compositeDocumentList = new CompositeList();
         for (int i = 0; i < documentIds.size(); i += DOCUMENTS_PER_FRAGMENT ) {
             int toIndex = Math.min(documentIds.size(), i+DOCUMENTS_PER_FRAGMENT) ;
-            List documentIdSubList = documentIdList.subList(i, toIndex);
+            List<Integer> documentIdSubList = documentIdList.subList(i, toIndex);
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            List documentList = super.getDocuments(documentIdSubList);
+            List<DocumentDomainObject> documentList = super.getDocuments(documentIdSubList);
             stopWatch.stop();
             if (log.isTraceEnabled()) {
                 log.trace("Got "+documentList.size()+" documents in "+stopWatch.getTime()+"ms.") ;

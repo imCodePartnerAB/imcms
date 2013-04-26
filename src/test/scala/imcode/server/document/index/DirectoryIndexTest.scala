@@ -123,7 +123,7 @@ class DirectoryIndexFixture {
 
     val docId = doc.getMetaId ensuring (_ != null, "document id must be set")
 
-    when(documentMapperMock.getDefaultDocument(docId)).thenReturn(doc)
+    when(documentMapperMock.getDefaultDocument[TextDocumentDomainObject](docId)).thenReturn(doc)
     when(documentMapperMock.getI18nMetas(docId)).thenReturn(
       i18nMetas.getOrElse(Seq(doc.getI18nMeta)).asJava
     )

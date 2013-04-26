@@ -72,83 +72,83 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     @Id
     @Column(name = "user_id")
-    protected int id;
+    protected volatile int id;
 
     @Column(name = "login_name")
-    private String loginName = "" ;
+    private volatile String loginName = "" ;
 
     @Column(name = "login_password")
-    private String password;
+    private volatile String password;
 
     @Column(name = "first_name")
-    private String firstName = "";
+    private volatile String firstName = "";
 
     @Column(name = "last_name")
-    private String lastName = "";
+    private volatile String lastName = "";
 
-    private String title = "";
-    private String company = "";
-    private String address = "";
-    private String city = "";
-    private String zip = "";
-    private String country = "";
+    private volatile String title = "";
+    private volatile String company = "";
+    private volatile String address = "";
+    private volatile String city = "";
+    private volatile String zip = "";
+    private volatile String country = "";
 
     @Transient
-    private String province = "";
+    private volatile String province = "";
 
     @Column(name = "email")
-    private String emailAddress = "";
-    private boolean active = true;
+    private volatile String emailAddress = "";
+    private volatile boolean active = true;
 
     @Column(name = "create_date")
-    private Date createDate;
+    private volatile Date createDate;
 
     @Column(name = "language")
-    private String languageIso639_2;
+    private volatile String languageIso639_2;
 
     @Transient
-    private TemplateGroupDomainObject templateGroup;
+    private volatile TemplateGroupDomainObject templateGroup;
 
     @Column(name = "external")
-    private boolean imcmsExternal;
+    private volatile boolean imcmsExternal;
 
     @Transient
-    private HashSet phoneNumbers = new HashSet();
+    private volatile HashSet phoneNumbers = new HashSet();
 
     @Transient
-    RoleIds roleIds = UserDomainObject.createRolesSetWithUserRole();
+    private volatile RoleIds roleIds = UserDomainObject.createRolesSetWithUserRole();
 
     @Transient
-    protected RoleIds userAdminRoleIds = new RoleIds();
+    protected volatile RoleIds userAdminRoleIds = new RoleIds();
 
     /** Http session id.*/
     @Column(name = "session_id")
-    private String sessionId;
+    private volatile String sessionId;
 
     @Transient
-    private boolean authenticatedByIp;
+    private volatile boolean authenticatedByIp;
 
     /**
      * FIXME - Kludge to get context path into template methods *
      */
     @Transient
-    private String currentContextPath;
+    private volatile String currentContextPath;
 
     /**
      * @since 4.0.7
      */
     @Enumerated
     @Column(name = "login_password_is_encrypted")
-    private PasswordType passwordType = PasswordType.UNENCRYPTED;
+    private volatile PasswordType passwordType = PasswordType.UNENCRYPTED;
 
     /**
      * @since 4.0.7
      */
     @Transient
-    private PasswordReset passwordReset = null;
+    private volatile PasswordReset passwordReset = null;
 
     @Transient
-    private volatile DocGetterCallback docGetterCallbackRef;
+    private volatile DocGetterCallback docGetterCallback;
 
     public UserDomainObject() {}
 
@@ -163,7 +163,8 @@ public class UserDomainObject implements Cloneable, Serializable {
         return newRoleIds;
     }
 
-    public Object clone() {
+    @Override
+    public UserDomainObject clone() {
         try {
             UserDomainObject clone = (UserDomainObject)super.clone();
             clone.roleIds = (RoleIds) roleIds.clone();
@@ -349,11 +350,11 @@ public class UserDomainObject implements Cloneable, Serializable {
      * @return document getter callback associated with this user.
      */
     public DocGetterCallback getDocGetterCallback() {
-        return docGetterCallbackRef;
+        return docGetterCallback;
     }
 
     public void setDocGetterCallback(DocGetterCallback callback) {
-        this.docGetterCallbackRef  = callback;
+        this.docGetterCallback = callback;
     }    
 
     /**

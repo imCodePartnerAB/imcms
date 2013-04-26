@@ -46,7 +46,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
     val docOpt =
       for {
         docId <- request.getParameter("docId") |> PosInt.unapply
-        doc <- imcmsServices.getDocumentMapper.getDocument(docId).asOption
+        doc <- imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId).asOption
       } yield doc
 
     val titleOpt = request.getParameter("label").trimToOption

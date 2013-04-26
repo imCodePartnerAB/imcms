@@ -686,8 +686,8 @@ public class DocumentMapper implements DocumentGetter {
      * @return default document in default language.
      * @since 6.0
      */
-    public DocumentDomainObject getDefaultDocument(int docId) {
-        return getDefaultDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
+    public <T extends DocumentDomainObject> T getDefaultDocument(int docId) {
+        return (T) getDefaultDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
     }
 
 
@@ -696,7 +696,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return working document in default language.
      * @since 6.0
      */
-    public DocumentDomainObject getWorkingDocument(int docId) {
+    public <T extends DocumentDomainObject> T getWorkingDocument(int docId) {
         return getWorkingDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
     }
 
@@ -705,7 +705,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return custom document in default language.
      * @since 6.0
      */
-    public DocumentDomainObject getCustomDocument(DocRef docRef) {
+    public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
         return getCustomDocument(docRef, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
     }
 
@@ -718,13 +718,13 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @param docId document id.
      */
-    public DocumentDomainObject getDocument(int docId) {
+    public <T extends DocumentDomainObject> T getDocument(int docId) {
         UserDomainObject user = Imcms.getUser();
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
 
         return callback == null
-                ? getDefaultDocument(docId)
-                : callback.getDoc(docId, user, this);
+                ? (T) getDefaultDocument(docId)
+                : (T) callback.getDoc(docId, user, this);
     }
 
 
@@ -734,8 +734,8 @@ public class DocumentMapper implements DocumentGetter {
      * @return working document
      * @since 6.0
      */
-    public DocumentDomainObject getWorkingDocument(int docId, DocumentLanguage language) {
-        return documentLoaderCachingProxy.getWorkingDoc(docId, language);
+    public <T extends DocumentDomainObject> T getWorkingDocument(int docId, DocumentLanguage language) {
+        return (T) documentLoaderCachingProxy.getWorkingDoc(docId, language);
     }
 
     /**
@@ -744,8 +744,8 @@ public class DocumentMapper implements DocumentGetter {
      * @return default document
      * @since 6.0
      */
-    public DocumentDomainObject getDefaultDocument(int docId, DocumentLanguage language) {
-        return documentLoaderCachingProxy.getDefaultDoc(docId, language);
+    public <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language) {
+        return (T) documentLoaderCachingProxy.getDefaultDoc(docId, language);
     }
 
 
@@ -755,8 +755,8 @@ public class DocumentMapper implements DocumentGetter {
      * @return default document
      * @since 6.0
      */
-    public DocumentDomainObject getDefaultDocument(int docId, String languageCode) {
-        return documentLoaderCachingProxy.getDefaultDoc(docId, getImcmsServices().getDocumentI18nSupport().getByCode(languageCode));
+    public <T extends DocumentDomainObject> T getDefaultDocument(int docId, String languageCode) {
+        return (T) documentLoaderCachingProxy.getDefaultDoc(docId, getImcmsServices().getDocumentI18nSupport().getByCode(languageCode));
     }
 
 
@@ -769,8 +769,8 @@ public class DocumentMapper implements DocumentGetter {
      * @return custom document
      * @since 6.0
      */
-    public DocumentDomainObject getCustomDocument(DocRef docRef, DocumentLanguage language) {
-        return documentLoaderCachingProxy.getCustomDoc(docRef, language);
+    public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef, DocumentLanguage language) {
+        return (T) documentLoaderCachingProxy.getCustomDoc(docRef, language);
     }
 
 

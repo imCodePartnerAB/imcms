@@ -226,7 +226,7 @@ public class Imcms {
      * Must not be called from a client code.
      */
     public static void removeUser() {
-        users.set(null);
+        users.remove();
     }
 
     /**

@@ -19,6 +19,7 @@ import com.vaadin.shared.ui.dd.VerticalDropLocation
 import com.vaadin.server.Page
 import com.vaadin.event.dd.acceptcriteria.{AcceptAll, Not, AcceptCriterion}
 import scala.collection.JavaConverters._
+import imcode.server.document.DocumentDomainObject
 
 
 // refers to check:
@@ -65,7 +66,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
             doc <- dlg.projection.selection
             docId = doc.getId
             if !state.getItemsMap.containsKey(docId)
-            doc <- imcmsServices.getDocumentMapper.getDefaultDocument(docId).asOption
+            doc <- imcmsServices.getDocumentMapper.getDefaultDocument[DocumentDomainObject](docId).asOption
           } {
             val docRef = imcmsServices.getDocumentMapper.getDocumentReference(doc)
             val menuItem = new MenuItemDomainObject(docRef)
@@ -87,7 +88,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
     ui.miEditSelectedDoc.setCommandHandler {
       for (docId <- ui.ttMenu.selectionOpt) {
-        imcmsServices.getDocumentMapper.getDocument(docId) match {
+        imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId) match {
           case null =>
             Page.getCurrent.showWarningNotification("Document does not exist")
             state.removeMenuItemByDocumentId(docId)

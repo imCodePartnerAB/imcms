@@ -24,7 +24,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
     Test.solr.recreateHome()
   }
 
-  "IndexService constructor" should  {
+  "IndexService constructor" should {
     "throw an Exception when neither Config.solrUrl nor Config.solrHome is set" in {
       val ex = intercept[IllegalStateException] {
         //new SolrServerFactory(new Config)

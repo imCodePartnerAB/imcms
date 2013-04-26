@@ -50,7 +50,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   def mkSolrInputDocs(docId: Int, languages: Seq[DocumentLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
     val solrInputDocs = for {
       language <- languages
-      doc <- documentMapper.getDefaultDocument(docId, language).asOption
+      doc <- documentMapper.getDefaultDocument[DocumentDomainObject](docId, language).asOption
     } yield documentIndexer.index(doc)
 
 
@@ -86,7 +86,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
       solrDoc <- solrServer.query(solrQuery).getResults.iterator().asScala
       docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
       languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
-      doc <- documentMapper.getDefaultDocument(docId, languageCode).asOption
+      doc <- documentMapper.getDefaultDocument[DocumentDomainObject](docId, languageCode).asOption
     } {
       docs.add(doc)
     }

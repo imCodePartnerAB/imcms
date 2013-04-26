@@ -76,12 +76,12 @@ object DocGetterCallbacks {
  */
 trait DocGetterCallback {
   def documentLanguages: DocumentLanguages
-  def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper): DocumentDomainObject
+  def getDoc[A <: DocumentDomainObject](docId: Int, user: UserDomainObject, docMapper: DocumentMapper): A
 }
 
 case class DefaultDocGetterCallback(documentLanguages: DocumentLanguages) extends DocGetterCallback {
-  def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
-    docMapper.getDefaultDocument(docId, documentLanguages.preferred) match {
+  def getDoc[A <: DocumentDomainObject](docId: Int, user: UserDomainObject, docMapper: DocumentMapper): A =
+    docMapper.getDefaultDocument[A](docId, documentLanguages.preferred) match {
       case doc if doc != null && !documentLanguages.preferredIsDefault && user.isSuperAdmin =>
         val meta = doc.getMeta
 
@@ -89,7 +89,7 @@ case class DefaultDocGetterCallback(documentLanguages: DocumentLanguages) extend
           if (meta.getDisabledLanguageShowSetting == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE)
             docMapper.getDefaultDocument(docId, documentLanguages.default)
           else
-            null
+            null.asInstanceOf[A]
         } else doc
 
       case doc => doc
@@ -97,13 +97,13 @@ case class DefaultDocGetterCallback(documentLanguages: DocumentLanguages) extend
 }
 
 case class WorkingDocGetterCallback(documentLanguages: DocumentLanguages, selectedDocId: Int) extends DocGetterCallback {
-  def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
+  def getDoc[A <: DocumentDomainObject](docId: Int, user: UserDomainObject, docMapper: DocumentMapper): A =
     if (selectedDocId == docId) docMapper.getWorkingDocument(docId, documentLanguages.preferred)
     else DefaultDocGetterCallback(documentLanguages).getDoc(docId, user, docMapper)
 }
 
 case class CustomDocGetterCallback(documentLanguages: DocumentLanguages, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
-  def getDoc(docId: Int, user: UserDomainObject, docMapper: DocumentMapper) =
+  def getDoc[A <: DocumentDomainObject](docId: Int, user: UserDomainObject, docMapper: DocumentMapper): A =
     if (selectedDocId == docId) docMapper.getCustomDocument(DocRef.of(selectedDocId, selectedDocVersionNo), documentLanguages.preferred)
     else DefaultDocGetterCallback(documentLanguages).getDoc(docId, user, docMapper)
 }

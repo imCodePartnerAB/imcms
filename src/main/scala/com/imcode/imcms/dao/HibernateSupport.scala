@@ -164,7 +164,7 @@ object HibernateSupport {
 
   object HibernateResultTransformer extends LowLevelHibernateResultTransformerImplicits {
     implicit object defaultResultTransformerFactory extends HibernateResultTransformer[Array[AnyRef]] {
-      def transformer = null;
+      def transformer = null
     }
   }
 
