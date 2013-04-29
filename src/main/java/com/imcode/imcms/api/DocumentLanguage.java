@@ -69,16 +69,16 @@ public final class DocumentLanguage implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private volatile Integer id;
 
-    private String code;
+    private volatile String code;
 
-    private String name;
+    private volatile String name;
 
-    private boolean enabled;
+    private volatile boolean enabled;
 
     @Column(name = "native_name")
-    private String nativeName;
+    private volatile String nativeName;
 
     protected DocumentLanguage() {
     }

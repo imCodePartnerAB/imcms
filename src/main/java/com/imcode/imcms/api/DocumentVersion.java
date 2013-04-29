@@ -25,26 +25,26 @@ public class DocumentVersion implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private volatile Long id;
 
     @Column(name = "doc_id", updatable = false, nullable = false)
-    private Integer docId;
+    private volatile Integer docId;
 
-    private Integer no;
+    private volatile Integer no;
 
     @Column(name = "created_by", updatable = false)
-    private Integer createdBy;
+    private volatile Integer createdBy;
 
     @Column(name = "created_dt", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDt;
+    private volatile Date createdDt;
 
     @Column(name = "modified_by", updatable = true, nullable = false)
-    private Integer modifiedBy;
+    private volatile Integer modifiedBy;
 
     @Column(name = "modified_dt", updatable = true, nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedDt;
+    private volatile Date modifiedDt;
 
     public DocumentVersion() {}
 

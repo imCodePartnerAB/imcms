@@ -17,7 +17,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
     private TemplateService templateService;
     private DatabaseService databaseService;
     private MailService mailService;
-    UserDomainObject currentUser;
+    volatile UserDomainObject currentUser;
     protected ImcmsServices service;
 
     public DefaultContentManagementSystem( ImcmsServices service, UserDomainObject accessor ) {
@@ -55,7 +55,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
     }
 
     public User getCurrentUser() {
-        return new User((UserDomainObject)currentUser.clone()) ;
+        return new User(currentUser.clone()) ;
     }
 
     public DatabaseService getDatabaseService() {

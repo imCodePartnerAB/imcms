@@ -49,11 +49,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 
-    private Meta meta = new Meta();
+    private volatile Meta meta = new Meta();
 
-    private I18nMeta i18nMeta = I18nMeta.builder().build();
+    private volatile I18nMeta i18nMeta = I18nMeta.builder().build();
 
-    private DocumentVersion version = new DocumentVersion();
+    private volatile DocumentVersion version = new DocumentVersion();
 
 
     @Override
