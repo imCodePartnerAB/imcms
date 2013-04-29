@@ -99,7 +99,7 @@ class DocumentIndexer(
     try {
       contentIndexer.index(doc, indexDoc)
     } catch {
-      case e: Throwable =>
+      case e: Exception =>
         logger.error("Failed to index doc's content. Doc id: %d, language: %s, type: %s".
             format(docId, doc.getLanguage, doc.getDocumentType), e)
     }

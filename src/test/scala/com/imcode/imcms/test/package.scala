@@ -11,7 +11,7 @@ package object test {
     try {
       block
     } catch {
-      case t: Throwable => t.printStackTrace()
+      case e: Exception => e.printStackTrace()
     }
 
   implicit def smiToAnswer[A](fn: InvocationOnMock => A): Answer[A] =

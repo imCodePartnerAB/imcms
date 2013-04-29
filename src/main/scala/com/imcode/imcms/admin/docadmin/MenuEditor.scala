@@ -105,7 +105,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
                       updateMenuUI()
                       dlg.close()
                     } catch {
-                      case e: Throwable =>
+                      case e: Exception =>
                         Page.getCurrent.showErrorNotification("Can't save document", e.getMessage)
                         throw e
                     }

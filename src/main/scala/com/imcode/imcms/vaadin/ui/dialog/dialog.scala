@@ -196,7 +196,7 @@ object Dialog extends Log4jLoggerSupport {
       try {
         handler
       } catch {
-        case e: Throwable =>
+        case e: Exception =>
           Page.getCurrent.showErrorNotification(s"Server Error: ${e.getMessage}")
 
           logger.error("Dialog button click hander error", e)

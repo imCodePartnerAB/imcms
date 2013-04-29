@@ -35,7 +35,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
     try {
       body
     } catch {
-      case e: Throwable => throw new SolrInputDocumentCreateException(e)
+      case e: Exception => throw new SolrInputDocumentCreateException(e)
     }
   }
 

@@ -75,7 +75,7 @@ class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDoc
           indexDoc.addField(DocumentIndex.FIELD__TEXT, content)
         }
       } catch {
-        case e: Throwable => logger.error(s"Unable to index doc ${doc.getId} file '$file'.", e)
+        case e: Exception => logger.error(s"Unable to index doc ${doc.getId} file '$file'.", e)
       }
     }
   }

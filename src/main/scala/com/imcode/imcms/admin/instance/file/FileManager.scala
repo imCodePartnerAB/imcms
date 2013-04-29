@@ -283,7 +283,7 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
         FileUtils.forceDelete(item)
         stateHandler ! ItemsState(remaining, item +: processed)
       } catch {
-        case e: Throwable => app.withLock {
+        case e: Exception => app.withLock {
           new OkCancelErrorDialog("file.mgr.dlg.delete.item.err.msg".f(item.getName)) |>> { dlg =>
             dlg.btnOk.setCaption("btn_skip".i)
 
@@ -436,7 +436,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
-            case e: Throwable => app.withLock {
+            case e: Exception => app.withLock {
               new OkCancelErrorDialog("Unable to copy") |>> { dlg =>
                 dlg.btnOk.setCaption("btn_skip".i)
                 dlg.mainUI = new Label("file.mgr.dlg.copy.item.err.msg".f(item.getName)) with UndefinedSize
@@ -573,7 +573,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
-            case e: Throwable => app.withLock {
+            case e: Exception => app.withLock {
               new OkCancelErrorDialog("file.mgr.dlg.move.item.err.msg".f(item.getName)) |>> { dlg =>
                 dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }

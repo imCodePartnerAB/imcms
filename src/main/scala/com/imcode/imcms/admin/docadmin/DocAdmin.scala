@@ -95,7 +95,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
             Page.getCurrent.showInfoNotification("Document has been saved")
             Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
           } catch {
-            case e => Page.getCurrent.showErrorNotification("Failed to save document", e.getStackTraceString)
+            case e: Exception => Page.getCurrent.showErrorNotification("Failed to save document", e.getStackTraceString)
           }
       }
     }

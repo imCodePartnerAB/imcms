@@ -163,7 +163,7 @@ class ManagedSolrDocumentIndexService(
               case _: InterruptedException =>
                 logger.debug(s"document-index-update thread [$indexUpdateThread] was interrupted")
 
-              case e =>
+              case e: Exception =>
                 val writeFailure = ManagedSolrDocumentIndexService.IndexUpdateFailure(ManagedSolrDocumentIndexService.this, e)
                 logger.error(s"error in document-index-update thread [$indexUpdateThread].", e)
                 indexWriteFailureRef.set(writeFailure)
@@ -249,7 +249,7 @@ class ManagedSolrDocumentIndexService(
 
         logger.info("Service has been shut down.")
       } catch {
-        case e: Throwable =>
+        case e: Exception =>
           logger.warn("An error occurred while shutting down the service.", e)
           throw e
       }

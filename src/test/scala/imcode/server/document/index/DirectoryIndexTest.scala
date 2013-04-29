@@ -79,7 +79,7 @@ class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndA
       srv2.commit()
       println("-------------------")
     } catch {
-      case e => println("ERRR> " + e.getMessage); e.printStackTrace()
+      case e: Exception => println("ERRR> " + e.getMessage); e.printStackTrace()
     }
     //srv.deleteById("*:*")
     srv.shutdown()
