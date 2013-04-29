@@ -80,7 +80,7 @@
 
                 if (!link) { // If the <a/> tag doesn't exists in the editor - create it.
                     var selectedElement = selection.getSelectedElement();
-                    var content = selectedText !== ''
+                    var content = (selectedText !== '' && (typeof selectedText) != 'undefined')
                         ? selectedText
                         : (selectedElement && selectedElement.is('img'))
                             ? selectedElement.getOuterHtml()
