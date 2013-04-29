@@ -6,7 +6,8 @@ import imcode.server.document.DocumentDomainObject;
 import java.util.Collection;
 import java.util.List;
 
-
+// todo: remove redundant type annotation (documentGetter.<T>) - introduced to workaroud compiler bug:
+// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
 public class DocumentGetterWrapper implements DocumentGetter {
 
     private DocumentGetter documentGetter ;
@@ -20,15 +21,15 @@ public class DocumentGetterWrapper implements DocumentGetter {
     }
 
     public <T extends DocumentDomainObject> T getDocument(int documentId) {
-        return documentGetter.getDocument(documentId) ;
+        return documentGetter.<T>getDocument(documentId) ;
     }
     
    public <T extends DocumentDomainObject> T getDefaultDocument(int documentId, DocumentLanguage language) {
-        return documentGetter.getDefaultDocument(documentId, language);
+        return documentGetter.<T>getDefaultDocument(documentId, language);
    }
 
    public <T extends DocumentDomainObject> T getDefaultDocument(int documentId) {
-        return documentGetter.getDefaultDocument(documentId);
+        return documentGetter.<T>getDefaultDocument(documentId);
    }
 
   //  public DocumentDomainObject getWorkingDocument(Integer documentId) {

@@ -38,6 +38,8 @@ import com.imcode.imcms.flow.DocumentPageFlow;
  * NativeQueriesDao, DocumentSaver, DocumentLoader and CategoryMapper are instantiated by SpringFramework
  * in order to support declared (AOP) transactions.
  */
+// todo: remove redundant type annotation (this.<T>) - introduced to workaroud compiler bug:
+// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
 public class DocumentMapper implements DocumentGetter {
 
     public enum SaveOpts {
@@ -687,7 +689,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId) {
-        return (T) getDefaultDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
+        return this.<T>getDefaultDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
     }
 
 
@@ -697,7 +699,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getWorkingDocument(int docId) {
-        return getWorkingDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
+        return this.<T>getWorkingDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
     }
 
 
@@ -706,7 +708,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
-        return getCustomDocument(docRef, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
+        return this.<T>getCustomDocument(docRef, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
     }
 
 
