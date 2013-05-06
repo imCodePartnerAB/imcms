@@ -36,6 +36,20 @@
         <listener-class>com.imcode.imcms.servlet.ImcmsInitListener</listener-class>
     </listener>
 
+    <!-- Reads request input using UTF-8 encoding -->
+    <filter>
+        <filter-name>characterEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
     <filter>
         <display-name>Imcms Filter</display-name>
         <filter-name>ImcmsFilter</filter-name>
@@ -78,9 +92,19 @@
     </filter>
 
     <filter>
-        <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+        <filter-name>Spring OpenSessionInViewFilter</filter-name>
         <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
     </filter>
+
+    <filter-mapping>
+        <filter-name>characterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>ImcmsFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <filter-mapping>
         <filter-name>SuperAdminFilter</filter-name>
@@ -93,13 +117,9 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
-        <url-pattern>/web/archive/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>ImcmsFilter</filter-name>
+        <filter-name>Spring OpenSessionInViewFilter</filter-name>
         <url-pattern>/*</url-pattern>
+        <!--<url-pattern>/web/archive/*</url-pattern>-->
     </filter-mapping>
 
     <filter-mapping>
@@ -398,6 +418,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.AjaxServlet</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.AjaxServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.AdminPanelServlet</servlet-class>
     </servlet>
@@ -662,6 +687,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.ImagePreview</servlet-name>
         <url-pattern>/servlet/ImagePreview</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.AjaxServlet</servlet-name>
+        <url-pattern>/servlet/AjaxServlet</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

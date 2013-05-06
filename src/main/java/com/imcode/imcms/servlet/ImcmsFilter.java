@@ -33,7 +33,7 @@ import org.apache.log4j.NDC;
 
 /**
  * Front filter - initializes Imcms and intercepts all requests.
- *
+ * <p/>
  * Request handling depends on a current imcms mode:
  * When in maintenance mode then service unavailable error is sent.
  * Otherwise request is processed normally.
@@ -46,57 +46,62 @@ public class ImcmsFilter implements Filter {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    /** Sends service unavailable. */
+    /**
+     * Sends service unavailable.
+     */
     private Filter maintenanceModeFilter = new Filter() {
 
         public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
                 throws IOException, ServletException {
-            HttpServletResponse response = (HttpServletResponse)servletResponse;
+            HttpServletResponse response = (HttpServletResponse) servletResponse;
 
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
         }
 
-        public void init(FilterConfig filterConfig) throws ServletException {}
-        public void destroy() {}
+        public void init(FilterConfig filterConfig) throws ServletException {
+        }
+
+        public void destroy() {
+        }
     };
 
-    /** Processes request normally. */
+    /**
+     * Processes request normally.
+     */
     private Filter normalModeFilter = new Filter() {
 
         public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
                 throws IOException, ServletException {
             try {
-                req.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
-
-                HttpServletRequest request = (HttpServletRequest)req;
-                HttpServletResponse response = (HttpServletResponse)res;
+                HttpServletRequest request = (HttpServletRequest) req;
+                HttpServletResponse response = (HttpServletResponse) res;
 
                 HttpSession session = request.getSession();
 
                 ImcmsServices service = Imcms.getServices();
 
-                if ( session.isNew() ) {
+                if (session.isNew()) {
                     service.incrementSessionCounter();
-                    setDomainSessionCookie( response, session );
+                    setDomainSessionCookie(response, session);
                 }
 
                 String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
                 FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
-                                                                      null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
-                if ( null != workaroundUriEncoding ) {
+                        null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
+                if (null != workaroundUriEncoding) {
                     request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
                 }
 
-                UserDomainObject user = Utility.getLoggedOnUser(request) ;
-                if ( null == user ) {
-                    user = service.verifyUserByIpOrDefault(request.getRemoteAddr()) ;
-                    assert user.isActive() ;
+                UserDomainObject user = Utility.getLoggedOnUser(request);
+                if (null == user) {
+                    user = service.verifyUserByIpOrDefault(request.getRemoteAddr());
+                    assert user.isActive();
                     Utility.makeUserLoggedIn(request, user);
 
-                // todo: optimize;
-                // In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
-                // -invalidates current session if it does not match to last user's session
-                // -redirects to the login page.
+                    // todo: optimize;
+                    // In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
+                    // -invalidates current session if it does not match to last user's session
+                    // -redirects to the login page.
                 } else if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
                     String sessionId = session.getId();
                     String lastUserSessionId = service
@@ -118,26 +123,31 @@ public class ImcmsFilter implements Filter {
 
                 Utility.initRequestWithApi(request, user);
 
-                NDC.setMaxDepth( 0 );
+                NDC.setMaxDepth(0);
                 String contextPath = request.getContextPath();
-                if ( !"".equals( contextPath ) ) {
-                    NDC.push( contextPath );
+                if (!"".equals(contextPath)) {
+                    NDC.push(contextPath);
                 }
-                NDC.push( StringUtils.substringAfterLast( request.getRequestURI(), "/" ) );
+                NDC.push(StringUtils.substringAfterLast(request.getRequestURI(), "/"));
 
                 handleDocumentUri(filterChain, request, response, service, fallbackDecoder);
-                NDC.setMaxDepth( 0 );
+                NDC.setMaxDepth(0);
             } finally {
                 Imcms.removeUser();
             }
         }
 
-        public void init(FilterConfig filterConfig) throws ServletException {}
-        public void destroy() {}
+        public void init(FilterConfig filterConfig) throws ServletException {
+        }
+
+        public void destroy() {
+        }
     };
 
 
-    /** Set to maintenanceModeFilter or normalModeFilter. */
+    /**
+     * Set to maintenanceModeFilter or normalModeFilter.
+     */
     private volatile Filter delegateFilter;
 
 
@@ -171,12 +181,11 @@ public class ImcmsFilter implements Filter {
     public void destroy() {
         Imcms.stop();
     }
-    
+
 
     /**
      * When request path matches a physical or mapped resource then processes request normally.
      * Otherwise threats a request as a document request.
-     * @see GetDoc#viewDoc(String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse) 
      *
      * @param chain
      * @param request
@@ -185,50 +194,52 @@ public class ImcmsFilter implements Filter {
      * @param fallbackDecoder
      * @throws ServletException
      * @throws IOException
+     * @see GetDoc#viewDoc(String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     private void handleDocumentUri(FilterChain chain, HttpServletRequest request, ServletResponse response,
                                    ImcmsServices service, FallbackDecoder fallbackDecoder) throws ServletException, IOException {
-        String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder) ;
-        path = StringUtils.substringAfter( path, request.getContextPath() ) ;
+        String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
+        path = StringUtils.substringAfter(path, request.getContextPath());
         ServletContext servletContext = request.getSession().getServletContext();
         Set resourcePaths = servletContext.getResourcePaths(path);
-        
+
         if (resourcePaths == null || resourcePaths.size() == 0) {
             String documentIdString = getDocumentIdString(service, path);
-            
+
             DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
-            
+
             if (null != document) {
                 try {
-                    GetDoc.viewDoc( document, request, (HttpServletResponse)response );
-                    return ;
-                } catch( NumberFormatException nfe ) {}
+                    GetDoc.viewDoc(document, request, (HttpServletResponse) response);
+                    return;
+                } catch (NumberFormatException nfe) {
+                }
             }
         }
-        
-        chain.doFilter( request, response );
+
+        chain.doFilter(request, response);
     }
 
     public static String getDocumentIdString(ImcmsServices service, String path) {
-        String documentPathPrefix = service.getConfig().getDocumentPathPrefix() ;
-        String documentIdString = null ;
-        if ( StringUtils.isNotBlank( documentPathPrefix ) && path.startsWith( documentPathPrefix )) {
-            documentIdString = path.substring( documentPathPrefix.length());
-            if (documentIdString.endsWith( "/" ) ) {
-                documentIdString = documentIdString.substring(0,documentIdString.length()-1);
+        String documentPathPrefix = service.getConfig().getDocumentPathPrefix();
+        String documentIdString = null;
+        if (StringUtils.isNotBlank(documentPathPrefix) && path.startsWith(documentPathPrefix)) {
+            documentIdString = path.substring(documentPathPrefix.length());
+            if (documentIdString.endsWith("/")) {
+                documentIdString = documentIdString.substring(0, documentIdString.length() - 1);
             }
         }
         return documentIdString;
     }
 
-    private void setDomainSessionCookie( ServletResponse response, HttpSession session ) {
+    private void setDomainSessionCookie(ServletResponse response, HttpSession session) {
 
         String domain = Imcms.getServices().getConfig().getSessionCookieDomain();
         if (StringUtils.isNotBlank(domain)) {
-            Cookie cookie = new Cookie( JSESSIONID_COOKIE_NAME, session.getId());
-            cookie.setDomain( domain );
-            cookie.setPath( "/" );
-            ((HttpServletResponse)response).addCookie( cookie );
+            Cookie cookie = new Cookie(JSESSIONID_COOKIE_NAME, session.getId());
+            cookie.setDomain(domain);
+            cookie.setPath("/");
+            ((HttpServletResponse) response).addCookie(cookie);
         }
     }
 }

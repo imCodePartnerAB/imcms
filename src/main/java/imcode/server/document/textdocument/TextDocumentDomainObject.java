@@ -4,17 +4,23 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
+
+    /**
+     * Modified text indexes.
+     *
+     * Every modified text can be saved to history.
+     * This controlled by setting boolean flag.
+     *
+     * Required when saving only particular set of text fields.
+     */
+    private Map<Integer, Boolean> modifiedTextIndexes = new TreeMap<Integer, Boolean>();
 
     /**
      * Content loop unique item key.
@@ -536,5 +542,17 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public Map<ContentLoopItemKey, ImageDomainObject> getLoopImages() {
         return loopImages;
+    }
+
+    public void addModifiedTextIndex(int index, boolean saveToHistory) {
+        modifiedTextIndexes.put(index, saveToHistory);
+    }
+
+    public void removeModifiedTextIndex(int index) {
+        modifiedTextIndexes.remove(index);
+    }
+
+    public void removeAllModifiedTextIndexs() {
+        modifiedTextIndexes.clear();
     }
 }

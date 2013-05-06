@@ -27,7 +27,7 @@ public class CategoryService {
 
         List<CategoryTypes> types = factory.getCurrentSession()
                 .createQuery(
-                "SELECT ct.id AS id, ct.name AS name FROM CategoryTypes ct WHERE ct.imageArchive IS TRUE ORDER BY ct.name")
+                "SELECT ct.id AS id, ct.name AS name FROM CategoryTypes ct WHERE ct.imageArchive = TRUE ORDER BY ct.name")
                 .setResultTransformer(Transformers.aliasToBean(CategoryTypes.class))
                 .list();
 
