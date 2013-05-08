@@ -746,8 +746,8 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/almedalen_alpha</connection>
-        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/almedalen_alpha</developerConnection>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/alpha23_almedalen</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/branches/alpha23_almedalen</developerConnection>
         <url></url>
     </scm>
 
