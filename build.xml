@@ -436,7 +436,7 @@
         <mkdir dir="${WEB-INF}/classes"/>
         
         <!-- Copy resources -->
-        <copy todir="${WEB-INF}"         file="${resources.dir}/applicationContext.xml" filtering="true"/>      
+        <!--<copy todir="${WEB-INF}"         file="/web/WEB-INF/applicationContext.xml" filtering="true"/>-->
         <copy todir="${WEB-INF}/classes" file="${resources.dir}/hibernate.cfg.xml" filtering="true"/>
         <copy todir="${WEB-INF}/classes" file="${resources.dir}/commons-logging.properties" filtering="true"/>
 

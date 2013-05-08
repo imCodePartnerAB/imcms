@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!--
+    Contains tasks for maven-driven build - see pom.xml for more details.
+    Not intended to be used as a standalone ant build.
+-->
+<project name="pom-ant">
+
+    <property file="build.properties"/>
+
+    <!-- todo: add jsp compilation as pre-integration test -->
+    <!-- todo: commons NOP logger ??? -->
+
+    <property name="version" value="" description="Artifact version is written into the WEB-INF/version.txt file. Set from Maven build."/>
+    <property name="webroot" value="" description="Generated webapp dir. Set from Maven build."/>
+    <property name="log4j-conf.file" value="" description="Log4j configuration file to use. Set from Maven build."/>
+
+    <property name="imcms" value="${webroot}/imcms"/>
+    <property name="docs" value="${imcms}/docs"/>
+    <property name="apisamples" value="${docs}/apisamples"/>
+
+    <property name="WEB-INF" value="${webroot}/WEB-INF"/>
+    <property name="versionfile" value="${WEB-INF}/version.txt"/>
+
+    <property name="conf" value="${WEB-INF}/conf"/>
+    <property name="templates" value="${WEB-INF}/templates"/>
+    <property name="sql" value="${WEB-INF}/sql"/>
+    <property name="sql-diff" value="${sql}/diff"/>
+    <property name="sql-sprocs" value="${sql}/sprocs"/>
+
+    <!-- Paths for other templates -->
+    <property name="texttemplates" value="${templates}/text"/>
+
+    <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
+
+    <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate"/>
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+    <!-- todo: API??? -->
+    <!--<target name="bindist-api-jar" depends="test">-->
+    <!--<mkdir dir="${dist}"/>-->
+    <!--<jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>-->
+    <!--</target>-->
+
+    <!-- todo: not in use ?!? -->
+    <target name="changes" depends="init">
+        <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
+    </target>
+
+    <target name="sql" depends="init">
+        <copy todir="${sql-diff}">
+            <fileset dir="sql/diff" includes="diff-*.sql"/>
+        </copy>
+
+        <copy todir="${sql}">
+            <fileset file="sql/imcms_5.0_schema.sql"/>
+        </copy>
+
+        <copy todir="${sql}">
+            <fileset file="sql/imcms_5.0_data.sql"/>
+        </copy>
+
+        <copy todir="${sql-sprocs}">
+            <fileset dir="sql/sprocs" includes="*.prc"/>
+        </copy>
+    </target>
+
+
+    <!-- Creates the directories and copies the files that are to be public. -->
+    <target name="web"
+            depends="init,changes"
+            description="Translates and copies the webfiles.">
+
+        <dependset>
+            <srcfileset file="build.properties"/>
+            <targetfileset dir="${conf}"/>
+        </dependset>
+
+        <echo message="${version}" file="${versionfile}"/>
+
+        <copy todir="${webroot}" filtering="true" encoding="utf-8">
+            <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
+        </copy>
+
+        <copy todir="${webroot}">
+            <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
+        </copy>
+
+        <antcall target="web-lang">
+            <param name="buildlanguage" value="swe"/>
+        </antcall>
+
+        <antcall target="web-lang">
+            <param name="buildlanguage" value="eng"/>
+        </antcall>
+
+        <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable">
+            <fileset dir="${apisamples}">
+                <include name="*.jsp"/>
+            </fileset>
+            <mapper type="glob" from="*" to="*.txt"/>
+        </copy>
+
+        <copy todir="${docs}">
+            <fileset dir="${basedir}/docs"/>
+        </copy>
+
+        <copy file="${conf}/${log4j-conf.file}" tofile="${conf}/log4j.xml" overwrite="true"/>
+
+        <!--<copy file="${basedir}/server.xml" todir="${conf}" overwrite="true"/>-->
+    </target>
+
+
+    <target name="web-lang" depends="init">
+        <imtranslate bundle="web/WEB-INF/conf/imcms" bundlelanguage="${buildlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${templates}/${buildlanguage}" filtering="true" encoding="utf-8">
+            <fileset dir="web/WEB-INF/templates/lang"/>
+        </imtranslate>
+
+        <imtranslate bundle="web/WEB-INF/conf/imcms" bundlelanguage="${buildlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${imcms}/${buildlanguage}" filtering="true" encoding="utf-8">
+            <fileset dir="web/imcms/lang" excludes="${imagespattern}"/>
+        </imtranslate>
+
+        <copy todir="${imcms}/${buildlanguage}" filtering="false">
+            <fileset dir="web/imcms/lang" includes="${imagespattern}"/>
+        </copy>
+    </target>
+
+
+    <!-- Init targets -->
+    <target name="init" depends="init-global-filters"
+            description="Handy target for everything else to depend on.">
+
+        <record name="${basedir}/build.log"/>
+
+        <tstamp/>
+
+        <if>
+            <equals arg1="${version}" arg2=""/>
+            <then>
+                <fail message="version property is not set"/>
+            </then>
+        </if>
+        <if>
+            <equals arg1="${webroot}" arg2=""/>
+            <then>
+                <fail message="webroot property is not set"/>
+            </then>
+        </if>
+        <if>
+            <equals arg1="${log4j-conf.file}" arg2=""/>
+            <then>
+                <fail message="log4j-conf.file property is not set"/>
+            </then>
+        </if>
+    </target>
+
+
+    <target name="init-global-filters">
+        <filter token="defaultlanguage" value="${defaultlanguage}"/>
+
+        <filter token="documentationwebappurl" value="http://${documentation-host}/${version}"/>
+        <filter token="documentationurl" value="http://${documentation-host}/${version}"/>
+
+        <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
+
+        <filter token="db-schema-version" value="${db-schema-version}"/>
+        <filter token="db-driver" value="${db-driver}"/>
+        <filter token="db-url" value="${db-url}"/>
+        <filter token="db-name" value="${db-name}"/>
+        <filter token="db-user" value="${db-user}"/>
+        <filter token="db-pass" value="${db-pass}"/>
+        <filter token="db-maxconnections" value="${db-maxconnections}"/>
+
+        <filter token="external-authenticator" value="${external-authenticator}"/>
+        <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
+
+        <filter token="ldap-url" value="${ldap-url}"/>
+        <filter token="ldap-bind-dn" value="${ldap-bind-dn}"/>
+        <filter token="ldap-password" value="${ldap-password}"/>
+        <filter token="ldap-user-object-class" value="${ldap-user-object-class}"/>
+        <filter token="ldap-attribute-login-name" value="${ldap-attribute-login-name}"/>
+
+
+        <filter token="secondary-external-authenticator" value="${secondary-external-authenticator}"/>
+        <filter token="secondary-external-user-and-role-registry" value="${secondary-external-user-and-role-registry}"/>
+
+        <filter token="secondary-ldap-url" value="${secondary-ldap-url}"/>
+        <filter token="secondary-ldap-bind-dn" value="${secondary-ldap-bind-dn}"/>
+        <filter token="secondary-ldap-password" value="${secondary-ldap-password}"/>
+        <filter token="secondary-ldap-user-object-class" value="${secondary-ldap-user-object-class}"/>
+        <filter token="secondary-ldap-attribute-login-name" value="${secondary-ldap-attribute-login-name}"/>
+
+
+        <filter token="smtp-server" value="${smtp-server}"/>
+
+        <filter token="servermaster-name" value="${servermaster-name}"/>
+        <filter token="servermaster-email" value="${servermaster-email}"/>
+
+        <filter token="webmaster-name" value="${webmaster-name}"/>
+        <filter token="webmaster-email" value="${webmaster-email}"/>
+
+        <filter token="i18n.defaultLanguage.code" value="${i18n.defaultLanguage.code}"/>
+    </target>
+</project>

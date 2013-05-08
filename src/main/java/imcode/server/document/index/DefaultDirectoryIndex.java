@@ -41,7 +41,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     private final File directory;
     private final IndexDocumentFactory indexDocumentFactory;
 
-    private boolean inconsistent;
+    //private boolean inconsistent;
 
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow or memoryconsuming queries?
@@ -115,9 +115,9 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         if (log.isDebugEnabled()) {
             log.debug("Got "+documentList.size()+" documents in "+stopWatch.getTime()+"ms.");
         }
-        if (documentList.size() != documentIds.size()) {
-            inconsistent = true ;
-        }
+//        if (documentList.size() != documentIds.size()) {
+//            inconsistent = true ;
+//        }
         CollectionUtils.filter(documentList, new Predicate() {
             public boolean evaluate(Object object) {
                 DocumentDomainObject document = (DocumentDomainObject) object;
@@ -196,7 +196,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
             if ( indexingLogSchedule.isTime() ) {
                 logIndexingProgress( i, documentIds.length, indexingLogSchedule.getStopWatch().getTime());
             }
-            Thread.yield(); // To make sure other threads with the same priority get a chance to run something once in a while.
+            //Thread.yield(); // To make sure other threads with the same priority get a chance to run something once in a while.
         }
 
         logIndexingCompleted( documentIds.length, indexingLogSchedule.getStopWatch() );
@@ -232,7 +232,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     public boolean isInconsistent() {
-        return inconsistent;
+        return false; //inconsistent;
     }
 
     public void delete() {
