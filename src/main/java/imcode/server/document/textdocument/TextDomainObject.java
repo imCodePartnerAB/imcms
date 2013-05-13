@@ -18,8 +18,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name = "imcms_text_doc_texts")
 public class TextDomainObject implements Serializable, Cloneable {
 
+    /** Plain text, with linebreaks. */
+    public final static int TEXT_TYPE_PLAIN = 0;
+
+    /** HTML-code. */
+    public final static int TEXT_TYPE_HTML = 1;
+
     public enum Format {
-        PLAIN, HTML
+        PLAIN_TEXT, HTML
     }
 
     public static final class Builder {
@@ -66,17 +72,21 @@ public class TextDomainObject implements Serializable, Cloneable {
             textDomainObject.text = text;
             return this;
         }
+
+        public Builder type(int type) {
+            textDomainObject.type = type;
+            return this;
+        }
+
+        public Builder format(Format format) {
+            textDomainObject.setFormat(format);
+            return this;
+        }
     }
 
     public static Builder builder() {
         return new Builder();
     }
-
-    /** Plain text, with linebreaks. */
-    public final static int TEXT_TYPE_PLAIN = 0;
-
-    /** HTML-code. */
-    public final static int TEXT_TYPE_HTML = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -268,5 +278,13 @@ public class TextDomainObject implements Serializable, Cloneable {
 
     public void setContentRef(ContentRef contentRef) {
         this.contentRef = contentRef;
+    }
+
+    public Format getFormat() {
+        return Format.values()[type];
+    }
+
+    public void setFormat(Format format) {
+        type = format.ordinal();
     }
 }

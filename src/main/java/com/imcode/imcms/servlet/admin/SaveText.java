@@ -103,11 +103,10 @@ public final class SaveText extends HttpServlet {
     private void saveText(DocumentMapper documentMapper, TextDomainObject text, TextDocumentDomainObject document,
                           int txt_no, ImcmsServices imcref, int meta_id,
                           UserDomainObject user) {
-        document.setText( txt_no, text );
-        document.addModifiedTextIndex(txt_no, true);
+        TextDomainObject textDO  = document.setText( txt_no, text );
 
         try {
-            documentMapper.saveDocument( document, user );
+            documentMapper.saveTextDocText(textDO, user);
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {

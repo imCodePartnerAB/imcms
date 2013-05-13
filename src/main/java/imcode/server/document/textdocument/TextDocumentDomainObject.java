@@ -246,14 +246,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public TextDomainObject setText(int no, TextDomainObject text) {
         ContentRef contentRef = text.getContentRef();
         ContentLoopItemKey key = contentRef == null
-                ? null :
-                new ContentLoopItemKey(no, contentRef);
+                ? null
+                : new ContentLoopItemKey(no, contentRef);
 
         TextDomainObject oldText = key == null ? texts.get(no) : loopTexts.get(key);
         TextDomainObject newText = text.clone();
-        Long id = oldText != null ? oldText.getId() : null;
 
-        newText.setId(id);
+        newText.setId(oldText != null ? oldText.getId() : text.getId());
         newText.setDocRef(getRef());
         newText.setNo(no);
         newText.setLanguage(getLanguage());
@@ -353,9 +352,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         ImageDomainObject oldImage = key == null ? images.get(no) : loopImages.get(key);
         ImageDomainObject newImage = image.clone();
-        Long id = oldImage != null ? oldImage.getId() : null;
 
-        newImage.setId(id);
+        newImage.setId(oldImage != null ? oldImage.getId() : image.getId());
         newImage.setDocRef(getRef());
         newImage.setNo(no);
         newImage.setLanguage(getLanguage());
@@ -524,9 +522,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @return clone of a ContentLoop set to this document.
      */
     public ContentLoop setContentLoop(int no, ContentLoop contentLoop) {
-        ContentLoop oldContentLoop = getContentLoop(no);
+        ContentLoop oldContentLoop = contentLoops.get(no);
         ContentLoop newContentLoop = ContentLoop.builder(contentLoop)
-                .id(oldContentLoop == null ? null : oldContentLoop.getId())
+                .id(oldContentLoop != null ? oldContentLoop.getId() : contentLoop.getId())
                 .docRef(getRef())
                 .no(no)
                 .build();
@@ -542,17 +540,5 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public Map<ContentLoopItemKey, ImageDomainObject> getLoopImages() {
         return loopImages;
-    }
-
-    public void addModifiedTextIndex(int index, boolean saveToHistory) {
-        modifiedTextIndexes.put(index, saveToHistory);
-    }
-
-    public void removeModifiedTextIndex(int index) {
-        modifiedTextIndexes.remove(index);
-    }
-
-    public void removeAllModifiedTextIndexs() {
-        modifiedTextIndexes.clear();
     }
 }

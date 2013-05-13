@@ -11,7 +11,10 @@
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 
-%><%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
+%>
+<%@ page import="imcode.server.document.textdocument.ContentRef" %>
+<%@ page import="com.google.common.base.Optional" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%
 
 int truncateLength = 70 ;
@@ -49,6 +52,7 @@ if ("getHelpTextInlineEditing".equals(action)) {
 	int txt_no  = Integer.parseInt(request.getParameter("txt_no")) ;
 	int format  = Integer.parseInt(request.getParameter("format")) ;
 	String text = request.getParameter("text") ;
+    Optional<ContentRef> contentRefOpt = ContentRef.of(request.getParameter("content_ref"));
 	boolean doLog = (null != request.getParameter("do_log")) ;
 	text = text
 		.replace(StringEscapeUtils.escapeHtml("<?imcms:contextpath?>"), "<?imcms:contextpath?>")
@@ -59,16 +63,27 @@ if ("getHelpTextInlineEditing".equals(action)) {
 	ImcmsServices imcref = Imcms.getServices() ;
 	UserDomainObject user = Utility.getLoggedOnUser(request) ;
 	DocumentMapper documentMapper = imcref.getDocumentMapper();
-	TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(meta_id) ;
+	TextDocumentDomainObject document = documentMapper.getDocument(meta_id) ;
 	TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor(document) ;
 	
 	if (permissionSet.getEditTexts()) {
-		TextDomainObject textDO = new TextDomainObject(text, format) ;
-		document.setText(txt_no, textDO) ;
-		document.addModifiedTextIndex(txt_no, true) ;
-		
+        TextDomainObject textDO = document.getText(txt_no, contentRefOpt.orNull());
+        if (textDO != null) {
+            textDO = textDO.clone();
+        } else {
+            textDO = new TextDomainObject() ;
+            textDO.setNo(txt_no);
+            textDO.setDocRef(document.getRef());
+            textDO.setLanguage(document.getLanguage());
+            textDO.setContentRef(contentRefOpt.orNull());
+        }
+
+        textDO.setText(text);
+        textDO.setType(format);
+
 		try {
-			documentMapper.saveDocument(document, user) ;
+            documentMapper.saveTextDocText(textDO, user);
+
 			if (doLog) {
 				imcref.updateMainLog("Text " + txt_no + " in [" + meta_id + "] modified by user: [" + user.getFullName() + "]") ;
 			}

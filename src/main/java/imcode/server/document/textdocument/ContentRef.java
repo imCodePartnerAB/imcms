@@ -68,7 +68,7 @@ public class ContentRef implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).add("contentNo", contentNo).add("loopNo=", loopNo).toString();
+        return Objects.toStringHelper(this).add("contentNo", contentNo).add("loopNo", loopNo).toString();
     }
 
     public int loopNo() {

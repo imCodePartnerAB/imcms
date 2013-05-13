@@ -20,11 +20,11 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
   val ui = new TextEditorUI |>> { ui =>
     if (!settings.canChangeFormat) {
       ui.miFormatHtml.setEnabled(settings.format == TextDomainObject.Format.HTML)
-      ui.miFormatPlain.setEnabled(settings.format == TextDomainObject.Format.PLAIN)
+      ui.miFormatPlain.setEnabled(settings.format == TextDomainObject.Format.PLAIN_TEXT)
     }
 
     ui.miFormatHtml.setCommandHandler { setFormat(TextDomainObject.Format.HTML) }
-    ui.miFormatPlain.setCommandHandler { setFormat(TextDomainObject.Format.PLAIN) }
+    ui.miFormatPlain.setCommandHandler { setFormat(TextDomainObject.Format.PLAIN_TEXT) }
     ui.miHistory.setCommandHandler {
       new TextHistoryDialog("Restore text", currentText) |> UI.getCurrent.addWindow
     }
@@ -60,7 +60,7 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
         ui.miFormatHtml.setChecked(true)
         ui.miFormatPlain.setChecked(false)
 
-      case TextDomainObject.Format.PLAIN =>
+      case TextDomainObject.Format.PLAIN_TEXT =>
         ui.miFormatHtml.setChecked(false)
         ui.miFormatPlain.setChecked(true)
     }
@@ -78,7 +78,7 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
         text,
         format |> {
           case TextDomainObject.Format.HTML => new RichTextArea with FullSize
-          case TextDomainObject.Format.PLAIN => settings.rowCountOpt match {
+          case TextDomainObject.Format.PLAIN_TEXT => settings.rowCountOpt match {
             case Some(1) => new TextField with FullWidth
             case _ => new TextArea with FullSize
           }
