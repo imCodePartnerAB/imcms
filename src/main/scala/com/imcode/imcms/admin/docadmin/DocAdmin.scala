@@ -91,7 +91,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
         case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(","))
         case Right((editedDoc, i18nMetas)) =>
           try {
-            imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, app.imcmsUser)
+            imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, app.imcmsUser)
             Page.getCurrent.showInfoNotification("Document has been saved")
             Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
           } catch {

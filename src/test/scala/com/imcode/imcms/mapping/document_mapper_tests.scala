@@ -57,14 +57,12 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val menuTextPrefix = "menu_text_"
 
     val i18nMetas = i18nContentSupport.getLanguages.asScala.map { language =>
-      val i18nMeta = I18nMeta.builder()
+      I18nMeta.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
         .menuText(menuTextPrefix + language.getCode)
         .build()
-
-      language -> i18nMeta
-    }.toMap.asJava
+    }.to[Set].asJava
 
     val id = docMapper.saveNewDocument(
       newDoc,
@@ -94,14 +92,12 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val menuTextPrefix = "menu_text_"
 
     val i18nMetas = i18nContentSupport.getLanguages.asScala.map { language =>
-      val i18nMeta = I18nMeta.builder()
+      I18nMeta.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
         .menuText(menuTextPrefix + language.getCode)
         .build()
-
-      language -> i18nMeta
-    }.toMap.asJava
+    }.toSet.asJava
 
     val id = docMapper.saveNewDocument(
       newDoc,

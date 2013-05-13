@@ -221,9 +221,8 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void updateDocument(DocumentDomainObject doc, List<I18nMeta> i18nMetas, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+    public void updateDocument(DocumentDomainObject doc, Set<I18nMeta> i18nMetas, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(doc);
-        //document.loadAllLazilyLoaded();
 
         if (user.canEditPermissionsFor(oldDoc)) {
             newUpdateDocumentRolePermissions(doc, user, oldDoc);
@@ -325,7 +324,7 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public <T extends DocumentDomainObject> int saveNewDocument(T doc, List<I18nMeta> i18nMetas, EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
+    public <T extends DocumentDomainObject> int saveNewDocument(T doc, Set<I18nMeta> i18nMetas, EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Meta meta = doc.getMeta();

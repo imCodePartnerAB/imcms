@@ -83,7 +83,7 @@ class MetaDao extends HibernateSupport {
       _.headline(headlineThatFitsInDB)
        .menuText(textThatFitsInDB)
        .build()
-    } |> hibernate.saveOrUpdate
+    } |> hibernate.mergeAndSaveOrUpdate
   }
 
 

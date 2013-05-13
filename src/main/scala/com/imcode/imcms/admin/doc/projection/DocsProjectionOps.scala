@@ -54,7 +54,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
                 imcmsServices.getDocumentMapper.saveNewDocument(
                   editedDoc,
-                  i18nMetas.asJava,
+                  i18nMetas.values.to[Set].asJava,
                   saveOpts,
                   UI.getCurrent.imcmsUser
                 )
@@ -115,7 +115,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
               page.showErrorNotification("Unable to save document", errors.mkString(", "))
 
             case Right((editedDoc, i18nMetas)) =>
-              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, UI.getCurrent.imcmsUser)
+              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, UI.getCurrent.imcmsUser)
               page.showInfoNotification("Document has been saved")
               projection.reload()
               dlg.close()

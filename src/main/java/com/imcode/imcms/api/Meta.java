@@ -273,7 +273,7 @@ public class Meta implements Serializable, Cloneable {
     /**
      * Enabled languages - might be empty.
      */
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "imcms_doc_languages",
             joinColumns = @JoinColumn(name = "doc_id"),

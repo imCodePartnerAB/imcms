@@ -123,6 +123,10 @@ trait HibernateSupport {
       obj
     }
 
+    def mergeAndSaveOrUpdate[A <: AnyRef](obj: A): A = withCurrentSession { session =>
+      session.merge(obj).asInstanceOf[A] |>> session.saveOrUpdate
+    }
+
     def delete[A <: AnyRef](obj: A): Unit = withCurrentSession { _.delete(obj) }
 
     def merge[A <: AnyRef](obj: A): A = withCurrentSession { _.merge(obj).asInstanceOf[A] }

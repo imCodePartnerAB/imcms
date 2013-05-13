@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -70,11 +71,9 @@ public abstract class DocumentPageFlow extends PageFlow {
 
 
         public void saveDocumentWithI18nSupport(
-                DocumentDomainObject document,
-                Map<DocumentLanguage, I18nMeta> labelsMap,
-                EnumSet<DocumentMapper.SaveOpts> directiveses,
-                UserDomainObject user)
-               throws NoPermissionInternalException, DocumentSaveException {
+                DocumentDomainObject document, Set<I18nMeta> i18nMetas,
+                EnumSet<DocumentMapper.SaveOpts> saveOpts,
+                UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
 
             throw new NotImplementedException();
         }

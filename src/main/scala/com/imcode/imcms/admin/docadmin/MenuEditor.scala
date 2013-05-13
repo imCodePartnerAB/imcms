@@ -101,7 +101,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
                   case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(", "))
                   case Right((modifiedDoc, i18nMetas)) =>
                     try {
-                      imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.asJava, UI.getCurrent.imcmsUser)
+                      imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.values.to[Set].asJava, UI.getCurrent.imcmsUser)
                       updateMenuUI()
                       dlg.close()
                     } catch {

@@ -36,12 +36,15 @@ import com.imcode.imcms.flow.DocumentPageFlow;
 /**
  * NOTES:
  * NativeQueriesDao, DocumentSaver, DocumentLoader and CategoryMapper are instantiated by SpringFramework
- * in order to support declared (AOP) transactions.
+ * in order to support declarative (AOP) transactions.
  */
 // todo: remove redundant type annotation (this.<T>) - introduced to workaroud compiler bug:
 // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
 public class DocumentMapper implements DocumentGetter {
 
+    /**
+     * Document save options.
+     */
     public enum SaveOpts {
         // Applies to text document only.
         CopyI18nMetaTextsIntoTextFields
@@ -243,10 +246,7 @@ public class DocumentMapper implements DocumentGetter {
 
         I18nMeta i18nMeta = I18nMeta.builder(docClone.getI18nMeta()).language(language).build();
 
-        Map<DocumentLanguage, I18nMeta> i18nMetas = new HashMap<DocumentLanguage, I18nMeta>();
-        i18nMetas.put(language, i18nMeta);
-
-        return saveNewDocument(doc, i18nMetas, user);
+        return saveNewDocument(doc, Sets.newHashSet(i18nMeta), user);
     }
 
 
@@ -262,7 +262,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param doc
      * @param i18nMetas
      * @param user
-     * @param directives
+     * @param saveOpts
      * @param <T>
      * @return saved document
      * @throws DocumentSaveException
@@ -270,8 +270,8 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, I18nMeta> i18nMetas,
-                                                              EnumSet<SaveOpts> directives,
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Set<I18nMeta> i18nMetas,
+                                                              EnumSet<SaveOpts> saveOpts,
                                                               final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
@@ -281,13 +281,8 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         T docClone = (T) doc.clone();
-        List<I18nMeta> i18nMetasList = new LinkedList<I18nMeta>();
 
-        for (Map.Entry<DocumentLanguage, I18nMeta> e : i18nMetas.entrySet()) {
-            i18nMetasList.add(e.getValue().clone());
-        }
-
-        int docId = documentSaver.saveNewDocument(docClone, i18nMetasList, directives, user);
+        int docId = documentSaver.saveNewDocument(docClone, i18nMetas, saveOpts, user);
 
         invalidateDocument(docId);
 
@@ -313,7 +308,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Set<I18nMeta> i18nMetas, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         return saveNewDocument(doc, i18nMetas, EnumSet.noneOf(SaveOpts.class), user);
@@ -325,39 +320,26 @@ public class DocumentMapper implements DocumentGetter {
      */
     public void saveDocument(final DocumentDomainObject doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
-        DocumentDomainObject docClone = doc.clone();
-        DocumentLanguage language = docClone.getLanguage();
-        I18nMeta i18nMeta = docClone.getI18nMeta();
-
-        Map<DocumentLanguage, I18nMeta> i18nMetas = new HashMap<DocumentLanguage, I18nMeta>();
-        i18nMetas.put(language, i18nMeta);
-
-        saveDocument(doc, i18nMetas, user);
+        saveDocument(doc, Sets.newHashSet(doc.getI18nMeta()), user);
     }
 
 
     /**
      * Updates existing document.
      *
-     * See {@link #saveDocument(imcode.server.document.DocumentDomainObject, java.util.Map, imcode.server.user.UserDomainObject)}
+     * See {@link #saveDocument(imcode.server.document.DocumentDomainObject, java.util.Set, imcode.server.user.UserDomainObject)}
      * to learn more about parameters.
      *
      * @since 6.0
      */
-    public void saveDocument(final DocumentDomainObject doc, Map<DocumentLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
+    public void saveDocument(final DocumentDomainObject doc, Set<I18nMeta> i18nMetas, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
-        List<I18nMeta> i18nMetasClone = new LinkedList<I18nMeta>();
-
-        for (Map.Entry<DocumentLanguage, I18nMeta> e : i18nMetas.entrySet()) {
-            i18nMetasClone.add(e.getValue().clone());
-        }
-
         DocumentDomainObject oldDoc = getCustomDocument(doc.getRef(), doc.getLanguage());
 
         try {
-            documentSaver.updateDocument(docClone, i18nMetasClone, oldDoc.clone(), user);
+            documentSaver.updateDocument(docClone, i18nMetas, oldDoc, user);
         } finally {
             invalidateDocument(doc.getId());
         }
@@ -1021,8 +1003,8 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         @Override
-        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Map<DocumentLanguage, I18nMeta> labelsMap, EnumSet<SaveOpts> saveParams, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().saveDocument(document, labelsMap, user);
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Set<I18nMeta> i18nMetas, EnumSet<SaveOpts> saveOpts, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+            Imcms.getServices().getDocumentMapper().saveDocument(document, i18nMetas, user);
         }
     }
 
