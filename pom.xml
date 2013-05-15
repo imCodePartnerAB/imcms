@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.imcode.imcms</groupId>
@@ -10,7 +13,7 @@
     <packaging>war</packaging>
 
     <properties>
-        <generated.webapp.dir>${project.build.directory}/${project.build.finalName}</generated.webapp.dir>
+        <build.webapp.dir>${project.build.directory}/${project.build.finalName}</build.webapp.dir>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -350,6 +353,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>2.5.5</version>
+        </dependency>
+
+        <dependency>
             <groupId>taglibs</groupId>
             <artifactId>standard</artifactId>
             <version>1.1.2</version>
@@ -467,12 +476,53 @@
             </plugin>
 
             <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.2</version>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/classes.xml</descriptor>
+                    </descriptors>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <!--
+                        The same functionality is provided by assembly plugin
+                        <attachClasses>true</attachClasses>
+                    -->
+
+                    <!--
+                        Excludes resources and pre-compiled JSPs from archived classes.
+                        See src/main/assembly/classes.xml assembly descriptor.
+                    -->
                     <archiveClasses>true</archiveClasses>
-                    <attachClasses>true</attachClasses>
-                    <warSourceDirectory>${generated.webapp.dir}</warSourceDirectory>
+
+                    <!-- Copy resources into WEB-INF/classes dir -->
+                    <webResources>
+                        <resource>
+                            <directory>src/main/resources</directory>
+                            <targetPath>WEB-INF/classes</targetPath>
+                            <filtering>true</filtering>
+                        </resource>
+                    </webResources>
+
+                    <!--
+                        War source directory must not be set to existing directory
+                        since webappDirectory (the directory where the webapp is built) is created using ant script.
+                    -->
+                    <warSourceDirectory></warSourceDirectory>
                 </configuration>
             </plugin>
 
@@ -511,7 +561,7 @@
                         <phase>pre-clean</phase>
                         <configuration>
                             <target>
-                                <delete dir="${generated.webapp.dir}" verbose="false" />
+                                <delete dir="${build.webapp.dir}" verbose="false" />
                             </target>
                         </configuration>
                         <goals>
@@ -558,13 +608,13 @@
                             <target>
                                 <ant antfile="${basedir}/pom-ant.xml" target="web">
                                     <property name="version" value="${project.version}" />
-                                    <property name="webroot" value="${generated.webapp.dir}" />
+                                    <property name="webroot" value="${build.webapp.dir}" />
                                     <property name="log4j-conf.file" value="${log4j-conf.file}" />
                                 </ant>
 
                                 <ant antfile="${basedir}/pom-ant.xml" target="sql">
                                     <property name="version" value="${project.version}" />
-                                    <property name="webroot" value="${generated.webapp.dir}" />
+                                    <property name="webroot" value="${build.webapp.dir}" />
                                     <property name="log4j-conf.file" value="${log4j-conf.file}" />
                                 </ant>
                             </target>
@@ -630,7 +680,7 @@
                     <scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>
                     <stopKey>${jetty.stop.key}</stopKey>
                     <stopPort>${jetty.stop.port}</stopPort>
-                    <webAppSourceDirectory>${generated.webapp.dir}</webAppSourceDirectory>
+                    <webAppSourceDirectory>${build.webapp.dir}</webAppSourceDirectory>
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
                             <port>${jetty.port}</port>
@@ -659,7 +709,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <webAppSourceDirectory>${generated.webapp.dir}</webAppSourceDirectory>
+                    <webAppSourceDirectory>${build.webapp.dir}</webAppSourceDirectory>
                     <excludes>
                         **/eng/jsp/category_admin_category.included.jsp,
                         **/swe/jsp/category_admin_category.included.jsp
@@ -690,7 +740,7 @@
                 <artifactId>tomcat6-maven-plugin</artifactId>
                 <version>2.1</version>
                 <configuration>
-                    <warSourceDirectory>${generated.webapp.dir}</warSourceDirectory>
+                    <warSourceDirectory>${build.webapp.dir}</warSourceDirectory>
                     <port>${tomcat.port}</port>
                     <path>${tomcat.contextPath}</path>
                     <username>${tomcat.username}</username>
@@ -704,7 +754,7 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.1</version>
                 <configuration>
-                    <warSourceDirectory>${generated.webapp.dir}</warSourceDirectory>
+                    <warSourceDirectory>${build.webapp.dir}</warSourceDirectory>
                     <port>${tomcat.port}</port>
                     <path>${tomcat.contextPath}</path>
                     <username>${tomcat.username}</username>
