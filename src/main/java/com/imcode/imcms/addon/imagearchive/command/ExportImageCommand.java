@@ -28,7 +28,7 @@ public class ExportImageCommand implements Serializable {
     private Integer height;
     private Integer quality = 100;
     private List<Format> fileFormats = new ArrayList<Format>();
-    private Short fileFormat;
+    private Integer fileFormat;
     private int[] qualities = new int[]{10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
     private boolean keepAspectRatio;
     private SizeUnit sizeUnit;
@@ -67,11 +67,11 @@ public class ExportImageCommand implements Serializable {
         this.width = width;
     }
 
-    public Short getFileFormat() {
+    public Integer getFileFormat() {
         return fileFormat;
     }
 
-    public void setFileFormat(Short fileFormat) {
+    public void setFileFormat(Integer fileFormat) {
         this.fileFormat = fileFormat;
     }
 

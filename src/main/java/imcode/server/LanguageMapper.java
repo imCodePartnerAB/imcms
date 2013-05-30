@@ -194,7 +194,7 @@ public class LanguageMapper {
      */
     public static String convert639_1to639_2(String language) throws LanguageNotSupportedException {
         if ( "se".equalsIgnoreCase(language) ) {
-            // FIXME Nasty workaround for our "se" which should be "sv". Hides Northern Sami language (sme).
+            // todo: FIXME Nasty workaround for our "se" which should be "sv". Hides Northern Sami language (sme).
             return (String) iso639_1to639_2map.get("sv");
         }
         String iso6392 = (String) iso639_1to639_2map.get(language.toLowerCase());

@@ -661,7 +661,7 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     public VelocityContext getVelocityContext(UserDomainObject user) {
         VelocityContext context = new VelocityContext();
-        // FIXME: This method needs an HttpServletRequest in, to get the context path from
+        // todo: FIXME: This method needs an HttpServletRequest in, to get the context path from
         context.put("contextPath", user.getCurrentContextPath());
         context.put("language", user.getLanguageIso639_2());
         return context;

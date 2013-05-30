@@ -34,7 +34,7 @@ public class Images implements Serializable {
     private String imageNm = "";
     
     @Column(name="format", nullable=false)
-    private short format;
+    private int format;
     
     @Column(name="width", nullable=false)
     private int width;
@@ -174,11 +174,11 @@ public class Images implements Serializable {
         this.width = width;
     }
 
-    public short getFormat() {
+    public int getFormat() {
         return format;
     }
 
-    public void setFormat(short format) {
+    public void setFormat(int format) {
         this.format = format;
     }
 

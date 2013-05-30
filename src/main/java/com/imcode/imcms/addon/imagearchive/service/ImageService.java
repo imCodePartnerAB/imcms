@@ -462,7 +462,7 @@ public class ImageService {
                 .setInteger("width", image.getWidth())
                 .setInteger("height", image.getHeight())
                 .setInteger("fileSize", image.getFileSize())
-                .setShort("format", image.getFormat())
+                .setInteger("format", image.getFormat())
                 .setString("uploadedBy", image.getUploadedBy())
                 .setDate("licenseDt", image.getLicenseDt())
                 .setDate("licenseEndDt", image.getLicenseEndDt())

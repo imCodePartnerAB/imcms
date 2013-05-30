@@ -9,6 +9,9 @@ import imcode.util.io.FileUtility;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -22,6 +25,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -36,10 +40,10 @@ import java.util.regex.Pattern;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.HttpSession;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -71,14 +75,10 @@ import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
 
 public class Utility {
 
-   private final static Logger log = Logger.getLogger( Utility.class.getName() );
+    private final static Logger log = Logger.getLogger( Utility.class.getName() );
 
     private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
 
@@ -87,6 +87,9 @@ public class Utility {
     public static final ResultSetHandler STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
     public static final ResultSetHandler STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
     private static final String LOGGED_IN_USER = "logon.isDone";
+    private static final Pattern DOMAIN_PATTERN = Pattern.compile("^.*?([^.]+?\\.[^.]+)$");
+    private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
+    private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
     private Utility() {
 
@@ -97,12 +100,12 @@ public class Utility {
      */
     public static String ipLongToString( long ip ) {
         return ( ip >>> 24 & 255 ) + "." + ( ip >>> 16 & 255 ) + "." + ( ip >>> 8 & 255 ) + "."
-               + ( ip & 255 );
+                + ( ip & 255 );
     }
 
     /**
      * Transforms a String containing an ip into a long.
-     * 
+     *
      * @throws IllegalArgumentException if the input is not a valid IPv4 address.
      */
     public static long ipStringToLong( String ip ) throws IllegalArgumentException {
@@ -128,11 +131,7 @@ public class Utility {
     }
 
     public static UserDomainObject getLoggedOnUser( HttpServletRequest req ) {
-        return getLoggedOnUser(req.getSession());
-    }
-
-    public static UserDomainObject getLoggedOnUser( HttpSession session ) {
-        return (UserDomainObject)session.getAttribute( LOGGED_IN_USER );
+        return (UserDomainObject)req.getSession().getAttribute( LOGGED_IN_USER );
     }
 
     public static int compareDatesWithNullFirst( Date date1, Date date2 ) {
@@ -177,7 +176,7 @@ public class Utility {
             for ( Iterator valuesIterator = parameterValues.iterator(); valuesIterator.hasNext(); ) {
                 String parameterValue = (String)valuesIterator.next();
                 requestParameterStrings.add( URLEncoder.encode( parameterName ) + "="
-                                             + URLEncoder.encode( parameterValue ) );
+                        + URLEncoder.encode( parameterValue ) );
             }
         }
         return StringUtils.join( requestParameterStrings.iterator(), "&" );
@@ -262,14 +261,14 @@ public class Utility {
             return "";
         }
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"
-                                                      + DateConstants.TIME_NO_SECONDS_FORMAT_STRING );
+                + DateConstants.TIME_NO_SECONDS_FORMAT_STRING );
         return dateFormat.format( datetime );
     }
 
     public static void forwardToLogin( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         forwardToLogin(request, response, HttpServletResponse.SC_FORBIDDEN);
     }
-    
+
     public static void forwardToLogin( HttpServletRequest request, HttpServletResponse response, int responseStatus ) throws ServletException, IOException {
         UserDomainObject user = getLoggedOnUser( request );
         StringBuffer loginTarget = request.getRequestURL() ;
@@ -442,7 +441,7 @@ public class Utility {
     }
 
     public static void writeXmlDocument(Document xmlDocument,
-                                         StreamResult streamResult) {
+                                        StreamResult streamResult) {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             javax.xml.transform.Transformer transformer = transformerFactory.newTransformer();
@@ -460,14 +459,11 @@ public class Utility {
         if ( null != user && !user.isDefaultUser() && !req.isSecure() && Imcms.getServices().getConfig().getSecureLoginRequired() ) {
             return;
         }
-        HttpSession session = req.getSession();
-        session.setAttribute(LOGGED_IN_USER, user);
+        req.getSession().setAttribute(LOGGED_IN_USER, user);
         if (null != user) {
-            // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
+            // todo FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
             user.setCurrentContextPath( req.getContextPath() );
         }
-
-        // todo: ??? Close all vaadin applications associated with a session ???
     }
 
     public static void makeUserLoggedOut(HttpServletRequest req) {
@@ -497,7 +493,7 @@ public class Utility {
                 char c = match.charAt(0);
                 if (c < 256) {
                     out.write(c) ;
-                } 
+                }
             } else {
                 int byteValue = Integer.parseInt(match.substring(1), 16);
                 out.write(byteValue);
@@ -510,33 +506,60 @@ public class Utility {
         return Imcms.getServices().getLocalizedMessageProvider().getResourceBundle(Utility.getLoggedOnUser(request).getLanguageIso639_2());
     }
 
+    public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String rememberCd) {
+        Cookie cookie = new Cookie("im_remember_cd", rememberCd);
+        cookie.setMaxAge(60 * 60 * 2);
+        cookie.setPath("/");
+
+        setCookieDomain(request, cookie);
+        response.addCookie(cookie);
+    }
+
+    public static void removeRememberCdCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = new Cookie("im_remember_cd", "");
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+
+        setCookieDomain(request, cookie);
+        response.addCookie(cookie);
+    }
+
+    public static void setCookieDomain(HttpServletRequest request, Cookie cookie) {
+        String serverName = request.getServerName();
+        if (!IP_PATTERN.matcher(serverName).matches()) {
+            Matcher matcher = DOMAIN_PATTERN.matcher(serverName);
+
+            if (matcher.matches()) {
+                cookie.setDomain("." + matcher.group(1));
+            }
+        }
+    }
+
     // collects a set of "public static final" constants from a class into a map,
     // which then can be exposed to an JSP as a scoped variable
     public static Map<String, Object> getConstants(Class<?> klass) {
-    	Map<String, Object> constants = new HashMap<String, Object>();
-    	for (Field field : klass.getFields()) {
-            int mods = field.getModifiers();
-
-            if (Modifier.isStatic(mods) && Modifier.isFinal(mods)) {
-    			try {
-    				constants.put(field.getName(), field.get(null));
-    			} catch (Exception ex) {
-    				log.warn(ex.getMessage(), ex);
-				}
+        Map<String, Object> constants = new HashMap<String, Object>();
+        for (Field field : klass.getFields()) {
+            if ((field.getModifiers() & STATIC_FINAL_MODIFIER_MASK) == STATIC_FINAL_MODIFIER_MASK) {
+                try {
+                    constants.put(field.getName(), field.get(null));
+                } catch (Exception ex) {
+                    log.warn(ex.getMessage(), ex);
+                }
             }
-    	}
+        }
 
-    	return constants;
+        return constants;
     }
 
-    public static String encodeURL(String value) {
-    	try {
-    		return URLEncoder.encode(value, "UTF-8");
-    	} catch (UnsupportedEncodingException ex) {
-    		log.warn(ex.getMessage(), ex);
-    	}
+    public static String encodeUrl(String value) {
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            log.warn(ex.getMessage(), ex);
 
-    	return null;
+            throw new RuntimeException(ex.getMessage(), ex);
+        }
     }
 
 }

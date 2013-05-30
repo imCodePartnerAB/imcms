@@ -129,7 +129,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     private volatile boolean authenticatedByIp;
 
     /**
-     * FIXME - Kludge to get context path into template methods *
+     * todo: FIXME - Kludge to get context path into template methods *
      */
     @Transient
     private volatile String currentContextPath;

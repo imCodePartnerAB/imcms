@@ -290,7 +290,7 @@ public class FileAdmin extends HttpServlet {
                 }
                 handledOutput = true;
             } catch ( FileNotFoundException ex ) {
-                // FIXME: Error dialog?
+                // todo: FIXME: Error dialog?
                 LOG.debug( "Download failed", ex );
             }
         }
@@ -349,7 +349,7 @@ public class FileAdmin extends HttpServlet {
                 handledOutput = true;
             }
         } else {
-            // FIXME: Output failed-to-rename-original-file error dialog
+            // todo: FIXME: Output failed-to-rename-original-file error dialog
             handledOutput = false;
         }
         return handledOutput;
