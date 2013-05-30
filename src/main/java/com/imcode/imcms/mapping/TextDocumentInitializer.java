@@ -1,12 +1,12 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.dao.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,11 +16,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.dao.ContentLoopDao;
-import com.imcode.imcms.dao.ImageDao;
-import com.imcode.imcms.dao.MenuDao;
-import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.dao.TextDao;
+import com.imcode.imcms.dao.TextDocDao;
 import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;
  
@@ -32,14 +28,8 @@ public class TextDocumentInitializer {
 
     private MetaDao metaDao;
     
-    private TextDao textDao;
-    
-    private MenuDao menuDao;
-    
-    private ImageDao imageDao;
-    
-    private ContentLoopDao contentLoopDao;
-    
+    private TextDocDao textDocDao;
+
     /**
 	 * Initializes text document.
      */
@@ -53,7 +43,7 @@ public class TextDocumentInitializer {
     }
     
     public void initTexts(TextDocumentDomainObject document) {
-    	Collection<TextDomainObject> texts = textDao.getTexts(document.getRef(), document.getLanguage());
+    	Collection<TextDomainObject> texts = textDocDao.getTexts(document.getRef(), document.getLanguage());
 
     	for (TextDomainObject text: texts) {
             Integer no = text.getNo();
@@ -88,7 +78,7 @@ public class TextDocumentInitializer {
     
     
     public void initImages(TextDocumentDomainObject document) {
-    	Collection<ImageDomainObject> images = imageDao.getImages(document.getRef(), document.getLanguage());
+    	Collection<ImageDomainObject> images = textDocDao.getImages(document.getRef(), document.getLanguage());
     	
     	for (ImageDomainObject image: images) {
     		document.setImage(image.getNo(), image);
@@ -97,7 +87,7 @@ public class TextDocumentInitializer {
 
 
     public void initMenus(TextDocumentDomainObject document) {
-    	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getRef());
+    	Collection<MenuDomainObject> menus = textDocDao.getMenus(document.getRef());
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
 
     	for (MenuDomainObject menu: menus) {
@@ -125,7 +115,7 @@ public class TextDocumentInitializer {
      * @throws IllegalStateException if a content loop is empty i.e. does not have a contents. 
      */
 	public void initContentLoops(TextDocumentDomainObject document) {
-		List<ContentLoop> loops = contentLoopDao.getLoops(document.getRef());
+		List<ContentLoop> loops = textDocDao.getLoops(document.getRef());
 		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
 		
 		for (ContentLoop loop: loops) {
@@ -143,36 +133,12 @@ public class TextDocumentInitializer {
 		this.metaDao = metaDao;
 	}
 
-	public TextDao getTextDao() {
-		return textDao;
+	public TextDocDao getTextDocDao() {
+		return textDocDao;
 	}
 
-	public void setTextDao(TextDao textDao) {
-		this.textDao = textDao;
-	}
-
-	public MenuDao getMenuDao() {
-		return menuDao;
-	}
-
-	public void setMenuDao(MenuDao menuDao) {
-		this.menuDao = menuDao;
-	}
-
-	public ImageDao getImageDao() {
-		return imageDao;
-	}
-
-	public void setImageDao(ImageDao imageDao) {
-		this.imageDao = imageDao;
-	}
-
-	public ContentLoopDao getContentLoopDao() {
-		return contentLoopDao;
-	}
-
-	public void setContentLoopDao(ContentLoopDao contentLoopDao) {
-		this.contentLoopDao = contentLoopDao;
+	public void setTextDocDao(TextDocDao textDocDao) {
+		this.textDocDao = textDocDao;
 	}
 
 	public DocumentGetter getDocumentGetter() {

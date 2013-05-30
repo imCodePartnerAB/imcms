@@ -1,5 +1,6 @@
 package com.imcode.imcms.web.admin;
 
+import com.imcode.imcms.dao.TextDocDao;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.dao.ContentLoopDao;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 
@@ -33,11 +33,11 @@ public class ContentLoopController {
 
     private String view = "forward:/servlet/AdminDoc?meta_id=%s&flags=%s";
 
-    private ContentLoopDao contentLoopDao;
+    private TextDocDao textDocDao;
 
     @Autowired
-    public void setContentLoopDao(ContentLoopDao contentLoopDao) {
-        this.contentLoopDao = contentLoopDao;
+    public void setTextDocDao(TextDocDao textDocDao) {
+        this.textDocDao = textDocDao;
     }
 
     @RequestMapping(value = "/contentloop", method = RequestMethod.POST)
@@ -84,7 +84,7 @@ public class ContentLoopController {
         }.updateLoop();
 
         try {
-            contentLoopDao.saveLoop(updatedLoop);
+            textDocDao.saveLoop(updatedLoop);
         } finally {
             documentMapper.invalidateDocument(document);
         }

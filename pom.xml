@@ -38,7 +38,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 
         <javac.args />
 
-        <solr.version>4.2.1</solr.version>
+        <solr.version>4.3.0</solr.version>
         <slf4j.version>1.7.5</slf4j.version>
         <scala.version>2.10.1</scala.version>
         <springframework.version>3.2.2.RELEASE</springframework.version>
@@ -53,7 +53,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 
         <tomcat.port>8888</tomcat.port>
         <tomcat.contextPath>/${project.artifactId}-${project.version}</tomcat.contextPath>
-        <tomcat.username>script</tomcat.username>
+        <tomcat.username>gui</tomcat.username>
         <tomcat.password></tomcat.password>
 
         <build.webapp.dir>${project.build.directory}/${project.build.finalName}</build.webapp.dir>
@@ -159,12 +159,6 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>2.0.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
         </dependency>
 
         <dependency>
@@ -413,15 +407,9 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
         </dependency>
 
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.0.0.GA</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>4.3.1.Final</version>
+            <version>5.0.1.Final</version>
         </dependency>
 
         <dependency>
@@ -465,6 +453,36 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
             <artifactId>jta</artifactId>
             <version>1.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+
+        <!--
+            Dependencies for Unified EL reference implementation.
+            Required by Hibernate Validator.
+        -->
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+        <!--
+            End of dependencies for Unified EL reference implementation
+        -->
 
         <dependency>
             <groupId>net.sourceforge.jtds</groupId>
@@ -1048,13 +1066,18 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                         </resource>
                     </webResources>
 
+                    <!--
+                        War source directory must not be set to existing directory
+                        since webappDirectory (the directory where the webapp is built) is created using ant script.
+                    -->
+                    <warSourceDirectory></warSourceDirectory>
+
                     <!--<webResources>-->
                     <!--<resource>-->
                     <!--<directory>src/main/sql</directory>-->
                     <!--<targetPath>WEB-INF/sql</targetPath>-->
                     <!--</resource>-->
                     <!--</webResources>-->
-                    <!--<warSourceDirectory>${build.webapp.dir}</warSourceDirectory>-->
                 </configuration>
             </plugin>
 

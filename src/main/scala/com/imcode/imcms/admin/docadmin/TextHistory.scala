@@ -6,7 +6,7 @@ import com.imcode.imcms.vaadin.data._
 import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDomainObject
 import com.imcode.imcms.ImcmsServicesSupport
-import com.imcode.imcms.dao.TextDao
+import com.imcode.imcms.dao.TextDocDao
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.vaadin.server.Sizeable
 import org.joda.time.DateTime
@@ -15,7 +15,7 @@ import scala.Some
 import com.imcode.imcms.vaadin.data.PropertyDescriptor
 
 class TextHistory(text: TextDomainObject) extends ImcmsServicesSupport {
-  private val textDao = imcmsServices.getSpringBean(classOf[TextDao])
+  private val textDao = imcmsServices.getSpringBean(classOf[TextDocDao])
 
   val ui = new TextHistoryUI(s"Document history") |>> { ui =>
     def rows(id: Long = 0, dateTime: DateTime = DateTime.now()): Stream[(Long, Option[Date], Date)] = {

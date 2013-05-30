@@ -68,13 +68,7 @@
     <bean id="dao" abstract="true" class="com.imcode.imcms.dao.HibernateSupport"
           p:sessionFactory-ref="sessionFactory"/>
 
-    <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao" parent="dao" p:languageDao-ref="languageDao"/>
-
-    <bean id="textDao" class="com.imcode.imcms.dao.TextDao" parent="dao" p:languageDao-ref="languageDao"/>
-
-    <bean id="menuDao" class="com.imcode.imcms.dao.MenuDao" parent="dao"/>
-
-    <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao" parent="dao"/>
+    <bean id="textDocDao" class="com.imcode.imcms.dao.TextDocDao" parent="dao" p:languageDao-ref="languageDao"/>
 
     <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao" parent="dao"/>
 
@@ -94,19 +88,13 @@
 
     <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver"
           p:metaDao-ref="metaDao"
-          p:contentLoopDao-ref="contentLoopDao"
           p:documentVersionDao-ref="documentVersionDao"
-          p:textDao-ref="textDao"
-          p:imageDao-ref="imageDao"
-          p:menuDao-ref="menuDao"/>
+          p:textDocDao-ref="textDocDao"/>
 
 
     <bean id="textDocumentInitializer" class="com.imcode.imcms.mapping.TextDocumentInitializer"
           p:metaDao-ref="metaDao"
-          p:textDao-ref="textDao"
-          p:imageDao-ref="imageDao"
-          p:menuDao-ref="menuDao"
-          p:contentLoopDao-ref="contentLoopDao"/>
+          p:textDocDao-ref="textDocDao"/>
 
 
     <bean id="documentLoader" class="com.imcode.imcms.mapping.DocumentLoader"

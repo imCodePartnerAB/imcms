@@ -4,7 +4,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcode.server.Config
 import com.imcode._
-import com.imcode.imcms.test.Test
+import com.imcode.imcms.test.TestSetup
 import java.lang.IllegalStateException
 import java.io.{File}
 import org.apache.commons.io.FileUtils
@@ -21,7 +21,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
   //with BeforeAndAfterEach
 
   override def beforeAll() {
-    Test.solr.recreateHome()
+    TestSetup.solr.recreateHome()
   }
 
   "IndexService constructor" should {
@@ -35,7 +35,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
 
     "create embedded SOLr server when Config.solrHome is set and Config.solrUrl is not" in  {
       val config = new Config() |>> { c =>
-        c.setSolrHome(Test.solr.home)
+        c.setSolrHome(TestSetup.solr.home)
       }
 
       //val solrServer = new SolrServerFactory(config).solrServer
@@ -62,7 +62,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
     val dateTimeStr = "%1$TFT%1$TT.%1$TLZ" format dateTime
 
     "store document using all fields defined in schema" in {
-      val solr = Test.solr.createEmbeddedServer()
+      val solr = TestSetup.solr.createEmbeddedServer()
       val df = new DocFields |>> { df =>
         df.metaId = 1001.toString
         df.docTypeId = 2
@@ -74,7 +74,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
     }
 
     "find previously stored document by *:*" in {
-      val solr = Test.solr.createEmbeddedServer()
+      val solr = TestSetup.solr.createEmbeddedServer()
       val query = new SolrQuery("*:*")
       val response = solr.query(query)
       val results = response.getResults
@@ -87,7 +87,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
     }
 
     "find previously stored document by meta_id:1001 AND doc_type_id:2" in {
-      val solr = Test.solr.createEmbeddedServer()
+      val solr = TestSetup.solr.createEmbeddedServer()
       val query = new SolrQuery("meta_id:1001 AND doc_type_id:2")
       val response = solr.query(query)
       val results = response.getResults
@@ -100,7 +100,7 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
     }
 
     "find nothing by created_datetime:dateTime AND doc_type_id:1" in {
-      val solr = Test.solr.createEmbeddedServer()
+      val solr = TestSetup.solr.createEmbeddedServer()
       val query = new SolrQuery("created_datetime:\""+dateTimeStr+"\" AND doc_type_id:1")
       val response = solr.query(query)
       val results = response.getResults

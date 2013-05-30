@@ -517,7 +517,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 			<td><input type="text"<%
 				%> name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"<%
 				%> id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"<%
-				%> size="50" maxlength="<%= ImageDomainObject.IMAGE_NAME_LENGTH %>" style="width:350px;" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getImageName())) %>"></td>
+				%> size="50" maxlength="<%= ImageDomainObject.IMAGE_NAME_LENGTH %>" style="width:350px;" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
 		</tr>
 		<tr>
 			<td nowrap><? templates/sv/change_img.html/16 ?></td>

@@ -1,11 +1,8 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.dao.ContentLoopDao;
-import com.imcode.imcms.dao.ImageDao;
-import com.imcode.imcms.dao.MenuDao;
-import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.dao.TextDao;
+import com.imcode.imcms.dao.*;
+import com.imcode.imcms.dao.TextDocDao;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
@@ -50,10 +47,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
 
     protected MetaDao metaDao;
+    protected TextDocDao textDocDao;
 
     public DocumentStoringVisitor(ImcmsServices services) {
         this.services = services;
         this.metaDao = services.getSpringBean(MetaDao.class);
+        this.textDocDao  = services.getSpringBean(TextDocDao.class);
     }
 
     /**
@@ -158,7 +157,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, UserDomainObject user) {
-        TextDao textDao = services.getSpringBean(TextDao.class);
+        TextDocDao textDao = services.getSpringBean(TextDocDao.class);
         DocumentLanguage language = textDocument.getLanguage();
 
         textDao.deleteTexts(textDocument.getRef(), language);
@@ -186,13 +185,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * @param user
      */
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, UserDomainObject user) {
-        ContentLoopDao dao = services.getSpringBean(ContentLoopDao.class);
-
-        dao.deleteLoops(textDocument.getRef());
-        dao.flush();
+        textDocDao.deleteLoops(textDocument.getRef());
+        textDocDao.flush();
 
         for (ContentLoop loop : textDocument.getContentLoops().values()) {
-            dao.saveLoop(ContentLoop.builder(loop).id(null).docRef(textDocument.getRef()).build());
+            textDocDao.saveLoop(ContentLoop.builder(loop).id(null).docRef(textDocument.getRef()).build());
         }
     }
 
@@ -215,7 +212,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     public void saveTextDocumentText(TextDomainObject text, UserDomainObject user) {
-        TextDao textDao = services.getSpringBean(TextDao.class);
+        TextDocDao textDao = services.getSpringBean(TextDocDao.class);
 
         textDao.saveText(text);
 
@@ -228,25 +225,22 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     public void saveTextDocumentImage(ImageDomainObject image, UserDomainObject user) {
-        ImageDao imageDao = services.getSpringBean(ImageDao.class);
-
-        image.setImageUrl(image.getSource().toStorageString());
+        image.setUrl(image.getSource().toStorageString());
         image.setType(image.getSource().getTypeId());
 
-        imageDao.saveImage(image);
+        textDocDao.saveImage(image);
 
         ImageHistory imageHistory = new ImageHistory(image, user);
-        imageDao.saveImageHistory(imageHistory);
+        textDocDao.saveImageHistory(imageHistory);
     }
 
 
     @Transactional
     void updateTextDocumentImages(TextDocumentDomainObject doc, UserDomainObject user) {
-        ImageDao imageDao = services.getSpringBean(ImageDao.class);
         DocumentLanguage language = doc.getLanguage();
 
-        imageDao.deleteImages(doc.getRef(), language);
-        imageDao.flush();
+        textDocDao.deleteImages(doc.getRef(), language);
+        textDocDao.flush();
 
         for (ImageDomainObject image : doc.getImages().values()) {
             image.setId(null);
@@ -347,13 +341,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     public void updateTextDocumentMenus(final TextDocumentDomainObject doc, final UserDomainObject user) {
-        MenuDao dao = services.getSpringBean(MenuDao.class);
-
         Integer docId = doc.getId();
         Integer docVersionNo = doc.getVersionNo();
         DocRef docRef = docId == null || docVersionNo == null ? null : DocRef.of(docId, docVersionNo);
 
-        dao.deleteMenus(doc.getRef());
+        textDocDao.deleteMenus(doc.getRef());
 
         for (Map.Entry<Integer, MenuDomainObject> entry : doc.getMenus().entrySet()) {
             MenuDomainObject menu = entry.getValue();
@@ -368,11 +360,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
 
     public void updateTextDocumentMenu(final MenuDomainObject menu, final UserDomainObject user) {
-        MenuDao dao = services.getSpringBean(MenuDao.class);
-
-        dao.saveMenu(menu);
+        textDocDao.saveMenu(menu);
 
         MenuHistory menuHistory = new MenuHistory(menu, user);
-        dao.saveMenuHistory(menuHistory);
+        textDocDao.saveMenuHistory(menuHistory);
     }
 }

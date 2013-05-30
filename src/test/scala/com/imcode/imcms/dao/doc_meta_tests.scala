@@ -3,12 +3,12 @@ package imcms.dao
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import imcms.test.Test.{db}
+import imcms.test.TestSetup.{db}
 import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.test.Test
+import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.api._
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 import imcms.mapping.orm.{Include, HtmlReference, UrlReference, FileReference}
@@ -29,7 +29,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
   before {
     //db.runScripts()
 
-    val ctx = Test.spring.createCtx(classOf[MetaDaoTestConfig])
+    val ctx = TestSetup.spring.createCtx(classOf[MetaDaoTestConfig])
 
     metaDao = ctx.getBean(classOf[MetaDao])
     versionDao = ctx.getBean(classOf[DocumentVersionDao])
@@ -129,9 +129,9 @@ class MetaDaoTestConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Test.hibernate.configurators.Basic,
-      Test.hibernate.configurators.addAnnotatedClasses(
+      TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      TestSetup.hibernate.configurators.Basic,
+      TestSetup.hibernate.configurators.addAnnotatedClasses(
         classOf[DocumentProperty],
         classOf[Meta],
         classOf[I18nMeta],
@@ -144,6 +144,6 @@ class MetaDaoTestConfig {
         classOf[HtmlReference],
         classOf[Include]
       ),
-      Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
+      TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
     ))
 }

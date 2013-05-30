@@ -3,12 +3,12 @@ package imcode.server.document.index
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
-import com.imcode.imcms.test.Test
+import com.imcode.imcms.test.TestSetup
 import com.imcode.db.Database
 import org.scalatest.mock.MockitoSugar.mock
 import imcode.server.{ImcmsServices, LoggingDocumentIndex, PhaseQueryFixingDocumentIndex}
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
-import com.imcode.imcms.dao.{TextDao, ImageDao}
+import com.imcode.imcms.dao.{TextDocDao}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.imcode._
@@ -57,7 +57,7 @@ class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndA
 //  }
 
   "create embedded solr server" in {
-    val coreContainer = new CoreContainer(Test.solr.home, new File(Test.solr.home, "solr.xml"))
+    val coreContainer = new CoreContainer(TestSetup.solr.home, new File(TestSetup.solr.home, "solr.xml"))
 //    val coreContainer = new CoreContainer(Test.solr.home.getAbsolutePath)
 //    val coreDescriptor = new CoreDescriptor(coreContainer, "core", new File(Test.solr.home, "core").getAbsolutePath)
 //    //coreDescriptor.setDataDir("/Users/ajosua/test/imSolr")
@@ -98,8 +98,7 @@ class DirectoryIndexFixture {
 
   private val documentMapperMock = mock[DocumentMapper]
   private val categoryMapperMock = mock[CategoryMapper]
-  private val imageDaoMock = mock[ImageDao]
-  private val textDaoMock = mock[TextDao]
+  private val textDocDaoMock = mock[TextDocDao]
 
   when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer(new Answer[JSet[CategoryDomainObject]]() {
      def answer(invocation: InvocationOnMock): JSet[CategoryDomainObject] = {
@@ -128,11 +127,11 @@ class DirectoryIndexFixture {
       i18nMetas.getOrElse(Seq(doc.getI18nMeta)).asJava
     )
 
-    when(textDaoMock.getTexts(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    when(textDocDaoMock.getTexts(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       texts.getOrElse(Seq(doc.getTexts.values.asScala, doc.getLoopTexts.values.asScala).flatten).asJava
     )
 
-    when(imageDaoMock.getImages(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    when(textDocDaoMock.getImages(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       images.getOrElse(Seq(doc.getImages.values.asScala, doc.getLoopImages.values.asScala).flatten).asJava
     )
   }

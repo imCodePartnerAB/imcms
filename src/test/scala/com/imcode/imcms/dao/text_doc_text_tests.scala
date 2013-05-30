@@ -5,7 +5,7 @@ import scala.collection.JavaConverters._
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.imcode.imcms.test.Test.{db}
+import com.imcode.imcms.test.TestSetup.{db}
 import com.imcode.imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish, mkLanguages}
 import _root_.imcode.server.user.{RoleId, RoleDomainObject, UserDomainObject}
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
@@ -13,27 +13,27 @@ import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.context.annotation.Bean._
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.test.Test
+import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.api.{DocRef, SystemProperty, DocumentLanguage, TextHistory}
 
 import org.scalatest.fixture
 import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
 
 @RunWith(classOf[JUnitRunner])
-class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAndAfter {
+class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAndAfterEach {
 
   type FixtureParam = DocumentLanguage
 
-	var textDao: TextDao = _
+	var textDao: TextDocDao = _
 
   val admin = new UserDomainObject(0) |>> { _.addRoleId(RoleId.SUPERADMIN) }
 
   override def beforeAll() = db.recreate()
 
-  before {
-    val ctx = Test.spring.createCtx(classOf[TextDaoSuiteConfig])
+  override def beforeEach() {
+    val ctx = TestSetup.spring.createCtx(classOf[TextDaoSuiteConfig])
 
-    textDao = ctx.getBean(classOf[TextDao])
+    textDao = ctx.getBean(classOf[TextDocDao])
 
     db.runScripts("src/test/resources/sql/text_dao.sql")
   }
@@ -227,7 +227,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 class TextDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def textDao = new TextDao
+  def textDao = new TextDocDao
 
   @Bean(autowire = Autowire.BY_TYPE)
   def languageDao = new LanguageDao
@@ -235,14 +235,14 @@ class TextDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: (org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration) =
     Function.chain(Seq(
-      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Test.hibernate.configurators.BasicWithSql,
-      Test.hibernate.configurators.addAnnotatedClasses(
+      TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      TestSetup.hibernate.configurators.BasicWithSql,
+      TestSetup.hibernate.configurators.addAnnotatedClasses(
         classOf[DocumentLanguage],
         classOf[TextDomainObject],
         classOf[TextHistory]
       ),
-      Test.hibernate.configurators.addXmlFiles(
+      TestSetup.hibernate.configurators.addXmlFiles(
         "com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
         "com/imcode/imcms/hbm/Text.hbm.xml"
       )

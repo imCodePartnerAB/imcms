@@ -109,7 +109,7 @@ public class ImageHistory {
         setHorizontalSpace(imageDO.getHorizontalSpace());
         setTarget(imageDO.getTarget());
         setLinkUrl(imageDO.getLinkUrl());
-        setImageUrl(imageDO.getImageUrl());
+        setImageUrl(imageDO.getUrl());
         setType(imageDO.getType());
 
         setLanguage(imageDO.getLanguage());

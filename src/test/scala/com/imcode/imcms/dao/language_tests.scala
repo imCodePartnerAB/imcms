@@ -5,10 +5,10 @@ import imcms.api.{SystemProperty, DocumentLanguage}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import imcms.test.Test.{db}
+import imcms.test.TestSetup.{db}
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test.config.{AbstractHibernateConfig}
-import com.imcode.imcms.test.{Test}
+import com.imcode.imcms.test.{TestSetup}
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.{Autowire}
 
@@ -22,7 +22,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
   override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Test.spring.createCtx(classOf[LanguageDaoSuiteConfig])
+    val ctx = TestSetup.spring.createCtx(classOf[LanguageDaoSuiteConfig])
 
     systemDao = ctx.getBean(classOf[SystemDao])
     languageDao = ctx.getBean(classOf[LanguageDao])
@@ -114,9 +114,9 @@ class LanguageDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Test.hibernate.configurators.BasicWithSql,
-      Test.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty], classOf[DocumentLanguage]),
-      Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/I18nLanguage.hbm.xml")
+      TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      TestSetup.hibernate.configurators.BasicWithSql,
+      TestSetup.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty], classOf[DocumentLanguage]),
+      TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/I18nLanguage.hbm.xml")
     ))
 }

@@ -6,7 +6,7 @@ import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test._
-import imcms.test.Test.{db}
+import imcms.test.TestSetup.{db}
 import imcms.test.fixtures.UserFX.{mkSuperAdmin}
 import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
@@ -29,7 +29,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
   override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Test.spring.createCtx(classOf[DocVersionDaoSuiteConfig])
+    val ctx = TestSetup.spring.createCtx(classOf[DocVersionDaoSuiteConfig])
 
     versionDao = ctx.getBean(classOf[DocumentVersionDao])
 
@@ -163,9 +163,9 @@ class DocVersionDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Test.hibernate.configurators.BasicWithSql,
-      Test.hibernate.configurators.addAnnotatedClasses(
+      TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      TestSetup.hibernate.configurators.BasicWithSql,
+      TestSetup.hibernate.configurators.addAnnotatedClasses(
         classOf[Meta],
         classOf[I18nMeta],
         classOf[DocumentVersion],
@@ -177,6 +177,6 @@ class DocVersionDaoSuiteConfig {
         classOf[UrlReference],
         classOf[HtmlReference]
       ),
-      Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
+      TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
     ))
 }

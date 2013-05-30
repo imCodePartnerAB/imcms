@@ -15,7 +15,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test._
-import com.imcode.imcms.test.Test
+import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.test.fixtures.LanguageFX
 import com.imcode.imcms.mapping.{DocumentSaver, DocumentStoringVisitor, DocumentMapper}
 import com.imcode.imcms.mapping.DocumentMapper.SaveOpts
@@ -31,9 +31,9 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   var i18nContentSupport: DocumentI18nSupport = _
 
   override def beforeAll() = withLogFailure {
-    Test.db.recreate()
-    Test.solr.recreateHome()
-    Test.imcms.init(start = true, prepareDbOnStart = true)
+    TestSetup.db.recreate()
+    TestSetup.solr.recreateHome()
+    TestSetup.imcms.init(start = true, prepareDbOnStart = true)
 
     i18nContentSupport = Imcms.getServices.getDocumentI18nSupport
     docMapper = Imcms.getServices.getDocumentMapper

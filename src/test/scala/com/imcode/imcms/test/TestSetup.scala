@@ -17,9 +17,9 @@ import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import imcode.server.document.index.service.SolrServerFactory
 import scala.reflect.ClassTag
 
-object Test extends Test
+object TestSetup extends TestSetup
 
-class Test extends TestDb with TestSolr {
+class TestSetup extends TestDb with TestSolr {
 
   val classLoader = Thread.currentThread.getContextClassLoader
 
@@ -104,7 +104,7 @@ object DataSourceAutocommit extends Enumeration {
 }
 
 
-trait TestDb { test: Test =>
+trait TestDb { test: TestSetup =>
 
   object db {
 
@@ -150,7 +150,7 @@ trait TestDb { test: Test =>
 }
 
 
-trait TestSolr { test: Test =>
+trait TestSolr { test: TestSetup =>
 
   object solr {
     val home: String = test.path("target/test-classes/WEB-INF/solr")

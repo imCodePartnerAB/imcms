@@ -2,16 +2,16 @@ package com.imcode.imcms.db
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.imcode.imcms.test.Test
+import com.imcode.imcms.test.TestSetup
 import org.scalatest.{WordSpec}
 
 @RunWith(classOf[JUnitRunner])
 class DBTestSuite extends WordSpec {
 
   "A new db" should {
-    Test.db.recreate()
+    TestSetup.db.recreate()
 
-    val db = new DB(Test.db.createDataSource())
+    val db = new DB(TestSetup.db.createDataSource())
 
     "be new" in {
       assert(db.isNew(), "empty")
@@ -36,11 +36,11 @@ class DBTestSuite extends WordSpec {
 
 
   ".prepare(schema) on 'a new db'" should {
-    Test.db.recreate()
+    TestSetup.db.recreate()
 
-    val scriptsDir = Test.path("src/main/web/WEB-INF/sql")
-    val schema = Schema.load(Test.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
-    val db = new DB(Test.db.createDataSource());
+    val scriptsDir = TestSetup.path("src/main/web/WEB-INF/sql")
+    val schema = Schema.load(TestSetup.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
+    val db = new DB(TestSetup.db.createDataSource());
 
     "run all update scritps" in {
       db.prepare(schema)

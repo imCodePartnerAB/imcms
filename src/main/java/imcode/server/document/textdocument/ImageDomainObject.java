@@ -7,6 +7,7 @@ import javax.persistence.*;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocRef;
+import imcode.util.image.Resize;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -86,13 +87,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
     @Transient
     private volatile ImageSource source = new NullImageSource();
 
+    @Transient
+    private volatile RotateDirection rotateDirection = RotateDirection.NORTH;
+
     private volatile DocRef docRef;
-
     private volatile ContentRef contentRef;
-
     private volatile Integer no;
-
-
     private volatile int width;
     private volatile int height;
     private volatile int border;
@@ -114,86 +114,58 @@ public class ImageDomainObject implements Serializable, Cloneable {
     @Column(name = "linkurl")
     private volatile String linkUrl = "";
 
-    @Column(name = "imgurl")
-    private volatile String imageUrl = "";
-
     @Column(name = "image_name", nullable = false, length = IMAGE_NAME_LENGTH)
-    private volatile String imageName = "";
+    private volatile String name = "";
 
-    private volatile Integer type;
+    // Source type id
+    private volatile Integer type = source.getTypeId();
+
+    // Source storage string
+    @Column(name = "imgurl")
+    private volatile String url = source.toStorageString();
 
     @Column(name = "archive_image_id")
     private volatile Long archiveImageId;
 
-    @Column(name = "format", nullable = false)
-    private volatile short format;
-
-    @Column(name = "crop_x1", nullable = false)
-    private volatile int cropX1;
-
-    @Column(name = "crop_y1", nullable = false)
-    private volatile int cropY1;
-
-    @Column(name = "crop_x2", nullable = false)
-    private volatile int cropX2;
-
-    @Column(name = "crop_y2", nullable = false)
-    private volatile int cropY2;
-
     @Column(name = "rotate_angle", nullable = false)
-    private volatile short rotateAngle;
+    private volatile int rotateAngle = rotateDirection.getAngle();
 
     @Column(name = "gen_file", length = GEN_FILE_LENGTH)
     private volatile String generatedFilename;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.ORDINAL)
+    private volatile Resize resize;
+
+    // todo: FIX add new format value - UNDEFINED with ordinal 0.
+    @Column(nullable = false)
+    @Enumerated(EnumType.ORDINAL)
+    private volatile Format format;
+
+    private volatile CropRegion cropRegion = new CropRegion();
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
     private volatile DocumentLanguage language;
 
     public String getName() {
-        return no == null ? "" : no.toString();
+        return name;
     }
 
     public ImageSize getDisplayImageSize() {
         ImageSize realImageSize = getRealImageSize();
-        CropRegion region = getCropRegion();
-
-        int realWidth;
-        int realHeight;
-
-        if (region.isValid()) {
-            realWidth = region.getWidth();
-            realHeight = region.getHeight();
-        } else {
-            realWidth = realImageSize.getWidth();
-            realHeight = realImageSize.getHeight();
-        }
 
         int wantedWidth = getWidth();
         int wantedHeight = getHeight();
-        int displayWidth;
-        int displayHeight;
-
-        if (wantedWidth > 0 || wantedHeight > 0) {
-            float ratio = realWidth / (float) realHeight;
-
-            if (wantedWidth > 0 && wantedHeight > 0) {
-                displayWidth = wantedWidth;
-                displayHeight = wantedHeight;
-            } else if (wantedWidth > 0) {
-                displayWidth = wantedWidth;
-                displayHeight = Math.round(wantedWidth / ratio);
-            } else {
-                displayHeight = wantedHeight;
-                displayWidth = Math.round(wantedHeight * ratio);
-            }
-
-        } else {
-            displayWidth = realWidth;
-            displayHeight = realHeight;
+        if (0 == wantedWidth && 0 != wantedHeight && 0 != realImageSize.getHeight()) {
+            wantedWidth = (int) (realImageSize.getWidth() * ((double) wantedHeight / realImageSize.getHeight()));
+        } else if (0 == wantedHeight && 0 != wantedWidth && 0 != realImageSize.getWidth()) {
+            wantedHeight = (int) (realImageSize.getHeight() * ((double) wantedWidth / realImageSize.getWidth()));
+        } else if (0 == wantedWidth && 0 == wantedHeight) {
+            wantedWidth = realImageSize.getWidth();
+            wantedHeight = realImageSize.getHeight();
         }
-
-        return new ImageSize(displayWidth, displayHeight);
+        return new ImageSize(wantedWidth, wantedHeight);
     }
 
     public ImageSize getRealImageSize() {
@@ -216,6 +188,70 @@ public class ImageDomainObject implements Serializable, Cloneable {
         }
 
         return null;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public DocRef getDocRef() {
+        return docRef;
+    }
+
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
+    }
+
+    public ContentRef getContentRef() {
+        return contentRef;
+    }
+
+    public void setContentRef(ContentRef contentRef) {
+        this.contentRef = contentRef;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getNo() {
+        return no;
+    }
+
+    public void setNo(Integer no) {
+        this.no = no;
+    }
+
+    public DocumentLanguage getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(DocumentLanguage language) {
+        this.language = language;
+    }
+
+    public Integer getIndex() {
+        return getNo();
+    }
+
+    public void setIndex(Integer index) {
+        setNo(index);
     }
 
     public int getWidth() {
@@ -258,9 +294,16 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return linkUrl;
     }
 
-    @Deprecated
+    public Format getFormat() {
+        return format;
+    }
+
+    public RotateDirection getRotateDirection() {
+        return rotateDirection;
+    }
+
     public void setName(String image_name) {
-        this.no = Integer.parseInt(image_name);
+        this.name = image_name;
     }
 
     public void setWidth(int image_width) {
@@ -303,6 +346,23 @@ public class ImageDomainObject implements Serializable, Cloneable {
         this.linkUrl = image_ref_link;
     }
 
+    public Long getArchiveImageId() {
+        return archiveImageId;
+    }
+
+    public void setArchiveImageId(Long archiveImageId) {
+        this.archiveImageId = archiveImageId;
+    }
+
+    public void setFormat(Format format) {
+        this.format = format;
+    }
+
+    public void setRotateDirection(RotateDirection rotateDirection) {
+        this.rotateDirection = rotateDirection;
+        this.rotateAngle = rotateDirection.getAngle();
+    }
+
     public void setSourceAndClearSize(ImageSource source) {
         setSource(source);
         setWidth(0);
@@ -314,6 +374,8 @@ public class ImageDomainObject implements Serializable, Cloneable {
             throw new NullArgumentException("source");
         }
         this.source = source;
+        this.type = source.getTypeId();
+        this.url = source.toStorageString();
     }
 
     public boolean isEmpty() {
@@ -372,7 +434,34 @@ public class ImageDomainObject implements Serializable, Cloneable {
             filename = filename.substring(0, maxlength);
         }
 
+        String[][] specialCharacterReplacements = {
+                {"\u00e5", "a"},// å
+                {"\u00c5", "A"},
+                {"\u00e4", "a"},// ä
+                {"\u00c4", "A"},
+                {"\u00f6", "o"},// ö
+                {"\u00d6", "O"},
+                {"\u00e9", "e"},// é
+                {"\u00c9", "E"},
+                {"\u00f8", "o"},// ø
+                {"\u00d8", "O"},
+                {"\u00e6", "ae"},// æ
+                {"\u00c6", "AE"},
+                {"\u0020", "_"} // space
+        };
+        for (String[] replacement : specialCharacterReplacements) {
+            filename = filename.replace(replacement[0], replacement[1]);
+        }
+
         generatedFilename = filename + suffix;
+    }
+
+    public Resize getResize() {
+        return resize;
+    }
+
+    public void setResize(Resize resize) {
+        this.resize = resize;
     }
 
     public long getSize() {
@@ -393,15 +482,23 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return source;
     }
 
+    public CropRegion getCropRegion() {
+        return cropRegion;
+    }
+
+    public void setCropRegion(CropRegion cropRegion) {
+        this.cropRegion = cropRegion;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof ImageDomainObject)) {
             return false;
         }
-
         final ImageDomainObject o = (ImageDomainObject) obj;
+        CropRegion otherCropRegion = o.getCropRegion();
         return new EqualsBuilder().append(source.toStorageString(), o.getSource().toStorageString())
-                .append(no, o.getName())
+                .append(name, o.getName())
                 .append(width, o.getWidth())
                 .append(height, o.getHeight())
                 .append(border, o.getBorder())
@@ -412,36 +509,32 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 .append(horizontalSpace, o.getHorizontalSpace())
                 .append(target, o.getTarget())
                 .append(linkUrl, o.getLinkUrl())
-                .append(language, o.getLanguage())
-                .append(format, o.format)
-                .append(cropX1, o.cropX1)
-                .append(cropY1, o.cropY1)
-                .append(cropX2, o.cropX2)
-                .append(cropY2, o.cropY2)
-                .append(rotateAngle, o.rotateAngle)
+                .append(format, o.getFormat())
+                .append(cropRegion.getCropX1(), otherCropRegion.getCropX1())
+                .append(cropRegion.getCropY1(), otherCropRegion.getCropY1())
+                .append(cropRegion.getCropX2(), otherCropRegion.getCropX2())
+                .append(cropRegion.getCropY2(), otherCropRegion.getCropY2())
+                .append(rotateDirection, o.getRotateDirection())
+                .append(resize, o.getResize())
                 .isEquals();
     }
 
+    @Override
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(source.toStorageString())
-                .append(no).append(width).append(height)
+                .append(name).append(width).append(height)
                 .append(border).append(align).append(alternateText)
                 .append(lowResolutionUrl).append(verticalSpace).append(horizontalSpace)
-                .append(target).append(linkUrl)
-                .append(language).append(format).append(rotateAngle)
-                .append(cropX1).append(cropY1).append(cropX2).append(cropY2)
+                .append(target).append(linkUrl).append(format)
+                .append(cropRegion.getCropX1()).append(cropRegion.getCropY1())
+                .append(cropRegion.getCropX2()).append(cropRegion.getCropY2())
+                .append(rotateDirection)
+                .append(resize)
                 .toHashCode();
     }
 
-    public DocumentLanguage getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(DocumentLanguage language) {
-        this.language = language;
-    }
-
+    @Override
     public ImageDomainObject clone() {
         try {
             return (ImageDomainObject) super.clone();
@@ -450,113 +543,21 @@ public class ImageDomainObject implements Serializable, Cloneable {
         }
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * @return image source type
-     * @see ImageSource
-     */
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    @Deprecated
-    public Integer getIndex() {
-        return no == null ? null : new Integer(no);
-    }
-
-    @Deprecated
-    public void setIndex(Integer index) {
-        this.no = index;
-    }
-
-
-    public Integer getNo() {
-        return getIndex();
-    }
-
-    public void setNo(Integer no) {
-        setIndex(no);
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
-    }
-
-    public Long getArchiveImageId() {
-        return archiveImageId;
-    }
-
-    public void setArchiveImageId(Long archiveImageId) {
-        this.archiveImageId = archiveImageId;
-    }
-
-    public Format getFormat() {
-        return Format.findFormat(format);
-    }
-
-    public void setFormat(Format format) {
-        this.format = (short) (format != null ? format.getOrdinal() : 0);
-    }
-
-    public CropRegion getCropRegion() {
-        return new CropRegion(cropX1, cropY1, cropX2, cropY2);
-    }
-
-    public void setCropRegion(CropRegion region) {
-        if (region.isValid()) {
-            cropX1 = region.getCropX1();
-            cropY1 = region.getCropY1();
-            cropX2 = region.getCropX2();
-            cropY2 = region.getCropY2();
-        } else {
-            cropX1 = -1;
-            cropY1 = -1;
-            cropX2 = -1;
-            cropY2 = -1;
-        }
-    }
-
-    public RotateDirection getRotateDirection() {
-        return RotateDirection.getByAngleDefaultIfNull(rotateAngle);
-    }
-
-    public void setRotateDirection(RotateDirection dir) {
-        this.rotateAngle = (short) (dir != null ? dir.getAngle() : 0);
-    }
-
-
+    @Embeddable
     public static class CropRegion implements Serializable {
         private static final long serialVersionUID = -586488435877347784L;
 
-        private int cropX1;
-        private int cropY1;
-        private int cropX2;
-        private int cropY2;
+        @Column(name = "crop_x1", nullable = false)
+        private volatile int cropX1;
+        @Column(name = "crop_y1", nullable = false)
+        private volatile int cropY1;
+        @Column(name = "crop_x2", nullable = false)
+        private volatile int cropX2;
+        @Column(name = "crop_y2", nullable = false)
+        private volatile int cropY2;
 
-        private boolean valid;
+        @Transient
+        private volatile boolean valid;
 
 
         public CropRegion() {
@@ -665,9 +666,9 @@ public class ImageDomainObject implements Serializable, Cloneable {
             return true;
         }
 
-        public boolean isSame(CropRegion other) {
-            return (!valid && !other.valid) ||
-                    valid && other.valid && equals(other);
+        @Override
+        public String toString() {
+            return String.format("%s(%d, %d, %d, %d)", CropRegion.class.getName(), cropX1, cropY1, cropX2, cropY2);
         }
     }
 
@@ -712,36 +713,14 @@ public class ImageDomainObject implements Serializable, Cloneable {
             return ANGLE_MAP.get(angle);
         }
 
+        public boolean isDefault() {
+            return this == RotateDirection.NORTH;
+        }
+
         public static RotateDirection getByAngleDefaultIfNull(int angle) {
             RotateDirection direction = getByAngle(angle);
 
             return (direction != null ? direction : RotateDirection.NORTH);
         }
-    }
-
-    public DocRef getDocRef() {
-        return docRef;
-    }
-
-    public void setDocRef(DocRef docRef) {
-        this.docRef = docRef;
-    }
-
-    public ContentRef getContentRef() {
-        return contentRef;
-    }
-
-    public void setContentRef(ContentRef contentRef) {
-        this.contentRef = contentRef;
-    }
-
-    @Override
-    public String toString() {
-        return "ImageDomainObject{" +
-                "no='" + no + '\'' +
-                ", id=" + id +
-                ", contentRef=" + contentRef +
-                ", docRef=" + docRef +
-                '}';
     }
 }

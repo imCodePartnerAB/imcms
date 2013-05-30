@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import imcms.test.Test.{db}
+import imcms.test.TestSetup.{db}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll}
@@ -9,7 +9,7 @@ import org.scalatest.matchers.{MustMatchers}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.test.Test
+import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.api.{SystemProperty}
 
 @RunWith(classOf[JUnitRunner])
@@ -23,7 +23,7 @@ class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAft
   override def beforeAll() = db.recreate()
 
   before {
-    val ctx = Test.spring.createCtx(classOf[SystemPropertyDaoSuiteConfig])
+    val ctx = TestSetup.spring.createCtx(classOf[SystemPropertyDaoSuiteConfig])
 
     systemDao = ctx.getBean(classOf[SystemDao])
 
@@ -73,8 +73,8 @@ class SystemPropertyDaoSuiteConfig {
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Test.hibernate.configurators.BasicWithSql,
-      Test.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty])
+      TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      TestSetup.hibernate.configurators.BasicWithSql,
+      TestSetup.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty])
     ))
 }

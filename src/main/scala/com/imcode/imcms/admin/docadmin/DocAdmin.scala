@@ -13,7 +13,7 @@ import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.ui.dialog.ConfirmationDialog
 import com.imcode.imcms.mapping.DocumentSaveException
 import com.imcode.imcms.ImcmsServicesSupport
-import com.imcode.imcms.dao.TextDao
+import com.imcode.imcms.dao.TextDocDao
 import org.apache.commons.lang3.StringEscapeUtils
 import _root_.imcode.server.document.textdocument._
 import imcode.server.{ImcmsConstants, Imcms}
@@ -309,7 +309,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
       case _ => None
     }
 
-    val textDao = imcmsServices.getSpringBean(classOf[TextDao])
+    val textDao = imcmsServices.getSpringBean(classOf[TextDocDao])
     val texts = textDao.getTexts(DocRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
 
     for (text <- texts.asScala if text.getDocRef == null) {

@@ -1,12 +1,8 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.DocIdentityCleanerVisitor;
-import com.imcode.imcms.dao.ContentLoopDao;
-import com.imcode.imcms.dao.DocumentVersionDao;
-import com.imcode.imcms.dao.ImageDao;
-import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.dao.TextDao;
-import com.imcode.imcms.dao.MenuDao;
+import com.imcode.imcms.dao.*;
+import com.imcode.imcms.dao.TextDocDao;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -35,13 +31,7 @@ public class DocumentSaver {
 
     private DocumentVersionDao documentVersionDao;
 
-    private ContentLoopDao contentLoopDao;
-
-    private TextDao textDao;
-
-    private ImageDao imageDao;
-
-    private MenuDao menuDao;
+    private TextDocDao textDocDao;
 
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
@@ -136,7 +126,7 @@ public class DocumentSaver {
             return null;
         }
 
-        ContentLoop loop = contentLoopDao.getLoop(docRef, contentRef.loopNo());
+        ContentLoop loop = textDocDao.getLoop(docRef, contentRef.loopNo());
 
         if (loop == null) {
             throw new IllegalStateException(String.format(
@@ -148,7 +138,7 @@ public class DocumentSaver {
                     "Content does not exists. Doc identity :%s, content loop no: %s.", docRef, contentRef.loopNo()));
         }
 
-        loop = contentLoopDao.saveLoop(loop);
+        loop = textDocDao.saveLoop(loop);
 
         return loop;
     }
@@ -493,14 +483,6 @@ public class DocumentSaver {
         this.metaDao = metaDao;
     }
 
-    public ContentLoopDao getContentLoopDao() {
-        return contentLoopDao;
-    }
-
-    public void setContentLoopDao(ContentLoopDao contentLoopDao) {
-        this.contentLoopDao = contentLoopDao;
-    }
-
     public DocumentVersionDao getDocumentVersionDao() {
         return documentVersionDao;
     }
@@ -509,27 +491,11 @@ public class DocumentSaver {
         this.documentVersionDao = documentVersionDao;
     }
 
-    public com.imcode.imcms.dao.TextDao getTextDao() {
-        return textDao;
+    public TextDocDao getTextDocDao() {
+        return textDocDao;
     }
 
-    public void setTextDao(com.imcode.imcms.dao.TextDao textDao) {
-        this.textDao = textDao;
-    }
-
-    public ImageDao getImageDao() {
-        return imageDao;
-    }
-
-    public void setImageDao(ImageDao imageDao) {
-        this.imageDao = imageDao;
-    }
-
-    public MenuDao getMenuDao() {
-        return menuDao;
-    }
-
-    public void setMenuDao(MenuDao menuDao) {
-        this.menuDao = menuDao;
+    public void setTextDocDao(TextDocDao textDocDao) {
+        this.textDocDao = textDocDao;
     }
 }

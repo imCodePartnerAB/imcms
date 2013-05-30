@@ -21,7 +21,7 @@ import scala.util.{Try, Failure, Success}
 @RunWith(classOf[JUnitRunner])
 class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
 
-  Test.initLogging()
+  TestSetup.initLogging()
 
   val ops: DocumentIndexServiceOps = {
     val ms = new DocIndexingMocksSetup
@@ -34,9 +34,9 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
 
   "InternalDocumentIndexService" should {
     "index all documents" in {
-      Test.solr.recreateHome()
+      TestSetup.solr.recreateHome()
 
-      using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
         val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
         assertTrue("No docs", docs.isEmpty)
 
@@ -47,7 +47,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
         Thread.sleep(1000)
       }
 
-      using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
         val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
         assertEquals("Found docs", 20, docs.size)
 
@@ -59,14 +59,14 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
     }
 
     "rebuild index" in {
-      using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
         service.rebuild().get |> { task =>
           task.future.get()
         }
       }
 
 
-      using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
         val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
         assertEquals("Found docs", 20, docs.size)
 
@@ -78,16 +78,16 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
     }
 
     "recreate and rebuild index when index is corrupted" in {
-      Test.solr.recreateHome()
+      TestSetup.solr.recreateHome()
 
-      using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
         val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
         assertTrue("No docs", docs.isEmpty)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
           service.update(AddDocToIndex(metaId))
           if (metaId == DocFX.DefaultId + 5) {
-            Test.solr.recreateHome()
+            TestSetup.solr.recreateHome()
           }
         }
 
@@ -99,9 +99,9 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
     }
 
     "read failure test" in {
-      Test.solr.recreateHome()
+      TestSetup.solr.recreateHome()
 
-      using(new InternalDocumentIndexService(Test.solr.home, ops)) { service =>
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
         service.rebuild().get |> { task =>
           task.future.get()
         }

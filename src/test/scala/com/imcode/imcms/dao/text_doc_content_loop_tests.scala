@@ -5,16 +5,15 @@ import scala.collection.JavaConverters._
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
-import imcms.test.Test.{db}
-import com.imcode.imcms.test.Test
+import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.api.{DocRef, ContentLoop}
 
 @RunWith(classOf[JUnitRunner])
-class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
+class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterEach {
 
 //  object ContentsSort extends Enumeration {
 //    val Asc, Desc = Value
@@ -28,21 +27,21 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 //  val loop2 = ContentLoopDesc(2, DocRef.of(1001, 0), ContentRef.of(0, 2), ContentsDesc(count = 2, sort = ContentsSort.Asc))
 //  val loop3 = ContentLoopDesc(3, DocRef.of(1001, 0), ContentRef.of(0, 3), ContentsDesc(count = 3, sort = ContentsSort.Desc))
 
-  var contentLoopDao: ContentLoopDao = _
+  var dao: TextDocDao = _
 
-  override def beforeAll() = db.recreate()
+  override def beforeAll() = TestSetup.db.recreate()
 
-  before {
-    val ctx = Test.spring.createCtx(classOf[ContentLoopDaoSuiteConfig])
+  override def beforeEach()  {
+    val ctx = TestSetup.spring.createCtx(classOf[MenuDaoSuiteConfig])
 
-    contentLoopDao = ctx.getBean(classOf[ContentLoopDao])
+    dao = ctx.getBean(classOf[TextDocDao])
 
-    db.runScripts("src/test/resources/sql/content_loop_dao.sql")
+    TestSetup.db.runScripts("src/test/resources/sql/content_loop_dao.sql")
   }
 
 
   test("get all content loops") {
-    assertEquals("loops count", 4, contentLoopDao.getLoops(DocRef.of(1001, 0)).size())
+    assertEquals("loops count", 4, dao.getLoops(DocRef.of(1001, 0)).size())
   }
 
 
@@ -78,9 +77,9 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     ContentLoop.builder() |> { builder =>
       val docRef = DocRef.of(1001, 0)
       builder.docRef(docRef)
-      builder.no(contentLoopDao.getNextLoopNo(docRef))
+      builder.no(dao.getNextLoopNo(docRef))
 
-      contentLoopDao.saveLoop(builder.build())
+      dao.saveLoop(builder.build())
     }
   }
 
@@ -90,10 +89,10 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     val count = loop.getContents.size
 
-    val newLoop = contentLoopDao.saveLoop(loop.addLastContent._1)
+    val newLoop = dao.saveLoop(loop.addLastContent._1)
     assertEquals(count + 1, newLoop.getContents.size)
 
-    assertNotNull(contentLoopDao.getLoop(newLoop.getId))
+    assertNotNull(dao.getLoop(newLoop.getId))
   }
 
   test("delete existing content loop") {
@@ -103,19 +102,19 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     val loopId = loop.getId
 
-    contentLoopDao.deleteLoop(loopId)
+    dao.deleteLoop(loopId)
 
-    assertNull(contentLoopDao.getLoop(loopId))
+    assertNull(dao.getLoop(loopId))
   }
 
   test("create non empty content loop [with 5 contents]") {
     val contentsCount = 5
     val docRef = DocRef.of(1001, 0)
-    val loop = ContentLoop.builder().docRef(docRef).no(contentLoopDao.getNextLoopNo(docRef)).build() |> { emptyLoop =>
+    val loop = ContentLoop.builder().docRef(docRef).no(dao.getNextLoopNo(docRef)).build() |> { emptyLoop =>
       1.to(contentsCount).foldLeft(emptyLoop) { case (loop, _) => loop.addFirstContent()._1 }
     }
 
-    contentLoopDao.saveLoop(loop) |> { savedLoop =>
+    dao.saveLoop(loop) |> { savedLoop =>
       assertNotNull("Loop exists", savedLoop)
 
       val contents = loop.getContents.asScala.toList
@@ -136,7 +135,7 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   def getLoop(no: Int): ContentLoop = getLoop(no, false)
 
   def getLoop(no: Int, assertLoopNotNull: Boolean) = DocRef.of(1001, 0) |> { docRef =>
-    contentLoopDao.getLoop(docRef, no) |>> { loop =>
+    dao.getLoop(docRef, no) |>> { loop =>
       if (assertLoopNotNull)
         assertNotNull("Loop exists - docRef: %s, no: %s.".format(docRef, no), loop)
     }
@@ -144,17 +143,17 @@ class ContentLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 }
 
 @Import(Array(classOf[AbstractHibernateConfig]))
-class ContentLoopDaoSuiteConfig {
+class TextDocDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def contentLoopDao = new ContentLoopDao
+  def textDocDao = new TextDocDao
 
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
     Function.chain(Seq(
-      Test.hibernate.configurators.Hbm2ddlAutoCreateDrop,
-      Test.hibernate.configurators.BasicWithSql,
-      Test.hibernate.configurators.addAnnotatedClasses(classOf[ContentLoop]),
-      Test.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/ContentLoop.hbm.xml")
+      TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
+      TestSetup.hibernate.configurators.BasicWithSql,
+      TestSetup.hibernate.configurators.addAnnotatedClasses(classOf[ContentLoop]),
+      TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/ContentLoop.hbm.xml")
     ))
 }
