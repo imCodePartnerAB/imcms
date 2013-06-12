@@ -4,16 +4,14 @@ package imcms.api
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.MustMatchers
-import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import org.scalatest.FunSuite
 import _root_.com.imcode.imcms.test.fixtures.{LanguageFX, UserFX}
+import _root_.imcode.server.{ImcmsServices, ImcmsConstants}
 
-import imcode.server.user.UserDomainObject
 import org.mockito.Mockito._
 import javax.servlet.http.HttpServletRequest
 import org.scalatest.mock.MockitoSugar
-import imcode.server.{ImcmsServices, Imcms, ImcmsConstants}
-import reflect.ClassTag
+import scala.reflect.ClassTag
 
 @RunWith(classOf[JUnitRunner])
 class DocGetterCallbackSuite extends FunSuite {

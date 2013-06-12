@@ -5,23 +5,23 @@ import imcms.api.{SystemProperty, DocumentLanguage}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import imcms.test.TestSetup.{db}
-import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
-import com.imcode.imcms.test.config.{AbstractHibernateConfig}
-import com.imcode.imcms.test.{TestSetup}
+import imcms.test.TestSetup.db
+import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import com.imcode.imcms.test.config.AbstractHibernateConfig
+import com.imcode.imcms.test.TestSetup
 import org.springframework.context.annotation.{Bean, Import}
-import org.springframework.beans.factory.annotation.{Autowire}
+import org.springframework.beans.factory.annotation.Autowire
 
 
 @RunWith(classOf[JUnitRunner])
-class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
+class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterEach {
 
   var systemDao: SystemDao = _
   var languageDao: LanguageDao = _
 
   override def beforeAll() = db.recreate()
 
-  before {
+  override def beforeEach() {
     val ctx = TestSetup.spring.createCtx(classOf[LanguageDaoSuiteConfig])
 
     systemDao = ctx.getBean(classOf[SystemDao])

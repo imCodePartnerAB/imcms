@@ -2,22 +2,16 @@ package imcode.server.document.index
 
 import com.imcode._
 import scala.collection.JavaConverters._
-import imcode.server.document.textdocument.TextDocumentDomainObject
-import imcode.server.user.RoleId
 import com.imcode.imcms.api.DocumentLanguage
 import org.scalatest.mock.MockitoSugar._
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
 import scala.collection.mutable.{Map => MMap}
-import imcode.server.document.{DocumentDomainObject, CategoryDomainObject, DocumentPermissionSetTypeDomainObject}
+import imcode.server.document.{DocumentDomainObject, CategoryDomainObject}
 import org.mockito.Matchers._
 import org.mockito.Mockito.{mock => _, _}
-import org.mockito.stubbing.Answer
-import org.mockito.invocation.InvocationOnMock
-import com.imcode.imcms.mapping.DocumentMapper.TextDocumentMenuIndexPair
 import imcode.server.ImcmsServices
 import com.imcode.imcms.test._
-import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
-import java.util.LinkedList
+import com.imcode.imcms.test.fixtures.LanguageFX
 import imcode.server.document.index.service.impl.{DocumentIndexer, DocumentContentIndexer}
 
 

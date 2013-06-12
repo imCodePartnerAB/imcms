@@ -7,12 +7,12 @@ import scala.collection.JavaConverters._
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.{TestSetup, withLogFailure}
 import org.springframework.context.annotation.{Bean, Import}
-import com.imcode.imcms.test.config.{AbstractHibernateConfig}
-import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll, FunSuite}
+import com.imcode.imcms.test.config.AbstractHibernateConfig
+import org.scalatest._
 
 
 @RunWith(classOf[JUnitRunner])
-class NativeQueriesSuite extends WordSpec with BeforeAndAfter with BeforeAndAfterAll {
+class NativeQueriesSuite extends WordSpec with BeforeAndAfterEach with BeforeAndAfterAll {
 
   val MimeTypeCountInEveryLanguage = 17
 

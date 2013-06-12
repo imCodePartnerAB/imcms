@@ -40,10 +40,7 @@ import java.util.regex.Pattern;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
+import javax.servlet.http.*;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -131,7 +128,11 @@ public class Utility {
     }
 
     public static UserDomainObject getLoggedOnUser( HttpServletRequest req ) {
-        return (UserDomainObject)req.getSession().getAttribute( LOGGED_IN_USER );
+        return getLoggedOnUser(req.getSession());
+    }
+
+    public static UserDomainObject getLoggedOnUser(HttpSession session) {
+        return (UserDomainObject) session.getAttribute( LOGGED_IN_USER );
     }
 
     public static int compareDatesWithNullFirst( Date date1, Date date2 ) {
@@ -179,7 +180,7 @@ public class Utility {
                         + URLEncoder.encode( parameterValue ) );
             }
         }
-        return StringUtils.join( requestParameterStrings.iterator(), "&" );
+        return StringUtils.join(requestParameterStrings.iterator(), "&");
     }
 
     public static Collection collectImageDirectories() {
@@ -199,11 +200,11 @@ public class Utility {
     }
 
     public static int[] getParameterInts( HttpServletRequest request, String parameterName ) {
-        String[] parameterValues = request.getParameterValues( parameterName );
+        String[] parameterValues = request.getParameterValues(parameterName);
         if (null == parameterValues) {
             return new int[0] ;
         }
-        return convertStringArrayToIntArray( parameterValues );
+        return convertStringArrayToIntArray(parameterValues);
     }
 
     public static int[] convertStringArrayToIntArray( String[] strings ) {
@@ -231,7 +232,7 @@ public class Utility {
     }
 
     public static String formatUser( UserDomainObject user ) {
-        return StringEscapeUtils.escapeHtml( user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName() + ")" );
+        return StringEscapeUtils.escapeHtml(user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName() + ")");
     }
 
     public static String getAbsolutePathToDocument(HttpServletRequest request, DocumentDomainObject document) {
@@ -277,13 +278,13 @@ public class Utility {
             loginTarget.append( "?" ).append( queryString );
         }
 
-        response.setStatus( responseStatus );
+        response.setStatus(responseStatus);
         request.setAttribute( VerifyUser.REQUEST_ATTRIBUTE__ERROR, ERROR__NO_PERMISSION );
         request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/login/index.jsp?"+VerifyUser.REQUEST_PARAMETER__NEXT_URL+"="+URLEncoder.encode( loginTarget.toString() ) ).forward( request,response );
     }
 
     public static String[] getParameterValues( HttpServletRequest request, String parameterName ) {
-        String[] parameterValues = request.getParameterValues( parameterName );
+        String[] parameterValues = request.getParameterValues(parameterName);
         if (null == parameterValues) {
             parameterValues = new String[0];
         }
@@ -373,7 +374,7 @@ public class Utility {
     }
 
     public static String numberToAlphaNumerics(long identityHashCode) {
-        return Long.toString(identityHashCode,Character.MAX_RADIX);
+        return Long.toString(identityHashCode, Character.MAX_RADIX);
     }
 
     public static Integer getInteger(Object object) {

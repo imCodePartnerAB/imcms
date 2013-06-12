@@ -1,12 +1,10 @@
 package imcode.server.document.index
 
 import org.junit.Test
-import org.junit.Assert._
 import com.imcode.imcms.test.{TestSetup => ImcmsTest}
 import imcode.server.Imcms
 import com.imcode.imcms.test.fixtures.UserFX
 import com.imcode.imcms.api.{DefaultContentManagementSystem, LuceneParsedQuery}
-import org.apache.lucene.search.{Sort, Query}
 
 class DocumentIndexTest {
 

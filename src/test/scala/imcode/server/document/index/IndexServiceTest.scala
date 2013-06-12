@@ -6,15 +6,10 @@ import imcode.server.Config
 import com.imcode._
 import com.imcode.imcms.test.TestSetup
 import java.lang.IllegalStateException
-import java.io.{File}
-import org.apache.commons.io.FileUtils
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
-import org.apache.solr.client.solrj.impl.HttpSolrServer
-import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
-import org.apache.solr.client.solrj.response.QueryResponse
+import org.apache.solr.client.solrj.SolrQuery
 import junit.framework.Assert._
 import java.util.Date
-import org.scalatest.{BeforeAndAfterEach, BeforeAndAfter, BeforeAndAfterAll, WordSpec}
+import org.scalatest.{BeforeAndAfterAll, WordSpec}
 
 @RunWith(classOf[JUnitRunner])
 class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
@@ -125,7 +120,6 @@ class IndexServiceTest extends WordSpec with BeforeAndAfterAll {
  */
 class DocFields {
   import org.apache.solr.client.solrj.beans.Field
-  import DocumentIndex._
 
   @Field("meta_id")
   var metaId: String = _

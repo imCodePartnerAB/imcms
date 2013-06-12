@@ -190,7 +190,7 @@ public class ImcmsImageUtils {
         	builder.append(source.getFileDocument().getId());
         } else {
         	builder.append("path=");
-        	builder.append(Utility.encodeURL(image.getUrlPathRelativeToContextPath()));
+        	builder.append(Utility.encodeUrl(image.getUrlPathRelativeToContextPath()));
         }
 
         builder.append("&width=");

@@ -4,9 +4,9 @@ package imcms.dao
 import imcms.mapping.orm.Include
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll}
+import org.scalatest.{BeforeAndAfterEach, WordSpec, BeforeAndAfterAll}
 import org.scalatest.matchers.MustMatchers
-import imcms.test.TestSetup.{db}
+import imcms.test.TestSetup.db
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
@@ -14,13 +14,13 @@ import com.imcode.imcms.test.TestSetup
 
 
 @RunWith(classOf[JUnitRunner])
-class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
+class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var metaDao: MetaDao = _
 
   override def beforeAll() = db.recreate()
 
-  before {
+  override def beforeEach() {
     val ctx = TestSetup.spring.createCtx(classOf[IncludeDaoSpecConfig])
 
     metaDao = ctx.getBean(classOf[MetaDao])

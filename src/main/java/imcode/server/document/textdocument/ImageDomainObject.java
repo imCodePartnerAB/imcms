@@ -133,8 +133,10 @@ public class ImageDomainObject implements Serializable, Cloneable {
     @Column(name = "gen_file", length = GEN_FILE_LENGTH)
     private volatile String generatedFilename;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.ORDINAL)
+    // fixme: edit type
+    //@Column(nullable = false)
+    //@Enumerated(EnumType.ORDINAL)
+    @Transient
     private volatile Resize resize;
 
     // todo: FIX add new format value - UNDEFINED with ordinal 0.

@@ -5,19 +5,16 @@ import scala.collection.JavaConverters._
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.imcode.imcms.test.TestSetup.{db}
-import com.imcode.imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish, mkLanguages}
-import _root_.imcode.server.user.{RoleId, RoleDomainObject, UserDomainObject}
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import com.imcode.imcms.test.fixtures.LanguageFX.mkLanguages
+import org.scalatest.{fixture, BeforeAndAfterEach, BeforeAndAfterAll}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
-import org.springframework.context.annotation.Bean._
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
-import com.imcode.imcms.api.{DocRef, SystemProperty, DocumentLanguage, TextHistory}
+import com.imcode.imcms.api.{DocRef, DocumentLanguage, TextHistory}
 
-import org.scalatest.fixture
 import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
+import com.imcode.imcms.test.fixtures.UserFX
 
 @RunWith(classOf[JUnitRunner])
 class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -26,16 +23,16 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
 	var textDao: TextDocDao = _
 
-  val admin = new UserDomainObject(0) |>> { _.addRoleId(RoleId.SUPERADMIN) }
+  val admin = UserFX.mkSuperAdmin
 
-  override def beforeAll() = db.recreate()
+  override def beforeAll() = TestSetup.db.recreate()
 
   override def beforeEach() {
     val ctx = TestSetup.spring.createCtx(classOf[TextDaoSuiteConfig])
 
     textDao = ctx.getBean(classOf[TextDocDao])
 
-    db.runScripts("src/test/resources/sql/text_dao.sql")
+    TestSetup.db.runScripts("src/test/resources/sql/text_dao.sql")
   }
 
   def withFixture(test: OneArgTest) {
@@ -81,7 +78,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     val texts = textDao.getTexts(DocRef.of(Default.docId, Default.docVersionNo), language)
 
     assertEquals("Texts count in doc", 1, texts.size)
-    assertTrue("Texts cotains saved text", texts.contains(text))
+    assertTrue("Texts contains saved text", texts.contains(text))
   }
 
 

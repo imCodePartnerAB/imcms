@@ -1,10 +1,9 @@
 package com.imcode
 package imcms.mapping
 
-import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{WordSpec}
+import org.scalatest.WordSpec
 import DocumentStoringVisitor.getFilenameForFileDocumentFile
 import imcms.api.DocumentVersion.WORKING_VERSION_NO
 import com.imcode.imcms.api.DocRef

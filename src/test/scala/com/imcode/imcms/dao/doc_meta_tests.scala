@@ -3,8 +3,8 @@ package imcms.dao
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import imcms.test.TestSetup.{db}
-import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll}
+import imcms.test.TestSetup.db
+import org.scalatest.{BeforeAndAfterEach, WordSpec, BeforeAndAfterAll}
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
@@ -13,20 +13,20 @@ import com.imcode.imcms.api._
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 import imcms.mapping.orm.{Include, HtmlReference, UrlReference, FileReference}
 import org.junit.Assert._
-import java.util.{Date}
+import java.util.Date
 import scala.collection.JavaConverters._
 import com.imcode.imcms.test.fixtures.{DocRefFX, UserFX, DocFX}
 import org.joda.time.DateTime
 
 @RunWith(classOf[JUnitRunner])
-class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
+class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var metaDao: MetaDao = _
   var versionDao: DocumentVersionDao = _
 
   override def beforeAll() = db.recreate()
 
-  before {
+  override def beforeEach() {
     //db.runScripts()
 
     val ctx = TestSetup.spring.createCtx(classOf[MetaDaoTestConfig])

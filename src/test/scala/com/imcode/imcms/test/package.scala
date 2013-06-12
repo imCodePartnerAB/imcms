@@ -4,7 +4,6 @@ package imcms
 import scala.util.control.{Exception => Ex}
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import scala.util.{Try, Failure}
 
 package object test {
   def withLogFailure[T](block: => T) =

@@ -32,7 +32,7 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   override def beforeAll() = TestSetup.db.recreate()
 
   override def beforeEach()  {
-    val ctx = TestSetup.spring.createCtx(classOf[MenuDaoSuiteConfig])
+    val ctx = TestSetup.spring.createCtx(classOf[ContextLoopDaoSuiteConfig])
 
     dao = ctx.getBean(classOf[TextDocDao])
 
@@ -143,7 +143,7 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 }
 
 @Import(Array(classOf[AbstractHibernateConfig]))
-class TextDocDaoSuiteConfig {
+class ContextLoopDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
   def textDocDao = new TextDocDao

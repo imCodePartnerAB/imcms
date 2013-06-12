@@ -4,9 +4,9 @@ package imcms.dao
 import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
+import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test.fixtures.{DocItemFX, DocFX, VersionFX}
-import com.imcode.imcms.test.fixtures.UserFX.{mkSuperAdmin}
+import com.imcode.imcms.test.fixtures.UserFX.mkSuperAdmin
 import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
@@ -16,7 +16,7 @@ import org.junit.Assert._
 import _root_.imcode.server.document.textdocument._
 
 @RunWith(classOf[JUnitRunner])
-class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
+class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var textDocDao: TextDocDao = _
 
@@ -24,8 +24,8 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfter {
 
   override def beforeAll() = TestSetup.db.recreate()
 
-  before {
-    val ctx = TestSetup.spring.createCtx(classOf[TextDocDaoSuiteConfig])
+  override def beforeEach() {
+    val ctx = TestSetup.spring.createCtx(classOf[MenuDaoSuiteConfig])
 
     textDocDao = ctx.getBean(classOf[TextDocDao])
 

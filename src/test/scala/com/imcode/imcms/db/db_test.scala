@@ -3,7 +3,7 @@ package com.imcode.imcms.db
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import com.imcode.imcms.test.TestSetup
-import org.scalatest.{WordSpec}
+import org.scalatest.WordSpec
 
 @RunWith(classOf[JUnitRunner])
 class DBTestSuite extends WordSpec {
@@ -14,7 +14,7 @@ class DBTestSuite extends WordSpec {
     val db = new DB(TestSetup.db.createDataSource())
 
     "be new" in {
-      assert(db.isNew(), "empty")
+      assert(db.isNew(), "new")
     }
 
     "contain no tables" in {

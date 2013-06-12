@@ -2,13 +2,11 @@ package imcode.server.document.index
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
+import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
 import com.imcode.imcms.test.TestSetup
-import com.imcode.db.Database
 import org.scalatest.mock.MockitoSugar.mock
-import imcode.server.{ImcmsServices, LoggingDocumentIndex, PhaseQueryFixingDocumentIndex}
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
-import com.imcode.imcms.dao.{TextDocDao}
+import com.imcode.imcms.dao.TextDocDao
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.imcode._
@@ -19,13 +17,13 @@ import com.imcode.imcms.api.{DocRef, DocumentVersion, I18nMeta}
 import scala.collection.JavaConverters._
 import java.io.File
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
-import org.apache.solr.core.{SolrCore, CoreDescriptor, CoreContainer}
+import org.apache.solr.core.CoreContainer
 import org.apache.solr.client.solrj.SolrQuery
 import imcode.server.document.textdocument.{ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
 import imcode.server.document.index.service.impl.{DocumentIndexer, DocumentContentIndexer}
 
 @RunWith(classOf[JUnitRunner])
-class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
+class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
 //        IndexService indexService = new IndexService(getConfig());
 //        SolrServer solrServer = indexService.solrServer();

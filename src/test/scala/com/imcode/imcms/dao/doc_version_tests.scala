@@ -6,8 +6,8 @@ import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test._
-import imcms.test.TestSetup.{db}
-import imcms.test.fixtures.UserFX.{mkSuperAdmin}
+import imcms.test.TestSetup.db
+import imcms.test.fixtures.UserFX.mkSuperAdmin
 import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 import imcms.api._
@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.fixtures.UserFX
 
 @RunWith(classOf[JUnitRunner])
-class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAfter with GivenWhenThen {
+class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach with GivenWhenThen {
 
   implicit object OrderingDocumentVersion extends Ordering[DocumentVersion] {
     def compare(v1: DocumentVersion, v2: DocumentVersion) = v1.getNo.intValue - v2.getNo.intValue
@@ -28,7 +28,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
 
   override def beforeAll() = db.recreate()
 
-  before {
+  override def beforeEach() {
     val ctx = TestSetup.spring.createCtx(classOf[DocVersionDaoSuiteConfig])
 
     versionDao = ctx.getBean(classOf[DocumentVersionDao])

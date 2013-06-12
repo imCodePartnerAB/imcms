@@ -8,7 +8,7 @@ import org.scalatest.mock.MockitoSugar._
 import com.imcode.imcms.test._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
+import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
 import imcode.server.document.index.DocIndexingMocksSetup
 import com.imcode.imcms.test.fixtures.DocFX
 import org.apache.solr.client.solrj.SolrServer
@@ -17,7 +17,7 @@ import org.mockito.invocation.InvocationOnMock
 import imcode.server.document.index.service.impl.{DocumentIndexServiceOps, ManagedSolrDocumentIndexService}
 
 @RunWith(classOf[JUnitRunner])
-class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
+class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
   TestSetup.initLogging()
 

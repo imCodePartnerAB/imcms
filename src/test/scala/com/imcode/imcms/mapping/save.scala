@@ -6,7 +6,6 @@ import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import imcms.test.{TestSetup}
 
 @RunWith(classOf[JUnitRunner])
 class SaveSpec extends WordSpec with ShouldMatchers {

@@ -6,8 +6,8 @@ import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.MustMatchers
-import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
-import imcms.test.TestSetup.{db}
+import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
+import imcms.test.TestSetup.db
 import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
@@ -15,13 +15,13 @@ import org.springframework.beans.factory.annotation.Autowire
 
 @RunWith(classOf[JUnitRunner])
 //todo: Test named queries
-class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfter {
+class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var metaDao: MetaDao = _
 
   override def beforeAll() = db.recreate()
 
-  before {
+  override def beforeEach() {
     val ctx = TestSetup.spring.createCtx(classOf[TemplateNamesDaoSuiteConfig])
 
     metaDao = ctx.getBean(classOf[MetaDao])

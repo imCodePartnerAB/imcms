@@ -1,19 +1,19 @@
 package com.imcode
 package imcms.dao
 
-import imcms.test.TestSetup.{db}
+import imcms.test.TestSetup.db
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{WordSpec, BeforeAndAfter, BeforeAndAfterAll}
-import org.scalatest.matchers.{MustMatchers}
+import org.scalatest.{BeforeAndAfterEach, WordSpec, BeforeAndAfterAll}
+import org.scalatest.matchers.MustMatchers
 import com.imcode.imcms.test.config.AbstractHibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
-import com.imcode.imcms.api.{SystemProperty}
+import com.imcode.imcms.api.SystemProperty
 
 @RunWith(classOf[JUnitRunner])
-class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAfter with BeforeAndAfterAll {
+class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterEach with BeforeAndAfterAll {
 
   var systemDao: SystemDao = _
 
@@ -22,7 +22,7 @@ class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAft
 
   override def beforeAll() = db.recreate()
 
-  before {
+  override def beforeEach() {
     val ctx = TestSetup.spring.createCtx(classOf[SystemPropertyDaoSuiteConfig])
 
     systemDao = ctx.getBean(classOf[SystemDao])

@@ -2,14 +2,13 @@ package imcode.server.document.index
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
-import org.apache.lucene.search.TermRangeQuery
+import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
 import java.util.Date
 import org.apache.lucene.document.DateTools
 
 
 @RunWith(classOf[JUnitRunner])
-class LuceneQueryConversionTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
+class LuceneQueryConversionTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
   "TermRangeQuery" should {
     "produce date range between infinity and upper bound" in {
@@ -21,7 +20,6 @@ class LuceneQueryConversionTest extends WordSpec with BeforeAndAfterAll with Bef
       //todo: fix
       //val query1 = new TermRangeQuery("field", dateFrom, dateTo, true, true)
       //val query2 = new TermRangeQuery("field", null, dateTo, true, true)
-
     }
   }
 }

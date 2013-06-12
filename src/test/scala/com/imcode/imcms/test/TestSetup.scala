@@ -1,18 +1,17 @@
 package com.imcode
 package imcms.test
 
-import java.io.{File}
+import java.io.File
 import org.apache.commons.dbcp.BasicDataSource
-import org.hibernate.cfg.{Configuration}
+import org.hibernate.cfg.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.context.annotation._
 import java.lang.{Class, String}
 import org.springframework.context.ApplicationContext
-import com.imcode.imcms.test.config.{TestConfig}
-import org.springframework.context.support.{FileSystemXmlApplicationContext}
+import com.imcode.imcms.test.config.TestConfig
+import org.springframework.context.support.FileSystemXmlApplicationContext
 import org.apache.commons.io.FileUtils
-import org.apache.solr.client.solrj.SolrServer
-import _root_.imcode.server.{Config, Imcms}
+import _root_.imcode.server.Imcms
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import imcode.server.document.index.service.SolrServerFactory
 import scala.reflect.ClassTag

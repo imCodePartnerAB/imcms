@@ -4,12 +4,12 @@ import com.imcode._
 import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{OneInstancePerTest, BeforeAndAfter, WordSpec, FunSuite}
+import org.scalatest.{BeforeAndAfterEach, WordSpec}
 import org.junit.Assert._
 import com.imcode.imcms.test.fixtures.{DocItemFX, DocRefFX}
 
 @RunWith(classOf[JUnitRunner])
-class ContentLoopSpec extends WordSpec with BeforeAndAfter {
+class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
 
   val LoopFx = new {
     val FirstContentIndex = 0

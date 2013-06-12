@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.api.{DocRef, ImageHistory, DocumentLanguage}
 import com.imcode.imcms.test.fixtures.UserFX
-import com.imcode.imcms.test.fixtures.LanguageFX.{mkEnglish, mkSwedish}
+import com.imcode.imcms.test.fixtures.LanguageFX.mkEnglish
 import imcode.server.document.textdocument.{ContentRef, ImageDomainObject}
 
 

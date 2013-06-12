@@ -4,20 +4,17 @@ import com.imcode._
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
-import imcode.server.document.index.{DocIndexingMocksSetup}
+import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
+import imcode.server.document.index.DocIndexingMocksSetup
 import com.imcode.imcms.test.fixtures.{DocFX, LanguageFX}
-import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.client.solrj.SolrServer
-import org.mockito.Mockito.{mock => _, _}
-import org.mockito.Matchers._
+import org.mockito.Mockito.{mock => _}
 import org.scalatest.mock.MockitoSugar._
-import com.imcode.imcms.test._
 import java.lang.{InterruptedException, Thread}
 import imcode.server.document.index.service.impl.DocumentIndexServiceOps
 
 @RunWith(classOf[JUnitRunner])
-class DocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
+class DocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
   val ops: DocumentIndexServiceOps = {
     val ms = new DocIndexingMocksSetup

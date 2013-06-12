@@ -4,7 +4,7 @@ import com.imcode._
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, WordSpec}
+import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.test.TestSetup
 import java.util.Date
@@ -18,7 +18,7 @@ import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX, LanguageFX}
 import imcode.server.document.index.service.impl.DocumentIndexer
 
 @RunWith(classOf[JUnitRunner])
-class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfter {
+class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
   TestSetup.initLogging()
 
