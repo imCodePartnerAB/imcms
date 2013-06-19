@@ -22,6 +22,6 @@ public class DefaultQueryParser implements QueryParser {
         BooleanClause.Occur[] flags = new BooleanClause.Occur[fields.length];
         Arrays.fill(flags, BooleanClause.Occur.SHOULD);
 
-        return MultiFieldQueryParser.parse(Version.LUCENE_40, queryString, fields, flags, new AnalyzerImpl());
+        return MultiFieldQueryParser.parse(Version.LUCENE_43, queryString, fields, flags, new AnalyzerImpl());
     }
 }

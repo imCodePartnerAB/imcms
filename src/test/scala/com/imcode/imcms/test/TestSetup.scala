@@ -6,7 +6,6 @@ import org.apache.commons.dbcp.BasicDataSource
 import org.hibernate.cfg.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.context.annotation._
-import java.lang.{Class, String}
 import org.springframework.context.ApplicationContext
 import com.imcode.imcms.test.config.TestConfig
 import org.springframework.context.support.FileSystemXmlApplicationContext

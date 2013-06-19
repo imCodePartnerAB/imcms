@@ -6,6 +6,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 
 package object test {
+
   def withLogFailure[T](block: => T) =
     try {
       block

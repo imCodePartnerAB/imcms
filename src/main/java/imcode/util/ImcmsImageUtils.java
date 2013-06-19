@@ -10,6 +10,7 @@ import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.NullImageSource;
 
+import java.util.Date;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -170,10 +171,41 @@ public class ImcmsImageUtils {
         return url;
     }
 
+    public static String getImageUrl(Integer metaId, ImageDomainObject image, String contextPath, boolean includeQueryParams) {
+        String generatedFilename = image.getGeneratedFilename();
+
+        if (generatedFilename == null) {
+            return getImageHandlingUrl(metaId, image, contextPath);
+        }
+
+        File generatedFile = image.getGeneratedFile();
+
+        if (!generatedFile.exists()) {
+            generateImage(image, false);
+
+        } else if (isImageModified(image, generatedFile)) {
+            generateImage(image, true);
+
+        }
+
+        String url = image.getGeneratedUrlPath(contextPath);
+
+        if (includeQueryParams) {
+            url += getImageQueryString(metaId, image, false);
+        }
+
+        return url;
+    }
+
     @Deprecated
     public static String getImageHandlingUrl(ImageDomainObject image, String contextPath) {
         
         return contextPath + "/imagehandling" + getImageQueryString(image, false);
+    }
+
+    public static String getImageHandlingUrl(Integer metaId, ImageDomainObject image, String contextPath) {
+
+        return contextPath + "/imagehandling" + getImageQueryString(metaId, image, false);
     }
 
     public static String getImagePreviewUrl(ImageDomainObject image, String contextPath) {
@@ -226,6 +258,77 @@ public class ImcmsImageUtils {
         return builder.toString();
     }
 
+    private static String getImageQueryString(Integer metaId, ImageDomainObject image, boolean forPreview) {
+        StringBuilder builder = new StringBuilder("?");
+
+        if (!forPreview && image.getSource() instanceof FileDocumentImageSource) {
+            FileDocumentImageSource source = (FileDocumentImageSource) image.getSource();
+            FileDocumentDomainObject fileDocument = source.getFileDocument();
+            builder.append("file_id=");
+            builder.append(fileDocument.getId());
+            builder.append("&file_no=");
+            builder.append(fileDocument.getDefaultFileId());
+        } else {
+            builder.append("path=");
+            builder.append(Utility.encodeUrl(image.getUrlPathRelativeToContextPath()));
+        }
+
+        if (!forPreview) {
+            builder.append("&meta_id=");
+            builder.append(metaId);
+
+            Integer imageIndex = image.getNo();
+            if (imageIndex != null) {
+                builder.append("&no=");
+                builder.append(imageIndex);
+            }
+        }
+
+        if (image.getWidth() > 0) {
+            builder.append("&width=");
+            builder.append(image.getWidth());
+        }
+        if (image.getHeight() > 0) {
+            builder.append("&height=");
+            builder.append(image.getHeight());
+        }
+
+        if (image.getFormat() != null) {
+            builder.append("&format=");
+            builder.append(image.getFormat().getExtension());
+        }
+
+        CropRegion region = image.getCropRegion();
+        if (region.isValid()) {
+            builder.append("&crop_x1=");
+            builder.append(region.getCropX1());
+            builder.append("&crop_y1=");
+            builder.append(region.getCropY1());
+            builder.append("&crop_x2=");
+            builder.append(region.getCropX2());
+            builder.append("&crop_y2=");
+            builder.append(region.getCropY2());
+        }
+
+        RotateDirection rotateDir = image.getRotateDirection();
+        if (!rotateDir.isDefault()) {
+            builder.append("&rangle=");
+            builder.append(rotateDir.getAngle());
+        }
+
+        if (!forPreview && image.getGeneratedFilename() != null) {
+            builder.append("&gen_file=");
+            builder.append(image.getGeneratedFilename());
+        }
+
+        if (image.getResize() != null) {
+            builder.append("&resize=");
+            builder.append(image.getResize().name().toLowerCase());
+        }
+
+        return builder.toString();
+    }
+
     public static ImageSource createImageSourceFromString(String imageUrl) {
         ImageSource imageSource = new NullImageSource();
         if ( StringUtils.isNotBlank(imageUrl) ) {
@@ -256,6 +359,22 @@ public class ImcmsImageUtils {
             }
         }
         return imageSource;
+    }
+
+    private static boolean isImageModified(ImageDomainObject image, File generatedFile) {
+        Date sourceModDate = image.getSource().getModifiedDatetime();
+
+        if (sourceModDate == null) {
+            return true;
+        }
+
+        long lastModified = generatedFile.lastModified();
+        if (lastModified == 0L) {
+            return true;
+        }
+        Date generatedModDate = new Date(lastModified);
+
+        return sourceModDate.after(generatedModDate);
     }
 
     public static void generateImage(ImageDomainObject image, boolean overwrite) {

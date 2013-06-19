@@ -16,7 +16,6 @@ import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import java.util.Date
 import org.apache.solr.client.solrj.response.QueryResponse
 import java.net.URLDecoder
-import imcode.server.document
 import java.util
 
 /**

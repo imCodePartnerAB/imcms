@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import imcode.util.ImcmsImageUtils;
+import org.apache.commons.lang.math.NumberUtils;
+
 import java.util.ArrayList;
 
 /**
@@ -21,8 +23,10 @@ import java.util.ArrayList;
 public class EditImage extends HttpServlet {
 
     private static final String REQUEST_ATTRIBUTE__IMAGE = EditImage.class+".image";
+    private static final String REQUEST_ATTRIBUTE__META_ID = EditImage.class + ".metaId";
     public static final String REQUEST_PARAMETER__RETURN = "return";
     public static final String REQUEST_PARAMETER__GENFILE = "gen_file";
+    public static final String REQUEST_PARAMETER__META_ID = "meta_id";
 
     public void doGet(final HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
@@ -30,7 +34,8 @@ public class EditImage extends HttpServlet {
         String returnPath = request.getParameter(REQUEST_PARAMETER__RETURN);
         ImageRetrievalCommand imageCommand = new ImageRetrievalCommand();
 
-        ImageDispatchCommand returnCommand = new ImageDispatchCommand();
+        int metaId = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__META_ID));
+        ImageDispatchCommand returnCommand = new ImageDispatchCommand(metaId);
         returnCommand.setReturnPath(returnPath);
         returnCommand.setImageCommand(imageCommand);
 
@@ -62,6 +67,10 @@ public class EditImage extends HttpServlet {
         return (ImageDomainObject) request.getAttribute(REQUEST_ATTRIBUTE__IMAGE);
     }
 
+    public static Integer getMetaId(HttpServletRequest request) {
+        return (Integer) request.getAttribute(REQUEST_ATTRIBUTE__META_ID);
+    }
+
     /**
      * This Command to retrieve image to (Xina) editor.  
      */
@@ -81,6 +90,11 @@ public class EditImage extends HttpServlet {
     private static class ImageDispatchCommand implements DispatchCommand {
         private String returnPath;
         private ImageRetrievalCommand imageCommand;
+        private int metaId;
+
+        public ImageDispatchCommand(int metaId) {
+            this.metaId = metaId;
+        }
 
         public void dispatch(HttpServletRequest request,
                              HttpServletResponse response) throws IOException, ServletException {
@@ -92,6 +106,9 @@ public class EditImage extends HttpServlet {
             }
 
             request.setAttribute(REQUEST_ATTRIBUTE__IMAGE, editImage);
+            if (metaId > 0) {
+                request.setAttribute(REQUEST_ATTRIBUTE__META_ID, metaId);
+            }
             request.getRequestDispatcher(returnPath).forward(request, response);
         }
 
