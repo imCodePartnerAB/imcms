@@ -87,15 +87,18 @@ public class ImageDomainObject implements Serializable, Cloneable {
     @Transient
     private volatile ImageSource source = new NullImageSource();
 
-    @Transient
-    private volatile RotateDirection rotateDirection = RotateDirection.NORTH;
-
     private volatile DocRef docRef;
+
     private volatile ContentRef contentRef;
+
     private volatile Integer no;
+
     private volatile int width;
+
     private volatile int height;
+
     private volatile int border;
+
     private volatile String align = "";
 
     @Column(name = "alt_text")
@@ -128,21 +131,16 @@ public class ImageDomainObject implements Serializable, Cloneable {
     private volatile Long archiveImageId;
 
     @Column(name = "rotate_angle", nullable = false)
-    private volatile int rotateAngle = rotateDirection.getAngle();
+    private volatile int rotateAngle = RotateDirection.NORTH.getAngle();
 
     @Column(name = "gen_file", length = GEN_FILE_LENGTH)
     private volatile String generatedFilename;
 
-    // fixme: edit type
-    //@Column(nullable = false)
-    //@Enumerated(EnumType.ORDINAL)
-    @Transient
-    private volatile Resize resize;
-
-    // todo: FIX add new format value - UNDEFINED with ordinal 0.
     @Column(nullable = false)
-    @Enumerated(EnumType.ORDINAL)
-    private volatile Format format;
+    private volatile int resize;
+
+    @Column(nullable = false)
+    private volatile int format;
 
     private volatile CropRegion cropRegion = new CropRegion();
 
@@ -296,12 +294,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return linkUrl;
     }
 
-    public Format getFormat() {
-        return format;
+    public RotateDirection getRotateDirection() {
+        return RotateDirection.getByAngle(rotateAngle);
     }
 
-    public RotateDirection getRotateDirection() {
-        return rotateDirection;
+    public void setRotateDirection(RotateDirection rotateDirection) {
+        this.rotateAngle = rotateDirection.getAngle();
     }
 
     public void setName(String image_name) {
@@ -356,13 +354,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
         this.archiveImageId = archiveImageId;
     }
 
-    public void setFormat(Format format) {
-        this.format = format;
+    public Format getFormat() {
+        return Format.findFormat(format);
     }
 
-    public void setRotateDirection(RotateDirection rotateDirection) {
-        this.rotateDirection = rotateDirection;
-        this.rotateAngle = rotateDirection.getAngle();
+    public void setFormat(Format format) {
+        this.format = format != null ? format.getOrdinal() : 0;
     }
 
     public void setSourceAndClearSize(ImageSource source) {
@@ -459,11 +456,11 @@ public class ImageDomainObject implements Serializable, Cloneable {
     }
 
     public Resize getResize() {
-        return resize;
+        return Resize.getByOrdinal(resize);
     }
 
     public void setResize(Resize resize) {
-        this.resize = resize;
+        this.resize = resize == null ? 0 : resize.getOrdinal();
     }
 
     public long getSize() {
@@ -516,7 +513,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 .append(cropRegion.getCropY1(), otherCropRegion.getCropY1())
                 .append(cropRegion.getCropX2(), otherCropRegion.getCropX2())
                 .append(cropRegion.getCropY2(), otherCropRegion.getCropY2())
-                .append(rotateDirection, o.getRotateDirection())
+                .append(getRotateDirection(), o.getRotateDirection())
                 .append(resize, o.getResize())
                 .isEquals();
     }
@@ -531,7 +528,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 .append(target).append(linkUrl).append(format)
                 .append(cropRegion.getCropX1()).append(cropRegion.getCropY1())
                 .append(cropRegion.getCropX2()).append(cropRegion.getCropY2())
-                .append(rotateDirection)
+                .append(getRotateDirection())
                 .append(resize)
                 .toHashCode();
     }

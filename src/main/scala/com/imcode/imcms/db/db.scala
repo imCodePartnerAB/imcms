@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate
 
 import scala.collection.JavaConverters._
 import java.sql.{ResultSet, Connection}
-import org.apache.ibatis.jdbc.ScriptRunner
 import org.springframework.jdbc.core.{ConnectionCallback, RowMapper}
 import java.io.FileReader
 
@@ -86,7 +85,7 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
   def runScripts(scripts: Seq[String]): Unit = synchronized {
     jdbcTemplate.execute(new ConnectionCallback[Unit] {
       def doInConnection(connection: Connection) {
-        val scriptRunner = new ScriptRunner(connection) |>> { sr =>
+        val scriptRunner = new IBatisPatchedScriptRunner(connection) |>> { sr =>
           sr.setAutoCommit(false)
           sr.setStopOnError(true)
         }
@@ -94,7 +93,9 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
         for (script <- scripts) {
           logger.debug("Running script %s." format script)
 
-          using(new FileReader(script)) { scriptRunner runScript _ }
+          using(new FileReader(script)) {
+            scriptRunner.runScript
+          }
         }
       }
     })

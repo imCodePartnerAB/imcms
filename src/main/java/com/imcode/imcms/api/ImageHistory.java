@@ -52,7 +52,7 @@ public class ImageHistory {
     private Integer type;
 
     @Column(name = "format", nullable = false)
-    private short format;
+    private int format;
 
     @Column(name = "crop_x1", nullable = false)
     private int cropX1;
@@ -67,7 +67,7 @@ public class ImageHistory {
     private int cropY2;
 
     @Column(name = "rotate_angle", nullable = false)
-    private short rotateAngle;
+    private int rotateAngle;
 
     @Column(name = "gen_file")
     private String generatedFilename;
@@ -279,7 +279,7 @@ public class ImageHistory {
     }
 
     public void setFormat(Format format) {
-        this.format = (short) (format != null ? format.getOrdinal() : 0);
+        this.format = format != null ? format.getOrdinal() : 0;
     }
 
     public CropRegion getCropRegion() {
