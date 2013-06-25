@@ -83,5 +83,3 @@ $$
 DELIMITER ;
 
 CALL imcms_schema_update_6_13_to_6_14;
-
-SHOW ERRORS ;
