@@ -5,6 +5,9 @@ import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
+import imcode.util.image.Resize;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -49,22 +52,15 @@ public class ImageHistory {
     @Column(name = "imgurl")
     private String imageUrl = "";
 
+    @Column(name = "image_name")
+    private volatile String name = "";
+
     private Integer type;
 
     @Column(name = "format", nullable = false)
     private int format;
 
-    @Column(name = "crop_x1", nullable = false)
-    private int cropX1;
-
-    @Column(name = "crop_y1", nullable = false)
-    private int cropY1;
-
-    @Column(name = "crop_x2", nullable = false)
-    private int cropX2;
-
-    @Column(name = "crop_y2", nullable = false)
-    private int cropY2;
+    private volatile CropRegion cropRegion = new CropRegion();
 
     @Column(name = "rotate_angle", nullable = false)
     private int rotateAngle;
@@ -92,34 +88,37 @@ public class ImageHistory {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
+    private volatile int resize;
+
     public ImageHistory() {
     }
 
-    public ImageHistory(ImageDomainObject imageDO, UserDomainObject user) {
-        setDocRef(imageDO.getDocRef());
-        setNo(imageDO.getNo());
+    public ImageHistory(ImageDomainObject image, UserDomainObject user) {
+        setDocRef(image.getDocRef());
+        setNo(image.getNo());
 
-        setWidth(imageDO.getWidth());
-        setHeight(imageDO.getHeight());
-        setBorder(imageDO.getBorder());
-        setAlign(imageDO.getAlign());
-        setAlternateText(imageDO.getAlternateText());
-        setLowResolutionUrl(imageDO.getLowResolutionUrl());
-        setVerticalSpace(imageDO.getVerticalSpace());
-        setHorizontalSpace(imageDO.getHorizontalSpace());
-        setTarget(imageDO.getTarget());
-        setLinkUrl(imageDO.getLinkUrl());
-        setImageUrl(imageDO.getUrl());
-        setType(imageDO.getType());
+        setWidth(image.getWidth());
+        setHeight(image.getHeight());
+        setBorder(image.getBorder());
+        setAlign(image.getAlign());
+        setAlternateText(image.getAlternateText());
+        setLowResolutionUrl(image.getLowResolutionUrl());
+        setVerticalSpace(image.getVerticalSpace());
+        setHorizontalSpace(image.getHorizontalSpace());
+        setTarget(image.getTarget());
+        setLinkUrl(image.getLinkUrl());
+        setImageUrl(image.getUrl());
+        setType(image.getType());
+        setResize(image.getResize());
 
-        setLanguage(imageDO.getLanguage());
-        setContentRef(imageDO.getContentRef());
+        setLanguage(image.getLanguage());
+        setContentRef(image.getContentRef());
         setUserId(user.getId());
         setModifiedDt(new Date());
-        setFormat(imageDO.getFormat());
-        setCropRegion(imageDO.getCropRegion());
-        setRotateDirection(imageDO.getRotateDirection());
-        setGeneratedFilename(imageDO.getGeneratedFilename());
+        setFormat(image.getFormat());
+        setCropRegion(image.getCropRegion());
+        setRotateDirection(image.getRotateDirection());
+        setGeneratedFilename(image.getGeneratedFilename());
     }
 
     public Long getId() {
@@ -283,21 +282,11 @@ public class ImageHistory {
     }
 
     public CropRegion getCropRegion() {
-        return new CropRegion(cropX1, cropY1, cropX2, cropY2);
+        return cropRegion;
     }
 
-    public void setCropRegion(CropRegion region) {
-        if (region.isValid()) {
-            cropX1 = region.getCropX1();
-            cropY1 = region.getCropY1();
-            cropX2 = region.getCropX2();
-            cropY2 = region.getCropY2();
-        } else {
-            cropX1 = -1;
-            cropY1 = -1;
-            cropX2 = -1;
-            cropY2 = -1;
-        }
+    public void setCropRegion(CropRegion cropRegion) {
+        this.cropRegion = cropRegion;
     }
 
     public RotateDirection getRotateDirection() {
@@ -322,5 +311,79 @@ public class ImageHistory {
 
     public void setDocRef(DocRef docRef) {
         this.docRef = docRef;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Resize getResize() {
+        return Resize.getByOrdinal(resize);
+    }
+
+    public void setResize(Resize resize) {
+        this.resize = resize == null ? 0 : resize.getOrdinal();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ImageHistory)) {
+            return false;
+        }
+        final ImageHistory o = (ImageHistory) obj;
+        return new EqualsBuilder()
+                .append(id, o.id)
+                .append(source.toStorageString(), o.getSource().toStorageString())
+                .append(docRef, o.getDocRef())
+                .append(contentRef, o.getContentRef())
+                .append(no, o.getNo())
+                .append(width, o.getWidth())
+                .append(height, o.getHeight())
+                .append(border, o.getBorder())
+                .append(align, o.getAlign())
+                .append(alternateText, o.getAlternateText())
+                .append(lowResolutionUrl, o.getLowResolutionUrl())
+                .append(verticalSpace, o.getVerticalSpace())
+                .append(horizontalSpace, o.getHorizontalSpace())
+                .append(target, o.getTarget())
+                .append(linkUrl, o.getLinkUrl())
+                .append(name, o.getName())
+                .append(cropRegion, o.getCropRegion())
+                .append(language, o.getLanguage())
+                .append(getFormat(), o.getFormat())
+                .append(getRotateDirection(), o.getRotateDirection())
+                .append(getResize(), o.getResize())
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(id)
+                .append(source.toStorageString())
+                .append(docRef)
+                .append(contentRef)
+                .append(no)
+                .append(width)
+                .append(height)
+                .append(border)
+                .append(align)
+                .append(alternateText)
+                .append(lowResolutionUrl)
+                .append(verticalSpace)
+                .append(horizontalSpace)
+                .append(target)
+                .append(linkUrl)
+                .append(name)
+                .append(cropRegion)
+                .append(language)
+                .append(getFormat())
+                .append(getRotateDirection())
+                .append(getResize())
+                .toHashCode();
     }
 }

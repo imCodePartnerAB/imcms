@@ -71,6 +71,11 @@ BEGIN
     ADD COLUMN resize INT NOT NULL DEFAULT 0;
   END IF;
 
+  IF NOT imcms_schema_is_column_exists('imcms_text_doc_images_history', 'resize') THEN
+    ALTER TABLE imcms_text_doc_images
+    ADD COLUMN resize INT NOT NULL DEFAULT 0;
+  END IF;
+
   CALL imcms_schema_set_version(6, 14);
 END;
 $$

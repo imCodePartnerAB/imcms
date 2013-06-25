@@ -19,6 +19,7 @@ import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -495,9 +496,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
             return false;
         }
         final ImageDomainObject o = (ImageDomainObject) obj;
-        CropRegion otherCropRegion = o.getCropRegion();
-        return new EqualsBuilder().append(source.toStorageString(), o.getSource().toStorageString())
-                .append(name, o.getName())
+        return new EqualsBuilder()
+                .append(id, o.id)
+                .append(source.toStorageString(), o.getSource().toStorageString())
+                .append(docRef, o.getDocRef())
+                .append(contentRef, o.getContentRef())
+                .append(no, o.getNo())
                 .append(width, o.getWidth())
                 .append(height, o.getHeight())
                 .append(border, o.getBorder())
@@ -508,28 +512,39 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 .append(horizontalSpace, o.getHorizontalSpace())
                 .append(target, o.getTarget())
                 .append(linkUrl, o.getLinkUrl())
-                .append(format, o.getFormat())
-                .append(cropRegion.getCropX1(), otherCropRegion.getCropX1())
-                .append(cropRegion.getCropY1(), otherCropRegion.getCropY1())
-                .append(cropRegion.getCropX2(), otherCropRegion.getCropX2())
-                .append(cropRegion.getCropY2(), otherCropRegion.getCropY2())
+                .append(name, o.getName())
+                .append(cropRegion, o.getCropRegion())
+                .append(language, o.getLanguage())
+                .append(getFormat(), o.getFormat())
                 .append(getRotateDirection(), o.getRotateDirection())
-                .append(resize, o.getResize())
+                .append(getResize(), o.getResize())
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(id)
                 .append(source.toStorageString())
-                .append(name).append(width).append(height)
-                .append(border).append(align).append(alternateText)
-                .append(lowResolutionUrl).append(verticalSpace).append(horizontalSpace)
-                .append(target).append(linkUrl).append(format)
-                .append(cropRegion.getCropX1()).append(cropRegion.getCropY1())
-                .append(cropRegion.getCropX2()).append(cropRegion.getCropY2())
+                .append(docRef)
+                .append(contentRef)
+                .append(no)
+                .append(width)
+                .append(height)
+                .append(border)
+                .append(align)
+                .append(alternateText)
+                .append(lowResolutionUrl)
+                .append(verticalSpace)
+                .append(horizontalSpace)
+                .append(target)
+                .append(linkUrl)
+                .append(name)
+                .append(cropRegion)
+                .append(language)
+                .append(getFormat())
                 .append(getRotateDirection())
-                .append(resize)
+                .append(getResize())
                 .toHashCode();
     }
 
@@ -638,31 +653,17 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + cropX1;
-            result = prime * result + cropY1;
-            result = prime * result + cropX2;
-            result = prime * result + cropY2;
-
-            return result;
+            return Arrays.hashCode(new int[]{cropX1, cropX2, cropY1, cropY2});
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            } else if (obj == null || getClass() != obj.getClass()) {
-                return false;
-            }
+        public boolean equals(Object object) {
+            return this == object || (object instanceof CropRegion && equals((CropRegion) object));
+        }
 
-            CropRegion other = (CropRegion) obj;
-            if (cropX1 != other.cropX1 || cropY1 != other.cropY1 ||
-                    cropX2 != other.cropX2 || cropY2 != other.cropY2) {
-                return false;
-            }
-
-            return true;
+        private boolean equals(CropRegion cropRegion) {
+            return cropX1 == cropRegion.cropX1 && cropY1 == cropRegion.cropY1 &&
+                   cropX2 == cropRegion.cropX2 && cropY2 == cropRegion.cropY2;
         }
 
         @Override
