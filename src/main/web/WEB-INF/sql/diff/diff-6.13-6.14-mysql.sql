@@ -58,7 +58,7 @@ $$
 
 CREATE PROCEDURE imcms_schema_set_version(new_major INT, new_minor INT)
 BEGIN
-  UPDATE database_version SET major = 6, minor = 14;
+  UPDATE database_version SET major = new_major, minor = new_minor;
 END;
 $$
 
@@ -72,7 +72,7 @@ BEGIN
   END IF;
 
   IF NOT imcms_schema_is_column_exists('imcms_text_doc_images_history', 'resize') THEN
-    ALTER TABLE imcms_text_doc_images
+    ALTER TABLE imcms_text_doc_images_history
     ADD COLUMN resize INT NOT NULL DEFAULT 0;
   END IF;
 

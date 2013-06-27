@@ -48,7 +48,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
-        <jetty.version>8.1.10.v20130312</jetty.version>
+        <jetty.version>8.1.11.v20130520</jetty.version>
         <jetty.contextPath>/${project.artifactId}-${project.version}</jetty.contextPath>
 
         <tomcat.port>8888</tomcat.port>
