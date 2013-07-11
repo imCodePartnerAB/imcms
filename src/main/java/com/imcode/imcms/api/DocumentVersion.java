@@ -2,6 +2,8 @@ package com.imcode.imcms.api;
 
 import com.google.common.base.Objects;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,8 +22,6 @@ import javax.persistence.TemporalType;
 public class DocumentVersion implements Cloneable {
 
     public static final int WORKING_VERSION_NO = 0;
-    public static final String WORKING_VERSION_NAME = "working";
-    public static final String DEFAULT_VERSION_NAME = "default";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -156,9 +156,5 @@ public class DocumentVersion implements Cloneable {
 
     public Date getModifiedDt() {
         return modifiedDt;
-    }
-
-    public void setModifiedDt(Date modifiedDt) {
-        this.modifiedDt = modifiedDt;
     }
 }

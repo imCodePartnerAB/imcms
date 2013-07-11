@@ -11,7 +11,7 @@ class IndexedDocsUI(container: IndexedDocsContainer) extends Table(null, contain
     with MultiSelectBehavior[Ix]
     with Selectable with Immediate {
 
-  setColumnHeaders(container.getContainerPropertyIds.asScala.map(_.i).toArray)
+  setColumnHeaders(container.getContainerPropertyIds.asScala.map(_.i).toArray: _*)
 
   setColumnCollapsingAllowed(true)
 

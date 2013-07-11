@@ -19,5 +19,5 @@ class TableWrapper[A <: TItemId](table: Table with ContainerWithTypedItemId[A]) 
   }
 
   def columnHeaders: Seq[String] = table.getColumnHeaders.toSeq
-  def columnHeaders_=(headers: Seq[String]) { table.setColumnHeaders(headers.toArray) }
+  def columnHeaders_=(headers: Seq[String]) { table.setColumnHeaders(headers.toArray: _*) }
 }

@@ -32,7 +32,7 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
 
     tbl.setMultiSelect(multiSelect)
 
-    tbl.setColumnHeaders(tbl.getContainerPropertyIds.asScala.map(_.toString.i).toArray)
+    tbl.setColumnHeaders(tbl.getContainerPropertyIds.asScala.map(_.toString.i).toArray: _*)
     tbl.addStyleName("striped")
   }
 

@@ -18,14 +18,14 @@ object DocGetterCallbacks {
   private object DocVersionType {
     def unapply(string: String): Option[DocVersionType] =
       PartialFunction.condOpt(string.trimToEmpty.toLowerCase) {
-        case DocumentVersion.DEFAULT_VERSION_NAME => DefaultVersion
-        case DocumentVersion.WORKING_VERSION_NAME => WorkingVersion
+        case ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_DEFAULT => DefaultVersion
+        case ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_WORKING => WorkingVersion
         case PosInt(no) if no == DocumentVersion.WORKING_VERSION_NO => WorkingVersion
         case PosInt(no) => CustomVersion(no)
       }
   }
 
-  /** Creates callback and sets it to a user. */
+  /** Creates a callback and sets it to the user. */
   def updateUserDocGetterCallback(request: HttpServletRequest, services: ImcmsServices, user: UserDomainObject) {
     val currentDocGetterCallback = user.getDocGetterCallback
     val docI18nSupport = services.getDocumentI18nSupport
@@ -65,7 +65,7 @@ object DocGetterCallbacks {
  * Parametrized callback for DocumentMapper#getDocument method.
  * A callback is (re)created on each request and (re)assigned to a user.
  *
- * Default doc callback always returns default version of any doc if it is present and a user has at least 'view' rights on it.
+ * Default doc callback always returns default version of any doc if it is present and the user has at least 'view' rights on it.
  *
  * Working and Custom doc callback return working and custom version of a document with particular id;
  * for other doc ids they behave exactly as default doc callback.
