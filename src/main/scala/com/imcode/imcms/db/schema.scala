@@ -43,9 +43,9 @@ object Schema {
   }
 
 
-  def load(file: File) = XML.loadFile(file) |> apply
+  def load(file: File): Schema = XML.loadFile(file) |> apply
 
-  def load(url: URL) = XML.load(url) |> apply
+  def load(url: URL): Schema = XML.load(url) |> apply
 }
 
 
@@ -57,6 +57,8 @@ case class Version(major: Int, minor: Int) extends Ordered[Version] {
     case 0 => this.minor compareTo that.minor
     case i => i
   }
+
+  override def toString: String = s"$major.$minor";
 }
 
 object Version {

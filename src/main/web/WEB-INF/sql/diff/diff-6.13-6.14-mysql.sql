@@ -7,7 +7,10 @@ DROP PROCEDURE IF EXISTS imcms_schema_update_6_13_to_6_14;
 
 DELIMITER $$
 
-CREATE FUNCTION imcms_schema_is_table_exists(expected_table_name VARCHAR(1024)) RETURNS BOOLEAN
+CREATE FUNCTION imcms_schema_is_table_exists(expected_table_name VARCHAR(1024))
+NOT DETERMINISTIC
+READS SQL DATA
+RETURNS BOOLEAN
 BEGIN
   RETURN EXISTS(
       SELECT * FROM information_schema.TABLES
@@ -17,6 +20,8 @@ END;
 $$
 
 CREATE PROCEDURE imcms_schema_check_table_exists(expected_table_name VARCHAR(1024))
+NOT DETERMINISTIC
+READS SQL DATA
 BEGIN
   IF NOT imcms_schema_is_table_exists(expected_table_name) THEN
     SELECT `error: table does not exists`;
@@ -25,6 +30,7 @@ END;
 $$
 
 CREATE FUNCTION imcms_schema_is_column_exists(expected_table_name VARCHAR(1024), expected_column_name VARCHAR(1024)) RETURNS BOOLEAN
+NOT DETERMINISTIC
 READS SQL DATA
 BEGIN
   -- CALL imcms_schema_check_table_exists(expected_table_name);
@@ -47,6 +53,8 @@ END;
 $$
 
 CREATE PROCEDURE imcms_schema_check_version(expected_major INT, expected_minor INT)
+DETERMINISTIC
+READS SQL DATA
 BEGIN
   DECLARE actual_major, actual_minor INT;
 
@@ -57,12 +65,16 @@ END;
 $$
 
 CREATE PROCEDURE imcms_schema_set_version(new_major INT, new_minor INT)
+DETERMINISTIC
+MODIFIES SQL DATA
 BEGIN
   UPDATE database_version SET major = new_major, minor = new_minor;
 END;
 $$
 
 CREATE PROCEDURE imcms_schema_update_6_13_to_6_14()
+DETERMINISTIC
+MODIFIES SQL DATA
 BEGIN
   CALL imcms_schema_check_version(6, 13);
 

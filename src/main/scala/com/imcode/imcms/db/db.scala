@@ -22,7 +22,7 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
   def version(): Version = jdbcTemplate.queryForObject("""SELECT concat(major, '.', minor) FROM database_version""", classOf[String])
 
   def updateVersion(newVersion: Version): Unit = synchronized {
-    logger.info("Updating database version from %s to %s.".format(version(), newVersion))
+    logger.info(s"Updating database version from ${version()} to $newVersion")
     jdbcTemplate.update("UPDATE database_version SET major=?, minor=?", Int.box(newVersion.major), Int.box(newVersion.minor))
   }
 
@@ -32,39 +32,38 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
     def update(): Either[String, Version] = {
       version() match {
         case schema.version =>
-          logger.info("Database is up-to-date.");
+          logger.info("Database is up-to-date.")
           Right(schema.version)
 
         case dbVersion if dbVersion < schema.version =>
-          logger.info("Database have to be updated. Required version: %s, database version: %s."
-                      .format(schema.version, dbVersion))
+          logger.info(s"Database have to be updated. Required version: ${schema.version}, database version: $dbVersion.")
 
           schema diffsChain dbVersion match {
             case Nil =>
-              Left("No diff is available for version %s." format dbVersion)
+              Left(s"No diff is available for version $dbVersion.")
 
             case diffsChain =>
               for (diff <- diffsChain) {
-                logger.info("The following diff will be applied: %s." format diff)
+                logger.info(s"The following diff will be applied: $diff.")
 
                 runScripts(diff.scripts.map(scriptFullPath))
                 updateVersion(diff.to)
               }
 
               val updatedDbVersion = version()
-              logger.info("Database has been updated. Database version: %s." format updatedDbVersion)
+              logger.info(s"Database has been updated. Database version: $updatedDbVersion.")
               Right(updatedDbVersion)
           }
 
         case unexpectedDbVersion =>
-          Left("Unexpected database version. Database version: %s is greater than required version: %s.".format(unexpectedDbVersion, schema.version))
+          Left(s"Unexpected database version. Database version: $unexpectedDbVersion is greater than required version: ${schema.version}.")
       }
     } // update
 
-    logger.info("Preparing databse.")
+    logger.info("Preparing database.")
     if (isNew()) {
       logger.info("Database is empty and need to be initialized.")
-      logger.info("The following init will be applied: %s." format schema.init)
+      logger.info(s"The following init will be applied: ${schema.init}.")
 
       runScripts(schema.init.scripts.map(scriptFullPath))
       updateVersion(schema.init.version)
@@ -91,7 +90,7 @@ class DB(ds: DataSource) extends Slf4jLoggerSupport {
         }
 
         for (script <- scripts) {
-          logger.debug("Running script %s." format script)
+          logger.debug(s"Running script $script.")
 
           using(new FileReader(script)) {
             scriptRunner.runScript

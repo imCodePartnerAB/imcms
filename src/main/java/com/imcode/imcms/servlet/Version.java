@@ -1,11 +1,11 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.db.Schema;
+import com.vaadin.sass.internal.util.StringUtil;
 import imcode.server.Imcms;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
+import java.io.*;
+import java.net.URL;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
@@ -19,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Move version info to the manifest file
@@ -26,6 +27,8 @@ import com.imcode.db.DatabaseException;
 public class Version extends HttpServlet {
 
     private final static String VERSION_FILE = "/WEB-INF/version.txt";
+
+    private final static String DB_SCHEMA_FILE = "schema.xml";
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
@@ -39,23 +42,33 @@ public class Version extends HttpServlet {
         out.println(imcmsVersion);
         out.println(javaVersion);
         out.println(serverInfo);
+        out.println("Required DB schema version: " + StringUtils.defaultString(getRequiredDbVersion(), "N/A"));
         out.println(databaseProductNameAndVersion);
     }
 
     private String getJavaVersion() {
-        return System.getProperty("java.vm.vendor")+" "+System.getProperty("java.vm.name")+" "+System.getProperty("java.vm.version");
+        return System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version");
     }
 
     private String getImcmsVersion() {
         try {
             Reader in = new InputStreamReader(getServletContext().getResourceAsStream(VERSION_FILE));
             try {
-                return "imCMS "+IOUtils.toString(in).trim();
+                return "imCMS " + IOUtils.toString(in).trim();
             } finally {
                 in.close();
             }
-        } catch ( Exception npe ) {
+        } catch (Exception npe) {
             return "imCMS";
+        }
+    }
+
+    private String getRequiredDbVersion() {
+        try {
+            return Schema.load(getClass().getClassLoader().getResource(DB_SCHEMA_FILE)).version().toString();
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
         }
     }
 
@@ -63,11 +76,11 @@ public class Version extends HttpServlet {
         try {
             Reader in = new InputStreamReader(servletContext.getResourceAsStream(VERSION_FILE));
             try {
-                return "imCMS "+IOUtils.toString(in).trim();
+                return "imCMS " + IOUtils.toString(in).trim();
             } finally {
                 in.close();
             }
-        } catch ( Exception npe ) {
+        } catch (Exception npe) {
             return "imCMS";
         }
     }
@@ -78,7 +91,7 @@ public class Version extends HttpServlet {
                 try {
                     DatabaseMetaData metaData = connection.getConnection().getMetaData();
                     return metaData.getDatabaseProductName() + " " + metaData.getDatabaseProductVersion();
-                } catch ( SQLException e ) {
+                } catch (SQLException e) {
                     throw DatabaseException.fromSQLException("", e);
                 }
             }
