@@ -4,8 +4,8 @@ package imcms.db
 import java.net.URL
 
 case class Schema(version: Version, init: Init, diffs: Set[Diff], scriptsDir: String = "") {
-  require(diffs.size == diffs.map(_.from).size, "'diffs' 'from' values must must be distinct: %s." format diffs)
-  require(diffs.map(diff => diffsChain(diff.from)) forall (chain => chain.last.to == version),
+  require(diffs.size == diffs.map(_.from).size, s"'diffs' 'from' values must must be distinct: $diffs.")
+  require(diffs.map(diff => diffsChain(diff.from)).forall(chain => chain.last.to == version),
           "every diffs-chain's last 'diff.to' must be equal to 'version'.")
 
   def diffsChain(from: Version): List[Diff] = diffs find (_.from == from) match {
@@ -50,15 +50,15 @@ object Schema {
 
 
 case class Version(major: Int, minor: Int) extends Ordered[Version] {
-  require(major > 0, "'major' must be > 0 but was %d." format major)
-  require(minor >= 0, "'minor' must be >= 0 but was %d." format minor)
+  require(major > 0, s"'major' must be > 0 but was $major.")
+  require(minor >= 0, s"'minor' must be >= 0 but was $minor.")
 
   def compare(that: Version) = this.major compareTo that.major match {
     case 0 => this.minor compareTo that.minor
     case i => i
   }
 
-  override def toString: String = s"$major.$minor";
+  override def toString: String = s"$major.$minor"
 }
 
 object Version {
@@ -68,10 +68,10 @@ object Version {
   implicit val stringToVersion: String => Version = {
     case VersionRe(major, minor) => Version(major.toInt, minor.toInt)
     case illegalArgument => throw new IllegalArgumentException(
-                              """|Provided value "%s" can not be converted into a Version.
-                                 |Expected value must be a string in a format 'major.minor' where major and minor
-                                 |are positive integers and major is greater than zero."""
-                                 .stripMargin format illegalArgument)
+                              s"""|Provided value "$illegalArgument" can not be converted into a Version.
+                                  |Expected value must be a string in a format "major.minor" where major and minor
+                                  |are positive integers and major is greater than zero."""
+                                  .stripMargin)
   }
 }
 
@@ -82,6 +82,6 @@ case class Init(version: Version, scripts: List[String]) {
 
 
 case class Diff(from: Version, to: Version, scripts: List[String]) {
-  require(from < to, "'from' %s must be < 'to' %s." format (from, to))
+  require(from < to, s"'from' $from must be < 'to' $to.")
   require(scripts.size > 0, "At least one script must be provided.")
 }

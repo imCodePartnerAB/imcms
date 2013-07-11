@@ -8,9 +8,9 @@ DROP PROCEDURE IF EXISTS imcms_schema_update_6_13_to_6_14;
 DELIMITER $$
 
 CREATE FUNCTION imcms_schema_is_table_exists(expected_table_name VARCHAR(1024))
+RETURNS BOOLEAN
 NOT DETERMINISTIC
 READS SQL DATA
-RETURNS BOOLEAN
 BEGIN
   RETURN EXISTS(
       SELECT * FROM information_schema.TABLES
@@ -29,7 +29,8 @@ BEGIN
 END;
 $$
 
-CREATE FUNCTION imcms_schema_is_column_exists(expected_table_name VARCHAR(1024), expected_column_name VARCHAR(1024)) RETURNS BOOLEAN
+CREATE FUNCTION imcms_schema_is_column_exists(expected_table_name VARCHAR(1024), expected_column_name VARCHAR(1024))
+RETURNS BOOLEAN
 NOT DETERMINISTIC
 READS SQL DATA
 BEGIN
