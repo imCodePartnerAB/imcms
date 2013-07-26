@@ -207,7 +207,7 @@ class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) w
   val btnAction = new Button with SingleClickListener with LinkStyle
   this.addComponents(previewUI, btnAction)
 
-  doto(previewUI, btnAction) { c => setComponentAlignment(c, Alignment.MIDDLE_CENTER) }
+  Seq(previewUI, btnAction).foreach(c => setComponentAlignment(c, Alignment.MIDDLE_CENTER))
 }
 
 /**

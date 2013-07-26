@@ -45,7 +45,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
     val pathInfo = request.getPathInfo
     val docOpt =
       for {
-        docId <- request.getParameter("docId") |> PosInt.unapply
+        docId <- request.getParameter("docId") |> NonNegInt.unapply
         doc <- imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId).asOption
       } yield doc
 
@@ -59,7 +59,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
         case null | "/" => mkWorkingDocEditorComponent(request, doc)
       } orElse {
         condOpt(pathInfo, doc, request.getParameter("menuNo")) {
-          case ("/menu", textDoc: TextDocumentDomainObject, PosInt(menuNo)) =>
+          case ("/menu", textDoc: TextDocumentDomainObject, NonNegInt(menuNo)) =>
             val title = titleOpt.getOrElse(s"Document ${docId} menu #${menuNo}")
             val returnUrl = returnUrlOpt.getOrElse(
               s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
@@ -69,7 +69,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
         }
       } orElse {
         condOpt(pathInfo, doc, request.getParameter("textNo")) {
-          case ("/text", textDoc: TextDocumentDomainObject, PosInt(textNo)) =>
+          case ("/text", textDoc: TextDocumentDomainObject, NonNegInt(textNo)) =>
             mkWorkingDocTextEditorComponent(request, textDoc, textNo)
         }
       }
@@ -295,7 +295,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
     }
 
     val rowsCountOpt = request.getParameter("rows") |> {
-      case  PosInt(rows) => Some(rows)
+      case  NonNegInt(rows) => Some(rows)
       case _ => None
     }
 

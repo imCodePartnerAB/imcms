@@ -98,21 +98,21 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       )
 
       assertEquals("FIELD__CATEGORY",
-        0 until 10 map {
+        (0 until 10).map {
           id => "category_" + id
-        } toSet,
+        }.toSet,
         indexedCategoriesNames
       )
 
       assertEquals("FIELD__CATEGORY_TYPE_ID",
-        0 until 10 toSet,
+        (0 until 10).toSet,
         indexedCategoriesTypesIds
       )
 
       assertEquals("FIELD__CATEGORY_TYPE",
-        0 until 10 map {
+        (0 until 10).map {
           id => "category_type_" + id
-        } toSet,
+        }.toSet,
         indexedCategoriesTypesNames
       )
 

@@ -17,15 +17,15 @@ class AdvancedFilter extends ImcmsServicesSupport {
   ui.chkMaintainers.addValueChangeHandler { toggleMaintainers() }
 
   def reset() {
-    doto(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers) {
+    Seq(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers).foreach {
       _.uncheck()
     }
 
-    doto(ui.lytDates.drCreated, ui.lytDates.drModified, ui.lytDates.drPublished, ui.lytDates.drExpired) { dr =>
+    Seq(ui.lytDates.drCreated, ui.lytDates.drModified, ui.lytDates.drPublished, ui.lytDates.drExpired).foreach { dr =>
       dr.cbRangeType.value = DateRangeType.Undefined
     }
 
-    doto(ui.lytMaintainers.ulCreators, ui.lytMaintainers.ulPublishers) { ul =>
+    Seq(ui.lytMaintainers.ulCreators, ui.lytMaintainers.ulPublishers).foreach { ul =>
       ul.chkEnabled.check()
       ul.chkEnabled.fireValueChange(true)
       ul.lstUsers.removeAllItems()

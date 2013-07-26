@@ -77,9 +77,9 @@ class CategoryTypeManager(app: UI) {
         dlg.setOkButtonHandler {
           vo.clone() |> { voc =>
             voc setName c.txtName.value.trim
-            voc setInherited c.chkInherited.booleanValue
-            voc setImageArchive c.chkImageArchive.booleanValue
-            voc setMultiselect c.chkMultiSelect.booleanValue
+            voc setInherited c.chkInherited.value
+            voc setImageArchive c.chkImageArchive.value
+            voc setMultiselect c.chkMultiSelect.value
 
             // todo: move validate into separate fn
             val validationError: Option[String] = voc.getName match {
@@ -102,7 +102,7 @@ class CategoryTypeManager(app: UI) {
                   Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
                   throw ex
                 case _ =>
-                  (isNew ? "New category type has been created" | "Category type has been updated") |> { msg =>
+                  (if (isNew) "New category type has been created" else "Category type has been updated") |> { msg =>
                     Page.getCurrent.showInfoNotification(msg)
                   }
 
@@ -124,7 +124,7 @@ class CategoryTypeManager(app: UI) {
 
     canManage |> { value =>
       ui.tblTypes.setSelectable(value)
-      doto[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value } //ui.mb,
+      Seq[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value)) //ui.mb,
     }
 
     handleSelection()
@@ -132,7 +132,7 @@ class CategoryTypeManager(app: UI) {
 
   private def handleSelection() {
     (canManage && ui.tblTypes.isSelected) |> { enabled =>
-      doto(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 }

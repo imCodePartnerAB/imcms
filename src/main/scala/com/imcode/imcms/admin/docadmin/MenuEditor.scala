@@ -45,8 +45,8 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     })
 
     ui.ttMenu.addValueChangeHandler {
-      doto(ui.miEditSelectedDoc, ui.miExcludeSelectedDoc, ui.miShowSelectedDoc) {
-        _.setEnabled(ui.ttMenu.isSelected)
+      Seq(ui.miEditSelectedDoc, ui.miExcludeSelectedDoc, ui.miShowSelectedDoc).foreach { mi =>
+        mi.setEnabled(ui.ttMenu.isSelected)
       }
     }
 

@@ -36,7 +36,7 @@ class TemplateManager(app: UI) {
             in = new FileInputStream(uploadedFile.file)
           } {
             app.privileged(permission) {
-              templateMapper.saveTemplate(name, uploadedFile.name, in, dlg.uploader.ui.chkOverwrite.booleanValue) match {
+              templateMapper.saveTemplate(name, uploadedFile.name, in, dlg.uploader.ui.chkOverwrite.value) match {
                 case 0 =>
                   FileUtils.deleteQuietly(uploadedFile.file)
                   reload() // ok
@@ -123,7 +123,9 @@ class TemplateManager(app: UI) {
     canManage |> { value =>
       import ui._
       tblTemplates.setSelectable(value)
-      doto[{def setEnabled(e: Boolean)}](miUpload, miDownload, miRename, miDelete, miEditContent) { _ setEnabled value }   //ui.mb,
+      Seq[{def setEnabled(e: Boolean)}](miUpload, miDownload, miRename, miDelete, miEditContent).foreach { widget =>
+        widget.setEnabled(value)   //ui.mb,
+      }
     }
 
     handleSelection()
@@ -132,7 +134,7 @@ class TemplateManager(app: UI) {
   private def handleSelection() {
     import ui._
     (canManage && tblTemplates.isSelected) |> { enabled =>
-      doto(miDownload, miRename, miEditContent, miDelete) { _ setEnabled enabled }
+      Seq(miDownload, miRename, miEditContent, miDelete).foreach(_.setEnabled(enabled))
     }
 
     miDocuments.setEnabled(tblTemplates.value.asOption.map { name =>

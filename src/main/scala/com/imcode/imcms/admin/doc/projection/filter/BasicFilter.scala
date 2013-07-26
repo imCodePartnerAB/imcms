@@ -60,13 +60,14 @@ class BasicFilter extends ImcmsServicesSupport {
     ui.chkType.checked = values.docType.isDefined
     ui.chkAdvanced.checked = values.advanced.isDefined
     ui.chkLanguage.checked = true
-    doto(ui.chkIdRange, ui.chkText, ui.chkType, ui.chkPhase, ui.chkAdvanced) {
+    Seq(ui.chkIdRange, ui.chkText, ui.chkType, ui.chkPhase, ui.chkAdvanced).foreach {
       //_.fireValueChange(true)
       _.check()
     }
 
-    doto(ui.lytPhases.chkNew, ui.lytPhases.chkPublished, ui.lytPhases.chkUnpublished, ui.lytPhases.chkApproved, ui.lytPhases.chkDisapproved, ui.lytPhases.chkArchived) {
-      _.uncheck()
+    Seq(ui.lytPhases.chkNew, ui.lytPhases.chkPublished, ui.lytPhases.chkUnpublished, ui.lytPhases.chkApproved,
+        ui.lytPhases.chkDisapproved, ui.lytPhases.chkArchived).foreach { chk =>
+      chk.uncheck()
     }
 
     ui.txtText.value = values.text.getOrElse("")
@@ -102,25 +103,25 @@ class BasicFilter extends ImcmsServicesSupport {
 
   // todo: return Error Either State
   def getState() = BasicFilterValues(
-    idRange = whenOpt(ui.chkIdRange.isChecked) {
+    idRange = when(ui.chkIdRange.isChecked) {
       IdRange(
         condOpt(ui.lytIdRange.txtStart.trim) { case value if value.nonEmpty => value.toInt },
         condOpt(ui.lytIdRange.txtEnd.trim) { case value if value.nonEmpty => value.toInt }
       )
     },
 
-    text = whenOpt(ui.chkText.isChecked)(ui.txtText.trim),
+    text = when(ui.chkText.isChecked)(ui.txtText.trim),
 
-    docType = whenOpt(ui.chkType.isChecked) {
+    docType = when(ui.chkType.isChecked) {
       Set(
-        whenOpt(ui.lytTypes.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
-        whenOpt(ui.lytTypes.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
-        whenOpt(ui.lytTypes.chkHtml.isChecked) { DocumentTypeDomainObject.HTML },
-        whenOpt(ui.lytTypes.chkUrl.isChecked) { DocumentTypeDomainObject.URL }
+        when(ui.lytTypes.chkText.isChecked) { DocumentTypeDomainObject.TEXT },
+        when(ui.lytTypes.chkFile.isChecked) { DocumentTypeDomainObject.FILE },
+        when(ui.lytTypes.chkHtml.isChecked) { DocumentTypeDomainObject.HTML },
+        when(ui.lytTypes.chkUrl.isChecked) { DocumentTypeDomainObject.URL }
       ).flatten
     },
 
-    advanced = whenOpt(ui.chkAdvanced.isChecked)(ui.lytAdvanced.cbTypes.value)
+    advanced = when(ui.chkAdvanced.isChecked)(ui.lytAdvanced.cbTypes.value)
   )
 }
 

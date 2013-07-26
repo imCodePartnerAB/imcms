@@ -106,8 +106,8 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   private def updatePhase() {
     val doc = new TextDocumentDomainObject() |>> { doc =>
       doc.setPublicationStartDatetime(ui.publication.calStart.value)
-      doc.setPublicationEndDatetime(ui.publication.chkEnd.checked ? ui.publication.calEnd.value | null)
-      doc.setArchivedDatetime(ui.publication.chkArchive.checked ? ui.publication.calArchive.value | null)
+      doc.setPublicationEndDatetime(if (ui.publication.chkEnd.checked) ui.publication.calEnd.value else null)
+      doc.setArchivedDatetime(if (ui.publication.chkArchive.checked) ui.publication.calArchive.value else null)
       doc.setPublicationStatus(ui.publication.sltStatus.value)
     }
 
@@ -136,8 +136,8 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
         Data(
           ui.publication.sltStatus.value,
           ui.publication.calStart.value,
-          ui.publication.chkArchive.checked ? Some(ui.publication.calArchive.value) | None,
-          ui.publication.chkEnd.checked ? Some(ui.publication.calEnd.value) | None,
+          when(ui.publication.chkArchive.checked)(ui.publication.calArchive.value),
+          when(ui.publication.chkEnd.checked)(ui.publication.calEnd.value),
           ui.info.ussCreator.selection,
           ui.publication.sltVersion.value.intValue,
           ui.info.dCreated.calDate.value,

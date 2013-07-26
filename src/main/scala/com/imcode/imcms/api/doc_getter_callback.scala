@@ -20,8 +20,8 @@ object DocGetterCallbacks {
       PartialFunction.condOpt(string.trimToEmpty.toLowerCase) {
         case ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_DEFAULT => DefaultVersion
         case ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_WORKING => WorkingVersion
-        case PosInt(no) if no == DocumentVersion.WORKING_VERSION_NO => WorkingVersion
-        case PosInt(no) => CustomVersion(no)
+        case NonNegInt(no) if no == DocumentVersion.WORKING_VERSION_NO => WorkingVersion
+        case NonNegInt(no) => CustomVersion(no)
       }
   }
 
@@ -39,7 +39,7 @@ object DocGetterCallbacks {
     val documentLanguages = DocumentLanguages(preferredLanguage, defaultLanguage)
     val docGetterCallback =
       (for {
-        PosInt(docId) <- request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID).asOption
+        NonNegInt(docId) <- request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID).asOption
         DocVersionType(docVersionType) <- request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION).asOption
         if !user.isDefaultUser
       } yield {

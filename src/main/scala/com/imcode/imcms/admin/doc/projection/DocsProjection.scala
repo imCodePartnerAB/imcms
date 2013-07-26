@@ -36,7 +36,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
 
     basicFilterUI.lytAdvanced.btnCustomize.addClickHandler { ui.toggleAdvancedFilter() }
     basicFilterUI.chkAdvanced.addValueChangeHandler {
-      if (!basicFilterUI.chkAdvanced.booleanValue) ui.isAdvancedFilterVisible = false
+      if (!basicFilterUI.chkAdvanced.value) ui.isAdvancedFilterVisible = false
     }
 
     basicFilterUI.lytButtons.btnFilter.addClickHandler { reload() }
@@ -104,7 +104,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
           }
         }
 
-        whenOpt(startOpt.isDefined || endOpt.isDefined) {
+        when(startOpt.isDefined || endOpt.isDefined) {
           IdRange(startOpt, endOpt)
         }
       }
@@ -196,7 +196,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
           case "docs_projection.advanced_filter.cb_relationships_children.item.no_children" => false
         }
 
-        whenOpt(hasParents.isDefined || hasChildren.isDefined) {
+        when(hasParents.isDefined || hasChildren.isDefined) {
           Relationship(hasParents, hasChildren)
         }
       }
@@ -218,7 +218,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
           if (advancedFormUI.lytMaintainers.ulPublishers.chkEnabled.isUnchecked) None
           else whenNotEmpty(advancedFormUI.lytMaintainers.ulPublishers.lstUsers.itemIds.asScala.toSeq)(identity)
 
-        whenOpt(creators.isDefined || publishers.isDefined) {
+        when(creators.isDefined || publishers.isDefined) {
           Maintainers(creators, publishers)
         }
       }

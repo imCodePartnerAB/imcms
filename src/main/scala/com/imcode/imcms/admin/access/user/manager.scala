@@ -36,13 +36,13 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
 
           dlg.setOkButtonHandler {
             new UserDomainObject |> { u =>
-              u setActive c.chkActivated.booleanValue
-              u setFirstName c.txtFirstName.value
-              u setLastName c.txtLastName.value
-              u setLoginName c.txtLogin.value
-              u setPassword c.txtPassword.value
-              u setRoleIds c.tcsRoles.value.asScala.toArray
-              u setLanguageIso639_2 c.sltUILanguage.value
+              u.setActive(c.chkActivated.value)
+              u.setFirstName(c.txtFirstName.value)
+              u.setLastName(c.txtLastName.value)
+              u.setLoginName(c.txtLogin.value)
+              u.setPassword(c.txtPassword.value)
+              u.setRoleIds(c.tcsRoles.value.asScala.toArray)
+              u.setLanguageIso639_2(c.sltUILanguage.value)
 
               roleMapper.addUser(u)
               search.reset()
@@ -53,7 +53,7 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
     }
 
     ui.miEdit.setCommandHandler {
-      whenSingle(search.selection) { user =>
+      whenSingleton(search.selection) { user =>
         new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName)) |>> { dlg =>
           dlg.mainUI = new UserEditorUI |>> { c =>
             c.chkActivated setValue user.isActive
@@ -66,7 +66,7 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
               c.tcsRoles.addItem(role.getId, role.getName)
             }
 
-            c.tcsRoles.value = user.getRoleIds.filterNot(RoleId.USERS ==).toSeq.asJava
+            c.tcsRoles.value = user.getRoleIds.filterNot(_ == RoleId.USERS).toSeq.asJava
 
             imcmsServices.getLanguageMapper.getDefaultLanguage |> { l =>
               c.sltUILanguage.addItem(l)
@@ -75,7 +75,7 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
             c.sltUILanguage.select(user.getLanguageIso639_2)
 
             dlg.setOkButtonHandler {
-              user.setActive(c.chkActivated.booleanValue)
+              user.setActive(c.chkActivated.value)
               user.setFirstName(c.txtFirstName.value)
               user.setLastName(c.txtLastName.value)
               user.setLoginName(c.txtLogin.value)
@@ -144,7 +144,7 @@ class UserEditorUI extends FormLayout with UndefinedSize {
     addComponent(btnEditContacts)
   }
 
-  doto(txtLogin, txtPassword, txtVerifyPassword, txtEmail) { _ setRequired true }
+  Seq(txtLogin, txtPassword, txtVerifyPassword, txtEmail).foreach(_.setRequired(true))
 
   this.addComponents(lytLogin, lytPassword, lytName, txtEmail, sltUILanguage, tcsRoles, lytContacts)
 }

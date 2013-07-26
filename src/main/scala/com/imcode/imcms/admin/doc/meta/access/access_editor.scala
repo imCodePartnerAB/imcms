@@ -125,7 +125,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
 
 
     ui.perms.miRoleChangePermSet.setCommandHandler {
-      whenSingle(ui.perms.tblRolesPermSets.value.asScala.toSeq) { role =>
+      whenSingleton(ui.perms.tblRolesPermSets.value.asScala.toSeq) { role =>
         types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
           case Nil => Page.getCurrent.showWarningNotification("You are not allowed to edit this role")
           case availableSetTypes =>
@@ -310,7 +310,7 @@ private class AddRolePermSetDialogMainUI extends FormLayout with UndefinedSize {
   val cbRole = new ComboBox("Role") with SingleSelect[RoleDomainObject] with NoNullSelection with Immediate
   val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
-  doto(READ, RESTRICTED_1, RESTRICTED_2, FULL) { setType =>
+  Seq(READ, RESTRICTED_1, RESTRICTED_2, FULL).foreach { setType =>
     ogPermsSetType.addItem(setType, PermSetTypeName(setType))
   }
 
@@ -324,7 +324,7 @@ private class ChangeRolePermSetDialogMainUI extends FormLayout with UndefinedSiz
   val lblRole = new Label with UndefinedSize |>> {_ setCaption "Role"}
   val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
-  doto(READ, RESTRICTED_1, RESTRICTED_2, FULL) { setType =>
+  Seq(READ, RESTRICTED_1, RESTRICTED_2, FULL).foreach { setType =>
     ogPermsSetType.addItem(setType, PermSetTypeName(setType))
   }
 
@@ -494,7 +494,7 @@ class DocPermSetsEditor(doc: DocumentDomainObject, user: UserDomainObject) exten
   resetValues()
 
   def resetValues() {
-    doto(editors.full, editors.restrictedOne, editors.restrictedTwo, editors.read) { _.resetValues() }
+    Seq(editors.full, editors.restrictedOne, editors.restrictedTwo, editors.read).foreach(_.resetValues())
     ui.tsSets.setSelectedTab(editors.restrictedOne.ui)
     ui.chkRestrictedOneIsMorePrivilegedThanRestrictedTwo.checked = doc.getMeta.getRestrictedOneMorePrivilegedThanRestrictedTwo
   }

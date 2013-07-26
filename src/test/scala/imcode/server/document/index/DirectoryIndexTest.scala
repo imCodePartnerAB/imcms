@@ -7,7 +7,7 @@ import com.imcode.imcms.test.TestSetup
 import org.scalatest.mock.MockitoSugar.mock
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
 import com.imcode.imcms.dao.TextDocDao
-import org.mockito.Mockito._
+import org.mockito.Mockito
 import org.mockito.Matchers._
 import com.imcode._
 import org.mockito.stubbing.Answer
@@ -92,13 +92,13 @@ class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndA
  */
 class DirectoryIndexFixture {
 
-  // when(...getDocumentMenuPairsContainingDocument).thenReturn(...)
+  // Mockito.when(...getDocumentMenuPairsContainingDocument).thenReturn(...)
 
   private val documentMapperMock = mock[DocumentMapper]
   private val categoryMapperMock = mock[CategoryMapper]
   private val textDocDaoMock = mock[TextDocDao]
 
-  when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer(new Answer[JSet[CategoryDomainObject]]() {
+  Mockito.when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer(new Answer[JSet[CategoryDomainObject]]() {
      def answer(invocation: InvocationOnMock): JSet[CategoryDomainObject] = {
        val categoriesIds = invocation.getArguments()(0).asInstanceOf[JCollection[JInteger]].asScala
 
@@ -120,16 +120,16 @@ class DirectoryIndexFixture {
 
     val docId = doc.getMetaId ensuring (_ != null, "document id must be set")
 
-    when(documentMapperMock.getDefaultDocument[TextDocumentDomainObject](docId)).thenReturn(doc)
-    when(documentMapperMock.getI18nMetas(docId)).thenReturn(
+    Mockito.when(documentMapperMock.getDefaultDocument[TextDocumentDomainObject](docId)).thenReturn(doc)
+    Mockito.when(documentMapperMock.getI18nMetas(docId)).thenReturn(
       i18nMetas.getOrElse(Seq(doc.getI18nMeta)).asJava
     )
 
-    when(textDocDaoMock.getTexts(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    Mockito.when(textDocDaoMock.getTexts(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       texts.getOrElse(Seq(doc.getTexts.values.asScala, doc.getLoopTexts.values.asScala).flatten).asJava
     )
 
-    when(textDocDaoMock.getImages(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    Mockito.when(textDocDaoMock.getImages(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       images.getOrElse(Seq(doc.getImages.values.asScala, doc.getLoopImages.values.asScala).flatten).asJava
     )
   }

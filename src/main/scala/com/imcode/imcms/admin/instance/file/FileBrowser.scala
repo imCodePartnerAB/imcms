@@ -197,7 +197,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   def locations: Map[File, Location] =
     tabsToLocations.values.map {
       case loc @ (locationTree, _) => locationTree.root.getCanonicalFile -> loc
-    } toMap
+    }.toMap
 
   /** Returns location by its root. */
   def location(root: File): Option[Location] = locations.get(root.getCanonicalFile)
@@ -321,7 +321,7 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
   /** Populates table with dir items. */
   def reload(dir: File) {
     val base = 1024
-    val baseFn = java.lang.Math.pow(1024, _:Int).toInt
+    val baseFn = java.lang.Math.pow(1024, _: Double).toInt
     val (dirs, files) = dir.listFiles.partition(_.isDirectory)
     def lastModified(file: File) = "file.browser.items.col.modified.fmt".f(file.lastModified.asInstanceOf[AnyRef])
 

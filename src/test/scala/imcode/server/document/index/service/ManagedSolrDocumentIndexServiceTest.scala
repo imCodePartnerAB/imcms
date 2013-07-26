@@ -2,6 +2,7 @@ package imcode.server.document.index.service
 
 import com.imcode._
 import org.junit.Assert._
+import org.mockito.Mockito
 import org.mockito.Mockito.{mock => _, _}
 import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar._
@@ -37,7 +38,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       val service = new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops, _ => ())
 
       try {
-        1001 to 1010 foreach { id =>
+        (1001 to 1010).foreach { id =>
           service.update(AddDocToIndex(id))
         }
 
@@ -56,7 +57,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       var serviceErrors = Vector.empty[ManagedSolrDocumentIndexService.ServiceFailure]
       val service = new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, opsMock, serviceErrors :+= _)
 
-      when(opsMock.addDocsToIndex(any(classOf[SolrServer]), anyInt())).thenAnswer { invocation: InvocationOnMock =>
+      Mockito.when(opsMock.addDocsToIndex(any(classOf[SolrServer]), anyInt())).thenAnswer { invocation: InvocationOnMock =>
         invocation.getArguments match {
           case Array(solrServer: SolrServer, docId: JInteger) =>
             if (docId > 1005) throw new RuntimeException("failed to index document " + docId)
@@ -65,7 +66,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       }
 
       try {
-        1001 to 1010 foreach { id =>
+        (1001 to 1010).foreach { id =>
           service.update(AddDocToIndex(id))
         }
 
@@ -91,7 +92,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
 
         Thread.sleep(1000)
 
-        1001 to 1010 foreach { id =>
+        (1001 to 1010).foreach { id =>
           service.update(AddDocToIndex(id))
         }
 

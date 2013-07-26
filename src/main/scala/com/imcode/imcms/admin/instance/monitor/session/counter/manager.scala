@@ -89,7 +89,7 @@ class SessionCounterManager(app: UI) {
       ui.dataUI.calStart.setReadOnly(true)
     }
 
-    doto(ui.miEdit, ui.miReset) { _ setEnabled canManage }
+    Seq(ui.miEdit, ui.miReset).foreach(_.setEnabled(canManage))
   }
 } // class SessionCounterManager
 

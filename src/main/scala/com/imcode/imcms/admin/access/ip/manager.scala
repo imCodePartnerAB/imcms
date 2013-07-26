@@ -133,7 +133,7 @@ class IPAccessManager(app: UI) {
 
     canManage |> { value =>
       ui.tblIP.setSelectable(value)
-      doto(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }
+      Seq(ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value))
     }
 
     handleSelection()
@@ -141,7 +141,7 @@ class IPAccessManager(app: UI) {
 
   private def handleSelection() {
     (canManage && ui.tblIP.isSelected) |> { enabled =>
-      doto(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class IPAccessManager

@@ -22,7 +22,7 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends Panel(caption) with 
   content.addComponents(lstChosen, lytButtons, lstAvailable)
     content.setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
 
-    doto(lstAvailable, lstChosen) { l =>
+    Seq(lstAvailable, lstChosen).foreach { l =>
       l.setColumns(10)
       l.setRows(5)
       l.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT)
@@ -67,6 +67,6 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends Panel(caption) with 
       listSelect.setItemCaption(itemId, caption)
     }
 
-    def setRows(count: Int): Unit = doto(lstAvailable, lstChosen) { _.setRows(count) }
-    def setColumns(count: Int): Unit = doto(lstAvailable, lstChosen) { _.setColumns(count) }
+    def setRows(count: Int): Unit = Seq(lstAvailable, lstChosen).foreach(_.setRows(count))
+    def setColumns(count: Int): Unit = Seq(lstAvailable, lstChosen).foreach(_.setColumns(count))
   }

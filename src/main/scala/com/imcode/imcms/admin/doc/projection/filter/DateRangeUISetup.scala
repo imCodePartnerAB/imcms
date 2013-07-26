@@ -11,7 +11,7 @@ trait DateRangeUISetup { this: DateRangeUI =>
   import DateRangeType._
 
   cbRangeType.addValueChangeHandler {
-    doto(dtFrom, dtTo) { _.setEnabled(false) }
+    Seq(dtFrom, dtTo).foreach(_.setEnabled(false))
     val now = new Date
     val calendar = Calendar.getInstance
 
@@ -21,7 +21,10 @@ trait DateRangeUISetup { this: DateRangeUI =>
         dtTo.setValue(null)
 
       case Custom =>
-        doto(dtFrom, dtTo) { dt => dt.setEnabled(true); dt.value = dt.valueOpt.getOrElse(now) }
+        Seq(dtFrom, dtTo).foreach { dt =>
+          dt.setEnabled(true)
+          dt.value = dt.valueOpt.getOrElse(now)
+        }
 
       case Day =>
         dtFrom.value = calendar.getTime

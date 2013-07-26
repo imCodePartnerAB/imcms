@@ -359,9 +359,9 @@ package object ui {
     final override def setValue(value: AnyRef) {
       super.setValue(
         value match {
-          case null => isMultiSelect ? java.util.Collections.emptyList | null
-          case coll: JCollection[_] => isMultiSelect ? value | coll.asScala.headOption.orNull
-          case _ => isMultiSelect ? java.util.Collections.singletonList(value) | value
+          case null => if (isMultiSelect) java.util.Collections.emptyList else null
+          case coll: JCollection[_] => if (isMultiSelect) value else coll.asScala.headOption.orNull
+          case _ => if (isMultiSelect) java.util.Collections.singletonList(value) else value
         }
       )
     }

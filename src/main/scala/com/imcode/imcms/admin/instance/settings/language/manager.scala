@@ -85,11 +85,11 @@ class LanguageManager(app: UI) {
   private def editAndSave(vo: DocumentLanguage) {
     val id = vo.getId
     val isNew = id == null
-    val dialogTitle = isNew ? "Create new language" | "edit Language"
+    val dialogTitle = if (isNew) "Create new language" else "edit Language"
 
     new OkCancelDialog(dialogTitle) |>> { dlg =>
       dlg.mainUI = new LanguageEditorUI |>> { c =>
-        c.txtId.value = isNew ? "" | id.toString
+        c.txtId.value = if (isNew) "" else id.toString
         c.txtCode.value = vo.getCode.trimToEmpty
         c.txtName.value = vo.getName.trimToEmpty
         c.txtNativeName.value = vo.getNativeName.trimToEmpty
@@ -110,7 +110,7 @@ class LanguageManager(app: UI) {
                   Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
                   throw ex
                 case _ =>
-                  (isNew ? "New language access has been created" | "Language access has been updated") |> { msg =>
+                  (if (isNew) "New language access has been created" else "Language access has been updated") |> { msg =>
                     Page.getCurrent.showInfoNotification(msg)
                   }
 
@@ -137,7 +137,7 @@ class LanguageManager(app: UI) {
 
     canManage |> { value =>
       ui.tblLanguages.setSelectable(value)
-      doto(ui.miNew, ui.miEdit, ui.miDelete) { _.setEnabled(value) }
+      Seq(ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value))
     }
 
     handleSelection()
@@ -145,7 +145,7 @@ class LanguageManager(app: UI) {
 
   private def handleSelection() {
     (canManage && ui.tblLanguages.isSelected) |> { enabled =>
-      doto(ui.miEdit, ui.miDelete) { _.setEnabled(enabled) }
+      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class LanguageManager

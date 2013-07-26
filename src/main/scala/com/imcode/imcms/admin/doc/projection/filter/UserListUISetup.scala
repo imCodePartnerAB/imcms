@@ -12,7 +12,7 @@ trait UserListUISetup { this: UserListUI =>
   val projectionDialogCaption: String
 
   chkEnabled.addValueChangeHandler {
-    doto(lstUsers, lytButtons) { _.setEnabled(chkEnabled.booleanValue) }
+    Seq(lstUsers, lytButtons).foreach(_.setEnabled(chkEnabled.value))
   }
 
   btnAdd.addClickHandler {

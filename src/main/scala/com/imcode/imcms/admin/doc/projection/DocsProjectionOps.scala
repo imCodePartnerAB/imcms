@@ -89,14 +89,14 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
 
   def showSelectedDoc() {
-    whenSingle(projection.selection) { doc =>
+    whenSingleton(projection.selection) { doc =>
       DocViewer.showDocViewDialog(projection.ui, doc.getId)
     }
   }
 
 
   def copySelectedDoc() {
-    whenSingle(projection.selection) { doc =>
+    whenSingleton(projection.selection) { doc =>
       imcmsServices.getDocumentMapper.copyDocument(doc, UI.getCurrent.imcmsUser)
       projection.reload()
       Page.getCurrent.showInfoNotification("Document has been copied")
@@ -105,7 +105,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
 
   def editSelectedDoc() {
-    whenSingle(projection.selection) { doc =>
+    whenSingleton(projection.selection) { doc =>
       val page = Page.getCurrent
 
       new DocEditorDialog(s"Edit document ${doc.getId}", doc) |>> { dlg =>

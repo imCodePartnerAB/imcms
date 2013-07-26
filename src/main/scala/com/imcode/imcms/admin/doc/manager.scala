@@ -53,7 +53,7 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
     ui.miNewUrlDoc.setCommandHandler { projectionOps.mkDocOfType[UrlDocumentDomainObject] }
 
     ui.miProfileEditName.setCommandHandler {
-      whenSingle(projection.docsUI.selection) { docId =>
+      whenSingleton(projection.docsUI.selection) { docId =>
         val docIdStr = docId.toString
         val profileMapper = new ProfileMapper(imcmsServices.getDatabase)
         val profileOpt = profileMapper.getAll.asScala.find(_.getDocumentName == docIdStr)

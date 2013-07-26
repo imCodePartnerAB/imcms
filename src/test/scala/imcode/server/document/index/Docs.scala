@@ -8,7 +8,7 @@ import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.document.{DocumentDomainObject, CategoryDomainObject}
 import org.mockito.Matchers._
-import org.mockito.Mockito.{mock => _, _}
+import org.mockito.Mockito
 import imcode.server.ImcmsServices
 import com.imcode.imcms.test._
 import com.imcode.imcms.test.fixtures.LanguageFX
@@ -30,11 +30,11 @@ class DocIndexingMocksSetup {
   private val categories = MMap.empty[DocId, CategoryDomainObject]
   private val parentDocs = MMap.empty[DocId, Seq[ParentDoc]].withDefaultValue(Seq.empty)
 
-  when(documentMapperMock.getImcmsServices).thenReturn(servicesMock)
+  Mockito.when(documentMapperMock.getImcmsServices).thenReturn(servicesMock)
 
-  when(servicesMock.getDocumentI18nSupport).thenReturn(LanguageFX.mkI18nSupport())
+  Mockito.when(servicesMock.getDocumentI18nSupport).thenReturn(LanguageFX.mkI18nSupport())
 
-  when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer { args: Array[AnyRef] =>
+  Mockito.when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer { args: Array[AnyRef] =>
     val availableCategories = for {
       categoryId <- args(0).asInstanceOf[JCollection[JInteger]].asScala
       category <- categories.get(categoryId)
@@ -44,24 +44,24 @@ class DocIndexingMocksSetup {
   }
 
 
-  when(documentMapperMock.getDefaultDocument(anyInt, any[DocumentLanguage])).thenAnswer { args: Array[AnyRef] =>
+  Mockito.when(documentMapperMock.getDefaultDocument(anyInt, any[DocumentLanguage])).thenAnswer { args: Array[AnyRef] =>
     args match {
       case Array(id: JInteger, language: DocumentLanguage) => docs(id)(language.getCode)
     }
   }
 
-  when(documentMapperMock.getDefaultDocument(anyInt, any[LanguageCode])).thenAnswer { args: Array[AnyRef] =>
+  Mockito.when(documentMapperMock.getDefaultDocument(anyInt, any[LanguageCode])).thenAnswer { args: Array[AnyRef] =>
     args match {
       case Array(id: JInteger, languageCode: String) => docs(id)(languageCode)
     }
   }
 
 
-  when(documentMapperMock.getAllDocumentIds).thenAnswer { () =>
+  Mockito.when(documentMapperMock.getAllDocumentIds).thenAnswer { () =>
     docs.keys.map(Int.box).toList.asJava
   }
 
-  when(documentMapperMock.getParentDocumentAndMenuIdsForDocument(any[DocumentDomainObject])).thenAnswer {
+  Mockito.when(documentMapperMock.getParentDocumentAndMenuIdsForDocument(any[DocumentDomainObject])).thenAnswer {
     args: Array[AnyRef] =>
       args match {
         case Array(doc: DocumentDomainObject) =>

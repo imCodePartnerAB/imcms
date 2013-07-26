@@ -19,11 +19,11 @@ class RoleManager(app: UI) {
   private def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
   val ui = new RoleManagerUI |>> { ui =>
-    ui.rc.btnReload addClickHandler { reload() }
-    ui.tblRoles addValueChangeHandler { handleSelection() }
+    ui.rc.btnReload.addClickHandler { reload() }
+    ui.tblRoles.addValueChangeHandler { handleSelection() }
 
-    ui.miNew setCommandHandler { editAndSave(new RoleDomainObject("")) }
-    ui.miEdit setCommandHandler {
+    ui.miNew.setCommandHandler { editAndSave(new RoleDomainObject("")) }
+    ui.miEdit.setCommandHandler {
       whenSelected(ui.tblRoles) { id =>
         roleMapper.getRole(id) match {
           case null => reload()
@@ -80,8 +80,8 @@ class RoleManager(app: UI) {
           vo.clone |> { voc =>
             // todo: validate
             voc.setName(c.txtName.value)
-            voc.removeAllPermissions
-            for ((permission, chkBox) <- permsToChkBoxes if chkBox.booleanValue) voc.addPermission(permission)
+            voc.removeAllPermissions()
+            for ((permission, chkBox) <- permsToChkBoxes if chkBox.value) voc.addPermission(permission)
 
             app.privileged(permission) {
               Ex.allCatch.either(roleMapper saveRole voc) match {
@@ -104,7 +104,7 @@ class RoleManager(app: UI) {
   }
 
   def reload() {
-    ui.tblRoles.removeAllItems
+    ui.tblRoles.removeAllItems()
 
     for {
       vo <- roleMapper.getAllRoles
@@ -113,7 +113,7 @@ class RoleManager(app: UI) {
 
     canManage |> { value =>
       ui.tblRoles.setSelectable(value)
-      doto(ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value }
+      Seq(ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value))
     }
 
     handleSelection()
@@ -121,7 +121,7 @@ class RoleManager(app: UI) {
 
   private def handleSelection() {
     (canManage && ui.tblRoles.isSelected) |> { enabled =>
-      doto(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class RoleManager

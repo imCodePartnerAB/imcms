@@ -66,7 +66,11 @@ class PropertyManagerManager(app: UI) {
   def reload() {
     import ui.dataUI._
 
-    doto(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly false}
+    Seq(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName,
+        serverMasterUI.txtEmail).foreach { txt =>
+      txt.setReadOnly(false)
+    }
+
     Imcms.getServices.getSystemData |> { d =>
       txtStartPageNumber.value = d.getStartDocument.toString
       txaSystemMessage.value = d.getSystemMessage
@@ -75,9 +79,13 @@ class PropertyManagerManager(app: UI) {
       serverMasterUI.txtName.value = d.getServerMaster
       serverMasterUI.txtEmail.value = d.getServerMasterAddress
     }
-    doto(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName, serverMasterUI.txtEmail) { _ setReadOnly true}
 
-    doto(ui.miEdit) { _ setEnabled canManage }
+    Seq(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName,
+        serverMasterUI.txtEmail).foreach { txt =>
+      txt.setReadOnly(true)
+    }
+
+    Seq(ui.miEdit).foreach(_.setEnabled(canManage))
   }
 } // class PropertyManager
 

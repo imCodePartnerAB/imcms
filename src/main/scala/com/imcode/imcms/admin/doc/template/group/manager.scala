@@ -64,11 +64,11 @@ class TemplateGroupManager(app: UI) {
   private def editAndSave(vo: TemplateGroupDomainObject) {
     val id = vo.getId
     val isNew = id == 0
-    val dialogTitle = isNew ? "Create new template group" | "Edit template group"
+    val dialogTitle = if (isNew) "Create new template group" else "Edit template group"
 
     new OkCancelDialog(dialogTitle) |>> { dlg =>
       dlg.mainUI = new TemplateGroupEditorUI |>> { c =>
-        c.txtId.value = isNew ? "" | id.toString
+        c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = vo.getName.trimToEmpty
         templateMapper.getTemplatesInGroup(vo).asScala.foreach(template => c.twsTemplates.addChosenItem(template.getName))
         templateMapper.getTemplatesNotInGroup(vo).asScala.foreach(template => c.twsTemplates.addAvailableItem(template.getName))
@@ -107,7 +107,7 @@ class TemplateGroupManager(app: UI) {
 
     canManage |> { value =>
       ui.tblGroups.setSelectable(value)
-      doto[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _.setEnabled(value) }   //ui.mb,
+      Seq[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value))   //ui.mb,
     }
 
     handleSelection()
@@ -115,7 +115,7 @@ class TemplateGroupManager(app: UI) {
 
   private def handleSelection() {
     (canManage && ui.tblGroups.isSelected) |> { enabled =>
-      doto(ui.miEdit, ui.miDelete) { _.setEnabled(enabled) }
+      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 }

@@ -48,7 +48,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
       .map { case Array(mimeType, displayName) => mimeType -> displayName } (breakOut)
 
   private def findFDFByName(name: String, ignoreCase: Boolean = true): Option[FileDocumentFile] = {
-    def namePredicate(fileName: String) = ignoreCase ? name.equalsIgnoreCase(fileName) | name.equals(fileName)
+    def namePredicate(fileName: String) = if (ignoreCase) name.equalsIgnoreCase(fileName) else name.equals(fileName)
 
     values.fdfs.collectFirst {
       case (_, fdf) if namePredicate(fdf.getFilename) => fdf
@@ -221,7 +221,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
         case fileIds =>
           val fdfs = values.fdfs filterKeys fileIds.toSet.andThen(!_)
           val ids = fdfs.keySet
-          val defaultFdfId = ids.find(values.defaultFdfId.get ==) orElse ids.headOption
+          val defaultFdfId = ids.find(_ == values.defaultFdfId.get).orElse(ids.headOption)
 
           values = Values(fdfs, defaultFdfId)
           sync()

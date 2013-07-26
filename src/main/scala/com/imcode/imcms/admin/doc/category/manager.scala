@@ -88,10 +88,10 @@ class CategoryManager(app: UI) {
         dlg.mainUI = new CategoryEditorUI(imagePicker.ui) |>> { c =>
           typesNames.foreach { c.sltType addItem _ }
 
-          c.txtId.value = isNew ? "" | id.toString
+          c.txtId.value = if (isNew) "" else id.toString
           c.txtName.value = vo.getName.trimToEmpty
           c.txaDescription.value = vo.getDescription.trimToEmpty
-          c.sltType.value = isNew ? typesNames.head | vo.getType.getName
+          c.sltType.value = if (isNew) typesNames.head else vo.getType.getName
 
           dlg.setOkButtonHandler {
             vo.clone |> { voc =>
@@ -120,7 +120,7 @@ class CategoryManager(app: UI) {
                     Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
                     throw ex
                   case _ =>
-                    (isNew ? "New category type has been created" | "Category type has been updated") |> { msg =>
+                    (if (isNew) "New category type has been created" else "Category type has been updated") |> { msg =>
                       Page.getCurrent.showInfoNotification(msg)
                     }
 
@@ -143,7 +143,7 @@ class CategoryManager(app: UI) {
 
     canManage |> { value =>
       ui.tblCategories.setSelectable(value)
-      doto[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled value } //ui.mb,
+      Seq[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value)) //ui.mb,
     }
 
     handleSelection()
@@ -151,7 +151,7 @@ class CategoryManager(app: UI) {
 
   private def handleSelection() {
     (canManage && ui.tblCategories.isSelected) |> { enabled =>
-      doto(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
+      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class CategoryManager

@@ -30,9 +30,9 @@ class DocSelectDialog(caption: String, user: UserDomainObject, multiSelect: Bool
 
       ui.miDeleteSelectedDocs.setEnabled(selection.nonEmpty)
 
-      doto(ui.miShowSelectedDoc, ui.miCopySelectedDoc) { mi => mi.setEnabled(isSingleSelection) }
+      Seq(ui.miShowSelectedDoc, ui.miCopySelectedDoc).foreach(mi => mi.setEnabled(isSingleSelection))
 
-      doto(ui.miNew, ui.miNewFileDoc, ui.miNewTextDoc, ui.miNewUrlDoc) { mi => mi.setEnabled(isTextDocSelection) }
+      Seq(ui.miNew, ui.miNewFileDoc, ui.miNewTextDoc, ui.miNewUrlDoc).foreach(mi => mi.setEnabled(isTextDocSelection))
     }
   }
 
