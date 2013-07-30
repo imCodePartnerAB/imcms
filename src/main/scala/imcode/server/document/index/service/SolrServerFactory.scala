@@ -27,7 +27,7 @@ object SolrServerFactory extends Log4jLoggerSupport {
       }
     }
 
-    new CoreContainer(solrHome, new File(solrHome, "solr.xml")) |> { coreContainer =>
+    new CoreContainer(solrHome) |>> { _.load() } |> { coreContainer =>
       new EmbeddedSolrServer(coreContainer, "core")
     }
   }
@@ -42,7 +42,7 @@ object SolrServerFactory extends Log4jLoggerSupport {
       sys.error(msg)
     }
 
-    new CoreContainer(solrHome) |> { coreContainer =>
+    new CoreContainer(solrHome) |>> { _.load() } |> { coreContainer =>
       new CoreDescriptor(coreContainer, "core", "core") |>> { coreDescriptor =>
         coreDescriptor.setDataDir(dataDir.getPath)
       } |> coreContainer.create |> { core =>

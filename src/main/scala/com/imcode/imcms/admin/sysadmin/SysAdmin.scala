@@ -16,8 +16,8 @@ import imcode.server.Imcms
 import Theme.Icon
 import com.vaadin.annotations.PreserveOnRefresh
 import com.vaadin.data.Property.ValueChangeEvent
-import com.imcode.imcms.I18nResource
-import com.imcode.imcms.vaadin.{OrderedMethod, TreeMenuItem}
+import com.imcode.imcms.I18nMessage
+import com.imcode.imcms.vaadin.{MenuItemOrder, TreeMenuItem}
 
 // todo: rename Theme class - name collision
 @PreserveOnRefresh
@@ -43,34 +43,34 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
 
 
   object Menu extends TreeMenuItem {
-    @OrderedMethod(0) object About extends TreeMenuItem("menu.about", Icon.About16)
+    @MenuItemOrder(0) object About extends TreeMenuItem("menu.about", Icon.About16)
 
-    @OrderedMethod(1) object Documents extends TreeMenuItem("menu.documents") {
-      @OrderedMethod(0) object Categories extends TreeMenuItem("menu.documents.categories", Icon.Done16)
-      @OrderedMethod(1) object Templates extends TreeMenuItem("menu.documents.templates", Icon.Done16)
+    @MenuItemOrder(1) object Documents extends TreeMenuItem("menu.documents") {
+      @MenuItemOrder(0) object Categories extends TreeMenuItem("menu.documents.categories", Icon.Done16)
+      @MenuItemOrder(1) object Templates extends TreeMenuItem("menu.documents.templates", Icon.Done16)
     }
 
-    @OrderedMethod(2) object Permissions extends TreeMenuItem("menu.permissions") {
-      @OrderedMethod(0) object Users extends TreeMenuItem("menu.permissions.users", Icon.Done16)
-      @OrderedMethod(1) object Roles extends TreeMenuItem("menu.permissions.roles", Icon.Done16)
-      @OrderedMethod(2) object IP_Access extends TreeMenuItem("menu.permissions.ip_access", Icon.Done16)
+    @MenuItemOrder(2) object Permissions extends TreeMenuItem("menu.permissions") {
+      @MenuItemOrder(0) object Users extends TreeMenuItem("menu.permissions.users", Icon.Done16)
+      @MenuItemOrder(1) object Roles extends TreeMenuItem("menu.permissions.roles", Icon.Done16)
+      @MenuItemOrder(2) object IP_Access extends TreeMenuItem("menu.permissions.ip_access", Icon.Done16)
     }
 
-    @OrderedMethod(3) object Instance extends TreeMenuItem("menu.instance") {
-      @OrderedMethod(0) object Settings extends TreeMenuItem("menu.instance.settings") {
-        @OrderedMethod(0) object Languages extends TreeMenuItem("menu.instance.settings.languages", Icon.Done16)
-        @OrderedMethod(1) object Properties extends TreeMenuItem("menu.instance.settings.properties", Icon.Done16)
+    @MenuItemOrder(3) object Instance extends TreeMenuItem("menu.instance") {
+      @MenuItemOrder(0) object Settings extends TreeMenuItem("menu.instance.settings") {
+        @MenuItemOrder(0) object Languages extends TreeMenuItem("menu.instance.settings.languages", Icon.Done16)
+        @MenuItemOrder(1) object Properties extends TreeMenuItem("menu.instance.settings.properties", Icon.Done16)
       }
 
-      @OrderedMethod(1) object Monitor extends TreeMenuItem("menu.monitor") {
-        @OrderedMethod(0) object SearchTerms extends TreeMenuItem("menu.monitor.search_terms")
-        @OrderedMethod(1) object Session extends TreeMenuItem("menu.monitor.session", Icon.Done16)
-        @OrderedMethod(2) object Cache extends TreeMenuItem("menu.monitor.cache")
-        @OrderedMethod(3) object LinkValidator extends TreeMenuItem("menu.monitor.link_validator")
+      @MenuItemOrder(1) object Monitor extends TreeMenuItem("menu.monitor") {
+        @MenuItemOrder(0) object SearchTerms extends TreeMenuItem("menu.monitor.search_terms")
+        @MenuItemOrder(1) object Session extends TreeMenuItem("menu.monitor.session", Icon.Done16)
+        @MenuItemOrder(2) object Cache extends TreeMenuItem("menu.monitor.cache")
+        @MenuItemOrder(3) object LinkValidator extends TreeMenuItem("menu.monitor.link_validator")
       }
     }
 
-    @OrderedMethod(4) object Files extends TreeMenuItem("menu.files", Icon.Done16)
+    @MenuItemOrder(4) object Files extends TreeMenuItem("menu.files", Icon.Done16)
   }
 
 
@@ -96,7 +96,7 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
       def addMenuItem(parentItem: TreeMenuItem, item: TreeMenuItem) {
         hspManagers.menu.addItem(item)
         hspManagers.menu.setParent(item, parentItem)
-        hspManagers.menu.setItemCaption(item, item.id |> I18nResource.i)
+        hspManagers.menu.setItemCaption(item, item.id |> I18nMessage.i)
         hspManagers.menu.setItemIcon(item, item.icon)
 
         item.children |> { children =>

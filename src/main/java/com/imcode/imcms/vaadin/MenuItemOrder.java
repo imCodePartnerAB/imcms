@@ -7,6 +7,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OrderedMethod {
+public @interface MenuItemOrder {
     int value() default 0;
 }

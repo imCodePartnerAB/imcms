@@ -174,7 +174,7 @@ public class Meta implements Serializable, Cloneable {
 
     // CHECKED	
     @Column(name = "disable_search", nullable = false)
-    private volatile Boolean searchDisabled;
+    private volatile boolean searchDisabled;
 
     // CHECKED	
     @Column(name = "target", nullable = false)
@@ -431,11 +431,11 @@ public class Meta implements Serializable, Cloneable {
         this.actualModifiedDatetime = actualModifiedDatetime;
     }
 
-    public Boolean getSearchDisabled() {
+    public boolean getSearchDisabled() {
         return searchDisabled;
     }
 
-    public void setSearchDisabled(Boolean searchDisabled) {
+    public void setSearchDisabled(boolean searchDisabled) {
         this.searchDisabled = searchDisabled;
     }
 

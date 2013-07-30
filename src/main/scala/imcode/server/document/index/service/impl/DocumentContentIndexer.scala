@@ -41,9 +41,11 @@ class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDoc
     val menus = doc.getMenus.values.asScala
 
     for (text <- texts) {
-      indexDoc.addField(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text)
-      indexDoc.addField(DocumentIndex.FIELD__TEXT, text)
-      indexDoc.addField(DocumentIndex.FIELD__TEXT + text.getNo, text)
+      val textValue = text.getText
+
+      indexDoc.addField(DocumentIndex.FIELD__NONSTRIPPED_TEXT, textValue)
+      indexDoc.addField(DocumentIndex.FIELD__TEXT, textValue)
+      indexDoc.addField(DocumentIndex.FIELD__TEXT + text.getNo, textValue)
     }
 
     for (image <- images) {

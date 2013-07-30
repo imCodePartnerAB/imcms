@@ -40,7 +40,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public final static int MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED = 5;
     public final static int MENU_SORT_ORDER__DEFAULT = MENU_SORT_ORDER__BY_HEADLINE;
 
-    public final static int DEFAULT_SORT_KEY = 500;
+    public static final int DEFAULT_SORT_KEY = 500;
 
     private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
 
@@ -109,9 +109,8 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     List getMenuItemsVisibleToUser(UserDomainObject user) {
         MenuItemDomainObject[] menuItemsArray = getMenuItems();
-        List menuItemsUserCanSee = new ArrayList(this.menuItems.size());
-        for (int i = 0; i < menuItemsArray.length; i++) {
-            MenuItemDomainObject menuItem = menuItemsArray[i];
+        List<MenuItemDomainObject> menuItemsUserCanSee = new ArrayList<MenuItemDomainObject>(this.menuItems.size());
+        for (MenuItemDomainObject menuItem : menuItemsArray) {
             if (user.canSeeDocumentWhenEditingMenus(menuItem.getDocument())) {
                 menuItemsUserCanSee.add(menuItem);
             }

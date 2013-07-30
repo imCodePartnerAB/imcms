@@ -55,7 +55,7 @@ class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndA
 //  }
 
   "create embedded solr server" in {
-    val coreContainer = new CoreContainer(TestSetup.solr.home, new File(TestSetup.solr.home, "solr.xml"))
+    val coreContainer = new CoreContainer(TestSetup.solr.home) |>> { _.load() }
 //    val coreContainer = new CoreContainer(Test.solr.home.getAbsolutePath)
 //    val coreDescriptor = new CoreDescriptor(coreContainer, "core", new File(Test.solr.home, "core").getAbsolutePath)
 //    //coreDescriptor.setDataDir("/Users/ajosua/test/imSolr")

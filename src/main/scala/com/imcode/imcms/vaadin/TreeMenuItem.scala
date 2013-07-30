@@ -13,7 +13,7 @@ class TreeMenuItem(val id: String = null, val icon: Resource = null) {
 
     getClass.getDeclaredMethods
       .filter(treeMenuItemMethod)
-      .sortBy(_.getAnnotation(classOf[OrderedMethod]).asOption.map(_.value()).getOrElse(0))
+      .sortBy(_.getAnnotation(classOf[MenuItemOrder]).asOption.map(_.value()).getOrElse(0))
       .map(_.invoke(this).asInstanceOf[TreeMenuItem])
   }
 }
