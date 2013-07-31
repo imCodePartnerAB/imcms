@@ -9,7 +9,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
-    <version>6.0.0-alpha62</version>
+    <version>6.0.0-alpha63-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>imCMS</name>
@@ -1240,8 +1240,8 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/6.0.0-alpha62</connection>
-        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/6.0.0-alpha62</developerConnection>
-        <url>/tags/6.0.0-alpha62</url>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</developerConnection>
+        <url></url>
     </scm>
 </project>
