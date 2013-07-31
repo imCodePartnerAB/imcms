@@ -186,27 +186,35 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
 
     override def getItemProperty(id: AnyRef) = FunctionProperty[AnyRef](id match {
       case "docs_projection.container_property.index" => () => ix + 1 : JInteger
-      case "docs_projection.container_property.meta_id" => () => {
-        val label = new Label with UndefinedSize |>> { lbl =>
-          lbl.setCaption(doc.getId.toString)
-          lbl.setIcon(Theme.Icon.Doc.phase(doc))
-        }
 
-        new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
+      case "docs_projection.container_property.meta_id" => () => {
+        new HorizontalLayout with Spacing with NoMargin with UndefinedSize |>> { lyt =>
+          val icon = new Image(null, Theme.Icon.Doc.phase(doc))
+          val label = new Label(doc.getId.toString)
+
+          lyt.addComponent(icon)
+          lyt.addComponent(label)
+
+          lyt.setComponentAlignment(icon, Alignment.MIDDLE_LEFT)
+          lyt.setComponentAlignment(label, Alignment.MIDDLE_LEFT)
+        }
       }
 
       case "docs_projection.container_property.headline" => () => doc.getHeadline
       case "docs_projection.container_property.type" => () => doc.getDocumentType.getName.toLocalizedString(Imcms.getUser)
       case "docs_projection.container_property.language" => () => {
-        val label = new Label with UndefinedSize |>> { lbl =>
+        new HorizontalLayout with Spacing with NoMargin with UndefinedSize |>> { lyt =>
           val language = doc.getLanguage
-          lbl.setCaption(language.getNativeName)
-          lbl.setIcon(Theme.Icon.Language.flag(language))
+          val icon = new Image(null, Theme.Icon.Language.flag(language))
+          val label = new Label(language.getNativeName)
+
+          lyt.addComponent(icon)
+          lyt.addComponent(label)
+
+          lyt.setComponentAlignment(icon, Alignment.MIDDLE_LEFT)
+          lyt.setComponentAlignment(label, Alignment.MIDDLE_LEFT)
         }
-
-        new HorizontalLayout with UndefinedSize |>> { _.addComponent(label) }
       }
-
       case "docs_projection.container_property.alias" => () => doc.getAlias
       case "docs_projection.container_property.phase" => () => "doc_publication_phase.%s".format(doc.getLifeCyclePhase).i
       case "docs_projection.container_property.created_dt" => () => formatDt(doc.getCreatedDatetime)

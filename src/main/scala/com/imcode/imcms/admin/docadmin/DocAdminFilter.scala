@@ -6,11 +6,11 @@ import _root_.imcode.util.Utility
 
 class DocAdminFilter extends Filter {
 
-  def init(filterConfig: FilterConfig) {}
+  override def init(filterConfig: FilterConfig) {}
 
-  def destroy() {}
+  override def destroy() {}
 
-  def doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
+  override def doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
     val session = request.asInstanceOf[HttpServletRequest].getSession(false)
     val user = if (session == null) null else Utility.getLoggedOnUser(session)
 
