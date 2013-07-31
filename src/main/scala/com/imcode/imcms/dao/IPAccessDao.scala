@@ -4,6 +4,7 @@ package imcms.dao
 
 import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.api.IPAccess
+import com.imcode.imcms.dao.hibernate.HibernateSupport
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class IPAccessDao extends HibernateSupport {

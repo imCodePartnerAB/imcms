@@ -21,7 +21,7 @@ class MenuEditorUI extends VerticalLayout with FullSize {
 
   val cbSortOrder = new ComboBox("menu_editor.cb_sort".i) with AlwaysFireValueChange[AnyRef] with SingleSelect[JInteger] with Immediate with NoNullSelection |>> { cb =>
     Seq(
-      MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE -> "menu_editor.cb_sort.item.title".i,
+      MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE -> "menu_editor.cb_sort.item.headline".i,
       MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED -> "menu_editor.cb_sort.item.modified_dt".i,
       MenuDomainObject.MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED -> "menu_editor.cb_sort.item.published_dt".i,
       MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED -> "menu_editor.cb_sort.item.manual".i,

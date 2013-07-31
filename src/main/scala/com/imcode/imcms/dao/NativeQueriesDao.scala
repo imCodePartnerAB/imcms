@@ -5,6 +5,7 @@ import scala.collection.JavaConverters._
 
 import org.springframework.transaction.annotation.Transactional
 import java.{util => ju}
+import com.imcode.imcms.dao.hibernate.HibernateSupport
 
 /**
  * Native queries - moved from the DocumentMapper.

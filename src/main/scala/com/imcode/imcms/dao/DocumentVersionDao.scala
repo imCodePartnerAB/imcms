@@ -5,7 +5,9 @@ import imcode.server.user.UserDomainObject;
 import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.DocumentVersion;
 
-import java.util.Date;
+import java.util.Date
+import com.imcode.imcms.dao.hibernate.HibernateSupport
+;
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class DocumentVersionDao extends HibernateSupport {

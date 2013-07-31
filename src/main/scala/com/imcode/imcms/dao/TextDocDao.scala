@@ -7,6 +7,7 @@ import org.hibernate.{ScrollMode, CacheMode}
 import imcode.server.document.textdocument.{ImageDomainObject, MenuDomainObject, ContentRef, TextDomainObject}
 
 import org.springframework.transaction.annotation.Transactional
+import com.imcode.imcms.dao.hibernate.HibernateSupport
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class TextDocDao extends HibernateSupport {

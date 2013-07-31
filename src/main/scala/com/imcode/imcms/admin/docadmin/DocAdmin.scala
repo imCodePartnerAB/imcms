@@ -130,10 +130,6 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
       editor.resetValues()
     }
 
-    ui.buttons.btnClose.addClickHandler {
-      save(close = false)
-    }
-
     ui.buttons.btnSaveAndClose.addClickHandler {
       save(close = true)
     }

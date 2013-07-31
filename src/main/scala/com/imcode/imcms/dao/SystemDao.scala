@@ -3,6 +3,7 @@ package imcms.dao
 
 import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.api.SystemProperty
+import com.imcode.imcms.dao.hibernate.HibernateSupport
 
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))

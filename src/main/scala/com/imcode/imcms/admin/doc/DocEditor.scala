@@ -28,7 +28,7 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
   }
 
   val ui = new TabSheet with FullSize |>> { ts =>
-    ts.addTab(metaEditor.ui, "doc_editor.tab.properties".i, null)
+    ts.addTab(metaEditor.ui, "doc_editor.tab.meta".i, null)
     ts.addTab(contentEditor.ui, "doc_editor.tab.content".i, null)
   }
 

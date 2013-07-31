@@ -65,7 +65,7 @@
           p:configLocation="classpath:hibernate.cfg.xml"
           p:dataSource-ref="dataSource"/>
 
-    <bean id="dao" abstract="true" class="com.imcode.imcms.dao.HibernateSupport"
+    <bean id="dao" abstract="true" class="com.imcode.imcms.dao.hibernate.HibernateSupport"
           p:sessionFactory-ref="sessionFactory"/>
 
     <bean id="textDocDao" class="com.imcode.imcms.dao.TextDocDao" parent="dao" p:languageDao-ref="languageDao"/>

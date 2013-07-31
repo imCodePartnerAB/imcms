@@ -1,10 +1,9 @@
-package com.imcode
-package imcms.dao
+package com.imcode.imcms.dao.hibernate
 
 import org.hibernate._
 import scala.reflect.ClassTag
 
-import com.imcode.imcms.dao.hibernate.HibernateResultTransformer
+import com.imcode._
 
 trait HibernateSupport {
 
@@ -87,9 +86,9 @@ trait HibernateSupport {
     def listByNamedQueryAndNamedParams[A <: AnyRef](queryName: String, namedParam: NamedParam, namedParams: NamedParam*): JList[A] =
       runNamedQueryWithNamedParams(queryName, namedParam, namedParams: _*)(_.list().asInstanceOf[JList[A]])
 
-    def listBySqlQuery[A <: AnyRef : HibernateResultTransformer](queryString: String, ps: Any*): JList[A] =
+    def listBySqlQuery[A <: AnyRef : ResultTransformerProvider](queryString: String, ps: Any*): JList[A] =
       runSqlQuery(queryString, ps: _*) { query =>
-        query.setResultTransformer(implicitly[HibernateResultTransformer[A]].transformer)
+        query.setResultTransformer(implicitly[ResultTransformerProvider[A]].resultTransformer)
         query.list().asInstanceOf[JList[A]]
       }
 

@@ -2,10 +2,10 @@ package com.imcode
 package imcms.mapping
 
 import scala.collection.JavaConverters._
-import com.imcode.imcms.dao.HibernateSupport
 import com.imcode.imcms.api.CategoryAlreadyExistsException
 import org.springframework.transaction.annotation.Transactional
 import _root_.imcode.server.document.{MaxCategoryDomainObjectsOfTypeExceededException, DocumentDomainObject, CategoryDomainObject, CategoryTypeDomainObject}
+import com.imcode.imcms.dao.hibernate.HibernateSupport
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class CategoryMapper extends HibernateSupport {
