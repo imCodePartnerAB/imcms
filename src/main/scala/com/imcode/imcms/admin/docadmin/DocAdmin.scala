@@ -60,7 +60,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
       } orElse {
         condOpt(pathInfo, doc, request.getParameter("menuNo")) {
           case ("/menu", textDoc: TextDocumentDomainObject, NonNegInt(menuNo)) =>
-            val title = titleOpt.getOrElse(s"Document ${docId} menu #${menuNo}")
+            val title = titleOpt.getOrElse("menu_editor.title".f(docId, menuNo))
             val returnUrl = returnUrlOpt.getOrElse(
               s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
             )
@@ -79,37 +79,39 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   }
 
 
-  def mkWorkingDocEditorComponent(request: VaadinRequest, doc: DocumentDomainObject) = new EditorContainerUI(s"Document ${doc.getId}") |>> { ui =>
-    val editor = new DocEditor(doc)
+  def mkWorkingDocEditorComponent(request: VaadinRequest, doc: DocumentDomainObject): EditorContainerUI = {
+    new EditorContainerUI("doc.edit_properties.title".f(doc.getId)) |>> { ui =>
+      val editor = new DocEditor(doc)
 
-    ui.mainUI = editor.ui
+      ui.mainUI = editor.ui
 
-    editor.ui.setSize(900, 600)
+      editor.ui.setSize(900, 600)
 
-    ui.buttons.btnSave.addClickHandler {
-      editor.collectValues() match {
-        case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(","))
-        case Right((editedDoc, i18nMetas)) =>
-          try {
-            imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, app.imcmsUser)
-            Page.getCurrent.showInfoNotification("Document has been saved")
-            Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
-          } catch {
-            case e: Exception => Page.getCurrent.showErrorNotification("Failed to save document", e.getStackTraceString)
-          }
+      ui.buttons.btnSave.addClickHandler {
+        editor.collectValues() match {
+          case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(","))
+          case Right((editedDoc, i18nMetas)) =>
+            try {
+              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, app.imcmsUser)
+              Page.getCurrent.showInfoNotification("notification.doc.saved".i)
+              Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
+            } catch {
+              case e: Exception => Page.getCurrent.showErrorNotification("notification.doc.unable_to_save".i, e.getStackTraceString)
+            }
+        }
       }
-    }
 
-    ui.buttons.btnClose.addClickHandler {
-      Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
-    }
+      ui.buttons.btnClose.addClickHandler {
+        Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
+      }
 
-    Page.getCurrent.getUriFragment.asOption.map(_.toLowerCase).foreach {
-      case "info" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
-      case "access" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.access"
-      case "appearance" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
-      case "content" => editor.ui.setSelectedTab(1)
-      case _ =>
+      Page.getCurrent.getUriFragment.asOption.map(_.toLowerCase).foreach {
+        case "info" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
+        case "access" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.access"
+        case "appearance" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
+        case "content" => editor.ui.setSelectedTab(1)
+        case _ =>
+      }
     }
   }
 
@@ -141,7 +143,8 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
       if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
         closeEditor()
       } else {
-        new ConfirmationDialog("Menu has been modified", "Close without saving?") |>> { dlg =>
+        new ConfirmationDialog("menu_editor.dlg.confirmation.close_without_saving.title".i,
+                               "menu_editor.dlg.confirmation.close_without_saving.message".i) |>> { dlg =>
           dlg.setOkButtonHandler {
             closeEditor()
             dlg.close()
@@ -157,7 +160,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
     def save(close: Boolean) {
       editor.collectValues().right.get |> { menu =>
         imcmsServices.getDocumentMapper.saveTextDocMenu(menu, UI.getCurrent.imcmsUser)
-        Page.getCurrent.showInfoNotification("Menu has been saved")
+        Page.getCurrent.showInfoNotification("menu_editor.notification.saved".i)
 
         if (close) {
           Page.getCurrent.open(params.returnUrl, "_self")

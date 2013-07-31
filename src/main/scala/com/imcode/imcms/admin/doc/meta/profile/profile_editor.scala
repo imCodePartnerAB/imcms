@@ -53,7 +53,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
 
   val ui = new ProfileEditorUI(defaultPermSetEditor.ui, restrictedOnePermSetEditor.ui, restrictedTwoPermSetEditor.ui)
 
-  val collectValues: ErrorsOrData =
+  override def collectValues(): ErrorsOrData =
     Right(
       Data(
         ui.cbDefaultTemplate.value,
@@ -64,7 +64,7 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
       )
     )
 
-  def resetValues() {
+  override def resetValues() {
     restrictedOnePermSetEditor.resetValues()
     restrictedOnePermSetEditor.resetValues()
 

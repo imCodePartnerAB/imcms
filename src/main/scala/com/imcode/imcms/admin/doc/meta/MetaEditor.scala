@@ -127,7 +127,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
     Collector(
       Right((dc, i18nMetas))
-    ).merge(appearanceEditorOpt.map(_.collectValues)) {
+    ).merge(appearanceEditorOpt.map(_.collectValues())) {
       case ((dc, _), appearance) => (dc, appearance.i18nMetas) |>> { _ =>
         dc.getMeta.setEnabledLanguages(appearance.enabledLanguages.asJava)
         dc.getMeta.setI18nShowMode(appearance.disabledLanguageShowSetting)
@@ -147,7 +147,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         dc.getMeta.setCreatorId(lifeCycle.creator.map(c => c.getId : JInteger).orNull)
         //???dc.getMeta.setModifierId
       }
-    }.merge(accessEditorOpt.map(_.collectValues)) {
+    }.merge(accessEditorOpt.map(_.collectValues())) {
       case (data@(dc, _), permissions) => data |>> { _ =>
         dc.setRoleIdsMappedToDocumentPermissionSetTypes(permissions.rolesPermissions)
         dc.getPermissionSets.setRestricted1(permissions.restrictedOnePermSet)
@@ -156,11 +156,11 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         dc.setLinkedForUnauthorizedUsers(permissions.isLinkedForUnauthorizedUsers)
         dc.setLinkableByOtherUsers(permissions.isLinkableByOtherUsers)
       }
-    }.merge(categoryEditorOpt.map(_.collectValues)) {
+    }.merge(categoryEditorOpt.map(_.collectValues())) {
       case (data@(dc, _), categories) => data |>> { _ =>
         dc.setCategoryIds(categories.categoriesIds.asJava)
       }
-    }.merge(profileEditorOpt.map(_.collectValues)) {
+    }.merge(profileEditorOpt.map(_.collectValues())) {
       case (data@(tdc: TextDocumentDomainObject, _), profile) => data |>> { _ =>
         tdc.setDefaultTemplateId(profile.defaultTemplate)
         tdc.getPermissionSetsForNewDocuments.setRestricted1(profile.restrictedOnePermSet)

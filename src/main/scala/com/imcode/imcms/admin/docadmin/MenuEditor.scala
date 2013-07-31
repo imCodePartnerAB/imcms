@@ -41,7 +41,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
   val ui = new MenuEditorUI |>> { ui =>
     ui.ttMenu.setItemDescriptionGenerator(new ItemDescriptionGenerator {
-      def generateDescription(source: Component, itemId: AnyRef, propertyId: AnyRef) = "menu item tooltip"
+      def generateDescription(source: Component, itemId: AnyRef, propertyId: AnyRef) = "n/a" // column title tooltip
     })
 
     ui.ttMenu.addValueChangeHandler {
@@ -60,7 +60,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
     // todo: ??? search for current language + default version ???
     ui.miIncludeDocs.setCommandHandler {
-      new DocSelectDialog("Choose documents", UI.getCurrent.imcmsUser) |>> { dlg =>
+      new DocSelectDialog("menu_editor.dlg.select_docs.title".i, UI.getCurrent.imcmsUser) |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
             doc <- dlg.projection.selection
@@ -90,12 +90,12 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       for (docId <- ui.ttMenu.selectionOpt) {
         imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId) match {
           case null =>
-            Page.getCurrent.showWarningNotification("Document does not exist")
+            Page.getCurrent.showWarningNotification("notification.doc.unable_to_find".i)
             state.removeMenuItemByDocumentId(docId)
             updateMenuUI()
 
-          case doc =>
-            new DocEditorDialog( "Edit document properties", doc) |>> { dlg =>
+          case selectedDoc =>
+            new DocEditorDialog("doc.edit_properties.title".f(docId), selectedDoc) |>> { dlg =>
               dlg.setOkButtonHandler {
                 dlg.docEditor.collectValues() match {
                   case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(", "))
@@ -106,7 +106,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
                       dlg.close()
                     } catch {
                       case e: Exception =>
-                        Page.getCurrent.showErrorNotification("Can't save document", e.getMessage)
+                        Page.getCurrent.showErrorNotification("notification.doc.unable_to_save".i, e.getMessage)
                         throw e
                     }
                 }

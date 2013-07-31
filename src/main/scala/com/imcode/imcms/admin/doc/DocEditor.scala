@@ -1,5 +1,6 @@
 package com.imcode
-package imcms.admin.doc
+package imcms
+package admin.doc
 
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentDomainObject}
@@ -27,8 +28,8 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
   }
 
   val ui = new TabSheet with FullSize |>> { ts =>
-    ts.addTab(metaEditor.ui, "Properties", null)
-    ts.addTab(contentEditor.ui, "Content", null)
+    ts.addTab(metaEditor.ui, "doc_editor.tab.properties".i, null)
+    ts.addTab(contentEditor.ui, "doc_editor.tab.content".i, null)
   }
 
   def resetValues() {
