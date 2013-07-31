@@ -3,16 +3,13 @@
 <!--
 todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 -->
-<project
-        xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
-    <version>6.0.0-alpha62-SNAPSHOT</version>
+    <version>6.0.0-alpha62</version>
     <packaging>war</packaging>
 
     <name>imCMS</name>
@@ -57,7 +54,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
         <tomcat.port>8888</tomcat.port>
         <tomcat.contextPath>/${project.artifactId}-${project.version}</tomcat.contextPath>
         <tomcat.username>gui</tomcat.username>
-        <tomcat.password></tomcat.password>
+        <tomcat.password />
 
         <build.webapp.dir>${project.build.directory}/${project.build.finalName}</build.webapp.dir>
 
@@ -1074,7 +1071,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                         War source directory must not be set to existing directory
                         since webappDirectory (the directory where the webapp is built) is created using ant script.
                     -->
-                    <warSourceDirectory></warSourceDirectory>
+                    <warSourceDirectory />
 
                     <!--<webResources>-->
                     <!--<resource>-->
@@ -1243,8 +1240,8 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</connection>
-        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</developerConnection>
-        <url></url>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/6.0.0-alpha62</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/6.0.0-alpha62</developerConnection>
+        <url>/tags/6.0.0-alpha62</url>
     </scm>
 </project>
