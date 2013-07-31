@@ -4,6 +4,8 @@ package imcms.dao
 import org.hibernate._
 import scala.reflect.ClassTag
 
+import com.imcode.imcms.dao.hibernate.HibernateResultTransformer
+
 trait HibernateSupport {
 
   @scala.reflect.BeanProperty
@@ -13,9 +15,6 @@ trait HibernateSupport {
   def flush(): Unit = hibernate.flush()
 
   object hibernate {
-
-    import HibernateSupport.HibernateResultTransformer
-
     type NamedParam = (String, Any)
     type PositionalParam = (Int, Any)
 
@@ -130,65 +129,5 @@ trait HibernateSupport {
     def delete[A <: AnyRef](obj: A): Unit = withCurrentSession { _.delete(obj) }
 
     def merge[A <: AnyRef](obj: A): A = withCurrentSession { _.merge(obj).asInstanceOf[A] }
-  }
-}
-
-
-object HibernateSupport {
-
-  import org.hibernate.transform.ResultTransformer
-
-  abstract class HibernateResultTransformer[+A <: AnyRef : ClassTag] {
-    def transformer: ResultTransformer
-
-    override def toString = "HibernateResultTransformer[%s]".format(scala.reflect.classTag[A].runtimeClass)
-  }
-
-
-  trait IdentityResultTransformer { this: ResultTransformer =>
-    def transformList(collection: JList[_]): JList[_] = collection
-  }
-
-
-  class HibernateArrayResultTransformer[E <: AnyRef : ClassTag] extends HibernateResultTransformer[Array[E]] {
-    def transformer = new ResultTransformer with IdentityResultTransformer {
-      def transformTuple(tuple: Array[AnyRef], aliases: Array[String]): Array[E] = Array.ofDim[E](tuple.size) |>> { arr =>
-        for ((element, i) <- tuple.zipWithIndex) arr(i) = element.asInstanceOf[E]
-      }
-    }
-  }
-
-
-  class HibernateSingleColumnTransformer[A <: AnyRef : ClassTag] extends HibernateResultTransformer[A] {
-    def transformer = new ResultTransformer with IdentityResultTransformer {
-      def transformTuple(tuple: Array[AnyRef], aliases: Array[String]): A = tuple(0).asInstanceOf[A]
-    }
-  }
-
-
-  object HibernateResultTransformer extends LowLevelHibernateResultTransformerImplicits {
-    implicit object defaultResultTransformerFactory extends HibernateResultTransformer[Array[AnyRef]] {
-      def transformer = null
-    }
-  }
-
-
-  class LowLevelHibernateResultTransformerImplicits {
-    implicit object anyRefSingleColumnTransformer extends HibernateSingleColumnTransformer[AnyRef]
-    implicit object stringSingleColumnTransformer extends HibernateSingleColumnTransformer[String]
-    implicit object jIntegerSingleColumnTransformer extends HibernateSingleColumnTransformer[JInteger]
-    implicit object jDoubleSingleColumnTransformer extends HibernateSingleColumnTransformer[JDouble]
-    implicit object jFloatSingleColumnTransformer extends HibernateSingleColumnTransformer[JFloat]
-    implicit object jBooleanSingleColumnTransformer extends HibernateSingleColumnTransformer[JBoolean]
-    implicit object jCharacterSingleColumnTransformer extends HibernateSingleColumnTransformer[JCharacter]
-    implicit object jByteSingleColumnTransformer extends HibernateSingleColumnTransformer[JByte]
-
-    implicit object stringArrayResultTransformer extends HibernateArrayResultTransformer[String]
-    implicit object jIntegerArrayResultTransformer extends HibernateArrayResultTransformer[JInteger]
-    implicit object jDoubleArrayResultTransformer extends HibernateArrayResultTransformer[JDouble]
-    implicit object jFloatArrayResultTransformer extends HibernateArrayResultTransformer[JFloat]
-    implicit object jBooleanArrayResultTransformer extends HibernateArrayResultTransformer[JBoolean]
-    implicit object jCharacterArrayResultTransformer extends HibernateArrayResultTransformer[JCharacter]
-    implicit object jByteArrayResultTransformer extends HibernateArrayResultTransformer[JByte]
   }
 }

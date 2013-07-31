@@ -1,0 +1,21 @@
+package com.imcode
+package imcms.dao.hibernate
+
+class LowLevelHibernateResultTransformerImplicits {
+  implicit object anyRefSingleColumnTransformer extends HibernateSingleColumnTransformer[AnyRef]
+  implicit object stringSingleColumnTransformer extends HibernateSingleColumnTransformer[String]
+  implicit object jIntegerSingleColumnTransformer extends HibernateSingleColumnTransformer[JInteger]
+  implicit object jDoubleSingleColumnTransformer extends HibernateSingleColumnTransformer[JDouble]
+  implicit object jFloatSingleColumnTransformer extends HibernateSingleColumnTransformer[JFloat]
+  implicit object jBooleanSingleColumnTransformer extends HibernateSingleColumnTransformer[JBoolean]
+  implicit object jCharacterSingleColumnTransformer extends HibernateSingleColumnTransformer[JCharacter]
+  implicit object jByteSingleColumnTransformer extends HibernateSingleColumnTransformer[JByte]
+
+  implicit object stringArrayResultTransformer extends HibernateArrayResultTransformer[String]
+  implicit object jIntegerArrayResultTransformer extends HibernateArrayResultTransformer[JInteger]
+  implicit object jDoubleArrayResultTransformer extends HibernateArrayResultTransformer[JDouble]
+  implicit object jFloatArrayResultTransformer extends HibernateArrayResultTransformer[JFloat]
+  implicit object jBooleanArrayResultTransformer extends HibernateArrayResultTransformer[JBoolean]
+  implicit object jCharacterArrayResultTransformer extends HibernateArrayResultTransformer[JCharacter]
+  implicit object jByteArrayResultTransformer extends HibernateArrayResultTransformer[JByte]
+}

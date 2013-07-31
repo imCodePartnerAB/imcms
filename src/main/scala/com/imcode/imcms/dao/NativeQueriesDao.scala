@@ -4,7 +4,7 @@ package imcms.dao
 import scala.collection.JavaConverters._
 
 import org.springframework.transaction.annotation.Transactional
-import java.util.TreeMap
+import java.{util => ju}
 
 /**
  * Native queries - moved from the DocumentMapper.
@@ -12,9 +12,6 @@ import java.util.TreeMap
  */
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class NativeQueriesDao extends HibernateSupport {
-
-  // required by separate compilation
-  import HibernateSupport.HibernateResultTransformer
 
   def getAllMimeTypes(): JList[String] = hibernate.listBySqlQuery(
     "SELECT mime FROM mime_types WHERE mime_id > 0 ORDER BY mime_id"
@@ -43,7 +40,7 @@ class NativeQueriesDao extends HibernateSupport {
       "SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", languageIso639_2
     ) |> {
       rows =>
-        new TreeMap[JInteger, String] |>> { m =>
+        new ju.TreeMap[JInteger, String] |>> { m =>
           for (Array(typeId: JInteger, name: String) <- rows.asScala) m.put(typeId, name)
         }
     }
