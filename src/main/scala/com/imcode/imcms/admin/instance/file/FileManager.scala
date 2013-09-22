@@ -24,7 +24,7 @@ class FileManager(app: UI) {
 
   val ui = new FileManagerUI(browser.ui, preview.ui) |>> { ui =>
 
-    ui.miEditRename setCommandHandler {
+    ui.miEditRename.setCommandHandler { _ =>
       for (LocationSelection(dir, Seq(item)) <- browser.selection; if item.isFile) {
         new OkCancelDialog("file.mgr.dlg.rename.item.title".f(item.getName)) |>> { dlg =>
           dlg.btnOk.setCaption("file.mgr.dlg.transfer.item.btn.rename".i)
@@ -60,24 +60,24 @@ class FileManager(app: UI) {
       }
     }
 
-    ui.miEditDelete setCommandHandler {
+    ui.miEditDelete.setCommandHandler { _ =>
       new ItemsDeleteHelper(app, browser) delete()
     }
 
-    ui.miEditCopy setCommandHandler {
+    ui.miEditCopy.setCommandHandler { _ =>
       new ItemsTransferHelper(app, browser) copy()
     }
 
-    ui.miEditMove setCommandHandler {
+    ui.miEditMove.setCommandHandler { _ =>
       new ItemsTransferHelper(app, browser) move()
     }
 
-    ui.miFileShow setCommandHandler {
+    ui.miFileShow.setCommandHandler { _ =>
       for (LocationSelection(_, Seq(item)) <- browser.selection; if item.isFile && FileOps.isShowable(item))
         FileOps.default(item)
     }
 
-    ui.miFileEdit setCommandHandler {
+    ui.miFileEdit.setCommandHandler { _ =>
       for (LocationSelection(_, Seq(item)) <- browser.selection; if item.isFile) {
         new OkCancelDialog("file.edit.dlg.title".f(item)) with CustomSizeDialog with Resizable { dlg =>
           dlg.btnOk.setCaption("btn_save".i)
@@ -93,7 +93,7 @@ class FileManager(app: UI) {
       }
     }
 
-    ui.miFileUpload setCommandHandler {
+    ui.miFileUpload.setCommandHandler { _ =>
       for (LocationSelection(dir, _) <- browser.selection) {
         new FileUploaderDialog("file.upload.dlg.title".i) |>> { dlg =>
           dlg.setOkButtonHandler {
@@ -114,16 +114,16 @@ class FileManager(app: UI) {
       }
     }
 
-    ui.miFileDownload.setCommandHandler {
+    ui.miFileDownload.setCommandHandler { _ =>
       for (LocationSelection(_, Seq(item)) <- browser.selection if item.isFile)
         FileOps.download(item)
     }
 
-    ui.miViewReload.setCommandHandler { browser.reloadLocation(preserveTreeSelection = true) }
+    ui.miViewReload.setCommandHandler { _ => browser.reloadLocation(preserveTreeSelection = true) }
 
-    ui.miViewPreview.setCommandHandler { preview.enabled = !preview.enabled }
+    ui.miViewPreview.setCommandHandler { _ => preview.enabled = !preview.enabled }
 
-    ui.miNewDir.setCommandHandler {
+    ui.miNewDir.setCommandHandler { _ =>
       for (selection <- browser.selection) {
         new OkCancelDialog("file.mgr.dlg.new_dir.title".i) |>> { dlg =>
           val txtName = new TextField("file.mgr.dlg.new_dir.frm.fld.name".i)

@@ -5,6 +5,7 @@ package vaadin.ui
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 
 class TwinSelect[T <: AnyRef](caption: String = "") extends Panel(caption) with LightStyle {
     private val content = new GridLayout(3, 1)
@@ -28,11 +29,11 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends Panel(caption) with 
       l.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT)
     }
 
-    btnAdd.addClickHandler { move(lstAvailable, lstChosen) }
-    btnRemove.addClickHandler { move(lstChosen, lstAvailable) }
+    btnAdd.addClickHandler { _ => move(lstAvailable, lstChosen) }
+    btnRemove.addClickHandler { _ => move(lstChosen, lstAvailable) }
 
-    lstAvailable.addValueChangeHandler { reset() }
-    lstChosen.addValueChangeHandler { reset() }
+    lstAvailable.addValueChangeHandler { _ => reset() }
+    lstChosen.addValueChangeHandler { _ => reset() }
 
     reset()
 

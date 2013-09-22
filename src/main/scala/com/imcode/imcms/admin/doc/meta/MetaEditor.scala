@@ -10,6 +10,7 @@ import _root_.imcode.server.document.{DocumentDomainObject}
 import com.imcode.imcms.api._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.admin.doc.meta.access.AccessEditor
 import com.imcode.imcms.admin.doc.meta.search.SearchSettingsEditor
 import com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
@@ -55,7 +56,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     // todo: disable profile tag =or= add lable =not supported/available =or= show empty page instead of editor
     if (doc.isInstanceOf[TextDocumentDomainObject]) ui.treeEditors.addItem("doc_meta_editor.menu_item.profile", "doc_meta_editor.menu_item.profile".i)
 
-    ui.treeEditors.addValueChangeHandler {
+    ui.treeEditors.addValueChangeHandler { _ =>
       ui.treeEditors.value match {
         case "doc_meta_editor.menu_item.life_cycle" =>
           if (lifeCycleEditorOpt.isEmpty) lifeCycleEditorOpt = Some(new LifeCycleEditor(doc.getMeta))

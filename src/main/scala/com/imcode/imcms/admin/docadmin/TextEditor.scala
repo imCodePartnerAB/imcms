@@ -23,9 +23,9 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
       ui.miFormatPlain.setEnabled(settings.format == TextDomainObject.Format.PLAIN_TEXT)
     }
 
-    ui.miFormatHtml.setCommandHandler { setFormat(TextDomainObject.Format.HTML) }
-    ui.miFormatPlain.setCommandHandler { setFormat(TextDomainObject.Format.PLAIN_TEXT) }
-    ui.miHistory.setCommandHandler {
+    ui.miFormatHtml.setCommandHandler { _ => setFormat(TextDomainObject.Format.HTML) }
+    ui.miFormatPlain.setCommandHandler { _ => setFormat(TextDomainObject.Format.PLAIN_TEXT) }
+    ui.miHistory.setCommandHandler { _ =>
       new TextHistoryDialog("Restore text", currentText) |> UI.getCurrent.addWindow
     }
   }

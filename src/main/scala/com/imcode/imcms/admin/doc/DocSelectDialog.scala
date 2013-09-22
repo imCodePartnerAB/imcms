@@ -15,14 +15,14 @@ class DocSelectDialog(caption: String, user: UserDomainObject, multiSelect: Bool
   val projectionOps = new DocsProjectionOps(projection)
 
   mainUI = new DocSelectDialogMainUI(projection.ui) |>> { ui =>
-    ui.miNewFileDoc.setCommandHandler { projectionOps.mkDocOfType[FileDocumentDomainObject] }
-    ui.miNewTextDoc.setCommandHandler { projectionOps.mkDocOfType[TextDocumentDomainObject] }
-    ui.miNewUrlDoc.setCommandHandler { projectionOps.mkDocOfType[UrlDocumentDomainObject] }
+    ui.miNewFileDoc.setCommandHandler { _ => projectionOps.mkDocOfType[FileDocumentDomainObject] }
+    ui.miNewTextDoc.setCommandHandler { _ => projectionOps.mkDocOfType[TextDocumentDomainObject] }
+    ui.miNewUrlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[UrlDocumentDomainObject] }
 
-    ui.miCopySelectedDoc.setCommandHandler { projectionOps.copySelectedDoc() }
-    ui.miDeleteSelectedDocs.setCommandHandler { projectionOps.deleteSelectedDocs() }
-    ui.miShowSelectedDoc.setCommandHandler { projectionOps.showSelectedDoc() }
-    ui.miHelp.setCommandHandler { /* todo: ??? show help in modal dialog ??? */ }
+    ui.miCopySelectedDoc.setCommandHandler { _ => projectionOps.copySelectedDoc() }
+    ui.miDeleteSelectedDocs.setCommandHandler { _ => projectionOps.deleteSelectedDocs() }
+    ui.miShowSelectedDoc.setCommandHandler { _ => projectionOps.showSelectedDoc() }
+    ui.miHelp.setCommandHandler { _ => /* todo: ??? show help in modal dialog ??? */ }
 
     projection.listen { selection =>
       val isSingleSelection = selection.size == 1

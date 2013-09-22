@@ -10,15 +10,16 @@ import com.imcode.imcms.vaadin.data._
 class UserSingleSelect {
   private val selectionRef = new AtomicReference(Option.empty[UserDomainObject])
   val ui = new UserSingleSelectUI |>> { ui =>
-    ui.btnSelect.addClickHandler {
+    ui.btnSelect.addClickHandler { _ =>
       new UserSingleSelectDialog |>> { dlg =>
         dlg.setOkButtonHandler {
           selection = dlg.search.selection.headOption
+          dlg.close()
         }
       } |> UI.getCurrent.addWindow
     }
 
-    ui.btnClear.addClickHandler { selection = None }
+    ui.btnClear.addClickHandler { _ => selection = None }
   }
 
   def selection: Option[UserDomainObject] = selectionRef.get

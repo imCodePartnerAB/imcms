@@ -5,5 +5,9 @@ import com.vaadin.ui.Button
 // implicit
 class ButtonWrapper(button: Button) {
 
-  def addClickHandler(handler: => Unit): Unit = button.addClickListener { _: Button.ClickEvent => handler }
+  def addClickHandler(handler: Button.ClickEvent => Unit): Unit = button.addClickListener(
+    new Button.ClickListener {
+      def buttonClick(event: Button.ClickEvent): Unit = handler(event)
+    }
+  )
 }

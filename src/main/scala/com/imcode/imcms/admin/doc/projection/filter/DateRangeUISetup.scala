@@ -6,11 +6,12 @@ import java.util.{Calendar, Date}
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 
 trait DateRangeUISetup { this: DateRangeUI =>
   import DateRangeType._
 
-  cbRangeType.addValueChangeHandler {
+  cbRangeType.addValueChangeHandler { _ =>
     Seq(dtFrom, dtTo).foreach(_.setEnabled(false))
     val now = new Date
     val calendar = Calendar.getInstance

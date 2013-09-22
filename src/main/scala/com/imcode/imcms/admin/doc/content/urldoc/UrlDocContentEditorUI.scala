@@ -5,7 +5,7 @@ package admin.doc.content.urldoc
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
-
+import com.imcode.imcms.vaadin.event._
 
 
 class UrlDocContentEditorUI extends Panel("URL/Link".i) with FullSize {
@@ -27,7 +27,7 @@ class UrlDocContentEditorUI extends Panel("URL/Link".i) with FullSize {
   cbTarget.addItem("_top", "Replace All") // _top install/htdocs/sv/jsp/docadmin/url_document.jsp/1005
   cbTarget.addItem("_custom", "Other Frame") // ??? install/htdocs/sv/jsp/docadmin/url_document.jsp/1006
 
-  cbTarget.addValueChangeHandler {
+  cbTarget.addValueChangeHandler { _ =>
     cbTarget.value match {
       case "_custom" =>
         txtCustomTarget.setEnabled(true)

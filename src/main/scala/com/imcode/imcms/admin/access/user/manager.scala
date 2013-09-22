@@ -20,7 +20,7 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
   val ui = new UserManagerUI(search.ui) |>> { ui =>
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
-    ui.miNew.setCommandHandler {
+    ui.miNew.setCommandHandler { _ =>
       new OkCancelDialog("user.dlg.new.caption".i) |>> { dlg =>
         dlg.mainUI = new UserEditorUI |>> { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
@@ -52,7 +52,7 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
       } |> UI.getCurrent.addWindow
     }
 
-    ui.miEdit.setCommandHandler {
+    ui.miEdit.setCommandHandler { _ =>
       whenSingleton(search.selection) { user =>
         new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName)) |>> { dlg =>
           dlg.mainUI = new UserEditorUI |>> { c =>

@@ -18,8 +18,8 @@ import com.vaadin.server.Page
 class PropertyManagerManager(app: UI) {
 
   val ui = new PropertyManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { reload() }
-    ui.miEdit.setCommandHandler {
+    ui.rc.btnReload.addClickHandler { _ => reload() }
+    ui.miEdit.setCommandHandler { _ =>
       new OkCancelDialog("Edit system properties") |>> { dlg =>
         dlg.mainUI = new PropertyEditorUI |>> { eui =>
           Imcms.getServices.getSystemData |> { d =>

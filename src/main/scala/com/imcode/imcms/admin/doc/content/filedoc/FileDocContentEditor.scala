@@ -83,7 +83,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
     ui.tblFiles.setColumnAlignment("Default", Table.ALIGN_CENTER)
 
-    ui.miUpload.setCommandHandler {
+    ui.miUpload.setCommandHandler { _ =>
       new FileUploaderDialog("Add file") |>> { dlg =>
         dlg.setOkButtonHandler {
           for (UploadedFile(_, mimeType, file) <- dlg.uploader.uploadedFile) {
@@ -127,7 +127,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
       } |> UI.getCurrent.addWindow
     } // ui.miUpload.setCommandHandler
 
-    ui.miEditProperties.setCommandHandler {
+    ui.miEditProperties.setCommandHandler { _ =>
       ui.tblFiles.selection match {
         case Nil =>
           Page.getCurrent.showWarningNotification("Please select a file")
@@ -213,7 +213,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
       }
     }
 
-    ui.miDelete.setCommandHandler {
+    ui.miDelete.setCommandHandler { _ =>
       ui.tblFiles.selection match {
         case Nil =>
           Page.getCurrent.showWarningNotification("Please select file(s)")
@@ -230,7 +230,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     }
 
 
-    ui.miMarkAsDefault.setCommandHandler {
+    ui.miMarkAsDefault.setCommandHandler { _ =>
       ui.tblFiles.selection match {
         case Nil =>
           Page.getCurrent.showWarningNotification("Please select a file")

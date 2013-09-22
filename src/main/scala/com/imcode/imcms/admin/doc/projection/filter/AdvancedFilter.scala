@@ -5,16 +5,17 @@ package admin.doc.projection.filter
 import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.vaadin.server.ExternalResource
 
 
 class AdvancedFilter extends ImcmsServicesSupport {
   val ui = new AdvancedFilterUI
 
-  ui.chkCategories.addValueChangeHandler { toggleCategories() }
-  ui.chkDates.addValueChangeHandler { toggleDates() }
-  ui.chkRelationships.addValueChangeHandler { toggleRelationships() }
-  ui.chkMaintainers.addValueChangeHandler { toggleMaintainers() }
+  ui.chkCategories.addValueChangeHandler { _ => toggleCategories() }
+  ui.chkDates.addValueChangeHandler { _ => toggleDates() }
+  ui.chkRelationships.addValueChangeHandler { _ => toggleRelationships() }
+  ui.chkMaintainers.addValueChangeHandler { _ => toggleMaintainers() }
 
   def reset() {
     Seq(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers).foreach {

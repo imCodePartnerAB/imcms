@@ -13,6 +13,7 @@ import java.io.{FileInputStream, ByteArrayInputStream, File}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.Page
 
@@ -24,8 +25,8 @@ class TemplateManager(app: UI) {
   private val fileRE = """(?i)(.+?)(?:\.(\w+))?""".r // filename, (optional extension)
 
   val ui = new TemplateManagerUI |>> { ui =>
-    ui.tblTemplates addValueChangeHandler { handleSelection() }
-    ui.miUpload.setCommandHandler {
+    ui.tblTemplates.addValueChangeHandler { _ => handleSelection() }
+    ui.miUpload.setCommandHandler { _ =>
       new FileUploaderDialog("Upload template file") |>> { dlg =>
         // strips filename extension, trims and replaces spaces with underscores
         dlg.uploader.fileNameToSaveAsName = fileRE.unapplySeq(_:String).map(_.head.trim.replaceAll("""\s""", "_")).get
@@ -55,7 +56,7 @@ class TemplateManager(app: UI) {
         }
       } |> UI.getCurrent.addWindow
     }
-    ui.miRename.setCommandHandler {
+    ui.miRename.setCommandHandler { _ =>
       whenSelected(ui.tblTemplates) { name =>
         new OkCancelDialog("Rename template") |>> { dlg =>
           val fileRenameUI = new TemplateRenameUI |>> { c =>
@@ -73,7 +74,7 @@ class TemplateManager(app: UI) {
         } |> UI.getCurrent.addWindow
       }
     }
-    ui.miEditContent.setCommandHandler {
+    ui.miEditContent.setCommandHandler { _ =>
       whenSelected(ui.tblTemplates) { name =>
         new Dialog("Template file content") with CustomSizeDialog with NoContentMarginDialog |>> { dlg =>
           dlg.mainUI = new TemplateContentEditorUI |>> { c =>
@@ -85,7 +86,7 @@ class TemplateManager(app: UI) {
         } |> UI.getCurrent.addWindow
       }
     }
-    ui.miDelete.setCommandHandler {
+    ui.miDelete.setCommandHandler { _ =>
       whenSelected(ui.tblTemplates) { name =>
         new ConfirmationDialog("Delete selected template?") |>> { dlg =>
           dlg.setOkButtonHandler {

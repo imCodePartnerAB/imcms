@@ -10,6 +10,7 @@ import com.imcode.imcms.api._
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.Editor
 
 /**
@@ -39,7 +40,7 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
         sltCategories.addItem(category.getId, category.getName)
       }
 
-      chkCType.addValueChangeHandler {
+      chkCType.addValueChangeHandler { _ =>
         sltCategories.setVisible(chkCType.isChecked)
       }
 

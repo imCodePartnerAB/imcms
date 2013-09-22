@@ -2,7 +2,7 @@ package com.imcode.imcms.vaadin.data
 
 import com.vaadin.data.Property
 
-class PropertyOps[A <: AnyRef](property: Property[A]) {
+class PropertyOps[A <: AnyRef] (property: Property[A]) {
   def value: A = property.getValue
   def value_=(v: A): Unit = property.setValue(v)
 

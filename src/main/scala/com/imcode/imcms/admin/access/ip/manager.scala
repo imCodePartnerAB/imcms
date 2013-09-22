@@ -9,10 +9,10 @@ import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.dao.IPAccessDao
 import com.imcode.imcms.api.IPAccess
 import com.imcode.imcms.admin.access.user.{UserSingleSelectDialog, UserSelectDialog}
-import javax.persistence.{Id, Entity}
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog, ConfirmationDialog}
 import _root_.imcode.server.Imcms
 import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
@@ -33,11 +33,11 @@ class IPAccessManager(app: UI) {
   private val fromDDN = ipStringToLong(_:String).toString
 
   val ui = new IPAccessManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { reload() }
-    ui.tblIP.addValueChangeHandler { handleSelection() }
+    ui.rc.btnReload.addClickHandler { _ => reload() }
+    ui.tblIP.addValueChangeHandler { _ => handleSelection() }
 
-    ui.miNew.setCommandHandler { editAndSave(new IPAccess) }
-    ui.miEdit.setCommandHandler {
+    ui.miNew.setCommandHandler { _ => editAndSave(new IPAccess) }
+    ui.miEdit.setCommandHandler { _ =>
       whenSelected(ui.tblIP) { id =>
         ipAccessDao.get(id) match {
           case null => reload()
@@ -45,7 +45,7 @@ class IPAccessManager(app: UI) {
         }
       }
     }
-    ui.miDelete setCommandHandler {
+    ui.miDelete.setCommandHandler { _ =>
       whenSelected(ui.tblIP) { id =>
         new ConfirmationDialog("Delete selected IP access?") |>> { dlg =>
           dlg.setOkButtonHandler {
@@ -87,7 +87,7 @@ class IPAccessManager(app: UI) {
 
         c.txtFrom.value = vo.getStart.asOption.map(toDDN).getOrElse("")
         c.txtTo.value = vo.getEnd.asOption.map(toDDN).getOrElse("")
-        c.userPickerUI.btnChoose.addClickHandler {
+        c.userPickerUI.btnChoose.addClickHandler { _ =>
           new UserSingleSelectDialog |>> { dlg =>
             dlg.setOkButtonHandler {
               c.userPickerUI.txtLoginName.value = dlg.search.selection.head.getLoginName

@@ -10,6 +10,7 @@ import imcode.server.document.DocumentTypeDomainObject
 import imcms.mapping.{DocLoaderCachingProxy}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 
 class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Margin with Spacing {
   val tblMetas = new Table("Metas") with TypedProperty[JInteger] with Selectable with Immediate {
@@ -58,14 +59,14 @@ class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Ma
 //    }
   }
 
-  btnReload addClickHandler {
+  btnReload.addClickHandler { _ =>
     reload()
   }
 
-  tblMetas addValueChangeHandler {
-    tblVersions.removeAllItems
-    tblDocs.removeAllItems
-    tblLanguages.removeAllItems
+  tblMetas.addValueChangeHandler { _ =>
+    tblVersions.removeAllItems()
+    tblDocs.removeAllItems()
+    tblLanguages.removeAllItems()
     
     whenSelected(tblMetas) { docId =>
       docLoaderCache.getMeta(docId).getEnabledLanguages.foreach { l =>

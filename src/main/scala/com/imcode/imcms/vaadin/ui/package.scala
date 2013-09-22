@@ -26,17 +26,11 @@ package object ui {
     case value => Some(fn(value))
   }
 
-  def menuCommand(handler: (MenuBar#MenuItem => Unit)) = new MenuBar.Command {
-    def menuSelected(mi: MenuBar#MenuItem): Unit = handler(mi)
-  }
-
-  implicit def fnToButtonClickListener(fn: Button.ClickEvent => Any): Button.ClickListener = {
-    new Button.ClickListener {
-      def buttonClick(event: Button.ClickEvent): Unit = fn(event)
-    }
-  }
-
-  implicit def fn0ToMenuCommand(fn: () => Unit) = menuCommand { _ => fn() }
+//  def menuCommand(handler: (MenuBar#MenuItem => Unit)) = new MenuBar.Command {
+//    def menuSelected(mi: MenuBar#MenuItem): Unit = handler(mi)
+//  }
+//
+//  implicit def fn0ToMenuCommand(fn: () => Unit) = menuCommand { _ => fn() }
 
 
   implicit def fnToTableCellStyleGenerator(fn: (TItemId,  TPropertyId) => String ) =
@@ -60,6 +54,8 @@ package object ui {
   implicit def wrapMenuItem(mi: MenuBar#MenuItem) = new MenuItemWrapper(mi)
 
   implicit def wrapButton(button: Button) = new ButtonWrapper(button)
+
+  implicit def wrapTree(tree: Tree) = new TreeWrapper(tree)
 
   implicit def wrapTable[A <: TItemId](table: Table with ContainerWithTypedItemId[A]) = new TableWrapper[A](table)
 

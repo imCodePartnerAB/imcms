@@ -12,6 +12,7 @@ import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.Page
 
@@ -21,11 +22,11 @@ class CategoryTypeManager(app: UI) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val ui = new CategoryTypeManagerUI |>> { ui =>
-    ui.rc.btnReload addClickHandler { reload() }
-    ui.tblTypes addValueChangeHandler { handleSelection() }
+    ui.rc.btnReload.addClickHandler { _ => reload() }
+    ui.tblTypes.addValueChangeHandler { _ => handleSelection() }
 
-    ui.miNew setCommandHandler { editAndSave(new CategoryTypeDomainObject) }
-    ui.miEdit setCommandHandler {
+    ui.miNew.setCommandHandler { _ => editAndSave(new CategoryTypeDomainObject) }
+    ui.miEdit.setCommandHandler { _ =>
       whenSelected(ui.tblTypes) { id =>
         categoryMapper.getCategoryTypeById(id.intValue) match {
           case null => reload()
@@ -33,7 +34,7 @@ class CategoryTypeManager(app: UI) {
         }
       }
     }
-    ui.miDelete setCommandHandler {
+    ui.miDelete.setCommandHandler { _ =>
       whenSelected(ui.tblTypes) { id =>
         new ConfirmationDialog("Delete selected category type?") |>> { dlg =>
           dlg.setOkButtonHandler {

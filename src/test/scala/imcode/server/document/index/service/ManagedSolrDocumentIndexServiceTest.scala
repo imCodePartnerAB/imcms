@@ -18,7 +18,7 @@ import org.mockito.invocation.InvocationOnMock
 import imcode.server.document.index.service.impl.{DocumentIndexServiceOps, ManagedSolrDocumentIndexService}
 
 @RunWith(classOf[JUnitRunner])
-class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
+class anagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
   TestSetup.initLogging()
 
@@ -50,7 +50,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       verify(solrServerWriter, times(10)).add(anyCollectionOf(classOf[SolrInputDocument]))
     }
 
-    "update (write) documents with provided ids to the solr index untill failure" in {
+    "update (write) documents with provided ids to the solr index until failure" in {
       val solrServerReader = mock[SolrServer]
       val solrServerWriter = mock[SolrServer]
       val opsMock = mock[DocumentIndexServiceOps]

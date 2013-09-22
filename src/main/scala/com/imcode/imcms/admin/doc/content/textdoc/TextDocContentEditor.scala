@@ -6,6 +6,7 @@ import com.imcode.imcms.admin.doc.content.DocContentEditor
 
 import com.imcode.imcms.vaadin.Editor
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.ui._
 import com.vaadin.ui._
 
@@ -15,7 +16,7 @@ class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEdit
   override type Data = TextDocumentDomainObject
 
   override val ui = new TextDocContentEditorUI |>> { ui =>
-    ui.lstItems.addValueChangeHandler {
+    ui.lstItems.addValueChangeHandler { _ =>
 
     }
   } //ui

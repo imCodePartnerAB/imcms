@@ -29,8 +29,8 @@ object SessionCounter {
 
 class SessionCounterManager(app: UI) {
   val ui = new SessionCounterManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { reload() }
-    ui.miEdit.setCommandHandler {
+    ui.rc.btnReload.addClickHandler { _ => reload() }
+    ui.miEdit.setCommandHandler { _ =>
       new OkCancelDialog("Edit session counter") |>> { dlg =>
         dlg.mainUI = new SessionCounterEditorUI |>> { c =>
           SessionCounter.get |> { sc =>
@@ -53,7 +53,7 @@ class SessionCounterManager(app: UI) {
         }
       } |> UI.getCurrent.addWindow
     }
-    ui.miReset.setCommandHandler {
+    ui.miReset.setCommandHandler { _ =>
       new ConfirmationDialog("Reset session counter?") |>> { dlg =>
         dlg.setOkButtonHandler {
           app.privileged(permission) {

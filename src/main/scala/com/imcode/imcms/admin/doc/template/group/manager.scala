@@ -11,6 +11,7 @@ import imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.Page
 
@@ -21,11 +22,11 @@ class TemplateGroupManager(app: UI) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
 
   val ui = new TemplateGroupManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { reload() }
-    ui.tblGroups.addValueChangeHandler { handleSelection() }
+    ui.rc.btnReload.addClickHandler { _ => reload() }
+    ui.tblGroups.addValueChangeHandler { _ => handleSelection() }
 
-    ui.miNew.setCommandHandler { editAndSave(new TemplateGroupDomainObject(0, null)) }
-    ui.miEdit.setCommandHandler {
+    ui.miNew.setCommandHandler { _ => editAndSave(new TemplateGroupDomainObject(0, null)) }
+    ui.miEdit.setCommandHandler { _ =>
       whenSelected(ui.tblGroups) { id =>
         templateMapper.getTemplateGroupById(id.intValue) match {
           case null => reload()
@@ -33,7 +34,7 @@ class TemplateGroupManager(app: UI) {
         }
       }
     }
-    ui.miDelete.setCommandHandler {
+    ui.miDelete.setCommandHandler { _ =>
       whenSelected(ui.tblGroups) { id =>
         new ConfirmationDialog("Delete selected template group?") |>> { dlg =>
           dlg.setOkButtonHandler {

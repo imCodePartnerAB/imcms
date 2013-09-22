@@ -133,7 +133,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
     val locationTree = new LocationTree(locationRoot)
     val locationItems = new LocationItems(conf.itemsFilter, isSelectable, isMultiSelect)
 
-    locationTree.ui.addValueChangeHandler {
+    locationTree.ui.addValueChangeHandler { _ =>
       locationTree.ui.value.asOption match {
         case Some(dir) =>
           locationItems.reload(dir)
@@ -152,9 +152,9 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       }
     }
 
-    locationItems.ui.addValueChangeHandler { updateSelection(locationTree, locationItems) }
+    locationItems.ui.addValueChangeHandler { _ => updateSelection(locationTree, locationItems) }
 
-    locationItems.ui.addItemClickListener { event: ItemClickEvent =>
+    locationItems.ui.addItemClickHandler { event: ItemClickEvent =>
       if (event.isDoubleClick) {
         event.getItemId match {
           case item: File if item.isDirectory => locationTree.selection = item

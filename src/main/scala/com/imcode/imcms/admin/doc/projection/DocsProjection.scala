@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicReference
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter._
 import org.apache.solr.client.solrj.SolrQuery
@@ -34,13 +35,13 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
   val ui = new DocsProjectionUI(basicFilter.ui, advancedFilter.ui, docsUI) { ui =>
     val basicFilterUI = basicFilter.ui
 
-    basicFilterUI.lytAdvanced.btnCustomize.addClickHandler { ui.toggleAdvancedFilter() }
-    basicFilterUI.chkAdvanced.addValueChangeHandler {
+    basicFilterUI.lytAdvanced.btnCustomize.addClickHandler { _ => ui.toggleAdvancedFilter() }
+    basicFilterUI.chkAdvanced.addValueChangeHandler { _ =>
       if (!basicFilterUI.chkAdvanced.value) ui.isAdvancedFilterVisible = false
     }
 
-    basicFilterUI.lytButtons.btnFilter.addClickHandler { reload() }
-    basicFilterUI.lytButtons.btnReset.addClickHandler { reset() }
+    basicFilterUI.lytButtons.btnFilter.addClickHandler { _ => reload() }
+    basicFilterUI.lytButtons.btnReset.addClickHandler { _ => reset() }
 
     override def attach() {
       super.attach()
@@ -48,7 +49,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
     }
   }
 
-  docsUI.addValueChangeHandler {
+  docsUI.addValueChangeHandler { _ =>
     selectionRef.set(docsUI.value.asScala.map(docsContainer.getItem(_).doc).toSeq)
     notifyListeners()
   }

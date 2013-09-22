@@ -98,11 +98,11 @@ extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDi
   val preview = new FilePreview(browser)
 
   mainUI = new FileDialogUI(browser.ui, preview.ui) |>> { ui =>
-    ui.miViewPreview.setCommandHandler {
+    ui.miViewPreview.setCommandHandler { _ =>
       preview.enabled = !preview.enabled
     }
 
-    ui.miFileUpload.setCommandHandler {
+    ui.miFileUpload.setCommandHandler { _ =>
       new FileUploaderDialog("Upload file") |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
@@ -179,7 +179,7 @@ class FilePreview(browser: FileBrowser) {
 
         ui.btnAction.setEnabled(true)
         ui.btnAction.setCaption(caption)
-        ui.btnAction.addClickHandler { FileOps.default(item) }
+        ui.btnAction.addClickHandler { _ => FileOps.default(item) }
         preview.set(new Embedded("", iconResource))
 
       case _ =>
@@ -226,11 +226,11 @@ class ImagePicker(browser: FileBrowser) {
   }
 
   val ui = new ImagePickerUI(preview.ui) |>> { ui =>
-    ui.btnRemove addClickHandler {
+    ui.btnRemove.addClickHandler { _ =>
       preview.clear()
     }
 
-    ui.btnChoose.addClickHandler { UI.getCurrent.addWindow(fileDialog) }
+    ui.btnChoose.addClickHandler { _ => UI.getCurrent.addWindow(fileDialog) }
   }
 
   preview.listen { ui.btnRemove setEnabled _.isDefined }

@@ -41,18 +41,18 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
   }
 
   val ui = new DocManagerUI(projection.ui) |>> { ui =>
-    ui.miSelectionShow.setCommandHandler {
+    ui.miSelectionShow.setCommandHandler { _ =>
       UI.getCurrent.addWindow(docSelectionDlg)
     }
 
-    ui.miShow.setCommandHandler { projectionOps.showSelectedDoc() }
-    ui.miEdit.setCommandHandler { projectionOps.editSelectedDoc() }
+    ui.miShow.setCommandHandler { _ => projectionOps.showSelectedDoc() }
+    ui.miEdit.setCommandHandler { _ => projectionOps.editSelectedDoc() }
 
-    ui.miNewTextDoc.setCommandHandler { projectionOps.mkDocOfType[TextDocumentDomainObject] }
-    ui.miNewFileDoc.setCommandHandler { projectionOps.mkDocOfType[FileDocumentDomainObject] }
-    ui.miNewUrlDoc.setCommandHandler { projectionOps.mkDocOfType[UrlDocumentDomainObject] }
+    ui.miNewTextDoc.setCommandHandler { _ => projectionOps.mkDocOfType[TextDocumentDomainObject] }
+    ui.miNewFileDoc.setCommandHandler { _ => projectionOps.mkDocOfType[FileDocumentDomainObject] }
+    ui.miNewUrlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[UrlDocumentDomainObject] }
 
-    ui.miProfileEditName.setCommandHandler {
+    ui.miProfileEditName.setCommandHandler { _ =>
       whenSingleton(projection.docsUI.selection) { docId =>
         val docIdStr = docId.toString
         val profileMapper = new ProfileMapper(imcmsServices.getDatabase)
@@ -90,7 +90,7 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
       }
     }
 
-    ui.miCopy.setCommandHandler {
+    ui.miCopy.setCommandHandler { _ =>
       projectionOps.copySelectedDoc()
     }
 

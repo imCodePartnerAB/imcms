@@ -11,6 +11,7 @@ import com.imcode.imcms.admin.access.user.projection.filter.UserFilter
 import com.vaadin.ui.{GridLayout, Table}
 
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.ui._
 
 import _root_.imcode.server.user.UserDomainObject
@@ -40,13 +41,13 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
     ui.addComponents(filter.ui, filteredUsersUI)
   }
 
-  filteredUsersUI.addValueChangeHandler {
+  filteredUsersUI.addValueChangeHandler { _ =>
     selectionRef.set(filteredUsersUI.value.asScala.map(userId => roleMapper.getUser(userId))(breakOut))
     notifyListeners()
   }
 
-  filter.ui.lytButtons.btnFilter.addClickHandler { reload() }
-  filter.ui.lytButtons.btnReset.addClickHandler { reset() }
+  filter.ui.lytButtons.btnFilter.addClickHandler { _ => reload() }
+  filter.ui.lytButtons.btnReset.addClickHandler { _ => reset() }
 
   reset()
 

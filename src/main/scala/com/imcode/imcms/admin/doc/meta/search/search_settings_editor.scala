@@ -8,6 +8,7 @@ import com.imcode.imcms.api.Meta
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.Editor
 
 /**
@@ -21,7 +22,7 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
   val ui = new SearchSettingsEditorUI |>> { ui =>
     import ui.keywords.{btnAdd, btnRemove, txtKeyword, lstKeywords}
 
-    btnAdd.addClickHandler {
+    btnAdd.addClickHandler { _ =>
       txtKeyword.trim.toLowerCase match {
         case value if value.length > 0 && lstKeywords.getItem(value) == null =>
           setKeywords(lstKeywords.itemIds.asScala.toSet + value)
@@ -32,11 +33,11 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
       txtKeyword.value = ""
     }
 
-    btnRemove.addClickHandler {
+    btnRemove.addClickHandler { _ =>
       whenSelected(lstKeywords) { keywords => keywords.asScala.foreach(lstKeywords removeItem _) }
     }
 
-    lstKeywords.addValueChangeHandler {
+    lstKeywords.addValueChangeHandler { _ =>
       lstKeywords.value.asScala.toSeq match {
         case Seq(value) => txtKeyword.value = value
         case Seq(_, _, _*) => txtKeyword.value = ""

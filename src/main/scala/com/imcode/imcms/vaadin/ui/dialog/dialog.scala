@@ -192,7 +192,7 @@ object Dialog extends Log4jLoggerSupport {
    * Wraps button click handler: shows "server error" message in case of an error.
    */
   def wrapButtonClickHandler(dialog: Dialog, button: Button, handler: => Unit) {
-    button.addClickHandler {
+    button.addClickHandler { _ =>
       try {
         handler
       } catch {

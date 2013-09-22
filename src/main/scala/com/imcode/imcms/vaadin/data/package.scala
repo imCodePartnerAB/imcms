@@ -3,6 +3,7 @@ package imcms
 package vaadin
 
 import com.vaadin.data.{Property, Container}
+import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 
 package object data extends LowPriorityPropertyImplicits {
 
@@ -16,19 +17,6 @@ package object data extends LowPriorityPropertyImplicits {
     descriptors.foreach { pd =>
       container.addContainerProperty(pd.id, pd.runtimeClass, pd.defaultValue)
     }
-
-
-  implicit def fnToPropertyValueChangeListener(fn: Property.ValueChangeEvent => Unit): Property.ValueChangeListener = {
-    new Property.ValueChangeListener {
-      def valueChange(event: Property.ValueChangeEvent): Unit = fn(event)
-    }
-  }
-
-
-  implicit def wrapValueChangeNotifier(vcn: Property.ValueChangeNotifier) = new {
-    def addValueChangeHandler(handler: => Unit): Unit = vcn.addValueChangeListener { _: Property.ValueChangeEvent => handler }
-  }
-
 
   /**
    * Takes precedence over LowPriorityPropertyImplicits implicit:

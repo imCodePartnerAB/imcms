@@ -10,6 +10,7 @@ import java.util.Date
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import _root_.imcode.server.document.LifeCyclePhase
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
@@ -40,31 +41,31 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
       } |> ui.publication.lytPhase.addComponent
     }
 
-    ui.publication.chkEnd.addValueChangeHandler {
+    ui.publication.chkEnd.addValueChangeHandler { _ =>
       ui.publication.calEnd.setEnabled(ui.publication.chkEnd.checked)
 
       updatePhase()
     }
 
-    ui.publication.chkArchive.addValueChangeHandler {
+    ui.publication.chkArchive.addValueChangeHandler { _ =>
       ui.publication.calArchive.setEnabled(ui.publication.chkArchive.checked)
 
       updatePhase()
     }
 
-    ui.publication.sltStatus.addValueChangeHandler {
+    ui.publication.sltStatus.addValueChangeHandler { _ =>
       updatePhase()
     }
 
-    ui.publication.calStart.addValueChangeHandler {
+    ui.publication.calStart.addValueChangeHandler { _ =>
       updatePhase()
     }
 
-    ui.publication.calEnd.addValueChangeHandler {
+    ui.publication.calEnd.addValueChangeHandler { _ =>
       updatePhase()
     }
 
-    ui.publication.calArchive.addValueChangeHandler {
+    ui.publication.calArchive.addValueChangeHandler { _ =>
       updatePhase()
     }
   }

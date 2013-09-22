@@ -13,6 +13,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.data.PropertyDescriptor
 import com.vaadin.server.Page
@@ -81,7 +82,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     // ui.lytRestrictedPermSets.btnEditRestrictedTwoPermSet setReadOnly !user.canDefineRestrictedTwoFor(doc)
     // ui.chkLim1IsMorePrivilegedThanLim2 setReadOnly !user.isSuperAdminOrHasFullPermissionOn(doc)
   val ui = new AccessEditorUI |>> { ui =>
-    ui.perms.miRoleAdd.setCommandHandler {
+    ui.perms.miRoleAdd.setCommandHandler { _ =>
       val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
       val assignedRoles = ui.perms.tblRolesPermSets.itemIds.asScala.toSet
       val availableRolesWithPermsSetTypes: Map[RoleDomainObject, List[DocumentPermissionSetTypeDomainObject]] =
@@ -101,7 +102,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
           dlg.mainUI = new AddRolePermSetDialogMainUI |>> { c =>
             availableRoles.foreach { role => c.cbRole.addItem(role, role.getName) }
 
-            c.cbRole.addValueChangeHandler {
+            c.cbRole.addValueChangeHandler { _ =>
               val availablePermSetTypes = availableRolesWithPermsSetTypes(c.cbRole.value)
               types.foreach { typeSet =>
                 c.ogPermsSetType.setItemEnabled(typeSet, availablePermSetTypes contains typeSet)
@@ -124,7 +125,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     }
 
 
-    ui.perms.miRoleChangePermSet.setCommandHandler {
+    ui.perms.miRoleChangePermSet.setCommandHandler { _ =>
       whenSingleton(ui.perms.tblRolesPermSets.value.asScala.toSeq) { role =>
         types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
           case Nil => Page.getCurrent.showWarningNotification("You are not allowed to edit this role")
@@ -150,13 +151,13 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
       }
     }
 
-    ui.perms.miRoleRemove.setCommandHandler {
+    ui.perms.miRoleRemove.setCommandHandler { _ =>
       whenSelected(ui.perms.tblRolesPermSets) { roles =>
         roles.asScala.foreach(ui.perms.tblRolesPermSets.removeItem)
       }
     }
 
-    ui.perms.miEditPermSets.setCommandHandler {
+    ui.perms.miEditPermSets.setCommandHandler { _ =>
       new OkCancelDialog("Permissions") |>> { dlg =>
         dlg.mainUI = permSetsEditor.ui
       } |> UI.getCurrent.addWindow

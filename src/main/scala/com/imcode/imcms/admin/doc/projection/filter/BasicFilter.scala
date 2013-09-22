@@ -11,34 +11,35 @@ import scala.PartialFunction._
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.api.DocumentLanguage
 
 class BasicFilter extends ImcmsServicesSupport {
 
   val ui: BasicFilterUI = new BasicFilterUI |>> { ui =>
-    ui.chkIdRange.addValueChangeHandler {
+    ui.chkIdRange.addValueChangeHandler { _ =>
       ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.range", ui.chkIdRange, ui.lytIdRange,
         new Label("%s - %s".format(ui.lytIdRange.txtStart.getInputPrompt.trimToEmpty, ui.lytIdRange.txtEnd.getInputPrompt.trimToEmpty))
       )
     }
 
-    ui.chkText.addValueChangeHandler {
+    ui.chkText.addValueChangeHandler { _ =>
       ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.text", ui.chkText, ui.txtText)
     }
 
-    ui.chkType.addValueChangeHandler {
+    ui.chkType.addValueChangeHandler { _ =>
       ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.types", ui.chkType, ui.lytTypes)
     }
 
-    ui.chkPhase.addValueChangeHandler  {
+    ui.chkPhase.addValueChangeHandler { _ =>
       ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.phases", ui.chkPhase, ui.lytPhases)
     }
 
-    ui.chkLanguage.addValueChangeHandler  {
+    ui.chkLanguage.addValueChangeHandler { _ =>
       ProjectionFilterUtil.toggle(ui, "docs_projection.basic_filter.languages", ui.chkLanguage, ui.lytLanguages)
     }
 
-    ui.chkAdvanced.addValueChangeHandler {
+    ui.chkAdvanced.addValueChangeHandler { _ =>
       ui.lytAdvanced.setEnabled(ui.chkAdvanced.isChecked)
     }
   }

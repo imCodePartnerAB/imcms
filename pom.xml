@@ -1013,14 +1013,13 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.1</version>
                 <configuration>
                     <excludes>
                         <exclude>**/Test*.java</exclude>
                         <exclude>**/*TestCase.java</exclude>
                     </excludes>
-                    <compilerVersion>1.6</compilerVersion>
-                    <meminitial>128m</meminitial>
+                    <meminitial>512m</meminitial>
                     <maxmem>512m</maxmem>
                     <compilerArgument>${javac.args}</compilerArgument>
                 </configuration>
@@ -1028,9 +1027,9 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.14</version>
+                <version>2.15</version>
                 <configuration>
-                    <argLine>-Xms64m -Xmx1024m</argLine>
+                    <argLine>-Xms512m -Xmx1024m</argLine>
                     <includes>
                         <include>**/*Spec.java</include>
                         <include>**/*Suite.java</include>
@@ -1040,7 +1039,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 
             <plugin>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.14</version>
+                <version>2.15</version>
             </plugin>
 
             <plugin>
@@ -1226,7 +1225,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.14</version>
+                <version>2.15</version>
             </plugin>
         </plugins>
     </reporting>

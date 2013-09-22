@@ -5,17 +5,18 @@ package admin.access.user.projection.filter
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import _root_.imcode.server.user.RoleId
 
 
 class UserFilter extends ImcmsServicesSupport {
 
   val ui: UserFilterUI = new UserFilterUI |>> { ui =>
-    ui.chkText.addValueChangeHandler {
+    ui.chkText.addValueChangeHandler { _ =>
       ProjectionFilterUtil.toggle(ui, "users_projection.filter.text", ui.chkText, ui.txtText)
     }
 
-    ui.chkRoles.addValueChangeHandler {
+    ui.chkRoles.addValueChangeHandler { _ =>
       ProjectionFilterUtil.toggle(ui, "users_projection.filter.roles", ui.chkRoles, ui.tcsRoles)
     }
   }

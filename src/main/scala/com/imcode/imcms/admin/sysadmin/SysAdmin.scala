@@ -9,6 +9,7 @@ import java.util.{Locale, Date}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.vaadin.server.VaadinRequest
 import imcms.admin.access.user.UserManager
 import imcode.server.Imcms
@@ -108,7 +109,7 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
         hspManagers.menu.expandItemsRecursively(item)
       }
 
-      hspManagers.menu.addValueChangeListener { e: ValueChangeEvent =>
+      hspManagers.menu.addValueChangeHandler { e: ValueChangeEvent =>
         hspManagers.content.removeAllComponents()
         hspManagers.content.addComponent(
           e.getProperty.getValue |> {
@@ -241,8 +242,8 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
       this.addComponents(tblTerms, lytBar)
 
       def reload() {
-        val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue.asInstanceOf[Date],
-          lytBar.calTo.getValue.asInstanceOf[Date])
+        val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue,
+          lytBar.calTo.getValue)
 
         tblTerms.removeAllItems()
         terms.asScala.foreach { t =>
@@ -251,7 +252,7 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
         }
       }
 
-      lytBar.btnReload.addClickHandler { reload() }
+      lytBar.btnReload.addClickHandler { _ => reload() }
 
       reload()
     })

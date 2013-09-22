@@ -6,6 +6,7 @@ import com.vaadin.ui._
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
 import imcode.server.document.textdocument.{MenuItemDomainObject, MenuDomainObject, TextDocumentDomainObject}
 import com.imcode.imcms.vaadin.Editor
@@ -44,7 +45,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       def generateDescription(source: Component, itemId: AnyRef, propertyId: AnyRef) = "n/a" // column title tooltip
     })
 
-    ui.ttMenu.addValueChangeHandler {
+    ui.ttMenu.addValueChangeHandler { _ =>
       Seq(ui.miEditSelectedDoc, ui.miExcludeSelectedDoc, ui.miShowSelectedDoc).foreach { mi =>
         mi.setEnabled(ui.ttMenu.isSelected)
       }
@@ -59,7 +60,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     )
 
     // todo: ??? search for current language + default version ???
-    ui.miIncludeDocs.setCommandHandler {
+    ui.miIncludeDocs.setCommandHandler { _ =>
       new DocSelectDialog("menu_editor.dlg.select_docs.title".i, UI.getCurrent.imcmsUser) |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
@@ -79,14 +80,14 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       } |> UI.getCurrent.addWindow
     }
 
-    ui.miExcludeSelectedDoc.setCommandHandler {
+    ui.miExcludeSelectedDoc.setCommandHandler { _ =>
       for (docId <- ui.ttMenu.selectionOpt) {
         state.removeMenuItemByDocumentId(docId)
         updateMenuUI()
       }
     }
 
-    ui.miEditSelectedDoc.setCommandHandler {
+    ui.miEditSelectedDoc.setCommandHandler { _ =>
       for (docId <- ui.ttMenu.selectionOpt) {
         imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId) match {
           case null =>
@@ -116,13 +117,13 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       }
     }
 
-    ui.miShowSelectedDoc.setCommandHandler {
+    ui.miShowSelectedDoc.setCommandHandler { _ =>
       for (docId <- ui.ttMenu.selectionOpt) {
         DocViewer.showDocViewDialog(ui, docId)
       }
     }
 
-    ui.cbSortOrder.addValueChangeHandler {
+    ui.cbSortOrder.addValueChangeHandler { _ =>
       state.setSortOrder(ui.cbSortOrder.selection)
       updateMenuUI()
     }

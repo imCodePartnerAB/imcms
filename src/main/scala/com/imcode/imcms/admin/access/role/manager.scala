@@ -11,6 +11,8 @@ import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
+
 import com.vaadin.server.Page
 import com.imcode.imcms.vaadin.server._
 
@@ -19,11 +21,11 @@ class RoleManager(app: UI) {
   private def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
   val ui = new RoleManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { reload() }
-    ui.tblRoles.addValueChangeHandler { handleSelection() }
+    ui.rc.btnReload.addClickHandler { _ => reload() }
+    ui.tblRoles.addValueChangeHandler { _ => handleSelection() }
 
-    ui.miNew.setCommandHandler { editAndSave(new RoleDomainObject("")) }
-    ui.miEdit.setCommandHandler {
+    ui.miNew.setCommandHandler { _ => editAndSave(new RoleDomainObject("")) }
+    ui.miEdit.setCommandHandler { _ =>
       whenSelected(ui.tblRoles) { id =>
         roleMapper.getRole(id) match {
           case null => reload()
@@ -31,7 +33,7 @@ class RoleManager(app: UI) {
         }
       }
     }
-    ui.miDelete.setCommandHandler {
+    ui.miDelete.setCommandHandler { _ =>
       whenSelected(ui.tblRoles) { id =>
         new ConfirmationDialog("Delete selected role?") |>> { dlg =>
           dlg.setOkButtonHandler {

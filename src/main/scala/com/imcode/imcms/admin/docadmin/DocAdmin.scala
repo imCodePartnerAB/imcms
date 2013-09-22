@@ -87,7 +87,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
 
       editor.ui.setSize(900, 600)
 
-      ui.buttons.btnSave.addClickHandler {
+      ui.buttons.btnSave.addClickHandler { _ =>
         editor.collectValues() match {
           case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(","))
           case Right((editedDoc, i18nMetas)) =>
@@ -101,7 +101,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
         }
       }
 
-      ui.buttons.btnClose.addClickHandler {
+      ui.buttons.btnClose.addClickHandler { _ =>
         Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
       }
 
@@ -126,15 +126,15 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
 
     ui.mainUI = editor.ui
 
-    ui.buttons.btnReset.addClickHandler {
+    ui.buttons.btnReset.addClickHandler { _ =>
       editor.resetValues()
     }
 
-    ui.buttons.btnSaveAndClose.addClickHandler {
+    ui.buttons.btnSaveAndClose.addClickHandler { _ =>
       save(close = true)
     }
 
-    ui.buttons.btnClose.addClickHandler {
+    ui.buttons.btnClose.addClickHandler { _ =>
       val editedMenu = editor.collectValues().right.get
       if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
         closeEditor()
@@ -329,14 +329,14 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
     ui.mainUI = editor.ui
     editor.ui.setSize(900, 600)
 
-    ui.buttons.btnSave.addClickHandler {
+    ui.buttons.btnSave.addClickHandler { _ =>
       save(closeAfterSave = false)
     }
-    ui.buttons.btnSaveAndClose.addClickHandler {
+    ui.buttons.btnSaveAndClose.addClickHandler { _ =>
       save(closeAfterSave = true)
     }
 
-    ui.buttons.btnClose.addClickHandler {
+    ui.buttons.btnClose.addClickHandler { _ =>
       closeEditor()
     }
 
