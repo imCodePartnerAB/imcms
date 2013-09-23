@@ -5,7 +5,7 @@ import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.SolrQuery
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 /**
  *
@@ -16,14 +16,33 @@ trait DocumentIndexService extends Log4jLoggerSupport {
 
   def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[JList[DocumentDomainObject]]
 
+  /**
+   * Updates index asynchronously.
+   *
+   * @param request index update request.
+   */
   def update(request: IndexUpdateOp)
 
+  /**
+   * Attempts to run a new index rebuild task if one is not already running.
+   *
+   * @return current or new rebuild task.
+   */
   def rebuild(): Try[IndexRebuildTask]
 
-  def rebuildIfEmpty(): Option[IndexRebuildTask] = {
-    if (query(new SolrQuery("*:*")).get.getResults.isEmpty) Some(rebuild().get) else None
+  /**
+   * @return None if index is not empty or Some(attempt to stat rebuild).
+   */
+  def rebuildIfEmpty(): Option[Try[IndexRebuildTask]] = {
+    query(new SolrQuery("*:*")) match {
+      case Success(queryResponse) => if (!queryResponse.getResults.isEmpty) None else Some(rebuild())
+      case Failure(throwable) => Some(Failure(throwable))
+    }
   }
 
+  /**
+   * @return current rebuild task
+   */
   def currentRebuildTaskOpt(): Option[IndexRebuildTask]
 
   def shutdown()

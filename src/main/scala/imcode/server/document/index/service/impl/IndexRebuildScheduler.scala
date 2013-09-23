@@ -36,7 +36,7 @@ trait IndexRebuildScheduler { this: DocumentIndexService =>
           logger.info("Running scheduled index rebuild.")
           rebuild().foreach { indexRebuildTask =>
             try {
-              indexRebuildTask.future.get
+              indexRebuildTask.future().get
               logger.info(s"Scheduled index rebuild task has finished. Next scheduled run in $interval minutes.")
             } catch {
               case _: InterruptedException =>
