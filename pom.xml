@@ -825,6 +825,8 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                         <arg>-unchecked</arg>
                         <arg>-deprecation</arg>
                         <arg>-explaintypes</arg>
+                        <arg>-Xmax-classfile-name</arg>
+                        <arg>72</arg>
                     </args>
                     <!--<excludes>-->
                     <!--<exclude>**/test/**</exclude>-->

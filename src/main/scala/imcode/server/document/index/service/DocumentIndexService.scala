@@ -31,9 +31,9 @@ trait DocumentIndexService extends Log4jLoggerSupport {
   def rebuild(): Try[IndexRebuildTask]
 
   /**
-   * @return None if index is not empty or Some(attempt to stat rebuild).
+   * @return None if index is not empty or Some(attempt to rebuild).
    */
-  def rebuildIfEmpty(): Option[Try[IndexRebuildTask]] = {
+  final def rebuildIfEmpty(): Option[Try[IndexRebuildTask]] = {
     query(new SolrQuery("*:*")) match {
       case Success(queryResponse) => if (!queryResponse.getResults.isEmpty) None else Some(rebuild())
       case Failure(throwable) => Some(Failure(throwable))

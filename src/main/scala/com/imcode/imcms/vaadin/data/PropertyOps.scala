@@ -2,6 +2,13 @@ package com.imcode.imcms.vaadin.data
 
 import com.vaadin.data.Property
 
+/**
+ * This class serves as a wrapper for <code>Property</code>
+ * Where needed, instances of properties are implicitly converted into this class.
+ *
+ * @param property
+ * @tparam A
+ */
 class PropertyOps[A <: AnyRef] (property: Property[A]) {
   def value: A = property.getValue
   def value_=(v: A): Unit = property.setValue(v)
