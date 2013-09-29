@@ -8,21 +8,24 @@ There are two ways to associate custom imCMS roles with a LDAP entries:
   2.An imCMS role can me mapped to any Active Directory group.
     An imCMS role specified in <role-to-ad-group> will be assigned to an imCMS user at the login time if
     LDAP service provider is Active Directory and the user is a (direct or indirect) member of a group
-    with matching distinguished name.
+    with matching aAMAccountName.
 -->
 <server>
     <ldap>
         <mapped-roles>
-            <!--<role-to-attribute role-name="LDAP-EMERGENCY" attribute-name="phone" attribute-value="112"/>-->
-            <!--<role-to-attribute role-name="LDAP-MANAGER" attribute-name="title" attribute-value="manager"/>-->
-            <!--<role-to-attribute role-name="LDAP-SPECIAL" attribute-name="primaryGroupID" attribute-value="513"/>-->
+            <role-to-attribute role="LDAP-EMERGENCY" attribute-name="phone" attribute-value="112"/>
+            <role-to-attribute role="LDAP-MANAGER" attribute-name="title" attribute-value="manager"/>
+            <role-to-attribute role="LDAP-SPECIAL" attribute-name="primaryGroupID" attribute-value="513"/>
 
-            <!--<role-to-ad-group role-name="imGrpLocSec" group-dn="CN=imGrpLocalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
-            <!--<role-to-ad-group role-name="imGrpGloSec" group-dn="CN=imGrpGlobalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
-            <!--<role-to-ad-group role-name="imGrpUniSec" group-dn="CN=imGrpUniversalSec,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
-            <!--<role-to-ad-group role-name="imGrpLocDist" group-dn="CN=imGrpLocalDistribution,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
-            <!--<role-to-ad-group role-name="imGrpGloDist" group-dn="CN=imGrpGlobalDistribution,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
-            <!--<role-to-ad-group role-name="imGrpUniDist" group-dn="CN=imGrpUniversalDistribution,CN=Users,DC=d01,DC=imcode,DC=com"/>-->
+            <!--
+                If role name equals to group name (aAMAccountName) then 'group' attribute can be omitted.
+            -->
+            <role-to-ad-group role="imGrpGlobalsec" group="imGrpGlobalSec"/>
+            <role-to-ad-group role="imGrpLocalsec" group="imGrpLocalSec"/>
+            <role-to-ad-group role="imGrpUniSec"/>
+            <role-to-ad-group role="imGrpLocDist"/>
+            <role-to-ad-group role="imGrpGloDist"/>
+            <role-to-ad-group role="imGrpUniDist"/>
         </mapped-roles>
     </ldap>
 </server>

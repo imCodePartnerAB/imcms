@@ -2,22 +2,22 @@ package imcode.server.user.ldap;
 
 public abstract class MappedRole {
 
-    private final String roleName;
+    private final String role;
 
-    private MappedRole(String roleName) {
-        this.roleName = roleName;
+    private MappedRole(String role) {
+        this.role = role;
     }
 
-    public String roleName() {
-        return roleName;
+    public String role() {
+        return role;
     }
 
     public static final class RoleToAttribute extends MappedRole {
         protected final String attributeName;
         protected final String attributeValue;
 
-        public RoleToAttribute(String roleName, String attributeName, String attributeValue) {
-            super(roleName);
+        public RoleToAttribute(String role, String attributeName, String attributeValue) {
+            super(role);
             this.attributeName = attributeName;
             this.attributeValue = attributeValue;
         }
@@ -33,27 +33,27 @@ public abstract class MappedRole {
         @Override
         public String toString() {
             return String.format("MappedRole.RoleToAttribute{" +
-                    "roleName='%s', " +
+                    "role='%s', " +
                     "attributeName='%s', " +
-                    "attributeValue='%s'}", roleName(), attributeName(), attributeValue());
+                    "attributeValue='%s'}", role(), attributeName(), attributeValue());
         }
     }
 
     public static final class RoleToAdGroup extends MappedRole {
-        private final String groupDn;
+        private final String group;
 
-        public RoleToAdGroup(String roleName, String groupDn) {
-            super(roleName);
-            this.groupDn = groupDn;
+        public RoleToAdGroup(String role, String group) {
+            super(role);
+            this.group = group;
         }
 
-        public String groupDn() {
-            return groupDn;
+        public String group() {
+            return group;
         }
 
         @Override
         public String toString() {
-            return String.format("MappedRole.RoleToAdGroup{roleName='%s', groupDn='%s'}", roleName(), groupDn());
+            return String.format("MappedRole.RoleToAdGroup{role='%s', group='%s'}", role(), group());
         }
     }
 }

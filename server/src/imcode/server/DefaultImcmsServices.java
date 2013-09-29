@@ -306,7 +306,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             log.error("External authenticator and external usermapper should both be either set or not set. Using default implementation.");
         }
 
-        // TO-DO: problem if primary LDAP classes are not instantiatd,
+        // TODO: problem if primary LDAP classes are not instantiatd,
         // because of conf error, secondary LDAP also will not be instantiated
         if (externalAuthenticator != null
                 && externalUserAndRoleRegistry != null

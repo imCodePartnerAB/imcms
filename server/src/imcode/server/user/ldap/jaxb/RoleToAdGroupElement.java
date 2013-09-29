@@ -1,5 +1,7 @@
 package imcode.server.user.ldap.jaxb;
 
+import org.apache.commons.lang.StringUtils;
+
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
@@ -7,17 +9,17 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 public class RoleToAdGroupElement {
 
-    @XmlAttribute(name = "role-name", required = true)
-    private String roleName;
+    @XmlAttribute(name = "role", required = true)
+    private String role;
 
-    @XmlAttribute(name = "group-dn", required = true)
-    private String groupDn;
+    @XmlAttribute(name = "group", required = false)
+    private String group;
 
-    public String roleName() {
-        return roleName.trim();
+    public String role() {
+        return role.trim();
     }
 
-    public String groupDn() {
-        return groupDn.trim().toLowerCase();
+    public String group() {
+        return StringUtils.defaultIfBlank(StringUtils.trimToNull(group), role()).toLowerCase();
     }
 }

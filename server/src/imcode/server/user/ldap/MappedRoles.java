@@ -18,13 +18,13 @@ public class MappedRoles {
     }
 
 
-    public Set<String> rolesNames() {
-        ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
+    public Set<String> roles() {
+        ImmutableSet.Builder<String> rolesBuilder = ImmutableSet.builder();
 
-        rolesNamesBuilder.addAll(rolesToAdGroups.rolesNames());
-        rolesNamesBuilder.addAll(rolesToAttributes.rolesNames());
+        rolesBuilder.addAll(rolesToAdGroups.roles());
+        rolesBuilder.addAll(rolesToAttributes.roles());
 
-        return rolesNamesBuilder.build();
+        return rolesBuilder.build();
     }
 
     public RolesToAdGroups rolesToAdGroups() {
@@ -37,43 +37,43 @@ public class MappedRoles {
 
 
     public static class RolesToAttributes {
-        private final Set<String> rolesNames;
-        private final Table<String, String, String> mappedRolesNamesTable;
+        private final Set<String> roles;
+        private final Table<String, String, String> mappedRolesTable;
 
         private RolesToAttributes(Collection<MappedRole.RoleToAttribute> rolesToAttributesColl) {
-            ImmutableTable.Builder<String, String, String> rolesNamesTableBuilder = ImmutableTable.builder();
-            ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
+            ImmutableTable.Builder<String, String, String> rolesTableBuilder = ImmutableTable.builder();
+            ImmutableSet.Builder<String> rolesBuilder = ImmutableSet.builder();
 
             for (MappedRole.RoleToAttribute mr: rolesToAttributesColl) {
-                rolesNamesBuilder.add(mr.roleName());
-                rolesNamesTableBuilder.put(mr.attributeName(), mr.attributeValue(), mr.roleName());
+                rolesBuilder.add(mr.role());
+                rolesTableBuilder.put(mr.attributeName(), mr.attributeValue(), mr.role());
             }
 
-            this.rolesNames = rolesNamesBuilder.build();
-            this.mappedRolesNamesTable = rolesNamesTableBuilder.build();
+            this.roles = rolesBuilder.build();
+            this.mappedRolesTable = rolesTableBuilder.build();
         }
 
-        public String roleName(String attributeName, String attributeValue) {
-            return mappedRolesNamesTable.get(attributeName, attributeValue);
+        public String role(String attributeName, String attributeValue) {
+            return mappedRolesTable.get(attributeName, attributeValue);
         }
 
-        public Set<String> rolesNames(List<P.P2<String, String>> attributesNameValuePairs) {
-            ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
+        public Set<String> roles(List<P.P2<String, String>> attributesNameValuePairs) {
+            ImmutableSet.Builder<String> rolesBuilder = ImmutableSet.builder();
 
             for (P.P2<String, String> nameAndValue: attributesNameValuePairs) {
-                String roleName = roleName(nameAndValue._1(), nameAndValue._2());
-                if (roleName != null) rolesNamesBuilder.add(roleName);
+                String role = role(nameAndValue._1(), nameAndValue._2());
+                if (role != null) rolesBuilder.add(role);
             }
 
-            return rolesNamesBuilder.build();
+            return rolesBuilder.build();
         }
 
-        public Set<String> rolesNames() {
-            return rolesNames;
+        public Set<String> roles() {
+            return roles;
         }
 
         public Set<String> attributesNames() {
-            return mappedRolesNamesTable.rowKeySet();
+            return mappedRolesTable.rowKeySet();
         }
     }
 
@@ -83,42 +83,42 @@ public class MappedRoles {
 
         private RolesToAdGroups(Collection<MappedRole.RoleToAdGroup> rolesToAdGroupsColl) {
             ImmutableTable.Builder<String, String, MappedRole.RoleToAdGroup> mappedRolesTableBuilder = ImmutableTable.builder();
-            ImmutableSet.Builder<String> groupsDnsBuilder = ImmutableSet.builder();
-            ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
+            ImmutableSet.Builder<String> groupsBuilder = ImmutableSet.builder();
+            ImmutableSet.Builder<String> rolesBuilder = ImmutableSet.builder();
 
             for (MappedRole.RoleToAdGroup mr: rolesToAdGroupsColl) {
-                rolesNamesBuilder.add(mr.roleName());
-                groupsDnsBuilder.add(mr.groupDn());
+                rolesBuilder.add(mr.role());
+                groupsBuilder.add(mr.group());
 
-                mappedRolesTableBuilder.put(mr.roleName(), mr.groupDn(), mr);
+                mappedRolesTableBuilder.put(mr.role(), mr.group(), mr);
             }
 
             this.mappedRolesTable = mappedRolesTableBuilder.build();
         }
 
-        public Set<String> groupsDns() {
+        public Set<String> groups() {
             return mappedRolesTable.columnKeySet();
         }
 
-        public Set<String> rolesNames() {
+        public Set<String> roles() {
             return mappedRolesTable.rowKeySet();
         }
 
-        public Set<String> rolesNames(Set<String> groupsDns) {
-            ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
-            ImmutableSet.Builder<String> lowerCasedGroupDnsBuilder = ImmutableSet.builder();
+        public Set<String> roles(Set<String> groups) {
+            ImmutableSet.Builder<String> rolesBuilder = ImmutableSet.builder();
+            ImmutableSet.Builder<String> lowerCasedGroupsBuilder = ImmutableSet.builder();
 
-            for (String groupDn: groupsDns) {
-                lowerCasedGroupDnsBuilder.add(groupDn.toLowerCase());
+            for (String group: groups) {
+                lowerCasedGroupsBuilder.add(group.toLowerCase());
             }
 
-            Set<String> lowerCasedGroupDns = lowerCasedGroupDnsBuilder.build();
+            Set<String> lowerCasedGroups = lowerCasedGroupsBuilder.build();
 
             for (MappedRole.RoleToAdGroup mappedRole: mappedRolesTable.values()) {
-                if (lowerCasedGroupDns.contains(mappedRole.groupDn())) rolesNamesBuilder.add(mappedRole.roleName());
+                if (lowerCasedGroups.contains(mappedRole.group())) rolesBuilder.add(mappedRole.role());
             }
 
-            return rolesNamesBuilder.build();
+            return rolesBuilder.build();
         }
     }
 }

@@ -126,7 +126,6 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
      * @param ldapUserName       A name that is used to log in (bind) to the ldap server
      * @param ldapPassword       A password that i used to log in (bind) to the ldap server
      */
-
     public LdapUserAndRoleRegistry(String ldapUrl,
                                    String ldapUserObjectClass,
                                    String ldapUserName,
@@ -155,7 +154,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     }
 
     public String[] getAllRoleNames() {
-        Set<String> names = new HashSet<String>(mappedRoles.rolesNames());
+        Set<String> names = new HashSet<String>(mappedRoles.roles());
         names.add(DEFAULT_LDAP_ROLE);
 
         return names.toArray(new String[]{});
@@ -271,13 +270,13 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                     attributeNameValuePairs.size(), loginName, Joiner.on(", ").join(attributeNameValuePairs)));
         }
 
-        Set<String> usersAdGroupsDns = searchForUserAdGroups(loginName, mappedRoles.rolesToAdGroups().groupsDns());
-        Set<String> rolesNamesMappedToAttributes = mappedRoles.rolesToAttributes().rolesNames(attributeNameValuePairs);
-        Set<String> rolesNamesMappedToAdGroupsDns = mappedRoles.rolesToAdGroups().rolesNames(usersAdGroupsDns);
+        Set<String> usersAdGroups = getADUserGroups(loginName, mappedRoles.rolesToAdGroups().groups());
+        Set<String> rolesNamesMappedToAttributes = mappedRoles.rolesToAttributes().roles(attributeNameValuePairs);
+        Set<String> rolesNamesMappedToAdGroups = mappedRoles.rolesToAdGroups().roles(usersAdGroups);
         ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
 
         rolesNamesBuilder.addAll(rolesNamesMappedToAttributes);
-        rolesNamesBuilder.addAll(rolesNamesMappedToAdGroupsDns);
+        rolesNamesBuilder.addAll(rolesNamesMappedToAdGroups);
 
         return rolesNamesBuilder.build();
     }
@@ -334,45 +333,36 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     }
 
     /**
-     * Returns user's Active Directory groups dns.
+     * Returns user's Active Directory groups sAMAccountName-s.
      * If LDAP service provider is not an AD then the empty set will be returned.
      *
-     * @param groupsDns groups dns to consider.
+     * @return groups sAMAccountName-s
+     * @param returningGroups groups sAMAccountName-s to return.
      * @since 4.1.11
      */
-    private Set<String> searchForUserAdGroups(String loginName, Set<String> groupsDns) {
+    private Set<String> getADUserGroups(String loginName, Set<String> returningGroups) {
         if (userPropertyNameToLdapAttributeNameMap.getProperty("LoginName").trim().compareToIgnoreCase("sAMAccountName") != 0) {
-            LOG.debug("LDAP service is not Active Directory based. No search will be performed.");
+            LOG.debug("Underlying LDAP service is not an Active Directory. No search will be performed.");
             return Collections.emptySet();
         }
 
-        ImmutableSet.Builder<String> groupsDnsBuilder = ImmutableSet.builder();
+        ImmutableSet.Builder<String> groupsBuilder = ImmutableSet.builder();
 
         try {
-            SearchControls searchControls = new SearchControls();
-            searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            searchControls.setReturningAttributes(new String[]{"sAMAccountName"});
-
-            for (String groupsDn : groupsDns) {
-                boolean userInRole = ldapConnection.search(
-                        "(&(objectClass=user)(sAMAccountName={0})(memberOf:1.2.840.113556.1.4.1941:={1}))",
-                        new Object[]{loginName, groupsDn},
-                        searchControls).hasNext();
-
-                if (userInRole) {
-                    groupsDnsBuilder.add(groupsDn);
+            for (String group : ldapConnection.getADUserGroups(loginName)) {
+                if (returningGroups.contains(group.toLowerCase())) {
+                    groupsBuilder.add(group);
                 }
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.info(String.format("User '%s' is a member of AD group '%s' - %s.",
-                            loginName, groupsDn, userInRole));
+                    LOG.info(String.format("User '%s' is a member of AD group '%s'.", loginName, group));
                 }
             }
         } catch (LdapClientException e) {
             LOG.error("LDAP search error. User: " + loginName, e);
         }
 
-        return groupsDnsBuilder.build();
+        return groupsBuilder.build();
     }
 
 

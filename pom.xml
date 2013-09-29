@@ -344,7 +344,7 @@
         <dependency>
             <groupId>com.imcode.net.ldap</groupId>
             <artifactId>imcode-ldap</artifactId>
-            <version>0.4</version>
+            <version>0.6</version>
         </dependency>
 
         <dependency>

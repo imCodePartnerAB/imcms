@@ -3,8 +3,9 @@ package imcode.server.user.ldap.jaxb;
 import javax.xml.bind.annotation.XmlAttribute;
 
 public class RoleToAttributeElement {
-    @XmlAttribute(name = "role-name", required = true)
-    private String roleName;
+
+    @XmlAttribute(name = "role", required = true)
+    private String role;
 
     @XmlAttribute(name = "attribute-name", required = true)
     private String attributeName;
@@ -20,7 +21,7 @@ public class RoleToAttributeElement {
         return attributeValue.trim().toLowerCase();
     }
 
-    public String roleName() {
-        return roleName.trim();
+    public String role() {
+        return role.trim();
     }
 }

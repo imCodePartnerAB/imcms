@@ -69,9 +69,9 @@ public final class XMLConfig {
             MappedRolesElement rolesMappingElement = ldapElement.mappedRolesElement();
 
             for (RoleToAttributeElement el: rolesMappingElement.rolesToAttributesElements()) {
-                String roleName = el.roleName().trim();
-                String attributeName = el.attributeName().trim();
-                String attributeValue = el.attributeValue().trim();
+                String roleName = el.role();
+                String attributeName = el.attributeName();
+                String attributeValue = el.attributeValue();
 
                 rolesToAttributesColl.add(new MappedRole.RoleToAttribute(roleName, attributeName, attributeValue));
 
@@ -80,19 +80,19 @@ public final class XMLConfig {
             }
 
             for (RoleToAdGroupElement el: rolesMappingElement.rolesToAdGroupsElements()) {
-                String roleName = el.roleName().trim();
-                String groupDn = el.groupDn().trim();
+                String role = el.role();
+                String group = el.group();
 
-                rolesToAdGroupsBuilderColl.add(new MappedRole.RoleToAdGroup(roleName, groupDn));
+                rolesToAdGroupsBuilderColl.add(new MappedRole.RoleToAdGroup(role, group));
 
-                logger.info(String.format("Added AD role-to-ad-group mapping. Role: %s, group dn: %s.",
-                        roleName, groupDn));
+                logger.info(String.format("Added AD role-to-ad-group mapping. Role: %s, group sAMAccountName: %s.",
+                        role, group));
             }
         }
 
         MappedRoles mappedRoles = new MappedRoles(rolesToAttributesColl.build(), rolesToAdGroupsBuilderColl.build());
 
-        if (mappedRoles.rolesNames().isEmpty()) {
+        if (mappedRoles.roles().isEmpty()) {
             logger.info("No configuration provided for LDAP mapped roles.");
         }
 
