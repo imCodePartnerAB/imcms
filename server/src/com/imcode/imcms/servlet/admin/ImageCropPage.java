@@ -73,7 +73,7 @@ public class ImageCropPage extends OkCancelPage {
 	
 	@Override
 	public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setAttribute("const", CONSTANTS);
+		request.setAttribute("constant", CONSTANTS);
 		request.setAttribute("cropPage", this);
 		request.setAttribute("region", region);
 		request.setAttribute("image", image);

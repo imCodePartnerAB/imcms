@@ -24,7 +24,9 @@
 	contentType="text/html; charset=UTF-8"
 
 %><%@taglib prefix="vel" uri="imcmsvelocity"
+            %><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
 %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
+%><%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
 %><%!
 
 final static int GUI_INNER_WIDTH = 900 ;
@@ -38,6 +40,7 @@ final static int GUI_INNER_WIDTH = 900 ;
     assert null != image;
     ImageSize realImageSize = image.getRealImageSize();
     assert null != realImageSize;
+    ImageSize displayImageSize = image.getDisplayImageSize();
     UserDomainObject user = Utility.getLoggedOnUser( request );
     CropRegion cropRegion = image.getCropRegion();
 
@@ -137,6 +140,132 @@ $(function() {
     
     limitDimension("width");
     limitDimension("height");
+    
+    
+    var zoomFactors = [2, 5, 10, 30, 50, 67, 80, 90, 100, 110, 120, 133, 150, 170, 200, 240, 300], 
+        zoomActual, 
+        zoomIndex, 
+        zoom = 100;
+
+    for (var i = 0; i < zoomFactors.length; ++i) {
+        if (zoomFactors[i] == 100) {
+            zoomActual = i;
+            zoomIndex = i;
+            break;
+        }
+    }
+
+    var contWidth = 900, 
+        contHeight = 400, 
+        imageWidth = parseInt($("#display_width").val(), 10), 
+        imageHeight = parseInt($("#display_height").val(), 10), 
+        ratio = imageWidth / imageHeight;
+
+    function updateImageZoom() {
+        var cont = $("#previewDiv"), 
+            img = $("img", cont);
+
+        if (zoomIndex != -1) {
+            zoomIndex = Math.max(Math.min(zoomIndex, zoomFactors.length - 1), 0);
+            zoom = zoomFactors[zoomIndex];
+        }
+
+        var percent = zoom / 100, 
+            newWidth = Math.round(imageWidth * percent), 
+            newHeight = Math.round(newWidth / ratio);
+
+        img.css({
+            width: newWidth + "px", 
+            height: newHeight + "px"
+        });
+
+        cont.css({
+            height: (newHeight > contHeight ? contHeight + "px" : "auto"), 
+            overflow: (newWidth > contWidth || newHeight > contHeight ? "auto" : "visible")
+        });
+
+        $("#zoom-value").text(Math.floor(zoom));
+    }
+
+    $("#zoom-in,#zoom-out").click(function() {
+        var zoomin = ($(this).attr("id").indexOf("zoom-in") != -1);
+        
+        
+        if (zoomIndex == -1) {
+            var found = false, 
+                start = (zoomin ? 0 : zoomFactors.length - 1), 
+                end = (zoomin ? zoomFactors.length : -1);
+
+            for (var i = start; i != end; (zoomin ? ++i : --i)) {
+                if ((zoomin && zoomFactors[i] > zoom) ||
+                    (!zoomin && zoomFactors[i] < zoom)) {
+                    zoomIndex = i;
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) {
+                return false;
+            }
+        } else {
+            if (zoomin) {
+                ++zoomIndex;
+            } else {
+                --zoomIndex;
+            }
+        }
+        
+        updateImageZoom();
+        
+        return false;
+    });
+
+    $("#zoom-actual").click(function() {
+        zoomIndex = zoomActual;
+        updateImageZoom();
+        
+        return false;
+    });
+
+    function zoomFit() {
+        zoomIndex = -1;
+
+        if ((imageWidth > contWidth) || (imageHeight > contHeight)) {
+            var finalWidth;
+
+            if (imageWidth > contWidth && imageHeight > contHeight) {
+                var targetRatio = contWidth / contHeight;
+
+                if (ratio > targetRatio) {
+                    finalWidth = contWidth;
+                } else {
+                    finalWidth = Math.floor(contHeight * ratio);
+                }
+            } else if (imageWidth > contWidth) {
+                finalWidth = contWidth;
+            } else {
+                finalWidth = Math.floor(contHeight * ratio);
+            }
+
+            zoomIndex = -1;
+            zoom = (finalWidth / imageWidth) * 100;
+
+        } else {
+            zoomIndex = zoomActual;
+        }
+
+        updateImageZoom();
+    }
+
+    $("#zoom-fit").click(function() {
+        zoomFit();
+        return false;
+    });
+    
+    if ($("#zoom-fit").length != 0) {
+        zoomFit();
+    }
 });
 
 function addScrolling() {
@@ -261,6 +390,8 @@ function resetCrop() {
 <form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher" onsubmit="checkLinkType();">
 <%= Page.htmlHidden(request) %>
 <input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID %>" value="<%= image.getArchiveImageId() %>"/>
+<input type="hidden" id="display_width" value="<%= displayImageSize.getWidth() %>"/>
+<input type="hidden" id="display_height" value="<%= displayImageSize.getHeight() %>"/>
 <input type="hidden" id="forced_width" value="<%= imageEditPage.getForcedWidth() %>"/>
 <input type="hidden" id="forced_height" value="<%= imageEditPage.getForcedHeight() %>"/>
 <input type="hidden" id="max_width" value="<%= imageEditPage.getMaxWidth() %>"/>
@@ -297,20 +428,35 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
                 <% if (null != imageEditPage.getHeading()) { %>
                 #gui_heading( "<%= imageEditPage.getHeading().toLocalizedString(request) %>" )
                 <% } %>
-                <%=
-            "<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"  %></td>
+                <div id="theLabel" class="imcmsAdmText">
+                    <i><%= StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) %></i>
+                    <% if (!image.isEmpty()) { %>
+                    <fmt:message var="bestFitText" key="templates/sv/change_img.html/best_fit"/>
+                    <a id="zoom-fit" href="#" style="float:right;margin-left:10px;"><img src="<%=request.getContextPath()%>/imcms/images/zoom_fit.gif" width="22" height="22" alt="${fn:escapeXml(bestFitText)}" title="${fn:escapeXml(bestFitText)}" style="border:none;"/></a>
+                    
+                    <fmt:message var="actualSizeText" key="templates/sv/change_img.html/actual_size"/>
+                    <a id="zoom-actual" href="#" style="float:right;margin-left:10px;"><img src="<%=request.getContextPath()%>/imcms/images/zoom_actual_size.gif" width="22" height="22" alt="${fn:escapeXml(actualSizeText)}" title="${fn:escapeXml(actualSizeText)}" style="border:none;"/></a>
+                    
+                    <fmt:message var="zoomOutText" key="templates/sv/change_img.html/zoom_out"/>
+                    <a id="zoom-out" href="#" style="float:right;margin-left:10px;"><img src="<%=request.getContextPath()%>/imcms/images/zoom_out.gif" width="22" height="22" alt="${fn:escapeXml(zoomOutText)}" title="${fn:escapeXml(zoomOutText)}" style="border:none;"/></a>
+                    
+                    <fmt:message var="zoomInText" key="templates/sv/change_img.html/zoom_in"/>
+                    <a id="zoom-in" href="#" style="float:right;margin-left:10px;"><img src="<%=request.getContextPath()%>/imcms/images/zoom_in.gif" width="22" height="22" alt="${fn:escapeXml(zoomInText)}" title="${fn:escapeXml(zoomInText)}" style="border:none;"/></a>
+                    
+                    <fmt:message var="zoomText" key="templates/sv/change_img.html/zoom"/>
+                    <div style="float:right;line-height:20px;"><c:out value="${zoomText}"/>: <span id="zoom-value">100</span>%</div>
+                    <% } %>
+                </div>
+            </td>
         </tr><%
 		if (!image.isEmpty()) {
 			int previewW = GUI_INNER_WIDTH ;
 			int previewH = 0 ;
 			String overFlow = " overflow:auto;" ;
 			try {
-				int width  = realImageSize.getWidth();
-				int height = realImageSize.getHeight();
-				if (cropRegion.isValid()) {
-					width = cropRegion.getWidth() ;
-					height = cropRegion.getHeight() ;
-				}
+				int width  = displayImageSize.getWidth();
+				int height = displayImageSize.getHeight();
+				
 				if (height > 400) {
 					previewH = 400 ;
 				}
@@ -318,7 +464,7 @@ if (null != imageEditPage.getReturnUrl() && !"".equals(imageEditPage.getReturnUr
         %>
 		<tr>
 			<td colspan="2" align="center" style="padding:0;">
-			<div id="previewDiv" style="padding:0; text-align:center;<%= previewW > 0 ? " width:" + previewW + "px;" : "" %><%= previewH > 0 ? " height:" + previewH + "px;" : "" %><%= overFlow %>">
+			<div id="previewDiv" style="padding:0; text-align:center;<%= previewW > 0 ? " width:" + previewW + "px;" : "" %><%= previewH > 0 ? " height:" + previewH + "px;" : "" %>">
 				<%= !image.isEmpty() ? ImcmsImageUtils.getImagePreviewHtmlTag(image, request, new Properties()) : "" %>
 			</div></td>
 		</tr><%

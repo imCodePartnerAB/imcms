@@ -47,19 +47,119 @@ public class ImageDomainObject implements Serializable {
     }
 
     public ImageSize getDisplayImageSize() {
-        ImageSize realImageSize = getRealImageSize( );
-
-        int wantedWidth = getWidth( );
-        int wantedHeight = getHeight( );
-        if ( 0 == wantedWidth && 0 != wantedHeight && 0 != realImageSize.getHeight( ) ) {
-            wantedWidth = (int)( realImageSize.getWidth( ) * ( (double)wantedHeight / realImageSize.getHeight( ) ) );
-        } else if ( 0 == wantedHeight && 0 != wantedWidth && 0 != realImageSize.getWidth( ) ) {
-            wantedHeight = (int)( realImageSize.getHeight( ) * ( (double)wantedWidth / realImageSize.getWidth( ) ) );
-        } else if ( 0 == wantedWidth && 0 == wantedHeight ) {
-            wantedWidth = realImageSize.getWidth( );
-            wantedHeight = realImageSize.getHeight( );
+        ImageSize realImageSize = getRealImageSize();
+        
+        int w = realImageSize.getWidth();
+        int h = realImageSize.getHeight();
+        
+        if (w == 0 && h == 0) {
+            return realImageSize;
         }
-        return new ImageSize( wantedWidth, wantedHeight );
+        
+        if (rotateDirection != null && (rotateDirection == RotateDirection.EAST || rotateDirection == RotateDirection.WEST)) {
+            int temp = h;
+            h = w;
+            w = temp;
+        }
+        
+        if (cropRegion != null && cropRegion.isValid()) {
+            w = cropRegion.getWidth();
+            h = cropRegion.getHeight();
+        }
+        
+        if (width > 0 || height > 0) {
+            Resize res = resize;
+            if (res == null) {
+                res = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
+            }
+            
+            double ratio = w / (double) h;
+            double targetRatio;
+            
+            int finalWidth;
+            int finalHeight;
+            
+            switch (res) {
+                case DEFAULT:
+                    if (width > 0 && height > 0) {
+                        targetRatio = width / (double) height;
+                        
+                        if (ratio > targetRatio) {
+                            finalWidth = width;
+                            finalHeight = (int) Math.round(width / ratio);
+                        } else {
+                            finalWidth = (int) Math.round(height * ratio);
+                            finalHeight = height;
+                        }
+                        
+                    } else if (width > 0) {
+                        finalWidth = width;
+                        finalHeight = (int) Math.round(width / ratio);
+                    } else {
+                        finalWidth = (int) Math.round(height * ratio);
+                        finalHeight = height;
+                    }
+                    break;
+                case FORCE:
+                    if (width > 0 && height > 0) {
+                        finalWidth = width;
+                        finalHeight = height;
+                    } else if (width > 0) {
+                        finalWidth = width;
+                        finalHeight = h;
+                    } else {
+                        finalWidth = w;
+                        finalHeight = height;
+                    }
+                    break;
+                case GREATER_THAN:
+                    if (width > 0 && height > 0) {
+                        if (w > width && h > height) {
+                            targetRatio = width / (double) height;
+
+                            if (ratio > targetRatio) {
+                                finalWidth = width;
+                                finalHeight = (int) Math.round(width / ratio);
+                            } else {
+                                finalWidth = (int) Math.round(height * ratio);
+                                finalHeight = height;
+                            }
+                        } else if (w > width) {
+                            finalWidth = width;
+                            finalHeight = (int) Math.round(width / ratio);
+                        } else if (h > height) {
+                            finalWidth = (int) Math.round(height * ratio);
+                            finalHeight = height;
+                        } else {
+                            finalWidth = w;
+                            finalHeight = h;
+                        }
+                    } else if (width > 0) {
+                        if (w > width) {
+                            finalWidth = width;
+                            finalHeight = (int) Math.round(width / ratio);
+                        } else {
+                            finalWidth = w;
+                            finalHeight = h;
+                        }
+                    } else {
+                        if (h > height) {
+                            finalWidth = (int) Math.round(height * ratio);
+                            finalHeight = height;
+                        } else {
+                            finalWidth = w;
+                            finalHeight = h;
+                        }
+                    }
+                    break;
+                default:
+                    throw new IllegalStateException("Unhandled resize = " + res);
+            }
+            
+            return new ImageSize(finalWidth, finalHeight);
+        }
+        
+        return new ImageSize(w, h);
     }
 
     public ImageSize getRealImageSize() {
