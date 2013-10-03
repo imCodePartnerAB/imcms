@@ -5,6 +5,7 @@
                  java.io.IOException,
                  java.util.Arrays,
                  java.util.HashSet"
+         pageEncoding="UTF-8"
 %><%@ page import="java.util.Iterator"%><%@ page import="java.util.Set"%><%@ page import="java.util.TreeSet"%><%@taglib prefix="vel" uri="imcmsvelocity"
 %><vel:velocity><%!
 
