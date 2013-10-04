@@ -12,7 +12,7 @@ import com.imcode.imcms.vaadin.event._
 import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter._
 import org.apache.solr.client.solrj.SolrQuery
-import imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject, DocumentDomainObject}
+import _root_.imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject, DocumentDomainObject}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
 import org.apache.commons.lang3.StringUtils
@@ -63,7 +63,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
 
 
   def reload() {
-    basicFilter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange)
+    basicFilter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange())
 
     createSolrQuery() match {
       case Failure(throwable) =>

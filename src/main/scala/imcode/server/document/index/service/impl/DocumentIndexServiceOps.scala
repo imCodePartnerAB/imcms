@@ -30,7 +30,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
 
   @throws(classOf[SolrInputDocumentCreateException])
-  def withExceptionWrapper[A](body: => A): A = {
+  private def withExceptionWrapper[A](body: => A): A = {
     try {
       body
     } catch {
@@ -124,7 +124,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   @throws(classOf[InterruptedException])
   @throws(classOf[SolrInputDocumentCreateException])
   def rebuildIndex(solrServer: SolrServer)(progressCallback: IndexRebuildProgress => Unit) {
-    logger.trace("Rebuilding index.")
+    logger.debug("Rebuilding index.")
     val docsView = mkSolrInputDocsView()
     val docsCount = docsView.length
     val rebuildStartDt = new Date
@@ -139,13 +139,13 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
       }
 
       solrServer.add(solrInputDocs.asJava)
-      logger.trace(s"Added input docs [$solrInputDocs] to index.")
+      logger.debug(s"Added input docs [$solrInputDocs] to index.")
       progressCallback(IndexRebuildProgress(rebuildStartMills, new Date().getTime, docsCount, docNo))
     }
 
-    logger.trace("Deleting old documents from the index.")
+    logger.debug("Deleting old documents from index.")
     solrServer.deleteByQuery("timestamp:{* TO %s}".format(DateUtil.getThreadLocalDateFormat.format(rebuildStartDt)))
     solrServer.commit()
-    logger.trace("Index rebuild is complete.")
+    logger.debug("Index rebuild is complete.")
   }
 }

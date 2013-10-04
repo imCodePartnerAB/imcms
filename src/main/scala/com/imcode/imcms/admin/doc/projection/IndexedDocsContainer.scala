@@ -2,24 +2,21 @@ package com.imcode
 package imcms
 package admin.doc.projection
 
-import com.vaadin.data.{Item, Container}
-import com.imcode.imcms.api.{DocumentLanguage, Document}
+import com.vaadin.data.{Property, Item, Container}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.ui.Theme
 
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
-import scala.collection.immutable.{ListSet, ListMap}
+import _root_.imcode.server.Imcms
+import scala.collection.immutable.{ListMap}
 import scala.collection.JavaConverters._
 import java.util.Arrays
-import org.apache.solr.client.solrj.SolrQuery
-import com.imcode.imcms.vaadin.ui.Theme
 import java.util.Date
-import scala.Some
-import com.imcode.imcms.vaadin.data.FunctionProperty
-import imcode.server.Imcms
+import org.apache.solr.client.solrj.SolrQuery
 
 class IndexedDocsContainer(
   user: UserDomainObject,
@@ -86,10 +83,10 @@ class IndexedDocsContainer(
       case (None, _) => java.util.Collections.emptyList()
       case (_, Some(ids)) if ids.isEmpty => java.util.Collections.emptyList()
       case (Some(solrQuery), None) =>
-        imcmsServices.getDocumentMapper.getDocumentIndex.getService().search(solrQuery, user).get
+        imcmsServices.getDocumentMapper.getDocumentIndex.getService.search(solrQuery, user).get
       case (Some(solrQuery), Some(ids)) =>
         // todo: apply visible docs filter
-        imcmsServices.getDocumentMapper.getDocumentIndex.getService().search(solrQuery, user).get
+        imcmsServices.getDocumentMapper.getDocumentIndex.getService.search(solrQuery, user).get
     }
 
     notifyItemSetChanged()
@@ -101,18 +98,18 @@ class IndexedDocsContainer(
    *
    * @return Some(range) or None if there are no visible docs in this container.
    */
-  def visibleDocsRange: Option[(DocId, DocId)] = visibleDocsFilterOpt match {
+  def visibleDocsRange(): Option[(DocId, DocId)] = visibleDocsFilterOpt match {
     case Some(ids) => if (ids.isEmpty) None else Some(ids.min, ids.max)
     case _ => imcmsServices.getDocumentMapper.getDocumentIdRange |> { idsRange =>
       Some(idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
     }
   }
 
-  override val getContainerPropertyIds = propertyIds.asJava
+  override val getContainerPropertyIds: JList[String] = propertyIds.asJava
 
-  override def getType(propertyId: AnyRef) = propertyIdToType(propertyId.asInstanceOf[String])
+  override def getType(propertyId: AnyRef): Class[_] = propertyIdToType(propertyId.asInstanceOf[String])
 
-  override def getContainerProperty(itemId: AnyRef, propertyId: AnyRef) = getItem(itemId).getItemProperty(propertyId)
+  override def getContainerProperty(itemId: AnyRef, propertyId: AnyRef): Property[AnyRef] = getItem(itemId).getItemProperty(propertyId)
 
   @transient
   override def size: Int = visibleDocs.size
@@ -180,14 +177,16 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
 
   case class DocItem(ix: Ix, doc: DocumentDomainObject) extends Item with ReadOnlyItem {
 
-    private def formatDt(dt: Date) = dt.asOption.map(dt => "%1$td.%1$tm.%1$tY %1$tH:%1$tM".format(dt)).getOrElse("")
+    private def formatDt(dt: Date): String = dt.asOption.map(dt => "%1$td.%1$tm.%1$tY %1$tH:%1$tM".format(dt)).getOrElse("")
 
     override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
-    override def getItemProperty(id: AnyRef) = FunctionProperty[AnyRef](id match {
-      case "docs_projection.container_property.index" => () => ix + 1 : JInteger
+    private val properties = scala.collection.mutable.Map[AnyRef, Property[AnyRef]]()
 
-      case "docs_projection.container_property.meta_id" => () => {
+    override def getItemProperty(id: AnyRef): Property[AnyRef] = properties.getOrElseUpdate(id, id match {
+      case "docs_projection.container_property.index" => LazyProperty(ix + 1 : JInteger)
+
+      case "docs_projection.container_property.meta_id" => LazyProperty(
         new HorizontalLayout with Spacing with NoMargin with UndefinedSize |>> { lyt =>
           val icon = new Image(null, Theme.Icon.Doc.phase(doc))
           val label = new Label(doc.getId.toString)
@@ -198,11 +197,11 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
           lyt.setComponentAlignment(icon, Alignment.MIDDLE_LEFT)
           lyt.setComponentAlignment(label, Alignment.MIDDLE_LEFT)
         }
-      }
+      )
 
-      case "docs_projection.container_property.headline" => () => doc.getHeadline
-      case "docs_projection.container_property.type" => () => doc.getDocumentType.getName.toLocalizedString(Imcms.getUser)
-      case "docs_projection.container_property.language" => () => {
+      case "docs_projection.container_property.headline" => LazyProperty(doc.getHeadline)
+      case "docs_projection.container_property.type" => LazyProperty(doc.getDocumentType.getName.toLocalizedString(Imcms.getUser))
+      case "docs_projection.container_property.language" => LazyProperty(
         new HorizontalLayout with Spacing with NoMargin with UndefinedSize |>> { lyt =>
           val language = doc.getLanguage
           val icon = new Image(null, Theme.Icon.Language.flag(language))
@@ -214,18 +213,18 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
           lyt.setComponentAlignment(icon, Alignment.MIDDLE_LEFT)
           lyt.setComponentAlignment(label, Alignment.MIDDLE_LEFT)
         }
-      }
-      case "docs_projection.container_property.alias" => () => doc.getAlias
-      case "docs_projection.container_property.phase" => () => "doc_publication_phase.%s".format(doc.getLifeCyclePhase).i
-      case "docs_projection.container_property.created_dt" => () => formatDt(doc.getCreatedDatetime)
-      case "docs_projection.container_property.modified_dt" => () => formatDt(doc.getModifiedDatetime)
+      )
+      case "docs_projection.container_property.alias" => LazyProperty(doc.getAlias)
+      case "docs_projection.container_property.phase" => LazyProperty("doc_publication_phase.%s".format(doc.getLifeCyclePhase).i)
+      case "docs_projection.container_property.created_dt" => LazyProperty(formatDt(doc.getCreatedDatetime))
+      case "docs_projection.container_property.modified_dt" => LazyProperty(formatDt(doc.getModifiedDatetime))
 
-      case "docs_projection.container_property.publish_dt" => () => formatDt(doc.getPublicationStartDatetime)
-      case "docs_projection.container_property.archive_dt" => () => formatDt(doc.getArchivedDatetime)
-      case "docs_projection.container_property.expire_dt" => () => formatDt(doc.getPublicationEndDatetime)
+      case "docs_projection.container_property.publish_dt" => LazyProperty(formatDt(doc.getPublicationStartDatetime))
+      case "docs_projection.container_property.archive_dt" => LazyProperty(formatDt(doc.getArchivedDatetime))
+      case "docs_projection.container_property.expire_dt" => LazyProperty(formatDt(doc.getPublicationEndDatetime))
 
-      case "docs_projection.container_property.parents" =>
-        () => imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
+      case "docs_projection.container_property.parents" => LazyProperty(
+        imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
           case Nil => null
           case pair :: Nil =>
             new Tree with ContainerWithTypedItemId[DocumentDomainObject] with NotSelectable with DocSelectWithLifeCycleIcon |>> { tree =>
@@ -248,9 +247,10 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
               }
             }
         }
+      )
 
-      case "docs_projection.container_property.children" =>
-        () => doc match {
+      case "docs_projection.container_property.children" => LazyProperty(
+        doc match {
           case textDoc: TextDocumentDomainObject =>
             imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).asScala.toList match {
               case List() => null
@@ -278,6 +278,7 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
 
           case _ => null
         }
+      )
     })
   }
 }

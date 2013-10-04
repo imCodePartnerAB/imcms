@@ -19,6 +19,7 @@ import com.vaadin.annotations.PreserveOnRefresh
 import com.vaadin.data.Property.ValueChangeEvent
 import com.imcode.imcms.I18nMessage
 import com.imcode.imcms.vaadin.{MenuItemOrder, TreeMenuItem}
+import com.imcode.imcms.admin.doc.manager.DocManager
 
 // todo: rename Theme class - name collision
 @PreserveOnRefresh
@@ -118,7 +119,7 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
             case Menu.System.Monitor.Solr => searchTerms
             case Menu.Documents.Categories => categories
             case Menu.Documents.Languages => languages
-            case Menu.System.Settings => systemSesttings
+            case Menu.System.Settings => systemSettings
             case Menu.System.Monitor.Session => sessionMonitor
             case Menu.Documents => documents
             case Menu.Permissions.Roles => roles
@@ -173,14 +174,14 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
   lazy val languages = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.instance.settings.language.LanguageManager(app)
     manager.ui.setMargin(true)
-    addTab(manager.ui, "Language", Icon.Tab32)
+    addTab(manager.ui, "doc.lang.mgr.title".i, Icon.Tab32)
   }
 
 
   lazy val documents = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.doc.DocManager(app)
+    val manager = new DocManager(app)
     manager.ui.setMargin(true)
-    addTab(manager.ui, "Document", Icon.Tab32)
+    addTab(manager.ui, "doc.mgr.title".i, Icon.Tab32)
   }
 
 
@@ -198,7 +199,7 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
   }
 
 
-  lazy val systemSesttings = new TabSheet with FullSize {
+  lazy val systemSettings = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.instance.settings.property.PropertyManagerManager(app)
     manager.ui.setMargin(true)
     addTab(manager.ui, "System Properties", Icon.Tab32)
