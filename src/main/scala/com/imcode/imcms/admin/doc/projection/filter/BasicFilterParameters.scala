@@ -1,6 +1,6 @@
 package com.imcode.imcms.admin.doc.projection.filter
 
-import imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject}
+import _root_.imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject}
 import com.imcode.imcms.api.DocumentLanguage
 
 /**

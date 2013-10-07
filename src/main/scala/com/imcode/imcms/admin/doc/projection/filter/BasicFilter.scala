@@ -1,4 +1,6 @@
-package com.imcode.imcms.admin.doc.projection.filter
+package com.imcode
+package imcms
+package admin.doc.projection.filter
 
 import scala.collection.JavaConverters._
 
@@ -9,6 +11,7 @@ import scala.PartialFunction._
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.api.DocumentLanguage
 import scala.util.Try
 
@@ -60,7 +63,7 @@ class BasicFilter extends ImcmsServicesSupport {
     }
 
     Seq(ui.lytPhases.chkNew, ui.lytPhases.chkPublished, ui.lytPhases.chkUnpublished, ui.lytPhases.chkApproved,
-        ui.lytPhases.chkDisapproved, ui.lytPhases.chkArchived).foreach { chk =>
+      ui.lytPhases.chkDisapproved, ui.lytPhases.chkArchived).foreach { chk =>
       chk.uncheck()
     }
 
@@ -151,7 +154,7 @@ class BasicFilter extends ImcmsServicesSupport {
           if chkLanguage.isChecked
         } yield
           chkLanguage.data
-      ).to[Set]
+        ).to[Set]
     }
 
     BasicFilterParameters(idRangeOpt, textOpt, typesOpt, languagesOpt, phasesOpt)

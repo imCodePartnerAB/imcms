@@ -1,4 +1,6 @@
-package com.imcode.imcms.admin.doc.projection
+package com.imcode
+package imcms
+package admin.doc.projection
 
 import com.imcode.util.event.Publisher
 import scala.collection.JavaConverters._
@@ -7,9 +9,10 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
+import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter._
 import org.apache.solr.client.solrj.SolrQuery
-import _root_.imcode.server.document.DocumentDomainObject
+import _root_.imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject, DocumentDomainObject}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
 import org.apache.commons.lang3.StringUtils
@@ -17,7 +20,8 @@ import java.net.URLDecoder
 import org.apache.solr.common.util.DateUtil
 import com.imcode.imcms.admin.doc.projection.filter.DateRange
 import com.imcode.imcms.admin.doc.projection.filter.IdRange
-import com.vaadin.ui.{Button, Component, UI}
+import com.imcode.imcms.api.DocumentLanguage
+import com.vaadin.ui.{Button, Component, UI, CheckBox}
 import scala.util.{Try, Failure, Success}
 import imcode.server.document.textdocument.TextDocumentDomainObject
 
@@ -198,7 +202,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
         solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__LANGUAGE_CODE, languages.map(_.getCode).mkString(" ")))
       }
     } |>> { solrQuery =>
-      //solrQuery.setRows(20)
+    //solrQuery.setRows(20)
       if (logger.isDebugEnabled)
         logger.debug("Projection SOLr query: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8")))
     }

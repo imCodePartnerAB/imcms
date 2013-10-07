@@ -1,4 +1,6 @@
-package com.imcode.imcms.admin.doc.projection.filter
+package com.imcode
+package imcms
+package admin.doc.projection.filter
 
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
