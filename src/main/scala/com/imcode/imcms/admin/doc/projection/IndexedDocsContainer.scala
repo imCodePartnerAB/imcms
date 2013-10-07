@@ -12,23 +12,27 @@ import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.Imcms
-import scala.collection.immutable.{ListMap}
+import scala.collection.immutable.ListMap
 import scala.collection.JavaConverters._
 import java.util.Arrays
 import java.util.Date
 import org.apache.solr.client.solrj.SolrQuery
 
+// todo: lazy loaded parents and children: single column - relationships?, show button/hover, loads count
 class IndexedDocsContainer(
-  user: UserDomainObject,
-  private var solrQueryOpt: Option[SolrQuery] = None,
-  private var visibleDocsFilterOpt: Option[Set[DocId]] = None  // todo: I18nDocRef, Doc
-  ) extends Container
-    with ContainerWithTypedItemId[Ix]
-    with IndexedDocsContainerItem
-    with ReadOnlyContainer
-    with Container.Sortable
-    with ContainerItemSetChangeNotifier
-    with ImcmsServicesSupport {
+                            user: UserDomainObject,
+                            private var solrQueryOpt: Option[SolrQuery] = None,
+                            // todo: Visible docs must be referenced by I18nDocRef
+                            private var visibleDocsFilterOpt: Option[Set[DocId]] = None,
+                            protected val parentsRenderer: (DocumentDomainObject => Component) = _ => null,
+                            protected val childrenRenderer: (DocumentDomainObject => Component) = _ => null
+                            ) extends Container
+with ContainerWithTypedItemId[Ix]
+with IndexedDocsContainerItem
+with ReadOnlyContainer
+with Container.Sortable
+with ContainerItemSetChangeNotifier
+with ImcmsServicesSupport {
 
   private implicit class JListOps(jList: JList[_]) {
     def nonEmpty: Boolean = !jList.isEmpty
@@ -120,9 +124,11 @@ class IndexedDocsContainer(
   }
 
   override def containsId(itemId: AnyRef): Boolean = itemId match {
-    case ix: Ix if visibleDocs.nonEmpty => ix >= 0 && ix < size
+    case id: Ix => containsId(id)
     case _ => false
   }
+
+  private def containsId(id: Ix): Boolean = visibleDocs.nonEmpty && id >= 0 && id < size
 
   override def isFirstId(itemId: AnyRef): Boolean = itemId match {
     case ix: Ix if visibleDocs.nonEmpty => ix == 0
@@ -139,17 +145,17 @@ class IndexedDocsContainer(
   override def lastItemId: Ix = if (visibleDocs.isEmpty) null else visibleDocs.size - 1
 
   override def prevItemId(itemId: AnyRef): Ix = itemId match {
-    case ix: Ix if containsId(ix - 1 : JInteger) => ix - 1
+    case id: Ix if containsId(id - 1) => id - 1
     case _ => null
   }
 
   override def nextItemId(itemId: AnyRef): Ix = itemId match {
-    case ix: Ix if containsId(ix + 1 : JInteger) => ix + 1
+    case id: Ix if containsId(id + 1) => id + 1
     case _ => null
   }
 
   override def getItem(itemId: AnyRef): DocItem = itemId match {
-      case ix: Ix if containsId(ix) => DocItem(ix, visibleDocs.get(ix))
+    case id: Ix if containsId(id) => DocItem(id, visibleDocs.get(id))
     case _ => null
   }
 
@@ -223,62 +229,8 @@ trait IndexedDocsContainerItem { this: IndexedDocsContainer =>
       case "docs_projection.container_property.archive_dt" => LazyProperty(formatDt(doc.getArchivedDatetime))
       case "docs_projection.container_property.expire_dt" => LazyProperty(formatDt(doc.getPublicationEndDatetime))
 
-      case "docs_projection.container_property.parents" => LazyProperty(
-        imcmsServices.getDocumentMapper.getDocumentMenuPairsContainingDocument(doc).toList match {
-          case Nil => null
-          case pair :: Nil =>
-            new Tree with ContainerWithTypedItemId[DocumentDomainObject] with NotSelectable with DocSelectWithLifeCycleIcon |>> { tree =>
-              val parentDoc = pair.getDocument
-              tree.addItem(parentDoc)
-              tree.setChildrenAllowed(parentDoc, false)
-              tree.setItemCaption(parentDoc, "%s - %s".format(parentDoc.getId, parentDoc.getHeadline))
-            }
-
-          case pairs =>
-            new Tree with ContainerWithTypedItemId[DocumentDomainObject] with NotSelectable with DocSelectWithLifeCycleIcon |>> { tree =>
-              val root = new {}
-              tree.addItem(root)
-              tree.setItemCaption(root, pairs.size.toString)
-              for (pair <- pairs; parentDoc = pair.getDocument) {
-                tree.addItem(parentDoc)
-                tree.setChildrenAllowed(parentDoc, false)
-                tree.setItemCaption(parentDoc, "%s - %s".format(parentDoc.getId, parentDoc.getHeadline))
-                tree.setParent(parentDoc, root)
-              }
-            }
-        }
-      )
-
-      case "docs_projection.container_property.children" => LazyProperty(
-        doc match {
-          case textDoc: TextDocumentDomainObject =>
-            imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).asScala.toList match {
-              case List() => null
-              case List(childDoc) =>
-                new Tree with ContainerWithTypedItemId[DocumentDomainObject] with DocSelectWithLifeCycleIcon with NotSelectable |>> { tree =>
-                  tree.addItem(childDoc)
-                  tree.setChildrenAllowed(childDoc, false)
-                  tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
-                }
-
-              case childDocs =>
-                new Tree with ContainerWithTypedItemId[DocumentDomainObject] with DocSelectWithLifeCycleIcon with NotSelectable |>> { tree =>
-                  val root = new {}
-                  tree.addItem(root)
-                  tree.setItemCaption(root, childDocs.size.toString)
-                  for (childDoc <- childDocs) {
-                    tree.addItem(childDoc)
-                    tree.setChildrenAllowed(childDoc, false)
-                    tree.setItemCaption(childDoc, "%s - %s" format (childDoc.getId, childDoc.getHeadline))
-                    tree.setParent(childDoc, root)
-                    // >>> link to listByNamedParams documents
-                  }
-                }
-            }
-
-          case _ => null
-        }
-      )
+      case "docs_projection.container_property.parents" => LazyProperty(parentsRenderer(doc))
+      case "docs_projection.container_property.children" => LazyProperty(childrenRenderer(doc))
     })
   }
 }

@@ -1,10 +1,6 @@
-package com.imcode
-package imcms
-package admin.doc.manager
+package com.imcode.imcms.admin.doc.manager
 
 import com.vaadin.ui.{MenuBar, VerticalLayout, Component}
-import com.imcode.imcms.vaadin.ui.{FullSize, Spacing}
-
 import com.imcode.imcms.vaadin.ui._
 
 class CustomDocsUI(projectionUI: Component) extends VerticalLayout with Spacing with FullSize {

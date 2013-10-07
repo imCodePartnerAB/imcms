@@ -1,6 +1,4 @@
-package com.imcode
-package imcms
-package admin.doc.projection
+package com.imcode.imcms.admin.doc.projection
 
 import imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
@@ -29,10 +27,10 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
     projection.selection |> {
       case Seq(selectedDoc: TextDocumentDomainObject) =>
         val (newDocType, dlgCaption) = scala.reflect.classTag[T].runtimeClass match {
-          case c if c == classOf[TextDocumentDomainObject] => DocumentTypeDomainObject.TEXT_ID -> "New Text Document"
-          case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "New File Document"
-          case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "New Url Document"
-          case c if c == classOf[HtmlDocumentDomainObject] => DocumentTypeDomainObject.HTML_ID -> "New Html Document"
+          case c if c == classOf[TextDocumentDomainObject] => DocumentTypeDomainObject.TEXT_ID -> "new_text_doc.dlg.title".i
+          case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "new_text_doc.dlg.title".i
+          case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "new_url_doc.dlg.title".i
+          case c if c == classOf[HtmlDocumentDomainObject] => DocumentTypeDomainObject.HTML_ID -> "new_html_doc.dlg.title".i
         }
 
         val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, UI.getCurrent.imcmsUser)

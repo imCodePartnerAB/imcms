@@ -8,16 +8,12 @@ import com.imcode.imcms.vaadin.ui.{Immediate, Selectable, MultiSelectBehavior}
 
 
 class IndexedDocsUI(container: IndexedDocsContainer) extends Table(null, container)
-    with MultiSelectBehavior[Ix]
-    with Selectable with Immediate {
+with MultiSelectBehavior[Ix]
+with Selectable with Immediate {
 
   setColumnHeaders(container.getContainerPropertyIds.asScala.map(_.i).toArray: _*)
 
-  setColumnCollapsingAllowed(true)
-
-  Seq("docs_projection.container_property.parents", "docs_projection.container_property.children").foreach {
-    setColumnCollapsed(_, true)
-  }
+  setColumnCollapsingAllowed(false)
 
   addStyleName("striped")
 }

@@ -1,6 +1,4 @@
-package com.imcode
-package imcms
-package admin.doc.projection
+package com.imcode.imcms.admin.doc.projection
 
 import com.imcode.imcms.admin.doc.projection.filter.{AdvancedFilterUI, BasicFilterUI}
 import com.vaadin.ui.{Panel, GridLayout}

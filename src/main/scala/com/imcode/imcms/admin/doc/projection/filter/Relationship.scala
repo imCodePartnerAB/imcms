@@ -1,3 +1,3 @@
 package com.imcode.imcms.admin.doc.projection.filter
 
-case class Relationship(hasParents: Option[Boolean], hasChildren: Option[Boolean])
+case class Relationship(hasParentsOpt: Option[Boolean], hasChildrenOpt: Option[Boolean])

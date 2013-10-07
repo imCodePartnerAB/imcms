@@ -1,6 +1,4 @@
-package com.imcode
-package imcms
-package admin.doc.projection.filter
+package com.imcode.imcms.admin.doc.projection.filter
 
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
@@ -64,8 +62,10 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
   val lytButtons = new HorizontalLayout with UndefinedSize with Spacing {
     val btnReset = new Button("btn_reset".i) with SmallStyle
     val btnFilter = new Button("btn_search".i) with SmallStyle
+    val btnBack = new Button with SmallStyle |>> { b => b.setIcon(Theme.Icon.HistoryBack, "Go back") }
+    val btnForward = new Button with SmallStyle |>> { b => b.setIcon(Theme.Icon.HistoryForward, "Go forward") }
 
-    this.addComponents(btnReset, btnFilter)
+    this.addComponents(btnReset, btnFilter, btnBack, btnForward)
   }
 
   this.addNamedComponents(

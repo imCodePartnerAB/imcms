@@ -10,7 +10,7 @@ object Theme {
   implicit val stringToThemeResource = new TR(_:String)
 
   object Icon {
-    val About16: TR = "icons/16/globe.png" 
+    val About16: TR = "icons/16/globe.png"
     val Help16: TR = "icons/16/help.png"
     val New16: TR = "icons/16/document-add.png"
     val Edit16: TR = "icons/16/settings.png"
@@ -28,6 +28,8 @@ object Theme {
     val Folder16: TR = "icons/16/folder.png"
     val TextFormatPlain: TR = "icons/16/document-txt.png"
     val TextFormatHtml: TR = "icons/16/document-web.png"
+    val HistoryBack: TR = "icons/16/arrow-left.png"
+    val HistoryForward: TR = "icons/16/arrow-right.png"
 
     object Browser {
       val TabHome32: TR = "icons/16/document-web.png"

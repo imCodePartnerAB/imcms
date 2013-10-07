@@ -1,6 +1,4 @@
-package com.imcode
-package imcms
-package admin.doc.projection
+package com.imcode.imcms.admin.doc.projection
 
 import com.imcode.util.event.Publisher
 import scala.collection.JavaConverters._
@@ -9,10 +7,9 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
-import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter._
 import org.apache.solr.client.solrj.SolrQuery
-import _root_.imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject, DocumentDomainObject}
+import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
 import org.apache.commons.lang3.StringUtils
@@ -20,15 +17,37 @@ import java.net.URLDecoder
 import org.apache.solr.common.util.DateUtil
 import com.imcode.imcms.admin.doc.projection.filter.DateRange
 import com.imcode.imcms.admin.doc.projection.filter.IdRange
-import com.imcode.imcms.api.DocumentLanguage
-import com.vaadin.ui.{UI, CheckBox}
+import com.vaadin.ui.{Button, Component, UI}
 import scala.util.{Try, Failure, Success}
+import imcode.server.document.textdocument.TextDocumentDomainObject
 
 
-class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport {
+class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport with ImcmsServicesSupport {
+  private def parentsRenderer(doc: DocumentDomainObject): Component = imcmsServices.getDocumentMapper.getParentDocsIds(doc) match {
+    case list if list.isEmpty => null
+    case list => new Button(s"show (${list.size()})") with LinkStyle |>> { btn =>
+      btn.addClickHandler { _ =>
+        //val languages = basicFilter.getState().
+      }
+    }
+  }
+
+  private def childrenRenderer(doc: DocumentDomainObject): Component = doc match {
+    case textDoc: TextDocumentDomainObject =>
+      imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).asScala.toList match {
+        case Nil => null
+        case childDocs => new Button(s"show (${childDocs.length})") with LinkStyle |>> { btn =>
+          btn.addClickHandler { _ => /* search children */ }
+        }
+      }
+
+    case _ => null
+  }
+
   val basicFilter = new BasicFilter
   val advancedFilter = new AdvancedFilter
-  val docsContainer = new IndexedDocsContainer(user)
+  val docsContainer = new IndexedDocsContainer(user, childrenRenderer = childrenRenderer, parentsRenderer = parentsRenderer)
+
   val docsUI = new IndexedDocsUI(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
   private val selectionRef = new AtomicReference(Seq.empty[DocumentDomainObject])
 
@@ -84,160 +103,16 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
    *
    * @return query Solr query string.
    */
-  def createSolrQuery(): Try[SolrQuery] = Try {
-    val basicFormUI = basicFilter.ui
-    val advancedFormUI = advancedFilter.ui
+  def createSolrQuery(): Try[SolrQuery] = {
+    for {
+      basicParams <- basicFilter.getParameters()
+      advancedParams <- advancedFilter.getParameters()
+    } yield {
+      createSolrQuery(basicParams, advancedParams)
+    }
+  }
 
-    val idRangeOpt =
-      if (basicFormUI.chkIdRange.isUnchecked) None
-      else {
-        val startOpt = condOpt(basicFormUI.lytIdRange.txtStart.trim) {
-          case value if value.nonEmpty => value match {
-            case AnyInt(start) => start
-            case _ => sys.error("docs_projection.dlg_param_validation_err.msg.illegal_range_value")
-          }
-        }
-
-        val endOpt = condOpt(basicFormUI.lytIdRange.txtEnd.trim) {
-          case value if value.nonEmpty => value match {
-            case AnyInt(end) => end
-            case _ => sys.error("docs_projection.dlg_param_validation_err.msg.illegal_range_value")
-          }
-        }
-
-        when(startOpt.isDefined || endOpt.isDefined) {
-          IdRange(startOpt, endOpt)
-        }
-      }
-
-
-    val textOpt: Option[String] =
-      if (basicFormUI.chkText.isUnchecked) None
-      else condOpt(basicFormUI.txtText.trim) {
-        case value if value.nonEmpty => value
-      }
-
-
-    val typesOpt: Option[List[Int]] =
-      if (basicFormUI.chkType.isUnchecked) None
-      else {
-        import basicFormUI.lytTypes._
-
-        Map(chkFile -> DocumentTypeDomainObject.FILE_ID,
-            chkText -> DocumentTypeDomainObject.TEXT_ID,
-            chkHtml -> DocumentTypeDomainObject.HTML_ID,
-            chkUrl -> DocumentTypeDomainObject.URL_ID
-        ).filterKeys(_.isChecked).values.toList match {
-          case Nil => None
-          case values => Some(values)
-        }
-      }
-
-    val phasesOpt: Option[Seq[LifeCyclePhase]] =
-      if (basicFormUI.chkPhase.isUnchecked) None
-      else {
-        import basicFormUI.lytPhases._
-
-        Map(chkNew -> LifeCyclePhase.NEW,
-            chkPublished -> LifeCyclePhase.PUBLISHED,
-            chkUnpublished -> LifeCyclePhase.UNPUBLISHED,
-            chkApproved -> LifeCyclePhase.APPROVED,
-            chkDisapproved -> LifeCyclePhase.DISAPPROVED,
-            chkArchived -> LifeCyclePhase.ARCHIVED
-        ).filterKeys(_.isChecked).values.toSeq match {
-          case Nil => None
-          case values => Some(values)
-        }
-      }
-
-    val datesOpt: Option[Map[String, DateRange]] =
-      if (advancedFormUI.chkDates.isUnchecked) None
-      else {
-        import advancedFormUI.lytDates._
-
-        val datesMap =
-          for {
-            (field, dr) <- Map(
-              DocumentIndex.FIELD__CREATED_DATETIME -> drCreated,
-              DocumentIndex.FIELD__MODIFIED_DATETIME -> drModified,
-              DocumentIndex.FIELD__PUBLICATION_START_DATETIME -> drPublished,
-              DocumentIndex.FIELD__ACTIVATED_DATETIME -> drArchived,
-              DocumentIndex.FIELD__PUBLICATION_END_DATETIME -> drExpired
-            )
-            if dr.cbRangeType.value != DateRangeType.Undefined
-            start = dr.dtFrom.valueOpt
-            end = dr.dtTo.valueOpt
-            if start.isDefined || end.isDefined
-          } yield {
-            val startFixed = start.map { dt =>
-              new org.joda.time.DateTime(dt).withMillisOfDay(0).toDate
-            }
-
-            val endFixed = end.map { dt =>
-              new org.joda.time.DateTime(dt).plusDays(1).withMillisOfDay(0).minus(1).toDate
-            }
-
-            field -> DateRange(startFixed, endFixed)
-          }
-
-        whenNotEmpty(datesMap)(_.toMap)
-      }
-
-
-    val relationshipOpt: Option[Relationship] =
-      if (advancedFormUI.chkRelationships.isUnchecked) None
-      else {
-        val hasParents = PartialFunction.condOpt(advancedFormUI.lytRelationships.cbParents.value) {
-          case "docs_projection.advanced_filter.cb_relationships_parents.item.has_parents" => true
-          case "docs_projection.advanced_filter.cb_relationships_parents.item.no_parents" => false
-        }
-
-        val hasChildren = PartialFunction.condOpt(advancedFormUI.lytRelationships.cbChildren.value) {
-          case "docs_projection.advanced_filter.cb_relationships_children.item.has_children" => true
-          case "docs_projection.advanced_filter.cb_relationships_children.item.no_children" => false
-        }
-
-        when(hasParents.isDefined || hasChildren.isDefined) {
-          Relationship(hasParents, hasChildren)
-        }
-      }
-
-    val categoriesOpt: Option[Seq[String]] =
-      if (advancedFormUI.chkCategories.isUnchecked) None
-      else {
-        whenNotEmpty(advancedFormUI.tcsCategories.getItemIds.asInstanceOf[JCollection[String]].asScala.toSeq)(identity)
-      }
-
-    val maintainersOpt: Option[Maintainers] =
-      if (advancedFormUI.chkMaintainers.isUnchecked) None
-      else {
-        val creators: Option[Seq[UserId]] =
-          if (advancedFormUI.lytMaintainers.ulCreators.chkEnabled.isUnchecked) None
-          else whenNotEmpty(advancedFormUI.lytMaintainers.ulCreators.lstUsers.itemIds.asScala.toSeq)(identity)
-
-        val publishers: Option[Seq[UserId]] =
-          if (advancedFormUI.lytMaintainers.ulPublishers.chkEnabled.isUnchecked) None
-          else whenNotEmpty(advancedFormUI.lytMaintainers.ulPublishers.lstUsers.itemIds.asScala.toSeq)(identity)
-
-        when(creators.isDefined || publishers.isDefined) {
-          Maintainers(creators, publishers)
-        }
-      }
-
-    val languagesOpt: Option[Seq[DocumentLanguage]] =
-      if (basicFormUI.chkLanguage.isUnchecked) None
-      else {
-        val languages = (
-          for {
-            _chk@(chkLanguage: CheckBox with TypedData[DocumentLanguage]) <- basicFormUI.lytLanguages.getComponentIterator.asScala
-            if chkLanguage.isChecked
-          } yield
-            chkLanguage.data
-        ).toSeq
-
-        whenNotEmpty(languages)(identity)
-      }
-
+  private def createSolrQuery(basicParams: BasicFilterParameters, advancedParams: AdvancedFilterParameters): SolrQuery = {
     def escape(text: String): String = {
       val SOLR_SPECIAL_CHARACTERS = Array("+", "-", "&", "|", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":", "\\", "/")
       val SOLR_REPLACEMENT_CHARACTERS = Array("\\+", "\\-", "\\&", "\\|", "\\!", "\\(", "\\)", "\\{", "\\}", "\\[", "\\]", "\\^", "\\\"", "\\~", "\\*", "\\?", "\\:", "\\\\", "\\/")
@@ -246,12 +121,13 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
     }
 
     List(
-      textOpt.map { text =>
-        val escapedText = text // escape(text)
+      basicParams.textOpt.collect {
+        case text if text.nonEmpty =>
+          val escapedText = text // escape(text)
 
-        Seq(DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE, DocumentIndex.FIELD__META_TEXT,
+          Seq(DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE, DocumentIndex.FIELD__META_TEXT,
             DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS, DocumentIndex.FIELD__TEXT
-        ).map(field => "%s:%s".format(field, escapedText)).mkString(" ")
+          ).map(field => "%s:%s".format(field, escapedText)).mkString(" ")
       }
     ).flatten |> {
       case Nil => "*:*"
@@ -261,19 +137,19 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
 
       new SolrQuery(solrQueryStirng)
     } |>> { solrQuery =>
-      for (IdRange(start, end) <- idRangeOpt) {
+      for (IdRange(start, end) <- basicParams.idRangeOpt) {
         solrQuery.addFilterQuery(
           "%s:[%s TO %s]".format(DocumentIndex.FIELD__META_ID, start.getOrElse("*"), end.getOrElse("*"))
         )
       }
 
-      for (types <- typesOpt) {
+      for (types <- basicParams.docTypesOpt if types.nonEmpty) {
         solrQuery.addFilterQuery(
           "%s:%s".format(DocumentIndex.FIELD__DOC_TYPE_ID, types.mkString(" "))
         )
       }
 
-      for (phases <- phasesOpt) {
+      for (phases <- basicParams.phasesOpt if phases.nonEmpty) {
         val now = new java.util.Date
         val phasesFilterQuery = phases.map(_.asQuery(now)) match {
           case Seq(query) => query.toString
@@ -284,7 +160,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
       }
 
       for {
-        dates <- datesOpt
+        dates <- advancedParams.datesOpt if dates.nonEmpty
         dateFormat = DateUtil.getThreadLocalDateFormat
         (field, DateRange(from, to)) <- dates
       } {
@@ -294,31 +170,31 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
         )
       }
 
-      for (Relationship(hasParents, hasChildren) <- relationshipOpt) {
-        hasParents.foreach { value =>
+      for (Relationship(hasParentsOpt, hasChildrenOpt) <- advancedParams.relationshipOpt) {
+        hasParentsOpt.foreach { value =>
           solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_PARENTS, value))
         }
 
-        hasChildren.foreach { value =>
+        hasChildrenOpt.foreach { value =>
           solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_CHILDREN, value))
         }
       }
 
-      for (categories <- categoriesOpt) {
+      for (categories <- advancedParams.categoriesOpt if categories.nonEmpty) {
         solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__CATEGORY_ID, categories.mkString(" ")))
       }
 
-      for (Maintainers(creators, publishers) <- maintainersOpt) {
-        creators.foreach { creators =>
+      for (Maintainers(creatorsOpt, publishersOpt) <- advancedParams.maintainersOpt) {
+        creatorsOpt.foreach { creators =>
           solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__CREATOR_ID, creators.mkString(" ")))
         }
 
-        publishers.foreach { publishers =>
+        publishersOpt.foreach { publishers =>
           solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__PUBLISHER_ID, publishers.mkString(" ")))
         }
       }
 
-      for (languages <- languagesOpt) {
+      for (languages <- basicParams.languagesOpt if languages.nonEmpty) {
         solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__LANGUAGE_CODE, languages.map(_.getCode).mkString(" ")))
       }
     } |>> { solrQuery =>
@@ -326,7 +202,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
       if (logger.isDebugEnabled)
         logger.debug("Projection SOLr query: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8")))
     }
-  } // def createSolrQuery()
+  }  // def createSolrQuery()
 
 
   def selection: Seq[DocumentDomainObject] = selectionRef.get

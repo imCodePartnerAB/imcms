@@ -1,6 +1,4 @@
-package com.imcode
-package imcms
-package admin.doc.projection.filter
+package com.imcode.imcms.admin.doc.projection.filter
 
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
@@ -22,8 +20,17 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/projection/advanced_filte
 
   val chkRelationships = new CheckBox("docs_projection.advanced_filter.chk_relationships".i) with Immediate
   val lytRelationships = new FormLayout with UndefinedSize {
-    val cbParents = new ComboBox("docs_projection.advanced_filter.chk_relationships_parents".i) with SingleSelect[String] with NoNullSelection
-    val cbChildren = new ComboBox("docs_projection.advanced_filter.chk_relationships_children".i) with SingleSelect[String] with NoNullSelection
+    val cbParents = new ComboBox("docs_projection.advanced_filter.chk_relationships_parents".i) with SingleSelect[String] with NoNullSelection with Immediate
+    val cbChildren = new ComboBox("docs_projection.advanced_filter.chk_relationships_children".i) with SingleSelect[String] with NoNullSelection with Immediate
+
+    val txtParents = new TextField("of") with Invisible |>> { _.setInputPrompt("any") }   // todo: i18n
+    val txtChildren = new TextField("of") with Invisible |>> { _.setInputPrompt("any") }  // todo: i18n
+
+    val lytParents = new HorizontalLayout with UndefinedSize with Spacing
+    val lytChildren = new HorizontalLayout with UndefinedSize with Spacing
+
+    lytParents.addComponents(cbParents, txtParents)
+    lytChildren.addComponents(cbChildren, txtChildren)
 
     Seq("docs_projection.advanced_filter.cb_relationships_parents.item.undefined",
       "docs_projection.advanced_filter.cb_relationships_parents.item.has_parents",
@@ -35,7 +42,7 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/projection/advanced_filte
       "docs_projection.advanced_filter.cb_relationships_children.item.no_children"
     ).foreach(itemId => cbChildren.addItem(itemId, itemId.i))
 
-    this.addComponents(cbParents, cbChildren)
+    this.addComponents(lytParents, lytChildren)
   }
 
   val chkMaintainers = new CheckBox("docs_projection.advanced_filter.chk_maintainers".i) with Immediate

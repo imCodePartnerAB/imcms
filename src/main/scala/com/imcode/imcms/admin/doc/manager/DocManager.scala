@@ -1,6 +1,4 @@
-package com.imcode
-package imcms
-package admin.doc.manager
+package com.imcode.imcms.admin.doc.manager
 
 import com.vaadin.ui.UI
 import com.imcode.imcms.admin.doc.projection.{DocsProjectionOps, DocsProjection}
@@ -16,7 +14,6 @@ import scala.collection.JavaConverters._
 import com.vaadin.server.Page
 import com.vaadin.event.Action
 
-// todo: ??? profile -> import _root_.com.imcode.imcms.mapping.ProfileMapper.SimpleProfile
 class DocManager(app: UI) extends ImcmsServicesSupport {
   val projection = new DocsProjection(app.imcmsUser)
   val projectionOps = new DocsProjectionOps(projection)

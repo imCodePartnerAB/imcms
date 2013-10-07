@@ -1,26 +1,20 @@
 package com.imcode.imcms.mapping;
 
 import com.google.common.collect.Sets;
+import com.imcode.db.Database;
 import com.imcode.imcms.DocIdentityCleanerVisitor;
-import imcode.server.*;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.DocumentReference;
-import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.NoPermissionToEditDocumentException;
+import com.imcode.imcms.api.*;
+import com.imcode.imcms.dao.NativeQueriesDao;
+import com.imcode.imcms.flow.DocumentPageFlow;
+import imcode.server.Config;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
+import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.util.*;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.ArrayUtils;
@@ -28,10 +22,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.oro.text.perl.Perl5Util;
 
-import com.imcode.db.Database;
-import com.imcode.imcms.api.*;
-import com.imcode.imcms.dao.NativeQueriesDao;
-import com.imcode.imcms.flow.DocumentPageFlow;
+import java.io.File;
+import java.io.FileFilter;
+import java.util.*;
 
 /**
  * NOTES:
@@ -160,15 +153,15 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Sets text doc's template.
      *
-     * By default if parent doc type is {@link TextDocumentDomainObject} its default template is used.
+     * By default if parent doc type is {@link imcode.server.document.textdocument.TextDocumentDomainObject} its default template is used.
      * It might be overridden however if most privileged permission set type for the current user is either
-     * {@link DocumentPermissionSetTypeDomainObject#RESTRICTED_1}
+     * {@link imcode.server.document.DocumentPermissionSetTypeDomainObject#RESTRICTED_1}
      * or
-     * {@link DocumentPermissionSetTypeDomainObject#RESTRICTED_2}
+     * {@link imcode.server.document.DocumentPermissionSetTypeDomainObject#RESTRICTED_2}
      * and there is a default template associated with that set type.
      *
      * Please note:
-     *   According to specification only doc of type {@link TextDocumentDomainObject}
+     *   According to specification only doc of type {@link imcode.server.document.textdocument.TextDocumentDomainObject}
      *   can be used as parent (of a 'profile').
      *   NB! for some (undocumented) reason a doc of any type might be used as a parent.
      *
@@ -229,7 +222,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param user
      * @return saved document.
      * @throws DocumentSaveException
-     * @throws NoPermissionToAddDocumentToMenuException
+     * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      *
      * @see #createDocumentOfTypeFromParent(int, imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      * @see imcode.server.document.DocumentDomainObject#fromDocumentTypeId(int)
@@ -266,7 +259,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param <T>
      * @return saved document
      * @throws DocumentSaveException
-     * @throws NoPermissionToAddDocumentToMenuException
+     * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      *
      * @since 6.0
      */
@@ -304,7 +297,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param <T>
      * @return
      * @throws DocumentSaveException
-     * @throws NoPermissionToAddDocumentToMenuException
+     * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      *
      * @since 6.0
      */
@@ -477,11 +470,15 @@ public class DocumentMapper implements DocumentGetter {
             int containingDocumentId = row[0];
             int menuIndex = row[1];
 
-            TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getDocument(containingDocumentId);
+            TextDocumentDomainObject containingDocument = getDocument(containingDocumentId);
             documentMenuPairs[i] = new TextDocumentMenuIndexPair(containingDocument, menuIndex);
         }
 
         return documentMenuPairs;
+    }
+
+    public List<Integer> getParentDocsIds(DocumentDomainObject doc) {
+        return nativeQueriesDao.getParentDocsIds(doc.getId());
     }
 
     public Iterator<DocumentDomainObject> getDocumentsIterator(final IntRange idRange) {
@@ -588,7 +585,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param doc  existing doc.
      * @param user
      * @return working version of new saved document in source document's language.
-     * @throws NoPermissionToAddDocumentToMenuException
+     * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      *
      * @throws DocumentSaveException
      */
@@ -617,7 +614,7 @@ public class DocumentMapper implements DocumentGetter {
         // todo: put into resource file.
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        Meta meta = documentSaver.getMetaDao().getMeta(docRef.docId());
+        Meta meta = documentSaver.getMetaDao().getMeta(docRef.docId()).clone();
         List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docRef.docId());
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
