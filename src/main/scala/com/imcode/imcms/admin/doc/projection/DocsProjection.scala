@@ -25,22 +25,23 @@ import com.vaadin.ui.{Button, Component, UI, CheckBox}
 import scala.util.{Try, Failure, Success}
 import imcode.server.document.textdocument.TextDocumentDomainObject
 
-
+// todo: i18n
 class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport with ImcmsServicesSupport {
   private def parentsRenderer(doc: DocumentDomainObject): Component = imcmsServices.getDocumentMapper.getParentDocsIds(doc) match {
-    case list if list.isEmpty => null
-    case list => new Button(s"show (${list.size()})") with LinkStyle |>> { btn =>
+    case ids if ids.isEmpty => null
+    case ids => new Button(s"show (${ids.size()}) $ids") with LinkStyle |>> { btn =>
       btn.addClickHandler { _ =>
         //val languages = basicFilter.getState().
+
       }
     }
   }
 
   private def childrenRenderer(doc: DocumentDomainObject): Component = doc match {
     case textDoc: TextDocumentDomainObject =>
-      imcmsServices.getDocumentMapper.getDocuments(textDoc.getChildDocumentIds).asScala.toList match {
-        case Nil => null
-        case childDocs => new Button(s"show (${childDocs.length})") with LinkStyle |>> { btn =>
+      textDoc.getChildDocumentIds match {
+        case ids if ids.isEmpty => null
+        case ids => new Button(s"show (${ids.size()}) $ids") with LinkStyle |>> { btn =>
           btn.addClickHandler { _ => /* search children */ }
         }
       }
@@ -174,13 +175,27 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
         )
       }
 
-      for (Relationship(hasParentsOpt, hasChildrenOpt) <- advancedParams.relationshipOpt) {
-        hasParentsOpt.foreach { value =>
-          solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_PARENTS, value))
+      for (Relationship(withParents, withChildren) <- advancedParams.relationshipOpt) {
+        withParents match {
+          case Relationship.Logical(value) =>
+            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_PARENTS, value))
+
+          case Relationship.Exact(docId) =>
+            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_PARENTS, true))
+            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__PARENT_ID, docId))
+
+          case _ =>
         }
 
-        hasChildrenOpt.foreach { value =>
-          solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_CHILDREN, value))
+        withChildren match {
+          case Relationship.Logical(value) =>
+            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_CHILDREN, value))
+
+          case Relationship.Exact(docId) =>
+            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_CHILDREN, true))
+            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__CHILD_ID, docId))
+
+          case _ =>
         }
       }
 

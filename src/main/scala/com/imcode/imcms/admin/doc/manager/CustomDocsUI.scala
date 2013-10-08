@@ -1,4 +1,6 @@
-package com.imcode.imcms.admin.doc.manager
+package com.imcode
+package imcms
+package admin.doc.manager
 
 import com.vaadin.ui.{MenuBar, VerticalLayout, Component}
 import com.imcode.imcms.vaadin.ui._

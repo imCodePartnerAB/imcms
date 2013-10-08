@@ -23,18 +23,18 @@ class AdvancedFilter extends ImcmsServicesSupport {
   ui.lytRelationships.cbParents.addValueChangeHandler { _ =>
     val txtParents = ui.lytRelationships.txtParents
 
-    txtParents.setVisible(ui.lytRelationships.cbParents.selection == "docs_projection.advanced_filter.cb_relationships_parents.item.has_parents")
+    txtParents.setVisible(ui.lytRelationships.cbParents.selection == "docs_projection.advanced_filter.cb_relationships_parents.item.with_parent_of")
   }
 
   ui.lytRelationships.cbChildren.addValueChangeHandler { _ =>
     val txtChildren = ui.lytRelationships.txtChildren
 
-    txtChildren.setVisible(ui.lytRelationships.cbChildren.selection == "docs_projection.advanced_filter.cb_relationships_children.item.has_children")
+    txtChildren.setVisible(ui.lytRelationships.cbChildren.selection == "docs_projection.advanced_filter.cb_relationships_children.item.with_children_of")
   }
 
   def reset() {
-    Seq(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers).foreach {
-      _.uncheck()
+    Seq(ui.chkCategories, ui.chkDates, ui.chkRelationships, ui.chkMaintainers).foreach { chk =>
+      chk.uncheck()
     }
 
     Seq(ui.lytDates.drCreated, ui.lytDates.drModified, ui.lytDates.drPublished, ui.lytDates.drExpired).foreach { dr =>
@@ -43,7 +43,7 @@ class AdvancedFilter extends ImcmsServicesSupport {
 
     Seq(ui.lytMaintainers.ulCreators, ui.lytMaintainers.ulPublishers).foreach { ul =>
       ul.chkEnabled.check()
-      ul.chkEnabled.fireValueChange(true)
+      ul.chkEnabled.fireValueChange(repaintIsNotNeeded = true)
       ul.lstUsers.removeAllItems()
     }
 
@@ -61,8 +61,8 @@ class AdvancedFilter extends ImcmsServicesSupport {
       category.getImageUrl.asOption.foreach(url => ui.tcsCategories.setItemIcon(category, new ExternalResource(url)))
     }
 
-    ui.lytRelationships.cbParents.value = "docs_projection.advanced_filter.cb_relationships_parents.item.undefined"
-    ui.lytRelationships.cbChildren.value = "docs_projection.advanced_filter.cb_relationships_children.item.undefined"
+    ui.lytRelationships.cbParents.value = "docs_projection.advanced_filter.cb_relationships_parents.item.unspecified"
+    ui.lytRelationships.cbChildren.value = "docs_projection.advanced_filter.cb_relationships_children.item.unspecified"
   }
 
   private def toggleCategories() = ProjectionFilterUtil.toggle(ui, "docs_projection.advanced_filter.categories", ui.chkCategories, ui.tcsCategories)
@@ -104,17 +104,21 @@ class AdvancedFilter extends ImcmsServicesSupport {
     }
 
     val relationshipOpt: Option[Relationship] = when(ui.chkRelationships.isChecked) {
-      val hasParentsOpt = PartialFunction.condOpt(ui.lytRelationships.cbParents.value) {
-        case "docs_projection.advanced_filter.cb_relationships_parents.item.has_parents" => true
-        case "docs_projection.advanced_filter.cb_relationships_parents.item.no_parents" => false
+      val withParents = ui.lytRelationships.cbParents.value match {
+        case "docs_projection.advanced_filter.cb_relationships_parents.item.unspecified" => Relationship.Unspecified
+        case "docs_projection.advanced_filter.cb_relationships_parents.item.with_parents" => Relationship.Logical(true)
+        case "docs_projection.advanced_filter.cb_relationships_parents.item.without_parents" => Relationship.Logical(false)
+        case "docs_projection.advanced_filter.cb_relationships_parents.item.with_parent_of" => Relationship.Exact(ui.lytRelationships.txtParents.value.toInt)
       }
 
-      val hasChildrenOpt = PartialFunction.condOpt(ui.lytRelationships.cbChildren.value) {
-        case "docs_projection.advanced_filter.cb_relationships_children.item.has_children" => true
-        case "docs_projection.advanced_filter.cb_relationships_children.item.no_children" => false
+      val withChildren = ui.lytRelationships.cbChildren.value match {
+        case "docs_projection.advanced_filter.cb_relationships_children.item.unspecified" => Relationship.Unspecified
+        case "docs_projection.advanced_filter.cb_relationships_children.item.with_children" => Relationship.Logical(true)
+        case "docs_projection.advanced_filter.cb_relationships_children.item.without_children" => Relationship.Logical(false)
+        case "docs_projection.advanced_filter.cb_relationships_children.item.with_children_of" => Relationship.Exact(ui.lytRelationships.txtChildren.value.toInt)
       }
 
-      Relationship(hasParentsOpt, hasChildrenOpt)
+      Relationship(withParents, withChildren)
     }
 
     val categoriesOpt: Option[Set[String]] = when(ui.chkCategories.isChecked) {

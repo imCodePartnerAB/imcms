@@ -51,7 +51,9 @@ public interface DocumentIndex {
     String FIELD__PROPERTY_PREFIX = "property.";
     String FIELD__ALIAS = "alias";
     String FIELD__TEMPLATE = "template";
+    // Applies to text document only
     String FIELD__CHILD_ID = "child_id";
+    // Applies to text document only
     String FIELD__HAS_CHILDREN = "has_children";
 
     String FIELD__SEARCH_ENABLED = "search_enabled";

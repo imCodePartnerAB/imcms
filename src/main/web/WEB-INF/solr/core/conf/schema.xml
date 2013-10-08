@@ -122,7 +122,7 @@
         <field name="template" type="text_general" indexed="true" stored="false"/>
         <field name="nonstripped_text" type="text_general" indexed="true" stored="false" multiValued="true"/>
         <field name="text" type="text_general_html_strip" indexed="true" stored="false" multiValued="true"/>
-        <field name="child_id" type="int" indexed="false" stored="true" multiValued="true"/>
+        <field name="child_id" type="int" indexed="true" stored="true" multiValued="true"/>
         <field name="has_children" type="boolean" indexed="true" stored="false"/>
         <field name="image_link_url" type="text_general" indexed="true" stored="false" multiValued="true"/>
 

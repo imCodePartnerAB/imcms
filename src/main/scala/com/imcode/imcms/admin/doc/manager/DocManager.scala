@@ -1,4 +1,6 @@
-package com.imcode.imcms.admin.doc.manager
+package com.imcode
+package imcms
+package admin.doc.manager
 
 import com.vaadin.ui.UI
 import com.imcode.imcms.admin.doc.projection.{DocsProjectionOps, DocsProjection}

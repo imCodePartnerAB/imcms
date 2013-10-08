@@ -1,4 +1,6 @@
-package com.imcode.imcms.admin.doc.projection
+package com.imcode
+package imcms
+package admin.doc.projection
 
 import imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject

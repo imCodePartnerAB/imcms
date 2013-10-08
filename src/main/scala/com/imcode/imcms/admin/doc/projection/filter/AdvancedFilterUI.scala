@@ -1,4 +1,6 @@
-package com.imcode.imcms.admin.doc.projection.filter
+package com.imcode
+package imcms
+package admin.doc.projection.filter
 
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
@@ -23,8 +25,8 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/projection/advanced_filte
     val cbParents = new ComboBox("docs_projection.advanced_filter.chk_relationships_parents".i) with SingleSelect[String] with NoNullSelection with Immediate
     val cbChildren = new ComboBox("docs_projection.advanced_filter.chk_relationships_children".i) with SingleSelect[String] with NoNullSelection with Immediate
 
-    val txtParents = new TextField("of") with Invisible |>> { _.setInputPrompt("any") }   // todo: i18n
-    val txtChildren = new TextField("of") with Invisible |>> { _.setInputPrompt("any") }  // todo: i18n
+    val txtParents = new TextField with Invisible |>> { _.setInputPrompt("any") }   // todo: i18n
+    val txtChildren = new TextField with Invisible |>> { _.setInputPrompt("any") }  // todo: i18n
 
     val lytParents = new HorizontalLayout with UndefinedSize with Spacing
     val lytChildren = new HorizontalLayout with UndefinedSize with Spacing
@@ -32,14 +34,16 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/projection/advanced_filte
     lytParents.addComponents(cbParents, txtParents)
     lytChildren.addComponents(cbChildren, txtChildren)
 
-    Seq("docs_projection.advanced_filter.cb_relationships_parents.item.undefined",
-      "docs_projection.advanced_filter.cb_relationships_parents.item.has_parents",
-      "docs_projection.advanced_filter.cb_relationships_parents.item.no_parents"
+    Seq("docs_projection.advanced_filter.cb_relationships_parents.item.unspecified",
+      "docs_projection.advanced_filter.cb_relationships_parents.item.with_parents",
+      "docs_projection.advanced_filter.cb_relationships_parents.item.without_parents",
+      "docs_projection.advanced_filter.cb_relationships_parents.item.with_parent_of"
     ).foreach(itemId => cbParents.addItem(itemId, itemId.i))
 
-    Seq("docs_projection.advanced_filter.cb_relationships_children.item.undefined",
-      "docs_projection.advanced_filter.cb_relationships_children.item.has_children",
-      "docs_projection.advanced_filter.cb_relationships_children.item.no_children"
+    Seq("docs_projection.advanced_filter.cb_relationships_children.item.unspecified",
+      "docs_projection.advanced_filter.cb_relationships_children.item.with_children",
+      "docs_projection.advanced_filter.cb_relationships_children.item.without_children",
+      "docs_projection.advanced_filter.cb_relationships_children.item.with_children_of"
     ).foreach(itemId => cbChildren.addItem(itemId, itemId.i))
 
     this.addComponents(lytParents, lytChildren)

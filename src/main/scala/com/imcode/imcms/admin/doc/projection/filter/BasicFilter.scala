@@ -58,10 +58,12 @@ class BasicFilter extends ImcmsServicesSupport {
 
   // todo: handle language differently - no lang selected, select default!!
   def setParameters(parameters: BasicFilterParameters) {
+    // reset all top-level checkboxes
     Seq(ui.chkIdRange, ui.chkText, ui.chkType, ui.chkPhase, ui.chkAdvanced).foreach { chk =>
       chk.check()
     }
 
+    // reset all child level checkboxes
     Seq(ui.lytPhases.chkNew, ui.lytPhases.chkPublished, ui.lytPhases.chkUnpublished, ui.lytPhases.chkApproved,
       ui.lytPhases.chkDisapproved, ui.lytPhases.chkArchived).foreach { chk =>
       chk.uncheck()
@@ -84,21 +86,26 @@ class BasicFilter extends ImcmsServicesSupport {
         ui.lytIdRange.txtEnd.value = end
     }
 
-    ui.lytTypes.chkText.checked = parameters.docTypesOpt.exists(set => set.contains(DocumentTypeDomainObject.TEXT))
-    ui.lytTypes.chkFile.checked = parameters.docTypesOpt.exists(set => set.contains(DocumentTypeDomainObject.FILE))
-    ui.lytTypes.chkHtml.checked = parameters.docTypesOpt.exists(set => set.contains(DocumentTypeDomainObject.HTML))
+    ui.lytTypes.chkText.checked = parameters.docTypesOpt.exists(types => types.contains(DocumentTypeDomainObject.TEXT))
+    ui.lytTypes.chkFile.checked = parameters.docTypesOpt.exists(types => types.contains(DocumentTypeDomainObject.FILE))
+    ui.lytTypes.chkHtml.checked = parameters.docTypesOpt.exists(types => types.contains(DocumentTypeDomainObject.HTML))
 
 
     ui.lytAdvanced.cbTypes.removeAllItems()
     Seq("docs_projection.basic_filter.cb_advanced_type.custom", "docs_projection.basic_filter.cb_advanced_type.last_xxx", "docs_projection.basic_filter.cb_advanced_type.last_zzz").foreach(itemId => ui.lytAdvanced.cbTypes.addItem(itemId, itemId.i))
     ui.lytAdvanced.cbTypes.value = parameters.advancedOpt.getOrElse("docs_projection.basic_filter.cb_advanced_type.custom")
 
+
+    val isChecked: (DocumentLanguage => Boolean) = {
+      val languages = parameters.languagesOpt.getOrElse(Set.empty)
+      language => (languages.isEmpty && imcmsServices.getDocumentI18nSupport.isDefault(language)) || languages.contains(language)
+    }
     ui.lytLanguages.removeAllComponents()
     for (language <- imcmsServices.getDocumentI18nSupport.getLanguages.asScala) {
       val chkLanguage = new CheckBox(language.getNativeName) with TypedData[DocumentLanguage] |>> { chk =>
         chk.setIcon(Theme.Icon.Language.flag(language))
         chk.data = language
-        chk.checked = language |> imcmsServices.getDocumentI18nSupport.isDefault
+        chk.checked = isChecked(language)
       }
 
       ui.lytLanguages.addComponent(chkLanguage)
