@@ -3,7 +3,7 @@ package imcms
 package admin.doc.projection.filter
 
 
-case class Relationship(withParents: Relationship.Type, withChildren: Relationship.Type)
+case class Relationship(parents: Relationship.Type = Relationship.Unspecified, children: Relationship.Type = Relationship.Unspecified)
 
 object Relationship {
   sealed trait Type

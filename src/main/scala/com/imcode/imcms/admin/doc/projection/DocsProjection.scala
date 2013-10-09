@@ -31,8 +31,17 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
     case ids if ids.isEmpty => null
     case ids => new Button(s"show (${ids.size()}) $ids") with LinkStyle |>> { btn =>
       btn.addClickHandler { _ =>
-        //val languages = basicFilter.getState().
+        val relationshipOpt = Some(
+          Relationship(children = Relationship.Exact(doc.getId))
+        )
 
+        val basicFilterParams = new BasicFilterParameters(languagesOpt = basicFilter.selectedLanguagesOpt())
+        val advancedFilterParams = new AdvancedFilterParameters(relationshipOpt = relationshipOpt)
+
+        basicFilter.setParameters(basicFilterParams)
+        advancedFilter.setParameters(advancedFilterParams)
+
+        reload()
       }
     }
   }
@@ -42,7 +51,19 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
       textDoc.getChildDocumentIds match {
         case ids if ids.isEmpty => null
         case ids => new Button(s"show (${ids.size()}) $ids") with LinkStyle |>> { btn =>
-          btn.addClickHandler { _ => /* search children */ }
+          btn.addClickHandler { _ =>
+            val relationshipOpt = Some(
+              Relationship(parents = Relationship.Exact(doc.getId))
+            )
+
+            val basicFilterParams = new BasicFilterParameters(languagesOpt = basicFilter.selectedLanguagesOpt())
+            val advancedFilterParams = new AdvancedFilterParameters(relationshipOpt = relationshipOpt)
+
+            basicFilter.setParameters(basicFilterParams)
+            advancedFilter.setParameters(advancedFilterParams)
+
+            reload()
+          }
         }
       }
 

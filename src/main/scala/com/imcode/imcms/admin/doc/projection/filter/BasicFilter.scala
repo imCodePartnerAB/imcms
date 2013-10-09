@@ -154,17 +154,22 @@ class BasicFilter extends ImcmsServicesSupport {
     }
 
 
-    val languagesOpt = when(ui.chkLanguage.isChecked) {
-      (
-        for {
-          _chk@(chkLanguage: CheckBox with TypedData[DocumentLanguage]) <- ui.lytLanguages.iterator.asScala
-          if chkLanguage.isChecked
-        } yield
-          chkLanguage.data
-        ).to[Set]
-    }
+    val languagesOpt = selectedLanguagesOpt()
 
     BasicFilterParameters(idRangeOpt, textOpt, typesOpt, languagesOpt, phasesOpt)
+  }
+
+  /**
+   * @return None
+   */
+  def selectedLanguagesOpt(): Option[Set[DocumentLanguage]] = when(ui.chkLanguage.isChecked) {
+    (
+      for {
+        _chk@(chkLanguage: CheckBox with TypedData[DocumentLanguage]) <- ui.lytLanguages.iterator.asScala
+        if chkLanguage.isChecked
+      } yield
+        chkLanguage.data
+    ).to[Set]
   }
 }
 

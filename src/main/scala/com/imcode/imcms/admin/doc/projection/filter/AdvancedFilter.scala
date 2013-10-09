@@ -141,6 +141,36 @@ class AdvancedFilter extends ImcmsServicesSupport {
   }
 
   def setParameters(parameters: AdvancedFilterParameters) {
-    //todo: implement
+    reset()
+
+    for (Relationship(parents, children) <- parameters.relationshipOpt) {
+      ui.chkRelationships.check()
+
+      parents match {
+        case Relationship.Logical(value) if value =>
+          ui.lytRelationships.cbParents.value = "docs_projection.advanced_filter.cb_relationships_parents.item.with_parents"
+        case Relationship.Logical(_) =>
+          ui.lytRelationships.cbParents.value = "docs_projection.advanced_filter.cb_relationships_parents.item.without_parents"
+        case Relationship.Exact(docId) =>
+          ui.lytRelationships.cbParents.value = "docs_projection.advanced_filter.cb_relationships_parents.item.with_parent_of"
+          ui.lytRelationships.txtParents.value = docId.toString
+
+        case _ =>
+          ui.lytRelationships.cbParents.value = "docs_projection.advanced_filter.cb_relationships_parents.item.unspecified"
+      }
+
+      children match {
+        case Relationship.Logical(value) if value =>
+          ui.lytRelationships.cbChildren.value = "docs_projection.advanced_filter.cb_relationships_children.item.with_children"
+        case Relationship.Logical(_) =>
+          ui.lytRelationships.cbChildren.value = "docs_projection.advanced_filter.cb_relationships_children.item.without_children"
+        case Relationship.Exact(docId) =>
+          ui.lytRelationships.cbChildren.value = "docs_projection.advanced_filter.cb_relationships_children.item.with_children_of"
+          ui.lytRelationships.txtChildren.value = docId.toString
+
+        case _ =>
+          ui.lytRelationships.cbChildren.value = "docs_projection.advanced_filter.cb_relationships_children.item.unspecified"
+      }
+    }
   }
 }
