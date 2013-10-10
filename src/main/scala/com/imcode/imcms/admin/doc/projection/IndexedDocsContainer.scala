@@ -18,7 +18,6 @@ import java.util.Arrays
 import java.util.Date
 import org.apache.solr.client.solrj.SolrQuery
 
-// todo: lazy loaded parents and children: single column - relationships?, show button/hover, loads count
 class IndexedDocsContainer(
                             user: UserDomainObject,
                             private var solrQueryOpt: Option[SolrQuery] = None,
@@ -87,10 +86,10 @@ with ImcmsServicesSupport {
       case (None, _) => java.util.Collections.emptyList()
       case (_, Some(ids)) if ids.isEmpty => java.util.Collections.emptyList()
       case (Some(solrQuery), None) =>
-        imcmsServices.getDocumentMapper.getDocumentIndex.getService.search(solrQuery, user).get
+        imcmsServices.getDocumentMapper.getDocumentIndex.search(solrQuery, user)
       case (Some(solrQuery), Some(ids)) =>
         // todo: apply visible docs filter
-        imcmsServices.getDocumentMapper.getDocumentIndex.getService.search(solrQuery, user).get
+        imcmsServices.getDocumentMapper.getDocumentIndex.search(solrQuery, user)
     }
 
     notifyItemSetChanged()

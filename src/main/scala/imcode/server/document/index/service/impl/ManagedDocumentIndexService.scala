@@ -1,7 +1,6 @@
 package imcode.server.document.index.service.impl
 
 import com.imcode._
-import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service._
 import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
@@ -220,11 +219,11 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[JList[DocumentDomainObject]] = {
-    Try(serviceOps.search(solrServerReader, solrQuery, searchingUser)) |>> {
+  override def search(solrQuery: SolrQuery): Try[JList[DocumentDomainObject]] = {
+    Try(serviceOps.search(solrServerReader, solrQuery)) |>> {
       case _: Success[_] =>
       case Failure(e) =>
-        logger.error(s"Search error. solrQuery: $solrQuery, searchingUser: $searchingUser", e)
+        logger.error(s"Search error. SOLr query: $solrQuery", e)
         Threads.spawnDaemon {
           serviceFailureHandler(ManagedSolrDocumentIndexService.IndexSearchFailure(ManagedSolrDocumentIndexService.this, e))
         }

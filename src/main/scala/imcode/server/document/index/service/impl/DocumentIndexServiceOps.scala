@@ -3,27 +3,28 @@ package imcode.server.document.index.service.impl
 import com.imcode._
 import com.imcode.imcms.api.DocumentLanguage
 import com.imcode.imcms.mapping.DocumentMapper
+
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
-import _root_.imcode.server.user.UserDomainObject
-import _root_.imcode.server.document.index.service.{IndexRebuildProgress}
+import _root_.imcode.server.document.index.service.IndexRebuildProgress
+
 import scala.collection.SeqView
 import scala.collection.JavaConverters._
+
+import java.util.Date
+import java.net.URLDecoder
+
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.common.util.DateUtil
-import java.lang.{InterruptedException, Thread}
 import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
-import java.util.Date
 import org.apache.solr.client.solrj.response.QueryResponse
-import java.net.URLDecoder
-import java.util
+
 
 /**
  * Document index service low level operations.
  *
- * The instance of this class is thread save.
+ * An instance of this class is thread save.
  */
-// todo: replace indexed doc filtering with filter queries at higher level
 class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) extends Log4jLoggerSupport {
 
   type DocId = Int
@@ -54,7 +55,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
 
     if (logger.isTraceEnabled) {
-      logger.trace("created %d solrInputDoc(s) with docId: %d and language(s): %s.".format(
+      logger.trace("Created %d solrInputDoc(s) with docId: %d and language(s): %s.".format(
         solrInputDocs.length, docId, languages.mkString(", "))
       )
     }
@@ -74,29 +75,31 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
   def mkSolrDocsDeleteQuery(docId: Int): String = "%s:%d".format(DocumentIndex.FIELD__META_ID, docId)
 
 
-  def search(solrServer: SolrServer, solrQuery: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
+  def search(solrServer: SolrServer, solrQuery: SolrQuery): JList[DocumentDomainObject] = {
     if (logger.isDebugEnabled) {
-      logger.debug("Searching using solrQuery: %s, searchingUser: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8"), searchingUser))
+      logger.debug("Searching SOLr index using query: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8")))
     }
 
-    val docs = new util.LinkedList[DocumentDomainObject]
+    val solrDocs = solrServer.query(solrQuery).getResults
 
-    for {
-      solrDoc <- solrServer.query(solrQuery).getResults.iterator().asScala
-      docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
-      languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
-      doc <- documentMapper.getDefaultDocument[DocumentDomainObject](docId, languageCode).asOption
-    } {
-      docs.add(doc)
+    new java.util.AbstractList[DocumentDomainObject] {
+      def get(i: Int): DocumentDomainObject = {
+        val solrDoc = solrDocs.get(i)
+        val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
+        val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
+
+        // todo: return wrapper which does return default fields if doc is null + return id and lang w/o db query
+        documentMapper.getDefaultDocument[DocumentDomainObject](docId, languageCode);
+      }
+
+      def size(): Int = solrDocs.size()
     }
-
-    docs
   }
 
 
   def query(solrServer: SolrServer, solrQuery: SolrQuery): QueryResponse = {
     if (logger.isDebugEnabled) {
-      logger.debug("Searching using solrQuery: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8")))
+      logger.debug("Searching using SOLr query: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8")))
     }
 
     solrServer.query(solrQuery)
@@ -132,7 +135,9 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
     progressCallback(IndexRebuildProgress(rebuildStartMills, rebuildStartMills, docsCount, 0))
 
-    for { ((docId, solrInputDocs), docNo) <- docsView.zip(Stream.from(1)); if solrInputDocs.nonEmpty } {
+    for {
+      ((docId, solrInputDocs), docNo) <- docsView.zip(Stream.from(1)); if solrInputDocs.nonEmpty
+    } {
       if (Thread.interrupted()) {
         solrServer.rollback()
         throw new InterruptedException()

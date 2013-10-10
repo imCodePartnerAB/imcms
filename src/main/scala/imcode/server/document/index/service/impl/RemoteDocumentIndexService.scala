@@ -21,7 +21,7 @@ class RemoteDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serv
 
   def query(solrQuery: SolrQuery): Try[QueryResponse] = ???
 
-  def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[JList[DocumentDomainObject]] = ???
+  def search(solrQuery: SolrQuery): Try[JList[DocumentDomainObject]] = ???
 
   def update(request: IndexUpdateOp) {}
 

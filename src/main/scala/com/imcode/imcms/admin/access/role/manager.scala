@@ -40,6 +40,7 @@ class RoleManager(app: UI) {
             app.privileged(permission) {
               Ex.allCatch.either(roleMapper.getRole(id).asOption.foreach(roleMapper.deleteRole)) match {
                 case Right(_) =>
+                  dlg.close()
                   Page.getCurrent.showInfoNotification("Role has been deleted")
                 case Left(ex) =>
                   Page.getCurrent.showErrorNotification("Internal error")
@@ -93,6 +94,7 @@ class RoleManager(app: UI) {
                   throw ex
                 case _ =>
                   (if (isNew) "New role has been created" else "Role has been updated") |> { msg =>
+                    dlg.close()
                     Page.getCurrent.showInfoNotification(msg)
                   }
 

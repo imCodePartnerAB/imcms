@@ -1,6 +1,5 @@
 package imcode.server.document.index.service.impl
 
-import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service.{IndexRebuildTask, IndexUpdateOp, DocumentIndexService}
 import org.apache.solr.client.solrj.response.QueryResponse
@@ -12,7 +11,7 @@ object UnavailableDocumentIndexService extends DocumentIndexService {
 
   override def query(solrQuery: SolrQuery): Try[QueryResponse] = Failure(new ServiceUnavailableException())
 
-  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): Try[com.imcode.JList[DocumentDomainObject]] = Failure(new ServiceUnavailableException())
+  override def search(solrQuery: SolrQuery): Try[com.imcode.JList[DocumentDomainObject]] = Failure(new ServiceUnavailableException())
 
   override def update(request: IndexUpdateOp) {}
 

@@ -757,7 +757,9 @@ public class UserDomainObject implements Cloneable, Serializable {
             isSuperAdmin()
             || (!document.isSearchDisabled()
                 && (canEdit(document)
-                    || (document.isPublished() && (document.isLinkedForUnauthorizedUsers() || canAccess(document)))));
+                    || (document.isPublished() && (document.isLinkedForUnauthorizedUsers() || canAccess(document)))
+                   )
+               );
     }
 
     public boolean canEditDocumentInformationFor( DocumentDomainObject document ) {
