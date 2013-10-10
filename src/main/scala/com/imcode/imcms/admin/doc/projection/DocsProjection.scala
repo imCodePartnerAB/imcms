@@ -9,27 +9,37 @@ import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
-import scala.PartialFunction._
 import com.imcode.imcms.admin.doc.projection.filter._
 import org.apache.solr.client.solrj.SolrQuery
-import _root_.imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject, DocumentDomainObject}
+import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
 import org.apache.commons.lang3.StringUtils
 import java.net.URLDecoder
 import org.apache.solr.common.util.DateUtil
-import com.imcode.imcms.admin.doc.projection.filter.DateRange
-import com.imcode.imcms.admin.doc.projection.filter.IdRange
-import com.imcode.imcms.api.DocumentLanguage
-import com.vaadin.ui.{Button, Component, UI, CheckBox}
-import scala.util.{Try, Failure, Success}
+import com.vaadin.ui.{Button, Component, UI}
+import scala.util.Try
 import imcode.server.document.textdocument.TextDocumentDomainObject
+import com.imcode.imcms.admin.doc.projection.filter.DateRange
+import scala.util.Failure
+import scala.Some
+import com.imcode.imcms.admin.doc.projection.filter.BasicFilterParameters
+import com.imcode.imcms.admin.doc.projection.filter.Maintainers
+import com.imcode.imcms.admin.doc.projection.filter.AdvancedFilterParameters
+import scala.util.Success
+import com.imcode.imcms.admin.doc.projection.filter.IdRange
 
-// todo: i18n
+
 class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport with ImcmsServicesSupport {
+
+  @transient
+  private var history = List.empty[(BasicFilterParameters, AdvancedFilterParameters)]
+  @transient
+  private var currentValidFilterParams = (BasicFilterParameters(), AdvancedFilterParameters())
+
   private def parentsRenderer(doc: DocumentDomainObject): Component = imcmsServices.getDocumentMapper.getParentDocsIds(doc) match {
     case ids if ids.isEmpty => null
-    case ids => new Button(s"show (${ids.size()}) $ids") with LinkStyle |>> { btn =>
+    case ids => new Button("docs_projection.result.show_parents".f(ids.size)) with LinkStyle |>> { btn =>
       btn.addClickHandler { _ =>
         val relationshipOpt = Some(
           Relationship(children = Relationship.Exact(doc.getId))
@@ -38,10 +48,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
         val basicFilterParams = new BasicFilterParameters(languagesOpt = basicFilter.selectedLanguagesOpt())
         val advancedFilterParams = new AdvancedFilterParameters(relationshipOpt = relationshipOpt)
 
-        basicFilter.setParameters(basicFilterParams)
-        advancedFilter.setParameters(advancedFilterParams)
-
-        reload()
+        setFilterParameters(basicFilterParams, advancedFilterParams)
       }
     }
   }
@@ -50,7 +57,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
     case textDoc: TextDocumentDomainObject =>
       textDoc.getChildDocumentIds match {
         case ids if ids.isEmpty => null
-        case ids => new Button(s"show (${ids.size()}) $ids") with LinkStyle |>> { btn =>
+        case ids => new Button("docs_projection.result.show_children".f(ids.size)) with LinkStyle |>> { btn =>
           btn.addClickHandler { _ =>
             val relationshipOpt = Some(
               Relationship(parents = Relationship.Exact(doc.getId))
@@ -59,10 +66,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
             val basicFilterParams = new BasicFilterParameters(languagesOpt = basicFilter.selectedLanguagesOpt())
             val advancedFilterParams = new AdvancedFilterParameters(relationshipOpt = relationshipOpt)
 
-            basicFilter.setParameters(basicFilterParams)
-            advancedFilter.setParameters(advancedFilterParams)
-
-            reload()
+            setFilterParameters(basicFilterParams, advancedFilterParams)
           }
         }
       }
@@ -87,6 +91,9 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
 
     basicFilterUI.lytButtons.btnFilter.addClickHandler { _ => reload() }
     basicFilterUI.lytButtons.btnReset.addClickHandler { _ => reset() }
+    basicFilterUI.lytButtons.btnBack.addClickHandler { _ =>
+      goBack()
+    }
 
     override def attach() {
       super.attach()
@@ -100,10 +107,33 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
   }
 
 
-  def reset() {
-    basicFilter.reset()
-    advancedFilter.reset()
+  def setFilterParameters(basicParams: BasicFilterParameters, advancedParams: AdvancedFilterParameters) {
+    if (currentValidFilterParams._1 != basicParams || currentValidFilterParams._2 != advancedParams) {
+      history +:= (currentValidFilterParams._1, currentValidFilterParams._2)
+    }
+
+    basicFilter.setParameters(basicParams)
+    advancedFilter.setParameters(advancedParams)
+    
+    currentValidFilterParams = (basicParams, advancedParams)
+
     reload()
+  }
+
+  def goBack() {
+    for ((basicParams, advancedParams) <- history.headOption) {
+      history = history.drop(1)
+
+      basicFilter.setParameters(basicParams)
+      advancedFilter.setParameters(advancedParams)
+
+      reload()
+    }
+  }
+
+
+  def reset() {
+    setFilterParameters(BasicFilterParameters(), AdvancedFilterParameters())
   }
 
 

@@ -65,9 +65,9 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     val btnReset = new Button("btn_reset".i) with SmallStyle
     val btnFilter = new Button("btn_search".i) with SmallStyle
     val btnBack = new Button with SmallStyle |>> { b => b.setIcon(Theme.Icon.HistoryBack, "Go back") }
-    val btnForward = new Button with SmallStyle |>> { b => b.setIcon(Theme.Icon.HistoryForward, "Go forward") }
+    //val btnForward = new Button with SmallStyle |>> { b => b.setIcon(Theme.Icon.HistoryForward, "Go forward") }
 
-    this.addComponents(btnReset, btnFilter, btnBack, btnForward)
+    this.addComponents(btnReset, btnFilter, btnBack/*, btnForward*/)
   }
 
   this.addNamedComponents(
