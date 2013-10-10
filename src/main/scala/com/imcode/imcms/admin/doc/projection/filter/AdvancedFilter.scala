@@ -81,7 +81,7 @@ class AdvancedFilter extends ImcmsServicesSupport {
           DocumentIndex.FIELD__CREATED_DATETIME -> drCreated,
           DocumentIndex.FIELD__MODIFIED_DATETIME -> drModified,
           DocumentIndex.FIELD__PUBLICATION_START_DATETIME -> drPublished,
-          DocumentIndex.FIELD__ACTIVATED_DATETIME -> drArchived,
+          DocumentIndex.FIELD__ARCHIVED_DATETIME -> drArchived,
           DocumentIndex.FIELD__PUBLICATION_END_DATETIME -> drExpired
         )
         if dr.cbRangeType.value != DateRangeType.Undefined
@@ -142,6 +142,43 @@ class AdvancedFilter extends ImcmsServicesSupport {
 
   def setParameters(parameters: AdvancedFilterParameters) {
     reset()
+
+    for (dates <- parameters.datesOpt) {
+      ui.chkDates.check()
+
+      for ((dateRangeName, dateRange) <- dates) {
+        import ui.lytDates._
+
+        val dateRangeUI = dateRangeName match {
+          case DocumentIndex.FIELD__CREATED_DATETIME => drCreated
+          case DocumentIndex.FIELD__MODIFIED_DATETIME => drModified
+          case DocumentIndex.FIELD__PUBLICATION_START_DATETIME => drPublished
+          case DocumentIndex.FIELD__ARCHIVED_DATETIME => drArchived
+          case DocumentIndex.FIELD__PUBLICATION_END_DATETIME => drExpired
+        }
+
+        dateRangeUI.dtFrom.value = dateRange.start.orNull
+        dateRangeUI.dtTo.value = dateRange.end.orNull
+      }
+    }
+
+    for (categories <- parameters.categoriesOpt) {
+      ui.chkCategories.check()
+
+      categories.foreach(ui.tcsCategories.select)
+    }
+
+    for (maintainers <- parameters.maintainersOpt) {
+      ui.chkMaintainers.check()
+
+      for (usersIds <- maintainers.creatorsOpt; userId <- usersIds) {
+        ui.lytMaintainers.ulCreators.lstUsers.addItem(userId)
+      }
+
+      for (usersIds <- maintainers.publishersOpt; userId <- usersIds) {
+        ui.lytMaintainers.ulCreators.lstUsers.addItem(userId)
+      }
+    }
 
     for (Relationship(parents, children) <- parameters.relationshipOpt) {
       ui.chkRelationships.check()

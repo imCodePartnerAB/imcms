@@ -50,7 +50,7 @@ class AdvancedFilterUI extends CustomLayout("admin/doc/projection/advanced_filte
   }
 
   val chkMaintainers = new CheckBox("docs_projection.advanced_filter.chk_maintainers".i) with Immediate
-  val lytMaintainers = new HorizontalLayout with Spacing with UndefinedSize{
+  val lytMaintainers = new HorizontalLayout with Spacing with UndefinedSize {
     val ulCreators = new UserListUI("docs_projection.advanced_filter.chk_maintainers_creators".i) with UserListUISetup {
       val projectionDialogCaption = "docs_projection.advanced.dlg_select_creators.caption".i
     }
