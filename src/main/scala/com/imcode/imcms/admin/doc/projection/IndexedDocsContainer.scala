@@ -33,10 +33,6 @@ with Container.Sortable
 with ContainerItemSetChangeNotifier
 with ImcmsServicesSupport {
 
-  private implicit class JListOps(jList: JList[_]) {
-    def nonEmpty: Boolean = !jList.isEmpty
-  }
-
   private val propertyIdToType = ListMap(
     "docs_projection.container_property.index" -> classOf[Ix],
     "docs_projection.container_property.meta_id" -> classOf[Component],
@@ -61,7 +57,14 @@ with ImcmsServicesSupport {
 
   private val propertyIds = propertyIdToType.keys.toList
 
-  private var visibleDocs = java.util.Collections.emptyList[DocumentDomainObject]
+  private class VisibleDocs(val docs: JList[DocumentDomainObject] = java.util.Collections.emptyList[DocumentDomainObject]) {
+    val size: Int = docs.size()
+    val isEmpty: Boolean = docs.isEmpty
+    val nonEmpty: Boolean = !isEmpty
+    val contains: (Int => Boolean) = if (isEmpty) Function.const(false) else { i => i >= 0 && i < size }
+  }
+
+  private var visibleDocs = new VisibleDocs()
 
   def getVisibleDocsFilterOpt: Option[Set[DocId]] = visibleDocsFilterOpt
 
@@ -82,15 +85,17 @@ with ImcmsServicesSupport {
   }
 
   private def updateVisibleDocsIds() {
-    visibleDocs = (solrQueryOpt, visibleDocsFilterOpt) match {
-      case (None, _) => java.util.Collections.emptyList()
-      case (_, Some(ids)) if ids.isEmpty => java.util.Collections.emptyList()
+    val docs: JList[DocumentDomainObject] = (solrQueryOpt, visibleDocsFilterOpt) match {
+      case (None, _) => java.util.Collections.emptyList[DocumentDomainObject]
+      case (_, Some(ids)) if ids.isEmpty => java.util.Collections.emptyList[DocumentDomainObject]
       case (Some(solrQuery), None) =>
         imcmsServices.getDocumentMapper.getDocumentIndex.search(solrQuery, user)
       case (Some(solrQuery), Some(ids)) =>
         // todo: apply visible docs filter
         imcmsServices.getDocumentMapper.getDocumentIndex.search(solrQuery, user)
     }
+
+    visibleDocs = new VisibleDocs(docs)
 
     notifyItemSetChanged()
   }
@@ -115,19 +120,17 @@ with ImcmsServicesSupport {
   override def getContainerProperty(itemId: AnyRef, propertyId: AnyRef): Property[AnyRef] = getItem(itemId).getItemProperty(propertyId)
 
   @transient
-  override def size: Int = visibleDocs.size
+  override def size(): Int = visibleDocs.size
 
-  override def getItemIds: JCollection[_] = new java.util.AbstractList[Ix] {
+  override def getItemIds(): JCollection[_] = new java.util.AbstractList[Ix] {
     def get(index: Int): Ix = index
     def size(): Int = IndexedDocsContainer.this.size
   }
 
   override def containsId(itemId: AnyRef): Boolean = itemId match {
-    case id: Ix => containsId(id)
+    case id: Ix => visibleDocs.contains(id)
     case _ => false
   }
-
-  private def containsId(id: Ix): Boolean = visibleDocs.nonEmpty && id >= 0 && id < size
 
   override def isFirstId(itemId: AnyRef): Boolean = itemId match {
     case ix: Ix if visibleDocs.nonEmpty => ix == 0
@@ -144,17 +147,17 @@ with ImcmsServicesSupport {
   override def lastItemId: Ix = if (visibleDocs.isEmpty) null else visibleDocs.size - 1
 
   override def prevItemId(itemId: AnyRef): Ix = itemId match {
-    case id: Ix if containsId(id - 1) => id - 1
+    case id: Ix if visibleDocs.contains(id - 1) => id - 1
     case _ => null
   }
 
   override def nextItemId(itemId: AnyRef): Ix = itemId match {
-    case id: Ix if containsId(id + 1) => id + 1
+    case id: Ix if visibleDocs.contains(id + 1) => id + 1
     case _ => null
   }
 
   override def getItem(itemId: AnyRef): DocItem = itemId match {
-    case id: Ix if containsId(id) => DocItem(id, visibleDocs.get(id))
+    case id: Ix if visibleDocs.contains(id) => DocItem(id, visibleDocs.docs.get(id))
     case _ => null
   }
 

@@ -18,6 +18,7 @@ import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.common.util.DateUtil
 import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import org.apache.solr.client.solrj.response.QueryResponse
+import imcode.server.document.textdocument.TextDocumentDomainObject
 
 
 /**
@@ -25,6 +26,7 @@ import org.apache.solr.client.solrj.response.QueryResponse
  *
  * An instance of this class is thread save.
  */
+// todo: document search might return doc which is not present in db (deleted) - return stub instead
 class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: DocumentIndexer) extends Log4jLoggerSupport {
 
   type DocId = Int
@@ -81,18 +83,30 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
     }
 
     val solrDocs = solrServer.query(solrQuery).getResults
-
     new java.util.AbstractList[DocumentDomainObject] {
-      def get(i: Int): DocumentDomainObject = {
-        val solrDoc = solrDocs.get(i)
-        val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
-        val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
+      val docs = scala.collection.mutable.Map.empty[Int, DocumentDomainObject]
 
-        // todo: return wrapper which does return default fields if doc is null + return id and lang w/o db query
-        documentMapper.getDefaultDocument[DocumentDomainObject](docId, languageCode);
+      override def get(i: Int): DocumentDomainObject = {
+        docs.getOrElseUpdate(i, {
+          val solrDoc = solrDocs.get(i)
+          val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
+          val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
+
+          documentMapper.getDefaultDocument[DocumentDomainObject](docId, languageCode) match {
+            case null => new TextDocumentDomainObject(docId) |>> { doc =>
+              val language = Option(documentMapper.getImcmsServices.getDocumentI18nSupport.getByCode(languageCode)).getOrElse {
+                documentMapper.getImcmsServices.getDocumentI18nSupport.getDefaultLanguage
+              }
+
+              doc.setLanguage(language)
+            }
+
+            case doc => doc
+          }
+        })
       }
 
-      def size(): Int = solrDocs.size()
+      override val size: Int = solrDocs.size()
     }
   }
 

@@ -17,6 +17,5 @@ case class BasicFilterParameters(
   textOpt: Option[String] = Some(""),
   docTypesOpt: Option[Set[DocumentTypeDomainObject]] = Some(Set.empty),
   languagesOpt: Option[Set[DocumentLanguage]] = Some(Set.empty),
-  phasesOpt: Option[Set[LifeCyclePhase]] = Some(Set.empty),
-  advancedOpt: Option[String] = Some("")
+  phasesOpt: Option[Set[LifeCyclePhase]] = Some(Set.empty)
 )

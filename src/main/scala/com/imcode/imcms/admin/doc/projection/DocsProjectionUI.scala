@@ -1,15 +1,15 @@
 package com.imcode.imcms.admin.doc.projection
 
-import com.imcode.imcms.admin.doc.projection.filter.{AdvancedFilterUI, BasicFilterUI}
+import com.imcode.imcms.admin.doc.projection.filter.{ExtendedFilterUI, BasicFilterUI}
 import com.vaadin.ui.{Panel, GridLayout}
 import com.imcode.imcms.vaadin.ui.{LightStyle, FullSize}
 
 class DocsProjectionUI(
     basicFilterUI: BasicFilterUI,
-    advancedFilterUI: AdvancedFilterUI,
+    advancedFilterUI: ExtendedFilterUI,
     docsUI: IndexedDocsUI) extends GridLayout(1, 2) with FullSize {
 
-  private val pnlAdvancedFilterForm = new Panel with FullSize with LightStyle {
+  private val pnlExtendedFilterForm = new Panel with FullSize with LightStyle {
     setContent(advancedFilterUI)
   }
 
@@ -17,12 +17,12 @@ class DocsProjectionUI(
   addComponent(docsUI)
   setRowExpandRatio(1, 1f)
 
-  def toggleAdvancedFilter() { isAdvancedFilterVisible = !isAdvancedFilterVisible }
+  def toggleExtendedFilter() { isExtendedFilterVisible = !isExtendedFilterVisible }
 
-  def isAdvancedFilterVisible = getComponent(0, 1) == pnlAdvancedFilterForm
+  def isExtendedFilterVisible = getComponent(0, 1) == pnlExtendedFilterForm
 
-  def isAdvancedFilterVisible_=(visible: Boolean) {
+  def isExtendedFilterVisible_=(visible: Boolean) {
     removeComponent(0, 1)
-    addComponent(if (visible) pnlAdvancedFilterForm else docsUI, 0, 1)
+    addComponent(if (visible) pnlExtendedFilterForm else docsUI, 0, 1)
   }
 }

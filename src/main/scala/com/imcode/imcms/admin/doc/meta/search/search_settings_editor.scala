@@ -61,7 +61,7 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
 
   def collectValues(): ErrorsOrData = Data(
     ui.keywords.lstKeywords.itemIds.asScala.toSet,
-    ui.misc.chkExcludeFromInternalSearch.isChecked
+    ui.misc.chkExcludeFromInternalSearch.checked
   ) |> Right.apply
 
   //def isModified = state != initialData

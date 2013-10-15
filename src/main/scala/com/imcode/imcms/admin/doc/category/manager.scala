@@ -16,6 +16,7 @@ import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.{Page, FileResource}
+import scala.util.{Failure, Try}
 
 /**
  * Category manager.
@@ -115,8 +116,8 @@ class CategoryManager(app: UI) {
               }
 
               app.privileged(permission) {
-                Ex.allCatch.either(categoryMapper saveCategory voc) match {
-                  case Left(ex) =>
+                Try(categoryMapper.saveCategory(voc)) match {
+                  case Failure(ex) =>
                     // todo: log ex, provide custom dialog with details -> show stack
                     Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
                     throw ex

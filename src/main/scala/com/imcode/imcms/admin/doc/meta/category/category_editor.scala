@@ -41,7 +41,7 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
       }
 
       chkCType.addValueChangeHandler { _ =>
-        sltCategories.setVisible(chkCType.isChecked)
+        sltCategories.setVisible(chkCType.checked)
       }
 
       chkCType -> sltCategories
@@ -70,7 +70,7 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   def collectValues(): ErrorsOrData = Right(
     Data(
       typeCategoriesUIs.collect {
-        case (chkCType, sltCategories) if chkCType.isChecked => sltCategories.value.asScala
+        case (chkCType, sltCategories) if chkCType.checked => sltCategories.value.asScala
       }.flatten.toSet
     )
   )

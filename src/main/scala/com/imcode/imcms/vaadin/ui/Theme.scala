@@ -29,6 +29,7 @@ object Theme {
     val TextFormatPlain: TR = "icons/16/document-txt.png"
     val TextFormatHtml: TR = "icons/16/document-web.png"
     val HistoryBack: TR = "icons/16/arrow-left.png"
+    val MoreOptions: TR = "icons/16/arrow-down.png"
     val HistoryForward: TR = "icons/16/arrow-right.png"
 
     object Browser {

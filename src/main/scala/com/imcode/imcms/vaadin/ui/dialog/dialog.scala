@@ -41,7 +41,7 @@ class Dialog(caption: String = "") extends Window(caption) with Modal {
   setContent(content)
   setResizable(false)
 
-  def mainUI = content.getComponent(0, 0)
+  def mainUI: Component = content.getComponent(0, 0)
   def mainUI_=(component: Component) {
     mainUISizeAssert(component)
 

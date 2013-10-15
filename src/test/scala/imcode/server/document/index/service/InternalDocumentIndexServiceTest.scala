@@ -5,13 +5,12 @@ import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
-import java.lang.Thread
 import org.mockito.Mockito.{mock => _}
 import com.imcode.imcms.test._
 import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX, UserFX}
 import org.apache.solr.client.solrj.SolrQuery
 import _root_.imcode.server.document.index.DocIndexingMocksSetup
-import imcode.server.document.index.service.impl.{DocumentIndexServiceOps, InternalDocumentIndexService}
+import _root_.imcode.server.document.index.service.impl.{DocumentIndexServiceOps, InternalDocumentIndexService}
 import scala.util.Failure
 
 @RunWith(classOf[JUnitRunner])
@@ -33,7 +32,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
       TestSetup.solr.recreateHome()
 
       using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
+        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get
         assertTrue("No docs", docs.isEmpty)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
@@ -44,11 +43,11 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
       }
 
       using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
+        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get
         assertEquals("Found docs", 20, docs.size)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          val docs = service.search(new SolrQuery("meta_id:" + metaId), UserFX.mkSuperAdmin).get
+          val docs = service.search(new SolrQuery("meta_id:" + metaId)).get
           assertEquals("Found docs", 2, docs.size)
         }
       }
@@ -63,11 +62,11 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
 
 
       using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
+        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get
         assertEquals("Found docs", 20, docs.size)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          val docs = service.search(new SolrQuery(s"meta_id:$metaId"), UserFX.mkSuperAdmin).get
+          val docs = service.search(new SolrQuery(s"meta_id:$metaId")).get
           assertEquals("Found docs", 2, docs.size)
         }
       }
@@ -77,7 +76,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
       TestSetup.solr.recreateHome()
 
       using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
+        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get
         assertTrue("No docs", docs.isEmpty)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
@@ -89,7 +88,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
 
         Thread.sleep(1000)
 
-        val docs2 = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get
+        val docs2 = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get
         assertEquals("Found docs", 20, docs2.size)
       }
     }
@@ -102,13 +101,13 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
           task.future.get()
         }
 
-        service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin).get |> { docs =>
+        service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get |> { docs =>
           assertEquals("Found docs", 20, docs.size)
         }
 
         //Test.solr.recreateHome()
 
-        service.search(new SolrQuery("nnn:uuu").setRows(Integer.MAX_VALUE), UserFX.mkSuperAdmin) match {
+        service.search(new SolrQuery("nnn:uuu").setRows(Integer.MAX_VALUE)) match {
           case Failure(error) =>
           case _ =>
         }

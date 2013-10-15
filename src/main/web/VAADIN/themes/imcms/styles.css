@@ -45,7 +45,7 @@
 
 table#users_projection,
 table#docs_projection_basic_filter,
-table#docs_projection_advanced_filter {
+table#docs_projection_extended_filter {
     border: solid 1px #a9a9a9;
     border-collapse: collapse;
 }
@@ -56,14 +56,14 @@ table#docs_projection_basic_filter {
     margin-bottom: 1px;
 }
 
-table#docs_projection_advanced_filter {
+table#docs_projection_extended_filter {
     background: #e0ffff;
     margin-top: -1px;
 }
 
 table#users_projection th,
 table#docs_projection_basic_filter th,
-table#docs_projection_advanced_filter th {
+table#docs_projection_extended_filter th {
     text-align: left;
     width: 100px;
 }
@@ -73,7 +73,7 @@ table#docs_projection_basic_filter th {
     background: #f5f5dc;
 }
 
-table#docs_projection_advanced_filter th {
+table#docs_projection_extended_filter th {
     background: #add8e6;
 }
 
@@ -81,8 +81,8 @@ table#users_projection td,
 table#users_projection th,
 table#docs_projection_basic_filter td,
 table#docs_projection_basic_filter th,
-table#docs_projection_advanced_filter td,
-table#docs_projection_advanced_filter th {
+table#docs_projection_extended_filter td,
+table#docs_projection_extended_filter th {
     padding: 0.3em;
     border: solid 1px #a9a9a9;
     border-left: none;
@@ -90,11 +90,11 @@ table#docs_projection_advanced_filter th {
 }
 
 
-table#docs_projection_basic_filter th.advanced {
+table#docs_projection_basic_filter th.extended {
     background: #add8e6;
 }
 
-table#docs_projection_basic_filter td.advanced {
+table#docs_projection_basic_filter td.extended {
     background: #e0ffff;
 }
 

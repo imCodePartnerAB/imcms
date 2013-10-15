@@ -3,39 +3,43 @@ package imcms
 package admin.doc.projection
 
 import com.imcode.util.event.Publisher
-import scala.collection.JavaConverters._
-import java.util.concurrent.atomic.AtomicReference
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
+
 import com.imcode.imcms.admin.doc.projection.filter._
-import org.apache.solr.client.solrj.SolrQuery
+import com.imcode.imcms.admin.doc.projection.filter.DateRange
+import com.imcode.imcms.admin.doc.projection.filter.BasicFilterParameters
+import com.imcode.imcms.admin.doc.projection.filter.Maintainers
+import com.imcode.imcms.admin.doc.projection.filter.ExtendedFilterParameters
+import com.imcode.imcms.admin.doc.projection.filter.IdRange
+
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
+import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+
 import org.apache.commons.lang3.StringUtils
-import java.net.URLDecoder
+import org.apache.solr.client.solrj.SolrQuery
 import org.apache.solr.common.util.DateUtil
 import com.vaadin.ui.{Button, Component, UI}
+
+import java.net.URLDecoder
+import java.util.concurrent.atomic.AtomicReference
+
+import scala.collection.JavaConverters._
 import scala.util.Try
-import imcode.server.document.textdocument.TextDocumentDomainObject
-import com.imcode.imcms.admin.doc.projection.filter.DateRange
 import scala.util.Failure
-import scala.Some
-import com.imcode.imcms.admin.doc.projection.filter.BasicFilterParameters
-import com.imcode.imcms.admin.doc.projection.filter.Maintainers
-import com.imcode.imcms.admin.doc.projection.filter.AdvancedFilterParameters
 import scala.util.Success
-import com.imcode.imcms.admin.doc.projection.filter.IdRange
 
 
 class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport with ImcmsServicesSupport {
 
   @transient
-  private var history = List.empty[(BasicFilterParameters, AdvancedFilterParameters)]
+  private var history = List.empty[(BasicFilterParameters, ExtendedFilterParameters)]
   @transient
-  private var currentValidFilterParams = (BasicFilterParameters(), AdvancedFilterParameters())
+  private var currentValidFilterParams = (BasicFilterParameters(), ExtendedFilterParameters())
 
   private def parentsRenderer(doc: DocumentDomainObject): Component = imcmsServices.getDocumentMapper.getParentDocsIds(doc) match {
     case ids if ids.isEmpty => null
@@ -45,10 +49,10 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
           Relationship(children = Relationship.Exact(doc.getId))
         )
 
-        val basicFilterParams = new BasicFilterParameters(languagesOpt = basicFilter.selectedLanguagesOpt())
-        val advancedFilterParams = new AdvancedFilterParameters(relationshipOpt = relationshipOpt)
+        val basicFilterParams = new BasicFilterParameters(languagesOpt = filter.selectedLanguagesOpt())
+        val extendedFilterParams = new ExtendedFilterParameters(relationshipOpt = relationshipOpt)
 
-        setFilterParameters(basicFilterParams, advancedFilterParams)
+        setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
       }
     }
   }
@@ -63,10 +67,10 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
               Relationship(parents = Relationship.Exact(doc.getId))
             )
 
-            val basicFilterParams = new BasicFilterParameters(languagesOpt = basicFilter.selectedLanguagesOpt())
-            val advancedFilterParams = new AdvancedFilterParameters(relationshipOpt = relationshipOpt)
+            val basicFilterParams = new BasicFilterParameters(languagesOpt = filter.selectedLanguagesOpt())
+            val extendedFilterParams = new ExtendedFilterParameters(relationshipOpt = relationshipOpt)
 
-            setFilterParameters(basicFilterParams, advancedFilterParams)
+            setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
           }
         }
       }
@@ -74,25 +78,28 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
     case _ => null
   }
 
-  val basicFilter = new BasicFilter
-  val advancedFilter = new AdvancedFilter
+  val filter = new Filter
   val docsContainer = new IndexedDocsContainer(user, childrenRenderer = childrenRenderer, parentsRenderer = parentsRenderer)
 
   val docsUI = new IndexedDocsUI(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
   private val selectionRef = new AtomicReference(Seq.empty[DocumentDomainObject])
 
-  val ui = new DocsProjectionUI(basicFilter.ui, advancedFilter.ui, docsUI) { ui =>
-    val basicFilterUI = basicFilter.ui
+  val ui = new DocsProjectionUI(filter.basicUI, filter.extendedUI, docsUI) { ui =>
+    val basicFilterUI = filter.basicUI
 
-    basicFilterUI.lytAdvanced.btnCustomize.addClickHandler { _ => ui.toggleAdvancedFilter() }
-    basicFilterUI.chkAdvanced.addValueChangeHandler { _ =>
-      if (!basicFilterUI.chkAdvanced.value) ui.isAdvancedFilterVisible = false
-    }
+    basicFilterUI.extended.btnCustomize.addClickHandler { _ => ui.toggleExtendedFilter() }
+    basicFilterUI.filterButtons.btnApplyFilter.addClickHandler { _ => reload() }
+    basicFilterUI.filterButtons.btnReset.addClickHandler { _ => reset() }
+    basicFilterUI.filterButtons.btnBack.addClickHandler { _ => goBack() }
+    filter.basicUI.filterButtons.btnApplyPredefinedFilter.addClickHandler { _ =>
+      new PredefinedFilterDialog |>> { dlg =>
+        dlg.setOkButtonHandler {
+          // combo box
+          // published by me, created by me
 
-    basicFilterUI.lytButtons.btnFilter.addClickHandler { _ => reload() }
-    basicFilterUI.lytButtons.btnReset.addClickHandler { _ => reset() }
-    basicFilterUI.lytButtons.btnBack.addClickHandler { _ =>
-      goBack()
+          dlg.close()
+        }
+      } |> UI.getCurrent.addWindow
     }
 
     override def attach() {
@@ -102,43 +109,40 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
   }
 
   docsUI.addValueChangeHandler { _ =>
-    selectionRef.set(docsUI.value.asScala.map(docsContainer.getItem(_).doc).toSeq)
+    selectionRef.set(docsUI.value.asScala.map(docIx => docsContainer.getItem(docIx).doc).to[Seq])
     notifyListeners()
   }
 
 
-  def setFilterParameters(basicParams: BasicFilterParameters, advancedParams: AdvancedFilterParameters) {
-    if (currentValidFilterParams._1 != basicParams || currentValidFilterParams._2 != advancedParams) {
-      history +:= (currentValidFilterParams._1, currentValidFilterParams._2)
-    }
+  def reset() {
+    setFilterParameters(FilterParameters())
+  }
 
-    basicFilter.setParameters(basicParams)
-    advancedFilter.setParameters(advancedParams)
-    
-    currentValidFilterParams = (basicParams, advancedParams)
+  def setFilterParameters(params: FilterParameters) {
+//    if (currentValidFilterParams._1 != basicParams || currentValidFilterParams._2 != extendedParams) {
+//      history +:= (currentValidFilterParams._1, currentValidFilterParams._2)
+//    }
+
+    filter.setParameters(params)
+    //currentValidFilterParams = (basicParams, extendedParams)
 
     reload()
   }
 
   def goBack() {
-    for ((basicParams, advancedParams) <- history.headOption) {
-      history = history.drop(1)
-
-      basicFilter.setParameters(basicParams)
-      advancedFilter.setParameters(advancedParams)
-
-      reload()
-    }
-  }
-
-
-  def reset() {
-    setFilterParameters(BasicFilterParameters(), AdvancedFilterParameters())
+//    for ((basicParams, extendedParams) <- history.headOption) {
+//      history = history.drop(1)
+//
+//      filter.setParameters(basicParams)
+//      extendedFilter.setParameters(extendedParams)
+//
+//      reload()
+//    }
   }
 
 
   def reload() {
-    basicFilter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange())
+    filter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange())
 
     createSolrQuery() match {
       case Failure(throwable) =>
@@ -161,14 +165,13 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
    */
   def createSolrQuery(): Try[SolrQuery] = {
     for {
-      basicParams <- basicFilter.getParameters()
-      advancedParams <- advancedFilter.getParameters()
+      params <- filter.getParameters()
     } yield {
-      createSolrQuery(basicParams, advancedParams)
+      createSolrQuery(params)
     }
   }
 
-  private def createSolrQuery(basicParams: BasicFilterParameters, advancedParams: AdvancedFilterParameters): SolrQuery = {
+  private def createSolrQuery(params: FilterParameters): SolrQuery = {
     def escape(text: String): String = {
       val SOLR_SPECIAL_CHARACTERS = Array("+", "-", "&", "|", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":", "\\", "/")
       val SOLR_REPLACEMENT_CHARACTERS = Array("\\+", "\\-", "\\&", "\\|", "\\!", "\\(", "\\)", "\\{", "\\}", "\\[", "\\]", "\\^", "\\\"", "\\~", "\\*", "\\?", "\\:", "\\\\", "\\/")
@@ -177,7 +180,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
     }
 
     List(
-      basicParams.textOpt.collect {
+      params.basic.textOpt.collect {
         case text if text.nonEmpty =>
           val escapedText = text // escape(text)
 
@@ -193,19 +196,19 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
 
       new SolrQuery(solrQueryStirng)
     } |>> { solrQuery =>
-      for (IdRange(start, end) <- basicParams.idRangeOpt) {
+      for (IdRange(start, end) <- params.basic.idRangeOpt) {
         solrQuery.addFilterQuery(
           "%s:[%s TO %s]".format(DocumentIndex.FIELD__META_ID, start.getOrElse("*"), end.getOrElse("*"))
         )
       }
 
-      for (types <- basicParams.docTypesOpt if types.nonEmpty) {
+      for (types <- params.basic.docTypesOpt if types.nonEmpty) {
         solrQuery.addFilterQuery(
           "%s:%s".format(DocumentIndex.FIELD__DOC_TYPE_ID, types.mkString(" "))
         )
       }
 
-      for (phases <- basicParams.phasesOpt if phases.nonEmpty) {
+      for (phases <- params.basic.phasesOpt if phases.nonEmpty) {
         val now = new java.util.Date
         val phasesFilterQuery = phases.map(_.asQuery(now)) match {
           case Seq(query) => query.toString
@@ -215,57 +218,59 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
         solrQuery.addFilterQuery(phasesFilterQuery)
       }
 
-      for {
-        dates <- advancedParams.datesOpt if dates.nonEmpty
-        dateFormat = DateUtil.getThreadLocalDateFormat
-        (field, DateRange(from, to)) <- dates
-      } {
-        solrQuery.addFilterQuery("%s:[%s TO %s]".format(field,
-          from.map(dateFormat.format).getOrElse("*"),
-          to.map(dateFormat.format).getOrElse("*"))
-        )
-      }
-
-      for (Relationship(withParents, withChildren) <- advancedParams.relationshipOpt) {
-        withParents match {
-          case Relationship.Logical(value) =>
-            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_PARENTS, value))
-
-          case Relationship.Exact(docId) =>
-            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_PARENTS, true))
-            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__PARENT_ID, docId))
-
-          case _ =>
-        }
-
-        withChildren match {
-          case Relationship.Logical(value) =>
-            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_CHILDREN, value))
-
-          case Relationship.Exact(docId) =>
-            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_CHILDREN, true))
-            solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__CHILD_ID, docId))
-
-          case _ =>
-        }
-      }
-
-      for (categories <- advancedParams.categoriesOpt if categories.nonEmpty) {
-        solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__CATEGORY_ID, categories.mkString(" ")))
-      }
-
-      for (Maintainers(creatorsOpt, publishersOpt) <- advancedParams.maintainersOpt) {
-        creatorsOpt.foreach { creators =>
-          solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__CREATOR_ID, creators.mkString(" ")))
-        }
-
-        publishersOpt.foreach { publishers =>
-          solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__PUBLISHER_ID, publishers.mkString(" ")))
-        }
-      }
-
-      for (languages <- basicParams.languagesOpt if languages.nonEmpty) {
+      for (languages <- params.basic.languagesOpt if languages.nonEmpty) {
         solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__LANGUAGE_CODE, languages.map(_.getCode).mkString(" ")))
+      }
+
+      params.extendedOpt.foreach { extendedParams =>
+        for {
+          dates <- extendedParams.datesOpt if dates.nonEmpty
+          dateFormat = DateUtil.getThreadLocalDateFormat
+          (field, DateRange(from, to)) <- dates
+        } {
+          solrQuery.addFilterQuery("%s:[%s TO %s]".format(field,
+            from.map(dateFormat.format).getOrElse("*"),
+            to.map(dateFormat.format).getOrElse("*"))
+          )
+        }
+
+        for (Relationship(withParents, withChildren) <- extendedParams.relationshipOpt) {
+          withParents match {
+            case Relationship.Logical(value) =>
+              solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_PARENTS, value))
+
+            case Relationship.Exact(docId) =>
+              solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_PARENTS, true))
+              solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__PARENT_ID, docId))
+
+            case _ =>
+          }
+
+          withChildren match {
+            case Relationship.Logical(value) =>
+              solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_CHILDREN, value))
+
+            case Relationship.Exact(docId) =>
+              solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__HAS_CHILDREN, true))
+              solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__CHILD_ID, docId))
+
+            case _ =>
+          }
+        }
+
+        for (categories <- extendedParams.categoriesOpt if categories.nonEmpty) {
+          solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__CATEGORY_ID, categories.mkString(" ")))
+        }
+
+        for (Maintainers(creatorsOpt, publishersOpt) <- extendedParams.maintainersOpt) {
+          creatorsOpt.foreach { creators =>
+            solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__CREATOR_ID, creators.mkString(" ")))
+          }
+
+          publishersOpt.foreach { publishers =>
+            solrQuery.addFilterQuery("%s:(%s)".format(DocumentIndex.FIELD__PUBLISHER_ID, publishers.mkString(" ")))
+          }
+        }
       }
     } |>> { solrQuery =>
     //solrQuery.setRows(20)
