@@ -1,10 +1,6 @@
 package com.imcode
 
-import scala.util.control.{Exception => Ex}
-import java.text.MessageFormat
-import imcode.server.{ImcmsServices, Imcms}
-import org.apache.log4j.Logger
-import java.util.{ListResourceBundle, Locale, ResourceBundle}
+import scala.language.implicitConversions
 
 package object imcms {
 
@@ -18,8 +14,8 @@ package object imcms {
   type MenuItemId = String
   type FileId = String
   type ErrorMsg = String
-  // Zero based index
-  type Ix = JInteger
+  /** Zero based index */
+  type Index = JInteger
 
   implicit def stringAsI18nMessageKey(string: String) = new I18nMessage(string)
 }

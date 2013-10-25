@@ -1,5 +1,7 @@
 package com.imcode.imcms.vaadin
 
+import scala.language.implicitConversions
+
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.data.Property
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}

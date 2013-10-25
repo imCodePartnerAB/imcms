@@ -2,6 +2,7 @@ package com.imcode.imcms.api;
 
 import com.google.common.base.Objects;
 
+// todo: include part of meta - title, etc ?
 public class I18nDocRef {
     private final DocRef docRef;
     private final DocumentLanguage language;

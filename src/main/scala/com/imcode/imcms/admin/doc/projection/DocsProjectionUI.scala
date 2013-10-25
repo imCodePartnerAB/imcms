@@ -3,6 +3,7 @@ package com.imcode.imcms.admin.doc.projection
 import com.imcode.imcms.admin.doc.projection.filter.{ExtendedFilterUI, BasicFilterUI}
 import com.vaadin.ui.{Panel, GridLayout}
 import com.imcode.imcms.vaadin.ui.{LightStyle, FullSize}
+import com.imcode.imcms.admin.doc.projection.container.IndexedDocsUI
 
 class DocsProjectionUI(
     basicFilterUI: BasicFilterUI,

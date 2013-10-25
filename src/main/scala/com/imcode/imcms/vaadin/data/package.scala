@@ -2,8 +2,9 @@ package com.imcode
 package imcms
 package vaadin
 
+import scala.language.implicitConversions
+
 import com.vaadin.data.{Property, Container}
-import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 
 package object data extends LowPriorityPropertyImplicits {
 

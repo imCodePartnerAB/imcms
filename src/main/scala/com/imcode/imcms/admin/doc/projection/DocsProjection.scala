@@ -32,6 +32,7 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
+import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsUI, IndexedDocsContainer}
 
 
 class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport with ImcmsServicesSupport {

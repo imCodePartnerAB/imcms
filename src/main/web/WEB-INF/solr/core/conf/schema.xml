@@ -89,20 +89,20 @@
 
 
         <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
-        <field name="meta_headline" type="text_general" indexed="true" stored="false"/>
+        <field name="meta_headline" type="text_general" indexed="true" stored="true"/>
         <field name="meta_headline_keyword" type="string" indexed="true" stored="false"/>
         <field name="meta_text" type="string" indexed="true" stored="false"/>
         <field name="doc_type_id" type="int" indexed="true" stored="false"/>
         <field name="creator_id" type="int" indexed="true" stored="false"/>
         <field name="publisher_id" type="int" indexed="true" stored="false"/>
-        <field name="created_datetime" type="date" indexed="true" stored="false"/>
-        <field name="modified_datetime" type="date" indexed="true" stored="false"/>
-        <field name="activated_datetime" type="date" indexed="true" stored="false"/>
-        <field name="publication_start_datetime" type="date" indexed="true" stored="false"/>
-        <field name="publication_end_datetime" type="date" indexed="true" stored="false"/>
-        <field name="archived_datetime" type="date" indexed="true" stored="false"/>
+        <field name="created_datetime" type="date" indexed="true" stored="true"/>
+        <field name="modified_datetime" type="date" indexed="true" stored="true"/>
+        <field name="activated_datetime" type="date" indexed="true" stored="true"/>
+        <field name="publication_start_datetime" type="date" indexed="true" stored="true"/>
+        <field name="publication_end_datetime" type="date" indexed="true" stored="true"/>
+        <field name="archived_datetime" type="date" indexed="true" stored="true"/>
         <!-- publication status -->
-        <field name="status" type="int" indexed="true" stored="false"/>
+        <field name="status" type="int" indexed="true" stored="true"/>
         <!-- file-doc field -->
         <field name="mime_type" type="text_general" indexed="true" stored="false"/>
         <!-- category name -->
@@ -114,7 +114,7 @@
         <field name="parent_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="parent_menu_id" type="text_general" indexed="true" stored="false" multiValued="true"/>
         <field name="has_parents" type="boolean" indexed="true" stored="false"/>
-        <field name="alias" type="text_general" indexed="true" stored="false"/>
+        <field name="alias" type="text_general" indexed="true" stored="true"/>
 
         <!--                 -->
         <!-- text-doc fields -->

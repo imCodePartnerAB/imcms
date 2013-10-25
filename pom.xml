@@ -35,12 +35,12 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 
         <javac.args />
 
-        <solr.version>4.4.0</solr.version>
+        <solr.version>4.5.1</solr.version>
         <slf4j.version>1.7.5</slf4j.version>
         <scala.version>2.10.2</scala.version>
         <springframework.version>3.2.4.RELEASE</springframework.version>
 
-        <hibernate.version>4.2.5.Final</hibernate.version>
+        <hibernate.version>4.2.7.SP1</hibernate.version>
         <gwt.version>2.5.1</gwt.version>
         <vaadin.version>7.1.6</vaadin.version>
 

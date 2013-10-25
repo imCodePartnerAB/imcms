@@ -17,6 +17,9 @@ import com.imcode.imcms.api.DocumentLanguage
 import scala.util.{Success, Failure, Try}
 import com.vaadin.server.ExternalResource
 
+/**
+ *
+ */
 class Filter extends ImcmsServicesSupport {
 
   val basicUI: BasicFilterUI = new BasicFilterUI

@@ -2,6 +2,8 @@ package com.imcode
 package imcms
 package vaadin
 
+import scala.language.implicitConversions
+
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
