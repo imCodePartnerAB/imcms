@@ -4,11 +4,11 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import java.util.Iterator;
+import org.apache.solr.common.SolrDocumentList;
 
 import java.util.List;
 
+// todo: queryXXX - move user + params to query settings class
 public interface DocumentIndex {
 
     String FIELD__ID = "id";
@@ -60,7 +60,7 @@ public interface DocumentIndex {
 
     /**
      * Searches for documents.
-     * Use {@link #search(org.apache.solr.client.solrj.SolrQuery, imcode.server.user.UserDomainObject)} instead.
+     * Use {@link #queryDocuments(org.apache.solr.client.solrj.SolrQuery, imcode.server.user.UserDomainObject)} instead.
      * @param query
      * @param searchingUser
      * @return
@@ -80,7 +80,14 @@ public interface DocumentIndex {
      * @throws IndexException
      * @since 6.0
      */
-    List<DocumentDomainObject> search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException;
+    List<DocumentDomainObject> queryDocuments(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException;
+
+    /**
+     * @return solr query response
+     * @throws IndexException
+     * @since 6.0
+     */
+    SolrDocumentList querySolrDocuments(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException;
 
     /**
      * Adds default document to index.

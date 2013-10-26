@@ -12,7 +12,7 @@ public enum PropertyId {
     META_ID("docs_projection.container_property.meta_id", Component.class),
     PHASE("docs_projection.container_property.phase", String.class),
     TYPE("docs_projection.container_property.type", String.class),
-    LANGUAGE("docs_projection.container_property.language", String.class),
+    LANGUAGE("docs_projection.container_property.language", Component.class),
     ALIAS("docs_projection.container_property.alias", String.class),
     HEADLINE("docs_projection.container_property.headline", String.class),
 

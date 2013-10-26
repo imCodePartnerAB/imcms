@@ -4,6 +4,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.common.SolrDocumentList;
 
 import java.util.List;
 
@@ -32,8 +33,13 @@ public class DocumentIndexWrapper implements DocumentIndex {
     }
 
     @Override
-    public List<DocumentDomainObject> search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
-        return index.search(solrQuery, searchingUser);
+    public List<DocumentDomainObject> queryDocuments(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
+        return index.queryDocuments(solrQuery, searchingUser);
+    }
+
+    @Override
+    public SolrDocumentList querySolrDocuments(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
+        return index.querySolrDocuments(solrQuery, searchingUser);
     }
 
     public DocumentIndexService getService() {

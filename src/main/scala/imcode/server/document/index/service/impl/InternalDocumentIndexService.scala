@@ -78,10 +78,6 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
 
   override def query(solrQuery: SolrQuery): Try[QueryResponse] = serviceRef.get.query(solrQuery)
 
-  override def search(solrQuery: SolrQuery): Try[JList[DocumentDomainObject]] = {
-    serviceRef.get.search(solrQuery)
-  }
-
   override def update(request: IndexUpdateOp): Unit = serviceRef.get.update(request)
 
   override def rebuild(): Try[IndexRebuildTask] = serviceRef.get.rebuild()

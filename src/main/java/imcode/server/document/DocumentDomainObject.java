@@ -77,19 +77,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return clone;
     }
 
-
-    /**
-     * Copies non-meta attributes from other doc.
-     * @param doc
-     */
-//    public void copyAttributesFrom(DocumentDomainObject doc) {
-//        seti18nMeta(doc.geti18nMeta().clone());
-//        setLanguage(doc.getLanguage().clone());
-//        setPermissionSets(doc.getPermissionSets().clone());
-//        setPermissionSetsForNew(doc.getPermissionSetsForNewDocuments().clone());
-//        setRoleIdsMappedToDocumentPermissionSetTypes(doc.getRolePermissionMappings().clone());
-//    }
-
     /**
      * Returns this document's version.
      */

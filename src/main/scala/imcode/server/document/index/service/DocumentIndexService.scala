@@ -14,8 +14,6 @@ trait DocumentIndexService extends Log4jLoggerSupport {
 
   def query(solrQuery: SolrQuery): Try[QueryResponse]
 
-  def search(solrQuery: SolrQuery): Try[JList[DocumentDomainObject]]
-
   /**
    * Updates index asynchronously.
    *

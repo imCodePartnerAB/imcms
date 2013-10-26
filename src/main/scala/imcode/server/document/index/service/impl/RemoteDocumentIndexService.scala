@@ -1,9 +1,5 @@
 package imcode.server.document.index.service.impl
 
-import com.imcode._
-import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
-import _root_.imcode.server.user.UserDomainObject
-import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service._
 import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.SolrQuery
@@ -20,8 +16,6 @@ class RemoteDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serv
   }
 
   def query(solrQuery: SolrQuery): Try[QueryResponse] = ???
-
-  def search(solrQuery: SolrQuery): Try[JList[DocumentDomainObject]] = ???
 
   def update(request: IndexUpdateOp) {}
 

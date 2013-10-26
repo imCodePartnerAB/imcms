@@ -18,7 +18,6 @@ import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.common.util.DateUtil
 import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import org.apache.solr.client.solrj.response.QueryResponse
-import imcode.server.document.textdocument.TextDocumentDomainObject
 
 
 /**
@@ -75,40 +74,6 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
 
   def mkSolrDocsDeleteQuery(docId: Int): String = "%s:%d".format(DocumentIndex.FIELD__META_ID, docId)
-
-
-  def search(solrServer: SolrServer, solrQuery: SolrQuery): JList[DocumentDomainObject] = {
-    if (logger.isDebugEnabled) {
-      logger.debug("Searching SOLr index using query: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8")))
-    }
-
-    val solrDocs = solrServer.query(solrQuery).getResults
-    new java.util.AbstractList[DocumentDomainObject] {
-      val docs = scala.collection.mutable.Map.empty[Int, DocumentDomainObject]
-
-      override def get(i: Int): DocumentDomainObject = {
-        docs.getOrElseUpdate(i, {
-          val solrDoc = solrDocs.get(i)
-          val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
-          val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
-
-          documentMapper.getDefaultDocument[DocumentDomainObject](docId, languageCode) match {
-            case null => new TextDocumentDomainObject(docId) |>> { doc =>
-              val language = Option(documentMapper.getImcmsServices.getDocumentI18nSupport.getByCode(languageCode)).getOrElse {
-                documentMapper.getImcmsServices.getDocumentI18nSupport.getDefaultLanguage
-              }
-
-              doc.setLanguage(language)
-            }
-
-            case doc => doc
-          }
-        })
-      }
-
-      override val size: Int = solrDocs.size()
-    }
-  }
 
 
   def query(solrServer: SolrServer, solrQuery: SolrQuery): QueryResponse = {

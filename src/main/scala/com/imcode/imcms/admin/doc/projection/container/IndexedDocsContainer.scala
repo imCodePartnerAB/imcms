@@ -58,10 +58,10 @@ with ImcmsServicesSupport {
       case (None, _) => java.util.Collections.emptyList[DocumentDomainObject]
       case (_, Some(ids)) if ids.isEmpty => java.util.Collections.emptyList[DocumentDomainObject]
       case (Some(solrQuery), None) =>
-        imcmsServices.getDocumentMapper.getDocumentIndex.search(solrQuery, user)
+        imcmsServices.getDocumentMapper.getDocumentIndex.queryDocuments(solrQuery, user)
       case (Some(solrQuery), Some(ids)) =>
         // todo: apply visible docs filter
-        imcmsServices.getDocumentMapper.getDocumentIndex.search(solrQuery, user)
+        imcmsServices.getDocumentMapper.getDocumentIndex.queryDocuments(solrQuery, user)
     }
 
     visibleDocs = new VisibleDocs(docs)

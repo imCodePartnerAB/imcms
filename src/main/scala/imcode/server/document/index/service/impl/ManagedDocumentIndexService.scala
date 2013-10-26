@@ -219,18 +219,6 @@ class ManagedSolrDocumentIndexService(
   }
 
 
-  override def search(solrQuery: SolrQuery): Try[JList[DocumentDomainObject]] = {
-    Try(serviceOps.search(solrServerReader, solrQuery)) |>> {
-      case _: Success[_] =>
-      case Failure(e) =>
-        logger.error(s"Search error. SOLr query: $solrQuery", e)
-        Threads.spawnDaemon {
-          serviceFailureHandler(ManagedSolrDocumentIndexService.IndexSearchFailure(ManagedSolrDocumentIndexService.this, e))
-        }
-    }
-  }
-
-
   override def shutdown(): Unit = lock.synchronized {
     if (shutdownRef.compareAndSet(false, true)) {
       logger.info("Attempting to shut down the service.")

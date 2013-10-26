@@ -32,7 +32,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
       TestSetup.solr.recreateHome()
 
       using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get
+        val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
         assertTrue("No docs", docs.isEmpty)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
@@ -43,11 +43,11 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
       }
 
       using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get
+        val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
         assertEquals("Found docs", 20, docs.size)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          val docs = service.search(new SolrQuery("meta_id:" + metaId)).get
+          val docs = service.query(new SolrQuery("meta_id:" + metaId)).get.getResults
           assertEquals("Found docs", 2, docs.size)
         }
       }
@@ -62,11 +62,11 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
 
 
       using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get
+        val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
         assertEquals("Found docs", 20, docs.size)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          val docs = service.search(new SolrQuery(s"meta_id:$metaId")).get
+          val docs = service.query(new SolrQuery(s"meta_id:$metaId")).get.getResults
           assertEquals("Found docs", 2, docs.size)
         }
       }
@@ -76,7 +76,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
       TestSetup.solr.recreateHome()
 
       using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get
+        val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
         assertTrue("No docs", docs.isEmpty)
 
         for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
@@ -88,7 +88,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
 
         Thread.sleep(1000)
 
-        val docs2 = service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get
+        val docs2 = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
         assertEquals("Found docs", 20, docs2.size)
       }
     }
@@ -101,13 +101,13 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
           task.future.get()
         }
 
-        service.search(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get |> { docs =>
+        service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults |> { docs =>
           assertEquals("Found docs", 20, docs.size)
         }
 
         //Test.solr.recreateHome()
 
-        service.search(new SolrQuery("nnn:uuu").setRows(Integer.MAX_VALUE)) match {
+        service.query(new SolrQuery("nnn:uuu").setRows(Integer.MAX_VALUE)) match {
           case Failure(error) =>
           case _ =>
         }

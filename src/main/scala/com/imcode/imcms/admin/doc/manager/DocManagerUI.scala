@@ -8,7 +8,7 @@ import com.imcode.imcms.vaadin.ui._
 
 
 class DocManagerUI(searchUI: DocsProjectionUI) extends VerticalLayout with Spacing with FullSize {
-  val mb = new MenuBar
+  val mb = new MenuBar with FullWidth
   val miNew = mb.addItem("doc.mgr.mi.new".i)
   val miNewTextDoc = miNew.addItem("doc.mgr.mi.new.text_doc".i)
   val miNewFileDoc = miNew.addItem("doc.mgr.mi.new.file_doc".i)
