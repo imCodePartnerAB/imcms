@@ -24,7 +24,7 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 
-public class DocumentService {
+public class  DocumentService {
 
     private final ContentManagementSystem contentManagementSystem;
 

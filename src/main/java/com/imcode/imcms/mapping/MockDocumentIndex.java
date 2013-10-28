@@ -4,6 +4,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.index.IndexException;
+import imcode.server.document.index.SearchResult;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -45,12 +46,7 @@ public class MockDocumentIndex implements DocumentIndex {
     }
 
     @Override
-    public List<DocumentDomainObject> queryDocuments(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public SolrDocumentList querySolrDocuments(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
+    public SearchResult search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

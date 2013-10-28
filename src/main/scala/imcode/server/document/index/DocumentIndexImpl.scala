@@ -6,21 +6,21 @@ import com.imcode.imcms.api.DocumentLanguage
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service.{DeleteDocFromIndex, AddDocToIndex, DocumentIndexService}
-import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 
 import org.apache.solr.client.solrj.SolrQuery
-import org.apache.solr.common.SolrDocumentList
 
 import java.util.Collections
 
 import scala.util.{Success, Failure}
+import scala.collection.JavaConverters._
+
 import com.imcode.imcms.ImcmsServicesSupport
 
 
 /**
  * {@link DocumentIndex} implementation.
  */
-class DocumentIndexImpl(service: DocumentIndexService, defaultDocumentLanguage: DocumentLanguage) extends DocumentIndex with ImcmsServicesSupport with Log4jLoggerSupport {
+class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex with ImcmsServicesSupport with Log4jLoggerSupport {
 
   @deprecated
   override def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
@@ -40,18 +40,28 @@ class DocumentIndexImpl(service: DocumentIndexService, defaultDocumentLanguage: 
       sortField.getReverse
     }
 
+    val documentMapper = imcmsServices.getDocumentMapper
+
     try {
-      queryDocuments(solrQuery, searchingUser)
+      val docs = new java.util.LinkedList[DocumentDomainObject]
+      for {
+        storedDocumentMeta <- search(solrQuery, searchingUser).storedDocumentMetaList().asScala
+        doc <- documentMapper.getDefaultDocument(storedDocumentMeta.metaId(), storedDocumentMeta.languageCode()).asOption
+      } {
+        docs.add(doc)
+      }
+
+      docs
     } catch {
       case _: Exception => Collections.emptyList()
     }
   }
 
   @throws(classOf[IndexException])
-  override def querySolrDocuments(solrQuery: SolrQuery, searchingUser: UserDomainObject): SolrDocumentList = {
+  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): SearchResult = {
     if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE) == null &&
       !solrQuery.getFilterQueries.exists(query => query.contains(s"${DocumentIndex.FIELD__LANGUAGE_CODE}:"))) {
-      solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, defaultDocumentLanguage.getCode))
+      solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, imcmsServices.getDocumentI18nSupport.getDefaultLanguage))
     }
 
     // todo: replace canSearchFor with filter queries
@@ -65,38 +75,7 @@ class DocumentIndexImpl(service: DocumentIndexService, defaultDocumentLanguage: 
 
     service.query(solrQuery) match {
       case Failure(e) => throw new IndexException(e)
-      case Success(queryResponse) => queryResponse.getResults
-    }
-  }
-
-  @throws(classOf[IndexException])
-  override def queryDocuments(solrQuery: SolrQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
-    new java.util.AbstractList[DocumentDomainObject] {
-      val solrDocs = querySolrDocuments(solrQuery, searchingUser)
-      val docs = scala.collection.mutable.Map.empty[Int, DocumentDomainObject]
-      val documentMapper = imcmsServices.getDocumentMapper
-
-      override def get(i: Int): DocumentDomainObject = {
-        docs.getOrElseUpdate(i, {
-          val solrDoc = solrDocs.get(i)
-          val docId = solrDoc.getFieldValue(DocumentIndex.FIELD__META_ID).toString.toInt
-          val languageCode = solrDoc.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE).toString
-
-          documentMapper.getDefaultDocument[DocumentDomainObject](docId, languageCode) match {
-            case null => new TextDocumentDomainObject(docId) |>> { doc =>
-              val language = Option(documentMapper.getImcmsServices.getDocumentI18nSupport.getByCode(languageCode)).getOrElse {
-                documentMapper.getImcmsServices.getDocumentI18nSupport.getDefaultLanguage
-              }
-
-              doc.setLanguage(language)
-            }
-
-            case doc => doc
-          }
-        })
-      }
-
-      override val size: Int = solrDocs.size()
+      case Success(queryResponse) => SearchResult(solrQuery, queryResponse)
     }
   }
 

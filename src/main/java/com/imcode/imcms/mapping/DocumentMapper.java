@@ -500,10 +500,13 @@ public class DocumentMapper implements DocumentGetter {
         return documentSaver.getMetaDao().getAllDocumentIds();
     }
 
+    /**
+     * @return documents id range or null if there are no documents.
+     */
     public IntRange getDocumentIdRange() {
         Integer[] minMaxPair = documentSaver.getMetaDao().getMinMaxDocumentIds();
 
-        return new IntRange(minMaxPair[0], minMaxPair[1]);
+        return minMaxPair[0] == null ? null : new IntRange(minMaxPair[0], minMaxPair[1]);
     }
 
     // TODO: refactor

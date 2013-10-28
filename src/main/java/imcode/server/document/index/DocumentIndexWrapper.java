@@ -33,13 +33,8 @@ public class DocumentIndexWrapper implements DocumentIndex {
     }
 
     @Override
-    public List<DocumentDomainObject> queryDocuments(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
-        return index.queryDocuments(solrQuery, searchingUser);
-    }
-
-    @Override
-    public SolrDocumentList querySolrDocuments(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
-        return index.querySolrDocuments(solrQuery, searchingUser);
+    public SearchResult search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
+        return search(solrQuery, searchingUser);
     }
 
     public DocumentIndexService getService() {

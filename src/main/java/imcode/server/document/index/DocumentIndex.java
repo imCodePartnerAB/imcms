@@ -8,7 +8,6 @@ import org.apache.solr.common.SolrDocumentList;
 
 import java.util.List;
 
-// todo: queryXXX - move user + params to query settings class
 public interface DocumentIndex {
 
     String FIELD__ID = "id";
@@ -59,8 +58,8 @@ public interface DocumentIndex {
     String FIELD__SEARCH_ENABLED = "search_enabled";
 
     /**
-     * Searches for documents.
-     * Use {@link #queryDocuments(org.apache.solr.client.solrj.SolrQuery, imcode.server.user.UserDomainObject)} instead.
+     * Searches documents.
+     *
      * @param query
      * @param searchingUser
      * @return
@@ -76,36 +75,29 @@ public interface DocumentIndex {
     void removeDocument(DocumentDomainObject document) throws IndexException;
 
     /**
-     * @return found documents
-     * @throws IndexException
-     * @since 6.0
-     */
-    List<DocumentDomainObject> queryDocuments(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException;
-
-    /**
      * @return solr query response
      * @throws IndexException
      * @since 6.0
      */
-    SolrDocumentList querySolrDocuments(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException;
+    SearchResult search(SolrQuery query, UserDomainObject searchingUser) throws IndexException;
 
     /**
      * Adds default document to index.
      *
-     * @param docId
+     * @param metaId
      * @throws IndexException
      * @since 6.0
      */
-    void indexDocument(int docId) throws IndexException;
+    void indexDocument(int metaId) throws IndexException;
 
     /**
      * Removes default document from index.
      *
-     * @param docId
+     * @param metaId
      * @throws IndexException
      * @since 6.0
      */
-    void removeDocument(int docId) throws IndexException;
+    void removeDocument(int metaId) throws IndexException;
 
     /**
      * Returns underlying service.
