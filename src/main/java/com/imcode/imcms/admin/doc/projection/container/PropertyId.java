@@ -19,9 +19,9 @@ public enum PropertyId {
     CREATED_DT("docs_projection.container_property.created_dt", String.class),
     MODIFIED_DT("docs_projection.container_property.modified_dt", String.class),
 
-    PUBLICATION_DT("docs_projection.container_property.publication_dt", String.class),
+    PUBLICATION_START_DT("docs_projection.container_property.publication_start_dt", String.class),
     ARCHIVING_DT("docs_projection.container_property.archiving_dt", String.class),
-    EXPIRATION_DT("docs_projection.container_property.expiration_dt", String.class),
+    EXPIRATION_DT("docs_projection.container_property.publication_end_dt", String.class),
 
     PARENTS("docs_projection.container_property.parents", Component.class),
     CHILDREN("docs_projection.container_property.children", Component.class);

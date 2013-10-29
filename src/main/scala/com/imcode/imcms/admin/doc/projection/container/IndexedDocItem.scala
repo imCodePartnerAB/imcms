@@ -61,7 +61,7 @@ case class IndexedDocItem(
     case PropertyId.CREATED_DT => LazyProperty(formatDt(fields.getCreatedDatetime))
     case PropertyId.MODIFIED_DT => LazyProperty(formatDt(fields.getModifiedDatetime))
 
-    case PropertyId.PUBLICATION_DT => LazyProperty(formatDt(fields.getPublicationStartDatetime))
+    case PropertyId.PUBLICATION_START_DT => LazyProperty(formatDt(fields.getPublicationStartDatetime))
     case PropertyId.ARCHIVING_DT => LazyProperty(formatDt(fields.getArchivedDatetime))
     case PropertyId.EXPIRATION_DT => LazyProperty(formatDt(fields.getPublicationEndDatetime))
 

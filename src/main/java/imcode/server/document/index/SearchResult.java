@@ -59,7 +59,7 @@ public class SearchResult {
         return !isEmpty && index >= 0 && index < size;
     }
 
-    public List<DocumentStoredFields> storedDocumentMetaList() {
+    public List<DocumentStoredFields> documentStoredFieldsList() {
         return documentStoredFieldsList;
     }
 }

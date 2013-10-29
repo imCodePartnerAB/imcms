@@ -37,7 +37,7 @@ public class FileReference {
 
     @Embedded
     @AttributeOverrides(
-            @AttributeOverride(name="docId", column = @Column(name="meta_id"))
+            @AttributeOverride(name= "metaId", column = @Column(name="meta_id"))
     )
     private DocRef docRef;
 

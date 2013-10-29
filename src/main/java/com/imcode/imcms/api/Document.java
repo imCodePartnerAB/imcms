@@ -399,23 +399,28 @@ public class Document implements Serializable {
         }
 
         public boolean equals(Object o) {
-            if ( this == o ) {
-                return true;
-            }
-            if ( o == null || getClass() != o.getClass() ) {
-                return false;
-            }
+            return o == this || (o instanceof PublicationStatus && equals((PublicationStatus) o));
+        }
 
-            return status == ( (PublicationStatus) o ).status;
-
+        private boolean equals(PublicationStatus that) {
+            return this.status == that.status;
         }
 
         public int hashCode() {
             return status;
         }
         
-        public Integer asInt() {
+        public int asInt() {
         	return status;
+        }
+
+        public static PublicationStatus of(int id) {
+            switch (id) {
+                case STATUS_NEW: return NEW;
+                case STATUS_PUBLICATION_APPROVED: return APPROVED;
+                case STATUS_PUBLICATION_DISAPPROVED: return DISAPPROVED;
+                default: throw new IllegalArgumentException("Illegal status id: " + id);
+            }
         }
     }
 

@@ -33,6 +33,7 @@ import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsUI, IndexedDocsContainer}
+import com.imcode.imcms.api.I18nDocRef
 
 
 class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport with ImcmsServicesSupport {
@@ -60,7 +61,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
 
   private def childrenRenderer(metaId: DocId, childrenIds: JCollection[DocId]): Component = {
     if (childrenIds.isEmpty) null
-    else new Button("docs_projection.result.show_children".f(parentsIds.size)) with LinkStyle |>> { btn =>
+    else new Button("docs_projection.result.show_children".f(childrenIds.size)) with LinkStyle |>> { btn =>
       btn.addClickHandler { _ =>
         val relationshipOpt = Some(
           Relationship(parents = Relationship.Exact(metaId))
@@ -78,7 +79,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
   val docsContainer = new IndexedDocsContainer(user, childrenRenderer = childrenRenderer, parentsRenderer = parentsRenderer)
 
   val docsUI = new IndexedDocsUI(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
-  private val selectionRef = new AtomicReference(Seq.empty[DocumentDomainObject])
+  private val selectionRef = new AtomicReference(Seq.empty[I18nDocRef])
 
   val ui = new DocsProjectionUI(filter.basicUI, filter.extendedUI, docsUI) { ui =>
     val basicFilterUI = filter.basicUI

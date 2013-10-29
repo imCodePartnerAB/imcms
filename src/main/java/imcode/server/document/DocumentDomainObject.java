@@ -464,12 +464,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
-        return getLifeCyclePhaseAtTime(doc.getMeta(), time);
-    }
-
-    public static LifeCyclePhase getLifeCyclePhaseAtTime(Meta meta, Date time) {
+        Meta meta = doc.getMeta();
         LifeCyclePhase lifeCyclePhase;
-        if (meta == null) return LifeCyclePhase.NEW;
 
         Document.PublicationStatus publicationStatus = meta.getPublicationStatus();
         if (publicationStatus == Document.PublicationStatus.NEW) {

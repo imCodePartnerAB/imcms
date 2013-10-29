@@ -46,7 +46,8 @@ object Theme {
     }
 
     object Language {
-      def flag(language: DocumentLanguage): TR = s"icons/language_flag/${language.getCode}.gif"
+      def flag(language: DocumentLanguage): TR = flag(language.getCode)
+      def flag(languageCode: String): TR = s"icons/language_flag/${languageCode}.gif"
     }
   }
 }

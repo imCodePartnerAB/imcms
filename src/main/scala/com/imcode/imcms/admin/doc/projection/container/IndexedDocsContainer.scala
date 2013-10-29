@@ -2,16 +2,20 @@ package com.imcode
 package imcms
 package admin.doc.projection.container
 
-import com.vaadin.data.{Property, Item, Container}
+import com.vaadin.data.{Item, Property, Container}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 
 import _root_.imcode.server.user.UserDomainObject
-import _root_.imcode.server.document.index.SearchResult
+import imcode.server.document.index.{DocumentStoredFields, SearchResult}
 
-import java.util.Arrays
+import java.util.{Date, Collections, Arrays}
 
 import org.apache.solr.client.solrj.SolrQuery
+import com.imcode.imcms.vaadin.ui.{Theme, UndefinedSize, NoMargin, Spacing}
+import imcode.server.Imcms
+import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
+import com.imcode.imcms.api.{DocumentLanguage, Document}
 
 // todo: Implement sorting
 class IndexedDocsContainer(
@@ -20,7 +24,7 @@ class IndexedDocsContainer(
     childrenRenderer: ((DocId, JCollection[DocId]) => Component) = (_, _) => null
 ) extends Container
 with ContainerWithTypedItemId[Index]
-with ReadOnlyContainer
+with ReadOnlyOrderedContainer
 with Container.Sortable
 with ContainerItemSetChangeNotifier
 with ImcmsServicesSupport {
@@ -29,6 +33,7 @@ with ImcmsServicesSupport {
     val isEmpty: Boolean = searchResultOpt.isEmpty
     val nonEmpty: Boolean = searchResultOpt.nonEmpty
     val contains: (Index => Boolean) = if (searchResultOpt.isEmpty) Function.const(false) else searchResultOpt.get.contains
+    val documentStoredFieldsList: JList[DocumentStoredFields] = if (searchResultOpt.isEmpty) Collections.emptyList else searchResultOpt.get.documentStoredFieldsList()
   }
 
   @transient
@@ -60,8 +65,8 @@ with ImcmsServicesSupport {
   override def size(): Int = items.size
 
   override def getItemIds(): JCollection[_] = new java.util.AbstractList[Index] {
-    def get(index: Int): Index = index
-    def size(): Int = IndexedDocsContainer.this.size
+    override def get(index: Int): Index = index
+    override val size: Int = IndexedDocsContainer.this.size
   }
 
   override def containsId(itemId: AnyRef): Boolean = itemId match {
@@ -94,7 +99,7 @@ with ImcmsServicesSupport {
   }
 
   override def getItem(itemId: AnyRef): IndexedDocItem = itemId match {
-    case id: Index if items.contains(id) => IndexedDocItem(id, items.docs.get(id))
+    case id: Index if items.contains(id) => IndexedDocItem(id, items.documentStoredFieldsList.get(id))
     case _ => null
   }
 
@@ -104,7 +109,66 @@ with ImcmsServicesSupport {
     PropertyId.META_ID, PropertyId.LANGUAGE, PropertyId.TYPE, PropertyId.PHASE, PropertyId.ALIAS, PropertyId.HEADLINE
   )
 
-  override def addItemAfter(previousItemId: AnyRef, newItemId: AnyRef): Item = throw new UnsupportedOperationException
 
-  override def addItemAfter(previousItemId: AnyRef): Item = throw new UnsupportedOperationException
+  private def mkItem(index: Index, fields: DocumentStoredFields): Item = new Item with ReadOnlyItem {
+
+    private val doc: DocumentDomainObject = DocumentDomainObject.fromDocumentTypeId(fields.documentType()) |>> { doc =>
+      doc.setCreatedDatetime(fields.createdDt())
+      doc.setArchivedDatetime(fields.archivingDt())
+      doc.setPublicationStartDatetime(fields.publicationStartDt())
+      doc.setPublicationEndDatetime(fields.publicationEndDt())
+      doc.setPublicationStatus(Document.PublicationStatus.of(fields.publicationStatusId()))
+      doc.setLanguage(imcmsServices.getDocumentI18nSupport.getByCode(fields.languageCode()))
+    }
+
+    private val properties = scala.collection.mutable.Map.empty[AnyRef, Property[AnyRef]]
+
+    private def formatDt(dt: Date): String = dt.asOption.map(dt => "%1$td.%1$tm.%1$tY %1$tH:%1$tM".format(dt)).getOrElse("")
+
+    override def getItemPropertyIds: JCollection[_] = PropertyId.valuesCollection()
+
+    override def getItemProperty(id: AnyRef): Property[AnyRef] = properties.getOrElseUpdate(id, id match {
+      case PropertyId.INDEX => LazyProperty(index + 1 : JInteger)
+      case PropertyId.META_ID => LazyProperty(
+        new HorizontalLayout with Spacing with NoMargin with UndefinedSize |>> { lyt =>
+          val icon = new Image(null, Theme.Icon.Doc.phase(doc.getLifeCyclePhase))
+          val label = new Label(fields.metaId())
+
+          lyt.addComponent(icon)
+          lyt.addComponent(label)
+
+          lyt.setComponentAlignment(icon, Alignment.MIDDLE_LEFT)
+          lyt.setComponentAlignment(label, Alignment.MIDDLE_LEFT)
+        }
+      )
+
+      case PropertyId.HEADLINE => LazyProperty(fields.headline())
+      case PropertyId.TYPE => LazyProperty(doc.getDocumentType.getName.toLocalizedString(Imcms.getUser))
+      case PropertyId.LANGUAGE => LazyProperty(
+        new HorizontalLayout with Spacing with NoMargin with UndefinedSize |>> { lyt =>
+          val language = doc.getLanguage
+          val icon = new Image(null, Theme.Icon.Language.flag(language))
+          val label = new Label(language.getNativeName)
+
+          lyt.addComponent(icon)
+          lyt.addComponent(label)
+
+          lyt.setComponentAlignment(icon, Alignment.MIDDLE_LEFT)
+          lyt.setComponentAlignment(label, Alignment.MIDDLE_LEFT)
+        }
+      )
+
+      case PropertyId.ALIAS => LazyProperty(fields.alias())
+      case PropertyId.PHASE => LazyProperty("doc_publication_phase.%s".format(doc.getLifeCyclePhase).i)
+      case PropertyId.CREATED_DT => LazyProperty(formatDt(fields.createdDt()))
+      case PropertyId.MODIFIED_DT => LazyProperty(formatDt(fields.modifiedDt()))
+
+      case PropertyId.PUBLICATION_START_DT => LazyProperty(formatDt(fields.publicationStartDt()))
+      case PropertyId.ARCHIVING_DT => LazyProperty(formatDt(fields.archivingDt()))
+      case PropertyId.EXPIRATION_DT => LazyProperty(formatDt(fields.publicationEndDt()))
+
+      case PropertyId.PARENTS => LazyProperty(parentsRenderer(fields))
+      case PropertyId.CHILDREN => LazyProperty(childrenRenderer(fields))
+    })
+  }
 }

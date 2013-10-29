@@ -353,7 +353,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveMenu(menu, user);
         } finally {
-            invalidateDocument(menu.getDocRef().docId());
+            invalidateDocument(menu.getDocRef().metaId());
         }
     }
 
@@ -617,8 +617,8 @@ public class DocumentMapper implements DocumentGetter {
         // todo: put into resource file.
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        Meta meta = documentSaver.getMetaDao().getMeta(docRef.docId()).clone();
-        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docRef.docId());
+        Meta meta = documentSaver.getMetaDao().getMeta(docRef.metaId()).clone();
+        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docRef.metaId());
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         makeDocumentLookNew(meta, user);
@@ -817,7 +817,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveText(text, user);
         } finally {
-            invalidateDocument(text.getDocRef().docId());
+            invalidateDocument(text.getDocRef().metaId());
         }
     }
 
@@ -843,7 +843,7 @@ public class DocumentMapper implements DocumentGetter {
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
             for (TextDomainObject text: texts) {
-                docIds.add(text.getDocRef().docId());
+                docIds.add(text.getDocRef().metaId());
             }
 
             for (Integer docId: docIds) {
@@ -866,7 +866,7 @@ public class DocumentMapper implements DocumentGetter {
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
             for (ImageDomainObject image: images) {
-                docIds.add(image.getDocRef().docId());
+                docIds.add(image.getDocRef().metaId());
             }
 
             for (Integer docId: docIds) {
@@ -897,7 +897,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveImage(image, user);
         } finally {
-            invalidateDocument(image.getDocRef().docId());
+            invalidateDocument(image.getDocRef().metaId());
         }
     }
 

@@ -45,7 +45,7 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
     try {
       val docs = new java.util.LinkedList[DocumentDomainObject]
       for {
-        storedDocumentMeta <- search(solrQuery, searchingUser).storedDocumentMetaList().asScala
+        storedDocumentMeta <- search(solrQuery, searchingUser).documentStoredFieldsList().asScala
         doc <- documentMapper.getDefaultDocument(storedDocumentMeta.metaId(), storedDocumentMeta.languageCode()).asOption
       } {
         docs.add(doc)

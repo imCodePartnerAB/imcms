@@ -73,7 +73,6 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   def deleteSelectedDocs() {
     whenNotEmpty(projection.selection) { docs =>
-    whenNotEmpty(projection.selection) { docs =>
       new ConfirmationDialog("Delete selected document(s)?") |>> { dlg =>
         dlg.setOkButtonHandler {
           try {

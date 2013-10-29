@@ -8,52 +8,50 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class DocRef {
 
+    // doc_meta_id
     @Column(name="doc_id")
-    private int docId;
+    private int metaId;
 
     @Column(name="doc_version_no")
-    private int docVersionNo;
+    private int versionNo;
 
     protected DocRef() {
     }
 
-    public DocRef(int docId, int docVersionNo) {
-        this.docId = docId;
-        this.docVersionNo = docVersionNo;
+    public DocRef(int metaId, int versionNo) {
+        this.metaId = metaId;
+        this.versionNo = versionNo;
     }
 
     public static DocRef of(int docId, int docVersionNo) {
         return new DocRef(docId, docVersionNo);
     }
 
-    public int docId() {
-        return docId;
+    public int metaId() {
+        return metaId;
     }
 
-    public int docVersionNo() {
-        return docVersionNo;
+    public int versionNo() {
+        return versionNo;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DocRef)) return false;
+        return (o == this) || (o instanceof DocRef && equals((DocRef) o));
+    }
 
-        DocRef docRef = (DocRef) o;
+    private boolean equals(DocRef that) {
+        return this.metaId == that.metaId && this.versionNo == that.versionNo;
 
-        if (docId != docRef.docId) return false;
-        if (docVersionNo != docRef.docVersionNo) return false;
-
-        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(docId, docVersionNo);
+        return Objects.hashCode(metaId, versionNo);
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).add("docId", docId).add("docVersionNo", docVersionNo()).toString();
+        return Objects.toStringHelper(this).add("docId", metaId).add("docVersionNo", versionNo()).toString();
     }
 }

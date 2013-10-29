@@ -218,7 +218,7 @@ class TextDocDao extends HibernateSupport {
    */
   def getLoop(docRef: DocRef, no: Int): ContentLoop =
     hibernate.getByNamedQueryAndNamedParams(
-      "ContentLoop.getByDocIdAndDocVersionNoAndNo", "docId" -> docRef.docId, "docVersionNo" -> docRef.docVersionNo, "no" -> no
+      "ContentLoop.getByDocIdAndDocVersionNoAndNo", "docId" -> docRef.metaId, "docVersionNo" -> docRef.versionNo, "no" -> no
     )
 
 
@@ -228,14 +228,14 @@ class TextDocDao extends HibernateSupport {
    * @return document content loops.
    */
   def getLoops(docRef: DocRef): JList[ContentLoop] = hibernate.listByNamedQueryAndNamedParams(
-    "ContentLoop.getByDocIdAndDocVersionNo", "docId" -> docRef.docId, "docVersionNo" -> docRef.docVersionNo
+    "ContentLoop.getByDocIdAndDocVersionNo", "docId" -> docRef.metaId, "docVersionNo" -> docRef.versionNo
   )
 
 
   def getNextLoopNo(docRef: DocRef): Int = hibernate.getByQuery[JInteger](
     "select max(l.no) from ContentLoop l where l.docId = ?1 and l.docVersionNo = ?2",
-    1 -> docRef.docId,
-    2 -> docRef.docVersionNo
+    1 -> docRef.metaId,
+    2 -> docRef.versionNo
   ) match {
     case null => 0
     case n => n.intValue + 1

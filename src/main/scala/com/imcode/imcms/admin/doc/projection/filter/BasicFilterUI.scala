@@ -42,7 +42,7 @@ class BasicFilterUI extends CustomLayout("admin/doc/projection/basic_filter") wi
     val chkApproved = new CheckBox("docs_projection.basic_filter.chk_phase_approved".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.APPROVED)) }
     val chkPublished = new CheckBox("docs_projection.basic_filter.chk_phase_published".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.PUBLISHED)) }
     val chkArchived = new CheckBox("docs_projection.basic_filter.chk_phase_archived".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.ARCHIVED)) }
-    val chkUnpublished = new CheckBox("docs_projection.basic_filter.chk_phase_unpublished".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.UNPUBLISHED)) }
+    val chkUnpublished = new CheckBox("docs_projection.basic_filter.chk_phase_expired".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.UNPUBLISHED)) }
   }
 
   object languages {

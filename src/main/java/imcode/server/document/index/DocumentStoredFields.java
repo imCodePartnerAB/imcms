@@ -33,12 +33,12 @@ public class DocumentStoredFields {
         return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE);
     }
 
-    public int type() {
+    public int documentType() {
         return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__DOC_TYPE_ID);
     }
 
-    public String phase() {
-        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__PHASE);
+    public int publicationStatusId() {
+        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__STATUS);
     }
 
     public Date createdDt() {
@@ -49,7 +49,7 @@ public class DocumentStoredFields {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME);
     }
 
-    public Date publicationDt() {
+    public Date publicationStartDt() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_START_DATETIME);
     }
 
@@ -57,7 +57,7 @@ public class DocumentStoredFields {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__ARCHIVED_DATETIME);
     }
 
-    public Date expireDt() {
+    public Date publicationEndDt() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_END_DATETIME);
     }
 
