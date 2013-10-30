@@ -74,22 +74,22 @@ public class DocumentLoader {
      * @param language
      * @return
      */
-    public DocumentDomainObject loadAndInitDocument(Meta meta, DocumentVersion version, DocumentLanguage language) {
-        return initDocument(createDocument(meta, version, language));
+    public <T extends DocumentDomainObject> T loadAndInitDocument(Meta meta, DocumentVersion version, DocumentLanguage language) {
+        return initDocument(this.<T>createDocument(meta, version, language));
     }
 
 
     /**
      * Creates document instance.
      */
-    private DocumentDomainObject createDocument(Meta meta, DocumentVersion version, DocumentLanguage language) {
+    private <T extends DocumentDomainObject> T createDocument(Meta meta, DocumentVersion version, DocumentLanguage language) {
         I18nMeta i18nMeta = metaDao.getI18nMeta(meta.getId(), language);
 
         if (i18nMeta == null) {
             i18nMeta = I18nMeta.builder().docId(meta.getId()).language(language).headline("").menuText("").menuImageURL("").build();
         }
 
-        DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+        T document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
         document.setMeta(meta);
         document.setLanguage(language);
@@ -103,7 +103,7 @@ public class DocumentLoader {
     /**
      * Initializes document's fields.
      */
-    private DocumentDomainObject initDocument(DocumentDomainObject document) {
+    private <T extends DocumentDomainObject> T initDocument(T document) {
         if (document == null) return null;
 
         document.accept(documentInitializingVisitor);

@@ -17,7 +17,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test._
 import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.mapping.{DocumentStoringVisitor, DocumentMapper}
-import com.imcode.imcms.api.{DocRef, I18nMeta, ContentLoop, DocumentI18nSupport}
+import com.imcode.imcms.api._
 import com.imcode.imcms.api.TextDocument.TextField
 
 @RunWith(classOf[JUnitRunner])
@@ -396,9 +396,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     docMapper.saveDocument(textDoc, admin)
 
-    val savedTextDoc = docMapper.getCustomDocument(textDoc.getRef, textDoc.getLanguage)
-      .asInstanceOf[TextDocumentDomainObject]
-
+    val savedTextDoc: TextDocumentDomainObject = docMapper.getCustomDocument(I18nDocRef.of(textDoc.getRef, textDoc.getLanguage))
     val savedMenu = savedTextDoc.getMenus.get(0)
 
     assertNotNull(savedMenu)
@@ -763,7 +761,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
 
   def getMainWorkingDocumentInDefaultLanguage(assertDocExists: Boolean) = {
-    val doc = docMapper.getCustomDocument(DocRef.of(1001, 0), i18nContentSupport.getDefaultLanguage)
+    val doc: DocumentDomainObject = docMapper.getCustomDocument(I18nDocRef.of(1001, 0, i18nContentSupport.getDefaultLanguage))
 
     if (assertDocExists) {
       assertNotNull(doc)

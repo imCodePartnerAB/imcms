@@ -37,6 +37,7 @@ class DocumentIndexer(
     indexDoc.addField(DocumentIndex.FIELD__ID, s"${docId}_$languageCode")
     indexDoc.addField(DocumentIndex.FIELD__TIMESTAMP, new Date)
     indexDoc.addField(DocumentIndex.FIELD__META_ID, docId)
+    indexDoc.addField(DocumentIndex.FIELD__VERSION_NO, doc.getVersionNo)
     indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, languageCode)
     indexDoc.addField(DocumentIndex.FIELD__SEARCH_ENABLED, !doc.isSearchDisabled)
 

@@ -14,10 +14,11 @@ import java.util.{Date, Collections, Arrays}
 import org.apache.solr.client.solrj.SolrQuery
 import com.imcode.imcms.vaadin.ui.{Theme, UndefinedSize, NoMargin, Spacing}
 import imcode.server.Imcms
-import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
-import com.imcode.imcms.api.{DocumentLanguage, Document}
+import imcode.server.document.DocumentDomainObject
+import com.imcode.imcms.api.Document
 
 // todo: Implement sorting
+// todo: Selection: memory solr - copy solr doc from main solr to the RAM
 class IndexedDocsContainer(
     user: UserDomainObject,
     parentsRenderer: ((DocId, JCollection[DocId]) => Component) = (_, _) => null,
@@ -30,10 +31,11 @@ with ContainerItemSetChangeNotifier
 with ImcmsServicesSupport {
 
   private class Items(val searchResultOpt: Option[SearchResult]) {
+    val size: Int = if (searchResultOpt.isDefined) searchResultOpt.get.size() else 0
     val isEmpty: Boolean = searchResultOpt.isEmpty
     val nonEmpty: Boolean = searchResultOpt.nonEmpty
-    val contains: (Index => Boolean) = if (searchResultOpt.isEmpty) Function.const(false) else searchResultOpt.get.contains
-    val documentStoredFieldsList: JList[DocumentStoredFields] = if (searchResultOpt.isEmpty) Collections.emptyList else searchResultOpt.get.documentStoredFieldsList()
+    val contains: (Int => Boolean) = if (searchResultOpt.isEmpty) Function.const(false) else searchResultOpt.get.contains
+    val documentStoredFieldsList: JList[DocumentStoredFields] = if (searchResultOpt.isEmpty) Collections.emptyList[DocumentStoredFields] else searchResultOpt.get.documentStoredFieldsList()
   }
 
   @transient
@@ -52,14 +54,14 @@ with ImcmsServicesSupport {
    * @return Some(range) or None if there are no visible docs in this container.
    */
   def visibleDocsRange(): Option[(DocId, DocId)] = imcmsServices.getDocumentMapper.getDocumentIdRange.asOption.map {
-    idRange => (idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
+    idsRange => (idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
   }
 
   override val getContainerPropertyIds: JCollection[_] = PropertyId.valuesCollection()
 
   override def getType(propertyId: AnyRef): Class[_] = propertyId.asInstanceOf[PropertyId].getType
 
-  override def getContainerProperty(itemId: AnyRef, propertyId: AnyRef): Property[AnyRef] = getItem(itemId).getItemProperty(propertyId)
+  override def getContainerProperty(itemId: AnyRef, propertyId: AnyRef): Property[_] = getItem(itemId).getItemProperty(propertyId)
 
   @transient
   override def size(): Int = items.size
@@ -99,7 +101,7 @@ with ImcmsServicesSupport {
   }
 
   override def getItem(itemId: AnyRef): IndexedDocItem = itemId match {
-    case id: Index if items.contains(id) => IndexedDocItem(id, items.documentStoredFieldsList.get(id))
+    case id: Index if items.contains(id) => mkItem(id, items.documentStoredFieldsList.get(id))
     case _ => null
   }
 
@@ -110,9 +112,9 @@ with ImcmsServicesSupport {
   )
 
 
-  private def mkItem(index: Index, fields: DocumentStoredFields): Item = new Item with ReadOnlyItem {
+  private def mkItem(index: Index, fields: DocumentStoredFields): IndexedDocItem = new IndexedDocItem(index, fields) {
 
-    private val doc: DocumentDomainObject = DocumentDomainObject.fromDocumentTypeId(fields.documentType()) |>> { doc =>
+    private val doc = (DocumentDomainObject.fromDocumentTypeId(fields.documentType()) : DocumentDomainObject) |>> { doc =>
       doc.setCreatedDatetime(fields.createdDt())
       doc.setArchivedDatetime(fields.archivingDt())
       doc.setPublicationStartDatetime(fields.publicationStartDt())
@@ -132,7 +134,7 @@ with ImcmsServicesSupport {
       case PropertyId.META_ID => LazyProperty(
         new HorizontalLayout with Spacing with NoMargin with UndefinedSize |>> { lyt =>
           val icon = new Image(null, Theme.Icon.Doc.phase(doc.getLifeCyclePhase))
-          val label = new Label(fields.metaId())
+          val label = new Label(fields.metaId().toString)
 
           lyt.addComponent(icon)
           lyt.addComponent(label)
@@ -167,8 +169,8 @@ with ImcmsServicesSupport {
       case PropertyId.ARCHIVING_DT => LazyProperty(formatDt(fields.archivingDt()))
       case PropertyId.EXPIRATION_DT => LazyProperty(formatDt(fields.publicationEndDt()))
 
-      case PropertyId.PARENTS => LazyProperty(parentsRenderer(fields))
-      case PropertyId.CHILDREN => LazyProperty(childrenRenderer(fields))
+      case PropertyId.PARENTS => LazyProperty(parentsRenderer(fields.metaId(), fields.parentsIds()))
+      case PropertyId.CHILDREN => LazyProperty(childrenRenderer(fields.metaId(), fields.childrenIds()))
     })
   }
 }

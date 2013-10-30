@@ -75,9 +75,9 @@ class ManagedSolrDocumentIndexService(
         }
       })
 
-      def progress(): Option[IndexRebuildProgress] = progressRef.get.asOption
+      override def progress(): Option[IndexRebuildProgress] = progressRef.get.asOption
 
-      def future(): Future[_] = futureTask
+      override def future(): Future[_] = futureTask
     } |>> indexRebuildTaskRef.set |>> { indexRebuildTaskImpl =>
       new Thread { indexRebuildThread =>
         private def submitStartNewIndexUpdateThread(): Unit = Threads.spawnDaemon {

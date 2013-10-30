@@ -1,7 +1,6 @@
 package imcode.server.document.index
 
 import com.imcode._
-import com.imcode.imcms.api.DocumentLanguage
 
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.document.DocumentDomainObject
@@ -46,7 +45,7 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
       val docs = new java.util.LinkedList[DocumentDomainObject]
       for {
         storedDocumentMeta <- search(solrQuery, searchingUser).documentStoredFieldsList().asScala
-        doc <- documentMapper.getDefaultDocument(storedDocumentMeta.metaId(), storedDocumentMeta.languageCode()).asOption
+        doc <- (documentMapper.getDefaultDocument(storedDocumentMeta.metaId(), storedDocumentMeta.languageCode()) : DocumentDomainObject).asOption
       } {
         docs.add(doc)
       }
@@ -75,7 +74,7 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
 
     service.query(solrQuery) match {
       case Failure(e) => throw new IndexException(e)
-      case Success(queryResponse) => SearchResult(solrQuery, queryResponse)
+      case Success(queryResponse) => new SearchResult(solrQuery, queryResponse)
     }
   }
 

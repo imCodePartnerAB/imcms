@@ -3,9 +3,7 @@ package imcms
 package admin.doc.projection.container
 
 import com.vaadin.ui.Table
-import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.ui.{Immediate, Selectable, MultiSelectBehavior}
-import com.imcode.imcms.admin.doc.projection.container.IndexedDocsContainer
 import com.imcode.imcms._
 
 

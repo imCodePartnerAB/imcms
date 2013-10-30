@@ -34,7 +34,7 @@ public class DocumentIndexWrapper implements DocumentIndex {
 
     @Override
     public SearchResult search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
-        return search(solrQuery, searchingUser);
+        return index.search(solrQuery, searchingUser);
     }
 
     public DocumentIndexService getService() {

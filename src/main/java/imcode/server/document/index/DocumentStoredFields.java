@@ -1,9 +1,11 @@
 package imcode.server.document.index;
 
 
+import com.google.common.base.Objects;
 import org.apache.solr.common.SolrDocument;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -18,7 +20,11 @@ public class DocumentStoredFields {
     }
 
     public int metaId() {
-        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__META_ID);
+        return Integer.parseInt(solrDocument.getFieldValue(DocumentIndex.FIELD__META_ID).toString());
+    }
+
+    public int versionNo() {
+        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__VERSION_NO);
     }
 
     public String headline() {
@@ -62,10 +68,14 @@ public class DocumentStoredFields {
     }
 
     public Collection<Integer> parentsIds() {
-        return (Collection<Integer>) (Collection<?>) solrDocument.getFieldValues(DocumentIndex.FIELD__PARENT_ID);
+        return Objects.firstNonNull(
+                (Collection<Integer>) (Collection<?>) solrDocument.getFieldValues(DocumentIndex.FIELD__PARENT_ID),
+                Collections.<Integer>emptyList());
     }
 
     public Collection<Integer> childrenIds() {
-        return (Collection<Integer>) (Collection<?>) solrDocument.getFieldValues(DocumentIndex.FIELD__CHILD_ID);
+        return Objects.firstNonNull(
+                (Collection<Integer>) (Collection<?>) solrDocument.getFieldValues(DocumentIndex.FIELD__CHILD_ID),
+                Collections.<Integer>emptyList());
     }
 }

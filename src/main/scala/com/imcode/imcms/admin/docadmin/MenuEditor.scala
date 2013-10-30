@@ -64,10 +64,10 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       new DocSelectDialog("menu_editor.dlg.select_docs.title".i, UI.getCurrent.imcmsUser) |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
-            doc <- dlg.projection.selection
-            docId = doc.getId
-            if !state.getItemsMap.containsKey(docId)
-            doc <- imcmsServices.getDocumentMapper.getDefaultDocument[DocumentDomainObject](docId).asOption
+            ref <- dlg.projection.selection
+            metaId = ref.metaId()
+            if !state.getItemsMap.containsKey(metaId)
+            doc <- imcmsServices.getDocumentMapper.getDefaultDocument[DocumentDomainObject](metaId).asOption
           } {
             val docRef = imcmsServices.getDocumentMapper.getDocumentReference(doc)
             val menuItem = new MenuItemDomainObject(docRef)

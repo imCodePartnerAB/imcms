@@ -105,6 +105,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return getVersionNo() == null || getMetaId() == null ? null : DocRef.of(getMetaId(), getVersionNo());
     }
 
+    public I18nDocRef getI18nRef() {
+        DocRef ref = getRef();
+        return ref == null ? null : I18nDocRef.of(ref, getLanguage());
+    }
+
 
     /**
      * Factory method. Creates new document.
@@ -112,7 +117,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      * @param documentTypeId document type id.
      * @return new document
      */
-    public static DocumentDomainObject fromDocumentTypeId(int documentTypeId) {
+    public static <T extends DocumentDomainObject> T fromDocumentTypeId(int documentTypeId) {
         DocumentDomainObject document;
 
         switch (documentTypeId) {
@@ -137,7 +142,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         document.setLanguage(Imcms.getServices().getDocumentI18nSupport().getDefaultLanguage());
         document.setVersion(new DocumentVersion(null, 0, null, new Date()));
 
-        return document;
+        return (T) document;
     }
 
     public Date getArchivedDatetime() {

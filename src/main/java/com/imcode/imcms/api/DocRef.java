@@ -23,8 +23,8 @@ public class DocRef {
         this.versionNo = versionNo;
     }
 
-    public static DocRef of(int docId, int docVersionNo) {
-        return new DocRef(docId, docVersionNo);
+    public static DocRef of(int metaId, int docVersionNo) {
+        return new DocRef(metaId, docVersionNo);
     }
 
     public int metaId() {

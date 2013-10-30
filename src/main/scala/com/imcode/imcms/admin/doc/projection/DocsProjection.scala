@@ -17,7 +17,7 @@ import com.imcode.imcms.admin.doc.projection.filter.IdRange
 
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
-import _root_.imcode.server.document.index.DocumentIndex
+import imcode.server.document.index.{DocumentStoredFields, DocumentIndex}
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 
 import org.apache.commons.lang3.StringUtils
@@ -33,10 +33,10 @@ import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsUI, IndexedDocsContainer}
-import com.imcode.imcms.api.I18nDocRef
+import com.imcode.imcms.api.{DocumentVersion, I18nDocRef}
 
 
-class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocumentDomainObject]] with Log4jLoggerSupport with ImcmsServicesSupport {
+class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[I18nDocRef]] with Log4jLoggerSupport with ImcmsServicesSupport {
 
   @transient
   private var history = List.empty[(BasicFilterParameters, ExtendedFilterParameters)]
@@ -106,7 +106,12 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
   }
 
   docsUI.addValueChangeHandler { _ =>
-    selectionRef.set(docsUI.value.asScala.map(docIx => docsContainer.getItem(docIx).fields).to[Seq])
+    def fieldsToI8nDocRef(fields: DocumentStoredFields): I18nDocRef = {
+      val language = imcmsServices.getDocumentI18nSupport.getByCode(fields.languageCode())
+      I18nDocRef.of(fields.metaId(), fields.versionNo(), language)
+    }
+
+    selectionRef.set(docsUI.value.asScala.map(docIx => docsContainer.getItem(docIx).fields |> fieldsToI8nDocRef).to[Seq])
     notifyListeners()
   }
 
@@ -277,7 +282,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
   }  // def createSolrQuery()
 
 
-  def selection: Seq[DocumentDomainObject] = selectionRef.get
+  def selection: Seq[I18nDocRef] = selectionRef.get
 
   override def notifyListeners(): Unit = notifyListeners(selection)
 }

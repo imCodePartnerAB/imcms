@@ -2,6 +2,8 @@ package com.imcode
 package imcms
 package admin.doc.meta.appearance
 
+import scala.language.reflectiveCalls
+
 import scala.collection.JavaConverters._
 import scala.collection.breakOut
 import scala.collection.immutable.ListMap
