@@ -12,7 +12,7 @@ import com.imcode.imcms.api.DocumentLanguage
  * @param languagesOpt
  * @param phasesOpt
  */
-case class BasicFilterParameters(
+case class BasicFilterParams(
   idRangeOpt: Option[IdRange] = Some(IdRange(None, None)),
   textOpt: Option[String] = Some(""),
   docTypesOpt: Option[Set[DocumentTypeDomainObject]] = Some(Set.empty),

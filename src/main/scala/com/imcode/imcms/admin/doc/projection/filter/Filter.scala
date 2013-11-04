@@ -40,10 +40,10 @@ class Filter extends ImcmsServicesSupport {
     resetUI()
 
     setBasicParameters(parameters.basic)
-    setExtendedParameters(parameters.extendedOpt.getOrElse(ExtendedFilterParameters()))
+    setExtendedParamsOpt(parameters.extendedOpt)
   }
 
-  private def setBasicParameters(parameters: BasicFilterParameters) {
+  private def setBasicParameters(parameters: BasicFilterParams) {
     basicUI.idRange.chkEnabled.checked = parameters.idRangeOpt.isDefined
     basicUI.text.chkEnabled.checked = parameters.textOpt.isDefined
     basicUI.types.chkEnabled.checked = parameters.docTypesOpt.isDefined
@@ -87,14 +87,15 @@ class Filter extends ImcmsServicesSupport {
     getBasicParameters() match {
       case Failure(error) => Failure(error)
       case Success(basicParams) if basicUI.extended.chkEnabled.unchecked => Success(FilterParameters(basicParams))
-      case Success(basicParams) => getExtendedParameters() match {
-        case Failure(error) => Failure(error)
-        case Success(extendedParams) => Success(FilterParameters(basicParams, Some(extendedParams)))
+      case Success(basicParams) => getExtendedParametersOpt() match {
+        case None => Success(FilterParameters(basicParams, None))
+        case Some(Failure(e)) => Failure(e)
+        case Some(Success(extendedParams)) => Success(FilterParameters(basicParams, Some(extendedParams)))
       }
     }
   }
 
-  private def getBasicParameters(): Try[BasicFilterParameters] = Try {
+  private def getBasicParameters(): Try[BasicFilterParams] = Try {
     val idRangeOpt = when(basicUI.idRange.chkEnabled.checked) {
       IdRange(
         condOpt(basicUI.idRange.txtStart.trim) {
@@ -138,7 +139,7 @@ class Filter extends ImcmsServicesSupport {
 
     val languagesOpt = selectedLanguagesOpt()
 
-    BasicFilterParameters(idRangeOpt, textOpt, typesOpt, languagesOpt, phasesOpt)
+    BasicFilterParams(idRangeOpt, textOpt, typesOpt, languagesOpt, phasesOpt)
   }
 
   /**
@@ -197,8 +198,12 @@ class Filter extends ImcmsServicesSupport {
   }
 
 
+  private def getExtendedParametersOpt(): Option[Try[ExtendedFilterParams]] = {
+    if (basicUI.extended.chkEnabled.unchecked) None
+    else Some(getExtendedParameters())
+  }
 
-  private def getExtendedParameters(): Try[ExtendedFilterParameters] = Try {
+  private def getExtendedParameters(): Try[ExtendedFilterParams] = Try {
     // Date meaning to DateRange
     val datesOpt: Option[Map[String, DateRange]] = when(extendedUI.dates.chkEnabled.checked) {
       import extendedUI.dates._
@@ -264,10 +269,13 @@ class Filter extends ImcmsServicesSupport {
       Maintainers(creatorsOpt, publishersOpt)
     }
 
-    ExtendedFilterParameters(datesOpt, categoriesOpt, relationshipOpt, maintainersOpt)
+    ExtendedFilterParams(datesOpt, categoriesOpt, relationshipOpt, maintainersOpt)
   }
 
-  private def setExtendedParameters(parameters: ExtendedFilterParameters) {
+  private def setExtendedParamsOpt(paramsOpt: Option[ExtendedFilterParams]) {
+    basicUI.extended.chkEnabled.checked = paramsOpt.isDefined
+
+    val parameters = paramsOpt.getOrElse(ExtendedFilterParams())
     for (dates <- parameters.datesOpt) {
       extendedUI.dates.chkEnabled.check()
 

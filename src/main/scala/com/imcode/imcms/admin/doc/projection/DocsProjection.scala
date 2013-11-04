@@ -10,15 +10,13 @@ import com.imcode.imcms.vaadin.event._
 
 import com.imcode.imcms.admin.doc.projection.filter._
 import com.imcode.imcms.admin.doc.projection.filter.DateRange
-import com.imcode.imcms.admin.doc.projection.filter.BasicFilterParameters
+import com.imcode.imcms.admin.doc.projection.filter.BasicFilterParams
 import com.imcode.imcms.admin.doc.projection.filter.Maintainers
-import com.imcode.imcms.admin.doc.projection.filter.ExtendedFilterParameters
+import com.imcode.imcms.admin.doc.projection.filter.ExtendedFilterParams
 import com.imcode.imcms.admin.doc.projection.filter.IdRange
 
-import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.user.UserDomainObject
-import imcode.server.document.index.{DocumentStoredFields, DocumentIndex}
-import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+import _root_.imcode.server.document.index.{DocumentStoredFields, DocumentIndex}
 
 import org.apache.commons.lang3.StringUtils
 import org.apache.solr.client.solrj.SolrQuery
@@ -33,15 +31,15 @@ import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsUI, IndexedDocsContainer}
-import com.imcode.imcms.api.{DocumentVersion, I18nDocRef}
+import com.imcode.imcms.api.I18nDocRef
 
 
 class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[I18nDocRef]] with Log4jLoggerSupport with ImcmsServicesSupport {
 
   @transient
-  private var history = List.empty[(BasicFilterParameters, ExtendedFilterParameters)]
+  private var history = List.empty[(BasicFilterParams, ExtendedFilterParams)]
   @transient
-  private var currentValidFilterParams = (BasicFilterParameters(), ExtendedFilterParameters())
+  private var currentValidFilterParams = (BasicFilterParams(), ExtendedFilterParams())
 
   private def parentsRenderer(metaId: DocId, parentsIds: JCollection[DocId]): Component = {
     if (parentsIds.isEmpty) null
@@ -51,8 +49,8 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
           Relationship(children = Relationship.Exact(metaId))
         )
 
-        val basicFilterParams = new BasicFilterParameters(languagesOpt = filter.selectedLanguagesOpt())
-        val extendedFilterParams = new ExtendedFilterParameters(relationshipOpt = relationshipOpt)
+        val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
+        val extendedFilterParams = new ExtendedFilterParams(relationshipOpt = relationshipOpt)
 
         setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
       }
@@ -67,8 +65,8 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
           Relationship(parents = Relationship.Exact(metaId))
         )
 
-        val basicFilterParams = new BasicFilterParameters(languagesOpt = filter.selectedLanguagesOpt())
-        val extendedFilterParams = new ExtendedFilterParameters(relationshipOpt = relationshipOpt)
+        val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
+        val extendedFilterParams = new ExtendedFilterParams(relationshipOpt = relationshipOpt)
 
         setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
       }

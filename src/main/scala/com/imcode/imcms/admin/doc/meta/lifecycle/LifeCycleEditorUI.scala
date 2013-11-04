@@ -46,7 +46,7 @@ class LifeCycleEditorUI extends VerticalLayout with Spacing with FullWidth {
     val calEnd = new PopupDateField with MinuteResolution with Immediate
     val chkStart = new CheckBox("start") with Checked with ReadOnly // decoration, always read-only
     val chkArchive = new CheckBox("archive") with Immediate with AlwaysFireValueChange[JBoolean]
-    val chkEnd = new CheckBox("expiration") with Immediate with AlwaysFireValueChange[JBoolean]
+    val chkEnd = new CheckBox("end") with Immediate with AlwaysFireValueChange[JBoolean]
 
     ussPublisher.ui.setCaption("Publisher")
   }
