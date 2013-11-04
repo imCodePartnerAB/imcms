@@ -52,11 +52,12 @@ class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDoc
       }
     }
 
-    val childIds: Set[Int] = (for (menu <- menus; menuItem <- menu.getMenuItems) yield menuItem.getDocumentId)(breakOut)
+    val childrenIds: Set[Int] = (for (menu <- menus; menuItem <- menu.getMenuItems) yield menuItem.getDocumentId)(breakOut)
 
-    indexDoc.addField(DocumentIndex.FIELD__HAS_CHILDREN, childIds.nonEmpty)
+    indexDoc.addField(DocumentIndex.FIELD__HAS_CHILDREN, childrenIds.nonEmpty)
+    indexDoc.addField(DocumentIndex.FIELD__CHILDREN_COUNT, childrenIds.size)
 
-    childIds.foreach(id => indexDoc.addField(DocumentIndex.FIELD__CHILD_ID, id))
+    childrenIds.foreach(id => indexDoc.addField(DocumentIndex.FIELD__CHILD_ID, id))
   }
 
 

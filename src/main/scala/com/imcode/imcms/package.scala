@@ -6,6 +6,7 @@ package object imcms {
 
   type UserId = JInteger
   type DocId = JInteger
+  type MetaId = JInteger
   type DocTypeId = JInteger
   type DocVersionNo = JInteger
   type LanguageId = JInteger

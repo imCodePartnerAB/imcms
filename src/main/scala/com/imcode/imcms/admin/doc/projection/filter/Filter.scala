@@ -5,17 +5,17 @@ package admin.doc.projection.filter
 import scala.collection.JavaConverters._
 
 import com.vaadin.ui.CheckBox
+import com.vaadin.server.ExternalResource
 
 import _root_.imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject}
 import _root_.imcode.server.document.index.DocumentIndex
 
 import scala.PartialFunction._
+import scala.util.{Success, Failure, Try}
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.api.DocumentLanguage
-import scala.util.{Success, Failure, Try}
-import com.vaadin.server.ExternalResource
 
 /**
  *
@@ -25,7 +25,7 @@ class Filter extends ImcmsServicesSupport {
   val basicUI: BasicFilterUI = new BasicFilterUI
   val extendedUI: ExtendedFilterUI = new ExtendedFilterUI
 
-  def setVisibleDocsRangeInputPrompt(range: Option[(DocId, DocId)]) {
+  def setMetaIdRangePrompt(range: Option[(MetaId, MetaId)]) {
     range.map {
       case (start, end) => (start.toString, end.toString)
     }.getOrElse("", "") |> {
@@ -321,9 +321,9 @@ class Filter extends ImcmsServicesSupport {
           extendedUI.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.with_parents"
         case Relationship.Logical(_) =>
           extendedUI.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.without_parents"
-        case Relationship.Exact(docId) =>
+        case Relationship.Exact(metaId) =>
           extendedUI.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of"
-          extendedUI.relationships.txtParents.value = docId.toString
+          extendedUI.relationships.txtParents.value = metaId.toString
 
         case _ =>
           extendedUI.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.unspecified"
@@ -334,9 +334,9 @@ class Filter extends ImcmsServicesSupport {
           extendedUI.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.with_children"
         case Relationship.Logical(_) =>
           extendedUI.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.without_children"
-        case Relationship.Exact(docId) =>
+        case Relationship.Exact(metaId) =>
           extendedUI.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.with_children_of"
-          extendedUI.relationships.txtChildren.value = docId.toString
+          extendedUI.relationships.txtChildren.value = metaId.toString
 
         case _ =>
           extendedUI.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.unspecified"

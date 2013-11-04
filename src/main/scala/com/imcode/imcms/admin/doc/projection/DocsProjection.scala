@@ -146,7 +146,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
 
 
   def reload() {
-    filter.setVisibleDocsRangeInputPrompt(docsContainer.visibleDocsRange())
+    filter.setMetaIdRangePrompt(docsContainer.metaIdRange())
 
     createSolrQuery() match {
       case Failure(throwable) =>

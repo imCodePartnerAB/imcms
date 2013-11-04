@@ -7,7 +7,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 
 import _root_.imcode.server.user.UserDomainObject
-import imcode.server.document.index.{DocumentStoredFields, SearchResult}
+import imcode.server.document.index.{DocumentIndex, DocumentStoredFields, SearchResult}
 
 import java.util.{Date, Collections, Arrays}
 
@@ -49,12 +49,27 @@ with ImcmsServicesSupport {
 
 
   /**
-   * Returns inclusive range of visible docs ids.
+   * Returns indexed documents meta id (inclusive) range.
    *
-   * @return Some(range) or None if there are no visible docs in this container.
+   * @return Some(min, max) or None if there are no indexed documents.
    */
-  def visibleDocsRange(): Option[(DocId, DocId)] = imcmsServices.getDocumentMapper.getDocumentIdRange.asOption.map {
-    idsRange => (idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
+  def metaIdRange(): Option[(MetaId, MetaId)] = {
+    // A range can also be queried from db instead of index.
+    // imcmsServices.getDocumentMapper.getDocumentIdRange.asOption.map {
+    //    idsRange => (idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
+    //  }
+
+    val query = new SolrQuery("*:*") |>> { q =>
+      q.setGetFieldStatistics(DocumentIndex.FIELD__META_ID)
+      q.setRows(0)
+    }
+
+    imcmsServices.getDocumentMapper.getDocumentIndex.getService.query(query).toOption.flatMap { queryResponse =>
+      queryResponse.getFieldStatsInfo.get(DocumentIndex.FIELD__META_ID) match {
+        case null => None
+        case stats => Some(stats.getMin.toString.toInt, stats.getMax.toString.toInt)
+      }
+    }
   }
 
   override val getContainerPropertyIds: JCollection[_] = PropertyId.valuesCollection()
