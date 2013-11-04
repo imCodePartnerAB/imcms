@@ -16,7 +16,7 @@ import com.imcode.imcms.admin.doc.projection.filter.ExtendedFilterParams
 import com.imcode.imcms.admin.doc.projection.filter.IdRange
 
 import _root_.imcode.server.user.UserDomainObject
-import _root_.imcode.server.document.index.{DocumentStoredFields, DocumentIndex}
+import imcode.server.document.index.{DocumentStoredFields, DocumentIndex}
 
 import org.apache.commons.lang3.StringUtils
 import org.apache.solr.client.solrj.SolrQuery
@@ -41,40 +41,44 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
   @transient
   private var currentValidFilterParams = (BasicFilterParams(), ExtendedFilterParams())
 
-  private def parentsRenderer(metaId: DocId, parentsIds: JCollection[DocId]): Component = {
-    if (parentsIds.isEmpty) null
-    else new Button("docs_projection.result.show_parents".f(parentsIds.size)) with LinkStyle |>> { btn =>
-      btn.addClickHandler { _ =>
-        val relationshipOpt = Some(
-          Relationship(children = Relationship.Exact(metaId))
-        )
+  private def parentsRenderer(fields: DocumentStoredFields): Component = {
+    fields.parentsCount() match {
+      case 0 => null
+      case n => new Button("docs_projection.result.show_parents".f(n)) with LinkStyle |>> { btn =>
+        btn.addClickHandler { _ =>
+          val relationshipOpt = Some(
+            Relationship(children = Relationship.Exact(fields.metaId()))
+          )
 
-        val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
-        val extendedFilterParams = new ExtendedFilterParams(relationshipOpt = relationshipOpt)
+          val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
+          val extendedFilterParams = new ExtendedFilterParams(relationshipOpt = relationshipOpt)
 
-        setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
+          setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
+        }
       }
     }
   }
 
-  private def childrenRenderer(metaId: DocId, childrenIds: JCollection[DocId]): Component = {
-    if (childrenIds.isEmpty) null
-    else new Button("docs_projection.result.show_children".f(childrenIds.size)) with LinkStyle |>> { btn =>
-      btn.addClickHandler { _ =>
-        val relationshipOpt = Some(
-          Relationship(parents = Relationship.Exact(metaId))
-        )
+  private def childrenRenderer(fields: DocumentStoredFields): Component = {
+    fields.childrenCount()   match {
+      case 0 => null
+      case n => new Button("docs_projection.result.show_children".f(n)) with LinkStyle |>> { btn =>
+        btn.addClickHandler { _ =>
+          val relationshipOpt = Some(
+            Relationship(parents = Relationship.Exact(fields.metaId()))
+          )
 
-        val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
-        val extendedFilterParams = new ExtendedFilterParams(relationshipOpt = relationshipOpt)
+          val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
+          val extendedFilterParams = new ExtendedFilterParams(relationshipOpt = relationshipOpt)
 
-        setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
+          setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
+        }
       }
     }
   }
 
   val filter = new Filter
-  val docsContainer = new IndexedDocsContainer(user, childrenRenderer = childrenRenderer, parentsRenderer = parentsRenderer)
+  val docsContainer = new IndexedDocsContainer(user, parentsRenderer, childrenRenderer)
 
   val docsUI = new IndexedDocsUI(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
   private val selectionRef = new AtomicReference(Seq.empty[I18nDocRef])

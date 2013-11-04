@@ -67,15 +67,11 @@ public class DocumentStoredFields {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_END_DATETIME);
     }
 
-    public Collection<Integer> parentsIds() {
-        return Objects.firstNonNull(
-                (Collection<Integer>) (Collection<?>) solrDocument.getFieldValues(DocumentIndex.FIELD__PARENT_ID),
-                Collections.<Integer>emptyList());
+    public int parentsCount() {
+        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__PARENTS_COUNT);
     }
 
-    public Collection<Integer> childrenIds() {
-        return Objects.firstNonNull(
-                (Collection<Integer>) (Collection<?>) solrDocument.getFieldValues(DocumentIndex.FIELD__CHILD_ID),
-                Collections.<Integer>emptyList());
+    public int childrenCount() {
+        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__CHILDREN_COUNT);
     }
 }

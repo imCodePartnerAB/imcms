@@ -2,17 +2,13 @@ package imcode.server.document.index.service.impl
 
 import com.imcode._
 import scala.collection.JavaConverters._
+import scala.collection.breakOut
 import org.apache.solr.common.SolrInputDocument
-import imcode.server.document.textdocument.{TextDomainObject, TextDocumentDomainObject}
-import imcode.server.document.{FileDocumentDomainObject, DocumentDomainObject}
-import org.apache.commons.io.IOUtils
+import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+import _root_.imcode.server.document.{FileDocumentDomainObject, DocumentDomainObject}
 import org.apache.tika.metadata.{HttpHeaders, Metadata}
-import org.apache.tika.parser.html.HtmlParser
-import org.apache.tika.mime.MediaType
-import org.apache.tika.detect.Detector
-import java.io.InputStream
 import org.apache.tika.Tika
-import imcode.server.document.index.DocumentIndex
+import _root_.imcode.server.document.index.DocumentIndex
 
 class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDocumentFile => Boolean) extends Log4jLoggerSupport {
 
@@ -56,11 +52,11 @@ class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDoc
       }
     }
 
-    indexDoc.addField(DocumentIndex.FIELD__HAS_CHILDREN, menus.exists(_.getMenuItems.nonEmpty))
+    val childIds: Set[Int] = (for (menu <- menus; menuItem <- menu.getMenuItems) yield menuItem.getDocumentId)(breakOut)
 
-    for (menu <- menus; menuItem <- menu.getMenuItems) {
-      indexDoc.addField(DocumentIndex.FIELD__CHILD_ID, menuItem.getDocumentId.toString)
-    }
+    indexDoc.addField(DocumentIndex.FIELD__HAS_CHILDREN, childIds.nonEmpty)
+
+    childIds.foreach(id => indexDoc.addField(DocumentIndex.FIELD__CHILD_ID, id))
   }
 
 

@@ -21,8 +21,8 @@ import com.imcode.imcms.api.Document
 // todo: Selection: memory solr - copy solr doc from main solr to the RAM
 class IndexedDocsContainer(
     user: UserDomainObject,
-    parentsRenderer: ((DocId, JCollection[DocId]) => Component) = (_, _) => null,
-    childrenRenderer: ((DocId, JCollection[DocId]) => Component) = (_, _) => null
+    parentsRenderer: (DocumentStoredFields => Component) = (_ => null),
+    childrenRenderer: (DocumentStoredFields => Component) = (_ => null)
 ) extends Container
 with ContainerWithTypedItemId[Index]
 with ReadOnlyOrderedContainer
@@ -169,8 +169,8 @@ with ImcmsServicesSupport {
       case PropertyId.ARCHIVING_DT => LazyProperty(formatDt(fields.archivingDt()))
       case PropertyId.EXPIRATION_DT => LazyProperty(formatDt(fields.publicationEndDt()))
 
-      case PropertyId.PARENTS => LazyProperty(parentsRenderer(fields.metaId(), fields.parentsIds()))
-      case PropertyId.CHILDREN => LazyProperty(childrenRenderer(fields.metaId(), fields.childrenIds()))
+      case PropertyId.PARENTS => LazyProperty(parentsRenderer(fields))
+      case PropertyId.CHILDREN => LazyProperty(childrenRenderer(fields))
     })
   }
 }

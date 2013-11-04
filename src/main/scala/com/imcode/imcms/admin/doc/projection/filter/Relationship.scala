@@ -9,5 +9,5 @@ object Relationship {
   sealed trait Type
   case object Unspecified extends Type
   case class Logical(value: Boolean) extends Type
-  case class Exact(docId: DocId) extends Type
+  case class Exact(metaId: DocId) extends Type
 }

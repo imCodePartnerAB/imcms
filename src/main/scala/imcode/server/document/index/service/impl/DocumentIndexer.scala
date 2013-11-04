@@ -84,6 +84,7 @@ class DocumentIndexer(
       }
 
       indexDoc.addField(DocumentIndex.FIELD__HAS_PARENTS, !parentDocumentAndMenuIds.isEmpty)
+      indexDoc.addField(DocumentIndex.FIELD__PARENTS_COUNT, parentDocumentAndMenuIds.size())
     }
 
     addFieldIfNotNull(DocumentIndex.FIELD__ALIAS, doc.getAlias)
