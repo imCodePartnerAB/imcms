@@ -21,7 +21,7 @@ public enum PropertyId {
 
     PUBLICATION_START_DT("docs_projection.container_property.publication_start_dt", String.class),
     ARCHIVING_DT("docs_projection.container_property.archiving_dt", String.class),
-    EXPIRATION_DT("docs_projection.container_property.publication_end_dt", String.class),
+    PUBLICATION_END_DT("docs_projection.container_property.publication_end_dt", String.class),
 
     PARENTS("docs_projection.container_property.parents", Component.class),
     CHILDREN("docs_projection.container_property.children", Component.class);

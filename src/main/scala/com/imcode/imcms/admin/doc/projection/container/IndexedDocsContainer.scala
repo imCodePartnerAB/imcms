@@ -2,28 +2,31 @@ package com.imcode
 package imcms
 package admin.doc.projection.container
 
-import com.vaadin.data.{Item, Property, Container}
+import com.vaadin.data.{Property, Container}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 
 import _root_.imcode.server.user.UserDomainObject
-import imcode.server.document.index.{DocumentIndex, DocumentStoredFields, SearchResult}
+import _root_.imcode.server.document.index.{DocumentIndex, DocumentStoredFields, SearchResult}
+import _root_.imcode.server.Imcms
+import _root_.imcode.server.document.DocumentDomainObject
 
 import java.util.{Date, Collections, Arrays}
 
 import org.apache.solr.client.solrj.SolrQuery
 import com.imcode.imcms.vaadin.ui.{Theme, UndefinedSize, NoMargin, Spacing}
-import imcode.server.Imcms
-import imcode.server.document.DocumentDomainObject
 import com.imcode.imcms.api.Document
 
-// todo: Implement sorting
-// todo: Selection: memory solr - copy solr doc from main solr to the RAM
+import scala.collection.JavaConverters._
+
+  // todo: Implement sorting
+// todo: Implement Selection base on in-memory solr.
 class IndexedDocsContainer(
-    user: UserDomainObject,
-    parentsRenderer: (DocumentStoredFields => Component) = (_ => null),
-    childrenRenderer: (DocumentStoredFields => Component) = (_ => null)
-) extends Container
+  user: UserDomainObject,
+  parentsRenderer: (DocumentStoredFields => Component) = Function.const(null),
+  childrenRenderer: (DocumentStoredFields => Component) = Function.const(null)
+)
+extends Container
 with ContainerWithTypedItemId[Index]
 with ReadOnlyOrderedContainer
 with Container.Sortable
@@ -120,10 +123,48 @@ with ImcmsServicesSupport {
     case _ => null
   }
 
-  override def sort(propertyId: Array[AnyRef], ascending: Array[Boolean]) {}
+  override def sort(propertyId: Array[AnyRef], ascending: Array[Boolean]) {
+    items.searchResultOpt.foreach { searchResult =>
+      val query = searchResult.solrQuery()
+      query.getSorts.asScala.foreach(query.removeSort)
+
+      for ((id: PropertyId, asc) <- propertyId.zip(ascending)) {
+        val sortField = id match {
+          case PropertyId.META_ID => DocumentIndex.FIELD__META_ID
+          case PropertyId.TYPE => DocumentIndex.FIELD__DOC_TYPE_ID
+          case PropertyId.LANGUAGE => DocumentIndex.FIELD__LANGUAGE_CODE
+          case PropertyId.ALIAS => DocumentIndex.FIELD__ALIAS
+          case PropertyId.HEADLINE => DocumentIndex.FIELD__META_HEADLINE
+          case PropertyId.CREATED_DT => DocumentIndex.FIELD__CREATED_DATETIME
+          case PropertyId.MODIFIED_DT => DocumentIndex.FIELD__MODIFIED_DATETIME
+          case PropertyId.PUBLICATION_START_DT => DocumentIndex.FIELD__PUBLICATION_START_DATETIME
+          case PropertyId.ARCHIVING_DT => DocumentIndex.FIELD__ARCHIVED_DATETIME
+          case PropertyId.PUBLICATION_END_DT => DocumentIndex.FIELD__PUBLICATION_END_DATETIME
+          case PropertyId.PARENTS => DocumentIndex.FIELD__PARENTS_COUNT
+          case PropertyId.CHILDREN => DocumentIndex.FIELD__CHILDREN_COUNT
+        }
+
+        query.addSort(sortField, if (asc) SolrQuery.ORDER.asc else SolrQuery.ORDER.desc)
+      }
+
+      setQueryOpt(Some(query))
+    }
+  }
 
   override val getSortableContainerPropertyIds: JCollection[_] = Arrays.asList(
-    PropertyId.META_ID, PropertyId.LANGUAGE, PropertyId.TYPE, PropertyId.PHASE, PropertyId.ALIAS, PropertyId.HEADLINE
+    PropertyId.META_ID,
+    PropertyId.LANGUAGE,
+    PropertyId.TYPE,
+    /*PropertyId.PHASE,*/
+    PropertyId.ALIAS,
+    PropertyId.HEADLINE,
+    PropertyId.CREATED_DT,
+    PropertyId.MODIFIED_DT,
+    PropertyId.PUBLICATION_START_DT,
+    PropertyId.ARCHIVING_DT,
+    PropertyId.PUBLICATION_END_DT,
+    PropertyId.PARENTS,
+    PropertyId.CHILDREN
   )
 
 
@@ -182,7 +223,7 @@ with ImcmsServicesSupport {
 
       case PropertyId.PUBLICATION_START_DT => LazyProperty(formatDt(fields.publicationStartDt()))
       case PropertyId.ARCHIVING_DT => LazyProperty(formatDt(fields.archivingDt()))
-      case PropertyId.EXPIRATION_DT => LazyProperty(formatDt(fields.publicationEndDt()))
+      case PropertyId.PUBLICATION_END_DT => LazyProperty(formatDt(fields.publicationEndDt()))
 
       case PropertyId.PARENTS => LazyProperty(parentsRenderer(fields))
       case PropertyId.CHILDREN => LazyProperty(childrenRenderer(fields))

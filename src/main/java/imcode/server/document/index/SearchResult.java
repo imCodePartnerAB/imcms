@@ -62,4 +62,8 @@ public class SearchResult {
     public List<DocumentStoredFields> documentStoredFieldsList() {
         return documentStoredFieldsList;
     }
+
+    public SolrQuery solrQuery() {
+        return solrQuery.getCopy();
+    }
 }
