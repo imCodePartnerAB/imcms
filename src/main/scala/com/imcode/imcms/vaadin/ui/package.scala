@@ -179,11 +179,12 @@ package object ui {
 
   trait OnceOnlyAttachAction extends AbstractComponent {
 
-    var attachAction = Option.empty[this.type => Unit]
+    var attachActionOpt = Option.empty[this.type => Unit]
 
     override def attach() {
-      attachAction.foreach(_ apply this)
-      attachAction = None
+      super.attach()
+      attachActionOpt.foreach(action => action.apply(this))
+      attachActionOpt = None
     }
   }
 

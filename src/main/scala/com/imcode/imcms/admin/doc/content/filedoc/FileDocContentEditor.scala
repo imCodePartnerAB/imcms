@@ -245,7 +245,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
       }
     }
 
-    ui.attachAction = Some(_ => resetValues())
+    ui.attachActionOpt = Some(_ => resetValues())
   } // ui
 
   def collectValues() = {
