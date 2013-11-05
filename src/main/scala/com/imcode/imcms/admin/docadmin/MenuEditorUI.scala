@@ -9,12 +9,15 @@ import imcode.server.document.textdocument.MenuDomainObject
 
 class MenuEditorUI extends VerticalLayout with FullSize {
   val mb = new MenuBar with FullWidth
-  val miIncludeDocs = mb.addItem("mi.add".i)
-  val miExcludeSelectedDoc = mb.addItem("mi.remove".i)
-  val miShowSelectedDoc = mb.addItem("mi.show".i)
-  val miEditSelectedDoc = mb.addItem("mi.properties".i)
+  val miAddExistingDocs = mb.addItem("mi.add".i)
+  val miNewDoc = mb.addItem("mi.new".i)
+  val miNewDocNA = miNewDoc.addItem("Not implemented".i)
+  val miCopySelectedDoc = mb.addItem("mi.copy".i)
+  val miRemoveSelectedDocs = mb.addItem("mi.remove".i)
+  val miEditSelectedDoc = mb.addItem("mi.edit".i)
+  val miShowSelectedDoc = mb.addItem("mi.show_in_a_new_window".i)
   val miHelp = mb.addItem("mi.help".i)
-  val ttMenu = new TreeTable with AlwaysFireValueChange[AnyRef] with DocIdSelectWithLifeCycleIcon with SingleSelect[DocId]
+  val ttMenu = new TreeTable with AlwaysFireValueChange[AnyRef] with DocIdSelectWithLifeCycleIcon with SingleSelect[MetaId]
                              with Selectable with Immediate with FullSize |>> { tt =>
     tt.setRowHeaderMode(Table.RowHeaderMode.HIDDEN)
   }

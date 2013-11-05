@@ -24,6 +24,7 @@ import com.vaadin.server.Page
 // todo: allow edit several at once
 // fixme: check op permissions
 // fixme: file doc - cant add files
+// fixme: copy should be rewritten - predefined copy dialog should be shown to a user.
 class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport with Log4jLoggerSupport {
 
   private def showMissingDocNotification() {
