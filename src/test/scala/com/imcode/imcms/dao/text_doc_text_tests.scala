@@ -35,8 +35,8 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     TestSetup.db.runScripts("src/test/resources/sql/text_dao.sql")
   }
 
-  def withFixture(test: OneArgTest) {
-    mkLanguages.foreach(test(_))
+  override def withFixture(test: OneArgTest) = {
+    test.apply(mkLanguages.head)
   }
 
   object Default {

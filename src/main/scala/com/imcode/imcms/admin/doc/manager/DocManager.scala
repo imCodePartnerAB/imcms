@@ -27,9 +27,9 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
   }
 
   val ui = new DocManagerUI(projection.ui) |>> { ui =>
-    ui.miSelectionShow.setCommandHandler { _ =>
-      UI.getCurrent.addWindow(docSelectionDlg)
-    }
+//    ui.miSelectionShow.setCommandHandler { _ =>
+//      UI.getCurrent.addWindow(docSelectionDlg)
+//    }
 
     ui.miShow.setCommandHandler { _ => projectionOps.showSelectedDoc() }
     ui.miEdit.setCommandHandler { _ => projectionOps.editSelectedDoc() }
@@ -37,6 +37,7 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
     ui.miNewTextDoc.setCommandHandler { _ => projectionOps.mkDocOfType[TextDocumentDomainObject] }
     ui.miNewFileDoc.setCommandHandler { _ => projectionOps.mkDocOfType[FileDocumentDomainObject] }
     ui.miNewUrlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[UrlDocumentDomainObject] }
+    ui.miDelete.setCommandHandler { _ => projectionOps.deleteSelectedDocs() }
 
     ui.miProfileEditName.setCommandHandler { _ =>
       whenSingleton(projection.docsUI.selection) { docId =>

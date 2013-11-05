@@ -2,10 +2,6 @@ package com.imcode.imcms.admin.doc.projection.container;
 
 import com.vaadin.ui.Component;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
 public enum PropertyId {
 
     INDEX("docs_projection.container_property.index", Integer.class),
@@ -20,21 +16,11 @@ public enum PropertyId {
     MODIFIED_DT("docs_projection.container_property.modified_dt", String.class),
 
     PUBLICATION_START_DT("docs_projection.container_property.publication_start_dt", String.class),
-    ARCHIVING_DT("docs_projection.container_property.archiving_dt", String.class),
+    ARCHIVE_DT("docs_projection.container_property.archive_dt", String.class),
     PUBLICATION_END_DT("docs_projection.container_property.publication_end_dt", String.class),
 
     PARENTS("docs_projection.container_property.parents", Component.class),
     CHILDREN("docs_projection.container_property.children", Component.class);
-
-    private static final Collection<PropertyId> valuesCollection;
-
-    static {
-        valuesCollection = Collections.unmodifiableCollection(Arrays.asList(values()));
-    }
-
-    public static Collection<PropertyId> valuesCollection() {
-        return valuesCollection;
-    }
 
     private final String id;
     private final Class<?> type;

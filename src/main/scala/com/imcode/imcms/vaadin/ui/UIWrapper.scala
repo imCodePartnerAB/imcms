@@ -4,23 +4,22 @@ package imcms.vaadin.ui
 import javax.servlet.http.HttpSession
 import javax.servlet.ServletContext
 import java.net.URL
-import com.vaadin.server.{VaadinServlet, VaadinService, WrappedHttpSession}
+import com.vaadin.server.{Page, VaadinServlet, VaadinService, WrappedHttpSession}
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.support.WebApplicationContextUtils
 
 
 /* implicit */
 class UIWrapper(ui: com.vaadin.ui.UI) {
 
-  //def context: WebApplicationContext = app.getContext.asInstanceOf[WebApplicationContext]
+//  def context: WebApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext)
 
   def session: HttpSession = ui.getSession.getSession.asInstanceOf[WrappedHttpSession].getHttpSession
 
   def servletContext: ServletContext = session.getServletContext
 
-  // todo: fix
-  def resourceUrl(resourcePath: String): URL = (null : URL) |> { appUrl =>
-
-    //VaadinServlet.getCurrent.getServletContext
-    new URL(appUrl.getProtocol, appUrl.getHost, appUrl.getPort, s"{$servletContext.getContextPath}/$resourcePath")
+  def resourceUrl(resourcePath: String): URL = ui.getPage.getLocation |> { appUrl =>
+    new URL(appUrl.getScheme, appUrl.getHost, appUrl.getPort, s"${servletContext.getContextPath}/$resourcePath")
   }
 
   def withLock(body: => Unit) {

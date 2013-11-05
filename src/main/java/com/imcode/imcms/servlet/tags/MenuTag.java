@@ -25,13 +25,13 @@ import com.imcode.imcms.api.TextDocument;
 
 public class MenuTag extends BodyTagSupport {
 
-    private int no;
-    private Properties attributes = new Properties();
-    private Iterator<MenuItemDomainObject> menuItemIterator;
-    private MenuItemDomainObject menuItem ;
-    private String template;
-    private MenuDomainObject menu;
-    private String label;
+    private volatile int no;
+    private volatile Properties attributes = new Properties();
+    private volatile Iterator<MenuItemDomainObject> menuItemIterator;
+    private volatile MenuItemDomainObject menuItem ;
+    private volatile MenuDomainObject menu;
+    private volatile String label;
+    private volatile String template;
 
     public int doStartTag() throws JspException {
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();

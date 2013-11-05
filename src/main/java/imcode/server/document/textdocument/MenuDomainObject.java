@@ -46,15 +46,15 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private volatile Long id;
 
     @Column(name = "sort_order")
-    private int sortOrder;
+    private volatile int sortOrder;
 
     @Column(name = "no")
-    private Integer no;
+    private volatile Integer no;
 
-    private DocRef docRef;
+    private volatile DocRef docRef;
 
 
     /**
@@ -65,7 +65,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
             name = "imcms_text_doc_menu_items",
             joinColumns = @JoinColumn(name = "menu_id"))
     @MapKeyColumn(name = "to_doc_id")
-    private Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
+    private volatile Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
 
     public MenuDomainObject() {
         this(null, MENU_SORT_ORDER__DEFAULT);

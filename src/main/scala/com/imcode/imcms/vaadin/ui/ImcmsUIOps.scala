@@ -11,12 +11,11 @@ import com.imcode.imcms.security.PermissionDenied
 /* implicit */
 class ImcmsUIOps(ui: UI) {
 
-  // todo: fix
   def imcmsUser: UserDomainObject = Utility.getLoggedOnUser(ui.session)
 
-  def imcmsDocUrl(docId: DocId) = ui.resourceUrl(docId.toString)
+  def imcmsDocUrl(metaId: MetaId) = ui.resourceUrl(metaId.toString)
 
-  def imcmsDocUrl(docAlias: String) = ui.resourceUrl(docAlias)
+  def imcmsDocUrl(alias: String) = ui.resourceUrl(alias)
 
   /**
    * If permission is granted executes an action.

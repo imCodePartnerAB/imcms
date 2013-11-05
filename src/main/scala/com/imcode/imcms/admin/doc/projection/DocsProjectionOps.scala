@@ -2,9 +2,9 @@ package com.imcode
 package imcms
 package admin.doc.projection
 
-import imcode.server.document._
+import _root_.imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
-import com.imcode.imcms.admin.doc.{DocEditorDialog, DocViewer}
+import com.imcode.imcms.admin.doc.{DocEditorDialog, DocOpener}
 import com.imcode.imcms.vaadin.ui.dialog.{InformationDialog, ConfirmationDialog}
 
 import com.imcode.imcms.vaadin.ui._
@@ -17,57 +17,72 @@ import com.vaadin.ui.UI
 import com.vaadin.server.Page
 
 /**
- * Common operations associated with docs projection [selection] such as edit, view, delete etc.
+ * Common operations associated with selected document(s) such as edit, view, delete etc.
  *
  * @param projection
  */
 // todo: allow edit several at once
-// todo: check permissions
+// fixme: check op permissions
+// fixme: file doc - cant add files
 class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport with Log4jLoggerSupport {
 
+  private def showMissingDocNotification() {
+    Page.getCurrent.showWarningNotification(
+      "Selected document has been deleted".i,
+      "Please re-run search."
+    )
+  }
+
   def mkDocOfType[T <: DocumentDomainObject : ClassTag] {
-    whenSingleton(projection.selection) { ref =>
-      imcmsServices.getDocumentMapper.getDefaultDocument(ref.metaId(), ref.language()) match {
-        case selectedDoc: TextDocumentDomainObject =>
-          val (newDocType, dlgCaption) = scala.reflect.classTag[T].runtimeClass match {
-            case c if c == classOf[TextDocumentDomainObject] => DocumentTypeDomainObject.TEXT_ID -> "new_text_doc.dlg.title".i
-            case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "new_text_doc.dlg.title".i
-            case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "new_url_doc.dlg.title".i
-            case c if c == classOf[HtmlDocumentDomainObject] => DocumentTypeDomainObject.HTML_ID -> "new_html_doc.dlg.title".i
-          }
+    projection.selection match {
+      case selection if selection.isEmpty || selection.size > 1 =>
+        new InformationDialog("Please select a text document you want to use as a template".i) |>> UI.getCurrent.addWindow
 
-          val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, UI.getCurrent.imcmsUser)
+      case selection => selection.head |> { ref =>
+        (imcmsServices.getDocumentMapper.getDefaultDocument(ref.metaId(), ref.language()) : DocumentDomainObject) match {
+          case null => showMissingDocNotification()
 
-          new DocEditorDialog(dlgCaption, newDoc) |>> { dlg =>
-            dlg.setOkButtonHandler {
-              dlg.docEditor.collectValues() match {
-                case Left(errors) =>
-                  Page.getCurrent.showErrorNotification(errors.mkString(", "))
+          case selectedDoc if !selectedDoc.isInstanceOf[TextDocumentDomainObject] =>
+            new InformationDialog("Please select a text document".i) |>> UI.getCurrent.addWindow
 
-                case Right((editedDoc, i18nMetas)) =>
-                  val saveOpts = dlg.docEditor.contentEditor match {
-                    case contentEditor: NewTextDocContentEditor if contentEditor.ui.chkCopyI18nMetaTextsToTextFields.checked =>
-                      java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)
-
-                    case _ =>
-                      java.util.EnumSet.noneOf(classOf[DocumentMapper.SaveOpts])
-                  }
-
-                  imcmsServices.getDocumentMapper.saveNewDocument(
-                    editedDoc,
-                    i18nMetas.values.to[Set].asJava,
-                    saveOpts,
-                    UI.getCurrent.imcmsUser
-                  )
-                  Page.getCurrent.showInfoNotification("New document has been saved")
-                  projection.reload()
-                  dlg.close()
-              }
+          case selectedDoc: TextDocumentDomainObject =>
+            val (newDocType, dlgCaption) = scala.reflect.classTag[T].runtimeClass match {
+              case c if c == classOf[TextDocumentDomainObject] => DocumentTypeDomainObject.TEXT_ID -> "new_text_doc.dlg.title".i
+              case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "new_file_doc.dlg.title".i
+              case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "new_url_doc.dlg.title".i
+              case c if c == classOf[HtmlDocumentDomainObject] => DocumentTypeDomainObject.HTML_ID -> "new_html_doc.dlg.title".i
             }
-          } |> UI.getCurrent.addWindow
 
-        case _ =>
-          new InformationDialog("Please select a text document/profile") |>> UI.getCurrent.addWindow
+            val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.user)
+
+            new DocEditorDialog(dlgCaption, newDoc) |>> { dlg =>
+              dlg.setOkButtonHandler {
+                dlg.docEditor.collectValues() match {
+                  case Left(errors) =>
+                    Page.getCurrent.showErrorNotification(errors.mkString(", "))
+
+                  case Right((editedDoc, i18nMetas)) =>
+                    val saveOpts = dlg.docEditor.contentEditor match {
+                      case contentEditor: NewTextDocContentEditor if contentEditor.ui.chkCopyI18nMetaTextsToTextFields.checked =>
+                        java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)
+
+                      case _ =>
+                        java.util.EnumSet.noneOf(classOf[DocumentMapper.SaveOpts])
+                    }
+
+                    imcmsServices.getDocumentMapper.saveNewDocument(
+                      editedDoc,
+                      i18nMetas.values.to[Set].asJava,
+                      saveOpts,
+                      projection.user
+                    )
+                    Page.getCurrent.showInfoNotification("New document has been created".i)
+                    projection.reload()
+                    dlg.close()
+                }
+              }
+            } |> UI.getCurrent.addWindow
+        }
       }
     }
   }
@@ -75,11 +90,11 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   def deleteSelectedDocs() {
     whenNotEmpty(projection.selection) { refs =>
-      new ConfirmationDialog("Delete selected document(s)?") |>> { dlg =>
+      new ConfirmationDialog("Delete selected document(s)?".i) |>> { dlg =>
         dlg.setOkButtonHandler {
           try {
-            refs.foreach(ref => imcmsServices.getDocumentMapper.deleteDocument(ref.metaId(), UI.getCurrent.imcmsUser))
-            Page.getCurrent.showInfoNotification("Documents has been deleted")
+            refs.foreach(ref => imcmsServices.getDocumentMapper.deleteDocument(ref.metaId(), projection.user))
+            Page.getCurrent.showInfoNotification("Documents has been deleted".i)
             dlg.close()
           } finally {
             projection.reload()
@@ -92,39 +107,45 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   def showSelectedDoc() {
     whenSingleton(projection.selection) { ref =>
-      DocViewer.showDocViewDialog(projection.ui, ref.metaId())
+      DocOpener.openDoc(ref.metaId())
     }
   }
 
 
   def copySelectedDoc() {
     whenSingleton(projection.selection) { ref =>
-      imcmsServices.getDocumentMapper.copyDocument(ref.docRef(), UI.getCurrent.imcmsUser)
-      projection.reload()
-      Page.getCurrent.showInfoNotification("Document has been copied")
+      (imcmsServices.getDocumentMapper.getDefaultDocument(ref.metaId(), ref.language()) : DocumentDomainObject) match {
+        case null => showMissingDocNotification()
+        case doc =>
+          imcmsServices.getDocumentMapper.copyDocument(ref.docRef(), projection.user)
+          projection.reload()
+          Page.getCurrent.showInfoNotification("Document has been copied".i)
+      }
     }
   }
 
 
   def editSelectedDoc() {
     whenSingleton(projection.selection) { ref =>
-      val page = Page.getCurrent
-      val doc: DocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(ref.metaId(), ref.language())
+      (imcmsServices.getDocumentMapper.getWorkingDocument(ref.metaId(), ref.language()) : DocumentDomainObject) match {
+        case null => showMissingDocNotification()
+        case doc =>
+          val page = Page.getCurrent
+          new DocEditorDialog(s"Edit document ${doc.getMetaId}".i, doc) |>> { dlg =>
+            dlg.setOkButtonHandler {
+              dlg.docEditor.collectValues() match {
+                case Left(errors) =>
+                  page.showErrorNotification("Unable to save document".i, errors.mkString(", "))
 
-      new DocEditorDialog(s"Edit document ${doc.getMetaId}", doc) |>> { dlg =>
-        dlg.setOkButtonHandler {
-          dlg.docEditor.collectValues() match {
-            case Left(errors) =>
-              page.showErrorNotification("Unable to save document", errors.mkString(", "))
-
-            case Right((editedDoc, i18nMetas)) =>
-              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, UI.getCurrent.imcmsUser)
-              page.showInfoNotification("Document has been saved")
-              projection.reload()
-              dlg.close()
-          }
-        }
-      } |> UI.getCurrent.addWindow
+                case Right((editedDoc, i18nMetas)) =>
+                  imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, projection.user)
+                  page.showInfoNotification("Document has been saved".i)
+                  projection.reload()
+                  dlg.close()
+              }
+            }
+          } |> UI.getCurrent.addWindow
+      }
     }
   }
 }

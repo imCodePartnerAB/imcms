@@ -12,7 +12,7 @@ import imcode.server.document.textdocument.{MenuItemDomainObject, MenuDomainObje
 import com.imcode.imcms.vaadin.Editor
 import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerator}
 import com.imcode.imcms.vaadin.data.PropertyDescriptor
-import com.imcode.imcms.admin.doc.{DocEditorDialog, DocViewer, DocSelectDialog}
+import com.imcode.imcms.admin.doc.{DocEditorDialog, DocOpener, DocSelectDialog}
 import scala.annotation.tailrec
 import com.vaadin.data.util.HierarchicalContainer
 import com.vaadin.event.dd.{DragAndDropEvent, DropHandler}
@@ -119,7 +119,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
     ui.miShowSelectedDoc.setCommandHandler { _ =>
       for (docId <- ui.ttMenu.selectionOpt) {
-        DocViewer.showDocViewDialog(ui, docId)
+        DocOpener.openDoc(docId)
       }
     }
 

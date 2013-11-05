@@ -33,8 +33,16 @@ import scala.util.Success
 import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsUI, IndexedDocsContainer}
 import com.imcode.imcms.api.I18nDocRef
 
-
-class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[I18nDocRef]] with Log4jLoggerSupport with ImcmsServicesSupport {
+/**
+ * Indexed documents projection.
+ *
+ * @param user
+ * @param multiSelect
+ */
+// fixme: history; history should be represented as a nested module.
+// fixme: security
+// todo: show recently created docs in a separate view
+class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[I18nDocRef]] with ImcmsServicesSupport with Log4jLoggerSupport {
 
   @transient
   private var history = List.empty[(BasicFilterParams, ExtendedFilterParams)]
@@ -148,7 +156,7 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
   def reload() {
     filter.setMetaIdRangePrompt(docsContainer.metaIdRange())
 
-    createSolrQuery() match {
+    createQuery() match {
       case Failure(throwable) =>
         docsContainer.setQueryOpt(None)
         new ErrorDialog(throwable.getMessage.i) |> UI.getCurrent.addWindow
@@ -163,19 +171,20 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
 
 
   /**
-   * Creates and returns Solr query string.
+   * Creates and returns Solr query base on filter parameters.
    *
-   * @return query Solr query string.
+   * @return Solr query.
    */
-  def createSolrQuery(): Try[SolrQuery] = {
+  def createQuery(): Try[SolrQuery] = {
     for {
-      params <- filter.getParameters()
+      params <- filter.createParams()
     } yield {
-      createSolrQuery(params)
+      createQuery(params)
     }
   }
 
-  private def createSolrQuery(params: FilterParameters): SolrQuery = {
+
+  private def createQuery(params: FilterParameters): SolrQuery = {
     def escape(text: String): String = {
       val SOLR_SPECIAL_CHARACTERS = Array("+", "-", "&", "|", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":", "\\", "/")
       val SOLR_REPLACEMENT_CHARACTERS = Array("\\+", "\\-", "\\&", "\\|", "\\!", "\\(", "\\)", "\\{", "\\}", "\\[", "\\]", "\\^", "\\\"", "\\~", "\\*", "\\?", "\\:", "\\\\", "\\/")
@@ -277,9 +286,11 @@ class DocsProjection(user: UserDomainObject, multiSelect: Boolean = true) extend
         }
       }
     } |>> { solrQuery =>
-    //solrQuery.setRows(20)
-      if (logger.isDebugEnabled)
+      solrQuery.setRows(Integer.MAX_VALUE)
+
+      if (logger.isDebugEnabled) {
         logger.debug("Projection SOLr query: %s.".format(URLDecoder.decode(solrQuery.toString, "UTF-8")))
+      }
     }
   }  // def createSolrQuery()
 

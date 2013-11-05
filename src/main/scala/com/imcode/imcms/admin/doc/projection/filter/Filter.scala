@@ -83,11 +83,11 @@ class Filter extends ImcmsServicesSupport {
     }
   }
 
-  def getParameters(): Try[FilterParameters] = {
-    getBasicParameters() match {
+  def createParams(): Try[FilterParameters] = {
+    createBasicParams() match {
       case Failure(error) => Failure(error)
       case Success(basicParams) if basicUI.extended.chkEnabled.unchecked => Success(FilterParameters(basicParams))
-      case Success(basicParams) => getExtendedParametersOpt() match {
+      case Success(basicParams) => createExtendedParamsOpt() match {
         case None => Success(FilterParameters(basicParams, None))
         case Some(Failure(e)) => Failure(e)
         case Some(Success(extendedParams)) => Success(FilterParameters(basicParams, Some(extendedParams)))
@@ -95,7 +95,7 @@ class Filter extends ImcmsServicesSupport {
     }
   }
 
-  private def getBasicParameters(): Try[BasicFilterParams] = Try {
+  private def createBasicParams(): Try[BasicFilterParams] = Try {
     val idRangeOpt = when(basicUI.idRange.chkEnabled.checked) {
       IdRange(
         condOpt(basicUI.idRange.txtStart.trim) {
@@ -198,7 +198,7 @@ class Filter extends ImcmsServicesSupport {
   }
 
 
-  private def getExtendedParametersOpt(): Option[Try[ExtendedFilterParams]] = {
+  private def createExtendedParamsOpt(): Option[Try[ExtendedFilterParams]] = {
     if (basicUI.extended.chkEnabled.unchecked) None
     else Some(getExtendedParameters())
   }

@@ -5,6 +5,7 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.orm.TemplateNames;
@@ -20,7 +21,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      *
      * Required when saving only particular set of text fields.
      */
-    private Map<Integer, Boolean> modifiedTextIndexes = new TreeMap<Integer, Boolean>();
+    //private Map<Integer, Boolean> modifiedTextIndexes = new TreeMap<Integer, Boolean>();
 
     /**
      * Content loop unique item key.
@@ -55,25 +56,25 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Images outside of loops.
      */
-    private volatile Map<Integer, ImageDomainObject> images = new HashMap<Integer, ImageDomainObject>();
+    private volatile ConcurrentHashMap<Integer, ImageDomainObject> images = new ConcurrentHashMap<Integer, ImageDomainObject>();
 
     /**
      * Texts outside of loops.
      */
-    private volatile Map<Integer, TextDomainObject> texts = new HashMap<Integer, TextDomainObject>();
+    private volatile ConcurrentHashMap<Integer, TextDomainObject> texts = new ConcurrentHashMap<Integer, TextDomainObject>();
 
     /**
      * Texts in loops.
      */
-    private volatile Map<ContentLoopItemKey, TextDomainObject> loopTexts
-            = new HashMap<ContentLoopItemKey, TextDomainObject>();
+    private volatile ConcurrentHashMap<ContentLoopItemKey, TextDomainObject> loopTexts
+            = new ConcurrentHashMap<ContentLoopItemKey, TextDomainObject>();
 
 
     /**
      * Images in loops.
      */
-    private volatile Map<ContentLoopItemKey, ImageDomainObject> loopImages
-            = new HashMap<ContentLoopItemKey, ImageDomainObject>();
+    private volatile ConcurrentHashMap<ContentLoopItemKey, ImageDomainObject> loopImages
+            = new ConcurrentHashMap<ContentLoopItemKey, ImageDomainObject>();
 
 
     /**
@@ -83,14 +84,14 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * <p/>
      * Map value is an included doc's id.
      */
-    private volatile Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
+    private volatile ConcurrentHashMap<Integer, Integer> includesMap = new ConcurrentHashMap<Integer, Integer>();
 
     /**
      * Menus map.
      * <p/>
      * Map index is a menu's no in this document.
      */
-    private volatile Map<Integer, MenuDomainObject> menus = new HashMap<Integer, MenuDomainObject>();
+    private volatile ConcurrentHashMap<Integer, MenuDomainObject> menus = new ConcurrentHashMap<Integer, MenuDomainObject>();
 
     /**
      * Template names.
@@ -102,7 +103,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * <p/>
      * Map key is a content's no in this document.
      */
-    private volatile Map<Integer, ContentLoop> contentLoops = new HashMap<Integer, ContentLoop>();
+    private volatile ConcurrentHashMap<Integer, ContentLoop> contentLoops = new ConcurrentHashMap<Integer, ContentLoop>();
 
 
     public TextDocumentDomainObject() {
@@ -162,9 +163,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public MenuDomainObject getMenu(int menuNo) {
         MenuDomainObject menu = menus.get(menuNo);
 
-        if (null == menu) {
+        if (menu == null) {
             setMenu(menuNo, new MenuDomainObject());
-            menus.get(menuNo);
+            menu = menus.get(menuNo);
         }
 
         return menu;
@@ -187,25 +188,25 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Removes all image.
      */
     public synchronized void removeAllImages() {
-        images = new HashMap<Integer, ImageDomainObject>();
-        loopImages = new HashMap<ContentLoopItemKey, ImageDomainObject>();
+        images = new ConcurrentHashMap<Integer, ImageDomainObject>();
+        loopImages = new ConcurrentHashMap<ContentLoopItemKey, ImageDomainObject>();
     }
 
     public void removeAllIncludes() {
-        includesMap = new HashMap<Integer, Integer>();
+        includesMap = new ConcurrentHashMap<Integer, Integer>();
     }
 
     public void removeAllMenus() {
-        menus = new HashMap<Integer, MenuDomainObject>();
+        menus = new ConcurrentHashMap<Integer, MenuDomainObject>();
     }
 
     public void removeAllContentLoops() {
-        contentLoops = new HashMap<Integer, ContentLoop>();
+        contentLoops = new ConcurrentHashMap<Integer, ContentLoop>();
     }
 
-    public void removeAllTexts() {
-        texts = new HashMap<Integer, TextDomainObject>();
-        loopTexts = new HashMap<ContentLoopItemKey, TextDomainObject>();
+    public synchronized void removeAllTexts() {
+        texts = new ConcurrentHashMap<Integer, TextDomainObject>();
+        loopTexts = new ConcurrentHashMap<ContentLoopItemKey, TextDomainObject>();
     }
 
 
@@ -396,8 +397,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return loopImages.get(new ContentLoopItemKey(imageNo, contentRef));
     }
 
-    private Map<Integer, MenuDomainObject> cloneMenusMap() {
-        Map<Integer, MenuDomainObject> menusClone = new HashMap<Integer, MenuDomainObject>();
+    private ConcurrentHashMap<Integer, MenuDomainObject> cloneMenusMap() {
+        ConcurrentHashMap<Integer, MenuDomainObject> menusClone = new ConcurrentHashMap<Integer, MenuDomainObject>();
 
         for (Map.Entry<Integer, MenuDomainObject> entry : menus.entrySet()) {
             MenuDomainObject menu = entry.getValue();
@@ -410,8 +411,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
 
-    private Map<Integer, ImageDomainObject> cloneImages() {
-        Map<Integer, ImageDomainObject> imagesClone = new HashMap<Integer, ImageDomainObject>();
+    private ConcurrentHashMap<Integer, ImageDomainObject> cloneImages() {
+        ConcurrentHashMap<Integer, ImageDomainObject> imagesClone = new ConcurrentHashMap<Integer, ImageDomainObject>();
 
         for (Map.Entry<Integer, ImageDomainObject> imagesEntry : images.entrySet()) {
             ImageDomainObject image = imagesEntry.getValue().clone();
@@ -423,9 +424,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
 
-    private Map<ContentLoopItemKey, ImageDomainObject> cloneLoopImages() {
-        Map<ContentLoopItemKey, ImageDomainObject> imagesClone
-                = new HashMap<ContentLoopItemKey, ImageDomainObject>();
+    private ConcurrentHashMap<ContentLoopItemKey, ImageDomainObject> cloneLoopImages() {
+        ConcurrentHashMap<ContentLoopItemKey, ImageDomainObject> imagesClone
+                = new ConcurrentHashMap<ContentLoopItemKey, ImageDomainObject>();
 
         for (Map.Entry<ContentLoopItemKey, ImageDomainObject> imagesEntry : loopImages.entrySet()) {
             ImageDomainObject image = imagesEntry.getValue().clone();
@@ -436,8 +437,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return imagesClone;
     }
 
-    private Map<Integer, TextDomainObject> cloneTexts() {
-        Map<Integer, TextDomainObject> textsClone = new HashMap<Integer, TextDomainObject>();
+    private ConcurrentHashMap<Integer, TextDomainObject> cloneTexts() {
+        ConcurrentHashMap<Integer, TextDomainObject> textsClone = new ConcurrentHashMap<Integer, TextDomainObject>();
 
         for (Map.Entry<Integer, TextDomainObject> textsEntry : texts.entrySet()) {
             TextDomainObject text = textsEntry.getValue().clone();
@@ -448,8 +449,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return textsClone;
     }
 
-    private Map<ContentLoopItemKey, TextDomainObject> cloneLoopTexts() {
-        Map<ContentLoopItemKey, TextDomainObject> textsClone = new HashMap<ContentLoopItemKey, TextDomainObject>();
+    private ConcurrentHashMap<ContentLoopItemKey, TextDomainObject> cloneLoopTexts() {
+        ConcurrentHashMap<ContentLoopItemKey, TextDomainObject> textsClone = new ConcurrentHashMap<ContentLoopItemKey, TextDomainObject>();
 
         for (Map.Entry<ContentLoopItemKey, TextDomainObject> textsEntry : loopTexts.entrySet()) {
             TextDomainObject text = textsEntry.getValue().clone();
@@ -466,14 +467,14 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return templateNamesClone;
     }
 
-    private Map<Integer, Integer> cloneIncludesMap() {
-        Map<Integer, Integer> includesMapClone = new HashMap<Integer, Integer>(includesMap);
+    private ConcurrentHashMap<Integer, Integer> cloneIncludesMap() {
+        ConcurrentHashMap<Integer, Integer> includesMapClone = new ConcurrentHashMap<Integer, Integer>(includesMap);
 
         return includesMapClone;
     }
 
-    private Map<Integer, ContentLoop> cloneContentLoopsMap() {
-        Map<Integer, ContentLoop> contentLoopsMapClone = new HashMap<Integer, ContentLoop>();
+    private ConcurrentHashMap<Integer, ContentLoop> cloneContentLoopsMap() {
+        ConcurrentHashMap<Integer, ContentLoop> contentLoopsMapClone = new ConcurrentHashMap<Integer, ContentLoop>();
 
         for (Map.Entry<Integer, ContentLoop> entry : contentLoops.entrySet()) {
             contentLoopsMapClone.put(entry.getKey(), entry.getValue().clone());
@@ -495,11 +496,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void setMenus(Map<Integer, MenuDomainObject> menus) {
-        this.menus = menus;
+        this.menus = new ConcurrentHashMap<Integer, MenuDomainObject>(menus);
     }
 
     public void setIncludesMap(Map<Integer, Integer> includesMap) {
-        this.includesMap = includesMap;
+        this.includesMap = new ConcurrentHashMap<Integer, Integer>(includesMap);
     }
 
     public Map<Integer, ContentLoop> getContentLoops() {
@@ -507,7 +508,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void setContentLoops(Map<Integer, ContentLoop> contentLoops) {
-        this.contentLoops = contentLoops;
+        this.contentLoops = new ConcurrentHashMap<Integer, ContentLoop>(contentLoops);
     }
 
     public ContentLoop getContentLoop(int no) {

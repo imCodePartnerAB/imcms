@@ -20,7 +20,8 @@ class DocSelectDialog(caption: String, user: UserDomainObject, multiSelect: Bool
     ui.miNewUrlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[UrlDocumentDomainObject] }
 
     ui.miCopySelectedDoc.setCommandHandler { _ => projectionOps.copySelectedDoc() }
-    ui.miDeleteSelectedDocs.setCommandHandler { _ => projectionOps.deleteSelectedDocs() }
+    ui.miDeleteSelectedDocs.setCommandHandler { _ =>projectionOps.deleteSelectedDocs()
+    }
     ui.miShowSelectedDoc.setCommandHandler { _ => projectionOps.showSelectedDoc() }
     ui.miHelp.setCommandHandler { _ => /* todo: ??? show help in modal dialog ??? */ }
 

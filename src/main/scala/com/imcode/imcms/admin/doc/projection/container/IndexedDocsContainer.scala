@@ -19,7 +19,7 @@ import com.imcode.imcms.api.Document
 
 import scala.collection.JavaConverters._
 
-  // todo: Implement sorting
+// todo: Implement sorting by status - ???sort by solr query???
 // todo: Implement Selection base on in-memory solr.
 class IndexedDocsContainer(
   user: UserDomainObject,
@@ -57,10 +57,10 @@ with ImcmsServicesSupport {
    * @return Some(min, max) or None if there are no indexed documents.
    */
   def metaIdRange(): Option[(MetaId, MetaId)] = {
-    // A range can also be queried from db instead of index.
-    // imcmsServices.getDocumentMapper.getDocumentIdRange.asOption.map {
-    //    idsRange => (idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
-    //  }
+    // A range can also be queried from db instead of index:
+    // imcmsServices.getDocumentMapper.getDocumentIdRange.asOption.map { idsRange =>
+    //   (idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
+    // }
 
     val query = new SolrQuery("*:*") |>> { q =>
       q.setGetFieldStatistics(DocumentIndex.FIELD__META_ID)
@@ -75,7 +75,7 @@ with ImcmsServicesSupport {
     }
   }
 
-  override val getContainerPropertyIds: JCollection[_] = PropertyId.valuesCollection()
+  override val getContainerPropertyIds: JCollection[_] = java.util.Arrays.asList(PropertyId.values() : _*)
 
   override def getType(propertyId: AnyRef): Class[_] = propertyId.asInstanceOf[PropertyId].getType
 
@@ -86,7 +86,7 @@ with ImcmsServicesSupport {
 
   override def getItemIds(): JCollection[_] = new java.util.AbstractList[Index] {
     override def get(index: Int): Index = index
-    override val size: Int = IndexedDocsContainer.this.size
+    override val size: Int = items.size
   }
 
   override def containsId(itemId: AnyRef): Boolean = itemId match {
@@ -131,6 +131,7 @@ with ImcmsServicesSupport {
       for ((id: PropertyId, asc) <- propertyId.zip(ascending)) {
         val sortField = id match {
           case PropertyId.META_ID => DocumentIndex.FIELD__META_ID
+          // case PropertyId.PHASE => todo: create filter query
           case PropertyId.TYPE => DocumentIndex.FIELD__DOC_TYPE_ID
           case PropertyId.LANGUAGE => DocumentIndex.FIELD__LANGUAGE_CODE
           case PropertyId.ALIAS => DocumentIndex.FIELD__ALIAS
@@ -138,7 +139,7 @@ with ImcmsServicesSupport {
           case PropertyId.CREATED_DT => DocumentIndex.FIELD__CREATED_DATETIME
           case PropertyId.MODIFIED_DT => DocumentIndex.FIELD__MODIFIED_DATETIME
           case PropertyId.PUBLICATION_START_DT => DocumentIndex.FIELD__PUBLICATION_START_DATETIME
-          case PropertyId.ARCHIVING_DT => DocumentIndex.FIELD__ARCHIVED_DATETIME
+          case PropertyId.ARCHIVE_DT => DocumentIndex.FIELD__ARCHIVED_DATETIME
           case PropertyId.PUBLICATION_END_DT => DocumentIndex.FIELD__PUBLICATION_END_DATETIME
           case PropertyId.PARENTS => DocumentIndex.FIELD__PARENTS_COUNT
           case PropertyId.CHILDREN => DocumentIndex.FIELD__CHILDREN_COUNT
@@ -161,7 +162,7 @@ with ImcmsServicesSupport {
     PropertyId.CREATED_DT,
     PropertyId.MODIFIED_DT,
     PropertyId.PUBLICATION_START_DT,
-    PropertyId.ARCHIVING_DT,
+    PropertyId.ARCHIVE_DT,
     PropertyId.PUBLICATION_END_DT,
     PropertyId.PARENTS,
     PropertyId.CHILDREN
@@ -183,7 +184,7 @@ with ImcmsServicesSupport {
 
     private def formatDt(dt: Date): String = dt.asOption.map(dt => "%1$td.%1$tm.%1$tY %1$tH:%1$tM".format(dt)).getOrElse("")
 
-    override def getItemPropertyIds: JCollection[_] = PropertyId.valuesCollection()
+    override val getItemPropertyIds: JCollection[_] = getContainerPropertyIds
 
     override def getItemProperty(id: AnyRef): Property[AnyRef] = properties.getOrElseUpdate(id, id match {
       case PropertyId.INDEX => LazyProperty(index + 1 : JInteger)
@@ -222,7 +223,7 @@ with ImcmsServicesSupport {
       case PropertyId.MODIFIED_DT => LazyProperty(formatDt(fields.modifiedDt()))
 
       case PropertyId.PUBLICATION_START_DT => LazyProperty(formatDt(fields.publicationStartDt()))
-      case PropertyId.ARCHIVING_DT => LazyProperty(formatDt(fields.archivingDt()))
+      case PropertyId.ARCHIVE_DT => LazyProperty(formatDt(fields.archivingDt()))
       case PropertyId.PUBLICATION_END_DT => LazyProperty(formatDt(fields.publicationEndDt()))
 
       case PropertyId.PARENTS => LazyProperty(parentsRenderer(fields))
