@@ -89,7 +89,7 @@ public class DocumentLoader {
             i18nMeta = I18nMeta.builder().docId(meta.getId()).language(language).headline("").menuText("").menuImageURL("").build();
         }
 
-        T document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+        T document = DocumentDomainObject.<T>fromDocumentTypeId(meta.getDocumentType());
 
         document.setMeta(meta);
         document.setLanguage(language);
