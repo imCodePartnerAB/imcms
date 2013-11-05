@@ -146,6 +146,8 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
     setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
     pnlUIContent.initManagersMenu()
     setContent(pnlUIContent)
+
+    UI.getCurrent.getLoadingIndicatorConfiguration.setFirstDelay(100)
   }
 
 

@@ -35,6 +35,8 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
     setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
 
     setContent(mkContent(request))
+
+    UI.getCurrent.getLoadingIndicatorConfiguration.setFirstDelay(1)
   }
 
 
