@@ -15,10 +15,10 @@ import java.util.regex.Pattern;
 public class ContentRef implements Serializable, Cloneable {
 
     @Column(name = "content_loop_no")
-    private int loopNo;
+    private volatile int loopNo;
 
     @Column(name = "content_no")
-    private int contentNo;
+    private volatile int contentNo;
 
     protected ContentRef() {}
 

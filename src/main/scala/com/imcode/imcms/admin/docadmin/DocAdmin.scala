@@ -313,7 +313,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
     val textDao = imcmsServices.getSpringBean(classOf[TextDocDao])
     val texts = textDao.getTexts(DocRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
 
-    for (text <- texts.asScala if text.getDocRef == null) {
+    for (text <- texts.asScala if text.getI18nDocRef == null) {
       text.setType(TextDomainObject.TEXT_TYPE_HTML)
     }
 

@@ -92,8 +92,8 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
 
     for (TextState(text, textUI) <- states) {
       ui.tsTexts.addTab(textUI) |> { tab =>
-        tab.setCaption(text.getLanguage.getName)
-        tab.setIcon(Theme.Icon.Language.flag(text.getLanguage))
+        tab.setCaption(text.getI18nDocRef.language().getName)
+        tab.setIcon(Theme.Icon.Language.flag(text.getI18nDocRef.language()))
       }
     }
 

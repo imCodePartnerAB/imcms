@@ -236,13 +236,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     /**
-     * Sets a text to this document.
+     * Inserts a text to this document.
      * <p/>
      * If a text belongs to a content loop then both loop and its content must exist in this document.
      *
-     * @param no
-     * @param text
-     * @return
+     * @param no text position in the document.
+     * @param text text being inserted.
+     * @return copy of inserted text.
      */
     public TextDomainObject setText(int no, TextDomainObject text) {
         ContentRef contentRef = text.getContentRef();
@@ -254,9 +254,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         TextDomainObject newText = text.clone();
 
         newText.setId(oldText != null ? oldText.getId() : text.getId());
-        newText.setDocRef(getRef());
+        newText.setI18nDocRef(getI18nRef());
         newText.setNo(no);
-        newText.setLanguage(getLanguage());
 
         if (key == null) {
             texts.put(no, newText);
@@ -266,7 +265,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             if (loop == null) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Loop does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), contentRef.loopNo(), contentRef.contentNo(), no)
+                        , getI18nRef(), contentRef.loopNo(), contentRef.contentNo(), no)
                 );
             }
 
@@ -275,7 +274,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             if (!contentExist) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Content does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), contentRef.loopNo(), contentRef.contentNo(), no)
+                        , getI18nRef(), contentRef.loopNo(), contentRef.contentNo(), no)
                 );
             }
 

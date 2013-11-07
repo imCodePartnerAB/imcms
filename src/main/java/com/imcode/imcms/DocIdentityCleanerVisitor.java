@@ -23,7 +23,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
 
         for (TextDomainObject text : doc.getTexts().values()) {
             text.setId(null);
-            text.setDocRef(null);
+            text.setI18nDocRef(null);
         }
 
         for (ImageDomainObject image : doc.getImages().values()) {

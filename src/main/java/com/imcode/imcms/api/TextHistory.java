@@ -23,15 +23,7 @@ public class TextHistory {
 
     private ContentRef contentRef;
 
-    private DocRef docRef;
-
-    /**
-     * i18n support
-     */
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private DocumentLanguage language;
-
+    private I18nDocRef i18nDocRef;
 
     @Column(name = "user_id")
     private Integer userId;
@@ -46,10 +38,9 @@ public class TextHistory {
 
     public TextHistory(TextDomainObject textDO, UserDomainObject user) {
         setType(textDO.getType());
-        setDocRef(textDO.getDocRef());
+        setI18nDocRef(textDO.getI18nDocRef());
         setNo(textDO.getNo());
         setText(textDO.getText());
-        setLanguage(textDO.getLanguage());
         setContentRef(textDO.getContentRef());
         setUserId(user.getId());
         setModifiedDt(new Date());
@@ -106,14 +97,6 @@ public class TextHistory {
         this.id = id;
     }
 
-    public DocumentLanguage getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(DocumentLanguage language) {
-        this.language = language;
-    }
-
     public Integer getNo() {
         return no;
     }
@@ -146,11 +129,11 @@ public class TextHistory {
         this.contentRef = contentRef;
     }
 
-    public DocRef getDocRef() {
-        return docRef;
+    public I18nDocRef getI18nDocRef() {
+        return i18nDocRef;
     }
 
-    public void setDocRef(DocRef docRef) {
-        this.docRef = docRef;
+    public void setI18nDocRef(I18nDocRef i18nDocRef) {
+        this.i18nDocRef = i18nDocRef;
     }
 }

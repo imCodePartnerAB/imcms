@@ -43,7 +43,7 @@ public class TextDocumentInitializer {
     }
     
     public void initTexts(TextDocumentDomainObject document) {
-    	Collection<TextDomainObject> texts = textDocDao.getTexts(document.getRef(), document.getLanguage());
+    	Collection<TextDomainObject> texts = textDocDao.getTexts(document.getI18nRef());
 
     	for (TextDomainObject text: texts) {
             Integer no = text.getNo();

@@ -10,10 +10,10 @@ public class DocRef {
 
     // doc_meta_id
     @Column(name="doc_id")
-    private int metaId;
+    private volatile int metaId;
 
     @Column(name="doc_version_no")
-    private int versionNo;
+    private volatile int versionNo;
 
     protected DocRef() {
     }

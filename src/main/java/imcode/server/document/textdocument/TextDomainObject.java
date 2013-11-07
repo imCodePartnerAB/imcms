@@ -1,15 +1,12 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.DocRef;
+import com.imcode.imcms.api.I18nDocRef;
 import imcode.util.Parser;
-
-import java.io.Serializable;
-
-import javax.persistence.*;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Text doc's text field.
@@ -18,10 +15,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name = "imcms_text_doc_texts")
 public class TextDomainObject implements Serializable, Cloneable {
 
-    /** Plain text, with linebreaks. */
+    /**
+     * Plain text, with linebreaks.
+     */
     public final static int TEXT_TYPE_PLAIN = 0;
 
-    /** HTML-code. */
+    /**
+     * HTML-code.
+     */
     public final static int TEXT_TYPE_HTML = 1;
 
     public enum Format {
@@ -48,18 +49,13 @@ public class TextDomainObject implements Serializable, Cloneable {
             return this;
         }
 
-        public Builder docRef(DocRef docRef) {
-            textDomainObject.docRef = docRef;
+        public Builder i18nDocRef(I18nDocRef i18nDocRef) {
+            textDomainObject.i18nDocRef = i18nDocRef;
             return this;
         }
 
         public Builder no(Integer no) {
             textDomainObject.no = no;
-            return this;
-        }
-
-        public Builder language(DocumentLanguage language) {
-            textDomainObject.language = language;
             return this;
         }
 
@@ -92,19 +88,17 @@ public class TextDomainObject implements Serializable, Cloneable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private volatile Long id;
 
-    /** Text filed no in a document. */
+    /**
+     * Text filed no in a document.
+     */
     private volatile Integer no;
 
     private volatile String text;
 
     private volatile int type;
 
-    private volatile DocRef docRef;
+    private volatile I18nDocRef i18nDocRef;
     private volatile ContentRef contentRef;
-
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private volatile DocumentLanguage language;
 
     public TextDomainObject() {
         this("");
@@ -208,7 +202,7 @@ public class TextDomainObject implements Serializable, Cloneable {
                 .append(text, o.getText())
                 .append(type, o.getType())
                 .append(no, o.getNo())
-                .append(language, o.getLanguage()).isEquals();
+                .append(i18nDocRef, o.getI18nDocRef()).isEquals();
     }
 
     @Override
@@ -217,14 +211,14 @@ public class TextDomainObject implements Serializable, Cloneable {
                 .append(text)
                 .append(type)
                 .append(no)
-                .append(language).toHashCode();
+                .append(i18nDocRef).toHashCode();
     }
 
 
     @Override
     public TextDomainObject clone() {
         try {
-            return (TextDomainObject)super.clone();
+            return (TextDomainObject) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -238,24 +232,6 @@ public class TextDomainObject implements Serializable, Cloneable {
         this.id = id;
     }
 
-    public DocumentLanguage getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(DocumentLanguage language) {
-        this.language = language;
-    }
-
-    @Deprecated
-    public Integer getIndex() {
-        return getNo();
-    }
-
-    @Deprecated
-    public void setIndex(Integer index) {
-        setNo(index);
-    }
-
     public Integer getNo() {
         return no;
     }
@@ -264,12 +240,12 @@ public class TextDomainObject implements Serializable, Cloneable {
         this.no = no;
     }
 
-    public DocRef getDocRef() {
-        return docRef;
+    public I18nDocRef getI18nDocRef() {
+        return i18nDocRef;
     }
 
-    public void setDocRef(DocRef docRef) {
-        this.docRef = docRef;
+    public void setI18nDocRef(I18nDocRef i18nDocRef) {
+        this.i18nDocRef = i18nDocRef;
     }
 
     public ContentRef getContentRef() {

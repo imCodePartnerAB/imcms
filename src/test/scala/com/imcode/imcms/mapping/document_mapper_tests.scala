@@ -176,14 +176,14 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       newDoc.setContentLoop(loopNo, loop)
     }
 
-    val menus = 0 until fieldsCountOfEachType map { menuNo =>
+    val menus = (0 until fieldsCountOfEachType).map { menuNo =>
       val menu = new MenuDomainObject
       0 until menuNo foreach { _ =>
         menu.addMenuItem(new MenuItemDomainObject(new GetterDocumentReference(saveNewTextDocumentFn().getId, docMapper)))
       }
 
       menuNo -> menu
-    } toMap
+    }.toMap
 
     for ((textType, no) <- textTypeToNo) {
       val text = new TextDomainObject(textPrefix + no, textType)
@@ -667,8 +667,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val text = "text"
     val textDO = new TextDomainObject(text)
 
-    textDO.setDocRef(doc.getRef)
-    textDO.setLanguage(doc.getLanguage)
+    textDO.setI18nDocRef(doc.getI18nRef)
     textDO.setNo(no)
 
     expectResult(null, "Text field does not exists") {

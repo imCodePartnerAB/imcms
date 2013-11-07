@@ -158,23 +158,20 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     @Transactional
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, UserDomainObject user) {
         TextDocDao textDao = services.getSpringBean(TextDocDao.class);
-        DocumentLanguage language = textDocument.getLanguage();
 
-        textDao.deleteTexts(textDocument.getRef(), language);
+        textDao.deleteTexts(textDocument.getI18nRef());
         textDao.flush();
 
         for (TextDomainObject text : textDocument.getTexts().values()) {
             text.setId(null);
-            text.setDocRef(textDocument.getRef());
-            text.setLanguage(language);
+            text.setI18nDocRef(textDocument.getI18nRef());
 
             saveTextDocumentText(text, user);
         }
 
         for (TextDomainObject text : textDocument.getLoopTexts().values()) {
             text.setId(null);
-            text.setDocRef(textDocument.getRef());
-            text.setLanguage(language);
+            text.setI18nDocRef(textDocument.getI18nRef());
 
             saveTextDocumentText(text, user);
         }

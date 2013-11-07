@@ -96,21 +96,21 @@ public class ContentLoop implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private volatile Long id;
 
-    private Integer no;
+    private volatile Integer no;
 
     @Column(name = "doc_id")
-    private Integer docId;
+    private volatile Integer docId;
 
     @Column(name = "doc_version_no")
-    private Integer docVersionNo;
+    private volatile Integer docVersionNo;
 
     @Column(name = "next_content_no")
-    private int nextContentNo;
+    private volatile int nextContentNo;
 
     @Version
-    private int version;
+    private volatile int version;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(

@@ -2,10 +2,22 @@ package com.imcode.imcms.api;
 
 import com.google.common.base.Objects;
 
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+
+@Embeddable
 public class I18nDocRef {
 
-    private final DocRef docRef;
-    private final DocumentLanguage language;
+    private volatile DocRef docRef;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "language_id", referencedColumnName = "id")
+    private volatile DocumentLanguage language;
+
+    protected I18nDocRef() {
+    }
 
     public I18nDocRef(DocRef docRef, DocumentLanguage language) {
         this.docRef = docRef;

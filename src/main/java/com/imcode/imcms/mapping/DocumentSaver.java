@@ -61,11 +61,11 @@ public class DocumentSaver {
      */
     @Transactional
     public void saveText(TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfNecessary(text.getDocRef(), text.getContentRef());
+        createEnclosingContentLoopIfNecessary(text.getI18nDocRef().docRef(), text.getContentRef());
 
         new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(text, user);
 
-        metaDao.touch(text.getDocRef(), user);
+        metaDao.touch(text.getI18nDocRef().docRef(), user);
     }
 
 
@@ -357,12 +357,10 @@ public class DocumentSaver {
                 TextDomainObject text2 = new TextDomainObject(i18nMeta.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN);
 
                 text1.setNo(1);
-                text1.setLanguage(i18nMeta.getLanguage());
-                text1.setDocRef(textDoc.getRef());
+                text1.setI18nDocRef(textDoc.getI18nRef());
 
                 text2.setNo(2);
-                text2.setLanguage(i18nMeta.getLanguage());
-                text2.setDocRef(textDoc.getRef());
+                text2.setI18nDocRef(textDoc.getI18nRef());
 
                 docCreatingVisitor.saveTextDocumentText(text1, user);
                 docCreatingVisitor.saveTextDocumentText(text2, user);

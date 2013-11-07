@@ -806,19 +806,16 @@ public class DocumentMapper implements DocumentGetter {
     public synchronized void saveTextDocText(TextDomainObject text, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
 
-        if (text.getDocRef() == null)
+        if (text.getI18nDocRef() == null)
             throw new IllegalStateException("text document identity is not set");
 
         if (text.getNo() == null)
             throw new IllegalStateException("text no is not set");
 
-        if (text.getLanguage() == null)
-            throw new IllegalStateException("text language is not set");
-
         try {
             documentSaver.saveText(text, user);
         } finally {
-            invalidateDocument(text.getDocRef().metaId());
+            invalidateDocument(text.getI18nDocRef().metaId());
         }
     }
 
@@ -844,7 +841,7 @@ public class DocumentMapper implements DocumentGetter {
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
             for (TextDomainObject text: texts) {
-                docIds.add(text.getDocRef().metaId());
+                docIds.add(text.getI18nDocRef().metaId());
             }
 
             for (Integer metaId: docIds) {

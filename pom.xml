@@ -35,6 +35,8 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 
         <javac.args />
 
+        <build.webapp.dir>${project.build.directory}/${artifactId}</build.webapp.dir>
+
         <solr.version>4.5.1</solr.version>
         <slf4j.version>1.7.5</slf4j.version>
         <scala.version>2.10.3</scala.version>
@@ -51,12 +53,19 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
         <jetty.version>8.1.12.v20130726</jetty.version>
         <jetty.contextPath>/${project.artifactId}-${project.version}</jetty.contextPath>
 
-        <tomcat.port>8888</tomcat.port>
-        <tomcat.contextPath>/${project.artifactId}-${project.version}</tomcat.contextPath>
-        <tomcat.username>gui</tomcat.username>
-        <tomcat.password />
+        <!--
+            Used by tomcat6:run
+            The web resources directory for the web application being run.
+            Default value is: ${basedir}/src/main/webapp
+        -->
+        <tomcat.warSourceDirectory>${build.webapp.dir}</tomcat.warSourceDirectory>
 
-        <build.webapp.dir>${project.build.directory}/${project.build.finalName}</build.webapp.dir>
+        <!--
+            Used by tomcat6:exploded
+            Whether Tomcat should automatically undeploy webapps that already exist when deploying.
+            Default value is: false.
+        -->
+        <maven.tomcat.update>true</maven.tomcat.update>
 
         <artifact.log4j.threshold>info</artifact.log4j.threshold>
         <artifact.log4j.hibernate.level>error</artifact.log4j.hibernate.level>
@@ -1134,28 +1143,12 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat6-maven-plugin</artifactId>
                 <version>2.1</version>
-                <configuration>
-                    <warSourceDirectory>${build.webapp.dir}</warSourceDirectory>
-                    <port>${tomcat.port}</port>
-                    <path>${tomcat.contextPath}</path>
-                    <username>${tomcat.username}</username>
-                    <password>${tomcat.password}</password>
-                    <update>true</update>
-                </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.1</version>
-                <configuration>
-                    <warSourceDirectory>${build.webapp.dir}</warSourceDirectory>
-                    <port>${tomcat.port}</port>
-                    <path>${tomcat.contextPath}</path>
-                    <username>${tomcat.username}</username>
-                    <password>${tomcat.password}</password>
-                    <update>true</update>
-                </configuration>
             </plugin>
 
             <plugin>

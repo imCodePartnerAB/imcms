@@ -22,13 +22,12 @@ class TextDocDao extends HibernateSupport {
                createIfNotExists: Boolean): JList[TextDomainObject] = {
     for {
       language <- languageDao.getAllLanguages.asScala
-      text <- PartialFunction.condOpt(getText(docRef, no, language, contentRefOpt)) {
+      i18nDocRef = I18nDocRef.of(docRef, language)
+      text <- PartialFunction.condOpt(getText(i18nDocRef, no, contentRefOpt)) {
         case text if text != null => text
         case _ if createIfNotExists => new TextDomainObject |>> { txt =>
-          txt.setDocRef(docRef)
+          txt.setI18nDocRef(i18nDocRef)
           txt.setNo(no)
-
-          txt.setLanguage(language)
           txt.setContentRef(contentRefOpt.orNull)
         }
       }
@@ -42,10 +41,10 @@ class TextDocDao extends HibernateSupport {
   def getTextById(id: Long): TextDomainObject = hibernate.get[TextDomainObject](id)
 
 
-  def deleteTexts(docRef: DocRef, language: DocumentLanguage): Int =
+  def deleteTexts(i18nDocRef: I18nDocRef): Int =
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
-      "Text.deleteTextsByDocRefAndLanguage",
-      "docRef" -> docRef, "language" -> language
+      "Text.deleteTextsByI18nDocRef",
+      "i18nDocRef" -> i18nDocRef
     )
 
 
@@ -64,27 +63,26 @@ class TextDocDao extends HibernateSupport {
   /**
    * Returns text fields for the same doc, version and language.
    */
-  def getTexts(docRef: DocRef, language: DocumentLanguage): JList[TextDomainObject] =
+  def getTexts(i18nDocRef: I18nDocRef): JList[TextDomainObject] =
     hibernate.listByNamedQueryAndNamedParams(
-      "Text.getByDocRefAndLanguage",
-      "docRef" -> docRef, "language" -> language
+      "Text.getByI18nDocRef",
+      "i18nDocRef" -> i18nDocRef
     )
 
 
-  def getText(docRef: DocRef, no: Int, language: DocumentLanguage, contentRefOpt: Option[ContentRef]) = {
+  def getText(i18nDocRef: I18nDocRef, no: Int, contentRefOpt: Option[ContentRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
-        """select t from Text t where t.docRef = :docRef and t.no = :no
-           and t.language = :language AND t.contentRef = :contentRef"""
+        """select t from Text t where t.i18nDocRef = :i18nDocRef and t.no = :no
+           AND t.contentRef = :contentRef"""
       else
-        """select t from Text t where t.docRef = :docRef and t.no = :no
-           and t.language = :language AND t.contentRef IS NULL"""
+        """select t from Text t where t.i18nDocRef = :i18nDocRef and t.no = :no
+           AND t.contentRef IS NULL"""
 
     hibernate.withCurrentSession { session =>
       session.createQuery(queryStr) |> { query =>
-        query.setParameter("docRef", docRef)
-          .setParameter("no", no)
-          .setParameter("language", language)
+        query.setParameter("i18nDocRef", i18nDocRef)
+             .setParameter("no", no)
 
         if (contentRefOpt.isDefined) {
           query.setParameter("contentRef", contentRefOpt.get)
