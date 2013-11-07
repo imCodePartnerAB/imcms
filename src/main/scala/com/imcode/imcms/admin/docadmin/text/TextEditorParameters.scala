@@ -1,4 +1,4 @@
-package com.imcode.imcms.admin.docadmin
+package com.imcode.imcms.admin.docadmin.text
 
 import _root_.imcode.server.document.textdocument.TextDomainObject
 

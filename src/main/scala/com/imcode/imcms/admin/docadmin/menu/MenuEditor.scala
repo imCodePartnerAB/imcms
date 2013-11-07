@@ -1,14 +1,16 @@
 package com.imcode
 package imcms
-package admin.docadmin
+package admin.docadmin.menu
 
 import com.vaadin.ui._
+
+import _root_.imcode.server.document.textdocument.{MenuItemDomainObject, MenuDomainObject, TextDocumentDomainObject}
+import _root_.imcode.server.document.DocumentDomainObject
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
-import imcode.server.document.textdocument.{MenuItemDomainObject, MenuDomainObject, TextDocumentDomainObject}
 import com.imcode.imcms.vaadin.Editor
 import com.vaadin.ui.AbstractSelect.{VerticalLocationIs, ItemDescriptionGenerator}
 import com.imcode.imcms.vaadin.data.PropertyDescriptor
@@ -20,7 +22,7 @@ import com.vaadin.shared.ui.dd.VerticalDropLocation
 import com.vaadin.server.Page
 import com.vaadin.event.dd.acceptcriteria.{AcceptAll, Not, AcceptCriterion}
 import scala.collection.JavaConverters._
-import imcode.server.document.DocumentDomainObject
+import com.imcode.imcms.vaadin.data.PropertyDescriptor
 
 
 // refers to check:

@@ -1,5 +1,6 @@
 package com.imcode
-package imcms.admin.docadmin
+package imcms
+package admin.docadmin.text
 
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._

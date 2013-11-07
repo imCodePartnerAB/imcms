@@ -1,4 +1,6 @@
-package com.imcode.imcms.admin.docadmin
+package com.imcode
+package imcms
+package admin.docadmin.text
 
 import java.util.Date
 

@@ -1,12 +1,14 @@
 package com.imcode
 package imcms
-package admin.docadmin
+package admin.docadmin.text
 
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import imcode.server.document.textdocument.TextDomainObject
 import com.imcode.imcms.vaadin.Editor
+import com.imcode.imcms.ImcmsServicesSupport
+import org.vaadin.openesignforms.ckeditor.{CKEditorTextField, CKEditorConfig}
 
 
 class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) extends Editor with ImcmsServicesSupport {
@@ -77,7 +79,19 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
       TextState(
         text,
         format |> {
-          case TextDomainObject.Format.HTML => new RichTextArea with FullSize
+          case TextDomainObject.Format.HTML =>
+            val config = new CKEditorConfig
+            config.useCompactTags()
+            config.disableElementsPath()
+            config.setResizeDir(CKEditorConfig.RESIZE_DIR.HORIZONTAL)
+            config.disableSpellChecker()
+            config.setToolbarCanCollapse(false)
+            //config.addOpenESignFormsCustomToolbar()
+            config.setWidth("100%")
+
+            new CKEditorTextField(config) with FullSize |>> { ckEditor =>
+              //ckEditor.
+            }
           case TextDomainObject.Format.PLAIN_TEXT => settings.rowCountOpt match {
             case Some(1) => new TextField with FullWidth
             case _ => new TextArea with FullSize

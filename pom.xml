@@ -51,17 +51,17 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
         <jetty.version>8.1.12.v20130726</jetty.version>
-        <jetty.contextPath>/${project.artifactId}-${project.version}</jetty.contextPath>
+        <jetty.contextPath>/${project.artifactId}</jetty.contextPath>
 
         <!--
-            Used by tomcat6:run
+            tomcat6:run goal property.
             The web resources directory for the web application being run.
             Default value is: ${basedir}/src/main/webapp
         -->
         <tomcat.warSourceDirectory>${build.webapp.dir}</tomcat.warSourceDirectory>
 
         <!--
-            Used by tomcat6:exploded
+            tomcat6:exploded goal property.
             Whether Tomcat should automatically undeploy webapps that already exist when deploying.
             Default value is: false.
         -->
@@ -728,6 +728,13 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.12</version>
         </dependency>
+
+        <!-- Vaadin Add-ons -->
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>ckeditor-wrapper-for-vaadin</artifactId>
+            <version>7.8.7</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -818,6 +825,17 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/web/VAADIN/widgetsets</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
@@ -1238,6 +1256,47 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.version}</version>
+                <configuration>
+                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                    <!-- <runTarget>mobilemail</runTarget> -->
+                    <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This
+                            way compatible with Vaadin eclipse plugin. -->
+                    <webappDirectory>${basedir}/src/main/web/VAADIN/widgetsets
+                    </webappDirectory>
+                    <hostedWebapp>${basedir}/src/main/web/VAADIN/widgetsets
+                    </hostedWebapp>
+                    <noServer>true</noServer>
+                    <!-- Remove draftCompile when project is ready -->
+                    <draftCompile>false</draftCompile>
+                    <compileReport>true</compileReport>
+                    <style>OBF</style>
+                    <strict>true</strict>
+                    <runTarget>http://localhost:8080/</runTarget>
+                </configuration>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <!-- if you don't specify any modules, the plugin will find them -->
+                            <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
+                                    </modules> -->
+                        </configuration>
+                        <goals>
+                            <goal>clean</goal>
+                            <goal>resources</goal>
+                            <goal>update-theme</goal>
+                            <goal>update-widgetset</goal>
+                            <goal>compile-theme</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

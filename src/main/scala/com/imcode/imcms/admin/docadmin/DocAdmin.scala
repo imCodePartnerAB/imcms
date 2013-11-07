@@ -20,11 +20,14 @@ import imcode.server.{ImcmsConstants, Imcms}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
 import _root_.imcode.server.document.{DocumentDomainObject, NoPermissionToEditDocumentException}
-import com.imcode.imcms.admin.docadmin.TextEditorParameters
 import scala.Some
+import com.imcode.imcms.admin.docadmin.menu.{MenuEditorParameters, MenuEditor}
+import com.imcode.imcms.admin.docadmin.text.{TextEditor, TextEditorParameters}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Includes???
+// Html doc???
+// template/group
 
 @com.vaadin.annotations.Theme("imcms")
 class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { app =>
@@ -58,7 +61,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
       val docId = doc.getId
 
       condOpt(pathInfo) {
-        case null | "/" => mkWorkingDocEditorComponent(request, doc)
+        case null | "" | "/" => wrapDocEditor(request, doc)
       } orElse {
         condOpt(pathInfo, doc, request.getParameter("menuNo")) {
           case ("/menu", textDoc: TextDocumentDomainObject, NonNegInt(menuNo)) =>
@@ -67,12 +70,12 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
               s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
             )
 
-            mkWorkingDocMenuEditorComponent(MenuEditorParameters(textDoc, menuNo, title, returnUrl))
+            wrapTextDocMenuEditor(MenuEditorParameters(textDoc, menuNo, title, returnUrl))
         }
       } orElse {
         condOpt(pathInfo, doc, request.getParameter("textNo")) {
           case ("/text", textDoc: TextDocumentDomainObject, NonNegInt(textNo)) =>
-            mkWorkingDocTextEditorComponent(request, textDoc, textNo)
+            wrapTextDocTextEditor(request, textDoc, textNo)
         }
       }
     } getOrElse {
@@ -81,7 +84,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   }
 
 
-  def mkWorkingDocEditorComponent(request: VaadinRequest, doc: DocumentDomainObject): EditorContainerUI = {
+  def wrapDocEditor(request: VaadinRequest, doc: DocumentDomainObject): EditorContainerUI = {
     new EditorContainerUI("doc.edit_properties.title".f(doc.getId)) |>> { ui =>
       val editor = new DocEditor(doc)
 
@@ -118,7 +121,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   }
 
 
-  def mkWorkingDocMenuEditorComponent(params: MenuEditorParameters) = new EditorContainerUI(params.title) |>> { ui =>
+  def wrapTextDocMenuEditor(params: MenuEditorParameters) = new EditorContainerUI(params.title) |>> { ui =>
     val doc = params.doc
     val docId = doc.getId
     val menuNo = params.menuNo
@@ -282,9 +285,9 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   //}
 
   // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
-  def mkWorkingDocTextEditorComponent(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int) = new EditorContainerUI() |>> { ui =>
+  def wrapTextDocTextEditor(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int): EditorContainerUI = new EditorContainerUI |>> { ui =>
     val title = request.getParameter("label").trimToNull match {
-      case null => s"Document ${doc.getId} text no ${textNo}"
+      case null => s"Document ${doc.getId} text no $textNo"
       case label => label |> StringEscapeUtils.escapeHtml4
     }
 

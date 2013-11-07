@@ -1,11 +1,13 @@
 package com.imcode
 package imcms
-package admin.docadmin
+package admin.docadmin.menu
 
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.admin.doc.projection.DocIdSelectWithLifeCycleIcon
 import imcode.server.document.textdocument.MenuDomainObject
+import com.imcode.imcms._
+import com.imcode._
 
 class MenuEditorUI extends VerticalLayout with FullSize {
   val mb = new MenuBar with FullWidth
