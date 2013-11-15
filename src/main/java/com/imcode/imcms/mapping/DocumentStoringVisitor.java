@@ -51,8 +51,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     public DocumentStoringVisitor(ImcmsServices services) {
         this.services = services;
-        this.metaDao = services.getSpringBean(MetaDao.class);
-        this.textDocDao  = services.getSpringBean(TextDocDao.class);
+        this.metaDao = services.getManagedBean(MetaDao.class);
+        this.textDocDao  = services.getManagedBean(TextDocDao.class);
     }
 
     /**
@@ -157,7 +157,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, UserDomainObject user) {
-        TextDocDao textDao = services.getSpringBean(TextDocDao.class);
+        TextDocDao textDao = services.getManagedBean(TextDocDao.class);
 
         textDao.deleteTexts(textDocument.getI18nRef());
         textDao.flush();
@@ -209,7 +209,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     public void saveTextDocumentText(TextDomainObject text, UserDomainObject user) {
-        TextDocDao textDao = services.getSpringBean(TextDocDao.class);
+        TextDocDao textDao = services.getManagedBean(TextDocDao.class);
 
         textDao.saveText(text);
 

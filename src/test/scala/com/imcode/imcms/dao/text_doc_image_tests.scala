@@ -5,7 +5,7 @@ import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import com.imcode.imcms.test.config.AbstractHibernateConfig
+import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
@@ -80,7 +80,7 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterE
 }
 
 
-@Import(Array(classOf[AbstractHibernateConfig]))
+@Import(Array(classOf[HibernateConfig]))
 class ImageDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)

@@ -3,7 +3,7 @@ package imcms
 package admin.doc
 
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
-import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject, DocumentDomainObject}
+import imcode.server.document.{HtmlDocumentDomainObject, UrlDocumentDomainObject, FileDocumentDomainObject, DocumentDomainObject}
 import com.imcode.imcms.api.{I18nMeta, DocumentLanguage}
 import com.imcode.imcms.admin.doc.meta.MetaEditor
 import com.imcode.imcms.vaadin.Editor
@@ -14,7 +14,7 @@ import com.imcode.imcms.admin.doc.content.textdoc.NewTextDocContentEditor
 import com.imcode.imcms.admin.doc.content.urldoc.UrlDocContentEditor
 import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
 
-
+// todo: add html editor support
 class DocEditor(doc: DocumentDomainObject) extends Editor {
 
   type Data = (DocumentDomainObject, Map[DocumentLanguage, I18nMeta])
@@ -24,6 +24,7 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
     case textDoc: TextDocumentDomainObject if textDoc.getMetaId == null => new NewTextDocContentEditor(textDoc, metaEditor)
     case fileDoc: FileDocumentDomainObject => new FileDocContentEditor(fileDoc)
     case urlDoc: UrlDocumentDomainObject => new UrlDocContentEditor(urlDoc)
+    //case htmlDoc: HtmlDocumentDomainObject => new HtmlDocContentEditor(urlDoc)
     case _ => new UnsupportedDocContentEditor(doc)
   }
 

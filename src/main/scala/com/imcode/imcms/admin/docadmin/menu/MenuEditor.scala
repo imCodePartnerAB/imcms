@@ -38,11 +38,11 @@ import com.imcode.imcms.vaadin.data.PropertyDescriptor
 // [-]NoPermissionsToAddToDocumentException
 class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends Editor with ImcmsServicesSupport {
 
-  type Data = MenuDomainObject
+  override type Data = MenuDomainObject
 
   private var state = menu.clone()
 
-  val ui = new MenuEditorUI |>> { ui =>
+  override val ui = new MenuEditorUI |>> { ui =>
     ui.ttMenu.setItemDescriptionGenerator(new ItemDescriptionGenerator {
       def generateDescription(source: Component, itemId: AnyRef, propertyId: AnyRef) = "n/a" // column title tooltip
     })

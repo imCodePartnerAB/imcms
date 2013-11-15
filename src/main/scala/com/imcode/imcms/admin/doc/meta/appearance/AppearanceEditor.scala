@@ -69,7 +69,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
     }
 
     ui.pnlAlias.txtAlias.addValidator(new Validator {
-      val metaDao = imcmsServices.getSpringBean(classOf[MetaDao])
+      val metaDao = imcmsServices.getManagedBean(classOf[MetaDao])
 
       def findDocIdByAlias(): Option[Int] =
         for {

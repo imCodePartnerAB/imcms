@@ -34,12 +34,12 @@ import imcode.server.kerberos.KerberosLoginService;
 public class MockImcmsServices implements ImcmsServices {
 
     @Override
-    public <T> T getSpringBean(String name, Class<T> requiredType) {
+    public <T> T getManagedBean(String name, Class<T> requiredType) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public <T> T getSpringBean(Class<T> requiredType) {
+    public <T> T getManagedBean(Class<T> requiredType) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

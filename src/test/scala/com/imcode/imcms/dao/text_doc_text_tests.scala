@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import com.imcode.imcms.test.fixtures.LanguageFX.mkLanguages
 import org.scalatest.{fixture, BeforeAndAfterEach, BeforeAndAfterAll}
-import com.imcode.imcms.test.config.AbstractHibernateConfig
+import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
@@ -218,7 +218,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
 
 
-@Import(Array(classOf[AbstractHibernateConfig]))
+@Import(Array(classOf[HibernateConfig]))
 class TextDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)

@@ -137,8 +137,8 @@ class TextDocDao extends HibernateSupport {
   /**
    * Please note that createIfNotExists creates an instance of ImageDomainObject not a database entry.
    */
-  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentRef],
-                createIfNotExists: Boolean): JList[ImageDomainObject] = {
+  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentRef] = None,
+                createIfNotExists: Boolean = false): JList[ImageDomainObject] = {
     for {
       language <- languageDao.getAllLanguages.asScala
       image <- PartialFunction.condOpt(getImage(docRef, no, language, contentRefOpt)) {

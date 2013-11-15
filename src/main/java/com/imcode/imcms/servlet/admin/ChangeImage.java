@@ -139,7 +139,7 @@ public class ChangeImage extends HttpServlet {
 
         };
 
-        TextDocDao textDocDao = Imcms.getServices().getSpringBean(TextDocDao.class);
+        TextDocDao textDocDao = Imcms.getServices().getManagedBean(TextDocDao.class);
 
         List<ImageDomainObject> images = textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentRef), true);
 

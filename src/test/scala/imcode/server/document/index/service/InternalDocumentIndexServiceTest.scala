@@ -16,7 +16,7 @@ import scala.util.Failure
 @RunWith(classOf[JUnitRunner])
 class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  TestSetup.initLogging()
+  //TestSetup.init()
 
   val ops: DocumentIndexServiceOps = {
     val ms = new DocIndexingMocksSetup

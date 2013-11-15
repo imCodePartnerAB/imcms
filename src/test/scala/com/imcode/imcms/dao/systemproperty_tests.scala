@@ -6,7 +6,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, WordSpec, BeforeAndAfterAll}
 import org.scalatest.matchers.MustMatchers
-import com.imcode.imcms.test.config.AbstractHibernateConfig
+import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
@@ -64,7 +64,7 @@ class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAft
 }
 
 
-@Import(Array(classOf[AbstractHibernateConfig]))
+@Import(Array(classOf[HibernateConfig]))
 class SystemPropertyDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)

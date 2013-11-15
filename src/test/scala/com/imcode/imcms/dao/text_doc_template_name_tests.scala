@@ -9,7 +9,7 @@ import org.scalatest.matchers.MustMatchers
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import imcms.test.TestSetup.db
 import com.imcode.imcms.test.TestSetup
-import com.imcode.imcms.test.config.AbstractHibernateConfig
+import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 
@@ -78,7 +78,7 @@ class TemplateNamesDaoSuite extends FunSuite with MustMatchers with BeforeAndAft
   }
 }
 
-@Import(Array(classOf[AbstractHibernateConfig]))
+@Import(Array(classOf[HibernateConfig]))
 class TemplateNamesDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)

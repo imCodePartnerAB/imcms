@@ -21,14 +21,15 @@ class TestSetup extends TestDb with TestSolr {
 
   val classLoader = Thread.currentThread.getContextClassLoader
 
-  val basedir: String = classLoader.getResource("test-log4j.xml") match {
+  val basedir: String = classLoader.getResource("log4j.xml") match {
     case null => sys.error("Not configured")
-    case url => new File(url.getFile).getParentFile.getParentFile.getParentFile.getCanonicalPath
+    case testClassesLog4jConfUrl => new File(testClassesLog4jConfUrl.getFile).getParentFile |> { testClassesDir =>
+      testClassesDir.getParentFile.getParentFile.getCanonicalPath
+    }
   }
 
-  System.setProperty("com.imcode.imcms.test.basedir", basedir)
-  System.setProperty("log4j.configuration", "test-log4j.xml")
-  //System.setProperty("solr.solr.home", path("src/main/solr"))
+  // ???
+  // System.setProperty("solr.solr.home", path("src/main/solr"))
 
   val env: Environment = spring.ctx.getBean(classOf[Environment])
 
@@ -72,8 +73,10 @@ class TestSetup extends TestDb with TestSolr {
       }
 
       Imcms.setSQLScriptsPath(path("src/main/web/WEB-INF/sql"))
-      Imcms.setServerPropertiesFilename("test-server.properties")
-      Imcms.setApplicationContext(new FileSystemXmlApplicationContext("file:" + path("src/test/resources/test-applicationContext.xml")))
+      Imcms.setServerPropertiesFilename("server.properties")
+      System.setProperty("com.imcode.imcms.test.basedir", basedir)
+      // Can not be replaced with @Configuration since XML configuration always takes precedence over annotation configuration.
+      Imcms.setApplicationContext(new FileSystemXmlApplicationContext("file:" + path("src/test/resources/applicationContext.xml")))
       Imcms.setPrepareDatabaseOnStart(prepareDbOnStart)
 
       if (start) Imcms.start()
@@ -86,10 +89,6 @@ class TestSetup extends TestDb with TestSolr {
   def file(relativePath: String) = new File(basedir, relativePath)
 
   def dir(relativePath: String) = new File(basedir, relativePath)
-
-  def initLogging() {
-    // does nothing, an explicit way to initialize logging engine
-  }
 }
 
 

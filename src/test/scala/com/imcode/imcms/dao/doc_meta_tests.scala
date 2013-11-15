@@ -5,7 +5,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test.TestSetup.db
 import org.scalatest.{BeforeAndAfterEach, WordSpec, BeforeAndAfterAll}
-import com.imcode.imcms.test.config.AbstractHibernateConfig
+import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
@@ -117,7 +117,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 }
 
 
-@Import(Array(classOf[AbstractHibernateConfig]))
+@Import(Array(classOf[HibernateConfig]))
 class MetaDaoTestConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)

@@ -18,9 +18,9 @@ import org.mockito.invocation.InvocationOnMock
 import imcode.server.document.index.service.impl.{DocumentIndexServiceOps, ManagedSolrDocumentIndexService}
 
 @RunWith(classOf[JUnitRunner])
-class anagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
+class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  TestSetup.initLogging()
+  //TestSetup.init()
 
   val ops: DocumentIndexServiceOps = {
     val ms = new DocIndexingMocksSetup

@@ -6,7 +6,7 @@ import com.vaadin.ui.Component
 trait Editor {
 
   type Data
-  type ErrorsOrData = Seq[ErrorMsg] Either Data
+  final type ErrorsOrData = Seq[ErrorMsg] Either Data
 
   def ui: Component
 

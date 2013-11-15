@@ -1,3 +1,6 @@
+<!--
+Can not be replaced with @Configuration since XML configuration always takes precedence over annotation configuration.
+-->
 <beans default-lazy-init="true"
   xmlns="http://www.springframework.org/schema/beans"
   xmlns:p="http://www.springframework.org/schema/p"
@@ -12,7 +15,7 @@
     http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-  <context:property-placeholder location="classpath:test-server.properties" system-properties-mode="NEVER"/>
+  <context:property-placeholder location="classpath:server.properties" system-properties-mode="NEVER"/>
 
   <import resource="file:${com.imcode.imcms.test.basedir}/src/main/web/WEB-INF/applicationContext.xml"/>
 </beans>

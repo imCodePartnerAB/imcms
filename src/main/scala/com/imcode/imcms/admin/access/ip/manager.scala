@@ -27,7 +27,7 @@ import com.imcode.imcms.vaadin.data.PropertyDescriptor
 // help: "Users from a specific IP number or an interval of numbers are given direct access to the system (so that the user does not have to log in)."
 
 class IPAccessManager(app: UI) {
-  private val ipAccessDao = Imcms.getServices.getSpringBean(classOf[IPAccessDao])
+  private val ipAccessDao = Imcms.getServices.getManagedBean(classOf[IPAccessDao])
   private val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
   private val toDDN = ((_:String).toLong) andThen ipLongToString
   private val fromDDN = ipStringToLong(_:String).toString

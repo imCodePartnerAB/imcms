@@ -13,6 +13,7 @@ class DocManagerUI(searchUI: DocsProjectionUI) extends VerticalLayout with Spaci
   val miNewTextDoc = miNew.addItem("doc.mgr.mi.new.text_doc".i)
   val miNewFileDoc = miNew.addItem("doc.mgr.mi.new.file_doc".i)
   val miNewUrlDoc = miNew.addItem("doc.mgr.mi.new.url_doc".i)
+  val miNewHtmlDoc = miNew.addItem("doc.mgr.mi.new.html_doc".i)
 
   val miCopy = mb.addItem("doc.mgr.mi.copy".i)
   val miEdit = mb.addItem("doc.mgr.action.edit".i)

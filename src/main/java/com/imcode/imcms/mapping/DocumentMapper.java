@@ -79,15 +79,15 @@ public class DocumentMapper implements DocumentGetter {
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
-        documentLoader = services.getSpringBean(DocumentLoader.class);
+        documentLoader = services.getManagedBean(DocumentLoader.class);
         documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
 
         documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getDocumentI18nSupport().getLanguages(), documentCacheMaxSize);
 
-        nativeQueriesDao = services.getSpringBean(NativeQueriesDao.class);
-        categoryMapper = services.getSpringBean(CategoryMapper.class);
+        nativeQueriesDao = services.getManagedBean(NativeQueriesDao.class);
+        categoryMapper = services.getManagedBean(CategoryMapper.class);
 
-        documentSaver = services.getSpringBean(DocumentSaver.class);
+        documentSaver = services.getManagedBean(DocumentSaver.class);
         documentSaver.setDocumentMapper(this);
     }
 

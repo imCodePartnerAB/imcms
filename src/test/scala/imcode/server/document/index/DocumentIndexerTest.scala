@@ -20,7 +20,7 @@ import imcode.server.document.index.service.impl.DocumentIndexer
 @RunWith(classOf[JUnitRunner])
 class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  TestSetup.initLogging()
+  //TestSetup.init()
 
   val defaultTextDocEn = DocFX.mkDefaultTextDocEn
   val docIndexer: DocumentIndexer = new DocIndexingMocksSetup |>> {

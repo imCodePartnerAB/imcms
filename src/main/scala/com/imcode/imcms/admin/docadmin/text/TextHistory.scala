@@ -16,7 +16,7 @@ import scala.Some
 import com.imcode.imcms.vaadin.data.PropertyDescriptor
 
 class TextHistory(text: TextDomainObject) extends ImcmsServicesSupport {
-  private val textDao = imcmsServices.getSpringBean(classOf[TextDocDao])
+  private val textDao = imcmsServices.getManagedBean(classOf[TextDocDao])
 
   val ui = new TextHistoryUI(s"Document history") |>> { ui =>
     def rows(id: Long = 0, dateTime: DateTime = DateTime.now()): Stream[(Long, Option[Date], Date)] = {

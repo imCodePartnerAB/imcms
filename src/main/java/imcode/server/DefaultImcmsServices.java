@@ -289,7 +289,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initImageCacheMapper() {
-        imageCacheMapper = getSpringBean(ImageCacheMapper.class);
+        imageCacheMapper = getManagedBean(ImageCacheMapper.class);
     }
 
     private void initAuthenticatorsAndUserAndRoleMappers(Properties props) {
@@ -877,12 +877,12 @@ public class DefaultImcmsServices implements ImcmsServices {
     }
 
     @Override
-    public <T> T getSpringBean(Class<T> requiredType) {
+    public <T> T getManagedBean(Class<T> requiredType) {
         return applicationContext.getBean(requiredType);
     }
 
     @Override
-    public <T> T getSpringBean(String name, Class<T> requiredType) {
+    public <T> T getManagedBean(String name, Class<T> requiredType) {
         return applicationContext.getBean(name, requiredType);
     }
 }

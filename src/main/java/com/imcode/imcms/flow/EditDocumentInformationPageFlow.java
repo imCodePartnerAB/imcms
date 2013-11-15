@@ -134,7 +134,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         }
 
         Integer docId = document.getMetaId();
-        MetaDao metaDao = Imcms.getServices().getSpringBean(MetaDao.class);
+        MetaDao metaDao = Imcms.getServices().getManagedBean(MetaDao.class);
 
         if (docId == null) {
             for (DocumentLanguage language: availableLanguages) {

@@ -23,17 +23,13 @@ import _root_.imcode.server.document.{DocumentDomainObject, NoPermissionToEditDo
 import scala.Some
 import com.imcode.imcms.admin.docadmin.menu.{MenuEditorParameters, MenuEditor}
 import com.imcode.imcms.admin.docadmin.text.{TextEditor, TextEditorParameters}
+import com.imcode.imcms.admin.docadmin.image.ImageEditor
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Includes???
-// Html doc???
 // template/group
-
 @com.vaadin.annotations.Theme("imcms")
 class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { app =>
 
-  // todo: doc - unapply @ bounds to matched object, not the result
-  // todo: ??? pass requests from filter ???
+  // todo: move logic into filter
   override def init(request: VaadinRequest) {
     setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
 
@@ -77,9 +73,24 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
           case ("/text", textDoc: TextDocumentDomainObject, NonNegInt(textNo)) =>
             wrapTextDocTextEditor(request, textDoc, textNo)
         }
+      } orElse {
+        condOpt(pathInfo, doc, request.getParameter("imageNo")) {
+          case ("/image", textDoc: TextDocumentDomainObject, NonNegInt(imageNo)) =>
+            wrapTextDocImageEditor(request, textDoc, imageNo)
+        }
       }
     } getOrElse {
       new Label("N/A")
+    }
+  }
+
+
+  def wrapTextDocImageEditor(request: VaadinRequest, doc: TextDocumentDomainObject, imageNo: Int): EditorContainerUI = {
+    //val imageEditor = new ImageEditor()
+
+
+    new EditorContainerUI() |>> { ui =>
+
     }
   }
 
@@ -313,7 +324,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
       case _ => None
     }
 
-    val textDao = imcmsServices.getSpringBean(classOf[TextDocDao])
+    val textDao = imcmsServices.getManagedBean(classOf[TextDocDao])
     val texts = textDao.getTexts(DocRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
 
     for (text <- texts.asScala if text.getI18nDocRef == null) {

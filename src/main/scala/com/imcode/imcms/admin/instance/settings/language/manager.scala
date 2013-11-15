@@ -17,8 +17,8 @@ import com.vaadin.server.Page
 
 //todo delete in use message
 class LanguageManager(app: UI) {
-  private val languageDao = Imcms.getServices.getSpringBean(classOf[LanguageDao])
-  private val systemDao = Imcms.getServices.getSpringBean(classOf[SystemDao])
+  private val languageDao = Imcms.getServices.getManagedBean(classOf[LanguageDao])
+  private val systemDao = Imcms.getServices.getManagedBean(classOf[SystemDao])
 
   val ui = new LanguageManagerUI |>> { ui =>
     ui.rc.btnReload.addClickHandler { _ => reload() }

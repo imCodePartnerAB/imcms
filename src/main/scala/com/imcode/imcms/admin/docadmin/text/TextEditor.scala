@@ -13,13 +13,13 @@ import org.vaadin.openesignforms.ckeditor.{CKEditorTextField, CKEditorConfig}
 
 class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) extends Editor with ImcmsServicesSupport {
 
-  type Data = Seq[TextDomainObject]
+  override type Data = Seq[TextDomainObject]
 
   private case class TextState(text: TextDomainObject, textUI: AbstractField[String])
 
   private var states: Seq[TextState] = _
 
-  val ui = new TextEditorUI |>> { ui =>
+  override val ui = new TextEditorUI |>> { ui =>
     if (!settings.canChangeFormat) {
       ui.miFormatHtml.setEnabled(settings.format == TextDomainObject.Format.HTML)
       ui.miFormatPlain.setEnabled(settings.format == TextDomainObject.Format.PLAIN_TEXT)

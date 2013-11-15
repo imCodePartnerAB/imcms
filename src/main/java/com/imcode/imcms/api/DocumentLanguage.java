@@ -3,22 +3,21 @@ package com.imcode.imcms.api;
 import java.io.Serializable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "imcms_languages")
-public final class DocumentLanguage implements Serializable, Cloneable {
+public class DocumentLanguage implements Serializable, Cloneable {
                     //
     public static final class Builder {
-        private DocumentLanguage documentLanguage = new DocumentLanguage();
+        private DocumentLanguage documentLanguage;
 
-        public Builder() {}
+        private Builder() {
+            this.documentLanguage = new DocumentLanguage();
+        }
 
-        public Builder(DocumentLanguage language) {
-            id(language.id);
-            enabled(language.enabled);
-            code(language.code);
-            name(language.name);
-            nativeName(language.nativeName);
+        private Builder(DocumentLanguage documentLanguage) {
+            this.documentLanguage = documentLanguage.clone();
         }
 
         public Builder id(Integer id) {
@@ -47,15 +46,7 @@ public final class DocumentLanguage implements Serializable, Cloneable {
         }
 
         public DocumentLanguage build() {
-            DocumentLanguage newDocumentLanguage = new DocumentLanguage();
-
-            newDocumentLanguage.id = documentLanguage.id;
-            newDocumentLanguage.code = documentLanguage.code;
-            newDocumentLanguage.name = documentLanguage.name;
-            newDocumentLanguage.nativeName = documentLanguage.nativeName;
-            newDocumentLanguage.enabled = documentLanguage.enabled;
-
-            return newDocumentLanguage;
+            return documentLanguage.clone();
         }
     }
 
@@ -71,10 +62,15 @@ public final class DocumentLanguage implements Serializable, Cloneable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private volatile Integer id;
 
+    @NotNull
+    @Column(nullable = false)
     private volatile String code;
 
+    @NotNull
+    @Column(nullable = false)
     private volatile String name;
 
+    @Column(nullable = false)
     private volatile boolean enabled;
 
     @Column(name = "native_name")

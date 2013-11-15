@@ -4,19 +4,14 @@ package imcms.test.config
 import com.imcode._
 import org.springframework.context.annotation._
 import javax.inject.Inject
-import org.springframework.core.env.{StandardEnvironment, Environment}
+import org.springframework.core.env.Environment
 
 @Configuration
-@PropertySource(Array("classpath:test-server.properties"))
+@Import(Array(classOf[EnvironmentConfig]))
 class TestConfig {
 
-  var env: Environment = _
-
   @Inject
-  def setEnv(env: StandardEnvironment) {
-    env.getPropertySources.remove(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME)
-    this.env = env
-  }
+  var env: Environment = _
 
   @Scope("prototype")
   @Bean(destroyMethod = "close")

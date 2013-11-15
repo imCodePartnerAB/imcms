@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test.TestSetup.db
 import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
-import com.imcode.imcms.test.config.AbstractHibernateConfig
+import com.imcode.imcms.test.config.HibernateConfig
 import com.imcode.imcms.test.TestSetup
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
@@ -58,7 +58,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     val language = languageDao.getById(1)
     assertTrue("Language is enabled.", language.isEnabled.booleanValue)
 
-    val updatedLanguage = new DocumentLanguage.Builder(language).enabled(false).build()
+    val updatedLanguage = DocumentLanguage.builder(language).enabled(false).build()
     languageDao.saveLanguage(updatedLanguage)
 
     val languageFromDb = languageDao.getById(1)
@@ -102,7 +102,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
 }
 
 
-@Import(Array(classOf[AbstractHibernateConfig]))
+@Import(Array(classOf[HibernateConfig]))
 class LanguageDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)

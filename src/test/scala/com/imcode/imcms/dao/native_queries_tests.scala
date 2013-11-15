@@ -7,7 +7,7 @@ import scala.collection.JavaConverters._
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.{TestSetup, withLogFailure}
 import org.springframework.context.annotation.{Bean, Import}
-import com.imcode.imcms.test.config.AbstractHibernateConfig
+import com.imcode.imcms.test.config.HibernateConfig
 import org.scalatest._
 
 
@@ -75,7 +75,7 @@ class NativeQueriesSuite extends WordSpec with BeforeAndAfterEach with BeforeAnd
 }
 
 
-@Import(Array(classOf[AbstractHibernateConfig]))
+@Import(Array(classOf[HibernateConfig]))
 class NativeQueriesSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)

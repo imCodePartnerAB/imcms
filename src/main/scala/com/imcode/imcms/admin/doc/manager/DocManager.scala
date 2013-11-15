@@ -8,7 +8,7 @@ import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.server._
-import _root_.imcode.server.document.{UrlDocumentDomainObject, FileDocumentDomainObject}
+import imcode.server.document.{HtmlDocumentDomainObject, UrlDocumentDomainObject, FileDocumentDomainObject}
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.mapping.ProfileMapper
 
@@ -37,6 +37,7 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
     ui.miNewTextDoc.setCommandHandler { _ => projectionOps.mkDocOfType[TextDocumentDomainObject] }
     ui.miNewFileDoc.setCommandHandler { _ => projectionOps.mkDocOfType[FileDocumentDomainObject] }
     ui.miNewUrlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[UrlDocumentDomainObject] }
+    ui.miNewHtmlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[HtmlDocumentDomainObject] }
     ui.miDelete.setCommandHandler { _ => projectionOps.deleteSelectedDocs() }
 
     ui.miProfileEditName.setCommandHandler { _ =>

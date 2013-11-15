@@ -8,7 +8,7 @@ import org.scalatest.{BeforeAndAfterEach, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test.fixtures.{DocItemFX, DocFX, VersionFX}
 import com.imcode.imcms.test.fixtures.UserFX.mkSuperAdmin
 import com.imcode.imcms.test.TestSetup
-import com.imcode.imcms.test.config.AbstractHibernateConfig
+import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.api.{DocRef, MenuHistory}
@@ -118,7 +118,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterEa
 }
 
 
-@Import(Array(classOf[AbstractHibernateConfig]))
+@Import(Array(classOf[HibernateConfig]))
 class MenuDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)

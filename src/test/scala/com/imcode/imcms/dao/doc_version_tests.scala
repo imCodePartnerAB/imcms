@@ -12,7 +12,7 @@ import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 import imcms.api._
 import org.scalatest._
-import com.imcode.imcms.test.config.AbstractHibernateConfig
+import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.fixtures.UserFX
@@ -154,7 +154,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
 }
 
 
-@Import(Array(classOf[AbstractHibernateConfig]))
+@Import(Array(classOf[HibernateConfig]))
 class DocVersionDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
