@@ -2,13 +2,13 @@ package com.imcode
 package imcms
 package admin.access.user
 
-import imcode.server.user._
-import com.vaadin.ui._
+import _root_.imcode.server.user._
 
-
+import com.imcode.imcms.vaadin.Current
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
+import com.vaadin.ui._
 
 import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.projection.UsersProjection
@@ -49,7 +49,7 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
             }
           }
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
 
     ui.miEdit.setCommandHandler { _ =>
@@ -87,7 +87,7 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
               search.reset()
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
 

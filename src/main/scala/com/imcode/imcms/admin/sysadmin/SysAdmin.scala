@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.sysadmin
 
+import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 import com.imcode._
 import com.imcode.imcms.servlet.superadmin.AdminSearchTerms
@@ -143,11 +144,11 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
 
 
   override def init(request: VaadinRequest) {
-    setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
+    setLocale(new Locale(this.imcmsUser.getLanguageIso639_2))
     pnlUIContent.initManagersMenu()
     setContent(pnlUIContent)
 
-    UI.getCurrent.getLoadingIndicatorConfiguration.setFirstDelay(100)
+    getLoadingIndicatorConfiguration.setFirstDelay(100)
   }
 
 

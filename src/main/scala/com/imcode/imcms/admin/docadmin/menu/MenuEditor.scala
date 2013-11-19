@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.docadmin.menu
 
+import com.imcode.imcms.vaadin.Current
 import com.vaadin.ui._
 
 import _root_.imcode.server.document.textdocument.{MenuItemDomainObject, MenuDomainObject, TextDocumentDomainObject}
@@ -63,7 +64,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
     // todo: ??? search for current language + default version ???
     ui.miAddExistingDocs.setCommandHandler { _ =>
-      new DocSelectDialog("menu_editor.dlg.select_docs.title".i, UI.getCurrent.imcmsUser) |>> { dlg =>
+      new DocSelectDialog("menu_editor.dlg.select_docs.title".i, Current.ui.imcmsUser) |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
             ref <- dlg.projection.selection
@@ -79,7 +80,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
           updateMenuUI()
           dlg.close()
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
 
     ui.miRemoveSelectedDocs.setCommandHandler { _ =>
@@ -93,7 +94,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       for (docId <- ui.ttMenu.selectionOpt) {
         imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId) match {
           case null =>
-            Page.getCurrent.showWarningNotification("notification.doc.unable_to_find".i)
+            Current.page.showWarningNotification("notification.doc.unable_to_find".i)
             state.removeMenuItemByDocumentId(docId)
             updateMenuUI()
 
@@ -101,20 +102,20 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
             new DocEditorDialog("doc.edit_properties.title".f(docId), selectedDoc) |>> { dlg =>
               dlg.setOkButtonHandler {
                 dlg.docEditor.collectValues() match {
-                  case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(", "))
+                  case Left(errors) => Current.page.showErrorNotification(errors.mkString(", "))
                   case Right((modifiedDoc, i18nMetas)) =>
                     try {
-                      imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.values.to[Set].asJava, UI.getCurrent.imcmsUser)
+                      imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.values.to[Set].asJava, Current.ui.imcmsUser)
                       updateMenuUI()
                       dlg.close()
                     } catch {
                       case e: Exception =>
-                        Page.getCurrent.showErrorNotification("notification.doc.unable_to_save".i, e.getMessage)
+                        Current.page.showErrorNotification("notification.doc.unable_to_save".i, e.getMessage)
                         throw e
                     }
                 }
               }
-            } |> UI.getCurrent.addWindow
+            } |> Current.ui.addWindow
         }
       }
     }
@@ -123,12 +124,12 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       for (metaId <- ui.ttMenu.selectionOpt) {
         imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](metaId) match {
           case null =>
-            Page.getCurrent.showWarningNotification("notification.doc.unable_to_find".i)
+            Current.page.showWarningNotification("notification.doc.unable_to_find".i)
             state.removeMenuItemByDocumentId(metaId)
             updateMenuUI()
 
           case doc =>
-            val newDoc: DocumentDomainObject = imcmsServices.getDocumentMapper.copyDocument(doc, UI.getCurrent.imcmsUser)
+            val newDoc: DocumentDomainObject = imcmsServices.getDocumentMapper.copyDocument(doc, Current.ui.imcmsUser)
             val newDocRef = imcmsServices.getDocumentMapper.getDocumentReference(newDoc)
             val newMenuItem = new MenuItemDomainObject(newDocRef)
             state.addMenuItemUnchecked(newMenuItem)

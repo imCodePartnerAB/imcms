@@ -2,6 +2,7 @@ package com.imcode
 package imcms.admin.doc
 
 import com.imcode.imcms._
+import com.imcode.imcms.vaadin.Current
 
 import com.imcode.imcms.vaadin.ui._
 import com.vaadin.ui._
@@ -15,8 +16,8 @@ object DocOpener extends ImcmsServicesSupport {
 //  }
 
   def openDoc(metaId: MetaId, target: String = "_blank") {
-    val url = UI.getCurrent.imcmsDocUrl(metaId)
+    val url = Current.ui.imcmsDocUrl(metaId)
 
-    Page.getCurrent.getJavaScript.execute(s"window.open('$url', '$target')")
+    Current.page.getJavaScript.execute(s"window.open('$url', '$target')")
   }
 }

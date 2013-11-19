@@ -8,6 +8,7 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
+import com.imcode.imcms.vaadin.Current
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog._
 import com.imcode.imcms.vaadin.data._
@@ -41,16 +42,16 @@ class RoleManager(app: UI) {
               Ex.allCatch.either(roleMapper.getRole(id).asOption.foreach(roleMapper.deleteRole)) match {
                 case Right(_) =>
                   dlg.close()
-                  Page.getCurrent.showInfoNotification("Role has been deleted")
+                  Current.page.showInfoNotification("Role has been deleted")
                 case Left(ex) =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   throw ex
               }
 
               reload()
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
   }
@@ -58,7 +59,7 @@ class RoleManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
+  def canManage = Current.ui.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage roles")
 
   /** Edit in modal dialog. */
@@ -90,12 +91,12 @@ class RoleManager(app: UI) {
               Ex.allCatch.either(roleMapper saveRole voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
-                  Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
+                  Current.page.showErrorNotification("Internal error, please contact your administrator")
                   throw ex
                 case _ =>
                   (if (isNew) "New role has been created" else "Role has been updated") |> { msg =>
                     dlg.close()
-                    Page.getCurrent.showInfoNotification(msg)
+                    Current.page.showInfoNotification(msg)
                   }
 
                   reload()
@@ -104,7 +105,7 @@ class RoleManager(app: UI) {
           }
         }
       }
-    } |> UI.getCurrent.addWindow
+    } |> Current.ui.addWindow
   }
 
   def reload() {

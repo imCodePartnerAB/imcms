@@ -2,6 +2,7 @@ package com.imcode
 package imcms.admin.doc.template
 package group
 
+import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
@@ -41,16 +42,16 @@ class TemplateGroupManager(app: UI) {
             app.privileged(permission) {
               Ex.allCatch.either(templateMapper deleteTemplateGroup id.intValue) match {
                 case Right(_) =>
-                  Page.getCurrent.showInfoNotification("Template group has been deleted")
+                  Current.page.showInfoNotification("Template group has been deleted")
                 case Left(ex) =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   throw ex
               }
 
               reload()
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
   } // ui
@@ -58,7 +59,7 @@ class TemplateGroupManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
+  def canManage = Current.ui.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage template groups")
 
   /** Edit in a modal dialog. */
@@ -96,7 +97,7 @@ class TemplateGroupManager(app: UI) {
           }
         }
       }
-    } |> UI.getCurrent.addWindow
+    } |> Current.ui.addWindow
   }
 
   def reload() {

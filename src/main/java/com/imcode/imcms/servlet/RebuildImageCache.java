@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.Config;
+import com.imcode.imcms.api.ContentManagementSystem;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.FileDocumentImageSource;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
@@ -9,20 +9,16 @@ import imcode.server.document.textdocument.ImageSource;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-
-import com.imcode.imcms.api.ContentManagementSystem;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 public class RebuildImageCache extends HttpServlet {

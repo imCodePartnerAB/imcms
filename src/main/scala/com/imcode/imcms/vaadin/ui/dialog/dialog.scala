@@ -3,6 +3,7 @@ package imcms
 package vaadin.ui
 package dialog
 
+import com.imcode.imcms.vaadin.Current
 import com.imcode._
 import com.vaadin.ui._
 import com.vaadin.server.{Page, ThemeResource}
@@ -197,7 +198,7 @@ object Dialog extends Log4jLoggerSupport {
         handler
       } catch {
         case e: Exception =>
-          Page.getCurrent.showErrorNotification(s"Server Error: ${e.getMessage}")
+          Current.page.showErrorNotification(s"Server Error: ${e.getMessage}")
 
           logger.error("Dialog button click handler error", e)
 

@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.instance.file
 
+import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 import java.io.{File}
 import com.imcode.util.event.Publisher
@@ -43,7 +44,7 @@ object FileOps {
         ds.setParameter("Content-Disposition", s"""attachment; filename="${file.getName}" """)
       }
     } |> { resource =>
-      Page.getCurrent.open(resource, "", 500, 500, BorderStyle.DEFAULT)
+      Current.page.open(resource, "", 500, 500, BorderStyle.DEFAULT)
     }
   }
 
@@ -52,14 +53,14 @@ object FileOps {
     new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog with Resizable |>> { dlg =>
       dlg.mainUI = new TextArea("", scala.io.Source.fromFile(file).mkString) with ReadOnly with FullSize
       dlg.setSize(500, 500)
-    } |> UI.getCurrent.addWindow
+    } |> Current.ui.addWindow
 
   // todo: fix
   def showDirectly(file: File) =
     new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog with Resizable |>> { dlg =>
       dlg.mainUI = new Embedded("", new FileResource(file))
       dlg.setSize(500, 500)
-    } |> UI.getCurrent.addWindow
+    } |> Current.ui.addWindow
 
 
   // todo: fix
@@ -119,7 +120,7 @@ extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDi
             }
           }
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
   }
 
@@ -230,7 +231,7 @@ class ImagePicker(browser: FileBrowser) {
       preview.clear()
     }
 
-    ui.btnChoose.addClickHandler { _ => UI.getCurrent.addWindow(fileDialog) }
+    ui.btnChoose.addClickHandler { _ => Current.ui.addWindow(fileDialog) }
   }
 
   preview.listen { ui.btnRemove setEnabled _.isDefined }

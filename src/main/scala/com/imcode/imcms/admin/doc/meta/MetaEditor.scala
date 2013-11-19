@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
+import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
@@ -80,7 +81,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
           ui.pnlCurrentEditor.setContent(appearanceEditorOpt.get.ui)
 
         case "doc_meta_editor.menu_item.access" =>
-          if (accessEditorOpt.isEmpty) accessEditorOpt = Some(new AccessEditor(doc, UI.getCurrent.imcmsUser))
+          if (accessEditorOpt.isEmpty) accessEditorOpt = Some(new AccessEditor(doc, Current.ui.imcmsUser))
 
           ui.pnlCurrentEditor.setContent(accessEditorOpt.get.ui)
 
@@ -95,7 +96,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
           ui.pnlCurrentEditor.setContent(categoryEditorOpt.get.ui)
 
         case "doc_meta_editor.menu_item.profile" =>
-          if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], UI.getCurrent.imcmsUser))
+          if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], Current.ui.imcmsUser))
 
           ui.pnlCurrentEditor.setContent(profileEditorOpt.get.ui)
 

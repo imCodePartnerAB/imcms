@@ -5,5 +5,5 @@ import scala.language.implicitConversions
 import com.vaadin.data.Property
 
 trait LowPriorityPropertyImplicits {
-  implicit def mkPropertyOps[A <: AnyRef](property: Property[A]): PropertyOps[A] = new PropertyOps(property)
+  implicit def wrapProperty[A <: AnyRef](property: Property[A]): PropertyWrapper[A] = new PropertyWrapper(property)
 }

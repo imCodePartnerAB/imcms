@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.projection
 
+import com.imcode.imcms.vaadin.Current
 import _root_.imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.{DocEditorDialog, DocOpener}
@@ -28,7 +29,7 @@ import com.vaadin.server.Page
 class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport with Log4jLoggerSupport {
 
   private def showMissingDocNotification() {
-    Page.getCurrent.showWarningNotification(
+    Current.page.showWarningNotification(
       "Selected document has been deleted".i,
       "Please re-run search."
     )
@@ -37,14 +38,14 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
   def mkDocOfType[T <: DocumentDomainObject : ClassTag] {
     projection.selection match {
       case selection if selection.isEmpty || selection.size > 1 =>
-        new InformationDialog("Please select a text document you want to use as a template".i) |>> UI.getCurrent.addWindow
+        new InformationDialog("Please select a text document you want to use as a template".i) |>> Current.ui.addWindow
 
       case selection => selection.head |> { ref =>
         (imcmsServices.getDocumentMapper.getDefaultDocument(ref.metaId(), ref.language()) : DocumentDomainObject) match {
           case null => showMissingDocNotification()
 
           case selectedDoc if !selectedDoc.isInstanceOf[TextDocumentDomainObject] =>
-            new InformationDialog("Please select a text document".i) |>> UI.getCurrent.addWindow
+            new InformationDialog("Please select a text document".i) |>> Current.ui.addWindow
 
           case selectedDoc: TextDocumentDomainObject =>
             val (newDocType, dlgCaption) = scala.reflect.classTag[T].runtimeClass match {
@@ -60,7 +61,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
               dlg.setOkButtonHandler {
                 dlg.docEditor.collectValues() match {
                   case Left(errors) =>
-                    Page.getCurrent.showErrorNotification(errors.mkString(", "))
+                    Current.page.showErrorNotification(errors.mkString(", "))
 
                   case Right((editedDoc, i18nMetas)) =>
                     val saveOpts = dlg.docEditor.contentEditor match {
@@ -77,12 +78,12 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                       saveOpts,
                       projection.user
                     )
-                    Page.getCurrent.showInfoNotification("New document has been created".i)
+                    Current.page.showInfoNotification("New document has been created".i)
                     projection.reload()
                     dlg.close()
                 }
               }
-            } |> UI.getCurrent.addWindow
+            } |> Current.ui.addWindow
         }
       }
     }
@@ -95,13 +96,13 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
         dlg.setOkButtonHandler {
           try {
             refs.foreach(ref => imcmsServices.getDocumentMapper.deleteDocument(ref.metaId(), projection.user))
-            Page.getCurrent.showInfoNotification("Documents has been deleted".i)
+            Current.page.showInfoNotification("Documents has been deleted".i)
             dlg.close()
           } finally {
             projection.reload()
           }
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
   }
 
@@ -120,7 +121,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
         case doc =>
           imcmsServices.getDocumentMapper.copyDocument(ref.docRef(), projection.user)
           projection.reload()
-          Page.getCurrent.showInfoNotification("Document has been copied".i)
+          Current.page.showInfoNotification("Document has been copied".i)
       }
     }
   }
@@ -131,7 +132,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
       (imcmsServices.getDocumentMapper.getWorkingDocument(ref.metaId(), ref.language()) : DocumentDomainObject) match {
         case null => showMissingDocNotification()
         case doc =>
-          val page = Page.getCurrent
+          val page = Current.page
           new DocEditorDialog(s"Edit document ${doc.getMetaId}".i, doc) |>> { dlg =>
             dlg.setOkButtonHandler {
               dlg.docEditor.collectValues() match {
@@ -145,7 +146,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
                   dlg.close()
               }
             }
-          } |> UI.getCurrent.addWindow
+          } |> Current.ui.addWindow
       }
     }
   }

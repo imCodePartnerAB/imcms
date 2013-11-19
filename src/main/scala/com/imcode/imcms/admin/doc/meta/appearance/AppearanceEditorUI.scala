@@ -6,6 +6,7 @@ import com.imcode.imcms.api._
 import com.vaadin.ui._
 
 import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.Current
 
 
 class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
@@ -40,7 +41,7 @@ class AppearanceEditorUI extends VerticalLayout with Spacing with FullWidth {
     val lblAlias = new Label with UndefinedSize {
       override def attach() {
         super.attach()
-        UI.getCurrent.servletContext.getContextPath |> {
+        Current.contextPath |> {
           case "" | "/" => "/"
           case path => s"$path/"
         } |> setCaption

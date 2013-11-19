@@ -21,9 +21,9 @@ package object data extends LowPriorityPropertyImplicits {
 
   /**
    * Takes precedence over LowPriorityPropertyImplicits implicit:
-   *   def mkPropertyOps[A <: AnyRef](property: Property[A]): PropertyOps[A]
+   *   def wrapProperty[A <: AnyRef](property: Property[A]): PropertyOps[A]
    */
-  implicit def mkTypedPropertyOps[A <: AnyRef](typedProperty: TypedProperty[A]): PropertyOps[A] = {
-    new PropertyOps(typedProperty.asInstanceOf[Property[A]])
+  implicit def wrapTypedProperty[A <: AnyRef](typedProperty: TypedProperty[A]): PropertyWrapper[A] = {
+    new PropertyWrapper(typedProperty.asInstanceOf[Property[A]])
   }
 }

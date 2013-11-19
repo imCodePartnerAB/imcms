@@ -10,6 +10,7 @@ import com.imcode.imcms.dao.IPAccessDao
 import com.imcode.imcms.api.IPAccess
 import com.imcode.imcms.admin.access.user.{UserSingleSelectDialog, UserSelectDialog}
 
+import com.imcode.imcms.vaadin.Current
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
@@ -52,15 +53,15 @@ class IPAccessManager(app: UI) {
             app.privileged(permission) {
               Ex.allCatch.either(ipAccessDao delete id) match {
                 case Right(_) =>
-                  Page.getCurrent.showInfoNotification("IP access has been deleted")
+                  Current.page.showInfoNotification("IP access has been deleted")
                   reload()
                 case Left(ex) =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   throw ex
               }
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
   }
@@ -68,7 +69,7 @@ class IPAccessManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
+  def canManage = Current.ui.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage IP access")
 
   /** Edit in modal dialog. */
@@ -92,7 +93,7 @@ class IPAccessManager(app: UI) {
             dlg.setOkButtonHandler {
               c.userPickerUI.txtLoginName.value = dlg.search.selection.head.getLoginName
             }
-          } |> UI.getCurrent.addWindow
+          } |> Current.ui.addWindow
         }
 
         dlg.setOkButtonHandler {
@@ -106,11 +107,11 @@ class IPAccessManager(app: UI) {
               Ex.allCatch.either(ipAccessDao save voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
-                  Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
+                  Current.page.showErrorNotification("Internal error, please contact your administrator")
                   throw ex
                 case _ =>
                   (if (isNew) "New IP access has been created" else "IP access has been updated") |> { msg =>
-                    Page.getCurrent.showInfoNotification(msg)
+                    Current.page.showInfoNotification(msg)
                   }
 
                   reload()
@@ -119,7 +120,7 @@ class IPAccessManager(app: UI) {
           }
         }
       }
-    }  |> UI.getCurrent.addWindow
+    }  |> Current.ui.addWindow
   } // editAndSave
 
 

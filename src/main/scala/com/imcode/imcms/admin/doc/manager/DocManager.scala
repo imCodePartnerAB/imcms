@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.manager
 
+import com.imcode.imcms.vaadin.Current
 import com.vaadin.ui.UI
 import com.imcode.imcms.admin.doc.projection.{DocsProjectionOps, DocsProjection}
 import com.imcode.imcms.vaadin.ui.dialog._
@@ -28,7 +29,7 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
 
   val ui = new DocManagerUI(projection.ui) |>> { ui =>
 //    ui.miSelectionShow.setCommandHandler { _ =>
-//      UI.getCurrent.addWindow(docSelectionDlg)
+//      Current.ui.addWindow(docSelectionDlg)
 //    }
 
     ui.miShow.setCommandHandler { _ => projectionOps.showSelectedDoc() }
@@ -60,21 +61,21 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
                 profileOpt match {
                   case Some(profile: ProfileMapper.SimpleProfile) =>
                     profileMapper.update(new ProfileMapper.SimpleProfile(profile.getId.toString, name, profile.getDocumentName))
-                    Page.getCurrent.showInfoNotification("Profile name is updated")
+                    Current.page.showInfoNotification("Profile name is updated")
 
                   case _ =>
                     profileMapper.create(new ProfileMapper.SimpleProfile(null, name, docIdStr))
-                    Page.getCurrent.showInfoNotification("Profile name is assigned")
+                    Current.page.showInfoNotification("Profile name is assigned")
                 }
 
               case _ =>
                 for (profile <- profileOpt) {
                   profileMapper.delete(profile.getId)
-                  Page.getCurrent.showInfoNotification("Profile name is removed")
+                  Current.page.showInfoNotification("Profile name is removed")
                 }
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
 

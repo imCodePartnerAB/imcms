@@ -40,17 +40,17 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
         <solr.version>4.5.1</solr.version>
         <slf4j.version>1.7.5</slf4j.version>
         <scala.version>2.10.3</scala.version>
-        <springframework.version>3.2.4.RELEASE</springframework.version>
+        <springframework.version>3.2.5.RELEASE</springframework.version>
 
         <hibernate.version>4.2.7.SP1</hibernate.version>
         <gwt.version>2.5.1</gwt.version>
-        <vaadin.version>7.1.7</vaadin.version>
+        <vaadin.version>7.1.8</vaadin.version>
 
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
-        <jetty.version>8.1.12.v20130726</jetty.version>
+        <jetty.version>8.1.14.v20131031</jetty.version>
         <jetty.contextPath>/${project.artifactId}</jetty.contextPath>
 
         <!--
@@ -833,6 +833,9 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                     <filesets>
                         <fileset>
                             <directory>src/main/web/VAADIN/widgetsets</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>src/main/web/VAADIN/gwt-unitCache</directory>
                         </fileset>
                     </filesets>
                 </configuration>

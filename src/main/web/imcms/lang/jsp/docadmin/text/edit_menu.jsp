@@ -10,7 +10,7 @@
     String content = (String) request.getAttribute("content");
     UserDomainObject user = parserParameters.getDocumentRequest().getUser();
 
-    String editorUrl = String.format("%s/docadmin/menu?docId=%d&menuNo=%d", request.getContextPath(), document.getId(), menuIndex);
+    String editorUrl = String.format("%s/docadmin/menu?meta_id=%d&menu_no=%d", request.getContextPath(), document.getId(), menuIndex);
 %>
 
 <a href="<%=editorUrl%>" class="imcms_label">

@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.instance.settings.property
 
+import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
@@ -44,23 +45,23 @@ class PropertyManagerManager(app: UI) {
 
               Ex.allCatch.either(Imcms.getServices.setSystemData(systemData)) match {
                 case Right(_) =>
-                  Page.getCurrent.showInfoNotification("System properties has been updated")
+                  Current.page.showInfoNotification("System properties has been updated")
                   reload()
                 case Left(ex) =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   throw ex
               }
             }
           }
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
   }
 
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
+  def canManage = Current.ui.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage system properties")
 
   def reload() {

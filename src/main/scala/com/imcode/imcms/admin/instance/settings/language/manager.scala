@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.instance.settings.language
 
+import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
@@ -40,16 +41,16 @@ class LanguageManager(app: UI) {
             app.privileged(permission) {
               Ex.allCatch.either(languageDao.deleteLanguage(id)) match {
                 case Right(_) =>
-                  Page.getCurrent.showInfoNotification("Language has been deleted")
+                  Current.page.showInfoNotification("Language has been deleted")
                 case Left(ex) =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   throw ex
               }
 
               reload()
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
     ui.miSetDefault.setCommandHandler { _ =>
@@ -62,16 +63,16 @@ class LanguageManager(app: UI) {
 
               Ex.allCatch.either(systemDao saveProperty property) match {
                 case Right(_) =>
-                  Page.getCurrent.showInfoNotification("Default language has been changed")
+                  Current.page.showInfoNotification("Default language has been changed")
                 case Left(ex) =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   throw ex
               }
 
               reload()
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
   }
@@ -79,7 +80,7 @@ class LanguageManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
+  def canManage = Current.ui.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage languages")
 
   /** Edit in modal dialog. */
@@ -108,11 +109,11 @@ class LanguageManager(app: UI) {
               Ex.allCatch.either(languageDao saveLanguage voc.build()) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
-                  Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
+                  Current.page.showErrorNotification("Internal error, please contact your administrator")
                   throw ex
                 case _ =>
                   (if (isNew) "New language access has been created" else "Language access has been updated") |> { msg =>
-                    Page.getCurrent.showInfoNotification(msg)
+                    Current.page.showInfoNotification(msg)
                   }
 
                   reload()
@@ -121,7 +122,7 @@ class LanguageManager(app: UI) {
           }
         }
       }
-    } |> UI.getCurrent.addWindow
+    } |> Current.ui.addWindow
   } // editAndSave
 
   def reload() {

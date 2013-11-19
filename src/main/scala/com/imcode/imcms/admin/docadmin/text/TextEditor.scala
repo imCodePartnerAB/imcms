@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.docadmin.text
 
+import com.imcode.imcms.vaadin.Current
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
@@ -28,7 +29,7 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
     ui.miFormatHtml.setCommandHandler { _ => setFormat(TextDomainObject.Format.HTML) }
     ui.miFormatPlain.setCommandHandler { _ => setFormat(TextDomainObject.Format.PLAIN_TEXT) }
     ui.miHistory.setCommandHandler { _ =>
-      new TextHistoryDialog("Restore text", currentText) |> UI.getCurrent.addWindow
+      new TextHistoryDialog("Restore text", currentText) |> Current.ui.addWindow
     }
   }
 

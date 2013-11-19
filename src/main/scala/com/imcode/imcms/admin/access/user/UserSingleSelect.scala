@@ -2,9 +2,9 @@ package com.imcode
 package imcms
 package admin.access.user
 
-import java.util.concurrent.atomic.AtomicReference
 import _root_.imcode.server.user.UserDomainObject
-import com.vaadin.ui.UI
+import java.util.concurrent.atomic.AtomicReference
+import com.imcode.imcms.vaadin.Current
 import com.imcode.imcms.vaadin.data._
 
 class UserSingleSelect {
@@ -16,7 +16,7 @@ class UserSingleSelect {
           selection = dlg.search.selection.headOption
           dlg.close()
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
 
     ui.btnClear.addClickHandler { _ => selection = None }

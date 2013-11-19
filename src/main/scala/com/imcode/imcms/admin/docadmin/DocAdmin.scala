@@ -15,39 +15,43 @@ import com.imcode.imcms.mapping.DocumentSaveException
 import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.dao.TextDocDao
 import org.apache.commons.lang3.StringEscapeUtils
+
 import _root_.imcode.server.document.textdocument._
-import imcode.server.{ImcmsConstants, Imcms}
+import _root_.imcode.server.{ImcmsConstants, Imcms}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
 import _root_.imcode.server.document.{DocumentDomainObject, NoPermissionToEditDocumentException}
-import scala.Some
+
 import com.imcode.imcms.admin.docadmin.menu.{MenuEditorParameters, MenuEditor}
 import com.imcode.imcms.admin.docadmin.text.{TextEditor, TextEditorParameters}
 import com.imcode.imcms.admin.docadmin.image.ImageEditor
+import com.imcode.imcms.vaadin.Current
 
-// template/group
+// todo: validate params in filter, create params wrapper, pass params into DocAdmin (no need to examine path in init)?
+// todo: template/group
+// todo: add [im]cms path element: /[im]cms/sysadmin/...; [im]cms/docadmin/...
 @com.vaadin.annotations.Theme("imcms")
 class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { app =>
 
   // todo: move logic into filter
   override def init(request: VaadinRequest) {
-    setLocale(new Locale(UI.getCurrent.imcmsUser.getLanguageIso639_2))
+    setLocale(new Locale(this.imcmsUser.getLanguageIso639_2))
 
     setContent(mkContent(request))
 
-    UI.getCurrent.getLoadingIndicatorConfiguration.setFirstDelay(1)
+    getLoadingIndicatorConfiguration.setFirstDelay(1)
   }
 
 
   private def mkContent(request: VaadinRequest): Component = {
     import PartialFunction.condOpt
 
-    val contextPath = VaadinServlet.getCurrent.getServletContext.getContextPath
+    val contextPath = Current.contextPath
     val pathInfo = request.getPathInfo
     val docOpt =
       for {
-        docId <- request.getParameter("docId") |> NonNegInt.unapply
-        doc <- imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId).asOption
+        metaId <- request.getParameter("meta_id") |> NonNegInt.unapply
+        doc <- imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](metaId).asOption
       } yield doc
 
     val titleOpt = request.getParameter("label").trimToOption
@@ -59,7 +63,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
       condOpt(pathInfo) {
         case null | "" | "/" => wrapDocEditor(request, doc)
       } orElse {
-        condOpt(pathInfo, doc, request.getParameter("menuNo")) {
+        condOpt(pathInfo, doc, request.getParameter("menu_no")) {
           case ("/menu", textDoc: TextDocumentDomainObject, NonNegInt(menuNo)) =>
             val title = titleOpt.getOrElse("menu_editor.title".f(docId, menuNo))
             val returnUrl = returnUrlOpt.getOrElse(
@@ -69,12 +73,12 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
             wrapTextDocMenuEditor(MenuEditorParameters(textDoc, menuNo, title, returnUrl))
         }
       } orElse {
-        condOpt(pathInfo, doc, request.getParameter("textNo")) {
+        condOpt(pathInfo, doc, request.getParameter("txt")) {
           case ("/text", textDoc: TextDocumentDomainObject, NonNegInt(textNo)) =>
             wrapTextDocTextEditor(request, textDoc, textNo)
         }
       } orElse {
-        condOpt(pathInfo, doc, request.getParameter("imageNo")) {
+        condOpt(pathInfo, doc, request.getParameter("img")) {
           case ("/image", textDoc: TextDocumentDomainObject, NonNegInt(imageNo)) =>
             wrapTextDocImageEditor(request, textDoc, imageNo)
         }
@@ -86,12 +90,19 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
 
 
   def wrapTextDocImageEditor(request: VaadinRequest, doc: TextDocumentDomainObject, imageNo: Int): EditorContainerUI = {
-    //val imageEditor = new ImageEditor()
+    val imageEditor = new ImageEditor(doc.getRef, imageNo)
+    val editorContainerUI =  new EditorContainerUI("doc.edit_image.title".i)
 
+    editorContainerUI.mainUI = imageEditor.ui
+    editorContainerUI.buttons.btnSave.addClickHandler { _ => }
+    editorContainerUI.buttons.btnReset.addClickHandler { _ => imageEditor.resetValues() }
+    editorContainerUI.buttons.btnSaveAndClose.addClickHandler { _ => }
+    editorContainerUI.buttons.btnClose.addClickHandler { _ => }
 
-    new EditorContainerUI() |>> { ui =>
+    imageEditor.ui.setSize(900, 600)
+    imageEditor.resetValues()
 
-    }
+    editorContainerUI
   }
 
 
@@ -105,23 +116,23 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
 
       ui.buttons.btnSave.addClickHandler { _ =>
         editor.collectValues() match {
-          case Left(errors) => Page.getCurrent.showErrorNotification(errors.mkString(","))
+          case Left(errors) => Current.page.showErrorNotification(errors.mkString(","))
           case Right((editedDoc, i18nMetas)) =>
             try {
               imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, app.imcmsUser)
-              Page.getCurrent.showInfoNotification("notification.doc.saved".i)
-              Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
+              Current.page.showInfoNotification("notification.doc.saved".i)
+              Current.page.open(Current.contextPath, "_self")
             } catch {
-              case e: Exception => Page.getCurrent.showErrorNotification("notification.doc.unable_to_save".i, e.getStackTraceString)
+              case e: Exception => Current.page.showErrorNotification("notification.doc.unable_to_save".i, e.getStackTraceString)
             }
         }
       }
 
       ui.buttons.btnClose.addClickHandler { _ =>
-        Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
+        Current.page.open(Current.contextPath, "_self")
       }
 
-      Page.getCurrent.getUriFragment.asOption.map(_.toLowerCase).foreach {
+      Current.page.getUriFragment.asOption.map(_.toLowerCase).foreach {
         case "info" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
         case "access" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.access"
         case "appearance" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
@@ -161,21 +172,21 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
             closeEditor()
             dlg.close()
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
 
     def closeEditor() {
-      Page.getCurrent.open(params.returnUrl, "_self")
+      Current.page.open(params.returnUrl, "_self")
     }
 
     def save(close: Boolean) {
       editor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, UI.getCurrent.imcmsUser)
-        Page.getCurrent.showInfoNotification("menu_editor.notification.saved".i)
+        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, Current.ui.imcmsUser)
+        Current.page.showInfoNotification("menu_editor.notification.saved".i)
 
         if (close) {
-          Page.getCurrent.open(params.returnUrl, "_self")
+          Current.page.open(params.returnUrl, "_self")
         }
       }
     }
@@ -357,14 +368,14 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
     }
 
     def closeEditor() {
-      Page.getCurrent.open(UI.getCurrent.servletContext.getContextPath, "_self")
+      Current.page.open(Current.contextPath, "_self")
     }
 
     def save(closeAfterSave: Boolean) {
       editor.collectValues().right.get |> { texts =>
         // -check permissionSet.getEditTexts()
         try {
-          imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, UI.getCurrent.imcmsUser)
+          imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, Current.ui.imcmsUser)
           val user = new UserDomainObject() // todo: fixme
           imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
           if (closeAfterSave) closeEditor()

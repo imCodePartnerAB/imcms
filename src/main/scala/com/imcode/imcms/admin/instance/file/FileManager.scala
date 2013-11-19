@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.instance.file
 
+import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 
@@ -54,9 +55,9 @@ class FileManager(app: UI) {
               }
             }
 
-            Page.getCurrent.showInfoNotification("file.mgr.rename.item.info.msg".i)
+            Current.page.showInfoNotification("file.mgr.rename.item.info.msg".i)
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
 
@@ -89,7 +90,7 @@ class FileManager(app: UI) {
           dlg.setOkButtonHandler {
             FileUtils.writeStringToFile(item, textArea.value)
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
 
@@ -102,7 +103,7 @@ class FileManager(app: UI) {
               destFile = new File(dir, dlg.uploader.saveAsName)
             } {
               if (destFile.exists && !dlg.uploader.mayOverwrite) {
-                new MsgDialog("file.mgr.dlg.upload.item.exist.title".i, "file.mgr.dlg.upload.item.exist.msg".i) |> UI.getCurrent.addWindow
+                new MsgDialog("file.mgr.dlg.upload.item.exist.title".i, "file.mgr.dlg.upload.item.exist.msg".i) |> Current.ui.addWindow
                 sys.error("File %s allready exists" format destFile.getCanonicalPath)
               } else {
                 FileUtils.moveFile(file, destFile)
@@ -110,7 +111,7 @@ class FileManager(app: UI) {
               }
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
 
@@ -147,7 +148,7 @@ class FileManager(app: UI) {
                 browser.reloadLocation()
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
   }
@@ -193,25 +194,25 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
   def delete() = for (selection <- browser.selection if selection.hasItems) {
     new ConfirmationDialog("file.mgr.dlg.delete.confirm.msg".i) |>> { dlg =>
       dlg.setOkButtonHandler { asyncDeleteItems(selection.items) }
-    } |> UI.getCurrent.addWindow
+    } |> Current.ui.addWindow
   }
 
   private def asyncDeleteItems(items: Seq[File]) {
-    def handleFinished(progressDialog: Dialog, itemsState: ItemsState) = app.withLock {
+    def handleFinished(progressDialog: Dialog, itemsState: ItemsState) = app.withSessionLock {
       progressDialog.close()
 
       if (itemsState.processed.isEmpty) {
-        Page.getCurrent.showWarningNotification("file.mgr.delete.nop.warn.msg".i)
+        Current.page.showWarningNotification("file.mgr.delete.nop.warn.msg".i)
       } else {
         browser.reloadLocation()
 
-        new InformationDialog("file.mgr.dlg.delete.summary.msg".f(itemsState.processed.size)) |> UI.getCurrent.addWindow
+        new InformationDialog("file.mgr.dlg.delete.summary.msg".f(itemsState.processed.size)) |> Current.ui.addWindow
       }
     }
     // no i18n
-    def handleUndefined(progressDialog: Dialog, msg: Any) = app.withLock {
+    def handleUndefined(progressDialog: Dialog, msg: Any) = app.withSessionLock {
       progressDialog.close()
-      Page.getCurrent.showErrorNotification("An error occured while deleting items", msg.toString)
+      Current.page.showErrorNotification("An error occured while deleting items", msg.toString)
     }
 
     new CancelDialog("dlg.progress.title".i) |>> { dlg =>
@@ -224,14 +225,14 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
         def act() {
           react {
             case itemsState @ ItemsState(Nil, _) =>
-              app.withLock {
+              app.withSessionLock {
                 dlgUI.pi.setValue(1)
               }
 
               handleFinished(dlg, itemsState)
 
             case itemsState @ ItemsState(remaining @ (item :: _), _) =>
-              app.withLock {
+              app.withSessionLock {
                 items.size.asInstanceOf[Float] |> { max =>
                   dlgUI.pi.setValue((max - remaining.size) / max)
                 }
@@ -267,7 +268,7 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
 
       DeleteActor ! ItemsState(items, Nil)
       DeleteActor.start()
-    } |> UI.getCurrent.addWindow
+    } |> Current.ui.addWindow
   }
 
   /**
@@ -283,13 +284,13 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
         FileUtils.forceDelete(item)
         stateHandler ! ItemsState(remaining, item +: processed)
       } catch {
-        case e: Exception => app.withLock {
+        case e: Exception => app.withSessionLock {
           new OkCancelErrorDialog("file.mgr.dlg.delete.item.err.msg".f(item.getName)) |>> { dlg =>
             dlg.btnOk.setCaption("btn_skip".i)
 
             dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
             dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
-          } |> UI.getCurrent.addWindow
+          } |> Current.ui.addWindow
         }
       }
 
@@ -314,7 +315,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
             destSelection <- dirSelectBrowser.selection
           } asyncCopyItems(destLocation._1.root, destSelection.dir, selection.items)
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
   }
 
@@ -331,7 +332,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
             destSelection <- dirSelectBrowser.selection
           } asyncMoveItems(destLocation._1.root, destSelection.dir, selection.items)
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
   }
 
@@ -345,21 +346,21 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
    */
   private def asyncCopyItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
 
-    def handleFinished(transferDialog: Dialog, itemsState: ItemsState) = app.withLock {
+    def handleFinished(transferDialog: Dialog, itemsState: ItemsState) = app.withSessionLock {
       transferDialog.close()
 
       if (itemsState.processed.isEmpty) {
-        Page.getCurrent.showWarningNotification("file.mgr.copy.nop.warn.msg".i)
+        Current.page.showWarningNotification("file.mgr.copy.nop.warn.msg".i)
       } else {
         new ConfirmationDialog("dlg.info.title".i, "file.mgr.dlg.copy.summary.msg".f(itemsState.processed.size, destDir.getName)) |>> { dlg =>
           dlg.setOkButtonHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
     // no i18n
-    def handleUndefined(transferDialog: Dialog, msg: Any) = app.withLock {
+    def handleUndefined(transferDialog: Dialog, msg: Any) = app.withSessionLock {
       transferDialog.close()
-      Page.getCurrent.showErrorNotification("An error occured while copying items", msg.toString)
+      Current.page.showErrorNotification("An error occured while copying items", msg.toString)
     }
 
     new CancelDialog("dlg.progress.title".i) |>> { dlg =>
@@ -373,14 +374,14 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
         def act() {
           react {
             case itemsState @ ItemsState(Nil, _) =>
-              app.withLock {
+              app.withSessionLock {
                 dlgUI.pi.setValue(1)
               }
 
               handleFinished(dlg, itemsState)
 
             case itemsState @ ItemsState(remaining @ (item :: _), _) =>
-              app.withLock {
+              app.withSessionLock {
                 dlgUI.lblMsg.value = "file.mgr.dlg.copy.progress.msg".f(item.getName, destDir.getName)
 
                 items.size.asInstanceOf[Float] |> { max =>
@@ -415,7 +416,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 
       CopyActor ! ItemsState(items, Nil)
       CopyActor.start()
-    } |> UI.getCurrent.addWindow
+    } |> Current.ui.addWindow
   }
 
   /**
@@ -436,18 +437,18 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
-            case e: Exception => app.withLock {
+            case e: Exception => app.withSessionLock {
               new OkCancelErrorDialog("Unable to copy") |>> { dlg =>
                 dlg.btnOk.setCaption("btn_skip".i)
                 dlg.mainUI = new Label("file.mgr.dlg.copy.item.err.msg".f(item.getName)) with UndefinedSize
 
                 dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
-              } |> UI.getCurrent.addWindow
+              } |> Current.ui.addWindow
             }
           }
         } else {
-          app.withLock {
+          app.withSessionLock {
             new YesNoCancelDialog("file.mgr.dlg.copy.item.issue.title".i) |>> { dlg =>
               val dlgUI = new ItemRenameDialogUI |>> { dlgUI =>
                 dlgUI.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
@@ -461,7 +462,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
               dlg.setYesButtonHandler { copyItem(dlgUI.txtName.value) }
               dlg.setNoButtonHandler { stateHandler ! ItemsState(remaining, processed) }
               dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
-            } |> UI.getCurrent.addWindow
+            } |> Current.ui.addWindow
           }
         }
       }
@@ -481,22 +482,22 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
    */
   private def asyncMoveItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
 
-    def handleFinished(transferDialog: Dialog, itemsState: ItemsState) = app.withLock {
+    def handleFinished(transferDialog: Dialog, itemsState: ItemsState) = app.withSessionLock {
       transferDialog.close()
 
       if (itemsState.processed.isEmpty) {
-        Page.getCurrent.showWarningNotification("file.mgr.move.nop.warn.msg".i)
+        Current.page.showWarningNotification("file.mgr.move.nop.warn.msg".i)
       } else {
         new ConfirmationDialog("dlg.info.title".i, "file.mgr.dlg.move.summary.msg".f(itemsState.processed.size, destDir.getName)) |>> { dlg =>
           dlg.setOkButtonHandler { browser.select(destLocationRoot, destDir, itemsState.processed) }
           dlg.setCancelButtonHandler { browser.reloadLocation() }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
     // no i18n
-    def handleUndefined(transferDialog: Dialog, msg: Any) = app.withLock {
+    def handleUndefined(transferDialog: Dialog, msg: Any) = app.withSessionLock {
       transferDialog.close()
-      Page.getCurrent.showErrorNotification("An error occured while moving items", msg.toString)
+      Current.page.showErrorNotification("An error occured while moving items", msg.toString)
     }
 
     new CancelDialog("dlg.progress.title".i) |>> { dlg =>
@@ -510,14 +511,14 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
         def act() {
           react {
             case itemsState @ ItemsState(Nil, _) =>
-              app.withLock {
+              app.withSessionLock {
                 dlgUI.pi.setValue(1)
               }
 
               handleFinished(dlg, itemsState)
 
             case itemsState @ ItemsState(remaining @ (item :: _), _) =>
-              app.withLock {
+              app.withSessionLock {
                 dlgUI.lblMsg.value = "file.mgr.dlg.move.progress.msg".f(item.getName, destDir.getName)
 
                 items.size.asInstanceOf[Float] |> { max =>
@@ -552,7 +553,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 
       MoveActor ! ItemsState(items, Nil)
       MoveActor.start()
-    } |> UI.getCurrent.addWindow
+    } |> Current.ui.addWindow
   }
 
   /**
@@ -573,15 +574,15 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
-            case e: Exception => app.withLock {
+            case e: Exception => app.withSessionLock {
               new OkCancelErrorDialog("file.mgr.dlg.move.item.err.msg".f(item.getName)) |>> { dlg =>
                 dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
-              } |> UI.getCurrent.addWindow
+              } |> Current.ui.addWindow
             }
           }
         } else {
-          app.withLock {
+          app.withSessionLock {
             new YesNoCancelDialog("file.mgr.dlg.move.item.issue.title".i) |>> { dlg =>
               val dlgUI = new ItemRenameDialogUI |>> { dlgUI =>
                 dlgUI.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
@@ -595,7 +596,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
               dlg.setYesButtonHandler { moveItem(dlgUI.txtName.value) }
               dlg.setNoButtonHandler { stateHandler ! ItemsState(remaining, processed) }
               dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
-            } |> UI.getCurrent.addWindow
+            } |> Current.ui.addWindow
           }
         }
       }

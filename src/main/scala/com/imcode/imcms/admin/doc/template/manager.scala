@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.doc.template
 
+import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
@@ -42,19 +43,19 @@ class TemplateManager(app: UI) {
                   FileUtils.deleteQuietly(uploadedFile.file)
                   reload() // ok
                 case -1 =>
-                  Page.getCurrent.showErrorNotification("Template with such name allready exists")
+                  Current.page.showErrorNotification("Template with such name allready exists")
                   sys.error("File exists")
                 case -2 =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   sys.error("IO error")
                 case n =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   sys.error("Unknown error")
               }
             }
           }
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
     ui.miRename.setCommandHandler { _ =>
       whenSelected(ui.tblTemplates) { name =>
@@ -71,7 +72,7 @@ class TemplateManager(app: UI) {
 
             reload()
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
     ui.miEditContent.setCommandHandler { _ =>
@@ -83,7 +84,7 @@ class TemplateManager(app: UI) {
 
           dlg.setWidth("600px")
           dlg.setHeight("800px")
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
     ui.miDelete.setCommandHandler { _ =>
@@ -93,16 +94,16 @@ class TemplateManager(app: UI) {
             app.privileged(permission) {
               Ex.allCatch.either(templateMapper.getTemplateByName(name).asOption.foreach(templateMapper.deleteTemplate)) match {
                 case Right(_) =>
-                  Page.getCurrent.showInfoNotification("Template has been deleted")
+                  Current.page.showInfoNotification("Template has been deleted")
                 case Left(ex) =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   throw ex
               }
 
               reload()
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
   }
@@ -110,7 +111,7 @@ class TemplateManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
+  def canManage = Current.ui.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage templates")
 
   def reload() {

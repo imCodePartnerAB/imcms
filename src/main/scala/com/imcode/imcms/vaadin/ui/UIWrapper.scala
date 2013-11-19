@@ -1,33 +1,49 @@
 package com.imcode
 package imcms.vaadin.ui
 
-import javax.servlet.http.HttpSession
-import javax.servlet.ServletContext
-import java.net.URL
-import com.vaadin.server.{Page, VaadinServlet, VaadinService, WrappedHttpSession}
-import org.springframework.web.context.WebApplicationContext
-import org.springframework.web.context.support.WebApplicationContextUtils
+import _root_.imcode.server.user.UserDomainObject
+import _root_.imcode.util.Utility
 
+import com.imcode.imcms._
+import com.imcode.imcms.vaadin.server._
+import com.imcode.imcms.security.{PermissionDenied, PermissionGranted, Permission}
+import com.imcode.imcms.vaadin.Current
+
+import java.net.URL
+import java.util.concurrent.Future
 
 /* implicit */
 class UIWrapper(ui: com.vaadin.ui.UI) {
 
-//  def context: WebApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext)
-
-  def session: HttpSession = ui.getSession.getSession.asInstanceOf[WrappedHttpSession].getHttpSession
-
-  def servletContext: ServletContext = session.getServletContext
-
-  def resourceUrl(resourcePath: String): URL = ui.getPage.getLocation |> { appUrl =>
-    new URL(appUrl.getScheme, appUrl.getHost, appUrl.getPort, s"${servletContext.getContextPath}/$resourcePath")
+  def resourceUrl(resourcePath: String): URL = ui.getPage.getLocation |> { url =>
+    new URL(url.getScheme, url.getHost, url.getPort, s"${Current.contextPath}/$resourcePath")
   }
 
-  def withLock(body: => Unit) {
-    ui.getSession.lock()
-    try {
-      body
-    } finally {
-      ui.getSession.unlock()
+  def withSessionLock(block: => Unit): Future[Void] = ui.access(
+    new Runnable {
+      override def run() {
+        block
+      }
+    }
+  )
+
+  def imcmsUser: UserDomainObject = Utility.getLoggedOnUser(Current.httpSession)
+
+  def imcmsDocUrl(metaId: MetaId) = ui.resourceUrl(metaId.toString)
+
+  def imcmsDocUrl(alias: String) = ui.resourceUrl(alias)
+
+  /**
+   * If permission is granted executes an action.
+   * Otherwise shows error notification and throws an exception.
+   */
+  def privileged[T](permission: => Permission)(action: => T) {
+    permission match {
+      case PermissionGranted => action
+      case PermissionDenied(reason) =>
+        ui.getPage.showErrorNotification(reason)
+        sys.error(reason)
     }
   }
+
 }

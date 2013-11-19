@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.instance.monitor.session.counter
 
+import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
@@ -42,16 +43,16 @@ class SessionCounterManager(app: UI) {
             app.privileged(permission) {
               Ex.allCatch.either(SessionCounter save SessionCounter(c.txtValue.value.toInt, c.calStart.value)) match {
                 case Right(_) =>
-                  Page.getCurrent.showInfoNotification("Session counter has been updated")
+                  Current.page.showInfoNotification("Session counter has been updated")
                   reload()
                 case Left(ex) =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   throw ex
               }
             }
           }
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
     ui.miReset.setCommandHandler { _ =>
       new ConfirmationDialog("Reset session counter?") |>> { dlg =>
@@ -59,22 +60,22 @@ class SessionCounterManager(app: UI) {
           app.privileged(permission) {
             Ex.allCatch.either(SessionCounter save SessionCounter(0, new Date)) match {
               case Right(_) =>
-                Page.getCurrent.showInfoNotification("Session counter has been reseted")
+                Current.page.showInfoNotification("Session counter has been reseted")
                 reload()
               case Left(ex) =>
-                Page.getCurrent.showErrorNotification("Internal error")
+                Current.page.showErrorNotification("Internal error")
                 throw ex
             }
           }
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
   } // ui
 
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
+  def canManage = Current.ui.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage session counter")
 
   def reload() {

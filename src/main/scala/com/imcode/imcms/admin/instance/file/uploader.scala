@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.instance.file
 
+import com.imcode.imcms.vaadin.Current
 import com.vaadin.ui._
 import com.imcode.util.event.Publisher
 import java.io._
@@ -102,7 +103,7 @@ class FileUploader extends Publisher[UploadStatus] {
         ui.txtSaveAsName.setEnabled(false)
         ui.pgiBytesReceived.setEnabled(false)
         FileUtils.deleteQuietly(receiver.file)
-        Page.getCurrent.showWarningNotification("file.upload.interrupted.warn.msg".i)
+        Current.page.showWarningNotification("file.upload.interrupted.warn.msg".i)
         notifyListeners(UploadFailed(ev))
       }
     })

@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.projection
 
+import com.imcode.imcms.vaadin.Current
 import com.imcode.util.event.Publisher
 import com.imcode.imcms.vaadin.ui._
 import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
@@ -106,7 +107,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
 
           dlg.close()
         }
-      } |> UI.getCurrent.addWindow
+      } |> Current.ui.addWindow
     }
 
     override def attach() {
@@ -159,7 +160,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
     createQuery() match {
       case Failure(throwable) =>
         docsContainer.setQueryOpt(None)
-        new ErrorDialog(throwable.getMessage.i) |> UI.getCurrent.addWindow
+        new ErrorDialog(throwable.getMessage.i) |> Current.ui.addWindow
 
       case Success(solrQuery) =>
         ui.removeComponent(0, 1)

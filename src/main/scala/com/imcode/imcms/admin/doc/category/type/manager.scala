@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.admin.doc.category.`type`
 
+import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
@@ -41,16 +42,16 @@ class CategoryTypeManager(app: UI) {
             app.privileged(permission) {
               Ex.allCatch.either(categoryMapper.getCategoryTypeById(id.intValue).asOption.foreach(categoryMapper.deleteCategoryTypeFromDb)) match {
                 case Right(_) =>
-                  Page.getCurrent.showInfoNotification("Category type has been deleted")
+                  Current.page.showInfoNotification("Category type has been deleted")
                 case Left(ex) =>
-                  Page.getCurrent.showErrorNotification("Internal error")
+                  Current.page.showErrorNotification("Internal error")
                   throw ex
               }
 
               reload()
             }
           }
-        } |> UI.getCurrent.addWindow
+        } |> Current.ui.addWindow
       }
     }
   } // val ui
@@ -58,7 +59,7 @@ class CategoryTypeManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = UI.getCurrent.imcmsUser.isSuperAdmin
+  def canManage = Current.ui.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage category types")
 
   /** Edit in a modal dialog. */
@@ -92,7 +93,7 @@ class CategoryTypeManager(app: UI) {
             }
 
             validationError.foreach { msg =>
-              Page.getCurrent.showWarningNotification(msg)
+              Current.page.showWarningNotification(msg)
               sys.error(msg)
             }
 
@@ -100,11 +101,11 @@ class CategoryTypeManager(app: UI) {
               Ex.allCatch.either(categoryMapper saveCategoryType voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
-                  Page.getCurrent.showErrorNotification("Internal error, please contact your administrator")
+                  Current.page.showErrorNotification("Internal error, please contact your administrator")
                   throw ex
                 case _ =>
                   (if (isNew) "New category type has been created" else "Category type has been updated") |> { msg =>
-                    Page.getCurrent.showInfoNotification(msg)
+                    Current.page.showInfoNotification(msg)
                   }
 
                   reload()
@@ -113,7 +114,7 @@ class CategoryTypeManager(app: UI) {
           }
         }
       }
-    } |> UI.getCurrent.addWindow
+    } |> Current.ui.addWindow
   } // editAndSave
 
   def reload() {
