@@ -1,5 +1,5 @@
 package com.imcode
-package imcms.vaadin.ui
+package imcms.vaadin.component
 
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.Utility

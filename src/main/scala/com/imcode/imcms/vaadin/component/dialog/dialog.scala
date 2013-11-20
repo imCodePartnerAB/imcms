@@ -1,12 +1,12 @@
 package com.imcode
 package imcms
-package vaadin.ui
+package vaadin.component
 package dialog
 
 import com.imcode.imcms.vaadin.Current
 import com.imcode._
 import com.vaadin.ui._
-import com.vaadin.server.{Page, ThemeResource}
+import com.vaadin.server.ThemeResource
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.shared.ui.MarginInfo
@@ -27,33 +27,33 @@ trait Resizable { this: Window =>
 /**
  * Auto-adjustable size dialog window with full margin.
 
- * Dialog UI is divided vertically into 2 areas - main UI and buttons bar UI.
- * Buttons bar UI takes minimal required space and main UI takes the rest.
+ * Dialog widget is divided vertically into 2 areas - main widget and footer (buttons bar) widget.
+ * Footer widget takes minimal required space and main widget takes the rest.
  *
  * By default:
- *   -buttons bar UI (buttons) are centered.
+ *   -footer widget (buttons) are centered.
  *   -size is adjusted automatically according to its content size.
  */
 class Dialog(caption: String = "") extends Window(caption) with Modal {
-  protected val mainUISizeAssert: Component => Unit = UIAsserts.assertFixedSize
-  protected val buttonsBarUISizeAssert: Component => Unit = UIAsserts.assertFixedSize
+  protected val mainWidgetSizeAssert: Component => Unit = WidgetAsserts.assertFixedSize
+  protected val footerWidgetSizeAssert: Component => Unit = WidgetAsserts.assertFixedSize
   protected val content = new GridLayout(1, 2) with Spacing with Margin
 
   setContent(content)
   setResizable(false)
 
-  def mainUI: Component = content.getComponent(0, 0)
-  def mainUI_=(component: Component) {
-    mainUISizeAssert(component)
+  def mainWidget: Component = content.getComponent(0, 0)
+  def mainWidget_=(component: Component) {
+    mainWidgetSizeAssert(component)
 
     content.addComponent(component, 0, 0)
     content.setComponentAlignment(component, Alignment.TOP_LEFT)
   }
 
 
-  def buttonsBarUI = content.getComponent(0, 1)
-  def buttonsBarUI_=(component: Component) {
-    buttonsBarUISizeAssert(component)
+  def footerWidget: Component = content.getComponent(0, 1)
+  def footerWidget_=(component: Component) {
+    footerWidgetSizeAssert(component)
 
     content.addComponent(component, 0, 1)
     content.setComponentAlignment(component, Alignment.TOP_CENTER)
@@ -69,7 +69,7 @@ class Dialog(caption: String = "") extends Window(caption) with Modal {
  * Size (both width and height) of this dialog MUST be set explicitly.
  */
 trait CustomSizeDialog extends Dialog {
-  override protected val mainUISizeAssert: Component => Unit = Function.const(Unit)
+  override protected val mainWidgetSizeAssert: Component => Unit = Function.const(Unit)
 
   content.setSizeFull()
   content.setColumnExpandRatio(0, 1f)
@@ -105,12 +105,12 @@ trait CancelButton { this: Dialog =>
 
 /** Empty dialog window. */
 class OKDialog(caption: String = "") extends Dialog(caption) with OKButton {
-  buttonsBarUI = btnOk
+  footerWidget = btnOk
 }
 
 /** Empty dialog window. */
 class CancelDialog(caption: String = "") extends Dialog(caption) with CancelButton {
-  buttonsBarUI = btnCancel
+  footerWidget = btnCancel
 
   setCancelButtonHandler { close() }
 }
@@ -120,7 +120,7 @@ class CancelDialog(caption: String = "") extends Dialog(caption) with CancelButt
 trait MsgLabel { this: Dialog =>
   val lblMessage = new Label with UndefinedSize
 
-  mainUI = lblMessage
+  mainWidget = lblMessage
 }
 
 /** Message dialog window. */
@@ -140,7 +140,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton
     setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
   }
 
-  buttonsBarUI = lytButtons
+  footerWidget = lytButtons
 }
 
 /** YesNoCancel dialog window. */
@@ -154,7 +154,7 @@ class YesNoCancelDialog(caption: String = "") extends Dialog(caption) with YesBu
     setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
   }
 
-  buttonsBarUI = lytButtons
+  footerWidget = lytButtons
 }
 
 
@@ -164,7 +164,7 @@ class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(ca
 
   val lblMessage = new Label(msg) with UndefinedSize
 
-  mainUI = lblMessage
+  mainWidget = lblMessage
 }
 
 

@@ -15,7 +15,7 @@ import com.vaadin.ui.themes.{ChameleonTheme, BaseTheme}
 import com.vaadin.shared.ui.datefield.Resolution
 
 
-package object ui {
+package object component {
 
   implicit def wrapUI(ui: UI): UIWrapper = new UIWrapper(ui)
 

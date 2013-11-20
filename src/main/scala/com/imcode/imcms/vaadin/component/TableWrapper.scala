@@ -1,4 +1,4 @@
-package com.imcode.imcms.vaadin.ui
+package com.imcode.imcms.vaadin.component
 
 import com.imcode.imcms.vaadin.data.{ContainerWithTypedItemId, TItemId, TColumnId}
 import com.vaadin.ui.Table

@@ -1,6 +1,6 @@
 package com.imcode
 package imcms
-package vaadin.ui
+package vaadin.component
 
 import com.vaadin.ui.TwinColSelect
 

@@ -1,6 +1,6 @@
 package com.imcode
 package imcms
-package vaadin.ui
+package vaadin.component
 
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
