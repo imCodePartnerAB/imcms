@@ -7,7 +7,7 @@ import com.imcode.imcms.admin.doc.content.DocContentEditor
 import com.imcode.imcms.vaadin.Editor
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.vaadin.ui._
 
 import scala.collection.mutable.{Map => MMap}
@@ -15,16 +15,16 @@ import scala.collection.mutable.{Map => MMap}
 class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEditor {
   override type Data = TextDocumentDomainObject
 
-  override val ui = new TextDocContentEditorUI |>> { ui =>
-    ui.lstItems.addValueChangeHandler { _ =>
+  override val widget = new TextDocContentEditorWidget |>> { w =>
+    w.lstItems.addValueChangeHandler { _ =>
 
     }
-  } //ui
+  }
 
   resetValues()
 
   override def resetValues() {
-    ui.lstItems.value = ui.lstItems.firstItemIdOpt.get
+    widget.lstItems.value = widget.lstItems.firstItemIdOpt.get
   }
 
   override def collectValues() = Right(doc)
@@ -38,7 +38,7 @@ class TextsEditor(texts: Map[Int, TextDomainObject]) extends Editor {
 
   private var state: Map[Int, TextDomainObject] = _
 
-  override val ui = new TextsEditorUI |>> { ui =>
+  override val widget = new TextsEditorWidget |>> { w =>
 
   }
 
@@ -47,10 +47,10 @@ class TextsEditor(texts: Map[Int, TextDomainObject]) extends Editor {
   override def resetValues() {
     state = texts
 
-    ui.tblTexts.removeAllItems()
+    widget.tblTexts.removeAllItems()
 
     for ((no, text) <- state) {
-      ui.tblTexts.addRowWithAutoId(
+      widget.tblTexts.addRowWithAutoId(
         no: JInteger,
         text.getType.toString,
         text.getContentRef.asOption.map(_.loopNo).get: JInteger,
@@ -64,7 +64,7 @@ class TextsEditor(texts: Map[Int, TextDomainObject]) extends Editor {
 }
 
 
-class TextsEditorUI extends VerticalLayout with Spacing with Margin with FullSize {
+class TextsEditorWidget extends VerticalLayout with Spacing with Margin with FullSize {
   val mb = new MenuBar
   val miNew = mb.addItem("New")
   val miEdit = mb.addItem("Edit")

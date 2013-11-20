@@ -9,8 +9,8 @@ import com.vaadin.ui._
 import imcode.server.{Imcms}
 import imcode.server.document.{TemplateGroupDomainObject}
 import imcms.security.{PermissionDenied, PermissionGranted}
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
@@ -22,21 +22,21 @@ import com.vaadin.server.Page
 class TemplateGroupManager(app: UI) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
 
-  val ui = new TemplateGroupManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { _ => reload() }
-    ui.tblGroups.addValueChangeHandler { _ => handleSelection() }
+  val widget = new TemplateGroupManagerWidget |>> { w =>
+    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.tblGroups.addValueChangeHandler { _ => handleSelection() }
 
-    ui.miNew.setCommandHandler { _ => editAndSave(new TemplateGroupDomainObject(0, null)) }
-    ui.miEdit.setCommandHandler { _ =>
-      whenSelected(ui.tblGroups) { id =>
+    w.miNew.setCommandHandler { _ => editAndSave(new TemplateGroupDomainObject(0, null)) }
+    w.miEdit.setCommandHandler { _ =>
+      whenSelected(w.tblGroups) { id =>
         templateMapper.getTemplateGroupById(id.intValue) match {
           case null => reload()
           case vo => editAndSave(vo)
         }
       }
     }
-    ui.miDelete.setCommandHandler { _ =>
-      whenSelected(ui.tblGroups) { id =>
+    w.miDelete.setCommandHandler { _ =>
+      whenSelected(w.tblGroups) { id =>
         new ConfirmationDialog("Delete selected template group?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
@@ -54,7 +54,7 @@ class TemplateGroupManager(app: UI) {
         } |> Current.ui.addWindow
       }
     }
-  } // ui
+  } // val widget
 
   reload()
   // END OF PRIMARY CONSTRUCTOR
@@ -69,7 +69,7 @@ class TemplateGroupManager(app: UI) {
     val dialogTitle = if (isNew) "Create new template group" else "Edit template group"
 
     new OkCancelDialog(dialogTitle) |>> { dlg =>
-      dlg.mainUI = new TemplateGroupEditorUI |>> { c =>
+      dlg.mainWidget = new TemplateGroupEditorWidget |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = vo.getName.trimToEmpty
         templateMapper.getTemplatesInGroup(vo).asScala.foreach(template => c.twsTemplates.addChosenItem(template.getName))
@@ -101,29 +101,29 @@ class TemplateGroupManager(app: UI) {
   }
 
   def reload() {
-    ui.tblGroups.removeAllItems
+    widget.tblGroups.removeAllItems
     for {
       vo <- templateMapper.getAllTemplateGroups
       id = vo.getId : JInteger
-    } ui.tblGroups.addItem(Array[AnyRef](id, vo.getName, templateMapper.getTemplatesInGroup(vo).size : JInteger), id)
+    } widget.tblGroups.addItem(Array[AnyRef](id, vo.getName, templateMapper.getTemplatesInGroup(vo).size : JInteger), id)
 
     canManage |> { value =>
-      ui.tblGroups.setSelectable(value)
-      Seq[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value))   //ui.mb,
+      widget.tblGroups.setSelectable(value)
+      Seq[{def setEnabled(e: Boolean)}](widget.miNew, widget.miEdit, widget.miDelete).foreach(_.setEnabled(value))   //ui.mb,
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    (canManage && ui.tblGroups.isSelected) |> { enabled =>
-      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
+    (canManage && widget.tblGroups.isSelected) |> { enabled =>
+      Seq(widget.miEdit, widget.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 }
 
 
-class TemplateGroupManagerUI extends VerticalLayout with Spacing with UndefinedSize {
+class TemplateGroupManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -132,7 +132,7 @@ class TemplateGroupManagerUI extends VerticalLayout with Spacing with UndefinedS
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
   val tblGroups = new Table with SingleSelect[TemplateGroupId] with Selectable with Immediate
-  val rc = new ReloadableContentUI(tblGroups)
+  val rc = new ReloadableContentWidget(tblGroups)
 
   addContainerProperties(tblGroups,
     PropertyDescriptor[JInteger]("Id"),
@@ -142,7 +142,7 @@ class TemplateGroupManagerUI extends VerticalLayout with Spacing with UndefinedS
   this.addComponents(mb, rc)
 }
 
-class TemplateGroupEditorUI extends FormLayout with UndefinedSize {
+class TemplateGroupEditorWidget extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled
   val txtName = new TextField("Name") with Required
   val twsTemplates = new TwinSelect[String]("Templates")

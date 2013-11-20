@@ -8,7 +8,7 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import com.imcode.imcms.api._
 
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.Editor
@@ -25,7 +25,7 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
   private val initialValues = Data(meta.getCategoryIds.asScala.toSet)
 
-  private val typeCategoriesUIs: Seq[(CheckBox with ExposeValueChange[JBoolean], MultiSelectBehavior[CategoryId])] =
+  private val typeCategoriesWidgets: Seq[(CheckBox with ExposeValueChange[JBoolean], MultiSelectBehavior[CategoryId])] =
     for {
       cType <- imcmsServices.getCategoryMapper.getAllCategoryTypes.toSeq
       categories = imcmsServices.getCategoryMapper.getAllCategoriesOfType(cType)
@@ -47,14 +47,14 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
       chkCType -> sltCategories
     }
 
-  val ui = new GridLayout(2, 1) with Spacing |>> { ui =>
-    for ((chkCType, sltCategories) <- typeCategoriesUIs) {
-      ui.addComponents(chkCType, sltCategories)
+  override val widget = new GridLayout(2, 1) with Spacing |>> { w =>
+    for ((chkCType, sltCategories) <- typeCategoriesWidgets) {
+      w.addComponents(chkCType, sltCategories)
     }
   }
 
-  def resetValues() {
-    for ((chkCType, sltCategories) <- typeCategoriesUIs) {
+  override def resetValues() {
+    for ((chkCType, sltCategories) <- typeCategoriesWidgets) {
       chkCType.uncheck()
       sltCategories.value = Collections.emptyList[CategoryId]
 
@@ -67,9 +67,9 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     }
   }
 
-  def collectValues(): ErrorsOrData = Right(
+  override def collectValues(): ErrorsOrData = Right(
     Data(
-      typeCategoriesUIs.collect {
+      typeCategoriesWidgets.collect {
         case (chkCType, sltCategories) if chkCType.checked => sltCategories.value.asScala
       }.flatten.toSet
     )

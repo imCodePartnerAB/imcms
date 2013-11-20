@@ -9,8 +9,8 @@ import imcode.server.{Imcms}
 import imcms.security.{PermissionGranted, PermissionDenied}
 import imcms.api.DocumentLanguage
 import imcms.dao.{SystemDao, LanguageDao}
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
@@ -21,21 +21,21 @@ class LanguageManager(app: UI) {
   private val languageDao = Imcms.getServices.getManagedBean(classOf[LanguageDao])
   private val systemDao = Imcms.getServices.getManagedBean(classOf[SystemDao])
 
-  val ui = new LanguageManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { _ => reload() }
-    ui.tblLanguages.addValueChangeHandler { _ => handleSelection() }
+  val widget = new LanguageManagerWidget |>> { w =>
+    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.tblLanguages.addValueChangeHandler { _ => handleSelection() }
 
-    ui.miNew.setCommandHandler { _ => editAndSave(DocumentLanguage.builder().build()) }
-    ui.miEdit.setCommandHandler { _ =>
-      whenSelected(ui.tblLanguages) { id =>
+    w.miNew.setCommandHandler { _ => editAndSave(DocumentLanguage.builder().build()) }
+    w.miEdit.setCommandHandler { _ =>
+      whenSelected(w.tblLanguages) { id =>
         languageDao.getById(id) match {
           case null => reload()
           case vo => editAndSave(vo)
         }
       }
     }
-    ui.miDelete.setCommandHandler { _ =>
-      whenSelected(ui.tblLanguages) { id =>
+    w.miDelete.setCommandHandler { _ =>
+      whenSelected(w.tblLanguages) { id =>
         new ConfirmationDialog("Delete selected language?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
@@ -53,8 +53,8 @@ class LanguageManager(app: UI) {
         } |> Current.ui.addWindow
       }
     }
-    ui.miSetDefault.setCommandHandler { _ =>
-      whenSelected(ui.tblLanguages) { id =>
+    w.miSetDefault.setCommandHandler { _ =>
+      whenSelected(w.tblLanguages) { id =>
         new ConfirmationDialog("Change default language?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
@@ -90,7 +90,7 @@ class LanguageManager(app: UI) {
     val dialogTitle = if (isNew) "Create new language" else "edit Language"
 
     new OkCancelDialog(dialogTitle) |>> { dlg =>
-      dlg.mainUI = new LanguageEditorUI |>> { c =>
+      dlg.mainWidget = new LanguageEditorWidget |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtCode.value = vo.getCode.trimToEmpty
         c.txtName.value = vo.getName.trimToEmpty
@@ -126,33 +126,33 @@ class LanguageManager(app: UI) {
   } // editAndSave
 
   def reload() {
-    ui.tblLanguages.removeAllItems
+    widget.tblLanguages.removeAllItems
 
     val default: JInteger = systemDao.getProperty("DefaultLanguageId").getValue.toInt
     for {
       vo <- languageDao.getAllLanguages.asScala
       id = vo.getId
       isDefault = default == id.intValue
-    } ui.tblLanguages.addItem(
+    } widget.tblLanguages.addItem(
       Array[AnyRef](id, vo.getCode, vo.getName, vo.getNativeName, vo.isEnabled: JBoolean, isDefault: JBoolean),
       id)
 
     canManage |> { value =>
-      ui.tblLanguages.setSelectable(value)
-      Seq(ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value))
+      widget.tblLanguages.setSelectable(value)
+      Seq(widget.miNew, widget.miEdit, widget.miDelete).foreach(_.setEnabled(value))
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    (canManage && ui.tblLanguages.isSelected) |> { enabled =>
-      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
+    (canManage && widget.tblLanguages.isSelected) |> { enabled =>
+      Seq(widget.miEdit, widget.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class LanguageManager
 
-class LanguageManagerUI extends VerticalLayout with Spacing with UndefinedSize {
+class LanguageManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -162,7 +162,7 @@ class LanguageManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val miSetDefault = mb.addItem("Set default", Delete16)
   val miHelp = mb.addItem("Help", Help16)
   val tblLanguages = new Table with SingleSelect[JInteger] with Immediate
-  val rc = new ReloadableContentUI(tblLanguages)
+  val rc = new ReloadableContentWidget(tblLanguages)
 
   addContainerProperties(tblLanguages,
     PropertyDescriptor[JInteger]("Id"),
@@ -175,7 +175,7 @@ class LanguageManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   this.addComponents(mb, rc)
 }
 
-class LanguageEditorUI extends FormLayout with UndefinedSize {
+class LanguageEditorWidget extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled
   val txtCode = new TextField("Code")
   val txtName = new TextField("Name")

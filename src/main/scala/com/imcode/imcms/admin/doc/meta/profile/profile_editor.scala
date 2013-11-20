@@ -7,11 +7,11 @@ import scala.collection.JavaConverters._
 import imcode.server.user._
 import imcode.server.document._
 
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import imcms.ImcmsServicesSupport
 import textdocument.TextDocumentDomainObject
-import com.imcode.imcms.admin.doc.meta.access.{TextDocPermSetEditorUI, TextDocPermSetEditor}
+import com.imcode.imcms.admin.doc.meta.access.{TextDocPermSetEditorWidget, TextDocPermSetEditor}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.Editor
 
@@ -49,18 +49,18 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
   private val restrictedTwoPermSetEditor = new TextDocPermSetEditor(restrictedTwoPermSet, doc, user)
   private val defaultPermSetEditor = new TextDocPermSetEditor(
     DocumentPermissionSetDomainObject.READ.asInstanceOf[TextDocumentPermissionSetDomainObject], doc, user
-  ) |>> { _.ui.setEnabled(false) }
+  ) |>> { _.widget.setEnabled(false) }
 
-  val ui = new ProfileEditorUI(defaultPermSetEditor.ui, restrictedOnePermSetEditor.ui, restrictedTwoPermSetEditor.ui)
+  override val widget = new ProfileEditorWidget(defaultPermSetEditor.widget, restrictedOnePermSetEditor.widget, restrictedTwoPermSetEditor.widget)
 
   override def collectValues(): ErrorsOrData =
     Right(
       Data(
-        ui.cbDefaultTemplate.value,
+        widget.cbDefaultTemplate.value,
         restrictedOnePermSet, // ??? clone
         restrictedTwoPermSet, // ??? clone
-        ui.cbRestrictedOneDefaultTemplate.value,
-        ui.cbRestrictedTwoDefaultTemplate.value
+        widget.cbRestrictedOneDefaultTemplate.value,
+        widget.cbRestrictedTwoDefaultTemplate.value
       )
     )
 
@@ -81,27 +81,27 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
       defaultTemplateNameOpt.orElse(selectedTemplateName.asOption).foreach(cb.select)
     }
 
-    setTemplatesNamesAsComboBoxItems(ui.cbDefaultTemplate, doc.getDefaultTemplateName)
-    setTemplatesNamesAsComboBoxItems(ui.cbRestrictedOneDefaultTemplate, doc.getDefaultTemplateNameForRestricted1)
-    setTemplatesNamesAsComboBoxItems(ui.cbRestrictedTwoDefaultTemplate, doc.getDefaultTemplateNameForRestricted2)
+    setTemplatesNamesAsComboBoxItems(widget.cbDefaultTemplate, doc.getDefaultTemplateName)
+    setTemplatesNamesAsComboBoxItems(widget.cbRestrictedOneDefaultTemplate, doc.getDefaultTemplateNameForRestricted1)
+    setTemplatesNamesAsComboBoxItems(widget.cbRestrictedTwoDefaultTemplate, doc.getDefaultTemplateNameForRestricted2)
   }
 
   resetValues()
 }
 
 
-class ProfileEditorUI(
-    defaultPermSetEditorUI: TextDocPermSetEditorUI,
-    restrictedOnePermSetEditorUI: TextDocPermSetEditorUI,
-    restrictedTwoPermSetEditorUI: TextDocPermSetEditorUI) extends VerticalLayout with FullWidth {
+class ProfileEditorWidget(
+    defaultPermSetEditorWidget: TextDocPermSetEditorWidget,
+    restrictedOnePermSetEditorWidget: TextDocPermSetEditorWidget,
+    restrictedTwoPermSetEditorWidget: TextDocPermSetEditorWidget) extends VerticalLayout with FullWidth {
 
   val cbDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NoNullSelection // ??? NullSelection ???
   val cbRestrictedOneDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NullSelection
   val cbRestrictedTwoDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NullSelection
 
-  defaultPermSetEditorUI.setCaption("Permissions")
-  restrictedOnePermSetEditorUI.setCaption("Permissions")
-  restrictedTwoPermSetEditorUI.setCaption("Permissions")
+  defaultPermSetEditorWidget.setCaption("Permissions")
+  restrictedOnePermSetEditorWidget.setCaption("Permissions")
+  restrictedTwoPermSetEditorWidget.setCaption("Permissions")
 
   private val pnlSettings = new Panel("Settings") with FullWidth {
     val content = new VerticalLayout with FullWidth with Margin
@@ -115,9 +115,9 @@ class ProfileEditorUI(
     tsSettings.addTab(lytRestrictedOne, "Custom-One")
     tsSettings.addTab(lytRestrictedTwo, "Custom-Two")
 
-    lytDefault.addComponents(cbDefaultTemplate, defaultPermSetEditorUI)
-    lytRestrictedOne.addComponents(cbRestrictedOneDefaultTemplate, restrictedOnePermSetEditorUI)
-    lytRestrictedTwo.addComponents(cbRestrictedTwoDefaultTemplate, restrictedTwoPermSetEditorUI)
+    lytDefault.addComponents(cbDefaultTemplate, defaultPermSetEditorWidget)
+    lytRestrictedOne.addComponents(cbRestrictedOneDefaultTemplate, restrictedOnePermSetEditorWidget)
+    lytRestrictedTwo.addComponents(cbRestrictedTwoDefaultTemplate, restrictedTwoPermSetEditorWidget)
 
     content.addComponent(tsSettings)
 

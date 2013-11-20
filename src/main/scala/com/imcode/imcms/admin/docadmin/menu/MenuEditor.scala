@@ -8,7 +8,7 @@ import com.vaadin.ui._
 import _root_.imcode.server.document.textdocument.{MenuItemDomainObject, MenuDomainObject, TextDocumentDomainObject}
 import _root_.imcode.server.document.DocumentDomainObject
 
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
@@ -43,18 +43,18 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
   private var state = menu.clone()
 
-  override val ui = new MenuEditorUI |>> { ui =>
-    ui.ttMenu.setItemDescriptionGenerator(new ItemDescriptionGenerator {
+  override val widget = new MenuEditorWidget |>> { w =>
+    w.ttMenu.setItemDescriptionGenerator(new ItemDescriptionGenerator {
       def generateDescription(source: Component, itemId: AnyRef, propertyId: AnyRef) = "n/a" // column title tooltip
     })
 
-    ui.ttMenu.addValueChangeHandler { _ =>
-      Seq(ui.miNewDoc, ui.miEditSelectedDoc, ui.miRemoveSelectedDocs, ui.miShowSelectedDoc, ui.miCopySelectedDoc).foreach { mi =>
-        mi.setEnabled(ui.ttMenu.isSelected)
+    w.ttMenu.addValueChangeHandler { _ =>
+      Seq(w.miNewDoc, w.miEditSelectedDoc, w.miRemoveSelectedDocs, w.miShowSelectedDoc, w.miCopySelectedDoc).foreach { mi =>
+        mi.setEnabled(w.ttMenu.isSelected)
       }
     }
 
-    addContainerProperties(ui.ttMenu,
+    addContainerProperties(w.ttMenu,
       PropertyDescriptor[DocId]("docs_projection.container_property.meta_id".i),
       PropertyDescriptor[String]("docs_projection.container_property.headline".i),
       PropertyDescriptor[String]("docs_projection.container_property.alias".i),
@@ -63,7 +63,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     )
 
     // todo: ??? search for current language + default version ???
-    ui.miAddExistingDocs.setCommandHandler { _ =>
+    w.miAddExistingDocs.setCommandHandler { _ =>
       new DocSelectDialog("menu_editor.dlg.select_docs.title".i, Current.ui.imcmsUser) |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
@@ -77,26 +77,26 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
             state.addMenuItemUnchecked(menuItem)
           }
 
-          updateMenuUI()
+          updateMenuWidget()
           dlg.close()
         }
       } |> Current.ui.addWindow
     }
 
-    ui.miRemoveSelectedDocs.setCommandHandler { _ =>
-      for (docId <- ui.ttMenu.selectionOpt) {
+    w.miRemoveSelectedDocs.setCommandHandler { _ =>
+      for (docId <- w.ttMenu.selectionOpt) {
         state.removeMenuItemByDocumentId(docId)
-        updateMenuUI()
+        updateMenuWidget()
       }
     }
 
-    ui.miEditSelectedDoc.setCommandHandler { _ =>
-      for (docId <- ui.ttMenu.selectionOpt) {
+    w.miEditSelectedDoc.setCommandHandler { _ =>
+      for (docId <- w.ttMenu.selectionOpt) {
         imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId) match {
           case null =>
             Current.page.showWarningNotification("notification.doc.unable_to_find".i)
             state.removeMenuItemByDocumentId(docId)
-            updateMenuUI()
+            updateMenuWidget()
 
           case selectedDoc =>
             new DocEditorDialog("doc.edit_properties.title".f(docId), selectedDoc) |>> { dlg =>
@@ -106,7 +106,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
                   case Right((modifiedDoc, i18nMetas)) =>
                     try {
                       imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.values.to[Set].asJava, Current.ui.imcmsUser)
-                      updateMenuUI()
+                      updateMenuWidget()
                       dlg.close()
                     } catch {
                       case e: Exception =>
@@ -120,40 +120,40 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       }
     }
 
-    ui.miCopySelectedDoc.setCommandHandler { _ =>
-      for (metaId <- ui.ttMenu.selectionOpt) {
+    w.miCopySelectedDoc.setCommandHandler { _ =>
+      for (metaId <- w.ttMenu.selectionOpt) {
         imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](metaId) match {
           case null =>
             Current.page.showWarningNotification("notification.doc.unable_to_find".i)
             state.removeMenuItemByDocumentId(metaId)
-            updateMenuUI()
+            updateMenuWidget()
 
           case doc =>
             val newDoc: DocumentDomainObject = imcmsServices.getDocumentMapper.copyDocument(doc, Current.ui.imcmsUser)
             val newDocRef = imcmsServices.getDocumentMapper.getDocumentReference(newDoc)
             val newMenuItem = new MenuItemDomainObject(newDocRef)
             state.addMenuItemUnchecked(newMenuItem)
-            updateMenuUI()
+            updateMenuWidget()
         }
       }
     }
 
-    ui.miShowSelectedDoc.setCommandHandler { _ =>
-      for (docId <- ui.ttMenu.selectionOpt) {
+    w.miShowSelectedDoc.setCommandHandler { _ =>
+      for (docId <- w.ttMenu.selectionOpt) {
         DocOpener.openDoc(docId)
       }
     }
 
-    ui.cbSortOrder.addValueChangeHandler { _ =>
-      state.setSortOrder(ui.cbSortOrder.selection)
-      updateMenuUI()
+    w.cbSortOrder.addValueChangeHandler { _ =>
+      state.setSortOrder(w.cbSortOrder.selection)
+      updateMenuWidget()
     }
   }
 
   resetValues()
 
   private object MenuDropHandlers {
-    private val container = ui.ttMenu.getContainerDataSource.asInstanceOf[HierarchicalContainer]
+    private val container = widget.ttMenu.getContainerDataSource.asInstanceOf[HierarchicalContainer]
 
     private abstract class AbstractDropHandler extends DropHandler {
       def drop(event: DragAndDropEvent) {
@@ -223,7 +223,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
   }
 
 
-  private def updateMenuUI() {
+  private def updateMenuWidget() {
     val sortOrder = state.getSortOrder
     val isMultilevel = sortOrder == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER
     val isManualSort = Set(
@@ -232,9 +232,9 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     ).contains(sortOrder)
 
 
-    ui.ttMenu.removeAllItems()
-    ui.ttMenu.setDragMode(if (isManualSort) Table.TableDragMode.ROW else Table.TableDragMode.NONE)
-    ui.ttMenu.setDropHandler(sortOrder match {
+    widget.ttMenu.removeAllItems()
+    widget.ttMenu.setDragMode(if (isManualSort) Table.TableDragMode.ROW else Table.TableDragMode.NONE)
+    widget.ttMenu.setDropHandler(sortOrder match {
       case MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER => MenuDropHandlers.multilevel
       case MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED => MenuDropHandlers.singleLevel
       case _ => null
@@ -246,9 +246,9 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       val doc = menuItem.getDocument
       val docId = doc.getId
       // doc.getDocumentType.getName.toLocalizedString(ui.getApplication.imcmsUser)
-      ui.ttMenu.addRow(docId, docId: JInteger, doc.getHeadline, doc.getAlias, doc.getDocumentType.getName.toLocalizedString("eng"), doc.getLifeCyclePhase.toString)
-      ui.ttMenu.setChildrenAllowed(docId, isMultilevel)
-      ui.ttMenu.setCollapsed(docId, false)
+      widget.ttMenu.addRow(docId, docId: JInteger, doc.getHeadline, doc.getAlias, doc.getDocumentType.getName.toLocalizedString("eng"), doc.getLifeCyclePhase.toString)
+      widget.ttMenu.setChildrenAllowed(docId, isMultilevel)
+      widget.ttMenu.setCollapsed(docId, false)
     }
 
     if (isMultilevel) {
@@ -268,16 +268,16 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
         menuItem <- menuItems
         parentMenuItem <- findParentMenuItem(menuItem.getTreeSortIndex)
       } {
-        ui.ttMenu.setParent(menuItem.getDocumentId, parentMenuItem.getDocumentId)
+        widget.ttMenu.setParent(menuItem.getDocumentId, parentMenuItem.getDocumentId)
       }
     }
   }
 
-  def resetValues() {
+  override def resetValues() {
     state = menu.clone()
-    ui.cbSortOrder.selection = state.getSortOrder
-    ui.ttMenu.selection = null
+    widget.cbSortOrder.selection = state.getSortOrder
+    widget.ttMenu.selection = null
   }
 
-  def collectValues(): ErrorsOrData = Right(state.clone())
+  override def collectValues(): ErrorsOrData = Right(state.clone())
 }

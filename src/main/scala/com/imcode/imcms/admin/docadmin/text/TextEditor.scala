@@ -4,7 +4,7 @@ package admin.docadmin.text
 
 import com.imcode.imcms.vaadin.Current
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import imcode.server.document.textdocument.TextDomainObject
 import com.imcode.imcms.vaadin.Editor
@@ -16,19 +16,19 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
 
   override type Data = Seq[TextDomainObject]
 
-  private case class TextState(text: TextDomainObject, textUI: AbstractField[String])
+  private case class TextState(text: TextDomainObject, textWidget: AbstractField[String])
 
   private var states: Seq[TextState] = _
 
-  override val ui = new TextEditorUI |>> { ui =>
+  override val widget = new TextEditorWidget |>> { w =>
     if (!settings.canChangeFormat) {
-      ui.miFormatHtml.setEnabled(settings.format == TextDomainObject.Format.HTML)
-      ui.miFormatPlain.setEnabled(settings.format == TextDomainObject.Format.PLAIN_TEXT)
+      w.miFormatHtml.setEnabled(settings.format == TextDomainObject.Format.HTML)
+      w.miFormatPlain.setEnabled(settings.format == TextDomainObject.Format.PLAIN_TEXT)
     }
 
-    ui.miFormatHtml.setCommandHandler { _ => setFormat(TextDomainObject.Format.HTML) }
-    ui.miFormatPlain.setCommandHandler { _ => setFormat(TextDomainObject.Format.PLAIN_TEXT) }
-    ui.miHistory.setCommandHandler { _ =>
+    w.miFormatHtml.setCommandHandler { _ => setFormat(TextDomainObject.Format.HTML) }
+    w.miFormatPlain.setCommandHandler { _ => setFormat(TextDomainObject.Format.PLAIN_TEXT) }
+    w.miHistory.setCommandHandler { _ =>
       new TextHistoryDialog("Restore text", currentText) |> Current.ui.addWindow
     }
   }
@@ -40,7 +40,7 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
       texts.map(_.clone())
     } else {
       states.map {
-        case TextState(text, textUI) => text.clone() |>> { _.setText(textUI.getValue) }
+        case TextState(text, testWidget) => text.clone() |>> { _.setText(testWidget.getValue) }
       }
     }
   }
@@ -48,33 +48,33 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
   private def currentText: TextDomainObject = {
     val selectedTabPositionOpt =
       for {
-        component <- ui.tsTexts.getSelectedTab.asOption
-        tab <- ui.tsTexts.getTab(component).asOption
-      } yield ui.tsTexts.getTabPosition(tab)
+        component <- widget.tsTexts.getSelectedTab.asOption
+        tab <- widget.tsTexts.getTab(component).asOption
+      } yield widget.tsTexts.getTabPosition(tab)
 
     states(selectedTabPositionOpt.get) |> {
-      case TextState(text, textUI) => text.clone() |>> { _.setText(textUI.value) }
+      case TextState(text, textWidget) => text.clone() |>> { _.setText(textWidget.value) }
     }
   }
 
   private def setFormat(format: TextDomainObject.Format) {
     format match {
       case TextDomainObject.Format.HTML =>
-        ui.miFormatHtml.setChecked(true)
-        ui.miFormatPlain.setChecked(false)
+        widget.miFormatHtml.setChecked(true)
+        widget.miFormatPlain.setChecked(false)
 
       case TextDomainObject.Format.PLAIN_TEXT =>
-        ui.miFormatHtml.setChecked(false)
-        ui.miFormatPlain.setChecked(true)
+        widget.miFormatHtml.setChecked(false)
+        widget.miFormatPlain.setChecked(true)
     }
 
     val selectedTabPositionOpt =
       for {
-        component <- ui.tsTexts.getSelectedTab.asOption
-        tab <- ui.tsTexts.getTab(component).asOption
-      } yield ui.tsTexts.getTabPosition(tab)
+        component <- widget.tsTexts.getSelectedTab.asOption
+        tab <- widget.tsTexts.getTab(component).asOption
+      } yield widget.tsTexts.getTabPosition(tab)
 
-    val tabIndex = ui.tsTexts.getTabIndex
+    val tabIndex = widget.tsTexts.getTabIndex
 
     states = texts.map { text =>
       TextState(
@@ -97,30 +97,30 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
             case Some(1) => new TextField with FullWidth
             case _ => new TextArea with FullSize
           }
-        } |>> { textUI =>
-          textUI.value = text.getText
+        } |>> { textWidget =>
+          textWidget.value = text.getText
         }
       )
     }
 
-    ui.tsTexts.removeAllComponents()
+    widget.tsTexts.removeAllComponents()
 
-    for (TextState(text, textUI) <- states) {
-      ui.tsTexts.addTab(textUI) |> { tab =>
+    for (TextState(text, textWidget) <- states) {
+      widget.tsTexts.addTab(textWidget) |> { tab =>
         tab.setCaption(text.getI18nDocRef.language().getName)
         tab.setIcon(Theme.Icon.Language.flag(text.getI18nDocRef.language()))
       }
     }
 
-    selectedTabPositionOpt.foreach(ui.tsTexts.setSelectedTab)
+    selectedTabPositionOpt.foreach(widget.tsTexts.setSelectedTab)
 
     format |> {
       case TextDomainObject.Format.HTML => ("Format: HTML", Theme.Icon.TextFormatHtml)
       case _ => ("Format: Plain text", Theme.Icon.TextFormatPlain)
     } |> {
       case (formatTypeName, formatTypeIcon) =>
-        ui.lblStatus.setCaption(formatTypeName)
-        ui.lblStatus.setIcon(formatTypeIcon)
+        widget.lblStatus.setCaption(formatTypeName)
+        widget.lblStatus.setIcon(formatTypeIcon)
     }
   }
 

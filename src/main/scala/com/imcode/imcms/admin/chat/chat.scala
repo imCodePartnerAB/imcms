@@ -4,7 +4,7 @@ package imcms.admin.chat
 import scala.collection.JavaConverters._
 
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import java.util.Date
 
 class MessageView(sender: String, message: String) extends VerticalLayout {

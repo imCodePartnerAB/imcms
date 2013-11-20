@@ -9,8 +9,8 @@ import com.vaadin.ui._
 
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.Current
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 
@@ -21,21 +21,21 @@ import com.imcode.imcms.vaadin.server._
 class RoleManager(app: UI) {
   private def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
-  val ui = new RoleManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { _ => reload() }
-    ui.tblRoles.addValueChangeHandler { _ => handleSelection() }
+  val widget = new RoleManagerWidget |>> { w =>
+    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.tblRoles.addValueChangeHandler { _ => handleSelection() }
 
-    ui.miNew.setCommandHandler { _ => editAndSave(new RoleDomainObject("")) }
-    ui.miEdit.setCommandHandler { _ =>
-      whenSelected(ui.tblRoles) { id =>
+    w.miNew.setCommandHandler { _ => editAndSave(new RoleDomainObject("")) }
+    w.miEdit.setCommandHandler { _ =>
+      whenSelected(w.tblRoles) { id =>
         roleMapper.getRole(id) match {
           case null => reload()
           case vo => editAndSave(vo)
         }
       }
     }
-    ui.miDelete.setCommandHandler { _ =>
-      whenSelected(ui.tblRoles) { id =>
+    w.miDelete.setCommandHandler { _ =>
+      whenSelected(w.tblRoles) { id =>
         new ConfirmationDialog("Delete selected role?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
@@ -69,21 +69,21 @@ class RoleManager(app: UI) {
     val dialogTitle = if(isNew) "Create new role" else "Edit role"
 
     new OkCancelDialog(dialogTitle) |>> { dlg =>
-      dlg.mainUI = new RoleEditorUI |>> { c =>
+      dlg.mainWidget = new RoleEditorWidget |>> { w =>
         val permsToChkBoxes = Map(
-            RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> c.chkPermChangeImagesInArchive,
-            RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION -> c.chkPermUseImagesFromArchive,
-            RoleDomainObject.PASSWORD_MAIL_PERMISSION -> c.chkPermGetPasswordByEmail,
-            RoleDomainObject.ADMIN_PAGES_PERMISSION -> c.chkPermAccessMyPages)
+            RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> w.chkPermChangeImagesInArchive,
+            RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION -> w.chkPermUseImagesFromArchive,
+            RoleDomainObject.PASSWORD_MAIL_PERMISSION -> w.chkPermGetPasswordByEmail,
+            RoleDomainObject.ADMIN_PAGES_PERMISSION -> w.chkPermAccessMyPages)
 
-        c.txtId.value = if (isNew) "" else id.intValue.toString
-        c.txtName.value = vo.getName
+        w.txtId.value = if (isNew) "" else id.intValue.toString
+        w.txtName.value = vo.getName
         for ((permission, chkBox) <- permsToChkBoxes) chkBox.value = vo.getPermissions.contains(permission)
 
         dlg.setOkButtonHandler {
           vo.clone |> { voc =>
             // todo: validate
-            voc.setName(c.txtName.value)
+            voc.setName(w.txtName.value)
             voc.removeAllPermissions()
             for ((permission, chkBox) <- permsToChkBoxes if chkBox.value) voc.addPermission(permission)
 
@@ -109,29 +109,29 @@ class RoleManager(app: UI) {
   }
 
   def reload() {
-    ui.tblRoles.removeAllItems()
+    widget.tblRoles.removeAllItems()
 
     for {
       vo <- roleMapper.getAllRoles
       id = vo.getId
-    } ui.tblRoles.addItem(Array[AnyRef](Int box id.intValue, vo.getName), id)
+    } widget.tblRoles.addItem(Array[AnyRef](Int box id.intValue, vo.getName), id)
 
     canManage |> { value =>
-      ui.tblRoles.setSelectable(value)
-      Seq(ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value))
+      widget.tblRoles.setSelectable(value)
+      Seq(widget.miNew, widget.miEdit, widget.miDelete).foreach(_.setEnabled(value))
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    (canManage && ui.tblRoles.isSelected) |> { enabled =>
-      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
+    (canManage && widget.tblRoles.isSelected) |> { enabled =>
+      Seq(widget.miEdit, widget.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class RoleManager
 
-class RoleManagerUI extends VerticalLayout with Spacing with UndefinedSize {
+class RoleManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -140,7 +140,7 @@ class RoleManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
   val tblRoles = new Table with SingleSelect[RoleId] with Immediate
-  val rc = new ReloadableContentUI(tblRoles)
+  val rc = new ReloadableContentWidget(tblRoles)
 
   addContainerProperties(tblRoles,
     PropertyDescriptor[JInteger]("Id"),
@@ -149,7 +149,7 @@ class RoleManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   this.addComponents(mb, rc)
 }
 
-class RoleEditorUI extends FormLayout with UndefinedSize {
+class RoleEditorWidget extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled
   val txtName = new TextField("Name")
   val chkPermGetPasswordByEmail = new CheckBox("Permission to get password by email")

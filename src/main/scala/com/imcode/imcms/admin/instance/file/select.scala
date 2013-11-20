@@ -9,8 +9,8 @@ import com.imcode.util.event.Publisher
 import java.util.concurrent.atomic.AtomicBoolean
 import org.apache.commons.io.FileUtils
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server._
 import com.vaadin.shared.ui.{MarginInfo, BorderStyle}
@@ -51,14 +51,14 @@ object FileOps {
   // todo: fix
   def showContent(file: File) =
     new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog with Resizable |>> { dlg =>
-      dlg.mainUI = new TextArea("", scala.io.Source.fromFile(file).mkString) with ReadOnly with FullSize
+      dlg.mainWidget = new TextArea("", scala.io.Source.fromFile(file).mkString) with ReadOnly with FullSize
       dlg.setSize(500, 500)
     } |> Current.ui.addWindow
 
   // todo: fix
   def showDirectly(file: File) =
     new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog with Resizable |>> { dlg =>
-      dlg.mainUI = new Embedded("", new FileResource(file))
+      dlg.mainWidget = new Embedded("", new FileResource(file))
       dlg.setSize(500, 500)
     } |> Current.ui.addWindow
 
@@ -76,7 +76,7 @@ object FileOps {
 class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Seq[File] = Nil)
     extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDialog {
 
-  mainUI = browser.ui
+  mainWidget = browser.widget
 
   browser listen {
     case None => btnOk setEnabled false
@@ -85,7 +85,7 @@ class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Se
 
   browser.notifyListeners()
   // todo: refactor out
-  browser.ui.spLocation.setSplitPosition(25)
+  browser.widget.spLocation.setSplitPosition(25)
   this.setSize(550, 450)
 }
 
@@ -98,22 +98,22 @@ class FileDialog(caption: String, browser: FileBrowser)
 extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDialog {
   val preview = new FilePreview(browser)
 
-  mainUI = new FileDialogUI(browser.ui, preview.ui) |>> { ui =>
-    ui.miViewPreview.setCommandHandler { _ =>
+  mainWidget = new FileDialogWidget(browser.widget, preview.widget) |>> { w =>
+    w.miViewPreview.setCommandHandler { _ =>
       preview.enabled = !preview.enabled
     }
 
-    ui.miFileUpload.setCommandHandler { _ =>
+    w.miFileUpload.setCommandHandler { _ =>
       new FileUploaderDialog("Upload file") |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
             uploadedFile <- dlg.uploader.uploadedFile
             selection <- browser.selection
             dir = selection.dir
-            filename = dlg.uploader.ui.txtSaveAsName.value // todo: check not empty
+            filename = dlg.uploader.widget.txtSaveAsName.value // todo: check not empty
             file = new File(dir, filename)
           } {
-            if (file.exists && !dlg.uploader.ui.chkOverwrite.checked) sys.error("File exists")
+            if (file.exists && !dlg.uploader.widget.chkOverwrite.checked) sys.error("File exists")
             else {
               FileUtils.moveFile(uploadedFile.file, file)
               browser.reloadLocationItems()
@@ -131,12 +131,12 @@ extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDi
 
   browser.notifyListeners()
   // todo: refactor out
-  browser.ui.spLocation.setSplitPosition(25)
+  browser.widget.spLocation.setSplitPosition(25)
   setWidth("500px"); setHeight("350px")
 }
 
 
-class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends GridLayout(2, 2) with FullSize {
+class FileDialogWidget(browserWidget: FileBrowserWidget, previewWidget: FilePreviewWidget) extends GridLayout(2, 2) with FullSize {
   val mb = new MenuBar
   val miFile = mb.addItem("File", null)
   val miView = mb.addItem("View", null)
@@ -147,10 +147,10 @@ class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends G
   val miFileDownload = miFile.addItem("Download", null)
 
   addComponent(mb, 0, 0, 1, 0)
-  this.addComponents(browserUI, previewUI)
+  this.addComponents(browserWidget, previewWidget)
 
-  setComponentAlignment(previewUI, Alignment.MIDDLE_CENTER)
-  previewUI.setMargin(new MarginInfo(false, true, false, true))
+  setComponentAlignment(previewWidget, Alignment.MIDDLE_CENTER)
+  previewWidget.setMargin(new MarginInfo(false, true, false, true))
 
   setColumnExpandRatio(0, 1f)
   setRowExpandRatio(1, 1f)
@@ -163,7 +163,7 @@ class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends G
 class FilePreview(browser: FileBrowser) {
   private val enabledRef = new AtomicBoolean(false)
   val preview = new EmbeddedPreview
-  val ui = new FilePreviewUI(preview.ui)
+  val widget = new FilePreviewWidget(preview.widget)
 
   browser.listen { ev =>
     if (enabled) ev match {
@@ -178,37 +178,37 @@ class FilePreview(browser: FileBrowser) {
                                case _ => "file"
                              }))
 
-        ui.btnAction.setEnabled(true)
-        ui.btnAction.setCaption(caption)
-        ui.btnAction.addClickHandler { _ => FileOps.default(item) }
+        widget.btnAction.setEnabled(true)
+        widget.btnAction.setCaption(caption)
+        widget.btnAction.addClickHandler { _ => FileOps.default(item) }
         preview.set(new Embedded("", iconResource))
 
       case _ =>
         if (!preview.isEmpty) {
           preview.clear
-          updateDisabled(ui.btnAction) { _ setCaption "file.preview.act.na".i }
+          updateDisabled(widget.btnAction) { _ setCaption "file.preview.act.na".i }
         }
     }
   }
 
-  preview.listen { ui.btnAction setEnabled _.isDefined }
+  preview.listen { widget.btnAction setEnabled _.isDefined }
   preview.notifyListeners()
   enabled = false
 
   def enabled = enabledRef.get
   def enabled_=(enabled: Boolean) {
     enabledRef.set(enabled)
-    ui.setVisible(enabled)
+    widget.setVisible(enabled)
     if (enabled) browser.notifyListeners
   }
 }
 
 
-class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) with Spacing {
+class FilePreviewWidget(val previewWidget: EmbeddedPreviewWidget) extends GridLayout(1, 2) with Spacing {
   val btnAction = new Button with SingleClickListener with LinkStyle
-  this.addComponents(previewUI, btnAction)
+  this.addComponents(previewWidget, btnAction)
 
-  Seq(previewUI, btnAction).foreach(c => setComponentAlignment(c, Alignment.MIDDLE_CENTER))
+  Seq(previewWidget, btnAction).foreach(c => setComponentAlignment(c, Alignment.MIDDLE_CENTER))
 }
 
 /**
@@ -217,7 +217,7 @@ class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) w
  * @param browser browser with preconfigured location(s)
  */
 class ImagePicker(browser: FileBrowser) {
-  val preview = new EmbeddedPreview; preview.stubUI.value = "No Icon"
+  val preview = new EmbeddedPreview; preview.stubWidget.value = "No Icon"
   val fileDialog = new FileDialog("Pick an image", browser) with Resizable |>> { dlg =>
     dlg.preview.enabled = true
     dlg.setOkButtonHandler {
@@ -226,26 +226,26 @@ class ImagePicker(browser: FileBrowser) {
     }
   }
 
-  val ui = new ImagePickerUI(preview.ui) |>> { ui =>
-    ui.btnRemove.addClickHandler { _ =>
+  val widget = new ImagePickerWidget(preview.widget) |>> { w =>
+    w.btnRemove.addClickHandler { _ =>
       preview.clear()
     }
 
-    ui.btnChoose.addClickHandler { _ => Current.ui.addWindow(fileDialog) }
+    w.btnChoose.addClickHandler { _ => Current.ui.addWindow(fileDialog) }
   }
 
-  preview.listen { ui.btnRemove setEnabled _.isDefined }
+  preview.listen { widget.btnRemove setEnabled _.isDefined }
   preview.notifyListeners()
 }
 
 
-class ImagePickerUI(previewUI: EmbeddedPreviewUI) extends GridLayout(2, 1) with Spacing {
+class ImagePickerWidget(previewWidget: EmbeddedPreviewWidget) extends GridLayout(2, 1) with Spacing {
   val lytButtons = new VerticalLayout with Spacing with UndefinedSize
   val btnChoose = new Button("Choose") with LinkStyle
   val btnRemove = new Button("Remove") with LinkStyle
 
   lytButtons.addComponents(btnRemove, btnChoose)
-  this.addComponents(previewUI, lytButtons)
+  this.addComponents(previewWidget, lytButtons)
 
   setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
 }
@@ -257,25 +257,25 @@ class ImagePickerUI(previewUI: EmbeddedPreviewUI) extends GridLayout(2, 1) with 
  * Preview is considered empty when stub is displayed.
  * By default stub is a Label but it can be any component.
  */
-class EmbeddedPreview[A <: Component](val stubUI: A = new Label with UndefinedSize) extends Publisher[Option[Embedded]] {
-  val ui = new EmbeddedPreviewUI
-  setPreviewComponent(stubUI)
+class EmbeddedPreview[A <: Component](val stubWidget: A = new Label with UndefinedSize) extends Publisher[Option[Embedded]] {
+  val widget = new EmbeddedPreviewWidget
+  setPreviewWidget(stubWidget)
 
-  def clear() = if (!isEmpty) setPreviewComponent(stubUI)
+  def clear() = if (!isEmpty) setPreviewWidget(stubWidget)
 
   def set(embedded: Embedded) {
-    assert(embedded ne stubUI, "Stub can not be used as a preview component.")
+    assert(embedded ne stubWidget, "Stub can not be used as a preview component.")
     embedded.setSizeFull
-    setPreviewComponent(embedded)
+    setPreviewWidget(embedded)
   }
 
-  def get = if (isEmpty) None else Some(ui.content.getComponent(0).asInstanceOf[Embedded])
-  def isEmpty = getPreviewComponent eq stubUI
+  def get = if (isEmpty) None else Some(widget.content.getComponent(0).asInstanceOf[Embedded])
+  def isEmpty = getPreviewWidget eq stubWidget
   override def notifyListeners() = notifyListeners(get)
 
-  private def getPreviewComponent = ui.content.getComponent(0)
-  private def setPreviewComponent(component: Component) {
-    ui.content |> { content =>
+  private def getPreviewWidget = widget.content.getComponent(0)
+  private def setPreviewWidget(component: Component) {
+    widget.content |> { content =>
       content.removeAllComponents()
       content.addComponent(component)
       content.setComponentAlignment(component, Alignment.MIDDLE_CENTER)
@@ -284,7 +284,7 @@ class EmbeddedPreview[A <: Component](val stubUI: A = new Label with UndefinedSi
   }
 }
 
-class EmbeddedPreviewUI(width: Int = 64, height: Int = 64) extends Panel {
+class EmbeddedPreviewWidget(width: Int = 64, height: Int = 64) extends Panel {
   val content = new VerticalLayout with FullSize
 
   setContent(content)

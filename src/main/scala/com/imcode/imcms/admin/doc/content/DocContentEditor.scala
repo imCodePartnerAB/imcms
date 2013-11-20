@@ -5,5 +5,5 @@ import _root_.imcode.server.document.DocumentDomainObject
 
 
 trait DocContentEditor extends Editor {
-  type Data <: DocumentDomainObject
+  override type Data <: DocumentDomainObject
 }

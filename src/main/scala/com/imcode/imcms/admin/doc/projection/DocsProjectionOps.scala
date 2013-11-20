@@ -6,9 +6,9 @@ import com.imcode.imcms.vaadin.Current
 import _root_.imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.{DocEditorDialog, DocOpener}
-import com.imcode.imcms.vaadin.ui.dialog.{InformationDialog, ConfirmationDialog}
+import com.imcode.imcms.vaadin.component.dialog.{InformationDialog, ConfirmationDialog}
 
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.server._
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -65,7 +65,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
                   case Right((editedDoc, i18nMetas)) =>
                     val saveOpts = dlg.docEditor.contentEditor match {
-                      case contentEditor: NewTextDocContentEditor if contentEditor.ui.chkCopyI18nMetaTextsToTextFields.checked =>
+                      case contentEditor: NewTextDocContentEditor if contentEditor.widget.chkCopyI18nMetaTextsToTextFields.checked =>
                         java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)
 
                       case _ =>

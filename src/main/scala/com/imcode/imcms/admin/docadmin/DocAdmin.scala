@@ -4,13 +4,13 @@ package admin.docadmin
 
 import java.util.Locale
 import scala.collection.JavaConverters._
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.api.{DocumentVersion, DocRef}
 import com.imcode.imcms.admin.doc.DocEditor
 import com.vaadin.ui._
 import com.vaadin.server._
 import com.imcode.imcms.vaadin.server._
-import com.imcode.imcms.vaadin.ui.dialog.ConfirmationDialog
+import com.imcode.imcms.vaadin.component.dialog.ConfirmationDialog
 import com.imcode.imcms.mapping.DocumentSaveException
 import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.dao.TextDocDao
@@ -24,7 +24,7 @@ import _root_.imcode.server.document.{DocumentDomainObject, NoPermissionToEditDo
 
 import com.imcode.imcms.admin.docadmin.menu.{MenuEditorParameters, MenuEditor}
 import com.imcode.imcms.admin.docadmin.text.{TextEditor, TextEditorParameters}
-import com.imcode.imcms.admin.docadmin.image.ImageEditor
+import com.imcode.imcms.admin.docadmin.image.ImagesEditor
 import com.imcode.imcms.vaadin.Current
 
 // todo: validate params in filter, create params wrapper, pass params into DocAdmin (no need to examine path in init)?
@@ -89,32 +89,32 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   }
 
 
-  def wrapTextDocImageEditor(request: VaadinRequest, doc: TextDocumentDomainObject, imageNo: Int): EditorContainerUI = {
-    val imageEditor = new ImageEditor(doc.getRef, imageNo)
-    val editorContainerUI =  new EditorContainerUI("doc.edit_image.title".i)
+  def wrapTextDocImageEditor(request: VaadinRequest, doc: TextDocumentDomainObject, imageNo: Int): EditorContainerWidget = {
+    val imageEditor = new ImagesEditor(doc.getRef, imageNo)
+    val editorContainerWidget =  new EditorContainerWidget("doc.edit_image.title".i)
 
-    editorContainerUI.mainUI = imageEditor.ui
-    editorContainerUI.buttons.btnSave.addClickHandler { _ => }
-    editorContainerUI.buttons.btnReset.addClickHandler { _ => imageEditor.resetValues() }
-    editorContainerUI.buttons.btnSaveAndClose.addClickHandler { _ => }
-    editorContainerUI.buttons.btnClose.addClickHandler { _ => }
+    editorContainerWidget.mainWidget = imageEditor.widget
+    editorContainerWidget.buttons.btnSave.addClickHandler { _ => }
+    editorContainerWidget.buttons.btnReset.addClickHandler { _ => imageEditor.resetValues() }
+    editorContainerWidget.buttons.btnSaveAndClose.addClickHandler { _ => }
+    editorContainerWidget.buttons.btnClose.addClickHandler { _ => }
 
-    imageEditor.ui.setSize(900, 600)
+    imageEditor.widget.setSize(900, 600)
     imageEditor.resetValues()
 
-    editorContainerUI
+    editorContainerWidget
   }
 
 
-  def wrapDocEditor(request: VaadinRequest, doc: DocumentDomainObject): EditorContainerUI = {
-    new EditorContainerUI("doc.edit_properties.title".f(doc.getId)) |>> { ui =>
+  def wrapDocEditor(request: VaadinRequest, doc: DocumentDomainObject): EditorContainerWidget = {
+    new EditorContainerWidget("doc.edit_properties.title".f(doc.getId)) |>> { w =>
       val editor = new DocEditor(doc)
 
-      ui.mainUI = editor.ui
+      w.mainWidget = editor.widget
 
-      editor.ui.setSize(900, 600)
+      editor.widget.setSize(900, 600)
 
-      ui.buttons.btnSave.addClickHandler { _ =>
+      w.buttons.btnSave.addClickHandler { _ =>
         editor.collectValues() match {
           case Left(errors) => Current.page.showErrorNotification(errors.mkString(","))
           case Right((editedDoc, i18nMetas)) =>
@@ -128,40 +128,40 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
         }
       }
 
-      ui.buttons.btnClose.addClickHandler { _ =>
+      w.buttons.btnClose.addClickHandler { _ =>
         Current.page.open(Current.contextPath, "_self")
       }
 
       Current.page.getUriFragment.asOption.map(_.toLowerCase).foreach {
-        case "info" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
-        case "access" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.access"
-        case "appearance" => editor.metaEditor.ui.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
-        case "content" => editor.ui.setSelectedTab(1)
+        case "info" => editor.metaEditor.widget.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
+        case "access" => editor.metaEditor.widget.treeEditors.selection = "doc_meta_editor.menu_item.access"
+        case "appearance" => editor.metaEditor.widget.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
+        case "content" => editor.widget.setSelectedTab(1)
         case _ =>
       }
     }
   }
 
 
-  def wrapTextDocMenuEditor(params: MenuEditorParameters) = new EditorContainerUI(params.title) |>> { ui =>
+  def wrapTextDocMenuEditor(params: MenuEditorParameters) = new EditorContainerWidget(params.title) |>> { w =>
     val doc = params.doc
     val docId = doc.getId
     val menuNo = params.menuNo
     val menu = params.doc.getMenu(menuNo)
 
-    val editor = new MenuEditor(doc, menu) |>> { _.ui.setSize(900, 600) }
+    val editor = new MenuEditor(doc, menu) |>> { _.widget.setSize(900, 600) }
 
-    ui.mainUI = editor.ui
+    w.mainWidget = editor.widget
 
-    ui.buttons.btnReset.addClickHandler { _ =>
+    w.buttons.btnReset.addClickHandler { _ =>
       editor.resetValues()
     }
 
-    ui.buttons.btnSaveAndClose.addClickHandler { _ =>
+    w.buttons.btnSaveAndClose.addClickHandler { _ =>
       save(close = true)
     }
 
-    ui.buttons.btnClose.addClickHandler { _ =>
+    w.buttons.btnClose.addClickHandler { _ =>
       val editedMenu = editor.collectValues().right.get
       if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
         closeEditor()
@@ -307,13 +307,13 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   //}
 
   // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
-  def wrapTextDocTextEditor(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int): EditorContainerUI = new EditorContainerUI |>> { ui =>
+  def wrapTextDocTextEditor(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int): EditorContainerWidget = new EditorContainerWidget |>> { w =>
     val title = request.getParameter("label").trimToNull match {
       case null => s"Document ${doc.getId} text no $textNo"
       case label => label |> StringEscapeUtils.escapeHtml4
     }
 
-    ui.setTitle(title)
+    w.setTitle(title)
 
     val formats = request.getParameterMap.get("format") match {
       case null => Set.empty[String]
@@ -353,17 +353,17 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
 
     val editor = new TextEditor(texts.asScala, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))
 
-    ui.mainUI = editor.ui
-    editor.ui.setSize(900, 600)
+    w.mainWidget = editor.widget
+    editor.widget.setSize(900, 600)
 
-    ui.buttons.btnSave.addClickHandler { _ =>
+    w.buttons.btnSave.addClickHandler { _ =>
       save(closeAfterSave = false)
     }
-    ui.buttons.btnSaveAndClose.addClickHandler { _ =>
+    w.buttons.btnSaveAndClose.addClickHandler { _ =>
       save(closeAfterSave = true)
     }
 
-    ui.buttons.btnClose.addClickHandler { _ =>
+    w.buttons.btnClose.addClickHandler { _ =>
       closeEditor()
     }
 

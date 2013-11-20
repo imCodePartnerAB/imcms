@@ -5,11 +5,11 @@ import imcode.server.document.DocumentDomainObject
 
 class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentEditor {
 
-  type Data = DocumentDomainObject
+  override type Data = DocumentDomainObject
 
-  val ui = new UnsuppotedDocContentEditorUI
+  override val widget = new UnsupportedDocContentEditorWidget
 
-  def resetValues() {}
+  override def resetValues() {}
 
-  def collectValues() = Right(doc)
+  override def collectValues(): ErrorsOrData = Right(doc)
 }

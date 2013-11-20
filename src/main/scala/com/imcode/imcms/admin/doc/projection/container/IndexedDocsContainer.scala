@@ -14,7 +14,7 @@ import _root_.imcode.server.document.DocumentDomainObject
 import java.util.{Date, Collections, Arrays}
 
 import org.apache.solr.client.solrj.SolrQuery
-import com.imcode.imcms.vaadin.ui.{Theme, UndefinedSize, NoMargin, Spacing}
+import com.imcode.imcms.vaadin.component.{Theme, UndefinedSize, NoMargin, Spacing}
 import com.imcode.imcms.api.Document
 
 import scala.collection.JavaConverters._

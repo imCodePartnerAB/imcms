@@ -3,12 +3,12 @@ package imcms
 package admin.doc.meta.lifecycle
 
 import scala.collection.JavaConverters._
-import com.imcode.imcms.admin.access.user.{UserSingleSelectUI, UserSingleSelect}
+import com.imcode.imcms.admin.access.user.{UserSingleSelectWidget, UserSingleSelect}
 import com.imcode.imcms.api.{DocumentVersion, Document, Meta}
 
 import java.util.Date
 import com.vaadin.ui._
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import _root_.imcode.server.document.LifeCyclePhase
@@ -33,46 +33,46 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   )
 
 
-  val ui = new LifeCycleEditorUI |>> { ui =>
+  override val widget = new LifeCycleEditorWidget |>> { w =>
     for (phase <- LifeCyclePhase.ALL) {
       new Label with UndefinedSize |>> { lbl =>
         lbl.setCaption(s"doc_publication_phase.$phase".i)
         lbl.setIcon(Theme.Icon.Doc.phase(phase))
-      } |> ui.publication.lytPhase.addComponent
+      } |> w.publication.lytPhase.addComponent
     }
 
-    ui.publication.chkEnd.addValueChangeHandler { _ =>
-      ui.publication.calEnd.setEnabled(ui.publication.chkEnd.checked)
+    w.publication.chkEnd.addValueChangeHandler { _ =>
+      w.publication.calEnd.setEnabled(w.publication.chkEnd.checked)
 
       updatePhase()
     }
 
-    ui.publication.chkArchive.addValueChangeHandler { _ =>
-      ui.publication.calArchive.setEnabled(ui.publication.chkArchive.checked)
+    w.publication.chkArchive.addValueChangeHandler { _ =>
+      w.publication.calArchive.setEnabled(w.publication.chkArchive.checked)
 
       updatePhase()
     }
 
-    ui.publication.sltStatus.addValueChangeHandler { _ =>
+    w.publication.sltStatus.addValueChangeHandler { _ =>
       updatePhase()
     }
 
-    ui.publication.calStart.addValueChangeHandler { _ =>
+    w.publication.calStart.addValueChangeHandler { _ =>
       updatePhase()
     }
 
-    ui.publication.calEnd.addValueChangeHandler { _ =>
+    w.publication.calEnd.addValueChangeHandler { _ =>
       updatePhase()
     }
 
-    ui.publication.calArchive.addValueChangeHandler { _ =>
+    w.publication.calArchive.addValueChangeHandler { _ =>
       updatePhase()
     }
   }
 
   resetValues()
 
-  def resetValues() {
+  override def resetValues() {
     // version
     val (versionsNos, defaultVersionNo) = meta.getId match {
       case null =>
@@ -83,50 +83,50 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
         versionInfo.getVersions.asScala.map(_.getNo) -> versionInfo.getDefaultVersion.getNo
     }
 
-    ui.info.ussCreator.selection = meta.getCreatorId.asOption.map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
-    ui.info.ussModifier.selection = None
-    ui.publication.ussPublisher.selection = meta.getPublisherId.asOption.map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
+    widget.info.ussCreator.selection = meta.getCreatorId.asOption.map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
+    widget.info.ussModifier.selection = None
+    widget.publication.ussPublisher.selection = meta.getPublisherId.asOption.map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
 
-    ui.publication.sltVersion.removeAllItems()
-    versionsNos.foreach(no => ui.publication.sltVersion.addItem(no, no.toString))
-    ui.publication.sltVersion.setItemCaption(DocumentVersion.WORKING_VERSION_NO, "doc.version.working".i)
-    ui.publication.sltVersion.select(defaultVersionNo)
+    widget.publication.sltVersion.removeAllItems()
+    versionsNos.foreach(no => widget.publication.sltVersion.addItem(no, no.toString))
+    widget.publication.sltVersion.setItemCaption(DocumentVersion.WORKING_VERSION_NO, "doc.version.working".i)
+    widget.publication.sltVersion.select(defaultVersionNo)
 
-    ui.publication.sltStatus.select(meta.getPublicationStatus)
+    widget.publication.sltStatus.select(meta.getPublicationStatus)
 
-    ui.publication.calStart.value = meta.getPublicationStartDatetime.asOption.getOrElse(new Date)
-    ui.publication.calEnd.value = meta.getPublicationEndDatetime
-    ui.publication.calArchive.value = meta.getArchivedDatetime
+    widget.publication.calStart.value = meta.getPublicationStartDatetime.asOption.getOrElse(new Date)
+    widget.publication.calEnd.value = meta.getPublicationEndDatetime
+    widget.publication.calArchive.value = meta.getArchivedDatetime
 
-    ui.publication.chkEnd.checked = meta.getPublicationEndDatetime != null
-    ui.publication.chkArchive.checked = meta.getPublicationEndDatetime != null
+    widget.publication.chkEnd.checked = meta.getPublicationEndDatetime != null
+    widget.publication.chkArchive.checked = meta.getPublicationEndDatetime != null
 
     updatePhase()
   }
 
   private def updatePhase() {
     val doc = new TextDocumentDomainObject() |>> { doc =>
-      doc.setPublicationStartDatetime(ui.publication.calStart.value)
-      doc.setPublicationEndDatetime(if (ui.publication.chkEnd.checked) ui.publication.calEnd.value else null)
-      doc.setArchivedDatetime(if (ui.publication.chkArchive.checked) ui.publication.calArchive.value else null)
-      doc.setPublicationStatus(ui.publication.sltStatus.value)
+      doc.setPublicationStartDatetime(widget.publication.calStart.value)
+      doc.setPublicationEndDatetime(if (widget.publication.chkEnd.checked) widget.publication.calEnd.value else null)
+      doc.setArchivedDatetime(if (widget.publication.chkArchive.checked) widget.publication.calArchive.value else null)
+      doc.setPublicationStatus(widget.publication.sltStatus.value)
     }
 
     val activePhase = doc.getLifeCyclePhase
 
     for ((phase, index) <- LifeCyclePhase.ALL.zipWithIndex) {
-      ui.publication.lytPhase.getComponent(index).setEnabled(phase == activePhase)
+      widget.publication.lytPhase.getComponent(index).setEnabled(phase == activePhase)
     }
   }
 
-  def collectValues(): ErrorsOrData = {
+  override def collectValues(): ErrorsOrData = {
     val errors = scala.collection.mutable.Buffer.empty[String]
 
-    if (ui.publication.chkArchive.checked && ui.publication.calArchive.valueOpt.isEmpty) {
+    if (widget.publication.chkArchive.checked && widget.publication.calArchive.valueOpt.isEmpty) {
       errors.append("Document archive is enabled but date is not specified")
     }
 
-    if (ui.publication.chkEnd.checked && ui.publication.calEnd.valueOpt.isEmpty) {
+    if (widget.publication.chkEnd.checked && widget.publication.calEnd.valueOpt.isEmpty) {
       errors.append("Document expiration is enabled but date is not specified")
     }
 
@@ -135,16 +135,16 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     } else {
       Right(
         Data(
-          ui.publication.sltStatus.value,
-          ui.publication.calStart.value,
-          when(ui.publication.chkArchive.checked)(ui.publication.calArchive.value),
-          when(ui.publication.chkEnd.checked)(ui.publication.calEnd.value),
-          ui.info.ussCreator.selection,
-          ui.publication.sltVersion.value.intValue,
-          ui.info.dCreated.calDate.value,
-          ui.info.dModified.calDate.value,
-          ui.info.ussCreator.selection,
-          ui.info.ussModifier.selection
+          widget.publication.sltStatus.value,
+          widget.publication.calStart.value,
+          when(widget.publication.chkArchive.checked)(widget.publication.calArchive.value),
+          when(widget.publication.chkEnd.checked)(widget.publication.calEnd.value),
+          widget.info.ussCreator.selection,
+          widget.publication.sltVersion.value.intValue,
+          widget.info.dCreated.calDate.value,
+          widget.info.dModified.calDate.value,
+          widget.info.ussCreator.selection,
+          widget.info.ussModifier.selection
         )
       )
     }

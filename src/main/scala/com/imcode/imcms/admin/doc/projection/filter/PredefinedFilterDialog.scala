@@ -2,15 +2,15 @@ package com.imcode
 package imcms
 package admin.doc.projection.filter
 
-import com.imcode.imcms.vaadin.ui.dialog.OkCancelDialog
+import com.imcode.imcms.vaadin.component.dialog.OkCancelDialog
 import com.vaadin.ui.{ComboBox, VerticalLayout, CheckBox}
-import com.imcode.imcms.vaadin.ui.{SingleSelect, NoNullSelection, Spacing, UndefinedSize}
+import com.imcode.imcms.vaadin.component.{SingleSelect, NoNullSelection, Spacing, UndefinedSize}
 
 // todo: i18n
 // todo: implement
 class PredefinedFilterDialog extends OkCancelDialog("Quick search".i) {
 
-  mainUI = new VerticalLayout with Spacing with UndefinedSize {
+  mainWidget = new VerticalLayout with Spacing with UndefinedSize {
     val cbFilterType = new ComboBox("Documents".i) with SingleSelect[String] with NoNullSelection
 
     val cbCreatedByCurrentUser = new CheckBox("Created by me".i)

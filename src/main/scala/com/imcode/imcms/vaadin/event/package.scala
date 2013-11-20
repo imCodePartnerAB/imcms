@@ -8,21 +8,9 @@ import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 
 package object event {
 
-  implicit def wrapItemClickNotifier(notifier: ItemClickEvent.ItemClickNotifier) = new {
-    def addItemClickHandler(handler: ItemClickEvent => Unit) {
-      notifier.addItemClickListener(new ItemClickEvent.ItemClickListener {
-        def itemClick(event: ItemClickEvent) {
-          handler(event)
-        }
-      })
-    }
-  }
+  implicit def wrapItemClickNotifier(notifier: ItemClickEvent.ItemClickNotifier): ItemClickNotifierWrapper =
+    new ItemClickNotifierWrapper(notifier)
 
-  implicit def wrapValueChangeNotifier(vcn: Property.ValueChangeNotifier) = new {
-    def addValueChangeHandler(handler: Property.ValueChangeEvent => Unit): Unit = vcn.addValueChangeListener(
-      new ValueChangeListener {
-        def valueChange(event: ValueChangeEvent): Unit = handler(event)
-      }
-    )
-  }
+  implicit def wrapValueChangeNotifier(vcn: Property.ValueChangeNotifier): ValueChangeNotifierWrapper =
+    new ValueChangeNotifierWrapper(vcn)
 }

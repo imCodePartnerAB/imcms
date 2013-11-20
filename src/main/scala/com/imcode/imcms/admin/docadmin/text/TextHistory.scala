@@ -2,13 +2,13 @@ package com.imcode
 package imcms
 package admin.docadmin.text
 
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDomainObject
 import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.dao.TextDocDao
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.vaadin.server.Sizeable
 import org.joda.time.DateTime
 import java.util.Date
@@ -18,7 +18,7 @@ import com.imcode.imcms.vaadin.data.PropertyDescriptor
 class TextHistory(text: TextDomainObject) extends ImcmsServicesSupport {
   private val textDao = imcmsServices.getManagedBean(classOf[TextDocDao])
 
-  val ui = new TextHistoryUI(s"Document history") |>> { ui =>
+  val widget = new TextHistoryWidget(s"Document history") |>> { widget =>
     def rows(id: Long = 0, dateTime: DateTime = DateTime.now()): Stream[(Long, Option[Date], Date)] = {
       val nextId = id + 1
       val date = dateTime.toDate
@@ -30,7 +30,7 @@ class TextHistory(text: TextDomainObject) extends ImcmsServicesSupport {
     }
 
     rows().take(100).foreach {
-      case (id, dateOpt, time) => ui.tblHistoryDetails.addRow(
+      case (id, dateOpt, time) => widget.tblHistoryDetails.addRow(
         id,
         dateOpt.map(_.formatted("%1$td.%1$tm.%1$tY")).orNull,
         time.formatted("%1$tH:%1$tM:%1$tS"),
@@ -39,7 +39,7 @@ class TextHistory(text: TextDomainObject) extends ImcmsServicesSupport {
   }
 }
 
-class TextHistoryUI(caption: String) extends CustomComponent with FullSize {
+class TextHistoryWidget(caption: String) extends CustomComponent with FullSize {
 
   private val pnlCompositionRoot = new Panel(caption) with FullSize
 
@@ -92,7 +92,7 @@ class TextHistoryDialog(caption: String, text: TextDomainObject) extends OkCance
 
   val textHistory = new TextHistory(text)
 
-  mainUI = textHistory.ui
+  mainWidget = textHistory.widget
 
   this.setSize(600, 600)
 }

@@ -3,7 +3,7 @@ package imcms
 package admin.access.user.projection.filter
 
 import scala.collection.JavaConverters._
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import _root_.imcode.server.user.RoleId
@@ -11,13 +11,13 @@ import _root_.imcode.server.user.RoleId
 
 class UserFilter extends ImcmsServicesSupport {
 
-  val ui: UserFilterUI = new UserFilterUI |>> { ui =>
-    ui.chkText.addValueChangeHandler { _ =>
-      ProjectionFilterUtil.toggle(ui, "users_projection.filter.text", ui.chkText, ui.txtText)
+  val widget: UserFilterWidget = new UserFilterWidget |>> { w =>
+    w.chkText.addValueChangeHandler { _ =>
+      ProjectionFilterUtil.toggle(w, "users_projection.filter.text", w.chkText, w.txtText)
     }
 
-    ui.chkRoles.addValueChangeHandler { _ =>
-      ProjectionFilterUtil.toggle(ui, "users_projection.filter.roles", ui.chkRoles, ui.tcsRoles)
+    w.chkRoles.addValueChangeHandler { _ =>
+      ProjectionFilterUtil.toggle(w, "users_projection.filter.roles", w.chkRoles, w.tcsRoles)
     }
   }
 
@@ -26,25 +26,25 @@ class UserFilter extends ImcmsServicesSupport {
 
 
   def setValues(state: UserFilterValues) {
-    ui.chkText.checked = state.text.isDefined
-    ui.chkRoles.checked = state.roles.isDefined
-    ui.chkShowInactive.checked = state.isShowInactive
+    widget.chkText.checked = state.text.isDefined
+    widget.chkRoles.checked = state.roles.isDefined
+    widget.chkShowInactive.checked = state.isShowInactive
 
-    Seq(ui.chkText, ui.chkRoles, ui.chkShowInactive).foreach(_.fireValueChange(true))
+    Seq(widget.chkText, widget.chkRoles, widget.chkShowInactive).foreach(_.fireValueChange(true))
 
-    ui.txtText.value = state.text.getOrElse("")
-    ui.tcsRoles.removeAllItems()
+    widget.txtText.value = state.text.getOrElse("")
+    widget.tcsRoles.removeAllItems()
     for (role <- imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllRolesExceptUsersRole) {
-      ui.tcsRoles.addItem(role.getId)
-      ui.tcsRoles.setItemCaption(role.getId, role.getName)
+      widget.tcsRoles.addItem(role.getId)
+      widget.tcsRoles.setItemCaption(role.getId, role.getName)
     }
-    ui.tcsRoles.value = state.roles.getOrElse(Set.empty[RoleId]).asJavaCollection
+    widget.tcsRoles.value = state.roles.getOrElse(Set.empty[RoleId]).asJavaCollection
   }
 
 
   def getValues = UserFilterValues(
-    when(ui.chkText.checked)(ui.txtText.trim),
-    when(ui.chkRoles.checked)(ui.tcsRoles.value.asScala.toSet),
-    ui.chkShowInactive.checked
+    when(widget.chkText.checked)(widget.txtText.trim),
+    when(widget.chkRoles.checked)(widget.tcsRoles.value.asScala.toSet),
+    widget.chkShowInactive.checked
   )  
 }

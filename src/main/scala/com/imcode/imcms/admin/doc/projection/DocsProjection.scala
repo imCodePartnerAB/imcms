@@ -4,8 +4,8 @@ package admin.doc.projection
 
 import com.imcode.imcms.vaadin.Current
 import com.imcode.util.event.Publisher
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog.ErrorDialog
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog.ErrorDialog
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 
@@ -31,7 +31,7 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
-import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsUI, IndexedDocsContainer}
+import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsWidget, IndexedDocsContainer}
 import com.imcode.imcms.api.I18nDocRef
 
 /**
@@ -89,17 +89,17 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
   val filter = new Filter
   val docsContainer = new IndexedDocsContainer(user, parentsRenderer, childrenRenderer)
 
-  val docsUI = new IndexedDocsUI(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
+  val docsWidget = new IndexedDocsWidget(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
   private val selectionRef = new AtomicReference(Seq.empty[I18nDocRef])
 
-  val ui = new DocsProjectionUI(filter.basicUI, filter.extendedUI, docsUI) { ui =>
-    val basicFilterUI = filter.basicUI
+  val widget = new DocsProjectionWidget(filter.basicWidget, filter.extendedWidget, docsWidget) { w =>
+    val basicFilterWidget = filter.basicWidget
 
-    basicFilterUI.extended.btnCustomize.addClickHandler { _ => ui.toggleExtendedFilter() }
-    basicFilterUI.filterButtons.btnApplyFilter.addClickHandler { _ => reload() }
-    basicFilterUI.filterButtons.btnReset.addClickHandler { _ => reset() }
-    basicFilterUI.filterButtons.btnBack.addClickHandler { _ => goBack() }
-    filter.basicUI.filterButtons.btnApplyPredefinedFilter.addClickHandler { _ =>
+    basicFilterWidget.extended.btnCustomize.addClickHandler { _ => w.toggleExtendedFilter() }
+    basicFilterWidget.filterButtons.btnApplyFilter.addClickHandler { _ => reload() }
+    basicFilterWidget.filterButtons.btnReset.addClickHandler { _ => reset() }
+    basicFilterWidget.filterButtons.btnBack.addClickHandler { _ => goBack() }
+    filter.basicWidget.filterButtons.btnApplyPredefinedFilter.addClickHandler { _ =>
       new PredefinedFilterDialog |>> { dlg =>
         dlg.setOkButtonHandler {
           // combo box
@@ -116,13 +116,13 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
     }
   }
 
-  docsUI.addValueChangeHandler { _ =>
+  docsWidget.addValueChangeHandler { _ =>
     def fieldsToI8nDocRef(fields: DocumentStoredFields): I18nDocRef = {
       val language = imcmsServices.getDocumentI18nSupport.getByCode(fields.languageCode())
       I18nDocRef.of(fields.metaId(), fields.versionNo(), language)
     }
 
-    selectionRef.set(docsUI.value.asScala.map(docIx => docsContainer.getItem(docIx).fields |> fieldsToI8nDocRef).to[Seq])
+    selectionRef.set(docsWidget.value.asScala.map(docIx => docsContainer.getItem(docIx).fields |> fieldsToI8nDocRef).to[Seq])
     notifyListeners()
   }
 
@@ -163,8 +163,8 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
         new ErrorDialog(throwable.getMessage.i) |> Current.ui.addWindow
 
       case Success(solrQuery) =>
-        ui.removeComponent(0, 1)
-        ui.addComponent(docsUI, 0, 1)
+        widget.removeComponent(0, 1)
+        widget.addComponent(docsWidget, 0, 1)
 
         docsContainer.setQueryOpt(Some(solrQuery))
     }

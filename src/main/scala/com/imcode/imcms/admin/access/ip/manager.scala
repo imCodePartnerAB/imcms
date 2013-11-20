@@ -11,10 +11,10 @@ import com.imcode.imcms.api.IPAccess
 import com.imcode.imcms.admin.access.user.{UserSingleSelectDialog, UserSelectDialog}
 
 import com.imcode.imcms.vaadin.Current
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
-import com.imcode.imcms.vaadin.ui.dialog.{OkCancelDialog, ConfirmationDialog}
+import com.imcode.imcms.vaadin.component.dialog.{OkCancelDialog, ConfirmationDialog}
 import _root_.imcode.server.Imcms
 import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
 import com.vaadin.server.Page
@@ -33,21 +33,21 @@ class IPAccessManager(app: UI) {
   private val toDDN = ((_:String).toLong) andThen ipLongToString
   private val fromDDN = ipStringToLong(_:String).toString
 
-  val ui = new IPAccessManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { _ => reload() }
-    ui.tblIP.addValueChangeHandler { _ => handleSelection() }
+  val widget = new IPAccessManagerWidget |>> { w =>
+    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.tblIP.addValueChangeHandler { _ => handleSelection() }
 
-    ui.miNew.setCommandHandler { _ => editAndSave(new IPAccess) }
-    ui.miEdit.setCommandHandler { _ =>
-      whenSelected(ui.tblIP) { id =>
+    w.miNew.setCommandHandler { _ => editAndSave(new IPAccess) }
+    w.miEdit.setCommandHandler { _ =>
+      whenSelected(w.tblIP) { id =>
         ipAccessDao.get(id) match {
           case null => reload()
           case vo => editAndSave(vo)
         }
       }
     }
-    ui.miDelete.setCommandHandler { _ =>
-      whenSelected(ui.tblIP) { id =>
+    w.miDelete.setCommandHandler { _ =>
+      whenSelected(w.tblIP) { id =>
         new ConfirmationDialog("Delete selected IP access?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
@@ -79,19 +79,19 @@ class IPAccessManager(app: UI) {
     val dialogTitle = if(isNew) "Create new IP access" else "Edit IP access"
 
     new OkCancelDialog(dialogTitle) |>> { dlg =>
-      dlg.mainUI = new IPAccessEditorUI |>> { c =>
+      dlg.mainWidget = new IPAccessEditorWidget |>> { w =>
 
-        c.txtId.value = if (isNew) "" else id.toString
-        c.userPickerUI.txtLoginName.value = vo.getUserId.asOption
+        w.txtId.value = if (isNew) "" else id.toString
+        w.userPickerWidget.txtLoginName.value = vo.getUserId.asOption
           .map(userId => roleMapper.getUser(userId.intValue))
           .map(user => user.getLoginName).getOrElse("")
 
-        c.txtFrom.value = vo.getStart.asOption.map(toDDN).getOrElse("")
-        c.txtTo.value = vo.getEnd.asOption.map(toDDN).getOrElse("")
-        c.userPickerUI.btnChoose.addClickHandler { _ =>
+        w.txtFrom.value = vo.getStart.asOption.map(toDDN).getOrElse("")
+        w.txtTo.value = vo.getEnd.asOption.map(toDDN).getOrElse("")
+        w.userPickerWidget.btnChoose.addClickHandler { _ =>
           new UserSingleSelectDialog |>> { dlg =>
             dlg.setOkButtonHandler {
-              c.userPickerUI.txtLoginName.value = dlg.search.selection.head.getLoginName
+              w.userPickerWidget.txtLoginName.value = dlg.search.selection.head.getLoginName
             }
           } |> Current.ui.addWindow
         }
@@ -99,9 +99,9 @@ class IPAccessManager(app: UI) {
         dlg.setOkButtonHandler {
           vo.clone |> { voc =>
             // todo: validate
-            voc.setUserId(roleMapper.getUser(c.userPickerUI.txtLoginName.value).getId)
-            voc.setStart(fromDDN(c.txtFrom.value))
-            voc.setEnd(fromDDN(c.txtTo.value))
+            voc.setUserId(roleMapper.getUser(w.userPickerWidget.txtLoginName.value).getId)
+            voc.setStart(fromDDN(w.txtFrom.value))
+            voc.setEnd(fromDDN(w.txtTo.value))
 
             app.privileged(permission) {
               Ex.allCatch.either(ipAccessDao save voc) match {
@@ -125,29 +125,29 @@ class IPAccessManager(app: UI) {
 
 
   def reload() {
-    ui.tblIP.removeAllItems
+    widget.tblIP.removeAllItems
     for {
       vo <- ipAccessDao.getAll.asScala
       id = vo.getId
       user = roleMapper getUser vo.getUserId.intValue
-    } ui.tblIP.addItem(Array[AnyRef](id, user.getLoginName, toDDN(vo.getStart), toDDN(vo.getEnd)), id)
+    } widget.tblIP.addItem(Array[AnyRef](id, user.getLoginName, toDDN(vo.getStart), toDDN(vo.getEnd)), id)
 
     canManage |> { value =>
-      ui.tblIP.setSelectable(value)
-      Seq(ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value))
+      widget.tblIP.setSelectable(value)
+      Seq(widget.miNew, widget.miEdit, widget.miDelete).foreach(_.setEnabled(value))
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    (canManage && ui.tblIP.isSelected) |> { enabled =>
-      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
+    (canManage && widget.tblIP.isSelected) |> { enabled =>
+      Seq(widget.miEdit, widget.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class IPAccessManager
 
-class IPAccessManagerUI extends VerticalLayout with Spacing with UndefinedSize {
+class IPAccessManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -156,7 +156,7 @@ class IPAccessManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
   val tblIP = new Table with SingleSelect[JInteger] with Immediate
-  val rc = new ReloadableContentUI(tblIP)
+  val rc = new ReloadableContentWidget(tblIP)
 
   addContainerProperties(tblIP,
     PropertyDescriptor[JInteger]("Id"),
@@ -168,8 +168,8 @@ class IPAccessManagerUI extends VerticalLayout with Spacing with UndefinedSize {
 }
 
 
-class IPAccessEditorUI extends FormLayout with UndefinedSize {
-  class UserPickerUI extends HorizontalLayout with Spacing with UndefinedSize {
+class IPAccessEditorWidget extends FormLayout with UndefinedSize {
+  class UserPickerWidget extends HorizontalLayout with Spacing with UndefinedSize {
     val txtLoginName = new TextField  { setInputPrompt("No user selected") }    // with ReadOnly
     val btnChoose = new Button("...") { setStyleName("small") }
 
@@ -178,9 +178,9 @@ class IPAccessEditorUI extends FormLayout with UndefinedSize {
   }
 
   val txtId = new TextField("Id") with Disabled
-  val userPickerUI = new UserPickerUI
+  val userPickerWidget = new UserPickerWidget
   val txtFrom = new TextField("From")
   val txtTo = new TextField("To")
 
-  this.addComponents(txtId, userPickerUI, txtFrom, txtTo)
+  this.addComponents(txtId, userPickerWidget, txtFrom, txtTo)
 }

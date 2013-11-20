@@ -3,8 +3,8 @@ package imcms
 package admin.doc
 
 import _root_.imcode.server.document.DocumentDomainObject
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog.{Resizable, BottomContentMarginDialog, CustomSizeDialog, OkCancelDialog}
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog.{Resizable, BottomContentMarginDialog, CustomSizeDialog, OkCancelDialog}
 
 
 class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCancelDialog(caption)
@@ -12,7 +12,7 @@ class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCanc
 
   val docEditor = new DocEditor(doc)
 
-  mainUI = docEditor.ui
+  mainWidget = docEditor.widget
   btnOk.setCaption("btn_save".i)
 
   this.setSize(700, 600)

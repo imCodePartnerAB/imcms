@@ -8,13 +8,13 @@ import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 
 
 class NewTextDocContentEditor(doc: TextDocumentDomainObject, metaEditor: MetaEditor) extends DocContentEditor {
-  type Data = TextDocumentDomainObject
+  override type Data = TextDocumentDomainObject
 
-  val ui = new NewTextDocContentEditorUI |>> { ui =>
+  override val widget = new NewTextDocContentEditorWidget |>> { w =>
 
-  } //ui
+  }
 
-  def resetValues() {}
+  override def resetValues() {}
 
-  def collectValues() = Right(doc)
+  override def collectValues() = Right(doc)
 }

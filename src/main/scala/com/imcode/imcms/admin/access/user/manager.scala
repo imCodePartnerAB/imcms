@@ -5,8 +5,8 @@ package admin.access.user
 import _root_.imcode.server.user._
 
 import com.imcode.imcms.vaadin.Current
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.ui._
 
@@ -17,12 +17,12 @@ import com.imcode.imcms.admin.access.user.projection.UsersProjection
 class UserManager(app: UI) extends ImcmsServicesSupport {
   private val search = new UsersProjection
 
-  val ui = new UserManagerUI(search.ui) |>> { ui =>
+  val widget = new UserManagerWidget(search.widget) |>> { w =>
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
-    ui.miNew.setCommandHandler { _ =>
+    w.miNew.setCommandHandler { _ =>
       new OkCancelDialog("user.dlg.new.caption".i) |>> { dlg =>
-        dlg.mainUI = new UserEditorUI |>> { c =>
+        dlg.mainWidget = new UserEditorWidget |>> { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
             c.tcsRoles.addItem(role.getId, role.getName)
           }
@@ -52,10 +52,10 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
       } |> Current.ui.addWindow
     }
 
-    ui.miEdit.setCommandHandler { _ =>
+    w.miEdit.setCommandHandler { _ =>
       whenSingleton(search.selection) { user =>
         new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName)) |>> { dlg =>
-          dlg.mainUI = new UserEditorUI |>> { c =>
+          dlg.mainWidget = new UserEditorWidget |>> { c =>
             c.chkActivated setValue user.isActive
             c.txtFirstName setValue user.getFirstName
             c.txtLastName setValue user.getLastName
@@ -91,13 +91,13 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
       }
     }
 
-    search.listen { ui.miEdit setEnabled _.size == 1 }
+    search.listen { w.miEdit setEnabled _.size == 1 }
     search.notifyListeners()
   }
 }
 
 
-class UserManagerUI(val searchUI: Component) extends VerticalLayout with Spacing {
+class UserManagerWidget(val searchWidget: Component) extends VerticalLayout with Spacing {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -105,14 +105,14 @@ class UserManagerUI(val searchUI: Component) extends VerticalLayout with Spacing
   val miEdit = mb.addItem("mi.edit".i, Edit16)
   val miHelp = mb.addItem("mi.help".i, Help16)
 
-  this.addComponents(mb, searchUI)
+  this.addComponents(mb, searchWidget)
 }
 
 
 /**
  * Add/Edit user dialog content.
  */
-class UserEditorUI extends FormLayout with UndefinedSize {
+class UserEditorWidget extends FormLayout with UndefinedSize {
   val txtLogin = new TextField("user.editor.frm.fld.txt_login".i)
   val txtPassword = new PasswordField("user.editor.frm.fld.pwd_password".i)
   val txtVerifyPassword = new PasswordField("user.editor.frm.fld.pwd_password_retype".i)

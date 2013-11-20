@@ -5,8 +5,8 @@ package admin.doc.manager
 import com.imcode.imcms.vaadin.Current
 import com.vaadin.ui.UI
 import com.imcode.imcms.admin.doc.projection.{DocsProjectionOps, DocsProjection}
-import com.imcode.imcms.vaadin.ui.dialog._
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component.dialog._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.server._
 import imcode.server.document.{HtmlDocumentDomainObject, UrlDocumentDomainObject, FileDocumentDomainObject}
@@ -23,38 +23,38 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
   val customDocs = new CustomDocs(app.imcmsUser)
 
   val docSelectionDlg = new OKDialog("doc.dlg_selection.caption".i) with CustomSizeDialog with Resizable with NonModal |>> { dlg =>
-    dlg.mainUI = customDocs.ui
+    dlg.mainWidget = customDocs.widget
     dlg.setSize(500, 500)
   }
 
-  val ui = new DocManagerUI(projection.ui) |>> { ui =>
+  val widget = new DocManagerWidget(projection.widget) |>> { w =>
 //    ui.miSelectionShow.setCommandHandler { _ =>
 //      Current.ui.addWindow(docSelectionDlg)
 //    }
 
-    ui.miShow.setCommandHandler { _ => projectionOps.showSelectedDoc() }
-    ui.miEdit.setCommandHandler { _ => projectionOps.editSelectedDoc() }
+    w.miShow.setCommandHandler { _ => projectionOps.showSelectedDoc() }
+    w.miEdit.setCommandHandler { _ => projectionOps.editSelectedDoc() }
 
-    ui.miNewTextDoc.setCommandHandler { _ => projectionOps.mkDocOfType[TextDocumentDomainObject] }
-    ui.miNewFileDoc.setCommandHandler { _ => projectionOps.mkDocOfType[FileDocumentDomainObject] }
-    ui.miNewUrlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[UrlDocumentDomainObject] }
-    ui.miNewHtmlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[HtmlDocumentDomainObject] }
-    ui.miDelete.setCommandHandler { _ => projectionOps.deleteSelectedDocs() }
+    w.miNewTextDoc.setCommandHandler { _ => projectionOps.mkDocOfType[TextDocumentDomainObject] }
+    w.miNewFileDoc.setCommandHandler { _ => projectionOps.mkDocOfType[FileDocumentDomainObject] }
+    w.miNewUrlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[UrlDocumentDomainObject] }
+    w.miNewHtmlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[HtmlDocumentDomainObject] }
+    w.miDelete.setCommandHandler { _ => projectionOps.deleteSelectedDocs() }
 
-    ui.miProfileEditName.setCommandHandler { _ =>
-      whenSingleton(projection.docsUI.selection) { docId =>
+    w.miProfileEditName.setCommandHandler { _ =>
+      whenSingleton(projection.docsWidget.selection) { docId =>
         val docIdStr = docId.toString
         val profileMapper = new ProfileMapper(imcmsServices.getDatabase)
         val profileOpt = profileMapper.getAll.asScala.find(_.getDocumentName == docIdStr)
 
         new OkCancelDialog("Edit profile name") |>> { dlg =>
-          val mainUI = new DocProfileNameEditorUI
-          mainUI.txtName.value = profileOpt.map(_.getName).getOrElse("")
+          val mainWidget = new DocProfileNameEditorWidget
+          mainWidget.txtName.value = profileOpt.map(_.getName).getOrElse("")
 
-          dlg.mainUI = mainUI
+          dlg.mainWidget = mainWidget
 
           dlg.setOkButtonHandler {
-            mainUI.txtName.trimOpt match {
+            mainWidget.txtName.trimOpt match {
               case Some(name) =>
                 // check name is not taken by a profile with other id
 
@@ -79,11 +79,11 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
       }
     }
 
-    ui.miCopy.setCommandHandler { _ =>
+    w.miCopy.setCommandHandler { _ =>
       projectionOps.copySelectedDoc()
     }
 
-    projection.docsUI.addActionHandler(new Action.Handler {
+    projection.docsWidget.addActionHandler(new Action.Handler {
 
       def getActions(target: AnyRef, sender: AnyRef) = Array(Actions.IncludeToSelection, Actions.Delete)
 
@@ -100,10 +100,10 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
       val isSingle = docs.size == 1
       val isSelected = docs.nonEmpty
 
-      ui.miCopy.setEnabled(isSingle)
-      ui.miEdit.setEnabled(isSingle)
-      ui.miShow.setEnabled(isSingle)
-      ui.miDelete.setEnabled(isSelected)
+      w.miCopy.setEnabled(isSingle)
+      w.miEdit.setEnabled(isSingle)
+      w.miShow.setEnabled(isSingle)
+      w.miDelete.setEnabled(isSelected)
     }
 
     projection.notifyListeners()

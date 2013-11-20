@@ -11,8 +11,8 @@ import imcode.server.document.{CategoryDomainObject}
 import imcms.admin.instance.file._
 import java.io.File
 import imcms.security.{PermissionGranted, PermissionDenied}
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
@@ -29,13 +29,13 @@ import scala.util.{Failure, Try}
 class CategoryManager(app: UI) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
-  val ui: CategoryManagerUI = new CategoryManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { _ => reload() }
-    ui.tblCategories.addValueChangeHandler { _ =>  handleSelection() }
+  val widget: CategoryManagerWidget = new CategoryManagerWidget |>> { w =>
+    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.tblCategories.addValueChangeHandler { _ =>  handleSelection() }
 
-    ui.miNew.setCommandHandler { _ => editAndSave(new CategoryDomainObject) }
-    ui.miEdit.setCommandHandler { _ =>
-      whenSelected(ui.tblCategories) { id =>
+    w.miNew.setCommandHandler { _ => editAndSave(new CategoryDomainObject) }
+    w.miEdit.setCommandHandler { _ =>
+      whenSelected(w.tblCategories) { id =>
         categoryMapper.getCategoryById(id.intValue) match {
           case null => reload()
           case vo => editAndSave(vo)
@@ -43,8 +43,8 @@ class CategoryManager(app: UI) {
       }
     }
 
-    ui.miDelete.setCommandHandler { _ =>
-      whenSelected(ui.tblCategories) { id =>
+    w.miDelete.setCommandHandler { _ =>
+      whenSelected(w.tblCategories) { id =>
         new ConfirmationDialog("Delete selected category?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
@@ -88,7 +88,7 @@ class CategoryManager(app: UI) {
       } imagePicker.preview.set(new Embedded("", new FileResource(file)))
 
       new OkCancelDialog(dialogTitle) |>> { dlg =>
-        dlg.mainUI = new CategoryEditorUI(imagePicker.ui) |>> { c =>
+        dlg.mainWidget = new CategoryEditorWidget(imagePicker.widget) |>> { c =>
           typesNames.foreach { c.sltType addItem _ }
 
           c.txtId.value = if (isNew) "" else id.toString
@@ -138,29 +138,29 @@ class CategoryManager(app: UI) {
   } // editAndSave
 
   def reload() {
-    ui.tblCategories.removeAllItems
+    widget.tblCategories.removeAllItems
     for {
       vo <- categoryMapper.getAllCategories.asScala
       id = Int box vo.getId
-    } ui.tblCategories.addItem(Array[AnyRef](id, vo.getName, vo.getDescription, vo.getImageUrl, vo.getType.getName), id)
+    } widget.tblCategories.addItem(Array[AnyRef](id, vo.getName, vo.getDescription, vo.getImageUrl, vo.getType.getName), id)
 
     canManage |> { value =>
-      ui.tblCategories.setSelectable(value)
-      Seq[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value)) //ui.mb,
+      widget.tblCategories.setSelectable(value)
+      Seq[{def setEnabled(e: Boolean)}](widget.miNew, widget.miEdit, widget.miDelete).foreach(_.setEnabled(value)) //ui.mb,
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    (canManage && ui.tblCategories.isSelected) |> { enabled =>
-      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
+    (canManage && widget.tblCategories.isSelected) |> { enabled =>
+      Seq(widget.miEdit, widget.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class CategoryManager
 
 
-class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
+class CategoryManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -169,7 +169,7 @@ class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
   val tblCategories = new Table with SingleSelect[CategoryId] with Immediate
-  val rc = new ReloadableContentUI(tblCategories)
+  val rc = new ReloadableContentWidget(tblCategories)
 
   addContainerProperties(tblCategories,
     PropertyDescriptor[JInteger]("Id"),
@@ -182,7 +182,7 @@ class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
 }
 
 
-class CategoryEditorUI(val imagePickerUI: ImagePickerUI) extends FormLayout with UndefinedSize {
+class CategoryEditorWidget(val imagePickerWidget: ImagePickerWidget) extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled {
     setColumns(11)
   }
@@ -194,6 +194,6 @@ class CategoryEditorUI(val imagePickerUI: ImagePickerUI) extends FormLayout with
 
   val sltType = new ComboBox("Type") with SingleSelect[String] with Required with NoNullSelection
 
-  this.addComponents(txtId, txtName, sltType, imagePickerUI, txaDescription)
-  imagePickerUI.setCaption("Icon")
+  this.addComponents(txtId, txtName, sltType, imagePickerWidget, txaDescription)
+  imagePickerWidget.setCaption("Icon")
 }

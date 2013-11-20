@@ -11,9 +11,9 @@ import com.vaadin.ui.Table
  */
 class CustomDocs(user: UserDomainObject) {
   val projection = new DocsProjection(user)
-  val ui = new CustomDocsUI(projection.ui)
+  val widget = new CustomDocsWidget(projection.widget)
 
-  projection.docsUI.addActionHandler(new Action.Handler {
+  projection.docsWidget.addActionHandler(new Action.Handler {
 
     def getActions(target: AnyRef, sender: AnyRef) = Array(Actions.ExcludeFromSelection, Actions.Delete)
 

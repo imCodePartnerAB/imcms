@@ -8,7 +8,7 @@ import java.util.Date
 import imcms.api.DocumentVersion
 import imcode.server.document.DocumentTypeDomainObject
 import imcms.mapping.{DocLoaderCachingProxy}
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 

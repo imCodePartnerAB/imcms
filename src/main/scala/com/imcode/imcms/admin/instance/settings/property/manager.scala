@@ -7,9 +7,9 @@ import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import imcms.security.{PermissionGranted, PermissionDenied}
 import imcode.server.Imcms
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.Page
 
@@ -18,18 +18,18 @@ import com.vaadin.server.Page
 
 class PropertyManagerManager(app: UI) {
 
-  val ui = new PropertyManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { _ => reload() }
-    ui.miEdit.setCommandHandler { _ =>
+  val widget = new PropertyManagerWidget |>> { w =>
+    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.miEdit.setCommandHandler { _ =>
       new OkCancelDialog("Edit system properties") |>> { dlg =>
-        dlg.mainUI = new PropertyEditorUI |>> { eui =>
+        dlg.mainWidget = new PropertyEditorWidget |>> { eui =>
           Imcms.getServices.getSystemData |> { d =>
             eui.txtStartPageNumber.value = d.getStartDocument.toString
             eui.txaSystemMessage.value = d.getSystemMessage
-            eui.webMasterUI.txtName.value = d.getWebMaster
-            eui.webMasterUI.txtEmail.value = d.getWebMasterAddress
-            eui.serverMasterUI.txtName.value = d.getServerMaster
-            eui.serverMasterUI.txtEmail.value = d.getServerMasterAddress
+            eui.webMaster.txtName.value = d.getWebMaster
+            eui.webMaster.txtEmail.value = d.getWebMasterAddress
+            eui.serverMaster.txtName.value = d.getServerMaster
+            eui.serverMaster.txtEmail.value = d.getServerMasterAddress
           }
 
           dlg.setOkButtonHandler {
@@ -37,10 +37,10 @@ class PropertyManagerManager(app: UI) {
               val systemData = Imcms.getServices.getSystemData |>> { d =>
                 d setStartDocument eui.txtStartPageNumber.value.toInt
                 d setSystemMessage eui.txaSystemMessage.value
-                d setWebMaster eui.webMasterUI.txtName.value
-                d setWebMasterAddress eui.webMasterUI.txtEmail.value
-                d setServerMaster eui.serverMasterUI.txtName.value
-                d setServerMasterAddress eui.serverMasterUI.txtEmail.value
+                d setWebMaster eui.webMaster.txtName.value
+                d setWebMasterAddress eui.webMaster.txtEmail.value
+                d setServerMaster eui.serverMaster.txtName.value
+                d setServerMasterAddress eui.serverMaster.txtEmail.value
               }
 
               Ex.allCatch.either(Imcms.getServices.setSystemData(systemData)) match {
@@ -65,48 +65,48 @@ class PropertyManagerManager(app: UI) {
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage system properties")
 
   def reload() {
-    import ui.dataUI._
+    import widget.dataWidget._
 
-    Seq(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName,
-        serverMasterUI.txtEmail).foreach { txt =>
+    Seq(txtStartPageNumber, txaSystemMessage, webMaster.txtName, webMaster.txtEmail, serverMaster.txtName,
+        serverMaster.txtEmail).foreach { txt =>
       txt.setReadOnly(false)
     }
 
     Imcms.getServices.getSystemData |> { d =>
       txtStartPageNumber.value = d.getStartDocument.toString
       txaSystemMessage.value = d.getSystemMessage
-      webMasterUI.txtName.value = d.getWebMaster
-      webMasterUI.txtEmail.value = d.getWebMasterAddress
-      serverMasterUI.txtName.value = d.getServerMaster
-      serverMasterUI.txtEmail.value = d.getServerMasterAddress
+      webMaster.txtName.value = d.getWebMaster
+      webMaster.txtEmail.value = d.getWebMasterAddress
+      serverMaster.txtName.value = d.getServerMaster
+      serverMaster.txtEmail.value = d.getServerMasterAddress
     }
 
-    Seq(txtStartPageNumber, txaSystemMessage, webMasterUI.txtName, webMasterUI.txtEmail, serverMasterUI.txtName,
-        serverMasterUI.txtEmail).foreach { txt =>
+    Seq(txtStartPageNumber, txaSystemMessage, webMaster.txtName, webMaster.txtEmail, serverMaster.txtName,
+        serverMaster.txtEmail).foreach { txt =>
       txt.setReadOnly(true)
     }
 
-    Seq(ui.miEdit).foreach(_.setEnabled(canManage))
+    Seq(widget.miEdit).foreach(_.setEnabled(canManage))
   }
 } // class PropertyManager
 
-class PropertyManagerUI extends VerticalLayout with Spacing with UndefinedSize {
+class PropertyManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
   val miEdit = mb.addItem("Edit", Edit16)
   val miHelp = mb.addItem("Help", Help16)
-  val dataUI = new PropertyEditorUI
+  val dataWidget = new PropertyEditorWidget
   val dataPanel = new Panel(new VerticalLayout with UndefinedSize with Margin) with UndefinedSize
-  val rc = new ReloadableContentUI(dataPanel)
+  val rc = new ReloadableContentWidget(dataPanel)
 
-  dataPanel.setContent(dataUI)
+  dataPanel.setContent(dataWidget)
   this.addComponents(mb, rc)
 }
 
 
-class PropertyEditorUI extends FormLayout with UndefinedSize {
-  class ContactUI(caption: String) extends VerticalLayout() with UndefinedSize with Spacing {
+class PropertyEditorWidget extends FormLayout with UndefinedSize {
+  class ContactWidget(caption: String) extends VerticalLayout() with UndefinedSize with Spacing {
     val txtName = new TextField("Name")
     val txtEmail = new TextField("e-mail")
 
@@ -116,8 +116,8 @@ class PropertyEditorUI extends FormLayout with UndefinedSize {
 
   val txtStartPageNumber = new TextField("Start page number")
   val txaSystemMessage = new TextArea("System message") |>> { _.setRows(5) }
-  val serverMasterUI = new ContactUI("Server master")
-  val webMasterUI = new ContactUI("Web master")
+  val serverMaster = new ContactWidget("Server master")
+  val webMaster = new ContactWidget("Web master")
 
-  this.addComponents(txtStartPageNumber, txaSystemMessage, serverMasterUI, webMasterUI)
+  this.addComponents(txtStartPageNumber, txaSystemMessage, serverMaster, webMaster)
 }

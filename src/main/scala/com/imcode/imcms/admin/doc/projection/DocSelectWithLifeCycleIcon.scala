@@ -4,7 +4,7 @@ package admin.doc.projection
 
 import com.vaadin.ui.AbstractSelect
 import com.imcode.imcms.vaadin.data.{ContainerWithTypedItemId}
-import com.imcode.imcms.vaadin.ui.Theme
+import com.imcode.imcms.vaadin.component.Theme
 import _root_.imcode.server.document.DocumentDomainObject
 
 

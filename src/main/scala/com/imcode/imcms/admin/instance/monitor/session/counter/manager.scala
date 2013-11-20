@@ -11,9 +11,9 @@ import imcms.dao.IPAccessDao
 import imcms.api.IPAccess
 import imcode.util.Utility.{ipLongToString, ipStringToLong}
 import java.util.Date
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.Page
 
@@ -29,11 +29,11 @@ object SessionCounter {
 }
 
 class SessionCounterManager(app: UI) {
-  val ui = new SessionCounterManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { _ => reload() }
-    ui.miEdit.setCommandHandler { _ =>
+  val widget = new SessionCounterManagerWidget |>> { w =>
+    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.miEdit.setCommandHandler { _ =>
       new OkCancelDialog("Edit session counter") |>> { dlg =>
-        dlg.mainUI = new SessionCounterEditorUI |>> { c =>
+        dlg.mainWidget = new SessionCounterEditorWidget |>> { c =>
           SessionCounter.get |> { sc =>
             c.txtValue.value = sc.value.toString
             c.calStart.value = sc.date
@@ -54,7 +54,7 @@ class SessionCounterManager(app: UI) {
         }
       } |> Current.ui.addWindow
     }
-    ui.miReset.setCommandHandler { _ =>
+    w.miReset.setCommandHandler { _ =>
       new ConfirmationDialog("Reset session counter?") |>> { dlg =>
         dlg.setOkButtonHandler {
           app.privileged(permission) {
@@ -70,7 +70,7 @@ class SessionCounterManager(app: UI) {
         }
       } |> Current.ui.addWindow
     }
-  } // ui
+  } // val widget
 
   reload()
   // END OF PRIMARY CONSTRUCTOR
@@ -80,37 +80,37 @@ class SessionCounterManager(app: UI) {
 
   def reload() {
     SessionCounter.get |> { sc =>
-      ui.dataUI.txtValue.setReadOnly(false)
-      ui.dataUI.calStart.setReadOnly(false)
+      widget.dataWidget.txtValue.setReadOnly(false)
+      widget.dataWidget.calStart.setReadOnly(false)
 
-      ui.dataUI.txtValue.value = sc.value.toString
-      ui.dataUI.calStart.value = sc.date
+      widget.dataWidget.txtValue.value = sc.value.toString
+      widget.dataWidget.calStart.value = sc.date
 
-      ui.dataUI.txtValue.setReadOnly(true)
-      ui.dataUI.calStart.setReadOnly(true)
+      widget.dataWidget.txtValue.setReadOnly(true)
+      widget.dataWidget.calStart.setReadOnly(true)
     }
 
-    Seq(ui.miEdit, ui.miReset).foreach(_.setEnabled(canManage))
+    Seq(widget.miEdit, widget.miReset).foreach(_.setEnabled(canManage))
   }
 } // class SessionCounterManager
 
-class SessionCounterManagerUI extends VerticalLayout with Spacing with UndefinedSize {
+class SessionCounterManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
   val miEdit = mb.addItem("Edit", Edit16)
   val miReset = mb.addItem("Reset", Delete16)
   val miHelp = mb.addItem("Help", Help16)
-  val dataUI = new SessionCounterEditorUI
+  val dataWidget = new SessionCounterEditorWidget
   val dataPanel = new Panel(new VerticalLayout with UndefinedSize with Margin) with UndefinedSize
-  val rc = new ReloadableContentUI(dataPanel)
+  val rc = new ReloadableContentWidget(dataPanel)
 
-  dataPanel.setContent(dataUI)
+  dataPanel.setContent(dataWidget)
   this.addComponents(mb, rc)
 }
 
 
-class SessionCounterEditorUI extends FormLayout with UndefinedSize {
+class SessionCounterEditorWidget extends FormLayout with UndefinedSize {
   val txtValue = new TextField("Value")
   val calStart = new DateField("Start date") with DayResolution
 

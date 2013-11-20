@@ -2,6 +2,7 @@ package com.imcode
 package imcms.dao
 
 import scala.collection.JavaConverters._
+import scala.collection.breakOut
 import com.imcode.imcms.api._
 import org.hibernate.{ScrollMode, CacheMode}
 import imcode.server.document.textdocument.{ImageDomainObject, MenuDomainObject, ContentRef, TextDomainObject}
@@ -154,6 +155,12 @@ class TextDocDao extends HibernateSupport {
   } |> { _.asJava }
 
 
+//  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentRef] = None): Map[DocumentLanguage, Option[ImageDomainObject]] = {
+//    (
+//      for (language <- languageDao.getAllLanguages.asScala)
+//      yield language -> getImage(docRef, no, language, contentRefOpt).asOption
+//    )(breakOut)
+//  }
 
   def getImage(docRef: DocRef, no: Int, language: DocumentLanguage, contentRefOpt: Option[ContentRef]) = {
     val queryStr =

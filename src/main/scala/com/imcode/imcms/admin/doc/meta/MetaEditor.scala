@@ -9,7 +9,7 @@ import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import _root_.imcode.server.document.{DocumentDomainObject}
 
 import com.imcode.imcms.api._
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.admin.doc.meta.access.AccessEditor
@@ -37,7 +37,7 @@ import com.imcode.imcms.vaadin.Editor
 //   if this doc has custom target, then adds this target to the targets combo-box as a last item
 class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSupport {
 
-  type Data = (DocumentDomainObject, Map[DocumentLanguage, I18nMeta])
+  override type Data = (DocumentDomainObject, Map[DocumentLanguage, I18nMeta])
 
   private var appearanceEditorOpt = Option.empty[AppearanceEditor]
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
@@ -46,23 +46,23 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
   private var categoryEditorOpt = Option.empty[CategoryEditor]
   private var profileEditorOpt = Option.empty[ProfileEditor]
 
-  val ui = new MetaEditorUI |>> { ui =>
-    ui.treeEditors.addItem("doc_meta_editor.menu_item.life_cycle", "doc_meta_editor.menu_item.life_cycle".i)
-    ui.treeEditors.addItem("doc_meta_editor.menu_item.appearance", "doc_meta_editor.menu_item.appearance".i)
-    ui.treeEditors.addItem("doc_meta_editor.menu_item.access", "doc_meta_editor.menu_item.access".i)
-    ui.treeEditors.addItem("doc_meta_editor.menu_item.search", "doc_meta_editor.menu_item.search".i)
-    ui.treeEditors.addItem("doc_meta_editor.menu_item.categories", "doc_meta_editor.menu_item.categories".i)
+  override val widget = new MetaEditorWidget |>> { w =>
+    w.treeEditors.addItem("doc_meta_editor.menu_item.life_cycle", "doc_meta_editor.menu_item.life_cycle".i)
+    w.treeEditors.addItem("doc_meta_editor.menu_item.appearance", "doc_meta_editor.menu_item.appearance".i)
+    w.treeEditors.addItem("doc_meta_editor.menu_item.access", "doc_meta_editor.menu_item.access".i)
+    w.treeEditors.addItem("doc_meta_editor.menu_item.search", "doc_meta_editor.menu_item.search".i)
+    w.treeEditors.addItem("doc_meta_editor.menu_item.categories", "doc_meta_editor.menu_item.categories".i)
 
     // According to v.4.x.x may be defined for text docs only
     // todo: disable profile tag =or= add lable =not supported/available =or= show empty page instead of editor
-    if (doc.isInstanceOf[TextDocumentDomainObject]) ui.treeEditors.addItem("doc_meta_editor.menu_item.profile", "doc_meta_editor.menu_item.profile".i)
+    if (doc.isInstanceOf[TextDocumentDomainObject]) w.treeEditors.addItem("doc_meta_editor.menu_item.profile", "doc_meta_editor.menu_item.profile".i)
 
-    ui.treeEditors.addValueChangeHandler { _ =>
-      ui.treeEditors.value match {
+    w.treeEditors.addValueChangeHandler { _ =>
+      w.treeEditors.value match {
         case "doc_meta_editor.menu_item.life_cycle" =>
           if (lifeCycleEditorOpt.isEmpty) lifeCycleEditorOpt = Some(new LifeCycleEditor(doc.getMeta))
 
-          ui.pnlCurrentEditor.setContent(lifeCycleEditorOpt.get.ui)
+          w.pnlCurrentEditor.setContent(lifeCycleEditorOpt.get.widget)
 
         case "doc_meta_editor.menu_item.appearance" =>
           if (appearanceEditorOpt.isEmpty) {
@@ -78,38 +78,38 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
             )
           }
 
-          ui.pnlCurrentEditor.setContent(appearanceEditorOpt.get.ui)
+          w.pnlCurrentEditor.setContent(appearanceEditorOpt.get.widget)
 
         case "doc_meta_editor.menu_item.access" =>
           if (accessEditorOpt.isEmpty) accessEditorOpt = Some(new AccessEditor(doc, Current.ui.imcmsUser))
 
-          ui.pnlCurrentEditor.setContent(accessEditorOpt.get.ui)
+          w.pnlCurrentEditor.setContent(accessEditorOpt.get.widget)
 
         case "doc_meta_editor.menu_item.search" =>
           if (searchSettingsEditorOpt.isEmpty) searchSettingsEditorOpt = Some(new SearchSettingsEditor(doc.getMeta))
 
-          ui.pnlCurrentEditor.setContent(searchSettingsEditorOpt.get.ui)
+          w.pnlCurrentEditor.setContent(searchSettingsEditorOpt.get.widget)
 
         case "doc_meta_editor.menu_item.categories" =>
           if (categoryEditorOpt.isEmpty) categoryEditorOpt = Some(new CategoryEditor(doc.getMeta))
 
-          ui.pnlCurrentEditor.setContent(categoryEditorOpt.get.ui)
+          w.pnlCurrentEditor.setContent(categoryEditorOpt.get.widget)
 
         case "doc_meta_editor.menu_item.profile" =>
           if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], Current.ui.imcmsUser))
 
-          ui.pnlCurrentEditor.setContent(profileEditorOpt.get.ui)
+          w.pnlCurrentEditor.setContent(profileEditorOpt.get.widget)
 
         case _ =>
       }
     }
 
-    ui.sp.setSplitPosition(20, Sizeable.UNITS_PERCENTAGE)
-  } // ui
+    w.sp.setSplitPosition(20, Sizeable.UNITS_PERCENTAGE)
+  } // widget
 
   resetValues()
 
-  def collectValues(): ErrorsOrData = {
+  override def collectValues(): ErrorsOrData = {
     case class Collector(errorsOrData: ErrorsOrData) {
       def merge[A](subEditorErrorsOrDataOpt: => Option[Seq[ErrorMsg] Either A])(fn: (Data, A) => Data): Collector = {
         subEditorErrorsOrDataOpt match {
@@ -181,7 +181,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     //      ////    ui.cbRestrictedTwoDefaultTemplate
   } // data
 
-  def resetValues() {
+  override def resetValues() {
     appearanceEditorOpt = None
     lifeCycleEditorOpt = None
     accessEditorOpt = None
@@ -189,6 +189,6 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     categoryEditorOpt = None
     profileEditorOpt = None
 
-    ui.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
+    widget.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
   }
 }

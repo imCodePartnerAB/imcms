@@ -7,19 +7,20 @@ import com.imcode.imcms.admin.doc.content.DocContentEditor
 import _root_.imcode.server.document.UrlDocumentDomainObject
 
 class UrlDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor {
-  type Data = UrlDocumentDomainObject
 
-  val ui = new UrlDocContentEditorUI
+  override type Data = UrlDocumentDomainObject
+
+  val widget = new UrlDocContentEditorWidget
 
   resetValues()
 
-  def resetValues() {
-    ui.txtURL.value = doc.getUrl
+  override def resetValues() {
+    widget.txtURL.value = doc.getUrl
   }
 
-  def collectValues() = doc.clone() |>> { clone =>
-    clone.setUrl(ui.txtURL.value)
-    clone.setTarget(ui.cbTarget.value)
+  override def collectValues(): ErrorsOrData = doc.clone() |>> { clone =>
+    clone.setUrl(widget.txtURL.value)
+    clone.setTarget(widget.cbTarget.value)
   } |> Right.apply
 }
 

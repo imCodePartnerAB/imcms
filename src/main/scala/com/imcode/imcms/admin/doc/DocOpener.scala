@@ -4,7 +4,7 @@ package imcms.admin.doc
 import com.imcode.imcms._
 import com.imcode.imcms.vaadin.Current
 
-import com.imcode.imcms.vaadin.ui._
+import com.imcode.imcms.vaadin.component._
 import com.vaadin.ui._
 import com.vaadin.server.Page
 import imcode.server.document.DocumentDomainObject

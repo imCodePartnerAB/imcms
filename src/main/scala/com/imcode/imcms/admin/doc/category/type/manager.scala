@@ -10,8 +10,8 @@ import imcode.server.{Imcms}
 import imcode.server.document.{CategoryTypeDomainObject}
 import com.imcode.imcms.admin.doc.category.{CategoryTypeId}
 import imcms.security.{PermissionDenied, PermissionGranted}
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
@@ -22,21 +22,22 @@ import com.vaadin.server.Page
 class CategoryTypeManager(app: UI) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
-  val ui = new CategoryTypeManagerUI |>> { ui =>
-    ui.rc.btnReload.addClickHandler { _ => reload() }
-    ui.tblTypes.addValueChangeHandler { _ => handleSelection() }
+  val widget = new CategoryTypeManagerWidget |>> { w =>
+    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.tblTypes.addValueChangeHandler { _ => handleSelection() }
 
-    ui.miNew.setCommandHandler { _ => editAndSave(new CategoryTypeDomainObject) }
-    ui.miEdit.setCommandHandler { _ =>
-      whenSelected(ui.tblTypes) { id =>
+    w.miNew.setCommandHandler { _ => editAndSave(new CategoryTypeDomainObject) }
+    w.miEdit.setCommandHandler { _ =>
+      whenSelected(w.tblTypes) { id =>
         categoryMapper.getCategoryTypeById(id.intValue) match {
           case null => reload()
           case vo => editAndSave(vo)
         }
       }
     }
-    ui.miDelete.setCommandHandler { _ =>
-      whenSelected(ui.tblTypes) { id =>
+
+    w.miDelete.setCommandHandler { _ =>
+      whenSelected(w.tblTypes) { id =>
         new ConfirmationDialog("Delete selected category type?") |>> { dlg =>
           dlg.setOkButtonHandler {
             app.privileged(permission) {
@@ -54,7 +55,7 @@ class CategoryTypeManager(app: UI) {
         } |> Current.ui.addWindow
       }
     }
-  } // val ui
+  } // val widget
 
   reload()
   // END OF PRIMARY CONSTRUCTOR
@@ -69,19 +70,19 @@ class CategoryTypeManager(app: UI) {
     val dialogTitle = if(isNew) "Create new category type" else "Edit category type"
 
     new OkCancelDialog(dialogTitle) |>> { dlg =>
-      dlg.mainUI = new CategoryTypeEditorUI |>> { c =>
-        c.txtId.value = if (isNew) "" else id.toString
-        c.txtName.value = vo.getName.trimToEmpty
-        c.chkImageArchive.value = vo.isImageArchive// : JBoolean
-        c.chkInherited.value = vo.isInherited //: JBoolean
-        c.chkMultiSelect.value = vo.isMultiselect //: JBoolean
+      dlg.mainWidget = new CategoryTypeEditorWidget |>> { w =>
+        w.txtId.value = if (isNew) "" else id.toString
+        w.txtName.value = vo.getName.trimToEmpty
+        w.chkImageArchive.value = vo.isImageArchive// : JBoolean
+        w.chkInherited.value = vo.isInherited //: JBoolean
+        w.chkMultiSelect.value = vo.isMultiselect //: JBoolean
 
         dlg.setOkButtonHandler {
           vo.clone() |> { voc =>
-            voc setName c.txtName.value.trim
-            voc setInherited c.chkInherited.value
-            voc setImageArchive c.chkImageArchive.value
-            voc setMultiselect c.chkMultiSelect.value
+            voc setName w.txtName.value.trim
+            voc setInherited w.chkInherited.value
+            voc setImageArchive w.chkImageArchive.value
+            voc setMultiselect w.chkMultiSelect.value
 
             // todo: move validate into separate fn
             val validationError: Option[String] = voc.getName match {
@@ -118,28 +119,28 @@ class CategoryTypeManager(app: UI) {
   } // editAndSave
 
   def reload() {
-    ui.tblTypes.removeAllItems
+    widget.tblTypes.removeAllItems
     for {
       vo <- categoryMapper.getAllCategoryTypes
       id = vo.getId :JInteger
-    } ui.tblTypes.addItem(Array[AnyRef](id, vo.getName, vo.isMultiselect : JBoolean, vo.isInherited : JBoolean, vo.isImageArchive : JBoolean), id)
+    } widget.tblTypes.addItem(Array[AnyRef](id, vo.getName, vo.isMultiselect : JBoolean, vo.isInherited : JBoolean, vo.isImageArchive : JBoolean), id)
 
     canManage |> { value =>
-      ui.tblTypes.setSelectable(value)
-      Seq[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete).foreach(_.setEnabled(value)) //ui.mb,
+      widget.tblTypes.setSelectable(value)
+      Seq[{def setEnabled(e: Boolean)}](widget.miNew, widget.miEdit, widget.miDelete).foreach(_.setEnabled(value)) //ui.mb,
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    (canManage && ui.tblTypes.isSelected) |> { enabled =>
-      Seq(ui.miEdit, ui.miDelete).foreach(_.setEnabled(enabled))
+    (canManage && widget.tblTypes.isSelected) |> { enabled =>
+      Seq(widget.miEdit, widget.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 }
 
-class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSize {
+class CategoryTypeManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -148,7 +149,7 @@ class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSi
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
   val tblTypes = new Table with SingleSelect[CategoryTypeId] with Immediate
-  val rc = new ReloadableContentUI(tblTypes)
+  val rc = new ReloadableContentWidget(tblTypes)
 
   addContainerProperties(tblTypes,
     PropertyDescriptor[JInteger]("Id"),
@@ -161,7 +162,7 @@ class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSi
 }
 
 
-class CategoryTypeEditorUI extends FormLayout with UndefinedSize {
+class CategoryTypeEditorWidget extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled
   val txtName = new TextField("Name") with Required
   val chkMultiSelect = new CheckBox("Multiselect")

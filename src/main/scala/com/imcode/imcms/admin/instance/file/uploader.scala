@@ -7,8 +7,8 @@ import com.vaadin.ui._
 import com.imcode.util.event.Publisher
 import java.io._
 import org.apache.commons.io.FileUtils
-import com.imcode.imcms.vaadin.ui._
-import com.imcode.imcms.vaadin.ui.dialog._
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.Page
@@ -34,11 +34,11 @@ case class UploadFailed(event: Upload.FailedEvent) extends UploadStatus
 class FileUploaderDialog(caption: String = "") extends OkCancelDialog(caption) {
   val uploader = new FileUploader
 
-  mainUI = uploader.ui
+  mainWidget = uploader.widget
 
   setCancelButtonHandler {
-    if (uploader.ui.upload.isUploading) {
-      uploader.ui.upload.interruptUpload()
+    if (uploader.widget.upload.isUploading) {
+      uploader.widget.upload.interruptUpload()
     }
 
     uploader.deleteUploadedFile()
@@ -67,7 +67,7 @@ class FileUploader extends Publisher[UploadStatus] {
    */
   var fileNameToSaveAsName: (String => String) = identity
 
-  val ui = new FileUploaderUI |>> { ui =>
+  val widget = new FileUploaderWidget |>> { w =>
     // Temp file based receiver
     val receiver = new Upload.Receiver {
       val file = File.createTempFile("imcms_upload", null) |>> {
@@ -77,41 +77,41 @@ class FileUploader extends Publisher[UploadStatus] {
       override def receiveUpload(filename: String, mimeType: String): OutputStream = new FileOutputStream(file)
     }
 
-    ui.upload.setReceiver(receiver)
-    ui.upload.addListener(new Upload.StartedListener {
+    w.upload.setReceiver(receiver)
+    w.upload.addListener(new Upload.StartedListener {
       def uploadStarted(ev: Upload.StartedEvent) {
         reset()
-        updateDisabled(ui.txtSaveAsName) { txtSaveAsName =>
+        updateDisabled(w.txtSaveAsName) { txtSaveAsName =>
           txtSaveAsName.value = fileNameToSaveAsName(ev.getFilename)
-          txtSaveAsName.setInputPrompt(ui.txtSaveAsName.value)
+          txtSaveAsName.setInputPrompt(w.txtSaveAsName.value)
         }
-        ui.pgiBytesReceived.setEnabled(true)
+        w.pgiBytesReceived.setEnabled(true)
         notifyListeners(UploadStarted(ev))
       }
     })
-    ui.upload.addListener(new Upload.ProgressListener {
+    w.upload.addListener(new Upload.ProgressListener {
       def updateProgress(readBytes: Long, contentLength: Long) {
-        ui.pgiBytesReceived.setValue(Float.box(readBytes.toFloat / contentLength))
+        w.pgiBytesReceived.setValue(Float.box(readBytes.toFloat / contentLength))
         notifyListeners(UploadProgressUpdated(readBytes, contentLength))
       }
     })
-    ui.upload.addListener(new Upload.FailedListener {
+    w.upload.addListener(new Upload.FailedListener {
       def uploadFailed(ev: Upload.FailedEvent) {
-        ui.txtSaveAsName.setEnabled(true)
-        ui.txtSaveAsName.value = ""
-        ui.txtSaveAsName.setInputPrompt(null)
-        ui.txtSaveAsName.setEnabled(false)
-        ui.pgiBytesReceived.setEnabled(false)
+        w.txtSaveAsName.setEnabled(true)
+        w.txtSaveAsName.value = ""
+        w.txtSaveAsName.setInputPrompt(null)
+        w.txtSaveAsName.setEnabled(false)
+        w.pgiBytesReceived.setEnabled(false)
         FileUtils.deleteQuietly(receiver.file)
         Current.page.showWarningNotification("file.upload.interrupted.warn.msg".i)
         notifyListeners(UploadFailed(ev))
       }
     })
-    ui.upload.addListener(new Upload.SucceededListener {
+    w.upload.addListener(new Upload.SucceededListener {
       def uploadSucceeded(ev: Upload.SucceededEvent) {
-        ui.txtSaveAsName.setEnabled(true)
-        ui.chkOverwrite.setEnabled(true)
-        ui.pgiBytesReceived.setValue(1f)
+        w.txtSaveAsName.setEnabled(true)
+        w.chkOverwrite.setEnabled(true)
+        w.pgiBytesReceived.setValue(1f)
 
         UploadedFile(ev.getFilename, ev.getMIMEType, receiver.file) |> { uploadedFile =>
           uploadedFileOptRef.set(Some(uploadedFile))
@@ -125,12 +125,12 @@ class FileUploader extends Publisher[UploadStatus] {
 
   def reset() {
     deleteUploadedFile()
-    updateDisabled(ui.chkOverwrite) { _.value = false }
-    updateDisabled(ui.txtSaveAsName) { saveAsName =>
-      ui.txtSaveAsName.value = ""
-      ui.txtSaveAsName.setInputPrompt(null)
+    updateDisabled(widget.chkOverwrite) { _.value = false }
+    updateDisabled(widget.txtSaveAsName) { saveAsName =>
+      widget.txtSaveAsName.value = ""
+      widget.txtSaveAsName.setInputPrompt(null)
     }
-    updateDisabled(ui.pgiBytesReceived) { pgiBytesReceived =>
+    updateDisabled(widget.pgiBytesReceived) { pgiBytesReceived =>
       pgiBytesReceived.setValue(0f)
       pgiBytesReceived.setPollingInterval(500)
     }
@@ -140,9 +140,9 @@ class FileUploader extends Publisher[UploadStatus] {
 
   def uploadedFile: Option[UploadedFile] = uploadedFileOptRef.get
 
-  def saveAsName: String = ui.txtSaveAsName.trim
+  def saveAsName: String = widget.txtSaveAsName.trim
 
-  def mayOverwrite: Boolean = ui.chkOverwrite.checked
+  def mayOverwrite: Boolean = widget.chkOverwrite.checked
 //  def mayOverwrite_=(value: Boolean) {
 //    if (value) {
 //      ui.chkOverwrite.setEnabled(true)
@@ -160,7 +160,7 @@ class FileUploader extends Publisher[UploadStatus] {
 }
 
 
-class FileUploaderUI extends FormLayout with UndefinedSize {
+class FileUploaderWidget extends FormLayout with UndefinedSize {
   val upload = new Upload("file.upload.dlg.frm.fld.select".i, null) with Immediate
   val txtSaveAsName = new TextField("file.upload.dlg.frm.fld.save_as".i) with Required
   val pgiBytesReceived = new ProgressIndicator; pgiBytesReceived.setCaption("file.upload.dlg.frm.fld.progress".i)
