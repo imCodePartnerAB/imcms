@@ -50,12 +50,11 @@ public class DocumentTypeDomainObject extends IdLocalizedNamePair {
         return allDocumentTypeIds ;
     }
 
-    public static Set getAllDocumentTypeIdsSet() {
-        Set set = new HashSet() ;
+    public static Set<Integer> getAllDocumentTypeIdsSet() {
+        Set<Integer> set = new HashSet<>() ;
         int[] allDocumentTypeIds = getAllDocumentTypeIds();
-        for ( int i = 0; i < allDocumentTypeIds.length; i++ ) {
-            int documentTypeId = allDocumentTypeIds[i];
-            set.add(new Integer(documentTypeId)) ;
+        for (int documentTypeId : allDocumentTypeIds) {
+            set.add(documentTypeId) ;
         }
         return set ;
     }

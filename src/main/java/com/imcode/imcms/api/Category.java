@@ -5,28 +5,28 @@ import imcode.server.document.CategoryDomainObject;
 /**
  * @author kreiger
  */
-public class Category implements Comparable {
+public class Category implements Comparable<Category> {
 
-    private final CategoryDomainObject internalCategory ;
+    private final CategoryDomainObject internalCategory;
 
-    public Category( String name, CategoryType categoryType ) {
-        this.internalCategory = new CategoryDomainObject( 0, name, "","", categoryType.getInternal() );
+    public Category(String name, CategoryType categoryType) {
+        this.internalCategory = new CategoryDomainObject(0, name, "", "", categoryType.getInternal());
     }
 
-    Category( CategoryDomainObject internalCategory ) {
-        this.internalCategory = internalCategory ;
+    Category(CategoryDomainObject internalCategory) {
+        this.internalCategory = internalCategory;
     }
 
     CategoryDomainObject getInternal() {
-        return internalCategory ;
+        return internalCategory;
     }
 
     public String getName() {
-        return internalCategory.getName() ;
+        return internalCategory.getName();
     }
 
     public void setName(String name) {
-        internalCategory.setName( name );
+        internalCategory.setName(name);
     }
 
     public boolean equals(Object o) {
@@ -52,26 +52,27 @@ public class Category implements Comparable {
     }
 
     public String getDescription() {
-        return internalCategory.getDescription() ;
+        return internalCategory.getDescription();
     }
 
     public int getId() {
         return internalCategory.getId();
     }
 
-    public String getImage(){
+    public String getImage() {
         return internalCategory.getImageUrl();
     }
 
-    public void setImage( String imageUrl ) {
-        internalCategory.setImageUrl( imageUrl );
+    public void setImage(String imageUrl) {
+        internalCategory.setImageUrl(imageUrl);
     }
 
-    public void setDescription( String description ) {
-        internalCategory.setDescription( description );
+    public void setDescription(String description) {
+        internalCategory.setDescription(description);
     }
 
-    public int compareTo( Object o ) {
-        return internalCategory.compareTo( ((Category)o).internalCategory ) ;
+    @Override
+    public int compareTo(Category category) {
+        return internalCategory.compareTo(category.internalCategory);
     }
 }

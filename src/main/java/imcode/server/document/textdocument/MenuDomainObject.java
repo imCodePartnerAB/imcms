@@ -2,28 +2,16 @@ package imcode.server.document.textdocument;
 
 import com.imcode.imcms.api.DocRef;
 import imcode.server.user.UserDomainObject;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.*;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Menu is a one-level navigation control between documents.
@@ -74,7 +62,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public MenuDomainObject clone() {
         try {
             MenuDomainObject clone = (MenuDomainObject) super.clone();
-            clone.menuItems = new HashMap<Integer, MenuItemDomainObject>();
+            clone.menuItems = new HashMap<>();
             for (Map.Entry<Integer, MenuItemDomainObject> entry : menuItems.entrySet()) {
                 clone.menuItems.put(entry.getKey(), entry.getValue().clone());
             }
@@ -87,7 +75,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public MenuDomainObject(Long id, int sortOrder) {
         this.id = id;
         this.sortOrder = sortOrder;
-        menuItems = new HashMap<Integer, MenuItemDomainObject>();
+        menuItems = new HashMap<>();
     }
 
     public Long getId() {
@@ -103,13 +91,13 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public MenuItemDomainObject[] getMenuItemsUserCanSee(UserDomainObject user) {
-        List menuItemsUserCanSee = getMenuItemsVisibleToUser(user);
-        return (MenuItemDomainObject[]) menuItemsUserCanSee.toArray(new MenuItemDomainObject[menuItemsUserCanSee.size()]);
+        List<MenuItemDomainObject> menuItemsUserCanSee = getMenuItemsVisibleToUser(user);
+        return menuItemsUserCanSee.toArray(new MenuItemDomainObject[menuItemsUserCanSee.size()]);
     }
 
-    List getMenuItemsVisibleToUser(UserDomainObject user) {
+    List<MenuItemDomainObject> getMenuItemsVisibleToUser(UserDomainObject user) {
         MenuItemDomainObject[] menuItemsArray = getMenuItems();
-        List<MenuItemDomainObject> menuItemsUserCanSee = new ArrayList<MenuItemDomainObject>(this.menuItems.size());
+        List<MenuItemDomainObject> menuItemsUserCanSee = new ArrayList<>(this.menuItems.size());
         for (MenuItemDomainObject menuItem : menuItemsArray) {
             if (user.canSeeDocumentWhenEditingMenus(menuItem.getDocument())) {
                 menuItemsUserCanSee.add(menuItem);
@@ -123,26 +111,25 @@ public class MenuDomainObject implements Cloneable, Serializable {
      * @return Menu items pointing to active documents.
      */
     public MenuItemDomainObject[] getPublishedMenuItemsUserCanSee(UserDomainObject user) {
-        List menuItems = getMenuItemsVisibleToUser(user);
+        List<MenuItemDomainObject> menuItems = getMenuItemsVisibleToUser(user);
         CollectionUtils.filter(menuItems, new Predicate() {
             public boolean evaluate(Object object) {
                 return ((MenuItemDomainObject) object).getDocument().isActive();
             }
         });
-        return (MenuItemDomainObject[]) menuItems.toArray(new MenuItemDomainObject[menuItems.size()]);
+        return menuItems.toArray(new MenuItemDomainObject[menuItems.size()]);
     }
 
     public MenuItemDomainObject[] getMenuItems() {
-        Set menuItemsUnsorted = getMenuItemsUnsorted();
-        MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[]) menuItemsUnsorted.toArray(new MenuItemDomainObject[menuItemsUnsorted.size()]);
+        Set<MenuItemDomainObject> menuItemsUnsorted = getMenuItemsUnsorted();
+        MenuItemDomainObject[] menuItemsArray = menuItemsUnsorted.toArray(new MenuItemDomainObject[menuItemsUnsorted.size()]);
         Arrays.sort(menuItemsArray, getMenuItemComparatorForSortOrder(sortOrder));
         return menuItemsArray;
     }
 
-    public Set getMenuItemsUnsorted() {
-        HashSet set = new HashSet();
-        for (Iterator iterator = menuItems.values().iterator(); iterator.hasNext(); ) {
-            MenuItemDomainObject menuItem = (MenuItemDomainObject) iterator.next();
+    public Set<MenuItemDomainObject> getMenuItemsUnsorted() {
+        HashSet<MenuItemDomainObject> set = new HashSet<>();
+        for (MenuItemDomainObject menuItem : menuItems.values()) {
             if (null != menuItem.getDocument()) {
                 set.add(menuItem);
             }
@@ -230,7 +217,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public void removeMenuItemByDocumentId(int childId) {
-        menuItems.remove(new Integer(childId));
+        menuItems.remove(childId);
     }
 
     public boolean equals(Object obj) {

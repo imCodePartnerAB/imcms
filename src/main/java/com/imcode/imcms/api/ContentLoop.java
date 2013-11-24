@@ -1,6 +1,5 @@
 package com.imcode.imcms.api;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.imcode.imcms.util.P;
 import com.imcode.imcms.util.P2;
@@ -9,6 +8,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.*;
 
@@ -178,7 +178,7 @@ public class ContentLoop implements Serializable, Cloneable {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, no, docId, docVersionNo, contents);
+        return Objects.hash(id, no, docId, docVersionNo, contents);
     }
 
     public DocRef getDocRef() {

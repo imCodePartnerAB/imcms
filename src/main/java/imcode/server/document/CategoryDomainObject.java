@@ -17,7 +17,7 @@ import org.hibernate.annotations.Cascade;
 
 @Entity(name = "Category")
 @Table(name = "categories")
-public class CategoryDomainObject implements Comparable, Serializable, Cloneable {
+public class CategoryDomainObject implements Comparable<CategoryDomainObject>, Serializable, Cloneable {
 
     private String name;
 
@@ -89,8 +89,9 @@ public class CategoryDomainObject implements Comparable, Serializable, Cloneable
         return imageUrl;
     }
 
-    public int compareTo(Object o) {
-        return name.compareToIgnoreCase(((CategoryDomainObject) o).name);
+    @Override
+    public int compareTo(CategoryDomainObject category) {
+        return name.compareToIgnoreCase(category.name);
     }
 
     public void setName(String name) {

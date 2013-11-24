@@ -13,25 +13,40 @@ import com.imcode.util.CountingIterator;
 
 public class DocumentPermissionSet {
 
-    /** @deprecated Use {@link DocumentPermissionSetType#FULL} */
+    /**
+     * @deprecated Use {@link DocumentPermissionSetType#FULL}
+     */
+    @Deprecated
     public final static int FULL = DocumentPermissionSetTypeDomainObject.FULL.getId();
-    /** @deprecated Use {@link DocumentPermissionSetType#RESTRICTED_1} */
+    /**
+     * @deprecated Use {@link DocumentPermissionSetType#RESTRICTED_1}
+     */
+    @Deprecated
     public final static int RESTRICTED_1 = DocumentPermissionSetTypeDomainObject.RESTRICTED_1.getId();
-    /** @deprecated Use {@link DocumentPermissionSetType#RESTRICTED_2} */
+    /**
+     * @deprecated Use {@link DocumentPermissionSetType#RESTRICTED_2}
+     */
+    @Deprecated
     public final static int RESTRICTED_2 = DocumentPermissionSetTypeDomainObject.RESTRICTED_2.getId();
-    /** @deprecated Use {@link DocumentPermissionSetType#READ} */
+    /**
+     * @deprecated Use {@link DocumentPermissionSetType#READ}
+     */
+    @Deprecated
     public final static int READ = DocumentPermissionSetTypeDomainObject.READ.getId();
-    /** @deprecated Use {@link DocumentPermissionSetType#NONE} */
+    /**
+     * @deprecated Use {@link DocumentPermissionSetType#NONE}
+     */
+    @Deprecated
     public final static int NONE = DocumentPermissionSetTypeDomainObject.NONE.getId();
 
     private DocumentPermissionSetDomainObject internalDocPermSet;
 
-    public DocumentPermissionSet( DocumentPermissionSetDomainObject internalDocPermSet ) {
+    public DocumentPermissionSet(DocumentPermissionSetDomainObject internalDocPermSet) {
         this.internalDocPermSet = internalDocPermSet;
     }
 
     /**
-     * @deprecated No replacement, don't use. Will be removed in 4.0 or later. 
+     * @deprecated No replacement, don't use. Will be removed in 4.0 or later.
      */
     public String getType() {
         return internalDocPermSet.getTypeName();
@@ -50,82 +65,82 @@ public class DocumentPermissionSet {
     }
 
     public boolean getEditTextsPermission() {
-        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            return ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getEditTexts();
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            return ((TextDocumentPermissionSetDomainObject) internalDocPermSet).getEditTexts();
         }
 
         return false;
     }
 
     public boolean getEditIncludesPermission() {
-        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            return ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getEditIncludes();
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            return ((TextDocumentPermissionSetDomainObject) internalDocPermSet).getEditIncludes();
         }
         return false;
     }
 
     public boolean getEditPicturesPermission() {
-        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            return ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getEditImages();
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            return ((TextDocumentPermissionSetDomainObject) internalDocPermSet).getEditImages();
         }
         return false;
     }
 
     public boolean getEditMenusPermission() {
-        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            return ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getEditMenus();
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            return ((TextDocumentPermissionSetDomainObject) internalDocPermSet).getEditMenus();
         }
 
         return false;
     }
 
     public String[] getEditableTemplateGroupNames() {
-        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            Set allowedTemplateGroupIds = ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getAllowedTemplateGroupIds();
-            List allowedTemplateGroups = Imcms.getServices().getTemplateMapper().getTemplateGroups(allowedTemplateGroupIds);
-            String[] templateGroupNames = new String[allowedTemplateGroupIds.size()] ;
-            for ( CountingIterator iterator = new CountingIterator(allowedTemplateGroups.iterator()); iterator.hasNext(); ) {
-                TemplateGroupDomainObject templateGroup = (TemplateGroupDomainObject) iterator.next();
-                templateGroupNames[iterator.getCount()-1] = templateGroup.getName() ;
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            Set<Integer> allowedTemplateGroupIds = ((TextDocumentPermissionSetDomainObject) internalDocPermSet).getAllowedTemplateGroupIds();
+            List<TemplateGroupDomainObject> allowedTemplateGroups = Imcms.getServices().getTemplateMapper().getTemplateGroups(allowedTemplateGroupIds);
+            String[] templateGroupNames = new String[allowedTemplateGroupIds.size()];
+            for (CountingIterator<TemplateGroupDomainObject> iterator = new CountingIterator<>(allowedTemplateGroups.iterator()); iterator.hasNext();) {
+                TemplateGroupDomainObject templateGroup = iterator.next();
+                templateGroupNames[iterator.getCount() - 1] = templateGroup.getName();
             }
-            return templateGroupNames ;
+            return templateGroupNames;
         }
         return new String[]{};
     }
 
-    public void setEditDocumentInformationPermission( boolean b ) {
-        internalDocPermSet.setEditDocumentInformation( b );
+    public void setEditDocumentInformationPermission(boolean b) {
+        internalDocPermSet.setEditDocumentInformation(b);
     }
 
-    public void setEditIncludesPermission( boolean b ) {
-        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).setEditIncludes( b );
+    public void setEditIncludesPermission(boolean b) {
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditIncludes(b);
         }
     }
 
-    public void setEditPermissionsPermission( boolean b ) {
-        internalDocPermSet.setEditPermissions( b );
+    public void setEditPermissionsPermission(boolean b) {
+        internalDocPermSet.setEditPermissions(b);
     }
 
-    public void setEditPicturesPermission( boolean b ) {
-        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).setEditImages( b );
+    public void setEditPicturesPermission(boolean b) {
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditImages(b);
         }
     }
 
-    public void setEditMenusPermission( boolean b ) {
-        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).setEditMenus( b );
+    public void setEditMenusPermission(boolean b) {
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditMenus(b);
         }
     }
 
-    public void setEditTextsPermission( boolean b ) {
-        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).setEditTexts( b );
+    public void setEditTextsPermission(boolean b) {
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditTexts(b);
         }
     }
 
-    public void setEditRolePermissionsPermission( boolean b ) {
-        internalDocPermSet.setEditPermissions( b );
+    public void setEditRolePermissionsPermission(boolean b) {
+        internalDocPermSet.setEditPermissions(b);
     }
 }

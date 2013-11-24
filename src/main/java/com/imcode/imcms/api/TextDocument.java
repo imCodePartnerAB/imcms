@@ -33,21 +33,21 @@ public class TextDocument extends Document {
 
     public final static int TYPE_ID = DocumentTypeDomainObject.TEXT_ID;
 
-    TextDocument( TextDocumentDomainObject textDocument,
-                  ContentManagementSystem contentManagementSystem ) {
+    TextDocument(TextDocumentDomainObject textDocument,
+                 ContentManagementSystem contentManagementSystem) {
         super(textDocument, contentManagementSystem);
     }
-    
+
     @Override
     public TextDocumentDomainObject getInternal() {
-    	return (TextDocumentDomainObject)super.getInternal();
+        return (TextDocumentDomainObject) super.getInternal();
     }
 
     /**
      * @return A SortedMap that contains the textFileds index as keys, and instaces of TextFields as values. Only the
      *         TextFields that contains any text is returned.
      */
-    public SortedMap getTextFields() {
+    public SortedMap<Integer, TextField> getTextFields() {
         Predicate predicate = new Predicate() {
             public boolean evaluate(Object o) {
                 Map.Entry entry = (Map.Entry) o;
@@ -63,7 +63,7 @@ public class TextDocument extends Document {
             }
         };
 
-        Map textFieldsMap = getInternalTextDocument().getTexts();
+        Map<Integer, TextDomainObject> textFieldsMap = getInternalTextDocument().getTexts();
 
         return filterAndConvertValues(textFieldsMap, predicate, fromDomainToAPITransformer);
     }
@@ -72,7 +72,7 @@ public class TextDocument extends Document {
      * @return A SortedMap that contains the images index as keys, and instaces of Image as values. Only the
      *         Image that has an url is returned.
      */
-    public SortedMap getImages() {
+    public SortedMap<Integer, Image> getImages() {
         Predicate predicate = new Predicate() {
             public boolean evaluate(Object o) {
                 Map.Entry entry = (Map.Entry) o;
@@ -88,7 +88,7 @@ public class TextDocument extends Document {
             }
         };
 
-        Map imagesMap = getInternalTextDocument().getImages();
+        Map<Integer, ImageDomainObject> imagesMap = getInternalTextDocument().getImages();
 
         return filterAndConvertValues(imagesMap, predicate, fromDomainToAPITransformer);
 
@@ -98,7 +98,7 @@ public class TextDocument extends Document {
      * @return A SortedMap that contains the index of the include as keys, and instaces of Document as values. Only the
      *         includes that has a document is returned.
      */
-    public SortedMap getIncludes() {
+    public SortedMap<Integer, Document> getIncludes() {
         Predicate predicate = new Predicate() {
             public boolean evaluate(Object o) {
                 Map.Entry entry = (Map.Entry) o;
@@ -110,26 +110,26 @@ public class TextDocument extends Document {
         Transformer fromDomainToAPITransformer = new Transformer() {
             public Object transform(Object o) {
                 Integer tempMetaId = (Integer) o;
-                return DocumentService.wrapDocumentDomainObject(getDocumentGetter().getDocument(tempMetaId), contentManagementSystem );
+                return DocumentService.wrapDocumentDomainObject(getDocumentGetter().getDocument(tempMetaId), contentManagementSystem);
             }
         };
 
-        Map includeMap = getInternalTextDocument().getIncludesMap();
+        Map<Integer, Integer> includeMap = getInternalTextDocument().getIncludesMap();
 
         return filterAndConvertValues(includeMap, predicate, fromDomainToAPITransformer);
 
     }
 
     private DocumentGetter getDocumentGetter() {
-        return contentManagementSystem.getInternal().getDocumentMapper() ;
+        return contentManagementSystem.getInternal().getDocumentMapper();
     }
 
-    private SortedMap filterAndConvertValues(Map map, Predicate predicate, Transformer transformer) {
-        Collection<Map.Entry> nonEmptyTextFields = CollectionUtils.select(map.entrySet(), predicate);
-        final SortedMap sortedMap = TransformedSortedMap.decorate(new TreeMap(), CloneTransformer.INSTANCE, transformer);
+    private <T> SortedMap<Integer, T> filterAndConvertValues(Map<Integer, ?> map, Predicate predicate, Transformer transformer) {
+        Collection<Map.Entry<Integer, ?>> nonEmptyTextFields = CollectionUtils.select(map.entrySet(), predicate);
+        final SortedMap<Integer, T> sortedMap = TransformedSortedMap.decorate(new TreeMap<>(), CloneTransformer.INSTANCE, transformer);
 
-        for ( Map.Entry entry : nonEmptyTextFields ) {
-            sortedMap.put(entry.getKey(), entry.getValue());
+        for (Map.Entry<Integer, ?> entry : nonEmptyTextFields) {
+            sortedMap.put(entry.getKey(), (T) entry.getValue());
         }
 
         return sortedMap;
@@ -145,7 +145,7 @@ public class TextDocument extends Document {
     }
 
     public TextDocumentDomainObject getInternalTextDocument() {
-        return (TextDocumentDomainObject)getInternal();
+        return getInternal();
     }
 
     public void setPlainTextField(int textFieldIndexInDocument, String newText) {
@@ -172,7 +172,7 @@ public class TextDocument extends Document {
 
     public Template getTemplate() {
         String templateName = getInternalTextDocument().getTemplateName();
-        return contentManagementSystem.getTemplateService().getTemplate(templateName) ;
+        return contentManagementSystem.getTemplateService().getTemplate(templateName);
     }
 
     public void setTemplate(TemplateGroup templateGroup, Template template) {
@@ -191,7 +191,7 @@ public class TextDocument extends Document {
         if (null != includedDocumentId) {
             DocumentDomainObject includedDocument = getDocumentGetter().getDocument(includedDocumentId);
             if (null != includedDocument) {
-                return DocumentService.wrapDocumentDomainObject(includedDocument, contentManagementSystem );
+                return DocumentService.wrapDocumentDomainObject(includedDocument, contentManagementSystem);
             }
         }
         return null;
@@ -199,9 +199,9 @@ public class TextDocument extends Document {
 
     public void setInclude(int includeIndexInDocument, TextDocument documentToBeIncluded) {
         if (null == documentToBeIncluded) {
-            getInternalTextDocument().removeInclude( includeIndexInDocument );
+            getInternalTextDocument().removeInclude(includeIndexInDocument);
         } else {
-            getInternalTextDocument().setInclude( includeIndexInDocument, documentToBeIncluded.getId() );
+            getInternalTextDocument().setInclude(includeIndexInDocument, documentToBeIncluded.getId());
         }
     }
 
@@ -215,18 +215,18 @@ public class TextDocument extends Document {
         return new Menu(this, menuIndexInDocument);
     }
 
-    public SortedMap getMenus() {
-        Map<Integer, MenuDomainObject> internalMenus = getInternalTextDocument().getMenus() ;
-        SortedMap menus = new TreeMap();
-        for ( Integer menuIndex : internalMenus.keySet() ) {
-            menus.put(menuIndex, new Menu(this, menuIndex.intValue()));
+    public SortedMap<Integer, Menu> getMenus() {
+        Map<Integer, MenuDomainObject> internalMenus = getInternalTextDocument().getMenus();
+        SortedMap<Integer, Menu> menus = new TreeMap<>();
+        for (Integer menuIndex : internalMenus.keySet()) {
+            menus.put(menuIndex, new Menu(this, menuIndex));
         }
-        return menus ;
+        return menus;
     }
 
-    public void setImage( int imageIndex, Image image ) {
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getInternal() ;
-        textDocument.setImage( imageIndex, image.getInternal());
+    public void setImage(int imageIndex, Image image) {
+        TextDocumentDomainObject textDocument = getInternal();
+        textDocument.setImage(imageIndex, image.getInternal());
     }
 
     ContentManagementSystem getContentManagementSystem() {
@@ -300,11 +300,11 @@ public class TextDocument extends Document {
         MenuItemDomainObject internalMenuItem;
         Document child;
 
-        public MenuItem( MenuItemDomainObject internalMenuItem, ContentManagementSystem contentManagementSystem ) {
+        public MenuItem(MenuItemDomainObject internalMenuItem, ContentManagementSystem contentManagementSystem) {
             this.internalMenuItem = internalMenuItem;
-            DocumentService.ApiWrappingDocumentVisitor visitor = new DocumentService.ApiWrappingDocumentVisitor( contentManagementSystem );
-            internalMenuItem.getDocument().accept( visitor );
-            child = visitor.getDocument() ;
+            DocumentService.ApiWrappingDocumentVisitor visitor = new DocumentService.ApiWrappingDocumentVisitor(contentManagementSystem);
+            internalMenuItem.getDocument().accept(visitor);
+            child = visitor.getDocument();
         }
 
         public Document getDocument() {
@@ -313,8 +313,8 @@ public class TextDocument extends Document {
 
 
         /**
-            @deprecated Use {@link #getSortKey()}
-       **/
+         * @deprecated Use {@link #getSortKey()}
+         */
         public int getManualNumber() {
             Integer sortKey = internalMenuItem.getSortKey();
             if (null == sortKey) {
@@ -327,7 +327,7 @@ public class TextDocument extends Document {
             return internalMenuItem.getSortKey();
         }
 
-        public void setSortKey( Integer sortKey ) {
+        public void setSortKey(Integer sortKey) {
             internalMenuItem.setSortKey(sortKey);
         }
 
@@ -384,8 +384,10 @@ public class TextDocument extends Document {
         public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED;
         /**
          * Menu sorted by tree sort order.
+         *
          * @deprecated Wrong name, use {@link #SORT_BY_TREE_ORDER_ASCENDING}.
          */
+        @Deprecated
         public final static int SORT_BY_TREE_ORDER_DESCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
         /**
          * Menu sorted by tree sort order.
@@ -403,7 +405,7 @@ public class TextDocument extends Document {
         Menu(TextDocument document, int menuIndex) {
             internalTextDocument = document.getInternalTextDocument();
             this.menuIndex = menuIndex;
-            contentManagementSystem = document.getContentManagementSystem() ;
+            contentManagementSystem = document.getContentManagementSystem();
         }
 
         /**
@@ -412,7 +414,7 @@ public class TextDocument extends Document {
          * @param documentToAdd the document to add
          */
         public void addDocument(Document documentToAdd) {
-            DocumentReference documentReference = new DirectDocumentReference( documentToAdd.getInternal() );
+            DocumentReference documentReference = new DirectDocumentReference(documentToAdd.getInternal());
             internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(documentReference));
         }
 
@@ -429,12 +431,12 @@ public class TextDocument extends Document {
          * @param sortOrder One of {@link #SORT_BY_HEADLINE}, {@link #SORT_BY_MANUAL_ORDER_DESCENDING},
          *                  {@link #SORT_BY_MODIFIED_DATETIME_DESCENDING}, or {@link #SORT_BY_TREE_ORDER_DESCENDING}
          */
-        public void setSortOrder( int sortOrder ) {
-            internalTextDocument.getMenu( menuIndex ).setSortOrder( sortOrder );
+        public void setSortOrder(int sortOrder) {
+            internalTextDocument.getMenu(menuIndex).setSortOrder(sortOrder);
         }
 
         public int getSortOrder() {
-            return internalTextDocument.getMenu( menuIndex ).getSortOrder();
+            return internalTextDocument.getMenu(menuIndex).getSortOrder();
         }
 
         /**
@@ -444,11 +446,11 @@ public class TextDocument extends Document {
         public MenuItem[] getVisibleMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
             DocumentPredicate documentPredicate = new DocumentPredicate() {
-                public boolean evaluateDocument( DocumentDomainObject document ) {
-                    return user.canSeeDocumentInMenus( document ) ;
+                public boolean evaluateDocument(DocumentDomainObject document) {
+                    return user.canSeeDocumentInMenus(document);
                 }
             };
-            return getMenuItems( documentPredicate );
+            return getMenuItems(documentPredicate);
         }
 
         /**
@@ -456,8 +458,8 @@ public class TextDocument extends Document {
          * @since 2.0
          */
         public Document[] getVisibleDocuments() {
-            MenuItem[] menuItems = getVisibleMenuItems() ;
-            return getDocumentsFromMenuItems( menuItems ) ;
+            MenuItem[] menuItems = getVisibleMenuItems();
+            return getDocumentsFromMenuItems(menuItems);
         }
 
         /**
@@ -465,11 +467,11 @@ public class TextDocument extends Document {
          */
         public MenuItem[] getMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-            return getMenuItems( new DocumentPredicate() {
-                public boolean evaluateDocument( DocumentDomainObject document ) {
-                    return user.canSeeDocumentInMenus( document ) || user.canEdit( document ) ;
+            return getMenuItems(new DocumentPredicate() {
+                public boolean evaluateDocument(DocumentDomainObject document) {
+                    return user.canSeeDocumentInMenus(document) || user.canEdit(document);
                 }
-            } ) ;
+            });
         }
 
         /**
@@ -477,11 +479,11 @@ public class TextDocument extends Document {
          */
         public MenuItem[] getPublishedMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-            return getMenuItems( new DocumentPredicate() {
-                public boolean evaluateDocument( DocumentDomainObject document ) {
-                    return document.isPublished() && user.canSeeDocumentWhenEditingMenus( document ) ;
+            return getMenuItems(new DocumentPredicate() {
+                public boolean evaluateDocument(DocumentDomainObject document) {
+                    return document.isPublished() && user.canSeeDocumentWhenEditingMenus(document);
                 }
-            } ) ;
+            });
         }
 
         /**
@@ -489,24 +491,24 @@ public class TextDocument extends Document {
          */
         public Document[] getDocuments() {
             MenuItem[] menuItems = getMenuItems();
-            return getDocumentsFromMenuItems( menuItems );
+            return getDocumentsFromMenuItems(menuItems);
         }
 
-        private MenuItem[] getMenuItems( DocumentPredicate documentPredicate ) {
-            MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu( menuIndex ).getMenuItems();
-            List menuItems = new ArrayList( menuItemsDomainObjects.length );
-            for ( MenuItemDomainObject menuItemDomainObject : menuItemsDomainObjects ) {
+        private MenuItem[] getMenuItems(DocumentPredicate documentPredicate) {
+            MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems();
+            List<MenuItem> menuItems = new ArrayList<>(menuItemsDomainObjects.length);
+            for (MenuItemDomainObject menuItemDomainObject : menuItemsDomainObjects) {
                 DocumentDomainObject document = menuItemDomainObject.getDocument();
-                if ( documentPredicate.evaluateDocument(document) ) {
+                if (documentPredicate.evaluateDocument(document)) {
                     menuItems.add(new MenuItem(menuItemDomainObject, contentManagementSystem));
                 }
             }
-            return (MenuItem[])menuItems.toArray( new MenuItem[menuItems.size()] );
+            return menuItems.toArray(new MenuItem[menuItems.size()]);
         }
 
-        private Document[] getDocumentsFromMenuItems( MenuItem[] menuItems ) {
+        private Document[] getDocumentsFromMenuItems(MenuItem[] menuItems) {
             Document[] documents = new Document[menuItems.length];
-            for ( int i = 0; i < menuItems.length; i++ ) {
+            for (int i = 0; i < menuItems.length; i++) {
                 MenuItem menuItem = menuItems[i];
                 documents[i] = menuItem.getDocument();
             }

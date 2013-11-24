@@ -1,43 +1,43 @@
 package com.imcode.imcms.mapping.orm;
 
+import org.apache.commons.lang.UnhandledException;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.UnhandledException;
-
 /**
- * Text document templates names. 
+ * Text document templates names.
  */
 @Entity
-@Table(name="text_docs")
+@Table(name = "text_docs")
 public class TemplateNames implements Cloneable {
-	
-    @Id 
-	@Column(name="meta_id")
-	private Integer docId;
-	
-	@Column(name="template_name")
+
+    @Id
+    @Column(name = "meta_id")
+    private Integer docId;
+
+    @Column(name = "template_name")
     private String templateName;
-	
-	@Column(name="group_id")
+
+    @Column(name = "group_id")
     private int templateGroupId;
-	
-	@Column(name="default_template")
+
+    @Column(name = "default_template")
     private String defaultTemplateName;
-	
-	@Column(name="default_template_1")
+
+    @Column(name = "default_template_1")
     private String defaultTemplateNameForRestricted1;
-	
-	@Column(name="default_template_2")
+
+    @Column(name = "default_template_2")
     private String defaultTemplateNameForRestricted2;
 
     @Override
     public TemplateNames clone() {
         try {
-            return (TemplateNames)super.clone();
-        } catch ( CloneNotSupportedException e ) {
+            return (TemplateNames) super.clone();
+        } catch (CloneNotSupportedException e) {
             throw new UnhandledException(e);
         }
     }
@@ -82,11 +82,11 @@ public class TemplateNames implements Cloneable {
         this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
     }
 
-	public Integer getDocId() {
-		return docId;
-	}
+    public Integer getDocId() {
+        return docId;
+    }
 
-	public void setDocId(Integer docId) {
-		this.docId = docId;
-	}
+    public void setDocId(Integer docId) {
+        this.docId = docId;
+    }
 }

@@ -1,41 +1,43 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.util.ChainableReversibleNullComparator;
+import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.RoleId;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.util.ChainableReversibleNullComparator;
+import java.io.Serializable;
+import java.util.*;
 
 public class Document implements Serializable {
 
     private final DocumentDomainObject internalDocument;
     ContentManagementSystem contentManagementSystem;
 
-    private final static Logger log = Logger.getLogger( Document.class.getName() );
+    private final static Logger log = Logger.getLogger(Document.class.getName());
 
-    /** @deprecated Use {@link Document.PublicationStatus#NEW} instead. */
+
+    /**
+     * @deprecated Use {@link Document.PublicationStatus#NEW} instead.
+     */
+    @Deprecated
     public static final int STATUS_NEW = 0;
-    /** @deprecated Use {@link Document.PublicationStatus#DISAPPROVED} instead. */
+
+    /**
+     * @deprecated Use {@link Document.PublicationStatus#DISAPPROVED} instead.
+     */
+    @Deprecated
     public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
-    /** @deprecated Use {@link Document.PublicationStatus#APPROVED} instead. */
+
+    /**
+     * @deprecated Use {@link Document.PublicationStatus#APPROVED} instead.
+     */
+    @Deprecated
     public static final int STATUS_PUBLICATION_APPROVED = 2;
 
-    protected Document( DocumentDomainObject document, ContentManagementSystem contentManagementSystem ) {
+    protected Document(DocumentDomainObject document, ContentManagementSystem contentManagementSystem) {
         this.internalDocument = document;
         this.contentManagementSystem = contentManagementSystem;
     }
@@ -51,58 +53,60 @@ public class Document implements Serializable {
     /**
      * @return map of roles Role -> DocumentPermissionSet instances.
      */
-    public Map getRolesMappedToPermissions() {
+    public Map<Role, DocumentPermissionSet> getRolesMappedToPermissions() {
         RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = internalDocument.getRoleIdsMappedToDocumentPermissionSetTypes();
 
-        Map result = new HashMap();
+        Map<RoleDomainObject, DocumentPermissionSetDomainObject> result = new HashMap<>();
         RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappings = roleIdToDocumentPermissionSetTypeMappings.getMappings();
         RoleGetter roleGetter = contentManagementSystem.getInternal().getRoleGetter();
-        for ( int i = 0; i < mappings.length; i++ ) {
-            RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = mappings[i];
+        for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappings) {
             RoleId roleId = mapping.getRoleId();
-            RoleDomainObject role = roleGetter.getRole(roleId) ;
+            RoleDomainObject role = roleGetter.getRole(roleId);
             DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
-            if ( DocumentPermissionSetTypeDomainObject.FULL.equals(documentPermissionSetType) ) {
+            if (DocumentPermissionSetTypeDomainObject.FULL.equals(documentPermissionSetType)) {
                 result.put(role, DocumentPermissionSetDomainObject.FULL);
-            } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType) ) {
+            } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType)) {
                 result.put(role, internalDocument.getPermissionSets().getRestricted1());
-            } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType) ) {
+            } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType)) {
                 result.put(role, internalDocument.getPermissionSets().getRestricted2());
-            } else if ( DocumentPermissionSetTypeDomainObject.READ.equals(documentPermissionSetType) ) {
+            } else if (DocumentPermissionSetTypeDomainObject.READ.equals(documentPermissionSetType)) {
                 result.put(role, DocumentPermissionSetDomainObject.READ);
-            } else if ( !DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) ) {
+            } else if (!DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType)) {
                 log.warn("A missing mapping in DocumentPermissionSetMapper");
             }
         }
 
-        return wrapDomainObjectsInMap( result );
+        return wrapDomainObjectsInMap(result);
 
     }
 
-    private static Map wrapDomainObjectsInMap( Map rolesMappedToPermissionsIds ) {
-        Map result = new HashMap();
-        Set keys = rolesMappedToPermissionsIds.keySet();
-        Iterator keyIterator = keys.iterator();
-        while ( keyIterator.hasNext() ) {
-            RoleDomainObject role = (RoleDomainObject)keyIterator.next();
-            DocumentPermissionSetDomainObject documentPermissionSetDO = (DocumentPermissionSetDomainObject)rolesMappedToPermissionsIds.get( role );
-            DocumentPermissionSet documentPermissionSet = new DocumentPermissionSet( documentPermissionSetDO );
-            result.put( new Role(role), documentPermissionSet );
+    private static Map<Role, DocumentPermissionSet> wrapDomainObjectsInMap(Map<RoleDomainObject, DocumentPermissionSetDomainObject> rolesMappedToPermissionsIds) {
+        Map<Role, DocumentPermissionSet> result = new HashMap<>();
+
+        for (Map.Entry<RoleDomainObject, DocumentPermissionSetDomainObject> entry : rolesMappedToPermissionsIds.entrySet()) {
+            result.put(new Role(entry.getKey()), new DocumentPermissionSet(entry.getValue()));
         }
+
         return result;
     }
 
-    /** Whether the document is archived. **/
+    /**
+     * Whether the document is archived. *
+     */
     public boolean isArchived() {
         return internalDocument.isArchived();
     }
 
-    /** Whether the document is published and not archived. **/
+    /**
+     * Whether the document is published and not archived. *
+     */
     public boolean isActive() {
         return internalDocument.isActive();
     }
 
-    /** Whether the document is published. **/
+    /**
+     * Whether the document is published. *
+     */
     public boolean isPublished() {
         return internalDocument.isPublished();
     }
@@ -116,18 +120,18 @@ public class Document implements Serializable {
     }
 
     public DocumentPermissionSet getDocumentPermissionSetForUser() {
-        return new DocumentPermissionSet( contentManagementSystem.getCurrentUser().getInternal().getPermissionSetFor( internalDocument ) );
+        return new DocumentPermissionSet(contentManagementSystem.getCurrentUser().getInternal().getPermissionSetFor(internalDocument));
     }
 
-    public boolean equals( Object o ) {
-        if ( this == o ) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof Document ) ) {
+        if (!(o instanceof Document)) {
             return false;
         }
 
-        final Document document = (Document)o;
+        final Document document = (Document) o;
 
         return internalDocument.equals(document.internalDocument);
 
@@ -136,7 +140,7 @@ public class Document implements Serializable {
     public DocumentLanguage getLanguage() {
         return internalDocument.getLanguage();
     }
-    
+
 
     public Integer getVersionNo() {
         return internalDocument.getVersionNo();
@@ -146,22 +150,22 @@ public class Document implements Serializable {
         return internalDocument.hashCode();
     }
 
-    public Set getKeywords() {
+    public Set<String> getKeywords() {
         return internalDocument.getKeywords();
     }
 
-    public void setKeywords(Set keywords) {
+    public void setKeywords(Set<String> keywords) {
         internalDocument.setKeywords(keywords);
     }
 
     public DocumentPermissionSet getPermissionSetRestrictedOne() {
-        DocumentPermissionSetDomainObject restrictedOne = internalDocument.getPermissionSets().getRestricted1() ;
-        return new DocumentPermissionSet( restrictedOne );
+        DocumentPermissionSetDomainObject restrictedOne = internalDocument.getPermissionSets().getRestricted1();
+        return new DocumentPermissionSet(restrictedOne);
     }
 
     public DocumentPermissionSet getPermissionSetRestrictedTwo() {
-        DocumentPermissionSetDomainObject restrictedTwo = internalDocument.getPermissionSets().getRestricted2() ;
-        return new DocumentPermissionSet( restrictedTwo );
+        DocumentPermissionSetDomainObject restrictedTwo = internalDocument.getPermissionSets().getRestricted2();
+        return new DocumentPermissionSet(restrictedTwo);
     }
 
     public String getHeadline() {
@@ -173,7 +177,7 @@ public class Document implements Serializable {
     }
 
     public String getAlias() {
-        return  internalDocument.getAlias();
+        return internalDocument.getAlias();
     }
 
     public void setAlias(String alias) {
@@ -188,25 +192,26 @@ public class Document implements Serializable {
         return internalDocument.getMenuImage();
     }
 
-    public void setHeadline(String headline ) {
-        internalDocument.setHeadline(headline );
+    public void setHeadline(String headline) {
+        internalDocument.setHeadline(headline);
     }
 
-    public void setMenuText(String menuText ) {
-        internalDocument.setMenuText(menuText );
+    public void setMenuText(String menuText) {
+        internalDocument.setMenuText(menuText);
     }
 
-    public void setMenuImageURL(String imageUrl ) {
-        internalDocument.setMenuImage(imageUrl );
+    public void setMenuImageURL(String imageUrl) {
+        internalDocument.setMenuImage(imageUrl);
     }
 
     public User getCreator() {
         int creatorId = internalDocument.getCreatorId();
-        return contentManagementSystem.getUserService().getUser(creatorId) ;
+        return contentManagementSystem.getUserService().getUser(creatorId);
     }
 
     /**
      * Returns the last user who modified this document.
+     *
      * @return the last user who modified this document or null is there is no associated user.
      */
     public User getModifier() {
@@ -214,85 +219,85 @@ public class Document implements Serializable {
         return modifierId == null ? null : contentManagementSystem.getUserService().getUser(modifierId);
     }
 
-    public void setCreator( User creator ) {
-        internalDocument.setCreator( creator.getInternal() );
+    public void setCreator(User creator) {
+        internalDocument.setCreator(creator.getInternal());
     }
 
-    public void addCategory( Category category ) {
-        internalDocument.addCategoryId( category.getId() );
+    public void addCategory(Category category) {
+        internalDocument.addCategoryId(category.getId());
     }
 
-    public void removeCategory( Category category ) {
-        internalDocument.removeCategoryId( category.getId() );
+    public void removeCategory(Category category) {
+        internalDocument.removeCategoryId(category.getId());
     }
 
     /**
      * @return An array of Categories, an empty if no one found.
      */
     public Category[] getCategories() {
-        Set categories = contentManagementSystem.getInternal().getCategoryMapper().getCategories(internalDocument.getCategoryIds());
-        CategoryDomainObject[] categoryDomainObjects = (CategoryDomainObject[]) categories.toArray(new CategoryDomainObject[categories.size()]);
-        return getCategoryArrayFromCategoryDomainObjectArray( categoryDomainObjects );
+        Set<CategoryDomainObject> categories = contentManagementSystem.getInternal().getCategoryMapper().getCategories(internalDocument.getCategoryIds());
+        CategoryDomainObject[] categoryDomainObjects = categories.toArray(new CategoryDomainObject[categories.size()]);
+        return getCategoryArrayFromCategoryDomainObjectArray(categoryDomainObjects);
     }
 
-    private Category[] getCategoryArrayFromCategoryDomainObjectArray( CategoryDomainObject[] categoryDomainObjects ) {
+    private Category[] getCategoryArrayFromCategoryDomainObjectArray(CategoryDomainObject[] categoryDomainObjects) {
         Category[] categories = new Category[categoryDomainObjects.length];
 
-        for ( int i = 0; i < categories.length; i++ ) {
+        for (int i = 0; i < categories.length; i++) {
             CategoryDomainObject categoryDomainObject = categoryDomainObjects[i];
-            categories[i] = new Category( categoryDomainObject );
+            categories[i] = new Category(categoryDomainObject);
         }
         return categories;
     }
 
     /**
-        @param permissionSetId One of the constants in {@link DocumentPermissionSet}.
-        @deprecated Use {@link #setPermissionSetTypeForRole(Role, DocumentPermissionSetType)}
-        @since 2.0
-     **/
-    public void setPermissionSetIdForRole( Role role, int permissionSetId ) {
-        if ( null != role ) {
+     * @param permissionSetId One of the constants in {@link DocumentPermissionSet}.
+     * @since 2.0
+     * @deprecated Use {@link #setPermissionSetTypeForRole(Role, DocumentPermissionSetType)}
+     */
+    public void setPermissionSetIdForRole(Role role, int permissionSetId) {
+        if (null != role) {
             internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), DocumentPermissionSetTypeDomainObject.fromInt(permissionSetId));
         }
     }
 
     /**
-        @since 3.0
+     * @since 3.0
      */
-    public void setPermissionSetTypeForRole( Role role, DocumentPermissionSetType documentPermissionSetType ) {
+    public void setPermissionSetTypeForRole(Role role, DocumentPermissionSetType documentPermissionSetType) {
         internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), documentPermissionSetType.getInternal());
     }
 
     /**
-     *   @deprecated Use {@link #getPermissionSetTypeForRole(Role)}
-         @since 2.0
+     * @since 2.0
+     * @deprecated Use {@link #getPermissionSetTypeForRole(Role)}
      */
-    public int getPermissionSetIdForRole( Role role ) {
+    public int getPermissionSetIdForRole(Role role) {
         return internalDocument.getDocumentPermissionSetTypeForRoleId(role.getInternal().getId()).getId();
     }
 
     /**
-        @since 3.0
-    */
-    public DocumentPermissionSetType getPermissionSetTypeForRole( Role role ) {
-        return new DocumentPermissionSetType(internalDocument.getDocumentPermissionSetTypeForRoleId(role.getInternal().getId())) ;
+     * @since 3.0
+     */
+    public DocumentPermissionSetType getPermissionSetTypeForRole(Role role) {
+        return new DocumentPermissionSetType(internalDocument.getDocumentPermissionSetTypeForRoleId(role.getInternal().getId()));
     }
 
     /**
      * @param categoryType
      * @return an array of Categories, empty array if no one found.
      */
-    public Category[] getCategoriesOfType( CategoryType categoryType ) {
+    public Category[] getCategoriesOfType(CategoryType categoryType) {
         CategoryMapper categoryMapper = contentManagementSystem.getInternal().getCategoryMapper();
-        Set categoriesOfType = categoryMapper.getCategoriesOfType(categoryType.getInternal(), internalDocument.getCategoryIds());
-        CategoryDomainObject[] categories = (CategoryDomainObject[]) categoriesOfType.toArray(new CategoryDomainObject[categoriesOfType.size()]);
-        return getCategoryArrayFromCategoryDomainObjectArray( categories );
+        Set<CategoryDomainObject> categoriesOfType = categoryMapper.getCategoriesOfType(categoryType.getInternal(), internalDocument.getCategoryIds());
+        CategoryDomainObject[] categories = categoriesOfType.toArray(new CategoryDomainObject[categoriesOfType.size()]);
+        return getCategoryArrayFromCategoryDomainObjectArray(categories);
     }
 
     public User getPublisher() {
         Integer publisherId = internalDocument.getPublisherId();
-        if ( null != publisherId ) {
-            return contentManagementSystem.getUserService().getUser(publisherId.intValue()) ;
+        if (null != publisherId) {
+            return contentManagementSystem.getUserService().getUser(publisherId);
         } else {
             return null;
         }
@@ -306,58 +311,66 @@ public class Document implements Serializable {
         return internalDocument.getPublicationStartDatetime();
     }
 
-    public void setPublicationStartDatetime( Date datetime ) {
-        internalDocument.setPublicationStartDatetime( datetime );
+    public void setPublicationStartDatetime(Date datetime) {
+        internalDocument.setPublicationStartDatetime(datetime);
     }
 
-    /** Deprecated with no replacement. */
+    /**
+     * Deprecated with no replacement.
+     */
     @Deprecated
     public Date getArchivedDatetime() {
         return internalDocument.getArchivedDatetime();
     }
 
-    /** Deprecated with no replacement. */
+    /**
+     * Deprecated with no replacement.
+     */
     @Deprecated
-    public void setArchivedDatetime( Date datetime ) {
-        internalDocument.setArchivedDatetime( datetime );
+    public void setArchivedDatetime(Date datetime) {
+        internalDocument.setArchivedDatetime(datetime);
     }
 
-    public void setPublisher( User user ) {
-        internalDocument.setPublisher( user.getInternal() );
+    public void setPublisher(User user) {
+        internalDocument.setPublisher(user.getInternal());
     }
 
     public Date getModifiedDatetime() {
         return internalDocument.getModifiedDatetime();
     }
 
-    public void setModifiedDatetime( Date date ) {
-        internalDocument.setModifiedDatetime( date );
+    public void setModifiedDatetime(Date date) {
+        internalDocument.setModifiedDatetime(date);
     }
 
     public Date getCreatedDatetime() {
         return internalDocument.getCreatedDatetime();
     }
 
-    /** @deprecated Use {@link #setPublicationStatus} instead. */
-    public void setStatus( int status ) {
-        internalDocument.setPublicationStatus( new PublicationStatus(status) );
+    /**
+     * @deprecated Use {@link #setPublicationStatus} instead.
+     */
+    public void setStatus(int status) {
+        internalDocument.setPublicationStatus(new PublicationStatus(status));
     }
 
-    public void setPublicationEndDatetime( Date datetime ) {
-        internalDocument.setPublicationEndDatetime( datetime );
+    public void setPublicationEndDatetime(Date datetime) {
+        internalDocument.setPublicationEndDatetime(datetime);
     }
 
     public Date getPublicationEndDatetime() {
         return internalDocument.getPublicationEndDatetime();
     }
 
-    /** @deprecated Use {@link #getPublicationStatus} instead. */
+    /**
+     * @deprecated Use {@link #getPublicationStatus} instead.
+     */
     public int getStatus() {
-        return internalDocument.getPublicationStatus().status ;
+        return internalDocument.getPublicationStatus().status;
     }
 
-    public void setVisibleInMenusForUnauthorizedUsers( boolean visibleInMenusForUnauthorizedUsers ) {
-        internalDocument.setLinkedForUnauthorizedUsers( visibleInMenusForUnauthorizedUsers );
+    public void setVisibleInMenusForUnauthorizedUsers(boolean visibleInMenusForUnauthorizedUsers) {
+        internalDocument.setLinkedForUnauthorizedUsers(visibleInMenusForUnauthorizedUsers);
     }
 
     public boolean isVisibleInMenusForUnauthorizedUsers() {
@@ -377,11 +390,11 @@ public class Document implements Serializable {
     }
 
     public void setPublicationStatus(PublicationStatus publicationStatus) {
-        internalDocument.setPublicationStatus(publicationStatus) ;
+        internalDocument.setPublicationStatus(publicationStatus);
     }
 
     /**
-        @since 3.0
+     * @since 3.0
      */
     public static class PublicationStatus implements Serializable {
         public static final PublicationStatus NEW = new PublicationStatus(STATUS_NEW);
@@ -395,7 +408,7 @@ public class Document implements Serializable {
         }
 
         public String toString() {
-            return ""+status ;
+            return "" + status;
         }
 
         public boolean equals(Object o) {
@@ -409,17 +422,21 @@ public class Document implements Serializable {
         public int hashCode() {
             return status;
         }
-        
+
         public int asInt() {
-        	return status;
+            return status;
         }
 
         public static PublicationStatus of(int id) {
             switch (id) {
-                case STATUS_NEW: return NEW;
-                case STATUS_PUBLICATION_APPROVED: return APPROVED;
-                case STATUS_PUBLICATION_DISAPPROVED: return DISAPPROVED;
-                default: throw new IllegalArgumentException("Illegal status id: " + id);
+                case STATUS_NEW:
+                    return NEW;
+                case STATUS_PUBLICATION_APPROVED:
+                    return APPROVED;
+                case STATUS_PUBLICATION_DISAPPROVED:
+                    return DISAPPROVED;
+                default:
+                    throw new IllegalArgumentException("Illegal status id: " + id);
             }
         }
     }
@@ -432,72 +449,72 @@ public class Document implements Serializable {
         public static final LifeCyclePhase ARCHIVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.ARCHIVED);
         public static final LifeCyclePhase APPROVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.APPROVED);
 
-        private imcode.server.document.LifeCyclePhase phase ;
+        private imcode.server.document.LifeCyclePhase phase;
 
-        private LifeCyclePhase( imcode.server.document.LifeCyclePhase phase ) {
+        private LifeCyclePhase(imcode.server.document.LifeCyclePhase phase) {
             this.phase = phase;
         }
 
         public String toString() {
-            return phase.toString() ;
+            return phase.toString();
         }
     }
 
     public abstract static class Comparator extends ChainableReversibleNullComparator {
 
-        public int compare( Object o1, Object o2 ) {
-            final Document d1 = (Document)o1;
-            final Document d2 = (Document)o2;
+        public int compare(Object o1, Object o2) {
+            final Document d1 = (Document) o1;
+            final Document d2 = (Document) o2;
             try {
-                return compareDocuments( d1, d2 );
-            } catch ( NullPointerException npe ) {
+                return compareDocuments(d1, d2);
+            } catch (NullPointerException npe) {
                 NullPointerException nullPointerException = new NullPointerException("Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator.");
                 nullPointerException.initCause(npe);
                 throw nullPointerException;
             }
         }
 
-        protected abstract int compareDocuments( Document d1, Document d2 );
+        protected abstract int compareDocuments(Document d1, Document d2);
 
         public final static Comparator ID = new Comparator() {
-            protected int compareDocuments( Document d1, Document d2 ) {
+            protected int compareDocuments(Document d1, Document d2) {
                 return d1.getId() - d2.getId();
             }
         };
 
         public final static Comparator HEADLINE = new Comparator() {
-            protected int compareDocuments( Document d1, Document d2 ) {
-                return d1.getHeadline().compareToIgnoreCase( d2.getHeadline() );
+            protected int compareDocuments(Document d1, Document d2) {
+                return d1.getHeadline().compareToIgnoreCase(d2.getHeadline());
             }
         };
 
         public final static Comparator CREATED_DATETIME = new Comparator() {
-            protected int compareDocuments( Document d1, Document d2 ) {
-                return d1.getCreatedDatetime().compareTo( d2.getCreatedDatetime() );
+            protected int compareDocuments(Document d1, Document d2) {
+                return d1.getCreatedDatetime().compareTo(d2.getCreatedDatetime());
             }
         };
 
         public final static Comparator MODIFIED_DATETIME = new Comparator() {
-            protected int compareDocuments( Document d1, Document d2 ) {
-                return d1.getModifiedDatetime().compareTo( d2.getModifiedDatetime() );
+            protected int compareDocuments(Document d1, Document d2) {
+                return d1.getModifiedDatetime().compareTo(d2.getModifiedDatetime());
             }
         };
 
         public final static Comparator PUBLICATION_START_DATETIME = new Comparator() {
-            protected int compareDocuments( Document document1, Document document2 ) {
-                return document1.getPublicationStartDatetime().compareTo( document2.getPublicationStartDatetime() );
+            protected int compareDocuments(Document document1, Document document2) {
+                return document1.getPublicationStartDatetime().compareTo(document2.getPublicationStartDatetime());
             }
         };
 
         public final static Comparator PUBLICATION_END_DATETIME = new Comparator() {
-            protected int compareDocuments( Document document1, Document document2 ) {
-                return document1.getPublicationEndDatetime().compareTo( document2.getPublicationEndDatetime() );
+            protected int compareDocuments(Document document1, Document document2) {
+                return document1.getPublicationEndDatetime().compareTo(document2.getPublicationEndDatetime());
             }
         };
 
         public final static Comparator ARCHIVED_DATETIME = new Comparator() {
-            protected int compareDocuments( Document document1, Document document2 ) {
-                return document1.getArchivedDatetime().compareTo( document2.getArchivedDatetime() );
+            protected int compareDocuments(Document document1, Document document2) {
+                return document1.getArchivedDatetime().compareTo(document2.getArchivedDatetime());
             }
         };
 

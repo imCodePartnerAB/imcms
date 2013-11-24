@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
+todo:
+    add hibernate dialect filtering in hibernate.cfg.xml
+                            or
+    hibernate.properties in main/resources and test/resources
+-->
+
+<!--
+    Tomcat plugin: http://tomcat.apache.org/maven-plugin-2/
+
+    Default credentials (username/password) for plugin goals are admin/<empty>
+
+    Add the following line to your $CATALINA_BASE/conf/tomcat-users.xml
+
+    <user username="admin" password="" roles="manager-gui, manager-script, admin-gui, admin-script"/>
+-->
+
+<!--
+    Please note that there is additional resources dir - resources-conf.
+    Resources from that dir are copied by ant script into ${project.basedir}/target/imcms/WEB-INF/conf dir.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -13,6 +31,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
     <packaging>war</packaging>
 
     <name>imCMS</name>
+
     <url>http://imcode.com</url>
     <description>Open Source CMS</description>
     <organization>
@@ -28,12 +47,20 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
-        <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
-        <maven.compiler.showWarnings>false</maven.compiler.showWarnings>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
 
-        <javac.args />
+        <maven.compiler.fork>true</maven.compiler.fork>
+        <maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>
+        <maven.compiler.meminitial>512m</maven.compiler.meminitial>
+        <maven.compiler.maxmem>1g</maven.compiler.maxmem>
+
+        <maven.compiler.debug>true</maven.compiler.debug>
+        <maven.compiler.optimize>false</maven.compiler.optimize>
+        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+
+        <javac.args/>
 
         <build.webapp.dir>${project.build.directory}/${project.artifactId}</build.webapp.dir>
 
@@ -46,19 +73,27 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
         <gwt.version>2.5.1</gwt.version>
         <vaadin.version>7.1.8</vaadin.version>
 
-        <jetty.port>9090</jetty.port>
-        <jetty.stop.key>${project.name}</jetty.stop.key>
-        <jetty.stop.port>9696</jetty.stop.port>
-        <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
-        <jetty.version>8.1.14.v20131031</jetty.version>
-        <jetty.contextPath>/${project.artifactId}</jetty.contextPath>
+        <!--
+            Jetty jsp compiler plugin version.
+        -->
+        <jetty.version>9.0.6.v20130930</jetty.version>
+
+        <tomcat.version>7.0.47</tomcat.version>
 
         <!--
-            tomcat6:run goal property.
+            tomcat7:run goal property.
             The web resources directory for the web application being run.
-            Default value is: ${basedir}/src/main/webapp
+            Default value is: ${project.basedir}/src/main/webapp
         -->
         <tomcat.warSourceDirectory>${build.webapp.dir}</tomcat.warSourceDirectory>
+
+        <!--
+            tomcat7:run goal property.
+            The port to run the Tomcat server on. Will be exposed as System props and session.executionProperties with
+            key tomcat.maven.http.port
+            Default value is: 8080.
+        -->
+        <maven.tomcat.port>9090</maven.tomcat.port>
 
         <!--
             tomcat6:exploded goal property.
@@ -80,7 +115,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                 <artifact.log4j.console-appender.threshold>all</artifact.log4j.console-appender.threshold>
                 <artifact.log4j.threshold>all</artifact.log4j.threshold>
 
-                <javac.args>-Xlint</javac.args>
+                <javac.args>-Xlint:all</javac.args>
                 <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
             </properties>
         </profile>
@@ -128,6 +163,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${slf4j.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -317,7 +353,9 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
             <version>2.4</version>
         </dependency>
 
-        <!-- both commons-lang:commons-lang:2.6 and org.apache.commons:commons-lang3:3.1 are required-->
+        <!--
+            both commons-lang:commons-lang:2.6 and org.apache.commons:commons-lang3:3.1 are required
+        -->
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
@@ -437,6 +475,12 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
             <groupId>com.imcode.util</groupId>
             <artifactId>imcode-util</artifactId>
             <version>2.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -475,20 +519,18 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
             <version>1</version>
         </dependency>
 
-        <!--
-            Dependencies for Unified EL reference implementation.
-            Required by Hibernate Validator.
-        -->
-        <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-            <version>2.2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>javax.el</artifactId>
-            <version>2.2.4</version>
-        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>javax.el</groupId>-->
+            <!--<artifactId>javax.el-api</artifactId>-->
+            <!--<version>2.2.4</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.glassfish.web</groupId>-->
+            <!--<artifactId>javax.el</artifactId>-->
+            <!--<version>2.2.4</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
         <!--
             End of dependencies for Unified EL reference implementation
         -->
@@ -503,7 +545,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.25</version>
+            <version>5.1.27</version>
         </dependency>
 
         <dependency>
@@ -585,24 +627,44 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
         <!-- Servlet, JSP, JSTL -->
         <!-- ================== -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+            <version>${tomcat.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>2.1</version>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jsp-api</artifactId>
+            <version>${tomcat.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Not distributed with all JEE web containers such as Tomcat 6.X -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-el-api</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            Hibernate Validator requires an implementation of the Unified Expression Language (JSR 341) for evaluating
+            dynamic expressions in constraint violation messages.
+            When the application runs in a Java EE container, an EL implementation is already provided by the container.
+        -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jasper-el</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Not distributed with Tomcat -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- ===== -->
@@ -795,10 +857,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 
     <build>
         <finalName>${project.artifactId}</finalName>
-        <!--
-            Please note that there is additional resources dir - resources-conf.
-            Resources from that dir are copied by ant script into target/imcms/WEB-INF/conf dir.
-        -->
+
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -811,6 +870,48 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                 <directory>src/test/resources</directory>
             </testResource>
         </testResources>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.tomcat.maven</groupId>
+                    <artifactId>tomcat6-maven-plugin</artifactId>
+                    <version>2.2</version>
+                    <dependencies>
+                        <!--
+                            Eliminates warning:
+                            SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+                            SLF4J: Defaulting to no-operation (NOP) logger implementation
+                            SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+                        -->
+                        <dependency>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-simple</artifactId>
+                            <version>${slf4j.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.tomcat.maven</groupId>
+                    <artifactId>tomcat7-maven-plugin</artifactId>
+                    <version>2.2</version>
+                    <dependencies>
+                        <!--
+                            Eliminates warning:
+                            SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+                            SLF4J: Defaulting to no-operation (NOP) logger implementation
+                            SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+                        -->
+                        <dependency>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-simple</artifactId>
+                            <version>${slf4j.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
         <plugins>
             <plugin>
@@ -846,7 +947,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                 <version>3.1.4</version>
                 <configuration>
                     <jvmArgs>
-                        <!-- ...-Xss64m...-->
+                        <jvmArg>-Xss1024k</jvmArg>
                         <jvmArg>-Xms1024m</jvmArg>
                         <jvmArg>-Xmx1024m</jvmArg>
                     </jvmArgs>
@@ -855,6 +956,9 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                         <arg>-unchecked</arg>
                         <arg>-deprecation</arg>
                         <arg>-explaintypes</arg>
+                        <!--
+                            Shortens generated classfile names - unpredictable behaviour
+                        -->
                         <!--<arg>-Xmax-classfile-name</arg>-->
                         <!--<arg>72</arg>-->
                     </args>
@@ -899,7 +1003,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.9.1</version>
                 <configuration>
-                    <configLocation>${basedir}/docs/checkstyle.xml</configLocation>
+                    <configLocation>${project.basedir}/docs/checkstyle.xml</configLocation>
                 </configuration>
             </plugin>
 
@@ -917,7 +1021,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                             <outputDirectory>${build.webapp.dir}/WEB-INF/conf</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/src/main/resources-conf</directory>
+                                    <directory>${project.basedir}/src/main/resources-conf</directory>
                                     <includes>
                                         <include>log4j.xml</include>
                                     </includes>
@@ -975,15 +1079,15 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
 
                                 <if>
                                     <not>
-                                        <available file="${basedir}/build.properties" />
+                                        <available file="${project.basedir}/build.properties" />
                                     </not>
                                     <then>
-                                        <copy file="${basedir}/build.properties.template" tofile="${basedir}/build.properties" />
+                                        <copy file="${project.basedir}/build.properties.template" tofile="${project.basedir}/build.properties" />
                                     </then>
                                 </if>
 
-                                <uptodate targetfile="${basedir}/build.properties" property="build-properties-up-to-date">
-                                    <srcfiles dir="${basedir}" includes="build.properties.template" />
+                                <uptodate targetfile="${project.basedir}/build.properties" property="build-properties-up-to-date">
+                                    <srcfiles dir="${project.basedir}" includes="build.properties.template" />
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
@@ -1003,7 +1107,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                         <phase>process-sources</phase>
                         <configuration>
                             <target>
-                                <ant antfile="${basedir}/pom-ant.xml" target="process-webapp-sources">
+                                <ant antfile="${project.basedir}/pom-ant.xml" target="process-webapp-sources">
                                     <property name="version" value="${project.version}" />
                                     <property name="build.webapp.dir" value="${build.webapp.dir}" />
                                 </ant>
@@ -1017,7 +1121,7 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
             </plugin>
 
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
+                <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-jspc-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
                 <executions>
@@ -1051,8 +1155,6 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                         <exclude>**/Test*.java</exclude>
                         <exclude>**/*TestCase.java</exclude>
                     </excludes>
-                    <meminitial>512m</meminitial>
-                    <maxmem>512m</maxmem>
                     <compilerArgument>${javac.args}</compilerArgument>
                 </configuration>
             </plugin>
@@ -1136,66 +1238,18 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                 </dependencies>
             </plugin>
 
-            <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                    <scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>
-                    <stopKey>${jetty.stop.key}</stopKey>
-                    <stopPort>${jetty.stop.port}</stopPort>
-                    <webAppSourceDirectory>${build.webapp.dir}</webAppSourceDirectory>
-                    <connectors>
-                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>${jetty.port}</port>
-                            <maxIdleTime>60000</maxIdleTime>
-                        </connector>
-                    </connectors>
-                    <webAppConfig>
-                        <contextPath>${jetty.contextPath}</contextPath>
-                    </webAppConfig>
-                </configuration>
-            </plugin>
-
-            <!-- http://tomcat.apache.org/maven-plugin-2/ -->
-            <!--<user username="manager" password="manager" roles="manager-gui,manager-script" />-->
-
+            <!--
+                Some deployment and info goals (...) are not yet available in v7 plugin.
+                v6. can be used instead.
+            -->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat6-maven-plugin</artifactId>
-                <version>2.1</version>
-                <dependencies>
-                    <!--
-                        Eliminates warning:
-                        SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-                        SLF4J: Defaulting to no-operation (NOP) logger implementation
-                        SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-                    -->
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-simple</artifactId>
-                        <version>${slf4j.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.1</version>
-                <dependencies>
-                    <!--
-                        Eliminates warning:
-                        SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-                        SLF4J: Defaulting to no-operation (NOP) logger implementation
-                        SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-                    -->
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-simple</artifactId>
-                        <version>${slf4j.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
             <plugin>
@@ -1269,9 +1323,9 @@ todo: ??? add hibernate dialect filtering in hibernate.cfg.xml ???
                     <!-- <runTarget>mobilemail</runTarget> -->
                     <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This
                             way compatible with Vaadin eclipse plugin. -->
-                    <webappDirectory>${basedir}/src/main/web/VAADIN/widgetsets
+                    <webappDirectory>${project.basedir}/src/main/web/VAADIN/widgetsets
                     </webappDirectory>
-                    <hostedWebapp>${basedir}/src/main/web/VAADIN/widgetsets
+                    <hostedWebapp>${project.basedir}/src/main/web/VAADIN/widgetsets
                     </hostedWebapp>
                     <noServer>true</noServer>
                     <!-- Remove draftCompile when project is ready -->

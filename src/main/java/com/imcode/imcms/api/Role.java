@@ -6,15 +6,15 @@ import imcode.server.user.RoleId;
 /**
  * @since 2.0
  */
-public class Role implements Comparable {
+public class Role implements Comparable<Role> {
 
-    public static final int SUPERADMIN_ID = RoleId.SUPERADMIN_ID ;
-    public static final int USERADMIN_ID = RoleId.USERADMIN_ID ;
-    public static final int USERS_ID = RoleId.USERS_ID ;
+    public static final int SUPERADMIN_ID = RoleId.SUPERADMIN_ID;
+    public static final int USERADMIN_ID = RoleId.USERADMIN_ID;
+    public static final int USERS_ID = RoleId.USERS_ID;
 
-    private final RoleDomainObject internalRole ;
+    private final RoleDomainObject internalRole;
 
-    Role( RoleDomainObject role ) {
+    Role(RoleDomainObject role) {
         this.internalRole = role;
     }
 
@@ -30,12 +30,12 @@ public class Role implements Comparable {
         return internalRole.getName();
     }
 
-    public void setName( String name ) {
-        internalRole.setName( name );
+    public void setName(String name) {
+        internalRole.setName(name);
     }
 
-    public boolean equals( Object o ) {
-        return internalRole.equals( ((Role)o).internalRole );
+    public boolean equals(Object o) {
+        return internalRole.equals(((Role) o).internalRole);
     }
 
     public int hashCode() {
@@ -43,19 +43,19 @@ public class Role implements Comparable {
     }
 
     public String toString() {
-        return getName() ;
+        return getName();
     }
 
     public void setPasswordMailPermission(boolean passwordMailPermission) {
         if (passwordMailPermission) {
-            internalRole.addPermission( RoleDomainObject.PASSWORD_MAIL_PERMISSION );
+            internalRole.addPermission(RoleDomainObject.PASSWORD_MAIL_PERMISSION);
         } else {
-            internalRole.removePermission( RoleDomainObject.PASSWORD_MAIL_PERMISSION );
+            internalRole.removePermission(RoleDomainObject.PASSWORD_MAIL_PERMISSION);
         }
     }
 
     public boolean hasPasswordMailPermission() {
-        return internalRole.hasPermission( RoleDomainObject.PASSWORD_MAIL_PERMISSION ) ;
+        return internalRole.hasPermission(RoleDomainObject.PASSWORD_MAIL_PERMISSION);
     }
 
     public void setUseImagesInArchivePermission(boolean useImages) {
@@ -82,7 +82,7 @@ public class Role implements Comparable {
         return internalRole.hasPermission(RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
     }
 
-    public int compareTo( Object o ) {
-        return internalRole.compareTo( ((Role)o).internalRole ) ;
+    public int compareTo(Role role) {
+        return internalRole.compareTo(role.internalRole);
     }
 }
