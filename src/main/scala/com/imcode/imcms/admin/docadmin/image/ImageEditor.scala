@@ -27,7 +27,7 @@ class ImageEditor(originalImageOpt: Option[ImageDomainObject]) extends Editor {
         new Label("No image") with UndefinedSize
 
       case Some(image) =>
-        val url = ImcmsImageUtils.getImageUrl(null, image, Current.contextPath)
+        val url = ImcmsImageUtils.getImageUrl(image, Current.contextPath)
         new Image(null, new ExternalResource(url))
     }
 

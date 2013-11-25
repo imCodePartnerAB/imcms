@@ -48,7 +48,7 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
 
           //image.setUrl()
 
-          editors(widget.tsImages.getTabIndex).setImageOpt(image)
+          editors(widget.tsImages.getTabIndex).setImageOpt(Some(image))
 
           dlg.close()
         }
