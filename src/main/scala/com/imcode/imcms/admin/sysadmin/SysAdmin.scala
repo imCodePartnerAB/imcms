@@ -2,7 +2,6 @@ package com.imcode
 package imcms
 package admin.sysadmin
 
-import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 import com.imcode._
 import com.imcode.imcms.servlet.superadmin.AdminSearchTerms

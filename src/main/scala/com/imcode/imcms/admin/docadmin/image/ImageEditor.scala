@@ -5,6 +5,7 @@ import imcode.util.ImcmsImageUtils
 import com.imcode.imcms.vaadin.{Editor, Current}
 import com.vaadin.ui.{Label, Alignment, Image}
 import com.vaadin.server.ExternalResource
+import com.imcode.imcms.vaadin.component.UndefinedSize
 
 class ImageEditor(originalImageOpt: Option[ImageDomainObject]) extends Editor {
 
@@ -23,10 +24,10 @@ class ImageEditor(originalImageOpt: Option[ImageDomainObject]) extends Editor {
 
     val content = imageOpt match {
       case None =>
-        new Label("No image")
+        new Label("No image") with UndefinedSize
 
       case Some(image) =>
-        val url = ImcmsImageUtils.getImageUrl(image, Current.contextPath)
+        val url = ImcmsImageUtils.getImageUrl(null, image, Current.contextPath)
         new Image(null, new ExternalResource(url))
     }
 

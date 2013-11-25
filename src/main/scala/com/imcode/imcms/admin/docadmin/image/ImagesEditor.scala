@@ -40,7 +40,22 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
     }
 
     w.miChoose.setCommandHandler { _ =>
+      val dlg = new ImageSelectDialog("Choose image")
 
+      dlg.setOkButtonHandler {
+        for (imageFile <- dlg.imageSelect.selectionOpt()) {
+          val image = new ImageDomainObject
+
+          //image.setUrl()
+
+          editors(widget.tsImages.getTabIndex).setImageOpt(image)
+
+          dlg.close()
+        }
+      }
+
+      dlg.setSize(800, 800, Sizeable.Unit.PIXELS)
+      dlg |> Current.ui.addWindow
     }
   }
 
