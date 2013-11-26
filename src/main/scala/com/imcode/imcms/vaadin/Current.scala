@@ -12,8 +12,8 @@ object Current {
   def vaadinSession: VaadinSession = VaadinSession.getCurrent
   def vaadinService: VaadinService = VaadinService.getCurrent
 
-  def ui: UI = Current.ui
-  def page: Page = Current.page
+  def ui: UI = UI.getCurrent
+  def page: Page = Page.getCurrent
 
   def httpSession: HttpSession = vaadinSession.getSession.asInstanceOf[WrappedHttpSession].getHttpSession
   def servletContext: ServletContext = vaadinServlet.getServletContext

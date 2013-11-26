@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-todo:
-    add hibernate dialect filtering in hibernate.cfg.xml
-                            or
-    hibernate.properties in main/resources and test/resources
--->
-
-<!--
     Tomcat plugin: http://tomcat.apache.org/maven-plugin-2/
 
     Default credentials (username/password) for plugin goals are admin/<empty>
@@ -21,7 +14,8 @@ todo:
     Please note that there is additional resources dir - resources-conf.
     Resources from that dir are copied by ant script into ${project.basedir}/target/imcms/WEB-INF/conf dir.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -53,7 +47,7 @@ todo:
         <maven.compiler.fork>true</maven.compiler.fork>
         <maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>
         <maven.compiler.meminitial>512m</maven.compiler.meminitial>
-        <maven.compiler.maxmem>1g</maven.compiler.maxmem>
+        <maven.compiler.maxmem>1024m</maven.compiler.maxmem>
 
         <maven.compiler.debug>true</maven.compiler.debug>
         <maven.compiler.optimize>false</maven.compiler.optimize>
@@ -73,11 +67,6 @@ todo:
         <gwt.version>2.5.1</gwt.version>
         <vaadin.version>7.1.8</vaadin.version>
 
-        <!--
-            Jetty jsp compiler plugin version.
-        -->
-        <jetty.version>9.0.6.v20130930</jetty.version>
-
         <tomcat.version>7.0.47</tomcat.version>
 
         <!--
@@ -89,11 +78,19 @@ todo:
 
         <!--
             tomcat7:run goal property.
+            will add /WEB-INF/lib/*.jar and /WEB-INF/classes from war dependencies in the webappclassloader
+            Default value is: true.
+            User property is: maven.tomcat.addWarDependenciesInClassloader.
+        -->
+        <addWarDependenciesInClassloader>false</addWarDependenciesInClassloader>
+
+        <!--
+            tomcat7:run goal property.
             The port to run the Tomcat server on. Will be exposed as System props and session.executionProperties with
             key tomcat.maven.http.port
             Default value is: 8080.
         -->
-        <maven.tomcat.port>9090</maven.tomcat.port>
+        <maven.tomcat.port>8080</maven.tomcat.port>
 
         <!--
             tomcat6:exploded goal property.
@@ -101,6 +98,16 @@ todo:
             Default value is: false.
         -->
         <maven.tomcat.update>true</maven.tomcat.update>
+
+        <!--
+            Jetty plugin and jsp compiler plugin version.
+        -->
+        <jetty.version>9.0.6.v20130930</jetty.version>
+        <jetty.port>9090</jetty.port>
+        <jetty.stop.key>${project.name}</jetty.stop.key>
+        <jetty.stop.port>9696</jetty.stop.port>
+        <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
+        <jetty.contextPath>/${project.artifactId}</jetty.contextPath>
 
         <artifact.log4j.threshold>info</artifact.log4j.threshold>
         <artifact.log4j.hibernate.level>error</artifact.log4j.hibernate.level>
@@ -910,7 +917,7 @@ todo:
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.1.4</version>
+                <version>3.1.6</version>
                 <configuration>
                     <jvmArgs>
                         <jvmArg>-Xss1024k</jvmArg>
@@ -1041,19 +1048,21 @@ todo:
                         <phase>validate</phase>
                         <configuration>
                             <target>
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
                                 <if>
                                     <not>
-                                        <available file="${project.basedir}/build.properties" />
+                                        <available file="${project.basedir}/build.properties"/>
                                     </not>
                                     <then>
-                                        <copy file="${project.basedir}/build.properties.template" tofile="${project.basedir}/build.properties" />
+                                        <copy file="${project.basedir}/build.properties.template"
+                                              tofile="${project.basedir}/build.properties"/>
                                     </then>
                                 </if>
 
-                                <uptodate targetfile="${project.basedir}/build.properties" property="build-properties-up-to-date">
-                                    <srcfiles dir="${project.basedir}" includes="build.properties.template" />
+                                <uptodate targetfile="${project.basedir}/build.properties"
+                                          property="build-properties-up-to-date">
+                                    <srcfiles dir="${project.basedir}" includes="build.properties.template"/>
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
@@ -1074,8 +1083,8 @@ todo:
                         <configuration>
                             <target>
                                 <ant antfile="${project.basedir}/pom-ant.xml" target="process-webapp-sources">
-                                    <property name="version" value="${project.version}" />
-                                    <property name="build.webapp.dir" value="${build.webapp.dir}" />
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="build.webapp.dir" value="${build.webapp.dir}"/>
                                 </ant>
                             </target>
                         </configuration>
@@ -1170,7 +1179,7 @@ todo:
                         War source directory must not be set to existing directory
                         since webappDirectory (the directory where the webapp is built) is created using ant script.
                     -->
-                    <warSourceDirectory />
+                    <warSourceDirectory/>
 
                     <!--<webResources>-->
                     <!--<resource>-->
@@ -1225,6 +1234,25 @@ todo:
                 <configuration>
                     <scmCommentPrefix>Issue 7753:</scmCommentPrefix>
                     <tagNameFormat>@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>${jetty.version}</version>
+                <configuration>
+                    <scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>
+                    <stopKey>${jetty.stop.key}</stopKey>
+                    <stopPort>${jetty.stop.port}</stopPort>
+                    <webAppSourceDirectory>${build.webapp.dir}</webAppSourceDirectory>
+                    <httpConnector>
+                        <port>${jetty.port}</port>
+                        <idleTimeout>30000</idleTimeout>
+                    </httpConnector>
+                    <webApp>
+                        <contextPath>${jetty.contextPath}</contextPath>
+                    </webApp>
                 </configuration>
             </plugin>
 

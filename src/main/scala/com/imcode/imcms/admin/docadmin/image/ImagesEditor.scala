@@ -14,8 +14,10 @@ import scala.collection.Set
 
 import com.imcode.imcms.dao.TextDocDao
 import com.vaadin.server._
-import com.vaadin.ui.{UI, Image}
+import com.vaadin.ui.{Button, UI, Image}
 import _root_.imcode.util.ImcmsImageUtils
+import org.slf4j.LoggerFactory
+import com.imcode.imcms.vaadin.component.dialog.OkCancelDialog
 
 // ImageEditParams:
 // ------------------
@@ -54,7 +56,7 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
         }
       }
 
-      dlg.setSize(800, 800, Sizeable.Unit.PIXELS)
+      dlg.setSize(600, 500, Sizeable.Unit.PIXELS)
       dlg |> Current.ui.addWindow
     }
   }
