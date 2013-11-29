@@ -69,10 +69,10 @@
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
-        <jetty.contextPath>/${project.artifactId}-${project.version}</jetty.contextPath>
+        <jetty.contextPath>/${project.artifactId}</jetty.contextPath>
 
         <tomcat.port>8888</tomcat.port>
-        <tomcat.contextPath>/${project.artifactId}-${project.version}</tomcat.contextPath>
+        <tomcat.contextPath>/${project.artifactId}</tomcat.contextPath>
         <tomcat.username>manager</tomcat.username>
         <tomcat.password>manager</tomcat.password>
     </properties>

@@ -1,5 +1,6 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.api.SearchResult;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentGetter;
 import com.imcode.util.HumanReadable;
@@ -52,6 +53,12 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
+        SearchResult<DocumentDomainObject> result = search(query, searchingUser, 0, -1);
+
+        return result.getDocuments();
+    }
+
+    public SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
         try {
             IndexSearcher indexSearcher = new IndexSearcher(directory.toString());
             try {
@@ -59,13 +66,13 @@ class DefaultDirectoryIndex implements DirectoryIndex {
                 searchStopWatch.start();
                 Hits hits = indexSearcher.search(query.getQuery(), query.getSort());
                 long searchTime = searchStopWatch.getTime();
-                List<DocumentDomainObject> documentList = getDocumentListForHits(hits, searchingUser);
+                SearchResult<DocumentDomainObject> result = getDocumentListForHits(hits, searchingUser, startPosition, maxResults);
                 if (log.isDebugEnabled()) {
                     log.debug("Search for " + query.getQuery().toString() + ": " + searchTime + "ms. Total: "
                             + searchStopWatch.getTime()
                             + "ms.");
                 }
-                return documentList;
+                return result;
             } finally {
                 indexSearcher.close();
             }
@@ -82,9 +89,22 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    private List<DocumentDomainObject> getDocumentListForHits(final Hits hits, final UserDomainObject searchingUser) {
+    private SearchResult<DocumentDomainObject> getDocumentListForHits(final Hits hits, final UserDomainObject searchingUser,
+                                                int startPosition, int maxResults) {
+
         DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter();
         List<Integer> documentIds = new DocumentIdHitsList(hits);
+
+        int totalCount = documentIds.size();
+
+        if (maxResults >= 0) {
+            startPosition = Math.min(startPosition, totalCount);
+            int toIndex = startPosition + maxResults;
+            toIndex = Math.min(toIndex, totalCount);
+
+            documentIds = documentIds.subList(startPosition, toIndex);
+        }
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         List<DocumentDomainObject> documentList = documentGetter.getDocuments(documentIds);
@@ -92,8 +112,8 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         if (log.isDebugEnabled()) {
             log.debug("Got " + documentList.size() + " documents in " + stopWatch.getTime() + "ms.");
         }
-//        if (documentList.size() != hits.length()) {
-//            inconsistent = true;
+//        if (documentList.size() != documentIds.size()) {
+//            inconsistent = true ;
 //        }
         CollectionUtils.filter(documentList, new Predicate() {
             public boolean evaluate(Object object) {
@@ -101,7 +121,8 @@ class DefaultDirectoryIndex implements DirectoryIndex {
                 return searchingUser.canSearchFor(document);
             }
         });
-        return documentList;
+
+        return SearchResult.of(documentList, totalCount);
     }
 
     public void indexDocument(DocumentDomainObject document) throws IndexException {
@@ -236,6 +257,16 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         return directory.hashCode();
     }
 
+    /**
+     * Read only non-caching view of found meta ids.
+     *
+     * Please note that {@link #get(int)} method call is expensive since it always perform additional computation.
+     * If you need a reusable sub-list of this view please consider copying its elements explicitly -
+     * for example {@code new java.util.ArrayList(DocumentIdHitsList.subList(n, k))}
+     */
+    // DON'T DO THIS!!
+    // This class implementation in almedalen_alpha23_r4 contains overridden {@link java.util.List#subList} method
+    // which violates behavioral contract by returning a copy of backing (this) list elements instead of a view.
     private static class DocumentIdHitsList extends AbstractList<Integer> {
 
         private final Hits hits;
@@ -244,6 +275,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
             this.hits = hits;
         }
 
+        @Override
         public Integer get(int index) {
             try {
                 return Integer.valueOf(hits.doc(index).get(DocumentIndex.FIELD__META_ID));
@@ -252,6 +284,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
             }
         }
 
+        @Override
         public int size() {
             return hits.length();
         }

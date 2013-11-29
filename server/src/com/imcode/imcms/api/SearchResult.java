@@ -1,0 +1,44 @@
+package com.imcode.imcms.api;
+
+import java.util.Collections;
+import java.util.List;
+
+public class SearchResult<T> {
+
+    public static <T> SearchResult<T> empty() {
+        return new SearchResult<T>(Collections.<T>emptyList(), 0);
+    }
+
+    public static <T> SearchResult<T> of(List<T> documents, int totalCount) {
+        return new SearchResult<T>(documents, totalCount);
+    }
+
+    private List<T> documents;
+    private int totalCount;
+
+
+    public SearchResult() {
+    }
+
+    public SearchResult(List<T> documents, int totalCount) {
+        this.documents = documents;
+        this.totalCount = totalCount;
+    }
+
+
+    public List<T> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<T> documents) {
+        this.documents = documents;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
+}
