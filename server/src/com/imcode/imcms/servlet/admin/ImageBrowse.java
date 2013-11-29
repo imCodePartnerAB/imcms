@@ -36,7 +36,7 @@ import com.imcode.util.MultipartHttpServletRequest;
  */
 public class ImageBrowse extends HttpServlet {
 
-    private final static Logger LOG = Logger.getLogger(ImageBrowse.class.getName());
+    private final static Logger LOG = Logger.getLogger( ImageBrowse.class.getName() );
 
     private static final String JSP__IMAGE_BROWSE = "ImageBrowse.jsp";
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ImageBrowse.button.ok";
@@ -50,20 +50,20 @@ public class ImageBrowse extends HttpServlet {
     public static final String REQUEST_PARAMETER__UPLOAD_BUTTON = "upload";
     public static final String REQUEST_PARAMETER__FILE = "file";
 
-    private static final LocalizedMessage ERROR_MESSAGE__FILE_EXISTS = new LocalizedMessage("error/servlet/images/image_file_exists");
+    private static final LocalizedMessage ERROR_MESSAGE__FILE_EXISTS = new LocalizedMessage( "error/servlet/images/image_file_exists" );
 
-    public void doPost(HttpServletRequest req, HttpServletResponse response) throws IOException, ServletException {
-        MultipartHttpServletRequest request = new MultipartHttpServletRequest(req);
-        ImageBrowser imageBrowser = (ImageBrowser) HttpSessionUtils.getSessionAttributeWithNameInRequest(request, ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER);
-        String imageUrl = request.getParameter(REQUEST_PARAMETER__IMAGE_URL);
+    public void doPost( HttpServletRequest req, HttpServletResponse response ) throws IOException, ServletException {
+        MultipartHttpServletRequest request = new MultipartHttpServletRequest( req );
+        ImageBrowser imageBrowser = (ImageBrowser)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER );
+        String imageUrl = request.getParameter( REQUEST_PARAMETER__IMAGE_URL );
 
-        if (null != request.getParameter(REQUEST_PARAMETER__CANCEL_BUTTON)) {
-            imageBrowser.cancel(request, response);
-        } else if (null != request.getParameter(REQUEST_PARAMETER__OK_BUTTON)
-                && null != imageUrl) {
+        if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
+            imageBrowser.cancel( request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__OK_BUTTON )
+                && null != imageUrl ) {
             verifyImage(imageUrl, imageBrowser, request, response);
         } else {
-            browse(imageUrl, false, request, response);
+            browse( imageUrl, false, request, response );
         }
     }
 
@@ -71,8 +71,8 @@ public class ImageBrowse extends HttpServlet {
                                    HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         File imagesRoot = Imcms.getServices().getConfig().getImagePath();
         File selectedImage = null;
-        File image = new File(imagesRoot, imageUrl);
-        if (FileUtility.directoryIsAncestorOfOrEqualTo(imagesRoot, image.getParentFile())) {
+        File image = new File( imagesRoot, imageUrl );
+        if ( FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, image.getParentFile() ) ) {
             selectedImage = image;
         }
 
@@ -81,48 +81,47 @@ public class ImageBrowse extends HttpServlet {
             if (info == null) {
                 browse(imageUrl, true, request, response);
             } else {
-                imageBrowser.selectImageUrl(imageUrl, request, response);
+                imageBrowser.selectImageUrl( imageUrl, request, response );
             }
         }
     }
 
-    public static void browse(String imageUrl, boolean fileNotImageError, HttpServletRequest request,
-                              HttpServletResponse response) throws ServletException, IOException {
+    public static void browse( String imageUrl, boolean fileNotImageError, HttpServletRequest request,
+                               HttpServletResponse response ) throws ServletException, IOException {
         File imagesRoot = Imcms.getServices().getConfig().getImagePath();
         boolean changeDirectoryButtonWasPressed = null
-                != request.getParameter(REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON);
+                != request.getParameter( REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON );
         File selectedImage = null;
-        if (null != imageUrl && !changeDirectoryButtonWasPressed) {
-            File image = new File(imagesRoot, imageUrl);
-            if (FileUtility.directoryIsAncestorOfOrEqualTo(imagesRoot, image.getParentFile())) {
+        if ( null != imageUrl && !changeDirectoryButtonWasPressed ) {
+            File image = new File( imagesRoot, imageUrl );
+            if ( FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, image.getParentFile() ) ) {
                 selectedImage = image;
             }
         }
 
-        String imageDirectoryString = request.getParameter(REQUEST_PARAMETER__IMAGE_DIRECTORY);
-        File lastVisitedDirectory = null;
+        String imageDirectoryString = request.getParameter( REQUEST_PARAMETER__IMAGE_DIRECTORY );
+        File lastVisitedDirectory = null ;
         try {
             lastVisitedDirectory = (null != request.getSession().getAttribute(REQUEST_PARAMETER__IMAGE_DIRECTORY_SESSION)) ?
                     (File) request.getSession().getAttribute(REQUEST_PARAMETER__IMAGE_DIRECTORY_SESSION) :
-                    null;
-        } catch (Exception ignore) {
-        }
+                    null ;
+        } catch (Exception ignore) {}
         File selectedDirectory =
                 (null != selectedImage) ?
                         selectedImage.getParentFile() :
                         (null != lastVisitedDirectory) ?
                                 lastVisitedDirectory :
                                 imagesRoot;
-        if (null != imageDirectoryString) {
-            File imageDirectory = new File(imagesRoot.getParentFile(), imageDirectoryString);
-            if (FileUtility.directoryIsAncestorOfOrEqualTo(imagesRoot, imageDirectory)) {
+        if ( null != imageDirectoryString ) {
+            File imageDirectory = new File( imagesRoot.getParentFile(), imageDirectoryString );
+            if ( FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, imageDirectory ) ) {
                 selectedDirectory = imageDirectory;
-                request.getSession().setAttribute(REQUEST_PARAMETER__IMAGE_DIRECTORY_SESSION, selectedDirectory);
+                request.getSession().setAttribute(REQUEST_PARAMETER__IMAGE_DIRECTORY_SESSION, selectedDirectory) ;
             }
         }
 
-        ImageBrowserPage page = new ImageBrowserPage(selectedDirectory, selectedImage);
-        if (null != request.getParameter(REQUEST_PARAMETER__UPLOAD_BUTTON)) {
+        ImageBrowserPage page = new ImageBrowserPage( selectedDirectory, selectedImage );
+        if ( null != request.getParameter( REQUEST_PARAMETER__UPLOAD_BUTTON ) ) {
             upload(request, selectedDirectory, page);
         }
 
@@ -130,23 +129,25 @@ public class ImageBrowse extends HttpServlet {
             page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__FILE_NOT_IMAGE);
         }
 
-        page.setLabel(StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)));
-        page.forward(request, response);
+        page.setLabel( StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__LABEL ) ) );
+        page.forward(request,response) ;
     }
 
-    private static void upload(HttpServletRequest request, File selectedDirectory, ImageBrowserPage page) throws IOException {
+    private static void upload( HttpServletRequest request, File selectedDirectory, ImageBrowserPage page ) throws IOException {
         File imagesRoot = Imcms.getServices().getConfig().getImagePath();
-        FileItem fileItem = ((MultipartHttpServletRequest) request).getParameterFileItem(REQUEST_PARAMETER__FILE);
-        if (null != fileItem) {
-            String fileName = fileItem.getName();
+        FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
+        if ( null != fileItem ) {
+//            LOG.info("Filename: " + fileItem.getName() + " normalized?: " +  Normalizer.isNormalized(fileItem.getName(), Normalizer.Form.NFKC));
+//            LOG.info("Before/After: " + fileItem.getName().length() + " / " +  Normalizer.normalize(fileItem.getName(), Normalizer.Form.NFKC).length());
+            String fileName = fileItem.getName();// Normalizer.normalize(fileItem.getName(), Normalizer.Form.NFKC);
             File destinationFile = new File(selectedDirectory, fileName);
-            boolean underImagesRoot = FileUtility.directoryIsAncestorOfOrEqualTo(imagesRoot, destinationFile.getParentFile());
-            boolean hasImageExtension = new ImageExtensionFilenameFilter().accept(destinationFile, destinationFile.getName());
+            boolean underImagesRoot = FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() );
+            boolean hasImageExtension = new ImageExtensionFilenameFilter().accept( destinationFile, destinationFile.getName() );
             if (!hasImageExtension) {
-                page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES);
-            } else if (destinationFile.exists()) {
-                page.setErrorMessage(ERROR_MESSAGE__FILE_EXISTS);
-            } else if (underImagesRoot) {
+                page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
+            } else if ( destinationFile.exists() ) {
+                page.setErrorMessage(ERROR_MESSAGE__FILE_EXISTS) ;
+            } else if ( underImagesRoot ) {
                 File tempFile = null;
                 try {
                     tempFile = File.createTempFile("upload_img", null);
@@ -169,57 +170,56 @@ public class ImageBrowse extends HttpServlet {
                     if (validImage) {
                         LOG.info(String.format("Saving uploaded file %s into %s.", fileName, destinationFile.getCanonicalFile()));
                         FileUtils.copyFile(tempFile, destinationFile);
-                        page.setCurrentImage(destinationFile);
+                        page.setCurrentImage( destinationFile ) ;
                     } else {
-                        page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES);
+                        page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
                     }
-                } catch (Exception e) {
-                    throw new UnhandledException("Failed to write file " + destinationFile
-                            + ". Possible permissions problem?", e);
+                } catch ( Exception e ) {
+                    throw new UnhandledException( "Failed to write file " + destinationFile
+                            + ". Possible permissions problem?", e );
                 } finally {
                     if (tempFile != null) {
                         tempFile.delete();
                     }
                 }
             } else {
-                LOG.info("User " + Utility.getLoggedOnUser(request) + " was denied uploading to file "
-                        + destinationFile);
+                LOG.info( "User " + Utility.getLoggedOnUser( request ) + " was denied uploading to file "
+                        + destinationFile );
             }
         }
     }
 
 
-    public static String getSimpleFileSize(long size) {
-        String sSize = size + " b";
+    public static String getSimpleFileSize( long size ) {
+        String sSize = size + " b" ;
         try {
-            double dFileSize = (double) size;
-            DecimalFormat df = new DecimalFormat("#.0");
+            double dFileSize = (double) size ;
+            DecimalFormat df = new DecimalFormat("#.0") ;
             if (dFileSize >= (1024 * 1024)) {
-                dFileSize = dFileSize / (1024 * 1024);
-                sSize = df.format(dFileSize);
-                sSize = sSize.replaceAll(",", ".") + " MB";
+                dFileSize = dFileSize / (1024 * 1024) ;
+                sSize  = df.format(dFileSize) ;
+                sSize  = sSize.replaceAll(",", ".") + " MB" ;
             } else if (dFileSize >= 1024) {
-                dFileSize = dFileSize / 1024;
-                sSize = df.format(dFileSize);
-                sSize = sSize.replaceAll(",", ".") + " kB";
+                dFileSize = dFileSize / 1024 ;
+                sSize  = df.format(dFileSize) ;
+                sSize  = sSize.replaceAll(",", ".") + " kB" ;
             }
-        } catch (NumberFormatException ex) {
+        } catch ( NumberFormatException ex ) {
             // ignore
         }
-        return sSize;
+        return sSize ;
     }
 
-    public static String truncateString(String str, int iTruncate) {
-        String ret = str;
+    public static String truncateString( String str, int iTruncate ) {
+        String ret = str ;
         try {
-            ret = ret.replaceAll("<[^>]+?>", "");
-            ret = ret.trim();
+            ret = ret.replaceAll("<[^>]+?>", "") ;
+            ret = ret.trim() ;
             if (ret.length() > iTruncate) {
-                ret = ret.substring(0, iTruncate - 3).trim().replaceAll("\\n", "<br/>\n") + "...";
+                ret = ret.substring(0, iTruncate - 3).trim().replaceAll("\\n", "<br/>\n") + "..." ;
             }
-        } catch (Exception ex) {
-        }
-        return ret;
+        } catch (Exception ex) {}
+        return ret ;
     }
 
     public static class ImageBrowserPage {
@@ -232,8 +232,8 @@ public class ImageBrowse extends HttpServlet {
         private File currentDirectory;
         private File currentImage;
 
-        public ImageBrowserPage(File currentDirectory, File currentImage) {
-            this.currentDirectory = currentDirectory;
+        public ImageBrowserPage( File currentDirectory, File currentImage ) {
+            this.currentDirectory = currentDirectory ;
             this.currentImage = currentImage;
         }
 
@@ -241,11 +241,11 @@ public class ImageBrowse extends HttpServlet {
             return label;
         }
 
-        private void setLabel(String label) {
+        private void setLabel( String label ) {
             this.label = label;
         }
 
-        public File getCurrentDirectory() {
+        public File getCurrentDirectory () {
             return currentDirectory;
         }
 
@@ -253,11 +253,11 @@ public class ImageBrowse extends HttpServlet {
             final File imagesRoot = Imcms.getServices().getConfig().getImagePath();
             Collection imageDirectories = Utility.collectImageDirectories();
 
-            File currentDirectoryRelativeToImageRootParent = FileUtility.relativizeFile(imagesRoot.getParentFile(), currentDirectory);
+            File currentDirectoryRelativeToImageRootParent = FileUtility.relativizeFile( imagesRoot.getParentFile(), currentDirectory );
             return Html.createOptionList(imageDirectories, currentDirectoryRelativeToImageRootParent, new ToStringPairTransformer() {
                 public String[] transformToStringPair(Object input) {
                     File file = (File) input;
-                    return new String[]{FileUtility.relativeFileToString(file), FileUtility.relativeFileToString(file)};
+                    return new String[] { FileUtility.relativeFileToString(file), FileUtility.relativeFileToString(file) };
                 }
             });
         }
@@ -290,30 +290,30 @@ public class ImageBrowse extends HttpServlet {
 
         public List<File> getImagesList() throws IOException {
             final File imagesRoot = Imcms.getServices().getConfig().getImagePath();
-            if (null != currentImage) {
-                imageUrl = FileUtility.relativeFileToString(FileUtility.relativizeFile(imagesRoot, currentImage));
+            if ( null != currentImage ) {
+                imageUrl = FileUtility.relativeFileToString( FileUtility.relativizeFile( imagesRoot, currentImage ) );
             }
-            File[] images = currentDirectory.listFiles(new ImageForWebExtensionFilenameFilter());
-            Arrays.sort(images);
-            return Arrays.asList(images);
+            File[] images = currentDirectory.listFiles( new ImageForWebExtensionFilenameFilter() );
+            Arrays.sort( images );
+            return Arrays.asList( images ) ;
         }
 
         public String getImageUrl() {
             return imageUrl;
         }
 
-        public void forward(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            request.setAttribute(REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE, this);
-            UserDomainObject user = Utility.getLoggedOnUser(request);
+        public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+            request.setAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE, this );
+            UserDomainObject user = Utility.getLoggedOnUser( request );
             String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__IMAGE_BROWSE;
-            request.getRequestDispatcher(forwardPath).forward(request, response);
+            request.getRequestDispatcher( forwardPath ).forward( request, response );
         }
 
-        public static ImageBrowserPage fromRequest(HttpServletRequest request) {
-            return (ImageBrowserPage) request.getAttribute(REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE);
+        public static ImageBrowserPage fromRequest( HttpServletRequest request ) {
+            return (ImageBrowserPage)request.getAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE ) ;
         }
 
-        public void setErrorMessage(LocalizedMessage errorMessage) {
+        public void setErrorMessage( LocalizedMessage errorMessage ) {
             this.errorMessage = errorMessage;
         }
 
@@ -321,7 +321,7 @@ public class ImageBrowse extends HttpServlet {
             return errorMessage;
         }
 
-        public void setCurrentImage(File currentImage) {
+        public void setCurrentImage( File currentImage ) {
             this.currentImage = currentImage;
         }
 
