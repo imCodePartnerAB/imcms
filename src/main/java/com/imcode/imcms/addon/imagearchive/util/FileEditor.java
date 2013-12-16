@@ -7,6 +7,7 @@ import java.io.File;
 import org.apache.commons.lang.StringUtils;
 
 public class FileEditor extends PropertyEditorSupport {
+
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
         File imcmsPath = Imcms.getPath();

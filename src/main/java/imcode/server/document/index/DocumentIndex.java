@@ -73,6 +73,9 @@ public interface DocumentIndex {
     @Deprecated
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
+    @Deprecated
+    com.imcode.imcms.api.SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException;
+
     void rebuild() throws IndexException;
 
     void indexDocument(DocumentDomainObject document) throws IndexException;

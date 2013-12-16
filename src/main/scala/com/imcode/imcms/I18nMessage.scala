@@ -4,7 +4,6 @@ package imcms
 import java.util.{ListResourceBundle, ResourceBundle, Locale}
 import org.apache.log4j.Logger
 import java.text.MessageFormat
-import scala.util.control.{Exception => Ex}
 import _root_.imcode.server.Imcms
 import scala.util.Try
 

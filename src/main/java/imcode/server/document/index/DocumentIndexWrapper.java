@@ -33,6 +33,11 @@ public class DocumentIndexWrapper implements DocumentIndex {
     }
 
     @Override
+    public com.imcode.imcms.api.SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
+        return index.search(query, searchingUser, startPosition, maxResults);
+    }
+
+    @Override
     public SearchResult search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
         return index.search(solrQuery, searchingUser);
     }

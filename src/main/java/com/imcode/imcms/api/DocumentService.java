@@ -206,7 +206,7 @@ public class  DocumentService {
     /**
      * @param name
      * @param maxChoices
-     * @return The newly craeated category type.
+     * @return The newly created category type.
      * @throws NoPermissionException
      * @throws CategoryTypeAlreadyExistsException
      *
@@ -241,6 +241,31 @@ public class  DocumentService {
             }, contentManagementSystem.getCurrentUser().getInternal());
             return new ApiDocumentWrappingList(documentList, contentManagementSystem);
         } catch ( RuntimeException e ) {
+            throw new SearchException(e);
+        }
+    }
+
+
+    public SearchResult<Document> getDocuments(final SearchQuery query, int startPosition, int maxResults) throws SearchException {
+        try {
+            SearchResult<DocumentDomainObject> result = getDocumentMapper().getDocumentIndex().search(new DocumentQuery() {
+                public Query getQuery() {
+                    return query.getQuery();
+                }
+
+                public Sort getSort() {
+                    return query.getSort();
+                }
+
+                public boolean isLogged() {
+                    return query.isLogged();
+                }
+            }, contentManagementSystem.getCurrentUser().getInternal(), startPosition, maxResults);
+
+            ApiDocumentWrappingList documents = new ApiDocumentWrappingList(result.getDocuments(), contentManagementSystem);
+
+            return SearchResult.of(documents, result.getTotalCount());
+        } catch (RuntimeException e) {
             throw new SearchException(e);
         }
     }

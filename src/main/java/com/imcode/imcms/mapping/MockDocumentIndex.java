@@ -8,12 +8,8 @@ import imcode.server.document.index.SearchResult;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.params.SolrParams;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class MockDocumentIndex implements DocumentIndex {
@@ -32,6 +28,13 @@ public class MockDocumentIndex implements DocumentIndex {
 
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return Arrays.asList(new DocumentDomainObject[0]);
+    }
+
+    @Override
+    public com.imcode.imcms.api.SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
+        List<DocumentDomainObject> documents = Arrays.asList(new DocumentDomainObject[0]);
+
+        return com.imcode.imcms.api.SearchResult.of(documents, documents.size());
     }
 
     public void rebuild() {

@@ -13,7 +13,7 @@ import java.util.Collections
 import scala.util.{Success, Failure}
 import scala.collection.JavaConverters._
 
-import com.imcode.imcms.ImcmsServicesSupport
+import com.imcode.imcms.{api, ImcmsServicesSupport}
 
 
 /**
@@ -54,6 +54,11 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
     } catch {
       case _: Exception => Collections.emptyList()
     }
+  }
+
+
+  def search(query: DocumentQuery, searchingUser: UserDomainObject, startPosition: Int, maxResults: Int): com.imcode.imcme.api.SearchResult[DocumentDomainObject] = {
+
   }
 
   @throws(classOf[IndexException])
