@@ -28,19 +28,19 @@ object SessionCounter {
   }
 }
 
-class SessionCounterManager(app: UI) {
-  val widget = new SessionCounterManagerWidget |>> { w =>
+class SessionCounterManager {
+  val view = new SessionCounterManagerView |>> { w =>
     w.rc.btnReload.addClickHandler { _ => reload() }
     w.miEdit.setCommandHandler { _ =>
       new OkCancelDialog("Edit session counter") |>> { dlg =>
-        dlg.mainWidget = new SessionCounterEditorWidget |>> { c =>
+        dlg.mainComponent = new SessionCounterEditorView |>> { c =>
           SessionCounter.get |> { sc =>
             c.txtValue.value = sc.value.toString
             c.calStart.value = sc.date
           }
 
           dlg.setOkButtonHandler {
-            app.privileged(permission) {
+            Current.ui.privileged(permission) {
               Ex.allCatch.either(SessionCounter save SessionCounter(c.txtValue.value.toInt, c.calStart.value)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("Session counter has been updated")
@@ -57,7 +57,7 @@ class SessionCounterManager(app: UI) {
     w.miReset.setCommandHandler { _ =>
       new ConfirmationDialog("Reset session counter?") |>> { dlg =>
         dlg.setOkButtonHandler {
-          app.privileged(permission) {
+          Current.ui.privileged(permission) {
             Ex.allCatch.either(SessionCounter save SessionCounter(0, new Date)) match {
               case Right(_) =>
                 Current.page.showInfoNotification("Session counter has been reseted")
@@ -75,42 +75,42 @@ class SessionCounterManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = Current.ui.imcmsUser.isSuperAdmin
+  def canManage = Current.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage session counter")
 
   def reload() {
     SessionCounter.get |> { sc =>
-      widget.dataWidget.txtValue.setReadOnly(false)
-      widget.dataWidget.calStart.setReadOnly(false)
+      view.dataView.txtValue.setReadOnly(false)
+      view.dataView.calStart.setReadOnly(false)
 
-      widget.dataWidget.txtValue.value = sc.value.toString
-      widget.dataWidget.calStart.value = sc.date
+      view.dataView.txtValue.value = sc.value.toString
+      view.dataView.calStart.value = sc.date
 
-      widget.dataWidget.txtValue.setReadOnly(true)
-      widget.dataWidget.calStart.setReadOnly(true)
+      view.dataView.txtValue.setReadOnly(true)
+      view.dataView.calStart.setReadOnly(true)
     }
 
-    Seq(widget.miEdit, widget.miReset).foreach(_.setEnabled(canManage))
+    Seq(view.miEdit, view.miReset).foreach(_.setEnabled(canManage))
   }
 } // class SessionCounterManager
 
-class SessionCounterManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
+class SessionCounterManagerView extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
   val miEdit = mb.addItem("Edit", Edit16)
   val miReset = mb.addItem("Reset", Delete16)
   val miHelp = mb.addItem("Help", Help16)
-  val dataWidget = new SessionCounterEditorWidget
+  val dataView = new SessionCounterEditorView
   val dataPanel = new Panel(new VerticalLayout with UndefinedSize with Margin) with UndefinedSize
-  val rc = new ReloadableContentWidget(dataPanel)
+  val rc = new ReloadableContentView(dataPanel)
 
-  dataPanel.setContent(dataWidget)
+  dataPanel.setContent(dataView)
   this.addComponents(mb, rc)
 }
 
 
-class SessionCounterEditorWidget extends FormLayout with UndefinedSize {
+class SessionCounterEditorView extends FormLayout with UndefinedSize {
   val txtValue = new TextField("Value")
   val calStart = new DateField("Start date") with DayResolution
 

@@ -31,7 +31,7 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
-import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsWidget, IndexedDocsContainer}
+import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsView, IndexedDocsContainer}
 import com.imcode.imcms.api.I18nDocRef
 
 /**
@@ -89,17 +89,17 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
   val filter = new Filter
   val docsContainer = new IndexedDocsContainer(user, parentsRenderer, childrenRenderer)
 
-  val docsWidget = new IndexedDocsWidget(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
+  val docsView = new IndexedDocsView(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
   private val selectionRef = new AtomicReference(Seq.empty[I18nDocRef])
 
-  val widget = new DocsProjectionWidget(filter.basicWidget, filter.extendedWidget, docsWidget) { w =>
-    val basicFilterWidget = filter.basicWidget
+  val view = new DocsProjectionView(filter.basicView, filter.extendeView, docsView) { w =>
+    val filterBasicView = filter.basicView
 
-    basicFilterWidget.extended.btnCustomize.addClickHandler { _ => w.toggleExtendedFilter() }
-    basicFilterWidget.filterButtons.btnApplyFilter.addClickHandler { _ => reload() }
-    basicFilterWidget.filterButtons.btnReset.addClickHandler { _ => reset() }
-    basicFilterWidget.filterButtons.btnBack.addClickHandler { _ => goBack() }
-    filter.basicWidget.filterButtons.btnApplyPredefinedFilter.addClickHandler { _ =>
+    filterBasicView.extended.btnCustomize.addClickHandler { _ => w.toggleExtendedFilter() }
+    filterBasicView.filterButtons.btnApplyFilter.addClickHandler { _ => reload() }
+    filterBasicView.filterButtons.btnReset.addClickHandler { _ => reset() }
+    filterBasicView.filterButtons.btnBack.addClickHandler { _ => goBack() }
+    filterBasicView.filterButtons.btnApplyPredefinedFilter.addClickHandler { _ =>
       new PredefinedFilterDialog |>> { dlg =>
         dlg.setOkButtonHandler {
           // combo box
@@ -116,13 +116,13 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
     }
   }
 
-  docsWidget.addValueChangeHandler { _ =>
+  docsView.addValueChangeHandler { _ =>
     def fieldsToI8nDocRef(fields: DocumentStoredFields): I18nDocRef = {
       val language = imcmsServices.getDocumentI18nSupport.getByCode(fields.languageCode())
       I18nDocRef.of(fields.metaId(), fields.versionNo(), language)
     }
 
-    selectionRef.set(docsWidget.value.asScala.map(docIx => docsContainer.getItem(docIx).fields |> fieldsToI8nDocRef).to[Seq])
+    selectionRef.set(docsView.value.asScala.map(docIx => docsContainer.getItem(docIx).fields |> fieldsToI8nDocRef).to[Seq])
     notifyListeners()
   }
 
@@ -163,8 +163,8 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
         new ErrorDialog(throwable.getMessage.i) |> Current.ui.addWindow
 
       case Success(solrQuery) =>
-        widget.removeComponent(0, 1)
-        widget.addComponent(docsWidget, 0, 1)
+        view.removeComponent(0, 1)
+        view.addComponent(docsView, 0, 1)
 
         docsContainer.setQueryOpt(Some(solrQuery))
     }

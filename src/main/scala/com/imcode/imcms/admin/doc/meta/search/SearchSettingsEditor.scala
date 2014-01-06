@@ -19,7 +19,7 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
 
   private val initialValues = Data(meta.getKeywords.asScala.map(_.toLowerCase).toSet, false)
 
-  override val widget = new SearchSettingsEditorWidget |>> { w =>
+  override val view = new SearchSettingsEditorView |>> { w =>
     import w.keywords.{btnAdd, btnRemove, txtKeyword, lstKeywords}
 
     btnAdd.addClickHandler { _ =>
@@ -50,18 +50,18 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
 
 
   private def setKeywords(keywords: Set[Keyword]) {
-    widget.keywords.lstKeywords.itemIds = keywords.map(_.toLowerCase).toSeq.sorted.asJava
+    view.keywords.lstKeywords.itemIds = keywords.map(_.toLowerCase).toSeq.sorted.asJava
   }
 
 
   override def resetValues() {
     setKeywords(initialValues.keywords)
-    widget.misc.chkExcludeFromInternalSearch.checked = initialValues.isExcludeFromInnerSearch
+    view.misc.chkExcludeFromInternalSearch.checked = initialValues.isExcludeFromInnerSearch
   }
 
   override def collectValues(): ErrorsOrData = Data(
-    widget.keywords.lstKeywords.itemIds.asScala.toSet,
-    widget.misc.chkExcludeFromInternalSearch.checked
+    view.keywords.lstKeywords.itemIds.asScala.toSet,
+    view.misc.chkExcludeFromInternalSearch.checked
   ) |> Right.apply
 
   //def isModified = state != initialData

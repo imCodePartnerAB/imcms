@@ -10,17 +10,17 @@ class UrlDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor
 
   override type Data = UrlDocumentDomainObject
 
-  val widget = new UrlDocContentEditorWidget
+  val view = new UrlDocContentEditorView
 
   resetValues()
 
   override def resetValues() {
-    widget.txtURL.value = doc.getUrl
+    view.txtURL.value = doc.getUrl
   }
 
   override def collectValues(): ErrorsOrData = doc.clone() |>> { clone =>
-    clone.setUrl(widget.txtURL.value)
-    clone.setTarget(widget.cbTarget.value)
+    clone.setUrl(view.txtURL.value)
+    clone.setTarget(view.cbTarget.value)
   } |> Right.apply
 }
 

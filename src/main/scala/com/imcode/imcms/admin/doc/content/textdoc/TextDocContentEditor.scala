@@ -15,7 +15,7 @@ import scala.collection.mutable.{Map => MMap}
 class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEditor {
   override type Data = TextDocumentDomainObject
 
-  override val widget = new TextDocContentEditorWidget |>> { w =>
+  override val view = new TextDocContentEditorView |>> { w =>
     w.lstItems.addValueChangeHandler { _ =>
 
     }
@@ -24,7 +24,7 @@ class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEdit
   resetValues()
 
   override def resetValues() {
-    widget.lstItems.value = widget.lstItems.firstItemIdOpt.get
+    view.lstItems.value = view.lstItems.firstItemIdOpt.get
   }
 
   override def collectValues() = Right(doc)
@@ -38,7 +38,7 @@ class TextsEditor(texts: Map[Int, TextDomainObject]) extends Editor {
 
   private var state: Map[Int, TextDomainObject] = _
 
-  override val widget = new TextsEditorWidget |>> { w =>
+  override val view = new TextsEditorView |>> { w =>
 
   }
 
@@ -47,10 +47,10 @@ class TextsEditor(texts: Map[Int, TextDomainObject]) extends Editor {
   override def resetValues() {
     state = texts
 
-    widget.tblTexts.removeAllItems()
+    view.tblTexts.removeAllItems()
 
     for ((no, text) <- state) {
-      widget.tblTexts.addRowWithAutoId(
+      view.tblTexts.addRowWithAutoId(
         no: JInteger,
         text.getType.toString,
         text.getContentRef.asOption.map(_.loopNo).get: JInteger,
@@ -64,7 +64,7 @@ class TextsEditor(texts: Map[Int, TextDomainObject]) extends Editor {
 }
 
 
-class TextsEditorWidget extends VerticalLayout with Spacing with Margin with FullSize {
+class TextsEditorView extends VerticalLayout with Spacing with Margin with FullSize {
   val mb = new MenuBar
   val miNew = mb.addItem("New")
   val miEdit = mb.addItem("Edit")

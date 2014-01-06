@@ -45,7 +45,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
   private lazy val mimeTypes: ListMap[MimeType, DisplayName] =
     imcmsServices.getDocumentMapper
-      .getAllMimeTypesWithDescriptions(Current.ui.imcmsUser)
+      .getAllMimeTypesWithDescriptions(Current.imcmsUser)
       .map { case Array(mimeType, displayName) => mimeType -> displayName } (breakOut)
 
   private def findFDFByName(name: String, ignoreCase: Boolean = true): Option[FileDocumentFile] = {
@@ -56,7 +56,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
     }
   }
 
-  override val widget = new FileDocContentEditorWidget with OnceOnlyAttachAction |>> { w =>
+  override val view = new FileDocContentEditorView with OnceOnlyAttachAction |>> { w =>
     w.tblFiles.addGeneratedColumn("Type", new ColumnGenerator {
       def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef): String = {
         val mimeType = values.fdfs(itemId.asInstanceOf[FileId]).getMimeType
@@ -110,7 +110,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                 new FileDocumentFile |>> { _.setId(id) } |> Right.apply
             } |> {
               case Left(errMsg: String) =>
-                dlg.uploader.widget.txtSaveAsName.setComponentError(errMsg)
+                dlg.uploader.view.txtSaveAsName.setComponentError(errMsg)
                 Current.page.showErrorNotification(errMsg)
 
               case Right(fdf: FileDocumentFile) =>
@@ -139,7 +139,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
         case Seq(fileId) =>
           new OkCancelDialog("Edit file properties") |>> { dlg =>
             val fdf = values.fdfs(fileId)
-            val filePropertiesEditorWidget = new FileDocFilePropertiesEditorWidget |>> { eui =>
+            val filePropertiesEditorView = new FileDocFilePropertiesEditorView |>> { eui =>
               eui.txtId.value = fdf.getId
               eui.txtName.value = fdf.getFilename
 
@@ -156,36 +156,36 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
               eui.cbType.value = mimeType
             }
 
-            dlg.mainWidget = filePropertiesEditorWidget
+            dlg.mainComponent = filePropertiesEditorView
             dlg.setOkButtonHandler {
               val errors = MMap.empty[AbstractComponent, ErrorMsg]
 
-              filePropertiesEditorWidget.txtId.trimOpt match {
+              filePropertiesEditorView.txtId.trimOpt match {
                 case None =>
-                  errors += filePropertiesEditorWidget.txtId -> "id is required"
+                  errors += filePropertiesEditorView.txtId -> "id is required"
 
                 case Some(newId) if newId != fdf.getId =>
                   for (fdf2 <- values.fdfs.get(newId)) {
-                    errors += filePropertiesEditorWidget.txtId -> "id is allready assigned to other file in this document"
+                    errors += filePropertiesEditorView.txtId -> "id is allready assigned to other file in this document"
                   }
 
                 case _ =>
               }
 
-              filePropertiesEditorWidget.txtName.trimOpt match {
+              filePropertiesEditorView.txtName.trimOpt match {
                 case None =>
-                  errors += filePropertiesEditorWidget.txtName -> "name is required"
+                  errors += filePropertiesEditorView.txtName -> "name is required"
 
                 case Some(newName) if !newName.equalsIgnoreCase(fdf.getFilename) =>
                   for (fdf2 <- findFDFByName(newName)) {
-                    errors += filePropertiesEditorWidget.txtName -> "name is allready assigned to other file in this document"
+                    errors += filePropertiesEditorView.txtName -> "name is allready assigned to other file in this document"
                   }
 
                 case _ =>
               }
 
-              filePropertiesEditorWidget.txtId.setComponentError(null)
-              filePropertiesEditorWidget.txtName.setComponentError(null)
+              filePropertiesEditorView.txtId.setComponentError(null)
+              filePropertiesEditorView.txtName.setComponentError(null)
 
               if (errors.nonEmpty) {
                 for ((component, errMsg) <- errors) {
@@ -193,7 +193,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                 }
               } else {
                 // if id has changed, update doc filemap
-                val newId = filePropertiesEditorWidget.txtId.trim
+                val newId = filePropertiesEditorView.txtId.trim
                 val fdfs = values.fdfs - fileId + (newId -> fdf)
                 val defaultFdfId = values.defaultFdfId.map {
                   case id if (fileId == id) && (fileId != newId) => newId
@@ -201,8 +201,8 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                 }
 
                 fdf.setId(newId)
-                fdf.setFilename(filePropertiesEditorWidget.txtName.trim)
-                fdf.setMimeType(filePropertiesEditorWidget.cbType.value)
+                fdf.setFilename(filePropertiesEditorView.txtName.trim)
+                fdf.setMimeType(filePropertiesEditorView.cbType.value)
 
                 values = Values(fdfs, defaultFdfId)
 
@@ -279,10 +279,10 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
 
   private def sync() {
-    widget.tblFiles.removeAllItems()
+    view.tblFiles.removeAllItems()
 
     for ((fileId, fdf) <- values.fdfs) {
-      widget.tblFiles.addItem(Array[AnyRef](fileId, fdf.getFilename), fileId)
+      view.tblFiles.addItem(Array[AnyRef](fileId, fdf.getFilename), fileId)
     }
   }
 }

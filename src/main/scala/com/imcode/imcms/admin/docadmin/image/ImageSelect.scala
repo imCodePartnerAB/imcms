@@ -13,25 +13,25 @@ import java.io.File
 
 class ImageSelect extends ImcmsServicesSupport {
 
-  val widget = new ImageSelectWidget
+  val view = new ImageSelectView
 
   imcmsServices.getConfig.getImagePath |>> { imagePath =>
-    widget.dirs.addItem(imagePath, imagePath.getName)
+    view.dirs.addItem(imagePath, imagePath.getName)
 
-    widget.dirs.addValueChangeHandler { _ =>
-      widget.images.removeAllItems()
+    view.dirs.addValueChangeHandler { _ =>
+      view.images.removeAllItems()
       for {
-        dir <- widget.dirs.selectionOpt
+        dir <- view.dirs.selectionOpt
         imageFile <- dir.listFiles()
       } {
-        widget.images.addItem(imageFile, imageFile.getName)
+        view.images.addItem(imageFile, imageFile.getName)
       }
     }
   }
 
-  widget.dirs.selectFirst()
+  view.dirs.selectFirst()
 
   def selectionOpt(): Option[File] = {
-    widget.images.selectionOpt
+    view.images.selectionOpt
   }
 }

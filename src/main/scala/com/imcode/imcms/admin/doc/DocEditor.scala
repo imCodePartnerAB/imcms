@@ -28,9 +28,9 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
     case _ => new UnsupportedDocContentEditor(doc)
   }
 
-  override val widget = new TabSheet with FullSize |>> { w =>
-    w.addTab(metaEditor.widget, "doc_editor.tab.meta".i, null)
-    w.addTab(contentEditor.widget, "doc_editor.tab.content".i, null)
+  override val view = new TabSheet with FullSize |>> { w =>
+    w.addTab(metaEditor.view, "doc_editor.tab.meta".i, null)
+    w.addTab(contentEditor.view, "doc_editor.tab.content".i, null)
   }
 
   override def resetValues() {

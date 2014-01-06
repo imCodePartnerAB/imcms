@@ -6,12 +6,8 @@
     <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
         <property name="customEditors">
             <map>
-                <entry key="java.io.File">
-                    <bean class="com.imcode.imcms.addon.imagearchive.util.FileEditor"/>
-                </entry>
-                <entry key="java.io.File[]">
-                    <bean class="com.imcode.imcms.addon.imagearchive.util.FileArrayEditor"/>
-                </entry>
+                <entry key="java.io.File" value="com.imcode.imcms.addon.imagearchive.util.FileEditor"/>
+                <entry key="java.io.File[]" value="com.imcode.imcms.addon.imagearchive.util.FileArrayEditor"/>
             </map>
         </property>
     </bean>

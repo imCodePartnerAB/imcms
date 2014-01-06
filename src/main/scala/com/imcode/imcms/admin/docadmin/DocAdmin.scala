@@ -31,11 +31,11 @@ import com.imcode.imcms.vaadin.Current
 // todo: template/group
 // todo: add [im]cms path element: /[im]cms/sysadmin/...; [im]cms/docadmin/...
 @com.vaadin.annotations.Theme("imcms")
-class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { app =>
+class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui =>
 
   // todo: move logic into filter
   override def init(request: VaadinRequest) {
-    setLocale(new Locale(this.imcmsUser.getLanguageIso639_2))
+    setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
 
     setContent(mkContent(request))
 
@@ -89,37 +89,37 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   }
 
 
-  def wrapTextDocImageEditor(request: VaadinRequest, doc: TextDocumentDomainObject, imageNo: Int): EditorContainerWidget = {
+  def wrapTextDocImageEditor(request: VaadinRequest, doc: TextDocumentDomainObject, imageNo: Int): EditorContainerView = {
     val imageEditor = new ImagesEditor(doc.getRef, imageNo)
-    val editorContainerWidget =  new EditorContainerWidget("doc.edit_image.title".i)
+    val editorContainerView =  new EditorContainerView("doc.edit_image.title".i)
 
-    editorContainerWidget.mainWidget = imageEditor.widget
-    editorContainerWidget.buttons.btnSave.addClickHandler { _ => }
-    editorContainerWidget.buttons.btnReset.addClickHandler { _ => imageEditor.resetValues() }
-    editorContainerWidget.buttons.btnSaveAndClose.addClickHandler { _ => }
-    editorContainerWidget.buttons.btnClose.addClickHandler { _ => }
+    editorContainerView.mainComponent = imageEditor.view
+    editorContainerView.buttons.btnSave.addClickHandler { _ => }
+    editorContainerView.buttons.btnReset.addClickHandler { _ => imageEditor.resetValues() }
+    editorContainerView.buttons.btnSaveAndClose.addClickHandler { _ => }
+    editorContainerView.buttons.btnClose.addClickHandler { _ => }
 
-    imageEditor.widget.setSize(900, 600)
+    imageEditor.view.setSize(900, 600)
     imageEditor.resetValues()
 
-    editorContainerWidget
+    editorContainerView
   }
 
 
-  def wrapDocEditor(request: VaadinRequest, doc: DocumentDomainObject): EditorContainerWidget = {
-    new EditorContainerWidget("doc.edit_properties.title".f(doc.getId)) |>> { w =>
+  def wrapDocEditor(request: VaadinRequest, doc: DocumentDomainObject): EditorContainerView = {
+    new EditorContainerView("doc.edit_properties.title".f(doc.getId)) |>> { w =>
       val editor = new DocEditor(doc)
 
-      w.mainWidget = editor.widget
+      w.mainComponent = editor.view
 
-      editor.widget.setSize(900, 600)
+      editor.view.setSize(900, 600)
 
       w.buttons.btnSave.addClickHandler { _ =>
         editor.collectValues() match {
           case Left(errors) => Current.page.showErrorNotification(errors.mkString(","))
           case Right((editedDoc, i18nMetas)) =>
             try {
-              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, app.imcmsUser)
+              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, Current.imcmsUser)
               Current.page.showInfoNotification("notification.doc.saved".i)
               Current.page.open(Current.contextPath, "_self")
             } catch {
@@ -133,25 +133,25 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
       }
 
       Current.page.getUriFragment.asOption.map(_.toLowerCase).foreach {
-        case "info" => editor.metaEditor.widget.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
-        case "access" => editor.metaEditor.widget.treeEditors.selection = "doc_meta_editor.menu_item.access"
-        case "appearance" => editor.metaEditor.widget.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
-        case "content" => editor.widget.setSelectedTab(1)
+        case "info" => editor.metaEditor.view.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
+        case "access" => editor.metaEditor.view.treeEditors.selection = "doc_meta_editor.menu_item.access"
+        case "appearance" => editor.metaEditor.view.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
+        case "content" => editor.view.setSelectedTab(1)
         case _ =>
       }
     }
   }
 
 
-  def wrapTextDocMenuEditor(params: MenuEditorParameters) = new EditorContainerWidget(params.title) |>> { w =>
+  def wrapTextDocMenuEditor(params: MenuEditorParameters) = new EditorContainerView(params.title) |>> { w =>
     val doc = params.doc
     val docId = doc.getId
     val menuNo = params.menuNo
     val menu = params.doc.getMenu(menuNo)
 
-    val editor = new MenuEditor(doc, menu) |>> { _.widget.setSize(900, 600) }
+    val editor = new MenuEditor(doc, menu) |>> { _.view.setSize(900, 600) }
 
-    w.mainWidget = editor.widget
+    w.mainComponent = editor.view
 
     w.buttons.btnReset.addClickHandler { _ =>
       editor.resetValues()
@@ -182,7 +182,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
 
     def save(close: Boolean) {
       editor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, Current.ui.imcmsUser)
+        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, Current.imcmsUser)
         Current.page.showInfoNotification("menu_editor.notification.saved".i)
 
         if (close) {
@@ -307,7 +307,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
   //}
 
   // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
-  def wrapTextDocTextEditor(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int): EditorContainerWidget = new EditorContainerWidget |>> { w =>
+  def wrapTextDocTextEditor(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int): EditorContainerView = new EditorContainerView |>> { w =>
     val title = request.getParameter("label").trimToNull match {
       case null => s"Document ${doc.getId} text no $textNo"
       case label => label |> StringEscapeUtils.escapeHtml4
@@ -353,8 +353,8 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
 
     val editor = new TextEditor(texts.asScala, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))
 
-    w.mainWidget = editor.widget
-    editor.widget.setSize(900, 600)
+    w.mainComponent = editor.view
+    editor.view.setSize(900, 600)
 
     w.buttons.btnSave.addClickHandler { _ =>
       save(closeAfterSave = false)
@@ -375,7 +375,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ap
       editor.collectValues().right.get |> { texts =>
         // -check permissionSet.getEditTexts()
         try {
-          imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, Current.ui.imcmsUser)
+          imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, Current.imcmsUser)
           val user = new UserDomainObject() // todo: fixme
           imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
           if (closeAfterSave) closeEditor()

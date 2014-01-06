@@ -57,8 +57,8 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
   }
 
 
-  def search(query: DocumentQuery, searchingUser: UserDomainObject, startPosition: Int, maxResults: Int): com.imcode.imcme.api.SearchResult[DocumentDomainObject] = {
-
+  override def search(query: DocumentQuery, searchingUser: UserDomainObject, startPosition: Int, maxResults: Int): com.imcode.imcms.api.SearchResult[DocumentDomainObject] = {
+    ???
   }
 
   @throws(classOf[IndexException])

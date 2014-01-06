@@ -51,14 +51,14 @@ object FileOps {
   // todo: fix
   def showContent(file: File) =
     new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog with Resizable |>> { dlg =>
-      dlg.mainWidget = new TextArea("", scala.io.Source.fromFile(file).mkString) with ReadOnly with FullSize
+      dlg.mainComponent = new TextArea("", scala.io.Source.fromFile(file).mkString) with ReadOnly with FullSize
       dlg.setSize(500, 500)
     } |> Current.ui.addWindow
 
   // todo: fix
   def showDirectly(file: File) =
     new OKDialog("file.dlg.show.title".f(file.getName)) with CustomSizeDialog with Resizable |>> { dlg =>
-      dlg.mainWidget = new Embedded("", new FileResource(file))
+      dlg.mainComponent = new Embedded("", new FileResource(file))
       dlg.setSize(500, 500)
     } |> Current.ui.addWindow
 
@@ -76,7 +76,7 @@ object FileOps {
 class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Seq[File] = Nil)
     extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDialog {
 
-  mainWidget = browser.widget
+  mainComponent = browser.view
 
   browser listen {
     case None => btnOk setEnabled false
@@ -85,7 +85,7 @@ class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Se
 
   browser.notifyListeners()
   // todo: refactor out
-  browser.widget.spLocation.setSplitPosition(25)
+  browser.view.spLocation.setSplitPosition(25)
   this.setSize(550, 450)
 }
 
@@ -98,7 +98,7 @@ class FileDialog(caption: String, browser: FileBrowser)
 extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDialog {
   val preview = new FilePreview(browser)
 
-  mainWidget = new FileDialogWidget(browser.widget, preview.widget) |>> { w =>
+  mainComponent = new FileDialogView(browser.view, preview.view) |>> { w =>
     w.miViewPreview.setCommandHandler { _ =>
       preview.enabled = !preview.enabled
     }
@@ -110,10 +110,10 @@ extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDi
             uploadedFile <- dlg.uploader.uploadedFile
             selection <- browser.selection
             dir = selection.dir
-            filename = dlg.uploader.widget.txtSaveAsName.value // todo: check not empty
+            filename = dlg.uploader.view.txtSaveAsName.value // todo: check not empty
             file = new File(dir, filename)
           } {
-            if (file.exists && !dlg.uploader.widget.chkOverwrite.checked) sys.error("File exists")
+            if (file.exists && !dlg.uploader.view.chkOverwrite.checked) sys.error("File exists")
             else {
               FileUtils.moveFile(uploadedFile.file, file)
               browser.reloadLocationItems()
@@ -131,12 +131,12 @@ extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDi
 
   browser.notifyListeners()
   // todo: refactor out
-  browser.widget.spLocation.setSplitPosition(25)
+  browser.view.spLocation.setSplitPosition(25)
   setWidth("500px"); setHeight("350px")
 }
 
 
-class FileDialogWidget(browserWidget: FileBrowserWidget, previewWidget: FilePreviewWidget) extends GridLayout(2, 2) with FullSize {
+class FileDialogView(browserView: FileBrowserView, previewView: FilePreviewView) extends GridLayout(2, 2) with FullSize {
   val mb = new MenuBar
   val miFile = mb.addItem("File", null)
   val miView = mb.addItem("View", null)
@@ -147,10 +147,10 @@ class FileDialogWidget(browserWidget: FileBrowserWidget, previewWidget: FilePrev
   val miFileDownload = miFile.addItem("Download", null)
 
   addComponent(mb, 0, 0, 1, 0)
-  this.addComponents(browserWidget, previewWidget)
+  this.addComponents(browserView, previewView)
 
-  setComponentAlignment(previewWidget, Alignment.MIDDLE_CENTER)
-  previewWidget.setMargin(new MarginInfo(false, true, false, true))
+  setComponentAlignment(previewView, Alignment.MIDDLE_CENTER)
+  previewView.setMargin(new MarginInfo(false, true, false, true))
 
   setColumnExpandRatio(0, 1f)
   setRowExpandRatio(1, 1f)
@@ -163,7 +163,7 @@ class FileDialogWidget(browserWidget: FileBrowserWidget, previewWidget: FilePrev
 class FilePreview(browser: FileBrowser) {
   private val enabledRef = new AtomicBoolean(false)
   val preview = new EmbeddedPreview
-  val widget = new FilePreviewWidget(preview.widget)
+  val view = new FilePreviewView(preview.previewComponentHolder)
 
   browser.listen { ev =>
     if (enabled) ev match {
@@ -178,37 +178,37 @@ class FilePreview(browser: FileBrowser) {
                                case _ => "file"
                              }))
 
-        widget.btnAction.setEnabled(true)
-        widget.btnAction.setCaption(caption)
-        widget.btnAction.addClickHandler { _ => FileOps.default(item) }
+        view.btnAction.setEnabled(true)
+        view.btnAction.setCaption(caption)
+        view.btnAction.addClickHandler { _ => FileOps.default(item) }
         preview.set(new Embedded("", iconResource))
 
       case _ =>
         if (!preview.isEmpty) {
           preview.clear
-          updateDisabled(widget.btnAction) { _ setCaption "file.preview.act.na".i }
+          updateDisabled(view.btnAction) { _ setCaption "file.preview.act.na".i }
         }
     }
   }
 
-  preview.listen { widget.btnAction setEnabled _.isDefined }
+  preview.listen { view.btnAction setEnabled _.isDefined }
   preview.notifyListeners()
   enabled = false
 
   def enabled = enabledRef.get
   def enabled_=(enabled: Boolean) {
     enabledRef.set(enabled)
-    widget.setVisible(enabled)
+    view.setVisible(enabled)
     if (enabled) browser.notifyListeners
   }
 }
 
 
-class FilePreviewWidget(val previewWidget: EmbeddedPreviewWidget) extends GridLayout(1, 2) with Spacing {
+class FilePreviewView(val previewComponent: EmbeddedPreviewComponentHolder) extends GridLayout(1, 2) with Spacing {
   val btnAction = new Button with SingleClickListener with LinkStyle
-  this.addComponents(previewWidget, btnAction)
+  this.addComponents(previewComponent, btnAction)
 
-  Seq(previewWidget, btnAction).foreach(c => setComponentAlignment(c, Alignment.MIDDLE_CENTER))
+  Seq(previewComponent, btnAction).foreach(c => setComponentAlignment(c, Alignment.MIDDLE_CENTER))
 }
 
 /**
@@ -217,7 +217,7 @@ class FilePreviewWidget(val previewWidget: EmbeddedPreviewWidget) extends GridLa
  * @param browser browser with preconfigured location(s)
  */
 class ImagePicker(browser: FileBrowser) {
-  val preview = new EmbeddedPreview; preview.stubWidget.value = "No Icon"
+  val preview = new EmbeddedPreview; preview.stubComponent.value = "No Icon"
   val fileDialog = new FileDialog("Pick an image", browser) with Resizable |>> { dlg =>
     dlg.preview.enabled = true
     dlg.setOkButtonHandler {
@@ -226,7 +226,7 @@ class ImagePicker(browser: FileBrowser) {
     }
   }
 
-  val widget = new ImagePickerWidget(preview.widget) |>> { w =>
+  val component = new ImagePickerComponent(preview.previewComponentHolder) |>> { w =>
     w.btnRemove.addClickHandler { _ =>
       preview.clear()
     }
@@ -234,18 +234,18 @@ class ImagePicker(browser: FileBrowser) {
     w.btnChoose.addClickHandler { _ => Current.ui.addWindow(fileDialog) }
   }
 
-  preview.listen { widget.btnRemove setEnabled _.isDefined }
+  preview.listen { component.btnRemove setEnabled _.isDefined }
   preview.notifyListeners()
 }
 
 
-class ImagePickerWidget(previewWidget: EmbeddedPreviewWidget) extends GridLayout(2, 1) with Spacing {
+class ImagePickerComponent(previewComponent: EmbeddedPreviewComponentHolder) extends GridLayout(2, 1) with Spacing {
   val lytButtons = new VerticalLayout with Spacing with UndefinedSize
   val btnChoose = new Button("Choose") with LinkStyle
   val btnRemove = new Button("Remove") with LinkStyle
 
   lytButtons.addComponents(btnRemove, btnChoose)
-  this.addComponents(previewWidget, lytButtons)
+  this.addComponents(previewComponent, lytButtons)
 
   setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
 }
@@ -257,34 +257,34 @@ class ImagePickerWidget(previewWidget: EmbeddedPreviewWidget) extends GridLayout
  * Preview is considered empty when stub is displayed.
  * By default stub is a Label but it can be any component.
  */
-class EmbeddedPreview[A <: Component](val stubWidget: A = new Label with UndefinedSize) extends Publisher[Option[Embedded]] {
-  val widget = new EmbeddedPreviewWidget
-  setPreviewWidget(stubWidget)
+class EmbeddedPreview[A <: Component](val stubComponent: A = new Label with UndefinedSize) extends Publisher[Option[Embedded]] {
+  val previewComponentHolder = new EmbeddedPreviewComponentHolder
+  setPreviewComponent(stubComponent)
 
-  def clear() = if (!isEmpty) setPreviewWidget(stubWidget)
+  def clear() = if (!isEmpty) setPreviewComponent(stubComponent)
 
   def set(embedded: Embedded) {
-    assert(embedded ne stubWidget, "Stub can not be used as a preview component.")
-    embedded.setSizeFull
-    setPreviewWidget(embedded)
+    assert(embedded ne stubComponent, "Stub can not be used as a preview component.")
+    embedded.setSizeFull()
+    setPreviewComponent(embedded)
   }
 
-  def get = if (isEmpty) None else Some(widget.content.getComponent(0).asInstanceOf[Embedded])
-  def isEmpty = getPreviewWidget eq stubWidget
+  def get = if (isEmpty) None else Some(previewComponentHolder.content.getComponent(0).asInstanceOf[Embedded])
+  def isEmpty = getPreviewComponent eq stubComponent
   override def notifyListeners() = notifyListeners(get)
 
-  private def getPreviewWidget = widget.content.getComponent(0)
-  private def setPreviewWidget(component: Component) {
-    widget.content |> { content =>
+  private def getPreviewComponent = previewComponentHolder.content.getComponent(0)
+  private def setPreviewComponent(comoponent: Component) {
+    previewComponentHolder.content |> { content =>
       content.removeAllComponents()
-      content.addComponent(component)
-      content.setComponentAlignment(component, Alignment.MIDDLE_CENTER)
+      content.addComponent(comoponent)
+      content.setComponentAlignment(comoponent, Alignment.MIDDLE_CENTER)
     }
     notifyListeners(get)
   }
 }
 
-class EmbeddedPreviewWidget(width: Int = 64, height: Int = 64) extends Panel {
+class EmbeddedPreviewComponentHolder(width: Int = 64, height: Int = 64) extends Panel {
   val content = new VerticalLayout with FullSize
 
   setContent(content)

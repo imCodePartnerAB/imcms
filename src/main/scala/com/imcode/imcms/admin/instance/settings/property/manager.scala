@@ -16,13 +16,13 @@ import com.vaadin.server.Page
 //todo: move to system dir + monitor
 // todo: updateReadOnly ->
 
-class PropertyManagerManager(app: UI) {
+class PropertyManagerManager {
 
-  val widget = new PropertyManagerWidget |>> { w =>
+  val view = new PropertyManagerView |>> { w =>
     w.rc.btnReload.addClickHandler { _ => reload() }
     w.miEdit.setCommandHandler { _ =>
       new OkCancelDialog("Edit system properties") |>> { dlg =>
-        dlg.mainWidget = new PropertyEditorWidget |>> { eui =>
+        dlg.mainComponent = new PropertyEditorView |>> { eui =>
           Imcms.getServices.getSystemData |> { d =>
             eui.txtStartPageNumber.value = d.getStartDocument.toString
             eui.txaSystemMessage.value = d.getSystemMessage
@@ -33,14 +33,14 @@ class PropertyManagerManager(app: UI) {
           }
 
           dlg.setOkButtonHandler {
-            app.privileged(permission) {
+            Current.ui.privileged(permission) {
               val systemData = Imcms.getServices.getSystemData |>> { d =>
-                d setStartDocument eui.txtStartPageNumber.value.toInt
-                d setSystemMessage eui.txaSystemMessage.value
-                d setWebMaster eui.webMaster.txtName.value
-                d setWebMasterAddress eui.webMaster.txtEmail.value
-                d setServerMaster eui.serverMaster.txtName.value
-                d setServerMasterAddress eui.serverMaster.txtEmail.value
+                d.setStartDocument(eui.txtStartPageNumber.value.toInt)
+                d.setSystemMessage(eui.txaSystemMessage.value)
+                d.setWebMaster(eui.webMaster.txtName.value)
+                d.setWebMasterAddress(eui.webMaster.txtEmail.value)
+                d.setServerMaster(eui.serverMaster.txtName.value)
+                d.setServerMasterAddress(eui.serverMaster.txtEmail.value)
               }
 
               Ex.allCatch.either(Imcms.getServices.setSystemData(systemData)) match {
@@ -61,11 +61,11 @@ class PropertyManagerManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = Current.ui.imcmsUser.isSuperAdmin
+  def canManage = Current.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage system properties")
 
   def reload() {
-    import widget.dataWidget._
+    import view.propertyEditorView._
 
     Seq(txtStartPageNumber, txaSystemMessage, webMaster.txtName, webMaster.txtEmail, serverMaster.txtName,
         serverMaster.txtEmail).foreach { txt =>
@@ -86,27 +86,27 @@ class PropertyManagerManager(app: UI) {
       txt.setReadOnly(true)
     }
 
-    Seq(widget.miEdit).foreach(_.setEnabled(canManage))
+    Seq(view.miEdit).foreach(_.setEnabled(canManage))
   }
 } // class PropertyManager
 
-class PropertyManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
+class PropertyManagerView extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
   val miEdit = mb.addItem("Edit", Edit16)
   val miHelp = mb.addItem("Help", Help16)
-  val dataWidget = new PropertyEditorWidget
+  val propertyEditorView = new PropertyEditorView
   val dataPanel = new Panel(new VerticalLayout with UndefinedSize with Margin) with UndefinedSize
-  val rc = new ReloadableContentWidget(dataPanel)
+  val rc = new ReloadableContentView(dataPanel)
 
-  dataPanel.setContent(dataWidget)
+  dataPanel.setContent(propertyEditorView)
   this.addComponents(mb, rc)
 }
 
 
-class PropertyEditorWidget extends FormLayout with UndefinedSize {
-  class ContactWidget(caption: String) extends VerticalLayout() with UndefinedSize with Spacing {
+class PropertyEditorView extends FormLayout with UndefinedSize {
+  class ContactComponent(caption: String) extends VerticalLayout() with UndefinedSize with Spacing {
     val txtName = new TextField("Name")
     val txtEmail = new TextField("e-mail")
 
@@ -116,8 +116,8 @@ class PropertyEditorWidget extends FormLayout with UndefinedSize {
 
   val txtStartPageNumber = new TextField("Start page number")
   val txaSystemMessage = new TextArea("System message") |>> { _.setRows(5) }
-  val serverMaster = new ContactWidget("Server master")
-  val webMaster = new ContactWidget("Web master")
+  val serverMaster = new ContactComponent("Server master")
+  val webMaster = new ContactComponent("Web master")
 
   this.addComponents(txtStartPageNumber, txaSystemMessage, serverMaster, webMaster)
 }

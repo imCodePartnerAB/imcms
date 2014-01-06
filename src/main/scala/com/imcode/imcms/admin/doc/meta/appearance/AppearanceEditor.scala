@@ -45,7 +45,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
   )
 
   // i18nMetas sorted by language (default always first) and native name
-  private val i18nMetaEditorWidgets: Seq[I18nMetaEditorWidget] = {
+  private val i18nMetaEditorViews: Seq[I18nMetaEditorView] = {
     val defaultLanguage = imcmsServices.getDocumentI18nSupport.getDefaultLanguage
     val languages = imcmsServices.getDocumentI18nSupport.getLanguages.asScala.sortWith {
       case (l1, _) if l1 == defaultLanguage => true
@@ -56,15 +56,15 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
     for (language <- languages)
     yield {
       val caption = language.getNativeName + (if (language == defaultLanguage) " (default)" else "")
-      new I18nMetaEditorWidget(language, caption)
+      new I18nMetaEditorView(language, caption)
     }
   }
 
-  override val widget = new AppearanceEditorWidget |>> { w =>
+  override val view = new AppearanceEditorView |>> { w =>
     w.pnlLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
     w.pnlLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
 
-    for (i18nMetaEditorWidget <- i18nMetaEditorWidgets) {
+    for (i18nMetaEditorWidget <- i18nMetaEditorViews) {
       w.pnlLanguages.lytI18nMetas.addComponent(i18nMetaEditorWidget)
     }
 
@@ -88,11 +88,11 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
     })
   } // widget
 
-  override def collectValues(): ErrorsOrData = Ex.allCatch.either(widget.pnlAlias.txtAlias.validate())
+  override def collectValues(): ErrorsOrData = Ex.allCatch.either(view.pnlAlias.txtAlias.validate())
     .left.map(e => Seq(e.getMessage))
     .right.map { _ =>
       Data(
-        i18nMetaEditorWidgets.collect {
+        i18nMetaEditorViews.collect {
           case i18nMetaEditorWidget if i18nMetaEditorWidget.chkEnabled.checked =>
             val language = i18nMetaEditorWidget.language
             val i18nMeta = I18nMeta.builder()
@@ -107,13 +107,13 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
             language -> i18nMeta
         }(breakOut),
 
-        i18nMetaEditorWidgets.collect {
+        i18nMetaEditorViews.collect {
           case i18nMetaEditorWidget if i18nMetaEditorWidget.chkEnabled.checked => i18nMetaEditorWidget.language
         } (breakOut),
 
-        widget.pnlLanguages.cbShowMode.value,
-        widget.pnlAlias.txtAlias.trimOpt,
-        widget.pnlLinkTarget.cbTarget.value
+        view.pnlLanguages.cbShowMode.value,
+        view.pnlAlias.txtAlias.trimOpt,
+        view.pnlLinkTarget.cbTarget.value
       )
     }
 
@@ -122,7 +122,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
   override def resetValues() {
     val defaultLanguage = imcmsServices.getDocumentI18nSupport.getDefaultLanguage
 
-    for (i18nMetaEditorWidget <- i18nMetaEditorWidgets) {
+    for (i18nMetaEditorWidget <- i18nMetaEditorViews) {
       val isDefaultLanguage = i18nMetaEditorWidget.language == defaultLanguage
 
       i18nMetaEditorWidget.chkEnabled.setReadOnly(false)
@@ -142,26 +142,26 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
       }
     }
 
-    widget.pnlAlias.txtAlias.setInputPrompt(meta.getId.asOption.map(_.toString).orNull)
-    widget.pnlAlias.txtAlias.value = meta.getAlias.trimToEmpty
-    widget.pnlLanguages.cbShowMode.select(meta.getI18nShowSetting)
+    view.pnlAlias.txtAlias.setInputPrompt(meta.getId.asOption.map(_.toString).orNull)
+    view.pnlAlias.txtAlias.value = meta.getAlias.trimToEmpty
+    view.pnlLanguages.cbShowMode.select(meta.getI18nShowSetting)
 
     for ((target, targetCaption) <- ListMap("_self" -> "Same frame", "_blank" -> "New window", "_top" -> "Replace all")) {
-      widget.pnlLinkTarget.cbTarget.addItem(target, targetCaption)
+      view.pnlLinkTarget.cbTarget.addItem(target, targetCaption)
     }
 
     val target = meta.getTarget match {
-      case null => widget.pnlLinkTarget.cbTarget.firstItemIdOpt.get
+      case null => view.pnlLinkTarget.cbTarget.firstItemIdOpt.get
       case target =>
-        widget.pnlLinkTarget.cbTarget.itemIds.asScala.find(_ == target.toLowerCase) match {
+        view.pnlLinkTarget.cbTarget.itemIds.asScala.find(_ == target.toLowerCase) match {
           case Some(predefinedTarget) => predefinedTarget
           case _ =>
-            widget.pnlLinkTarget.cbTarget.addItem(target, "Other frame: %s".format(target))
+            view.pnlLinkTarget.cbTarget.addItem(target, "Other frame: %s".format(target))
             target
         }
     }
 
-    widget.pnlLinkTarget.cbTarget.select(target)
+    view.pnlLinkTarget.cbTarget.select(target)
   }
 
   resetValues()

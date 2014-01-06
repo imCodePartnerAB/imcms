@@ -17,11 +17,11 @@ import com.imcode.imcms.vaadin.server._
 import com.vaadin.server.Page
 
 //todo delete in use message
-class LanguageManager(app: UI) {
+class LanguageManager {
   private val languageDao = Imcms.getServices.getManagedBean(classOf[LanguageDao])
   private val systemDao = Imcms.getServices.getManagedBean(classOf[SystemDao])
 
-  val widget = new LanguageManagerWidget |>> { w =>
+  val view = new LanguageManagerView |>> { w =>
     w.rc.btnReload.addClickHandler { _ => reload() }
     w.tblLanguages.addValueChangeHandler { _ => handleSelection() }
 
@@ -38,7 +38,7 @@ class LanguageManager(app: UI) {
       whenSelected(w.tblLanguages) { id =>
         new ConfirmationDialog("Delete selected language?") |>> { dlg =>
           dlg.setOkButtonHandler {
-            app.privileged(permission) {
+            Current.ui.privileged(permission) {
               Ex.allCatch.either(languageDao.deleteLanguage(id)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("Language has been deleted")
@@ -57,7 +57,7 @@ class LanguageManager(app: UI) {
       whenSelected(w.tblLanguages) { id =>
         new ConfirmationDialog("Change default language?") |>> { dlg =>
           dlg.setOkButtonHandler {
-            app.privileged(permission) {
+            Current.ui.privileged(permission) {
               val property = systemDao.getProperty("DefaultLanguageId")
               property.setValue(id.toString)
 
@@ -80,7 +80,7 @@ class LanguageManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = Current.ui.imcmsUser.isSuperAdmin
+  def canManage = Current.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage languages")
 
   /** Edit in modal dialog. */
@@ -90,7 +90,7 @@ class LanguageManager(app: UI) {
     val dialogTitle = if (isNew) "Create new language" else "edit Language"
 
     new OkCancelDialog(dialogTitle) |>> { dlg =>
-      dlg.mainWidget = new LanguageEditorWidget |>> { c =>
+      dlg.mainComponent = new LanguageEditorView |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtCode.value = vo.getCode.trimToEmpty
         c.txtName.value = vo.getName.trimToEmpty
@@ -105,7 +105,7 @@ class LanguageManager(app: UI) {
             voc.nativeName(c.txtNativeName.value)
             voc.enabled(c.chkEnabled.value)
 
-            app.privileged(permission) {
+            Current.ui.privileged(permission) {
               Ex.allCatch.either(languageDao saveLanguage voc.build()) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
@@ -126,33 +126,33 @@ class LanguageManager(app: UI) {
   } // editAndSave
 
   def reload() {
-    widget.tblLanguages.removeAllItems
+    view.tblLanguages.removeAllItems
 
     val default: JInteger = systemDao.getProperty("DefaultLanguageId").getValue.toInt
     for {
       vo <- languageDao.getAllLanguages.asScala
       id = vo.getId
       isDefault = default == id.intValue
-    } widget.tblLanguages.addItem(
+    } view.tblLanguages.addItem(
       Array[AnyRef](id, vo.getCode, vo.getName, vo.getNativeName, vo.isEnabled: JBoolean, isDefault: JBoolean),
       id)
 
     canManage |> { value =>
-      widget.tblLanguages.setSelectable(value)
-      Seq(widget.miNew, widget.miEdit, widget.miDelete).foreach(_.setEnabled(value))
+      view.tblLanguages.setSelectable(value)
+      Seq(view.miNew, view.miEdit, view.miDelete).foreach(_.setEnabled(value))
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    (canManage && widget.tblLanguages.isSelected) |> { enabled =>
-      Seq(widget.miEdit, widget.miDelete).foreach(_.setEnabled(enabled))
+    (canManage && view.tblLanguages.isSelected) |> { enabled =>
+      Seq(view.miEdit, view.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class LanguageManager
 
-class LanguageManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
+class LanguageManagerView extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -162,7 +162,7 @@ class LanguageManagerWidget extends VerticalLayout with Spacing with UndefinedSi
   val miSetDefault = mb.addItem("Set default", Delete16)
   val miHelp = mb.addItem("Help", Help16)
   val tblLanguages = new Table with SingleSelect[JInteger] with Immediate
-  val rc = new ReloadableContentWidget(tblLanguages)
+  val rc = new ReloadableContentView(tblLanguages)
 
   addContainerProperties(tblLanguages,
     PropertyDescriptor[JInteger]("Id"),
@@ -175,7 +175,7 @@ class LanguageManagerWidget extends VerticalLayout with Spacing with UndefinedSi
   this.addComponents(mb, rc)
 }
 
-class LanguageEditorWidget extends FormLayout with UndefinedSize {
+class LanguageEditorView extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled
   val txtCode = new TextField("Code")
   val txtName = new TextField("Name")

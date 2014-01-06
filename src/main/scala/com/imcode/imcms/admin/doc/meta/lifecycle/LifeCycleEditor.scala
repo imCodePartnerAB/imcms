@@ -3,7 +3,7 @@ package imcms
 package admin.doc.meta.lifecycle
 
 import scala.collection.JavaConverters._
-import com.imcode.imcms.admin.access.user.{UserSingleSelectWidget, UserSingleSelect}
+import com.imcode.imcms.admin.access.user.{UserSingleSelectView, UserSingleSelect}
 import com.imcode.imcms.api.{DocumentVersion, Document, Meta}
 
 import java.util.Date
@@ -33,7 +33,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   )
 
 
-  override val widget = new LifeCycleEditorWidget |>> { w =>
+  override val view = new LifeCycleEditorView |>> { w =>
     for (phase <- LifeCyclePhase.ALL) {
       new Label with UndefinedSize |>> { lbl =>
         lbl.setCaption(s"doc_publication_phase.$phase".i)
@@ -83,50 +83,50 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
         versionInfo.getVersions.asScala.map(_.getNo) -> versionInfo.getDefaultVersion.getNo
     }
 
-    widget.info.ussCreator.selection = meta.getCreatorId.asOption.map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
-    widget.info.ussModifier.selection = None
-    widget.publication.ussPublisher.selection = meta.getPublisherId.asOption.map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
+    view.info.ussCreator.selection = meta.getCreatorId.asOption.map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
+    view.info.ussModifier.selection = None
+    view.publication.ussPublisher.selection = meta.getPublisherId.asOption.map(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(_))
 
-    widget.publication.sltVersion.removeAllItems()
-    versionsNos.foreach(no => widget.publication.sltVersion.addItem(no, no.toString))
-    widget.publication.sltVersion.setItemCaption(DocumentVersion.WORKING_VERSION_NO, "doc.version.working".i)
-    widget.publication.sltVersion.select(defaultVersionNo)
+    view.publication.sltVersion.removeAllItems()
+    versionsNos.foreach(no => view.publication.sltVersion.addItem(no, no.toString))
+    view.publication.sltVersion.setItemCaption(DocumentVersion.WORKING_VERSION_NO, "doc.version.working".i)
+    view.publication.sltVersion.select(defaultVersionNo)
 
-    widget.publication.sltStatus.select(meta.getPublicationStatus)
+    view.publication.sltStatus.select(meta.getPublicationStatus)
 
-    widget.publication.calStart.value = meta.getPublicationStartDatetime.asOption.getOrElse(new Date)
-    widget.publication.calEnd.value = meta.getPublicationEndDatetime
-    widget.publication.calArchive.value = meta.getArchivedDatetime
+    view.publication.calStart.value = meta.getPublicationStartDatetime.asOption.getOrElse(new Date)
+    view.publication.calEnd.value = meta.getPublicationEndDatetime
+    view.publication.calArchive.value = meta.getArchivedDatetime
 
-    widget.publication.chkEnd.checked = meta.getPublicationEndDatetime != null
-    widget.publication.chkArchive.checked = meta.getPublicationEndDatetime != null
+    view.publication.chkEnd.checked = meta.getPublicationEndDatetime != null
+    view.publication.chkArchive.checked = meta.getPublicationEndDatetime != null
 
     updatePhase()
   }
 
   private def updatePhase() {
     val doc = new TextDocumentDomainObject() |>> { doc =>
-      doc.setPublicationStartDatetime(widget.publication.calStart.value)
-      doc.setPublicationEndDatetime(if (widget.publication.chkEnd.checked) widget.publication.calEnd.value else null)
-      doc.setArchivedDatetime(if (widget.publication.chkArchive.checked) widget.publication.calArchive.value else null)
-      doc.setPublicationStatus(widget.publication.sltStatus.value)
+      doc.setPublicationStartDatetime(view.publication.calStart.value)
+      doc.setPublicationEndDatetime(if (view.publication.chkEnd.checked) view.publication.calEnd.value else null)
+      doc.setArchivedDatetime(if (view.publication.chkArchive.checked) view.publication.calArchive.value else null)
+      doc.setPublicationStatus(view.publication.sltStatus.value)
     }
 
     val activePhase = doc.getLifeCyclePhase
 
     for ((phase, index) <- LifeCyclePhase.ALL.zipWithIndex) {
-      widget.publication.lytPhase.getComponent(index).setEnabled(phase == activePhase)
+      view.publication.lytPhase.getComponent(index).setEnabled(phase == activePhase)
     }
   }
 
   override def collectValues(): ErrorsOrData = {
     val errors = scala.collection.mutable.Buffer.empty[String]
 
-    if (widget.publication.chkArchive.checked && widget.publication.calArchive.valueOpt.isEmpty) {
+    if (view.publication.chkArchive.checked && view.publication.calArchive.valueOpt.isEmpty) {
       errors.append("Document archive is enabled but date is not specified")
     }
 
-    if (widget.publication.chkEnd.checked && widget.publication.calEnd.valueOpt.isEmpty) {
+    if (view.publication.chkEnd.checked && view.publication.calEnd.valueOpt.isEmpty) {
       errors.append("Document expiration is enabled but date is not specified")
     }
 
@@ -135,16 +135,16 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     } else {
       Right(
         Data(
-          widget.publication.sltStatus.value,
-          widget.publication.calStart.value,
-          when(widget.publication.chkArchive.checked)(widget.publication.calArchive.value),
-          when(widget.publication.chkEnd.checked)(widget.publication.calEnd.value),
-          widget.info.ussCreator.selection,
-          widget.publication.sltVersion.value.intValue,
-          widget.info.dCreated.calDate.value,
-          widget.info.dModified.calDate.value,
-          widget.info.ussCreator.selection,
-          widget.info.ussModifier.selection
+          view.publication.sltStatus.value,
+          view.publication.calStart.value,
+          when(view.publication.chkArchive.checked)(view.publication.calArchive.value),
+          when(view.publication.chkEnd.checked)(view.publication.calEnd.value),
+          view.info.ussCreator.selection,
+          view.publication.sltVersion.value.intValue,
+          view.info.dCreated.calDate.value,
+          view.info.dModified.calDate.value,
+          view.info.ussCreator.selection,
+          view.info.ussModifier.selection
         )
       )
     }

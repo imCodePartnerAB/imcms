@@ -14,14 +14,13 @@ import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 
-import com.vaadin.server.Page
 import com.imcode.imcms.vaadin.server._
 
 //todo delete in use message
-class RoleManager(app: UI) {
+class RoleManager {
   private def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
-  val widget = new RoleManagerWidget |>> { w =>
+  val view = new RoleManagerView |>> { w =>
     w.rc.btnReload.addClickHandler { _ => reload() }
     w.tblRoles.addValueChangeHandler { _ => handleSelection() }
 
@@ -38,7 +37,7 @@ class RoleManager(app: UI) {
       whenSelected(w.tblRoles) { id =>
         new ConfirmationDialog("Delete selected role?") |>> { dlg =>
           dlg.setOkButtonHandler {
-            app.privileged(permission) {
+            Current.ui.privileged(permission) {
               Ex.allCatch.either(roleMapper.getRole(id).asOption.foreach(roleMapper.deleteRole)) match {
                 case Right(_) =>
                   dlg.close()
@@ -59,7 +58,7 @@ class RoleManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = Current.ui.imcmsUser.isSuperAdmin
+  def canManage = Current.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage roles")
 
   /** Edit in modal dialog. */
@@ -69,7 +68,7 @@ class RoleManager(app: UI) {
     val dialogTitle = if(isNew) "Create new role" else "Edit role"
 
     new OkCancelDialog(dialogTitle) |>> { dlg =>
-      dlg.mainWidget = new RoleEditorWidget |>> { w =>
+      dlg.mainComponent = new RoleEditorView |>> { w =>
         val permsToChkBoxes = Map(
             RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> w.chkPermChangeImagesInArchive,
             RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION -> w.chkPermUseImagesFromArchive,
@@ -87,7 +86,7 @@ class RoleManager(app: UI) {
             voc.removeAllPermissions()
             for ((permission, chkBox) <- permsToChkBoxes if chkBox.value) voc.addPermission(permission)
 
-            app.privileged(permission) {
+            Current.ui.privileged(permission) {
               Ex.allCatch.either(roleMapper saveRole voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
@@ -109,29 +108,29 @@ class RoleManager(app: UI) {
   }
 
   def reload() {
-    widget.tblRoles.removeAllItems()
+    view.tblRoles.removeAllItems()
 
     for {
       vo <- roleMapper.getAllRoles
       id = vo.getId
-    } widget.tblRoles.addItem(Array[AnyRef](Int box id.intValue, vo.getName), id)
+    } view.tblRoles.addItem(Array[AnyRef](Int box id.intValue, vo.getName), id)
 
     canManage |> { value =>
-      widget.tblRoles.setSelectable(value)
-      Seq(widget.miNew, widget.miEdit, widget.miDelete).foreach(_.setEnabled(value))
+      view.tblRoles.setSelectable(value)
+      Seq(view.miNew, view.miEdit, view.miDelete).foreach(_.setEnabled(value))
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    (canManage && widget.tblRoles.isSelected) |> { enabled =>
-      Seq(widget.miEdit, widget.miDelete).foreach(_.setEnabled(enabled))
+    (canManage && view.tblRoles.isSelected) |> { enabled =>
+      Seq(view.miEdit, view.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class RoleManager
 
-class RoleManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
+class RoleManagerView extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -140,7 +139,7 @@ class RoleManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
   val tblRoles = new Table with SingleSelect[RoleId] with Immediate
-  val rc = new ReloadableContentWidget(tblRoles)
+  val rc = new ReloadableContentView(tblRoles)
 
   addContainerProperties(tblRoles,
     PropertyDescriptor[JInteger]("Id"),
@@ -149,7 +148,7 @@ class RoleManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
   this.addComponents(mb, rc)
 }
 
-class RoleEditorWidget extends FormLayout with UndefinedSize {
+class RoleEditorView extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled
   val txtName = new TextField("Name")
   val chkPermGetPasswordByEmail = new CheckBox("Permission to get password by email")

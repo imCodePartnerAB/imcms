@@ -11,7 +11,7 @@ class ImageEditor(originalImageOpt: Option[ImageDomainObject]) extends Editor {
 
   override type Data = Option[ImageDomainObject]
 
-  override val widget = new ImageEditorWidget
+  override val view = new ImageEditorView
 
   private var imageOpt: Option[ImageDomainObject] = None
 
@@ -20,7 +20,7 @@ class ImageEditor(originalImageOpt: Option[ImageDomainObject]) extends Editor {
   def setImageOpt(imageOpt: Option[ImageDomainObject]) {
     this.imageOpt = imageOpt.map(_.clone())
 
-    widget.removeAllComponents()
+    view.removeAllComponents()
 
     val content = imageOpt match {
       case None =>
@@ -31,8 +31,8 @@ class ImageEditor(originalImageOpt: Option[ImageDomainObject]) extends Editor {
         new Image(null, new ExternalResource(url))
     }
 
-    widget.addComponent(content)
-    widget.setComponentAlignment(content, Alignment.MIDDLE_CENTER)
+    view.addComponent(content)
+    view.setComponentAlignment(content, Alignment.MIDDLE_CENTER)
   }
 
   override def resetValues() {

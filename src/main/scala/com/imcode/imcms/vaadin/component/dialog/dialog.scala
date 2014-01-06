@@ -35,32 +35,29 @@ trait Resizable { this: Window =>
  *   -size is adjusted automatically according to its content size.
  */
 class Dialog(caption: String = "") extends Window(caption) with Modal {
-  protected val mainWidgetSizeAssert: Component => Unit = WidgetAsserts.assertFixedSize
-  protected val footerWidgetSizeAssert: Component => Unit = WidgetAsserts.assertFixedSize
+  protected val mainComponentSizeAssert: Component => Unit = ComponentAsserts.assertFixedSize
+  protected val footerComponentSizeAssert: Component => Unit = ComponentAsserts.assertFixedSize
   protected val content = new GridLayout(1, 2) with Spacing with Margin
 
   setContent(content)
   setResizable(false)
 
-  def mainWidget: Component = content.getComponent(0, 0)
-  def mainWidget_=(component: Component) {
-    mainWidgetSizeAssert(component)
+  def mainComponent: Component = content.getComponent(0, 0)
+  def mainComponent_=(component: Component) {
+    mainComponentSizeAssert(component)
 
     content.addComponent(component, 0, 0)
     content.setComponentAlignment(component, Alignment.TOP_LEFT)
   }
 
 
-  def footerWidget: Component = content.getComponent(0, 1)
-  def footerWidget_=(component: Component) {
-    footerWidgetSizeAssert(component)
+  def footerComponent: Component = content.getComponent(0, 1)
+  def footerComponent_=(component: Component) {
+    footerComponentSizeAssert(component)
 
     content.addComponent(component, 0, 1)
     content.setComponentAlignment(component, Alignment.TOP_CENTER)
   }
-
-  /** Exposes close method. */
-  override def close(): Unit = super.close()
 }
 
 
@@ -69,7 +66,7 @@ class Dialog(caption: String = "") extends Window(caption) with Modal {
  * Size (both width and height) of this dialog MUST be set explicitly.
  */
 trait CustomSizeDialog extends Dialog {
-  override protected val mainWidgetSizeAssert: Component => Unit = Function.const(Unit)
+  override protected val mainComponentSizeAssert: Component => Unit = Function.const(Unit)
 
   content.setSizeFull()
   content.setColumnExpandRatio(0, 1f)
@@ -105,12 +102,12 @@ trait CancelButton { this: Dialog =>
 
 /** Empty dialog window. */
 class OKDialog(caption: String = "") extends Dialog(caption) with OKButton {
-  footerWidget = btnOk
+  footerComponent = btnOk
 }
 
 /** Empty dialog window. */
 class CancelDialog(caption: String = "") extends Dialog(caption) with CancelButton {
-  footerWidget = btnCancel
+  footerComponent = btnCancel
 
   setCancelButtonHandler { close() }
 }
@@ -120,7 +117,7 @@ class CancelDialog(caption: String = "") extends Dialog(caption) with CancelButt
 trait MsgLabel { this: Dialog =>
   val lblMessage = new Label with UndefinedSize
 
-  mainWidget = lblMessage
+  mainComponent = lblMessage
 }
 
 /** Message dialog window. */
@@ -140,7 +137,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton
     setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
   }
 
-  footerWidget = lytButtons
+  footerComponent = lytButtons
 }
 
 /** YesNoCancel dialog window. */
@@ -154,7 +151,7 @@ class YesNoCancelDialog(caption: String = "") extends Dialog(caption) with YesBu
     setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
   }
 
-  footerWidget = lytButtons
+  footerComponent = lytButtons
 }
 
 
@@ -164,7 +161,7 @@ class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(ca
 
   val lblMessage = new Label(msg) with UndefinedSize
 
-  mainWidget = lblMessage
+  mainComponent = lblMessage
 }
 
 

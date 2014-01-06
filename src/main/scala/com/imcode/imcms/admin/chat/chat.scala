@@ -42,7 +42,7 @@ class MessagesPanel extends Panel(new VerticalLayout{setSpacing(true)}) with Ful
 
 class Chat extends VerticalLayout {
   val pnlMessages = new MessagesPanel
-  val txaText = new TextArea() |>> { t => t.setRows(3); t.setSizeFull }
+  val txaText = new TextArea() |>> { t => t.setRows(3); t.setSizeFull() }
   val btnSend = new Button("Send") { setHeight("100%") }
 
   val lytMessage = new HorizontalLayout {
@@ -55,7 +55,7 @@ class Chat extends VerticalLayout {
   setSpacing(true)
   this.addComponents(pnlMessages, lytMessage)
   setExpandRatio(pnlMessages, 1.0f)
-  setSizeFull
+  setSizeFull()
 }
 
 //    new Chat {

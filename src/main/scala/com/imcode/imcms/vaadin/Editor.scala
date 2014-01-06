@@ -8,7 +8,7 @@ trait Editor {
   type Data
   final type ErrorsOrData = Seq[ErrorMsg] Either Data
 
-  def widget: Component
+  def view: Component
 
   def resetValues()
   def collectValues(): ErrorsOrData

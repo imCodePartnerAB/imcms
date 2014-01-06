@@ -15,7 +15,7 @@ class IPAccessDao extends HibernateSupport {
         "DELETE FROM IPAccess i WHERE i.id = :id", "id" -> id
     )
 
-    def save(ipAccess: IPAccess ) = hibernate.saveOrUpdate(ipAccess)
+    def save(ipAccess: IPAccess) = hibernate.saveOrUpdate(ipAccess)
 
     def get(id: JInteger) = hibernate.get[IPAccess](id)
 }

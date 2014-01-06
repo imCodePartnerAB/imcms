@@ -27,8 +27,6 @@ class UIWrapper(ui: com.vaadin.ui.UI) {
     }
   )
 
-  def imcmsUser: UserDomainObject = Utility.getLoggedOnUser(Current.httpSession)
-
   def imcmsDocUrl(metaId: MetaId) = ui.resourceUrl(metaId.toString)
 
   def imcmsDocUrl(alias: String) = ui.resourceUrl(alias)

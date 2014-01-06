@@ -6,7 +6,7 @@ import com.imcode.imcms.admin.access.user.projection.UsersProjection
 abstract class UserSelectDialog(caption: String, multiSelect: Boolean) extends OkCancelDialog(caption) {
   val search = new UsersProjection(multiSelect = multiSelect)
 
-  mainWidget = search.widget
+  mainComponent = search.view
 
   search.listen(selection => btnOk.setEnabled(selection.nonEmpty))
   search.notifyListeners()

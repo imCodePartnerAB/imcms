@@ -14,15 +14,15 @@ import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.projection.UsersProjection
 
 // todo add security check, add editAndSave, add external UI
-class UserManager(app: UI) extends ImcmsServicesSupport {
+class UserManager extends ImcmsServicesSupport {
   private val search = new UsersProjection
 
-  val widget = new UserManagerWidget(search.widget) |>> { w =>
+  val view = new UserManagerView(search.view) |>> { w =>
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     w.miNew.setCommandHandler { _ =>
       new OkCancelDialog("user.dlg.new.caption".i) |>> { dlg =>
-        dlg.mainWidget = new UserEditorWidget |>> { c =>
+        dlg.mainComponent = new UserEditorView |>> { c =>
           for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
             c.tcsRoles.addItem(role.getId, role.getName)
           }
@@ -55,7 +55,7 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
     w.miEdit.setCommandHandler { _ =>
       whenSingleton(search.selection) { user =>
         new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName)) |>> { dlg =>
-          dlg.mainWidget = new UserEditorWidget |>> { c =>
+          dlg.mainComponent = new UserEditorView |>> { c =>
             c.chkActivated setValue user.isActive
             c.txtFirstName setValue user.getFirstName
             c.txtLastName setValue user.getLastName
@@ -97,7 +97,7 @@ class UserManager(app: UI) extends ImcmsServicesSupport {
 }
 
 
-class UserManagerWidget(val searchWidget: Component) extends VerticalLayout with Spacing {
+class UserManagerView(val searchView: Component) extends VerticalLayout with Spacing {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -105,14 +105,14 @@ class UserManagerWidget(val searchWidget: Component) extends VerticalLayout with
   val miEdit = mb.addItem("mi.edit".i, Edit16)
   val miHelp = mb.addItem("mi.help".i, Help16)
 
-  this.addComponents(mb, searchWidget)
+  this.addComponents(mb, searchView)
 }
 
 
 /**
  * Add/Edit user dialog content.
  */
-class UserEditorWidget extends FormLayout with UndefinedSize {
+class UserEditorView extends FormLayout with UndefinedSize {
   val txtLogin = new TextField("user.editor.frm.fld.txt_login".i)
   val txtPassword = new PasswordField("user.editor.frm.fld.pwd_password".i)
   val txtVerifyPassword = new PasswordField("user.editor.frm.fld.pwd_password_retype".i)

@@ -14,7 +14,7 @@ class DocSelectDialog(caption: String, user: UserDomainObject, multiSelect: Bool
   val projection = new DocsProjection(user, multiSelect = multiSelect)
   val projectionOps = new DocsProjectionOps(projection)
 
-  mainWidget = new DocSelectDialogMainWidget(projection.widget) |>> { w =>
+  mainComponent = new DocSelectDialogView(projection.view) |>> { w =>
     w.miNewFileDoc.setCommandHandler { _ => projectionOps.mkDocOfType[FileDocumentDomainObject] }
     w.miNewTextDoc.setCommandHandler { _ => projectionOps.mkDocOfType[TextDocumentDomainObject] }
     w.miNewUrlDoc.setCommandHandler { _ => projectionOps.mkDocOfType[UrlDocumentDomainObject] }

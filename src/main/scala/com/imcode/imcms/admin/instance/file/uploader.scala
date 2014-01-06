@@ -34,11 +34,11 @@ case class UploadFailed(event: Upload.FailedEvent) extends UploadStatus
 class FileUploaderDialog(caption: String = "") extends OkCancelDialog(caption) {
   val uploader = new FileUploader
 
-  mainWidget = uploader.widget
+  mainComponent = uploader.view
 
   setCancelButtonHandler {
-    if (uploader.widget.upload.isUploading) {
-      uploader.widget.upload.interruptUpload()
+    if (uploader.view.upload.isUploading) {
+      uploader.view.upload.interruptUpload()
     }
 
     uploader.deleteUploadedFile()
@@ -67,7 +67,7 @@ class FileUploader extends Publisher[UploadStatus] {
    */
   var fileNameToSaveAsName: (String => String) = identity
 
-  val widget = new FileUploaderWidget |>> { w =>
+  val view = new FileUploaderView |>> { w =>
     // Temp file based receiver
     val receiver = new Upload.Receiver {
       val file = File.createTempFile("imcms_upload", null) |>> {
@@ -125,12 +125,12 @@ class FileUploader extends Publisher[UploadStatus] {
 
   def reset() {
     deleteUploadedFile()
-    updateDisabled(widget.chkOverwrite) { _.value = false }
-    updateDisabled(widget.txtSaveAsName) { saveAsName =>
-      widget.txtSaveAsName.value = ""
-      widget.txtSaveAsName.setInputPrompt(null)
+    updateDisabled(view.chkOverwrite) { _.value = false }
+    updateDisabled(view.txtSaveAsName) { saveAsName =>
+      view.txtSaveAsName.value = ""
+      view.txtSaveAsName.setInputPrompt(null)
     }
-    updateDisabled(widget.pgiBytesReceived) { pgiBytesReceived =>
+    updateDisabled(view.pgiBytesReceived) { pgiBytesReceived =>
       pgiBytesReceived.setValue(0f)
       pgiBytesReceived.setPollingInterval(500)
     }
@@ -140,9 +140,9 @@ class FileUploader extends Publisher[UploadStatus] {
 
   def uploadedFile: Option[UploadedFile] = uploadedFileOptRef.get
 
-  def saveAsName: String = widget.txtSaveAsName.trim
+  def saveAsName: String = view.txtSaveAsName.trim
 
-  def mayOverwrite: Boolean = widget.chkOverwrite.checked
+  def mayOverwrite: Boolean = view.chkOverwrite.checked
 //  def mayOverwrite_=(value: Boolean) {
 //    if (value) {
 //      ui.chkOverwrite.setEnabled(true)
@@ -160,7 +160,7 @@ class FileUploader extends Publisher[UploadStatus] {
 }
 
 
-class FileUploaderWidget extends FormLayout with UndefinedSize {
+class FileUploaderView extends FormLayout with UndefinedSize {
   val upload = new Upload("file.upload.dlg.frm.fld.select".i, null) with Immediate
   val txtSaveAsName = new TextField("file.upload.dlg.frm.fld.save_as".i) with Required
   val pgiBytesReceived = new ProgressIndicator; pgiBytesReceived.setCaption("file.upload.dlg.frm.fld.progress".i)

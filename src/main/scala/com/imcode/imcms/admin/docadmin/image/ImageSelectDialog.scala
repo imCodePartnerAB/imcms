@@ -10,5 +10,5 @@ class ImageSelectDialog(caption: String) extends OkCancelDialog(caption) with Re
 
   val imageSelect = new ImageSelect
 
-  mainWidget = imageSelect.widget
+  mainComponent = imageSelect.view
 }

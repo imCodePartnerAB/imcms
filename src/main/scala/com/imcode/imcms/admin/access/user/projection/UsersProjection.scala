@@ -22,7 +22,7 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
   private val selectionRef = new AtomicReference(Seq.empty[UserDomainObject])
 
   private val filter = new UserFilter
-  private val filteredUsersWidget = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable |>> { tbl =>
+  private val filteredUsersView = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable |>> { tbl =>
     addContainerProperties(tbl,
       PropertyDescriptor[UserId]("users_projection.container_property.id"),
       PropertyDescriptor[String]("users_projection.container_property.login"),
@@ -37,17 +37,17 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
     tbl.addStyleName("striped")
   }
 
-  val widget = new GridLayout(1, 2) |>> { w =>
-    w.addComponents(filter.widget, filteredUsersWidget)
+  val view = new GridLayout(1, 2) |>> { w =>
+    w.addComponents(filter.view, filteredUsersView)
   }
 
-  filteredUsersWidget.addValueChangeHandler { _ =>
-    selectionRef.set(filteredUsersWidget.value.asScala.map(userId => roleMapper.getUser(userId))(breakOut))
+  filteredUsersView.addValueChangeHandler { _ =>
+    selectionRef.set(filteredUsersView.value.asScala.map(userId => roleMapper.getUser(userId))(breakOut))
     notifyListeners()
   }
 
-  filter.widget.lytButtons.btnFilter.addClickHandler { _ => reload() }
-  filter.widget.lytButtons.btnReset.addClickHandler { _ => reset() }
+  filter.view.lytButtons.btnFilter.addClickHandler { _ => reload() }
+  filter.view.lytButtons.btnReset.addClickHandler { _ => reset() }
 
   reset()
 
@@ -69,7 +69,7 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
 
     val matchesRoles: (UserDomainObject => Boolean) =
       state.roles match {
-        case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(filter.widget.tcsRoles.value.asScala.toSeq).nonEmpty }
+        case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(filter.view.tcsRoles.value.asScala.toSeq).nonEmpty }
         case _ => matchesAlways
       }
 
@@ -78,12 +78,12 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
 
     val matchesAll = (user: UserDomainObject) => List(matchesText, matchesRoles, matchesShowInactive) forall (_ apply user)
 
-    filteredUsersWidget.removeAllItems
+    filteredUsersView.removeAllItems
     for {
       user <- roleMapper.getAllUsers.toList if !user.isDefaultUser && matchesAll(user)
       userId = Int box user.getId
     } {
-      filteredUsersWidget.addItem(
+      filteredUsersView.addItem(
         Array[AnyRef](
           userId,
           user.getLoginName,

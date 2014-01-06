@@ -34,10 +34,10 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
 
   private val editors = collection.mutable.MutableList.empty[ImageEditor]
 
-  override val widget: ImagesEditorWidget = new ImagesEditorWidget |>> { w =>
+  override val view: ImagesEditorView = new ImagesEditorView |>> { w =>
     w.miClear.setCommandHandler { _ =>
       if (editors.nonEmpty) {
-        editors(widget.tsImages.getTabIndex).setImageOpt(None)
+        editors(view.tsImages.getTabIndex).setImageOpt(None)
       }
     }
 
@@ -50,7 +50,7 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
 
           //image.setUrl()
 
-          editors(widget.tsImages.getTabIndex).setImageOpt(Some(image))
+          editors(view.tsImages.getTabIndex).setImageOpt(Some(image))
 
           dlg.close()
         }
@@ -62,12 +62,12 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
   }
 
   override def resetValues() {
-    widget.tsImages.removeAllComponents()
+    view.tsImages.removeAllComponents()
     editors.clear()
 
     for (image <- imcmsServices.getManagedBean(classOf[TextDocDao]).getImages(docRef, imageNo, None, true).asScala) {
       val imageEditor = new ImageEditor(Some(image))
-      widget.tsImages.addTab(imageEditor.widget, image.getLanguage.getNativeName, Theme.Icon.Language.flag(image.getLanguage))
+      view.tsImages.addTab(imageEditor.view, image.getLanguage.getNativeName, Theme.Icon.Language.flag(image.getLanguage))
       editors += imageEditor
     }
   }

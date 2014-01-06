@@ -16,11 +16,11 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
 
   override type Data = Seq[TextDomainObject]
 
-  private case class TextState(text: TextDomainObject, textWidget: AbstractField[String])
+  private case class TextState(text: TextDomainObject, textComponent: AbstractField[String])
 
   private var states: Seq[TextState] = _
 
-  override val widget = new TextEditorWidget |>> { w =>
+  override val view = new TextEditorView |>> { w =>
     if (!settings.canChangeFormat) {
       w.miFormatHtml.setEnabled(settings.format == TextDomainObject.Format.HTML)
       w.miFormatPlain.setEnabled(settings.format == TextDomainObject.Format.PLAIN_TEXT)
@@ -48,9 +48,9 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
   private def currentText: TextDomainObject = {
     val selectedTabPositionOpt =
       for {
-        component <- widget.tsTexts.getSelectedTab.asOption
-        tab <- widget.tsTexts.getTab(component).asOption
-      } yield widget.tsTexts.getTabPosition(tab)
+        component <- view.tsTexts.getSelectedTab.asOption
+        tab <- view.tsTexts.getTab(component).asOption
+      } yield view.tsTexts.getTabPosition(tab)
 
     states(selectedTabPositionOpt.get) |> {
       case TextState(text, textWidget) => text.clone() |>> { _.setText(textWidget.value) }
@@ -60,21 +60,21 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
   private def setFormat(format: TextDomainObject.Format) {
     format match {
       case TextDomainObject.Format.HTML =>
-        widget.miFormatHtml.setChecked(true)
-        widget.miFormatPlain.setChecked(false)
+        view.miFormatHtml.setChecked(true)
+        view.miFormatPlain.setChecked(false)
 
       case TextDomainObject.Format.PLAIN_TEXT =>
-        widget.miFormatHtml.setChecked(false)
-        widget.miFormatPlain.setChecked(true)
+        view.miFormatHtml.setChecked(false)
+        view.miFormatPlain.setChecked(true)
     }
 
     val selectedTabPositionOpt =
       for {
-        component <- widget.tsTexts.getSelectedTab.asOption
-        tab <- widget.tsTexts.getTab(component).asOption
-      } yield widget.tsTexts.getTabPosition(tab)
+        component <- view.tsTexts.getSelectedTab.asOption
+        tab <- view.tsTexts.getTab(component).asOption
+      } yield view.tsTexts.getTabPosition(tab)
 
-    val tabIndex = widget.tsTexts.getTabIndex
+    val tabIndex = view.tsTexts.getTabIndex
 
     states = texts.map { text =>
       TextState(
@@ -103,24 +103,24 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
       )
     }
 
-    widget.tsTexts.removeAllComponents()
+    view.tsTexts.removeAllComponents()
 
     for (TextState(text, textWidget) <- states) {
-      widget.tsTexts.addTab(textWidget) |> { tab =>
+      view.tsTexts.addTab(textWidget) |> { tab =>
         tab.setCaption(text.getI18nDocRef.language().getName)
         tab.setIcon(Theme.Icon.Language.flag(text.getI18nDocRef.language()))
       }
     }
 
-    selectedTabPositionOpt.foreach(widget.tsTexts.setSelectedTab)
+    selectedTabPositionOpt.foreach(view.tsTexts.setSelectedTab)
 
     format |> {
       case TextDomainObject.Format.HTML => ("Format: HTML", Theme.Icon.TextFormatHtml)
       case _ => ("Format: Plain text", Theme.Icon.TextFormatPlain)
     } |> {
       case (formatTypeName, formatTypeIcon) =>
-        widget.lblStatus.setCaption(formatTypeName)
-        widget.lblStatus.setIcon(formatTypeIcon)
+        view.lblStatus.setCaption(formatTypeName)
+        view.lblStatus.setIcon(formatTypeIcon)
     }
   }
 

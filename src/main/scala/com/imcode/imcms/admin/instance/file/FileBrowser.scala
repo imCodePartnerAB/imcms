@@ -114,14 +114,14 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
   /** Selection in a current location */
   private val selectionRef = new AtomicReference(Option.empty[LocationSelection])
 
-  val widget = new FileBrowserWidget |>> { w =>
+  val view = new FileBrowserView |>> { w =>
     w.accLocationTrees.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet.SelectedTabChangeEvent) {
         val locationOpt = tabsToLocations.get(e.getTabSheet.getSelectedTab)
         locationRef.set(locationOpt)
 
         for ((locationTree, locationItems) <- locationOpt) {
-          w.spLocation.setSecondComponent(locationItems.widget)
+          w.spLocation.setSecondComponent(locationItems.view)
           updateSelection(locationTree, locationItems)
         }
       }
@@ -133,8 +133,8 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
     val locationTree = new LocationTree(locationRoot)
     val locationItems = new LocationItems(conf.itemsFilter, isSelectable, isMultiSelect)
 
-    locationTree.widget.addValueChangeHandler { _ =>
-      locationTree.widget.value.asOption match {
+    locationTree.view.addValueChangeHandler { _ =>
+      locationTree.view.value.asOption match {
         case Some(dir) =>
           locationItems.reload(dir)
           Some(LocationSelection(dir, Nil)) |> { selection =>
@@ -143,7 +143,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
           }
 
         case _ =>
-          locationItems.widget.removeAllItems()
+          locationItems.view.removeAllItems()
 
           None |> { selection =>
             selectionRef.set(selection)
@@ -152,9 +152,9 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       }
     }
 
-    locationItems.widget.addValueChangeHandler { _ => updateSelection(locationTree, locationItems) }
+    locationItems.view.addValueChangeHandler { _ => updateSelection(locationTree, locationItems) }
 
-    locationItems.widget.addItemClickHandler { event: ItemClickEvent =>
+    locationItems.view.addItemClickHandler { event: ItemClickEvent =>
       if (event.isDoubleClick) {
         event.getItemId match {
           case item: File if item.isDirectory => locationTree.selection = item
@@ -166,12 +166,12 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
     locationTree.reload()
 
     locationRootToConf(locationRoot) = conf
-    tabsToLocations(locationTree.widget) = (locationTree, locationItems)
-    widget.accLocationTrees.addTab(locationTree.widget, caption, icon.orNull)
+    tabsToLocations(locationTree.view) = (locationTree, locationItems)
+    view.accLocationTrees.addTab(locationTree.view, caption, icon.orNull)
   }
 
   private def updateSelection(locationTree: LocationTree, locationItems: LocationItems) {
-    locationTree.widget.value.asOption match {
+    locationTree.view.value.asOption match {
       case Some(dir) =>
         Some(LocationSelection(dir, locationItems.selection)) |> { selection =>
           selectionRef.set(selection)
@@ -204,14 +204,14 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
   /** Reloads current location. */
   def reloadLocation(preserveTreeSelection: Boolean = true) =
-    for ((locationTree, _) <- location; dir = locationTree.widget.value) {
+    for ((locationTree, _) <- location; dir = locationTree.view.value) {
       locationTree.reload()
       if (preserveTreeSelection && dir.isDirectory) locationTree.selection = dir
     }
 
   /** Reloads current location's items. */
   def reloadLocationItems() =
-    for ((locationTree, locationItems) <- location; dir = locationTree.widget.value)
+    for ((locationTree, locationItems) <- location; dir = locationTree.view.value)
       locationItems.reload(dir)
 
 
@@ -231,14 +231,14 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
       case (_, (locationTree, _)) => locationTree.root.getCanonicalFile == locationRoot.getCanonicalFile
     } foreach {
       case (tab, (locationTree, locationItems)) =>
-        widget.accLocationTrees.setSelectedTab(tab)
+        view.accLocationTrees.setSelectedTab(tab)
         locationTree.selection = locationSelection.dir
-        if (isSelectable) locationItems.widget.value = locationSelection.items.asJava
+        if (isSelectable) locationItems.view.value = locationSelection.items.asJava
     }
 
   // primary constructor
   listen { e =>
-    widget.lblSelectionPath.value = {
+    view.lblSelectionPath.value = {
       val pathOpt =
         for {
           LocationSelection(dir, items) <- e
@@ -263,7 +263,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 }
 
 
-class FileBrowserWidget extends VerticalLayout with Spacing with FullSize {
+class FileBrowserView extends VerticalLayout with Spacing with FullSize {
   val spLocation = new HorizontalSplitPanel with FullSize
   val accLocationTrees = new Accordion with FullSize
   val lblSelectionPath = new Label
@@ -284,26 +284,26 @@ trait FSItemIcon extends AbstractSelect {
 
 
 class LocationTree(val root: File) {
-  val widget = new Tree with SingleSelect[File] with Immediate with NoNullSelection with FSItemIcon
+  val view = new Tree with SingleSelect[File] with Immediate with NoNullSelection with FSItemIcon
 
   def reload() {
-    widget.setContainerDataSource(new LocationTreeContainer(root.getCanonicalFile))
-    widget.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM)
+    view.setContainerDataSource(new LocationTreeContainer(root.getCanonicalFile))
+    view.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM)
     selection = root
   }
 
   def selection_=(dir: File) = dir.getCanonicalFile |> { dir =>
-    widget.select(dir)
-    widget.expandItem(if (dir == root) dir else dir.getParentFile)
+    view.select(dir)
+    view.expandItem(if (dir == root) dir else dir.getParentFile)
   }
 
-  def selection = widget.value
+  def selection = view.value
 }
 
 
 class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: Boolean) {
 
-  val widget = new Table with MultiSelectBehavior[File] with FSItemIcon with Immediate with FullSize |>> { w =>
+  val view = new Table with MultiSelectBehavior[File] with FSItemIcon with Immediate with FullSize |>> { w =>
     w.setSelectable(selectable)
     w.setMultiSelect(multiSelect)
 
@@ -325,14 +325,14 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
     val (dirs, files) = dir.listFiles.partition(_.isDirectory)
     def lastModified(file: File) = "file.browser.items.col.modified.fmt".f(file.lastModified.asInstanceOf[AnyRef])
 
-    widget.removeAllItems()
+    view.removeAllItems()
 
     dirs.sortWith((d1, d2) => d1.getName.compareToIgnoreCase(d2.getName) < 0).foreach { dir =>
-      widget.addItem(Array[AnyRef](dir.getName, lastModified(dir), "--", "file.browser.items.col.kind.dir".i), dir)
+      view.addItem(Array[AnyRef](dir.getName, lastModified(dir), "--", "file.browser.items.col.kind.dir".i), dir)
     }
 
     for (file <- files.sortWith((f1, f2) => f1.getName.compareToIgnoreCase(f2.getName) < 0) if filter(file)) {
-      widget.addItem(
+      view.addItem(
         Array[AnyRef](
           file.getName, lastModified(file), FileProperties.sizeAsString(file), "file.browser.items.col.kind.file".i
         ),
@@ -340,7 +340,7 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
     }
   }
 
-  def selection = widget.value.asScala.toSeq
+  def selection = view.value.asScala.toSeq
 }
 
 

@@ -25,7 +25,7 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
   private val initialValues = Data(meta.getCategoryIds.asScala.toSet)
 
-  private val typeCategoriesWidgets: Seq[(CheckBox with ExposeValueChange[JBoolean], MultiSelectBehavior[CategoryId])] =
+  private val typeCategoriesView: Seq[(CheckBox with ExposeValueChange[JBoolean], MultiSelectBehavior[CategoryId])] =
     for {
       cType <- imcmsServices.getCategoryMapper.getAllCategoryTypes.toSeq
       categories = imcmsServices.getCategoryMapper.getAllCategoriesOfType(cType)
@@ -47,14 +47,14 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
       chkCType -> sltCategories
     }
 
-  override val widget = new GridLayout(2, 1) with Spacing |>> { w =>
-    for ((chkCType, sltCategories) <- typeCategoriesWidgets) {
+  override val view = new GridLayout(2, 1) with Spacing |>> { w =>
+    for ((chkCType, sltCategories) <- typeCategoriesView) {
       w.addComponents(chkCType, sltCategories)
     }
   }
 
   override def resetValues() {
-    for ((chkCType, sltCategories) <- typeCategoriesWidgets) {
+    for ((chkCType, sltCategories) <- typeCategoriesView) {
       chkCType.uncheck()
       sltCategories.value = Collections.emptyList[CategoryId]
 
@@ -69,7 +69,7 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
   override def collectValues(): ErrorsOrData = Right(
     Data(
-      typeCategoriesWidgets.collect {
+      typeCategoriesView.collect {
         case (chkCType, sltCategories) if chkCType.checked => sltCategories.value.asScala
       }.flatten.toSet
     )

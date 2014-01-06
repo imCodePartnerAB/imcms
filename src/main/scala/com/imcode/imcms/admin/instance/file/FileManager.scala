@@ -16,39 +16,39 @@ import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.vaadin.server.{Page, UserError}
 
-class FileManager(app: UI) {
+class FileManager {
   val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))
 
   val preview = new FilePreview(browser) |>> { preview =>
-    preview.widget.previewWidget.setSize(256, 256)
+    preview.view.previewComponent.setSize(256, 256)
   }
 
-  val widget = new FileManagerWidget(browser.widget, preview.widget) |>> { w =>
+  val view = new FileManagerView(browser.view, preview.view) |>> { w =>
 
     w.miEditRename.setCommandHandler { _ =>
       for (LocationSelection(dir, Seq(item)) <- browser.selection; if item.isFile) {
         new OkCancelDialog("file.mgr.dlg.rename.item.title".f(item.getName)) |>> { dlg =>
           dlg.btnOk.setCaption("file.mgr.dlg.transfer.item.btn.rename".i)
 
-          val dlgMainWidget = new ItemRenameDialogMainWidget
-          dlg.mainWidget = dlgMainWidget
-          dlgMainWidget.txtName.value = item.getName
+          val dlgMainComponent = new ItemRenameDialogView
+          dlg.mainComponent = dlgMainComponent
+          dlgMainComponent.txtName.value = item.getName
 
           dlg.setOkButtonHandler {
             val forbiddenChars = """?"\/:;%*|>>>"""
             val forbiddenCharsSet = forbiddenChars.toSet
-            dlgMainWidget.txtName.value.trim |> {
+            dlgMainComponent.txtName.value.trim |> {
               case name if name.isEmpty || name.head == '.' || name.exists(forbiddenCharsSet(_)) =>
                 val msg = "file.mgr.dlg.illegal.item.name.msg".f(forbiddenChars)
-                dlgMainWidget.lblMsg.value = msg
-                dlgMainWidget.lblMsg.setComponentError(new UserError(msg))
+                dlgMainComponent.lblMsg.value = msg
+                dlgMainComponent.lblMsg.setComponentError(new UserError(msg))
                 sys.error(msg)
 
               case name => new File(dir, name) match {
                 case file if file.exists =>
                   val msg = "file.mgr.dlg.transfer.item.exist.msg".f(name, dir.getName)
-                  dlgMainWidget.lblMsg.value = msg
-                  dlgMainWidget.lblMsg.setComponentError(new UserError(msg))
+                  dlgMainComponent.lblMsg.value = msg
+                  dlgMainComponent.lblMsg.setComponentError(new UserError(msg))
                   sys.error(msg)
 
                 case file => item.renameTo(file)
@@ -62,15 +62,15 @@ class FileManager(app: UI) {
     }
 
     w.miEditDelete.setCommandHandler { _ =>
-      new ItemsDeleteHelper(app, browser) delete()
+      new ItemsDeleteHelper(browser) delete()
     }
 
     w.miEditCopy.setCommandHandler { _ =>
-      new ItemsTransferHelper(app, browser) copy()
+      new ItemsTransferHelper(browser) copy()
     }
 
     w.miEditMove.setCommandHandler { _ =>
-      new ItemsTransferHelper(app, browser) move()
+      new ItemsTransferHelper(browser) move()
     }
 
     w.miFileShow.setCommandHandler { _ =>
@@ -84,7 +84,7 @@ class FileManager(app: UI) {
           dlg.btnOk.setCaption("btn_save".i)
 
           val textArea = new TextArea("", scala.io.Source.fromFile(item).mkString) with FullSize
-          dlg.mainWidget = textArea
+          dlg.mainComponent = textArea
           dlg.setSize(500, 500)
 
           dlg.setOkButtonHandler {
@@ -129,7 +129,7 @@ class FileManager(app: UI) {
         new OkCancelDialog("file.mgr.dlg.new_dir.title".i) |>> { dlg =>
           val txtName = new TextField("file.mgr.dlg.new_dir.frm.fld.name".i)
           val lblMsg = new Label with UndefinedSize
-          dlg.mainWidget = new FormLayout with UndefinedSize { this.addComponents(lblMsg, txtName) }
+          dlg.mainComponent = new FormLayout with UndefinedSize { this.addComponents(lblMsg, txtName) }
 
           // refactor
           val forbiddenChars = """?"\/:;%*|>>>"""
@@ -155,7 +155,7 @@ class FileManager(app: UI) {
 }
 
 
-class FileManagerWidget(browserUI: FileBrowserWidget, previewWidget: FilePreviewWidget) extends GridLayout(2, 2) with Spacing with FullSize {
+class FileManagerView(browserUI: FileBrowserView, previewView: FilePreviewView) extends GridLayout(2, 2) with Spacing with FullSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -177,8 +177,8 @@ class FileManagerWidget(browserUI: FileBrowserWidget, previewWidget: FilePreview
   val miHelp = mb.addItem("file.mgr.menu.help".i, Help16)
 
   addComponent(mb, 0, 0, 1, 0)
-  this.addComponents(browserUI, previewWidget)
-  setComponentAlignment(previewWidget, Alignment.MIDDLE_CENTER)
+  this.addComponents(browserUI, previewView)
+  setComponentAlignment(previewView, Alignment.MIDDLE_CENTER)
   setColumnExpandRatio(0, 1f)
   setRowExpandRatio(1, 1f)
 }
@@ -189,7 +189,7 @@ class FileManagerWidget(browserUI: FileBrowserWidget, previewWidget: FilePreview
 case class ItemsState(remaining: Seq[File], processed: Seq[File])
 
 
-class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
+class ItemsDeleteHelper(browser: FileBrowser) {
 
   def delete() = for (selection <- browser.selection if selection.hasItems) {
     new ConfirmationDialog("file.mgr.dlg.delete.confirm.msg".i) |>> { dlg =>
@@ -198,7 +198,7 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
   }
 
   private def asyncDeleteItems(items: Seq[File]) {
-    def handleFinished(progressDialog: Dialog, itemsState: ItemsState) = app.withSessionLock {
+    def handleFinished(progressDialog: Dialog, itemsState: ItemsState) = Current.ui.withSessionLock {
       progressDialog.close()
 
       if (itemsState.processed.isEmpty) {
@@ -210,14 +210,14 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
       }
     }
     // no i18n
-    def handleUndefined(progressDialog: Dialog, msg: Any) = app.withSessionLock {
+    def handleUndefined(progressDialog: Dialog, msg: Any) = Current.ui.withSessionLock {
       progressDialog.close()
       Current.page.showErrorNotification("An error occured while deleting items", msg.toString)
     }
 
     new CancelDialog("dlg.progress.title".i) |>> { dlg =>
-      val dialogMainWidget = new ItemsDeleteProgressDialogMainWidget
-      dlg.mainWidget = dialogMainWidget
+      val dialogMainWidget = new ItemsDeleteProgressDialogView
+      dlg.mainComponent = dialogMainWidget
       dialogMainWidget.lblMsg.value = "file.mgr.dlg.delete.progress.prepare.msg".i
       dialogMainWidget.pi.setPollingInterval(500)
 
@@ -225,14 +225,14 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
         def act() {
           react {
             case itemsState @ ItemsState(Nil, _) =>
-              app.withSessionLock {
+              Current.ui.withSessionLock {
                 dialogMainWidget.pi.setValue(1)
               }
 
               handleFinished(dlg, itemsState)
 
             case itemsState @ ItemsState(remaining @ (item :: _), _) =>
-              app.withSessionLock {
+              Current.ui.withSessionLock {
                 items.size.asInstanceOf[Float] |> { max =>
                   dialogMainWidget.pi.setValue((max - remaining.size) / max)
                 }
@@ -284,7 +284,7 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
         FileUtils.forceDelete(item)
         stateHandler ! ItemsState(remaining, item +: processed)
       } catch {
-        case e: Exception => app.withSessionLock {
+        case e: Exception => Current.ui.withSessionLock {
           new OkCancelErrorDialog("file.mgr.dlg.delete.item.err.msg".f(item.getName)) |>> { dlg =>
             dlg.btnOk.setCaption("btn_skip".i)
 
@@ -301,7 +301,7 @@ class ItemsDeleteHelper(app: UI, browser: FileBrowser) {
 
 
 // todo: refactor - merge duplicated code
-class ItemsTransferHelper(app: UI, browser: FileBrowser) {
+class ItemsTransferHelper(browser: FileBrowser) {
 
   def copy() {
     // refactor into dest dir selection method??
@@ -346,7 +346,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
    */
   private def asyncCopyItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
 
-    def handleFinished(transferDialog: Dialog, itemsState: ItemsState) = app.withSessionLock {
+    def handleFinished(transferDialog: Dialog, itemsState: ItemsState) = Current.ui.withSessionLock {
       transferDialog.close()
 
       if (itemsState.processed.isEmpty) {
@@ -358,34 +358,34 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
       }
     }
     // no i18n
-    def handleUndefined(transferDialog: Dialog, msg: Any) = app.withSessionLock {
+    def handleUndefined(transferDialog: Dialog, msg: Any) = Current.ui.withSessionLock {
       transferDialog.close()
       Current.page.showErrorNotification("An error occured while copying items", msg.toString)
     }
 
     new CancelDialog("dlg.progress.title".i) |>> { dlg =>
-      val dialogMainWidget = new ItemsTransferProgressDialogMainWidget
+      val dialogMainComponent = new ItemsTransferProgressDialogView
 
-      dlg.mainWidget = dialogMainWidget
-      dialogMainWidget.lblMsg.value = "file.mgr.dlg.copy.progress.prepare.msg".i
-      dialogMainWidget.pi.setPollingInterval(500)
+      dlg.mainComponent = dialogMainComponent
+      dialogMainComponent.lblMsg.value = "file.mgr.dlg.copy.progress.prepare.msg".i
+      dialogMainComponent.pi.setPollingInterval(500)
 
       object CopyActor extends Actor {
         def act() {
           react {
             case itemsState @ ItemsState(Nil, _) =>
-              app.withSessionLock {
-                dialogMainWidget.pi.setValue(1)
+              Current.ui.withSessionLock {
+                dialogMainComponent.pi.setValue(1)
               }
 
               handleFinished(dlg, itemsState)
 
             case itemsState @ ItemsState(remaining @ (item :: _), _) =>
-              app.withSessionLock {
-                dialogMainWidget.lblMsg.value = "file.mgr.dlg.copy.progress.msg".f(item.getName, destDir.getName)
+              Current.ui.withSessionLock {
+                dialogMainComponent.lblMsg.value = "file.mgr.dlg.copy.progress.msg".f(item.getName, destDir.getName)
 
                 items.size.asInstanceOf[Float] |> { max =>
-                  dialogMainWidget.pi.setValue((max - remaining.size) / max)
+                  dialogMainComponent.pi.setValue((max - remaining.size) / max)
                 }
               }
 
@@ -409,7 +409,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 
       dlg.setCancelButtonHandler {
         dlg.btnCancel.setEnabled(false)
-        dialogMainWidget.lblMsg.value = "dlg.progress.cancelling.msg".i
+        dialogMainComponent.lblMsg.value = "dlg.progress.cancelling.msg".i
 
         CopyActor ! 'cancel
       }
@@ -437,10 +437,10 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
-            case e: Exception => app.withSessionLock {
+            case e: Exception => Current.ui.withSessionLock {
               new OkCancelErrorDialog("Unable to copy") |>> { dlg =>
                 dlg.btnOk.setCaption("btn_skip".i)
-                dlg.mainWidget = new Label("file.mgr.dlg.copy.item.err.msg".f(item.getName)) with UndefinedSize
+                dlg.mainComponent = new Label("file.mgr.dlg.copy.item.err.msg".f(item.getName)) with UndefinedSize
 
                 dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
@@ -448,9 +448,9 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
             }
           }
         } else {
-          app.withSessionLock {
+          Current.ui.withSessionLock {
             new YesNoCancelDialog("file.mgr.dlg.copy.item.issue.title".i) |>> { dlg =>
-              val dialogMainWidget = new ItemRenameDialogMainWidget |>> { mw =>
+              val dialogMainWidget = new ItemRenameDialogView |>> { mw =>
                 mw.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
                 mw.txtName.value = destItemName
               }
@@ -458,7 +458,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
               dlg.btnYes.setCaption("btn_rename".i)
               dlg.btnNo.setCaption("btn_skip".i)
 
-              dlg.mainWidget = dialogMainWidget
+              dlg.mainComponent = dialogMainWidget
               dlg.setYesButtonHandler { copyItem(dialogMainWidget.txtName.value) }
               dlg.setNoButtonHandler { stateHandler ! ItemsState(remaining, processed) }
               dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
@@ -482,7 +482,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
    */
   private def asyncMoveItems(destLocationRoot: File, destDir: File, items: Seq[File]) {
 
-    def handleFinished(transferDialog: Dialog, itemsState: ItemsState) = app.withSessionLock {
+    def handleFinished(transferDialog: Dialog, itemsState: ItemsState) = Current.ui.withSessionLock {
       transferDialog.close()
 
       if (itemsState.processed.isEmpty) {
@@ -495,15 +495,15 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
       }
     }
     // no i18n
-    def handleUndefined(transferDialog: Dialog, msg: Any) = app.withSessionLock {
+    def handleUndefined(transferDialog: Dialog, msg: Any) = Current.ui.withSessionLock {
       transferDialog.close()
       Current.page.showErrorNotification("An error occured while moving items", msg.toString)
     }
 
     new CancelDialog("dlg.progress.title".i) |>> { dlg =>
-      val dialogMainWidget = new ItemsTransferProgressDialogMainWidget
+      val dialogMainWidget = new ItemsTransferProgressDialogView
 
-      dlg.mainWidget = dialogMainWidget
+      dlg.mainComponent = dialogMainWidget
       dialogMainWidget.lblMsg.value = "file.mgr.dlg.move.progress.prepare.msg".i
       dialogMainWidget.pi.setPollingInterval(500)
 
@@ -511,14 +511,14 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
         def act() {
           react {
             case itemsState @ ItemsState(Nil, _) =>
-              app.withSessionLock {
+              Current.ui.withSessionLock {
                 dialogMainWidget.pi.setValue(1)
               }
 
               handleFinished(dlg, itemsState)
 
             case itemsState @ ItemsState(remaining @ (item :: _), _) =>
-              app.withSessionLock {
+              Current.ui.withSessionLock {
                 dialogMainWidget.lblMsg.value = "file.mgr.dlg.move.progress.msg".f(item.getName, destDir.getName)
 
                 items.size.asInstanceOf[Float] |> { max =>
@@ -574,7 +574,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
-            case e: Exception => app.withSessionLock {
+            case e: Exception => Current.ui.withSessionLock {
               new OkCancelErrorDialog("file.mgr.dlg.move.item.err.msg".f(item.getName)) |>> { dlg =>
                 dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
@@ -582,9 +582,9 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
             }
           }
         } else {
-          app.withSessionLock {
+          Current.ui.withSessionLock {
             new YesNoCancelDialog("file.mgr.dlg.move.item.issue.title".i) |>> { dlg =>
-              val dialogMainWidget = new ItemRenameDialogMainWidget |>> { w =>
+              val dialogMainWidget = new ItemRenameDialogView |>> { w =>
                 w.lblMsg.value = "file.mgr.dlg.transfer.item.exist.msg".f(destItemName, destDir.getName)
                 w.txtName.value = destItemName
               }
@@ -592,7 +592,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
               dlg.btnYes.setCaption("btn_rename".i)
               dlg.btnNo.setCaption("btn_skip".i)
 
-              dlg.mainWidget = dialogMainWidget
+              dlg.mainComponent = dialogMainWidget
               dlg.setYesButtonHandler { moveItem(dialogMainWidget.txtName.value) }
               dlg.setNoButtonHandler { stateHandler ! ItemsState(remaining, processed) }
               dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
@@ -610,7 +610,7 @@ class ItemsTransferHelper(app: UI, browser: FileBrowser) {
 }
 
 
-class ItemsDeleteProgressDialogMainWidget extends FormLayout with Spacing with UndefinedSize {
+class ItemsDeleteProgressDialogView extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 
@@ -618,7 +618,7 @@ class ItemsDeleteProgressDialogMainWidget extends FormLayout with Spacing with U
 }
 
 
-class ItemsTransferProgressDialogMainWidget extends FormLayout with Spacing with UndefinedSize {
+class ItemsTransferProgressDialogView extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 
@@ -626,7 +626,7 @@ class ItemsTransferProgressDialogMainWidget extends FormLayout with Spacing with
 }
 
 
-class ItemRenameDialogMainWidget extends FormLayout with Spacing with UndefinedSize {
+class ItemRenameDialogView extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label with UndefinedSize
   val txtName = new TextField("file.mgr.dlg.transfer.item.frm.fld.name".i)
 

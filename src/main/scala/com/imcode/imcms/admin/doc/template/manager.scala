@@ -21,11 +21,11 @@ import com.vaadin.server.Page
 //todo: common internal ex handler???
 //todo: add related docs handling
 //-upload fialog and save as handling
-class TemplateManager(app: UI) {
+class TemplateManager {
   private val templateMapper = Imcms.getServices.getTemplateMapper
   private val fileRE = """(?i)(.+?)(?:\.(\w+))?""".r // filename, (optional extension)
 
-  val widget = new TemplateManagerWidget |>> { w =>
+  val view = new TemplateManagerView |>> { w =>
     w.tblTemplates.addValueChangeHandler { _ => handleSelection() }
     w.miUpload.setCommandHandler { _ =>
       new FileUploaderDialog("Upload template file") |>> { dlg =>
@@ -34,11 +34,11 @@ class TemplateManager(app: UI) {
         dlg.setOkButtonHandler {
           for {
             uploadedFile <- dlg.uploader.uploadedFile
-            name = dlg.uploader.widget.txtSaveAsName.value // todo: check not empty
+            name = dlg.uploader.view.txtSaveAsName.value // todo: check not empty
             in = new FileInputStream(uploadedFile.file)
           } {
-            app.privileged(permission) {
-              templateMapper.saveTemplate(name, uploadedFile.name, in, dlg.uploader.widget.chkOverwrite.value) match {
+            Current.ui.privileged(permission) {
+              templateMapper.saveTemplate(name, uploadedFile.name, in, dlg.uploader.view.chkOverwrite.value) match {
                 case 0 =>
                   FileUtils.deleteQuietly(uploadedFile.file)
                   reload() // ok
@@ -60,14 +60,14 @@ class TemplateManager(app: UI) {
     w.miRename.setCommandHandler { _ =>
       whenSelected(w.tblTemplates) { name =>
         new OkCancelDialog("Rename template") |>> { dlg =>
-          val fileRenameWidget = new TemplateRenameWidget |>> { c =>
+          val templateRenameView = new TemplateRenameView |>> { c =>
             c.txtName.value = name
           }
 
-          dlg.mainWidget = fileRenameWidget
+          dlg.mainComponent = templateRenameView
           dlg.setOkButtonHandler {
-            app.privileged(permission) {
-              templateMapper.renameTemplate(name, fileRenameWidget.txtName.value)
+            Current.ui.privileged(permission) {
+              templateMapper.renameTemplate(name, templateRenameView.txtName.value)
             }
 
             reload()
@@ -78,7 +78,7 @@ class TemplateManager(app: UI) {
     w.miEditContent.setCommandHandler { _ =>
       whenSelected(w.tblTemplates) { name =>
         new Dialog("Template file content") with CustomSizeDialog with NoContentMarginDialog |>> { dlg =>
-          dlg.mainWidget = new TemplateContentEditorWidget |>> { c =>
+          dlg.mainComponent = new TemplateContentEditorView |>> { c =>
             c.txaContent.value = templateMapper.getTemplateData(name)
           }
 
@@ -91,7 +91,7 @@ class TemplateManager(app: UI) {
       whenSelected(w.tblTemplates) { name =>
         new ConfirmationDialog("Delete selected template?") |>> { dlg =>
           dlg.setOkButtonHandler {
-            app.privileged(permission) {
+            Current.ui.privileged(permission) {
               Ex.allCatch.either(templateMapper.getTemplateByName(name).asOption.foreach(templateMapper.deleteTemplate)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("Template has been deleted")
@@ -111,19 +111,19 @@ class TemplateManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = Current.ui.imcmsUser.isSuperAdmin
+  def canManage = Current.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage templates")
 
   def reload() {
-    widget.tblTemplates.removeAllItems
+    view.tblTemplates.removeAllItems
     for {
       vo <- templateMapper.getAllTemplates.asScala
       name = vo.getName
       fileRE(_, ext) = vo.getFileName
-    } widget.tblTemplates.addItem(Array[AnyRef](name, ext, Int box templateMapper.getCountOfDocumentsUsingTemplate(vo)), name)
+    } view.tblTemplates.addItem(Array[AnyRef](name, ext, Int box templateMapper.getCountOfDocumentsUsingTemplate(vo)), name)
 
     canManage |> { value =>
-      import widget._
+      import view._
       tblTemplates.setSelectable(value)
       Seq[{def setEnabled(e: Boolean)}](miUpload, miDownload, miRename, miDelete, miEditContent).foreach { widget =>
         widget.setEnabled(value)   //ui.mb,
@@ -134,7 +134,7 @@ class TemplateManager(app: UI) {
   }
 
   private def handleSelection() {
-    import widget._
+    import view._
     (canManage && tblTemplates.isSelected) |> { enabled =>
       Seq(miDownload, miRename, miEditContent, miDelete).foreach(_.setEnabled(enabled))
     }
@@ -145,7 +145,7 @@ class TemplateManager(app: UI) {
   }
 }
 
-class TemplateManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
+class TemplateManagerView extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -157,7 +157,7 @@ class TemplateManagerWidget extends VerticalLayout with Spacing with UndefinedSi
   val miDocuments = mb.addItem("Related documents", Documents16, null)
   val miHelp = mb.addItem("Help", Help16, null)
   val tblTemplates = new Table with SingleSelect[TemplateName] with Selectable with Immediate
-  val rc = new ReloadableContentWidget(tblTemplates)
+  val rc = new ReloadableContentView(tblTemplates)
 
   addContainerProperties(tblTemplates,
     PropertyDescriptor[String]("Name"),
@@ -168,13 +168,13 @@ class TemplateManagerWidget extends VerticalLayout with Spacing with UndefinedSi
 }
 
 
-class TemplateRenameWidget extends FormLayout with UndefinedSize {
+class TemplateRenameView extends FormLayout with UndefinedSize {
   val txtName = new TextField("Name")
 
   addComponent(txtName)
 }
 
-class TemplateContentEditorWidget extends VerticalLayout with FullSize {
+class TemplateContentEditorView extends VerticalLayout with FullSize {
   val txaContent = new TextArea with FullSize |>> {
     _.setRows(20)
   }

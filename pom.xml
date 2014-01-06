@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Tomcat plugin: http://tomcat.apache.org/maven-plugin-2/
+    Tomcat plugin: http://tomcat.apache.org/maven-plugin-2
 
-    Default credentials (username/password) for plugin goals are admin/<empty>
+        Default credentials (username/password) for plugin goals are admin/<empty>
 
-    Add the following line to your $CATALINA_BASE/conf/tomcat-users.xml
+        Add the following line to your $CATALINA_BASE/conf/tomcat-users.xml
 
-    <user username="admin" password="" roles="manager-gui, manager-script, admin-gui, admin-script"/>
+        <user username="admin" password="" roles="manager-gui, manager-script, admin-gui, admin-script"/>
 -->
 
 <!--
     Please note that there is additional resources dir - resources-conf.
     Resources from that dir are copied by ant script into ${project.basedir}/target/imcms/WEB-INF/conf dir.
+-->
+
+<!--
+    Vaadin (GWT) add-ons widgetset
+        Vaadin add-ons widgets have to be compiled (mvn vaadin:compile) before they can be used.
+        By default widgetset compilation is bound to maven package goal
+
+        See also: src/main/java/com/imcode/imcms/AppWidgetSet.gwt.xml
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -61,11 +69,14 @@
         <solr.version>4.5.1</solr.version>
         <slf4j.version>1.7.5</slf4j.version>
         <scala.version>2.10.3</scala.version>
-        <springframework.version>3.2.5.RELEASE</springframework.version>
+        <springframework.version>4.0.0.RELEASE</springframework.version>
 
-        <hibernate.version>4.2.8.Final</hibernate.version>
+        <!--
+            Core & EntityManager version
+        -->
+        <hibernate.version>4.3.0.Final</hibernate.version>
         <gwt.version>2.5.1</gwt.version>
-        <vaadin.version>7.1.8</vaadin.version>
+        <vaadin.version>7.1.9</vaadin.version>
 
         <tomcat.version>7.0.47</tomcat.version>
 
@@ -258,11 +269,11 @@
             <version>3.5</version>
         </dependency>
 
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>3.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>cglib</groupId>-->
+            <!--<artifactId>cglib</artifactId>-->
+            <!--<version>3.0</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>commons-beanutils</groupId>
@@ -412,11 +423,11 @@
             <version>3.2.3</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>4.2</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.ow2.asm</groupId>-->
+            <!--<artifactId>asm</artifactId>-->
+            <!--<version>4.2</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -427,13 +438,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.0.1.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.18.0-GA</version>
+            <version>5.0.2.Final</version>
         </dependency>
 
         <dependency>
@@ -856,11 +861,11 @@
                             SLF4J: Defaulting to no-operation (NOP) logger implementation
                             SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
                         -->
-                        <dependency>
-                            <groupId>org.slf4j</groupId>
-                            <artifactId>slf4j-simple</artifactId>
-                            <version>${slf4j.version}</version>
-                        </dependency>
+                        <!--<dependency>-->
+                            <!--<groupId>org.slf4j</groupId>-->
+                            <!--<artifactId>slf4j-simple</artifactId>-->
+                            <!--<version>${slf4j.version}</version>-->
+                        <!--</dependency>-->
                     </dependencies>
                 </plugin>
 
@@ -875,11 +880,11 @@
                             SLF4J: Defaulting to no-operation (NOP) logger implementation
                             SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
                         -->
-                        <dependency>
-                            <groupId>org.slf4j</groupId>
-                            <artifactId>slf4j-simple</artifactId>
-                            <version>${slf4j.version}</version>
-                        </dependency>
+                        <!--<dependency>-->
+                            <!--<groupId>org.slf4j</groupId>-->
+                            <!--<artifactId>slf4j-simple</artifactId>-->
+                            <!--<version>${slf4j.version}</version>-->
+                        <!--</dependency>-->
                     </dependencies>
                 </plugin>
             </plugins>

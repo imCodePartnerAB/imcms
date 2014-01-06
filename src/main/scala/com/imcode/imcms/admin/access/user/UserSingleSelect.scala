@@ -9,7 +9,7 @@ import com.imcode.imcms.vaadin.data._
 
 class UserSingleSelect {
   private val selectionRef = new AtomicReference(Option.empty[UserDomainObject])
-  val widget = new UserSingleSelectWidget |>> { w =>
+  val view = new UserSingleSelectView |>> { w =>
     w.btnSelect.addClickHandler { _ =>
       new UserSingleSelectDialog |>> { dlg =>
         dlg.setOkButtonHandler {
@@ -24,8 +24,8 @@ class UserSingleSelect {
 
   def selection: Option[UserDomainObject] = selectionRef.get
   def selection_=(userOpt: Option[UserDomainObject]) {
-    widget.btnClear.setEnabled(userOpt.isDefined)
-    widget.lblName.value = userOpt match {
+    view.btnClear.setEnabled(userOpt.isDefined)
+    view.lblName.value = userOpt match {
       case Some(user) => s"[ <b>${user.getLoginName}</b> ]"
       case _ => "[ <i>not selected</i> ]"
     }

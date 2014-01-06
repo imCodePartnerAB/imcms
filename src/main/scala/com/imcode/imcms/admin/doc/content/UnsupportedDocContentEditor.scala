@@ -7,7 +7,7 @@ class UnsupportedDocContentEditor(doc: DocumentDomainObject) extends DocContentE
 
   override type Data = DocumentDomainObject
 
-  override val widget = new UnsupportedDocContentEditorWidget
+  override val view = new UnsupportedDocContentEditorView
 
   override def resetValues() {}
 

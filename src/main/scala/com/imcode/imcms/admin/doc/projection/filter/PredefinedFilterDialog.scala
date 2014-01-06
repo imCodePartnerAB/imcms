@@ -10,7 +10,7 @@ import com.imcode.imcms.vaadin.component.{SingleSelect, NoNullSelection, Spacing
 // todo: implement
 class PredefinedFilterDialog extends OkCancelDialog("Quick search".i) {
 
-  mainWidget = new VerticalLayout with Spacing with UndefinedSize {
+  mainComponent = new VerticalLayout with Spacing with UndefinedSize {
     val cbFilterType = new ComboBox("Documents".i) with SingleSelect[String] with NoNullSelection
 
     val cbCreatedByCurrentUser = new CheckBox("Created by me".i)

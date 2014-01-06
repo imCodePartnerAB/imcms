@@ -12,7 +12,7 @@ class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCanc
 
   val docEditor = new DocEditor(doc)
 
-  mainWidget = docEditor.widget
+  mainComponent = docEditor.view
   btnOk.setCaption("btn_save".i)
 
   this.setSize(700, 600)

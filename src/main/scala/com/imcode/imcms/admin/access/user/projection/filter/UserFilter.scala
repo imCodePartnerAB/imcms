@@ -11,7 +11,7 @@ import _root_.imcode.server.user.RoleId
 
 class UserFilter extends ImcmsServicesSupport {
 
-  val widget: UserFilterWidget = new UserFilterWidget |>> { w =>
+  val view: UserFilterView = new UserFilterView |>> { w =>
     w.chkText.addValueChangeHandler { _ =>
       ProjectionFilterUtil.toggle(w, "users_projection.filter.text", w.chkText, w.txtText)
     }
@@ -26,25 +26,25 @@ class UserFilter extends ImcmsServicesSupport {
 
 
   def setValues(state: UserFilterValues) {
-    widget.chkText.checked = state.text.isDefined
-    widget.chkRoles.checked = state.roles.isDefined
-    widget.chkShowInactive.checked = state.isShowInactive
+    view.chkText.checked = state.text.isDefined
+    view.chkRoles.checked = state.roles.isDefined
+    view.chkShowInactive.checked = state.isShowInactive
 
-    Seq(widget.chkText, widget.chkRoles, widget.chkShowInactive).foreach(_.fireValueChange(true))
+    Seq(view.chkText, view.chkRoles, view.chkShowInactive).foreach(_.fireValueChange(true))
 
-    widget.txtText.value = state.text.getOrElse("")
-    widget.tcsRoles.removeAllItems()
+    view.txtText.value = state.text.getOrElse("")
+    view.tcsRoles.removeAllItems()
     for (role <- imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllRolesExceptUsersRole) {
-      widget.tcsRoles.addItem(role.getId)
-      widget.tcsRoles.setItemCaption(role.getId, role.getName)
+      view.tcsRoles.addItem(role.getId)
+      view.tcsRoles.setItemCaption(role.getId, role.getName)
     }
-    widget.tcsRoles.value = state.roles.getOrElse(Set.empty[RoleId]).asJavaCollection
+    view.tcsRoles.value = state.roles.getOrElse(Set.empty[RoleId]).asJavaCollection
   }
 
 
   def getValues = UserFilterValues(
-    when(widget.chkText.checked)(widget.txtText.trim),
-    when(widget.chkRoles.checked)(widget.tcsRoles.value.asScala.toSet),
-    widget.chkShowInactive.checked
+    when(view.chkText.checked)(view.txtText.trim),
+    when(view.chkRoles.checked)(view.tcsRoles.value.asScala.toSet),
+    view.chkShowInactive.checked
   )  
 }

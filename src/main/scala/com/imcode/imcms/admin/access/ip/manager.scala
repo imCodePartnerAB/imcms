@@ -27,13 +27,13 @@ import com.imcode.imcms.vaadin.data.PropertyDescriptor
 // todo: reload in case of internal error
 // help: "Users from a specific IP number or an interval of numbers are given direct access to the system (so that the user does not have to log in)."
 
-class IPAccessManager(app: UI) {
+class IPAccessManager {
   private val ipAccessDao = Imcms.getServices.getManagedBean(classOf[IPAccessDao])
   private val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
   private val toDDN = ((_:String).toLong) andThen ipLongToString
   private val fromDDN = ipStringToLong(_:String).toString
 
-  val widget = new IPAccessManagerWidget |>> { w =>
+  val view = new IPAccessManagerView |>> { w =>
     w.rc.btnReload.addClickHandler { _ => reload() }
     w.tblIP.addValueChangeHandler { _ => handleSelection() }
 
@@ -50,7 +50,7 @@ class IPAccessManager(app: UI) {
       whenSelected(w.tblIP) { id =>
         new ConfirmationDialog("Delete selected IP access?") |>> { dlg =>
           dlg.setOkButtonHandler {
-            app.privileged(permission) {
+            Current.ui.privileged(permission) {
               Ex.allCatch.either(ipAccessDao delete id) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("IP access has been deleted")
@@ -69,7 +69,7 @@ class IPAccessManager(app: UI) {
   reload()
   // END OF PRIMARY CONSTRUCTOR
 
-  def canManage = Current.ui.imcmsUser.isSuperAdmin
+  def canManage = Current.imcmsUser.isSuperAdmin
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage IP access")
 
   /** Edit in modal dialog. */
@@ -79,19 +79,19 @@ class IPAccessManager(app: UI) {
     val dialogTitle = if(isNew) "Create new IP access" else "Edit IP access"
 
     new OkCancelDialog(dialogTitle) |>> { dlg =>
-      dlg.mainWidget = new IPAccessEditorWidget |>> { w =>
+      dlg.mainComponent = new IPAccessEditorView |>> { w =>
 
         w.txtId.value = if (isNew) "" else id.toString
-        w.userPickerWidget.txtLoginName.value = vo.getUserId.asOption
+        w.userPickerComponent.txtLoginName.value = vo.getUserId.asOption
           .map(userId => roleMapper.getUser(userId.intValue))
           .map(user => user.getLoginName).getOrElse("")
 
         w.txtFrom.value = vo.getStart.asOption.map(toDDN).getOrElse("")
         w.txtTo.value = vo.getEnd.asOption.map(toDDN).getOrElse("")
-        w.userPickerWidget.btnChoose.addClickHandler { _ =>
+        w.userPickerComponent.btnChoose.addClickHandler { _ =>
           new UserSingleSelectDialog |>> { dlg =>
             dlg.setOkButtonHandler {
-              w.userPickerWidget.txtLoginName.value = dlg.search.selection.head.getLoginName
+              w.userPickerComponent.txtLoginName.value = dlg.search.selection.head.getLoginName
             }
           } |> Current.ui.addWindow
         }
@@ -99,11 +99,11 @@ class IPAccessManager(app: UI) {
         dlg.setOkButtonHandler {
           vo.clone |> { voc =>
             // todo: validate
-            voc.setUserId(roleMapper.getUser(w.userPickerWidget.txtLoginName.value).getId)
+            voc.setUserId(roleMapper.getUser(w.userPickerComponent.txtLoginName.value).getId)
             voc.setStart(fromDDN(w.txtFrom.value))
             voc.setEnd(fromDDN(w.txtTo.value))
 
-            app.privileged(permission) {
+            Current.ui.privileged(permission) {
               Ex.allCatch.either(ipAccessDao save voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
@@ -125,29 +125,29 @@ class IPAccessManager(app: UI) {
 
 
   def reload() {
-    widget.tblIP.removeAllItems
+    view.tblIP.removeAllItems
     for {
       vo <- ipAccessDao.getAll.asScala
       id = vo.getId
       user = roleMapper getUser vo.getUserId.intValue
-    } widget.tblIP.addItem(Array[AnyRef](id, user.getLoginName, toDDN(vo.getStart), toDDN(vo.getEnd)), id)
+    } view.tblIP.addItem(Array[AnyRef](id, user.getLoginName, toDDN(vo.getStart), toDDN(vo.getEnd)), id)
 
     canManage |> { value =>
-      widget.tblIP.setSelectable(value)
-      Seq(widget.miNew, widget.miEdit, widget.miDelete).foreach(_.setEnabled(value))
+      view.tblIP.setSelectable(value)
+      Seq(view.miNew, view.miEdit, view.miDelete).foreach(_.setEnabled(value))
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    (canManage && widget.tblIP.isSelected) |> { enabled =>
-      Seq(widget.miEdit, widget.miDelete).foreach(_.setEnabled(enabled))
+    (canManage && view.tblIP.isSelected) |> { enabled =>
+      Seq(view.miEdit, view.miDelete).foreach(_.setEnabled(enabled))
     }
   }
 } // class IPAccessManager
 
-class IPAccessManagerWidget extends VerticalLayout with Spacing with UndefinedSize {
+class IPAccessManagerView extends VerticalLayout with Spacing with UndefinedSize {
   import Theme.Icon._
 
   val mb = new MenuBar
@@ -156,7 +156,7 @@ class IPAccessManagerWidget extends VerticalLayout with Spacing with UndefinedSi
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
   val tblIP = new Table with SingleSelect[JInteger] with Immediate
-  val rc = new ReloadableContentWidget(tblIP)
+  val rc = new ReloadableContentView(tblIP)
 
   addContainerProperties(tblIP,
     PropertyDescriptor[JInteger]("Id"),
@@ -168,8 +168,8 @@ class IPAccessManagerWidget extends VerticalLayout with Spacing with UndefinedSi
 }
 
 
-class IPAccessEditorWidget extends FormLayout with UndefinedSize {
-  class UserPickerWidget extends HorizontalLayout with Spacing with UndefinedSize {
+class IPAccessEditorView extends FormLayout with UndefinedSize {
+  class UserPickerComponent extends HorizontalLayout with Spacing with UndefinedSize {
     val txtLoginName = new TextField  { setInputPrompt("No user selected") }    // with ReadOnly
     val btnChoose = new Button("...") { setStyleName("small") }
 
@@ -178,9 +178,9 @@ class IPAccessEditorWidget extends FormLayout with UndefinedSize {
   }
 
   val txtId = new TextField("Id") with Disabled
-  val userPickerWidget = new UserPickerWidget
+  val userPickerComponent = new UserPickerComponent
   val txtFrom = new TextField("From")
   val txtTo = new TextField("To")
 
-  this.addComponents(txtId, userPickerWidget, txtFrom, txtTo)
+  this.addComponents(txtId, userPickerComponent, txtFrom, txtTo)
 }

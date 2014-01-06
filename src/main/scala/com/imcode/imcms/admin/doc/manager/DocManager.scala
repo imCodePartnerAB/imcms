@@ -17,17 +17,17 @@ import scala.collection.JavaConverters._
 import com.vaadin.server.Page
 import com.vaadin.event.Action
 
-class DocManager(app: UI) extends ImcmsServicesSupport {
-  val projection = new DocsProjection(app.imcmsUser)
+class DocManager extends ImcmsServicesSupport {
+  val projection = new DocsProjection(Current.imcmsUser)
   val projectionOps = new DocsProjectionOps(projection)
-  val customDocs = new CustomDocs(app.imcmsUser)
+  val customDocs = new CustomDocs(Current.imcmsUser)
 
   val docSelectionDlg = new OKDialog("doc.dlg_selection.caption".i) with CustomSizeDialog with Resizable with NonModal |>> { dlg =>
-    dlg.mainWidget = customDocs.widget
+    dlg.mainComponent = customDocs.view
     dlg.setSize(500, 500)
   }
 
-  val widget = new DocManagerWidget(projection.widget) |>> { w =>
+  val view = new DocManagerView(projection.view) |>> { w =>
 //    ui.miSelectionShow.setCommandHandler { _ =>
 //      Current.ui.addWindow(docSelectionDlg)
 //    }
@@ -42,16 +42,16 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
     w.miDelete.setCommandHandler { _ => projectionOps.deleteSelectedDocs() }
 
     w.miProfileEditName.setCommandHandler { _ =>
-      whenSingleton(projection.docsWidget.selection) { docId =>
+      whenSingleton(projection.docsView.selection) { docId =>
         val docIdStr = docId.toString
         val profileMapper = new ProfileMapper(imcmsServices.getDatabase)
         val profileOpt = profileMapper.getAll.asScala.find(_.getDocumentName == docIdStr)
 
         new OkCancelDialog("Edit profile name") |>> { dlg =>
-          val mainWidget = new DocProfileNameEditorWidget
+          val mainWidget = new DocProfileNameEditorView
           mainWidget.txtName.value = profileOpt.map(_.getName).getOrElse("")
 
-          dlg.mainWidget = mainWidget
+          dlg.mainComponent = mainWidget
 
           dlg.setOkButtonHandler {
             mainWidget.txtName.trimOpt match {
@@ -83,7 +83,7 @@ class DocManager(app: UI) extends ImcmsServicesSupport {
       projectionOps.copySelectedDoc()
     }
 
-    projection.docsWidget.addActionHandler(new Action.Handler {
+    projection.docsView.addActionHandler(new Action.Handler {
 
       def getActions(target: AnyRef, sender: AnyRef) = Array(Actions.IncludeToSelection, Actions.Delete)
 

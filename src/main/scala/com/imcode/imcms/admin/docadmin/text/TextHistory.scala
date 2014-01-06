@@ -18,7 +18,7 @@ import com.imcode.imcms.vaadin.data.PropertyDescriptor
 class TextHistory(text: TextDomainObject) extends ImcmsServicesSupport {
   private val textDao = imcmsServices.getManagedBean(classOf[TextDocDao])
 
-  val widget = new TextHistoryWidget(s"Document history") |>> { widget =>
+  val view = new TextHistoryView(s"Document history") |>> { widget =>
     def rows(id: Long = 0, dateTime: DateTime = DateTime.now()): Stream[(Long, Option[Date], Date)] = {
       val nextId = id + 1
       val date = dateTime.toDate
@@ -39,7 +39,7 @@ class TextHistory(text: TextDomainObject) extends ImcmsServicesSupport {
   }
 }
 
-class TextHistoryWidget(caption: String) extends CustomComponent with FullSize {
+class TextHistoryView(caption: String) extends CustomComponent with FullSize {
 
   private val pnlCompositionRoot = new Panel(caption) with FullSize
 
@@ -92,7 +92,7 @@ class TextHistoryDialog(caption: String, text: TextDomainObject) extends OkCance
 
   val textHistory = new TextHistory(text)
 
-  mainWidget = textHistory.widget
+  mainComponent = textHistory.view
 
   this.setSize(600, 600)
 }

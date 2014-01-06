@@ -18,13 +18,13 @@ import Theme.Icon
 import com.vaadin.annotations.PreserveOnRefresh
 import com.vaadin.data.Property.ValueChangeEvent
 import com.imcode.imcms.I18nMessage
-import com.imcode.imcms.vaadin.{MenuItemOrder, TreeMenuItem}
+import com.imcode.imcms.vaadin.{Current, MenuItemOrder, TreeMenuItem}
 import com.imcode.imcms.admin.doc.manager.DocManager
 
 // todo: rename Theme class - name collision
 @PreserveOnRefresh
 @com.vaadin.annotations.Theme("imcms")
-class SysAdmin extends com.vaadin.ui.UI { app =>
+class SysAdmin extends UI {
 
   // superadmin access:
   // ------------------
@@ -74,7 +74,7 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
   }
 
 
-  val pnlWidgetContent = new Panel with FullSize {
+  val pnlViewContent = new Panel with FullSize {
     val hspManagers = new HorizontalSplitPanel with FullSize {
       val menu = new Tree with Immediate
       val content = new VerticalLayout with FullSize with Margin
@@ -143,9 +143,9 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
 
 
   override def init(request: VaadinRequest) {
-    setLocale(new Locale(this.imcmsUser.getLanguageIso639_2))
-    pnlWidgetContent.initManagersMenu()
-    setContent(pnlWidgetContent)
+    setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
+    pnlViewContent.initManagersMenu()
+    setContent(pnlViewContent)
 
     getLoadingIndicatorConfiguration.setFirstDelay(100)
   }
@@ -174,44 +174,44 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
 
 
   lazy val languages = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.instance.settings.language.LanguageManager(app)
-    manager.widget.setMargin(true)
-    addTab(manager.widget, "doc.lang.mgr.title".i, Icon.Tab32)
+    val manager = new com.imcode.imcms.admin.instance.settings.language.LanguageManager
+    manager.view.setMargin(true)
+    addTab(manager.view, "doc.lang.mgr.title".i, Icon.Tab32)
   }
 
 
   lazy val documents = new TabSheet with FullSize {
-    val manager = new DocManager(app)
-    manager.widget.setMargin(true)
-    addTab(manager.widget, "doc.mgr.title".i, Icon.Tab32)
+    val manager = new DocManager
+    manager.view.setMargin(true)
+    addTab(manager.view, "doc.mgr.title".i, Icon.Tab32)
   }
 
 
   lazy val ipAccess = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.access.ip.IPAccessManager(app)
-    manager.widget.setMargin(true)
-    addTab(manager.widget, "IP Access ", Icon.Tab32)
+    val manager = new com.imcode.imcms.admin.access.ip.IPAccessManager
+    manager.view.setMargin(true)
+    addTab(manager.view, "IP Access ", Icon.Tab32)
   }
 
 
   lazy val roles = new TabSheet with FullSize {
-    val roleManager = new com.imcode.imcms.admin.access.role.RoleManager(app)
-    roleManager.widget.setMargin(true)
-    addTab(roleManager.widget, "Roles and their permissions", Icon.Tab32)
+    val roleManager = new com.imcode.imcms.admin.access.role.RoleManager
+    roleManager.view.setMargin(true)
+    addTab(roleManager.view, "Roles and their permissions", Icon.Tab32)
   }
 
 
   lazy val systemSettings = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.instance.settings.property.PropertyManagerManager(app)
-    manager.widget.setMargin(true)
-    addTab(manager.widget, "System Properties", Icon.Tab32)
+    val manager = new com.imcode.imcms.admin.instance.settings.property.PropertyManagerManager
+    manager.view.setMargin(true)
+    addTab(manager.view, "System Properties", Icon.Tab32)
   }
 
 
   lazy val sessionMonitor = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.instance.monitor.session.counter.SessionCounterManager(app)
-    manager.widget.setMargin(true)
-    addTab(manager.widget, "Counter", Icon.Tab32)
+    val manager = new com.imcode.imcms.admin.instance.monitor.session.counter.SessionCounterManager
+    manager.view.setMargin(true)
+    addTab(manager.view, "Counter", Icon.Tab32)
   }
 
 
@@ -263,41 +263,41 @@ class SysAdmin extends com.vaadin.ui.UI { app =>
 
 
   lazy val filesystem = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.instance.file.FileManager(app)
-    manager.widget.setMargin(true)
-    addTab(manager.widget, "File manager", Icon.Tab32)
+    val manager = new com.imcode.imcms.admin.instance.file.FileManager
+    manager.view.setMargin(true)
+    addTab(manager.view, "File manager", Icon.Tab32)
   }
 
 
   lazy val templates = new TabSheet with FullSize {
-    val templateManager = new com.imcode.imcms.admin.doc.template.TemplateManager(app)
-    val templateGroupManager = new com.imcode.imcms.admin.doc.template.group.TemplateGroupManager(app)
+    val templateManager = new com.imcode.imcms.admin.doc.template.TemplateManager
+    val templateGroupManager = new com.imcode.imcms.admin.doc.template.group.TemplateGroupManager
 
-    addTab(templateManager.widget, "Templates", Icon.Tab32)
-    addTab(templateGroupManager.widget, "Template Groups", Icon.Tab32)
+    addTab(templateManager.view, "Templates", Icon.Tab32)
+    addTab(templateGroupManager.view, "Template Groups", Icon.Tab32)
 
-    templateManager.widget.setMargin(true)
-    templateGroupManager.widget.setMargin(true)
+    templateManager.view.setMargin(true)
+    templateGroupManager.view.setMargin(true)
   }
 
 
   lazy val categories = new TabSheet with FullSize {
-    val categoryManager = new com.imcode.imcms.admin.doc.category.CategoryManager(app)
-    val categoryTypeManager = new com.imcode.imcms.admin.doc.category.`type`.CategoryTypeManager(app)
+    val categoryManager = new com.imcode.imcms.admin.doc.category.CategoryManager
+    val categoryTypeManager = new com.imcode.imcms.admin.doc.category.`type`.CategoryTypeManager
 
-    addTab(categoryManager.widget, "Categories ", Icon.Tab32)
-    addTab(categoryTypeManager.widget, "Category types", Icon.Tab32)
+    addTab(categoryManager.view, "Categories ", Icon.Tab32)
+    addTab(categoryTypeManager.view, "Category types", Icon.Tab32)
 
-    categoryManager.widget.setMargin(true)
-    categoryTypeManager.widget.setMargin(true)
+    categoryManager.view.setMargin(true)
+    categoryTypeManager.view.setMargin(true)
   }
 
 
   lazy val chat =  new VerticalLayout
 
   lazy val users = new TabSheet with FullSize {
-    val manager = new UserManager(app)
-    manager.widget.setMargin(true)
-    addTab(manager.widget, "Users and their permissions", Icon.Tab32)
+    val manager = new UserManager
+    manager.view.setMargin(true)
+    addTab(manager.view, "Users and their permissions", Icon.Tab32)
   }
 }

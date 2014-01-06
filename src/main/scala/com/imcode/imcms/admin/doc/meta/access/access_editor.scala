@@ -82,7 +82,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     // ui.lytRestrictedPermSets.btnEditRestrictedOnePermSet setReadOnly !user.canDefineRestrictedOneFor(doc)
     // ui.lytRestrictedPermSets.btnEditRestrictedTwoPermSet setReadOnly !user.canDefineRestrictedTwoFor(doc)
     // ui.chkLim1IsMorePrivilegedThanLim2 setReadOnly !user.isSuperAdminOrHasFullPermissionOn(doc)
-  override val widget = new AccessEditorWidget |>> { editorWidget =>
+  override val view = new AccessEditorView |>> { editorWidget =>
     editorWidget.perms.miRoleAdd.setCommandHandler { _ =>
       val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
       val assignedRoles = editorWidget.perms.tblRolesPermSets.itemIds.asScala.toSet
@@ -100,7 +100,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
       } else {
         new OkCancelDialog("Add role") |>> { dlg =>
           val availableRoles = availableRolesWithPermsSetTypes.keySet
-          dlg.mainWidget = new AddRolePermSetDialogMainWidget |>> { c =>
+          dlg.mainComponent = new AddRolePermSetDialogView |>> { c =>
             availableRoles.foreach { role => c.cbRole.addItem(role, role.getName) }
 
             c.cbRole.addValueChangeHandler { _ =>
@@ -132,7 +132,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
           case Nil => Current.page.showWarningNotification("You are not allowed to edit this role")
           case availableSetTypes =>
             new OkCancelDialog("Change Role Permissions") |>> { dlg =>
-              dlg.mainWidget = new ChangeRolePermSetDialogMainWidget |>> { c =>
+              dlg.mainComponent = new ChangeRolePermSetDialogView |>> { c =>
                 c.lblRole.value = role.getName
 
                 c.ogPermsSetType.value = editorWidget.perms.tblRolesPermSets
@@ -160,7 +160,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
 
     editorWidget.perms.miEditPermSets.setCommandHandler { _ =>
       new OkCancelDialog("Permissions") |>> { dlg =>
-        dlg.mainWidget = permSetsEditor.widget
+        dlg.mainComponent = permSetsEditor.view
       } |> Current.ui.addWindow
     }
   }
@@ -174,7 +174,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
       .filterNot(_.getId == RoleId.SUPERADMIN)
       .map(role => (role.getId, role))(breakOut) : Map[RoleId, RoleDomainObject]
 
-    widget.perms.tblRolesPermSets.removeAllItems()
+    view.perms.tblRolesPermSets.removeAllItems()
 
     for {
       mapping <- initialValues.rolesPermissions.getMappings
@@ -186,8 +186,8 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
       addRolePermSetType(role, setType)
     }
 
-    widget.misc.chkShareWithOtherAdmins.checked = initialValues.isLinkableByOtherUsers
-    widget.misc.chkShowToUnauthorizedUser.checked = initialValues.isLinkedForUnauthorizedUsers
+    view.misc.chkShareWithOtherAdmins.checked = initialValues.isLinkableByOtherUsers
+    view.misc.chkShowToUnauthorizedUser.checked = initialValues.isLinkedForUnauthorizedUsers
 
     permSetsEditor.resetValues()
 
@@ -199,11 +199,11 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
 
 
   private def addRolePermSetType(role: RoleDomainObject, setType: DocumentPermissionSetTypeDomainObject) {
-    widget.perms.tblRolesPermSets.addItem(Array[AnyRef](RolePermSet(role, setType)), role)
+    view.perms.tblRolesPermSets.addItem(Array[AnyRef](RolePermSet(role, setType)), role)
   }
 
   private def setRolePermSetType(role: RoleDomainObject, setType: DocumentPermissionSetTypeDomainObject) {
-    widget.perms.tblRolesPermSets.item(role)
+    view.perms.tblRolesPermSets.item(role)
       .getItemProperty(RolePermSetPropertyId)
       .asInstanceOf[Property[RolePermSet]].value = RolePermSet(role, setType)
   }
@@ -215,7 +215,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     Right(
       Data(
         new RoleIdToDocumentPermissionSetTypeMappings |>> { rolesPermissions =>
-          import widget.perms.tblRolesPermSets
+          import view.perms.tblRolesPermSets
           tblRolesPermSets.itemIds.asScala.foreach { role =>
             rolesPermissions.setPermissionSetTypeForRole(
               role.getId,
@@ -226,15 +226,15 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
         permSetsValues.restrictedOnePermSet,
         permSetsValues.restrictedTwoPermSet,
         permSetsValues.isRestrictedOneMorePrivilegedThanRestrictedTwo,
-        widget.misc.chkShowToUnauthorizedUser.checked,
-        widget.misc.chkShareWithOtherAdmins.checked
+        view.misc.chkShowToUnauthorizedUser.checked,
+        view.misc.chkShareWithOtherAdmins.checked
       )
     )
   }
 }
 
 
-class AccessEditorWidget extends VerticalLayout with Spacing with FullWidth {
+class AccessEditorView extends VerticalLayout with Spacing with FullWidth {
   object perms {
     val mb = new MenuBar
     val miRole = mb.addItem("Role")
@@ -308,7 +308,7 @@ private class RolesPermSetsTableColumnGenerator(setType: DocumentPermissionSetTy
 }
 
 
-private class AddRolePermSetDialogMainWidget extends FormLayout with UndefinedSize {
+private class AddRolePermSetDialogView extends FormLayout with UndefinedSize {
   val cbRole = new ComboBox("Role") with SingleSelect[RoleDomainObject] with NoNullSelection with Immediate
   val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
@@ -322,7 +322,7 @@ private class AddRolePermSetDialogMainWidget extends FormLayout with UndefinedSi
 /**
  * Changes permission set type for a role.
  */
-private class ChangeRolePermSetDialogMainWidget extends FormLayout with UndefinedSize {
+private class ChangeRolePermSetDialogView extends FormLayout with UndefinedSize {
   val lblRole = new Label with UndefinedSize |>> {_ setCaption "Role"}
   val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
@@ -341,20 +341,20 @@ trait DocPermSetEditor extends Editor {
 
 class NonTextDocPermSetEditor(permSet: TextDocumentPermissionSetDomainObject) extends DocPermSetEditor {
 
-  override val widget = new NonTextDocPermSetEditorWidget
+  override val view = new NonTextDocPermSetEditorView
 
   resetValues()
 
   override def resetValues() {
-    widget.chkEditMeta.checked = permSet.getEditDocumentInformation
-    widget.chkEditPermissions.checked = permSet.getEditPermissions
-    widget.chkEditContent.checked = permSet.getEdit
+    view.chkEditMeta.checked = permSet.getEditDocumentInformation
+    view.chkEditPermissions.checked = permSet.getEditPermissions
+    view.chkEditContent.checked = permSet.getEdit
   }
 
   override def collectValues(): ErrorsOrData = new TextDocumentPermissionSetDomainObject(permSet.getType) |>> { ps =>
-    ps.setEditDocumentInformation(widget.chkEditMeta.checked)
-    ps.setEditPermissions(widget.chkEditPermissions.checked)
-    ps.setEdit(widget.chkEditContent.checked)
+    ps.setEditDocumentInformation(view.chkEditMeta.checked)
+    ps.setEditPermissions(view.chkEditPermissions.checked)
+    ps.setEdit(view.chkEditContent.checked)
   } |> Right.apply
 }
 
@@ -364,7 +364,7 @@ class TextDocPermSetEditor(
     doc: DocumentDomainObject,
     user: UserDomainObject) extends DocPermSetEditor with ImcmsServicesSupport {
 
-  override val widget = new TextDocPermSetEditorWidget
+  override val view = new TextDocPermSetEditorView
 
   resetValues()
 
@@ -372,39 +372,39 @@ class TextDocPermSetEditor(
     // Authorized document types
     val selectedTypeIds = permSet.getAllowedDocumentTypeIds
     for ((typeId, typeName) <- imcmsServices.getDocumentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user).asScala) {
-      widget.tcsCreateDocsOfTypes.addItem(typeId, typeName)
-      if (selectedTypeIds contains typeId) widget.tcsCreateDocsOfTypes.select(typeId)
+      view.tcsCreateDocsOfTypes.addItem(typeId, typeName)
+      if (selectedTypeIds contains typeId) view.tcsCreateDocsOfTypes.select(typeId)
     }
 
     // template groups
     val selectedGroupIds = permSet.getAllowedTemplateGroupIds
     for (group <- imcmsServices.getTemplateMapper.getAllTemplateGroups) {
-      widget.tcsUseTemplatesFromTemplateGroups.addItem(group, group.getName)
-      if (selectedGroupIds contains group.getId) widget.tcsUseTemplatesFromTemplateGroups.select(group)
+      view.tcsUseTemplatesFromTemplateGroups.addItem(group, group.getName)
+      if (selectedGroupIds contains group.getId) view.tcsUseTemplatesFromTemplateGroups.select(group)
     }
 
-    widget.chkEditMeta.checked = permSet.getEditDocumentInformation
-    widget.chkEditPermissions.checked = permSet.getEditPermissions
-    widget.chkEditTexts.checked = permSet.getEdit
+    view.chkEditMeta.checked = permSet.getEditDocumentInformation
+    view.chkEditPermissions.checked = permSet.getEditPermissions
+    view.chkEditTexts.checked = permSet.getEdit
 
-    widget.chkEditTemplates.checked = permSet.getEditTemplates
-    widget.chkEditImages.checked = permSet.getEditImages
-    widget.chkEditMenus.checked = permSet.getEditMenus
-    widget.chkEditIncludes.checked = permSet.getEditIncludes
+    view.chkEditTemplates.checked = permSet.getEditTemplates
+    view.chkEditImages.checked = permSet.getEditImages
+    view.chkEditMenus.checked = permSet.getEditMenus
+    view.chkEditIncludes.checked = permSet.getEditIncludes
   }
 
   override def collectValues(): ErrorsOrData = new TextDocumentPermissionSetDomainObject(permSet.getType) |>> { ps =>
-    ps.setEditDocumentInformation(widget.chkEditMeta.checked)
-    ps.setEditPermissions(widget.chkEditPermissions.checked)
-    ps.setEdit(widget.chkEditTexts.checked)
+    ps.setEditDocumentInformation(view.chkEditMeta.checked)
+    ps.setEditPermissions(view.chkEditPermissions.checked)
+    ps.setEdit(view.chkEditTexts.checked)
 
-    ps.setEditTemplates(widget.chkEditTemplates.checked)
-    ps.setEditImages(widget.chkEditImages.checked)
-    ps.setEditMenus(widget.chkEditMenus.checked)
-    ps.setEditIncludes(widget.chkEditIncludes.checked)
+    ps.setEditTemplates(view.chkEditTemplates.checked)
+    ps.setEditImages(view.chkEditImages.checked)
+    ps.setEditMenus(view.chkEditMenus.checked)
+    ps.setEditIncludes(view.chkEditIncludes.checked)
 
-    ps.setAllowedDocumentTypeIds(new java.util.HashSet(widget.tcsCreateDocsOfTypes.itemIds))
-    ps.setAllowedTemplateGroupIds(widget.tcsUseTemplatesFromTemplateGroups.itemIds.asScala.map(_.getId: JInteger).toSet.asJava)
+    ps.setAllowedDocumentTypeIds(new java.util.HashSet(view.tcsCreateDocsOfTypes.itemIds))
+    ps.setAllowedTemplateGroupIds(view.tcsUseTemplatesFromTemplateGroups.itemIds.asScala.map(_.getId: JInteger).toSet.asJava)
   } |> Right.apply
 }
 
@@ -412,7 +412,7 @@ class TextDocPermSetEditor(
 /**
  * Doc's restricted permission set
  */
-class NonTextDocPermSetEditorWidget extends VerticalLayout with UndefinedSize {
+class NonTextDocPermSetEditorView extends VerticalLayout with UndefinedSize {
 
   private val content = new VerticalLayout with Spacing with Margin with UndefinedSize
 
@@ -428,7 +428,7 @@ class NonTextDocPermSetEditorWidget extends VerticalLayout with UndefinedSize {
 }
 
 
-class TextDocPermSetEditorWidget extends VerticalLayout with UndefinedSize {
+class TextDocPermSetEditorView extends VerticalLayout with UndefinedSize {
 
   private val content = new VerticalLayout with Spacing with Margin with UndefinedSize
 
@@ -483,33 +483,33 @@ class DocPermSetsEditor(doc: DocumentDomainObject, user: UserDomainObject) exten
     }
   }
 
-  override val widget = new DocPermSetsEditorWidget { w =>
-    w.tsSets.addTab(editors.read.widget, PermSetTypeName(READ))
-    w.tsSets.addTab(editors.restrictedOne.widget, PermSetTypeName(RESTRICTED_1))
-    w.tsSets.addTab(editors.restrictedTwo.widget, PermSetTypeName(RESTRICTED_2))
-    w.tsSets.addTab(editors.full.widget, PermSetTypeName(FULL))
+  override val view = new DocPermSetsEditorView { w =>
+    w.tsSets.addTab(editors.read.view, PermSetTypeName(READ))
+    w.tsSets.addTab(editors.restrictedOne.view, PermSetTypeName(RESTRICTED_1))
+    w.tsSets.addTab(editors.restrictedTwo.view, PermSetTypeName(RESTRICTED_2))
+    w.tsSets.addTab(editors.full.view, PermSetTypeName(FULL))
 
-    editors.read.widget.setEnabled(false)
-    editors.full.widget.setEnabled(false)
+    editors.read.view.setEnabled(false)
+    editors.full.view.setEnabled(false)
   }
 
   resetValues()
 
   override def resetValues() {
     Seq(editors.full, editors.restrictedOne, editors.restrictedTwo, editors.read).foreach(_.resetValues())
-    widget.tsSets.setSelectedTab(editors.restrictedOne.widget)
-    widget.chkRestrictedOneIsMorePrivilegedThanRestrictedTwo.checked = doc.getMeta.getRestrictedOneMorePrivilegedThanRestrictedTwo
+    view.tsSets.setSelectedTab(editors.restrictedOne.view)
+    view.chkRestrictedOneIsMorePrivilegedThanRestrictedTwo.checked = doc.getMeta.getRestrictedOneMorePrivilegedThanRestrictedTwo
   }
 
   override def collectValues(): ErrorsOrData = Data(
     restrictedOnePermSet = editors.restrictedOne.collectValues().right.get,
     restrictedTwoPermSet = editors.restrictedTwo.collectValues().right.get,
-    isRestrictedOneMorePrivilegedThanRestrictedTwo = widget.chkRestrictedOneIsMorePrivilegedThanRestrictedTwo.checked
+    isRestrictedOneMorePrivilegedThanRestrictedTwo = view.chkRestrictedOneIsMorePrivilegedThanRestrictedTwo.checked
   ) |> Right.apply
 }
 
 
-class DocPermSetsEditorWidget extends VerticalLayout with UndefinedSize with Spacing {
+class DocPermSetsEditorView extends VerticalLayout with UndefinedSize with Spacing {
   val tsSets = new TabSheet with UndefinedSize
   val chkRestrictedOneIsMorePrivilegedThanRestrictedTwo = new CheckBox("Custom-One is more privileged that Custom-Two")
 
