@@ -1,20 +1,19 @@
 package com.imcode
-package imcms.admin.doc.template
+package imcms
+package admin.doc.template
 package group
 
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
-import com.vaadin.ui._
-import imcode.server.{Imcms}
-import imcode.server.document.{TemplateGroupDomainObject}
-import imcms.security.{PermissionDenied, PermissionGranted}
+import _root_.imcode.server.Imcms
+import _root_.imcode.server.document.TemplateGroupDomainObject
+import com.imcode.imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
-import com.vaadin.server.Page
 
 //todo: form check
 //todo: duplicate save check!
@@ -40,7 +39,7 @@ class TemplateGroupManager {
         new ConfirmationDialog("Delete selected template group?") |>> { dlg =>
           dlg.setOkButtonHandler {
             Current.ui.privileged(permission) {
-              Ex.allCatch.either(templateMapper deleteTemplateGroup id.intValue) match {
+              Ex.allCatch.either(templateMapper.deleteTemplateGroup(id.intValue)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("Template group has been deleted")
                 case Left(ex) =>
@@ -72,8 +71,17 @@ class TemplateGroupManager {
       dlg.mainComponent = new TemplateGroupEditorView |>> { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = vo.getName.trimToEmpty
-        templateMapper.getTemplatesInGroup(vo).asScala.foreach(template => c.twsTemplates.addChosenItem(template.getName))
-        templateMapper.getTemplatesNotInGroup(vo).asScala.foreach(template => c.twsTemplates.addAvailableItem(template.getName))
+
+        val templatesInGroups = templateMapper.getTemplatesInGroup(vo).asScala.map(_.getName)
+        val templatesNotInGroups = templateMapper.getTemplatesNotInGroup(vo).asScala.map(_.getName)
+
+        c.twsTemplates.removeAllItems()
+        c.twsTemplates.addItems(templatesInGroups)
+        c.twsTemplates.addItems(templatesNotInGroups)
+        c.twsTemplates.selection = templatesInGroups
+
+        //templateMapper.getTemplatesInGroup(vo).asScala.foreach(template => c.twsTemplates.addChosenItem(template.getName))
+        //templateMapper.getTemplatesNotInGroup(vo).asScala.foreach(template => c.twsTemplates.addAvailableItem(template.getName))
 
         dlg.setOkButtonHandler {
           Current.ui.privileged(permission) {
@@ -89,11 +97,12 @@ class TemplateGroupManager {
             }
 
             for {
-              name <- c.twsTemplates.chosenItemIds
+              name <- c.twsTemplates.selection
               template <- templateMapper.getTemplateByName(name).asOption
             } templateMapper.addTemplateToGroup(template, voc)
 
             reload()
+            dlg.close()
           }
         }
       }
@@ -120,32 +129,4 @@ class TemplateGroupManager {
       Seq(view.miEdit, view.miDelete).foreach(_.setEnabled(enabled))
     }
   }
-}
-
-
-class TemplateGroupManagerView extends VerticalLayout with Spacing with UndefinedSize {
-  import Theme.Icon._
-
-  val mb = new MenuBar
-  val miNew = mb.addItem("Add new", New16)
-  val miEdit = mb.addItem("Edit", Edit16)
-  val miDelete = mb.addItem("Delete", Delete16)
-  val miHelp = mb.addItem("Help", Help16)
-  val tblGroups = new Table with SingleSelect[TemplateGroupId] with Selectable with Immediate
-  val rc = new ReloadableContentView(tblGroups)
-
-  addContainerProperties(tblGroups,
-    PropertyDescriptor[JInteger]("Id"),
-    PropertyDescriptor[String]("Name"),
-    PropertyDescriptor[JInteger]("Templates count"))
-
-  this.addComponents(mb, rc)
-}
-
-class TemplateGroupEditorView extends FormLayout with UndefinedSize {
-  val txtId = new TextField("Id") with Disabled
-  val txtName = new TextField("Name") with Required
-  val twsTemplates = new TwinSelect[String]("Templates")
-
-  this.addComponents(txtId, txtName, twsTemplates)
 }

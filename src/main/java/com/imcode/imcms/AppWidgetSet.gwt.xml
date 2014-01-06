@@ -20,6 +20,7 @@
      based browsers including Google Chrome.
     -->
     <!-- <set-property name="user.agent" value="safari"/> -->
+    <set-property name="user.agent" value="gecko1_8"/>
 
     <!--
      To enable SuperDevMode, uncomment this line.

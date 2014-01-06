@@ -50,7 +50,7 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
 
 
   private def setKeywords(keywords: Set[Keyword]) {
-    view.keywords.lstKeywords.itemIds = keywords.map(_.toLowerCase).toSeq.sorted.asJava
+    view.keywords.lstKeywords.setItems(keywords.map(_.toLowerCase).toSeq.sorted)
   }
 
 

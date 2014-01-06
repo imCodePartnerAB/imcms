@@ -4,19 +4,16 @@ package imcms.admin.doc.template
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
-import com.vaadin.ui._
-import imcode.server.user._
-import imcode.server.{Imcms}
-import imcms.admin.instance.file._
+import _root_.imcode.server.Imcms
+import com.imcode.imcms.admin.instance.file._
 import org.apache.commons.io.FileUtils
-import imcms.security.{PermissionDenied, PermissionGranted}
-import java.io.{FileInputStream, ByteArrayInputStream, File}
+import com.imcode.imcms.security.{PermissionDenied, PermissionGranted}
+import java.io.FileInputStream
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
-import com.vaadin.server.Page
 
 //todo: common internal ex handler???
 //todo: add related docs handling
@@ -29,7 +26,7 @@ class TemplateManager {
     w.tblTemplates.addValueChangeHandler { _ => handleSelection() }
     w.miUpload.setCommandHandler { _ =>
       new FileUploaderDialog("Upload template file") |>> { dlg =>
-        // strips filename extension, trims and replaces spaces with underscores
+      // strips filename extension, trims and replaces spaces with underscores
         dlg.uploader.fileNameToSaveAsName = fileRE.unapplySeq(_:String).map(_.head.trim.replaceAll("""\s""", "_")).get
         dlg.setOkButtonHandler {
           for {
@@ -143,41 +140,4 @@ class TemplateManager {
       templateMapper.getCountOfDocumentsUsingTemplate(templateMapper.getTemplateByName(name)) > 0
     } getOrElse false)
   }
-}
-
-class TemplateManagerView extends VerticalLayout with Spacing with UndefinedSize {
-  import Theme.Icon._
-
-  val mb = new MenuBar
-  val miUpload = mb.addItem("Upload", New16, null)
-  val miDownload = mb.addItem("Download", New16, null)
-  val miRename = mb.addItem("Rename", Edit16, null)
-  val miDelete = mb.addItem("Delete", Delete16, null)
-  val miEditContent = mb.addItem("Edit content", EditContent16, null)
-  val miDocuments = mb.addItem("Related documents", Documents16, null)
-  val miHelp = mb.addItem("Help", Help16, null)
-  val tblTemplates = new Table with SingleSelect[TemplateName] with Selectable with Immediate
-  val rc = new ReloadableContentView(tblTemplates)
-
-  addContainerProperties(tblTemplates,
-    PropertyDescriptor[String]("Name"),
-    PropertyDescriptor[String]("Type"),
-    PropertyDescriptor[JInteger]("Document count using this template"))
-
-  this.addComponents(mb, rc)
-}
-
-
-class TemplateRenameView extends FormLayout with UndefinedSize {
-  val txtName = new TextField("Name")
-
-  addComponent(txtName)
-}
-
-class TemplateContentEditorView extends VerticalLayout with FullSize {
-  val txaContent = new TextArea with FullSize |>> {
-    _.setRows(20)
-  }
-
-  addComponent(txaContent)
 }
