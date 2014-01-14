@@ -1,11 +1,11 @@
 package com.imcode
-package imcms.admin.instance.settings.language
+package imcms
+package admin.instance.settings.language
 
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
-import com.vaadin.ui._
-import imcode.server.{Imcms}
+import imcode.server.Imcms
 import imcms.security.{PermissionGranted, PermissionDenied}
 import imcms.api.DocumentLanguage
 import imcms.dao.{SystemDao, LanguageDao}
@@ -14,7 +14,6 @@ import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
-import com.vaadin.server.Page
 
 //todo delete in use message
 class LanguageManager {
@@ -22,7 +21,7 @@ class LanguageManager {
   private val systemDao = Imcms.getServices.getManagedBean(classOf[SystemDao])
 
   val view = new LanguageManagerView |>> { w =>
-    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.miReload.setCommandHandler { _ => reload() }
     w.tblLanguages.addValueChangeHandler { _ => handleSelection() }
 
     w.miNew.setCommandHandler { _ => editAndSave(DocumentLanguage.builder().build()) }
@@ -99,7 +98,7 @@ class LanguageManager {
 
         dlg.setOkButtonHandler {
           DocumentLanguage.builder() |> { voc =>
-            // todo: validate
+          // todo: validate
             voc.code(c.txtCode.value)
             voc.name(c.txtName.value)
             voc.nativeName(c.txtNativeName.value)
@@ -151,55 +150,3 @@ class LanguageManager {
     }
   }
 } // class LanguageManager
-
-class LanguageManagerView extends VerticalLayout with Spacing with UndefinedSize {
-  import Theme.Icon._
-
-  val mb = new MenuBar
-  val miNew = mb.addItem("Add new", New16)
-  val miEdit = mb.addItem("Edit", Edit16)
-  val miDelete = mb.addItem("Delete", Delete16)
-  val miSetDefault = mb.addItem("Set default", Delete16)
-  val miHelp = mb.addItem("Help", Help16)
-  val tblLanguages = new Table with SingleSelect[JInteger] with Immediate
-  val rc = new ReloadableContentView(tblLanguages)
-
-  addContainerProperties(tblLanguages,
-    PropertyDescriptor[JInteger]("Id"),
-    PropertyDescriptor[String]("Code"),
-    PropertyDescriptor[String]("Name"),
-    PropertyDescriptor[String]("Native name"),
-    PropertyDescriptor[JBoolean]("Enabled"),
-    PropertyDescriptor[JBoolean]("Default"))
-
-  this.addComponents(mb, rc)
-}
-
-class LanguageEditorView extends FormLayout with UndefinedSize {
-  val txtId = new TextField("Id") with Disabled
-  val txtCode = new TextField("Code")
-  val txtName = new TextField("Name")
-  val txtNativeName = new TextField("Native name")
-  val chkEnabled = new CheckBox("Enabled")
-
-  this.addComponents(txtId, txtCode, txtName, txtNativeName, chkEnabled)
-}
-
-
-////
-//// Custom UI demo
-////
-//class LanguageEditorUI extends CustomLayout("LanguageEditorUI") with UndefinedSize{
-//  val txtId = new TextField("Id") with Disabled
-//  val txtCode = new TextField("Code")
-//  val txtName = new TextField("Name")
-//  val txtNativeName = new TextField("Native name")
-//  val chkEnabled = new CheckBox("Enabled")
-//
-//  addNamedComponentsTo(this,
-//    "txtId" -> txtId,
-//    "txtCode" -> txtCode,
-//    "txtName" -> txtName,
-//    "txtNativeName" -> txtNativeName,
-//    "chkEnabled" -> chkEnabled)
-//}

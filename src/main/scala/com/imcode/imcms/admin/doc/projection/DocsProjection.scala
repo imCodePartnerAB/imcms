@@ -92,14 +92,14 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
   val docsView = new IndexedDocsView(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
   private val selectionRef = new AtomicReference(Seq.empty[I18nDocRef])
 
-  val view = new DocsProjectionView(filter.basicView, filter.extendeView, docsView) { w =>
+  val view = new DocsProjectionView(filter.basicView, filter.extendedView, docsView) { w =>
     val filterBasicView = filter.basicView
 
     filterBasicView.extended.btnCustomize.addClickHandler { _ => w.toggleExtendedFilter() }
     filterBasicView.filterButtons.btnApplyFilter.addClickHandler { _ => reload() }
     filterBasicView.filterButtons.btnReset.addClickHandler { _ => reset() }
     filterBasicView.filterButtons.btnBack.addClickHandler { _ => goBack() }
-    filterBasicView.filterButtons.btnApplyPredefinedFilter.addClickHandler { _ =>
+    filterBasicView.filterButtons.btnChoosePredefinedFilter.addClickHandler { _ =>
       new PredefinedFilterDialog |>> { dlg =>
         dlg.setOkButtonHandler {
           // combo box
@@ -218,7 +218,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
 
       for (types <- params.basic.docTypesOpt if types.nonEmpty) {
         solrQuery.addFilterQuery(
-          "%s:%s".format(DocumentIndex.FIELD__DOC_TYPE_ID, types.mkString(" "))
+          "%s:%s".format(DocumentIndex.FIELD__DOC_TYPE_ID, types.iterator.map(_.getId).mkString(" "))
         )
       }
 

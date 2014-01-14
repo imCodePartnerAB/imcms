@@ -1,21 +1,19 @@
 package com.imcode
-package imcms.admin.doc.category.`type`
+package imcms
+package admin.doc.category
 
+import com.imcode.imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConverters._
-import com.vaadin.ui._
-import imcode.server.{Imcms}
 
-import imcode.server.document.{CategoryTypeDomainObject}
-import com.imcode.imcms.admin.doc.category.{CategoryTypeId}
-import imcms.security.{PermissionDenied, PermissionGranted}
+import _root_.imcode.server.Imcms
+import _root_.imcode.server.document.CategoryTypeDomainObject
+
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
-import com.vaadin.server.Page
 
 //todo:
 //fix: edit - multiselect - always on
@@ -23,7 +21,7 @@ class CategoryTypeManager {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val view = new CategoryTypeManagerView |>> { w =>
-    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.miReload.setCommandHandler{ _ => reload() }
     w.tblTypes.addValueChangeHandler { _ => handleSelection() }
 
     w.miNew.setCommandHandler { _ => editAndSave(new CategoryTypeDomainObject) }
@@ -138,36 +136,4 @@ class CategoryTypeManager {
       Seq(view.miEdit, view.miDelete).foreach(_.setEnabled(enabled))
     }
   }
-}
-
-class CategoryTypeManagerView extends VerticalLayout with Spacing with UndefinedSize {
-  import Theme.Icon._
-
-  val mb = new MenuBar
-  val miNew = mb.addItem("Add new", New16)
-  val miEdit = mb.addItem("Edit", Edit16)
-  val miDelete = mb.addItem("Delete", Delete16)
-  val miHelp = mb.addItem("Help", Help16)
-  val tblTypes = new Table with SingleSelect[CategoryTypeId] with Immediate
-  val rc = new ReloadableContentView(tblTypes)
-
-  addContainerProperties(tblTypes,
-    PropertyDescriptor[JInteger]("Id"),
-    PropertyDescriptor[String]("Name"),
-    PropertyDescriptor[JBoolean]("Multi select?"),
-    PropertyDescriptor[JBoolean]("Inherited to new documents?"),
-    PropertyDescriptor[JBoolean]("Used by image archive?"))
-
-  this.addComponents(mb, rc)
-}
-
-
-class CategoryTypeEditorView extends FormLayout with UndefinedSize {
-  val txtId = new TextField("Id") with Disabled
-  val txtName = new TextField("Name") with Required
-  val chkMultiSelect = new CheckBox("Multiselect")
-  val chkInherited = new CheckBox("Inherited to new documents")
-  val chkImageArchive = new CheckBox("Used by image archive")
-
-  this.addComponents(txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
 }

@@ -23,7 +23,7 @@ import com.imcode.imcms.api.DocumentLanguage
 class Filter extends ImcmsServicesSupport {
 
   val basicView: BasicFilterView = new BasicFilterView
-  val extendeView: ExtendedFilterView = new ExtendedFilterView
+  val extendedView: ExtendedFilterView = new ExtendedFilterView
 
   def setMetaIdRangePrompt(range: Option[(MetaId, MetaId)]) {
     range.map {
@@ -168,33 +168,33 @@ class Filter extends ImcmsServicesSupport {
       chk.uncheck()
     }
 
-    Seq(extendeView.categories.chkEnabled, extendeView.dates.chkEnabled, extendeView.relationships.chkEnabled, extendeView.maintainers.chkEnabled).foreach { chk =>
+    Seq(extendedView.categories.chkEnabled, extendedView.dates.chkEnabled, extendedView.relationships.chkEnabled, extendedView.maintainers.chkEnabled).foreach { chk =>
       chk.uncheck()
     }
 
-    Seq(extendeView.dates.drCreated, extendeView.dates.drModified, extendeView.dates.drPublished, extendeView.dates.drExpired).foreach { dr =>
+    Seq(extendedView.dates.drCreated, extendedView.dates.drModified, extendedView.dates.drPublished, extendedView.dates.drExpired).foreach { dr =>
       dr.cbRangeType.value = DateRangeType.Undefined
     }
 
-    Seq(extendeView.maintainers.ulCreators, extendeView.maintainers.ulPublishers).foreach { ul =>
+    Seq(extendedView.maintainers.ulCreators, extendedView.maintainers.ulPublishers).foreach { ul =>
       ul.chkEnabled.uncheck()
       //ul.chkEnabled.fireValueChange(repaintIsNotNeeded = true)
       ul.lstUsers.removeAllItems()
     }
 
-    extendeView.categories.tcsCategories.removeAllItems()
+    extendedView.categories.tcsCategories.removeAllItems()
 
     for {
       categoryType <- imcmsServices.getCategoryMapper.getAllCategoryTypes
       category <- imcmsServices.getCategoryMapper.getAllCategoriesOfType(categoryType)
     } {
-      extendeView.categories.tcsCategories.addItem(category)
-      extendeView.categories.tcsCategories.setItemCaption(category, categoryType.getName + ":" + category.getName)
-      category.getImageUrl.asOption.foreach(url => extendeView.categories.tcsCategories.setItemIcon(category, new ExternalResource(url)))
+      extendedView.categories.tcsCategories.addItem(category)
+      extendedView.categories.tcsCategories.setItemCaption(category, categoryType.getName + ":" + category.getName)
+      category.getImageUrl.asOption.foreach(url => extendedView.categories.tcsCategories.setItemIcon(category, new ExternalResource(url)))
     }
 
-    extendeView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.unspecified"
-    extendeView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.unspecified"
+    extendedView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.unspecified"
+    extendedView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.unspecified"
   }
 
 
@@ -205,8 +205,8 @@ class Filter extends ImcmsServicesSupport {
 
   private def getExtendedParameters(): Try[ExtendedFilterParams] = Try {
     // Date meaning to DateRange
-    val datesOpt: Option[Map[String, DateRange]] = when(extendeView.dates.chkEnabled.checked) {
-      import extendeView.dates._
+    val datesOpt: Option[Map[String, DateRange]] = when(extendedView.dates.chkEnabled.checked) {
+      import extendedView.dates._
 
       val datesMap = for {
         (field, dr) <- Map(
@@ -235,35 +235,35 @@ class Filter extends ImcmsServicesSupport {
       datesMap.toMap
     }
 
-    val relationshipOpt: Option[Relationship] = when(extendeView.relationships.chkEnabled.checked) {
-      val withParents = extendeView.relationships.cbParents.value match {
+    val relationshipOpt: Option[Relationship] = when(extendedView.relationships.chkEnabled.checked) {
+      val withParents = extendedView.relationships.cbParents.value match {
         case "docs_projection.extended_filter.cb_relationships_parents.item.unspecified" => Relationship.Unspecified
         case "docs_projection.extended_filter.cb_relationships_parents.item.with_parents" => Relationship.Logical(true)
         case "docs_projection.extended_filter.cb_relationships_parents.item.without_parents" => Relationship.Logical(false)
-        case "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of" => Relationship.Exact(extendeView.relationships.txtParents.value.toInt)
+        case "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of" => Relationship.Exact(extendedView.relationships.txtParents.value.toInt)
       }
 
-      val withChildren = extendeView.relationships.cbChildren.value match {
+      val withChildren = extendedView.relationships.cbChildren.value match {
         case "docs_projection.extended_filter.cb_relationships_children.item.unspecified" => Relationship.Unspecified
         case "docs_projection.extended_filter.cb_relationships_children.item.with_children" => Relationship.Logical(true)
         case "docs_projection.extended_filter.cb_relationships_children.item.without_children" => Relationship.Logical(false)
-        case "docs_projection.extended_filter.cb_relationships_children.item.with_children_of" => Relationship.Exact(extendeView.relationships.txtChildren.value.toInt)
+        case "docs_projection.extended_filter.cb_relationships_children.item.with_children_of" => Relationship.Exact(extendedView.relationships.txtChildren.value.toInt)
       }
 
       Relationship(withParents, withChildren)
     }
 
-    val categoriesOpt: Option[Set[String]] = when(extendeView.categories.chkEnabled.checked) {
-      extendeView.categories.tcsCategories.getItemIds.asInstanceOf[JCollection[String]].asScala.to[Set]
+    val categoriesOpt: Option[Set[String]] = when(extendedView.categories.chkEnabled.checked) {
+      extendedView.categories.tcsCategories.getItemIds.asInstanceOf[JCollection[String]].asScala.to[Set]
     }
 
-    val maintainersOpt: Option[Maintainers] = when(extendeView.maintainers.chkEnabled.checked) {
-      val creatorsOpt: Option[Set[UserId]] = when(extendeView.maintainers.ulCreators.chkEnabled.checked) {
-        extendeView.maintainers.ulCreators.lstUsers.itemIds.asScala.to[Set]
+    val maintainersOpt: Option[Maintainers] = when(extendedView.maintainers.chkEnabled.checked) {
+      val creatorsOpt: Option[Set[UserId]] = when(extendedView.maintainers.ulCreators.chkEnabled.checked) {
+        extendedView.maintainers.ulCreators.lstUsers.itemIds.asScala.to[Set]
       }
 
-      val publishersOpt: Option[Set[UserId]] = when(extendeView.maintainers.ulPublishers.chkEnabled.checked) {
-        extendeView.maintainers.ulPublishers.lstUsers.itemIds.asScala.to[Set]
+      val publishersOpt: Option[Set[UserId]] = when(extendedView.maintainers.ulPublishers.chkEnabled.checked) {
+        extendedView.maintainers.ulPublishers.lstUsers.itemIds.asScala.to[Set]
       }
 
       Maintainers(creatorsOpt, publishersOpt)
@@ -277,10 +277,10 @@ class Filter extends ImcmsServicesSupport {
 
     val parameters = paramsOpt.getOrElse(ExtendedFilterParams())
     for (dates <- parameters.datesOpt) {
-      extendeView.dates.chkEnabled.check()
+      extendedView.dates.chkEnabled.check()
 
       for ((dateRangeName, dateRange) <- dates) {
-        import extendeView.dates._
+        import extendedView.dates._
 
         val dateRangeWidget = dateRangeName match {
           case DocumentIndex.FIELD__CREATED_DATETIME => drCreated
@@ -296,50 +296,50 @@ class Filter extends ImcmsServicesSupport {
     }
 
     for (categories <- parameters.categoriesOpt) {
-      extendeView.categories.chkEnabled.check()
+      extendedView.categories.chkEnabled.check()
 
-      categories.foreach(extendeView.categories.tcsCategories.select)
+      categories.foreach(extendedView.categories.tcsCategories.select)
     }
 
     for (maintainers <- parameters.maintainersOpt) {
-      extendeView.maintainers.chkEnabled.check()
+      extendedView.maintainers.chkEnabled.check()
 
       for (usersIds <- maintainers.creatorsOpt; userId <- usersIds) {
-        extendeView.maintainers.ulCreators.lstUsers.addItem(userId)
+        extendedView.maintainers.ulCreators.lstUsers.addItem(userId)
       }
 
       for (usersIds <- maintainers.publishersOpt; userId <- usersIds) {
-        extendeView.maintainers.ulCreators.lstUsers.addItem(userId)
+        extendedView.maintainers.ulCreators.lstUsers.addItem(userId)
       }
     }
 
     for (Relationship(parents, children) <- parameters.relationshipOpt) {
-      extendeView.relationships.chkEnabled.check()
+      extendedView.relationships.chkEnabled.check()
 
       parents match {
         case Relationship.Logical(value) if value =>
-          extendeView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.with_parents"
+          extendedView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.with_parents"
         case Relationship.Logical(_) =>
-          extendeView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.without_parents"
+          extendedView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.without_parents"
         case Relationship.Exact(metaId) =>
-          extendeView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of"
-          extendeView.relationships.txtParents.value = metaId.toString
+          extendedView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of"
+          extendedView.relationships.txtParents.value = metaId.toString
 
         case _ =>
-          extendeView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.unspecified"
+          extendedView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.unspecified"
       }
 
       children match {
         case Relationship.Logical(value) if value =>
-          extendeView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.with_children"
+          extendedView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.with_children"
         case Relationship.Logical(_) =>
-          extendeView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.without_children"
+          extendedView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.without_children"
         case Relationship.Exact(metaId) =>
-          extendeView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.with_children_of"
-          extendeView.relationships.txtChildren.value = metaId.toString
+          extendedView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.with_children_of"
+          extendedView.relationships.txtChildren.value = metaId.toString
 
         case _ =>
-          extendeView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.unspecified"
+          extendedView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.unspecified"
       }
     }
   }

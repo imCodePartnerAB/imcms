@@ -115,8 +115,8 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
     selectedTabPositionOpt.foreach(view.tsTexts.setSelectedTab)
 
     format |> {
-      case TextDomainObject.Format.HTML => ("Format: HTML", Theme.Icon.TextFormatHtml)
-      case _ => ("Format: Plain text", Theme.Icon.TextFormatPlain)
+      case TextDomainObject.Format.HTML => ("Format: HTML", Theme.Icon.TextFormatHtml16)
+      case _ => ("Format: Plain text", Theme.Icon.TextFormatPlain16)
     } |> {
       case (formatTypeName, formatTypeIcon) =>
         view.lblStatus.setCaption(formatTypeName)

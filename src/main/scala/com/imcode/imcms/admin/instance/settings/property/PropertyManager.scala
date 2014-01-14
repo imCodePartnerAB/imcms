@@ -3,23 +3,20 @@ package imcms.admin.instance.settings.property
 
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConverters._
-import com.vaadin.ui._
 import imcms.security.{PermissionGranted, PermissionDenied}
 import imcode.server.Imcms
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.server._
-import com.vaadin.server.Page
 
 //todo: move to system dir + monitor
 // todo: updateReadOnly ->
 
-class PropertyManagerManager {
+class PropertyManager {
 
   val view = new PropertyManagerView |>> { w =>
-    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.miReload.setCommandHandler { _ => reload() }
     w.miEdit.setCommandHandler { _ =>
       new OkCancelDialog("Edit system properties") |>> { dlg =>
         dlg.mainComponent = new PropertyEditorView |>> { eui =>
@@ -68,7 +65,7 @@ class PropertyManagerManager {
     import view.propertyEditorView._
 
     Seq(txtStartPageNumber, txaSystemMessage, webMaster.txtName, webMaster.txtEmail, serverMaster.txtName,
-        serverMaster.txtEmail).foreach { txt =>
+      serverMaster.txtEmail).foreach { txt =>
       txt.setReadOnly(false)
     }
 
@@ -82,42 +79,10 @@ class PropertyManagerManager {
     }
 
     Seq(txtStartPageNumber, txaSystemMessage, webMaster.txtName, webMaster.txtEmail, serverMaster.txtName,
-        serverMaster.txtEmail).foreach { txt =>
+      serverMaster.txtEmail).foreach { txt =>
       txt.setReadOnly(true)
     }
 
     Seq(view.miEdit).foreach(_.setEnabled(canManage))
   }
-} // class PropertyManager
-
-class PropertyManagerView extends VerticalLayout with Spacing with UndefinedSize {
-  import Theme.Icon._
-
-  val mb = new MenuBar
-  val miEdit = mb.addItem("Edit", Edit16)
-  val miHelp = mb.addItem("Help", Help16)
-  val propertyEditorView = new PropertyEditorView
-  val dataPanel = new Panel(new VerticalLayout with UndefinedSize with Margin) with UndefinedSize
-  val rc = new ReloadableContentView(dataPanel)
-
-  dataPanel.setContent(propertyEditorView)
-  this.addComponents(mb, rc)
-}
-
-
-class PropertyEditorView extends FormLayout with UndefinedSize {
-  class ContactComponent(caption: String) extends VerticalLayout() with UndefinedSize with Spacing {
-    val txtName = new TextField("Name")
-    val txtEmail = new TextField("e-mail")
-
-    setCaption(caption)
-    this.addComponents(txtName, txtEmail)
-  }
-
-  val txtStartPageNumber = new TextField("Start page number")
-  val txaSystemMessage = new TextArea("System message") |>> { _.setRows(5) }
-  val serverMaster = new ContactComponent("Server master")
-  val webMaster = new ContactComponent("Web master")
-
-  this.addComponents(txtStartPageNumber, txaSystemMessage, serverMaster, webMaster)
 }

@@ -52,15 +52,14 @@ class BasicFilterView extends CustomLayout("admin/doc/projection/basic_filter") 
 
   object extended {
     val chkEnabled = new CheckBox("docs_projection.basic_filter.chk_extended".i) with FullWidth with ExposeValueChange[JBoolean] with Immediate
-    val btnCustomize = new Button("...") with SmallStyle
+    val btnCustomize = new Button("...") with SmallDefaultStyle
   }
   
   object filterButtons {
-    val btnReset = new Button("btn_reset".i) with SmallStyle
-    val btnApplyFilter = new Button("btn_search".i) with SmallStyle
-    val btnApplyPredefinedFilter = new Button("...") with SmallStyle
-    val btnBack = new Button with SmallStyle |>> { b => b.setIcon(Theme.Icon.HistoryBack) }
-    //val btnForward = new Button with SmallStyle |>> { b => b.setIcon(Theme.Icon.HistoryForward, "Go forward") }
+    val btnReset = new Button("btn_reset".i) with SmallDefaultStyle { b => b.setIcon(Theme.Icon.Reload16) }
+    val btnApplyFilter = new Button("btn_search".i) with SmallDefaultStyle
+    val btnChoosePredefinedFilter = new Button("...") with SmallDefaultStyle
+    val btnBack = new Button("back") with SmallDefaultStyle |>> { b => b.setIcon(Theme.Icon.HistoryBack16) }
   }
 
   private val lytIdRange = new HorizontalLayout with Spacing with UndefinedSize |>> { lyt =>
@@ -80,9 +79,17 @@ class BasicFilterView extends CustomLayout("admin/doc/projection/basic_filter") 
 
   private val lytSearchButtons = new HorizontalLayout with UndefinedSize with Spacing |>> { lyt =>
     import filterButtons._
-    val lytFilter = new HorizontalLayout with UndefinedSize
-    lytFilter.addComponents(btnApplyFilter, btnApplyPredefinedFilter)
-    lyt.addComponents(btnReset, lytFilter, btnBack/*, btnForward*/)
+    val lytFilter = new HorizontalLayout with UndefinedSize |>> { lyt =>
+      lyt.setStyleName("segment")
+      lyt.addStyleName("segment-alternate")
+    }
+
+    btnApplyFilter.addStyleName("first")
+    btnChoosePredefinedFilter.addStyleName("last")
+
+    lytFilter.addComponents(btnApplyFilter, btnChoosePredefinedFilter)
+
+    lyt.addComponents(btnBack, lytFilter, btnReset)
   }
 
   private val lytExtended = new HorizontalLayout with Spacing with UndefinedSize |>> { lyt =>

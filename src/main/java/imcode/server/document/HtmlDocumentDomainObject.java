@@ -4,7 +4,7 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
 
     private String html = "";
 
-    public void setHtml( String html ) {
+    public void setHtml(String html) {
         this.html = html;
     }
 
@@ -16,7 +16,16 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
         return DocumentTypeDomainObject.HTML;
     }
 
-    public void accept( DocumentVisitor documentVisitor ) {
-        documentVisitor.visitHtmlDocument( this );
+    public void accept(DocumentVisitor documentVisitor) {
+        documentVisitor.visitHtmlDocument(this);
+    }
+
+    @Override
+    public HtmlDocumentDomainObject clone() {
+        HtmlDocumentDomainObject clone = (HtmlDocumentDomainObject) super.clone();
+
+        clone.setHtml(html);
+
+        return clone;
     }
 }

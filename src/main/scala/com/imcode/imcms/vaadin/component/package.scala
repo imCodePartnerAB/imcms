@@ -11,7 +11,7 @@ import com.vaadin.ui.Layout.AlignmentHandler
 import com.vaadin.data.{Item, Property}
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.{Sizeable, Resource}
-import com.vaadin.ui.themes.{ChameleonTheme, BaseTheme}
+import com.vaadin.ui.themes.{Reindeer, ChameleonTheme, BaseTheme}
 import com.vaadin.shared.ui.datefield.Resolution
 
 
@@ -229,20 +229,23 @@ package object component {
     setHeight("100%")
   }
 
-  // todo: fix
   trait LinkStyle { this: Button =>
     setStyleName(BaseTheme.BUTTON_LINK)
   }
 
-  // todo: fix
   trait SmallStyle { this: Button =>
-    addStyleName(ChameleonTheme.BUTTON_SMALL)
+    addStyleName(Reindeer.BUTTON_SMALL)
   }
 
-  // todo: fix
-  @deprecated
+  trait SmallDefaultStyle { this: Button =>
+    addStyleName(Reindeer.BUTTON_SMALL)
+    addStyleName(Reindeer.BUTTON_DEFAULT)
+  }
+
+
+
   trait LightStyle { this: Panel =>
-    setStyleName(ChameleonTheme.PANEL_LIGHT)
+    setStyleName(Reindeer.PANEL_LIGHT)
   }
 
   trait Immediate { this: AbstractComponent =>

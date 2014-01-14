@@ -5,24 +5,23 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 
-class TemplateManagerView extends VerticalLayout with Spacing with UndefinedSize {
-  import Theme.Icon._
+class TemplateManagerView extends VerticalLayout with UndefinedSize {
 
-  val mb = new MenuBar
-  val miUpload = mb.addItem("Upload", New16, null)
-  val miDownload = mb.addItem("Download", New16, null)
-  val miRename = mb.addItem("Rename", Edit16, null)
-  val miDelete = mb.addItem("Delete", Delete16, null)
-  val miEditContent = mb.addItem("Edit content", EditContent16, null)
-  val miDocuments = mb.addItem("Related documents", Documents16, null)
-  val miHelp = mb.addItem("Help", Help16, null)
+  val mb = new MenuBar with FullWidth
+  val miUpload = mb.addItem("Upload")
+  val miDownload = mb.addItem("Download")
+  val miRename = mb.addItem("Rename")
+  val miDelete = mb.addItem("Delete")
+  val miEditContent = mb.addItem("Edit content")
+  val miDocuments = mb.addItem("Related documents")
+  val miReload = mb.addItem("Reload")
+  val miHelp = mb.addItem("Help")
   val tblTemplates = new Table with SingleSelect[TemplateName] with Selectable with Immediate
-  val rc = new ReloadableContentView(tblTemplates)
 
   addContainerProperties(tblTemplates,
     PropertyDescriptor[String]("Name"),
     PropertyDescriptor[String]("Type"),
     PropertyDescriptor[JInteger]("Document count using this template"))
 
-  this.addComponents(mb, rc)
+  this.addComponents(mb, tblTemplates)
 }

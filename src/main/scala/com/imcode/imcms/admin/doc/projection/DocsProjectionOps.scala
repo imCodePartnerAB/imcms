@@ -30,8 +30,8 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   private def showMissingDocNotification() {
     Current.page.showWarningNotification(
-      "Selected document has been deleted".i,
-      "Please re-run search."
+      "Selected document can not be found".i,
+      "Please re-run search.".i
     )
   }
 

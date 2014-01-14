@@ -32,7 +32,8 @@ import com.vaadin.server.Page
  * @param doc used as a read only value object to initialize editor.
  */
 class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEditor with ImcmsServicesSupport {
-  type Data = FileDocumentDomainObject
+
+  override type Data = FileDocumentDomainObject
 
   private type MimeType = String
   private type DisplayName = String

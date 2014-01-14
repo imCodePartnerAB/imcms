@@ -21,6 +21,8 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 /**
  * Parent of all imCMS document types.
  * <p/>
+ * A Document is uniquely identified by id (meta id), (content) language and (content) version.
+ * <p/>
  * Holds document content and meta.
  */
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
@@ -549,5 +551,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         }
 
         this.i18nMeta = i18nMeta;
+    }
+
+    public boolean isNew() {
+        return getId() == ID_NEW;
     }
 }

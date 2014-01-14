@@ -1,4 +1,4 @@
-@import url(../chameleon/legacy-styles.css);
+@import url(../reindeer/legacy-styles.css);
 
 .v-loading-indicator,
 .v-loading-indicator-delay,
@@ -35,7 +35,7 @@
 }
 
 /* copied form runo. */
-.v-button-small .v-button-wrap, .v-disabled.v-button-small .v-button-wrap {
+.v-button-small .v-button-wrap, .v-disabled .v-button-small .v-button-wrap {
     font-size: 11px;
     line-height: 13px;
     padding: 1px 12px;
@@ -46,19 +46,22 @@
 table#users_projection,
 table#docs_projection_basic_filter,
 table#docs_projection_extended_filter {
-    border: solid 1px #a9a9a9;
+    border: none;
     border-collapse: collapse;
+}
+
+table#docs_projection_basic_filter {
+    border-top: solid 1px #a9a9a9;
 }
 
 table#users_projection,
 table#docs_projection_basic_filter {
     background: #fffff0;
-    margin-bottom: 1px;
 }
 
 table#docs_projection_extended_filter {
     background: #e0ffff;
-    margin-top: -1px;
+    width: 100%;
 }
 
 table#users_projection th,
@@ -84,9 +87,8 @@ table#docs_projection_basic_filter th,
 table#docs_projection_extended_filter td,
 table#docs_projection_extended_filter th {
     padding: 0.3em;
-    border: solid 1px #a9a9a9;
-    border-left: none;
-    border-right: none;
+    border: none;
+    border-bottom: solid 1px #a9a9a9;
 }
 
 
@@ -102,4 +104,64 @@ table#users_projection #buttons,
 table#docs_projection_basic_filter #buttons {
     border-left: solid 1px #a9a9a9;
 }
+
+/*.v-table-listeot, .v-table-row, .v-table-row-odd {*/
+    /*height: 30px;*/
+/*}*/
+
+/*.v-menubar {*/
+    /*padding: 0;*/
+    /*padding-bottom: 6px;*/
+    /*padding-top: 6px;*/
+    /*border: none;*/
+    /*background: none;*/
+    /*height: 40px;*/
+/*}*/
+
+/*.v-menubar {*/
+    /*margin: 10px;*/
+    /*padding: 4px 0 0 4px;*/
+    /*padding: 10px;*/
+    /*margin: 0;*/
+/*}*/
+
+/*.v-menubar .v-menubar-menuitem {*/
+    /*margin: 0;*/
+/*}*/
+
+/*.v-menubar .v-menubar-menuitem {*/
+    /*border: solid 1px #a9a9a9;*/
+    /*background: #e1e1e1;*/
+    /*margin-right: 4px;*/
+    /*cursor: default;*/
+    /*vertical-align: middle;*/
+    /*white-space: nowrap;*/
+    /*display: inline;*/
+    /*display: inline-block;*/
+    /*zoom: 1;*/
+/*}*/
+
+.v-verticallayout-manager {
+    padding: 4px 0 0 0;
+}
+
+/*.v-tabsheet {*/
+    /*margin: 10;*/
+/*}*/
+
+
+/*.v-menubar {*/
+    /*display: inline-block;*/
+    /*white-space: nowrap;*/
+    /*overflow: hidden;*/
+/*}*/
+
+/*.v-menubar .v-menubar-menuitem {*/
+    /*cursor: default;*/
+    /*vertical-align: middle;*/
+    /*white-space: nowrap;*/
+    /*display: inline;*/
+    /*display: inline-block;*/
+    /*zoom: 1;*/
+/*}*/
 

@@ -1,11 +1,9 @@
 package com.imcode
 package imcms.admin.access.role
 
-import _root_.imcode.server.{Imcms}
-import _root_.imcode.server.user.{RoleId, RoleDomainObject}
+import _root_.imcode.server.Imcms
+import _root_.imcode.server.user.RoleDomainObject
 import scala.util.control.{Exception => Ex}
-import scala.collection.JavaConverters._
-import com.vaadin.ui._
 
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.Current
@@ -21,7 +19,7 @@ class RoleManager {
   private def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
   val view = new RoleManagerView |>> { w =>
-    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.miReload.setCommandHandler { _ => reload() }
     w.tblRoles.addValueChangeHandler { _ => handleSelection() }
 
     w.miNew.setCommandHandler { _ => editAndSave(new RoleDomainObject("")) }
@@ -70,10 +68,10 @@ class RoleManager {
     new OkCancelDialog(dialogTitle) |>> { dlg =>
       dlg.mainComponent = new RoleEditorView |>> { w =>
         val permsToChkBoxes = Map(
-            RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> w.chkPermChangeImagesInArchive,
-            RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION -> w.chkPermUseImagesFromArchive,
-            RoleDomainObject.PASSWORD_MAIL_PERMISSION -> w.chkPermGetPasswordByEmail,
-            RoleDomainObject.ADMIN_PAGES_PERMISSION -> w.chkPermAccessMyPages)
+          RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> w.chkPermChangeImagesInArchive,
+          RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION -> w.chkPermUseImagesFromArchive,
+          RoleDomainObject.PASSWORD_MAIL_PERMISSION -> w.chkPermGetPasswordByEmail,
+          RoleDomainObject.ADMIN_PAGES_PERMISSION -> w.chkPermAccessMyPages)
 
         w.txtId.value = if (isNew) "" else id.intValue.toString
         w.txtName.value = vo.getName
@@ -81,7 +79,7 @@ class RoleManager {
 
         dlg.setOkButtonHandler {
           vo.clone |> { voc =>
-            // todo: validate
+          // todo: validate
             voc.setName(w.txtName.value)
             voc.removeAllPermissions()
             for ((permission, chkBox) <- permsToChkBoxes if chkBox.value) voc.addPermission(permission)
@@ -129,33 +127,3 @@ class RoleManager {
     }
   }
 } // class RoleManager
-
-class RoleManagerView extends VerticalLayout with Spacing with UndefinedSize {
-  import Theme.Icon._
-
-  val mb = new MenuBar
-  val miNew = mb.addItem("Add new", New16)
-  val miEdit = mb.addItem("Edit", Edit16)
-  val miDelete = mb.addItem("Delete", Delete16)
-  val miHelp = mb.addItem("Help", Help16)
-  val tblRoles = new Table with SingleSelect[RoleId] with Immediate
-  val rc = new ReloadableContentView(tblRoles)
-
-  addContainerProperties(tblRoles,
-    PropertyDescriptor[JInteger]("Id"),
-    PropertyDescriptor[String]("Name"))
-
-  this.addComponents(mb, rc)
-}
-
-class RoleEditorView extends FormLayout with UndefinedSize {
-  val txtId = new TextField("Id") with Disabled
-  val txtName = new TextField("Name")
-  val chkPermGetPasswordByEmail = new CheckBox("Permission to get password by email")
-  val chkPermAccessMyPages = new CheckBox("""Permission to access "My pages" """)
-  val chkPermUseImagesFromArchive = new CheckBox("Permission to use images from image archive")
-  val chkPermChangeImagesInArchive = new CheckBox("Permission to change images in image archive")
-
-  this.addComponents(txtName, chkPermGetPasswordByEmail, chkPermAccessMyPages, chkPermUseImagesFromArchive,
-      chkPermChangeImagesInArchive)
-}

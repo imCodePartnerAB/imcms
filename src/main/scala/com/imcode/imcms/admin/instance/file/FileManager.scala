@@ -155,7 +155,7 @@ class FileManager {
 }
 
 
-class FileManagerView(browserUI: FileBrowserView, previewView: FilePreviewView) extends GridLayout(2, 2) with Spacing with FullSize {
+class FileManagerView(browserUI: FileBrowserView, previewView: FilePreviewView) extends GridLayout(2, 2) with FullSize {
   import Theme.Icon._
 
   val mb = new MenuBar

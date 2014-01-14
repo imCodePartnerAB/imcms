@@ -2,6 +2,9 @@ package com.imcode
 package imcms
 package admin.sysadmin
 
+import com.imcode.imcms.admin.access.user.UserManager
+import com.imcode.imcms.vaadin.component.Theme.Icon
+import com.vaadin.ui.themes.Reindeer
 import scala.collection.JavaConverters._
 import com.imcode._
 import com.imcode.imcms.servlet.superadmin.AdminSearchTerms
@@ -11,10 +14,9 @@ import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.vaadin.server.VaadinRequest
-import imcms.admin.access.user.UserManager
-import imcode.server.Imcms
 
-import Theme.Icon
+import _root_.imcode.server.Imcms
+
 import com.vaadin.annotations.PreserveOnRefresh
 import com.vaadin.data.Property.ValueChangeEvent
 import com.imcode.imcms.I18nMessage
@@ -22,6 +24,7 @@ import com.imcode.imcms.vaadin.{Current, MenuItemOrder, TreeMenuItem}
 import com.imcode.imcms.admin.doc.manager.DocManager
 
 // todo: rename Theme class - name collision
+// todo: enable chat ???
 @PreserveOnRefresh
 @com.vaadin.annotations.Theme("imcms")
 class SysAdmin extends UI {
@@ -74,23 +77,26 @@ class SysAdmin extends UI {
   }
 
 
-  val pnlViewContent = new Panel with FullSize {
+  val lytContent = new VerticalLayout with FullSize {
+
     val hspManagers = new HorizontalSplitPanel with FullSize {
       val menu = new Tree with Immediate
-      val content = new VerticalLayout with FullSize with Margin
+      val lytManager = new VerticalLayout with FullSize |>> { lyt =>
+        lyt.addStyleName("manager")
+      }
 
-      setFirstComponent(menu)
-      setSecondComponent(content)
+      val lytMenu = new VerticalLayout with FullSize |>> { lyt =>
+        lyt.addStyleName("manager")
+      }
+
+      lytMenu.addComponent(menu)
+
+      setFirstComponent(lytMenu)
+      setSecondComponent(lytManager)
       setSplitPosition(15)
     }
 
-    val content = new VerticalSplitPanel |>> { p =>
-      p.setFirstComponent(hspManagers)
-      p.setSecondComponent(chat)
-      p.setSplitPosition(85)
-    }
-
-    setContent(hspManagers)
+    addComponent(hspManagers)
 
     def initManagersMenu() {
       def addMenuItem(parentItem: TreeMenuItem, item: TreeMenuItem) {
@@ -111,8 +117,8 @@ class SysAdmin extends UI {
       }
 
       hspManagers.menu.addValueChangeHandler { e: ValueChangeEvent =>
-        hspManagers.content.removeAllComponents()
-        hspManagers.content.addComponent(
+        hspManagers.lytManager.removeAllComponents()
+        hspManagers.lytManager.addComponent(
           e.getProperty.getValue |> {
             case null | Menu.About => labelAbout
 
@@ -144,15 +150,15 @@ class SysAdmin extends UI {
 
   override def init(request: VaadinRequest) {
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
-    pnlViewContent.initManagersMenu()
-    setContent(pnlViewContent)
+    lytContent.initManagersMenu()
+    setContent(lytContent)
 
     getLoadingIndicatorConfiguration.setFirstDelay(100)
   }
 
 
   def NA(id: Any) = new Panel(id.toString) {
-    setIcon(Icon.Tab32)
+    setIcon(Icon.Tab16)
 
     setContent(new Label("NOT AVAILABLE"))
   }
@@ -175,48 +181,48 @@ class SysAdmin extends UI {
 
   lazy val languages = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.instance.settings.language.LanguageManager
-    manager.view.setMargin(true)
-    addTab(manager.view, "doc.lang.mgr.title".i, Icon.Tab32)
+    addTab(manager.view, "doc.lang.mgr.title".i)
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val documents = new TabSheet with FullSize {
     val manager = new DocManager
-    manager.view.setMargin(true)
-    addTab(manager.view, "doc.mgr.title".i, Icon.Tab32)
+    addTab(manager.view, "doc.mgr.title".i)
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val ipAccess = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.access.ip.IPAccessManager
-    manager.view.setMargin(true)
-    addTab(manager.view, "IP Access ", Icon.Tab32)
+    addTab(manager.view, "IP Access ")
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val roles = new TabSheet with FullSize {
     val roleManager = new com.imcode.imcms.admin.access.role.RoleManager
-    roleManager.view.setMargin(true)
-    addTab(roleManager.view, "Roles and their permissions", Icon.Tab32)
+    addTab(roleManager.view, "Roles and their permissions")
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val systemSettings = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.instance.settings.property.PropertyManagerManager
-    manager.view.setMargin(true)
-    addTab(manager.view, "System Properties", Icon.Tab32)
+    val manager = new com.imcode.imcms.admin.instance.settings.property.PropertyManager
+    addTab(manager.view, "System Properties")
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val sessionMonitor = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.instance.monitor.session.counter.SessionCounterManager
-    manager.view.setMargin(true)
-    addTab(manager.view, "Counter", Icon.Tab32)
+    addTab(manager.view, "Counter")
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val searchTerms = new TabSheet with FullSize {
-    addTab(new VerticalLayout with Spacing with Margin {
+    addTab(new VerticalLayout with Spacing {
       setCaption("Popular search terms")
 
       val tblTerms = new Table {
@@ -259,13 +265,14 @@ class SysAdmin extends UI {
 
       reload()
     })
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val filesystem = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.instance.file.FileManager
-    manager.view.setMargin(true)
-    addTab(manager.view, "File manager", Icon.Tab32)
+    addTab(manager.view, "File manager")
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
@@ -273,23 +280,24 @@ class SysAdmin extends UI {
     val templateManager = new com.imcode.imcms.admin.doc.template.TemplateManager
     val templateGroupManager = new com.imcode.imcms.admin.doc.template.group.TemplateGroupManager
 
-    addTab(templateManager.view, "Templates", Icon.Tab32)
-    addTab(templateGroupManager.view, "Template Groups", Icon.Tab32)
+    addTab(templateManager.view, "Templates")
+    addTab(templateGroupManager.view, "Template Groups")
 
-    templateManager.view.setMargin(true)
-    templateGroupManager.view.setMargin(true)
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val categories = new TabSheet with FullSize {
     val categoryManager = new com.imcode.imcms.admin.doc.category.CategoryManager
-    val categoryTypeManager = new com.imcode.imcms.admin.doc.category.`type`.CategoryTypeManager
+    val categoryTypeManager = new com.imcode.imcms.admin.doc.category.CategoryTypeManager
 
-    addTab(categoryManager.view, "Categories ", Icon.Tab32)
-    addTab(categoryTypeManager.view, "Category types", Icon.Tab32)
+    addTab(categoryManager.view, "Categories ")
+    addTab(categoryTypeManager.view, "Category types")
 
-    categoryManager.view.setMargin(true)
-    categoryTypeManager.view.setMargin(true)
+    categoryManager.view.setSizeFull()
+    categoryTypeManager.view.setSizeFull()
+
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
@@ -297,7 +305,7 @@ class SysAdmin extends UI {
 
   lazy val users = new TabSheet with FullSize {
     val manager = new UserManager
-    manager.view.setMargin(true)
-    addTab(manager.view, "Users and their permissions", Icon.Tab32)
+    addTab(manager.view, "Users and their permissions")
+    setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 }

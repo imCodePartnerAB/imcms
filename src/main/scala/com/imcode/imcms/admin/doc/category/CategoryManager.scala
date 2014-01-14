@@ -1,22 +1,23 @@
 package com.imcode
-package imcms.admin.doc.category
+package imcms
+package admin.doc.category
 
+import _root_.imcode.server.Imcms
+import _root_.imcode.server.document.CategoryDomainObject
+
+import com.imcode.imcms.admin.instance.file.{ImagePicker, FileBrowser, ImcmsFileBrowser}
+import com.imcode.imcms.security.{PermissionDenied, PermissionGranted}
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
-import imcode.server.{Imcms}
-
-import imcode.server.document.{CategoryDomainObject}
-import imcms.admin.instance.file._
 import java.io.File
-import imcms.security.{PermissionGranted, PermissionDenied}
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.server._
-import com.vaadin.server.{Page, FileResource}
+import com.vaadin.server.FileResource
 import scala.util.{Failure, Try}
 
 /**
@@ -30,7 +31,7 @@ class CategoryManager {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val view: CategoryManagerView = new CategoryManagerView |>> { w =>
-    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.miReload.setCommandHandler { _ => reload() }
     w.tblCategories.addValueChangeHandler { _ =>  handleSelection() }
 
     w.miNew.setCommandHandler { _ => editAndSave(new CategoryDomainObject) }
@@ -157,43 +158,4 @@ class CategoryManager {
       Seq(view.miEdit, view.miDelete).foreach(_.setEnabled(enabled))
     }
   }
-} // class CategoryManager
-
-
-class CategoryManagerView extends VerticalLayout with Spacing with UndefinedSize {
-  import Theme.Icon._
-
-  val mb = new MenuBar
-  val miNew = mb.addItem("Add new", New16)
-  val miEdit = mb.addItem("Edit", Edit16)
-  val miDelete = mb.addItem("Delete", Delete16)
-  val miHelp = mb.addItem("Help", Help16)
-  val tblCategories = new Table with SingleSelect[CategoryId] with Immediate
-  val rc = new ReloadableContentView(tblCategories)
-
-  addContainerProperties(tblCategories,
-    PropertyDescriptor[JInteger]("Id"),
-    PropertyDescriptor[String]("Name"),
-    PropertyDescriptor[String]("Description"),
-    PropertyDescriptor[String]("Icon"),
-    PropertyDescriptor[String]("Type"))
-
-  this.addComponents(mb, rc)
-}
-
-
-class CategoryEditorView(val imagePickerComponent: ImagePickerComponent) extends FormLayout with UndefinedSize {
-  val txtId = new TextField("Id") with Disabled {
-    setColumns(11)
-  }
-  val txtName = new TextField("Name") with Required
-  val txaDescription = new TextArea("Description") |>> { t =>
-    t.setRows(5)
-    t.setColumns(11)
-  }
-
-  val sltType = new ComboBox("Type") with SingleSelect[String] with Required with NoNullSelection
-
-  this.addComponents(txtId, txtName, sltType, imagePickerComponent, txaDescription)
-  imagePickerComponent.setCaption("Icon")
 }

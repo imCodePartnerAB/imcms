@@ -6,7 +6,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.event._
 
-class ExtendedFilterView extends CustomLayout("admin/doc/projection/extended_filter") with UndefinedSize {
+class ExtendedFilterView extends CustomLayout("admin/doc/projection/extended_filter") with FullSize {
 
   object dates {
     val chkEnabled = new CheckBox("docs_projection.extended_filter.chk_dates".i) with Immediate

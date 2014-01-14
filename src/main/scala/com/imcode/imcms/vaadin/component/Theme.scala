@@ -19,6 +19,7 @@ object Theme {
     val EditContent16: TR = "icons/16/document-txt.png"
     val Documents16: TR = "icons/16/note.png"
     val Tab32: TR = "icons/32/folder.png"
+    val Tab16: TR = "icons/16/folder.png"
     val Lock32: TR = "icons/32/lock.png"
     val Ok16: TR = "icons/16/ok.png"
     val Ok32: TR = "icons/32/ok.png"
@@ -26,11 +27,11 @@ object Theme {
     val Done32: TR = Ok32
     val File16: TR = "icons/16/document.png"
     val Folder16: TR = "icons/16/folder.png"
-    val TextFormatPlain: TR = "icons/16/document-txt.png"
-    val TextFormatHtml: TR = "icons/16/document-web.png"
-    val HistoryBack: TR = "icons/16/arrow-left.png"
-    val MoreOptions: TR = "icons/16/arrow-down.png"
-    val HistoryForward: TR = "icons/16/arrow-right.png"
+    val TextFormatPlain16: TR = "icons/16/document-txt.png"
+    val TextFormatHtml16: TR = "icons/16/document-web.png"
+    val HistoryBack16: TR = "icons/16/arrow-left.png"
+    val MoreOptions16: TR = "icons/16/arrow-down.png"
+    val HistoryForward16: TR = "icons/16/arrow-right.png"
 
     object Browser {
       val TabHome32: TR = "icons/16/document-web.png"

@@ -22,7 +22,7 @@ class TemplateGroupManager {
   private val templateMapper = Imcms.getServices.getTemplateMapper
 
   val view = new TemplateGroupManagerView |>> { w =>
-    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.miReload.setCommandHandler { _ => reload() }
     w.tblGroups.addValueChangeHandler { _ => handleSelection() }
 
     w.miNew.setCommandHandler { _ => editAndSave(new TemplateGroupDomainObject(0, null)) }

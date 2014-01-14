@@ -11,9 +11,9 @@ class IndexedDocsView(container: IndexedDocsContainer) extends Table(null, conta
 with MultiSelectBehavior[Index]
 with Selectable with Immediate {
 
-  setColumnHeaders(PropertyId.values().map(propertyId => propertyId.toString.i): _*)
+  setColumnHeaders(PropertyId.values.map(propertyId => propertyId.toString.i): _*)
 
   setColumnCollapsingAllowed(false)
 
-  addStyleName("striped")
+  addStyleName("striped borderless")
 }

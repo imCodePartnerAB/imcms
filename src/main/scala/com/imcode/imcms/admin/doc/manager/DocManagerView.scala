@@ -7,7 +7,7 @@ import com.vaadin.ui.{MenuBar, VerticalLayout}
 import com.imcode.imcms.vaadin.component._
 
 
-class DocManagerView(projectionView: DocsProjectionView) extends VerticalLayout with Spacing with FullSize {
+class DocManagerView(projectionView: DocsProjectionView) extends VerticalLayout with FullSize {
   val mb = new MenuBar with FullWidth
   val miNew = mb.addItem("doc.mgr.mi.new".i)
   val miNewTextDoc = miNew.addItem("doc.mgr.mi.new.text_doc".i)
@@ -23,7 +23,7 @@ class DocManagerView(projectionView: DocsProjectionView) extends VerticalLayout 
   //val miViewContent = miView.addItem("doc.mgr.mi.view.content".i)
   //val miViewStructure = miView.addItem("doc.mgr.mi.view.structure".i)
 
-  val miSelection = mb.addItem("doc.mgr.mi.selection".i)
+  //val miSelection = mb.addItem("doc.mgr.mi.selection".i)
   //val miSelectionShow = miSelection.addItem("doc.mgr.mi.selection.show".i)
   val miProfile = mb.addItem("doc.mgr.mi.profile".i)
 

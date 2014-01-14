@@ -4,11 +4,10 @@ package admin.access.ip
 
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
-import com.vaadin.ui._
-import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
+import com.imcode.imcms.security.PermissionGranted
 import com.imcode.imcms.dao.IPAccessDao
 import com.imcode.imcms.api.IPAccess
-import com.imcode.imcms.admin.access.user.{UserSingleSelectDialog, UserSelectDialog}
+import com.imcode.imcms.admin.access.user.UserSingleSelectDialog
 
 import com.imcode.imcms.vaadin.Current
 import com.imcode.imcms.vaadin.component._
@@ -17,10 +16,8 @@ import com.imcode.imcms.vaadin.event._
 import com.imcode.imcms.vaadin.component.dialog.{OkCancelDialog, ConfirmationDialog}
 import _root_.imcode.server.Imcms
 import _root_.imcode.util.Utility.{ipLongToString, ipStringToLong}
-import com.vaadin.server.Page
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.security.PermissionDenied
-import com.imcode.imcms.vaadin.data.PropertyDescriptor
 
 // todo: ipv4; add/handle ipv6?
 // todo: Should select user from user select!!
@@ -34,7 +31,7 @@ class IPAccessManager {
   private val fromDDN = ipStringToLong(_:String).toString
 
   val view = new IPAccessManagerView |>> { w =>
-    w.rc.btnReload.addClickHandler { _ => reload() }
+    w.miReload.setCommandHandler { _ => reload() }
     w.tblIP.addValueChangeHandler { _ => handleSelection() }
 
     w.miNew.setCommandHandler { _ => editAndSave(new IPAccess) }
@@ -98,7 +95,7 @@ class IPAccessManager {
 
         dlg.setOkButtonHandler {
           vo.clone |> { voc =>
-            // todo: validate
+          // todo: validate
             voc.setUserId(roleMapper.getUser(w.userPickerComponent.txtLoginName.value).getId)
             voc.setStart(fromDDN(w.txtFrom.value))
             voc.setEnd(fromDDN(w.txtTo.value))
@@ -146,41 +143,3 @@ class IPAccessManager {
     }
   }
 } // class IPAccessManager
-
-class IPAccessManagerView extends VerticalLayout with Spacing with UndefinedSize {
-  import Theme.Icon._
-
-  val mb = new MenuBar
-  val miNew = mb.addItem("Add new", New16)
-  val miEdit = mb.addItem("Edit", Edit16)
-  val miDelete = mb.addItem("Delete", Delete16)
-  val miHelp = mb.addItem("Help", Help16)
-  val tblIP = new Table with SingleSelect[JInteger] with Immediate
-  val rc = new ReloadableContentView(tblIP)
-
-  addContainerProperties(tblIP,
-    PropertyDescriptor[JInteger]("Id"),
-    PropertyDescriptor[String]("Name"),
-    PropertyDescriptor[String]("IP range from"),
-    PropertyDescriptor[String]("IP range to"))
-
-  this.addComponents(mb, rc)
-}
-
-
-class IPAccessEditorView extends FormLayout with UndefinedSize {
-  class UserPickerComponent extends HorizontalLayout with Spacing with UndefinedSize {
-    val txtLoginName = new TextField  { setInputPrompt("No user selected") }    // with ReadOnly
-    val btnChoose = new Button("...") { setStyleName("small") }
-
-    this.addComponents(txtLoginName, btnChoose)
-    setCaption("User")
-  }
-
-  val txtId = new TextField("Id") with Disabled
-  val userPickerComponent = new UserPickerComponent
-  val txtFrom = new TextField("From")
-  val txtTo = new TextField("To")
-
-  this.addComponents(txtId, userPickerComponent, txtFrom, txtTo)
-}
