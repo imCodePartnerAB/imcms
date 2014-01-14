@@ -78,7 +78,7 @@
         <gwt.version>2.5.1</gwt.version>
         <vaadin.version>7.1.9</vaadin.version>
 
-        <tomcat.version>7.0.47</tomcat.version>
+        <tomcat.version>7.0.50</tomcat.version>
 
         <!--
             tomcat7:run goal property.
@@ -716,6 +716,13 @@
         <!-- ============================ -->
         <!-- Java EE API & Implementation -->
         <!-- ============================ -->
+        <!-- Not distributed with Tomcat -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-servlet-api</artifactId>
@@ -765,13 +772,6 @@
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
             <version>1</version>
-        </dependency>
-
-        <!-- Not distributed with Tomcat -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
         </dependency>
 
     </dependencies>

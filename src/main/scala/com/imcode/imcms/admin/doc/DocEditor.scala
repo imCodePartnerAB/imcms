@@ -32,7 +32,7 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
   override val view = new TabSheet with FullSize |>> { w =>
     w.addTab(metaEditor.view, "doc_editor.tab.meta".i, null)
     w.addTab(contentEditor.view, "doc_editor.tab.content".i, null)
-    w.setStyleName(Reindeer.TABSHEET_MINIMAL)
+    w.addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
   override def resetValues() {

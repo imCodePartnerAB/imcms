@@ -132,9 +132,9 @@ class LanguageManager {
       vo <- languageDao.getAllLanguages.asScala
       id = vo.getId
       isDefault = default == id.intValue
-    } view.tblLanguages.addItem(
-      Array[AnyRef](id, vo.getCode, vo.getName, vo.getNativeName, vo.isEnabled: JBoolean, isDefault: JBoolean),
-      id)
+    } view.tblLanguages.addRow(id,
+      id, vo.getCode, vo.getName, vo.getNativeName, vo.isEnabled: JBoolean, isDefault: JBoolean, null
+    )
 
     canManage |> { value =>
       view.tblLanguages.setSelectable(value)

@@ -111,7 +111,7 @@ class RoleManager {
     for {
       vo <- roleMapper.getAllRoles
       id = vo.getId
-    } view.tblRoles.addItem(Array[AnyRef](Int box id.intValue, vo.getName), id)
+    } view.tblRoles.addRow(id, id.intValue : JInteger, vo.getName, null)
 
     canManage |> { value =>
       view.tblRoles.setSelectable(value)

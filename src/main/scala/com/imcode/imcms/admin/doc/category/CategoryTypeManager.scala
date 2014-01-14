@@ -121,7 +121,7 @@ class CategoryTypeManager {
     for {
       vo <- categoryMapper.getAllCategoryTypes
       id = vo.getId :JInteger
-    } view.tblTypes.addItem(Array[AnyRef](id, vo.getName, vo.isMultiselect : JBoolean, vo.isInherited : JBoolean, vo.isImageArchive : JBoolean), id)
+    } view.tblTypes.addRow(id, id, vo.getName, vo.isMultiselect : JBoolean, vo.isInherited : JBoolean, vo.isImageArchive : JBoolean, null)
 
     canManage |> { value =>
       view.tblTypes.setSelectable(value)

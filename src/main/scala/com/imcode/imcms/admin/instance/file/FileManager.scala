@@ -3,18 +3,17 @@ package imcms
 package admin.instance.file
 
 import com.imcode.imcms.vaadin.Current
-import scala.collection.JavaConverters._
 import com.vaadin.ui._
 
 import java.io.File
 import org.apache.commons.io.FileUtils
 import actors.Actor
-import scala.concurrent.ops.{spawn}
+import scala.concurrent.ops.spawn
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.component.dialog._
-import com.vaadin.server.{Page, UserError}
+import com.vaadin.server.UserError
 
 class FileManager {
   val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))
@@ -152,35 +151,6 @@ class FileManager {
       }
     }
   }
-}
-
-
-class FileManagerView(browserUI: FileBrowserView, previewView: FilePreviewView) extends GridLayout(2, 2) with FullSize {
-  import Theme.Icon._
-
-  val mb = new MenuBar
-  val miFile = mb.addItem("file.mgr.menu.file".i, File16)
-  val miFileShow = miFile.addItem("file.mgr.menu.file.show".i)
-  val miFileEdit = miFile.addItem("file.mgr.menu.file.edit".i)
-  val miFileUpload = miFile.addItem("file.mgr.menu.file.upload".i)
-  val miFileDownload = miFile.addItem("file.mgr.menu.file.download".i)
-  val miNew = mb.addItem("file.mgr.menu.new".i, New16)
-  val miNewDir = miNew.addItem("file.mgr.menu.new.dir".i)
-  val miEdit = mb.addItem("file.mgr.menu.edit".i, Edit16)
-  val miEditCopy = miEdit.addItem("file.mgr.menu.edit.copy".i)
-  val miEditMove = miEdit.addItem("file.mgr.menu.edit.move".i)
-  val miEditRename = miEdit.addItem("file.mgr.menu.edit.rename".i)
-  val miEditDelete = miEdit.addItem("file.mgr.menu.edit.delete".i)
-  val miView = mb.addItem("file.mgr.menu.view".i)
-  val miViewReload = miView.addItem("file.mgr.menu.view.reload".i, Reload16)
-  val miViewPreview = miView.addItem("file.mgr.menu.view.toggle_preview".i)
-  val miHelp = mb.addItem("file.mgr.menu.help".i, Help16)
-
-  addComponent(mb, 0, 0, 1, 0)
-  this.addComponents(browserUI, previewView)
-  setComponentAlignment(previewView, Alignment.MIDDLE_CENTER)
-  setColumnExpandRatio(0, 1f)
-  setRowExpandRatio(1, 1f)
 }
 
 

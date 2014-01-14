@@ -130,11 +130,13 @@ class MsgDialog(caption: String = "", msg: String ="") extends OKDialog(caption)
 /** OKCancel dialog window. */
 class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton with CancelButton {
 
-  val lytButtons = new GridLayout(2, 1) with Spacing {
-    this.addComponents( btnOk, btnCancel)
+  val lytButtons = new GridLayout(2, 1) with Spacing |>> { lyt =>
+    lyt.addComponents( btnOk, btnCancel)
 
-    setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)
-    setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
+    lyt.setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)
+    lyt.setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
+
+    lyt.addStyleName("dialog-buttons")
   }
 
   footerComponent = lytButtons

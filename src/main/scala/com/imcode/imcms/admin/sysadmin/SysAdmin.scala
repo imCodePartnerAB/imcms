@@ -86,7 +86,6 @@ class SysAdmin extends UI {
       }
 
       val lytMenu = new VerticalLayout with FullSize |>> { lyt =>
-        lyt.addStyleName("manager")
       }
 
       lytMenu.addComponent(menu)
@@ -94,6 +93,7 @@ class SysAdmin extends UI {
       setFirstComponent(lytMenu)
       setSecondComponent(lytManager)
       setSplitPosition(15)
+      addStyleName(Reindeer.SPLITPANEL_SMALL)
     }
 
     addComponent(hspManagers)

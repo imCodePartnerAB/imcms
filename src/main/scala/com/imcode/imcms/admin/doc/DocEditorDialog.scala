@@ -5,6 +5,7 @@ package admin.doc
 import _root_.imcode.server.document.DocumentDomainObject
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.component.dialog.{Resizable, BottomContentMarginDialog, CustomSizeDialog, OkCancelDialog}
+import com.vaadin.ui.VerticalLayout
 
 
 class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCancelDialog(caption)
@@ -12,7 +13,8 @@ class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCanc
 
   val docEditor = new DocEditor(doc)
 
-  mainComponent = docEditor.view
+  mainComponent = new VerticalLayout(docEditor.view) with FullSize |>> { _.addStyleName("doc_editor") }
+
   btnOk.setCaption("btn_save".i)
 
   this.setSize(700, 600)

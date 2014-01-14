@@ -114,7 +114,7 @@ class TemplateGroupManager {
     for {
       vo <- templateMapper.getAllTemplateGroups
       id = vo.getId : JInteger
-    } view.tblGroups.addItem(Array[AnyRef](id, vo.getName, templateMapper.getTemplatesInGroup(vo).size : JInteger), id)
+    } view.tblGroups.addItem(Array[AnyRef](id, vo.getName, templateMapper.getTemplatesInGroup(vo).size : JInteger, null), id)
 
     canManage |> { value =>
       view.tblGroups.setSelectable(value)

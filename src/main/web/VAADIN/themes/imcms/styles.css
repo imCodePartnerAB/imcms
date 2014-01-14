@@ -105,63 +105,30 @@ table#docs_projection_basic_filter #buttons {
     border-left: solid 1px #a9a9a9;
 }
 
-/*.v-table-listeot, .v-table-row, .v-table-row-odd {*/
-    /*height: 30px;*/
-/*}*/
-
-/*.v-menubar {*/
-    /*padding: 0;*/
-    /*padding-bottom: 6px;*/
-    /*padding-top: 6px;*/
-    /*border: none;*/
-    /*background: none;*/
-    /*height: 40px;*/
-/*}*/
-
-/*.v-menubar {*/
-    /*margin: 10px;*/
-    /*padding: 4px 0 0 4px;*/
-    /*padding: 10px;*/
-    /*margin: 0;*/
-/*}*/
-
-/*.v-menubar .v-menubar-menuitem {*/
-    /*margin: 0;*/
-/*}*/
-
-/*.v-menubar .v-menubar-menuitem {*/
-    /*border: solid 1px #a9a9a9;*/
-    /*background: #e1e1e1;*/
-    /*margin-right: 4px;*/
-    /*cursor: default;*/
-    /*vertical-align: middle;*/
-    /*white-space: nowrap;*/
-    /*display: inline;*/
-    /*display: inline-block;*/
-    /*zoom: 1;*/
-/*}*/
-
-.v-verticallayout-manager {
-    padding: 4px 0 0 0;
+.v-menubar-manager {
+    margin-top: 2px;
 }
 
-/*.v-tabsheet {*/
-    /*margin: 10;*/
-/*}*/
+.v-verticallayout-manager {
+    padding-top: 1px;
+    padding-left: 1px;
+    padding-right: 1px;
+}
 
+.v-verticallayout-doc_editor {
+    padding-top: 1px;
+    padding-left: 1px;
+    border-bottom: 1px solid;
+    /*padding-right: 1px;*/
+}
 
-/*.v-menubar {*/
-    /*display: inline-block;*/
-    /*white-space: nowrap;*/
-    /*overflow: hidden;*/
-/*}*/
+.dialog-buttons {
+    /*padding-top: 4px;*/
+    /*padding-left: 2px;*/
+    /*padding-left: 2px;*/
+    /*border-top: 1px solid;*/
+}
 
-/*.v-menubar .v-menubar-menuitem {*/
-    /*cursor: default;*/
-    /*vertical-align: middle;*/
-    /*white-space: nowrap;*/
-    /*display: inline;*/
-    /*display: inline-block;*/
-    /*zoom: 1;*/
-/*}*/
-
+.v-accordion {
+    border: none;
+}

@@ -127,7 +127,7 @@ class IPAccessManager {
       vo <- ipAccessDao.getAll.asScala
       id = vo.getId
       user = roleMapper getUser vo.getUserId.intValue
-    } view.tblIP.addItem(Array[AnyRef](id, user.getLoginName, toDDN(vo.getStart), toDDN(vo.getEnd)), id)
+    } view.tblIP.addRow(id, id, user.getLoginName, toDDN(vo.getStart), toDDN(vo.getEnd))
 
     canManage |> { value =>
       view.tblIP.setSelectable(value)

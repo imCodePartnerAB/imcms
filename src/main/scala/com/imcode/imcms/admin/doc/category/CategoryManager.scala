@@ -143,7 +143,7 @@ class CategoryManager {
     for {
       vo <- categoryMapper.getAllCategories.asScala
       id = Int box vo.getId
-    } view.tblCategories.addItem(Array[AnyRef](id, vo.getName, vo.getDescription, vo.getImageUrl, vo.getType.getName), id)
+    } view.tblCategories.addItem(Array[AnyRef](id, vo.getName, vo.getDescription, vo.getImageUrl, vo.getType.getName, null), id)
 
     canManage |> { value =>
       view.tblCategories.setSelectable(value)

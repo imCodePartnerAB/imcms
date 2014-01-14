@@ -117,7 +117,7 @@ class TemplateManager {
       vo <- templateMapper.getAllTemplates.asScala
       name = vo.getName
       fileRE(_, ext) = vo.getFileName
-    } view.tblTemplates.addItem(Array[AnyRef](name, ext, Int box templateMapper.getCountOfDocumentsUsingTemplate(vo)), name)
+    } view.tblTemplates.addItem(Array[AnyRef](name, ext, Int box templateMapper.getCountOfDocumentsUsingTemplate(vo), null), name)
 
     canManage |> { value =>
       import view._

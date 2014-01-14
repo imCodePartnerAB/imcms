@@ -14,9 +14,9 @@ import com.imcode.imcms.admin.access.user.projection.UsersProjection
 
 // todo add security check, add editAndSave, add external UI
 class UserManager extends ImcmsServicesSupport {
-  private val search = new UsersProjection
+  private val usersProjection = new UsersProjection
 
-  val view = new UserManagerView(search.view) |>> { w =>
+  val view = new UserManagerView(usersProjection.view) |>> { w =>
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     w.miNew.setCommandHandler { _ =>
@@ -44,7 +44,7 @@ class UserManager extends ImcmsServicesSupport {
               u.setLanguageIso639_2(c.sltUILanguage.value)
 
               roleMapper.addUser(u)
-              search.reset()
+              usersProjection.reset()
             }
           }
         }
@@ -52,7 +52,7 @@ class UserManager extends ImcmsServicesSupport {
     }
 
     w.miEdit.setCommandHandler { _ =>
-      whenSingleton(search.selection) { user =>
+      whenSingleton(usersProjection.selection) { user =>
         new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName)) |>> { dlg =>
           dlg.mainComponent = new UserEditorView |>> { c =>
             c.chkActivated setValue user.isActive
@@ -83,14 +83,14 @@ class UserManager extends ImcmsServicesSupport {
               user.setLanguageIso639_2(c.sltUILanguage.value)
 
               roleMapper.saveUser(user)
-              search.reset()
+              usersProjection.reset()
             }
           }
         } |> Current.ui.addWindow
       }
     }
 
-    search.listen { w.miEdit setEnabled _.size == 1 }
-    search.notifyListeners()
+    usersProjection.listen { w.miEdit setEnabled _.size == 1 }
+    usersProjection.notifyListeners()
   }
 }

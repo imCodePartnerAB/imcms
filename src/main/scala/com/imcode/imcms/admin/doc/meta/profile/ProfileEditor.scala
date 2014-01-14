@@ -2,7 +2,6 @@ package com.imcode
 package imcms
 package admin.doc.meta.profile
 
-import scala.collection.breakOut
 import scala.collection.JavaConverters._
 import imcode.server.user._
 import imcode.server.document._
@@ -11,7 +10,7 @@ import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import imcms.ImcmsServicesSupport
 import textdocument.TextDocumentDomainObject
-import com.imcode.imcms.admin.doc.meta.access.{TextDocPermSetEditorView, TextDocPermSetEditor}
+import com.imcode.imcms.admin.doc.meta.access.TextDocPermSetEditor
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.Editor
 
@@ -35,12 +34,12 @@ import com.imcode.imcms.vaadin.Editor
 class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) extends Editor with ImcmsServicesSupport {
 
   case class Data(
-    defaultTemplate: String,
-    restrictedOnePermSet: TextDocumentPermissionSetDomainObject,
-    restrictedTwoPermSet: TextDocumentPermissionSetDomainObject,
-    restrictedOneTemplate: String,
-    restrictedTwoTemplate: String
-  )
+                   defaultTemplate: String,
+                   restrictedOnePermSet: TextDocumentPermissionSetDomainObject,
+                   restrictedTwoPermSet: TextDocumentPermissionSetDomainObject,
+                   restrictedOneTemplate: String,
+                   restrictedTwoTemplate: String
+                   )
 
   private val restrictedOnePermSet = doc.getPermissionSetsForNewDocuments.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject]
   private val restrictedTwoPermSet = doc.getPermissionSetsForNewDocuments.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject]
@@ -87,42 +86,4 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
   }
 
   resetValues()
-}
-
-
-class ProfileEditorView(
-    defaultPermSetEditorView: TextDocPermSetEditorView,
-    restrictedOnePermSetEditorView: TextDocPermSetEditorView,
-    restrictedTwoPermSetEditorView: TextDocPermSetEditorView) extends VerticalLayout with FullWidth {
-
-  val cbDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NoNullSelection // ??? NullSelection ???
-  val cbRestrictedOneDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NullSelection
-  val cbRestrictedTwoDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NullSelection
-
-  defaultPermSetEditorView.setCaption("Permissions")
-  restrictedOnePermSetEditorView.setCaption("Permissions")
-  restrictedTwoPermSetEditorView.setCaption("Permissions")
-
-  private val pnlSettings = new Panel("Settings") with FullWidth {
-    val content = new VerticalLayout with FullWidth with Margin
-
-    val tsSettings = new TabSheet
-    val lytDefault = new FormLayout with Margin
-    val lytRestrictedOne = new FormLayout with Margin
-    val lytRestrictedTwo = new FormLayout with Margin
-
-    tsSettings.addTab(lytDefault, "Default")
-    tsSettings.addTab(lytRestrictedOne, "Custom-One")
-    tsSettings.addTab(lytRestrictedTwo, "Custom-Two")
-
-    lytDefault.addComponents(cbDefaultTemplate, defaultPermSetEditorView)
-    lytRestrictedOne.addComponents(cbRestrictedOneDefaultTemplate, restrictedOnePermSetEditorView)
-    lytRestrictedTwo.addComponents(cbRestrictedTwoDefaultTemplate, restrictedTwoPermSetEditorView)
-
-    content.addComponent(tsSettings)
-
-    setContent(content)
-  }
-
-  this.addComponents(pnlSettings)
 }

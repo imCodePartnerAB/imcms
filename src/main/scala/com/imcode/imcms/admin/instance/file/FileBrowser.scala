@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.instance.file
 
+import com.vaadin.ui.themes.Reindeer
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import scala.collection.mutable.{Map => MMap}
@@ -99,7 +100,7 @@ object ImcmsFileBrowser {
  * A location is uniquely identified by its root dir.
  */
 class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean = false)
-    extends Publisher[Option[LocationSelection]] {
+extends Publisher[Option[LocationSelection]] {
 
   type Location = (LocationTree, LocationItems)
   type LocationRoot = File
@@ -264,7 +265,7 @@ class FileBrowser(val isSelectable: Boolean = true, val isMultiSelect: Boolean =
 
 
 class FileBrowserView extends VerticalLayout with Spacing with FullSize {
-  val spLocation = new HorizontalSplitPanel with FullSize
+  val spLocation = new HorizontalSplitPanel with FullSize |>> { _.addStyleName(Reindeer.SPLITPANEL_SMALL) }
   val accLocationTrees = new Accordion with FullSize
   val lblSelectionPath = new Label
 
@@ -311,11 +312,14 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
       PropertyDescriptor[String]("file.browser.items.col.name".i),
       PropertyDescriptor[String]("file.browser.items.col.modified".i),
       PropertyDescriptor[String]("file.browser.items.col.size".i),
-      PropertyDescriptor[String]("file.browser.items.col.kind".i))
+      PropertyDescriptor[String]("file.browser.items.col.kind".i)
+    )
 
     import Table._
     w.setColumnAlignments(Align.LEFT, Align.RIGHT, Align.RIGHT, Align.RIGHT)
-    w.setRowHeaderMode(ROW_HEADER_MODE_ICON_ONLY);
+    w.setRowHeaderMode(RowHeaderMode.ICON_ONLY)
+    w.setColumnExpandRatio("file.browser.items.col.name", 1f)
+    w.setStyleName(Reindeer.TABLE_BORDERLESS)
   }
 
   /** Populates table with dir items. */
