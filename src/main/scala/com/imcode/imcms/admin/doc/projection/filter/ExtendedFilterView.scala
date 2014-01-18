@@ -81,7 +81,7 @@ class ExtendedFilterView extends CustomLayout("admin/doc/projection/extended_fil
   private val lytMaintainers = new HorizontalLayout with Spacing with UndefinedSize {
     import maintainers._
 
-    this.addComponents(ulCreators, ulPublishers)
+    addComponents(ulCreators, ulPublishers)
   }
 
   this.addNamedComponents(

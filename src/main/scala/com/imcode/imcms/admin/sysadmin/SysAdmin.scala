@@ -120,7 +120,7 @@ class SysAdmin extends UI {
         hspManagers.lytManager.removeAllComponents()
         hspManagers.lytManager.addComponent(
           e.getProperty.getValue |> {
-            case null | Menu.About => labelAbout
+            case null | Menu.About => about
 
             case Menu.System.Monitor.Solr => searchTerms
             case Menu.Documents.Categories => categories
@@ -142,6 +142,8 @@ class SysAdmin extends UI {
 
       hspManagers.menu.select(Menu.About)
     } // initManagersMenu
+
+    //addStyleName(Reindeer.LAYOUT_WHITE)
   }
 
 
@@ -157,32 +159,39 @@ class SysAdmin extends UI {
   }
 
 
-  def NA(id: Any) = new Panel(id.toString) {
-    setIcon(Icon.Tab16)
+  def NA(id: Any) = new TabSheet with FullSize |>> { ts =>
+    val lblNA = new Label("NOT AVAILABLE") |>> { lbl =>
+      lbl.setCaption(id.toString)      
+      lbl.addStyleName(Reindeer.LABEL_SMALL)
+    }
 
-    setContent(new Label("NOT AVAILABLE"))
+    ts.addTab(lblNA)
+    ts.setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
-  val labelAbout = new Panel("About") {
-    private val lyt = new VerticalLayout with Spacing with Margin
+  val about = new TabSheet with FullSize |>> { ts =>
+    val text = """
+      |Welcome to the imCMS new admin UI prototype -
+      | please pick a task from the menu. Note that some views are not (yet) available.
+      |""".stripMargin
 
-    setContent(lyt)
+    val lblContent = new Label(text) |>> { lbl =>
+      lbl.setCaption("About")
+    }
 
-    lyt.addComponent(new Label("""
-                   |Welcome to the imCMS new admin UI prototype -
-                   | please pick a task from the menu. Note that some views are not (yet) available.
-                   |""".stripMargin))
+    ts.addTab(lblContent)
+    ts.setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   def instanceCacheView = new com.imcode.imcms.admin.instance.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
 
 
-  lazy val languages = new TabSheet with FullSize {
+  lazy val languages = new TabSheet with FullSize |>> { ts =>
     val manager = new com.imcode.imcms.admin.instance.settings.language.LanguageManager
-    addTab(manager.view, "doc.lang.mgr.title".i)
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    ts.addTab(manager.view, "doc.lang.mgr.title".i)
+    ts.setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
@@ -245,10 +254,10 @@ class SysAdmin extends UI {
         //calTo.setStyle("calendar")
         calTo.setResolution(DateField.RESOLUTION_DAY)
 
-        this.addComponents(calFrom, calTo, btnReload)
+        addComponents(calFrom, calTo, btnReload)
       }
 
-      this.addComponents(tblTerms, lytBar)
+      addComponents(tblTerms, lytBar)
 
       def reload() {
         val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue,
@@ -283,7 +292,7 @@ class SysAdmin extends UI {
     addTab(templateManager.view, "Templates")
     addTab(templateGroupManager.view, "Template Groups")
 
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
@@ -297,7 +306,7 @@ class SysAdmin extends UI {
     categoryManager.view.setSizeFull()
     categoryTypeManager.view.setSizeFull()
 
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
@@ -306,6 +315,6 @@ class SysAdmin extends UI {
   lazy val users = new TabSheet with FullSize {
     val manager = new UserManager
     addTab(manager.view, "Users and their permissions")
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 }

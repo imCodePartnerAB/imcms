@@ -53,5 +53,5 @@ class AccessEditorView extends VerticalLayout with Spacing with FullWidth {
     setContent(content)
   }
 
-  this.addComponents(pnlRights, pnlMisc)
+  addComponents(pnlRights, pnlMisc)
 }

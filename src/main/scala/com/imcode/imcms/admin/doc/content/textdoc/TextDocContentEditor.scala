@@ -24,7 +24,7 @@ class TextDocContentEditor(doc: TextDocumentDomainObject) extends DocContentEdit
   resetValues()
 
   override def resetValues() {
-    view.lstItems.value = view.lstItems.firstItemIdOpt.get
+    view.lstItems.selection = view.lstItems.firstItemIdOpt.get
   }
 
   override def collectValues() = Right(doc)
@@ -80,6 +80,6 @@ class TextsEditorView extends VerticalLayout with Spacing with Margin with FullS
     PropertyDescriptor[String]("text")
   )
 
-  this.addComponents(mb, tblTexts)
+  addComponents(mb, tblTexts)
   this.setExpandRatio(tblTexts, 1.0f)
 }

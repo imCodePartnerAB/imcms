@@ -26,7 +26,7 @@ class TemplateManagerView extends VerticalLayout with FullSize {
     PropertyDescriptor[Void]("")
   )
 
-  this.addComponents(mb, tblTemplates)
+  addComponents(mb, tblTemplates)
   this.setExpandRatio(tblTemplates, 1f)
   tblTemplates.setColumnExpandRatio("", 1f)
   tblTemplates.setStyleName(Reindeer.TABLE_BORDERLESS)

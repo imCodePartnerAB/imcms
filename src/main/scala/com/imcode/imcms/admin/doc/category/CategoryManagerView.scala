@@ -33,6 +33,6 @@ class CategoryManagerView extends VerticalLayout with FullSize {
   }
 
 
-  this.addComponents(mb, tblCategories)
+  addComponents(mb, tblCategories)
   this.setExpandRatio(tblCategories, 1f)
 }

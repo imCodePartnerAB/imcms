@@ -15,5 +15,5 @@ class TemplateGroupEditorView extends FormLayout with UndefinedSize {
   }
 
 
-  this.addComponents(txtId, txtName, twsTemplates)
+  addComponents(txtId, txtName, twsTemplates)
 }

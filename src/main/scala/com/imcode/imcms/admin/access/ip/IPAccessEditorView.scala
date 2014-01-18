@@ -12,7 +12,7 @@ class IPAccessEditorView extends FormLayout with UndefinedSize {
     val txtLoginName = new TextField  { setInputPrompt("No user selected") }    // with ReadOnly
     val btnChoose = new Button("...") { setStyleName("small") }
 
-    this.addComponents(txtLoginName, btnChoose)
+    addComponents(txtLoginName, btnChoose)
     setCaption("User")
   }
 
@@ -21,5 +21,5 @@ class IPAccessEditorView extends FormLayout with UndefinedSize {
   val txtFrom = new TextField("From")
   val txtTo = new TextField("To")
 
-  this.addComponents(txtId, userPickerComponent, txtFrom, txtTo)
+  addComponents(txtId, userPickerComponent, txtFrom, txtTo)
 }

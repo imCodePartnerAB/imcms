@@ -19,6 +19,6 @@ class DocSelectDialogView(docsProjectionView: DocsProjectionView) extends Vertic
   val miShowSelectedDoc = mb.addItem("doc.mgr.mi.show".i)
   val miHelp = mb.addItem("doc.mgr.mi.help".i)
 
-  this.addComponents(mb, docsProjectionView)
+  addComponents(mb, docsProjectionView)
   setExpandRatio(docsProjectionView, 1f)
 }

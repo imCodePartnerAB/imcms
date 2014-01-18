@@ -44,5 +44,5 @@ extends VerticalLayout with FullWidth {
     setContent(content)
   }
 
-  this.addComponents(pnlSettings)
+  addComponents(pnlSettings)
 }

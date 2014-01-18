@@ -14,6 +14,6 @@ class ImagesEditorView extends VerticalLayout with Spacing with FullSize {
   val miHelp = mb.addItem("Help")
   val tsImages = new TabSheet with FullSize
 
-  this.addComponents(mb, tsImages)
+  addComponents(mb, tsImages)
   setExpandRatio(tsImages, 1f)
 }

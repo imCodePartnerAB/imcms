@@ -21,6 +21,6 @@ class FileDocContentEditorView extends VerticalLayout with Spacing with Margin w
       PropertyDescriptor[String]("Name"))
   }
 
-  this.addComponents(mb, tblFiles)
+  addComponents(mb, tblFiles)
   setExpandRatio(tblFiles, 1.0f)
 }

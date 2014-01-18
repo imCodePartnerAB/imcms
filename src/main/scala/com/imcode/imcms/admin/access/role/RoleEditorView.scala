@@ -14,6 +14,6 @@ class RoleEditorView extends FormLayout with UndefinedSize {
   val chkPermUseImagesFromArchive = new CheckBox("Permission to use images from image archive")
   val chkPermChangeImagesInArchive = new CheckBox("Permission to change images in image archive")
 
-  this.addComponents(txtName, chkPermGetPasswordByEmail, chkPermAccessMyPages, chkPermUseImagesFromArchive,
+  addComponents(txtName, chkPermGetPasswordByEmail, chkPermAccessMyPages, chkPermUseImagesFromArchive,
     chkPermChangeImagesInArchive)
 }

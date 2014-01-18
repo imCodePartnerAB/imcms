@@ -73,7 +73,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
 
       def findDocIdByAlias(): Option[Int] =
         for {
-          alias <- w.pnlAlias.txtAlias.trimOpt
+          alias <- w.pnlAlias.txtAlias.trimmedValueOpt
           docId <- metaDao.getDocIdByAliasOpt(alias)
           if meta.getId != docId
         } yield docId
@@ -99,9 +99,9 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
               .id(i18nMetas.get(language).map(_.getId).orNull)
               .docId(meta.getId)
               .language(language)
-              .headline(i18nMetaEditorWidget.txtTitle.trim)
-              .menuImageURL(i18nMetaEditorWidget.embLinkImage.trim)
-              .menuText(i18nMetaEditorWidget.txaMenuText.trim)
+              .headline(i18nMetaEditorWidget.txtTitle.trimmedValue)
+              .menuImageURL(i18nMetaEditorWidget.embLinkImage.trimmedValue)
+              .menuText(i18nMetaEditorWidget.txaMenuText.trimmedValue)
               .build()
 
             language -> i18nMeta
@@ -111,9 +111,9 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
           case i18nMetaEditorWidget if i18nMetaEditorWidget.chkEnabled.checked => i18nMetaEditorWidget.language
         } (breakOut),
 
-        view.pnlLanguages.cbShowMode.value,
-        view.pnlAlias.txtAlias.trimOpt,
-        view.pnlLinkTarget.cbTarget.value
+        view.pnlLanguages.cbShowMode.selection,
+        view.pnlAlias.txtAlias.trimmedValueOpt,
+        view.pnlLinkTarget.cbTarget.selection
       )
     }
 

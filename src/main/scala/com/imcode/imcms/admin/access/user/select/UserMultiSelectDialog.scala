@@ -1,6 +1,7 @@
 package com.imcode
 package imcms
-package admin.access.user
+package admin
+package access.user.select
 
 
 class UserMultiSelectDialog(caption: String = "user.dlg.multi_select.caption".i)

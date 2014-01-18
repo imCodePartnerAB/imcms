@@ -7,7 +7,7 @@ import scala.collection.JavaConverters._
 import com.imcode.imcms.security.PermissionGranted
 import com.imcode.imcms.dao.IPAccessDao
 import com.imcode.imcms.api.IPAccess
-import com.imcode.imcms.admin.access.user.UserSingleSelectDialog
+import com.imcode.imcms.admin.access.user.select.UserSingleSelectDialog
 
 import com.imcode.imcms.vaadin.Current
 import com.imcode.imcms.vaadin.component._

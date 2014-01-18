@@ -95,14 +95,14 @@ class CategoryManager {
           c.txtId.value = if (isNew) "" else id.toString
           c.txtName.value = vo.getName.trimToEmpty
           c.txaDescription.value = vo.getDescription.trimToEmpty
-          c.sltType.value = if (isNew) typesNames.head else vo.getType.getName
+          c.sltType.selection = if (isNew) typesNames.head else vo.getType.getName
 
           dlg.setOkButtonHandler {
             vo.clone |> { voc =>
               voc setName c.txtName.value.trim
               voc setDescription c.txaDescription.value.trim
               voc setImageUrl (if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.get.get.getSource.asInstanceOf[FileResource].getFilename)
-              voc setType categoryMapper.getCategoryTypeByName(c.sltType.value)
+              voc setType categoryMapper.getCategoryTypeByName(c.sltType.selection)
               // todo: move validate into separate fn
               val validationError: Option[String] = voc.getName match {
                 case "" => Some("Category name is not set")

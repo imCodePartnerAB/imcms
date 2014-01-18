@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta.lifecycle
 
-import com.imcode.imcms.admin.access.user.{UserSingleSelectView, UserSingleSelect}
+import com.imcode.imcms.admin.access.user.select.{UserSingleSelectView, UserSingleSelect}
 import com.imcode.imcms.api.Document
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.component._
@@ -14,7 +14,7 @@ class LifeCycleEditorView extends VerticalLayout with Spacing with FullWidth {
     val calDate = new PopupDateField with MinuteResolution with Now
     val lblBy = new Label("by") with UndefinedSize
 
-    this.addComponents(calDate, lblBy, ussUI)
+    addComponents(calDate, lblBy, ussUI)
   }
 
   object info {
@@ -65,7 +65,7 @@ class LifeCycleEditorView extends VerticalLayout with Spacing with FullWidth {
     val lytDate = new GridLayout(2, 2) with Spacing {
       setCaption("Date")
 
-      this.addComponents(
+      addComponents(
         publication.chkStart, publication.calStart,
         publication.chkArchive, publication.calArchive,
         publication.chkEnd, publication.calEnd
@@ -75,5 +75,5 @@ class LifeCycleEditorView extends VerticalLayout with Spacing with FullWidth {
     content.addComponents(publication.sltStatus, publication.sltVersion, lytDate, publication.ussPublisher.view, publication.lytPhase)
   }
 
-  this.addComponents(pnlInfo, pnlPublication)
+  addComponents(pnlInfo, pnlPublication)
 }

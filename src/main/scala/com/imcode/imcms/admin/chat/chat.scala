@@ -12,7 +12,7 @@ class MessageView(sender: String, message: String) extends VerticalLayout {
     val lblSender = new Label(sender) {setWidth("100%")}
     val lblDetails = new Label("Sent: " + (new Date).toString)
 
-    this.addComponents(lblSender, lblDetails)
+    addComponents(lblSender, lblDetails)
     //setExpandRatio(lblSender, 1.0f)
 
     setWidth("100%")
@@ -22,7 +22,7 @@ class MessageView(sender: String, message: String) extends VerticalLayout {
 
   val lblText = new Label(message) {setWidth("100%")}
 
-  this.addComponents(lytHeader, lblText)
+  addComponents(lytHeader, lblText)
   setWidth("100%")
   setHeight(null)
 }
@@ -46,14 +46,14 @@ class Chat extends VerticalLayout {
   val btnSend = new Button("Send") { setHeight("100%") }
 
   val lytMessage = new HorizontalLayout {
-    this.addComponents(txaText, btnSend)
+    addComponents(txaText, btnSend)
     setExpandRatio(txaText, 1.0f)
     setWidth("100%")
     setHeight("50px")
   }
 
   setSpacing(true)
-  this.addComponents(pnlMessages, lytMessage)
+  addComponents(pnlMessages, lytMessage)
   setExpandRatio(pnlMessages, 1.0f)
   setSizeFull()
 }

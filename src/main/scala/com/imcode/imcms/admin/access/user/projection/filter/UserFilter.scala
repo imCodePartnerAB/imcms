@@ -28,9 +28,9 @@ class UserFilter extends ImcmsServicesSupport {
   def setValues(state: UserFilterValues) {
     view.chkText.checked = state.text.isDefined
     view.chkRoles.checked = state.roles.isDefined
-    view.chkShowInactive.checked = state.isShowInactive
+    view.chkShowDisabled.checked = state.isShowInactive
 
-    Seq(view.chkText, view.chkRoles, view.chkShowInactive).foreach(_.fireValueChange(true))
+    Seq(view.chkText, view.chkRoles, view.chkShowDisabled).foreach(_.fireValueChange(repaintIsNotNeeded = true))
 
     view.txtText.value = state.text.getOrElse("")
     view.tcsRoles.removeAllItems()
@@ -43,8 +43,8 @@ class UserFilter extends ImcmsServicesSupport {
 
 
   def getValues = UserFilterValues(
-    when(view.chkText.checked)(view.txtText.trim),
+    when(view.chkText.checked)(view.txtText.trimmedValue),
     when(view.chkRoles.checked)(view.tcsRoles.value.asScala.toSet),
-    view.chkShowInactive.checked
+    view.chkShowDisabled.checked
   )  
 }

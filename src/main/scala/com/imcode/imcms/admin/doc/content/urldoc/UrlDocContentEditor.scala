@@ -20,7 +20,7 @@ class UrlDocContentEditor(doc: UrlDocumentDomainObject) extends DocContentEditor
 
   override def collectValues(): ErrorsOrData = doc.clone() |>> { clone =>
     clone.setUrl(view.txtURL.value)
-    clone.setTarget(view.cbTarget.value)
+    clone.setTarget(view.cbTarget.selection)
   } |> Right.apply
 }
 

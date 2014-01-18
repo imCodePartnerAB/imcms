@@ -16,5 +16,5 @@ class SessionCounterManagerView extends VerticalLayout with FullWidth {
 //  val pnlValues = new Panel(new VerticalLayout with UndefinedSize) with UndefinedSize
 //
 //  pnlValues.setContent(frmValues)
-  this.addComponents(mb, frmValues)
+  addComponents(mb, frmValues)
 }

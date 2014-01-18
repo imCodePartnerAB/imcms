@@ -13,5 +13,5 @@ class LanguageEditorView extends FormLayout with UndefinedSize {
   val txtNativeName = new TextField("Native name")
   val chkEnabled = new CheckBox("Enabled")
 
-  this.addComponents(txtId, txtCode, txtName, txtNativeName, chkEnabled)
+  addComponents(txtId, txtCode, txtName, txtNativeName, chkEnabled)
 }

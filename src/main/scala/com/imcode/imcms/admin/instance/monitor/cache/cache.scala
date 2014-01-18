@@ -42,7 +42,7 @@ class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Ma
   val btnReload = new Button("Reload") with LinkStyle
 
   private val lytTables = new GridLayout(2,2) with Spacing {
-    this.addComponents(tblMetas, tblDocs, tblVersions, tblLanguages)
+    addComponents(tblMetas, tblDocs, tblVersions, tblLanguages)
   }
 
   def reload() {

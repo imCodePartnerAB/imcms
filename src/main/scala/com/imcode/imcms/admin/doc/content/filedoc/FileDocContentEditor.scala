@@ -154,14 +154,14 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                 eui.cbType.addItem(mimeType, mimeType)
               }
 
-              eui.cbType.value = mimeType
+              eui.cbType.selection = mimeType
             }
 
             dlg.mainComponent = filePropertiesEditorView
             dlg.setOkButtonHandler {
               val errors = MMap.empty[AbstractComponent, ErrorMsg]
 
-              filePropertiesEditorView.txtId.trimOpt match {
+              filePropertiesEditorView.txtId.trimmedValueOpt match {
                 case None =>
                   errors += filePropertiesEditorView.txtId -> "id is required"
 
@@ -173,7 +173,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                 case _ =>
               }
 
-              filePropertiesEditorView.txtName.trimOpt match {
+              filePropertiesEditorView.txtName.trimmedValueOpt match {
                 case None =>
                   errors += filePropertiesEditorView.txtName -> "name is required"
 
@@ -194,7 +194,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                 }
               } else {
                 // if id has changed, update doc filemap
-                val newId = filePropertiesEditorView.txtId.trim
+                val newId = filePropertiesEditorView.txtId.trimmedValue
                 val fdfs = values.fdfs - fileId + (newId -> fdf)
                 val defaultFdfId = values.defaultFdfId.map {
                   case id if (fileId == id) && (fileId != newId) => newId
@@ -202,8 +202,8 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
                 }
 
                 fdf.setId(newId)
-                fdf.setFilename(filePropertiesEditorView.txtName.trim)
-                fdf.setMimeType(filePropertiesEditorView.cbType.value)
+                fdf.setFilename(filePropertiesEditorView.txtName.trimmedValue)
+                fdf.setMimeType(filePropertiesEditorView.cbType.selection)
 
                 values = Values(fdfs, defaultFdfId)
 

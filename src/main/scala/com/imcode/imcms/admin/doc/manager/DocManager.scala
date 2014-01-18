@@ -54,7 +54,7 @@ class DocManager extends ImcmsServicesSupport {
           dlg.mainComponent = mainWidget
 
           dlg.setOkButtonHandler {
-            mainWidget.txtName.trimOpt match {
+            mainWidget.txtName.trimmedValueOpt match {
               case Some(name) =>
                 // check name is not taken by a profile with other id
 

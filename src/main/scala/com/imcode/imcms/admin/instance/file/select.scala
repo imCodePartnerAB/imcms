@@ -147,7 +147,7 @@ class FileDialogView(browserView: FileBrowserView, previewView: FilePreviewView)
   val miFileDownload = miFile.addItem("Download", null)
 
   addComponent(mb, 0, 0, 1, 0)
-  this.addComponents(browserView, previewView)
+  addComponents(browserView, previewView)
 
   setComponentAlignment(previewView, Alignment.MIDDLE_CENTER)
   previewView.setMargin(new MarginInfo(false, true, false, true))
@@ -206,7 +206,7 @@ class FilePreview(browser: FileBrowser) {
 
 class FilePreviewView(val previewComponent: EmbeddedPreviewComponentHolder) extends GridLayout(1, 2) with Spacing {
   val btnAction = new Button with SingleClickListener with LinkStyle
-  this.addComponents(previewComponent, btnAction)
+  addComponents(previewComponent, btnAction)
 
   Seq(previewComponent, btnAction).foreach(c => setComponentAlignment(c, Alignment.MIDDLE_CENTER))
 }
@@ -245,7 +245,7 @@ class ImagePickerComponent(previewComponent: EmbeddedPreviewComponentHolder) ext
   val btnRemove = new Button("Remove") with LinkStyle
 
   lytButtons.addComponents(btnRemove, btnChoose)
-  this.addComponents(previewComponent, lytButtons)
+  addComponents(previewComponent, lytButtons)
 
   setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
 }

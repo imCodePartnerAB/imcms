@@ -98,13 +98,13 @@ class Filter extends ImcmsServicesSupport {
   private def createBasicParams(): Try[BasicFilterParams] = Try {
     val idRangeOpt = when(basicView.idRange.chkEnabled.checked) {
       IdRange(
-        condOpt(basicView.idRange.txtStart.trim) {
+        condOpt(basicView.idRange.txtStart.trimmedValue) {
           case value if value.nonEmpty => value match {
             case NonNegInt(start) => start
             case _ => sys.error("docs_projection.dlg_param_validation_err.msg.illegal_range_value".i)
           }
         },
-        condOpt(basicView.idRange.txtEnd.trim) {
+        condOpt(basicView.idRange.txtEnd.trimmedValue) {
           case value if value.nonEmpty => value match {
             case NonNegInt(end) => end
             case _ => sys.error("docs_projection.dlg_param_validation_err.msg.illegal_range_value".i)
@@ -113,7 +113,7 @@ class Filter extends ImcmsServicesSupport {
       )
     }
 
-    val textOpt = when(basicView.text.chkEnabled.checked)(basicView.text.txtText.trim)
+    val textOpt = when(basicView.text.chkEnabled.checked)(basicView.text.txtText.trimmedValue)
 
     val typesOpt = when(basicView.types.chkEnabled.checked) {
       Set(
@@ -173,7 +173,7 @@ class Filter extends ImcmsServicesSupport {
     }
 
     Seq(extendedView.dates.drCreated, extendedView.dates.drModified, extendedView.dates.drPublished, extendedView.dates.drExpired).foreach { dr =>
-      dr.cbRangeType.value = DateRangeType.Undefined
+      dr.cbRangeType.selection = DateRangeType.Undefined
     }
 
     Seq(extendedView.maintainers.ulCreators, extendedView.maintainers.ulPublishers).foreach { ul =>
@@ -193,8 +193,8 @@ class Filter extends ImcmsServicesSupport {
       category.getImageUrl.asOption.foreach(url => extendedView.categories.tcsCategories.setItemIcon(category, new ExternalResource(url)))
     }
 
-    extendedView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.unspecified"
-    extendedView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.unspecified"
+    extendedView.relationships.cbParents.selection = "docs_projection.extended_filter.cb_relationships_parents.item.unspecified"
+    extendedView.relationships.cbChildren.selection = "docs_projection.extended_filter.cb_relationships_children.item.unspecified"
   }
 
 
@@ -216,7 +216,7 @@ class Filter extends ImcmsServicesSupport {
           DocumentIndex.FIELD__ARCHIVED_DATETIME -> drArchived,
           DocumentIndex.FIELD__PUBLICATION_END_DATETIME -> drExpired
         )
-        if dr.cbRangeType.value != DateRangeType.Undefined
+        if dr.cbRangeType.selection != DateRangeType.Undefined
         startOpt = dr.dtFrom.valueOpt
         endOpt = dr.dtTo.valueOpt
         if startOpt.isDefined || endOpt.isDefined
@@ -236,14 +236,14 @@ class Filter extends ImcmsServicesSupport {
     }
 
     val relationshipOpt: Option[Relationship] = when(extendedView.relationships.chkEnabled.checked) {
-      val withParents = extendedView.relationships.cbParents.value match {
+      val withParents = extendedView.relationships.cbParents.selection match {
         case "docs_projection.extended_filter.cb_relationships_parents.item.unspecified" => Relationship.Unspecified
         case "docs_projection.extended_filter.cb_relationships_parents.item.with_parents" => Relationship.Logical(true)
         case "docs_projection.extended_filter.cb_relationships_parents.item.without_parents" => Relationship.Logical(false)
         case "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of" => Relationship.Exact(extendedView.relationships.txtParents.value.toInt)
       }
 
-      val withChildren = extendedView.relationships.cbChildren.value match {
+      val withChildren = extendedView.relationships.cbChildren.selection match {
         case "docs_projection.extended_filter.cb_relationships_children.item.unspecified" => Relationship.Unspecified
         case "docs_projection.extended_filter.cb_relationships_children.item.with_children" => Relationship.Logical(true)
         case "docs_projection.extended_filter.cb_relationships_children.item.without_children" => Relationship.Logical(false)
@@ -318,28 +318,28 @@ class Filter extends ImcmsServicesSupport {
 
       parents match {
         case Relationship.Logical(value) if value =>
-          extendedView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.with_parents"
+          extendedView.relationships.cbParents.selection = "docs_projection.extended_filter.cb_relationships_parents.item.with_parents"
         case Relationship.Logical(_) =>
-          extendedView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.without_parents"
+          extendedView.relationships.cbParents.selection = "docs_projection.extended_filter.cb_relationships_parents.item.without_parents"
         case Relationship.Exact(metaId) =>
-          extendedView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of"
+          extendedView.relationships.cbParents.selection = "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of"
           extendedView.relationships.txtParents.value = metaId.toString
 
         case _ =>
-          extendedView.relationships.cbParents.value = "docs_projection.extended_filter.cb_relationships_parents.item.unspecified"
+          extendedView.relationships.cbParents.selection = "docs_projection.extended_filter.cb_relationships_parents.item.unspecified"
       }
 
       children match {
         case Relationship.Logical(value) if value =>
-          extendedView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.with_children"
+          extendedView.relationships.cbChildren.selection = "docs_projection.extended_filter.cb_relationships_children.item.with_children"
         case Relationship.Logical(_) =>
-          extendedView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.without_children"
+          extendedView.relationships.cbChildren.selection = "docs_projection.extended_filter.cb_relationships_children.item.without_children"
         case Relationship.Exact(metaId) =>
-          extendedView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.with_children_of"
+          extendedView.relationships.cbChildren.selection = "docs_projection.extended_filter.cb_relationships_children.item.with_children_of"
           extendedView.relationships.txtChildren.value = metaId.toString
 
         case _ =>
-          extendedView.relationships.cbChildren.value = "docs_projection.extended_filter.cb_relationships_children.item.unspecified"
+          extendedView.relationships.cbChildren.selection = "docs_projection.extended_filter.cb_relationships_children.item.unspecified"
       }
     }
   }

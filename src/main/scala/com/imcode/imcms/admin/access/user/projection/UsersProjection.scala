@@ -35,7 +35,6 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
     )
 
     tbl.setMultiSelect(multiSelect)
-
     tbl.setColumnHeaders(tbl.getContainerPropertyIds.asScala.map(_.toString.i).toArray: _*)
     tbl.addStyleName(Reindeer.TABLE_BORDERLESS)
     tbl.setColumnExpandRatio("", 1f)
@@ -52,8 +51,8 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
     notifyListeners()
   }
 
-  filter.view.lytButtons.btnFilter.addClickHandler { _ => reload() }
-  filter.view.lytButtons.btnReset.addClickHandler { _ => reset() }
+  filter.view.btnFilter.addClickHandler { _ => reload() }
+  filter.view.btnReset.addClickHandler { _ => reset() }
 
   reset()
 
@@ -64,29 +63,29 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
 
 
   def reload() {
-    val matchesAlways = Function.const(true)_
     val state = filter.getValues
 
-    val matchesText: (UserDomainObject => Boolean) =
-      state.text match {
-        case Some(text) if text.nonEmpty => { _.getLoginName.contains(text) }
-        case _ => matchesAlways
+    val loginPredicateOpt: Option[(UserDomainObject => Boolean)] = PartialFunction.condOpt(state.text) {
+      case Some(text) if text.nonEmpty => { _.getLoginName.toLowerCase.contains(text.toLowerCase) }
+    }
+
+    val rolesPredicateOpt: Option[(UserDomainObject => Boolean)] = PartialFunction.condOpt(state.roles) {
+      case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(filter.view.tcsRoles.value.asScala.toSeq).nonEmpty }
+    }
+
+    val inactivePredicateOpt: Option[(UserDomainObject => Boolean)] = PartialFunction.condOpt(state.isShowInactive) {
+      case false => { _.isActive }
+    }
+
+    val predicate: (UserDomainObject => Boolean) =
+      Seq(loginPredicateOpt, rolesPredicateOpt, inactivePredicateOpt).collect { case Some(p) => p } match {
+        case Nil => { _ => true }
+        case ps => { u => ps.forall(p => p(u)) }
       }
 
-    val matchesRoles: (UserDomainObject => Boolean) =
-      state.roles match {
-        case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(filter.view.tcsRoles.value.asScala.toSeq).nonEmpty }
-        case _ => matchesAlways
-      }
-
-    val matchesShowInactive: (UserDomainObject => Boolean) =
-      if (state.isShowInactive) matchesAlways else { _.isActive }
-
-    val matchesAll = (user: UserDomainObject) => List(matchesText, matchesRoles, matchesShowInactive) forall (_ apply user)
-
-    filteredUsersView.removeAllItems
+    filteredUsersView.removeAllItems()
     for {
-      user <- roleMapper.getAllUsers.toList if !user.isDefaultUser && matchesAll(user)
+      user <- roleMapper.getAllUsers.toList if !user.isDefaultUser && predicate(user)
       userId = user.getId : JInteger
     } {
       filteredUsersView.addRow(

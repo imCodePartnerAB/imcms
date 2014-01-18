@@ -11,5 +11,5 @@ class FileDocFilePropertiesEditorView extends FormLayout with UndefinedSize {
   val txtName = new TextField("Name") with Required
   val cbType = new ComboBox("Type") with Required with SingleSelect[String] with NoTextInput with NoNullSelection
 
-  this.addComponents(txtId, txtName, cbType)
+  addComponents(txtId, txtName, cbType)
 }

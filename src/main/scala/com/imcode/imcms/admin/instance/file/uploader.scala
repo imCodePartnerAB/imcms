@@ -140,7 +140,7 @@ class FileUploader extends Publisher[UploadStatus] {
 
   def uploadedFile: Option[UploadedFile] = uploadedFileOptRef.get
 
-  def saveAsName: String = view.txtSaveAsName.trim
+  def saveAsName: String = view.txtSaveAsName.trimmedValue
 
   def mayOverwrite: Boolean = view.chkOverwrite.checked
 //  def mayOverwrite_=(value: Boolean) {
@@ -167,7 +167,7 @@ class FileUploaderView extends FormLayout with UndefinedSize {
   val chkOverwrite = new CheckBox("file.upload.dlg.frm.fld.overwrite".i)
 
   upload.setButtonCaption("...")
-  this.addComponents(upload, pgiBytesReceived, txtSaveAsName, chkOverwrite)
+  addComponents(upload, pgiBytesReceived, txtSaveAsName, chkOverwrite)
 
   txtSaveAsName.setRequiredError("required")
 }

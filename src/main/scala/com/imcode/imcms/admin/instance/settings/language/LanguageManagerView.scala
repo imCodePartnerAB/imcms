@@ -33,6 +33,6 @@ class LanguageManagerView extends VerticalLayout with FullSize {
     tbl.setColumnAlignment("Id", Table.Align.RIGHT)
   }
 
-  this.addComponents(mb, tblLanguages)
+  addComponents(mb, tblLanguages)
   this.setExpandRatio(tblLanguages, 1f)
 }

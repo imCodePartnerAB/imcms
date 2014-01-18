@@ -135,7 +135,7 @@ extends Publisher[Option[LocationSelection]] {
     val locationItems = new LocationItems(conf.itemsFilter, isSelectable, isMultiSelect)
 
     locationTree.view.addValueChangeHandler { _ =>
-      locationTree.view.value.asOption match {
+      locationTree.view.selection.asOption match {
         case Some(dir) =>
           locationItems.reload(dir)
           Some(LocationSelection(dir, Nil)) |> { selection =>
@@ -172,7 +172,7 @@ extends Publisher[Option[LocationSelection]] {
   }
 
   private def updateSelection(locationTree: LocationTree, locationItems: LocationItems) {
-    locationTree.view.value.asOption match {
+    locationTree.view.selection.asOption match {
       case Some(dir) =>
         Some(LocationSelection(dir, locationItems.selection)) |> { selection =>
           selectionRef.set(selection)
@@ -205,14 +205,14 @@ extends Publisher[Option[LocationSelection]] {
 
   /** Reloads current location. */
   def reloadLocation(preserveTreeSelection: Boolean = true) =
-    for ((locationTree, _) <- location; dir = locationTree.view.value) {
+    for ((locationTree, _) <- location; dir = locationTree.view.selection) {
       locationTree.reload()
       if (preserveTreeSelection && dir.isDirectory) locationTree.selection = dir
     }
 
   /** Reloads current location's items. */
   def reloadLocationItems() =
-    for ((locationTree, locationItems) <- location; dir = locationTree.view.value)
+    for ((locationTree, locationItems) <- location; dir = locationTree.view.selection)
       locationItems.reload(dir)
 
 
@@ -272,7 +272,7 @@ class FileBrowserView extends VerticalLayout with Spacing with FullSize {
   spLocation.setFirstComponent(accLocationTrees)
   spLocation.setSplitPosition(15)
 
-  this.addComponents(spLocation, lblSelectionPath)
+  addComponents(spLocation, lblSelectionPath)
   setExpandRatio(spLocation, 1.0f)
 }
 
@@ -298,7 +298,7 @@ class LocationTree(val root: File) {
     view.expandItem(if (dir == root) dir else dir.getParentFile)
   }
 
-  def selection = view.value
+  def selection = view.selection
 }
 
 

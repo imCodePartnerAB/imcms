@@ -44,7 +44,8 @@ package object component {
 
   implicit def wrapComponent(c: Component) = new ComponentWrapper(c)
 
-  implicit def wrapComponentContainer(cc: ComponentContainer) = new ComponentContainerWrapper(cc)
+  //
+  // implicit def wrapComponentContainer(cc: ComponentContainer) = new ComponentContainerWrapper(cc)
 
   implicit def wrapCustomLayout(cl: CustomLayout) = new CustomLayoutWrapper(cl)
 
@@ -279,7 +280,6 @@ package object component {
       setItemIcon(id, icon)
     }
 
-    // todo: move to sel ops
     def isSelected: Boolean
     def selectFirst(): Unit
   }
@@ -299,7 +299,6 @@ package object component {
       firstItemIdOpt.foreach(id => selection = id)
     }
 
-    // remove??? use value instead ???
     def selection: A = getTypedValue
 
     def selection_=(v: A) { setValue(v) }
@@ -328,7 +327,7 @@ package object component {
 
     def selection_=(v: A) { selection = Option(v).toSeq }
 
-    def firstOpt: Option[A] = getTypedValue.asScala.headOption
+    def firstSelectedValueOpt: Option[A] = getTypedValue.asScala.headOption
   }
 
 
@@ -364,6 +363,8 @@ package object component {
         }
       )
     }
+
+    def firstSelectedValueOpt: Option[A] = selection.headOption
 
     //  ?????????????????????????????????????????????????????????
     //  final override def setMultiSelect(multiSelect: Boolean) =

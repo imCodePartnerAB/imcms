@@ -23,7 +23,7 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
     import w.keywords.{btnAdd, btnRemove, txtKeyword, lstKeywords}
 
     btnAdd.addClickHandler { _ =>
-      txtKeyword.trim.toLowerCase match {
+      txtKeyword.trimmedValue.toLowerCase match {
         case value if value.length > 0 && lstKeywords.getItem(value) == null =>
           setKeywords(lstKeywords.itemIds.asScala.toSet + value)
 

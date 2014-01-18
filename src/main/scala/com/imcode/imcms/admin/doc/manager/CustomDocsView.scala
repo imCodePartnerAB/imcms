@@ -9,6 +9,6 @@ class CustomDocsView(projectionView: Component) extends VerticalLayout with Spac
   val mb = new MenuBar
   val miDoc = mb.addItem("doc.selection.mi.doc".i)
 
-  this.addComponents(mb, projectionView)
+  addComponents(mb, projectionView)
   setExpandRatio(projectionView, 1.0f)
 }

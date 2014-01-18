@@ -16,5 +16,5 @@ class DateRangeComponent(caption: String = "") extends HorizontalLayout with Spa
 
   setCaption(caption)
 
-  this.addComponents(cbRangeType, dtFrom, dtTo)
+  addComponents(cbRangeType, dtFrom, dtTo)
 }

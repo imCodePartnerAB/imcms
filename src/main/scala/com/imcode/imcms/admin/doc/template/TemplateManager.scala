@@ -136,7 +136,7 @@ class TemplateManager {
       Seq(miDownload, miRename, miEditContent, miDelete).foreach(_.setEnabled(enabled))
     }
 
-    miDocuments.setEnabled(tblTemplates.value.asOption.map { name =>
+    miDocuments.setEnabled(tblTemplates.selection.asOption.map { name =>
       templateMapper.getCountOfDocumentsUsingTemplate(templateMapper.getTemplateByName(name)) > 0
     } getOrElse false)
   }

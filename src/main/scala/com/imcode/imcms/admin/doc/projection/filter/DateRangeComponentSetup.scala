@@ -16,7 +16,7 @@ trait DateRangeComponentSetup { this: DateRangeComponent =>
     val now = new Date
     val calendar = Calendar.getInstance
 
-    cbRangeType.value match {
+    cbRangeType.selection match {
       case Undefined =>
         dtFrom.setValue(null)
         dtTo.setValue(null)
@@ -54,5 +54,5 @@ trait DateRangeComponentSetup { this: DateRangeComponent =>
   }
 
   DateRangeType.values.foreach(cbRangeType addItem _)
-  cbRangeType.value = Undefined
+  cbRangeType.selection = Undefined
 }

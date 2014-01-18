@@ -24,6 +24,6 @@ class ImageSelectView extends VerticalLayout with FullSize with Spacing {
   hspContent.setSecondComponent(images)
   hspContent.setSplitPosition(27f, Sizeable.Unit.PERCENTAGE)
 
-  this.addComponents(mb, hspContent)
+  addComponents(mb, hspContent)
   this.setExpandRatio(hspContent, 1.0f)
 }

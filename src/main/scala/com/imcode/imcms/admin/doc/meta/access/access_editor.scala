@@ -44,7 +44,7 @@ private class AddRolePermSetDialogView extends FormLayout with UndefinedSize {
     ogPermsSetType.addItem(setType, PermSetTypeName(setType))
   }
 
-  this.addComponents(cbRole, ogPermsSetType)
+  addComponents(cbRole, ogPermsSetType)
 }
 
 
@@ -59,7 +59,7 @@ private class ChangeRolePermSetDialogView extends FormLayout with UndefinedSize 
     ogPermsSetType.addItem(setType, PermSetTypeName(setType))
   }
 
-  this.addComponents(lblRole, ogPermsSetType)
+  addComponents(lblRole, ogPermsSetType)
 }
 
 

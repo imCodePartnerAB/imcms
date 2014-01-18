@@ -56,7 +56,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     if (doc.isInstanceOf[TextDocumentDomainObject]) w.treeEditors.addItem("doc_meta_editor.menu_item.profile", "doc_meta_editor.menu_item.profile".i)
 
     w.treeEditors.addValueChangeHandler { _ =>
-      w.treeEditors.value match {
+      w.treeEditors.selection match {
         case "doc_meta_editor.menu_item.life_cycle" =>
           if (lifeCycleEditorOpt.isEmpty) lifeCycleEditorOpt = Some(new LifeCycleEditor(doc.getMeta))
 

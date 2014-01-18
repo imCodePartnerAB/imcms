@@ -21,7 +21,7 @@ class UserListComponent(caption: String = "") extends GridLayout(2, 2) {
 
   lytButtons.addComponents(btnRemove, btnAdd)
   addComponent(chkEnabled, 0, 0, 1, 0)
-  this.addComponents(lstUsers, lytButtons)
+  addComponents(lstUsers, lytButtons)
 
   setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
 }

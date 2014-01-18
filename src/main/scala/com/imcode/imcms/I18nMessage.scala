@@ -26,26 +26,28 @@ class I18nMessage(key: String) {
 
   private case class Value(locale: Locale, text: String)
 
-  private val value: Value = {
-    val locale = Imcms.getUser.asOption match {
-      case Some(user) => new Locale(user.getLanguageIso639_2)
-      case _ => Locale.getDefault
-    }
+  private val value: Value = key.trim match {
+    case "" => Value(Locale.getDefault, "")
+    case k =>
+      val locale = Imcms.getUser.asOption match {
+        case Some(user) => new Locale(user.getLanguageIso639_2)
+        case _ => Locale.getDefault
+      }
 
-    val bundle = try {
-      ResourceBundle.getBundle("admin_ui", locale)
-    } catch {
-      case e: Exception =>
-        Logger.getLogger(getClass).error(s"Can't retrieve resource bundle for locale ${locale.getDisplayName}.", e)
-        new ListResourceBundle {
-          override def getContents: Array[Array[AnyRef]] = Array.ofDim(2)
-        }
-    }
+      val bundle = try {
+        ResourceBundle.getBundle("admin_ui", locale)
+      } catch {
+        case e: Exception =>
+          Logger.getLogger(getClass).error(s"Can't retrieve resource bundle for locale ${locale.getDisplayName}.", e)
+          new ListResourceBundle {
+            override def getContents: Array[Array[AnyRef]] = Array.ofDim(2)
+          }
+      }
 
-    Value(
-      locale,
-      Try(bundle.getString(key)).getOrElse(s"<#${key.split('.').last}#>")
-    )
+      Value(
+        locale,
+        Try(bundle.getString(key)).getOrElse(s"<#${key.split('.').last}#>")
+      )
   }
 
 

@@ -3,7 +3,7 @@ package imcms
 package admin.doc.meta.lifecycle
 
 import scala.collection.JavaConverters._
-import com.imcode.imcms.admin.access.user.{UserSingleSelectView, UserSingleSelect}
+import com.imcode.imcms.admin.access.user.select.{UserSingleSelectView, UserSingleSelect}
 import com.imcode.imcms.api.{DocumentVersion, Document, Meta}
 
 import java.util.Date
@@ -109,7 +109,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
       doc.setPublicationStartDatetime(view.publication.calStart.value)
       doc.setPublicationEndDatetime(if (view.publication.chkEnd.checked) view.publication.calEnd.value else null)
       doc.setArchivedDatetime(if (view.publication.chkArchive.checked) view.publication.calArchive.value else null)
-      doc.setPublicationStatus(view.publication.sltStatus.value)
+      doc.setPublicationStatus(view.publication.sltStatus.selection)
     }
 
     val activePhase = doc.getLifeCyclePhase
@@ -135,12 +135,12 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     } else {
       Right(
         Data(
-          view.publication.sltStatus.value,
+          view.publication.sltStatus.selection,
           view.publication.calStart.value,
           when(view.publication.chkArchive.checked)(view.publication.calArchive.value),
           when(view.publication.chkEnd.checked)(view.publication.calEnd.value),
           view.info.ussCreator.selection,
-          view.publication.sltVersion.value.intValue,
+          view.publication.sltVersion.selection.intValue,
           view.info.dCreated.calDate.value,
           view.info.dModified.calDate.value,
           view.info.ussCreator.selection,

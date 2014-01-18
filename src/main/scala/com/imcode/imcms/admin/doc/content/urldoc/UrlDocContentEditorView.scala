@@ -28,7 +28,7 @@ class UrlDocContentEditorView extends Panel("URL/Link".i) with FullSize {
   cbTarget.addItem("_custom", "Other Frame") // ??? install/htdocs/sv/jsp/docadmin/url_document.jsp/1006
 
   cbTarget.addValueChangeHandler { _ =>
-    cbTarget.value match {
+    cbTarget.selection match {
       case "_custom" =>
         txtCustomTarget.setEnabled(true)
         txtCustomTarget.value = ""

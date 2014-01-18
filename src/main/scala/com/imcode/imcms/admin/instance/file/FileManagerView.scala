@@ -27,7 +27,7 @@ class FileManagerView(browserView: FileBrowserView, previewView: FilePreviewView
   val miHelp = mb.addItem("file.mgr.menu.help".i)
 
   addComponent(mb, 0, 0, 1, 0)
-  this.addComponents(browserView, previewView)
+  addComponents(browserView, previewView)
   setComponentAlignment(previewView, Alignment.MIDDLE_CENTER)
   setColumnExpandRatio(0, 1f)
   setRowExpandRatio(1, 1f)

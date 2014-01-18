@@ -16,7 +16,7 @@ class PredefinedFilterDialog extends OkCancelDialog("Quick search".i) {
     val cbCreatedByCurrentUser = new CheckBox("Created by me".i)
     val cbApprovedByCurrentUser = new CheckBox("Approved by me".i)
 
-    this.addComponents(cbFilterType, cbCreatedByCurrentUser, cbApprovedByCurrentUser)
+    addComponents(cbFilterType, cbCreatedByCurrentUser, cbApprovedByCurrentUser)
 
     Seq(
       "Created in the past week".i,

@@ -1,4 +1,7 @@
-package com.imcode.imcms.admin.access.user
+package com.imcode
+package imcms
+package admin
+package access.user.select
 
 import com.imcode.imcms.vaadin.component.dialog.OkCancelDialog
 import com.imcode.imcms.admin.access.user.projection.UsersProjection

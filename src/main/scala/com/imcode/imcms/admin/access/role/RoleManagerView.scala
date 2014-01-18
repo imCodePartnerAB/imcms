@@ -31,6 +31,6 @@ class RoleManagerView extends VerticalLayout with FullSize {
   }
 
 
-  this.addComponents(mb, tblRoles)
+  addComponents(mb, tblRoles)
   this.setExpandRatio(tblRoles, 1f)
 }

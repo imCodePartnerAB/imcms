@@ -40,5 +40,5 @@ class SearchSettingsEditorView extends VerticalLayout with Spacing with FullWidt
     setContent(content)
   }
 
-  this.addComponents(pnlKeywords, pnlMisc)
+  addComponents(pnlKeywords, pnlMisc)
 }

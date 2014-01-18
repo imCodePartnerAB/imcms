@@ -52,5 +52,5 @@ class AppearanceEditorView extends VerticalLayout with Spacing with FullWidth {
     setContent(layout)
   }
 
-  this.addComponents(pnlLanguages, pnlLinkTarget, pnlAlias)
+  addComponents(pnlLanguages, pnlLinkTarget, pnlAlias)
 }

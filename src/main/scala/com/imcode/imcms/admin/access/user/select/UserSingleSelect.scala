@@ -1,6 +1,7 @@
 package com.imcode
 package imcms
-package admin.access.user
+package admin
+package access.user.select
 
 import _root_.imcode.server.user.UserDomainObject
 import java.util.concurrent.atomic.AtomicReference

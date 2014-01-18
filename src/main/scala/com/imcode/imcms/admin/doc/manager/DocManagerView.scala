@@ -29,6 +29,6 @@ class DocManagerView(projectionView: DocsProjectionView) extends VerticalLayout 
 
   val miProfileEditName = miProfile.addItem("doc.mgr.mi.profile.edit_name".i)
 
-  this.addComponents(mb, projectionView)
+  addComponents(mb, projectionView)
   setExpandRatio(projectionView, 1.0f)
 }

@@ -9,88 +9,96 @@ import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
 
+import com.vaadin.ui.Component
 import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.projection.UsersProjection
 
-// todo add security check, add editAndSave, add external UI
+// todo: add security check
+// fixme: search for user w/o roles
+// fixme: change user interface language
+// todo: ??? ask reload UI if current user language has been changed ???
+// todo: superadmin: disable roles editing || disallow superadmin role removal
+// fixme: interface language: I18n
 class UserManager extends ImcmsServicesSupport {
+
   private val usersProjection = new UsersProjection
 
-  val view = new UserManagerView(usersProjection.view) |>> { w =>
+  val view: Component = new UserManagerView(usersProjection.view) |>> { w =>
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     w.miNew.setCommandHandler { _ =>
-      new OkCancelDialog("user.dlg.new.caption".i) |>> { dlg =>
-        dlg.mainComponent = new UserEditorView |>> { c =>
-          for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
-            c.tcsRoles.addItem(role.getId, role.getName)
-          }
+      val userEditor = new UserEditor(new UserDomainObject)
+      val dlg = new OkCancelDialog("user.dlg.new.caption".i)
 
-          imcmsServices.getLanguageMapper.getDefaultLanguage |> { l =>
-            c.sltUILanguage.addItem(l)
-            c.sltUILanguage.select(l)
-          }
-
-          c.chkActivated.setValue(true)
-
-          dlg.setOkButtonHandler {
-            new UserDomainObject |> { u =>
-              u.setActive(c.chkActivated.value)
-              u.setFirstName(c.txtFirstName.value)
-              u.setLastName(c.txtLastName.value)
-              u.setLoginName(c.txtLogin.value)
-              u.setPassword(c.txtPassword.value)
-              u.setRoleIds(c.tcsRoles.value.asScala.toArray)
-              u.setLanguageIso639_2(c.sltUILanguage.value)
-
-              roleMapper.addUser(u)
-              usersProjection.reset()
-            }
-          }
+      dlg.mainComponent = userEditor.view
+      dlg.setOkButtonHandler {
+        userEditor.collectValues() match {
+          case Left(_) =>
+          case Right(user) =>
+            roleMapper.addUser(user)
+            usersProjection.reset()
+            dlg.close()
         }
-      } |> Current.ui.addWindow
+      }
+
+      Current.ui.addWindow(dlg)
     }
 
     w.miEdit.setCommandHandler { _ =>
       whenSingleton(usersProjection.selection) { user =>
-        new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName)) |>> { dlg =>
-          dlg.mainComponent = new UserEditorView |>> { c =>
-            c.chkActivated setValue user.isActive
-            c.txtFirstName setValue user.getFirstName
-            c.txtLastName setValue user.getLastName
-            c.txtLogin setValue user.getLoginName
-            c.txtPassword setValue user.getPassword
+        val userEditor = new UserEditor(user)
+        val dlg = new OkCancelDialog("user.dlg.edit.caption".i)
 
-            for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
-              c.tcsRoles.addItem(role.getId, role.getName)
-            }
-
-            c.tcsRoles.value = user.getRoleIds.filterNot(_ == RoleId.USERS).toSeq.asJava
-
-            imcmsServices.getLanguageMapper.getDefaultLanguage |> { l =>
-              c.sltUILanguage.addItem(l)
-            }
-
-            c.sltUILanguage.select(user.getLanguageIso639_2)
-
-            dlg.setOkButtonHandler {
-              user.setActive(c.chkActivated.value)
-              user.setFirstName(c.txtFirstName.value)
-              user.setLastName(c.txtLastName.value)
-              user.setLoginName(c.txtLogin.value)
-              user.setPassword(c.txtPassword.value)
-              user.setRoleIds(c.tcsRoles.value.asScala.toArray)
-              user.setLanguageIso639_2(c.sltUILanguage.value)
-
-              roleMapper.saveUser(user)
+        dlg.mainComponent = userEditor.view
+        dlg.setOkButtonHandler {
+          userEditor.collectValues() match {
+            case Left(_) =>
+            case Right(editedUser) =>
+              roleMapper.saveUser(editedUser)
               usersProjection.reset()
-            }
+              dlg.close()
           }
-        } |> Current.ui.addWindow
+        }
+
+        Current.ui.addWindow(dlg)
       }
     }
 
-    usersProjection.listen { w.miEdit setEnabled _.size == 1 }
+    usersProjection.listen { selection => w.miEdit.setEnabled(selection.size == 1) }
     usersProjection.notifyListeners()
   }
 }
+
+
+
+/*
+        // Security check
+        // Lets verify that the user is an admin, otherwise throw him out.
+        if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
+            String header = "Error in AdminUser.";
+            Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            log.debug(header + "- user is not an administrator");
+            AdminRoles.printErrorMessage(req, res, header, msg);
+            return;
+        }
+----------------
+
+          UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
+        if ( null == userFinder ) {
+            Utility.redirectToStartDocument(request, response);
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__SHOW_USERS_BUTTON ) ) {
+            listUsers( request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__SELECT_USER_BUTTON ) ) {
+            UserDomainObject selectedUser = getSelectedUserFromRequest( request );
+            if ( null == selectedUser && !userFinder.isNullSelectable() ) {
+                listUsers( request, response );
+            } else {
+                userFinder.selectUser( selectedUser, request, response );
+            }
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
+            userFinder.cancel( request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__ADD_USER ) && userFinder.isUsersAddable() ) {
+            goToCreateUserPage(userFinder, request, response);
+        }
+*/

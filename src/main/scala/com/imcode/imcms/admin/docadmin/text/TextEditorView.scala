@@ -16,6 +16,6 @@ class TextEditorView extends VerticalLayout with Spacing with FullSize {
   val tsTexts = new TabSheet with FullSize
   val lblStatus = new Label
 
-  this.addComponents(mb, tsTexts, lblStatus)
+  addComponents(mb, tsTexts, lblStatus)
   setExpandRatio(tsTexts, 1f)
 }

@@ -128,7 +128,7 @@ class FileManager {
         new OkCancelDialog("file.mgr.dlg.new_dir.title".i) |>> { dlg =>
           val txtName = new TextField("file.mgr.dlg.new_dir.frm.fld.name".i)
           val lblMsg = new Label with UndefinedSize
-          dlg.mainComponent = new FormLayout with UndefinedSize { this.addComponents(lblMsg, txtName) }
+          dlg.mainComponent = new FormLayout with UndefinedSize { addComponents(lblMsg, txtName) }
 
           // refactor
           val forbiddenChars = """?"\/:;%*|>>>"""
@@ -584,7 +584,7 @@ class ItemsDeleteProgressDialogView extends FormLayout with Spacing with Undefin
   val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 
-  this.addComponents(lblMsg, pi)
+  addComponents(lblMsg, pi)
 }
 
 
@@ -592,7 +592,7 @@ class ItemsTransferProgressDialogView extends FormLayout with Spacing with Undef
   val lblMsg = new Label with UndefinedSize
   val pi = new ProgressIndicator
 
-  this.addComponents(lblMsg, pi)
+  addComponents(lblMsg, pi)
 }
 
 
@@ -600,5 +600,5 @@ class ItemRenameDialogView extends FormLayout with Spacing with UndefinedSize {
   val lblMsg = new Label with UndefinedSize
   val txtName = new TextField("file.mgr.dlg.transfer.item.frm.fld.name".i)
 
-  this.addComponents(lblMsg, txtName)
+  addComponents(lblMsg, txtName)
 }

@@ -13,5 +13,5 @@ class CategoryTypeEditorView extends FormLayout with UndefinedSize {
   val chkInherited = new CheckBox("Inherited to new documents")
   val chkImageArchive = new CheckBox("Used by image archive")
 
-  this.addComponents(txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
+  addComponents(txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
 }

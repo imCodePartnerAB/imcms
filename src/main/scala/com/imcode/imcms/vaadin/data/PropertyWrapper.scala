@@ -16,12 +16,12 @@ class PropertyWrapper[A <: AnyRef] (property: Property[A]) {
 
   def valueOpt: Option[A] = Option(value)
 
-  def clear(implicit ev: A =:= String): Unit = property.setValue("".asInstanceOf[A]) //
-  def trim(implicit ev: A =:= String): String = value.trim
-  def trimOpt(implicit ev: A =:= String): Option[String] = trim match {
+  def clear(implicit ev: A =:= String): Unit = property.setValue("".asInstanceOf[A])
+  def trimmedValue(implicit ev: A =:= String): String = value.trim
+  def trimmedValueOpt(implicit ev: A =:= String): Option[String] = trimmedValue match {
     case "" => None
     case v => Some(v)
   }
-  def isBlank(implicit ev: A =:= String): Boolean = trim.isEmpty
+  def isBlank(implicit ev: A =:= String): Boolean = trimmedValue.isEmpty
   def notBlank(implicit ev: A =:= String): Boolean = !isBlank
 }

@@ -40,6 +40,6 @@ class MenuEditorView extends VerticalLayout with FullSize {
     lyt.addComponent(cbSortOrder)
   }
 
-  this.addComponents(mb, lytSort, ttMenu)
+  addComponents(mb, lytSort, ttMenu)
   setExpandRatio(ttMenu, 1f)
 }

@@ -15,5 +15,5 @@ class PropertyManagerView extends VerticalLayout with FullWidth {
 //  val dataPanel = new Panel(new VerticalLayout with UndefinedSize with Margin) with UndefinedSize
 //
 //  dataPanel.setContent(propertyEditorView)
-  this.addComponents(mb, propertyEditorView)
+  addComponents(mb, propertyEditorView)
 }

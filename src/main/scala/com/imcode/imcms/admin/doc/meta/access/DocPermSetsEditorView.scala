@@ -9,5 +9,5 @@ class DocPermSetsEditorView extends VerticalLayout with UndefinedSize with Spaci
   val tsSets = new TabSheet with UndefinedSize
   val chkRestrictedOneIsMorePrivilegedThanRestrictedTwo = new CheckBox("Custom-One is more privileged that Custom-Two")
 
-  this.addComponents(tsSets, chkRestrictedOneIsMorePrivilegedThanRestrictedTwo)
+  addComponents(tsSets, chkRestrictedOneIsMorePrivilegedThanRestrictedTwo)
 }

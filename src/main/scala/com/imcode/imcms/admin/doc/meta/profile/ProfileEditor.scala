@@ -55,11 +55,11 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
   override def collectValues(): ErrorsOrData =
     Right(
       Data(
-        view.cbDefaultTemplate.value,
+        view.cbDefaultTemplate.selection,
         restrictedOnePermSet, // ??? clone
         restrictedTwoPermSet, // ??? clone
-        view.cbRestrictedOneDefaultTemplate.value,
-        view.cbRestrictedTwoDefaultTemplate.value
+        view.cbRestrictedOneDefaultTemplate.selection,
+        view.cbRestrictedTwoDefaultTemplate.selection
       )
     )
 

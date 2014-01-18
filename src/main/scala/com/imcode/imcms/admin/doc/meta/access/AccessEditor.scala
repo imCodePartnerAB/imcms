@@ -101,19 +101,19 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
             availableRoles.foreach { role => c.cbRole.addItem(role, role.getName) }
 
             c.cbRole.addValueChangeHandler { _ =>
-              val availablePermSetTypes = availableRolesWithPermsSetTypes(c.cbRole.value)
+              val availablePermSetTypes = availableRolesWithPermsSetTypes(c.cbRole.selection)
               types.foreach { typeSet =>
                 c.ogPermsSetType.setItemEnabled(typeSet, availablePermSetTypes contains typeSet)
               }
 
-              c.ogPermsSetType.value = availablePermSetTypes.head
+              c.ogPermsSetType.selection = availablePermSetTypes.head
             }
 
-            c.cbRole.value = availableRoles.head
+            c.cbRole.selection = availableRoles.head
 
             dlg.setOkButtonHandler {
-              val role = c.cbRole.value
-              val setType = c.ogPermsSetType.value
+              val role = c.cbRole.selection
+              val setType = c.ogPermsSetType.selection
 
               addRolePermSetType(role, setType)
             }
@@ -132,7 +132,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
               dlg.mainComponent = new ChangeRolePermSetDialogView |>> { c =>
                 c.lblRole.value = role.getName
 
-                c.ogPermsSetType.value = editorWidget.perms.tblRolesPermSets
+                c.ogPermsSetType.selection = editorWidget.perms.tblRolesPermSets
                   .item(role)
                   .getItemProperty(RolePermSetPropertyId).getValue.asInstanceOf[RolePermSet].setType
 
@@ -141,7 +141,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
                 }
 
                 dlg.setOkButtonHandler {
-                  setRolePermSetType(role, c.ogPermsSetType.value)
+                  setRolePermSetType(role, c.ogPermsSetType.selection)
                 }
               }
             } |> Current.ui.addWindow

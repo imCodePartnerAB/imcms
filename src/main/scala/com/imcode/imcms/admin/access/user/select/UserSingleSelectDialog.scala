@@ -1,6 +1,7 @@
 package com.imcode
 package imcms
-package admin.access.user
+package admin
+package access.user.select
 
 
 class UserSingleSelectDialog(caption: String = "user.dlg.single_select.caption".i)

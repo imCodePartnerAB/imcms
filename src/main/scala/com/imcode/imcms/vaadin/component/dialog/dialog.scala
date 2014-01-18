@@ -37,7 +37,7 @@ trait Resizable { this: Window =>
 class Dialog(caption: String = "") extends Window(caption) with Modal {
   protected val mainComponentSizeAssert: Component => Unit = ComponentAsserts.assertFixedSize
   protected val footerComponentSizeAssert: Component => Unit = ComponentAsserts.assertFixedSize
-  protected val content = new GridLayout(1, 2) with Spacing with Margin
+  protected val content = new GridLayout(1, 2) with Spacing
 
   setContent(content)
   setResizable(false)
@@ -56,7 +56,7 @@ class Dialog(caption: String = "") extends Window(caption) with Modal {
     footerComponentSizeAssert(component)
 
     content.addComponent(component, 0, 1)
-    content.setComponentAlignment(component, Alignment.TOP_CENTER)
+    content.setComponentAlignment(component, Alignment.MIDDLE_CENTER)
   }
 }
 
@@ -146,7 +146,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton
 class YesNoCancelDialog(caption: String = "") extends Dialog(caption) with YesButton with NoButton with CancelButton {
 
   val lytButtons = new GridLayout(3, 1) with Spacing {
-    this.addComponents( btnYes, btnNo, btnCancel)
+    addComponents( btnYes, btnNo, btnCancel)
 
     setComponentAlignment(btnYes, Alignment.MIDDLE_RIGHT)
     setComponentAlignment(btnNo, Alignment.MIDDLE_CENTER)

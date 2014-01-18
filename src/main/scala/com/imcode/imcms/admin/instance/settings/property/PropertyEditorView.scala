@@ -11,7 +11,7 @@ class PropertyEditorView extends FormLayout with UndefinedSize {
     val txtEmail = new TextField("e-mail")
 
     setCaption(caption)
-    this.addComponents(txtName, txtEmail)
+    addComponents(txtName, txtEmail)
   }
 
   val txtStartPageNumber = new TextField("Start page number")
@@ -19,5 +19,5 @@ class PropertyEditorView extends FormLayout with UndefinedSize {
   val serverMaster = new ContactComponent("Server master")
   val webMaster = new ContactComponent("Web master")
 
-  this.addComponents(txtStartPageNumber, txaSystemMessage, serverMaster, webMaster)
+  addComponents(txtStartPageNumber, txaSystemMessage, serverMaster, webMaster)
 }

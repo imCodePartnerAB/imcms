@@ -19,6 +19,6 @@ class CategoryEditorView(val imagePickerComponent: ImagePickerComponent) extends
 
   val sltType = new ComboBox("Type") with SingleSelect[String] with Required with NoNullSelection
 
-  this.addComponents(txtId, txtName, sltType, imagePickerComponent, txaDescription)
+  addComponents(txtId, txtName, sltType, imagePickerComponent, txaDescription)
   imagePickerComponent.setCaption("Icon")
 }
