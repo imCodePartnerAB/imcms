@@ -36,5 +36,5 @@ class IPAccessManagerView extends VerticalLayout with FullSize {
 
 
   addComponents(mb, tblIP)
-  this.setExpandRatio(tblIP, 1f)
+  setExpandRatio(tblIP, 1f)
 }

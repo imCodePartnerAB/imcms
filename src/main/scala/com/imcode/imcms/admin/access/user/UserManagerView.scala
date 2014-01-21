@@ -15,5 +15,5 @@ class UserManagerView(val projectionView: Component) extends VerticalLayout with
   val miHelp = mb.addItem("mi.help".i)
 
   addComponents(mb, projectionView)
-  this.setExpandRatio(projectionView, 1f)
+  setExpandRatio(projectionView, 1f)
 }

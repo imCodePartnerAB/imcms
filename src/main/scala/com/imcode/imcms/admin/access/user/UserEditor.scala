@@ -24,7 +24,7 @@ class UserEditor(user: UserDomainObject) extends Editor with ImcmsServicesSuppor
 
   override val view = new UserEditorView |>> { v =>
     v.sltUILanguage.addItem("eng", "English")
-    v.sltUILanguage.addItem("sve", "Svenska")
+    v.sltUILanguage.addItem("swe", "Svenska")
 
     v.btnEditContacts.addClickHandler { _ =>
       val contactsEditorDialog = new OkCancelDialog("Contacts".i)

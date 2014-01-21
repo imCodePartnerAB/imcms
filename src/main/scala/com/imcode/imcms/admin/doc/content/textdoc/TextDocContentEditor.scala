@@ -81,5 +81,5 @@ class TextsEditorView extends VerticalLayout with Spacing with Margin with FullS
   )
 
   addComponents(mb, tblTexts)
-  this.setExpandRatio(tblTexts, 1.0f)
+  setExpandRatio(tblTexts, 1.0f)
 }

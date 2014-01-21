@@ -17,7 +17,7 @@ class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCanc
 
   btnOk.setCaption("btn_save".i)
 
-  this.setSize(700, 600)
+  this.setSize(750, 600)
 }
 
 

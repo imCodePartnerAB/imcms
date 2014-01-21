@@ -9,19 +9,24 @@ import com.imcode.imcms.vaadin.Current
 import com.imcode.imcms.vaadin.data._
 
 class UserSingleSelect {
+
   private val selectionRef = new AtomicReference(Option.empty[UserDomainObject])
+
   val view = new UserSingleSelectView |>> { w =>
     w.btnSelect.addClickHandler { _ =>
-      new UserSingleSelectDialog |>> { dlg =>
-        dlg.setOkButtonHandler {
-          selection = dlg.search.selection.headOption
-          dlg.close()
-        }
-      } |> Current.ui.addWindow
+      val dlg = new UserSingleSelectDialog
+      dlg.setOkButtonHandler {
+        selection = dlg.search.selection.headOption
+        dlg.close()
+      }
+
+      Current.ui.addWindow(dlg)
     }
 
     w.btnClear.addClickHandler { _ => selection = None }
   }
+
+  selection = None
 
   def selection: Option[UserDomainObject] = selectionRef.get
   def selection_=(userOpt: Option[UserDomainObject]) {
@@ -33,6 +38,4 @@ class UserSingleSelect {
 
     selectionRef.set(userOpt)
   }
-
-  selection = None
 }

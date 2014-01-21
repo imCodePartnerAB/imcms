@@ -47,7 +47,7 @@ class UserManager extends ImcmsServicesSupport {
     w.miEdit.setCommandHandler { _ =>
       whenSingleton(usersProjection.selection) { user =>
         val userEditor = new UserEditor(user)
-        val dlg = new OkCancelDialog("user.dlg.edit.caption".i)
+        val dlg = new OkCancelDialog("user.dlg.edit.caption".f(user.getLoginName))
 
         dlg.mainComponent = userEditor.view
         dlg.setOkButtonHandler {

@@ -3,7 +3,7 @@ package com.imcode.imcms.vaadin.data
 import scala.reflect.ClassTag
 
 /**
- * A container property.
+ * A container property descriptor.
  *
  * @tparam A container property class
  * @param id container property id

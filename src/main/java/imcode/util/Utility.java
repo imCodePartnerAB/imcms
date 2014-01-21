@@ -8,6 +8,7 @@ import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.vaadin.server.VaadinSession;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -447,8 +448,11 @@ public class Utility {
         }
     }
 
+    // todo: investigate - ??? why not invalidate session ???
     public static void makeUserLoggedOut(HttpServletRequest req) {
-        req.getSession().removeAttribute(LOGGED_IN_USER);
+        // req.getSession().removeAttribute(LOGGED_IN_USER);
+        HttpSession session = req.getSession(false);
+        if (session != null) session.invalidate();
     }
 
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {

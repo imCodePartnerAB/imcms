@@ -27,7 +27,7 @@ class TemplateManagerView extends VerticalLayout with FullSize {
   )
 
   addComponents(mb, tblTemplates)
-  this.setExpandRatio(tblTemplates, 1f)
+  setExpandRatio(tblTemplates, 1f)
   tblTemplates.setColumnExpandRatio("", 1f)
   tblTemplates.setStyleName(Reindeer.TABLE_BORDERLESS)
   tblTemplates.setColumnAlignment("Document count using this template", Table.Align.RIGHT)

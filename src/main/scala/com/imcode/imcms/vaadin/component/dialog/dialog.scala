@@ -24,6 +24,7 @@ trait Resizable { this: Window =>
   setResizable(true)
 }
 
+
 /**
  * Auto-adjustable size dialog window with full margin.
 
@@ -35,8 +36,8 @@ trait Resizable { this: Window =>
  *   -size is adjusted automatically according to its content size.
  */
 class Dialog(caption: String = "") extends Window(caption) with Modal {
-  protected val mainComponentSizeAssert: Component => Unit = ComponentAsserts.assertFixedSize
-  protected val footerComponentSizeAssert: Component => Unit = ComponentAsserts.assertFixedSize
+  protected val mainComponentSizeAssert: Component => Unit = ComponentAsserts.assertSizeNotDefinedInPersentage
+  protected val footerComponentSizeAssert: Component => Unit = ComponentAsserts.assertSizeNotDefinedInPersentage
   protected val content = new GridLayout(1, 2) with Spacing
 
   setContent(content)
@@ -141,6 +142,8 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) with OKButton
 
   footerComponent = lytButtons
 }
+
+
 
 /** YesNoCancel dialog window. */
 class YesNoCancelDialog(caption: String = "") extends Dialog(caption) with YesButton with NoButton with CancelButton {

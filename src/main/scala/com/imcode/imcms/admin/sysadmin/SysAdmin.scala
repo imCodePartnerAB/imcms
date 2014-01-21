@@ -155,7 +155,7 @@ class SysAdmin extends UI {
     lytContent.initManagersMenu()
     setContent(lytContent)
 
-    getLoadingIndicatorConfiguration.setFirstDelay(100)
+    getLoadingIndicatorConfiguration.setFirstDelay(10)
   }
 
 

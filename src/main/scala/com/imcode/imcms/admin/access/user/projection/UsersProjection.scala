@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.access.user.projection
 
+import com.imcode.imcms.vaadin.data.util.converter.TableCellStringToBooleanConverter
 import com.vaadin.ui.themes.Reindeer
 import scala.collection.breakOut
 import scala.collection.JavaConverters._
@@ -19,18 +20,21 @@ import _root_.imcode.server.user.UserDomainObject
 
 
 class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDomainObject]] with ImcmsServicesSupport {
+
   private val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
   private val selectionRef = new AtomicReference(Seq.empty[UserDomainObject])
 
   private val filter = new UserFilter
-  private val filteredUsersView = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable with FullSize |>> { tbl =>
+  private val filteredUsersTable = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable with FullSize |>> { tbl =>
     addContainerProperties(tbl,
       PropertyDescriptor[UserId]("users_projection.container_property.id"),
       PropertyDescriptor[String]("users_projection.container_property.login"),
       PropertyDescriptor[String]("users_projection.container_property.first_name"),
       PropertyDescriptor[String]("users_projection.container_property.last_name"),
+      PropertyDescriptor[String]("users_projection.container_property.email"),
+      PropertyDescriptor[String]("users_projection.container_property.language"),
       PropertyDescriptor[JBoolean]("users_projection.container_property.is_superadmin"),
-      PropertyDescriptor[JBoolean]("users_projection.container_property.is_active"),
+      PropertyDescriptor[JBoolean]("users_projection.container_property.is_inactive"),
       PropertyDescriptor[Void]("")
     )
 
@@ -39,15 +43,22 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
     tbl.addStyleName(Reindeer.TABLE_BORDERLESS)
     tbl.setColumnExpandRatio("", 1f)
     tbl.setColumnAlignment("users_projection.container_property.id", Table.Align.RIGHT)
+    tbl.setColumnAlignment("users_projection.container_property.is_superadmin", Table.Align.CENTER)
+    tbl.setColumnAlignment("users_projection.container_property.is_inactive", Table.Align.CENTER)
+
+    val converter = TableCellStringToBooleanConverter.falseAsEmptyString
+
+    tbl.setConverter("users_projection.container_property.is_superadmin", converter)
+    tbl.setConverter("users_projection.container_property.is_inactive", converter)
   }
 
   val view = new VerticalLayout with FullSize |>> { w =>
-    w.addComponents(filter.view, filteredUsersView)
-    w.setExpandRatio(filteredUsersView, 1f)
+    w.addComponents(filter.view, filteredUsersTable)
+    w.setExpandRatio(filteredUsersTable, 1f)
   }
 
-  filteredUsersView.addValueChangeHandler { _ =>
-    selectionRef.set(filteredUsersView.value.asScala.map(userId => roleMapper.getUser(userId))(breakOut))
+  filteredUsersTable.addValueChangeHandler { _ =>
+    selectionRef.set(filteredUsersTable.value.asScala.map(userId => roleMapper.getUser(userId))(breakOut))
     notifyListeners()
   }
 
@@ -83,19 +94,21 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
         case ps => { u => ps.forall(p => p(u)) }
       }
 
-    filteredUsersView.removeAllItems()
+    filteredUsersTable.removeAllItems()
     for {
       user <- roleMapper.getAllUsers.toList if !user.isDefaultUser && predicate(user)
       userId = user.getId : JInteger
     } {
-      filteredUsersView.addRow(
+      filteredUsersTable.addRow(
         userId,
         userId,
         user.getLoginName,
         user.getFirstName,
         user.getLastName,
+        user.getEmailAddress,
+        user.getLanguageIso639_2,
         user.isSuperAdmin : JBoolean,
-        user.isActive : JBoolean,
+        !user.isActive : JBoolean,
         null
       )
     }

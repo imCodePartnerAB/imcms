@@ -11,7 +11,7 @@ import com.vaadin.server.Sizeable
 // todo: replace images widget with custom widget from v4.
 class ImageSelectView extends VerticalLayout with FullSize with Spacing {
 
-  private var mb = new MenuBar
+  private val mb = new MenuBar
   private val hspContent = new HorizontalSplitPanel with FullSize
 
   val miUpload = mb.addItem("Upload")
@@ -25,5 +25,5 @@ class ImageSelectView extends VerticalLayout with FullSize with Spacing {
   hspContent.setSplitPosition(27f, Sizeable.Unit.PERCENTAGE)
 
   addComponents(mb, hspContent)
-  this.setExpandRatio(hspContent, 1.0f)
+  setExpandRatio(hspContent, 1.0f)
 }

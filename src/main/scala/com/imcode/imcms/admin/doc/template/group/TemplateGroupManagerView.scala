@@ -27,7 +27,7 @@ class TemplateGroupManagerView extends VerticalLayout with FullSize {
   )
 
   addComponents(mb, tblGroups)
-  this.setExpandRatio(tblGroups, 1f)
+  setExpandRatio(tblGroups, 1f)
   tblGroups.setColumnExpandRatio("", 1f)
   tblGroups.setStyleName(Reindeer.TABLE_BORDERLESS)
   tblGroups.setColumnAlignment("Id", Table.Align.RIGHT)

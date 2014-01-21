@@ -16,7 +16,7 @@ class UserFilterView extends CustomLayout("admin/access/user/projection/filter")
 
   val chkRoles = new CheckBox("users_projection.filter.chk_roles".i) with ExposeValueChange[JBoolean] with Immediate
   val tcsRoles = new TwinColSelect with MultiSelect[RoleId] with TCSDefaultI18n
-  val chkShowDisabled = new CheckBox("users_projection.filter.chk_show_disabled".i) with ExposeValueChange[JBoolean] with Immediate
+  val chkShowDisabled = new CheckBox("users_projection.filter.chk_show_inactive".i) with ExposeValueChange[JBoolean] with Immediate
 
   val btnReset = new Button("btn_reset".i) with SmallStyle
   val btnFilter = new Button("btn_search".i) with SmallStyle
