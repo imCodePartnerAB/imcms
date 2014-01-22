@@ -174,32 +174,9 @@ class SysAdmin extends UI {
 
 
   val admin = new TabSheet with FullSize |>> { ts =>
-    val mb = new MenuBar with FullWidth |>> { _.addStyleName("manager") }
-    val miLanguage = mb.addItem("", Theme.Icon.Language.flag(Current.imcmsUser.getLanguageIso639_2))
-    val miLanguageEng = miLanguage.addItem("English", Theme.Icon.Language.flag("eng")) |>> { _.setEnabled(Current.imcmsUser.getLanguageIso639_2 != "eng") }
-    val miLanguageSwe = miLanguage.addItem("Svenska", Theme.Icon.Language.flag("swe")) |>> { _.setEnabled(Current.imcmsUser.getLanguageIso639_2 != "swe") }
-    val miChangePassword = mb.addItem("admin.mi.change_password".i)
-
-    val miRestart = mb.addItem("admin.mi.restart".i)
-    val miExit = mb.addItem("admin.mi.exit".i)
-    val miHelp = mb.addItem("mi.help".i)
-    val img = new Image("", new ExternalResource(Current.contextPath + "/images/imCMSpower.gif"))
-
-    val lytContent = new VerticalLayout(mb, img) with FullSize
-    lytContent.setExpandRatio(img, 1.0f)
-    lytContent.setComponentAlignment(img, Alignment.MIDDLE_CENTER)
-
-    ts.addTab(lytContent, "imCMS Admin")
+    val manager = new Manager
+    ts.addTab(manager.view, "imCMS Admin")
     ts.setStyleName(Reindeer.TABSHEET_MINIMAL)
-
-    miExit.setCommandHandler { _ =>
-      Current.page.setLocation(Current.contextPath + "/servlet/LogOut")
-    }
-
-    miRestart.setCommandHandler { _ =>
-      Current.page.setLocation(Current.page.getLocation)
-      Current.httpSession.invalidate()
-    }
   }
 
 
