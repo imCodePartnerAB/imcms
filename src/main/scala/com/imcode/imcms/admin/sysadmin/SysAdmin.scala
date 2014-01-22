@@ -3,6 +3,7 @@ package imcms
 package admin.sysadmin
 
 import com.imcode.imcms.admin.access.user.UserManager
+import com.imcode.imcms.vaadin.component.dialog.OkCancelDialog
 import com.imcode.imcms.vaadin.component.Theme.Icon
 import com.vaadin.ui.themes.Reindeer
 import scala.collection.JavaConverters._
@@ -13,7 +14,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
-import com.vaadin.server.VaadinRequest
+import com.vaadin.server.{ExternalResource, VaadinRequest}
 
 import _root_.imcode.server.Imcms
 
@@ -25,6 +26,7 @@ import com.imcode.imcms.admin.doc.manager.DocManager
 
 // todo: rename Theme class - name collision
 // todo: enable chat ???
+// todo: rename: permissions -> access (members?), IPAccess -> IP Login/Autologin
 @PreserveOnRefresh
 @com.vaadin.annotations.Theme("imcms")
 class SysAdmin extends UI {
@@ -48,32 +50,32 @@ class SysAdmin extends UI {
 
 
   object Menu extends TreeMenuItem {
-    @MenuItemOrder(0) object About extends TreeMenuItem("mm.about", Icon.About16)
-
-    @MenuItemOrder(1) object Documents extends TreeMenuItem("mm.docs") {
-      @MenuItemOrder(0) object Categories extends TreeMenuItem("mm.docs.categories", Icon.Done16)
-      @MenuItemOrder(1) object Templates extends TreeMenuItem("mm.docs.templates", Icon.Done16)
-      @MenuItemOrder(2) object Languages extends TreeMenuItem("mm.docs.languages", Icon.Done16)
-    }
-
-    @MenuItemOrder(2) object Permissions extends TreeMenuItem("mm.permissions") {
-      @MenuItemOrder(0) object Users extends TreeMenuItem("mm.permissions.users", Icon.Done16)
-      @MenuItemOrder(1) object Roles extends TreeMenuItem("mm.permissions.roles", Icon.Done16)
-      @MenuItemOrder(2) object IP_Access extends TreeMenuItem("mm.permissions.ip_access", Icon.Done16)
-    }
-
-    @MenuItemOrder(3) object System extends TreeMenuItem("mm.system") {
-      @MenuItemOrder(0) object Settings extends TreeMenuItem("mm.system.settings", Icon.Done16)
-      @MenuItemOrder(1) object Monitor extends TreeMenuItem("mm.system.monitor") {
-        @MenuItemOrder(0) object Solr extends TreeMenuItem("mm.system.monitor.solr")
-        @MenuItemOrder(1) object SearchTerms extends TreeMenuItem("mm.system.monitor.search_terms")
-        @MenuItemOrder(2) object Session extends TreeMenuItem("mm.system.monitor.session", Icon.Done16)
-        @MenuItemOrder(3) object Cache extends TreeMenuItem("mm.system.monitor.cache")
-        @MenuItemOrder(4) object LinkValidator extends TreeMenuItem("mm.system.monitor.link_validator")
+    @MenuItemOrder(0) object Admin extends TreeMenuItem("mm.admin") {
+      @MenuItemOrder(1) object Documents extends TreeMenuItem("mm.docs") {
+        @MenuItemOrder(0) object Categories extends TreeMenuItem("mm.docs.categories", Icon.Done16)
+        @MenuItemOrder(1) object Templates extends TreeMenuItem("mm.docs.templates", Icon.Done16)
+        @MenuItemOrder(2) object Languages extends TreeMenuItem("mm.docs.languages", Icon.Done16)
       }
-    }
 
-    @MenuItemOrder(4) object Files extends TreeMenuItem("mm.files", Icon.Done16)
+      @MenuItemOrder(2) object Permissions extends TreeMenuItem("mm.permissions") {
+        @MenuItemOrder(0) object Users extends TreeMenuItem("mm.permissions.users", Icon.Done16)
+        @MenuItemOrder(1) object Roles extends TreeMenuItem("mm.permissions.roles", Icon.Done16)
+        @MenuItemOrder(2) object IP_Access extends TreeMenuItem("mm.permissions.ip_access", Icon.Done16)
+      }
+
+      @MenuItemOrder(3) object System extends TreeMenuItem("mm.system") {
+        @MenuItemOrder(0) object Settings extends TreeMenuItem("mm.system.settings", Icon.Done16)
+        @MenuItemOrder(1) object Monitor extends TreeMenuItem("mm.system.monitor") {
+          @MenuItemOrder(0) object Solr extends TreeMenuItem("mm.system.monitor.solr")
+          @MenuItemOrder(1) object SearchTerms extends TreeMenuItem("mm.system.monitor.search_terms")
+          @MenuItemOrder(2) object Session extends TreeMenuItem("mm.system.monitor.session", Icon.Done16)
+          @MenuItemOrder(3) object Cache extends TreeMenuItem("mm.system.monitor.cache")
+          @MenuItemOrder(4) object LinkValidator extends TreeMenuItem("mm.system.monitor.link_validator")
+        }
+      }
+
+      @MenuItemOrder(4) object Files extends TreeMenuItem("mm.files", Icon.Done16)
+    }
   }
 
 
@@ -86,6 +88,7 @@ class SysAdmin extends UI {
       }
 
       val lytMenu = new VerticalLayout with FullSize |>> { lyt =>
+        lyt.addStyleName("sysadmin-menu")
       }
 
       lytMenu.addComponent(menu)
@@ -120,27 +123,27 @@ class SysAdmin extends UI {
         hspManagers.lytManager.removeAllComponents()
         hspManagers.lytManager.addComponent(
           e.getProperty.getValue |> {
-            case null | Menu.About => about
+            case null | Menu.Admin => admin
 
-            case Menu.System.Monitor.Solr => searchTerms
-            case Menu.Documents.Categories => categories
-            case Menu.Documents.Languages => languages
-            case Menu.System.Settings => systemSettings
-            case Menu.System.Monitor.Session => sessionMonitor
-            case Menu.Documents => documents
-            case Menu.Permissions.Roles => roles
-            case Menu.Permissions.Users => users
-            case Menu.Permissions.IP_Access => ipAccess
-            case Menu.Documents.Templates => templates
-            case Menu.System.Monitor.Cache => instanceCacheView
-            case Menu.Files => filesystem
+            case Menu.Admin.System.Monitor.Solr => searchTerms
+            case Menu.Admin.Documents.Categories => categories
+            case Menu.Admin.Documents.Languages => languages
+            case Menu.Admin.System.Settings => systemSettings
+            case Menu.Admin.System.Monitor.Session => sessionMonitor
+            case Menu.Admin.Documents => documents
+            case Menu.Admin.Permissions.Roles => roles
+            case Menu.Admin.Permissions.Users => users
+            case Menu.Admin.Permissions.IP_Access => ipAccess
+            case Menu.Admin.Documents.Templates => templates
+            case Menu.Admin.System.Monitor.Cache => instanceCacheView
+            case Menu.Admin.Files => filesystem
 
             case other => NA(other)
           }
         )
       }
 
-      hspManagers.menu.select(Menu.About)
+      hspManagers.menu.select(Menu.Admin)
     } // initManagersMenu
 
     //addStyleName(Reindeer.LAYOUT_WHITE)
@@ -170,18 +173,33 @@ class SysAdmin extends UI {
   }
 
 
-  val about = new TabSheet with FullSize |>> { ts =>
-    val text = """
-      |Welcome to the imCMS new admin UI prototype -
-      | please pick a task from the menu. Note that some views are not (yet) available.
-      |""".stripMargin
+  val admin = new TabSheet with FullSize |>> { ts =>
+    val mb = new MenuBar with FullWidth |>> { _.addStyleName("manager") }
+    val miLanguage = mb.addItem("", Theme.Icon.Language.flag(Current.imcmsUser.getLanguageIso639_2))
+    val miLanguageEng = miLanguage.addItem("English", Theme.Icon.Language.flag("eng")) |>> { _.setEnabled(Current.imcmsUser.getLanguageIso639_2 != "eng") }
+    val miLanguageSwe = miLanguage.addItem("Svenska", Theme.Icon.Language.flag("swe")) |>> { _.setEnabled(Current.imcmsUser.getLanguageIso639_2 != "swe") }
+    val miChangePassword = mb.addItem("admin.mi.change_password".i)
 
-    val lblContent = new Label(text) |>> { lbl =>
-      lbl.setCaption("About")
+    val miRestart = mb.addItem("admin.mi.restart".i)
+    val miExit = mb.addItem("admin.mi.exit".i)
+    val miHelp = mb.addItem("mi.help".i)
+    val img = new Image("", new ExternalResource(Current.contextPath + "/images/imCMSpower.gif"))
+
+    val lytContent = new VerticalLayout(mb, img) with FullSize
+    lytContent.setExpandRatio(img, 1.0f)
+    lytContent.setComponentAlignment(img, Alignment.MIDDLE_CENTER)
+
+    ts.addTab(lytContent, "imCMS Admin")
+    ts.setStyleName(Reindeer.TABSHEET_MINIMAL)
+
+    miExit.setCommandHandler { _ =>
+      Current.page.setLocation(Current.contextPath + "/servlet/LogOut")
     }
 
-    ts.addTab(lblContent)
-    ts.setStyleName(Reindeer.TABSHEET_MINIMAL)
+    miRestart.setCommandHandler { _ =>
+      Current.page.setLocation(Current.page.getLocation)
+      Current.httpSession.invalidate()
+    }
   }
 
 

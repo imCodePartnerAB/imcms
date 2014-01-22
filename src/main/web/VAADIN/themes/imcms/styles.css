@@ -109,11 +109,21 @@ table#docs_projection_basic_filter #buttons {
     margin-top: 2px;
 }
 
+.v-verticallayout-sysadmin-menu {
+    padding: 2px 2px 2px 0;
+    /*font-weight: bold;*/
+}
+
 .v-verticallayout-manager {
     padding-top: 1px;
     padding-left: 1px;
     padding-right: 1px;
 }
+
+.v-verticallayout-manager .v-tabsheet-tabitem-selected .v-captiontext {
+    font-weight: bold;
+}
+
 
 .v-verticallayout-doc_editor {
     padding-top: 1px;
