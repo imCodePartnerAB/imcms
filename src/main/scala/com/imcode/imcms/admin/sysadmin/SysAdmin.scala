@@ -159,6 +159,9 @@ class SysAdmin extends UI {
     setContent(lytContent)
 
     getLoadingIndicatorConfiguration.setFirstDelay(10)
+    getLoadingIndicatorConfiguration.setSecondDelay(100)
+    getLoadingIndicatorConfiguration.setThirdDelay(1000)
+    Current.page.setTitle("imCMS Admin")
   }
 
 

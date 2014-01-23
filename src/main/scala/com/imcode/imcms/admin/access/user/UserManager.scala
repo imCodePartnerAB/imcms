@@ -14,52 +14,41 @@ import com.imcode.imcms.admin.access.user.projection.UsersProjection
 
 // todo: add security check
 // fixme: search for user w/o roles
-// fixme: change user interface language
-// todo: ??? ask reload UI if current user language has been changed ???
 // todo: superadmin: disable roles editing || disallow superadmin role removal
 // fixme: interface language: I18n
 class UserManager extends ImcmsServicesSupport {
 
   private val usersProjection = new UsersProjection
 
-  val view: Component = new UserManagerView(usersProjection.view) |>> { w =>
-    w.miNew.setCommandHandler { _ =>
+  val view: Component = new UserManagerView(usersProjection.view) |>> { v =>
+    v.miNew.setCommandHandler { _ =>
       editUser(new UserDomainObject)
     }
 
-    w.miEdit.setCommandHandler { _ =>
+    v.miEdit.setCommandHandler { _ =>
       whenSingleton(usersProjection.selection) { user =>
         editUser(user)
       }
     }
 
-    usersProjection.listen { selection => w.miEdit.setEnabled(selection.size == 1) }
+    usersProjection.listen { selection => v.miEdit.setEnabled(selection.size == 1) }
     usersProjection.notifyListeners()
   }
 
-
+  /**
+   * Edit and save new or existing user
+   * @param user user to edit
+   */
   private def editUser(user: UserDomainObject) {
-    val userEditor = new UserEditor(user)
+    val editor = new UserEditor(user)
     val dialogTitle = if (user.isNew) "user_dlg.new.caption".i else "user_dlg.edit.caption".f(user.getLoginName)
     val dialog = new OkCancelDialog(dialogTitle) with OKCaptionIsSave
 
-    dialog.mainComponent = userEditor.view
-    dialog.setOkButtonHandler {
-      userEditor.collectValues() match {
-        case Left(errors) =>
-          Current.page.showConstraintViolationNotification(errors)
-
-        case Right(editedUser) =>
-          val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
-          try {
-            if (user.isNew) roleMapper.addUser(editedUser) else roleMapper.saveUser(editedUser)
-            usersProjection.reset()
-            dialog.close()
-            Current.page.showInfoNotification("User has been saved")
-          } catch {
-            case e: Exception => Current.page.showUnhandledExceptionNotification(e)
-          }
-      }
+    Dialog.asOKEditorDialog(dialog, editor) { editedUser =>
+      val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
+      if (user.isNew) roleMapper.addUser(editedUser) else roleMapper.saveUser(editedUser)
+      usersProjection.reset()
+      Current.page.showInfoNotification("User has been saved")
     }
 
     dialog.show()

@@ -3,7 +3,7 @@ package imcms
 package vaadin.component
 package dialog
 
-import com.imcode.imcms.vaadin.Current
+import com.imcode.imcms.vaadin.{Editor, Current}
 import com.imcode._
 import com.vaadin.ui._
 import com.vaadin.server.ThemeResource
@@ -196,7 +196,7 @@ trait NoContentMarginDialog { this: Dialog =>
 object Dialog extends Log4jLoggerSupport {
 
   /**
-   * Wraps button click handler: shows "server error" message in case of an error.
+   * Wraps button click handler: shows "system error" message in case of an error.
    */
   def wrapButtonClickHandler(dialog: Dialog, button: Button, handler: => Unit) {
     button.addClickHandler { _ =>
@@ -204,11 +204,22 @@ object Dialog extends Log4jLoggerSupport {
         handler
       } catch {
         case e: Exception =>
-          Current.page.showErrorNotification(s"Server Error: ${e.getMessage}")
-
           logger.error("Dialog button click handler error", e)
+          Current.page.showUnhandledExceptionNotification(e)
+      }
+    }
+  }
 
-          throw e
+  def asOKEditorDialog(dialog: Dialog with OKButton, editor: Editor)(validDataHandler: editor.Data => Unit) {
+    dialog.mainComponent = editor.view
+    dialog.setOkButtonHandler {
+      editor.collectValues() match {
+        case Left(errors) =>
+          Current.page.showConstraintViolationNotification(errors)
+
+        case Right(values) =>
+          validDataHandler(values)
+          dialog.close()
       }
     }
   }
