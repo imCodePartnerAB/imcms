@@ -56,8 +56,8 @@ class BasicFilterView extends CustomLayout("admin/doc/projection/basic_filter") 
   }
   
   object filterButtons {
-    val btnReset = new Button("btn_reset".i) with SmallDefaultStyle { b => b.setIcon(Theme.Icon.Reload16) }
-    val btnApplyFilter = new Button("btn_search".i) with SmallDefaultStyle
+    val btnReset = new Button("btn_caption.reset".i) with SmallDefaultStyle { b => b.setIcon(Theme.Icon.Reload16) }
+    val btnApplyFilter = new Button("btn_caption.search".i) with SmallDefaultStyle
     val btnChoosePredefinedFilter = new Button("...") with SmallDefaultStyle
     val btnBack = new Button("back") with SmallDefaultStyle |>> { b => b.setIcon(Theme.Icon.HistoryBack16) }
   }

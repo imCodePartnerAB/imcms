@@ -57,7 +57,7 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
       }
 
       dlg.setSize(600, 500, Sizeable.Unit.PIXELS)
-      dlg |> Current.ui.addWindow
+      dlg.show()
     }
   }
 

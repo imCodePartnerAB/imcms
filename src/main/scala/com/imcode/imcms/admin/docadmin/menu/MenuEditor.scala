@@ -64,7 +64,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
     // todo: ??? search for current language + default version ???
     w.miAddExistingDocs.setCommandHandler { _ =>
-      new DocSelectDialog("menu_editor.dlg.select_docs.title".i, Current.imcmsUser) |>> { dlg =>
+      new DocSelectDialog("menu_editor_dlg.select_docs.title".i, Current.imcmsUser) |>> { dlg =>
         dlg.setOkButtonHandler {
           for {
             ref <- dlg.projection.selection

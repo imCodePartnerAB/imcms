@@ -161,10 +161,10 @@ class FileUploader extends Publisher[UploadStatus] {
 
 
 class FileUploaderView extends FormLayout with UndefinedSize {
-  val upload = new Upload("file.upload.dlg.frm.fld.select".i, null) with Immediate
-  val txtSaveAsName = new TextField("file.upload.dlg.frm.fld.save_as".i) with Required
-  val pgiBytesReceived = new ProgressIndicator; pgiBytesReceived.setCaption("file.upload.dlg.frm.fld.progress".i)
-  val chkOverwrite = new CheckBox("file.upload.dlg.frm.fld.overwrite".i)
+  val upload = new Upload("file_upload_dlg.frm.fld.select".i, null) with Immediate
+  val txtSaveAsName = new TextField("file_upload_dlg.frm.fld.save_as".i) with Required
+  val pgiBytesReceived = new ProgressIndicator; pgiBytesReceived.setCaption("file_upload_dlg.frm.fld.progress".i)
+  val chkOverwrite = new CheckBox("file_upload_dlg.frm.fld.overwrite".i)
 
   upload.setButtonCaption("...")
   addComponents(upload, pgiBytesReceived, txtSaveAsName, chkOverwrite)

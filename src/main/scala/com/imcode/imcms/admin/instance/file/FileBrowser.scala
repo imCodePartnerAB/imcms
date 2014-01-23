@@ -75,19 +75,19 @@ object ImcmsFileBrowser {
   def addLocation(captionResourceId: String, conf: LocationConf, image: Option[Resource])(browser: FileBrowser) =
     browser |>> { _ => browser.addLocation(captionResourceId.i, conf, image) }
 
-  val addHomeLocation = addLocation("file.browser.location.home", LocationConf(Imcms.getPath), Theme.Icon.Browser.TabHome32.asOption)_
+  val addHomeLocation = addLocation("file_browser.location.home", LocationConf(Imcms.getPath), Theme.Icon.Browser.TabHome32.asOption)_
 
   val addImagesLocation =
-    addLocation("file.browser.location.images", LocationConf(Imcms.getPath, "images"), Theme.Icon.Browser.TabImages32.asOption)_
+    addLocation("file_browser.location.images", LocationConf(Imcms.getPath, "images"), Theme.Icon.Browser.TabImages32.asOption)_
 
   val addTemplatesLocation =
-    addLocation("file.browser.location.templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), Theme.Icon.Browser.TabTemplates32.asOption)_
+    addLocation("file_browser.location.templates", LocationConf(Imcms.getPath, "WEB-INF/templates/text"), Theme.Icon.Browser.TabTemplates32.asOption)_
 
   val addLogsLocation =
-    addLocation("file.browser.location.logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), Theme.Icon.Browser.TabLogs32.asOption)_
+    addLocation("file_browser.location.logs", LocationConf(Imcms.getPath, "WEB-INF/logs"), Theme.Icon.Browser.TabLogs32.asOption)_
 
   val addConfLocation =
-    addLocation("file.browser.location.conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), Theme.Icon.Browser.TabConf32.asOption)_
+    addLocation("file_browser.location.conf", LocationConf(Imcms.getPath, "WEB-INF/conf"), Theme.Icon.Browser.TabConf32.asOption)_
 
   val addAllLocations =
     Function.chain(Seq(addHomeLocation, addImagesLocation, addTemplatesLocation, addLogsLocation, addConfLocation))
@@ -309,16 +309,16 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
     w.setMultiSelect(multiSelect)
 
     addContainerProperties(w,
-      PropertyDescriptor[String]("file.browser.items.col.name".i),
-      PropertyDescriptor[String]("file.browser.items.col.modified".i),
-      PropertyDescriptor[String]("file.browser.items.col.size".i),
-      PropertyDescriptor[String]("file.browser.items.col.kind".i)
+      PropertyDescriptor[String]("file_browser.items.col.name".i),
+      PropertyDescriptor[String]("file_browser.items.col.modified".i),
+      PropertyDescriptor[String]("file_browser.items.col.size".i),
+      PropertyDescriptor[String]("file_browser.items.col.kind".i)
     )
 
     import Table._
     w.setColumnAlignments(Align.LEFT, Align.RIGHT, Align.RIGHT, Align.RIGHT)
     w.setRowHeaderMode(RowHeaderMode.ICON_ONLY)
-    w.setColumnExpandRatio("file.browser.items.col.name", 1f)
+    w.setColumnExpandRatio("file_browser.items.col.name", 1f)
     w.setStyleName(Reindeer.TABLE_BORDERLESS)
   }
 
@@ -327,18 +327,18 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
     val base = 1024
     val baseFn = java.lang.Math.pow(1024, _: Double).toInt
     val (dirs, files) = dir.listFiles.partition(_.isDirectory)
-    def lastModified(file: File) = "file.browser.items.col.modified.fmt".f(file.lastModified.asInstanceOf[AnyRef])
+    def lastModified(file: File) = "file_browser.items.col.modified.fmt".f(file.lastModified.asInstanceOf[AnyRef])
 
     view.removeAllItems()
 
     dirs.sortWith((d1, d2) => d1.getName.compareToIgnoreCase(d2.getName) < 0).foreach { dir =>
-      view.addItem(Array[AnyRef](dir.getName, lastModified(dir), "--", "file.browser.items.col.kind.dir".i), dir)
+      view.addItem(Array[AnyRef](dir.getName, lastModified(dir), "--", "file_browser.items.col.kind.dir".i), dir)
     }
 
     for (file <- files.sortWith((f1, f2) => f1.getName.compareToIgnoreCase(f2.getName) < 0) if filter(file)) {
       view.addItem(
         Array[AnyRef](
-          file.getName, lastModified(file), FileProperties.sizeAsString(file), "file.browser.items.col.kind.file".i
+          file.getName, lastModified(file), FileProperties.sizeAsString(file), "file_browser.items.col.kind.file".i
         ),
         file)
     }

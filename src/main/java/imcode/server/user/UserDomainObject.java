@@ -813,10 +813,16 @@ public class UserDomainObject implements Cloneable, Serializable {
         return Collections.unmodifiableSet(phoneNumbers);
     }
 
+    /**
+     * @return roles this user can administrate if he is Useradmin.
+     */
     public RoleId[] getUserAdminRoleIds() {
         return userAdminRoleIds.toArray();
     }
 
+    /**
+     * @param userAdminRoleReferences roles this user can administrate if he is Useradmin.
+     */
     public void setUserAdminRolesIds(RoleId[] userAdminRoleReferences) {
         userAdminRoleIds = new RoleIds(userAdminRoleReferences);
     }

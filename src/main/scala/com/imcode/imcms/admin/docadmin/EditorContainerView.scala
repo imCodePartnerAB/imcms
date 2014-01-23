@@ -17,10 +17,10 @@ class EditorContainerView(title: String = null) extends CustomComponent with Ful
   setCompositionRoot(lytContent)
 
   object buttons {
-    val btnSave = new Button("btn_save".i)
-    val btnSaveAndClose = new Button("btn_save_and_close".i)
-    val btnClose = new Button("btn_close".i)
-    val btnReset = new Button("btn_reset".i)
+    val btnSave = new Button("btn_caption.save".i)
+    val btnSaveAndClose = new Button("btn_caption.save_and_close".i)
+    val btnClose = new Button("btn_caption.close".i)
+    val btnReset = new Button("btn_caption.reset".i)
   }
 
   lytButtons.addComponents(buttons.btnSave, buttons.btnSaveAndClose, buttons.btnClose, buttons.btnReset)

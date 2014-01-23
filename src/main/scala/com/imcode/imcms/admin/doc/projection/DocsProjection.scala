@@ -160,7 +160,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
     createQuery() match {
       case Failure(throwable) =>
         docsContainer.setQueryOpt(None)
-        new ErrorDialog(throwable.getMessage.i) |> Current.ui.addWindow
+        new ErrorDialog(throwable.getMessage.i).show()
 
       case Success(solrQuery) =>
         view.removeComponent(0, 1)

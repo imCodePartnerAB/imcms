@@ -38,21 +38,21 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
   def mkDocOfType[T <: DocumentDomainObject : ClassTag] {
     projection.selection match {
       case selection if selection.isEmpty || selection.size > 1 =>
-        new InformationDialog("Please select a text document you want to use as a template".i) |>> Current.ui.addWindow
+        new InformationDialog("Please select a text document you want to use as a template".i).show()
 
       case selection => selection.head |> { ref =>
         (imcmsServices.getDocumentMapper.getDefaultDocument(ref.metaId(), ref.language()) : DocumentDomainObject) match {
           case null => showMissingDocNotification()
 
           case selectedDoc if !selectedDoc.isInstanceOf[TextDocumentDomainObject] =>
-            new InformationDialog("Please select a text document".i) |>> Current.ui.addWindow
+            new InformationDialog("Please select a text document".i).show()
 
           case selectedDoc: TextDocumentDomainObject =>
             val (newDocType, dlgCaption) = scala.reflect.classTag[T].runtimeClass match {
-              case c if c == classOf[TextDocumentDomainObject] => DocumentTypeDomainObject.TEXT_ID -> "new_text_doc.dlg.title".i
-              case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "new_file_doc.dlg.title".i
-              case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "new_url_doc.dlg.title".i
-              case c if c == classOf[HtmlDocumentDomainObject] => DocumentTypeDomainObject.HTML_ID -> "new_html_doc.dlg.title".i
+              case c if c == classOf[TextDocumentDomainObject] => DocumentTypeDomainObject.TEXT_ID -> "new_doc_dlg_title.text".i
+              case c if c == classOf[FileDocumentDomainObject] => DocumentTypeDomainObject.FILE_ID -> "new_doc_dlg_title.file".i
+              case c if c == classOf[UrlDocumentDomainObject] => DocumentTypeDomainObject.URL_ID -> "new_doc_dlg_title.url".i
+              case c if c == classOf[HtmlDocumentDomainObject] => DocumentTypeDomainObject.HTML_ID -> "new_doc_dlg_title.html".i
             }
 
             val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.user)

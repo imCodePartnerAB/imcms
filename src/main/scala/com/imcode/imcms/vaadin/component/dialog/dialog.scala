@@ -75,26 +75,30 @@ trait CustomSizeDialog extends Dialog {
 }
 
 trait YesButton { this: Dialog =>
-  val btnYes = new Button("btn_yes".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
+  val btnYes = new Button("btn_caption.yes".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
 
   def setYesButtonHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnYes, handler)
 }
 
 trait NoButton { this: Dialog =>
-  val btnNo = new Button("btn_no".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/cancel.png")) }
+  val btnNo = new Button("btn_caption.no".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/cancel.png")) }
 
   def setNoButtonHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnNo, handler)
 }
 
 trait OKButton { this: Dialog =>
-  val btnOk = new Button("btn_ok".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
+  val btnOk = new Button("btn_caption.ok".i) with SingleClickListener |>> { _.setIcon(new ThemeResource("icons/16/ok.png")) }
 
   def setOkButtonHandler(handler: => Unit): Unit = Dialog.wrapButtonClickHandler(this, btnOk, handler)
 }
 
+trait OKCaptionIsSave { this: OKButton =>
+  btnOk.setCaption("btn_caption.save".i)
+}
+
 
 trait CancelButton { this: Dialog =>
-  val btnCancel = new Button("btn_cancel".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
+  val btnCancel = new Button("btn_caption.cancel".i) with SingleClickListener { setIcon(new ThemeResource("icons/16/cancel.png")) }
 
   setCancelButtonHandler(close())
 
@@ -162,7 +166,7 @@ class YesNoCancelDialog(caption: String = "") extends Dialog(caption) with YesBu
 
 /** Confirmation dialog window. */
 class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(caption) {
-  def this(msg: String = "") = this("dlg.confirm.title".i, msg)
+  def this(msg: String = "") = this("dlg_title.confirmaton".i, msg)
 
   val lblMessage = new Label(msg) with UndefinedSize
 
@@ -171,13 +175,13 @@ class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(ca
 
 
 /** Information dialog window. */
-class InformationDialog(msg: String = "") extends MsgDialog("dlg.info.title".i, msg)
+class InformationDialog(msg: String = "") extends MsgDialog("dlg_title.info".i, msg)
 
 /** Error dialog window. */
-class ErrorDialog(msg: String = "") extends MsgDialog("dlg.err.title".i, msg)
+class ErrorDialog(msg: String = "") extends MsgDialog("dlg_title.error".i, msg)
 
 /** Error dialog window. */
-class OkCancelErrorDialog(msg: String = "") extends OkCancelDialog("dlg.err.title".i) with MsgLabel {
+class OkCancelErrorDialog(msg: String = "") extends OkCancelDialog("dlg_title.error".i) with MsgLabel {
   lblMessage.value = msg
 }
 

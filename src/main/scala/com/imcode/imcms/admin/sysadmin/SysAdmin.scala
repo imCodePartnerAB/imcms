@@ -192,7 +192,7 @@ class SysAdmin extends UI {
 
   lazy val documents = new TabSheet with FullSize {
     val manager = new DocManager
-    addTab(manager.view, "doc.mgr.title".i)
+    addTab(manager.view, "doc_mgr.title".i)
     setStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 

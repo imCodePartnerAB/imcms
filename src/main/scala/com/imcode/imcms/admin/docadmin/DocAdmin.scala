@@ -166,8 +166,8 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
       if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
         closeEditor()
       } else {
-        new ConfirmationDialog("menu_editor.dlg.confirmation.close_without_saving.title".i,
-                               "menu_editor.dlg.confirmation.close_without_saving.message".i) |>> { dlg =>
+        new ConfirmationDialog("menu_editor_dlg.confirmation.close_without_saving.title".i,
+                               "menu_editor_dlg.confirmation.close_without_saving.message".i) |>> { dlg =>
           dlg.setOkButtonHandler {
             closeEditor()
             dlg.close()

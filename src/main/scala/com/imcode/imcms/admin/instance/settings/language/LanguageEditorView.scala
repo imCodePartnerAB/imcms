@@ -8,11 +8,11 @@ import com.imcode.imcms.vaadin.component._
 
 class LanguageEditorView extends FormLayout with UndefinedSize {
 
-  val txtId = new TextField("doc_lng_editor.frm_fld.id".i) with Disabled
-  val txtCode = new TextField("doc_lng_editor.frm_fld.code".i)
-  val txtName = new TextField("doc_lng_editor.frm_fld.name".i)
-  val txtNativeName = new TextField("doc_lng_editor.frm_fld.native_name".i)
-  val chkEnabled = new CheckBox("doc_lng_editor.frm_fld.is_enabled".i)
+  val txtId = new TextField("doc_language_editor.frm_fld.id".i) with Disabled
+  val txtCode = new TextField("doc_language_editor.frm_fld.code".i)
+  val txtName = new TextField("doc_language_editor.frm_fld.name".i)
+  val txtNativeName = new TextField("doc_language_editor.frm_fld.native_name".i)
+  val chkEnabled = new CheckBox("doc_language_editor.frm_fld.is_enabled".i)
 
   addComponents(txtId, txtCode, txtName, txtNativeName, chkEnabled)
 }

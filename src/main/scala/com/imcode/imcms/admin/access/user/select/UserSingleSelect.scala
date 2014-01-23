@@ -20,7 +20,7 @@ class UserSingleSelect {
         dlg.close()
       }
 
-      Current.ui.addWindow(dlg)
+      dlg.show()
     }
 
     w.btnClear.addClickHandler { _ => selection = None }

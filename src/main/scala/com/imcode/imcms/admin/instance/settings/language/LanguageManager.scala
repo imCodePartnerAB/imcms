@@ -86,9 +86,9 @@ class LanguageManager {
   private def editAndSave(vo: DocumentLanguage) {
     val id = vo.getId
     val isNew = id == null
-    val dialogTitle = if (isNew) "doc_lng_editor_dlg_title.new".i else "doc_lng_editor_dlg_title.edit".i
+    val dialogTitle = if (isNew) "doc_language_editor_dlg_title.new".i else "doc_language_editor_dlg_title.edit".f(vo.getName)
 
-    val dlg = new OkCancelDialog(dialogTitle)
+    val dlg = new OkCancelDialog(dialogTitle) with OKCaptionIsSave
     dlg.mainComponent = new LanguageEditorView |>> { c =>
       c.txtId.value = if (isNew) "" else id.toString
       c.txtCode.value = vo.getCode.trimToEmpty
@@ -121,8 +121,8 @@ class LanguageManager {
         }
       }
     }
-    dlg.btnOk.setCaption("btn_save".i)
-    Current.ui.addWindow(dlg)
+
+    dlg.show()
   } // editAndSave
 
   def reload() {

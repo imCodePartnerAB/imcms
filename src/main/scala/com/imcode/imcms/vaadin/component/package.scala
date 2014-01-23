@@ -61,6 +61,7 @@ package object component {
 
   implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBoxWrapper(checkBox)
 
+  implicit def wrapWindow(window: Window) = new WindowWrapper(window)
 
   implicit def wrapSizeable(sizeable: Sizeable) = new {
     def setSize(width: Float, height: Float, units: Sizeable.Unit = Sizeable.Unit.PIXELS) {

@@ -168,8 +168,8 @@ class FilePreview(browser: FileBrowser) {
   browser.listen { ev =>
     if (enabled) ev match {
       case Some(LocationSelection(_, Seq(item))) if item.isFile =>
-        val caption = if (FileOps.isShowable(item)) "file.preview.act.show".i
-                      else "file.browser.preview.act.download".i
+        val caption = if (FileOps.isShowable(item)) "file_preview.act.show".i
+                      else "file_browser.preview.act.download".i
         val iconResource = if (FileOps.isDirectlyShowable(item)) new FileResource(item)
                            else new ThemeResource("images/noncommercial/%s.png".format(
                              FileOps.extString(item) match {
@@ -186,7 +186,7 @@ class FilePreview(browser: FileBrowser) {
       case _ =>
         if (!preview.isEmpty) {
           preview.clear
-          updateDisabled(view.btnAction) { _ setCaption "file.preview.act.na".i }
+          updateDisabled(view.btnAction) { _ setCaption "file_preview.act.na".i }
         }
     }
   }
@@ -231,7 +231,7 @@ class ImagePicker(browser: FileBrowser) {
       preview.clear()
     }
 
-    w.btnChoose.addClickHandler { _ => Current.ui.addWindow(fileDialog) }
+    w.btnChoose.addClickHandler { _ => fileDialog.show() }
   }
 
   preview.listen { component.btnRemove setEnabled _.isDefined }

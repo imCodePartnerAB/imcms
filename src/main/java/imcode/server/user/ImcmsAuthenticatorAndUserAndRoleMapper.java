@@ -431,9 +431,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     private void updateUserRoles(UserDomainObject newUser) {
-        Set<RoleId> newUserRoleIds = new HashSet(Arrays.asList(newUser.getRoleIds()));
+        Set<RoleId> newUserRoleIds = new HashSet<>(Arrays.asList(newUser.getRoleIds()));
         newUserRoleIds.add(RoleId.USERS);
-        CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "user_id", new Integer(newUser.getId())));
+        CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "user_id", newUser.getId()));
         for (RoleId roleId : newUserRoleIds) {
             updateUserRolesCommand.add(new InsertIntoTableDatabaseCommand("user_roles_crossref", new String[][]{
                     {"user_id", "" + newUser.getId()},

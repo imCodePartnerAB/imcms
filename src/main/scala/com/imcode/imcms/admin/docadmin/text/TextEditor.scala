@@ -29,7 +29,7 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
     w.miFormatHtml.setCommandHandler { _ => setFormat(TextDomainObject.Format.HTML) }
     w.miFormatPlain.setCommandHandler { _ => setFormat(TextDomainObject.Format.PLAIN_TEXT) }
     w.miHistory.setCommandHandler { _ =>
-      new TextHistoryDialog("Restore text", currentText) |> Current.ui.addWindow
+      new TextHistoryDialog("Restore text", currentText).show()
     }
   }
 
