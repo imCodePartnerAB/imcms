@@ -38,7 +38,7 @@ trait Resizable { this: Window =>
 class Dialog(caption: String = "") extends Window(caption) with Modal {
   protected val mainComponentSizeAssert: Component => Unit = ComponentAsserts.assertSizeNotDefinedInPersentage
   protected val footerComponentSizeAssert: Component => Unit = ComponentAsserts.assertSizeNotDefinedInPersentage
-  protected val content = new GridLayout(1, 2) with Spacing
+  protected val content = new GridLayout(1, 2)
 
   setContent(content)
   setResizable(false)
@@ -217,10 +217,27 @@ object Dialog extends Log4jLoggerSupport {
         case Left(errors) =>
           Current.page.showConstraintViolationNotification(errors)
 
-        case Right(values) =>
-          validDataHandler(values)
+        case Right(data) =>
+          validDataHandler(data)
           dialog.close()
       }
     }
   }
+
+  def bind(dialog: OKEditorDialog)(validDataHandler: dialog.editor.Data => Unit) {
+    dialog.setOkButtonHandler {
+      dialog.editor.collectValues() match {
+        case Left(errors) =>
+          Current.page.showConstraintViolationNotification(errors)
+
+        case Right(data) =>
+          validDataHandler(data)
+          dialog.close()
+      }
+    }
+  }
+}
+
+trait OKEditorDialog extends Dialog with OKButton {
+  val editor: Editor
 }

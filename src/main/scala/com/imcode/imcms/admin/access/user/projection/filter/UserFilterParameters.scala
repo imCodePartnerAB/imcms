@@ -4,7 +4,7 @@ package admin.access.user.projection.filter
 
 import imcode.server.user.RoleId
 
-case class UserFilterValues(
+case class UserFilterParameters(
   text: Option[String] = Some(""),
   roles: Option[Set[RoleId]] = None,
   isShowInactive: Boolean = false

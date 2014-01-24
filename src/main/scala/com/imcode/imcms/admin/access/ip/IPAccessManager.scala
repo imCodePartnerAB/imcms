@@ -88,7 +88,7 @@ class IPAccessManager {
         w.userPickerComponent.btnChoose.addClickHandler { _ =>
           new UserSingleSelectDialog |>> { dlg =>
             dlg.setOkButtonHandler {
-              w.userPickerComponent.txtLoginName.value = dlg.search.selection.head.getLoginName
+              w.userPickerComponent.txtLoginName.value = dlg.projection.selection.head.getLoginName
             }
           } |> Current.ui.addWindow
         }

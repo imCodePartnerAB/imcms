@@ -25,7 +25,7 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
   private val selectionRef = new AtomicReference(Seq.empty[UserDomainObject])
 
   private val filter = new UserFilter
-  private val filteredUsersTable = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable with FullSize |>> { tbl =>
+  val usersView = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable with FullSize |>> { tbl =>
     addContainerProperties(tbl,
       PropertyDescriptor[UserId]("users_projection.container_property.id"),
       PropertyDescriptor[String]("users_projection.container_property.login"),
@@ -53,12 +53,12 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
   }
 
   val view = new VerticalLayout with FullSize |>> { w =>
-    w.addComponents(filter.view, filteredUsersTable)
-    w.setExpandRatio(filteredUsersTable, 1f)
+    w.addComponents(filter.view, usersView)
+    w.setExpandRatio(usersView, 1f)
   }
 
-  filteredUsersTable.addValueChangeHandler { _ =>
-    selectionRef.set(filteredUsersTable.value.asScala.map(userId => roleMapper.getUser(userId))(breakOut))
+  usersView.addValueChangeHandler { _ =>
+    selectionRef.set(usersView.value.asScala.map(userId => roleMapper.getUser(userId))(breakOut))
     notifyListeners()
   }
 
@@ -74,7 +74,7 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
 
 
   def reload() {
-    val state = filter.getValues
+    val state = filter.getFilterParameters
 
     val loginPredicateOpt: Option[(UserDomainObject => Boolean)] = PartialFunction.condOpt(state.text) {
       case Some(text) if text.nonEmpty => { _.getLoginName.toLowerCase.contains(text.toLowerCase) }
@@ -94,12 +94,12 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
         case ps => { u => ps.forall(p => p(u)) }
       }
 
-    filteredUsersTable.removeAllItems()
+    usersView.removeAllItems()
     for {
       user <- roleMapper.getAllUsers.toList if !user.isDefaultUser && predicate(user)
       userId = user.getId : JInteger
     } {
-      filteredUsersTable.addRow(
+      usersView.addRow(
         userId,
         userId,
         user.getLoginName,

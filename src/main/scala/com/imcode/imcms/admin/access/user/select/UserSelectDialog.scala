@@ -9,12 +9,24 @@ import com.imcode.imcms.admin.access.user.projection.UsersProjection
 import com.imcode.imcms.vaadin.component._
 
 abstract class UserSelectDialog(caption: String, multiSelect: Boolean) extends OkCancelDialog(caption) with CustomSizeDialog with Resizable {
-  val search = new UsersProjection(multiSelect = multiSelect)
+  val projection = new UsersProjection(multiSelect) |>> { p =>
+    p.usersView.setColumnCollapsingAllowed(true)
 
-  mainComponent = search.view
+    Seq("users_projection.container_property.id", "users_projection.container_property.login",
+      "users_projection.container_property.first_name", "users_projection.container_property.last_name",
+      "users_projection.container_property.is_superadmin", "users_projection.container_property.is_inactive", ""
+    ).foreach(id => p.usersView.setColumnCollapsible(id, false))
 
-  search.listen(selection => btnOk.setEnabled(selection.nonEmpty))
-  search.notifyListeners()
+    Seq("users_projection.container_property.email", "users_projection.container_property.email").foreach { id =>
+      p.usersView.setColumnCollapsible(id, true)
+      p.usersView.setColumnCollapsed(id, true)
+    }
+  }
+
+  mainComponent = projection.view
+
+  projection.listen(selection => btnOk.setEnabled(selection.nonEmpty))
+  projection.notifyListeners()
 
   this.setSize(600, 500)
 }

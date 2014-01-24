@@ -6,7 +6,6 @@ package access.user
 import _root_.java.lang.String
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
-import com.imcode.imcms.vaadin.component.dialog.OkCancelDialog
 import com.imcode.imcms.vaadin.{Current, Editor}
 import com.vaadin.server.UserError
 import scala.collection.JavaConverters._
@@ -24,89 +23,77 @@ class UserEditor(user: UserDomainObject) extends Editor with ImcmsServicesSuppor
 
   override type Data = UserDomainObject
 
-  private val contactsEditor = new UserContactsEditor(user)
-
   override val view = new UserEditorView |>> { v =>
-    v.sltUILanguage.addItem("eng", "English", Theme.Icon.Language.flag("eng"))
-    v.sltUILanguage.addItem("swe", "Svenska", Theme.Icon.Language.flag("swe"))
-
-    v.btnEditContacts.addClickHandler { _ =>
-      val contactsEditorDialog = new OkCancelDialog("Contacts".i)
-
-      contactsEditorDialog.mainComponent = contactsEditor.view
-      contactsEditorDialog.setOkButtonHandler {
-        contactsEditorDialog.close()
-      }
-
-      contactsEditorDialog.show()
-    }
+    v.account.sltUILanguage.addItem("eng", "English", Theme.Icon.Language.flag("eng"))
+    v.account.sltUILanguage.addItem("swe", "Svenska", Theme.Icon.Language.flag("swe"))
   }
 
   resetValues()
 
   override def resetValues() {
-    view.chkEnabled.setValue(user.isActive)
-    view.txtFirstName.setValue(user.getFirstName)
+    view.account.chkEnabled.setValue(user.isActive)
+    view.account.txtFirstName.setValue(user.getFirstName)
 
-    view.txtLastName.setValue(user.getLastName)
-    view.txtLogin.setValue(user.getLoginName)
-    view.txtEmail.setValue(user.getEmailAddress)
+    view.account.txtLastName.setValue(user.getLastName)
+    view.account.txtLogin.setValue(user.getLoginName)
+    view.account.txtEmail.setValue(user.getEmailAddress)
 
     if (!user.isNew) {
       // for decoration only - show that password exists.
-      view.txtPassword.setInputPrompt("***************")
-      view.txtPasswordCheck.setInputPrompt("***************")
+      view.account.txtPassword.setInputPrompt("***************")
+      view.account.txtPasswordCheck.setInputPrompt("***************")
     }
 
-    view.tcsRoles.removeAllItems()
+    view.account.tcsRoles.removeAllItems()
     for (role <- imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllRolesExceptUsersRole) {
-      view.tcsRoles.addItem(role.getId, role.getName)
+      view.account.tcsRoles.addItem(role.getId, role.getName)
     }
 
-    view.tcsRoles.value = user.getRoleIds.filterNot(_ == RoleId.USERS).toSeq.asJava
-    view.sltUILanguage.select(
+    view.account.tcsRoles.value = user.getRoleIds.filterNot(_ == RoleId.USERS).toSeq.asJava
+    view.account.sltUILanguage.select(
       Set("eng", "swe").find(_ == user.getLanguageIso639_2).getOrElse(Current.imcmsUser.getLanguageIso639_2)
     )
-
-    contactsEditor.resetValues()
   }
 
   override def collectValues(): UserEditor#ErrorsOrData = {
-    val loginValidationErrorOpt = validateLogin(view.txtLogin.trimmedValue)
-    val emailValidationErrorOpt = validateEmail(view.txtEmail.trimmedValue)
-    val passwordValidationErrorOpt = validatePassword(view.txtPassword.value, view.txtPasswordCheck.value)
+    val loginValidationErrorOpt = validateLogin(view.account.txtLogin.trimmedValue)
+    val emailValidationErrorOpt = validateEmail(view.account.txtEmail.trimmedValue)
+    val passwordValidationErrorOpt = validatePassword(view.account.txtPassword.value, view.account.txtPasswordCheck.value)
 
-    Seq(view.lytLogin, view.txtEmail, view.lytPassword).foreach(_.setComponentError(null))
+    Seq(view.account.lytLogin, view.account.txtEmail, view.account.lytPassword).foreach(_.setComponentError(null))
+    view.getTab(0).setComponentError(null)
 
     if (loginValidationErrorOpt.isDefined) {
-      view.lytLogin.setComponentError(new UserError(loginValidationErrorOpt.get))
+      view.account.lytLogin.setComponentError(new UserError(loginValidationErrorOpt.get))
     }
 
     if (emailValidationErrorOpt.isDefined) {
-      view.txtEmail.setComponentError(new UserError(emailValidationErrorOpt.get))
+      view.account.txtEmail.setComponentError(new UserError(emailValidationErrorOpt.get))
     }
 
     if (passwordValidationErrorOpt.isDefined) {
-      view.lytPassword.setComponentError(new UserError(passwordValidationErrorOpt.get))
+      view.account.lytPassword.setComponentError(new UserError(passwordValidationErrorOpt.get))
     }
 
     Seq(loginValidationErrorOpt, emailValidationErrorOpt, passwordValidationErrorOpt).flatten match {
-      case errors if errors.nonEmpty => Left(errors)
+      case errors if errors.nonEmpty =>
+        view.getTab(0).setComponentError(new UserError(errors.mkString(", ")))
+        Left(errors)
       case _ =>
         val u = user.clone()
 
-        if (user.isNew || view.txtPassword.value.length > 0) {
-          u.setPassword(view.txtPassword.value)
+        if (user.isNew || view.account.txtPassword.value.length > 0) {
+          u.setPassword(view.account.txtPassword.value)
         }
-        u.setActive(view.chkEnabled.checked)
-        u.setFirstName(view.txtFirstName.trimmedValue)
-        u.setLastName(view.txtLastName.trimmedValue)
-        u.setLoginName(view.txtLogin.trimmedValue)
+        u.setActive(view.account.chkEnabled.checked)
+        u.setFirstName(view.account.txtFirstName.trimmedValue)
+        u.setLastName(view.account.txtLastName.trimmedValue)
+        u.setLoginName(view.account.txtLogin.trimmedValue)
 
-        u.setRoleIds(view.tcsRoles.value.asScala.toArray)
-        u.setLanguageIso639_2(view.sltUILanguage.selection)
-        u.setEmailAddress(view.txtEmail.trimmedValue)
-        u.setRoleIds(view.tcsRoles.selection.toArray)
+        u.setRoleIds(view.account.tcsRoles.value.asScala.toArray)
+        u.setLanguageIso639_2(view.account.sltUILanguage.selection)
+        u.setEmailAddress(view.account.txtEmail.trimmedValue)
+        u.setRoleIds(view.account.tcsRoles.selection.toArray)
 
         Right(u)
     }

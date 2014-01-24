@@ -1,5 +1,6 @@
 package com.imcode
-package imcms.admin.access.role
+package imcms
+package admin.access.role
 
 import _root_.imcode.server.user.RoleId
 import com.vaadin.ui.themes.Reindeer
@@ -13,11 +14,11 @@ import com.imcode.imcms.vaadin.data._
 class RoleManagerView extends VerticalLayout with FullSize {
 
   val mb = new MenuBar with FullWidth |>> { _.addStyleName("manager") }
-  val miNew = mb.addItem("Add new")
-  val miEdit = mb.addItem("Edit")
-  val miDelete = mb.addItem("Delete")
-  val miReload = mb.addItem("Reload")
-  val miHelp = mb.addItem("Help")
+  val miNew = mb.addItem("mi.new".i)
+  val miEdit = mb.addItem("mi.edit".i)
+  val miDelete = mb.addItem("mi.delete".i)
+  val miReload = mb.addItem("mi.reload".i)
+  val miHelp = mb.addItem("mi.help".i)
   val tblRoles = new Table with SingleSelect[RoleId] with Immediate with FullSize |>> { tbl =>
     addContainerProperties(tbl,
       PropertyDescriptor[JInteger]("Id"),

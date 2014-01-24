@@ -8,12 +8,13 @@ import com.imcode.imcms.vaadin.component.dialog._
 import com.vaadin.ui.VerticalLayout
 
 
-class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCancelDialog(caption) with OKCaptionIsSave
-    with CustomSizeDialog with BottomContentMarginDialog with Resizable {
+class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCancelDialog(caption)
+with OKEditorDialog with OKCaptionIsSave
+with CustomSizeDialog with Resizable {
 
-  val docEditor = new DocEditor(doc)
+  val editor = new DocEditor(doc)
 
-  mainComponent = new VerticalLayout(docEditor.view) with FullSize |>> { _.addStyleName("doc_editor") }
+  mainComponent = new VerticalLayout(editor.view) with FullSize |>> { _.addStyleName("doc_editor") }
 
   this.setSize(750, 600)
 }

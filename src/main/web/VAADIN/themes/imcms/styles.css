@@ -131,11 +131,14 @@ table#docs_projection_basic_filter #buttons {
     padding-right: 1px;
 }
 
+.v-tabsheet-user-editor {
+    padding-top: 1px;
+    padding-left: 1px;
+    border-bottom: 1px solid;
+}
+
 .dialog-buttons {
     padding-top: 4px;
-    padding-left: 2px;
-    padding-left: 2px;
-    border-top: 1px solid;
 }
 
 .v-accordion {

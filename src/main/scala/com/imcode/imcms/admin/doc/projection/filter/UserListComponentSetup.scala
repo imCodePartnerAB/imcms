@@ -19,7 +19,7 @@ trait UserListComponentSetup { this: UserListComponent =>
   btnAdd.addClickHandler { _ =>
     new UserMultiSelectDialog |>> { dlg =>
       dlg.setOkButtonHandler {
-        for (user <- dlg.search.selection) lstUsers.addItem(user.getId: JInteger, "#" + user.getLoginName)
+        for (user <- dlg.projection.selection) lstUsers.addItem(user.getId: JInteger, "#" + user.getLoginName)
       }
     } |> Current.ui.addWindow
   }

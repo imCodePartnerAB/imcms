@@ -74,7 +74,7 @@ object FileOps {
 
 
 class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Seq[File] = Nil)
-    extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDialog {
+    extends OkCancelDialog(caption) with CustomSizeDialog {
 
   mainComponent = browser.view
 
@@ -95,7 +95,7 @@ class DirSelectionDialog(caption: String, browser: FileBrowser, excludedDirs: Se
  * @param browser - preconfigured browser.
  */
 class FileDialog(caption: String, browser: FileBrowser)
-extends OkCancelDialog(caption) with CustomSizeDialog with BottomContentMarginDialog {
+extends OkCancelDialog(caption) with CustomSizeDialog {
   val preview = new FilePreview(browser)
 
   mainComponent = new FileDialogView(browser.view, preview.view) |>> { w =>

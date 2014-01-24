@@ -6,7 +6,7 @@ import com.imcode.imcms.vaadin.Current
 import _root_.imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.{DocEditorDialog, DocOpener}
-import com.imcode.imcms.vaadin.component.dialog.{InformationDialog, ConfirmationDialog}
+import com.imcode.imcms.vaadin.component.dialog.{Dialog, InformationDialog, ConfirmationDialog}
 
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.server._
@@ -57,33 +57,26 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
             val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.user)
 
-            new DocEditorDialog(dlgCaption, newDoc) |>> { dlg =>
-              dlg.setOkButtonHandler {
-                dlg.docEditor.collectValues() match {
-                  case Left(errors) =>
-                    Current.page.showErrorNotification(errors.mkString(", "))
+            val dialog = new DocEditorDialog(dlgCaption, newDoc)
+            Dialog.bind(dialog) { case (editedDoc, i18nMetas) =>
+              val saveOpts = dialog.editor.contentEditor match {
+                case contentEditor: NewTextDocContentEditor if contentEditor.view.chkCopyI18nMetaTextsToTextFields.checked =>
+                  java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)
 
-                  case Right((editedDoc, i18nMetas)) =>
-                    val saveOpts = dlg.docEditor.contentEditor match {
-                      case contentEditor: NewTextDocContentEditor if contentEditor.view.chkCopyI18nMetaTextsToTextFields.checked =>
-                        java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)
-
-                      case _ =>
-                        java.util.EnumSet.noneOf(classOf[DocumentMapper.SaveOpts])
-                    }
-
-                    imcmsServices.getDocumentMapper.saveNewDocument(
-                      editedDoc,
-                      i18nMetas.values.to[Set].asJava,
-                      saveOpts,
-                      projection.user
-                    )
-                    Current.page.showInfoNotification("New document has been created".i)
-                    projection.reload()
-                    dlg.close()
-                }
+                case _ =>
+                  java.util.EnumSet.noneOf(classOf[DocumentMapper.SaveOpts])
               }
-            } |> Current.ui.addWindow
+
+              imcmsServices.getDocumentMapper.saveNewDocument(
+                editedDoc,
+                i18nMetas.values.to[Set].asJava,
+                saveOpts,
+                projection.user
+              )
+              Current.page.showInfoNotification("New document has been saved".i)
+              projection.reload()
+            }
+            dialog.show()
         }
       }
     }
@@ -132,21 +125,15 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
       (imcmsServices.getDocumentMapper.getWorkingDocument(ref.metaId(), ref.language()) : DocumentDomainObject) match {
         case null => showMissingDocNotification()
         case doc =>
-          val page = Current.page
-          new DocEditorDialog(s"Edit document ${doc.getMetaId}".i, doc) |>> { dlg =>
-            dlg.setOkButtonHandler {
-              dlg.docEditor.collectValues() match {
-                case Left(errors) =>
-                  page.showErrorNotification("Unable to save document".i, errors.mkString(", "))
+          val dialog = new DocEditorDialog(s"Edit document ${doc.getMetaId}".i, doc)
 
-                case Right((editedDoc, i18nMetas)) =>
-                  imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, projection.user)
-                  page.showInfoNotification("Document has been saved".i)
-                  projection.reload()
-                  dlg.close()
-              }
-            }
-          } |> Current.ui.addWindow
+          Dialog.bind(dialog) { case (editedDoc, i18nMetas) =>
+            imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, projection.user)
+            Current.page.showInfoNotification("Document has been saved".i)
+            projection.reload()
+          }
+
+          dialog.show()
       }
     }
   }

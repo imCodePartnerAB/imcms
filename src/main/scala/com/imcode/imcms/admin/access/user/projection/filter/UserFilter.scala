@@ -22,27 +22,27 @@ class UserFilter extends ImcmsServicesSupport {
   }
 
 
-  def reset(): Unit = setValues(UserFilterValues())
+  def reset(): Unit = setFilterParameters(UserFilterParameters())
 
 
-  def setValues(state: UserFilterValues) {
-    view.chkText.checked = state.text.isDefined
-    view.chkRoles.checked = state.roles.isDefined
-    view.chkShowDisabled.checked = state.isShowInactive
+  def setFilterParameters(parameters: UserFilterParameters) {
+    view.chkText.checked = parameters.text.isDefined
+    view.chkRoles.checked = parameters.roles.isDefined
+    view.chkShowDisabled.checked = parameters.isShowInactive
 
     Seq(view.chkText, view.chkRoles, view.chkShowDisabled).foreach(_.fireValueChange(repaintIsNotNeeded = true))
 
-    view.txtText.value = state.text.getOrElse("")
+    view.txtText.value = parameters.text.getOrElse("")
     view.tcsRoles.removeAllItems()
     for (role <- imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllRolesExceptUsersRole) {
       view.tcsRoles.addItem(role.getId)
       view.tcsRoles.setItemCaption(role.getId, role.getName)
     }
-    view.tcsRoles.value = state.roles.getOrElse(Set.empty[RoleId]).asJavaCollection
+    view.tcsRoles.value = parameters.roles.getOrElse(Set.empty[RoleId]).asJavaCollection
   }
 
 
-  def getValues = UserFilterValues(
+  def getFilterParameters = UserFilterParameters(
     when(view.chkText.checked)(view.txtText.trimmedValue),
     when(view.chkRoles.checked)(view.tcsRoles.value.asScala.toSet),
     view.chkShowDisabled.checked

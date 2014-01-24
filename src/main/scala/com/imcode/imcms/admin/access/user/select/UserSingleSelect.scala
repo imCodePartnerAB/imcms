@@ -14,13 +14,13 @@ class UserSingleSelect {
 
   val view = new UserSingleSelectView |>> { w =>
     w.btnSelect.addClickHandler { _ =>
-      val dlg = new UserSingleSelectDialog
-      dlg.setOkButtonHandler {
-        selection = dlg.search.selection.headOption
-        dlg.close()
+      val dialog = new UserSingleSelectDialog
+      dialog.setOkButtonHandler {
+        selection = dialog.projection.selection.headOption
+        dialog.close()
       }
 
-      dlg.show()
+      dialog.show()
     }
 
     w.btnClear.addClickHandler { _ => selection = None }

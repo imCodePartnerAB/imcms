@@ -28,7 +28,7 @@ class PageWrapper(page: Page) {
   def showHtmlInfoNotification(caption: String, description: String = null): Unit =
     showNotification(caption, description, Notification.Type.HUMANIZED_MESSAGE, htmlContentAllowed = true)
 
-  def showUnhandledExceptionNotification(exception: Exception): Unit = showHtmlErrorNotification(
+  def showUnhandledExceptionNotification(exception: Throwable): Unit = showHtmlErrorNotification(
     s"""
         SYSTEM ERROR
         <div style='margin:0; padding:0; overflow:hidden; text-overflow:ellipsis;'>

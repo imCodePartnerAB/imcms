@@ -116,14 +116,14 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
       w.buttons.btnSave.addClickHandler { _ =>
         editor.collectValues() match {
-          case Left(errors) => Current.page.showErrorNotification(errors.mkString(","))
+          case Left(errors) => Current.page.showConstraintViolationNotification(errors)
           case Right((editedDoc, i18nMetas)) =>
             try {
               imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, Current.imcmsUser)
               Current.page.showInfoNotification("notification.doc.saved".i)
               Current.page.open(Current.contextPath, "_self")
             } catch {
-              case e: Exception => Current.page.showErrorNotification("notification.doc.unable_to_save".i, e.getStackTraceString)
+              case e: Exception => Current.page.showUnhandledExceptionNotification(e)
             }
         }
       }

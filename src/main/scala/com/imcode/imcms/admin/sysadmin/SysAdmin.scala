@@ -3,7 +3,6 @@ package imcms
 package admin.sysadmin
 
 import com.imcode.imcms.admin.access.user.UserManager
-import com.imcode.imcms.vaadin.component.dialog.OkCancelDialog
 import com.imcode.imcms.vaadin.component.Theme.Icon
 import com.vaadin.ui.themes.Reindeer
 import scala.collection.JavaConverters._
@@ -14,7 +13,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
-import com.vaadin.server.{ExternalResource, VaadinRequest}
+import com.vaadin.server.VaadinRequest
 
 import _root_.imcode.server.Imcms
 
@@ -172,14 +171,14 @@ class SysAdmin extends UI {
     }
 
     ts.addTab(lblNA)
-    ts.setStyleName(Reindeer.TABSHEET_MINIMAL)
+    ts.addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   val admin = new TabSheet with FullSize |>> { ts =>
     val manager = new Manager
     ts.addTab(manager.view, "imCMS Admin")
-    ts.setStyleName(Reindeer.TABSHEET_MINIMAL)
+    ts.addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
@@ -189,42 +188,42 @@ class SysAdmin extends UI {
   lazy val languages = new TabSheet with FullSize |>> { ts =>
     val manager = new com.imcode.imcms.admin.instance.settings.language.LanguageManager
     ts.addTab(manager.view, "doc.lang.mgr.title".i)
-    ts.setStyleName(Reindeer.TABSHEET_MINIMAL)
+    ts.addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val documents = new TabSheet with FullSize {
     val manager = new DocManager
     addTab(manager.view, "doc_mgr.title".i)
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val ipAccess = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.access.ip.IPAccessManager
     addTab(manager.view, "IP Access ")
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val roles = new TabSheet with FullSize {
     val roleManager = new com.imcode.imcms.admin.access.role.RoleManager
     addTab(roleManager.view, "Roles and their permissions")
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val systemSettings = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.instance.settings.property.PropertyManager
     addTab(manager.view, "System Properties")
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val sessionMonitor = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.instance.monitor.session.counter.SessionCounterManager
     addTab(manager.view, "Counter")
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
@@ -272,14 +271,14 @@ class SysAdmin extends UI {
 
       reload()
     })
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
   lazy val filesystem = new TabSheet with FullSize {
     val manager = new com.imcode.imcms.admin.instance.file.FileManager
     addTab(manager.view, "File manager")
-    setStyleName(Reindeer.TABSHEET_MINIMAL)
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 

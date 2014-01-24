@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.docadmin.menu
 
+import com.imcode.imcms.vaadin.component.dialog.Dialog
 import com.imcode.imcms.vaadin.Current
 import com.vaadin.ui._
 
@@ -99,23 +100,13 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
             updateMenuView()
 
           case selectedDoc =>
-            new DocEditorDialog("doc.edit_properties.title".f(docId), selectedDoc) |>> { dlg =>
-              dlg.setOkButtonHandler {
-                dlg.docEditor.collectValues() match {
-                  case Left(errors) => Current.page.showErrorNotification(errors.mkString(", "))
-                  case Right((modifiedDoc, i18nMetas)) =>
-                    try {
-                      imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.values.to[Set].asJava, Current.imcmsUser)
-                      updateMenuView()
-                      dlg.close()
-                    } catch {
-                      case e: Exception =>
-                        Current.page.showErrorNotification("notification.doc.unable_to_save".i, e.getMessage)
-                        throw e
-                    }
-                }
-              }
-            } |> Current.ui.addWindow
+            val dialog = new DocEditorDialog("doc.edit_properties.title".f(docId), selectedDoc)
+            Dialog.bind(dialog) { case (modifiedDoc, i18nMetas) =>
+              imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.values.to[Set].asJava, Current.imcmsUser)
+              updateMenuView()
+            }
+
+            dialog.show()
         }
       }
     }
