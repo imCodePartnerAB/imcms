@@ -2,7 +2,16 @@ package com.imcode
 package imcms
 package admin.sysadmin
 
+import com.imcode.imcms.admin.access.ip.IPAccessManager
+import com.imcode.imcms.admin.access.role.RoleManager
 import com.imcode.imcms.admin.access.user.UserManager
+import com.imcode.imcms.admin.doc.category.{CategoryTypeManager, CategoryManager}
+import com.imcode.imcms.admin.doc.template.group.TemplateGroupManager
+import com.imcode.imcms.admin.doc.template.TemplateManager
+import com.imcode.imcms.admin.instance.file.FileManager
+import com.imcode.imcms.admin.instance.monitor.session.counter.SessionCounterManager
+import com.imcode.imcms.admin.instance.settings.language.LanguageManager
+import com.imcode.imcms.admin.instance.settings.property.PropertyManager
 import com.imcode.imcms.vaadin.component.Theme.Icon
 import com.vaadin.ui.themes.Reindeer
 import scala.collection.JavaConverters._
@@ -17,7 +26,6 @@ import com.vaadin.server.{ThemeResource, VaadinRequest}
 import _root_.imcode.server.Imcms
 
 import com.vaadin.annotations.PreserveOnRefresh
-import com.imcode.imcms.I18nMessage
 import com.imcode.imcms.vaadin.Current
 import com.imcode.imcms.admin.doc.manager.DocManager
 
@@ -45,62 +53,65 @@ import com.imcode.imcms.admin.doc.manager.DocManager
 @com.vaadin.annotations.Theme("imcms")
 class SysAdmin extends UI {
 
-  private class MenuItem(val id: AnyRef, viewOpt: => Option[Component] = None,
-                         val iconOpt: Option[ThemeResource] = None, val children: Seq[MenuItem]) {
+  private class MenuItem(val caption: String, val iconOpt: Option[ThemeResource] = None,
+                         viewOpt: => Option[Component] = None, val children: Seq[MenuItem]) {
 
-    def view = viewOpt.getOrElse(NA(id))
+    def view = viewOpt.getOrElse(NA(caption))
   }
 
   private object MenuItem {
-    def apply(id: AnyRef, children: MenuItem*) = new MenuItem(id, children = children)
+    def apply(caption: String, children: MenuItem*) =
+      new MenuItem(caption, children = children)
 
-    def apply(id: AnyRef, view: => Component, children: MenuItem*) = new MenuItem(id, Some(view), children = children)
+    def apply(caption: String, view: => Component, children: MenuItem*) =
+      new MenuItem(caption, viewOpt = Some(view), children = children)
 
-    def apply(id: AnyRef, view: => Component, icon: ThemeResource, children: MenuItem*) =
-      new MenuItem(id, Some(view), Some(icon), children)
+    def apply(caption: String, icon: ThemeResource, view: => Component, children: MenuItem*) =
+      new MenuItem(caption, Some(icon), Some(view), children)
   }
 
 
   private val menuRoot =
-    MenuItem("mm.admin", admin,
-      MenuItem("mm.docs", documents,
-        MenuItem("mm.docs.categories", categories, Icon.Done16),
-        MenuItem("mm.docs.templates", templates, Icon.Done16),
-        MenuItem("mm.docs.languages", languages, Icon.Done16)
+    MenuItem("mm.admin", adminView,
+      MenuItem("mm.docs", documentsView,
+        MenuItem("mm.docs.categories", Icon.Done16, categoriesView),
+        MenuItem("mm.docs.templates", Icon.Done16, templatesView),
+        MenuItem("mm.docs.languages", Icon.Done16, languagesView)
       ),
 
       MenuItem("mm.permissions",
-        MenuItem("mm.permissions.users", users , Icon.Done16),
-        MenuItem("mm.permissions.roles", roles , Icon.Done16),
-        MenuItem("mm.permissions.ip_access", ipAccess, Icon.Done16)
+        MenuItem("mm.permissions.users", Icon.Done16, usersView),
+        MenuItem("mm.permissions.roles", Icon.Done16, rolesView),
+        MenuItem("mm.permissions.ip_access", Icon.Done16, ipAccessView)
       ),
 
       MenuItem("mm.system",
-        MenuItem("mm.system.settings", systemSettings, Icon.Done16,
+        MenuItem("mm.system.settings", Icon.Done16, systemSettingsView,
           MenuItem("mm.system.monitor"),
           MenuItem("mm.system.monitor.solr"),
-          MenuItem("mm.system.monitor.search_terms", searchTerms),
-          MenuItem("mm.system.monitor.session", sessionMonitor, Icon.Done16),
-          MenuItem("mm.system.monitor.cache"),
+          MenuItem("mm.system.monitor.search_terms", searchTermsView),
+          MenuItem("mm.system.monitor.session", Icon.Done16, sessionMonitorView),
+          MenuItem("mm.system.monitor.cache", instanceCacheView),
           MenuItem("mm.system.monitor.link_validator")
-          )
+        )
       ),
 
-      MenuItem("mm.files", filesystem, Icon.Done16)
+      MenuItem("mm.files", Icon.Done16, filesystemView)
     )
 
 
   private lazy val menu = new Tree with SingleSelect[MenuItem] with Immediate with NoNullSelection |>> { tree =>
-    def addMenuItem(item: MenuItem, parentItemOpt: Option[MenuItem] = None) {
+    def addMenuItem(item: MenuItem) {
       tree.addItem(item)
-      tree.setItemCaption(item, item.id.toString |> I18nMessage.i)
+      tree.setItemCaption(item, item.caption.i)
 
       item.iconOpt.foreach(icon => tree.setItemIcon(item, icon))
-      parentItemOpt.foreach(parentItem => tree.setParent(item, parentItem))
-
       item.children |> { children =>
         tree.setChildrenAllowed(item, children.nonEmpty)
-        children.foreach(childItem => addMenuItem(childItem, Some(item)))
+         for (child <- children) {
+           addMenuItem(child)
+           tree.setParent(child, item)
+         }
       }
     }
 
@@ -139,66 +150,50 @@ class SysAdmin extends UI {
   }
 
 
-  def NA(id: Any) = new TabSheet with MinimalStyle with FullSize |>> { ts =>
-
+  private def NA(caption: String) =
     new VerticalLayout with MiddleCenterAlignment with FullSize |>> {
       _.addComponent(new Label("NOT AVAILABLE") with UndefinedSize)
-    } |>> {
-      ts.addTab(_, id.toString |> I18nMessage.i)
+    } |> { view =>
+      createTabSheet(caption -> view)
     }
-  }
 
+  private def createTabSheet(tabs: (String, Component)*) =
+    new TabSheet with MinimalStyle with FullSize |>> { ts =>
+      for ((caption, component) <- tabs) ts.addTab(component, caption)
+    }
 
-  lazy val admin = new TabSheet with MinimalStyle with FullSize |>> { ts =>
-    val manager = new Manager
-    ts.addTab(manager.view, "imCMS Admin")
-  }
+  private lazy val adminView = createTabSheet("imCMS Admin" -> new Manager().view)
 
+  private lazy val instanceCacheView = new com.imcode.imcms.admin.instance.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
 
-  lazy val instanceCacheView = new com.imcode.imcms.admin.instance.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
+  private lazy val languagesView = createTabSheet("doc.lang.mgr.title" -> new LanguageManager().view)
 
+  private lazy val documentsView = createTabSheet("doc_mgr.title" -> new DocManager().view)
 
-  lazy val languages = new TabSheet with MinimalStyle with FullSize |>> { ts =>
-    val manager = new com.imcode.imcms.admin.instance.settings.language.LanguageManager
-    ts.addTab(manager.view, "doc.lang.mgr.title".i)
-  }
+  private lazy val ipAccessView = createTabSheet("IP Access " -> new IPAccessManager().view)
 
+  private lazy val rolesView = createTabSheet("Roles and their permissions" -> new RoleManager().view)
 
-  lazy val documents = new TabSheet with MinimalStyle with FullSize {
-    val manager = new DocManager
-    addTab(manager.view, "doc_mgr.title".i)
-  }
+  private lazy val systemSettingsView = createTabSheet("System Properties" -> new PropertyManager().view)
 
+  private lazy val sessionMonitorView = createTabSheet("Counter" -> new SessionCounterManager().view)
 
-  lazy val ipAccess = new TabSheet with FullSize {
-    val manager = new com.imcode.imcms.admin.access.ip.IPAccessManager
-    addTab(manager.view, "IP Access ")
-    addStyleName(Reindeer.TABSHEET_MINIMAL)
-  }
+  private lazy val filesystemView = createTabSheet("File manager" -> new FileManager().view)
 
+  private lazy val usersView = createTabSheet("Users and their permissions" -> new UserManager().view)
 
-  lazy val roles = new TabSheet with MinimalStyle with FullSize {
-    val roleManager = new com.imcode.imcms.admin.access.role.RoleManager
-    addTab(roleManager.view, "Roles and their permissions")
-  }
+  private lazy val templatesView = createTabSheet(
+    "Templates" -> new TemplateManager().view,
+    "Template Groups" -> new TemplateGroupManager().view
+  )
 
+  private lazy val categoriesView = createTabSheet(
+    "Categories" -> new CategoryManager().view,
+    "Category types" -> new CategoryTypeManager().view
+  )
 
-  lazy val systemSettings = new TabSheet with MinimalStyle with FullSize {
-    val manager = new com.imcode.imcms.admin.instance.settings.property.PropertyManager
-    addTab(manager.view, "System Properties")
-  }
-
-
-  lazy val sessionMonitor = new TabSheet with MinimalStyle with FullSize {
-    val manager = new com.imcode.imcms.admin.instance.monitor.session.counter.SessionCounterManager
-    addTab(manager.view, "Counter")
-  }
-
-
-  lazy val searchTerms = new TabSheet with MinimalStyle with FullSize {
-    addTab(new VerticalLayout with Spacing {
-      setCaption("Popular search terms")
-
+  private lazy val searchTermsView = createTabSheet("Popular search terms" ->
+    new VerticalLayout with Spacing {
       val tblTerms = new Table {
         addContainerProperties(this, PropertyDescriptor[String]("Term"), PropertyDescriptor[String]("Count"))
         setPageLength(10)
@@ -225,8 +220,7 @@ class SysAdmin extends UI {
       addComponents(tblTerms, lytBar)
 
       def reload() {
-        val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue,
-          lytBar.calTo.getValue)
+        val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue, lytBar.calTo.getValue)
 
         tblTerms.removeAllItems()
         terms.asScala.foreach { t =>
@@ -238,39 +232,6 @@ class SysAdmin extends UI {
       lytBar.btnReload.addClickHandler { _ => reload() }
 
       reload()
-    })
-  }
-
-
-  lazy val filesystem = new TabSheet with MinimalStyle with FullSize {
-    val manager = new com.imcode.imcms.admin.instance.file.FileManager
-    addTab(manager.view, "File manager")
-  }
-
-
-  lazy val templates = new TabSheet with MinimalStyle with FullSize {
-    val templateManager = new com.imcode.imcms.admin.doc.template.TemplateManager
-    val templateGroupManager = new com.imcode.imcms.admin.doc.template.group.TemplateGroupManager
-
-    addTab(templateManager.view, "Templates")
-    addTab(templateGroupManager.view, "Template Groups")
-  }
-
-
-  lazy val categories = new TabSheet with MinimalStyle with FullSize {
-    val categoryManager = new com.imcode.imcms.admin.doc.category.CategoryManager
-    val categoryTypeManager = new com.imcode.imcms.admin.doc.category.CategoryTypeManager
-
-    addTab(categoryManager.view, "Categories ")
-    addTab(categoryTypeManager.view, "Category types")
-
-    categoryManager.view.setSizeFull()
-    categoryTypeManager.view.setSizeFull()
-  }
-
-
-  lazy val users = new TabSheet with MinimalStyle with FullSize {
-    val manager = new UserManager
-    addTab(manager.view, "Users and their permissions")
-  }
+    }
+  )
 }
