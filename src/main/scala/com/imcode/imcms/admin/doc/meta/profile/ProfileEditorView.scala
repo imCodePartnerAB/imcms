@@ -26,7 +26,7 @@ extends VerticalLayout with FullWidth {
   private val pnlSettings = new Panel("Settings") with FullWidth {
     val content = new VerticalLayout with FullWidth with Margin
 
-    val tsSettings = new TabSheet |>> { _.addStyleName(Reindeer.TABSHEET_MINIMAL) }
+    val tsSettings = new TabSheet with MinimalStyle
     val lytDefault = new FormLayout with Margin
     val lytRestrictedOne = new FormLayout with Margin
     val lytRestrictedTwo = new FormLayout with Margin

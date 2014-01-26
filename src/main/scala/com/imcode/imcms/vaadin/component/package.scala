@@ -121,28 +121,17 @@ package object component {
     }
   }
 
-  trait ContainerWithDefaultAlignment extends Layout with AlignmentHandler {
-
-    protected def defaultAlignment: Alignment
-
-    abstract override def addComponent(c: Component) {
-      super.addComponent(c)
-      setComponentAlignment(c, defaultAlignment)
-    }
+  trait LeftBottomAlignment { this: Layout.AlignmentHandler =>
+    setDefaultComponentAlignment(Alignment.BOTTOM_LEFT)
   }
 
 
-  trait LeftBottomAlignment extends ContainerWithDefaultAlignment {
-    protected val defaultAlignment = Alignment.BOTTOM_LEFT
+  trait MiddleLeftAlignment { this: Layout.AlignmentHandler =>
+    setDefaultComponentAlignment(Alignment.MIDDLE_LEFT)
   }
 
-
-  trait MiddleLeftAlignment extends ContainerWithDefaultAlignment {
-    protected val defaultAlignment = Alignment.MIDDLE_LEFT
-  }
-
-  trait MiddleCenterAlignment extends ContainerWithDefaultAlignment {
-    protected val defaultAlignment = Alignment.MIDDLE_CENTER
+  trait MiddleCenterAlignment { this: Layout.AlignmentHandler =>
+    setDefaultComponentAlignment(Alignment.MIDDLE_CENTER)
   }
 
   trait NoChildrenAllowed extends Tree {
@@ -232,7 +221,7 @@ package object component {
   }
 
   trait LinkStyle { this: Button =>
-    setStyleName(BaseTheme.BUTTON_LINK)
+    addStyleName(BaseTheme.BUTTON_LINK)
   }
 
   trait SmallStyle { this: Button =>
@@ -244,10 +233,25 @@ package object component {
     addStyleName(Reindeer.BUTTON_DEFAULT)
   }
 
+  trait MinimalStyle { this: TabSheet =>
+    addStyleName(Reindeer.TABSHEET_MINIMAL)
+  }
+
+  trait TabSheetSmallStyle { this: TabSheet =>
+    addStyleName(Reindeer.TABSHEET_SMALL)
+  }
 
 
   trait LightStyle { this: Panel =>
-    setStyleName(Reindeer.PANEL_LIGHT)
+    addStyleName(Reindeer.PANEL_LIGHT)
+  }
+
+  trait BorderlessStyle { this: Table =>
+    addStyleName(Reindeer.TABLE_BORDERLESS)
+  }
+
+  trait MenuBarInTabStyle { this: MenuBar =>
+    addStyleName("in-tab")
   }
 
   trait Immediate { this: AbstractComponent =>

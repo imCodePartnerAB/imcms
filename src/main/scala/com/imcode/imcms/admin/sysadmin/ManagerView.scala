@@ -8,7 +8,7 @@ import com.vaadin.ui._
 
 class ManagerView extends VerticalLayout with FullSize {
 
-  val mb = new MenuBar with FullWidth |>> { _.addStyleName("manager") }
+  val mb = new MenuBar with MenuBarInTabStyle with FullWidth
   val miLanguage = mb.addItem("", Theme.Icon.Language.flag("eng"))
   val miLanguageEng = miLanguage.addItem("English", Theme.Icon.Language.flag("eng"))
   val miLanguageSwe = miLanguage.addItem("Svenska", Theme.Icon.Language.flag("swe"))

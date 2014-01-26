@@ -59,13 +59,13 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
   private val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
 
   case class Data(
-                   rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone(),
-                   restrictedOnePermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject],
-                   restrictedTwoPermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject],
-                   isRestrictedOneMorePrivilegedThanRestrictedTwo: Boolean = meta.getRestrictedOneMorePrivilegedThanRestrictedTwo,
-                   isLinkedForUnauthorizedUsers: Boolean = meta.getLinkedForUnauthorizedUsers,
-                   isLinkableByOtherUsers: Boolean = meta.getLinkableByOtherUsers
-                   )
+    rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone(),
+    restrictedOnePermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject],
+    restrictedTwoPermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject],
+    isRestrictedOneMorePrivilegedThanRestrictedTwo: Boolean = meta.getRestrictedOneMorePrivilegedThanRestrictedTwo,
+    isLinkedForUnauthorizedUsers: Boolean = meta.getLinkedForUnauthorizedUsers,
+    isLinkableByOtherUsers: Boolean = meta.getLinkableByOtherUsers
+  )
 
   private val initialValues = Data()
   private val permSetsEditor = new DocPermSetsEditor(doc, user)
@@ -79,10 +79,10 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
   // ui.lytRestrictedPermSets.btnEditRestrictedOnePermSet setReadOnly !user.canDefineRestrictedOneFor(doc)
   // ui.lytRestrictedPermSets.btnEditRestrictedTwoPermSet setReadOnly !user.canDefineRestrictedTwoFor(doc)
   // ui.chkLim1IsMorePrivilegedThanLim2 setReadOnly !user.isSuperAdminOrHasFullPermissionOn(doc)
-  override val view = new AccessEditorView |>> { editorWidget =>
-    editorWidget.perms.miRoleAdd.setCommandHandler { _ =>
+  override val view = new AccessEditorView |>> { editorView =>
+    editorView.perms.miRoleAdd.setCommandHandler { _ =>
       val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
-      val assignedRoles = editorWidget.perms.tblRolesPermSets.itemIds.asScala.toSet
+      val assignedRoles = editorView.perms.tblRolesPermSets.itemIds.asScala.toSet
       val availableRolesWithPermsSetTypes: Map[RoleDomainObject, List[DocumentPermissionSetTypeDomainObject]] =
         (for {
           role <- roleMapper.getAllRoles
@@ -123,8 +123,8 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     }
 
 
-    editorWidget.perms.miRoleChangePermSet.setCommandHandler { _ =>
-      whenSingleton(editorWidget.perms.tblRolesPermSets.value.asScala.toSeq) { role =>
+    editorView.perms.miRoleChangePermSet.setCommandHandler { _ =>
+      whenSingleton(editorView.perms.tblRolesPermSets.value.asScala.toSeq) { role =>
         types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
           case Nil => Current.page.showWarningNotification("You are not allowed to edit this role")
           case availableSetTypes =>
@@ -132,7 +132,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
               dlg.mainComponent = new ChangeRolePermSetDialogView |>> { c =>
                 c.lblRole.value = role.getName
 
-                c.ogPermsSetType.selection = editorWidget.perms.tblRolesPermSets
+                c.ogPermsSetType.selection = editorView.perms.tblRolesPermSets
                   .item(role)
                   .getItemProperty(RolePermSetPropertyId).getValue.asInstanceOf[RolePermSet].setType
 
@@ -149,13 +149,13 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
       }
     }
 
-    editorWidget.perms.miRoleRemove.setCommandHandler { _ =>
-      whenSelected(editorWidget.perms.tblRolesPermSets) { roles =>
-        roles.asScala.foreach(editorWidget.perms.tblRolesPermSets.removeItem)
+    editorView.perms.miRoleRemove.setCommandHandler { _ =>
+      whenSelected(editorView.perms.tblRolesPermSets) { roles =>
+        roles.asScala.foreach(editorView.perms.tblRolesPermSets.removeItem)
       }
     }
 
-    editorWidget.perms.miEditPermSets.setCommandHandler { _ =>
+    editorView.perms.miEditPermSets.setCommandHandler { _ =>
       new OkCancelDialog("Permissions") |>> { dlg =>
         dlg.mainComponent = permSetsEditor.view
       } |> Current.ui.addWindow

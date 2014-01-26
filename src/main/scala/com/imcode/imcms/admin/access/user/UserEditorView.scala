@@ -9,18 +9,17 @@ import com.vaadin.ui._
 import com.vaadin.ui.themes.Reindeer
 
 
-class UserEditorView extends TabSheet with UndefinedSize {
+class UserEditorView extends TabSheet with MinimalStyle with UndefinedSize {
 
   private val lytAccount = new FormLayout with UndefinedSize
   private val lytContacts = new VerticalLayout with UndefinedSize
 
-  addTab(lytAccount, "account".i)
-  addTab(lytContacts, "contacts".i)
-  addStyleName(Reindeer.TABSHEET_MINIMAL)
+  addTab(lytAccount, "user_editor_tab.account".i)
+  addTab(lytContacts, "user_editor_tab.contacts".i)
   addStyleName("user-editor")
 
   object account {
-    val txtLogin = new TextField("user_editor.frm_fld.txt_login".i)
+    val txtLoginName = new TextField("user_editor.frm_fld.txt_login_name".i)
     val txtPassword = new PasswordField("user_editor.frm_fld.pwd_password".i)
     val txtPasswordCheck = new PasswordField("user_editor.frm_fld.pwd_password_check".i)
     val txtFirstName = new TextField("user_editor.frm_fld.txt_first_name".i)
@@ -38,12 +37,12 @@ class UserEditorView extends TabSheet with UndefinedSize {
       lyt.setCaption("user_editor.frm_fld.name".i)
     }
 
-    val lytLogin = new HorizontalLayout(txtLogin, chkEnabled) with UndefinedSize with Spacing |>> { lyt =>
-      lyt.setCaption("user_editor.frm_fld.account".i)
+    val lytLogin = new HorizontalLayout(txtLoginName, chkEnabled) with UndefinedSize with Spacing |>> { lyt =>
+      lyt.setCaption("user_editor.frm_fld.login".i)
       lyt.setComponentAlignment(chkEnabled, Alignment.BOTTOM_LEFT)
     }
 
-    Seq(txtLogin, txtPassword, txtPasswordCheck, txtEmail).foreach(_.setRequired(true))
+    Seq(txtLoginName, txtPassword, txtPasswordCheck, txtEmail).foreach(_.setRequired(true))
   }
 
   object contacts {

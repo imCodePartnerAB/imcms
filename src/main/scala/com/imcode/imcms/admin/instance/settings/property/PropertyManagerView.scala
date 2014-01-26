@@ -7,7 +7,7 @@ import com.imcode.imcms.vaadin.component._
 
 class PropertyManagerView extends VerticalLayout with FullWidth {
 
-  val mb = new MenuBar with FullWidth |>> { _.addStyleName("manager") }
+  val mb = new MenuBar with MenuBarInTabStyle with FullWidth
   val miEdit = mb.addItem("Edit")
   val miHelp = mb.addItem("Help")
   val miReload = mb.addItem("Reload")

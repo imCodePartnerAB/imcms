@@ -8,7 +8,7 @@ import com.imcode.imcms.vaadin.component._
 
 
 class DocManagerView(projectionView: DocsProjectionView) extends VerticalLayout with FullSize {
-  val mb = new MenuBar with FullWidth |>> { _.addStyleName("manager") }
+  val mb = new MenuBar with MenuBarInTabStyle with FullWidth
   val miNew = mb.addItem("doc_mgr.mi.new".i)
   val miNewTextDoc = miNew.addItem("doc_mgr.mi.new.text_doc".i)
   val miNewFileDoc = miNew.addItem("doc_mgr.mi.new.file_doc".i)

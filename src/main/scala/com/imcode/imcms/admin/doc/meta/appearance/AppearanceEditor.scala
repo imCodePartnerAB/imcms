@@ -60,20 +60,20 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
     }
   }
 
-  override val view = new AppearanceEditorView |>> { w =>
-    w.pnlLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
-    w.pnlLanguages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
+  override val view = new AppearanceEditorView |>> { v =>
+    v.languages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
+    v.languages.cbShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
 
     for (i18nMetaEditorWidget <- i18nMetaEditorViews) {
-      w.pnlLanguages.lytI18nMetas.addComponent(i18nMetaEditorWidget)
+      v.languages.lytI18nMetas.addComponent(i18nMetaEditorWidget)
     }
 
-    w.pnlAlias.txtAlias.addValidator(new Validator {
+    v.alias.txtAlias.addValidator(new Validator {
       val metaDao = imcmsServices.getManagedBean(classOf[MetaDao])
 
       def findDocIdByAlias(): Option[Int] =
         for {
-          alias <- w.pnlAlias.txtAlias.trimmedValueOpt
+          alias <- v.alias.txtAlias.trimmedValueOpt
           docId <- metaDao.getDocIdByAliasOpt(alias)
           if meta.getId != docId
         } yield docId
@@ -88,7 +88,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
     })
   } // widget
 
-  override def collectValues(): ErrorsOrData = Ex.allCatch.either(view.pnlAlias.txtAlias.validate())
+  override def collectValues(): ErrorsOrData = Ex.allCatch.either(view.alias.txtAlias.validate())
     .left.map(e => Seq(e.getMessage))
     .right.map { _ =>
       Data(
@@ -111,9 +111,9 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
           case i18nMetaEditorWidget if i18nMetaEditorWidget.chkEnabled.checked => i18nMetaEditorWidget.language
         } (breakOut),
 
-        view.pnlLanguages.cbShowMode.selection,
-        view.pnlAlias.txtAlias.trimmedValueOpt,
-        view.pnlLinkTarget.cbTarget.selection
+        view.languages.cbShowMode.selection,
+        view.alias.txtAlias.trimmedValueOpt,
+        view.linkTarget.cbTarget.selection
       )
     }
 
@@ -142,26 +142,26 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
       }
     }
 
-    view.pnlAlias.txtAlias.setInputPrompt(meta.getId.asOption.map(_.toString).orNull)
-    view.pnlAlias.txtAlias.value = meta.getAlias.trimToEmpty
-    view.pnlLanguages.cbShowMode.select(meta.getI18nShowSetting)
+    view.alias.txtAlias.setInputPrompt(meta.getId.asOption.map(_.toString).orNull)
+    view.alias.txtAlias.value = meta.getAlias.trimToEmpty
+    view.languages.cbShowMode.select(meta.getI18nShowSetting)
 
     for ((target, targetCaption) <- ListMap("_self" -> "Same frame", "_blank" -> "New window", "_top" -> "Replace all")) {
-      view.pnlLinkTarget.cbTarget.addItem(target, targetCaption)
+      view.linkTarget.cbTarget.addItem(target, targetCaption)
     }
 
     val target = meta.getTarget match {
-      case null => view.pnlLinkTarget.cbTarget.firstItemIdOpt.get
+      case null => view.linkTarget.cbTarget.firstItemIdOpt.get
       case target =>
-        view.pnlLinkTarget.cbTarget.itemIds.asScala.find(_ == target.toLowerCase) match {
+        view.linkTarget.cbTarget.itemIds.asScala.find(_ == target.toLowerCase) match {
           case Some(predefinedTarget) => predefinedTarget
           case _ =>
-            view.pnlLinkTarget.cbTarget.addItem(target, "Other frame: %s".format(target))
+            view.linkTarget.cbTarget.addItem(target, "Other frame: %s".format(target))
             target
         }
     }
 
-    view.pnlLinkTarget.cbTarget.select(target)
+    view.linkTarget.cbTarget.select(target)
   }
 
   resetValues()

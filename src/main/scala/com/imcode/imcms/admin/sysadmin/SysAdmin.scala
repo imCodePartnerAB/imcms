@@ -6,196 +6,167 @@ import com.imcode.imcms.admin.access.user.UserManager
 import com.imcode.imcms.vaadin.component.Theme.Icon
 import com.vaadin.ui.themes.Reindeer
 import scala.collection.JavaConverters._
-import com.imcode._
 import com.imcode.imcms.servlet.superadmin.AdminSearchTerms
 import java.util.{Locale, Date}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
-import com.vaadin.server.VaadinRequest
+import com.vaadin.server.{ThemeResource, VaadinRequest}
 
 import _root_.imcode.server.Imcms
 
 import com.vaadin.annotations.PreserveOnRefresh
-import com.vaadin.data.Property.ValueChangeEvent
 import com.imcode.imcms.I18nMessage
-import com.imcode.imcms.vaadin.{Current, MenuItemOrder, TreeMenuItem}
+import com.imcode.imcms.vaadin.Current
 import com.imcode.imcms.admin.doc.manager.DocManager
 
 // todo: rename Theme class - name collision
-// todo: enable chat ???
 // todo: rename: permissions -> access (members?), IPAccess -> IP Login/Autologin
+
+// superadmin access:
+// ------------------
+// categories
+// counter
+// delete doc
+// ipaccess
+// profiles ???
+// roles
+// search terms
+// ~~ sections
+// system info
+// users: !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole()
+// file
+// link check ???
+// list docs ???
+// templates
+
 @PreserveOnRefresh
 @com.vaadin.annotations.Theme("imcms")
 class SysAdmin extends UI {
 
-  // superadmin access:
-  // ------------------
-  // categories
-  // counter
-  // delete doc
-  // ipaccess
-  // profiles ???
-  // roles
-  // search terms
-  // ~~ sections
-  // system info
-  // users: !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole()
-  // file
-  // link check ???
-  // list docs ???
-  // templates
+  private class MenuItem(val id: AnyRef, viewOpt: => Option[Component] = None,
+                         val iconOpt: Option[ThemeResource] = None, val children: Seq[MenuItem]) {
+
+    def view = viewOpt.getOrElse(NA(id))
+  }
+
+  private object MenuItem {
+    def apply(id: AnyRef, children: MenuItem*) = new MenuItem(id, children = children)
+
+    def apply(id: AnyRef, view: => Component, children: MenuItem*) = new MenuItem(id, Some(view), children = children)
+
+    def apply(id: AnyRef, view: => Component, icon: ThemeResource, children: MenuItem*) =
+      new MenuItem(id, Some(view), Some(icon), children)
+  }
 
 
-  object Menu extends TreeMenuItem {
-    @MenuItemOrder(0) object Admin extends TreeMenuItem("mm.admin") {
-      @MenuItemOrder(1) object Documents extends TreeMenuItem("mm.docs") {
-        @MenuItemOrder(0) object Categories extends TreeMenuItem("mm.docs.categories", Icon.Done16)
-        @MenuItemOrder(1) object Templates extends TreeMenuItem("mm.docs.templates", Icon.Done16)
-        @MenuItemOrder(2) object Languages extends TreeMenuItem("mm.docs.languages", Icon.Done16)
+  private val menuRoot =
+    MenuItem("mm.admin", admin,
+      MenuItem("mm.docs", documents,
+        MenuItem("mm.docs.categories", categories, Icon.Done16),
+        MenuItem("mm.docs.templates", templates, Icon.Done16),
+        MenuItem("mm.docs.languages", languages, Icon.Done16)
+      ),
+
+      MenuItem("mm.permissions",
+        MenuItem("mm.permissions.users", users , Icon.Done16),
+        MenuItem("mm.permissions.roles", roles , Icon.Done16),
+        MenuItem("mm.permissions.ip_access", ipAccess, Icon.Done16)
+      ),
+
+      MenuItem("mm.system",
+        MenuItem("mm.system.settings", systemSettings, Icon.Done16,
+          MenuItem("mm.system.monitor"),
+          MenuItem("mm.system.monitor.solr"),
+          MenuItem("mm.system.monitor.search_terms", searchTerms),
+          MenuItem("mm.system.monitor.session", sessionMonitor, Icon.Done16),
+          MenuItem("mm.system.monitor.cache"),
+          MenuItem("mm.system.monitor.link_validator")
+          )
+      ),
+
+      MenuItem("mm.files", filesystem, Icon.Done16)
+    )
+
+
+  private lazy val menu = new Tree with SingleSelect[MenuItem] with Immediate with NoNullSelection |>> { tree =>
+    def addMenuItem(item: MenuItem, parentItemOpt: Option[MenuItem] = None) {
+      tree.addItem(item)
+      tree.setItemCaption(item, item.id.toString |> I18nMessage.i)
+
+      item.iconOpt.foreach(icon => tree.setItemIcon(item, icon))
+      parentItemOpt.foreach(parentItem => tree.setParent(item, parentItem))
+
+      item.children |> { children =>
+        tree.setChildrenAllowed(item, children.nonEmpty)
+        children.foreach(childItem => addMenuItem(childItem, Some(item)))
       }
+    }
 
-      @MenuItemOrder(2) object Permissions extends TreeMenuItem("mm.permissions") {
-        @MenuItemOrder(0) object Users extends TreeMenuItem("mm.permissions.users", Icon.Done16)
-        @MenuItemOrder(1) object Roles extends TreeMenuItem("mm.permissions.roles", Icon.Done16)
-        @MenuItemOrder(2) object IP_Access extends TreeMenuItem("mm.permissions.ip_access", Icon.Done16)
-      }
+    addMenuItem(menuRoot)
 
-      @MenuItemOrder(3) object System extends TreeMenuItem("mm.system") {
-        @MenuItemOrder(0) object Settings extends TreeMenuItem("mm.system.settings", Icon.Done16)
-        @MenuItemOrder(1) object Monitor extends TreeMenuItem("mm.system.monitor") {
-          @MenuItemOrder(0) object Solr extends TreeMenuItem("mm.system.monitor.solr")
-          @MenuItemOrder(1) object SearchTerms extends TreeMenuItem("mm.system.monitor.search_terms")
-          @MenuItemOrder(2) object Session extends TreeMenuItem("mm.system.monitor.session", Icon.Done16)
-          @MenuItemOrder(3) object Cache extends TreeMenuItem("mm.system.monitor.cache")
-          @MenuItemOrder(4) object LinkValidator extends TreeMenuItem("mm.system.monitor.link_validator")
+    tree.addValueChangeHandler { _ =>
+      content.setSecondComponent(
+        tree.valueOpt match {
+          case Some(menuItem) => menuItem.view
+          case _ => null
         }
-      }
-
-      @MenuItemOrder(4) object Files extends TreeMenuItem("mm.files", Icon.Done16)
+      )
     }
   }
 
 
-  val lytContent = new VerticalLayout with FullSize {
-
-    val hspManagers = new HorizontalSplitPanel with FullSize {
-      val menu = new Tree with Immediate
-      val lytManager = new VerticalLayout with FullSize |>> { lyt =>
-        lyt.addStyleName("manager")
-      }
-
-      val lytMenu = new VerticalLayout with FullSize |>> { lyt =>
-        lyt.addStyleName("sysadmin-menu")
-      }
-
-      lytMenu.addComponent(menu)
-
-      setFirstComponent(lytMenu)
-      setSecondComponent(lytManager)
-      setSplitPosition(15)
-      addStyleName(Reindeer.SPLITPANEL_SMALL)
-    }
-
-    addComponent(hspManagers)
-
-    def initManagersMenu() {
-      def addMenuItem(parentItem: TreeMenuItem, item: TreeMenuItem) {
-        hspManagers.menu.addItem(item)
-        hspManagers.menu.setParent(item, parentItem)
-        hspManagers.menu.setItemCaption(item, item.id |> I18nMessage.i)
-        hspManagers.menu.setItemIcon(item, item.icon)
-
-        item.children |> { children =>
-          hspManagers.menu.setChildrenAllowed(item, children.nonEmpty)
-          children.foreach(childItem => addMenuItem(item, childItem))
-        }
-      }
-
-      Menu.children.foreach { item =>
-        addMenuItem(Menu, item)
-        hspManagers.menu.expandItemsRecursively(item)
-      }
-
-      hspManagers.menu.addValueChangeHandler { e: ValueChangeEvent =>
-        hspManagers.lytManager.removeAllComponents()
-        hspManagers.lytManager.addComponent(
-          e.getProperty.getValue |> {
-            case null | Menu.Admin => admin
-
-            case Menu.Admin.System.Monitor.Solr => searchTerms
-            case Menu.Admin.Documents.Categories => categories
-            case Menu.Admin.Documents.Languages => languages
-            case Menu.Admin.System.Settings => systemSettings
-            case Menu.Admin.System.Monitor.Session => sessionMonitor
-            case Menu.Admin.Documents => documents
-            case Menu.Admin.Permissions.Roles => roles
-            case Menu.Admin.Permissions.Users => users
-            case Menu.Admin.Permissions.IP_Access => ipAccess
-            case Menu.Admin.Documents.Templates => templates
-            case Menu.Admin.System.Monitor.Cache => instanceCacheView
-            case Menu.Admin.Files => filesystem
-
-            case other => NA(other)
-          }
-        )
-      }
-
-      hspManagers.menu.select(Menu.Admin)
-    } // initManagersMenu
-
-    //addStyleName(Reindeer.LAYOUT_WHITE)
+  private lazy val content: HorizontalSplitPanel = new HorizontalSplitPanel with FullSize |>> { hsp =>
+    hsp.setFirstComponent(menu)
+    hsp.setSplitPosition(15)
+    hsp.addStyleName(Reindeer.SPLITPANEL_SMALL)
   }
-
-
-
 
 
   override def init(request: VaadinRequest) {
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
-    lytContent.initManagersMenu()
-    setContent(lytContent)
+    setContent(content)
+
+    menu.expandItemsRecursively(menuRoot)
+    menu.select(menuRoot)
 
     getLoadingIndicatorConfiguration.setFirstDelay(10)
     getLoadingIndicatorConfiguration.setSecondDelay(100)
     getLoadingIndicatorConfiguration.setThirdDelay(1000)
+
     Current.page.setTitle("imCMS Admin")
   }
 
 
-  def NA(id: Any) = new TabSheet with FullSize |>> { ts =>
-    val lblNA = new Label("NOT AVAILABLE") |>> { lbl =>
-      lbl.setCaption(id.toString)      
-      lbl.addStyleName(Reindeer.LABEL_SMALL)
-    }
+  def NA(id: Any) = new TabSheet with MinimalStyle with FullSize |>> { ts =>
 
-    ts.addTab(lblNA)
-    ts.addStyleName(Reindeer.TABSHEET_MINIMAL)
+    new VerticalLayout with MiddleCenterAlignment with FullSize |>> {
+      _.addComponent(new Label("NOT AVAILABLE") with UndefinedSize)
+    } |>> {
+      ts.addTab(_, id.toString |> I18nMessage.i)
+    }
   }
 
 
-  val admin = new TabSheet with FullSize |>> { ts =>
+  lazy val admin = new TabSheet with MinimalStyle with FullSize |>> { ts =>
     val manager = new Manager
     ts.addTab(manager.view, "imCMS Admin")
-    ts.addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
-  def instanceCacheView = new com.imcode.imcms.admin.instance.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
+  lazy val instanceCacheView = new com.imcode.imcms.admin.instance.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
 
 
-  lazy val languages = new TabSheet with FullSize |>> { ts =>
+  lazy val languages = new TabSheet with MinimalStyle with FullSize |>> { ts =>
     val manager = new com.imcode.imcms.admin.instance.settings.language.LanguageManager
     ts.addTab(manager.view, "doc.lang.mgr.title".i)
-    ts.addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
-  lazy val documents = new TabSheet with FullSize {
+  lazy val documents = new TabSheet with MinimalStyle with FullSize {
     val manager = new DocManager
     addTab(manager.view, "doc_mgr.title".i)
-    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
@@ -206,28 +177,25 @@ class SysAdmin extends UI {
   }
 
 
-  lazy val roles = new TabSheet with FullSize {
+  lazy val roles = new TabSheet with MinimalStyle with FullSize {
     val roleManager = new com.imcode.imcms.admin.access.role.RoleManager
     addTab(roleManager.view, "Roles and their permissions")
-    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
-  lazy val systemSettings = new TabSheet with FullSize {
+  lazy val systemSettings = new TabSheet with MinimalStyle with FullSize {
     val manager = new com.imcode.imcms.admin.instance.settings.property.PropertyManager
     addTab(manager.view, "System Properties")
-    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
-  lazy val sessionMonitor = new TabSheet with FullSize {
+  lazy val sessionMonitor = new TabSheet with MinimalStyle with FullSize {
     val manager = new com.imcode.imcms.admin.instance.monitor.session.counter.SessionCounterManager
     addTab(manager.view, "Counter")
-    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
-  lazy val searchTerms = new TabSheet with FullSize {
+  lazy val searchTerms = new TabSheet with MinimalStyle with FullSize {
     addTab(new VerticalLayout with Spacing {
       setCaption("Popular search terms")
 
@@ -271,29 +239,25 @@ class SysAdmin extends UI {
 
       reload()
     })
-    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
-  lazy val filesystem = new TabSheet with FullSize {
+  lazy val filesystem = new TabSheet with MinimalStyle with FullSize {
     val manager = new com.imcode.imcms.admin.instance.file.FileManager
     addTab(manager.view, "File manager")
-    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
-  lazy val templates = new TabSheet with FullSize {
+  lazy val templates = new TabSheet with MinimalStyle with FullSize {
     val templateManager = new com.imcode.imcms.admin.doc.template.TemplateManager
     val templateGroupManager = new com.imcode.imcms.admin.doc.template.group.TemplateGroupManager
 
     addTab(templateManager.view, "Templates")
     addTab(templateGroupManager.view, "Template Groups")
-
-    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
-  lazy val categories = new TabSheet with FullSize {
+  lazy val categories = new TabSheet with MinimalStyle with FullSize {
     val categoryManager = new com.imcode.imcms.admin.doc.category.CategoryManager
     val categoryTypeManager = new com.imcode.imcms.admin.doc.category.CategoryTypeManager
 
@@ -302,16 +266,11 @@ class SysAdmin extends UI {
 
     categoryManager.view.setSizeFull()
     categoryTypeManager.view.setSizeFull()
-
-    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 
 
-  lazy val chat =  new VerticalLayout
-
-  lazy val users = new TabSheet with FullSize {
+  lazy val users = new TabSheet with MinimalStyle with FullSize {
     val manager = new UserManager
     addTab(manager.view, "Users and their permissions")
-    addStyleName(Reindeer.TABSHEET_MINIMAL)
   }
 }

@@ -26,12 +26,16 @@
 }
 
 .im-border-bottom {
-    border-top: solid 1px #a9a9a9;
-    /*padding-top: 5px;*/
+    border-bottom: 1px solid #a9a9a9;
 }
 
 .im-fieldset {
-    border: solid 1px #a9a9a9;
+    border: none;
+}
+
+.im-fieldset legend {
+    background: lightgray;
+    width: 100%;
 }
 
 /* copied form runo. */
@@ -105,7 +109,7 @@ table#docs_projection_basic_filter #buttons {
     border-left: solid 1px #a9a9a9;
 }
 
-.v-menubar-manager {
+.v-menubar-in-tab {
     margin-top: 2px;
 }
 
@@ -119,21 +123,22 @@ table#docs_projection_basic_filter #buttons {
     padding-right: 1px;
 }
 
-.v-verticallayout-manager .v-tabsheet-tabitem-selected .v-captiontext {
+.v-tabsheet-tabitem-selected .v-captiontext {
     font-weight: bold;
 }
 
 
 .v-verticallayout-doc_editor {
-    padding-top: 1px;
-    padding-left: 1px;
-    border-bottom: 1px solid;
-    padding-right: 1px;
+    /*padding-top: 1px;*/
+    /*padding-left: 1px;*/
+    /*padding-right: 1px;*/
+}
+
+.v-tabsheet {
+    padding: 1px 1px 0 1px;
 }
 
 .v-tabsheet-user-editor {
-    padding-top: 1px;
-    padding-left: 1px;
     border-bottom: 1px solid;
 }
 
@@ -142,5 +147,9 @@ table#docs_projection_basic_filter #buttons {
 }
 
 .v-accordion {
+    border: none;
+}
+
+.v-table {
     border: none;
 }

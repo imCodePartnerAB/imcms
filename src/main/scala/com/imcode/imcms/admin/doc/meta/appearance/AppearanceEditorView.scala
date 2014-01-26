@@ -9,48 +9,42 @@ import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.Current
 
 
-class AppearanceEditorView extends VerticalLayout with Spacing with FullWidth {
-  val pnlLanguages = new Panel("Languages") with FullWidth {
-    val layout = new VerticalLayout with Spacing with Margin with FullWidth
+class AppearanceEditorView extends TabSheet with TabSheetSmallStyle with FullSize {
+
+  object languages {
+    val cbShowMode = new ComboBox with SingleSelect[Meta.DisabledLanguageShowSetting] with FullWidth with NoNullSelection
+    val lblShowMode = new Label("When language is disabled") with UndefinedSize
+    val lytShowMode = new HorizontalLayout(lblShowMode, cbShowMode) with FullWidth with MiddleLeftAlignment with Spacing with Margin |>> { lyt =>
+      lyt.setExpandRatio(cbShowMode, 1.0f)
+    }
 
     val lytI18nMetas = new VerticalLayout with Spacing with FullWidth
-    val cbShowMode = new ComboBox("When language is disabled") with SingleSelect[Meta.DisabledLanguageShowSetting] with NoNullSelection
+    private val pnlI18nMetas = new Panel(lytI18nMetas) with FullSize with LightStyle
 
-    private val lytShowMode = new FormLayout with FullWidth
-    lytShowMode.addComponent(cbShowMode)
-
-    layout.addComponents(lytI18nMetas, lytShowMode)
-    setContent(layout)
+    val content = new VerticalLayout(lytShowMode, pnlI18nMetas) with FullSize |>> { lyt =>
+      lyt.setExpandRatio(pnlI18nMetas, 1.0f)
+    }
   }
 
-  val pnlLinkTarget = new Panel("Link action") with FullWidth {
-    val layout = new FormLayout with Margin with FullWidth
-    val cbTarget = new ComboBox("Show in") with SingleSelect[String] with NoNullSelection
-
-    layout.addComponent(cbTarget)
-    setContent(layout)
+  object linkTarget {
+    val cbTarget = new ComboBox("Show in") with FullWidth with SingleSelect[String] with NoNullSelection
+    val content = new FormLayout(cbTarget)
   }
 
-
-  val pnlAlias = new Panel("Alias") with FullWidth {
-    val layout = new HorizontalLayout with MiddleLeftAlignment with Margin with FullHeight
-    val txtAlias = new TextField with FullWidth |>> {
-      _.setInputPrompt("alternate page name")
+  object alias {
+    private val contextPathPrefix = Current.contextPath match {
+      case "" | "/" => "/"
+      case path => s"$path/"
     }
 
-    val lblAlias = new Label with UndefinedSize {
-      override def attach() {
-        super.attach()
-        Current.contextPath |> {
-          case "" | "/" => "/"
-          case path => s"$path/"
-        } |> setCaption
-      }
+    val lblAlias = new Label(contextPathPrefix) with UndefinedSize
+    val txtAlias = new TextField with FullWidth
+    val content = new HorizontalLayout(lblAlias, txtAlias) with Margin with FullSize |>> { lyt =>
+      lyt.setExpandRatio(txtAlias, 1.0f)
     }
-
-    layout.addComponents(lblAlias, txtAlias)
-    setContent(layout)
   }
 
-  addComponents(pnlLanguages, pnlLinkTarget, pnlAlias)
+  addTab(languages.content, "Languages")
+  addTab(linkTarget.content, "Link action")
+  addTab(alias.content, "Alias")
 }

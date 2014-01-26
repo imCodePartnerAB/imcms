@@ -44,23 +44,23 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
   private var categoryEditorOpt = Option.empty[CategoryEditor]
   private var profileEditorOpt = Option.empty[ProfileEditor]
 
-  override val view = new MetaEditorView |>> { w =>
-    w.treeEditors.addItem("doc_meta_editor.menu_item.life_cycle", "doc_meta_editor.menu_item.life_cycle".i)
-    w.treeEditors.addItem("doc_meta_editor.menu_item.appearance", "doc_meta_editor.menu_item.appearance".i)
-    w.treeEditors.addItem("doc_meta_editor.menu_item.access", "doc_meta_editor.menu_item.access".i)
-    w.treeEditors.addItem("doc_meta_editor.menu_item.search", "doc_meta_editor.menu_item.search".i)
-    w.treeEditors.addItem("doc_meta_editor.menu_item.categories", "doc_meta_editor.menu_item.categories".i)
+  override val view = new MetaEditorView |>> { v =>
+    v.treeEditors.addItem("doc_meta_editor.menu_item.life_cycle", "doc_meta_editor.menu_item.life_cycle".i)
+    v.treeEditors.addItem("doc_meta_editor.menu_item.appearance", "doc_meta_editor.menu_item.appearance".i)
+    v.treeEditors.addItem("doc_meta_editor.menu_item.access", "doc_meta_editor.menu_item.access".i)
+    v.treeEditors.addItem("doc_meta_editor.menu_item.search", "doc_meta_editor.menu_item.search".i)
+    v.treeEditors.addItem("doc_meta_editor.menu_item.categories", "doc_meta_editor.menu_item.categories".i)
 
     // According to v.4.x.x may be defined for text docs only
     // todo: disable profile tag =or= add lable =not supported/available =or= show empty page instead of editor
-    if (doc.isInstanceOf[TextDocumentDomainObject]) w.treeEditors.addItem("doc_meta_editor.menu_item.profile", "doc_meta_editor.menu_item.profile".i)
+    if (doc.isInstanceOf[TextDocumentDomainObject]) v.treeEditors.addItem("doc_meta_editor.menu_item.profile", "doc_meta_editor.menu_item.profile".i)
 
-    w.treeEditors.addValueChangeHandler { _ =>
-      w.treeEditors.selection match {
+    v.treeEditors.addValueChangeHandler { _ =>
+      v.treeEditors.selection match {
         case "doc_meta_editor.menu_item.life_cycle" =>
           if (lifeCycleEditorOpt.isEmpty) lifeCycleEditorOpt = Some(new LifeCycleEditor(doc.getMeta))
 
-          w.pnlCurrentEditor.setContent(lifeCycleEditorOpt.get.view)
+          v.setSecondComponent(lifeCycleEditorOpt.get.view)
 
         case "doc_meta_editor.menu_item.appearance" =>
           if (appearanceEditorOpt.isEmpty) {
@@ -76,33 +76,31 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
             )
           }
 
-          w.pnlCurrentEditor.setContent(appearanceEditorOpt.get.view)
+          v.setSecondComponent(appearanceEditorOpt.get.view)
 
         case "doc_meta_editor.menu_item.access" =>
           if (accessEditorOpt.isEmpty) accessEditorOpt = Some(new AccessEditor(doc, Current.imcmsUser))
 
-          w.pnlCurrentEditor.setContent(accessEditorOpt.get.view)
+          v.setSecondComponent(accessEditorOpt.get.view)
 
         case "doc_meta_editor.menu_item.search" =>
           if (searchSettingsEditorOpt.isEmpty) searchSettingsEditorOpt = Some(new SearchSettingsEditor(doc.getMeta))
 
-          w.pnlCurrentEditor.setContent(searchSettingsEditorOpt.get.view)
+          v.setSecondComponent(searchSettingsEditorOpt.get.view)
 
         case "doc_meta_editor.menu_item.categories" =>
           if (categoryEditorOpt.isEmpty) categoryEditorOpt = Some(new CategoryEditor(doc.getMeta))
 
-          w.pnlCurrentEditor.setContent(categoryEditorOpt.get.view)
+          v.setSecondComponent(categoryEditorOpt.get.view)
 
         case "doc_meta_editor.menu_item.profile" =>
           if (profileEditorOpt.isEmpty) profileEditorOpt = Some(new ProfileEditor(doc.asInstanceOf[TextDocumentDomainObject], Current.imcmsUser))
 
-          w.pnlCurrentEditor.setContent(profileEditorOpt.get.view)
+          v.setSecondComponent(profileEditorOpt.get.view)
 
         case _ =>
       }
     }
-
-    w.sp.setSplitPosition(20, Sizeable.UNITS_PERCENTAGE)
   } // widget
 
   resetValues()

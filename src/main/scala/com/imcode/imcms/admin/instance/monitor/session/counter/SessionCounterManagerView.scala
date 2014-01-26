@@ -7,7 +7,7 @@ import com.vaadin.ui.{Panel, MenuBar, VerticalLayout}
 
 class SessionCounterManagerView extends VerticalLayout with FullWidth {
 
-  val mb = new MenuBar with FullWidth |>> { _.addStyleName("manager") }
+  val mb = new MenuBar with MenuBarInTabStyle with FullWidth
   val miEdit = mb.addItem("Edit")
   val miReset = mb.addItem("Reset")
   val miReload = mb.addItem("Reload")

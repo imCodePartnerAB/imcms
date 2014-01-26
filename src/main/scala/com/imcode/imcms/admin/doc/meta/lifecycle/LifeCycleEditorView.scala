@@ -8,13 +8,14 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.component._
 
 
-class LifeCycleEditorView extends VerticalLayout with Spacing with FullWidth {
+class LifeCycleEditorView extends TabSheet with TabSheetSmallStyle with FullSize {
 
-  class DateComponent(caption: String, ussUI: UserSingleSelectView) extends HorizontalLayoutUI(caption, margin = false) {
+  class DateComponent(caption: String, ussUI: UserSingleSelectView) extends HorizontalLayout with Spacing {
     val calDate = new PopupDateField with MinuteResolution with Now
     val lblBy = new Label("by") with UndefinedSize
 
     addComponents(calDate, lblBy, ussUI)
+    setCaption(caption)
   }
 
   object info {
@@ -23,6 +24,10 @@ class LifeCycleEditorView extends VerticalLayout with Spacing with FullWidth {
 
     val dCreated = new DateComponent("Created", ussCreator.view)
     val dModified = new DateComponent("Modified", ussModifier.view)
+
+    private val lytContent = new FormLayout(dCreated, dModified) with UndefinedSize
+
+    val content = new Panel(lytContent) with LightStyle with FullSize
   }
 
   object publication {
@@ -49,31 +54,24 @@ class LifeCycleEditorView extends VerticalLayout with Spacing with FullWidth {
     val chkEnd = new CheckBox("end") with Immediate with AlwaysFireValueChange[JBoolean]
 
     ussPublisher.view.setCaption("Publisher")
-  }
 
-  private val pnlInfo = new Panel("Info") with FullWidth {
-    val content = new FormLayout with Margin with FullWidth
-    setContent(content)
+    private val lytContent = new FormLayout with UndefinedSize |>> { lyt =>
+      val lytDate = new GridLayout(2, 2) with Spacing {
+        setCaption("Date")
 
-    content.addComponents(info.dCreated, info.dModified)
-  }
+        addComponents(
+          chkStart, calStart,
+          chkArchive, calArchive,
+          chkEnd, calEnd
+        )
+      }
 
-  private val pnlPublication = new Panel("Publication") with FullWidth {
-    val content = new FormLayout with Margin with FullWidth
-    setContent(content)
-
-    val lytDate = new GridLayout(2, 2) with Spacing {
-      setCaption("Date")
-
-      addComponents(
-        publication.chkStart, publication.calStart,
-        publication.chkArchive, publication.calArchive,
-        publication.chkEnd, publication.calEnd
-      )
+      lyt.addComponents(sltStatus, sltVersion, lytDate, ussPublisher.view, lytPhase)
     }
 
-    content.addComponents(publication.sltStatus, publication.sltVersion, lytDate, publication.ussPublisher.view, publication.lytPhase)
+    val content = new Panel(lytContent) with LightStyle with FullSize
   }
 
-  addComponents(pnlInfo, pnlPublication)
+  addTab(info.content, "Info")
+  addTab(publication.content, "Publication")
 }

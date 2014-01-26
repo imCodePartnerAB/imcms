@@ -11,7 +11,7 @@ import com.vaadin.ui.themes.Reindeer
 
 class TemplateGroupManagerView extends VerticalLayout with FullSize {
 
-  val mb = new MenuBar with FullWidth |>> { _.addStyleName("manager") }
+  val mb = new MenuBar with MenuBarInTabStyle with FullWidth
   val miNew = mb.addItem("New")
   val miEdit = mb.addItem("Edit")
   val miDelete = mb.addItem("Delete")

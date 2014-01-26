@@ -35,7 +35,7 @@ class UserEditor(user: UserDomainObject) extends Editor with ImcmsServicesSuppor
     view.account.txtFirstName.setValue(user.getFirstName)
 
     view.account.txtLastName.setValue(user.getLastName)
-    view.account.txtLogin.setValue(user.getLoginName)
+    view.account.txtLoginName.setValue(user.getLoginName)
     view.account.txtEmail.setValue(user.getEmailAddress)
 
     if (!user.isNew) {
@@ -56,7 +56,7 @@ class UserEditor(user: UserDomainObject) extends Editor with ImcmsServicesSuppor
   }
 
   override def collectValues(): UserEditor#ErrorsOrData = {
-    val loginValidationErrorOpt = validateLogin(view.account.txtLogin.trimmedValue)
+    val loginValidationErrorOpt = validateLogin(view.account.txtLoginName.trimmedValue)
     val emailValidationErrorOpt = validateEmail(view.account.txtEmail.trimmedValue)
     val passwordValidationErrorOpt = validatePassword(view.account.txtPassword.value, view.account.txtPasswordCheck.value)
 
@@ -88,7 +88,7 @@ class UserEditor(user: UserDomainObject) extends Editor with ImcmsServicesSuppor
         u.setActive(view.account.chkEnabled.checked)
         u.setFirstName(view.account.txtFirstName.trimmedValue)
         u.setLastName(view.account.txtLastName.trimmedValue)
-        u.setLoginName(view.account.txtLogin.trimmedValue)
+        u.setLoginName(view.account.txtLoginName.trimmedValue)
 
         u.setRoleIds(view.account.tcsRoles.value.asScala.toArray)
         u.setLanguageIso639_2(view.account.sltUILanguage.selection)

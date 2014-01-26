@@ -8,7 +8,7 @@ import com.imcode.imcms.vaadin.component._
 
 class FileManagerView(browserView: FileBrowserView, previewView: FilePreviewView) extends GridLayout(2, 2) with FullSize {
 
-  val mb = new MenuBar with FullWidth |>> { _.addStyleName("manager") }
+  val mb = new MenuBar with MenuBarInTabStyle with FullWidth
   val miFile = mb.addItem("file_mgr.mi.file".i)
   val miFileShow = miFile.addItem("file_mgr.mi.file.show".i)
   val miFileEdit = miFile.addItem("file_mgr.mi.file.edit".i)
