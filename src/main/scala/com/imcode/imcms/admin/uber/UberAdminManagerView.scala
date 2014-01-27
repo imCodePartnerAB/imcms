@@ -1,12 +1,12 @@
 package com.imcode
 package imcms
 package admin
-package sysadmin
+package uber
 
 import com.imcode.imcms.vaadin.component._
 import com.vaadin.ui._
 
-class ManagerView extends VerticalLayout with FullSize {
+class UberAdminManagerView extends VerticalLayout with FullSize {
 
   val mb = new MenuBar with MenuBarInTabStyle with FullWidth
   val miLanguage = mb.addItem("", Theme.Icon.Language.flag("eng"))

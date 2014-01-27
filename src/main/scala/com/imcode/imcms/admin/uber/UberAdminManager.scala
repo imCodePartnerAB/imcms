@@ -1,7 +1,7 @@
 package com.imcode
 package imcms
 package admin
-package sysadmin
+package uber
 
 import com.imcode.imcms.vaadin.Current
 import com.vaadin.server.ExternalResource
@@ -11,9 +11,9 @@ import com.vaadin.ui.MenuBar.Command
 
 // fixme: change lang should update user
 // fixme: change password should update user
-class Manager {
+class UberAdminManager {
 
-  val view = new ManagerView |>> { v =>
+  val view = new UberAdminManagerView |>> { v =>
     v.imgSplash.setIcon(new ExternalResource(Current.contextPath + "/images/imCMSpower.gif"))
 
     v.miLogOut.setCommandHandler { _ =>

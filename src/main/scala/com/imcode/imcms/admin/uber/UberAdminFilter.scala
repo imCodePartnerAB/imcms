@@ -1,10 +1,10 @@
-package com.imcode.imcms.admin.sysadmin
+package com.imcode.imcms.admin.uber
 
 import javax.servlet._
 import imcode.util.Utility
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 
-class SysAdminFilter extends Filter {
+class UberAdminFilter extends Filter {
 
   def init(filterConfig: FilterConfig) {}
 

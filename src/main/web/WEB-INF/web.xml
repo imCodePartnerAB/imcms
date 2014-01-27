@@ -61,7 +61,7 @@
 
         <display-name>SysAdmin Filter</display-name>
         <filter-name>SysAdminFilter</filter-name>
-        <filter-class>com.imcode.imcms.admin.sysadmin.SysAdminFilter</filter-class>
+        <filter-class>com.imcode.imcms.admin.uber.UberAdminFilter</filter-class>
     </filter>
 
     <filter>
@@ -156,14 +156,14 @@
     </servlet>
 
     <servlet>
-        <servlet-name>vaadin-sysadmin</servlet-name>
+        <servlet-name>vaadin-uberadmin</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
         </servlet-class>
 
         <init-param>
             <param-name>UI</param-name>
-            <param-value>com.imcode.imcms.admin.sysadmin.SysAdmin</param-value>
+            <param-value>com.imcode.imcms.admin.uber.UberAdmin</param-value>
         </init-param>
     </servlet>
 
@@ -704,8 +704,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>vaadin-sysadmin</servlet-name>
-        <url-pattern>/sysadmin/*</url-pattern>
+        <servlet-name>vaadin-uberadmin</servlet-name>
+        <url-pattern>/admin/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

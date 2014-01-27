@@ -1,6 +1,6 @@
 package com.imcode
 package imcms
-package admin.sysadmin
+package admin.uber
 
 import com.imcode.imcms.admin.access.ip.IPAccessManager
 import com.imcode.imcms.admin.access.role.RoleManager
@@ -51,7 +51,7 @@ import com.imcode.imcms.admin.doc.manager.DocManager
 
 @PreserveOnRefresh
 @com.vaadin.annotations.Theme("imcms")
-class SysAdmin extends UI {
+class UberAdmin extends UI {
 
   private class MenuItem(val caption: String, val iconOpt: Option[ThemeResource] = None,
                          viewOpt: => Option[Component] = None, val children: Seq[MenuItem]) {
@@ -103,7 +103,7 @@ class SysAdmin extends UI {
   private lazy val menu = new Tree with SingleSelect[MenuItem] with Immediate with NoNullSelection |>> { tree =>
     def addMenuItem(item: MenuItem) {
       tree.addItem(item)
-      tree.setItemCaption(item, item.caption.i)
+      tree.setItemCaption(item, item.caption)
 
       item.iconOpt.foreach(icon => tree.setItemIcon(item, icon))
       item.children |> { children =>
@@ -162,13 +162,11 @@ class SysAdmin extends UI {
       for ((caption, component) <- tabs) ts.addTab(component, caption)
     }
 
-  private lazy val adminView = createTabSheet("imCMS Admin" -> new Manager().view)
+  private lazy val adminView = createTabSheet("imCMS Admin" -> new UberAdminManager().view)
 
-  private lazy val instanceCacheView = new com.imcode.imcms.admin.instance.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
+  private lazy val languagesView = createTabSheet("doc.lang.mgr.title".i -> new LanguageManager().view)
 
-  private lazy val languagesView = createTabSheet("doc.lang.mgr.title" -> new LanguageManager().view)
-
-  private lazy val documentsView = createTabSheet("doc_mgr.title" -> new DocManager().view)
+  private lazy val documentsView = createTabSheet("doc_mgr.title".i -> new DocManager().view)
 
   private lazy val ipAccessView = createTabSheet("IP Access" -> new IPAccessManager().view)
 
@@ -190,6 +188,10 @@ class SysAdmin extends UI {
   private lazy val categoriesView = createTabSheet(
     "Categories" -> new CategoryManager().view,
     "Category types" -> new CategoryTypeManager().view
+  )
+
+  private lazy val instanceCacheView = createTabSheet(
+    "Cache" -> new com.imcode.imcms.admin.instance.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
   )
 
   private lazy val searchTermsView = createTabSheet("Popular search terms" ->
