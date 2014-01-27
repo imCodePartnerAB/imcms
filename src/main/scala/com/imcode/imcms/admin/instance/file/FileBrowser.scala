@@ -135,7 +135,7 @@ extends Publisher[Option[LocationSelection]] {
     val locationItems = new LocationItems(conf.itemsFilter, isSelectable, isMultiSelect)
 
     locationTree.view.addValueChangeHandler { _ =>
-      locationTree.view.selection.asOption match {
+      locationTree.view.firstSelected.asOption match {
         case Some(dir) =>
           locationItems.reload(dir)
           Some(LocationSelection(dir, Nil)) |> { selection =>
@@ -172,7 +172,7 @@ extends Publisher[Option[LocationSelection]] {
   }
 
   private def updateSelection(locationTree: LocationTree, locationItems: LocationItems) {
-    locationTree.view.selection.asOption match {
+    locationTree.view.firstSelected.asOption match {
       case Some(dir) =>
         Some(LocationSelection(dir, locationItems.selection)) |> { selection =>
           selectionRef.set(selection)
@@ -205,14 +205,14 @@ extends Publisher[Option[LocationSelection]] {
 
   /** Reloads current location. */
   def reloadLocation(preserveTreeSelection: Boolean = true) =
-    for ((locationTree, _) <- location; dir = locationTree.view.selection) {
+    for ((locationTree, _) <- location; dir = locationTree.view.firstSelected) {
       locationTree.reload()
       if (preserveTreeSelection && dir.isDirectory) locationTree.selection = dir
     }
 
   /** Reloads current location's items. */
   def reloadLocationItems() =
-    for ((locationTree, locationItems) <- location; dir = locationTree.view.selection)
+    for ((locationTree, locationItems) <- location; dir = locationTree.view.firstSelected)
       locationItems.reload(dir)
 
 
@@ -234,7 +234,7 @@ extends Publisher[Option[LocationSelection]] {
       case (tab, (locationTree, locationItems)) =>
         view.accLocationTrees.setSelectedTab(tab)
         locationTree.selection = locationSelection.dir
-        if (isSelectable) locationItems.view.value = locationSelection.items.asJava
+        if (isSelectable) locationItems.view.selection = locationSelection.items
     }
 
   // primary constructor
@@ -298,13 +298,13 @@ class LocationTree(val root: File) {
     view.expandItem(if (dir == root) dir else dir.getParentFile)
   }
 
-  def selection = view.selection
+  def selection = view.firstSelected
 }
 
 
 class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: Boolean) {
 
-  val view = new Table with MultiSelectBehavior[File] with FSItemIcon with Immediate with FullSize |>> { w =>
+  val view = new Table with SelectWithTypedItemId[File] with FSItemIcon with Immediate with FullSize |>> { w =>
     w.setSelectable(selectable)
     w.setMultiSelect(multiSelect)
 
@@ -344,7 +344,7 @@ class LocationItems(filter: File => Boolean, selectable: Boolean, multiSelect: B
     }
   }
 
-  def selection = view.value.asScala.toSeq
+  def selection = view.selection
 }
 
 

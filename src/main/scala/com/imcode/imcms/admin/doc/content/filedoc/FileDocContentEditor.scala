@@ -203,7 +203,7 @@ class FileDocContentEditor(doc: FileDocumentDomainObject) extends DocContentEdit
 
                 fdf.setId(newId)
                 fdf.setFilename(filePropertiesEditorView.txtName.trimmedValue)
-                fdf.setMimeType(filePropertiesEditorView.cbType.selection)
+                fdf.setMimeType(filePropertiesEditorView.cbType.firstSelected)
 
                 values = Values(fdfs, defaultFdfId)
 

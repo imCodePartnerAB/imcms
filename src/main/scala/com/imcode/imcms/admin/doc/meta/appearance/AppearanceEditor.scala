@@ -111,9 +111,9 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
           case i18nMetaEditorWidget if i18nMetaEditorWidget.chkEnabled.checked => i18nMetaEditorWidget.language
         } (breakOut),
 
-        view.languages.cbShowMode.selection,
+        view.languages.cbShowMode.firstSelected,
         view.alias.txtAlias.trimmedValueOpt,
-        view.linkTarget.cbTarget.selection
+        view.linkTarget.cbTarget.firstSelected
       )
     }
 

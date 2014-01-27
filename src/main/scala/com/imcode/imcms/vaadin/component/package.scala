@@ -2,16 +2,17 @@ package com.imcode
 package imcms
 package vaadin
 
+import _root_.java.lang.AssertionError
+import _root_.java.util.Collections
 import scala.language.implicitConversions
 
 import scala.collection.JavaConverters._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
-import com.vaadin.ui.Layout.AlignmentHandler
-import com.vaadin.data.{Item, Property}
+import com.vaadin.data.Item
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.server.{Sizeable, Resource}
-import com.vaadin.ui.themes.{Reindeer, ChameleonTheme, BaseTheme}
+import com.vaadin.ui.themes.{Reindeer, BaseTheme}
 import com.vaadin.shared.ui.datefield.Resolution
 
 
@@ -19,10 +20,12 @@ package object component {
 
   implicit def wrapUI(ui: UI): UIWrapper = new UIWrapper(ui)
 
-  def whenSelected[A <: AnyRef, B](select: AbstractSelect with TypedProperty[A])(fn: A => B): Option[B] = select.value match {
-    case null => None
-    case value: JCollection[_] if value.isEmpty => None
-    case value => Some(fn(value))
+  @deprecated // move to selection trait!!
+  def whenSelected[A <: AnyRef, B](select: AbstractSelect with SingleSelect[A])(fn: A => B): Option[B] = select.firstSelectedOpt.map(fn)
+  @deprecated  // move to selection trait!!
+  def whenSelected[A <: AnyRef, B](select: AbstractSelect with MultiSelect[A])(fn: Seq[A] => B): Option[B] = select.selection match {
+    case Nil => None
+    case ids => Some(fn(ids))
   }
 
 //  def menuCommand(handler: (MenuBar#MenuItem => Unit)) = new MenuBar.Command {
@@ -285,97 +288,64 @@ package object component {
       setItemIcon(id, icon)
     }
 
-    def isSelected: Boolean
-    def selectFirst(): Unit
+    def isSelected: Boolean = (getValue, isMultiSelect) match {
+      case (value, false) => value != null
+      case (ids: JCollection[_], true) => ids.size() != 0
+      case _ => throw new AssertionError("Invalid content")
+    }
+
+    def selectFirst() {
+      firstItemIdOpt.foreach(id => setValue(if (isMultiSelect) Collections.singletonList(id) else id))
+    }
+
+    def firstSelectedOpt: Option[A] = Option(firstSelected)
+
+    def firstSelected: A = (getValue, isMultiSelect) match {
+      case (value, false) => value.asInstanceOf[A]
+      case (ids: JCollection[_], true) => (if (ids.size() == 0) null else ids.iterator().next()).asInstanceOf[A]
+      case _ => throw new AssertionError("Invalid content")
+    }
+
+
+    def selection_=(v: A) {
+      setValue(if (!isMultiSelect) v else if (v == null) Collections.emptyList() else Collections.singletonList(v))
+    }
+
+    def selection_=(v: Seq[A]) {
+      setValue(if (!isMultiSelect) v.headOption.orNull else v.asJavaCollection)
+    }
+
+    def selection: Seq[A] = (getValue, isMultiSelect) match {
+      case (value, false) => Option(value).toSeq.asInstanceOf[Seq[A]]
+      case (ids: JCollection[_], true) => ids.asScala.toSeq.asInstanceOf[Seq[A]]
+      case _ => throw new AssertionError("Invalid content")
+    }
+
+    def clearSelection() {
+      setValue(if (!isMultiSelect) null else Collections.emptyList())
+    }
   }
 
 
-  trait SingleSelect[A <: TItemId] extends SelectWithTypedItemId[A] with TypedProperty[A] {
+  trait SingleSelect[A <: TItemId] extends SelectWithTypedItemId[A] {
     setMultiSelect(false)
 
     override final def setMultiSelect(multiSelect: Boolean) {
       require(!multiSelect, "must be false")
       super.setMultiSelect(multiSelect)
     }
-
-    override def isSelected: Boolean = selectionOpt.isDefined
-
-    override def selectFirst() {
-      firstItemIdOpt.foreach(id => selection = id)
-    }
-
-    def selection: A = getTypedValue
-
-    def selection_=(v: A) { setValue(v) }
-
-    def selectionOpt: Option[A] = getTypedValue.asOption
   }
 
 
-  trait MultiSelect[A <: TItemId] extends SelectWithTypedItemId[A] with TypedProperty[JCollection[A]] {
+  trait MultiSelect[A <: TItemId] extends SelectWithTypedItemId[A] {
     setMultiSelect(true)
 
-    override def setMultiSelect(multiSelect: Boolean) {
+    override final def setMultiSelect(multiSelect: Boolean) {
       require(multiSelect, "must be true")
       super.setMultiSelect(multiSelect)
     }
-
-    override def isSelected: Boolean = getTypedValue.asScala.nonEmpty
-
-    override def selectFirst() {
-      selection = firstItemIdOpt.toSeq
-    }
-
-    def selection: Seq[A] = getTypedValue.asScala.toSeq
-
-    def selection_=(v: Seq[A]) { setValue(v.asJava) }
-
-    def selection_=(v: A) { selection = Option(v).toSeq }
-
-    def firstSelectedValueOpt: Option[A] = getTypedValue.asScala.headOption
   }
 
-
-  /**
-   * <code>value<code> property always returns a collection.
-   */
-  // todo: ??? Multiselect'Read'Behavior ???
-  trait MultiSelectBehavior[A <: TItemId] extends SelectWithTypedItemId[A] with TypedProperty[JCollection[A]] {
-
-    def selection: Seq[A] = getTypedValue.asScala.toSeq
-    def selection_=(v: Seq[A]) { setValue(v.asJava) }
-
-    override def isSelected: Boolean = getTypedValue.asScala.nonEmpty
-
-    override def selectFirst() {
-      selection = firstItemIdOpt.toSeq
-    }
-
-    /**
-     * @return collection of selected items or empty collection if there is no selected item(s).
-     */
-    final override def getValue: JCollection[A] = super.getValue |> { value =>
-      if (isMultiSelect) value.asInstanceOf[JCollection[A]]
-      else value.asInstanceOf[A].asOption.toSeq.asJavaCollection
-    }
-
-    final override def setValue(value: AnyRef) {
-      super.setValue(
-        value match {
-          case null => if (isMultiSelect) java.util.Collections.emptyList else null
-          case coll: JCollection[_] => if (isMultiSelect) value else coll.asScala.headOption.orNull
-          case _ => if (isMultiSelect) java.util.Collections.singletonList(value) else value
-        }
-      )
-    }
-
-    def firstSelectedValueOpt: Option[A] = selection.headOption
-
-    //  ?????????????????????????????????????????????????????????
-    //  final override def setMultiSelect(multiSelect: Boolean) =
-    //    if (value.isEmpty) super.setMultiSelect(multiSelect)
-    //    else throw new IllegalStateException("Multi-select value can not be changed on non-empty select.")
-  }
 
   trait Now { this: DateField =>
     setValue(new java.util.Date)

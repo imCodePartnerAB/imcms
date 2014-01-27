@@ -25,7 +25,7 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
   private val selectionRef = new AtomicReference(Seq.empty[UserDomainObject])
 
   private val filter = new UserFilter
-  val usersView = new Table with MultiSelectBehavior[UserId] with Immediate with Selectable with FullSize |>> { tbl =>
+  val usersView = new Table with SelectWithTypedItemId[UserId] with Immediate with Selectable with FullSize |>> { tbl =>
     addContainerProperties(tbl,
       PropertyDescriptor[UserId]("users_projection.container_property.id"),
       PropertyDescriptor[String]("users_projection.container_property.login"),
@@ -58,7 +58,7 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
   }
 
   usersView.addValueChangeHandler { _ =>
-    selectionRef.set(usersView.value.asScala.map(userId => roleMapper.getUser(userId))(breakOut))
+    selectionRef.set(usersView.selection.map(userId => roleMapper.getUser(userId))(breakOut))
     notifyListeners()
   }
 
@@ -81,7 +81,7 @@ class UsersProjection(multiSelect: Boolean = true) extends Publisher[Seq[UserDom
     }
 
     val rolesPredicateOpt: Option[(UserDomainObject => Boolean)] = PartialFunction.condOpt(state.roles) {
-      case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(filter.view.tcsRoles.value.asScala.toSeq).nonEmpty }
+      case Some(roles) if roles.nonEmpty => { _.getRoleIds.intersect(filter.view.tcsRoles.selection).nonEmpty }
     }
 
     val inactivePredicateOpt: Option[(UserDomainObject => Boolean)] = PartialFunction.condOpt(state.isShowInactive) {

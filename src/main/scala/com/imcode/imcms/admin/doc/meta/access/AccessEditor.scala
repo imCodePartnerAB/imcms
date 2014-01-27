@@ -101,7 +101,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
             availableRoles.foreach { role => c.cbRole.addItem(role, role.getName) }
 
             c.cbRole.addValueChangeHandler { _ =>
-              val availablePermSetTypes = availableRolesWithPermsSetTypes(c.cbRole.selection)
+              val availablePermSetTypes = availableRolesWithPermsSetTypes(c.cbRole.firstSelected)
               types.foreach { typeSet =>
                 c.ogPermsSetType.setItemEnabled(typeSet, availablePermSetTypes contains typeSet)
               }
@@ -112,8 +112,8 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
             c.cbRole.selection = availableRoles.head
 
             dlg.setOkButtonHandler {
-              val role = c.cbRole.selection
-              val setType = c.ogPermsSetType.selection
+              val role = c.cbRole.firstSelected
+              val setType = c.ogPermsSetType.firstSelected
 
               addRolePermSetType(role, setType)
             }
@@ -124,7 +124,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
 
 
     editorView.perms.miRoleChangePermSet.setCommandHandler { _ =>
-      whenSingleton(editorView.perms.tblRolesPermSets.value.asScala.toSeq) { role =>
+      whenSingleton(editorView.perms.tblRolesPermSets.selection) { role =>
         types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
           case Nil => Current.page.showWarningNotification("You are not allowed to edit this role")
           case availableSetTypes =>
@@ -141,7 +141,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
                 }
 
                 dlg.setOkButtonHandler {
-                  setRolePermSetType(role, c.ogPermsSetType.selection)
+                  setRolePermSetType(role, c.ogPermsSetType.firstSelected)
                 }
               }
             } |> Current.ui.addWindow
@@ -151,7 +151,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
 
     editorView.perms.miRoleRemove.setCommandHandler { _ =>
       whenSelected(editorView.perms.tblRolesPermSets) { roles =>
-        roles.asScala.foreach(editorView.perms.tblRolesPermSets.removeItem)
+        roles.foreach(editorView.perms.tblRolesPermSets.removeItem)
       }
     }
 

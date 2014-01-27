@@ -25,7 +25,7 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
   private val initialValues = Data(meta.getCategoryIds.asScala.toSet)
 
-  private val typeCategoriesView: Seq[(CheckBox with ExposeValueChange[JBoolean], MultiSelectBehavior[CategoryId])] =
+  private val typeCategoriesView: Seq[(CheckBox with ExposeValueChange[JBoolean], SingleSelect[CategoryId])] =
     for {
       cType <- imcmsServices.getCategoryMapper.getAllCategoryTypes.toSeq
       categories = imcmsServices.getCategoryMapper.getAllCategoriesOfType(cType)
@@ -33,8 +33,8 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     } yield {
       val chkCType = new CheckBox(cType.getName) with ExposeValueChange[JBoolean] with Immediate
       val sltCategories =
-        if (cType.isMultiselect) new TwinColSelect with MultiSelectBehavior[CategoryId]
-        else new ComboBox with MultiSelectBehavior[CategoryId] with NoNullSelection
+        if (cType.isMultiselect) new TwinColSelect with SingleSelect[CategoryId]
+        else new ComboBox with SingleSelect[CategoryId] with NoNullSelection
 
       categories.foreach { category =>
         sltCategories.addItem(category.getId, category.getName)
@@ -56,7 +56,7 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   override def resetValues() {
     for ((chkCType, sltCategories) <- typeCategoriesView) {
       chkCType.uncheck()
-      sltCategories.value = Collections.emptyList[CategoryId]
+      sltCategories.clearSelection()
 
       for (categoryId <- sltCategories.itemIds.asScala if initialValues.categoriesIds(categoryId)) {
         sltCategories.select(categoryId)
@@ -70,7 +70,7 @@ class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
   override def collectValues(): ErrorsOrData = Right(
     Data(
       typeCategoriesView.collect {
-        case (chkCType, sltCategories) if chkCType.checked => sltCategories.value.asScala
+        case (chkCType, sltCategories) if chkCType.checked => sltCategories.selection
       }.flatten.toSet
     )
   )

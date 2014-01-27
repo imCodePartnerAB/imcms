@@ -56,7 +56,7 @@ class SysAdmin extends UI {
   private class MenuItem(val caption: String, val iconOpt: Option[ThemeResource] = None,
                          viewOpt: => Option[Component] = None, val children: Seq[MenuItem]) {
 
-    def view = viewOpt.getOrElse(NA(caption))
+    def view = viewOpt.getOrElse(createNotImplementedStubView(caption))
   }
 
   private object MenuItem {
@@ -108,10 +108,10 @@ class SysAdmin extends UI {
       item.iconOpt.foreach(icon => tree.setItemIcon(item, icon))
       item.children |> { children =>
         tree.setChildrenAllowed(item, children.nonEmpty)
-         for (child <- children) {
-           addMenuItem(child)
-           tree.setParent(child, item)
-         }
+        for (child <- children) {
+          addMenuItem(child)
+          tree.setParent(child, item)
+        }
       }
     }
 
@@ -119,7 +119,7 @@ class SysAdmin extends UI {
 
     tree.addValueChangeHandler { _ =>
       content.setSecondComponent(
-        tree.valueOpt match {
+        tree.firstSelectedOpt match {
           case Some(menuItem) => menuItem.view
           case _ => null
         }
@@ -150,7 +150,7 @@ class SysAdmin extends UI {
   }
 
 
-  private def NA(caption: String) =
+  private def createNotImplementedStubView(caption: String) =
     new VerticalLayout with MiddleCenterAlignment with FullSize |>> {
       _.addComponent(new Label("NOT AVAILABLE") with UndefinedSize)
     } |> { view =>
@@ -170,7 +170,7 @@ class SysAdmin extends UI {
 
   private lazy val documentsView = createTabSheet("doc_mgr.title" -> new DocManager().view)
 
-  private lazy val ipAccessView = createTabSheet("IP Access " -> new IPAccessManager().view)
+  private lazy val ipAccessView = createTabSheet("IP Access" -> new IPAccessManager().view)
 
   private lazy val rolesView = createTabSheet("Roles and their permissions" -> new RoleManager().view)
 

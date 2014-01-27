@@ -34,11 +34,11 @@ class SearchSettingsEditor(meta: Meta) extends Editor {
     }
 
     btnRemove.addClickHandler { _ =>
-      whenSelected(lstKeywords) { keywords => keywords.asScala.foreach(lstKeywords removeItem _) }
+      whenSelected(lstKeywords) { keywords => keywords.foreach(lstKeywords removeItem _) }
     }
 
     lstKeywords.addValueChangeHandler { _ =>
-      lstKeywords.value.asScala.toSeq match {
+      lstKeywords.selection match {
         case Seq(value) => txtKeyword.value = value
         case Seq(_, _, _*) => txtKeyword.value = ""
         case _ =>

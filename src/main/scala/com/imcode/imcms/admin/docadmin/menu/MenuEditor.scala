@@ -85,14 +85,14 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     w.miRemoveSelectedDocs.setCommandHandler { _ =>
-      for (docId <- w.ttMenu.selectionOpt) {
+      for (docId <- w.ttMenu.firstSelectedOpt) {
         state.removeMenuItemByDocumentId(docId)
         updateMenuView()
       }
     }
 
     w.miEditSelectedDoc.setCommandHandler { _ =>
-      for (docId <- w.ttMenu.selectionOpt) {
+      for (docId <- w.ttMenu.firstSelectedOpt) {
         imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId) match {
           case null =>
             Current.page.showWarningNotification("notification.doc.unable_to_find".i)
@@ -112,7 +112,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     w.miCopySelectedDoc.setCommandHandler { _ =>
-      for (metaId <- w.ttMenu.selectionOpt) {
+      for (metaId <- w.ttMenu.firstSelectedOpt) {
         imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](metaId) match {
           case null =>
             Current.page.showWarningNotification("notification.doc.unable_to_find".i)
@@ -130,13 +130,13 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     w.miShowSelectedDoc.setCommandHandler { _ =>
-      for (docId <- w.ttMenu.selectionOpt) {
+      for (docId <- w.ttMenu.firstSelectedOpt) {
         DocOpener.openDoc(docId)
       }
     }
 
     w.cbSortOrder.addValueChangeHandler { _ =>
-      state.setSortOrder(w.cbSortOrder.selection)
+      state.setSortOrder(w.cbSortOrder.firstSelected)
       updateMenuView()
     }
   }
@@ -267,7 +267,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
   override def resetValues() {
     state = menu.clone()
     view.cbSortOrder.selection = state.getSortOrder
-    view.ttMenu.selection = null
+    view.ttMenu.clearSelection()
   }
 
   override def collectValues(): ErrorsOrData = Right(state.clone())

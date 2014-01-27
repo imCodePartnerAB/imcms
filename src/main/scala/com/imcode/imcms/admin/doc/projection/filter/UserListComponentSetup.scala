@@ -3,7 +3,6 @@ package imcms
 package admin.doc.projection.filter
 
 import com.imcode.imcms.vaadin.Current
-import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.select.UserMultiSelectDialog
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
@@ -25,6 +24,6 @@ trait UserListComponentSetup { this: UserListComponent =>
   }
 
   btnRemove.addClickHandler { _ =>
-    lstUsers.value.asScala.foreach(lstUsers.removeItem)
+    lstUsers.selection.foreach(lstUsers.removeItem)
   }
 }

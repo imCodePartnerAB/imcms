@@ -122,7 +122,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
       I18nDocRef.of(fields.metaId(), fields.versionNo(), language)
     }
 
-    selectionRef.set(docsView.value.asScala.map(docIx => docsContainer.getItem(docIx).fields |> fieldsToI8nDocRef).to[Seq])
+    selectionRef.set(docsView.selection.map(docIx => docsContainer.getItem(docIx).fields |> fieldsToI8nDocRef).to[Seq])
     notifyListeners()
   }
 

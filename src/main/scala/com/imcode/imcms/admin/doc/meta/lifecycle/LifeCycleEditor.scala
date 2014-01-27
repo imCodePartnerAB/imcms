@@ -109,7 +109,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
       doc.setPublicationStartDatetime(view.publication.calStart.value)
       doc.setPublicationEndDatetime(if (view.publication.chkEnd.checked) view.publication.calEnd.value else null)
       doc.setArchivedDatetime(if (view.publication.chkArchive.checked) view.publication.calArchive.value else null)
-      doc.setPublicationStatus(view.publication.sltStatus.selection)
+      doc.setPublicationStatus(view.publication.sltStatus.firstSelected)
     }
 
     val activePhase = doc.getLifeCyclePhase
@@ -135,12 +135,12 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     } else {
       Right(
         Data(
-          view.publication.sltStatus.selection,
+          view.publication.sltStatus.firstSelected,
           view.publication.calStart.value,
           when(view.publication.chkArchive.checked)(view.publication.calArchive.value),
           when(view.publication.chkEnd.checked)(view.publication.calEnd.value),
           view.info.ussCreator.selection,
-          view.publication.sltVersion.selection.intValue,
+          view.publication.sltVersion.firstSelected.intValue,
           view.info.dCreated.calDate.value,
           view.info.dModified.calDate.value,
           view.info.ussCreator.selection,

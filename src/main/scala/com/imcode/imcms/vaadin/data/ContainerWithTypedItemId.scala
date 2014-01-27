@@ -7,7 +7,7 @@ import com.imcode._
 trait ContainerWithTypedItemId[A <: TItemId] { this: Container  =>
 
   def addItems(ids: Seq[A]) {
-    ids.map(id => addItem(id))
+    ids.foreach(id => addItem(id))
   }
 
   def addItems(ids: JCollection[A]) {

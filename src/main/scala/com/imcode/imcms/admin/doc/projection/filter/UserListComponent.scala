@@ -12,7 +12,7 @@ import com.imcode.imcms.vaadin.component._
  */
 class UserListComponent(caption: String = "") extends GridLayout(2, 2) {
   val chkEnabled = new CheckBox(caption) with ExposeValueChange[JBoolean] with Immediate
-  val lstUsers = new ListSelect with MultiSelectBehavior[UserId] with NoNullSelection {
+  val lstUsers = new ListSelect with SingleSelect[UserId] with NoNullSelection {
     setColumns(20)
   }
   val btnAdd = new Button("+") with SmallStyle

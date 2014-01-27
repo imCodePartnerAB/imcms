@@ -99,10 +99,10 @@ class CategoryManager {
 
           dlg.setOkButtonHandler {
             vo.clone |> { voc =>
-              voc setName c.txtName.value.trim
-              voc setDescription c.txaDescription.value.trim
-              voc setImageUrl (if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.get.get.getSource.asInstanceOf[FileResource].getFilename)
-              voc setType categoryMapper.getCategoryTypeByName(c.sltType.selection)
+              voc.setName(c.txtName.value.trim)
+              voc.setDescription(c.txaDescription.value.trim)
+              voc.setImageUrl(if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.get.get.getSource.asInstanceOf[FileResource].getFilename)
+              voc.setType(categoryMapper.getCategoryTypeByName(c.sltType.firstSelected))
               // todo: move validate into separate fn
               val validationError: Option[String] = voc.getName match {
                 case "" => Some("Category name is not set")

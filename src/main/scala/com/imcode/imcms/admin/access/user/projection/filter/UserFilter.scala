@@ -2,11 +2,9 @@ package com.imcode
 package imcms
 package admin.access.user.projection.filter
 
-import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
-import _root_.imcode.server.user.RoleId
 
 
 class UserFilter extends ImcmsServicesSupport {
@@ -38,13 +36,13 @@ class UserFilter extends ImcmsServicesSupport {
       view.tcsRoles.addItem(role.getId)
       view.tcsRoles.setItemCaption(role.getId, role.getName)
     }
-    view.tcsRoles.value = parameters.roles.getOrElse(Set.empty[RoleId]).asJavaCollection
+    view.tcsRoles.selection = parameters.roles.toSeq.flatten
   }
 
 
   def getFilterParameters = UserFilterParameters(
     when(view.chkText.checked)(view.txtText.trimmedValue),
-    when(view.chkRoles.checked)(view.tcsRoles.value.asScala.toSet),
+    when(view.chkRoles.checked)(view.tcsRoles.selection.to[Set]),
     view.chkShowDisabled.checked
   )  
 }

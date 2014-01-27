@@ -216,7 +216,7 @@ class Filter extends ImcmsServicesSupport {
           DocumentIndex.FIELD__ARCHIVED_DATETIME -> drArchived,
           DocumentIndex.FIELD__PUBLICATION_END_DATETIME -> drExpired
         )
-        if dr.cbRangeType.selection != DateRangeType.Undefined
+        if dr.cbRangeType.firstSelected != DateRangeType.Undefined
         startOpt = dr.dtFrom.valueOpt
         endOpt = dr.dtTo.valueOpt
         if startOpt.isDefined || endOpt.isDefined
@@ -236,14 +236,14 @@ class Filter extends ImcmsServicesSupport {
     }
 
     val relationshipOpt: Option[Relationship] = when(extendedView.relationships.chkEnabled.checked) {
-      val withParents = extendedView.relationships.cbParents.selection match {
+      val withParents = extendedView.relationships.cbParents.firstSelected match {
         case "docs_projection.extended_filter.cb_relationships_parents.item.unspecified" => Relationship.Unspecified
         case "docs_projection.extended_filter.cb_relationships_parents.item.with_parents" => Relationship.Logical(true)
         case "docs_projection.extended_filter.cb_relationships_parents.item.without_parents" => Relationship.Logical(false)
         case "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of" => Relationship.Exact(extendedView.relationships.txtParents.value.toInt)
       }
 
-      val withChildren = extendedView.relationships.cbChildren.selection match {
+      val withChildren = extendedView.relationships.cbChildren.firstSelected match {
         case "docs_projection.extended_filter.cb_relationships_children.item.unspecified" => Relationship.Unspecified
         case "docs_projection.extended_filter.cb_relationships_children.item.with_children" => Relationship.Logical(true)
         case "docs_projection.extended_filter.cb_relationships_children.item.without_children" => Relationship.Logical(false)

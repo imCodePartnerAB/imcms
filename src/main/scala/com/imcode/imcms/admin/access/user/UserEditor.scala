@@ -49,7 +49,7 @@ class UserEditor(user: UserDomainObject) extends Editor with ImcmsServicesSuppor
       view.account.tcsRoles.addItem(role.getId, role.getName)
     }
 
-    view.account.tcsRoles.value = user.getRoleIds.filterNot(_ == RoleId.USERS).toSeq.asJava
+    view.account.tcsRoles.selection = user.getRoleIds.filterNot(_ == RoleId.USERS).to[Seq]
     view.account.sltUILanguage.select(
       Set("eng", "swe").find(_ == user.getLanguageIso639_2).getOrElse(Current.imcmsUser.getLanguageIso639_2)
     )
@@ -90,8 +90,8 @@ class UserEditor(user: UserDomainObject) extends Editor with ImcmsServicesSuppor
         u.setLastName(view.account.txtLastName.trimmedValue)
         u.setLoginName(view.account.txtLoginName.trimmedValue)
 
-        u.setRoleIds(view.account.tcsRoles.value.asScala.toArray)
-        u.setLanguageIso639_2(view.account.sltUILanguage.selection)
+        u.setRoleIds(view.account.tcsRoles.selection.toArray)
+        u.setLanguageIso639_2(view.account.sltUILanguage.firstSelected)
         u.setEmailAddress(view.account.txtEmail.trimmedValue)
         u.setRoleIds(view.account.tcsRoles.selection.toArray)
 

@@ -114,12 +114,12 @@ class ExtendedFilterView extends CustomLayout("admin/doc/projection/extended_fil
   relationships.cbParents.addValueChangeHandler { _ =>
     val txtParents = relationships.txtParents
 
-    txtParents.setVisible(relationships.cbParents.selection == "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of")
+    txtParents.setVisible(relationships.cbParents.firstSelected == "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of")
   }
 
   relationships.cbChildren.addValueChangeHandler { _ =>
     val txtChildren = relationships.txtChildren
 
-    txtChildren.setVisible(relationships.cbChildren.selection == "docs_projection.extended_filter.cb_relationships_children.item.with_children_of")
+    txtChildren.setVisible(relationships.cbChildren.firstSelected == "docs_projection.extended_filter.cb_relationships_children.item.with_children_of")
   }
 }

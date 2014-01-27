@@ -77,10 +77,10 @@ class CategoryTypeManager {
 
         dlg.setOkButtonHandler {
           vo.clone() |> { voc =>
-            voc setName w.txtName.value.trim
-            voc setInherited w.chkInherited.value
-            voc setImageArchive w.chkImageArchive.value
-            voc setMultiselect w.chkMultiSelect.value
+            voc.setName(w.txtName.value.trim)
+            voc.setInherited(w.chkInherited.value)
+            voc.setImageArchive(w.chkImageArchive.value)
+            voc.setMultiselect(w.chkMultiSelect.value)
 
             // todo: move validate into separate fn
             val validationError: Option[String] = voc.getName match {

@@ -21,7 +21,7 @@ class ImageSelect extends ImcmsServicesSupport {
     view.dirs.addValueChangeHandler { _ =>
       view.images.removeAllItems()
       for {
-        dir <- view.dirs.selectionOpt
+        dir <- view.dirs.firstSelectedOpt
         imageFile <- dir.listFiles()
       } {
         view.images.addItem(imageFile, imageFile.getName)
@@ -32,6 +32,6 @@ class ImageSelect extends ImcmsServicesSupport {
   view.dirs.selectFirst()
 
   def selectionOpt(): Option[File] = {
-    view.images.selectionOpt
+    view.images.firstSelectedOpt
   }
 }
