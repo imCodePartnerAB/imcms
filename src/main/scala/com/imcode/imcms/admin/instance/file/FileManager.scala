@@ -194,7 +194,7 @@ class ItemsDeleteHelper(browser: FileBrowser) {
           react {
             case itemsState @ ItemsState(Nil, _) =>
               Current.ui.withSessionLock {
-                dialogMainWidget.pi.setValue(1)
+                dialogMainWidget.pi.value = 1
               }
 
               handleFinished(dlg, itemsState)
@@ -202,7 +202,7 @@ class ItemsDeleteHelper(browser: FileBrowser) {
             case itemsState @ ItemsState(remaining @ (item :: _), _) =>
               Current.ui.withSessionLock {
                 items.size.asInstanceOf[Float] |> { max =>
-                  dialogMainWidget.pi.setValue((max - remaining.size) / max)
+                  dialogMainWidget.pi.value = (max - remaining.size) / max
                 }
 
                 val parentName = item.getParentFile.asOption.map(_.getName).getOrElse(".")
@@ -343,7 +343,7 @@ class ItemsTransferHelper(browser: FileBrowser) {
           react {
             case itemsState @ ItemsState(Nil, _) =>
               Current.ui.withSessionLock {
-                dialogMainComponent.pi.setValue(1)
+                dialogMainComponent.pi.value = 1
               }
 
               handleFinished(dlg, itemsState)
@@ -353,7 +353,7 @@ class ItemsTransferHelper(browser: FileBrowser) {
                 dialogMainComponent.lblMsg.value = "file_mgr_dlg.copy.progress.msg".f(item.getName, destDir.getName)
 
                 items.size.asInstanceOf[Float] |> { max =>
-                  dialogMainComponent.pi.setValue((max - remaining.size) / max)
+                  dialogMainComponent.pi.value = (max - remaining.size) / max
                 }
               }
 
@@ -480,7 +480,7 @@ class ItemsTransferHelper(browser: FileBrowser) {
           react {
             case itemsState @ ItemsState(Nil, _) =>
               Current.ui.withSessionLock {
-                dialogMainWidget.pi.setValue(1)
+                dialogMainWidget.pi.value = 1
               }
 
               handleFinished(dlg, itemsState)
@@ -490,7 +490,7 @@ class ItemsTransferHelper(browser: FileBrowser) {
                 dialogMainWidget.lblMsg.value = "file_mgr_dlg.move.progress.msg".f(item.getName, destDir.getName)
 
                 items.size.asInstanceOf[Float] |> { max =>
-                  dialogMainWidget.pi.setValue((max - remaining.size) / max)
+                  dialogMainWidget.pi.value = (max - remaining.size) / max
                 }
               }
 

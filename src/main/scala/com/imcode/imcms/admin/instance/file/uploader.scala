@@ -91,7 +91,7 @@ class FileUploader extends Publisher[UploadStatus] {
     })
     w.upload.addListener(new Upload.ProgressListener {
       def updateProgress(readBytes: Long, contentLength: Long) {
-        w.pgiBytesReceived.setValue(Float.box(readBytes.toFloat / contentLength))
+        w.pgiBytesReceived.value = readBytes.toFloat / contentLength
         notifyListeners(UploadProgressUpdated(readBytes, contentLength))
       }
     })
@@ -111,7 +111,7 @@ class FileUploader extends Publisher[UploadStatus] {
       def uploadSucceeded(ev: Upload.SucceededEvent) {
         w.txtSaveAsName.setEnabled(true)
         w.chkOverwrite.setEnabled(true)
-        w.pgiBytesReceived.setValue(1f)
+        w.pgiBytesReceived.value = 1
 
         UploadedFile(ev.getFilename, ev.getMIMEType, receiver.file) |> { uploadedFile =>
           uploadedFileOptRef.set(Some(uploadedFile))
@@ -131,7 +131,7 @@ class FileUploader extends Publisher[UploadStatus] {
       view.txtSaveAsName.setInputPrompt(null)
     }
     updateDisabled(view.pgiBytesReceived) { pgiBytesReceived =>
-      pgiBytesReceived.setValue(0f)
+      pgiBytesReceived.value = 1
       pgiBytesReceived.setPollingInterval(500)
     }
 

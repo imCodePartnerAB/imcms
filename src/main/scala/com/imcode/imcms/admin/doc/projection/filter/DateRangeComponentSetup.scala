@@ -18,8 +18,8 @@ trait DateRangeComponentSetup { this: DateRangeComponent =>
 
     cbRangeType.firstSelected match {
       case Undefined =>
-        dtFrom.setValue(null)
-        dtTo.setValue(null)
+        dtFrom.value = null
+        dtTo.value = null
 
       case Custom =>
         Seq(dtFrom, dtTo).foreach { dt =>

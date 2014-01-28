@@ -74,9 +74,9 @@
         <!--
             Core & EntityManager version
         -->
-        <hibernate.version>4.3.0.Final</hibernate.version>
+        <hibernate.version>4.3.1.Final</hibernate.version>
         <gwt.version>2.5.1</gwt.version>
-        <vaadin.version>7.1.9</vaadin.version>
+        <vaadin.version>7.1.10</vaadin.version>
 
         <tomcat.version>7.0.50</tomcat.version>
 

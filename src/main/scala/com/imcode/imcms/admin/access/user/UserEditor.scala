@@ -31,12 +31,12 @@ class UserEditor(user: UserDomainObject) extends Editor with ImcmsServicesSuppor
   resetValues()
 
   override def resetValues() {
-    view.account.chkEnabled.setValue(user.isActive)
-    view.account.txtFirstName.setValue(user.getFirstName)
+    view.account.chkEnabled.checked = user.isActive
+    view.account.txtFirstName.value = user.getFirstName
 
-    view.account.txtLastName.setValue(user.getLastName)
-    view.account.txtLoginName.setValue(user.getLoginName)
-    view.account.txtEmail.setValue(user.getEmailAddress)
+    view.account.txtLastName.value = user.getLastName
+    view.account.txtLoginName.value = user.getLoginName
+    view.account.txtEmail.value = user.getEmailAddress
 
     if (!user.isNew) {
       // for decoration only - show that password exists.

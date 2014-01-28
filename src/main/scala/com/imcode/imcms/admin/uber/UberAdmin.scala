@@ -103,7 +103,7 @@ class UberAdmin extends UI {
   private lazy val menu = new Tree with SingleSelect[MenuItem] with Immediate with NoNullSelection |>> { tree =>
     def addMenuItem(item: MenuItem) {
       tree.addItem(item)
-      tree.setItemCaption(item, item.caption)
+      tree.setItemCaption(item, item.caption.i)
 
       item.iconOpt.foreach(icon => tree.setItemIcon(item, icon))
       item.children |> { children =>
@@ -208,11 +208,11 @@ class UberAdmin extends UI {
         val calTo = new DateField()
         val btnReload = new Button("Reload")
 
-        calFrom.setValue(new Date)
+        calFrom.value = new Date
         //calFrom.setStyle("calendar")
         calFrom.setResolution(DateField.RESOLUTION_DAY)
 
-        calTo.setValue(new Date)
+        calTo.value = new Date
         //calTo.setStyle("calendar")
         calTo.setResolution(DateField.RESOLUTION_DAY)
 

@@ -20,20 +20,11 @@ package object component {
 
   implicit def wrapUI(ui: UI): UIWrapper = new UIWrapper(ui)
 
-  @deprecated // move to selection trait!!
   def whenSelected[A <: AnyRef, B](select: AbstractSelect with SingleSelect[A])(fn: A => B): Option[B] = select.firstSelectedOpt.map(fn)
-  @deprecated  // move to selection trait!!
   def whenSelected[A <: AnyRef, B](select: AbstractSelect with MultiSelect[A])(fn: Seq[A] => B): Option[B] = select.selection match {
     case Nil => None
     case ids => Some(fn(ids))
   }
-
-//  def menuCommand(handler: (MenuBar#MenuItem => Unit)) = new MenuBar.Command {
-//    def menuSelected(mi: MenuBar#MenuItem): Unit = handler(mi)
-//  }
-//
-//  implicit def fn0ToMenuCommand(fn: () => Unit) = menuCommand { _ => fn() }
-
 
   implicit def fnToTableCellStyleGenerator(fn: (TItemId,  TPropertyId) => String ) =
     new Table.CellStyleGenerator {
@@ -47,8 +38,7 @@ package object component {
 
   implicit def wrapComponent(c: Component) = new ComponentWrapper(c)
 
-  //
-  // implicit def wrapComponentContainer(cc: ComponentContainer) = new ComponentContainerWrapper(cc)
+  implicit def wrapComponentContainer(cc: ComponentContainer) = new ComponentContainerWrapper(cc)
 
   implicit def wrapCustomLayout(cl: CustomLayout) = new CustomLayoutWrapper(cl)
 
@@ -183,7 +173,7 @@ package object component {
    * By default a fields does not fire ValueChangeEvent when assigned value equals to existing.
    * This traits overrides default behavior and always fires ValueChangeEvent on value change.
    */
-  // todo: remove type
+  // todo: remove type ???
   trait AlwaysFireValueChange[T <: AnyRef] extends AbstractField[T] {
     override def setValue(value: T) {
       if (getValue == value) super.fireValueChange(true)
@@ -322,7 +312,7 @@ package object component {
     }
 
     def clearSelection() {
-      setValue(if (!isMultiSelect) null else Collections.emptyList())
+      setValue(if (isMultiSelect) Collections.emptyList() else null)
     }
   }
 

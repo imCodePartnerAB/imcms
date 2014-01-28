@@ -4,6 +4,7 @@ package admin.doc.content.htmldoc
 
 import com.imcode.imcms.admin.doc.content.DocContentEditor
 import com.imcode.imcms.ImcmsServicesSupport
+import com.imcode.imcms.vaadin.data._
 import _root_.imcode.server.document.HtmlDocumentDomainObject
 
 
@@ -27,9 +28,7 @@ class HtmlDocContentEditor(doc: HtmlDocumentDomainObject) extends DocContentEdit
   resetValues()
 
   def resetValues() {
-    view.editor.setValue(
-      if (doc.isNew) newHtmlTemplate else doc.getHtml
-    )
+    view.editor.value  = if (doc.isNew) newHtmlTemplate else doc.getHtml
   }
 
   def collectValues(): ErrorsOrData = Right(doc.clone() |>> { _.setHtml(view.editor.getValue) })
