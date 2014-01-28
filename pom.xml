@@ -7,7 +7,7 @@
 
         Add the following line to your $CATALINA_BASE/conf/tomcat-users.xml
 
-        <user username="admin" password="" roles="manager-gui, manager-script, admin-gui, admin-script"/>
+        <user username="admin" password="" roles="manager-gui, manager-script, admin-gui, admin-script" />
 -->
 
 <!--
@@ -22,14 +22,13 @@
 
         See also: src/main/java/com/imcode/imcms/AppWidgetSet.gwt.xml
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
-    <version>6.0.0-alpha63-SNAPSHOT</version>
+    <version>6.0.0-alpha63</version>
     <packaging>war</packaging>
 
     <name>imCMS</name>
@@ -62,7 +61,7 @@
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
-        <javac.args/>
+        <javac.args />
 
         <build.webapp.dir>${project.build.directory}/${project.artifactId}</build.webapp.dir>
 
@@ -1052,21 +1051,19 @@
                         <phase>validate</phase>
                         <configuration>
                             <target>
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
                                 <if>
                                     <not>
-                                        <available file="${project.basedir}/build.properties"/>
+                                        <available file="${project.basedir}/build.properties" />
                                     </not>
                                     <then>
-                                        <copy file="${project.basedir}/build.properties.template"
-                                              tofile="${project.basedir}/build.properties"/>
+                                        <copy file="${project.basedir}/build.properties.template" tofile="${project.basedir}/build.properties" />
                                     </then>
                                 </if>
 
-                                <uptodate targetfile="${project.basedir}/build.properties"
-                                          property="build-properties-up-to-date">
-                                    <srcfiles dir="${project.basedir}" includes="build.properties.template"/>
+                                <uptodate targetfile="${project.basedir}/build.properties" property="build-properties-up-to-date">
+                                    <srcfiles dir="${project.basedir}" includes="build.properties.template" />
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
@@ -1087,8 +1084,8 @@
                         <configuration>
                             <target>
                                 <ant antfile="${project.basedir}/pom-ant.xml" target="process-webapp-sources">
-                                    <property name="version" value="${project.version}"/>
-                                    <property name="build.webapp.dir" value="${build.webapp.dir}"/>
+                                    <property name="version" value="${project.version}" />
+                                    <property name="build.webapp.dir" value="${build.webapp.dir}" />
                                 </ant>
                             </target>
                         </configuration>
@@ -1183,7 +1180,7 @@
                         War source directory must not be set to existing directory
                         since webappDirectory (the directory where the webapp is built) is created using ant script.
                     -->
-                    <warSourceDirectory/>
+                    <warSourceDirectory />
 
                     <!--<webResources>-->
                     <!--<resource>-->
@@ -1374,8 +1371,8 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</connection>
-        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</developerConnection>
-        <url></url>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/6.0.0-alpha63</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/6.0.0-alpha63</developerConnection>
+        <url>/tags/6.0.0-alpha63</url>
     </scm>
 </project>
