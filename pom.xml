@@ -28,7 +28,7 @@
 
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
-    <version>6.0.0-alpha64</version>
+    <version>6.0.0-alpha65-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>imCMS</name>
@@ -1371,8 +1371,8 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/6.0.0-alpha64</connection>
-        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/tags/6.0.0-alpha64</developerConnection>
-        <url>/tags/6.0.0-alpha64</url>
+        <connection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</connection>
+        <developerConnection>scm:svn:https://svn.imcode.com/imcode/imcms/trunk</developerConnection>
+        <url></url>
     </scm>
 </project>
