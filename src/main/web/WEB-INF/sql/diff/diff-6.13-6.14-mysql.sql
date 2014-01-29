@@ -1,98 +1,52 @@
-DROP FUNCTION IF EXISTS imcms_schema_is_table_exists;
-DROP FUNCTION IF EXISTS imcms_schema_is_column_exists;
-DROP PROCEDURE IF EXISTS imcms_schema_check_table_exists;
-DROP PROCEDURE IF EXISTS imcms_schema_check_version;
-DROP PROCEDURE IF EXISTS imcms_schema_set_version;
-DROP PROCEDURE IF EXISTS imcms_schema_update_6_13_to_6_14;
-
 DELIMITER $$
 
-CREATE FUNCTION imcms_schema_is_table_exists(expected_table_name VARCHAR(1024))
-RETURNS BOOLEAN
-NOT DETERMINISTIC
-READS SQL DATA
+CREATE PROCEDURE imcms_schema_update_6_13_to_6_14()
 BEGIN
-  RETURN EXISTS(
-      SELECT * FROM information_schema.TABLES
-      WHERE table_schema = database() AND table_name = expected_table_name
-  );
-END;
-$$
+  DECLARE schema_version VARCHAR(8);
+  DECLARE column_exists BOOLEAN;
+  DECLARE error_message_text VARCHAR(1024);
 
-CREATE PROCEDURE imcms_schema_check_table_exists(expected_table_name VARCHAR(1024))
-NOT DETERMINISTIC
-READS SQL DATA
-BEGIN
-  IF NOT imcms_schema_is_table_exists(expected_table_name) THEN
-    SELECT `error: table does not exists`;
-  END IF;
-END;
-$$
-
-CREATE FUNCTION imcms_schema_is_column_exists(expected_table_name VARCHAR(1024), expected_column_name VARCHAR(1024))
-RETURNS BOOLEAN
-NOT DETERMINISTIC
-READS SQL DATA
-BEGIN
-  -- CALL imcms_schema_check_table_exists(expected_table_name);
-  -- leads to [HY000][1415] Not allowed to return a result set from a function error at runtime.
-  -- Workaround:
-  DECLARE dummy VARCHAR(1024);
-
-  IF NOT imcms_schema_is_table_exists(expected_table_name) THEN
-    SELECT `error: table does not exists` INTO dummy;
+  -- check schema version equals to 6.13
+  SELECT concat(major, '.', minor) INTO schema_version FROM database_version;
+  IF NOT schema_version <=> '6.13' THEN
+    SET error_message_text = concat('Invalid schema version. Expected: 6.13, actual: ', ifnull(schema_version, 'null'));
+    SIGNAL SQLSTATE 'ERROR' SET MESSAGE_TEXT = error_message_text;
   END IF;
 
-  RETURN EXISTS(
-      SELECT *
+  -- add column imcms_text_doc_images.resize if not exists
+  SET column_exists = EXISTS(
+      SELECT 1
       FROM information_schema.COLUMNS
       WHERE table_schema = database()
-            AND table_name = expected_table_name
-            AND column_name = expected_column_name
+            AND table_name = 'imcms_text_doc_images'
+            AND column_name = 'resize'
   );
-END;
-$$
 
-CREATE PROCEDURE imcms_schema_check_version(expected_major INT, expected_minor INT)
-DETERMINISTIC
-READS SQL DATA
-BEGIN
-  DECLARE actual_major, actual_minor INT;
-
-  IF NOT (actual_major = expected_major AND actual_minor = expected_minor) THEN
-    SELECT `error: unexpected schema version`;
-  END IF;
-END;
-$$
-
-CREATE PROCEDURE imcms_schema_set_version(new_major INT, new_minor INT)
-DETERMINISTIC
-MODIFIES SQL DATA
-BEGIN
-  UPDATE database_version SET major = new_major, minor = new_minor;
-END;
-$$
-
-CREATE PROCEDURE imcms_schema_update_6_13_to_6_14()
-DETERMINISTIC
-MODIFIES SQL DATA
-BEGIN
-  CALL imcms_schema_check_version(6, 13);
-
-  IF NOT imcms_schema_is_column_exists('imcms_text_doc_images', 'resize') THEN
+  IF NOT column_exists THEN
     ALTER TABLE imcms_text_doc_images
     ADD COLUMN resize INT NOT NULL DEFAULT 0;
   END IF;
 
-  IF NOT imcms_schema_is_column_exists('imcms_text_doc_images_history', 'resize') THEN
+  -- add column imcms_text_doc_images_history.resize if not exists
+  SET column_exists = EXISTS(
+      SELECT 1
+      FROM information_schema.COLUMNS
+      WHERE table_schema = database()
+            AND table_name = 'imcms_text_doc_images_history'
+            AND column_name = 'resize'
+  );
+
+  IF NOT column_exists THEN
     ALTER TABLE imcms_text_doc_images_history
     ADD COLUMN resize INT NOT NULL DEFAULT 0;
   END IF;
 
-  CALL imcms_schema_set_version(6, 14);
+  -- update schema version to 6.14
+  UPDATE database_version SET major = 6, minor = 14;
 END;
 $$
 
 DELIMITER ;
 
 CALL imcms_schema_update_6_13_to_6_14;
+DROP PROCEDURE imcms_schema_update_6_13_to_6_14;
