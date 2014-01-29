@@ -59,8 +59,8 @@
             Restricts access to the SysAdmin
         </description>
 
-        <display-name>SysAdmin Filter</display-name>
-        <filter-name>SysAdminFilter</filter-name>
+        <display-name>Über Admin Filter</display-name>
+        <filter-name>UberAdminFilter</filter-name>
         <filter-class>com.imcode.imcms.admin.uber.UberAdminFilter</filter-class>
     </filter>
 
@@ -121,8 +121,8 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>SysAdminFilter</filter-name>
-        <url-pattern>/sysadmin/*</url-pattern>
+        <filter-name>UberAdminFilter</filter-name>
+        <url-pattern>/admin/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
