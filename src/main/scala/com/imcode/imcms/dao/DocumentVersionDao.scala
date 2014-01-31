@@ -1,9 +1,10 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.orm.DocumentVersion
 import imcode.server.user.UserDomainObject;
 import org.springframework.transaction.annotation.Transactional;
-import com.imcode.imcms.api.DocumentVersion;
+
 
 import java.util.Date
 import com.imcode.imcms.dao.hibernate.HibernateSupport

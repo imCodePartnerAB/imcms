@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.orm.{DocumentLanguage, ImageHistory, DocRef}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -9,7 +10,6 @@ import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
-import com.imcode.imcms.api.{DocRef, ImageHistory, DocumentLanguage}
 import com.imcode.imcms.test.fixtures.UserFX
 import com.imcode.imcms.test.fixtures.LanguageFX.mkEnglish
 import imcode.server.document.textdocument.{ContentRef, ImageDomainObject}

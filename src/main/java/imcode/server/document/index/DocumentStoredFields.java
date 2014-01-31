@@ -1,11 +1,8 @@
 package imcode.server.document.index;
 
 
-import com.google.common.base.Objects;
 import org.apache.solr.common.SolrDocument;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 
 /**

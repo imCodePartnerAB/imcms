@@ -1,5 +1,7 @@
 package imcode.server.parser;
 
+import com.imcode.imcms.mapping.orm.Content;
+import com.imcode.imcms.mapping.orm.ContentLoop;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;

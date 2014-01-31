@@ -1,5 +1,9 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.DocumentVersion;
+import com.imcode.imcms.mapping.orm.I18nMeta;
+import com.imcode.imcms.mapping.orm.Meta;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;

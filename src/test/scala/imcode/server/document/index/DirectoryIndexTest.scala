@@ -1,5 +1,6 @@
 package imcode.server.document.index
 
+import com.imcode.imcms.mapping.orm.{DocRef, DocumentVersion, I18nMeta}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
@@ -13,7 +14,6 @@ import com.imcode._
 import org.mockito.stubbing.Answer
 import imcode.server.document.CategoryDomainObject
 import org.mockito.invocation.InvocationOnMock
-import com.imcode.imcms.api.{DocRef, DocumentVersion, I18nMeta}
 import scala.collection.JavaConverters._
 import java.io.File
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer

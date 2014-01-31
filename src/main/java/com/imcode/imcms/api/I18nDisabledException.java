@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
 import imcode.server.document.DocumentDomainObject;
 
 public class I18nDisabledException extends I18nException {

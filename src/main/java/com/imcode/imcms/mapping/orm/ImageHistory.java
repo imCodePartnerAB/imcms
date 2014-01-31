@@ -1,4 +1,4 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping.orm;
 
 import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;

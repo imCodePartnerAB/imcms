@@ -15,7 +15,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.mapping.orm.ContentLoop;
 import com.imcode.imcms.dao.TextDocDao;
 import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;

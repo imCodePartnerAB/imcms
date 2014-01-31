@@ -7,7 +7,7 @@
     <session-factory>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
 
-        <mapping class="com.imcode.imcms.api.Meta"/>
+        <mapping class="com.imcode.imcms.mapping.orm.Meta"/>
 
         <mapping class="com.imcode.imcms.mapping.orm.TemplateNames"/>
         <mapping class="com.imcode.imcms.mapping.orm.Include"/>
@@ -15,19 +15,19 @@
         <mapping class="com.imcode.imcms.mapping.orm.HtmlReference"/>
         <mapping class="com.imcode.imcms.mapping.orm.UrlReference"/>
 
-        <mapping class="com.imcode.imcms.api.SystemProperty"/>
-        <mapping class="com.imcode.imcms.api.I18nMeta"/>
-        <mapping class="com.imcode.imcms.api.DocumentLanguage"/>
-        <mapping class="com.imcode.imcms.api.TextHistory"/>
-        <mapping class="com.imcode.imcms.api.ImageHistory"/>
-        <mapping class="com.imcode.imcms.api.MenuHistory"/>
-        <mapping class="com.imcode.imcms.api.IPAccess"/>
+        <mapping class="com.imcode.imcms.mapping.orm.SystemProperty"/>
+        <mapping class="com.imcode.imcms.mapping.orm.I18nMeta"/>
+        <mapping class="com.imcode.imcms.mapping.orm.DocumentLanguage"/>
+        <mapping class="com.imcode.imcms.mapping.orm.TextHistory"/>
+        <mapping class="com.imcode.imcms.mapping.orm.ImageHistory"/>
+        <mapping class="com.imcode.imcms.mapping.orm.MenuHistory"/>
+        <mapping class="com.imcode.imcms.mapping.orm.IPAccess"/>
 
 
 
-        <mapping class="com.imcode.imcms.api.DocumentVersion"/>
-        <mapping class="com.imcode.imcms.api.DocumentProperty"/>
-        <mapping class="com.imcode.imcms.api.ContentLoop"/>
+        <mapping class="com.imcode.imcms.mapping.orm.DocumentVersion"/>
+        <mapping class="com.imcode.imcms.mapping.orm.DocumentProperty"/>
+        <mapping class="com.imcode.imcms.mapping.orm.ContentLoop"/>
 
         <mapping class="imcode.server.user.UserDomainObject"/>
         <mapping class="imcode.server.document.textdocument.ImageDomainObject"/>

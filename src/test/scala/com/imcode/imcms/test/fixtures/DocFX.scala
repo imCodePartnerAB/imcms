@@ -2,10 +2,10 @@ package com.imcode
 package imcms.test
 package fixtures
 
+import com.imcode.imcms.mapping.orm.{DocumentLanguage, I18nMeta}
 import scala.collection.JavaConverters._
 import imcode.server.user.RoleId
 import imcode.server.document.DocumentPermissionSetTypeDomainObject
-import com.imcode.imcms.api.{I18nMeta, DocumentLanguage}
 import imcode.server.document.textdocument.{TextDomainObject, TextDocumentDomainObject}
 
 

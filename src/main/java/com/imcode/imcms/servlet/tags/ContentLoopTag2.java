@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.tags;
 
-import com.imcode.imcms.api.DocRef;
+import com.imcode.imcms.mapping.orm.DocRef;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.Utility;
@@ -13,8 +13,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.imcode.imcms.api.Content;
-import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.mapping.orm.Content;
+import com.imcode.imcms.mapping.orm.ContentLoop;
 
 /**
  * Content loop tag v2.

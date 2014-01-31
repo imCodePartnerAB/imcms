@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.orm.SystemProperty
 import imcms.test.TestSetup.db
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -10,7 +11,6 @@ import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
-import com.imcode.imcms.api.SystemProperty
 
 @RunWith(classOf[JUnitRunner])
 class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterEach with BeforeAndAfterAll {

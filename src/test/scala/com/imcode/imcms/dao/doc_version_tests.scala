@@ -8,7 +8,7 @@ import org.scalatest.junit.JUnitRunner
 import imcms.test._
 import imcms.test.TestSetup.db
 import imcms.test.fixtures.UserFX.mkSuperAdmin
-import imcms.mapping.orm.{HtmlReference, UrlReference, FileReference}
+import com.imcode.imcms.mapping.orm._
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 import imcms.api._
 import org.scalatest._

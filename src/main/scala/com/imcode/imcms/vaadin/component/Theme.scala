@@ -1,9 +1,9 @@
 package com.imcode
 package imcms.vaadin.component
 
+import com.imcode.imcms.mapping.orm.DocumentLanguage
 import com.vaadin.server.{ThemeResource => TR}
 import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
-import com.imcode.imcms.api.DocumentLanguage
 
 // todo: refactor, change package ???
 object Theme {

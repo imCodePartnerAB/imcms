@@ -1,4 +1,6 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping;
+
+import com.imcode.imcms.mapping.orm.DocumentVersion;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -49,7 +51,7 @@ public class DocumentVersionInfo implements Serializable {
 	 * @param versions document versions listByNamedParams.
 	 */
 	public DocumentVersionInfo(int metaId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
-		versionsMap = new TreeMap<Integer, DocumentVersion>();
+		versionsMap = new TreeMap<>();
 		
 		for (DocumentVersion  version: versions) {
 			versionsMap.put(version.getNo(), version);

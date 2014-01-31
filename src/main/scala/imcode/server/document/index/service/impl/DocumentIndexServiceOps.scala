@@ -1,13 +1,13 @@
 package imcode.server.document.index.service.impl
 
 import com.imcode._
-import com.imcode.imcms.api.DocumentLanguage
 import com.imcode.imcms.mapping.DocumentMapper
 
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
 import _root_.imcode.server.document.index.service.IndexRebuildProgress
 
+import com.imcode.imcms.mapping.orm.DocumentLanguage
 import scala.collection.SeqView
 import scala.collection.JavaConverters._
 

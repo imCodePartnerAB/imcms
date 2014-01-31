@@ -2,6 +2,7 @@ package com.imcode.imcms.api;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
 
 import java.util.List;
 import java.util.Map;

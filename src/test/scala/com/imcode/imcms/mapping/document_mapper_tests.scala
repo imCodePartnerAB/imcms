@@ -5,6 +5,7 @@ import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.server.Imcms
 import _root_.imcode.server.document._
 import _root_.imcode.util.io.InputStreamSource
+import com.imcode.imcms.mapping.orm._
 import scala.collection.JavaConverters._
 import _root_.imcode.server.document.textdocument._
 import java.io.ByteArrayInputStream
@@ -170,7 +171,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       var loop = ContentLoop.builder().no(loopNo).build()
 
       for (contentNo <- 0 until loopNo) {
-        loop = loop.addLastContent._1
+        loop = new ContentLoopOps(loop).addContentLast().loop()
       }
 
       newDoc.setContentLoop(loopNo, loop)

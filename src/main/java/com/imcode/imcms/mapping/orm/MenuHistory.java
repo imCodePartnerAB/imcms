@@ -1,5 +1,6 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping.orm;
 
+import com.imcode.imcms.mapping.orm.DocRef;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.user.UserDomainObject;

@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta.appearance
 
+import com.imcode.imcms.mapping.orm.{DocumentLanguage, Meta, I18nMeta}
 import scala.language.reflectiveCalls
 
 import scala.collection.JavaConverters._

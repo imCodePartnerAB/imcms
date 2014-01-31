@@ -2,8 +2,9 @@ package com.imcode
 package imcms.test
 package fixtures
 
+import com.imcode.imcms.mapping.orm.DocumentLanguage
 import scala.collection.JavaConverters._
-import com.imcode.imcms.api.{DocumentLanguage, DocumentI18nSupport}
+import com.imcode.imcms.api.DocumentI18nSupport
 
 object LanguageFX {
   val HostNameEn = "imcode.com"

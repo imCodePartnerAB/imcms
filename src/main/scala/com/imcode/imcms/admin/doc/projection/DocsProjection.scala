@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.projection
 
+import com.imcode.imcms.mapping.orm.I18nDocRef
 import com.imcode.imcms.vaadin.Current
 import com.imcode.util.event.Publisher
 import com.imcode.imcms.vaadin.component._
@@ -32,7 +33,6 @@ import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsView, IndexedDocsContainer}
-import com.imcode.imcms.api.I18nDocRef
 
 /**
  * Indexed documents projection.

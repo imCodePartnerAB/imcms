@@ -20,6 +20,7 @@
 	
 %>
 <%@ page import="imcode.server.Imcms" %>
+<%@ page import="com.imcode.imcms.mapping.orm.DocumentLanguage" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"
 %><%!
 

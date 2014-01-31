@@ -1,8 +1,8 @@
 package com.imcode.imcms;
 
-import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.mapping.orm.ContentLoop;
+import com.imcode.imcms.mapping.orm.DocumentVersion;
+import com.imcode.imcms.mapping.orm.I18nMeta;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;

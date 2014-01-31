@@ -1,8 +1,8 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.orm.SystemProperty
 import org.springframework.transaction.annotation.Transactional
-import com.imcode.imcms.api.SystemProperty
 import com.imcode.imcms.dao.hibernate.HibernateSupport
 
 

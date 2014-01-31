@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
 import imcode.server.document.DocumentDomainObject;
 
 import java.util.Collection;

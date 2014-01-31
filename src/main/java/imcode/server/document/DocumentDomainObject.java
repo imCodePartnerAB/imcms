@@ -1,7 +1,7 @@
 package imcode.server.document;
 
+import com.imcode.imcms.mapping.orm.*;
 import imcode.server.Imcms;
-import com.imcode.imcms.api.DocRef;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;

@@ -1,8 +1,8 @@
 package com.imcode.imcms.flow;
 
 import com.google.common.collect.Sets;
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.I18nMeta;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -30,7 +30,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ObjectUtils;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.mapping.orm.Meta;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.admin.ImageBrowser;

@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.mapping.orm.I18nMeta;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;

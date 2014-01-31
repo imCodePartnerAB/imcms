@@ -3,8 +3,6 @@
  */
 package com.imcode.imcms.mapping.orm;
 
-import com.imcode.imcms.api.DocRef;
-
 import javax.persistence.*;
 
 //ORDER BY default_variant DESC, variant_name

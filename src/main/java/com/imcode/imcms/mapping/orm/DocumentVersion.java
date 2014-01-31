@@ -1,9 +1,7 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping.orm;
 
 import com.google.common.base.Objects;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

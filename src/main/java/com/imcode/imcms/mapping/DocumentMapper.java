@@ -6,6 +6,7 @@ import com.imcode.imcms.DocIdentityCleanerVisitor;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.mapping.orm.*;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;

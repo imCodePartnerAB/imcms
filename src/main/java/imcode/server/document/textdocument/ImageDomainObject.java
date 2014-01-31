@@ -5,8 +5,8 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.DocRef;
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.DocRef;
 import imcode.util.image.Resize;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;

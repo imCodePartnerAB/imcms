@@ -25,12 +25,12 @@
             java.text.Collator,
             java.text.DateFormat,
             java.text.SimpleDateFormat,
-            com.imcode.imcms.api.Meta"
+            com.imcode.imcms.mapping.orm.Meta"
 	
 %>
-<%@ page import="com.imcode.imcms.api.DocumentLanguage" %>
+<%@ page import="com.imcode.imcms.mapping.orm.DocumentLanguage" %>
 <%@ page import="java.util.*" %>
-<%@ page import="com.imcode.imcms.api.I18nMeta" %>
+<%@ page import="com.imcode.imcms.mapping.orm.I18nMeta" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
 %><%@	taglib prefix="vel" uri="imcmsvelocity"

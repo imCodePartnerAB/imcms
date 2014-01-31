@@ -1,7 +1,7 @@
 package com.imcode.imcms.admin.doc.projection.filter
 
 import _root_.imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject}
-import com.imcode.imcms.api.DocumentLanguage
+import com.imcode.imcms.mapping.orm.DocumentLanguage
 
 /**
  * The checkbox associated with a parameter is checked only if this parameter is defined.

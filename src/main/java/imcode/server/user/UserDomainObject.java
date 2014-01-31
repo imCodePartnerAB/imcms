@@ -1,6 +1,6 @@
 package imcode.server.user;
 
-import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
 import com.imcode.imcms.api.DocGetterCallback;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -23,7 +22,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
-import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.mapping.orm.Meta;
 
 import javax.persistence.*;
 

@@ -1,6 +1,7 @@
 package com.imcode.imcms.api
 
 import com.imcode._
+import com.imcode.imcms.mapping.orm.{ContentLoopOps, ContentLoop, DocRef}
 import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -69,10 +70,11 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
   "Add first content" should {
     "return a pair of updated loop and added content with lowest index and highest no" in {
       val loop = mkContentLoop()
+      val ops = new ContentLoopOps(loop)
 
-      loop.addFirstContent() |> { loopAndContent =>
-        val updatedLoop = loopAndContent._1
-        val newContent = loopAndContent._2
+      ops.addContentFirst() |> { loopAndContent =>
+        val updatedLoop = loopAndContent.loop()
+        val newContent = loopAndContent.content()
         val expectedNewContentNo = LoopFx.NextContentNo
         val expectedNewContentIndex = 0
 
@@ -96,10 +98,11 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
   "Add last content" should {
     "return pair of updated loop with added content with highest index and highest no" in {
       val loop = mkContentLoop()
+      val ops = new ContentLoopOps(loop)
 
-      loop.addLastContent() |> { loopAndContent =>
-        val updatedLoop = loopAndContent._1
-        val newContent = loopAndContent._2
+      ops.addContentLast() |> { loopAndContent =>
+        val updatedLoop = loopAndContent.loop()
+        val newContent = loopAndContent.content()
         val expectedNewContentNo = LoopFx.NextContentNo
         val expectedNewContentIndex = 10
 
@@ -125,9 +128,10 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "does not exist" should {
       "throw IndexOutOfBoundsException" in {
         val loop = mkContentLoop()
+        val loopOps = new ContentLoopOps(loop)
 
         intercept[IndexOutOfBoundsException] {
-          loop.addContentBefore(LoopFx.VacantContentIndex)
+          loopOps.addContentBefore(LoopFx.VacantContentIndex)
         }
       }
     }
@@ -135,9 +139,11 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "exists" should {
       "return updated content and inserted content" in {
         mkContentLoop() |> { loop =>
-          loop.addContentBefore(LoopFx.LastContentIndex) |> { loopAndContent =>
-            val contents = loopAndContent._1.getContents
-            val content = loopAndContent._2
+          val ops = new ContentLoopOps(loop)
+
+          ops.addContentBefore(LoopFx.LastContentIndex) |> { loopAndContent =>
+            val contents = loopAndContent.loop().getContents
+            val content = loopAndContent.content()
 
             assertEquals(LoopFx.ContentsCount + 1, contents.size)
             assertEquals(LoopFx.NextContentNo, content.getNo)
@@ -153,9 +159,10 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "does not exist" should {
       "throw IndexOutOfBoundsException" in {
         val loop = mkContentLoop()
+        val loopOps = new ContentLoopOps(loop)
 
         intercept[IndexOutOfBoundsException] {
-          loop.disableContent(LoopFx.VacantContentIndex)
+          loopOps.disableContent(LoopFx.VacantContentIndex)
         }
       }
     }
@@ -163,12 +170,14 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "exists" should {
       "return updated loop" in {
         mkContentLoop() |> { loop =>
-          assertTrue("content exists", loop.findContent(5).isPresent)
+          assertTrue("content exists", new ContentLoopOps(loop).findContent(5).isPresent)
 
-          loop.deleteContent(5) |> { updatedLoop =>
+          val ops = new ContentLoopOps(loop)
+
+          ops.deleteContent(5) |> { updatedLoop =>
             val contents = updatedLoop.getContents.asScala
             assertEquals(LoopFx.ContentsCount - 1, contents.size)
-            assertFalse("content exists", updatedLoop.findContent(5).isPresent)
+            assertFalse("content exists", updatedLoop.ops.findContent(5).isPresent)
           }
         }
       }
@@ -180,9 +189,10 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "does not exist" should {
       "throw IndexOutOfBoundsException" in {
         val loop = mkContentLoop()
+        val loopOps = new ContentLoopOps(loop)
 
         intercept[IndexOutOfBoundsException] {
-          loop.addContentAfter(LoopFx.VacantContentIndex)
+          loopOps.addContentAfter(LoopFx.VacantContentIndex)
         }
       }
     }
@@ -190,9 +200,11 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "exists" should {
       "return updated content and inserted content" in {
         mkContentLoop() |> { loop =>
-          loop.addContentAfter(LoopFx.FirstContentIndex) |> { loopAndContent =>
-            val contents = loopAndContent._1.getContents
-            val content = loopAndContent._2
+          val ops = new ContentLoopOps(loop)
+
+          ops.addContentAfter(LoopFx.FirstContentIndex) |> { loopAndContent =>
+            val contents = loopAndContent.loop().getContents
+            val content = loopAndContent.content()
 
             assertEquals(LoopFx.ContentsCount + 1, contents.size)
             assertEquals(LoopFx.NextContentNo, content.getNo)
@@ -208,9 +220,10 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "does not exist" should {
       "throw IndexOutOfBoundsException" in {
         val loop = mkContentLoop()
+        val loopOps = new ContentLoopOps(loop)
 
         intercept[IndexOutOfBoundsException] {
-          loop.disableContent(LoopFx.VacantContentIndex)
+          loopOps.disableContent(LoopFx.VacantContentIndex)
         }
       }
     }
@@ -218,7 +231,9 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "exist" should {
       "return updated loop" in {
         mkContentLoop() |> { loop =>
-          loop.disableContent(5) |> { updatedLoop =>
+          val ops = new ContentLoopOps(loop)
+
+          ops.disableContent(5) |> { updatedLoop =>
             val contents = updatedLoop.getContents.asScala
             assertEquals(LoopFx.ContentsCount - 1, contents.count(_.isEnabled))
 
@@ -237,9 +252,10 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "does not exist" should {
       "throw IndexOutOfBoundsException" in {
         val loop = mkContentLoop()
+        val loopOps = new ContentLoopOps(loop)
 
         intercept[IndexOutOfBoundsException] {
-          loop.enableContent(LoopFx.VacantContentIndex)
+          loopOps.enableContent(LoopFx.VacantContentIndex)
         }
       }
     }
@@ -256,7 +272,9 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
           assertEquals(3, loop.getContents.size)
           assertEquals(2, loop.getContents.asScala.count(_.isEnabled))
 
-          loop.enableContent(1) |> { updatedLoop =>
+          val ops = new ContentLoopOps(loop)
+
+          ops.enableContent(1) |> { updatedLoop =>
             assertEquals(3, updatedLoop.getContents.size)
             assertEquals(3, updatedLoop.getContents.asScala.count(_.isEnabled))
           }
@@ -269,9 +287,10 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
   "Move non existing content forward" should {
     "throw IndexOutOfBoundsException" in {
       val loop = mkContentLoop()
+      val loopOps = new ContentLoopOps(loop)
 
       intercept[IndexOutOfBoundsException] {
-        loop.moveContentForward(LoopFx.VacantContentIndex)
+        loopOps.moveContentForward(LoopFx.VacantContentIndex)
       }
     }
   }
@@ -281,7 +300,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "return the loop unchanged" when {
       "the content is the last" in {
         mkContentLoop() |> { loop =>
-          assertEquals(loop, loop.moveContentForward(LoopFx.LastContentIndex))
+          assertEquals(loop, new ContentLoopOps(loop).moveContentForward(LoopFx.LastContentIndex))
         }
       }
 
@@ -290,7 +309,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
           6 to 9 foreach builder.disableContent
           builder.build()
         } |> { loop =>
-          assertEquals(loop, loop.moveContentForward(5))
+          assertEquals(loop, loop.ops.moveContentForward(5))
         }
       }
     }
@@ -303,7 +322,9 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
         val contentAt5 = loop.getContents.get(5)
         val contentAt6 = loop.getContents.get(6)
 
-        loop.moveContentForward(5) |> { updateLoop =>
+        val ops = new ContentLoopOps(loop)
+
+        ops.moveContentForward(5) |> { updateLoop =>
           assertSame(contentAt5, updateLoop.getContents.get(6))
           assertSame(contentAt6, updateLoop.getContents.get(5))
         }
@@ -318,7 +339,9 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
         val contentAt4 = loop.getContents.get(4)
         val contentAt8 = loop.getContents.get(8)
 
-        loop.moveContentForward(4) |> { updateLoop =>
+        val ops = new ContentLoopOps(loop)
+
+        ops.moveContentForward(4) |> { updateLoop =>
           assertSame(contentAt4, updateLoop.getContents.get(8))
           assertSame(contentAt8, updateLoop.getContents.get(7))
         }
@@ -330,9 +353,10 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
   "Move non existing content backward" should {
     "throw IndexOutOfBoundsException" in {
       val loop = mkContentLoop()
+      val loopOps = new ContentLoopOps(loop)
 
       intercept[IndexOutOfBoundsException] {
-        loop.moveContentBackward(LoopFx.VacantContentIndex)
+        loopOps.moveContentBackward(LoopFx.VacantContentIndex)
       }
     }
   }
@@ -342,7 +366,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "return the loop unchanged" when {
       "the content is the first" in {
         val loop = mkContentLoop()
-        val updatedLoop = loop.moveContentBackward(LoopFx.FirstContentIndex)
+        val updatedLoop = loop.ops.moveContentBackward(LoopFx.FirstContentIndex)
 
         assertEquals(loop, updatedLoop)
       }
@@ -352,7 +376,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
           0 to 5 foreach builder.disableContent
           builder.build()
         } |> { loop =>
-          assertEquals(loop, loop.moveContentBackward(6))
+          assertEquals(loop, loop.ops.moveContentBackward(6))
         }
       }
     }
@@ -365,7 +389,9 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
         val contentAt5 = loop.getContents.get(5)
         val contentAt6 = loop.getContents.get(6)
 
-        loop.moveContentBackward(6) |> { updateLoop =>
+        val ops = new ContentLoopOps(loop)
+
+        ops.moveContentBackward(6) |> { updateLoop =>
           assertSame(contentAt5, updateLoop.getContents.get(6))
           assertSame(contentAt6, updateLoop.getContents.get(5))
         }
@@ -380,7 +406,9 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
         val contentAt4 = loop.getContents.get(4)
         val contentAt8 = loop.getContents.get(8)
 
-        loop.moveContentBackward(8) |> { updateLoop =>
+        val ops = new ContentLoopOps(loop)
+
+        ops.moveContentBackward(8) |> { updateLoop =>
           assertSame(contentAt4, updateLoop.getContents.get(5))
           assertSame(contentAt8, updateLoop.getContents.get(4))
         }
@@ -392,9 +420,10 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
   "Move non existing content top" should {
     "throw IndexOfBoundsException" in {
       val loop = mkContentLoop()
+      val loopOps = new ContentLoopOps(loop)
 
       intercept[IndexOutOfBoundsException] {
-        loop.moveContentTop(LoopFx.VacantContentIndex)
+        loopOps.moveContentFirst(LoopFx.VacantContentIndex)
       }
     }
   }
@@ -404,7 +433,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "return the loop unchanged" when {
       "the content is allready at the top" in {
         val loop = mkContentLoop()
-        val updatedLoop = loop.moveContentTop(0)
+        val updatedLoop = new ContentLoopOps(loop).moveContentFirst(0)
 
         assertEquals(loop, updatedLoop)
       }
@@ -413,7 +442,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
 
     "return updated loop with the content at the top" in {
       val loop = mkContentLoop()
-      val updatedLoop = loop.moveContentTop(5)
+      val updatedLoop = loop.ops.moveContentFirst(5)
 
       assertEquals(loop.getContents.get(5), updatedLoop.getContents.get(0))
       assertEquals(loop.getContents.get(0), updatedLoop.getContents.get(1))
@@ -424,9 +453,10 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
   "Move non existing content bottom" should {
     "throw IndexOfBoundsException" in {
       val loop = mkContentLoop()
+      val loopOps = new ContentLoopOps(loop)
 
       intercept[IndexOutOfBoundsException] {
-        loop.moveContentBottom(LoopFx.VacantContentIndex)
+        loopOps.moveContentLast(LoopFx.VacantContentIndex)
       }
     }
   }
@@ -436,7 +466,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     "return a loop unchanged" when {
       "the content is already at the bottom" in {
         val loop = mkContentLoop()
-        val updatedLoop = loop.moveContentBottom(LoopFx.LastContentIndex)
+        val loopOps = new ContentLoopOps(loop)
+        val updatedLoop = loopOps.moveContentLast(LoopFx.LastContentIndex)
 
         assertEquals(loop, updatedLoop)
       }
@@ -445,7 +476,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
 
     "return updated loop with the content at the bottom" in {
       val loop = mkContentLoop()
-      val updatedLoop = loop.moveContentBottom(5)
+      val updatedLoop = loop.ops.moveContentLast(5)
 
       assertEquals(loop.getContents.get(5), updatedLoop.getContents.get(LoopFx.LastContentIndex))
       assertEquals(loop.getContents.get(LoopFx.LastContentIndex), updatedLoop.getContents.get(LoopFx.LastContentIndex - 1))

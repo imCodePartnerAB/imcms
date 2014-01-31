@@ -1,14 +1,15 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Content is a facet of a content loop.
  * <p/>
  * A Content is distinguished by no which is assigned automatically when a new content is added into a content loop.
  *
- * @see com.imcode.imcms.api.ContentLoop
+ * @see ContentLoop
  */
 @Embeddable
 @Access(AccessType.FIELD)
@@ -83,21 +84,15 @@ public class Content implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Content)) return false;
+        return o == this || (o instanceof Content && equals((Content) o));
+    }
 
-        Content content = (Content) o;
-
-        if (enabled != content.enabled) return false;
-        if (no != content.no) return false;
-
-        return true;
+    private boolean equals(Content that) {
+        return this.enabled == that.enabled && this.no == that.no;
     }
 
     @Override
     public int hashCode() {
-        int result = no;
-        result = 31 * result + (enabled ? 1 : 0);
-        return result;
+        return Objects.hash(no, enabled);
     }
 }

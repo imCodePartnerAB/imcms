@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.mapping.orm.Meta;
 
 /**
  * Copies documents permissions to meta. 

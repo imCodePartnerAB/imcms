@@ -5,6 +5,7 @@ package mapping
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.net.sf.ehcache.config.CacheConfiguration
 import _root_.net.sf.ehcache.CacheManager
+import com.imcode.imcms.mapping.orm.{DocumentLanguage, Meta, I18nDocRef}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api._
 

@@ -1,4 +1,4 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,7 +1,5 @@
 package com.imcode.imcms.mapping.orm;
 
-import com.imcode.imcms.api.DocRef;
-
 import javax.persistence.*;
 
 /**

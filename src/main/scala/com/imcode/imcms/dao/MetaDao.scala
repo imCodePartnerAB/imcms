@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils
 import org.springframework.transaction.annotation.Transactional
 
 import com.imcode.imcms.api._
-import com.imcode.imcms.mapping.orm.{FileReference, HtmlReference, Include, TemplateNames, UrlReference}
+import com.imcode.imcms.mapping.orm._
 import imcode.server.user.UserDomainObject
 import java.util.Date
 import com.imcode.imcms.dao.hibernate.HibernateSupport

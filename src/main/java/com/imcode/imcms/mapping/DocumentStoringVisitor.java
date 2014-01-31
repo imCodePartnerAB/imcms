@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.*;
 import com.imcode.imcms.dao.TextDocDao;
+import com.imcode.imcms.mapping.orm.*;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
@@ -27,9 +27,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
-import com.imcode.imcms.mapping.orm.FileReference;
-import com.imcode.imcms.mapping.orm.Include;
-import com.imcode.imcms.mapping.orm.TemplateNames;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

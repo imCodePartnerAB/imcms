@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.DocIdentityCleanerVisitor;
 import com.imcode.imcms.dao.*;
 import com.imcode.imcms.dao.TextDocDao;
+import com.imcode.imcms.mapping.orm.*;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -15,8 +16,6 @@ import imcode.util.Utility;
 import java.util.*;
 
 import org.springframework.transaction.annotation.Transactional;
-
-import com.imcode.imcms.api.*;
 
 /**
  * Used internally by DocumentMapper. Must NOT be used directly.
@@ -127,13 +126,14 @@ public class DocumentSaver {
         }
 
         ContentLoop loop = textDocDao.getLoop(docRef, contentRef.loopNo());
+        ContentLoopOps ops = new ContentLoopOps(loop);
 
         if (loop == null) {
             throw new IllegalStateException(String.format(
                     "Content loop does not exists. Doc identity: %s, content loop no: %s.", docRef, contentRef.loopNo()));
         }
 
-        if (loop.findContent(contentRef.contentNo()).isPresent()) {
+        if (ops.findContent(contentRef.contentNo()).isPresent()) {
             throw new IllegalStateException(String.format(
                     "Content does not exists. Doc identity :%s, content loop no: %s.", docRef, contentRef.loopNo()));
         }

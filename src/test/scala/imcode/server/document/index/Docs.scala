@@ -1,8 +1,8 @@
 package imcode.server.document.index
 
 import com.imcode._
+import com.imcode.imcms.mapping.orm.DocumentLanguage
 import scala.collection.JavaConverters._
-import com.imcode.imcms.api.DocumentLanguage
 import org.scalatest.mock.MockitoSugar._
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
 import scala.collection.mutable.{Map => MMap}

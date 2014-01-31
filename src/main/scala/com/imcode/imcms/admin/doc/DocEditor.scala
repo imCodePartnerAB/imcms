@@ -4,9 +4,9 @@ package admin.doc
 
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.content.htmldoc.HtmlDocContentEditor
+import com.imcode.imcms.mapping.orm.{DocumentLanguage, I18nMeta}
 import com.vaadin.ui.themes.Reindeer
 import imcode.server.document.{HtmlDocumentDomainObject, UrlDocumentDomainObject, FileDocumentDomainObject, DocumentDomainObject}
-import com.imcode.imcms.api.{I18nMeta, DocumentLanguage}
 import com.imcode.imcms.admin.doc.meta.MetaEditor
 import com.imcode.imcms.vaadin.Editor
 import com.vaadin.ui.TabSheet

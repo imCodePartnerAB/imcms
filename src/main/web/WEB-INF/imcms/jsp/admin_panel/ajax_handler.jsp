@@ -1,8 +1,8 @@
 <%@ page
 	
-	import="com.imcode.imcms.api.DocumentVersion,
-	        com.imcode.imcms.api.DocumentVersionInfo,
-	        com.imcode.imcms.api.DocumentLanguage,
+	import="com.imcode.imcms.mapping.orm.DocumentVersion,
+	        com.imcode.imcms.mapping.DocumentVersionInfo,
+	        com.imcode.imcms.mapping.orm.DocumentLanguage,
 	        com.imcode.imcms.mapping.DocumentMapper,
 	        com.imcode.imcms.servlet.AdminPanelServlet,
 	        com.imcode.imcms.servlet.admin.AdminDoc,

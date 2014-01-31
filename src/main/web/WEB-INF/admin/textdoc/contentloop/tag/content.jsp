@@ -2,9 +2,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@page import="com.imcode.imcms.web.admin.ContentLoopController"%>
-<%@page import="com.imcode.imcms.api.ContentLoop"%>
+<%@page import="com.imcode.imcms.mapping.orm.ContentLoop"%>
 <%@page import="java.util.List"%>
-<%@page import="com.imcode.imcms.api.Content"%>
+<%@page import="com.imcode.imcms.mapping.orm.Content"%>
 
 <% 
 int contentsCount = (Integer)request.getAttribute("contentsCount");

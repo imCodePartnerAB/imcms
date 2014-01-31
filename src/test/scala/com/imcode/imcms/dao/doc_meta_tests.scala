@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.api._
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
-import imcms.mapping.orm.{Include, HtmlReference, UrlReference, FileReference}
+import com.imcode.imcms.mapping.orm._
 import org.junit.Assert._
 import java.util.Date
 import scala.collection.JavaConverters._

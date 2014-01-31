@@ -1,6 +1,6 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.I18nDocRef;
+import com.imcode.imcms.mapping.orm.I18nDocRef;
 import imcode.util.Parser;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;

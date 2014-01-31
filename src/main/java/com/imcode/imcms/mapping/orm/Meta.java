@@ -1,4 +1,4 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping.orm;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.imcode.imcms.api.Document;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSets;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;

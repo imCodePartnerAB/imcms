@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.orm.{ContentLoopOps, ContentLoop, DocRef}
 import scala.collection.JavaConverters._
 import org.junit.Assert._
 import org.junit.runner.RunWith
@@ -10,7 +11,6 @@ import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
-import com.imcode.imcms.api.{DocRef, ContentLoop}
 
 @RunWith(classOf[JUnitRunner])
 class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -88,8 +88,9 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val loopId = loop.getId
 
     val count = loop.getContents.size
+    val ops = new ContentLoopOps(loop)
 
-    val newLoop = dao.saveLoop(loop.addLastContent._1)
+    val newLoop = dao.saveLoop(ops.addContentLast().loop())
     assertEquals(count + 1, newLoop.getContents.size)
 
     assertNotNull(dao.getLoop(newLoop.getId))
@@ -111,7 +112,11 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val contentsCount = 5
     val docRef = DocRef.of(1001, 0)
     val loop = ContentLoop.builder().docRef(docRef).no(dao.getNextLoopNo(docRef)).build() |> { emptyLoop =>
-      1.to(contentsCount).foldLeft(emptyLoop) { case (loop, _) => loop.addFirstContent()._1 }
+      1.to(contentsCount).foldLeft(emptyLoop) {
+        case (loop, _) =>
+          val ops = new ContentLoopOps(loop)
+          ops.addContentFirst().loop()
+      }
     }
 
     dao.saveLoop(loop) |> { savedLoop =>

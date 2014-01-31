@@ -1,11 +1,11 @@
 package com.imcode
 package imcms.admin.instance.monitor.cache
 
+import com.imcode.imcms.mapping.orm.DocumentVersion
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 
 import java.util.Date
-import imcms.api.DocumentVersion
 import imcode.server.document.DocumentTypeDomainObject
 import imcms.mapping.{DocLoaderCachingProxy}
 import com.imcode.imcms.vaadin.component._

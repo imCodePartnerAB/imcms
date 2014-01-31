@@ -2,12 +2,12 @@ package com.imcode
 package imcms
 package admin.instance.settings.language
 
+import com.imcode.imcms.mapping.orm.DocumentLanguage
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import _root_.imcode.server.Imcms
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
-import com.imcode.imcms.api.DocumentLanguage
 import com.imcode.imcms.dao.{SystemDao, LanguageDao}
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.component.dialog._

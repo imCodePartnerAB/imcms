@@ -4,9 +4,9 @@ package admin.docadmin.image
 
 import _root_.imcode.server.document.textdocument.ImageDomainObject
 
+import com.imcode.imcms.mapping.orm.{DocumentLanguage, DocRef}
 import com.imcode.imcms.vaadin.{Current, Editor}
 import com.imcode.imcms.vaadin.component._
-import com.imcode.imcms.api.{DocRef, DocumentLanguage}
 
 import scala.collection.mutable
 import scala.collection.JavaConverters._

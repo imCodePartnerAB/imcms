@@ -1,5 +1,7 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.imcms.mapping.orm.ContentLoop;
+import com.imcode.imcms.mapping.orm.ContentLoopOps;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
@@ -7,7 +9,6 @@ import imcode.server.document.DocumentVisitor;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -269,12 +270,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
                 );
             }
 
-            boolean contentExist = loop.findContent(contentRef.contentNo()).isPresent();
+            boolean contentExist = new ContentLoopOps(loop).findContent(contentRef.contentNo()).isPresent();
 
             if (!contentExist) {
                 throw new IllegalStateException(String.format(
-                        "Invalid text. Content does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getI18nRef(), contentRef.loopNo(), contentRef.contentNo(), no)
+                        "Invalid text. Content does not exists. DocRef identity: %s, contentRef: %s, text no: %s."
+                        , getI18nRef(), contentRef, no)
                 );
             }
 
@@ -370,12 +371,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
                 );
             }
 
-            boolean contentExist = loop.findContent(contentRef.contentNo()).isPresent();
+            boolean contentExist = new ContentLoopOps(loop).findContent(contentRef.contentNo()).isPresent();
 
             if (!contentExist) {
                 throw new IllegalStateException(String.format(
-                        "Invalid image. Content does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), contentRef.loopNo(), contentRef.contentNo(), no)
+                        "Invalid image. Content does not exists. DocRef: %s, contentRef: %s, image no: %s."
+                        , getRef(), contentRef, no)
                 );
             }
 

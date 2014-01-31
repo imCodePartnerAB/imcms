@@ -1,6 +1,6 @@
 package imcode.server.document.index;
 
-import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;

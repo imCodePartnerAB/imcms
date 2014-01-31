@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.api.DocumentI18nSupport;
-import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
 import org.springframework.web.servlet.LocaleResolver;
 
 import imcode.server.Imcms;

@@ -1,5 +1,6 @@
 <%@ page import="com.imcode.imcms.api.*,
                  java.util.*" errorPage="error.jsp" %>
+<%@ page import="com.imcode.imcms.mapping.orm.DocumentLanguage" %>
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;

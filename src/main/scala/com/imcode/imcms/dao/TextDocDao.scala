@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.orm._
 import scala.collection.JavaConverters._
 import scala.collection.breakOut
 import com.imcode.imcms.api._

@@ -5,6 +5,8 @@ import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.SystemDao;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.SystemProperty;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;

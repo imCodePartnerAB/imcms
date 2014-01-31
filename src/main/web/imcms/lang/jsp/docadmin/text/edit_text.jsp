@@ -1,5 +1,5 @@
-<%@ page import="com.imcode.imcms.api.Content,
-                 com.imcode.imcms.api.ContentLoop,
+<%@ page import="com.imcode.imcms.mapping.orm.Content,
+                 com.imcode.imcms.mapping.orm.ContentLoop,
                  imcode.server.Imcms,
                  imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,

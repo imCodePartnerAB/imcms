@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.orm.{DocumentLanguage, DocRef, TextHistory, I18nDocRef}
 import scala.collection.JavaConverters._
 import org.junit.Assert._
 import org.junit.runner.RunWith
@@ -11,7 +12,6 @@ import com.imcode.imcms.test.config.HibernateConfig
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
-import com.imcode.imcms.api.{I18nDocRef, DocRef, DocumentLanguage, TextHistory}
 
 import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
 import com.imcode.imcms.test.fixtures.UserFX

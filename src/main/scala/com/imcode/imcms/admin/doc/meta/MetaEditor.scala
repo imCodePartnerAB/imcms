@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
+import com.imcode.imcms.mapping.orm.{DocumentLanguage, I18nMeta}
 import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 

@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.tags;
 
-import com.imcode.imcms.api.Content;
-import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.mapping.orm.Content;
+import com.imcode.imcms.mapping.orm.ContentLoop;
 import imcode.server.parser.TagParser;
 
 public class ImageTag extends SimpleImcmsTag {

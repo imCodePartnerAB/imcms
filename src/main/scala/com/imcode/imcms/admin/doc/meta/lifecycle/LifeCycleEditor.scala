@@ -2,9 +2,10 @@ package com.imcode
 package imcms
 package admin.doc.meta.lifecycle
 
+import com.imcode.imcms.mapping.orm.{DocumentVersion, Meta}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.select.{UserSingleSelectView, UserSingleSelect}
-import com.imcode.imcms.api.{DocumentVersion, Document, Meta}
+import com.imcode.imcms.api.Document
 
 import java.util.Date
 import com.vaadin.ui._

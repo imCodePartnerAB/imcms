@@ -14,7 +14,7 @@
 	        org.apache.commons.lang.StringUtils,
 	        java.util.List,
 	        com.imcode.imcms.mapping.DocumentMapper,
-	        com.imcode.imcms.api.DocumentVersion,
+	        com.imcode.imcms.mapping.orm.DocumentVersion,
 	        com.imcode.imcms.api.*,
 	        java.util.Set"
 	
@@ -73,6 +73,8 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 <%@page import="org.apache.commons.collections.iterators.ReverseListIterator"%>
 <%@page import="java.util.Iterator"%>
 <%@ page import="imcode.server.ImcmsConstants" %>
+<%@ page import="com.imcode.imcms.mapping.orm.DocumentLanguage" %>
+<%@ page import="com.imcode.imcms.mapping.DocumentVersionInfo" %>
 <vel:velocity>
 <style type="text/css">
 /*<![CDATA[*/

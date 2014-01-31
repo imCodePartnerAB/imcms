@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.orm.DocumentLanguage;
 import com.imcode.util.ChainableReversibleNullComparator;
 import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;

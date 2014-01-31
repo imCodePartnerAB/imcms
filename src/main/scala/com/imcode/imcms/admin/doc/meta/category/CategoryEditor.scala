@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta.category
 
+import com.imcode.imcms.mapping.orm.Meta
 import java.util.Collections
 import scala.collection.JavaConverters._
 

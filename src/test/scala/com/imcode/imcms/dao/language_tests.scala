@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import imcms.api.{SystemProperty, DocumentLanguage}
+import com.imcode.imcms.mapping.orm.{DocumentLanguage, SystemProperty}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

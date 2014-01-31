@@ -1,6 +1,6 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.DocRef;
+import com.imcode.imcms.mapping.orm.DocRef;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;

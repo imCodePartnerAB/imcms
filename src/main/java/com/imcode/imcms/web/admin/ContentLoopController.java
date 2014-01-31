@@ -1,6 +1,7 @@
 package com.imcode.imcms.web.admin;
 
 import com.imcode.imcms.dao.TextDocDao;
+import com.imcode.imcms.mapping.orm.ContentLoopOps;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.mapping.orm.ContentLoop;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 
@@ -52,30 +53,31 @@ public class ContentLoopController {
         TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(docId);
         final Command command = getCommand(cmd);
         final ContentLoop loop = document.getContentLoop(no);
+        final ContentLoopOps ops = new ContentLoopOps(loop);
 
         ContentLoop updatedLoop = new Object() {
             ContentLoop updateLoop() {
                 switch (command) {
                     case MOVE_UP:
-                        return loop.moveContentBackward(contentIndex);
+                        return ops.moveContentBackward(contentIndex);
 
                     case MOVE_DOWN:
-                        return loop.moveContentForward(contentIndex);
+                        return ops.moveContentForward(contentIndex);
 
                     case ADD_BEFORE:
-                        return loop.addContentBefore(contentIndex)._1();
+                        return ops.addContentBefore(contentIndex).loop();
 
                     case ADD_AFTER:
-                        return loop.addContentAfter(contentIndex)._1();
+                        return ops.addContentAfter(contentIndex).loop();
 
                     case ADD_FISRT:
-                        return loop.addFirstContent()._1();
+                        return ops.addContentFirst().loop();
 
                     case ADD_LAST:
-                        return loop.addLastContent()._1();
+                        return ops.addContentLast().loop();
 
                     case DELETE:
-                        return loop.disableContent(contentIndex);
+                        return ops.disableContent(contentIndex);
 
                     default:
                         return loop;

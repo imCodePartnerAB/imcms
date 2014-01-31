@@ -24,7 +24,7 @@ trait DocumentIndexService extends Log4jLoggerSupport {
   /**
    * Attempts to run a new index rebuild task if one is not already running.
    *
-   * @return current or new rebuild task.
+   * @return current or a new rebuild task.
    */
   def rebuild(): Try[IndexRebuildTask]
 

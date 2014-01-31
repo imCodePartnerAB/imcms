@@ -2,10 +2,10 @@ package com.imcode
 package imcms
 package admin.docadmin
 
+import com.imcode.imcms.mapping.orm.{DocRef, DocumentVersion}
 import java.util.Locale
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
-import com.imcode.imcms.api.{DocumentVersion, DocRef}
 import com.imcode.imcms.admin.doc.DocEditor
 import com.vaadin.ui._
 import com.vaadin.server._

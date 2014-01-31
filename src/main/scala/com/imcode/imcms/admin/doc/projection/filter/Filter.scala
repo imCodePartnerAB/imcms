@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.projection.filter
 
+import com.imcode.imcms.mapping.orm.DocumentLanguage
 import scala.collection.JavaConverters._
 
 import com.vaadin.ui.CheckBox
@@ -15,7 +16,6 @@ import scala.util.{Success, Failure, Try}
 
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
-import com.imcode.imcms.api.DocumentLanguage
 
 /**
  *

@@ -1,7 +1,6 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.mapping.orm.I18nMeta;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;
@@ -15,7 +14,6 @@ import imcode.util.Utility;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
