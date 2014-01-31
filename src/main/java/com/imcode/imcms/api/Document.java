@@ -316,18 +316,10 @@ public class Document implements Serializable {
         internalDocument.setPublicationStartDatetime(datetime);
     }
 
-    /**
-     * Deprecated with no replacement.
-     */
-    @Deprecated
     public Date getArchivedDatetime() {
         return internalDocument.getArchivedDatetime();
     }
 
-    /**
-     * Deprecated with no replacement.
-     */
-    @Deprecated
     public void setArchivedDatetime(Date datetime) {
         internalDocument.setArchivedDatetime(datetime);
     }

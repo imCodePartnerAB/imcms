@@ -43,7 +43,7 @@
         <property name="useCodeAsDefaultMessage" value="true"/>
     </bean>
 
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+    <bean id="dataSource" class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" destroy-method="close"
           p:driverClassName="${JdbcDriver}"
           p:url="${JdbcUrl}"
           p:username="${User}"

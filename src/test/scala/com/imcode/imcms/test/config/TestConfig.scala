@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.test.config
 
-import com.imcode._
+import org.apache.tomcat.dbcp.dbcp.BasicDataSource
 import org.springframework.context.annotation._
 import javax.inject.Inject
 import org.springframework.core.env.Environment
@@ -15,7 +15,7 @@ class TestConfig {
 
   @Scope("prototype")
   @Bean(destroyMethod = "close")
-  def dataSource = new org.apache.commons.dbcp.BasicDataSource |>> { ds =>
+  def dataSource = new BasicDataSource |>> { ds =>
     ds.setDriverClassName(env.getRequiredProperty("JdbcDriver"))
     ds.setUsername(env.getRequiredProperty("User"))
     ds.setPassword(env.getRequiredProperty("Password"))

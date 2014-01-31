@@ -15,7 +15,6 @@
 	        java.util.List,
 	        com.imcode.imcms.mapping.DocumentMapper,
 	        com.imcode.imcms.mapping.orm.DocumentVersion,
-	        com.imcode.imcms.api.*,
 	        java.util.Set"
 	
 %><%@ taglib uri="imcmsvelocity" prefix="vel"

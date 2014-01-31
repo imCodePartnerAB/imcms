@@ -7,7 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
 import org.mockito.Mockito.{mock => _}
 import com.imcode.imcms.test._
-import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX, UserFX}
+import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX}
 import org.apache.solr.client.solrj.SolrQuery
 import _root_.imcode.server.document.index.DocIndexingMocksSetup
 import _root_.imcode.server.document.index.service.impl.{DocumentIndexServiceOps, InternalDocumentIndexService}

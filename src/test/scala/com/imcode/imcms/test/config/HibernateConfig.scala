@@ -2,6 +2,7 @@ package com.imcode
 package imcms.test.config
 
 import com.imcode._
+import org.apache.tomcat.dbcp.dbcp.BasicDataSource
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.context.annotation._
 import org.springframework.beans.factory.annotation.Autowire
@@ -22,7 +23,7 @@ class HibernateConfig {
   var env: Environment = _
 
   @Bean(destroyMethod = "close")
-  def dataSource = new org.apache.commons.dbcp.BasicDataSource |>> { ds =>
+  def dataSource = new BasicDataSource |>> { ds =>
     ds.setDriverClassName(env.getRequiredProperty("JdbcDriver"))
     ds.setUrl(env.getRequiredProperty("JdbcUrl"))
     ds.setUsername(env.getRequiredProperty("User"))

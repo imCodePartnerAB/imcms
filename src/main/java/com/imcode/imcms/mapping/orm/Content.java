@@ -1,6 +1,8 @@
 package com.imcode.imcms.mapping.orm;
 
-import javax.persistence.*;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 

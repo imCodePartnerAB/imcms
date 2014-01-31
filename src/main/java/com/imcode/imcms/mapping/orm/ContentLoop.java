@@ -102,11 +102,7 @@ public class ContentLoop implements Serializable, Cloneable {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "imcms_text_doc_contents",
-            joinColumns = {
-                    @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
-                    @JoinColumn(name = "doc_version_no", referencedColumnName = "doc_version_no"),
-                    @JoinColumn(name = "loop_no", referencedColumnName = "no")
-            }
+            joinColumns = @JoinColumn(name = "content_id")
     )
     @OrderColumn(name = "ix")
     private List<Content> content = new LinkedList<>();

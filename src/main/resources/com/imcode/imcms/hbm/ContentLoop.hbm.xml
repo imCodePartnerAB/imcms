@@ -6,17 +6,17 @@
 <hibernate-mapping>
 
   <!-- Unique -->
-  <query name="ContentLoop.getByDocIdAndDocVersionNoAndNo">
+  <query name="ContentLoop.getByDocRefAndNo">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo AND l.no = :no
+    SELECT l FROM ContentLoop l WHERE l.docRef = :docRef AND l.no = :no
     ]]>
   </query>
 
 
   <!-- List -->
-  <query name="ContentLoop.getByDocIdAndDocVersionNo">
+  <query name="ContentLoop.getByDocRef">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo
+    SELECT l FROM ContentLoop l WHERE l.docRef = :docRef
     ]]>
   </query>
     

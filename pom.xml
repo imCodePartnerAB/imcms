@@ -22,7 +22,8 @@
 
         See also: src/main/java/com/imcode/imcms/AppWidgetSet.gwt.xml
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -61,14 +62,14 @@
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
-        <javac.args />
+        <javac.args/>
 
         <build.webapp.dir>${project.build.directory}/${project.artifactId}</build.webapp.dir>
 
         <solr.version>4.6.1</solr.version>
         <slf4j.version>1.7.5</slf4j.version>
         <scala.version>2.10.3</scala.version>
-        <springframework.version>4.0.0.RELEASE</springframework.version>
+        <springframework.version>4.0.1.RELEASE</springframework.version>
 
         <!--
             Core & EntityManager version
@@ -112,7 +113,7 @@
         <!--
             Jetty plugin and jsp compiler plugin version.
         -->
-        <jetty.version>9.0.6.v20130930</jetty.version>
+        <jetty.version>9.1.1.v20140108</jetty.version>
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
@@ -263,18 +264,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr</artifactId>
-            <version>3.5</version>
-        </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>cglib</groupId>-->
-            <!--<artifactId>cglib</artifactId>-->
-            <!--<version>3.0</version>-->
-        <!--</dependency>-->
-
-        <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.8.3</version>
@@ -320,12 +309,6 @@
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.2.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.4</version>
         </dependency>
 
         <dependency>
@@ -423,9 +406,9 @@
         </dependency>
 
         <!--<dependency>-->
-            <!--<groupId>org.ow2.asm</groupId>-->
-            <!--<artifactId>asm</artifactId>-->
-            <!--<version>4.2</version>-->
+        <!--<groupId>org.ow2.asm</groupId>-->
+        <!--<artifactId>asm</artifactId>-->
+        <!--<version>4.2</version>-->
         <!--</dependency>-->
 
         <dependency>
@@ -437,7 +420,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.0.2.Final</version>
+            <version>5.0.3.Final</version>
         </dependency>
 
         <dependency>
@@ -756,6 +739,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-dbcp</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
             <version>1.1</version>
@@ -861,9 +851,9 @@
                             SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
                         -->
                         <!--<dependency>-->
-                            <!--<groupId>org.slf4j</groupId>-->
-                            <!--<artifactId>slf4j-simple</artifactId>-->
-                            <!--<version>${slf4j.version}</version>-->
+                        <!--<groupId>org.slf4j</groupId>-->
+                        <!--<artifactId>slf4j-simple</artifactId>-->
+                        <!--<version>${slf4j.version}</version>-->
                         <!--</dependency>-->
                     </dependencies>
                 </plugin>
@@ -880,10 +870,23 @@
                             SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
                         -->
                         <!--<dependency>-->
-                            <!--<groupId>org.slf4j</groupId>-->
-                            <!--<artifactId>slf4j-simple</artifactId>-->
-                            <!--<version>${slf4j.version}</version>-->
+                        <!--<groupId>org.slf4j</groupId>-->
+                        <!--<artifactId>slf4j-simple</artifactId>-->
+                        <!--<version>${slf4j.version}</version>-->
                         <!--</dependency>-->
+                    </dependencies>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>${jetty.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.tomcat</groupId>
+                            <artifactId>tomcat-dbcp</artifactId>
+                            <version>${tomcat.version}</version>
+                        </dependency>
                     </dependencies>
                 </plugin>
             </plugins>
@@ -1051,19 +1054,21 @@
                         <phase>validate</phase>
                         <configuration>
                             <target>
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
                                 <if>
                                     <not>
-                                        <available file="${project.basedir}/build.properties" />
+                                        <available file="${project.basedir}/build.properties"/>
                                     </not>
                                     <then>
-                                        <copy file="${project.basedir}/build.properties.template" tofile="${project.basedir}/build.properties" />
+                                        <copy file="${project.basedir}/build.properties.template"
+                                              tofile="${project.basedir}/build.properties"/>
                                     </then>
                                 </if>
 
-                                <uptodate targetfile="${project.basedir}/build.properties" property="build-properties-up-to-date">
-                                    <srcfiles dir="${project.basedir}" includes="build.properties.template" />
+                                <uptodate targetfile="${project.basedir}/build.properties"
+                                          property="build-properties-up-to-date">
+                                    <srcfiles dir="${project.basedir}" includes="build.properties.template"/>
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
@@ -1084,8 +1089,8 @@
                         <configuration>
                             <target>
                                 <ant antfile="${project.basedir}/pom-ant.xml" target="process-webapp-sources">
-                                    <property name="version" value="${project.version}" />
-                                    <property name="build.webapp.dir" value="${build.webapp.dir}" />
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="build.webapp.dir" value="${build.webapp.dir}"/>
                                 </ant>
                             </target>
                         </configuration>
@@ -1115,7 +1120,6 @@
 
                                 **/document_search_terms.jsp
                             </excludes>
-                            <verbose>true</verbose>
                             <mergeFragment>false</mergeFragment>
                             <webAppSourceDirectory>${build.webapp.dir}</webAppSourceDirectory>
                         </configuration>
@@ -1180,7 +1184,7 @@
                         War source directory must not be set to existing directory
                         since webappDirectory (the directory where the webapp is built) is created using ant script.
                     -->
-                    <warSourceDirectory />
+                    <warSourceDirectory/>
 
                     <!--<webResources>-->
                     <!--<resource>-->
@@ -1241,7 +1245,6 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
                 <configuration>
                     <scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>
                     <stopKey>${jetty.stop.key}</stopKey>
