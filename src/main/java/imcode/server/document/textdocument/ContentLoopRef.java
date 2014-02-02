@@ -3,7 +3,6 @@ package imcode.server.document.textdocument;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.google.common.primitives.Ints;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -12,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Embeddable
-public class ContentRef implements Serializable, Cloneable {
+public class ContentLoopRef implements Serializable, Cloneable {
 
     @Column(name = "content_loop_no")
     private volatile int loopNo;
@@ -20,44 +19,44 @@ public class ContentRef implements Serializable, Cloneable {
     @Column(name = "content_no")
     private volatile int contentNo;
 
-    protected ContentRef() {}
+    protected ContentLoopRef() {}
 
-    private ContentRef(int loopNo, int contentNo) {
+    private ContentLoopRef(int loopNo, int contentNo) {
         this.loopNo = loopNo;
         this.contentNo = contentNo;
     }
 
-    public static ContentRef of(int loopNo, int contentNo) {
-        return new ContentRef(loopNo, contentNo);
+    public static ContentLoopRef of(int loopNo, int contentNo) {
+        return new ContentLoopRef(loopNo, contentNo);
     }
 
-    public static Optional<ContentRef> of(String loopNo, String contentNo) {
-        Integer loopNoInt = Ints.tryParse(loopNo);
-        Integer contentNoInt = Ints.tryParse(contentNo);
+    public static Optional<ContentLoopRef> of(String loopNo, String contentNo) {
+        Integer loopNoInt = Integer.valueOf(loopNo);
+        Integer contentNoInt = Integer.valueOf(contentNo);
 
         return Optional.fromNullable(
-            loopNoInt != null && contentNoInt != null
-                    ? ContentRef.of(loopNoInt, contentNoInt)
-                    : null
+                loopNoInt != null && contentNoInt != null
+                        ? ContentLoopRef.of(loopNoInt, contentNoInt)
+                        : null
         );
     }
 
-    public static Optional<ContentRef> of(String ref) {
+    public static Optional<ContentLoopRef> of(String ref) {
         Matcher matcher = Pattern.compile("(\\d+)_(\\d+)").matcher(Strings.nullToEmpty(ref).trim());
 
         return Optional.fromNullable(
                 matcher.find()
-                    ? ContentRef.of(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)))
-                    : null
+                        ? ContentLoopRef.of(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)))
+                        : null
         );
     }
 
     @Override
     public boolean equals(Object o) {
-        return this == o || (o instanceof ContentRef && equals((ContentRef) o));
+        return this == o || (o instanceof ContentLoopRef && equals((ContentLoopRef) o));
     }
 
-    private boolean equals(ContentRef that) {
+    private boolean equals(ContentLoopRef that) {
         return loopNo == that.loopNo && contentNo == that.contentNo;
     }
 
@@ -71,11 +70,11 @@ public class ContentRef implements Serializable, Cloneable {
         return Objects.toStringHelper(this).add("contentNo", contentNo).add("loopNo", loopNo).toString();
     }
 
-    public int loopNo() {
+    public int getLoopNo() {
         return loopNo;
     }
 
-    public int contentNo() {
+    public int getContentNo() {
         return contentNo;
     }
 }

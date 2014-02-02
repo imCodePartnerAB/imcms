@@ -25,7 +25,7 @@ class Filter extends ImcmsServicesSupport {
   val basicView: BasicFilterView = new BasicFilterView
   val extendedView: ExtendedFilterView = new ExtendedFilterView
 
-  def setMetaIdRangePrompt(range: Option[(MetaId, MetaId)]) {
+  def setDocIdRangePrompt(range: Option[(DocId, DocId)]) {
     range.map {
       case (start, end) => (start.toString, end.toString)
     }.getOrElse("", "") |> {
@@ -321,9 +321,9 @@ class Filter extends ImcmsServicesSupport {
           extendedView.relationships.cbParents.selection = "docs_projection.extended_filter.cb_relationships_parents.item.with_parents"
         case Relationship.Logical(_) =>
           extendedView.relationships.cbParents.selection = "docs_projection.extended_filter.cb_relationships_parents.item.without_parents"
-        case Relationship.Exact(metaId) =>
+        case Relationship.Exact(docId) =>
           extendedView.relationships.cbParents.selection = "docs_projection.extended_filter.cb_relationships_parents.item.with_parent_of"
-          extendedView.relationships.txtParents.value = metaId.toString
+          extendedView.relationships.txtParents.value = docId.toString
 
         case _ =>
           extendedView.relationships.cbParents.selection = "docs_projection.extended_filter.cb_relationships_parents.item.unspecified"
@@ -334,9 +334,9 @@ class Filter extends ImcmsServicesSupport {
           extendedView.relationships.cbChildren.selection = "docs_projection.extended_filter.cb_relationships_children.item.with_children"
         case Relationship.Logical(_) =>
           extendedView.relationships.cbChildren.selection = "docs_projection.extended_filter.cb_relationships_children.item.without_children"
-        case Relationship.Exact(metaId) =>
+        case Relationship.Exact(docId) =>
           extendedView.relationships.cbChildren.selection = "docs_projection.extended_filter.cb_relationships_children.item.with_children_of"
-          extendedView.relationships.txtChildren.value = metaId.toString
+          extendedView.relationships.txtChildren.value = docId.toString
 
         case _ =>
           extendedView.relationships.cbChildren.selection = "docs_projection.extended_filter.cb_relationships_children.item.unspecified"

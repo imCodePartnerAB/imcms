@@ -69,9 +69,9 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
         dlg.setOkButtonHandler {
           for {
             ref <- dlg.projection.selection
-            metaId = ref.metaId()
-            if !state.getItemsMap.containsKey(metaId)
-            doc <- imcmsServices.getDocumentMapper.getDefaultDocument[DocumentDomainObject](metaId).asOption
+            docId = ref.docId()
+            if !state.getItemsMap.containsKey(docId)
+            doc <- imcmsServices.getDocumentMapper.getDefaultDocument[DocumentDomainObject](docId).asOption
           } {
             val docRef = imcmsServices.getDocumentMapper.getDocumentReference(doc)
             val menuItem = new MenuItemDomainObject(docRef)
@@ -112,11 +112,11 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     w.miCopySelectedDoc.setCommandHandler { _ =>
-      for (metaId <- w.ttMenu.firstSelectedOpt) {
-        imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](metaId) match {
+      for (docId <- w.ttMenu.firstSelectedOpt) {
+        imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId) match {
           case null =>
             Current.page.showWarningNotification("notification.doc.unable_to_find".i)
-            state.removeMenuItemByDocumentId(metaId)
+            state.removeMenuItemByDocumentId(docId)
             updateMenuView()
 
           case doc =>

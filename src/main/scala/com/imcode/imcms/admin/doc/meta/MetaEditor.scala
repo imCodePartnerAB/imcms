@@ -65,8 +65,8 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
         case "doc_meta_editor.menu_item.appearance" =>
           if (appearanceEditorOpt.isEmpty) {
-            val i18nMetas: Map[DocumentLanguage, I18nMeta] = doc.getMetaId.asOption match {
-              case Some(id) =>
+            val i18nMetas: Map[DocumentLanguage, I18nMeta] = doc.getId match {
+              case id if id != DocumentDomainObject.ID_NEW =>
                 imcmsServices.getDocumentMapper.getI18nMetas(id).asScala.map(m => m.getLanguage -> m).toMap
               case _ =>
                 Map.empty

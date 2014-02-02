@@ -117,7 +117,7 @@ class DirectoryIndexFixture {
                      texts: Option[Seq[TextDomainObject]] = None,
                      images: Option[Seq[ImageDomainObject]] = None) {
 
-    val docId = doc.getMetaId ensuring (_ != null, "document id must be set")
+    val docId = doc.isNew ensuring (_ != true, "document must not be new")
 
     Mockito.when(documentMapperMock.getDefaultDocument[TextDocumentDomainObject](docId)).thenReturn(doc)
     Mockito.when(documentMapperMock.getI18nMetas(docId)).thenReturn(

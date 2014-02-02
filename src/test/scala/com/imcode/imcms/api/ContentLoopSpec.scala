@@ -29,7 +29,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
 
   "ContentLoop.builder().build()" should {
     "create new ContentLoop instance with default values" in {
-      ContentLoop.builder().build() |> { loop =>
+      ContentLoopService.builder().build() |> { loop =>
         assertNull(loop.getId)
         assertNull(loop.getNo)
         assertNull(loop.getDocRef)
@@ -44,7 +44,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
 
   "ContentLoop.builder(Content).build()" should {
     "create new ContentLoop instance with values copied from provided content loop" in {
-      ContentLoop.builder() |> {
+      ContentLoopService.builder() |> {
         _.id(1L)
          .no(2)
          .docRef(DocRef.of(1001, 0))
@@ -54,7 +54,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
          .disableContent(0)
          .build()
       } |> { loop =>
-        ContentLoop.builder(loop).build()
+        ContentLoopService.builder(loop).build()
       } |> { loop =>
         assertEquals(1L, loop.getId)
         assertEquals(2, loop.getNo)
@@ -73,8 +73,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
       val ops = new ContentLoopOps(loop)
 
       ops.addContentFirst() |> { loopAndContent =>
-        val updatedLoop = loopAndContent.loop()
-        val newContent = loopAndContent.content()
+        val updatedLoop = loopAndContent.getLoop()
+        val newContent = loopAndContent.getContent()
         val expectedNewContentNo = LoopFx.NextContentNo
         val expectedNewContentIndex = 0
 
@@ -101,8 +101,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
       val ops = new ContentLoopOps(loop)
 
       ops.addContentLast() |> { loopAndContent =>
-        val updatedLoop = loopAndContent.loop()
-        val newContent = loopAndContent.content()
+        val updatedLoop = loopAndContent.getLoop()
+        val newContent = loopAndContent.getContent()
         val expectedNewContentNo = LoopFx.NextContentNo
         val expectedNewContentIndex = 10
 
@@ -142,8 +142,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
           val ops = new ContentLoopOps(loop)
 
           ops.addContentBefore(LoopFx.LastContentIndex) |> { loopAndContent =>
-            val contents = loopAndContent.loop().getContents
-            val content = loopAndContent.content()
+            val contents = loopAndContent.getLoop().getContents
+            val content = loopAndContent.getContent()
 
             assertEquals(LoopFx.ContentsCount + 1, contents.size)
             assertEquals(LoopFx.NextContentNo, content.getNo)
@@ -203,8 +203,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
           val ops = new ContentLoopOps(loop)
 
           ops.addContentAfter(LoopFx.FirstContentIndex) |> { loopAndContent =>
-            val contents = loopAndContent.loop().getContents
-            val content = loopAndContent.content()
+            val contents = loopAndContent.getLoop().getContents
+            val content = loopAndContent.getContent()
 
             assertEquals(LoopFx.ContentsCount + 1, contents.size)
             assertEquals(LoopFx.NextContentNo, content.getNo)
@@ -262,7 +262,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
 
     "exist" should {
       "return updated loop" in {
-        ContentLoop.builder().addContent(0).addContent(1).addContent(2).disableContent(1).build() |> { loop =>
+        ContentLoopService.builder().addContent(0).addContent(1).addContent(2).disableContent(1).build() |> { loop =>
           loop.getContents |> { contents =>
             assertTrue(contents.get(0).isEnabled)
             assertTrue(contents.get(1).isDisabled)
@@ -305,7 +305,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
       }
 
       "all following contents are disabled" in {
-        ContentLoop.builder(mkContentLoop()) |> { builder =>
+        ContentLoopService.builder(mkContentLoop()) |> { builder =>
           6 to 9 foreach builder.disableContent
           builder.build()
         } |> { loop =>
@@ -332,7 +332,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     }
 
     "place the content next after a nearest enabled content with greater index and return updated loop" in {
-      ContentLoop.builder(mkContentLoop()) |> { builder =>
+      ContentLoopService.builder(mkContentLoop()) |> { builder =>
         5 to 7 foreach builder.disableContent
         builder.build()
       } |> { loop =>
@@ -372,7 +372,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
       }
 
       "all previous contents are disabled" in {
-        ContentLoop.builder(mkContentLoop()) |> { builder =>
+        ContentLoopService.builder(mkContentLoop()) |> { builder =>
           0 to 5 foreach builder.disableContent
           builder.build()
         } |> { loop =>
@@ -399,7 +399,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     }
 
     "place the content before nearest enabled content with lower index and return updated loop" in {
-      ContentLoop.builder(mkContentLoop()) |> { builder =>
+      ContentLoopService.builder(mkContentLoop()) |> { builder =>
         5 to 7 foreach builder.disableContent
         builder.build()
       } |> { loop =>

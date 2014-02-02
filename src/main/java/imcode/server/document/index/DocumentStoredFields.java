@@ -16,7 +16,7 @@ public class DocumentStoredFields {
         this.solrDocument = solrDocument;
     }
 
-    public int metaId() {
+    public int id() {
         return Integer.parseInt(solrDocument.getFieldValue(DocumentIndex.FIELD__META_ID).toString());
     }
 

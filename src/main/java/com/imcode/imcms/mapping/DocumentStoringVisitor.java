@@ -127,8 +127,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * @return FileDocumentFile filename
      */
     public static String getFilenameForFileDocumentFile(DocRef docRef, String fileId) {
-        int docId = docRef.metaId();
-        int docVersionNo = docRef.versionNo();
+        int docId = docRef.getDocId();
+        int docVersionNo = docRef.getVersionNo();
 
         String filename = "" + docId;
 
@@ -192,7 +192,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void updateDocumentI18nMeta(DocumentDomainObject doc, UserDomainObject user) {
         metaDao.deleteI18nMeta(doc.getId(), doc.getLanguage().getId());
 
-        I18nMeta i18nMeta = I18nMeta.builder(doc.getI18nMeta()).id(null).docId(doc.getMetaId()).language(doc.getLanguage()).build();
+        I18nMeta i18nMeta = I18nMeta.builder(doc.getI18nMeta()).id(null).docId(doc.getId()).language(doc.getLanguage()).build();
 
         metaDao.saveI18nMeta(i18nMeta);
     }
@@ -256,14 +256,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     public void updateTextDocumentIncludes(TextDocumentDomainObject doc) {
-        Integer docId = doc.getMetaId();
+        int docId = doc.getId();
 
         metaDao.deleteIncludes(docId);
 
         for (Map.Entry<Integer, Integer> entry : doc.getIncludesMap().entrySet()) {
             Include include = new Include();
             include.setId(null);
-            include.setMetaId(docId);
+            include.setDocId(docId);
             include.setIndex(entry.getKey());
             include.setIncludedDocumentId(entry.getValue());
 
@@ -274,7 +274,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, UserDomainObject user) {
-        Integer docId = textDocument.getMetaId();
+        int docId = textDocument.getId();
 
         TemplateNames templateNames = textDocument.getTemplateNames();
 
@@ -335,9 +335,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     public void updateTextDocumentMenus(final TextDocumentDomainObject doc, final UserDomainObject user) {
-        Integer docId = doc.getId();
-        Integer docVersionNo = doc.getVersionNo();
-        DocRef docRef = docId == null || docVersionNo == null ? null : DocRef.of(docId, docVersionNo);
+        DocRef docRef = doc.getRef();
 
         textDocDao.deleteMenus(doc.getRef());
 

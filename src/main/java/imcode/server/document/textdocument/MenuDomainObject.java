@@ -34,7 +34,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private volatile Long id;
+    private volatile Integer id;
 
     @Column(name = "sort_order")
     private volatile int sortOrder;
@@ -72,17 +72,17 @@ public class MenuDomainObject implements Cloneable, Serializable {
         }
     }
 
-    public MenuDomainObject(Long id, int sortOrder) {
+    public MenuDomainObject(Integer id, int sortOrder) {
         this.id = id;
         this.sortOrder = sortOrder;
         menuItems = new HashMap<>();
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

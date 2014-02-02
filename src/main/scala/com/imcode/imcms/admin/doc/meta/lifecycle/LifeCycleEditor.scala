@@ -77,7 +77,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     // version
     val (versionsNos, defaultVersionNo) = meta.getId match {
       case null =>
-        Seq[JInteger](DocumentVersion.WORKING_VERSION_NO) -> DocumentVersion.WORKING_VERSION_NO
+        Seq(DocumentVersion.WORKING_VERSION_NO) -> DocumentVersion.WORKING_VERSION_NO
 
       case id =>
         val versionInfo = imcmsServices.getDocumentMapper.getDocumentVersionInfo(id)

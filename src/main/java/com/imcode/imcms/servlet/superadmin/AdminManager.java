@@ -603,7 +603,7 @@ public class AdminManager extends HttpServlet {
         } else if (whichButton.equalsIgnoreCase("AdminCategories")) {
             url += "AdminCategories";
         } else if (whichButton.equals("AdminProfiles")) {
-            url = request.getContextPath() + "/imcms/admin/profile/listByNamedParams";
+            url = request.getContextPath() + "/imcms/admin/profile/list";
         }
         return url;
 

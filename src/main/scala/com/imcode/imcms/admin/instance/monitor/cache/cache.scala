@@ -1,13 +1,11 @@
 package com.imcode
 package imcms.admin.instance.monitor.cache
 
-import com.imcode.imcms.mapping.orm.DocumentVersion
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 
 import java.util.Date
-import imcode.server.document.DocumentTypeDomainObject
-import imcms.mapping.{DocLoaderCachingProxy}
+import imcms.mapping.DocLoaderCachingProxy
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
@@ -21,7 +19,7 @@ class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Ma
       PropertyDescriptor[Date]("Modified date"),
       PropertyDescriptor[String]("Default version"))
   }
-  val tblVersions = new Table("Available versions") {
+  val tblVersions = new Table("Available versions") with SingleSelect[JInteger] {
     addContainerProperties(this,
       PropertyDescriptor[JInteger]("No"),
       PropertyDescriptor[Date]("Created"),
@@ -74,7 +72,7 @@ class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Ma
       }
 
       docLoaderCache.getDocVersionInfo(docId).getVersions.foreach { v =>
-        tblVersions.addItem(Array(v.getNo, v.getCreatedDt, v.getModifiedDt), v.getNo)
+        tblVersions.addRow(v.getNo, v.getNo, v.getCreatedDt, v.getModifiedDt)
       }                                                                                
 
       val counter = new java.util.concurrent.atomic.AtomicInteger(0)

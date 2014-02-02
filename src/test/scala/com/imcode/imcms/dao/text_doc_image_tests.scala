@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.test.fixtures.UserFX
 import com.imcode.imcms.test.fixtures.LanguageFX.mkEnglish
-import imcode.server.document.textdocument.{ContentRef, ImageDomainObject}
+import imcode.server.document.textdocument.{ContentLoopRef, ImageDomainObject}
 
 
 @RunWith(classOf[JUnitRunner])
@@ -39,7 +39,7 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterE
   }
 
   test("get text doc's images by doc ref and no inside content loop") {
-    val images = textDocDao.getImages(DocRef.of(1001, 0), 1, Some(ContentRef.of(1, 1)), false)
+    val images = textDocDao.getImages(DocRef.of(1001, 0), 1, Some(ContentLoopRef.of(1, 1)), false)
     assertEquals(2, images.size)
   }
 

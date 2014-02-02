@@ -21,7 +21,7 @@ public class ImageHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Transient
     private ImageSource source = new NullImageSource();
@@ -68,7 +68,7 @@ public class ImageHistory {
     @Column(name = "gen_file")
     private String generatedFilename;
 
-    private ContentRef contentRef;
+    private ContentLoopRef contentLoopRef;
 
     private DocRef docRef;
 
@@ -112,7 +112,7 @@ public class ImageHistory {
         setResize(image.getResize());
 
         setLanguage(image.getLanguage());
-        setContentRef(image.getContentRef());
+        setContentLoopRef(image.getContentLoopRef());
         setUserId(user.getId());
         setModifiedDt(new Date());
         setFormat(image.getFormat());
@@ -121,11 +121,11 @@ public class ImageHistory {
         setGeneratedFilename(image.getGeneratedFilename());
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -241,12 +241,12 @@ public class ImageHistory {
         this.type = type;
     }
 
-    public ContentRef getContentRef() {
-        return contentRef;
+    public ContentLoopRef getContentLoopRef() {
+        return contentLoopRef;
     }
 
-    public void setContentRef(ContentRef contentRef) {
-        this.contentRef = contentRef;
+    public void setContentLoopRef(ContentLoopRef contentLoopRef) {
+        this.contentLoopRef = contentLoopRef;
     }
 
     public DocumentLanguage getLanguage() {
@@ -339,7 +339,7 @@ public class ImageHistory {
                 .append(id, o.id)
                 .append(source.toStorageString(), o.getSource().toStorageString())
                 .append(docRef, o.getDocRef())
-                .append(contentRef, o.getContentRef())
+                .append(contentLoopRef, o.getContentLoopRef())
                 .append(no, o.getNo())
                 .append(width, o.getWidth())
                 .append(height, o.getHeight())
@@ -366,7 +366,7 @@ public class ImageHistory {
                 .append(id)
                 .append(source.toStorageString())
                 .append(docRef)
-                .append(contentRef)
+                .append(contentLoopRef)
                 .append(no)
                 .append(width)
                 .append(height)

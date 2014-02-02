@@ -11,22 +11,22 @@ public interface DocumentGetter {
     /** 
      * @return list of working documents. 
      */ 
-    List<DocumentDomainObject> getDocuments(Collection<Integer> metaIds);
+    List<DocumentDomainObject> getDocuments(Collection<Integer> docIds);
 
     /**
      * Returns default document in default language.
      * 
-     * @param metaId document's meta id.
+     * @param docId document's meta id.
      *
      */
-    <T extends DocumentDomainObject> T getDocument(int metaId);
+    <T extends DocumentDomainObject> T getDocument(int docId);
 
     /**
      * Returns default document
-     * @param metaId
+     * @param docId
      * @return
      */
-    <T extends DocumentDomainObject> T getDefaultDocument(int metaId, DocumentLanguage language);
+    <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language);
 
-    <T extends DocumentDomainObject> T getDefaultDocument(int metaId);
+    <T extends DocumentDomainObject> T getDefaultDocument(int docId);
 }

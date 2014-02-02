@@ -168,10 +168,10 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val textPrefix = "text_"
 
     for (loopNo <- 0 until loopsCount) {
-      var loop = ContentLoop.builder().no(loopNo).build()
+      var loop = ContentLoopService.builder().no(loopNo).build()
 
       for (contentNo <- 0 until loopNo) {
-        loop = new ContentLoopOps(loop).addContentLast().loop()
+        loop = new ContentLoopOps(loop).addContentLast().getLoop()
       }
 
       newDoc.setContentLoop(loopNo, loop)
@@ -202,10 +202,10 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       newDoc.setMenu(no, menu)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = TextDomainObject.builder().contentRef(ContentRef.of(loopNo, contentNo)).build()
+        val text = TextDomainObject.builder().contentRef(ContentLoopRef.of(loopNo, contentNo)).build()
         val image = new ImageDomainObject
 
-        image.setContentRef(ContentRef.of(loopNo, contentNo))
+        image.setContentLoopRef(ContentLoopRef.of(loopNo, contentNo))
 
         text.setText(textPrefix + no + "_%d:%d".format(loopNo, contentNo))
         text.setType(textType)
@@ -249,13 +249,13 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
                    menuItems.values.asScala.map(_.getDocumentId).toSet)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = savedDoc.getText(no, ContentRef.of(loopNo, contentNo))
-        val image = savedDoc.getImage(no, ContentRef.of(loopNo, contentNo))
+        val text = savedDoc.getText(no, ContentLoopRef.of(loopNo, contentNo))
+        val image = savedDoc.getImage(no, ContentLoopRef.of(loopNo, contentNo))
 
         assertNotNull(text)
         assertEquals(no, text.getNo)
-        assertEquals(loopNo, text.getContentRef.loopNo)
-        assertEquals(contentNo, text.getContentRef.contentNo)
+        assertEquals(loopNo, text.getContentLoopRef.getLoopNo)
+        assertEquals(contentNo, text.getContentLoopRef.getContentNo)
         assertEquals(textType, text.getType)
         assertEquals(textPrefix + no + "_%d:%d".format(loopNo, contentNo), text.getText)
 
@@ -534,7 +534,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     doc = docMapper.getDefaultDocument(docId, i18nContentSupport.getDefaultLanguage)
 
     assertNotNull("New document exists",  doc)
-    assertEquals("Default version of a new document is 0.", doc.getVersion.getNo, new JInteger(0))
+    assertEquals("Default version of a new document is 0.", doc.getVersionNo, 0)
 
     val version = docMapper.makeDocumentVersion(docId, admin)
 
@@ -544,7 +544,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     doc = docMapper.getDefaultDocument(docId, i18nContentSupport.getDefaultLanguage)
 
-    assertEquals("Default version of a document is 1.", doc.getVersion.getNo, new JInteger(1))
+    assertEquals("Default version of a document is 1.", doc.getVersionNo, 1)
   }
 
 
@@ -690,7 +690,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("save text doc content loop") {
     val doc = saveNewTextDocumentFn()
-    val loop = ContentLoop.builder().addContent(0).build();
+    val loop = ContentLoopService.builder().addContent(0).build();
 
     doc.setContentLoop(0, loop)
 

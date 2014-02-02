@@ -10,18 +10,20 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import java.util.Objects;
+
 /**
  * Text document include. 
  */
 @Entity
 @Table(name="includes")
-public class Include {
+public class Include implements Cloneable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name="meta_id")
-	private Integer metaId;
+	private Integer docId;
 	
 	@Column(name="included_meta_id")
 	private Integer includedDocumentId;
@@ -58,32 +60,31 @@ public class Include {
 
 	@Override 
     public int hashCode() {
-        return new HashCodeBuilder()
-        		.append(index).toHashCode();
+        return Objects.hash(index);
     }
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Integer getMetaId() {
-		return metaId;
+	public Integer getDocId() {
+		return docId;
 	}
 
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
+	public void setDocId(Integer docId) {
+		this.docId = docId;
 	}
 
 	public Integer getIncludedDocumentId() {
 		return includedDocumentId;
 	}
 
-	public void setIncludedDocumentId(Integer includedMetaId) {
-		this.includedDocumentId = includedMetaId;
+	public void setIncludedDocumentId(Integer includedDocId) {
+		this.includedDocumentId = includedDocId;
 	}
 
 	public Integer getIndex() {

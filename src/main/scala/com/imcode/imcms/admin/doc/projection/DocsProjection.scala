@@ -56,7 +56,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
       case n => new Button("docs_projection.result.show_parents".f(n)) with LinkStyle |>> { btn =>
         btn.addClickHandler { _ =>
           val relationshipOpt = Some(
-            Relationship(children = Relationship.Exact(fields.metaId()))
+            Relationship(children = Relationship.Exact(fields.id()))
           )
 
           val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
@@ -74,7 +74,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
       case n => new Button("docs_projection.result.show_children".f(n)) with LinkStyle |>> { btn =>
         btn.addClickHandler { _ =>
           val relationshipOpt = Some(
-            Relationship(parents = Relationship.Exact(fields.metaId()))
+            Relationship(parents = Relationship.Exact(fields.id()))
           )
 
           val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
@@ -119,7 +119,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
   docsView.addValueChangeHandler { _ =>
     def fieldsToI8nDocRef(fields: DocumentStoredFields): I18nDocRef = {
       val language = imcmsServices.getDocumentI18nSupport.getByCode(fields.languageCode())
-      I18nDocRef.of(fields.metaId(), fields.versionNo(), language)
+      I18nDocRef.of(fields.id(), fields.versionNo(), language)
     }
 
     selectionRef.set(docsView.selection.map(docIx => docsContainer.getItem(docIx).fields |> fieldsToI8nDocRef).to[Seq])
@@ -155,7 +155,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
 
 
   def reload() {
-    filter.setMetaIdRangePrompt(docsContainer.metaIdRange())
+    filter.setDocIdRangePrompt(docsContainer.docIdRange())
 
     createQuery() match {
       case Failure(throwable) =>

@@ -87,7 +87,7 @@ public class ContentLoop implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private volatile Long id;
+    private volatile Integer id;
 
     private volatile Integer no;
 
@@ -110,7 +110,7 @@ public class ContentLoop implements Serializable, Cloneable {
     protected ContentLoop() {
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

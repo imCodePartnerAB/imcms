@@ -15,7 +15,7 @@ import javax.persistence.Table;
 public class DocumentProperty {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 	
 	@Column(name="meta_id", nullable=false)
 	private Integer docId;	
@@ -26,11 +26,11 @@ public class DocumentProperty {
 	@Column(name="value", nullable=false)
 	private String value;
 
-    public Long getId() {
+    public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -38,8 +38,8 @@ public class DocumentProperty {
 		return docId;
 	}
 
-	public void setDocId(Integer metaId) {
-		this.docId = metaId;
+	public void setDocId(Integer docId) {
+		this.docId = docId;
 	}
 
 	public String getName() {

@@ -29,8 +29,8 @@ public class ImageCacheMapper {
     private SessionFactory factory;
 
     
-	public void deleteDocumentImagesCache(int metaId, Map<Integer, ImageDomainObject> images) {
-		Set<String> cacheIds = new HashSet<String>();
+	public void deleteDocumentImagesCache(int docId, Map<Integer, ImageDomainObject> images) {
+		Set<String> cacheIds = new HashSet<>();
 		
 		for (int imageIndex : images.keySet()) {
 			ImageDomainObject image = images.get(imageIndex);

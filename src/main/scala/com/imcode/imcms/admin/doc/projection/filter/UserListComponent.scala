@@ -8,7 +8,7 @@ import com.imcode.imcms.vaadin.component._
 
 
 /**
- * Component for managing listByNamedParams of users.
+ * Component for managing list of users.
  */
 class UserListComponent(caption: String = "") extends GridLayout(2, 2) {
   val chkEnabled = new CheckBox(caption) with ExposeValueChange[JBoolean] with Immediate

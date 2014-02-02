@@ -52,11 +52,11 @@ with ImcmsServicesSupport {
 
 
   /**
-   * Returns indexed documents meta id (inclusive) range.
+   * Returns indexed documents id (inclusive) range.
    *
    * @return Some(min, max) or None if there are no indexed documents.
    */
-  def metaIdRange(): Option[(MetaId, MetaId)] = {
+  def docIdRange(): Option[(DocId, DocId)] = {
     // A range can also be queried from db instead of index:
     // imcmsServices.getDocumentMapper.getDocumentIdRange.asOption.map { idsRange =>
     //   (idsRange.getMinimumInteger: DocId, idsRange.getMaximumInteger: DocId)
@@ -191,7 +191,7 @@ with ImcmsServicesSupport {
       case PropertyId.META_ID => LazyProperty(
         new HorizontalLayout with Spacing with NoMargin with UndefinedSize |>> { lyt =>
           val icon = new Image(null, Theme.Icon.Doc.phase(doc.getLifeCyclePhase))
-          val label = new Label(fields.metaId().toString)
+          val label = new Label(fields.id().toString)
 
           lyt.addComponent(icon)
           lyt.addComponent(label)

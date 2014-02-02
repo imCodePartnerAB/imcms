@@ -1,11 +1,10 @@
 package com.imcode.imcms.mapping.orm;
 
-import com.google.common.base.Objects;
-
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import java.util.Objects;
 
 @Embeddable
 public class I18nDocRef {
@@ -24,38 +23,38 @@ public class I18nDocRef {
         this.language = language;
     }
 
-    public int metaId() {
-        return docRef.metaId();
+    public int docId() {
+        return docRef.getDocId();
     }
 
     public int versionNo() {
-        return docRef.versionNo();
+        return docRef.getVersionNo();
     }
 
-    public static I18nDocRef of(int metaId, int versionNo, DocumentLanguage language) {
-        return of(DocRef.of(metaId, versionNo), language);
+    public static I18nDocRef of(int docId, int versionNo, DocumentLanguage language) {
+        return of(DocRef.of(docId, versionNo), language);
     }
 
     public static I18nDocRef of(DocRef docRef, DocumentLanguage language) {
         return new I18nDocRef(docRef, language);
     }
 
-    public DocRef docRef() {
+    public DocRef getDocRef() {
         return docRef;
     }
 
-    public DocumentLanguage language() {
+    public DocumentLanguage getLanguage() {
         return language;
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).add("docRef", docRef).add("language", language).toString();
+        return com.google.common.base.Objects.toStringHelper(this).add("docRef", docRef).add("language", language).toString();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(docRef, language);
+        return Objects.hash(docRef, language);
     }
 
     @Override
@@ -64,6 +63,6 @@ public class I18nDocRef {
     }
 
     private boolean equals(I18nDocRef that) {
-        return this.docRef.equals(that.docRef) && this.language.equals(that.language);
+        return Objects.equals(docRef, that.docRef) && Objects.equals(language, that.language);
     }
 }

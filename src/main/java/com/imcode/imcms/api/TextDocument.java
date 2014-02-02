@@ -517,4 +517,12 @@ public class TextDocument extends Document {
 
     }
 
+    public ContentLoop getContentLoop(int no) {
+        //return getInternal().getContentLoop(no);
+        return null;
+    }
+
+    public void setContentLoop(int no, ContentLoop contentLoop) {
+        // getInternal().setContentLoop(no, ...);
+    }
 }

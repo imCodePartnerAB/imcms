@@ -6,7 +6,7 @@ import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.textdocument.ContentRef;
+import imcode.server.document.textdocument.ContentLoopRef;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -53,7 +53,7 @@ public class ChangeImage extends HttpServlet {
         String contentNoStr = request.getParameter("content_no");
         Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
-        ContentRef contentRef = loopNo == null || contentNo == null ? null : ContentRef.of(loopNo, contentNo);
+        ContentLoopRef contentLoopRef = loopNo == null || contentNo == null ? null : ContentLoopRef.of(loopNo, contentNo);
 
         final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(
                 documentId);
@@ -67,15 +67,15 @@ public class ChangeImage extends HttpServlet {
         /**
          * Image DTO. Holds generic properties such as size and border. 
          */
-        final ImageDomainObject defaultImage = contentRef == null
+        final ImageDomainObject defaultImage = contentLoopRef == null
                 ? document.getImage(imageIndex)
-                : document.getImage(imageIndex, contentRef);
+                : document.getImage(imageIndex, contentLoopRef);
         final ImageDomainObject image = defaultImage != null
                 ? defaultImage
                 : new ImageDomainObject();
 
         image.setNo(imageIndex);
-        image.setContentRef(contentRef);
+        image.setContentLoopRef(contentLoopRef);
 
         // Check if user has image rights
         if (!ImageEditPage.userHasImagePermissionsOnDocument(user, document)) {
@@ -141,7 +141,7 @@ public class ChangeImage extends HttpServlet {
 
         TextDocDao textDocDao = Imcms.getServices().getManagedBean(TextDocDao.class);
 
-        List<ImageDomainObject> images = textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentRef), true);
+        List<ImageDomainObject> images = textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
 
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);

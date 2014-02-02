@@ -22,7 +22,7 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
 
   val metaEditor = new MetaEditor(doc)
   val contentEditor = doc match {
-    case textDoc: TextDocumentDomainObject if textDoc.getMetaId == null => new NewTextDocContentEditor(textDoc, metaEditor)
+    case textDoc: TextDocumentDomainObject if textDoc.isNew => new NewTextDocContentEditor(textDoc, metaEditor)
     case fileDoc: FileDocumentDomainObject => new FileDocContentEditor(fileDoc)
     case urlDoc: UrlDocumentDomainObject => new UrlDocContentEditor(urlDoc)
     case htmlDoc: HtmlDocumentDomainObject => new HtmlDocContentEditor(htmlDoc)
@@ -47,7 +47,7 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
       val mergedDoc = contentDoc.clone()
 
       mergedDoc.setMeta(metaDoc.getMeta)
-      mergedDoc.setVersion(metaDoc.getVersion)
+      mergedDoc.setVersionNo(metaDoc.getVersionNo)
       mergedDoc.setI18nMeta(metaDoc.getI18nMeta)
 
       Right((mergedDoc, i18nMetas))

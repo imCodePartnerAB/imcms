@@ -22,7 +22,7 @@ class MetaDao extends HibernateSupport {
   /**  Updates doc's access and modified date-time. */
   def touch(docRef: DocRef, user: UserDomainObject): Unit = touch(docRef, user, new Date)
   def touch(docRef: DocRef, user: UserDomainObject, date: Date): Unit =
-    touch(docRef.metaId, docRef.versionNo, user.getId, date)
+    touch(docRef.getDocId, docRef.getVersionNo, user.getId, date)
 
   private def touch(docId: Int, docVersionNo: Int, userId: Int, dt: Date) {
     hibernate.bulkUpdateByNamedParams(

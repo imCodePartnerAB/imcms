@@ -273,7 +273,7 @@ package object component {
   }
 
   trait SelectWithTypedItemId[A <: TItemId] extends AbstractSelect with ContainerWithTypedItemId[A] {
-    def addItem(id: A, caption: String, icon: Resource = null): Item = addItem(id) |>> { _ =>
+    def addItem(id: A, caption: String, icon: Resource = null): Item = addItem(id.asInstanceOf[Object]) |>> { _ =>
       setItemCaption(id, caption)
       setItemIcon(id, icon)
     }

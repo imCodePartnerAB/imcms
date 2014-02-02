@@ -10,8 +10,6 @@ import com.imcode.imcms.mapping.orm.DocRef;
 import imcode.util.image.Resize;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
@@ -19,63 +17,11 @@ import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Entity(name = "Image")
 @Table(name = "imcms_text_doc_images")
 public class ImageDomainObject implements Serializable, Cloneable {
-
-    public static final class Builder {
-        private ImageDomainObject imageDomainObject;
-
-        public Builder() {
-            imageDomainObject = new ImageDomainObject();
-        }
-
-        public Builder(ImageDomainObject imageDomainObject) {
-            this.imageDomainObject = imageDomainObject.clone();
-        }
-
-        public ImageDomainObject build() {
-            return imageDomainObject.clone();
-        }
-
-        public Builder id(Long id) {
-            imageDomainObject.id = id;
-            return this;
-        }
-
-        public Builder docRef(DocRef docRef) {
-            imageDomainObject.docRef = docRef;
-            return this;
-        }
-
-        public Builder no(Integer no) {
-            imageDomainObject.no = no;
-            return this;
-        }
-
-        public Builder language(DocumentLanguage language) {
-            imageDomainObject.language = language;
-            return this;
-        }
-
-        public Builder contentRef(ContentRef contentRef) {
-            imageDomainObject.contentRef = contentRef;
-            return this;
-        }
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static Builder builder(ImageDomainObject imageDomainObject) {
-        return new Builder(imageDomainObject);
-    }
 
     public static final int IMAGE_NAME_LENGTH = 40;
 
@@ -83,14 +29,14 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private volatile Long id;
+    private volatile Integer id;
 
     @Transient
     private volatile ImageSource source = new NullImageSource();
 
     private volatile DocRef docRef;
 
-    private volatile ContentRef contentRef;
+    private volatile ContentLoopRef contentLoopRef;
 
     private volatile Integer no;
 
@@ -191,11 +137,11 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return null;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -207,12 +153,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
         this.docRef = docRef;
     }
 
-    public ContentRef getContentRef() {
-        return contentRef;
+    public ContentLoopRef getContentLoopRef() {
+        return contentLoopRef;
     }
 
-    public void setContentRef(ContentRef contentRef) {
-        this.contentRef = contentRef;
+    public void setContentLoopRef(ContentLoopRef contentLoopRef) {
+        this.contentLoopRef = contentLoopRef;
     }
 
     public String getUrl() {
@@ -492,60 +438,58 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof ImageDomainObject)) {
-            return false;
-        }
-        final ImageDomainObject o = (ImageDomainObject) obj;
-        return new EqualsBuilder()
-                .append(id, o.id)
-                .append(source.toStorageString(), o.getSource().toStorageString())
-                .append(docRef, o.getDocRef())
-                .append(contentRef, o.getContentRef())
-                .append(no, o.getNo())
-                .append(width, o.getWidth())
-                .append(height, o.getHeight())
-                .append(border, o.getBorder())
-                .append(align, o.getAlign())
-                .append(alternateText, o.getAlternateText())
-                .append(lowResolutionUrl, o.getLowResolutionUrl())
-                .append(verticalSpace, o.getVerticalSpace())
-                .append(horizontalSpace, o.getHorizontalSpace())
-                .append(target, o.getTarget())
-                .append(linkUrl, o.getLinkUrl())
-                .append(name, o.getName())
-                .append(cropRegion, o.getCropRegion())
-                .append(language, o.getLanguage())
-                .append(getFormat(), o.getFormat())
-                .append(getRotateDirection(), o.getRotateDirection())
-                .append(getResize(), o.getResize())
-                .isEquals();
+        return obj == this || (obj instanceof ImageDomainObject && equals((ImageDomainObject) obj));
+    }
+
+    private boolean equals(ImageDomainObject that) {
+        return Objects.equals(id, that.id)
+                && Objects.equals(source.toStorageString(), that.getSource().toStorageString())
+                && Objects.equals(docRef, that.getDocRef())
+                && Objects.equals(contentLoopRef, that.getContentLoopRef())
+                && Objects.equals(no, that.getNo())
+                && Objects.equals(width, that.getWidth())
+                && Objects.equals(height, that.getHeight())
+                && Objects.equals(border, that.getBorder())
+                && Objects.equals(align, that.getAlign())
+                && Objects.equals(alternateText, that.getAlternateText())
+                && Objects.equals(lowResolutionUrl, that.getLowResolutionUrl())
+                && Objects.equals(verticalSpace, that.getVerticalSpace())
+                && Objects.equals(horizontalSpace, that.getHorizontalSpace())
+                && Objects.equals(target, that.getTarget())
+                && Objects.equals(linkUrl, that.getLinkUrl())
+                && Objects.equals(name, that.getName())
+                && Objects.equals(cropRegion, that.getCropRegion())
+                && Objects.equals(language, that.getLanguage())
+                && Objects.equals(getFormat(), that.getFormat())
+                && Objects.equals(getRotateDirection(), that.getRotateDirection())
+                && Objects.equals(getResize(), that.getResize());
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(id)
-                .append(source.toStorageString())
-                .append(docRef)
-                .append(contentRef)
-                .append(no)
-                .append(width)
-                .append(height)
-                .append(border)
-                .append(align)
-                .append(alternateText)
-                .append(lowResolutionUrl)
-                .append(verticalSpace)
-                .append(horizontalSpace)
-                .append(target)
-                .append(linkUrl)
-                .append(name)
-                .append(cropRegion)
-                .append(language)
-                .append(getFormat())
-                .append(getRotateDirection())
-                .append(getResize())
-                .toHashCode();
+        return Objects.hash(
+                id,
+                source.toStorageString(),
+                docRef,
+                contentLoopRef,
+                no,
+                width,
+                height,
+                border,
+                align,
+                alternateText,
+                lowResolutionUrl,
+                verticalSpace,
+                horizontalSpace,
+                target,
+                linkUrl,
+                name,
+                cropRegion,
+                language,
+                getFormat(),
+                getRotateDirection(),
+                getResize()
+        );
     }
 
     @Override

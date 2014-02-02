@@ -1,20 +1,21 @@
 package com.imcode.imcms.mapping.orm;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 
 public class ImageId implements Serializable {
 
 	@Column(name="meta_id")
-	private int metaId;
+	private int docId;
 	
 	private String name = "";
 	
 	public ImageId() {}
 	
-	public ImageId(int metaId, String name) {
-		setMetaId(metaId);
+	public ImageId(int docId, String name) {
+		setDocId(docId);
 		setName(name);
 	}
 	
@@ -26,21 +27,21 @@ public class ImageId implements Serializable {
 		
 		ImageId imageId = (ImageId) o;
 		
-		return metaId == imageId.metaId
+		return docId == imageId.docId
 			&& name.equals(imageId.name);
 	}
 	
 	@Override 
 	public int hashCode() {
-		return name.hashCode() + metaId;
+		return Objects.hash(name, docId);
 	}
 
-	public int getMetaId() {
-		return metaId;
+	public int getDocId() {
+		return docId;
 	}
 
-	public void setMetaId(int metaId) {
-		this.metaId = metaId;
+	public void setDocId(int docId) {
+		this.docId = docId;
 	}
 
 	public String getName() {

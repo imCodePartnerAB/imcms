@@ -47,7 +47,7 @@ pageContext.setAttribute("baseURL", baseURL);
  ******************************************************************************************* */
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 DocumentVersionInfo docVersionInfo = documentMapper.getDocumentVersionInfo(document.getId());
-DocumentVersion version = document.getVersion();
+int versionNo = document.getVersionNo();
 
 /* *******************************************************************************************
  *         Get languages                                                                     *
@@ -191,7 +191,7 @@ if (null != languages) { %>
 } %>
 
 <%
-boolean isWorkingVersion = DocumentVersionInfo.isWorkingVersion(version);
+boolean isWorkingVersion = DocumentVersionInfo.isWorkingVersionNo(versionNo);
 String sFlags = request.getParameter("flags");
 if (sFlags != null && sFlags.equals("1")) {
 } else {
@@ -208,9 +208,9 @@ if (sFlags != null && sFlags.equals("1")) {
           <select name="<%=ImcmsConstants.REQUEST_PARAM__DOC_VERSION%>">          
             <% while (iterator.hasNext()) {
             	DocumentVersion v = (DocumentVersion)iterator.next();
-            	String sSelected = v.getNo().equals(version.getNo()) ? " selected=\"selected\"" : "";
+            	String sSelected = v.getNo() == versionNo ? " selected=\"selected\"" : "";
                 String displayName = DocumentVersionInfo.isWorkingVersion(v)
-                        ? "DRAFT" : "Version " + v.getNo().toString();
+                        ? "DRAFT" : "Version " + v.getNo();
 
                 if (docVersionInfo.isDefaultVersion(v)) {
                     displayName += " (default)";    

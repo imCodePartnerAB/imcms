@@ -21,10 +21,11 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 /**
  * Parent of all imCMS document types.
  * <p/>
- * A Document is uniquely identified by id (meta id), (content) language and (content) version.
+ * A Document content is uniquely identified by id, version and optionally language.
  * <p/>
  * Holds document content and meta.
  */
+// fixme: ??? language must be 'generic-default', never null ???
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public static final int ID_NEW = 0;
@@ -55,8 +56,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private volatile I18nMeta i18nMeta = I18nMeta.builder().build();
 
-    private volatile DocumentVersion version = new DocumentVersion();
-
+    private volatile int versionNo = DocumentVersion.WORKING_VERSION_NO;
 
     @Override
     public DocumentDomainObject clone() {
@@ -72,44 +72,26 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             clone.meta = meta.clone();
         }
 
-        if (version != null) {
-            clone.version = version.clone();
-        }
-
         return clone;
-    }
-
-    /**
-     * Returns this document's version.
-     */
-    public DocumentVersion getVersion() {
-        return version;
     }
 
     /**
      * Returns this document's version no.
      */
-    public Integer getVersionNo() {
-        DocumentVersion version = getVersion();
-
-        return version == null ? null : version.getNo();
+    public int getVersionNo() {
+        return versionNo;
     }
 
-
-    /**
-     * Returns this document's version.
-     */
-    public void setVersion(DocumentVersion version) {
-        this.version = version;
+    public void setVersionNo(int no) {
+        versionNo = no;
     }
 
     public DocRef getRef() {
-        return getVersionNo() == null || getMetaId() == null ? null : DocRef.of(getMetaId(), getVersionNo());
+        return DocRef.of(getId(), getVersionNo());
     }
 
     public I18nDocRef getI18nRef() {
-        DocRef ref = getRef();
-        return ref == null ? null : I18nDocRef.of(ref, getLanguage());
+        return I18nDocRef.of(getRef(), getLanguage());
     }
 
 
@@ -142,7 +124,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         }
 
         document.setLanguage(Imcms.getServices().getDocumentI18nSupport().getDefaultLanguage());
-        document.setVersion(new DocumentVersion(null, 0, null, new Date()));
+        document.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
 
         return (T) document;
     }
@@ -171,22 +153,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return meta.getCreatorId();
     }
 
-    /**
-     * Returns the last user who modified this document.
-     *
-     * @return the last user who modified this document or null is there is no associated user.
-     */
-    public Integer getModifierId() {
-        try {
-            Integer modifierId = version == null ? null : version.getModifiedBy();
-
-            // legacy property based modifier support
-            return modifierId != null ? modifierId : Integer.valueOf(getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public void setCreatorId(int creatorId) {
         meta.setCreatorId(creatorId);
     }
@@ -204,16 +170,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public int getId() {
-        Integer id = getMetaId();
+        Integer id = meta.getId();
         return id == null ? ID_NEW : id;
     }
 
-    public Integer getMetaId() {
-        return meta.getId();
-    }
-
     public void setId(int id) {
-        meta.setId(id);
+        meta.setId(id == ID_NEW ? null : id);
     }
 
     public String getMenuImage() {

@@ -51,9 +51,9 @@ public class Content implements Serializable, Cloneable {
         return new Builder(content);
     }
 
-    private int no;
+    private volatile int no;
 
-    private boolean enabled = true;
+    private volatile boolean enabled = true;
 
     protected Content() {
     }

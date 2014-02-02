@@ -36,7 +36,7 @@ class IncludeDaoSpec extends WordSpec with MustMatchers with BeforeAndAfterAll w
 
     "save new text doc's include" in {
       val include = new Include
-      include.setMetaId(1002)
+      include.setDocId(1002)
       include.setIncludedDocumentId(1001)
 
       metaDao.saveInclude(include)

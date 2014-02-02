@@ -7,18 +7,18 @@ import java.util.List;
 public class ContentLoopOps {
 
     public static abstract class ContentIndex {
-        public abstract Content content();
-        public abstract int index();
+        public abstract Content getContent();
+        public abstract int getIndex();
 
         public static ContentIndex of(final Content content, final int index) {
             return new ContentIndex() {
                 @Override
-                public Content content() {
+                public Content getContent() {
                     return content;
                 }
 
                 @Override
-                public int index() {
+                public int getIndex() {
                     return index;
                 }
             };
@@ -26,18 +26,18 @@ public class ContentLoopOps {
     }
 
     public static abstract class UpdatedLoopAndNewContent {
-        public abstract ContentLoop loop();
-        public abstract Content content();
+        public abstract ContentLoop getLoop();
+        public abstract Content getContent();
 
         public static UpdatedLoopAndNewContent of(final ContentLoop loop, final Content content) {
             return new UpdatedLoopAndNewContent() {
                 @Override
-                public ContentLoop loop() {
+                public ContentLoop getLoop() {
                     return loop;
                 }
 
                 @Override
-                public Content content() {
+                public Content getContent() {
                     return content;
                 }
             };

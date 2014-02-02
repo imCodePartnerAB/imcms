@@ -17,7 +17,7 @@ public class GetterDocumentReference extends DocumentReference implements Serial
     }
 
     public DocumentDomainObject getDocument() {
-        return documentGetter.getDefaultDocument(getDocumentId());
+        return documentGetter.getDocument(getDocumentId());
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {

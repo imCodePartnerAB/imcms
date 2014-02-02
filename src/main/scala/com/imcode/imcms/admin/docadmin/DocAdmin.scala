@@ -50,8 +50,8 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     val pathInfo = request.getPathInfo
     val docOpt =
       for {
-        metaId <- request.getParameter("meta_id") |> NonNegInt.unapply
-        doc <- imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](metaId).asOption
+        docId <- request.getParameter("meta_id") |> NonNegInt.unapply
+        doc <- imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId).asOption
       } yield doc
 
     val titleOpt = request.getParameter("label").trimToOption
@@ -331,7 +331,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
     val ContentRefExt = """(\d+)_(\d+)""".r
     val contentRefOpt = request.getParameter("contentRef") match {
-      case ContentRefExt(loopNo, contentNo) => ContentRef.of(loopNo.toInt, contentNo.toInt).asOption
+      case ContentRefExt(loopNo, contentNo) => ContentLoopRef.of(loopNo.toInt, contentNo.toInt).asOption
       case _ => None
     }
 

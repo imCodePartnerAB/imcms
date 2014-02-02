@@ -23,12 +23,12 @@ public class DocumentVersion implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private volatile Long id;
+    private volatile Integer id;
 
     @Column(name = "doc_id", updatable = false, nullable = false)
     private volatile Integer docId;
 
-    private volatile Integer no;
+    private volatile int no = WORKING_VERSION_NO;
 
     @Column(name = "created_by", updatable = false)
     private volatile Integer createdBy;
@@ -102,11 +102,11 @@ public class DocumentVersion implements Cloneable {
                 .toString();
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -119,11 +119,11 @@ public class DocumentVersion implements Cloneable {
     }
 
 
-    public Integer getNo() {
+    public int getNo() {
         return no;
     }
 
-    public void setNo(Integer no) {
+    public void setNo(int no) {
         this.no = no;
     }
 

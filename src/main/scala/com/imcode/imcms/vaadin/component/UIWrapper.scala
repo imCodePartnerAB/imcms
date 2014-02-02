@@ -27,7 +27,7 @@ class UIWrapper(ui: com.vaadin.ui.UI) {
     }
   )
 
-  def imcmsDocUrl(metaId: MetaId) = ui.resourceUrl(metaId.toString)
+  def imcmsDocUrl(docId: DocId) = ui.resourceUrl(docId.toString)
 
   def imcmsDocUrl(alias: String) = ui.resourceUrl(alias)
 

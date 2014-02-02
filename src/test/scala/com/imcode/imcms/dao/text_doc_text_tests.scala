@@ -13,7 +13,7 @@ import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
 
-import imcode.server.document.textdocument.{ContentRef, TextDomainObject}
+import imcode.server.document.textdocument.{ContentLoopRef, TextDomainObject}
 import com.imcode.imcms.test.fixtures.UserFX
 
 @RunWith(classOf[JUnitRunner])
@@ -49,7 +49,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
   def saveNewText(
       docId: Int = Default.docId,
       docVersionNo: Int = Default.docVersionNo,
-      contentRefOpt: Option[ContentRef] = None,
+      contentRefOpt: Option[ContentLoopRef] = None,
       no: Int = Default.no,
       text: String = Default.text,
       language: DocumentLanguage) =
@@ -68,7 +68,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       assertEquals("Saved text docI18nRef", I18nDocRef.of(docId, docVersionNo, language), savedVO.getI18nDocRef)
       assertEquals("Saved text no", no, savedVO.getNo)
       assertEquals("Saved text text", text, savedVO.getText)
-      assertEquals("Saved text contentRef", contentRefOpt, savedVO.getContentRef.asOption)
+      assertEquals("Saved text contentRef", contentRefOpt, savedVO.getContentLoopRef.asOption)
     }
 
 
@@ -85,7 +85,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     val text = saveNewText(text="initial text", language = language)
     val updatedTextValue = "modified text"
     val updatedDocVersionNo = 1
-    val updatedI18nDocRef = I18nDocRef.of(text.getI18nDocRef.metaId, updatedDocVersionNo, language)
+    val updatedI18nDocRef = I18nDocRef.of(text.getI18nDocRef.docId, updatedDocVersionNo, language)
 
     text.clone |> { textToUpdate =>
       textToUpdate.setText(updatedTextValue)
@@ -100,12 +100,12 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
     assertEquals("Updated text i18nDocRef", updatedI18nDocRef, updatedText.getI18nDocRef)
     assertEquals("Updated text no", text.getNo, updatedText.getNo)
     assertEquals("Updated text text", updatedTextValue, updatedText.getText)
-    assertEquals("Updated text contentRef", text.getContentRef, updatedText.getContentRef)
+    assertEquals("Updated text contentRef", text.getContentRef, updatedText.getContentLoopRef)
   }
 
 
   test("delete text") { () =>
-    val contentRef = ContentRef.of(100, 1)
+    val contentRef = ContentLoopRef.of(100, 1)
     val contentRefOpts = Seq(None, Some(contentRef))
     val nos = 0 until 5
 
@@ -149,7 +149,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
   test("get texts by doc ref, no and content ref") { () =>
     val versionNos = 0 until 2
     val nos = 0 until 5
-    val contentRef = ContentRef.of(100, 1)
+    val contentRef = ContentLoopRef.of(100, 1)
     val contentRefOpts = Seq(None, Some(contentRef))
     val languages = mkLanguages
 
@@ -175,7 +175,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
   test("get texts by doc ref and language") { () =>
     val versionNos = 0 until 2
     val nos = 0 until 5
-    val contentRef = ContentRef.of(100, 1)
+    val contentRef = ContentLoopRef.of(100, 1)
     val contentRefOpts = Seq(None, Some(contentRef))
 
     for (versionNo <- versionNos; no <- nos; contentRefOpt <- contentRefOpts; language <- mkLanguages)
@@ -188,11 +188,11 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       expectResult(nos.size * contentRefOpts.size) { texts.size }
 
       expectResult(nos.size, "Texts count outsude content loop") {
-        texts.count(_.getContentRef == null)
+        texts.count(_.getContentLoopRef == null)
       }
 
       expectResult(nos.size, "Texts count inside content loop") {
-        texts.count(text => text.getContentRef != null && text.getContentRef == contentRef)
+        texts.count(text => text.getContentLoopRef != null && text.getContentLoopRef == contentRef)
       }
     }
   }
@@ -201,7 +201,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
   test("get text by doc ref, no, language and content ref") { () =>
     val versionNos = 0 until 2
     val nos = 0 until 5
-    val contentRef = ContentRef.of(100, 1)
+    val contentRef = ContentLoopRef.of(100, 1)
     val contentRefOpts = Seq(None, Some(contentRef))
 
     for (versionNo <- versionNos; no <- nos; language <- mkLanguages; contentRefOpt <- contentRefOpts)

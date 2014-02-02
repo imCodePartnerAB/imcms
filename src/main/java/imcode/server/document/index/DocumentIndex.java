@@ -8,6 +8,8 @@ import org.apache.solr.common.SolrDocumentList;
 
 import java.util.List;
 
+// todo: limit (legacy search) document count (w/o pagination) with 100
+// todo: pagination should return stored docs fields instead of real documents
 public interface DocumentIndex {
 
     String FIELD__ID = "id";
@@ -92,20 +94,20 @@ public interface DocumentIndex {
     /**
      * Adds default document to index.
      *
-     * @param metaId
+     * @param docId
      * @throws IndexException
      * @since 6.0
      */
-    void indexDocument(int metaId) throws IndexException;
+    void indexDocument(int docId) throws IndexException;
 
     /**
      * Removes default document from index.
      *
-     * @param metaId
+     * @param docId
      * @throws IndexException
      * @since 6.0
      */
-    void removeDocument(int metaId) throws IndexException;
+    void removeDocument(int docId) throws IndexException;
 
     /**
      * Returns underlying service.

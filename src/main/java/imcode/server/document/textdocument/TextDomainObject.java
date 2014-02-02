@@ -2,11 +2,10 @@ package imcode.server.document.textdocument;
 
 import com.imcode.imcms.mapping.orm.I18nDocRef;
 import imcode.util.Parser;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Text doc's text field.
@@ -59,8 +58,8 @@ public class TextDomainObject implements Serializable, Cloneable {
             return this;
         }
 
-        public Builder contentRef(ContentRef contentRef) {
-            textDomainObject.contentRef = contentRef;
+        public Builder contentRef(ContentLoopRef contentLoopRef) {
+            textDomainObject.contentLoopRef = contentLoopRef;
             return this;
         }
 
@@ -98,7 +97,7 @@ public class TextDomainObject implements Serializable, Cloneable {
     private volatile int type;
 
     private volatile I18nDocRef i18nDocRef;
-    private volatile ContentRef contentRef;
+    private volatile ContentLoopRef contentLoopRef;
 
     public TextDomainObject() {
         this("");
@@ -188,30 +187,21 @@ public class TextDomainObject implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof TextDomainObject)) {
-            return false;
-        }
+        return obj == this || (obj instanceof TextDomainObject && equals((TextDomainObject) obj));
+    }
 
-        if (this == obj) {
-            return true;
-        }
-
-        final TextDomainObject o = (TextDomainObject) obj;
-
-        return new EqualsBuilder()
-                .append(text, o.getText())
-                .append(type, o.getType())
-                .append(no, o.getNo())
-                .append(i18nDocRef, o.getI18nDocRef()).isEquals();
+    private boolean equals(TextDomainObject that) {
+        return Objects.equals(id, that.id)
+                && Objects.equals(text, that.text)
+                && Objects.equals(type, that.type)
+                && Objects.equals(no, that.no)
+                && Objects.equals(i18nDocRef, that.i18nDocRef)
+                && Objects.equals(contentLoopRef, that.contentLoopRef);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(33, 31)
-                .append(text)
-                .append(type)
-                .append(no)
-                .append(i18nDocRef).toHashCode();
+        return Objects.hash(id, text, type, no, i18nDocRef, contentLoopRef);
     }
 
 
@@ -220,7 +210,7 @@ public class TextDomainObject implements Serializable, Cloneable {
         try {
             return (TextDomainObject) super.clone();
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
     }
 
@@ -248,12 +238,12 @@ public class TextDomainObject implements Serializable, Cloneable {
         this.i18nDocRef = i18nDocRef;
     }
 
-    public ContentRef getContentRef() {
-        return contentRef;
+    public ContentLoopRef getContentLoopRef() {
+        return contentLoopRef;
     }
 
-    public void setContentRef(ContentRef contentRef) {
-        this.contentRef = contentRef;
+    public void setContentLoopRef(ContentLoopRef contentLoopRef) {
+        this.contentLoopRef = contentLoopRef;
     }
 
     public Format getFormat() {

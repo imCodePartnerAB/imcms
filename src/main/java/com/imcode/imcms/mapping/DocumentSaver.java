@@ -60,11 +60,11 @@ public class DocumentSaver {
      */
     @Transactional
     public void saveText(TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfNecessary(text.getI18nDocRef().docRef(), text.getContentRef());
+        createEnclosingContentLoopIfNecessary(text.getI18nDocRef().getDocRef(), text.getContentLoopRef());
 
         new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(text, user);
 
-        metaDao.touch(text.getI18nDocRef().docRef(), user);
+        metaDao.touch(text.getI18nDocRef().getDocRef(), user);
     }
 
 
@@ -106,7 +106,7 @@ public class DocumentSaver {
 
     @Transactional
     public void saveImage(ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfNecessary(image.getDocRef(), image.getContentRef());
+        createEnclosingContentLoopIfNecessary(image.getDocRef(), image.getContentLoopRef());
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
@@ -120,22 +120,22 @@ public class DocumentSaver {
      * Creates content loop if item references non-saved enclosing content loop.
      */
     @Transactional
-    public ContentLoop createEnclosingContentLoopIfNecessary(DocRef docRef, ContentRef contentRef) {
-        if (contentRef == null) {
+    public ContentLoop createEnclosingContentLoopIfNecessary(DocRef docRef, ContentLoopRef contentLoopRef) {
+        if (contentLoopRef == null) {
             return null;
         }
 
-        ContentLoop loop = textDocDao.getLoop(docRef, contentRef.loopNo());
+        ContentLoop loop = textDocDao.getLoop(docRef, contentLoopRef.getLoopNo());
         ContentLoopOps ops = new ContentLoopOps(loop);
 
         if (loop == null) {
             throw new IllegalStateException(String.format(
-                    "Content loop does not exists. Doc identity: %s, content loop no: %s.", docRef, contentRef.loopNo()));
+                    "Content loop does not exists. Doc identity: %s, content loop no: %s.", docRef, contentLoopRef.getLoopNo()));
         }
 
-        if (ops.findContent(contentRef.contentNo()).isPresent()) {
+        if (ops.findContent(contentLoopRef.getContentNo()).isPresent()) {
             throw new IllegalStateException(String.format(
-                    "Content does not exists. Doc identity :%s, content loop no: %s.", docRef, contentRef.loopNo()));
+                    "Content does not exists. Doc identity :%s, content loop no: %s.", docRef, contentLoopRef.getLoopNo()));
         }
 
         loop = textDocDao.saveLoop(loop);
@@ -148,7 +148,7 @@ public class DocumentSaver {
     public void changeDocumentDefaultVersion(int docId, int newDefaultDocVersionNo, UserDomainObject publisher) {
         DocumentVersion currentDefaultVersion = documentVersionDao.getDefaultVersion(docId);
 
-        if (!currentDefaultVersion.getNo().equals(newDefaultDocVersionNo)) {
+        if (currentDefaultVersion.getNo() != newDefaultDocVersionNo) {
             DocumentVersion version = documentVersionDao.getVersion(docId, newDefaultDocVersionNo);
             if (version == null) {
                 throw new IllegalStateException(
@@ -183,7 +183,7 @@ public class DocumentSaver {
         for (DocumentDomainObject doc : docs) {
             doc.accept(new DocIdentityCleanerVisitor());
             doc.setMeta(meta);
-            doc.setVersion(nextVersion);
+            doc.setVersionNo(nextVersion.getNo());
 
             docSavingVisitor.updateDocumentI18nMeta(doc, user);
         }
@@ -271,7 +271,7 @@ public class DocumentSaver {
 
         for (DocumentDomainObject doc : docs) {
             doc.setMeta(meta);
-            doc.setVersion(copyDocVersion);
+            doc.setVersionNo(copyDocVersion.getNo());
         }
 
         // Currently only text doc has i18n content.
@@ -343,7 +343,7 @@ public class DocumentSaver {
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
 
         DocumentVersion version = documentVersionDao.createVersion(docId, user.getId());
-        doc.setVersion(version);
+        doc.setVersionNo(version.getNo());
 
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 

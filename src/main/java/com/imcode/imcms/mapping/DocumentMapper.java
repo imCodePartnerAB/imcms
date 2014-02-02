@@ -32,8 +32,6 @@ import java.util.*;
  * NativeQueriesDao, DocumentSaver, DocumentLoader and CategoryMapper are instantiated by SpringFramework
  * in order to support declarative (AOP) transactions.
  */
-// todo: remove redundant type annotation (this.<T>) - introduced to workaround compiler bug:
-// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
 public class DocumentMapper implements DocumentGetter {
 
     /**
@@ -276,11 +274,11 @@ public class DocumentMapper implements DocumentGetter {
 
         T docClone = (T) doc.clone();
 
-        int metaId = documentSaver.saveNewDocument(docClone, i18nMetas, saveOpts, user);
+        int docId = documentSaver.saveNewDocument(docClone, i18nMetas, saveOpts, user);
 
-        invalidateDocument(metaId);
+        invalidateDocument(docId);
 
-        return (T) getWorkingDocument(metaId, docClone.getLanguage());
+        return (T) getWorkingDocument(docId, docClone.getLanguage());
     }
 
     /**
@@ -354,7 +352,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveMenu(menu, user);
         } finally {
-            invalidateDocument(menu.getDocRef().metaId());
+            invalidateDocument(menu.getDocRef().getDocId());
         }
     }
 
@@ -367,25 +365,25 @@ public class DocumentMapper implements DocumentGetter {
      * @return new document version.
      * @since 6.0
      */
-    public DocumentVersion makeDocumentVersion(final int metaId, final UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(final int docId, final UserDomainObject user)
             throws DocumentSaveException {
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         for (DocumentLanguage language : imcmsServices.getDocumentI18nSupport().getLanguages()) {
-            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(I18nDocRef.of(DocRef.of(metaId, DocumentVersion.WORKING_VERSION_NO), language));
+            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(I18nDocRef.of(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO), language));
             docs.add(doc);
         }
 
         if (docs.isEmpty()) {
             throw new IllegalArgumentException(String.format(
-                    "Unable to make next document version. Working document does not exists: metaId: %d.",
-                    metaId));
+                    "Unable to make next document version. Working document does not exists: docId: %d.",
+                    docId));
         }
 
         DocumentVersion version = documentSaver.makeDocumentVersion(docs, user);
 
-        invalidateDocument(metaId);
+        invalidateDocument(docId);
 
         return version;
     }
@@ -396,12 +394,12 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void changeDocumentDefaultVersion(int metaId, int newDocDefaultVersionNo, UserDomainObject publisher)
+    public void changeDocumentDefaultVersion(int docId, int newDocDefaultVersionNo, UserDomainObject publisher)
             throws DocumentSaveException, NoPermissionToEditDocumentException {
         try {
-            documentSaver.changeDocumentDefaultVersion(metaId, newDocDefaultVersionNo, publisher);
+            documentSaver.changeDocumentDefaultVersion(docId, newDocDefaultVersionNo, publisher);
         } finally {
-            invalidateDocument(metaId);
+            invalidateDocument(docId);
         }
     }
 
@@ -411,9 +409,9 @@ public class DocumentMapper implements DocumentGetter {
     }
 
 
-    public void invalidateDocument(int metaId) {
-        documentLoaderCachingProxy.removeDocFromCache(metaId);
-        documentIndex.indexDocument(metaId);
+    public void invalidateDocument(int docId) {
+        documentLoaderCachingProxy.removeDocFromCache(docId);
+        documentIndex.indexDocument(docId);
     }
 
 
@@ -441,8 +439,8 @@ public class DocumentMapper implements DocumentGetter {
         return nativeQueriesDao.getAllMimeTypes().toArray(new String[]{});
     }
 
-    public void deleteDocument(final int metaId, UserDomainObject user) {
-        deleteDocument(getDefaultDocument(metaId), user);
+    public void deleteDocument(final int docId, UserDomainObject user) {
+        deleteDocument(getDefaultDocument(docId), user);
     }
 
     public void deleteDocument(final DocumentDomainObject document, UserDomainObject user) {
@@ -599,10 +597,10 @@ public class DocumentMapper implements DocumentGetter {
     public <T extends DocumentDomainObject> T copyDocument(final T doc, final UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        Integer metaId = copyDocument(doc.getRef(), user);
+        Integer docId = copyDocument(doc.getRef(), user);
 
         @SuppressWarnings("unchecked")
-        T workingDocument = (T)getWorkingDocument(metaId, doc.getLanguage());
+        T workingDocument = (T)getWorkingDocument(docId, doc.getLanguage());
 
         return workingDocument;
     }
@@ -621,8 +619,8 @@ public class DocumentMapper implements DocumentGetter {
         // todo: put into resource file.
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        Meta meta = documentSaver.getMetaDao().getMeta(docRef.metaId()).clone();
-        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docRef.metaId());
+        Meta meta = documentSaver.getMetaDao().getMeta(docRef.getDocId()).clone();
+        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docRef.getDocId());
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         makeDocumentLookNew(meta, user);
@@ -670,22 +668,22 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * @param metaId
+     * @param docId
      * @return default document in default language.
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T getDefaultDocument(int metaId) {
-        return this.<T>getDefaultDocument(metaId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
+    public <T extends DocumentDomainObject> T getDefaultDocument(int docId) {
+        return getDefaultDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
     }
 
 
     /**
-     * @param metaId
+     * @param docId
      * @return working document in default language.
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T getWorkingDocument(int metaId) {
-        return this.<T>getWorkingDocument(metaId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
+    public <T extends DocumentDomainObject> T getWorkingDocument(int docId) {
+        return getWorkingDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
     }
 
 
@@ -694,7 +692,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
-        return this.<T>getCustomDocument(I18nDocRef.of(docRef, imcmsServices.getDocumentI18nSupport().getDefaultLanguage()));
+        return getCustomDocument(I18nDocRef.of(docRef, imcmsServices.getDocumentI18nSupport().getDefaultLanguage()));
     }
 
 
@@ -704,46 +702,46 @@ public class DocumentMapper implements DocumentGetter {
      * Delegates call to a callback associated with a user.
      * If there is no callback then a default document is returned.
      *
-     * @param metaId document id.
+     * @param docId document id.
      */
-    public <T extends DocumentDomainObject> T getDocument(int metaId) {
+    public <T extends DocumentDomainObject> T getDocument(int docId) {
         UserDomainObject user = Imcms.getUser();
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
 
         return callback == null
-                ? (T) getDefaultDocument(metaId)
-                : (T) callback.getDoc(metaId, user, this);
+                ? (T) getDefaultDocument(docId)
+                : (T) callback.getDoc(docId, user, this);
     }
 
     /**
-     * @param metaId
+     * @param docId
      * @param language
      * @return working document
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T getWorkingDocument(int metaId, DocumentLanguage language) {
-        return (T) documentLoaderCachingProxy.getWorkingDoc(metaId, language);
+    public <T extends DocumentDomainObject> T getWorkingDocument(int docId, DocumentLanguage language) {
+        return documentLoaderCachingProxy.getWorkingDoc(docId, language);
     }
 
     /**
-     * @param metaId
+     * @param docId
      * @param language
      * @return default document
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T getDefaultDocument(int metaId, DocumentLanguage language) {
-        return (T) documentLoaderCachingProxy.getDefaultDoc(metaId, language);
+    public <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language) {
+        return documentLoaderCachingProxy.getDefaultDoc(docId, language);
     }
 
 
     /**
-     * @param metaId
+     * @param docId
      * @param languageCode
      * @return default document
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T getDefaultDocument(int metaId, String languageCode) {
-        return (T) documentLoaderCachingProxy.getDefaultDoc(metaId, getImcmsServices().getDocumentI18nSupport().getByCode(languageCode));
+    public <T extends DocumentDomainObject> T getDefaultDocument(int docId, String languageCode) {
+        return documentLoaderCachingProxy.getDefaultDoc(docId, getImcmsServices().getDocumentI18nSupport().getByCode(languageCode));
     }
 
 
@@ -756,7 +754,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getCustomDocument(I18nDocRef i18nDocRef) {
-        return (T) documentLoaderCachingProxy.getCustomDoc(i18nDocRef);
+        return documentLoaderCachingProxy.getCustomDoc(i18nDocRef);
     }
 
 
@@ -816,7 +814,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveText(text, user);
         } finally {
-            invalidateDocument(text.getI18nDocRef().metaId());
+            invalidateDocument(text.getI18nDocRef().docId());
         }
     }
 
@@ -842,11 +840,11 @@ public class DocumentMapper implements DocumentGetter {
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
             for (TextDomainObject text: texts) {
-                docIds.add(text.getI18nDocRef().metaId());
+                docIds.add(text.getI18nDocRef().docId());
             }
 
-            for (Integer metaId: docIds) {
-                invalidateDocument(metaId);
+            for (Integer docId: docIds) {
+                invalidateDocument(docId);
             }
         }
     }
@@ -865,11 +863,11 @@ public class DocumentMapper implements DocumentGetter {
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
             for (ImageDomainObject image: images) {
-                docIds.add(image.getDocRef().metaId());
+                docIds.add(image.getDocRef().getDocId());
             }
 
-            for (Integer metaId: docIds) {
-                invalidateDocument(metaId);
+            for (Integer docId: docIds) {
+                invalidateDocument(docId);
             }
         }
     }
@@ -896,7 +894,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             documentSaver.saveImage(image, user);
         } finally {
-            invalidateDocument(image.getDocRef().metaId());
+            invalidateDocument(image.getDocRef().getDocId());
         }
     }
 
@@ -918,8 +916,8 @@ public class DocumentMapper implements DocumentGetter {
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
-        for (Integer metaId : documentIds) {
-            DocumentDomainObject doc = getDefaultDocument(metaId, language);
+        for (Integer docId : documentIds) {
+            DocumentDomainObject doc = getDefaultDocument(docId, language);
             if (doc != null) {
                 docs.add(doc);
             }
@@ -957,12 +955,12 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public I18nMeta getI18nMeta(int metaId, DocumentLanguage language) {
-        return documentSaver.getMetaDao().getI18nMeta(metaId, language);
+    public I18nMeta getI18nMeta(int docId, DocumentLanguage language) {
+        return documentSaver.getMetaDao().getI18nMeta(docId, language);
     }
 
-    public List<I18nMeta> getI18nMetas(int metaId) {
-        return documentSaver.getMetaDao().getI18nMetas(metaId);
+    public List<I18nMeta> getI18nMetas(int docId) {
+        return documentSaver.getMetaDao().getI18nMetas(docId);
     }
 
     private class DocumentsIterator implements Iterator<DocumentDomainObject> {

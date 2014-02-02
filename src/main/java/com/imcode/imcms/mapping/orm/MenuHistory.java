@@ -47,10 +47,10 @@ public class MenuHistory implements Serializable {
     }
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
 	@Column(name="menu_id")
-    private Long menuId;
+    private Integer menuId;
 
 	@Column(name="sort_order")
     private int sortOrder;
@@ -66,7 +66,7 @@ public class MenuHistory implements Serializable {
 	    joinColumns = {@JoinColumn(name="menu_id", referencedColumnName = "menu_id")}
 	)
 	@MapKeyColumn(name="to_doc_id")
-    private Map<Integer, MenuItemHistory> menuItems = new HashMap<Integer, MenuItemHistory>();
+    private Map<Integer, MenuItemHistory> menuItems = new HashMap<>();
 
 
     @Column(name="user_id")
@@ -108,19 +108,19 @@ public class MenuHistory implements Serializable {
         this.modifiedDt = modifiedDt;
     }
 
-    public Long getMenuId() {
+    public Integer getMenuId() {
         return menuId;
     }
 
-    public void setMenuId(Long menuId) {
+    public void setMenuId(Integer menuId) {
         this.menuId = menuId;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId( Long id ) {
+    public void setId( Integer id ) {
         this.id = id;
     }
 

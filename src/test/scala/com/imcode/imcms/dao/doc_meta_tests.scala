@@ -107,12 +107,12 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
   ".getIncludes" in {
     val docRef = DocRefFX.Default
-    metaDao.getIncludes(docRef.metaId)
+    metaDao.getIncludes(docRef.getDocId)
   }
 
   ".deleteIncludes" in {
     val docRef = DocRefFX.Default
-    metaDao.deleteIncludes(docRef.metaId)
+    metaDao.deleteIncludes(docRef.getDocId)
   }
 }
 

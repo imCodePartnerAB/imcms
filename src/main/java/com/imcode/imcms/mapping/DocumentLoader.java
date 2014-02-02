@@ -99,7 +99,7 @@ public class DocumentLoader {
         document.setLanguage(language);
         document.setI18nMeta(i18nMeta);
 
-        document.setVersion(version);
+        document.setVersionNo(version.getNo());
 
         return document;
     }

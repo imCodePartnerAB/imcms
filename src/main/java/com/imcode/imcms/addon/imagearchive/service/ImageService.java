@@ -624,7 +624,7 @@ public class ImageService {
                 }
             }
 
-            List<Long> keywordIds = new ArrayList<Long>(newKeywordNames.size() + existingKeywords.size());
+            List<Integer> keywordIds = new ArrayList<>(newKeywordNames.size() + existingKeywords.size());
             for (String k : newKeywordNames) {
                 Keywords keyword = new Keywords();
                 keyword.setKeywordNm(k);
@@ -636,12 +636,12 @@ public class ImageService {
                 keywordIds.add(k.getId());
             }
 
-            List<Long> existingImageKeywordIds = session.createQuery(
+            List<Integer> existingImageKeywordIds = session.createQuery(
                     "SELECT ik.keywordId FROM ImageKeywords ik WHERE ik.imageId = :imageId")
                     .setLong("imageId", imageId)
                     .list();
-            List<Long> toDelete = new ArrayList<Long>();
-            for (Long id : existingImageKeywordIds) {
+            List<Integer> toDelete = new ArrayList<>();
+            for (Integer id : existingImageKeywordIds) {
                 if (keywordIds.contains(id)) {
                     keywordIds.remove(id);
                 } else {
@@ -656,7 +656,7 @@ public class ImageService {
                         .executeUpdate();
             }
 
-            for (Long id : keywordIds) {
+            for (Integer id : keywordIds) {
                 ImageKeywords ik = new ImageKeywords();
                 ik.setKeywordId(id);
                 ik.setImageId(imageId);

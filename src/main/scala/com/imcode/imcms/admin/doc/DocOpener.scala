@@ -15,8 +15,8 @@ object DocOpener extends ImcmsServicesSupport {
 //    openDoc(doc.getId, target)
 //  }
 
-  def openDoc(metaId: MetaId, target: String = "_blank") {
-    val url = Current.ui.imcmsDocUrl(metaId)
+  def openDoc(docId: DocId, target: String = "_blank") {
+    val url = Current.ui.imcmsDocUrl(docId)
 
     Current.page.getJavaScript.execute(s"window.open('$url', '$target')")
   }

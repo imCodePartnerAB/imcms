@@ -5,8 +5,8 @@ import com.vaadin.ui.Table
 
 // implicit
 class TableWrapper[A <: TItemId](table: Table with ContainerWithTypedItemId[A]) {
-  def addRow(itemId: A, column: AnyRef, columns: AnyRef*): AnyRef = table.addItem((column +: columns).toArray, itemId)
-  def addRowWithAutoId(column: AnyRef, columns: AnyRef*): AnyRef = table.addItem((column +: columns).toArray, null)
+  def addRow(itemId: A, column: Any, columns: Any*): AnyRef = table.addItem((column +: columns).map(_.asInstanceOf[AnyRef]).toArray, itemId)
+  def addRowWithAutoId(column: Any, columns: Any*): AnyRef = table.addItem((column +: columns).map(_.asInstanceOf[AnyRef]).toArray, null)
 
   object generatedColumn {
     def update(columnId: TColumnId, generator: (Table, A, TColumnId) => AnyRef) {

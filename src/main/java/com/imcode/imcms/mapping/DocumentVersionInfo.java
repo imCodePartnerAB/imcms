@@ -14,9 +14,9 @@ import java.util.TreeMap;
 public class DocumentVersionInfo implements Serializable {
 	
 	/**
-	 * Document's meta id. 
+	 * Document's doc id.
 	 */
-	private int metaId;
+	private int docId;
 	
 	/**
 	 * Latest version;
@@ -34,7 +34,7 @@ public class DocumentVersionInfo implements Serializable {
 	private DocumentVersion defaultVersion;
 	
 	/**
-	 * Version listByNamedParams sorted ascending.
+	 * Version list sorted ascending.
 	 */
 	private List<DocumentVersion> versions;
 	
@@ -46,11 +46,11 @@ public class DocumentVersionInfo implements Serializable {
     /**
 	 * Creates new instance of DocumentVersionSupport.
 	 * 
-	 * @param metaId documentId.
+	 * @param docId documentId.
 	 * 
-	 * @param versions document versions listByNamedParams.
+	 * @param versions document versions list.
 	 */
-	public DocumentVersionInfo(int metaId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
+	public DocumentVersionInfo(int docId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
 		versionsMap = new TreeMap<>();
 		
 		for (DocumentVersion  version: versions) {
@@ -61,7 +61,7 @@ public class DocumentVersionInfo implements Serializable {
         this.defaultVersion = defaultVersion;
         this.latestVersion = versions.get(versions.size() - 1);
 
-		this.metaId = metaId;
+		this.docId = docId;
 		this.versions = Collections.unmodifiableList(versions);
 		this.versionsMap = Collections.unmodifiableMap(versionsMap);			
 	}
@@ -69,8 +69,8 @@ public class DocumentVersionInfo implements Serializable {
     /**
 	 * @return document id.
 	 */
-	public int getMetaId() {
-		return metaId;
+	public int getDocId() {
+		return docId;
 	}
 	
 	/** 
@@ -84,15 +84,18 @@ public class DocumentVersionInfo implements Serializable {
 
     
     public static boolean isWorkingVersion(DocumentVersion version) {
-        return version != null && DocumentVersion.WORKING_VERSION_NO == version.getNo();
+        return version != null && isWorkingVersionNo(version.getNo());
     }
-    
+
+    public static boolean isWorkingVersionNo(int no) {
+        return no == DocumentVersion.WORKING_VERSION_NO;
+    }
 	
 	/**
 	 * @returns if given version number belongs to active version.
 	 */
 	public boolean isDefaultVersion(DocumentVersion version) {
-		return version != null && getDefaultVersion().getNo().equals(version.getNo());
+		return version != null && getDefaultVersion().getNo() == version.getNo();
 	}
 	
 	/** 
@@ -120,7 +123,7 @@ public class DocumentVersionInfo implements Serializable {
 	 * Return unmodifiable map of document's version 
 	 * sorted by number in ascending order.
 	 *  
-	 * @return unmodifiable listByNamedParams of document's versions.
+	 * @return unmodifiable list of document's versions.
 	 */
 	public List<DocumentVersion> getVersions() {
 		return versions;

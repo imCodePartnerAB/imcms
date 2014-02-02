@@ -151,7 +151,7 @@ pageContext.setAttribute("baseURL", baseURL);
 *         Available document's versions                                                     *
 ******************************************************************************************* */
 DocumentVersionInfo docVersionInfo = documentMapper.getDocumentVersionInfo(document.getId());
-DocumentVersion version = document.getVersion();
+int versionNo = document.getVersionNo();
 
 /* *******************************************************************************************
 *         Get languages                                                                     *
@@ -163,7 +163,7 @@ DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().docume
 
 
 
-boolean isWorkingVersion = DocumentVersionInfo.isWorkingVersion(version);
+boolean isWorkingVersion = DocumentVersionInfo.isWorkingVersionNo(versionNo);
 
 String imcmsVersionComplete = Version.getImcmsVersion(getServletConfig().getServletContext()) ;
 String imcmsVersionShort = reFormatVersion(imcmsVersionComplete) ;
@@ -341,7 +341,7 @@ if ("adminPanelHtml".equals(get)) { %>
                         <select name="<%=ImcmsConstants.REQUEST_PARAM__DOC_VERSION%>" class="imcmsSelectBox"><%
                         while (iterator.hasNext()) {
                             DocumentVersion v = (DocumentVersion)iterator.next() ;
-                            String sSelected = v.getNo().equals(version.getNo()) ? " selected=\"selected\"" : "" ;
+                            String sSelected = v.getNo() == versionNo ? " selected=\"selected\"" : "" ;
                             String displayName = DocumentVersionInfo.isWorkingVersion(v) ? "DRAFT" : "Version " + v.getNo().toString() ;
                             if (docVersionInfo.isDefaultVersion(v)) {
                                 displayName += " (default)" ;    

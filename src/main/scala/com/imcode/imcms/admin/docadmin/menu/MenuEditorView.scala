@@ -19,7 +19,7 @@ class MenuEditorView extends VerticalLayout with FullSize {
   val miEditSelectedDoc = mb.addItem("mi.edit".i)
   val miShowSelectedDoc = mb.addItem("mi.show_in_a_new_window".i)
   val miHelp = mb.addItem("mi.help".i)
-  val ttMenu = new TreeTable with AlwaysFireValueChange[AnyRef] with DocIdSelectWithLifeCycleIcon with SingleSelect[MetaId]
+  val ttMenu = new TreeTable with AlwaysFireValueChange[AnyRef] with DocIdSelectWithLifeCycleIcon with SingleSelect[DocId]
                              with Selectable with Immediate with FullSize |>> { tt =>
     tt.setRowHeaderMode(Table.RowHeaderMode.HIDDEN)
   }

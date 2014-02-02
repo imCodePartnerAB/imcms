@@ -16,7 +16,7 @@ public class FileReference {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "filename")
     private String filename;
@@ -35,7 +35,7 @@ public class FileReference {
 
     @Embedded
     @AttributeOverrides(
-            @AttributeOverride(name= "metaId", column = @Column(name="meta_id"))
+            @AttributeOverride(name= "docId", column = @Column(name="meta_id"))
     )
     private DocRef docRef;
 
@@ -71,11 +71,11 @@ public class FileReference {
         this.mimeType = mimeType;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

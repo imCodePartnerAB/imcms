@@ -1,11 +1,7 @@
 package com.imcode.imcms.mapping.orm;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -60,11 +56,7 @@ public class Meta implements Serializable, Cloneable {
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder(17, 31)
-                    .append(setId)
-                    .append(permissionId)
-                    .append(permissionData)
-                    .toHashCode();
+            return Objects.hash(setId, permissionId, permissionData);
         }
 
         public Integer getPermissionData() {
@@ -313,18 +305,18 @@ public class Meta implements Serializable, Cloneable {
 
             clone.disabledLanguageShowSetting = disabledLanguageShowSetting;
 
-            clone.permisionSetEx = new HashSet<PermisionSetEx>(permisionSetEx);
-            clone.permisionSetExForNew = new HashSet<PermisionSetEx>(permisionSetExForNew);
-            clone.permissionSetBitsMap = new HashMap<Integer, Integer>(permissionSetBitsMap);
-            clone.permissionSetBitsForNewMap = new HashMap<Integer, Integer>(permissionSetBitsForNewMap);
+            clone.permisionSetEx = new HashSet<>(permisionSetEx);
+            clone.permisionSetExForNew = new HashSet<>(permisionSetExForNew);
+            clone.permissionSetBitsMap = new HashMap<>(permissionSetBitsMap);
+            clone.permissionSetBitsForNewMap = new HashMap<>(permissionSetBitsForNewMap);
 
-            clone.roleIdToPermissionSetIdMap = new HashMap<Integer, Integer>(roleIdToPermissionSetIdMap);
+            clone.roleIdToPermissionSetIdMap = new HashMap<>(roleIdToPermissionSetIdMap);
 
-            clone.properties = new HashMap<String, String>(properties);
-            clone.categoryIds = new HashSet<Integer>(categoryIds);
+            clone.properties = new HashMap<>(properties);
+            clone.categoryIds = new HashSet<>(categoryIds);
 
-            clone.keywords = new HashSet<String>(keywords);
-            clone.enabledLanguages = new HashSet<DocumentLanguage>(enabledLanguages);
+            clone.keywords = new HashSet<>(keywords);
+            clone.enabledLanguages = new HashSet<>(enabledLanguages);
 
             if (permissionSets != null) {
                 clone.permissionSets = permissionSets.clone();

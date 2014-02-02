@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping.orm;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -97,12 +98,7 @@ public class DocumentLanguage implements Serializable, Cloneable {
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (code != null ? code.hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (enabled ? 1 : 0);
-        result = 31 * result + (nativeName != null ? nativeName.hashCode() : 0);
-        return result;
+        return Objects.hash(id, code, name, nativeName, enabled);
     }
 
     @Override

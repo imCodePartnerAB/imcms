@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class UrlReference {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;    
+	private Integer id;
 	
 	@Column(name="frame_name")
 	private String urlFrameName;

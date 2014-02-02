@@ -34,12 +34,11 @@ ALTER TABLE imcms_text_doc_texts_history
 DROP TABLE imcms_text_doc_contents;
 RENAME TABLE imcms_text_doc_contents_new TO imcms_text_doc_contents;
 
-CREATE VIEW v_imcms_text_doc_contents AS
+CREATE VIEW imcms_text_doc_contents_v AS
     SELECT l.doc_id, l.doc_version_no, l.no AS loop_no, c.no AS content_no, c.ix AS content_ix, c.enabled as content_enabled
     FROM imcms_text_doc_content_loops l JOIN
          imcms_text_doc_contents c
          ON l.id = c.loop_id;
-
 
 --
 -- Update schema version

@@ -65,16 +65,16 @@ public class ContentLoopController {
                         return ops.moveContentForward(contentIndex);
 
                     case ADD_BEFORE:
-                        return ops.addContentBefore(contentIndex).loop();
+                        return ops.addContentBefore(contentIndex).getLoop();
 
                     case ADD_AFTER:
-                        return ops.addContentAfter(contentIndex).loop();
+                        return ops.addContentAfter(contentIndex).getLoop();
 
                     case ADD_FISRT:
-                        return ops.addContentFirst().loop();
+                        return ops.addContentFirst().getLoop();
 
                     case ADD_LAST:
-                        return ops.addContentLast().loop();
+                        return ops.addContentLast().getLoop();
 
                     case DELETE:
                         return ops.disableContent(contentIndex);

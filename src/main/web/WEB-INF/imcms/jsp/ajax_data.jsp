@@ -12,7 +12,7 @@
 	pageEncoding="UTF-8"
 
 %>
-<%@ page import="imcode.server.document.textdocument.ContentRef" %>
+<%@ page import="imcode.server.document.textdocument.ContentLoopRef" %>
 <%@ page import="com.google.common.base.Optional" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%
@@ -52,7 +52,7 @@ if ("getHelpTextInlineEditing".equals(action)) {
 	int txt_no  = Integer.parseInt(request.getParameter("txt_no")) ;
 	int format  = Integer.parseInt(request.getParameter("format")) ;
 	String text = request.getParameter("text") ;
-    Optional<ContentRef> contentRefOpt = ContentRef.of(request.getParameter("content_ref"));
+    Optional<ContentLoopRef> contentRefOpt = ContentLoopRef.of(request.getParameter("content_ref"));
 	boolean doLog = (null != request.getParameter("do_log")) ;
 	text = text
 		.replace(StringEscapeUtils.escapeHtml("<?imcms:contextpath?>"), "<?imcms:contextpath?>")
@@ -74,7 +74,7 @@ if ("getHelpTextInlineEditing".equals(action)) {
             textDO = new TextDomainObject() ;
             textDO.setNo(txt_no);
             textDO.setI18nDocRef(document.getI18nRef());
-            textDO.setContentRef(contentRefOpt.orNull());
+            textDO.setContentLoopRef(contentRefOpt.orNull());
         }
 
         textDO.setText(text);

@@ -4,9 +4,8 @@ package imcms.dao
 import com.imcode.imcms.mapping.orm._
 import scala.collection.JavaConverters._
 import scala.collection.breakOut
-import com.imcode.imcms.api._
 import org.hibernate.{ScrollMode, CacheMode}
-import imcode.server.document.textdocument.{ImageDomainObject, MenuDomainObject, ContentRef, TextDomainObject}
+import imcode.server.document.textdocument.{ImageDomainObject, MenuDomainObject, ContentLoopRef, TextDomainObject}
 
 import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.dao.hibernate.HibernateSupport
@@ -20,7 +19,7 @@ class TextDocDao extends HibernateSupport {
   /**
    * Please note that createIfNotExists merely creates an instance of TextDomainObject not a database entry.
    */
-  def getTexts(docRef: DocRef, no: Int, contentRefOpt: Option[ContentRef],
+  def getTexts(docRef: DocRef, no: Int, contentRefOpt: Option[ContentLoopRef],
                createIfNotExists: Boolean): JList[TextDomainObject] = {
     for {
       language <- languageDao.getAllLanguages.asScala
@@ -30,7 +29,7 @@ class TextDocDao extends HibernateSupport {
         case _ if createIfNotExists => new TextDomainObject |>> { txt =>
           txt.setI18nDocRef(i18nDocRef)
           txt.setNo(no)
-          txt.setContentRef(contentRefOpt.orNull)
+          txt.setContentLoopRef(contentRefOpt.orNull)
         }
       }
     } yield text
@@ -72,7 +71,7 @@ class TextDocDao extends HibernateSupport {
     )
 
 
-  def getText(i18nDocRef: I18nDocRef, no: Int, contentRefOpt: Option[ContentRef]) = {
+  def getText(i18nDocRef: I18nDocRef, no: Int, contentRefOpt: Option[ContentLoopRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
         """select t from Text t where t.i18nDocRef = :i18nDocRef and t.no = :no
@@ -139,7 +138,7 @@ class TextDocDao extends HibernateSupport {
   /**
    * Please note that createIfNotExists creates an instance of ImageDomainObject not a database entry.
    */
-  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentRef] = None,
+  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentLoopRef] = None,
                 createIfNotExists: Boolean = false): JList[ImageDomainObject] = {
     for {
       language <- languageDao.getAllLanguages.asScala
@@ -149,7 +148,7 @@ class TextDocDao extends HibernateSupport {
           img.setDocRef(docRef)
           img.setNo(no)
           img.setLanguage(language)
-          img.setContentRef(contentRefOpt.orNull)
+          img.setContentLoopRef(contentRefOpt.orNull)
         }
       }
     } yield image
@@ -163,7 +162,7 @@ class TextDocDao extends HibernateSupport {
 //    )(breakOut)
 //  }
 
-  def getImage(docRef: DocRef, no: Int, language: DocumentLanguage, contentRefOpt: Option[ContentRef]) = {
+  def getImage(docRef: DocRef, no: Int, language: DocumentLanguage, contentRefOpt: Option[ContentLoopRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
         """select i from Image i where i.docRef = :docRef and i.no = :no

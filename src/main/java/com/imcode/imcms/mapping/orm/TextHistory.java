@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping.orm;
 
-import com.imcode.imcms.mapping.orm.I18nDocRef;
-import imcode.server.document.textdocument.ContentRef;
+import imcode.server.document.textdocument.ContentLoopRef;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -14,7 +13,7 @@ public class TextHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private Integer no;
 
@@ -22,7 +21,7 @@ public class TextHistory {
 
     private Integer type;
 
-    private ContentRef contentRef;
+    private ContentLoopRef contentLoopRef;
 
     private I18nDocRef i18nDocRef;
 
@@ -42,7 +41,7 @@ public class TextHistory {
         setI18nDocRef(textDO.getI18nDocRef());
         setNo(textDO.getNo());
         setText(textDO.getText());
-        setContentRef(textDO.getContentRef());
+        setContentLoopRef(textDO.getContentLoopRef());
         setUserId(user.getId());
         setModifiedDt(new Date());
     }
@@ -90,11 +89,11 @@ public class TextHistory {
         return getText();
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -122,12 +121,12 @@ public class TextHistory {
         this.modifiedDt = modifiedDt;
     }
 
-    public ContentRef getContentRef() {
-        return contentRef;
+    public ContentLoopRef getContentLoopRef() {
+        return contentLoopRef;
     }
 
-    public void setContentRef(ContentRef contentRef) {
-        this.contentRef = contentRef;
+    public void setContentLoopRef(ContentLoopRef contentLoopRef) {
+        this.contentLoopRef = contentLoopRef;
     }
 
     public I18nDocRef getI18nDocRef() {

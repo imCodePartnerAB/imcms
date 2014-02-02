@@ -90,7 +90,7 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val count = loop.getContents.size
     val ops = new ContentLoopOps(loop)
 
-    val newLoop = dao.saveLoop(ops.addContentLast().loop())
+    val newLoop = dao.saveLoop(ops.addContentLast().getLoop())
     assertEquals(count + 1, newLoop.getContents.size)
 
     assertNotNull(dao.getLoop(newLoop.getId))
@@ -115,7 +115,7 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       1.to(contentsCount).foldLeft(emptyLoop) {
         case (loop, _) =>
           val ops = new ContentLoopOps(loop)
-          ops.addContentFirst().loop()
+          ops.addContentFirst().getLoop()
       }
     }
 
