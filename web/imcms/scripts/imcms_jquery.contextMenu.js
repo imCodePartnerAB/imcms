@@ -14,7 +14,7 @@
 // MODIFIED: Tommy Ullberg, imCode. 2011-02-24 16:57
 // Added onAbort
 //
-if(jQ)( function() {
+if(jQ)( function($) {
 	$.extend($.fn, {
 		
 		contextMenu: function(o, onAbort, callback) {

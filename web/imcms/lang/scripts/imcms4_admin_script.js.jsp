@@ -59,23 +59,25 @@ if (loadJq) { %>
 
 <jsp:include page="imcms_jquery-ui_1.8.16.js" />
 
-jQ.fn.outerHTML = function() {
+(function($) {
+
+$.fn.outerHTML = function() {
 		return $('<div>').append( this.eq(0).clone() ).html();
 };
 
-function imLog(mess) {
+window.imLog = function(mess) {
 	try {
 		if (window && window.console) {
 			window.console.log(mess) ;
 		}
 	} catch (e) {}
-}
+};
 
-var private_USE_INLINE_EDITING_FORMATTED = false;//('false' != imcmsGetCookie('<%= USE_INLINE_EDITING_FORMATTED %>')) ;
-var private_USE_INLINE_EDITING           = (!private_USE_INLINE_EDITING_FORMATTED && 'false' != imcmsGetCookie('<%= USE_INLINE_EDITING %>')) ;
-var private_USE_WIDTH                    = ('false' != imcmsGetCookie('<%= USE_WIDTH %>')) ;
+window.private_USE_INLINE_EDITING_FORMATTED = false;//('false' != imcmsGetCookie('<%= USE_INLINE_EDITING_FORMATTED %>')) ;
+window.private_USE_INLINE_EDITING           = (!private_USE_INLINE_EDITING_FORMATTED && 'false' != imcmsGetCookie('<%= USE_INLINE_EDITING %>')) ;
+window.private_USE_WIDTH                    = ('false' != imcmsGetCookie('<%= USE_WIDTH %>')) ;
 
-jQ(document).ready(function($) {
+$(document).ready(function($) {
 	
 	<% if (isTextMode) { %>
 	<%--
@@ -286,6 +288,8 @@ function imcmsGetCookie(Name) {
 	}
 	return null ;
 }
+
+})(jQ);
 
 <% } %><%--
 

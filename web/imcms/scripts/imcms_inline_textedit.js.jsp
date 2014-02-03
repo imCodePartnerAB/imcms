@@ -20,11 +20,14 @@ try {
 String cp = request.getContextPath() ;
 
 %>
-jQ(document).ready(function($) {
+
+(function($) {
+
+$(document).ready(function($) {
 	if (private_USE_INLINE_EDITING) editablePluginActivate($) ;
 }) ;
 
-function getImcmsTextFieldFromString($, string) {
+window.getImcmsTextFieldFromString = function($, string) {
 	var re = new RegExp('^imcmsInlineTextEdit_(\\d{4,6})_(\\d+)_(text|html)_.+$', '') ;
 	if (re.test(string)) {
 		var arrMatch = re.exec(string) ;
@@ -35,9 +38,9 @@ function getImcmsTextFieldFromString($, string) {
 		} ;
 	}
 	return null ;
-}
+};
 
-function editablePluginActivate($) {<%
+window.editablePluginActivate = function($) {<%
 	if (DEBUG_INIT) { %>
 	imLog('editablePluginActivate($) ;') ;<%
 	} %>
@@ -113,31 +116,31 @@ function editablePluginActivate($) {<%
 			}
 		}
 	}) ;
-}
+};
 
-function editablePluginDestroy($) {<%
+window.editablePluginDestroy = function($) {<%
 	if (DEBUG_INIT) { %>
 	imLog('editablePluginDestroy($) ;') ;<%
 	} %>
 	$('.imcmsInlineEditEditor').editable('destroy') ;
 	$('.imcmsInlineEditInput').editable('destroy') ;
 	$('.imcmsInlineEditTextarea').editable('destroy') ;
-}
+};
 
 <%--
-function editablePluginConfig($, configStr) {
+window.editablePluginConfig = function($, configStr) {
 	$('.imcmsInlineEditEditor').editable(configStr) ;
 	$('.imcmsInlineEditInput').editable(configStr) ;
 	$('.imcmsInlineEditTextarea').editable(configStr) ;
-}
+};
 --%>
 
-function setSizeOfEditor($) {<%-- Called by init. Not used here. --%>}
-function checkIframeScroll($){<%-- Called by init. Not used here. --%>}
+window.setSizeOfEditor = function($) {<%-- Called by init. Not used here. --%>};
+window.checkIframeScroll = function($){<%-- Called by init. Not used here. --%>};
 
 
 
-function saveText($, containerId, metaId, textNo, textFormat, textContent) {
+window.saveText = function($, containerId, metaId, textNo, textFormat, textContent) {
 	var isSavedSuccess = false ;
 	var $container = $('#' + containerId) ;
 	$.ajax({
@@ -212,4 +215,6 @@ function saveText($, containerId, metaId, textNo, textFormat, textContent) {
 				}) ;
 		}
 	}) ;
-}
+};
+
+})(jQ);
