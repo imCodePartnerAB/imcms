@@ -17,46 +17,9 @@ import java.util.Objects;
 @Access(AccessType.FIELD)
 public class Content implements Serializable, Cloneable {
 
-    public static final class Builder {
-        private Content content;
+    private int no;
 
-        public Builder() {
-            content = new Content();
-        }
-
-        public Builder(Content content) {
-            this.content = content.clone();
-        }
-
-        public Builder no(int no) {
-            content.no = no;
-            return this;
-        }
-
-        public Builder enabled(boolean enabled) {
-            content.enabled = enabled;
-            return this;
-        }
-
-        public Content build() {
-            return content.clone();
-        }
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static Builder builder(Content content) {
-        return new Builder(content);
-    }
-
-    private volatile int no;
-
-    private volatile boolean enabled = true;
-
-    protected Content() {
-    }
+    private boolean enabled = true;
 
     @Override
     public Content clone() {
@@ -69,19 +32,14 @@ public class Content implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return String.format("Content{no=%s, enabled=%s}", no, enabled);
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("no", no)
+                .add("enabled", enabled).toString();
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public boolean isDisabled() {
-        return !enabled;
-    }
-
-    public int getNo() {
-        return no;
+    @Override
+    public int hashCode() {
+        return Objects.hash(no, enabled);
     }
 
     @Override
@@ -93,8 +51,19 @@ public class Content implements Serializable, Cloneable {
         return this.enabled == that.enabled && this.no == that.no;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(no, enabled);
+    public int getNo() {
+        return no;
+    }
+
+    public void setNo(int no) {
+        this.no = no;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

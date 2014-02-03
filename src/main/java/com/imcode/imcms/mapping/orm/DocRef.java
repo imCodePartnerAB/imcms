@@ -4,17 +4,19 @@ import com.google.common.base.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.Min;
 
 @Embeddable
 public class DocRef {
 
     @Column(name="doc_id")
-    private volatile int docId;
+    private int docId;
 
+    @Min(1)
     @Column(name="doc_version_no")
-    private volatile int versionNo;
+    private int versionNo;
 
-    protected DocRef() {
+    public DocRef() {
     }
 
     public DocRef(int docId, int versionNo) {
@@ -22,16 +24,14 @@ public class DocRef {
         this.versionNo = versionNo;
     }
 
-    public static DocRef of(int docId, int docVersionNo) {
-        return new DocRef(docId, docVersionNo);
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this).add("docId", docId).add("versionNo", versionNo).toString();
     }
 
-    public int getDocId() {
-        return docId;
-    }
-
-    public int getVersionNo() {
-        return versionNo;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(docId, versionNo);
     }
 
     @Override
@@ -44,13 +44,19 @@ public class DocRef {
 
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(docId, versionNo);
+    public int getDocId() {
+        return docId;
     }
 
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this).add("docId", docId).add("docVersionNo", getVersionNo()).toString();
+    public void setDocId(int docId) {
+        this.docId = docId;
+    }
+
+    public int getVersionNo() {
+        return versionNo;
+    }
+
+    public void setVersionNo(int versionNo) {
+        this.versionNo = versionNo;
     }
 }

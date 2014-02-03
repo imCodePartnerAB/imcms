@@ -52,16 +52,16 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       getLoop(2, true),
       getLoop(3, true))
 
-    assertEquals("Contents count.", loops(0).getContents.size, 0)
-    assertEquals("Contents count.", loops(1).getContents.size, 1)
-    assertEquals("Contents count.", loops(2).getContents.size, 3)
-    assertEquals("Contents count.", loops(3).getContents.size, 3)
+    assertEquals("Contents count.", loops(0).getItems.size, 0)
+    assertEquals("Contents count.", loops(1).getItems.size, 1)
+    assertEquals("Contents count.", loops(2).getItems.size, 3)
+    assertEquals("Contents count.", loops(3).getItems.size, 3)
   }
 
 
   test("check contents order in a loop") {
-    val ascSortedContents = getLoop(2, true).getContents.asScala.toList
-    val descSortedContents = getLoop(3, true).getContents.asScala.toList
+    val ascSortedContents = getLoop(2, true).getItems.asScala.toList
+    val descSortedContents = getLoop(3, true).getItems.asScala.toList
 
     for (i <- 0 to 2) {
       assertEquals("Content order no.", i, ascSortedContents(i).getNo)
@@ -87,11 +87,11 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val loop = getLoop(0, true)
     val loopId = loop.getId
 
-    val count = loop.getContents.size
+    val count = loop.getItems.size
     val ops = new ContentLoopOps(loop)
 
     val newLoop = dao.saveLoop(ops.addContentLast().getLoop())
-    assertEquals(count + 1, newLoop.getContents.size)
+    assertEquals(count + 1, newLoop.getItems.size)
 
     assertNotNull(dao.getLoop(newLoop.getId))
   }
@@ -122,8 +122,8 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     dao.saveLoop(loop) |> { savedLoop =>
       assertNotNull("Loop exists", savedLoop)
 
-      val contents = loop.getContents.asScala.toList
-      val savedContents = savedLoop.getContents.asScala.toList
+      val contents = loop.getItems.asScala.toList
+      val savedContents = savedLoop.getItems.asScala.toList
 
       assertEquals("Content count matches", contentsCount, savedContents.size)
 

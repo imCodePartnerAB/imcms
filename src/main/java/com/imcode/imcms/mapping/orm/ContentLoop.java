@@ -1,6 +1,8 @@
 package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;
 
@@ -13,91 +15,23 @@ import java.util.*;
 @Table(name = "imcms_text_doc_content_loops")
 public class ContentLoop implements Serializable, Cloneable {
 
-    /** Non Thread Safe */
-    public static final class Builder {
-
-        private ContentLoop contentLoop;
-
-        public Builder() {
-            contentLoop = new ContentLoop();
-        }
-
-        public Builder(ContentLoop contentLoop) {
-            this.contentLoop = contentLoop.clone();
-        }
-
-        public Builder id(Long id) {
-            contentLoop.id = id;
-            return this;
-        }
-
-        public Builder docRef(DocRef docRef) {
-            contentLoop.docRef = docRef;
-
-            return this;
-        }
-
-        public Builder no(Integer no) {
-            contentLoop.no = no;
-            return this;
-        }
-
-        public Builder addContent(int contentIndex) {
-            Content content = Content.builder().no(contentLoop.nextContentNo++).build();
-            contentLoop.content.add(contentIndex, content);
-
-            return this;
-        }
-
-        public Builder enableContent(int contentIndex) {
-            contentLoop.content.set(contentIndex, Content.builder(contentLoop.content.get(contentIndex)).enabled(true).build());
-            return this;
-        }
-
-        public Builder disableContent(int contentIndex) {
-            contentLoop.content.set(contentIndex, Content.builder(contentLoop.content.get(contentIndex)).enabled(false).build());
-            return this;
-        }
-
-        public Builder moveContent(int fromIndex, int toIndex) {
-            Content content = contentLoop.content.remove(fromIndex);
-            contentLoop.content.add(toIndex, content);
-
-            return this;
-        }
-
-        public Builder deleteContent(int contentIndex) {
-            contentLoop.content.remove(contentIndex);
-
-            return this;
-        }
-
-        public ContentLoop build() {
-            return contentLoop.clone();
-        }
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static Builder builder(ContentLoop contentLoop) {
-        return new Builder(contentLoop);
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private volatile Integer id;
+    private Integer id;
 
-    private volatile Integer no;
+    @Min(1)
+    @Column(updatable = false)
+    private Integer no;
 
-    private volatile DocRef docRef;
+    @NotNull
+    private DocRef docRef;
 
+    @Min(1)
     @Column(name = "next_content_no")
-    private volatile int nextContentNo;
+    private int nextContentNo;
 
     @Version
-    private volatile int version;
+    private int version;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
@@ -105,28 +39,7 @@ public class ContentLoop implements Serializable, Cloneable {
             joinColumns = @JoinColumn(name = "content_id")
     )
     @OrderColumn(name = "ix")
-    private List<Content> content = new LinkedList<>();
-
-    protected ContentLoop() {
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public Integer getNo() {
-        return no;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("ContentLoop{id: %s, docRef: %s, no: %s, contents: [%s]}",
-                id, getDocRef(), no, "..."); // causes hibernate stack overflow: StringUtils.join(contents, ", "));
-    }
+    private List<Content> items = new LinkedList<>();
 
     @Override
     public ContentLoop clone() {
@@ -138,10 +51,27 @@ public class ContentLoop implements Serializable, Cloneable {
             throw new RuntimeException(e);
         }
 
-        clone.content = new LinkedList<>(content);
+        clone.items = new LinkedList<>(items);
 
         return clone;
     }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", id)
+                .add("no", no)
+                .add("docRef", docRef)
+                .add("nextContentNo", nextContentNo)
+                .add("version", version)
+                .add("items", items).toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, no, docRef, items);
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -149,26 +79,61 @@ public class ContentLoop implements Serializable, Cloneable {
     }
 
     private boolean equals(ContentLoop that) {
-        return Objects.equals(content, that.content) &&
-               Objects.equals(docRef, that.docRef) &&
-               Objects.equals(id, that.id) &&
-               Objects.equals(no, that.no);
+        return Objects.equals(id, that.id)
+                && Objects.equals(no, that.no)
+                && Objects.equals(nextContentNo, that.nextContentNo)
+                && Objects.equals(docRef, that.docRef)
+                && Objects.equals(version, that.version)
+                && Objects.equals(items, that.items);
+
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, no, docRef, content);
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getNo() {
+        return no;
+    }
+
+    public void setNo(Integer no) {
+        this.no = no;
     }
 
     public DocRef getDocRef() {
         return docRef;
     }
 
-    public List<Content> getContents() {
-        return Collections.unmodifiableList(content);
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
     }
 
-    public ContentLoopOps ops() {
-        return new ContentLoopOps(this);
+    public int getNextContentNo() {
+        return nextContentNo;
+    }
+
+    public void setNextContentNo(int nextContentNo) {
+        this.nextContentNo = nextContentNo;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public List<Content> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Content> items) {
+        this.items = items;
     }
 }

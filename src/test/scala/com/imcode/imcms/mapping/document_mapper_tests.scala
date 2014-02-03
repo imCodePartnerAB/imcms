@@ -221,10 +221,10 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       val loop = savedDoc.getContentLoop(loopNo);
       assertNotNull(loop)
 
-      expectResult(loop.getContents.size, "contents in the loop")(loopNo)
+      expectResult(loop.getItems.size, "contents in the loop")(loopNo)
 
       for (contentNo <- 0 until loopNo) {
-        assertTrue(loop.getContents.asScala.find(_.getNo == contentNo).isDefined)
+        assertTrue(loop.getItems.asScala.find(_.getNo == contentNo).isDefined)
       }
     }
 

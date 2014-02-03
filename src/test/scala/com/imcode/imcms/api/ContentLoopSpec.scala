@@ -78,16 +78,16 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
         val expectedNewContentNo = LoopFx.NextContentNo
         val expectedNewContentIndex = 0
 
-        assertEquals(LoopFx.ContentsCount, loop.getContents.size)
+        assertEquals(LoopFx.ContentsCount, loop.getItems.size)
 
         assertNotSame(loop, updatedLoop)
 
-        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getContents.size)
-        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getContents.asScala.count(_.isEnabled))
+        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getItems.size)
+        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getItems.asScala.count(_.isEnabled))
 
         assertEquals(expectedNewContentNo, newContent.getNo)
 
-        updatedLoop.getContents.get(expectedNewContentIndex) |> { firstContent =>
+        updatedLoop.getItems.get(expectedNewContentIndex) |> { firstContent =>
           assertSame(newContent, firstContent)
         }
       }
@@ -106,17 +106,17 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
         val expectedNewContentNo = LoopFx.NextContentNo
         val expectedNewContentIndex = 10
 
-        assertEquals(LoopFx.ContentsCount, loop.getContents.size)
-        assertEquals(LoopFx.ContentsCount, loop.getContents.asScala.count(_.isEnabled))
+        assertEquals(LoopFx.ContentsCount, loop.getItems.size)
+        assertEquals(LoopFx.ContentsCount, loop.getItems.asScala.count(_.isEnabled))
 
         assertNotSame(loop, updatedLoop)
 
-        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getContents.size)
-        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getContents.asScala.count(_.isEnabled))
+        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getItems.size)
+        assertEquals(LoopFx.ContentsCount + 1, updatedLoop.getItems.asScala.count(_.isEnabled))
 
         assertEquals(expectedNewContentNo, newContent.getNo)
 
-        updatedLoop.getContents.get(expectedNewContentIndex) |> { lastContent =>
+        updatedLoop.getItems.get(expectedNewContentIndex) |> { lastContent =>
           assertSame(newContent, lastContent)
         }
       }
@@ -142,7 +142,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
           val ops = new ContentLoopOps(loop)
 
           ops.addContentBefore(LoopFx.LastContentIndex) |> { loopAndContent =>
-            val contents = loopAndContent.getLoop().getContents
+            val contents = loopAndContent.getLoop().getItems
             val content = loopAndContent.getContent()
 
             assertEquals(LoopFx.ContentsCount + 1, contents.size)
@@ -175,7 +175,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
           val ops = new ContentLoopOps(loop)
 
           ops.deleteContent(5) |> { updatedLoop =>
-            val contents = updatedLoop.getContents.asScala
+            val contents = updatedLoop.getItems.asScala
             assertEquals(LoopFx.ContentsCount - 1, contents.size)
             assertFalse("content exists", updatedLoop.ops.findContent(5).isPresent)
           }
@@ -203,7 +203,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
           val ops = new ContentLoopOps(loop)
 
           ops.addContentAfter(LoopFx.FirstContentIndex) |> { loopAndContent =>
-            val contents = loopAndContent.getLoop().getContents
+            val contents = loopAndContent.getLoop().getItems
             val content = loopAndContent.getContent()
 
             assertEquals(LoopFx.ContentsCount + 1, contents.size)
@@ -234,7 +234,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
           val ops = new ContentLoopOps(loop)
 
           ops.disableContent(5) |> { updatedLoop =>
-            val contents = updatedLoop.getContents.asScala
+            val contents = updatedLoop.getItems.asScala
             assertEquals(LoopFx.ContentsCount - 1, contents.count(_.isEnabled))
 
             contents.zipWithIndex.filter { case (content, _) => !content.isEnabled } |> { disabledContents =>
@@ -275,8 +275,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
           val ops = new ContentLoopOps(loop)
 
           ops.enableContent(1) |> { updatedLoop =>
-            assertEquals(3, updatedLoop.getContents.size)
-            assertEquals(3, updatedLoop.getContents.asScala.count(_.isEnabled))
+            assertEquals(3, updatedLoop.getItems.size)
+            assertEquals(3, updatedLoop.getItems.asScala.count(_.isEnabled))
           }
         }
       }
@@ -319,14 +319,14 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
   "Move existing content forward" should {
     "swap the content with a next content and return updated loop" in {
       mkContentLoop() |> { loop =>
-        val contentAt5 = loop.getContents.get(5)
-        val contentAt6 = loop.getContents.get(6)
+        val contentAt5 = loop.getItems.get(5)
+        val contentAt6 = loop.getItems.get(6)
 
         val ops = new ContentLoopOps(loop)
 
         ops.moveContentForward(5) |> { updateLoop =>
-          assertSame(contentAt5, updateLoop.getContents.get(6))
-          assertSame(contentAt6, updateLoop.getContents.get(5))
+          assertSame(contentAt5, updateLoop.getItems.get(6))
+          assertSame(contentAt6, updateLoop.getItems.get(5))
         }
       }
     }
@@ -342,8 +342,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
         val ops = new ContentLoopOps(loop)
 
         ops.moveContentForward(4) |> { updateLoop =>
-          assertSame(contentAt4, updateLoop.getContents.get(8))
-          assertSame(contentAt8, updateLoop.getContents.get(7))
+          assertSame(contentAt4, updateLoop.getItems.get(8))
+          assertSame(contentAt8, updateLoop.getItems.get(7))
         }
       }
     }
@@ -386,14 +386,14 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
   "Move existing content backward" should {
     "swap the content with a prev content and return updated loop" in {
       mkContentLoop() |> { loop =>
-        val contentAt5 = loop.getContents.get(5)
-        val contentAt6 = loop.getContents.get(6)
+        val contentAt5 = loop.getItems.get(5)
+        val contentAt6 = loop.getItems.get(6)
 
         val ops = new ContentLoopOps(loop)
 
         ops.moveContentBackward(6) |> { updateLoop =>
-          assertSame(contentAt5, updateLoop.getContents.get(6))
-          assertSame(contentAt6, updateLoop.getContents.get(5))
+          assertSame(contentAt5, updateLoop.getItems.get(6))
+          assertSame(contentAt6, updateLoop.getItems.get(5))
         }
       }
     }
@@ -409,8 +409,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
         val ops = new ContentLoopOps(loop)
 
         ops.moveContentBackward(8) |> { updateLoop =>
-          assertSame(contentAt4, updateLoop.getContents.get(5))
-          assertSame(contentAt8, updateLoop.getContents.get(4))
+          assertSame(contentAt4, updateLoop.getItems.get(5))
+          assertSame(contentAt8, updateLoop.getItems.get(4))
         }
       }
     }
@@ -444,8 +444,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
       val loop = mkContentLoop()
       val updatedLoop = loop.ops.moveContentFirst(5)
 
-      assertEquals(loop.getContents.get(5), updatedLoop.getContents.get(0))
-      assertEquals(loop.getContents.get(0), updatedLoop.getContents.get(1))
+      assertEquals(loop.getItems.get(5), updatedLoop.getItems.get(0))
+      assertEquals(loop.getItems.get(0), updatedLoop.getItems.get(1))
     }
   }
 
@@ -478,8 +478,8 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
       val loop = mkContentLoop()
       val updatedLoop = loop.ops.moveContentLast(5)
 
-      assertEquals(loop.getContents.get(5), updatedLoop.getContents.get(LoopFx.LastContentIndex))
-      assertEquals(loop.getContents.get(LoopFx.LastContentIndex), updatedLoop.getContents.get(LoopFx.LastContentIndex - 1))
+      assertEquals(loop.getItems.get(5), updatedLoop.getItems.get(LoopFx.LastContentIndex))
+      assertEquals(loop.getItems.get(LoopFx.LastContentIndex), updatedLoop.getItems.get(LoopFx.LastContentIndex - 1))
     }
   }
 }
