@@ -46,22 +46,13 @@ public class ContentLoop {
             int no = content.getNo();
             if (no < 1 || no >= nextContentNo) {
                 throw new IllegalArgumentException(String.format(
-                        "A content no must be in range [1..nextContentNo - 1] must be >= 1, but was %d.", no));
+                        "A content no must be in range [1..nextContentNo - 1], but was %d.", no));
             }
         }
 
         this.nextContentNo = nextContentNo;
         this.items = Collections.unmodifiableList(items);
         this.cachedHashCode = Objects.hash(nextContentNo, items);
-    }
-
-
-    public List<Content> getItems() {
-        return items;
-    }
-
-    public int getNextContentNo() {
-        return nextContentNo;
     }
 
 
@@ -84,6 +75,14 @@ public class ContentLoop {
     @Override
     public int hashCode() {
         return cachedHashCode;
+    }
+
+    public List<Content> getItems() {
+        return items;
+    }
+
+    public int getNextContentNo() {
+        return nextContentNo;
     }
 
     public ContentLoopOps ops() {

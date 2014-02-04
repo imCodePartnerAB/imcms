@@ -6,7 +6,7 @@ import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.textdocument.ContentLoopRef;
+import com.imcode.imcms.mapping.orm.ContentLoopRef;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;

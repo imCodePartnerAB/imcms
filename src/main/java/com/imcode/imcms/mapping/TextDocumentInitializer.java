@@ -88,7 +88,7 @@ public class TextDocumentInitializer {
 
     public void initMenus(TextDocumentDomainObject document) {
     	Collection<MenuDomainObject> menus = textDocDao.getMenus(document.getRef());
-    	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
+    	Map<Integer, MenuDomainObject> menusMap = new HashMap<>();
 
     	for (MenuDomainObject menu: menus) {
     		initMenuItems(menu, documentGetter);

@@ -86,6 +86,8 @@
 
     <bean id="imageCacheMapper" class="com.imcode.imcms.mapping.ImageCacheMapper"/>
 
+    <bean id="documentLanguageService" class="com.imcode.imcms.mapping.DefaultDocumentLanguageService"/>
+
     <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver"
           p:metaDao-ref="metaDao"
           p:documentVersionDao-ref="documentVersionDao"

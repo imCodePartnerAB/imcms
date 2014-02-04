@@ -1,6 +1,5 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.mapping.orm.DocRef;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -9,7 +8,6 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -17,8 +15,6 @@ import java.util.*;
  * Menu is a one-level navigation control between documents.
  * A menu can contain any number of items - links to other documents.
  */
-@Entity(name = "Menu")
-@Table(name = "imcms_text_doc_menus")
 public class MenuDomainObject implements Cloneable, Serializable {
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
@@ -32,31 +28,15 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private volatile Integer id;
-
-    @Column(name = "sort_order")
     private volatile int sortOrder;
-
-    @Column(name = "no")
-    private volatile Integer no;
-
-    private volatile DocRef docRef;
-
 
     /**
      * Map of included meta_id to included DocumentDomainObject.
      */
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "imcms_text_doc_menu_items",
-            joinColumns = @JoinColumn(name = "menu_id"))
-    @MapKeyColumn(name = "to_doc_id")
-    private volatile Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
+    private volatile Map<Integer, MenuItemDomainObject> menuItems = new HashMap<>();
 
     public MenuDomainObject() {
-        this(null, MENU_SORT_ORDER__DEFAULT);
+        this(MENU_SORT_ORDER__DEFAULT);
     }
 
     public MenuDomainObject clone() {
@@ -72,18 +52,9 @@ public class MenuDomainObject implements Cloneable, Serializable {
         }
     }
 
-    public MenuDomainObject(Integer id, int sortOrder) {
-        this.id = id;
+    public MenuDomainObject(int sortOrder) {
         this.sortOrder = sortOrder;
         menuItems = new HashMap<>();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public int getSortOrder() {
@@ -236,37 +207,5 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     public Map<Integer, MenuItemDomainObject> getItemsMap() {
         return menuItems;
-    }
-
-    public Integer getNo() {
-        return no;
-    }
-
-    public void setNo(Integer no) {
-        this.no = no;
-    }
-
-    /**
-     * Use {@link MenuDomainObject#getNo()} instead.
-     */
-    @Deprecated
-    public Integer getIndex() {
-        return getNo();
-    }
-
-    /**
-     * Use {@link MenuDomainObject#setNo(Integer)} instead.
-     */
-    @Deprecated
-    public void setIndex(Integer index) {
-        setNo(index);
-    }
-
-    public DocRef getDocRef() {
-        return docRef;
-    }
-
-    public void setDocRef(DocRef docRef) {
-        this.docRef = docRef;
     }
 }

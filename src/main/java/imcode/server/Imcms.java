@@ -2,11 +2,8 @@ package imcode.server;
 
 import com.google.common.collect.Maps;
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.dao.SystemDao;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
-import com.imcode.imcms.mapping.orm.DocumentLanguage;
-import com.imcode.imcms.mapping.orm.SystemProperty;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
@@ -245,35 +242,25 @@ public class Imcms {
     private static DocumentI18nSupport createDocumentI18nSupport() {
         logger.info("Creating i18n support.");
 
-        LanguageDao languageDao = applicationContext.getBean(LanguageDao.class);
-        SystemDao systemDao = applicationContext.getBean(SystemDao.class);
-        SystemProperty languageIdProperty = systemDao.getProperty("DefaultLanguageId");
+        DocumentLanguageService dls = applicationContext.getBean(DocumentLanguageService.class);
 
         Map<String, DocumentLanguage> languagesByCodes = Maps.newHashMap();
         Map<String, DocumentLanguage> languagesByHosts = Maps.newHashMap();
 
-        for (DocumentLanguage language: languageDao.getAllLanguages()) {
+        for (DocumentLanguage language: dls.getAllLanguages()) {
             languagesByCodes.put(language.getCode(), language);
         }
 
         if (languagesByCodes.size() == 0) {
-            String msg = "I18n configuration error. Database table i18n_languages must contain at least one record.";
+            String msg = "I18n configuration error. No document languages defined.";
             logger.fatal(msg);
             throw new I18nException(msg);
         }
 
-        if (languageIdProperty == null) {
-            String msg = "I18n configuration error. Default language (DefaultLanguageId system property) is not set.";
-            logger.fatal(msg);
-            throw new I18nException(msg);
-        }
-
-
-        String languageId = languageIdProperty.getValue();
-        DocumentLanguage defaultLanguage = languageDao.getById(Integer.parseInt(languageId));
+        DocumentLanguage defaultLanguage = dls.getDefault();
 
         if (defaultLanguage == null) {
-            String msg = String.format("I18n configuration error. Default language can not be set. There is no language with id %s.", languageId);
+            String msg = String.format("I18n configuration error. Default language is not configured.");
             logger.fatal(msg);
             throw new I18nException(msg);
         }

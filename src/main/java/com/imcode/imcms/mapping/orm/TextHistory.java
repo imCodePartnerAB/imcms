@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.orm;
 
-import imcode.server.document.textdocument.ContentLoopRef;
+import com.imcode.imcms.mapping.orm.ContentLoopRef;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 

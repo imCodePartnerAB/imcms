@@ -346,9 +346,9 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     val preferredLanguage = Imcms.getUser.getDocGetterCallback.documentLanguages.preferred
 
     val (format, canChangeFormat) = (showModeText, showModeHtml) match {
-      case (true, false) => (TextDomainObject.Format.PLAIN_TEXT, false)
-      case (false, true) => (TextDomainObject.Format.HTML, false)
-      case _ => (TextDomainObject.Format.values()(texts.asScala.head.getType), true)
+      case (true, false) => (TextDomainObject.Type.PLAIN_TEXT, false)
+      case (false, true) => (TextDomainObject.Type.HTML, false)
+      case _ => (TextDomainObject.Type.values()(texts.asScala.head.getType), true)
     }
 
     val editor = new TextEditor(texts.asScala, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))

@@ -1,4 +1,4 @@
-package imcode.server.document.textdocument;
+package com.imcode.imcms.mapping.orm;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;

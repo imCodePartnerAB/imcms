@@ -9,101 +9,41 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "imcms_languages")
 public class DocumentLanguage implements Serializable, Cloneable {
-                    //
-    public static final class Builder {
-        private DocumentLanguage documentLanguage;
-
-        private Builder() {
-            this.documentLanguage = new DocumentLanguage();
-        }
-
-        private Builder(DocumentLanguage documentLanguage) {
-            this.documentLanguage = documentLanguage.clone();
-        }
-
-        public Builder id(Integer id) {
-            documentLanguage.id = id;
-            return this;
-        }
-
-        public Builder enabled(boolean enabled) {
-            documentLanguage.enabled = enabled;
-            return this;
-        }
-
-        public Builder code(String code) {
-            documentLanguage.code = code;
-            return this;
-        }
-
-        public Builder name(String name) {
-            documentLanguage.name = name;
-            return this;
-        }
-
-        public Builder nativeName(String nativeName) {
-            documentLanguage.nativeName = nativeName;
-            return this;
-        }
-
-        public DocumentLanguage build() {
-            return documentLanguage.clone();
-        }
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static Builder builder(DocumentLanguage documentLanguage) {
-        return new Builder(documentLanguage);
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private volatile Integer id;
+    private Integer id;
 
     @NotNull
     @Column(nullable = false)
-    private volatile String code;
+    private String code;
 
     @NotNull
     @Column(nullable = false)
-    private volatile String name;
-
-    @Column(nullable = false)
-    private volatile boolean enabled;
+    private String name;
 
     @Column(name = "native_name")
-    private volatile String nativeName;
+    private String nativeName;
 
-    protected DocumentLanguage() {
-    }
+    @Column(nullable = false)
+    private boolean enabled;
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DocumentLanguage)) return false;
+        return o == this || (o instanceof DocumentLanguage && equals((DocumentLanguage) o));
+    }
 
-        DocumentLanguage language = (DocumentLanguage) o;
-
-        if (enabled != language.enabled) return false;
-        if (code != null ? !code.equals(language.code) : language.code != null) return false;
-        if (id != null ? !id.equals(language.id) : language.id != null) return false;
-        if (name != null ? !name.equals(language.name) : language.name != null) return false;
-        if (nativeName != null ? !nativeName.equals(language.nativeName) : language.nativeName != null) return false;
-
-        return true;
+    private boolean equals(DocumentLanguage that) {
+        return Objects.equals(id, that.id)
+                && Objects.equals(code, that.code)
+                && Objects.equals(name, that.name)
+                && Objects.equals(enabled, that.enabled)
+                && Objects.equals(nativeName, that.nativeName);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, code, name, nativeName, enabled);
-    }
-
-    @Override
-    public String toString() {
-        return getName();
     }
 
     @Override
@@ -119,19 +59,39 @@ public class DocumentLanguage implements Serializable, Cloneable {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getCode() {
         return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getNativeName() {
-        return nativeName != null ? nativeName : name;
+        return nativeName;
+    }
+
+    public void setNativeName(String nativeName) {
+        this.nativeName = nativeName;
     }
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

@@ -20,17 +20,17 @@ public abstract class ContentManagementSystem {
 
     public abstract TemplateService getTemplateService();
 
-    public abstract MailService getMailService() ;
+    public abstract MailService getMailService();
 
     public abstract void runAsSuperadmin(ContentManagementSystemRunnable runnable) throws NoPermissionException;
 
     /**
-        Get a ContentManagementSystem for the given username and password.
-    **/
-    public static ContentManagementSystem getContentManagementSystem( String userName, String password ) {
+     * Get a ContentManagementSystem for the given username and password.
+     */
+    public static ContentManagementSystem getContentManagementSystem(String userName, String password) {
         ImcmsServices imcref = Imcms.getServices();
-        UserDomainObject user = imcref.verifyUser( userName, password );
-        return DefaultContentManagementSystem.create( imcref, user, Imcms.getApiDataSource());
+        UserDomainObject user = imcref.verifyUser(userName, password);
+        return DefaultContentManagementSystem.create(imcref, user, Imcms.getApiDataSource());
     }
 
     /**
@@ -45,10 +45,10 @@ public abstract class ContentManagementSystem {
         ImcmsServices services = Imcms.getServices();
         UserDomainObject user = services.verifyUser(username, password);
 
-        if ( null == user || user.isDefaultUser()) {
-            return null ;
+        if (null == user || user.isDefaultUser()) {
+            return null;
         }
-        
+
         ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
 
         if (services.getConfig().isDenyMultipleUserLogin()) {
@@ -56,7 +56,7 @@ public abstract class ContentManagementSystem {
             currentUser.setSessionId(request.getSession().getId());
             cms.getUserService().updateUserSession(currentUser);
         }
-        
+
         Utility.makeUserLoggedIn(request, user);
 
         return cms;
@@ -67,8 +67,8 @@ public abstract class ContentManagementSystem {
      * @since 2.0
      */
     public static ContentManagementSystem fromRequest(ServletRequest request) {
-        return Utility.getContentManagementSystemFromRequest(request) ;
+        return Utility.getContentManagementSystemFromRequest(request);
     }
 
-    abstract ImcmsServices getInternal() ;
+    abstract ImcmsServices getInternal();
 }

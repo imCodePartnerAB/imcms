@@ -1,17 +1,14 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.mapping.orm.I18nDocRef;
+import com.imcode.imcms.api.ContentLoopRef;
 import imcode.util.Parser;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Text doc's text field.
  */
-@Entity(name = "Text")
-@Table(name = "imcms_text_doc_texts")
 public class TextDomainObject implements Serializable, Cloneable {
 
     /**
@@ -24,7 +21,7 @@ public class TextDomainObject implements Serializable, Cloneable {
      */
     public final static int TEXT_TYPE_HTML = 1;
 
-    public enum Format {
+    public enum Type {
         PLAIN_TEXT, HTML
     }
 
@@ -43,21 +40,6 @@ public class TextDomainObject implements Serializable, Cloneable {
             return textDomainObject.clone();
         }
 
-        public Builder id(Long id) {
-            textDomainObject.id = id;
-            return this;
-        }
-
-        public Builder i18nDocRef(I18nDocRef i18nDocRef) {
-            textDomainObject.i18nDocRef = i18nDocRef;
-            return this;
-        }
-
-        public Builder no(Integer no) {
-            textDomainObject.no = no;
-            return this;
-        }
-
         public Builder contentRef(ContentLoopRef contentLoopRef) {
             textDomainObject.contentLoopRef = contentLoopRef;
             return this;
@@ -73,8 +55,8 @@ public class TextDomainObject implements Serializable, Cloneable {
             return this;
         }
 
-        public Builder format(Format format) {
-            textDomainObject.setFormat(format);
+        public Builder format(Type type) {
+            textDomainObject.setFormatType(type);
             return this;
         }
     }
@@ -83,20 +65,10 @@ public class TextDomainObject implements Serializable, Cloneable {
         return new Builder();
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private volatile Long id;
-
-    /**
-     * Text filed no in a document.
-     */
-    private volatile Integer no;
-
     private volatile String text;
 
     private volatile int type;
 
-    private volatile I18nDocRef i18nDocRef;
     private volatile ContentLoopRef contentLoopRef;
 
     public TextDomainObject() {
@@ -191,17 +163,14 @@ public class TextDomainObject implements Serializable, Cloneable {
     }
 
     private boolean equals(TextDomainObject that) {
-        return Objects.equals(id, that.id)
-                && Objects.equals(text, that.text)
+        return Objects.equals(text, that.text)
                 && Objects.equals(type, that.type)
-                && Objects.equals(no, that.no)
-                && Objects.equals(i18nDocRef, that.i18nDocRef)
                 && Objects.equals(contentLoopRef, that.contentLoopRef);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, text, type, no, i18nDocRef, contentLoopRef);
+        return Objects.hash(text, type, contentLoopRef);
     }
 
 
@@ -214,30 +183,6 @@ public class TextDomainObject implements Serializable, Cloneable {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getNo() {
-        return no;
-    }
-
-    public void setNo(Integer no) {
-        this.no = no;
-    }
-
-    public I18nDocRef getI18nDocRef() {
-        return i18nDocRef;
-    }
-
-    public void setI18nDocRef(I18nDocRef i18nDocRef) {
-        this.i18nDocRef = i18nDocRef;
-    }
-
     public ContentLoopRef getContentLoopRef() {
         return contentLoopRef;
     }
@@ -246,11 +191,11 @@ public class TextDomainObject implements Serializable, Cloneable {
         this.contentLoopRef = contentLoopRef;
     }
 
-    public Format getFormat() {
-        return Format.values()[type];
+    public Type getFormatType() {
+        return Type.values()[type];
     }
 
-    public void setFormat(Format format) {
-        type = format.ordinal();
+    public void setFormatType(Type type) {
+        this.type = type.ordinal();
     }
 }

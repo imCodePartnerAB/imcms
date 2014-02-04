@@ -1,111 +1,116 @@
-package imcode.server.document.textdocument;
+package com.imcode.imcms.mapping.orm;
 
-import com.imcode.imcms.api.ContentLoopRef;
-import com.imcode.imcms.mapping.orm.DocumentLanguage;
-import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.image.Format;
-import imcode.util.image.ImageInfo;
 import imcode.util.image.Resize;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
-public class ImageDomainObject implements Serializable, Cloneable {
+@Entity(name = "Image")
+@Table(name = "imcms_text_doc_images")
+public class TextDocImage implements Serializable, Cloneable {
 
     public static final int IMAGE_NAME_LENGTH = 40;
 
     private static final int GEN_FILE_LENGTH = 255;
 
-    private volatile ImageSource source = new NullImageSource();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    private volatile ContentLoopRef contentLoopRef;
+    @Transient
+    private ImageSource source = new NullImageSource();
 
-    private volatile int width;
+    @NotNull
+    private DocRef docRef;
 
-    private volatile int height;
+    private ContentLoopRef contentLoopRef;
 
-    private volatile int border;
+    @NotNull
+    private Integer no;
 
-    private volatile String align = "";
+    private int width;
 
-    private volatile String alternateText = "";
+    private int height;
 
-    private volatile String lowResolutionUrl = "";
+    private int border;
 
-    private volatile int verticalSpace;
+    private String align = "";
 
-    private volatile int horizontalSpace;
-    private volatile String target = "";
+    @Column(name = "alt_text")
+    private String alternateText = "";
 
-    private volatile String linkUrl = "";
+    @Column(name = "low_scr")
+    private String lowResolutionUrl = "";
 
-    private volatile String name = "";
+    @Column(name = "v_space")
+    private int verticalSpace;
+
+    @Column(name = "h_space")
+    private int horizontalSpace;
+    private String target = "";
+
+    @Column(name = "linkurl")
+    private String linkUrl = "";
+
+    @Column(name = "image_name", nullable = false, length = IMAGE_NAME_LENGTH)
+    private String name = "";
 
     // Source type id
-    private volatile Integer type = source.getTypeId();
+    private Integer type = source.getTypeId();
 
     // Source storage string
-    private volatile String url = source.toStorageString();
+    @Column(name = "imgurl")
+    private String url = source.toStorageString();
 
-    private volatile Long archiveImageId;
+    @Column(name = "archive_image_id")
+    private Long archiveImageId;
 
-    private volatile int rotateAngle = RotateDirection.NORTH.getAngle();
+    @Column(name = "rotate_angle", nullable = false)
+    private int rotateAngle = RotateDirection.NORTH.getAngle();
 
-    private volatile String generatedFilename;
+    @Column(name = "gen_file", length = GEN_FILE_LENGTH)
+    private String generatedFilename;
 
-    private volatile int resize;
+    @Column(nullable = false)
+    private int resize;
 
-    private volatile int format;
+    @Column(nullable = false)
+    private int format;
 
-    private volatile CropRegion cropRegion = new CropRegion();
+    private CropRegion cropRegion = new CropRegion();
 
-    private volatile DocumentLanguage language;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "language_id", referencedColumnName = "id")
+    private DocumentLanguage language;
 
     public String getName() {
         return name;
     }
 
-    public ImageSize getDisplayImageSize() {
-        ImageSize realImageSize = getRealImageSize();
-
-        int wantedWidth = getWidth();
-        int wantedHeight = getHeight();
-        if (0 == wantedWidth && 0 != wantedHeight && 0 != realImageSize.getHeight()) {
-            wantedWidth = (int) (realImageSize.getWidth() * ((double) wantedHeight / realImageSize.getHeight()));
-        } else if (0 == wantedHeight && 0 != wantedWidth && 0 != realImageSize.getWidth()) {
-            wantedHeight = (int) (realImageSize.getHeight() * ((double) wantedWidth / realImageSize.getWidth()));
-        } else if (0 == wantedWidth && 0 == wantedHeight) {
-            wantedWidth = realImageSize.getWidth();
-            wantedHeight = realImageSize.getHeight();
-        }
-        return new ImageSize(wantedWidth, wantedHeight);
+    public Integer getId() {
+        return id;
     }
 
-    public ImageSize getRealImageSize() {
-        ImageSize imageSize = new ImageSize(0, 0);
-        if (!isEmpty()) {
-            try {
-                imageSize = source.getImageSize();
-            } catch (IOException ignored) {
-            }
-        }
-        return imageSize;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public ImageInfo getImageInfo() {
-        if (!isEmpty()) {
-            try {
-                return source.getImageInfo();
-            } catch (IOException ex) {
-            }
-        }
+    public DocRef getDocRef() {
+        return docRef;
+    }
 
-        return null;
+    public void setDocRef(DocRef docRef) {
+        this.docRef = docRef;
     }
 
     public ContentLoopRef getContentLoopRef() {
@@ -132,12 +137,28 @@ public class ImageDomainObject implements Serializable, Cloneable {
         this.type = type;
     }
 
+    public Integer getNo() {
+        return no;
+    }
+
+    public void setNo(Integer no) {
+        this.no = no;
+    }
+
     public DocumentLanguage getLanguage() {
         return language;
     }
 
     public void setLanguage(DocumentLanguage language) {
         this.language = language;
+    }
+
+    public Integer getIndex() {
+        return getNo();
+    }
+
+    public void setIndex(Integer index) {
+        setNo(index);
     }
 
     public int getWidth() {
@@ -377,12 +398,15 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object obj) {
-        return obj == this || (obj instanceof ImageDomainObject && equals((ImageDomainObject) obj));
+        return obj == this || (obj instanceof TextDocImage && equals((TextDocImage) obj));
     }
 
-    private boolean equals(ImageDomainObject that) {
-        return Objects.equals(source.toStorageString(), that.getSource().toStorageString())
+    private boolean equals(TextDocImage that) {
+        return Objects.equals(id, that.id)
+                && Objects.equals(source.toStorageString(), that.getSource().toStorageString())
+                && Objects.equals(docRef, that.getDocRef())
                 && Objects.equals(contentLoopRef, that.getContentLoopRef())
+                && Objects.equals(no, that.getNo())
                 && Objects.equals(width, that.getWidth())
                 && Objects.equals(height, that.getHeight())
                 && Objects.equals(border, that.getBorder())
@@ -404,8 +428,11 @@ public class ImageDomainObject implements Serializable, Cloneable {
     @Override
     public int hashCode() {
         return Objects.hash(
+                id,
                 source.toStorageString(),
+                docRef,
                 contentLoopRef,
+                no,
                 width,
                 height,
                 border,
@@ -426,23 +453,30 @@ public class ImageDomainObject implements Serializable, Cloneable {
     }
 
     @Override
-    public ImageDomainObject clone() {
+    public TextDocImage clone() {
         try {
-            return (ImageDomainObject) super.clone();
+            return (TextDocImage) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Embeddable
     public static class CropRegion implements Serializable {
         private static final long serialVersionUID = -586488435877347784L;
 
-        private volatile int cropX1;
-        private volatile int cropY1;
-        private volatile int cropX2;
-        private volatile int cropY2;
+        @Column(name = "crop_x1", nullable = false)
+        private int cropX1;
+        @Column(name = "crop_y1", nullable = false)
+        private int cropY1;
+        @Column(name = "crop_x2", nullable = false)
+        private int cropX2;
+        @Column(name = "crop_y2", nullable = false)
+        private int cropY2;
 
-        private volatile boolean valid;
+        @Transient
+        private boolean valid;
+
 
         public CropRegion() {
             cropX1 = -1;
@@ -533,7 +567,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
         private boolean equals(CropRegion cropRegion) {
             return cropX1 == cropRegion.cropX1 && cropY1 == cropRegion.cropY1 &&
-                   cropX2 == cropRegion.cropX2 && cropY2 == cropRegion.cropY2;
+                    cropX2 == cropRegion.cropX2 && cropY2 == cropRegion.cropY2;
         }
 
         @Override
@@ -549,7 +583,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
         WEST(-90, 180, 0);
 
         private static final Map<Integer, RotateDirection> ANGLE_MAP =
-                new HashMap<Integer, RotateDirection>(RotateDirection.values().length);
+                new HashMap<>(RotateDirection.values().length);
 
         static {
             for (RotateDirection direction : RotateDirection.values()) {
@@ -594,3 +628,4 @@ public class ImageDomainObject implements Serializable, Cloneable {
         }
     }
 }
+

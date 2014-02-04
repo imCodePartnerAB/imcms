@@ -1,9 +1,6 @@
 package com.imcode.imcms.api;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.imcode.imcms.mapping.orm.DocumentLanguage;
-
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,28 +11,23 @@ import java.util.Map;
  */
 public class DocumentI18nSupport {
 
-    final private DocumentLanguage defaultLanguage;
+    private final DocumentLanguage defaultLanguage;
 
-    final private Map<String, DocumentLanguage> languagesByCodes;
+    private final Map<String, DocumentLanguage> languagesByCodes;
 
-    final private Map<String, DocumentLanguage> languagesByHosts;
+    private final Map<String, DocumentLanguage> languagesByHosts;
 
-    final private List<DocumentLanguage> languages;
-
-    final private Map<Integer, DocumentLanguage> languagesByIds;
+    private final List<DocumentLanguage> languages;
 
     public DocumentI18nSupport(Map<String, DocumentLanguage> languagesByCodes, Map<String, DocumentLanguage> languagesByHosts, DocumentLanguage defaultLanguage) {
         this.languagesByCodes = languagesByCodes;
         this.languagesByHosts = languagesByHosts;
         this.defaultLanguage = defaultLanguage;
 
-        languages = Lists.newLinkedList();
-        languagesByIds = Maps.newHashMap();
-
+        languages = new LinkedList<>();
 
         for (DocumentLanguage language: languagesByCodes.values()) {
             languages.add(language);
-            languagesByIds.put(language.getId(), language);
         }
     }
 
@@ -50,10 +42,6 @@ public class DocumentI18nSupport {
 
     public DocumentLanguage getByCode(String code) {
         return languagesByCodes.get(code.toLowerCase());
-    }
-
-    public DocumentLanguage getById(Integer id) {
-        return languagesByIds.get(id);
     }
 
     public boolean isDefault(DocumentLanguage language) {

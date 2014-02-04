@@ -9,11 +9,11 @@ import java.util.Objects;
 @Embeddable
 public class I18nDocRef {
 
-    private volatile DocRef docRef;
+    private DocRef docRef;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private volatile DocumentLanguage language;
+    private DocumentLanguage language;
 
     protected I18nDocRef() {
     }
@@ -31,13 +31,13 @@ public class I18nDocRef {
         return docRef.getVersionNo();
     }
 
-    public static I18nDocRef of(int docId, int versionNo, DocumentLanguage language) {
-        return of(DocRef.of(docId, versionNo), language);
-    }
-
-    public static I18nDocRef of(DocRef docRef, DocumentLanguage language) {
-        return new I18nDocRef(docRef, language);
-    }
+//    public static I18nDocRef of(int docId, int versionNo, DocumentLanguage language) {
+//        return of(DocRef.of(docId, versionNo), language);
+//    }
+//
+//    public static I18nDocRef of(DocRef docRef, DocumentLanguage language) {
+//        return new I18nDocRef(docRef, language);
+//    }
 
     public DocRef getDocRef() {
         return docRef;
