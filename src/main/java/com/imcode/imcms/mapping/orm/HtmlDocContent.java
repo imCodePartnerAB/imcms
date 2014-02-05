@@ -5,13 +5,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "imcms_html_docs")
-public class HtmlDocContent implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    private DocRef docRef;
+public class HtmlDocContent extends DocVersionedContent {
 
     private String html;
 
@@ -21,13 +15,5 @@ public class HtmlDocContent implements Serializable {
 
     public void setHtml(String text) {
         this.html = text;
-    }
-
-    public DocRef getDocRef() {
-        return docRef;
-    }
-
-    public void setDocRef(DocRef docRef) {
-        this.docRef = docRef;
     }
 }

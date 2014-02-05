@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.orm.{MenuHistory, DocRef}
+import com.imcode.imcms.mapping.orm.{TextDocMenuHistory, DocRef}
 import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -95,7 +95,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterEa
 
     defaultMenus() |> { menus => assertEquals("menus count", menuNos.size + 1, menus.size) }
 
-    val menuHistory = new MenuHistory(menu, mkSuperAdmin)
+    val menuHistory = new TextDocMenuHistory(menu, mkSuperAdmin)
     textDocDao.saveMenuHistory(menuHistory)
   }
 
@@ -129,7 +129,7 @@ class MenuDaoSuiteConfig {
     Function.chain(Seq(
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.BasicWithSql,
-      TestSetup.hibernate.configurators.addAnnotatedClasses(classOf[MenuDomainObject], classOf[MenuHistory]),
+      TestSetup.hibernate.configurators.addAnnotatedClasses(classOf[MenuDomainObject], classOf[TextDocMenuHistory]),
       TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Menu.hbm.xml")
     ))
 }

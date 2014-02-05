@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.projection
 
-import com.imcode.imcms.mapping.orm.I18nDocRef
+import com.imcode.imcms.api.I18nDocRef
 import com.imcode.imcms.vaadin.Current
 import com.imcode.util.event.Publisher
 import com.imcode.imcms.vaadin.component._
@@ -23,7 +23,7 @@ import imcode.server.document.index.{DocumentStoredFields, DocumentIndex}
 import org.apache.commons.lang3.StringUtils
 import org.apache.solr.client.solrj.SolrQuery
 import org.apache.solr.common.util.DateUtil
-import com.vaadin.ui.{Button, Component, UI}
+import com.vaadin.ui.{Button, Component}
 
 import java.net.URLDecoder
 import java.util.concurrent.atomic.AtomicReference

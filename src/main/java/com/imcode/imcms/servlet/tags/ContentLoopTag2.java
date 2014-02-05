@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.tags;
 
-import com.imcode.imcms.mapping.orm.DocRef;
+import com.imcode.imcms.api.DocRef;
 import com.imcode.imcms.mapping.orm.TextDocLoop;
 import com.imcode.imcms.mapping.orm.TextDocLoopItem;
 import imcode.server.document.textdocument.TextDocumentDomainObject;

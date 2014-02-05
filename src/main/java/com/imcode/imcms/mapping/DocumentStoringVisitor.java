@@ -224,8 +224,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         textDocDao.saveImage(image);
 
-        ImageHistory imageHistory = new ImageHistory(image, user);
-        textDocDao.saveImageHistory(imageHistory);
+        TextDocImageHistory textDocImageHistory = new TextDocImageHistory(image, user);
+        textDocDao.saveImageHistory(textDocImageHistory);
     }
 
 
@@ -297,7 +297,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             }
 
             boolean isDefaultFile = fileId.equals(fileDocument.getDefaultFileId());
-            FileDocContent fileRef = new FileDocContent();
+            FileDocItem fileRef = new FileDocItem();
             fileRef.setDocRef(fileDocument.getRef());
             fileRef.setFileId(fileId);
             fileRef.setFilename(filename);
@@ -354,7 +354,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void updateTextDocumentMenu(final MenuDomainObject menu, final UserDomainObject user) {
         textDocDao.saveMenu(menu);
 
-        MenuHistory menuHistory = new MenuHistory(menu, user);
+        TextDocMenuHistory menuHistory = new TextDocMenuHistory(menu, user);
         textDocDao.saveMenuHistory(menuHistory);
     }
 }

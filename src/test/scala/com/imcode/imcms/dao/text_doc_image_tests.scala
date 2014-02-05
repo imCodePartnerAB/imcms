@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.orm.{DocLanguage, ImageHistory, DocRef}
+import com.imcode.imcms.mapping.orm.{DocLanguage, TextDocImageHistory, DocRef}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -73,7 +73,7 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterE
 
 	test("save text doc's image history") {
     val image = ImageDomainObject.builder().docRef(DocRef.of(1001, 0)).language(mkEnglish).no(1000).build()
-    val imageHistory = new ImageHistory(image, admin)
+    val imageHistory = new TextDocImageHistory(image, admin)
 
     textDocDao.saveImageHistory(imageHistory)
 	}
@@ -97,7 +97,7 @@ class ImageDaoSuiteConfig {
       TestSetup.hibernate.configurators.addAnnotatedClasses(
         classOf[DocLanguage],
         classOf[ImageDomainObject],
-        classOf[ImageHistory]
+        classOf[TextDocImageHistory]
       ),
       TestSetup.hibernate.configurators.addXmlFiles(
         "com/imcode/imcms/hbm/I18nLanguage.hbm.xml",

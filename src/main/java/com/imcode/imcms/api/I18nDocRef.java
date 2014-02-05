@@ -9,10 +9,10 @@ public class I18nDocRef {
     }
 
 //    public static I18nDocRef of(int docId, int versionNo, DocumentLanguage language) {
-//        return of(com.imcode.imcms.mapping.orm.DocRef.of(docId, versionNo), language);
+//        return of(com.imcode.imcms.api.DocRef.of(docId, versionNo), language);
 //    }
 //
-//    public static I18nDocRef of(com.imcode.imcms.mapping.orm.DocRef docRef, DocumentLanguage language) {
+//    public static I18nDocRef of(com.imcode.imcms.api.DocRef docRef, DocumentLanguage language) {
 //        return new I18nDocRef(docRef, language);
 //    }
 

@@ -1,9 +1,6 @@
 package com.imcode.imcms.mapping.orm;
 
-import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
 
@@ -12,14 +9,14 @@ import javax.persistence.*;
 @MappedSuperclass
 public class TextDocImageBase extends DocVersionedI18nContent {
 
-    @Transient
-    private ImageSource source = new NullImageSource();
-
     private Integer no;
 
     private int width;
+
     private int height;
+
     private int border;
+
     private String align = "";
 
     @Column(name = "alt_text")
@@ -33,6 +30,7 @@ public class TextDocImageBase extends DocVersionedI18nContent {
 
     @Column(name = "h_space")
     private int horizontalSpace;
+
     private String target = "";
 
     @Column(name = "linkurl")
@@ -42,14 +40,14 @@ public class TextDocImageBase extends DocVersionedI18nContent {
     private String imageUrl = "";
 
     @Column(name = "image_name")
-    private volatile String name = "";
+    private  String name = "";
 
     private Integer type;
 
     @Column(name = "format", nullable = false)
     private int format;
 
-    private volatile CropRegion cropRegion = new CropRegion();
+    private TextDocImageCropRegion cropRegion = new TextDocImageCropRegion();
 
     @Column(name = "rotate_angle", nullable = false)
     private int rotateAngle;
@@ -63,16 +61,7 @@ public class TextDocImageBase extends DocVersionedI18nContent {
     @JoinColumn(name = "language_id")
     private DocLanguage language;
 
-    private volatile int resize;
-
-
-    public ImageSource getSource() {
-        return source;
-    }
-
-    public void setSource(ImageSource source) {
-        this.source = source;
-    }
+    private  int resize;
 
     public Integer getNo() {
         return no;
@@ -202,11 +191,11 @@ public class TextDocImageBase extends DocVersionedI18nContent {
         this.format = format != null ? format.getOrdinal() : 0;
     }
 
-    public CropRegion getCropRegion() {
+    public TextDocImageCropRegion getCropRegion() {
         return cropRegion;
     }
 
-    public void setCropRegion(CropRegion cropRegion) {
+    public void setCropRegion(TextDocImageCropRegion cropRegion) {
         this.cropRegion = cropRegion;
     }
 

@@ -548,8 +548,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
         SOUTH(180, 90, -90),
         WEST(-90, 180, 0);
 
-        private static final Map<Integer, RotateDirection> ANGLE_MAP =
-                new HashMap<Integer, RotateDirection>(RotateDirection.values().length);
+        private static final Map<Integer, RotateDirection> ANGLE_MAP = new HashMap<>(RotateDirection.values().length);
 
         static {
             for (RotateDirection direction : RotateDirection.values()) {

@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.orm.FileDocContent;
+import com.imcode.imcms.mapping.orm.FileDocItem;
 import com.imcode.imcms.mapping.orm.HtmlDocContent;
 import com.imcode.imcms.mapping.orm.UrlDocContent;
 import imcode.server.document.DocumentVisitor;
@@ -34,9 +34,9 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
      *   ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(final FileDocumentDomainObject doc) {
-    	Collection<FileDocContent> fileReferences = metaDao.getFileReferences(doc.getRef());
+    	Collection<FileDocItem> fileReferences = metaDao.getFileReferences(doc.getRef());
     	
-    	for (FileDocContent fileRef: fileReferences) {
+    	for (FileDocItem fileRef: fileReferences) {
             String fileId = fileRef.getFileId();           
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
             

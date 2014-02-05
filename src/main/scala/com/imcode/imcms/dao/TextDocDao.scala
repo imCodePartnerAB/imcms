@@ -109,7 +109,7 @@ class TextDocDao extends HibernateSupport {
   def saveMenu(menu: MenuDomainObject): MenuDomainObject = hibernate.saveOrUpdate(menu)
 
 
-  def saveMenuHistory(menuHistory: MenuHistory) = hibernate.save(menuHistory)
+  def saveMenuHistory(menuHistory: TextDocMenuHistory) = hibernate.save(menuHistory)
 
 
   def deleteMenus(docRef: DocRef) = hibernate.withCurrentSession { session =>
@@ -191,7 +191,7 @@ class TextDocDao extends HibernateSupport {
   def saveImage(image: ImageDomainObject) = hibernate.saveOrUpdate(image)
 
 
-  def saveImageHistory(imageHistory: ImageHistory) = hibernate.save(imageHistory)
+  def saveImageHistory(imageHistory: TextDocImageHistory) = hibernate.save(imageHistory)
 
 
   def getImages(docRef: DocRef): JList[ImageDomainObject] =

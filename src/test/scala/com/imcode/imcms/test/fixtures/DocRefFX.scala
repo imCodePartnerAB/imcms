@@ -2,7 +2,7 @@ package com.imcode
 package imcms.test
 package fixtures
 
-import com.imcode.imcms.mapping.orm.DocRef
+import com.imcode.imcms.api.DocRef
 
 
 object DocRefFX {

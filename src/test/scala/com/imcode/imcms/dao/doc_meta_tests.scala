@@ -92,7 +92,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
   ".saveFileReferences" in {
     val docRef = DocRefFX.Default
-    val fileRef = new FileDocContent |>> { ref =>
+    val fileRef = new FileDocItem |>> { ref =>
       ref.setDocRef(docRef)
     }
 
@@ -139,7 +139,7 @@ class MetaDaoTestConfig {
         classOf[DocLanguage],
         classOf[CategoryDomainObject],
         classOf[CategoryTypeDomainObject],
-        classOf[FileDocContent],
+        classOf[FileDocItem],
         classOf[UrlDocContent],
         classOf[HtmlDocContent],
         classOf[Include]

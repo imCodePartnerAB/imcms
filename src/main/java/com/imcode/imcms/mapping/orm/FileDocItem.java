@@ -4,19 +4,19 @@
 package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 //ORDER BY default_variant DESC, variant_name
 
-/**
- * FileDocumentDomainObject Hibernate ORM.
- */
 @Entity
 @Table(name = "fileupload_docs")
-public class FileDocContent {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+@AssociationOverride(
+        name = "contentVersion",
+        joinColumns = {
+                @JoinColumn(name = "meta_id", referencedColumnName = "doc_id"),
+                @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
+        })
+public class FileDocItem extends DocVersionedContent {
 
     @Column(name = "filename")
     private String filename;
@@ -32,12 +32,6 @@ public class FileDocContent {
 
     @Column(name = "variant_name")
     private String fileId;
-
-    @Embedded
-    @AttributeOverrides(
-            @AttributeOverride(name= "docId", column = @Column(name="meta_id"))
-    )
-    private DocRef docRef;
 
     public String getFilename() {
         return filename;
@@ -71,27 +65,11 @@ public class FileDocContent {
         this.mimeType = mimeType;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getFileId() {
         return fileId;
     }
 
     public void setFileId(String fileId) {
         this.fileId = fileId;
-    }
-
-    public DocRef getDocRef() {
-        return docRef;
-    }
-
-    public void setDocRef(DocRef docRef) {
-        this.docRef = docRef;
     }
 }

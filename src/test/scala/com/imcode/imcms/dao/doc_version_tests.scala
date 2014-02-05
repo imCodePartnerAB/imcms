@@ -173,7 +173,7 @@ class DocVersionDaoSuiteConfig {
         classOf[DocProperty],
         classOf[CategoryDomainObject],
         classOf[CategoryTypeDomainObject],
-        classOf[FileDocContent],
+        classOf[FileDocItem],
         classOf[UrlDocContent],
         classOf[HtmlDocContent]
       ),

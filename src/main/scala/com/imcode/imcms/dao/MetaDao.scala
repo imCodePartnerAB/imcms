@@ -142,13 +142,13 @@ class MetaDao extends HibernateSupport {
   )
 
 
-  def getFileReferences(docRef: DocRef): JList[FileDocContent] =
+  def getFileReferences(docRef: DocRef): JList[FileDocItem] =
     hibernate.listByNamedQueryAndNamedParams(
       "FileDoc.getReferences", "docRef" -> docRef
     )
 
 
-  def saveFileReference(fileRef: FileDocContent) = hibernate.saveOrUpdate(fileRef)
+  def saveFileReference(fileRef: FileDocItem) = hibernate.saveOrUpdate(fileRef)
 
 
   def deleteFileReferences(docRef: DocRef): Int = hibernate.bulkUpdateByNamedQueryAndNamedParams(
