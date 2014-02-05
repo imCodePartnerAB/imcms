@@ -1,6 +1,6 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.mapping.orm.I18nMeta;
+import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;

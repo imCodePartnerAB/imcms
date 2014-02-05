@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.api.DocRef;
-import com.imcode.imcms.mapping.orm.TextDocLoop;
-import com.imcode.imcms.mapping.orm.TextDocLoopItem;
+import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.api.Content;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.Utility;
@@ -21,17 +21,17 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 public class ContentLoopTag2 extends BodyTagSupport {
 
     /** Creates empty content loop. */
-    private static TextDocLoop createLoop(DocRef docRef, Integer no) {
-        return TextDocLoop.builder().docRef(docRef).no(no).build();
+    private static ContentLoop createLoop(DocRef docRef, Integer no) {
+        return ContentLoop.builder().docRef(docRef).no(no).build();
     }
 
 
 	/** Loop number in a TextDocument. */
     private int no;
 
-    private TextDocLoop loop;
+    private ContentLoop loop;
 
-    private TextDocLoopItem currentContent;
+    private Content currentContent;
 
     private int contentsCount;
 
@@ -213,18 +213,18 @@ public class ContentLoopTag2 extends BodyTagSupport {
     }
 
 
-    public TextDocLoop getLoop() {
+    public ContentLoop getLoop() {
         return loop;
     }
 
-    public void setLoop(TextDocLoop loop) {
+    public void setLoop(ContentLoop loop) {
         this.loop = loop;
     }
 
     /**
      * @return current content.
      */
-    public TextDocLoopItem getCurrentContent() {
+    public Content getCurrentContent() {
         return currentContent;
     }
 }

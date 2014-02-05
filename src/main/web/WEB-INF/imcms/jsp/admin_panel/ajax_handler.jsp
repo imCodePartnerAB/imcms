@@ -1,6 +1,6 @@
 <%@ page
 	
-	import="com.imcode.imcms.mapping.orm.DocVersion,
+	import="com.imcode.imcms.api.DocumentVersion,
 	        com.imcode.imcms.mapping.DocumentVersionInfo,
 	        com.imcode.imcms.mapping.orm.DocLanguage,
 	        com.imcode.imcms.mapping.DocumentMapper,
@@ -150,7 +150,7 @@ pageContext.setAttribute("baseURL", baseURL);
 /* *******************************************************************************************
 *         Available document's versions                                                     *
 ******************************************************************************************* */
-DocumentVersionInfo docVersionInfo = documentMapper.getDocumentVersionInfo(document.getId());
+DocumentVersionInfo DocumentVersionInfo = documentMapper.getDocumentVersionInfo(document.getId());
 int versionNo = document.getVersionNo();
 
 /* *******************************************************************************************
@@ -331,7 +331,7 @@ if ("adminPanelHtml".equals(get)) { %>
         <div id="imcmsToolBarSubAppearance" class="imcmsToolBarSubPanel imcmsToolBarSubPanelLeft"></div><%-- --%>
         <div id="imcmsToolBarSubSettings" class="imcmsToolBarSubPanel imcmsToolBarSubPanelRight">
             <%= getSubPanelStart(cp) %><%
-            Iterator iterator = new ReverseListIterator(docVersionInfo.getVersions()) ;
+            Iterator iterator = new ReverseListIterator(DocumentVersionInfo.getVersions()) ;
             %>
                 <table border="0" cellspacing="0" cellpadding="2">
                 <tr>
@@ -340,10 +340,10 @@ if ("adminPanelHtml".equals(get)) { %>
                         <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE%>" value="<%=currentLanguage.getCode()%>"/>
                         <select name="<%=ImcmsConstants.REQUEST_PARAM__DOC_VERSION%>" class="imcmsSelectBox"><%
                         while (iterator.hasNext()) {
-                            DocVersion v = (DocVersion)iterator.next() ;
+                            DocumentVersion v = (DocumentVersion)iterator.next() ;
                             String sSelected = v.getNo() == versionNo ? " selected=\"selected\"" : "" ;
                             String displayName = DocumentVersionInfo.isWorkingVersion(v) ? "DRAFT" : "Version " + v.getNo().toString() ;
-                            if (docVersionInfo.isDefaultVersion(v)) {
+                            if (DocumentVersionInfo.isDefaultVersion(v)) {
                                 displayName += " (default)" ;    
                             } %>
                             <option value="<%=v.getNo()%>" <%= sSelected %>><%=(displayName)%></option><%
@@ -354,7 +354,7 @@ if ("adminPanelHtml".equals(get)) { %>
                     if (user.canEdit(document)) { %>
                     <td style="padding-left:10px; white-space:nowrap;">
                     <form action="<%= cp %>/servlet/AdminDoc?meta_id=<%=document.getId()%>" method="post">
-                        <input type="text" size="3" name="no" value="<%=docVersionInfo.getDefaultVersion().getNo()%>" class="imcmsTextField"/>
+                        <input type="text" size="3" name="no" value="<%=DocumentVersionInfo.getDefaultVersion().getNo()%>" class="imcmsTextField"/>
                         <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE%>" value="<%=currentLanguage.getCode()%>"/>
                         <input type="hidden" name="flags" value="8388608"/>
                         <input type="submit" name="cmd" value="Set default" class="imcmsToolBarBtn" />

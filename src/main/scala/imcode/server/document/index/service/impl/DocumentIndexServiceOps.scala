@@ -7,7 +7,7 @@ import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.DocumentIndex
 import _root_.imcode.server.document.index.service.IndexRebuildProgress
 
-import com.imcode.imcms.mapping.orm.DocLanguage
+import com.imcode.imcms.api.DocumentLanguage
 import scala.collection.SeqView
 import scala.collection.JavaConverters._
 
@@ -48,7 +48,7 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
 
   @throws(classOf[SolrInputDocumentCreateException])
-  def mkSolrInputDocs(docId: Int, languages: Seq[DocLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
+  def mkSolrInputDocs(docId: Int, languages: Seq[DocumentLanguage]): Seq[SolrInputDocument] = withExceptionWrapper {
     val solrInputDocs = for {
       language <- languages
       doc <- documentMapper.getDefaultDocument[DocumentDomainObject](docId, language).asOption

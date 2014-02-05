@@ -4,7 +4,7 @@ package admin.doc
 
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.content.htmldoc.HtmlDocContentEditor
-import com.imcode.imcms.mapping.orm.{DocLanguage, I18nMeta}
+import com.imcode.imcms.api.{DocumentLanguage, I18nMeta}
 import com.vaadin.ui.themes.Reindeer
 import imcode.server.document.{HtmlDocumentDomainObject, UrlDocumentDomainObject, FileDocumentDomainObject, DocumentDomainObject}
 import com.imcode.imcms.admin.doc.meta.MetaEditor
@@ -18,7 +18,7 @@ import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
 
 class DocEditor(doc: DocumentDomainObject) extends Editor {
 
-  override type Data = (DocumentDomainObject, Map[DocLanguage, I18nMeta])
+  override type Data = (DocumentDomainObject, Map[DocumentLanguage, I18nMeta])
 
   val metaEditor = new MetaEditor(doc)
   val contentEditor = doc match {

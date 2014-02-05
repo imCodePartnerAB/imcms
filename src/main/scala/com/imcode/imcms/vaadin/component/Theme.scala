@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.vaadin.component
 
-import com.imcode.imcms.mapping.orm.DocLanguage
+import com.imcode.imcms.api.DocumentLanguage
 import com.vaadin.server.{ThemeResource => TR}
 import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
 
@@ -47,7 +47,7 @@ object Theme {
     }
 
     object Language {
-      def flag(language: DocLanguage): TR = flag(language.getCode)
+      def flag(language: DocumentLanguage): TR = flag(language.getCode)
       def flag(languageCode: String): TR = s"icons/language_flag/${languageCode}.gif"
     }
   }

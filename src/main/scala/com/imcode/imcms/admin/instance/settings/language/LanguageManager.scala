@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.instance.settings.language
 
-import com.imcode.imcms.mapping.orm.DocLanguage
+import com.imcode.imcms.api.DocumentLanguage
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
@@ -24,7 +24,7 @@ class LanguageManager {
     v.miReload.setCommandHandler { _ => reload() }
     v.tblLanguages.addValueChangeHandler { _ => handleSelection() }
 
-    v.miNew.setCommandHandler { _ => editAndSave(DocLanguage.builder().build()) }
+    v.miNew.setCommandHandler { _ => editAndSave(DocumentLanguage.builder().build()) }
     v.miEdit.setCommandHandler { _ =>
       whenSelected(v.tblLanguages) { id =>
         languageDao.getById(id) match {
@@ -83,7 +83,7 @@ class LanguageManager {
   def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage languages")
 
   /** Edit in modal dialog. */
-  private def editAndSave(vo: DocLanguage) {
+  private def editAndSave(vo: DocumentLanguage) {
     val id = vo.getId
     val isNew = id == null
     val dialogTitle = if (isNew) "doc_language_editor_dlg_title.new".i else "doc_language_editor_dlg_title.edit".f(vo.getName)
@@ -97,7 +97,7 @@ class LanguageManager {
       c.chkEnabled.value = vo.isEnabled
 
       dlg.setOkButtonHandler {
-        DocLanguage.builder() |> { voc =>
+        DocumentLanguage.builder() |> { voc =>
           // todo: validate
           voc.code(c.txtCode.value)
           voc.name(c.txtName.value)

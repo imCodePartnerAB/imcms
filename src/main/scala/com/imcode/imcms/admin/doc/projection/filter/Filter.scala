@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.projection.filter
 
-import com.imcode.imcms.mapping.orm.DocLanguage
+import com.imcode.imcms.api.DocumentLanguage
 import scala.collection.JavaConverters._
 
 import com.vaadin.ui.CheckBox
@@ -65,7 +65,7 @@ class Filter extends ImcmsServicesSupport {
     basicView.types.chkFile.checked = parameters.docTypesOpt.exists(types => types.contains(DocumentTypeDomainObject.FILE))
     basicView.types.chkHtml.checked = parameters.docTypesOpt.exists(types => types.contains(DocumentTypeDomainObject.HTML))
 
-    val isChecked: (DocLanguage => Boolean) = {
+    val isChecked: (DocumentLanguage => Boolean) = {
       val languages = parameters.languagesOpt.getOrElse(Set.empty)
       language => (languages.isEmpty && imcmsServices.getDocumentI18nSupport.isDefault(language)) || languages.contains(language)
     }
@@ -73,7 +73,7 @@ class Filter extends ImcmsServicesSupport {
     basicView.languages.layout.removeAllComponents()
 
     for (language <- imcmsServices.getDocumentI18nSupport.getLanguages.asScala) {
-      val chkLanguage = new CheckBox(language.getNativeName) with TypedData[DocLanguage] |>> { chk =>
+      val chkLanguage = new CheckBox(language.getNativeName) with TypedData[DocumentLanguage] |>> { chk =>
         chk.setIcon(Theme.Icon.Language.flag(language))
         chk.data = language
         chk.checked = isChecked(language)
@@ -145,10 +145,10 @@ class Filter extends ImcmsServicesSupport {
   /**
    * @return None
    */
-  def selectedLanguagesOpt(): Option[Set[DocLanguage]] = when(basicView.languages.chkEnabled.checked) {
+  def selectedLanguagesOpt(): Option[Set[DocumentLanguage]] = when(basicView.languages.chkEnabled.checked) {
     (
       for {
-        _chk@(chkLanguage: CheckBox with TypedData[DocLanguage]) <- basicView.languages.layout.iterator.asScala
+        _chk@(chkLanguage: CheckBox with TypedData[DocumentLanguage]) <- basicView.languages.layout.iterator.asScala
         if chkLanguage.checked
       } yield {
         chkLanguage.data

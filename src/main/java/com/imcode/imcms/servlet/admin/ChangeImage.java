@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.dao.TextDocDao;
-import com.imcode.imcms.mapping.orm.TextDocLoopItemRef;
+import com.imcode.imcms.api.ContentLoopRef;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -32,7 +32,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import scala.Option;
+
 
 /**
  * Change image withe the same 'no' for all available languages.
@@ -53,10 +53,9 @@ public class ChangeImage extends HttpServlet {
         String contentNoStr = request.getParameter("content_no");
         Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
-        TextDocLoopItemRef contentLoopRef = loopNo == null || contentNo == null ? null : TextDocLoopItemRef.of(loopNo, contentNo);
+        ContentLoopRef contentLoopRef = loopNo == null || contentNo == null ? null : ContentLoopRef.of(loopNo, contentNo);
 
-        final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(
-                documentId);
+        final TextDocumentDomainObject document = documentMapper.getDocument(documentId);
 
         final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));
         int forcedWidth = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__WIDTH));
@@ -74,7 +73,7 @@ public class ChangeImage extends HttpServlet {
                 ? defaultImage
                 : new ImageDomainObject();
 
-        image.setNo(imageIndex);
+        //image.setNo(imageIndex);
         image.setContentLoopRef(contentLoopRef);
 
         // Check if user has image rights
@@ -141,7 +140,7 @@ public class ChangeImage extends HttpServlet {
 
         TextDocDao textDocDao = Imcms.getServices().getManagedBean(TextDocDao.class);
 
-        List<ImageDomainObject> images = textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
+        List<ImageDomainObject> images = null;//textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
 
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);

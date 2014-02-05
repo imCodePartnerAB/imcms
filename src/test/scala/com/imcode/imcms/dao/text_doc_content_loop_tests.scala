@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.orm.{ContentLoopOps, TextDocLoop, DocRef}
+import com.imcode.imcms.mapping.orm.{ TextDocLoop}
 import scala.collection.JavaConverters._
 import org.junit.Assert._
 import org.junit.runner.RunWith

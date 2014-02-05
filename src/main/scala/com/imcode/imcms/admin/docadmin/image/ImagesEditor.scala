@@ -4,7 +4,7 @@ package admin.docadmin.image
 
 import _root_.imcode.server.document.textdocument.ImageDomainObject
 
-import com.imcode.imcms.mapping.orm.{DocLanguage, DocRef}
+import com.imcode.imcms.api.{DocumentLanguage, DocRef}
 import com.imcode.imcms.vaadin.{Current, Editor}
 import com.imcode.imcms.vaadin.component._
 

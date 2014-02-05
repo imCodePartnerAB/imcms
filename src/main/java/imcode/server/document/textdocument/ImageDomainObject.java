@@ -1,7 +1,6 @@
 package imcode.server.document.textdocument;
 
 import com.imcode.imcms.api.ContentLoopRef;
-import com.imcode.imcms.mapping.orm.DocLanguage;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.util.image.Format;
@@ -63,8 +62,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
     private volatile int format;
 
     private volatile CropRegion cropRegion = new CropRegion();
-
-    private volatile DocLanguage language;
 
     public String getName() {
         return name;
@@ -130,14 +127,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     public void setType(Integer type) {
         this.type = type;
-    }
-
-    public DocLanguage getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(DocLanguage language) {
-        this.language = language;
     }
 
     public int getWidth() {
@@ -395,7 +384,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 && Objects.equals(linkUrl, that.getLinkUrl())
                 && Objects.equals(name, that.getName())
                 && Objects.equals(cropRegion, that.getCropRegion())
-                && Objects.equals(language, that.getLanguage())
                 && Objects.equals(getFormat(), that.getFormat())
                 && Objects.equals(getRotateDirection(), that.getRotateDirection())
                 && Objects.equals(getResize(), that.getResize());
@@ -418,7 +406,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 linkUrl,
                 name,
                 cropRegion,
-                language,
                 getFormat(),
                 getRotateDirection(),
                 getResize()

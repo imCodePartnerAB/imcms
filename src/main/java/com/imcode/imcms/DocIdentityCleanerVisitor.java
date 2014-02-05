@@ -1,15 +1,10 @@
 package com.imcode.imcms;
 
-import com.imcode.imcms.mapping.orm.TextDocLoop;
-import com.imcode.imcms.mapping.orm.DocVersion;
-import com.imcode.imcms.mapping.orm.I18nMeta;
+import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
 
 /**
  * Cleans doc's identity data.
@@ -21,25 +16,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
     public void visitTextDocument(TextDocumentDomainObject doc) {
         visitOtherDocument(doc);
 
-        for (TextDomainObject text : doc.getTexts().values()) {
-            text.setId(null);
-            text.setI18nDocRef(null);
-        }
 
-        for (ImageDomainObject image : doc.getImages().values()) {
-            image.setId(null);
-            image.setDocRef(null);
-        }
-
-        for (MenuDomainObject menu : doc.getMenus().values()) {
-            menu.setId(null);
-            menu.setDocRef(null);
-        }
-
-        for (TextDocLoop loop : doc.getContentLoops().values()) {
-            //loop.setId(null);
-            //loop.setDocRef(null);
-        }
 
         doc.getTemplateNames().setDocId(null);
     }
@@ -48,8 +25,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
     @Override
     protected void visitOtherDocument(DocumentDomainObject doc) {
         doc.getMeta().setId(null);
-        doc.setI18nMeta(I18nMeta.builder(doc.getI18nMeta()).id(null).docId(null).build());
-        doc.setVersionNo(DocVersion.WORKING_VERSION_NO);
+        doc.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
     }
 
     @Override

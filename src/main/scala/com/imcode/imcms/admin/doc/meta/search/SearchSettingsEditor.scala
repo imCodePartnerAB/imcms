@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta.search
 
-import com.imcode.imcms.mapping.orm.Meta
+import com.imcode.imcms.api.Meta
 import scala.collection.JavaConverters._
 
 import com.vaadin.ui._
