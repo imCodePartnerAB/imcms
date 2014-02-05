@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Document i18n meta.
@@ -9,63 +10,6 @@ import java.io.Serializable;
 @Entity
 @Table(name = "imcms_doc_i18n_meta")
 public class I18nMeta implements Serializable, Cloneable {
-
-    public static class Builder {
-        private I18nMeta i18nMeta;
-
-        public Builder() {
-            i18nMeta = new I18nMeta();
-            i18nMeta.headline = "";
-            i18nMeta.menuText = "";
-            i18nMeta.menuImageURL = "";
-        }
-
-        public Builder(I18nMeta i18nMeta) {
-            this.i18nMeta = i18nMeta.clone();
-        }
-
-        public I18nMeta build() {
-            return i18nMeta.clone();
-        }
-
-        public Builder id(Integer id) {
-            i18nMeta.id = id;
-            return this;
-        }
-
-        public Builder headline(String headline) {
-            i18nMeta.headline = headline;
-            return this;
-        }
-
-        public Builder docId(Integer docId) {
-            i18nMeta.docId = docId;
-            return this;
-        }
-
-        public Builder language(DocumentLanguage language) {
-            i18nMeta.language = language;
-            return this;
-        }
-
-        public Builder menuImageURL(String menuImageURL) {
-            i18nMeta.menuImageURL = menuImageURL;
-            return this;
-        }
-
-        public Builder menuText(String menuText) {
-            i18nMeta.menuText = menuText;
-            return this;
-        }
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static Builder builder(I18nMeta i18nMeta) {
-        return new Builder(i18nMeta);
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -97,9 +41,6 @@ public class I18nMeta implements Serializable, Cloneable {
     @Column(name = "menu_image_url")
     private String menuImageURL;
 
-    protected I18nMeta() {
-    }
-
     public Integer getDocId() {
         return docId;
     }
@@ -126,44 +67,23 @@ public class I18nMeta implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        return o == this || (o instanceof I18nMeta && equals((I18nMeta) o));
+    }
 
-        I18nMeta i18nMeta = (I18nMeta) o;
-
-        if (docId != null ? !docId.equals(i18nMeta.docId) : i18nMeta.docId != null) return false;
-        if (headline != null ? !headline.equals(i18nMeta.headline) : i18nMeta.headline != null) return false;
-        if (id != null ? !id.equals(i18nMeta.id) : i18nMeta.id != null) return false;
-        if (language != null ? !language.equals(i18nMeta.language) : i18nMeta.language != null) return false;
-        if (menuImageURL != null ? !menuImageURL.equals(i18nMeta.menuImageURL) : i18nMeta.menuImageURL != null)
-            return false;
-        if (menuText != null ? !menuText.equals(i18nMeta.menuText) : i18nMeta.menuText != null) return false;
-
-        return true;
+    private boolean equals(I18nMeta that) {
+        return Objects.equals(id, that.id)
+                && Objects.equals(docId, that.docId)
+                && Objects.equals(headline, that.headline)
+                && Objects.equals(menuText, that.menuText)
+                && Objects.equals(menuImageURL, that.menuImageURL)
+                && Objects.equals(language, that.language);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (docId != null ? docId.hashCode() : 0);
-        result = 31 * result + (language != null ? language.hashCode() : 0);
-        result = 31 * result + (headline != null ? headline.hashCode() : 0);
-        result = 31 * result + (menuText != null ? menuText.hashCode() : 0);
-        result = 31 * result + (menuImageURL != null ? menuImageURL.hashCode() : 0);
-        return result;
+        return Objects.hash(id, docId, headline, menuText, menuImageURL, language);
     }
 
-    @Override
-    public String toString() {
-        return "I18nMeta{" +
-                "docId=" + docId +
-                ", id=" + id +
-                ", language=" + language +
-                ", headline='" + headline + '\'' +
-                ", menuText='" + menuText + '\'' +
-                ", menuImageURL='" + menuImageURL + '\'' +
-                '}';
-    }
 
     @Override
     public I18nMeta clone() {

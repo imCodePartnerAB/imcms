@@ -1,11 +1,5 @@
 package imcode.server.document;
 
-import com.imcode.imcms.api.DocRef;
-import com.imcode.imcms.mapping.orm.DocumentLanguage;
-import com.imcode.imcms.mapping.orm.Meta;
-import com.imcode.imcms.mapping.orm.I18nMeta;
-import com.imcode.imcms.mapping.orm.DocumentVersion;
-
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;

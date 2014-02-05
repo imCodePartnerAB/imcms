@@ -1,16 +1,14 @@
 package com.imcode.imcms.mapping.orm;
 
-import java.io.Serializable;
-import java.util.*;
-
-import javax.persistence.*;
-
 import com.imcode.imcms.api.Document;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSets;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Document's meta.
