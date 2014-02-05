@@ -132,7 +132,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         String filename = "" + docId;
 
-        if (docVersionNo != DocumentVersion.WORKING_VERSION_NO) {
+        if (docVersionNo != DocVersion.WORKING_VERSION_NO) {
             filename += ("_" + docVersionNo);
         }
 
@@ -182,8 +182,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         textDocDao.deleteLoops(textDocument.getRef());
         textDocDao.flush();
 
-        for (ContentLoop loop : textDocument.getContentLoops().values()) {
-            textDocDao.saveLoop(ContentLoop.builder(loop).id(null).docRef(textDocument.getRef()).build());
+        for (TextDocLoop loop : textDocument.getContentLoops().values()) {
+            textDocDao.saveLoop(TextDocLoop.builder(loop).id(null).docRef(textDocument.getRef()).build());
         }
     }
 
@@ -210,7 +210,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         textDao.saveText(text);
 
-        TextHistory textHistory = new TextHistory(text, user);
+        TextDocTextHistory textHistory = new TextDocTextHistory(text, user);
         textDao.saveTextHistory(textHistory);
     }
 
@@ -231,7 +231,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     void updateTextDocumentImages(TextDocumentDomainObject doc, UserDomainObject user) {
-        DocumentLanguage language = doc.getLanguage();
+        DocLanguage language = doc.getLanguage();
 
         textDocDao.deleteImages(doc.getRef(), language);
         textDocDao.flush();
@@ -297,7 +297,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             }
 
             boolean isDefaultFile = fileId.equals(fileDocument.getDefaultFileId());
-            FileReference fileRef = new FileReference();
+            FileDocContent fileRef = new FileDocContent();
             fileRef.setDocRef(fileDocument.getRef());
             fileRef.setFileId(fileId);
             fileRef.setFilename(filename);

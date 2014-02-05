@@ -1,7 +1,7 @@
 package imcode.server.document.index
 
 import com.imcode._
-import com.imcode.imcms.mapping.orm.DocumentLanguage
+import com.imcode.imcms.mapping.orm.DocLanguage
 import scala.collection.JavaConverters._
 import org.scalatest.mock.MockitoSugar._
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
@@ -44,9 +44,9 @@ class DocIndexingMocksSetup {
   }
 
 
-  Mockito.when(documentMapperMock.getDefaultDocument(anyInt, any[DocumentLanguage])).thenAnswer { args: Array[AnyRef] =>
+  Mockito.when(documentMapperMock.getDefaultDocument(anyInt, any[DocLanguage])).thenAnswer { args: Array[AnyRef] =>
     args match {
-      case Array(id: JInteger, language: DocumentLanguage) => docs(id)(language.getCode)
+      case Array(id: JInteger, language: DocLanguage) => docs(id)(language.getCode)
     }
   }
 

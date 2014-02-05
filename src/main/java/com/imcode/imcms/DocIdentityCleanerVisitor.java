@@ -1,7 +1,7 @@
 package com.imcode.imcms;
 
-import com.imcode.imcms.mapping.orm.ContentLoop;
-import com.imcode.imcms.mapping.orm.DocumentVersion;
+import com.imcode.imcms.mapping.orm.TextDocLoop;
+import com.imcode.imcms.mapping.orm.DocVersion;
 import com.imcode.imcms.mapping.orm.I18nMeta;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
@@ -36,7 +36,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
             menu.setDocRef(null);
         }
 
-        for (ContentLoop loop : doc.getContentLoops().values()) {
+        for (TextDocLoop loop : doc.getContentLoops().values()) {
             //loop.setId(null);
             //loop.setDocRef(null);
         }
@@ -49,7 +49,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
     protected void visitOtherDocument(DocumentDomainObject doc) {
         doc.getMeta().setId(null);
         doc.setI18nMeta(I18nMeta.builder(doc.getI18nMeta()).id(null).docId(null).build());
-        doc.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
+        doc.setVersionNo(DocVersion.WORKING_VERSION_NO);
     }
 
     @Override

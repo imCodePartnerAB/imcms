@@ -50,7 +50,7 @@ class MetaDao extends HibernateSupport {
     "value" -> alias.toLowerCase
   )
 
-  def getI18nMeta(docId: Int, language: DocumentLanguage): I18nMeta =
+  def getI18nMeta(docId: Int, language: DocLanguage): I18nMeta =
     hibernate.getByNamedQueryAndNamedParams[I18nMeta](
       "I18nMeta.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
     ).asOption.getOrElse(
@@ -89,10 +89,10 @@ class MetaDao extends HibernateSupport {
 
 
   def insertPropertyIfNotExists(docId: Int, name: String, value: String): Boolean = {
-    hibernate.getByNamedQueryAndNamedParams[DocumentProperty](
+    hibernate.getByNamedQueryAndNamedParams[DocProperty](
       "DocumentProperty.getProperty", "docId" -> docId, "name" -> name
     ).asOption.getOrElse(
-      new DocumentProperty |>> { property =>
+      new DocProperty |>> { property =>
         property.setDocId(docId)
         property.setName(name)
       }
@@ -142,13 +142,13 @@ class MetaDao extends HibernateSupport {
   )
 
 
-  def getFileReferences(docRef: DocRef): JList[FileReference] =
+  def getFileReferences(docRef: DocRef): JList[FileDocContent] =
     hibernate.listByNamedQueryAndNamedParams(
       "FileDoc.getReferences", "docRef" -> docRef
     )
 
 
-  def saveFileReference(fileRef: FileReference) = hibernate.saveOrUpdate(fileRef)
+  def saveFileReference(fileRef: FileDocContent) = hibernate.saveOrUpdate(fileRef)
 
 
   def deleteFileReferences(docRef: DocRef): Int = hibernate.bulkUpdateByNamedQueryAndNamedParams(
@@ -156,20 +156,20 @@ class MetaDao extends HibernateSupport {
   )
 
 
-  def getHtmlReference(docRef: DocRef): HtmlReference = hibernate.getByNamedQueryAndNamedParams(
+  def getHtmlReference(docRef: DocRef): HtmlDocContent = hibernate.getByNamedQueryAndNamedParams(
     "HtmlDoc.getReference", "docRef" -> docRef
   )
 
 
-  def saveHtmlReference(reference: HtmlReference) = hibernate.saveOrUpdate(reference)
+  def saveHtmlReference(reference: HtmlDocContent) = hibernate.saveOrUpdate(reference)
 
 
-  def getUrlReference(docRef: DocRef): UrlReference = hibernate.getByNamedQueryAndNamedParams(
+  def getUrlReference(docRef: DocRef): UrlDocContent = hibernate.getByNamedQueryAndNamedParams(
     "UrlDoc.getReference", "docRef" -> docRef
   )
 
 
-  def saveUrlReference(reference: UrlReference) = hibernate.merge(reference)
+  def saveUrlReference(reference: UrlDocContent) = hibernate.merge(reference)
 
 
   def getAllAliases(): JList[String] = hibernate.listByNamedQueryAndNamedParams(
@@ -180,7 +180,7 @@ class MetaDao extends HibernateSupport {
 
 
 
-  def getAliasProperty(alias: String): DocumentProperty  = hibernate.getByNamedQueryAndNamedParams(
+  def getAliasProperty(alias: String): DocProperty  = hibernate.getByNamedQueryAndNamedParams(
     "DocumentProperty.getAliasProperty",
 
     "name" -> DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,

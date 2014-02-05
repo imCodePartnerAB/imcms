@@ -1,7 +1,7 @@
 package imcode.server.parser;
 
-import com.imcode.imcms.mapping.orm.Content;
-import com.imcode.imcms.mapping.orm.ContentLoop;
+import com.imcode.imcms.mapping.orm.TextDocLoopItem;
+import com.imcode.imcms.mapping.orm.TextDocLoop;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -404,7 +404,7 @@ public class TagParser {
      *                   - formats
      *                   - rows
      */
-    public String tagText(Properties attributes, ContentLoop loop, Content content) {
+    public String tagText(Properties attributes, TextDocLoop loop, TextDocLoopItem content) {
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
 
         if ( shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse==null ) {
@@ -508,14 +508,14 @@ public class TagParser {
      * @param attributes The attributes of the image tag
      */
     public String tagImage(Properties attributes) {
-        ContentLoop loop = null;
-        Content content = null;
+        TextDocLoop loop = null;
+        TextDocLoopItem content = null;
         
         return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document,
                 documentRequest.getHttpServletRequest(), service, loop, content);
     }
 
-    public String tagImage(Properties attributes, ContentLoop loop, Content content) {
+    public String tagImage(Properties attributes, TextDocLoop loop, TextDocLoopItem content) {
         return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document,
                 documentRequest.getHttpServletRequest(), service, loop, content);
     }    
@@ -523,7 +523,7 @@ public class TagParser {
     public String tagImage(Properties attributes, boolean imageMode, int[] implicitImageIndex,
                            UserDomainObject user, TextDocumentDomainObject document,
                            HttpServletRequest httpServletRequest, ImcmsServices service,
-                           ContentLoop loop, Content content) {
+                           TextDocLoop loop, TextDocLoopItem content) {
 
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
         if ( shouldOutputNothingAccordingToMode(attributes, imageMode) || textDocumentToUse==null) {

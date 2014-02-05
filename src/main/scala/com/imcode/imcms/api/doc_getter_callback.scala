@@ -2,7 +2,7 @@ package com.imcode
 package imcms.api
 
 import com.imcode.imcms.mapping.DocumentMapper
-import com.imcode.imcms.mapping.orm.{DocumentLanguage, DocumentVersion, Meta, I18nDocRef}
+import com.imcode.imcms.mapping.orm.{DocLanguage, DocVersion, Meta, I18nDocRef}
 import imcode.server.document.DocumentDomainObject
 import imcode.server.user.UserDomainObject
 import javax.servlet.http.HttpServletRequest

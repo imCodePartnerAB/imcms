@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.orm.DocumentLanguage
+import com.imcode.imcms.mapping.orm.DocLanguage
 import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.dao.hibernate.HibernateSupport
 
@@ -9,17 +9,17 @@ import com.imcode.imcms.dao.hibernate.HibernateSupport
 class LanguageDao extends HibernateSupport {
 
 
-  def getAllLanguages(): JList[DocumentLanguage] = hibernate.listAll()
+  def getAllLanguages(): JList[DocLanguage] = hibernate.listAll()
 
 
-  def getById(id: JInteger): DocumentLanguage = hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getById", "id" -> id)
+  def getById(id: JInteger): DocLanguage = hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getById", "id" -> id)
 
 
-  def getByCode(code: String): DocumentLanguage =
+  def getByCode(code: String): DocLanguage =
     hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getByCode", "code" -> code)
 
 
-  def saveLanguage(language: DocumentLanguage): DocumentLanguage = language.clone() |> hibernate.saveOrUpdate
+  def saveLanguage(language: DocLanguage): DocLanguage = language.clone() |> hibernate.saveOrUpdate
 
 
   def deleteLanguage(id: JInteger) =

@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta.lifecycle
 
-import com.imcode.imcms.mapping.orm.{DocumentVersion, Meta}
+import com.imcode.imcms.mapping.orm.{DocVersion, Meta}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.admin.access.user.select.{UserSingleSelectView, UserSingleSelect}
 import com.imcode.imcms.api.Document
@@ -77,7 +77,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
     // version
     val (versionsNos, defaultVersionNo) = meta.getId match {
       case null =>
-        Seq(DocumentVersion.WORKING_VERSION_NO) -> DocumentVersion.WORKING_VERSION_NO
+        Seq(DocVersion.WORKING_VERSION_NO) -> DocVersion.WORKING_VERSION_NO
 
       case id =>
         val versionInfo = imcmsServices.getDocumentMapper.getDocumentVersionInfo(id)
@@ -90,7 +90,7 @@ class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
 
     view.publication.sltVersion.removeAllItems()
     versionsNos.foreach(no => view.publication.sltVersion.addItem(no, no.toString))
-    view.publication.sltVersion.setItemCaption(DocumentVersion.WORKING_VERSION_NO, "doc.version.working".i)
+    view.publication.sltVersion.setItemCaption(DocVersion.WORKING_VERSION_NO, "doc.version.working".i)
     view.publication.sltVersion.select(defaultVersionNo)
 
     view.publication.sltStatus.select(meta.getPublicationStatus)

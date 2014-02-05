@@ -1,15 +1,15 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.mapping.orm.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.DocLanguage;
 import imcode.server.document.DocumentDomainObject;
 
 public class I18nDisabledException extends I18nException {
 
 	private DocumentDomainObject document;
 	
-	private DocumentLanguage language;
+	private DocLanguage language;
 	
-	public I18nDisabledException(DocumentDomainObject document, DocumentLanguage language) {
+	public I18nDisabledException(DocumentDomainObject document, DocLanguage language) {
 		this.document = document;
 		this.language = language;
 	}
@@ -22,11 +22,11 @@ public class I18nDisabledException extends I18nException {
 		this.document = document;
 	}
 
-	public DocumentLanguage getLanguage() {
+	public DocLanguage getLanguage() {
 		return language;
 	}
 
-	public void setLanguage(DocumentLanguage language) {
+	public void setLanguage(DocLanguage language) {
 		this.language = language;
 	}
 }

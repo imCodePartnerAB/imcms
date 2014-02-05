@@ -1,11 +1,12 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.api._
 import com.imcode.imcms.mapping.orm._
 import scala.collection.JavaConverters._
 import scala.collection.breakOut
 import org.hibernate.{ScrollMode, CacheMode}
-import imcode.server.document.textdocument.{ImageDomainObject, MenuDomainObject, ContentLoopRef, TextDomainObject}
+import imcode.server.document.textdocument.{ImageDomainObject, MenuDomainObject, TextDomainObject}
 
 import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.dao.hibernate.HibernateSupport
@@ -19,7 +20,7 @@ class TextDocDao extends HibernateSupport {
   /**
    * Please note that createIfNotExists merely creates an instance of TextDomainObject not a database entry.
    */
-  def getTexts(docRef: DocRef, no: Int, contentRefOpt: Option[ContentLoopRef],
+  def getTexts(docRef: DocRef, no: Int, contentRefOpt: Option[TextDocLoopItemRef],
                createIfNotExists: Boolean): JList[TextDomainObject] = {
     for {
       language <- languageDao.getAllLanguages.asScala
@@ -49,7 +50,7 @@ class TextDocDao extends HibernateSupport {
     )
 
 
-  def saveTextHistory(textHistory: TextHistory) = hibernate.save(textHistory)
+  def saveTextHistory(textHistory: TextDocTextHistory) = hibernate.save(textHistory)
 
 
   /**
@@ -71,7 +72,7 @@ class TextDocDao extends HibernateSupport {
     )
 
 
-  def getText(i18nDocRef: I18nDocRef, no: Int, contentRefOpt: Option[ContentLoopRef]) = {
+  def getText(i18nDocRef: I18nDocRef, no: Int, contentRefOpt: Option[TextDocLoopItemRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
         """select t from Text t where t.i18nDocRef = :i18nDocRef and t.no = :no
@@ -138,7 +139,7 @@ class TextDocDao extends HibernateSupport {
   /**
    * Please note that createIfNotExists creates an instance of ImageDomainObject not a database entry.
    */
-  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentLoopRef] = None,
+  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[TextDocLoopItemRef] = None,
                 createIfNotExists: Boolean = false): JList[ImageDomainObject] = {
     for {
       language <- languageDao.getAllLanguages.asScala
@@ -162,7 +163,7 @@ class TextDocDao extends HibernateSupport {
 //    )(breakOut)
 //  }
 
-  def getImage(docRef: DocRef, no: Int, language: DocumentLanguage, contentRefOpt: Option[ContentLoopRef]) = {
+  def getImage(docRef: DocRef, no: Int, language: DocLanguage, contentRefOpt: Option[TextDocLoopItemRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
         """select i from Image i where i.docRef = :docRef and i.no = :no
@@ -199,7 +200,7 @@ class TextDocDao extends HibernateSupport {
     ) |> ImageUtil.initImagesSources
 
 
-  def getImages(docRef: DocRef, language: DocumentLanguage): JList[ImageDomainObject] =
+  def getImages(docRef: DocRef, language: DocLanguage): JList[ImageDomainObject] =
     hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
       "Image.getByDocRefAndLanguage",
       "docRef" -> docRef, "language" -> language
@@ -207,12 +208,12 @@ class TextDocDao extends HibernateSupport {
 
 
 
-  def deleteImages(docRef: DocRef, language: DocumentLanguage): Int =
+  def deleteImages(docRef: DocRef, language: DocLanguage): Int =
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
       "Image.deleteImagesByDocRefAndLanguage", "docRef" -> docRef, "language" -> language
     )
 
-  def getLoop(loopId: Long) = hibernate.get[ContentLoop](loopId)
+  def getLoop(loopId: Long) = hibernate.get[TextDocLoop](loopId)
 
   /**
    * Returns loop or null if loop can not be found.
@@ -221,7 +222,7 @@ class TextDocDao extends HibernateSupport {
    *
    * @return loop or null if loop can not be found.
    */
-  def getLoop(docRef: DocRef, no: Int): ContentLoop =
+  def getLoop(docRef: DocRef, no: Int): TextDocLoop =
     hibernate.getByNamedQueryAndNamedParams(
       "ContentLoop.getByDocRefAndNo", "docRef" -> docRef, "no" -> no
     )
@@ -232,7 +233,7 @@ class TextDocDao extends HibernateSupport {
 
    * @return document content loops.
    */
-  def getLoops(docRef: DocRef): JList[ContentLoop] = hibernate.listByNamedQueryAndNamedParams(
+  def getLoops(docRef: DocRef): JList[TextDocLoop] = hibernate.listByNamedQueryAndNamedParams(
     "ContentLoop.getByDocRef", "docRef" -> docRef
   )
 
@@ -252,7 +253,7 @@ class TextDocDao extends HibernateSupport {
    * @param loop content loop.
    * @return saved content loop.
    */
-  def saveLoop(loop: ContentLoop) = loop.clone() |>> { loopClone =>
+  def saveLoop(loop: TextDocLoop) = loop.clone() |>> { loopClone =>
     hibernate.saveOrUpdate(loopClone)
     hibernate.flush()
   }

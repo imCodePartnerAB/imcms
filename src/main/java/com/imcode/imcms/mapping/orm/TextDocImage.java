@@ -17,23 +17,16 @@ import java.util.*;
 
 @Entity(name = "Image")
 @Table(name = "imcms_text_doc_images")
-public class TextDocImage implements Serializable, Cloneable {
+public class TextDocImage extends DocVersionedContent {
 
     public static final int IMAGE_NAME_LENGTH = 40;
 
     private static final int GEN_FILE_LENGTH = 255;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @Transient
     private ImageSource source = new NullImageSource();
 
-    @NotNull
-    private DocRef docRef;
-
-    private ContentLoopRef contentLoopRef;
+    private TextDocLoopItemRef loopItemRef;
 
     @NotNull
     private Integer no;
@@ -91,34 +84,18 @@ public class TextDocImage implements Serializable, Cloneable {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private DocumentLanguage language;
+    private DocLanguage language;
 
     public String getName() {
         return name;
     }
 
-    public Integer getId() {
-        return id;
+    public TextDocLoopItemRef getLoopItemRef() {
+        return loopItemRef;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public DocRef getDocRef() {
-        return docRef;
-    }
-
-    public void setDocRef(DocRef docRef) {
-        this.docRef = docRef;
-    }
-
-    public ContentLoopRef getContentLoopRef() {
-        return contentLoopRef;
-    }
-
-    public void setContentLoopRef(ContentLoopRef contentLoopRef) {
-        this.contentLoopRef = contentLoopRef;
+    public void setLoopItemRef(TextDocLoopItemRef contentLoopRef) {
+        this.loopItemRef = contentLoopRef;
     }
 
     public String getUrl() {
@@ -145,11 +122,11 @@ public class TextDocImage implements Serializable, Cloneable {
         this.no = no;
     }
 
-    public DocumentLanguage getLanguage() {
+    public DocLanguage getLanguage() {
         return language;
     }
 
-    public void setLanguage(DocumentLanguage language) {
+    public void setLanguage(DocLanguage language) {
         this.language = language;
     }
 
@@ -396,70 +373,61 @@ public class TextDocImage implements Serializable, Cloneable {
         this.cropRegion = cropRegion;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj == this || (obj instanceof TextDocImage && equals((TextDocImage) obj));
-    }
-
-    private boolean equals(TextDocImage that) {
-        return Objects.equals(id, that.id)
-                && Objects.equals(source.toStorageString(), that.getSource().toStorageString())
-                && Objects.equals(docRef, that.getDocRef())
-                && Objects.equals(contentLoopRef, that.getContentLoopRef())
-                && Objects.equals(no, that.getNo())
-                && Objects.equals(width, that.getWidth())
-                && Objects.equals(height, that.getHeight())
-                && Objects.equals(border, that.getBorder())
-                && Objects.equals(align, that.getAlign())
-                && Objects.equals(alternateText, that.getAlternateText())
-                && Objects.equals(lowResolutionUrl, that.getLowResolutionUrl())
-                && Objects.equals(verticalSpace, that.getVerticalSpace())
-                && Objects.equals(horizontalSpace, that.getHorizontalSpace())
-                && Objects.equals(target, that.getTarget())
-                && Objects.equals(linkUrl, that.getLinkUrl())
-                && Objects.equals(name, that.getName())
-                && Objects.equals(cropRegion, that.getCropRegion())
-                && Objects.equals(language, that.getLanguage())
-                && Objects.equals(getFormat(), that.getFormat())
-                && Objects.equals(getRotateDirection(), that.getRotateDirection())
-                && Objects.equals(getResize(), that.getResize());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                id,
-                source.toStorageString(),
-                docRef,
-                contentLoopRef,
-                no,
-                width,
-                height,
-                border,
-                align,
-                alternateText,
-                lowResolutionUrl,
-                verticalSpace,
-                horizontalSpace,
-                target,
-                linkUrl,
-                name,
-                cropRegion,
-                language,
-                getFormat(),
-                getRotateDirection(),
-                getResize()
-        );
-    }
-
-    @Override
-    public TextDocImage clone() {
-        try {
-            return (TextDocImage) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    @Override
+//    public boolean equals(Object obj) {
+//        return obj == this || (obj instanceof TextDocImage && equals((TextDocImage) obj));
+//    }
+//
+//    private boolean equals(TextDocImage that) {
+//        return Objects.equals(id, that.id)
+//                && Objects.equals(source.toStorageString(), that.getSource().toStorageString())
+//                && Objects.equals(docRef, that.getDocRef())
+//                && Objects.equals(contentLoopRef, that.getContentLoopRef())
+//                && Objects.equals(no, that.getNo())
+//                && Objects.equals(width, that.getWidth())
+//                && Objects.equals(height, that.getHeight())
+//                && Objects.equals(border, that.getBorder())
+//                && Objects.equals(align, that.getAlign())
+//                && Objects.equals(alternateText, that.getAlternateText())
+//                && Objects.equals(lowResolutionUrl, that.getLowResolutionUrl())
+//                && Objects.equals(verticalSpace, that.getVerticalSpace())
+//                && Objects.equals(horizontalSpace, that.getHorizontalSpace())
+//                && Objects.equals(target, that.getTarget())
+//                && Objects.equals(linkUrl, that.getLinkUrl())
+//                && Objects.equals(name, that.getName())
+//                && Objects.equals(cropRegion, that.getCropRegion())
+//                && Objects.equals(language, that.getLanguage())
+//                && Objects.equals(getFormat(), that.getFormat())
+//                && Objects.equals(getRotateDirection(), that.getRotateDirection())
+//                && Objects.equals(getResize(), that.getResize());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(
+//                id,
+//                source.toStorageString(),
+//                docRef,
+//                contentLoopRef,
+//                no,
+//                width,
+//                height,
+//                border,
+//                align,
+//                alternateText,
+//                lowResolutionUrl,
+//                verticalSpace,
+//                horizontalSpace,
+//                target,
+//                linkUrl,
+//                name,
+//                cropRegion,
+//                language,
+//                getFormat(),
+//                getRotateDirection(),
+//                getResize()
+//        );
+//    }
 
     @Embeddable
     public static class CropRegion implements Serializable {

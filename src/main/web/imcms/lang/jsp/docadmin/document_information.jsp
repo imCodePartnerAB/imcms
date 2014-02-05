@@ -28,7 +28,7 @@
             com.imcode.imcms.mapping.orm.Meta"
 	
 %>
-<%@ page import="com.imcode.imcms.mapping.orm.DocumentLanguage" %>
+<%@ page import="com.imcode.imcms.mapping.orm.DocLanguage" %>
 <%@ page import="java.util.*" %>
 <%@ page import="com.imcode.imcms.mapping.orm.I18nMeta" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
@@ -59,7 +59,7 @@
     pageContext.setAttribute("document", document);
     pageContext.setAttribute("i18nMetas", documentInformationPage.getLabelsMap().values());
 
-    Map<DocumentLanguage, Boolean> languagesStates  = documentInformationPage.getLanguagesStates();
+    Map<DocLanguage, Boolean> languagesStates  = documentInformationPage.getLanguagesStates();
 %><%!
 
 String formatDate(Date date) {
@@ -395,8 +395,8 @@ function setI18nCodeParameterValue(value) {
 			<table border="0" cellspacing="0" cellpadding="2">
 
             <%
-            for (Map.Entry<DocumentLanguage, Boolean> state: languagesStates.entrySet()) {
-                DocumentLanguage language = state.getKey();
+            for (Map.Entry<DocLanguage, Boolean> state: languagesStates.entrySet()) {
+                DocLanguage language = state.getKey();
                 String postfix = "_" + language.getCode();
                 Boolean enabled = state.getValue();
 

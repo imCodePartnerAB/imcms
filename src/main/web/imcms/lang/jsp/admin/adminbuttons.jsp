@@ -14,7 +14,7 @@
 	        org.apache.commons.lang.StringUtils,
 	        java.util.List,
 	        com.imcode.imcms.mapping.DocumentMapper,
-	        com.imcode.imcms.mapping.orm.DocumentVersion,
+	        com.imcode.imcms.mapping.orm.DocVersion,
 	        java.util.Set"
 	
 %><%@ taglib uri="imcmsvelocity" prefix="vel"
@@ -52,10 +52,10 @@ int versionNo = document.getVersionNo();
 /* *******************************************************************************************
  *         Get languages                                                                     *
  ******************************************************************************************* */
-List<DocumentLanguage> languages = Imcms.getServices().getDocumentI18nSupport().getLanguages();
-Set<DocumentLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
-DocumentLanguage defaultLanguage = Imcms.getServices().getDocumentI18nSupport().getDefaultLanguage();
-DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
+List<DocLanguage> languages = Imcms.getServices().getDocumentI18nSupport().getLanguages();
+Set<DocLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
+DocLanguage defaultLanguage = Imcms.getServices().getDocumentI18nSupport().getDefaultLanguage();
+DocLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
 
 /* *******************************************************************************************
  *         BROWSER SNIFFER                                                                   *
@@ -72,7 +72,7 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 <%@page import="org.apache.commons.collections.iterators.ReverseListIterator"%>
 <%@page import="java.util.Iterator"%>
 <%@ page import="imcode.server.ImcmsConstants" %>
-<%@ page import="com.imcode.imcms.mapping.orm.DocumentLanguage" %>
+<%@ page import="com.imcode.imcms.mapping.orm.DocLanguage" %>
 <%@ page import="com.imcode.imcms.mapping.DocumentVersionInfo" %>
 <vel:velocity>
 <style type="text/css">
@@ -147,7 +147,7 @@ if (null != languages) { %>
 	<tr><%
 	int iCount = 0 ;
 	int languagesPerRow = 7 ;
-	for (DocumentLanguage lang: languages ) {
+	for (DocLanguage lang: languages ) {
 		String langCode       = lang.getCode() ;
 		String langName       = lang.getName() ;
 		String langNameNative = lang.getNativeName() ;
@@ -207,7 +207,7 @@ if (sFlags != null && sFlags.equals("1")) {
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
           <select name="<%=ImcmsConstants.REQUEST_PARAM__DOC_VERSION%>">          
             <% while (iterator.hasNext()) {
-            	DocumentVersion v = (DocumentVersion)iterator.next();
+            	DocVersion v = (DocVersion)iterator.next();
             	String sSelected = v.getNo() == versionNo ? " selected=\"selected\"" : "";
                 String displayName = DocumentVersionInfo.isWorkingVersion(v)
                         ? "DRAFT" : "Version " + v.getNo();

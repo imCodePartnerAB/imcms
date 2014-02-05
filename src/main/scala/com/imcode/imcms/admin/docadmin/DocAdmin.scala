@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.docadmin
 
-import com.imcode.imcms.mapping.orm.{DocRef, DocumentVersion}
+import com.imcode.imcms.mapping.orm.{DocRef, DocVersion}
 import java.util.Locale
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
@@ -336,7 +336,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     }
 
     val textDao = imcmsServices.getManagedBean(classOf[TextDocDao])
-    val texts = textDao.getTexts(DocRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
+    val texts = textDao.getTexts(DocRef.of(doc.getId, DocVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
 
     for (text <- texts.asScala if text.getI18nDocRef == null) {
       text.setType(TextDomainObject.TEXT_TYPE_HTML)

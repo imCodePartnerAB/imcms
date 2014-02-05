@@ -20,7 +20,7 @@ public class I18nMeta implements Serializable, Cloneable {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private DocumentLanguage language;
+    private DocLanguage language;
 
     /**
      * Doc's headline label. Mainly used as HTML page title.
@@ -53,7 +53,7 @@ public class I18nMeta implements Serializable, Cloneable {
         return id;
     }
 
-    public DocumentLanguage getLanguage() {
+    public DocLanguage getLanguage() {
         return language;
     }
 

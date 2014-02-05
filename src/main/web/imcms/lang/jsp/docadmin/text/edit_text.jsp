@@ -1,5 +1,5 @@
-<%@ page import="com.imcode.imcms.mapping.orm.Content,
-                 com.imcode.imcms.mapping.orm.ContentLoop,
+<%@ page import="com.imcode.imcms.mapping.orm.TextDocLoopItem,
+                 com.imcode.imcms.mapping.orm.TextDocLoop,
                  imcode.server.Imcms,
                  imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,
@@ -34,10 +34,10 @@
         url += "&rows=" + rows;
     }
 
-    Content loopContent = (Content) request.getAttribute("tag.text.loop.content");
+    TextDocLoopItem loopContent = (TextDocLoopItem) request.getAttribute("tag.text.loop.content");
 
     if (loopContent != null) {
-        ContentLoop loop = (ContentLoop) request.getAttribute("tag.text.loop");
+        TextDocLoop loop = (TextDocLoop) request.getAttribute("tag.text.loop");
 
         url += String.format("contentRef=%d_%d", loop.getNo(), loopContent.getNo());
     }

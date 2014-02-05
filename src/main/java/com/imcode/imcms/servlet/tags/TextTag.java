@@ -1,16 +1,16 @@
 package com.imcode.imcms.servlet.tags;
 
+import com.imcode.imcms.mapping.orm.TextDocLoop;
+import com.imcode.imcms.mapping.orm.TextDocLoopItem;
 import imcode.server.parser.TagParser;
-import com.imcode.imcms.mapping.orm.Content;
-import com.imcode.imcms.mapping.orm.ContentLoop;
 
 public class TextTag extends SimpleImcmsTag {
 	
 
     protected String getContent(TagParser tagParser) {
         ContentLoopTag2 clTag = (ContentLoopTag2)findAncestorWithClass(this, ContentLoopTag2.class);
-        ContentLoop loop =  clTag == null ? null : clTag.getLoop();
-        Content content = clTag == null ? null : clTag.getCurrentContent();
+        TextDocLoop loop =  clTag == null ? null : clTag.getLoop();
+        TextDocLoopItem content = clTag == null ? null : clTag.getCurrentContent();
 
 
         return tagParser.tagText(attributes, loop, content);

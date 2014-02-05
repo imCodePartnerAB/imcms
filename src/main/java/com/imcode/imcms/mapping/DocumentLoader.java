@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.orm.DocumentLanguage;
-import com.imcode.imcms.mapping.orm.DocumentVersion;
+import com.imcode.imcms.mapping.orm.DocLanguage;
+import com.imcode.imcms.mapping.orm.DocVersion;
 import com.imcode.imcms.mapping.orm.I18nMeta;
 import com.imcode.imcms.mapping.orm.Meta;
 import imcode.server.ImcmsConstants;
@@ -78,7 +78,7 @@ public class DocumentLoader {
      * @param language
      * @return
      */
-    public <T extends DocumentDomainObject> T loadAndInitDocument(Meta meta, DocumentVersion version, DocumentLanguage language) {
+    public <T extends DocumentDomainObject> T loadAndInitDocument(Meta meta, DocVersion version, DocLanguage language) {
         return initDocument(this.<T>createDocument(meta, version, language));
     }
 
@@ -86,14 +86,14 @@ public class DocumentLoader {
     /**
      * Creates document instance.
      */
-    private <T extends DocumentDomainObject> T createDocument(Meta meta, DocumentVersion version, DocumentLanguage language) {
+    private <T extends DocumentDomainObject> T createDocument(Meta meta, DocVersion version, DocLanguage language) {
         I18nMeta i18nMeta = metaDao.getI18nMeta(meta.getId(), language);
 
         if (i18nMeta == null) {
             i18nMeta = I18nMeta.builder().docId(meta.getId()).language(language).headline("").menuText("").menuImageURL("").build();
         }
 
-        T document = DocumentDomainObject.<T>fromDocumentTypeId(meta.getDocumentType());
+        T document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
         document.setMeta(meta);
         document.setLanguage(language);

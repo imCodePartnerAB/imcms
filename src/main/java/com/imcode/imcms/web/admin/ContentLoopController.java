@@ -2,6 +2,7 @@ package com.imcode.imcms.web.admin;
 
 import com.imcode.imcms.dao.TextDocDao;
 import com.imcode.imcms.mapping.orm.ContentLoopOps;
+import com.imcode.imcms.mapping.orm.TextDocLoop;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.imcode.imcms.mapping.orm.ContentLoop;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 
@@ -52,11 +52,11 @@ public class ContentLoopController {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(docId);
         final Command command = getCommand(cmd);
-        final ContentLoop loop = document.getContentLoop(no);
+        final TextDocLoop loop = document.getContentLoop(no);
         final ContentLoopOps ops = new ContentLoopOps(loop);
 
-        ContentLoop updatedLoop = new Object() {
-            ContentLoop updateLoop() {
+        TextDocLoop updatedLoop = new Object() {
+            TextDocLoop updateLoop() {
                 switch (command) {
                     case MOVE_UP:
                         return ops.moveContentBackward(contentIndex);

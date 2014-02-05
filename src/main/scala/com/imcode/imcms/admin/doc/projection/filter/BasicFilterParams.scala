@@ -1,7 +1,7 @@
 package com.imcode.imcms.admin.doc.projection.filter
 
 import _root_.imcode.server.document.{LifeCyclePhase, DocumentTypeDomainObject}
-import com.imcode.imcms.mapping.orm.DocumentLanguage
+import com.imcode.imcms.mapping.orm.DocLanguage
 
 /**
  * The checkbox associated with a parameter is checked only if this parameter is defined.
@@ -16,6 +16,6 @@ case class BasicFilterParams(
   idRangeOpt: Option[IdRange] = Some(IdRange(None, None)),
   textOpt: Option[String] = Some(""),
   docTypesOpt: Option[Set[DocumentTypeDomainObject]] = Some(Set.empty),
-  languagesOpt: Option[Set[DocumentLanguage]] = Some(Set.empty),
+  languagesOpt: Option[Set[DocLanguage]] = Some(Set.empty),
   phasesOpt: Option[Set[LifeCyclePhase]] = Some(Set.empty)
 )

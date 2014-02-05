@@ -1,8 +1,8 @@
 <%@ page
 	
-	import="com.imcode.imcms.mapping.orm.DocumentVersion,
+	import="com.imcode.imcms.mapping.orm.DocVersion,
 	        com.imcode.imcms.mapping.DocumentVersionInfo,
-	        com.imcode.imcms.mapping.orm.DocumentLanguage,
+	        com.imcode.imcms.mapping.orm.DocLanguage,
 	        com.imcode.imcms.mapping.DocumentMapper,
 	        com.imcode.imcms.servlet.AdminPanelServlet,
 	        com.imcode.imcms.servlet.admin.AdminDoc,
@@ -156,10 +156,10 @@ int versionNo = document.getVersionNo();
 /* *******************************************************************************************
 *         Get languages                                                                     *
 ******************************************************************************************* */
-List<DocumentLanguage> languages = Imcms.getServices().getDocumentI18nSupport().getLanguages();
-Set<DocumentLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
-DocumentLanguage defaultLanguage = Imcms.getServices().getDocumentI18nSupport().getDefaultLanguage();
-DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
+List<DocLanguage> languages = Imcms.getServices().getDocumentI18nSupport().getLanguages();
+Set<DocLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
+DocLanguage defaultLanguage = Imcms.getServices().getDocumentI18nSupport().getDefaultLanguage();
+DocLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
 
 
 
@@ -183,7 +183,7 @@ if ("adminPanelHtml".equals(get)) { %>
                 <ul>
                     <li id="statusIcon"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></li><%
                 boolean hasManyLanguages = (languages.size() > 6) ;
-                for (DocumentLanguage lang: languages) {
+                for (DocLanguage lang: languages) {
                     String langCode       = lang.getCode() ;
                     String langName       = lang.getName() ;
                     String langNameNative = lang.getNativeName() ;
@@ -340,7 +340,7 @@ if ("adminPanelHtml".equals(get)) { %>
                         <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE%>" value="<%=currentLanguage.getCode()%>"/>
                         <select name="<%=ImcmsConstants.REQUEST_PARAM__DOC_VERSION%>" class="imcmsSelectBox"><%
                         while (iterator.hasNext()) {
-                            DocumentVersion v = (DocumentVersion)iterator.next() ;
+                            DocVersion v = (DocVersion)iterator.next() ;
                             String sSelected = v.getNo() == versionNo ? " selected=\"selected\"" : "" ;
                             String displayName = DocumentVersionInfo.isWorkingVersion(v) ? "DRAFT" : "Version " + v.getNo().toString() ;
                             if (docVersionInfo.isDefaultVersion(v)) {

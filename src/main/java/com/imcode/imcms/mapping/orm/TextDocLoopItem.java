@@ -6,25 +6,18 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * Content is a facet of a content loop.
- * <p/>
- * A Content is distinguished by no which is assigned automatically when a new content is added into a content loop.
- *
- * @see ContentLoop
- */
 @Embeddable
 @Access(AccessType.FIELD)
-public class Content implements Serializable, Cloneable {
+public class TextDocLoopItem implements Serializable, Cloneable {
 
     private int no;
 
     private boolean enabled = true;
 
     @Override
-    public Content clone() {
+    public TextDocLoopItem clone() {
         try {
-            return (Content) super.clone();
+            return (TextDocLoopItem) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -44,10 +37,10 @@ public class Content implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof Content && equals((Content) o));
+        return o == this || (o instanceof TextDocLoopItem && equals((TextDocLoopItem) o));
     }
 
-    private boolean equals(Content that) {
+    private boolean equals(TextDocLoopItem that) {
         return this.enabled == that.enabled && this.no == that.no;
     }
 

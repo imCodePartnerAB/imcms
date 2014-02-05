@@ -1,12 +1,12 @@
 package com.imcode
 package imcms.mapping
 
-import com.imcode.imcms.mapping.orm.{DocRef, DocumentVersion}
+import com.imcode.imcms.mapping.orm.{DocRef, DocVersion}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import DocumentStoringVisitor.getFilenameForFileDocumentFile
-import DocumentVersion.WORKING_VERSION_NO
+import DocVersion.WORKING_VERSION_NO
 
 @RunWith(classOf[JUnitRunner])
 class FilenameSpec extends WordSpec {

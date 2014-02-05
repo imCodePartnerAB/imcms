@@ -1,14 +1,13 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.mapping.orm.HtmlDocContent;
+import com.imcode.imcms.mapping.orm.UrlDocContent;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-
-import com.imcode.imcms.mapping.orm.HtmlReference;
-import com.imcode.imcms.mapping.orm.UrlReference;
 
 /**
  * Updates existing document fields.
@@ -34,7 +33,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction   
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
-        HtmlReference htmlReference = new HtmlReference();
+        HtmlDocContent htmlReference = new HtmlDocContent();
 
         htmlReference.setDocRef(document.getRef());
         htmlReference.setHtml(document.getHtml());
@@ -45,7 +44,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction   
     public void visitUrlDocument(UrlDocumentDomainObject document) {
-        UrlReference reference = new UrlReference();
+        UrlDocContent reference = new UrlDocContent();
         reference.setDocRef(document.getRef());
         reference.setUrl(document.getUrl());
         reference.setUrlTarget("");

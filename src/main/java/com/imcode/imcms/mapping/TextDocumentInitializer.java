@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.dao.*;
+import com.imcode.imcms.mapping.orm.TextDocLoop;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
@@ -15,7 +16,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.imcode.imcms.mapping.orm.ContentLoop;
 import com.imcode.imcms.dao.TextDocDao;
 import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;
@@ -115,10 +115,10 @@ public class TextDocumentInitializer {
      * @throws IllegalStateException if a content loop is empty i.e. does not have a contents. 
      */
 	public void initContentLoops(TextDocumentDomainObject document) {
-		List<ContentLoop> loops = textDocDao.getLoops(document.getRef());
-		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
+		List<TextDocLoop> loops = textDocDao.getLoops(document.getRef());
+		Map<Integer, TextDocLoop> loopsMap = new HashMap<>();
 		
-		for (ContentLoop loop: loops) {
+		for (TextDocLoop loop: loops) {
 			loopsMap.put(loop.getNo(), loop);
 		}
 		

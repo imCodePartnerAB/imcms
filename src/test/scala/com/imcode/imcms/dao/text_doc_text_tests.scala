@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.orm.{DocumentLanguage, DocRef, TextHistory, I18nDocRef}
+import com.imcode.imcms.mapping.orm.{DocLanguage, DocRef, TextDocTextHistory, I18nDocRef}
 import scala.collection.JavaConverters._
 import org.junit.Assert._
 import org.junit.runner.RunWith
@@ -19,7 +19,7 @@ import com.imcode.imcms.test.fixtures.UserFX
 @RunWith(classOf[JUnitRunner])
 class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  type FixtureParam = DocumentLanguage
+  type FixtureParam = DocLanguage
 
 	var textDao: TextDocDao = _
 
@@ -52,7 +52,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
       contentRefOpt: Option[ContentLoopRef] = None,
       no: Int = Default.no,
       text: String = Default.text,
-      language: DocumentLanguage) =
+      language: DocLanguage) =
 
     TextDomainObject.builder().i18nDocRef(I18nDocRef.of(docId, docVersionNo, language)).no(no).text(text) |> { builder =>
       contentRefOpt.foreach(builder.contentRef)
@@ -125,7 +125,7 @@ class TextDaoSuite extends fixture.FunSuite with BeforeAndAfterAll with BeforeAn
 
   test("save text history") { language =>
     val text = saveNewText(language = language)
-    val textHistory = new TextHistory(text, admin)
+    val textHistory = new TextDocTextHistory(text, admin)
 
     textDao.saveTextHistory(textHistory)
   }
@@ -233,9 +233,9 @@ class TextDaoSuiteConfig {
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.BasicWithSql,
       TestSetup.hibernate.configurators.addAnnotatedClasses(
-        classOf[DocumentLanguage],
+        classOf[DocLanguage],
         classOf[TextDomainObject],
-        classOf[TextHistory]
+        classOf[TextDocTextHistory]
       ),
       TestSetup.hibernate.configurators.addXmlFiles(
         "com/imcode/imcms/hbm/I18nLanguage.hbm.xml",

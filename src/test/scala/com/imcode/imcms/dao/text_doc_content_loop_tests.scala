@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.orm.{ContentLoopOps, ContentLoop, DocRef}
+import com.imcode.imcms.mapping.orm.{ContentLoopOps, TextDocLoop, DocRef}
 import scala.collection.JavaConverters._
 import org.junit.Assert._
 import org.junit.runner.RunWith
@@ -74,7 +74,7 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   }
 
   test("create empty content loop") {
-    ContentLoop.builder() |> { builder =>
+    TextDocLoop.builder() |> { builder =>
       val docRef = DocRef.of(1001, 0)
       builder.docRef(docRef)
       builder.no(dao.getNextLoopNo(docRef))
@@ -111,7 +111,7 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   test("create non empty content loop [with 5 contents]") {
     val contentsCount = 5
     val docRef = DocRef.of(1001, 0)
-    val loop = ContentLoop.builder().docRef(docRef).no(dao.getNextLoopNo(docRef)).build() |> { emptyLoop =>
+    val loop = TextDocLoop.builder().docRef(docRef).no(dao.getNextLoopNo(docRef)).build() |> { emptyLoop =>
       1.to(contentsCount).foldLeft(emptyLoop) {
         case (loop, _) =>
           val ops = new ContentLoopOps(loop)
@@ -137,7 +137,7 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   }
 
 
-  def getLoop(no: Int): ContentLoop = getLoop(no, false)
+  def getLoop(no: Int): TextDocLoop = getLoop(no, false)
 
   def getLoop(no: Int, assertLoopNotNull: Boolean) = DocRef.of(1001, 0) |> { docRef =>
     dao.getLoop(docRef, no) |>> { loop =>
@@ -158,7 +158,7 @@ class ContextLoopDaoSuiteConfig {
     Function.chain(Seq(
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.BasicWithSql,
-      TestSetup.hibernate.configurators.addAnnotatedClasses(classOf[ContentLoop]),
+      TestSetup.hibernate.configurators.addAnnotatedClasses(classOf[TextDocLoop]),
       TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/ContentLoop.hbm.xml")
     ))
 }

@@ -1,12 +1,12 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.dao.TextDocDao;
+import com.imcode.imcms.mapping.orm.TextDocLoopItemRef;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import com.imcode.imcms.mapping.orm.ContentLoopRef;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -53,7 +53,7 @@ public class ChangeImage extends HttpServlet {
         String contentNoStr = request.getParameter("content_no");
         Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
-        ContentLoopRef contentLoopRef = loopNo == null || contentNo == null ? null : ContentLoopRef.of(loopNo, contentNo);
+        TextDocLoopItemRef contentLoopRef = loopNo == null || contentNo == null ? null : TextDocLoopItemRef.of(loopNo, contentNo);
 
         final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(
                 documentId);

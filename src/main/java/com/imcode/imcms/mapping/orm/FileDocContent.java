@@ -12,7 +12,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "fileupload_docs")
-public class FileReference {
+public class FileDocContent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

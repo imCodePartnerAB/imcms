@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "imcms_languages")
-public class DocumentLanguage implements Serializable, Cloneable {
+public class DocLanguage implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +30,10 @@ public class DocumentLanguage implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof DocumentLanguage && equals((DocumentLanguage) o));
+        return o == this || (o instanceof DocLanguage && equals((DocLanguage) o));
     }
 
-    private boolean equals(DocumentLanguage that) {
+    private boolean equals(DocLanguage that) {
         return Objects.equals(id, that.id)
                 && Objects.equals(code, that.code)
                 && Objects.equals(name, that.name)
@@ -47,9 +47,9 @@ public class DocumentLanguage implements Serializable, Cloneable {
     }
 
     @Override
-    public DocumentLanguage clone() {
+    public DocLanguage clone() {
         try {
-            return (DocumentLanguage)super.clone();
+            return (DocLanguage)super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }

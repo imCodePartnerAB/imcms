@@ -92,7 +92,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
   ".saveFileReferences" in {
     val docRef = DocRefFX.Default
-    val fileRef = new FileReference |>> { ref =>
+    val fileRef = new FileDocContent |>> { ref =>
       ref.setDocRef(docRef)
     }
 
@@ -132,16 +132,16 @@ class MetaDaoTestConfig {
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.Basic,
       TestSetup.hibernate.configurators.addAnnotatedClasses(
-        classOf[DocumentProperty],
+        classOf[DocProperty],
         classOf[Meta],
         classOf[I18nMeta],
-        classOf[DocumentVersion],
-        classOf[DocumentLanguage],
+        classOf[DocVersion],
+        classOf[DocLanguage],
         classOf[CategoryDomainObject],
         classOf[CategoryTypeDomainObject],
-        classOf[FileReference],
-        classOf[UrlReference],
-        classOf[HtmlReference],
+        classOf[FileDocContent],
+        classOf[UrlDocContent],
+        classOf[HtmlDocContent],
         classOf[Include]
       ),
       TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")

@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.orm.DocumentVersion
+import com.imcode.imcms.mapping.orm.DocVersion
 import imcode.server.user.UserDomainObject;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,17 +19,17 @@ class DocumentVersionDao extends HibernateSupport {
    *
    * @return new document version.
    */
-  def createVersion(docId: Int, userId: Int): DocumentVersion = synchronized {
+  def createVersion(docId: Int, userId: Int): DocVersion = synchronized {
     val no = getLatestVersion(docId) match {
       case null => 0
       case version => version.getNo.intValue + 1
     }
 
-    hibernate.save(new DocumentVersion(docId, no, userId, new Date))
+    hibernate.save(new DocVersion(docId, no, userId, new Date))
   }
 
 
-  def getLatestVersion(docId: Int): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
+  def getLatestVersion(docId: Int): DocVersion = hibernate.getByNamedQueryAndNamedParams(
     "DocumentVersion.getLatestVersion", "docId" -> docId
   )
 
@@ -39,22 +39,22 @@ class DocumentVersionDao extends HibernateSupport {
    * @param docId meta id.
    * @return available versions for the document.
    */
-  def getAllVersions (docId: Int): JList[DocumentVersion] = hibernate.listByNamedQueryAndNamedParams(
+  def getAllVersions (docId: Int): JList[DocVersion] = hibernate.listByNamedQueryAndNamedParams(
     "DocumentVersion.getByDocId", "docId" -> docId
   )
 
 
-  def getVersion(docId: Int, no: Int): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
+  def getVersion(docId: Int, no: Int): DocVersion = hibernate.getByNamedQueryAndNamedParams(
     "DocumentVersion.getByDocIdAndNo", "docId" -> docId, "no" -> no
   )
 
 
-  def getDefaultVersion(docId: Int): DocumentVersion = hibernate.getByNamedQueryAndNamedParams(
+  def getDefaultVersion(docId: Int): DocVersion = hibernate.getByNamedQueryAndNamedParams(
     "DocumentVersion.getDefaultVersion", "docId" -> docId
   )
 
 
-  def changeDefaultVersion(newDefaultVersion: DocumentVersion, publisher: UserDomainObject) {
+  def changeDefaultVersion(newDefaultVersion: DocVersion, publisher: UserDomainObject) {
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
       "DocumentVersion.changeDefaultVersion",
 

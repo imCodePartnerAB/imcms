@@ -7,11 +7,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="imcms_url_docs")
-public class UrlReference {
+public class UrlDocContent extends DocVersionedContent {
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Integer id;
-	
 	@Column(name="frame_name")
 	private String urlFrameName;
 	
@@ -26,8 +23,6 @@ public class UrlReference {
 	
 	@Column(name="lang_prefix")	
 	private String urlLanguagePrefix;
-
-    private DocRef docRef;
 
     public String getUrlFrameName() {
 		return urlFrameName;
@@ -68,12 +63,4 @@ public class UrlReference {
 	public void setUrlLanguagePrefix(String urlLanguagePrefix) {
 		this.urlLanguagePrefix = urlLanguagePrefix;
 	}
-
-    public DocRef getDocRef() {
-        return docRef;
-    }
-
-    public void setDocRef(DocRef docRef) {
-        this.docRef = docRef;
-    }
 }

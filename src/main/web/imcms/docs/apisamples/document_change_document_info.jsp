@@ -1,12 +1,12 @@
 <%@ page import="com.imcode.imcms.api.*,
                  java.util.*" errorPage="error.jsp" %>
-<%@ page import="com.imcode.imcms.mapping.orm.DocumentLanguage" %>
+<%@ page import="com.imcode.imcms.mapping.orm.DocLanguage" %>
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
-    DocumentLanguage language = DocumentI18nSupport.getCurrentLanguage();
+    DocLanguage language = DocumentI18nSupport.getCurrentLanguage();
 
     document.setHeadline(language, "Test headline text");
     document.setMenuText(language, "Test menu text");

@@ -20,8 +20,8 @@ import com.imcode.imcms.test.fixtures.UserFX
 @RunWith(classOf[JUnitRunner])
 class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach with GivenWhenThen {
 
-  implicit object OrderingDocumentVersion extends Ordering[DocumentVersion] {
-    def compare(v1: DocumentVersion, v2: DocumentVersion) = v1.getNo.intValue - v2.getNo.intValue
+  implicit object OrderingDocumentVersion extends Ordering[DocVersion] {
+    def compare(v1: DocVersion, v2: DocVersion) = v1.getNo.intValue - v2.getNo.intValue
   }
 
   var versionDao: DocumentVersionDao = _
@@ -168,14 +168,14 @@ class DocVersionDaoSuiteConfig {
       TestSetup.hibernate.configurators.addAnnotatedClasses(
         classOf[Meta],
         classOf[I18nMeta],
-        classOf[DocumentVersion],
-        classOf[DocumentLanguage],
-        classOf[DocumentProperty],
+        classOf[DocVersion],
+        classOf[DocLanguage],
+        classOf[DocProperty],
         classOf[CategoryDomainObject],
         classOf[CategoryTypeDomainObject],
-        classOf[FileReference],
-        classOf[UrlReference],
-        classOf[HtmlReference]
+        classOf[FileDocContent],
+        classOf[UrlDocContent],
+        classOf[HtmlDocContent]
       ),
       TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
     ))

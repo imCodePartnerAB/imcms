@@ -1,6 +1,6 @@
 package imcode.server.document.index;
 
-import com.imcode.imcms.mapping.orm.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.DocLanguage;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -13,20 +13,20 @@ import java.util.Set;
 public class SolrQueryCustomizer {
 
     private transient UserDomainObject user;
-    private transient Set<DocumentLanguage> languages = Collections.emptySet();
+    private transient Set<DocLanguage> languages = Collections.emptySet();
 
     public SolrQueryCustomizer setUser(UserDomainObject user) {
         this.user = user;
         return this;
     }
 
-    public SolrQueryCustomizer setLanguage(DocumentLanguage language) {
+    public SolrQueryCustomizer setLanguage(DocLanguage language) {
         languages = Collections.singleton(language);
         return this;
     }
 
-    public SolrQueryCustomizer setLanguages(Collection<DocumentLanguage> languages) {
-        languages = new HashSet<DocumentLanguage>(languages);
+    public SolrQueryCustomizer setLanguages(Collection<DocLanguage> languages) {
+        languages = new HashSet<DocLanguage>(languages);
         return this;
     }
 

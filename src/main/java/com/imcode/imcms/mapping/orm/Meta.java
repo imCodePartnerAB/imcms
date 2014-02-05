@@ -93,10 +93,10 @@ public class Meta implements Serializable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "meta_id")
-    private volatile Integer id;
+    private Integer id;
 
     @Column(name = "default_version_no", nullable = false)
-    private volatile int defaultVersionNo = DocumentVersion.WORKING_VERSION_NO;
+    private int defaultVersionNo = DocVersion.WORKING_VERSION_NO;
 
 
     /**
@@ -104,11 +104,11 @@ public class Meta implements Serializable, Cloneable {
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "disabled_language_show_rule", nullable = false)
-    private volatile DisabledLanguageShowSetting disabledLanguageShowSetting = DisabledLanguageShowSetting.DO_NOT_SHOW;
+    private DisabledLanguageShowSetting disabledLanguageShowSetting = DisabledLanguageShowSetting.DO_NOT_SHOW;
 
     // CHECKED
     @Column(name = "activate", nullable = false, updatable = false)
-    private volatile Integer activate;
+    private Integer activate;
 
     // The following fields are mapped to document attributes:
     // CHECKED
@@ -117,23 +117,23 @@ public class Meta implements Serializable, Cloneable {
     // Discrimination column - from old code:
     // DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(permissionData);
     // todo: rename to documentTypeId
-    private volatile Integer documentType;
+    private Integer documentType;
 
     // CHECKED
     @Column(name = "owner_id", nullable = false)
-    private volatile Integer creatorId;
+    private Integer creatorId;
 
     // CHECKED
     @Column(name = "permissions", nullable = false)
-    private volatile Boolean restrictedOneMorePrivilegedThanRestrictedTwo;
+    private Boolean restrictedOneMorePrivilegedThanRestrictedTwo;
 
     // CHECKED
     @Column(name = "shared", nullable = false)
-    private volatile Boolean linkableByOtherUsers;
+    private Boolean linkableByOtherUsers;
 
     // CHECKED	
     @Column(name = "show_meta", nullable = false)
-    private volatile Boolean linkedForUnauthorizedUsers;
+    private Boolean linkedForUnauthorizedUsers;
 
     /**
      * Deprecated with no replacement.
@@ -141,17 +141,17 @@ public class Meta implements Serializable, Cloneable {
     @Deprecated
     @Column(name = "lang_prefix", nullable = false)
     @SuppressWarnings("unused")
-    private volatile String lang_prefix = "";
+    private String lang_prefix = "";
 
     // CHECKED	
     @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private volatile Date createdDatetime;
+    private Date createdDatetime;
 
     // CHECKED	
     @Column(name = "date_modified", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private volatile Date modifiedDatetime;
+    private Date modifiedDatetime;
 
     /**
      * (Saved) value of modified dt at the time this meta was actually loaded.
@@ -161,23 +161,23 @@ public class Meta implements Serializable, Cloneable {
      * @see com.imcode.imcms.mapping.DocumentSaver#updateDocument
      */
     @Transient
-    private volatile Date actualModifiedDatetime;
+    private Date actualModifiedDatetime;
 
     // CHECKED	
     @Column(name = "disable_search", nullable = false)
-    private volatile boolean searchDisabled;
+    private boolean searchDisabled;
 
     // CHECKED	
     @Column(name = "target", nullable = false)
-    private volatile String target;
+    private String target;
 
     @Column(name = "archived_datetime", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
-    private volatile Date archivedDatetime;
+    private Date archivedDatetime;
 
     // CHECKED	
     @Column(name = "publisher_id", nullable = true)
-    private volatile Integer publisherId;
+    private Integer publisherId;
 
     // CHECKED
 
@@ -186,29 +186,29 @@ public class Meta implements Serializable, Cloneable {
     // Document.PublicationStatus publicationStatus = publicationStatusFromInt(publicationStatusInt);
     // document.setPublicationStatus(publicationStatus); 
     @Column(name = "status", nullable = true)
-    private volatile Integer publicationStatusInt;
+    private Integer publicationStatusInt;
 
     // CHECKED
     @Column(name = "publication_start_datetime", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
-    private volatile Date publicationStartDatetime;
+    private Date publicationStartDatetime;
 
     // CHECKED
     @Column(name = "publication_end_datetime", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
-    private volatile Date publicationEndDatetime;
+    private Date publicationEndDatetime;
 
     // These fields were lazy loaded in previous version:
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "document_properties", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "key_name")
     @Column(name = "value", nullable = false)
-    private volatile Map<String, String> properties = new HashMap<String, String>();
+    private Map<String, String> properties = new HashMap<String, String>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "document_categories", joinColumns = @JoinColumn(name = "meta_id"))
     @Column(name = "category_id", nullable = false)
-    private volatile Set<Integer> categoryIds = new HashSet<Integer>();
+    private Set<Integer> categoryIds = new HashSet<Integer>();
 
     // Set id is either restricted 1 or restricted 2
     // Roles are user defined or system predefined roles
@@ -218,7 +218,7 @@ public class Meta implements Serializable, Cloneable {
     @CollectionTable(name = "roles_rights", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "role_id")
     @Column(name = "set_id")
-    private volatile Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<Integer, Integer>();
 
 
     /**
@@ -231,7 +231,7 @@ public class Meta implements Serializable, Cloneable {
     @CollectionTable(name = "doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "set_id")
     @Column(name = "permission_id")
-    private volatile Map<Integer, Integer> permissionSetBitsMap = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> permissionSetBitsMap = new HashMap<Integer, Integer>();
 
 
     /**
@@ -244,7 +244,7 @@ public class Meta implements Serializable, Cloneable {
     @CollectionTable(name = "new_doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "set_id")
     @Column(name = "permission_id")
-    private volatile Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<Integer, Integer>();
 
     /**
      *
@@ -252,13 +252,13 @@ public class Meta implements Serializable, Cloneable {
     // For processing after load:
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
-    private volatile Set<PermisionSetEx> permisionSetEx = new HashSet<PermisionSetEx>();
+    private Set<PermisionSetEx> permisionSetEx = new HashSet<PermisionSetEx>();
 
 
     // For processing after load:
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "new_doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
-    private volatile Set<PermisionSetEx> permisionSetExForNew = new HashSet<PermisionSetEx>();
+    private Set<PermisionSetEx> permisionSetExForNew = new HashSet<PermisionSetEx>();
 
 
     /**
@@ -270,13 +270,13 @@ public class Meta implements Serializable, Cloneable {
             joinColumns = @JoinColumn(name = "doc_id"),
             inverseJoinColumns = @JoinColumn(name = "language_id")
     )
-    private volatile Set<DocumentLanguage> enabledLanguages = new HashSet<DocumentLanguage>();
+    private Set<DocLanguage> enabledLanguages = new HashSet<DocLanguage>();
 
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "imcms_doc_keywords", joinColumns = @JoinColumn(name = "doc_id"))
     @Column(name = "value")
-    private volatile Set<String> keywords = new HashSet<String>();
+    private Set<String> keywords = new HashSet<String>();
 
 
     //
@@ -284,16 +284,16 @@ public class Meta implements Serializable, Cloneable {
     //
 
     @Transient
-    private volatile DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+    private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
 
     @Transient
-    private volatile DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
+    private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
 
     @Transient
-    private volatile RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
+    private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
 
     @Transient
-    private volatile Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+    private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
 
 
     @Override
@@ -561,12 +561,12 @@ public class Meta implements Serializable, Cloneable {
         this.disabledLanguageShowSetting = disabledLanguageShowSetting;
     }
 
-    public Set<DocumentLanguage> getEnabledLanguages() {
+    public Set<DocLanguage> getEnabledLanguages() {
         return enabledLanguages;
     }
 
-    public void setEnabledLanguages(Set<DocumentLanguage> languages) {
-        this.enabledLanguages = languages != null ? languages : new HashSet<DocumentLanguage>();
+    public void setEnabledLanguages(Set<DocLanguage> languages) {
+        this.enabledLanguages = languages != null ? languages : new HashSet<DocLanguage>();
     }
 
     // Transient properties

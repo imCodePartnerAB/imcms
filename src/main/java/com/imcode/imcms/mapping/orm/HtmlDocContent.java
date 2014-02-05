@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "imcms_html_docs")
-public class HtmlReference implements Serializable {
+public class HtmlDocContent implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

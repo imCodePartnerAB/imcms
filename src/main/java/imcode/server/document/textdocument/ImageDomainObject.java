@@ -1,7 +1,7 @@
 package imcode.server.document.textdocument;
 
 import com.imcode.imcms.api.ContentLoopRef;
-import com.imcode.imcms.mapping.orm.DocumentLanguage;
+import com.imcode.imcms.mapping.orm.DocLanguage;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.util.image.Format;
@@ -64,7 +64,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     private volatile CropRegion cropRegion = new CropRegion();
 
-    private volatile DocumentLanguage language;
+    private volatile DocLanguage language;
 
     public String getName() {
         return name;
@@ -132,11 +132,11 @@ public class ImageDomainObject implements Serializable, Cloneable {
         this.type = type;
     }
 
-    public DocumentLanguage getLanguage() {
+    public DocLanguage getLanguage() {
         return language;
     }
 
-    public void setLanguage(DocumentLanguage language) {
+    public void setLanguage(DocLanguage language) {
         this.language = language;
     }
 

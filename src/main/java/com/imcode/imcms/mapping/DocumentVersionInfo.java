@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.orm.DocumentVersion;
+import com.imcode.imcms.mapping.orm.DocVersion;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -21,27 +21,27 @@ public class DocumentVersionInfo implements Serializable {
 	/**
 	 * Latest version;
 	 */
-	private DocumentVersion latestVersion;
+	private DocVersion latestVersion;
 
 	/**
 	 * Working version (version no 0).
 	 */
-	private DocumentVersion workingVersion;
+	private DocVersion workingVersion;
 	
 	/**
 	 * Default version.
 	 */
-	private DocumentVersion defaultVersion;
+	private DocVersion defaultVersion;
 	
 	/**
 	 * Version list sorted ascending.
 	 */
-	private List<DocumentVersion> versions;
+	private List<DocVersion> versions;
 	
 	/**
 	 * Versions map.
 	 */
-	private Map<Integer, DocumentVersion> versionsMap;
+	private Map<Integer, DocVersion> versionsMap;
 
     /**
 	 * Creates new instance of DocumentVersionSupport.
@@ -50,10 +50,10 @@ public class DocumentVersionInfo implements Serializable {
 	 * 
 	 * @param versions document versions list.
 	 */
-	public DocumentVersionInfo(int docId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
+	public DocumentVersionInfo(int docId, List<DocVersion> versions, DocVersion workingVersion, DocVersion defaultVersion) {
 		versionsMap = new TreeMap<>();
 		
-		for (DocumentVersion  version: versions) {
+		for (DocVersion version: versions) {
 			versionsMap.put(version.getNo(), version);
 		}
 
@@ -78,44 +78,44 @@ public class DocumentVersionInfo implements Serializable {
 	 * 
 	 * @return version or null if there is no version with such version number.
 	 */				
-	public DocumentVersion getVersion(Integer no) {
+	public DocVersion getVersion(Integer no) {
 		return versionsMap.get(no);
 	}
 
     
-    public static boolean isWorkingVersion(DocumentVersion version) {
+    public static boolean isWorkingVersion(DocVersion version) {
         return version != null && isWorkingVersionNo(version.getNo());
     }
 
     public static boolean isWorkingVersionNo(int no) {
-        return no == DocumentVersion.WORKING_VERSION_NO;
+        return no == DocVersion.WORKING_VERSION_NO;
     }
 	
 	/**
 	 * @returns if given version number belongs to active version.
 	 */
-	public boolean isDefaultVersion(DocumentVersion version) {
+	public boolean isDefaultVersion(DocVersion version) {
 		return version != null && getDefaultVersion().getNo() == version.getNo();
 	}
 	
 	/** 
 	 * @return latest version.
 	 */				
-	public DocumentVersion getLatestVersion() {
+	public DocVersion getLatestVersion() {
 		return latestVersion;
 	}
 	
 	/** 
 	 * @return working version.
 	 */		
-	public DocumentVersion getWorkingVersion() {
+	public DocVersion getWorkingVersion() {
 		return workingVersion;
 	}	
 	
 	/** 
 	 * @return default version of a document.
 	 */
-	public DocumentVersion getDefaultVersion() {
+	public DocVersion getDefaultVersion() {
 		return defaultVersion;
 	}	
 	
@@ -125,7 +125,7 @@ public class DocumentVersionInfo implements Serializable {
 	 *  
 	 * @return unmodifiable list of document's versions.
 	 */
-	public List<DocumentVersion> getVersions() {
+	public List<DocVersion> getVersions() {
 		return versions;
 	}
 	

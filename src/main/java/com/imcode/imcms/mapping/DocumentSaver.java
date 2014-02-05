@@ -120,12 +120,12 @@ public class DocumentSaver {
      * Creates content loop if item references non-saved enclosing content loop.
      */
     @Transactional
-    public ContentLoop createEnclosingContentLoopIfNecessary(DocRef docRef, ContentLoopRef contentLoopRef) {
+    public TextDocLoop createEnclosingContentLoopIfNecessary(DocRef docRef, TextDocLoopItemRef contentLoopRef) {
         if (contentLoopRef == null) {
             return null;
         }
 
-        ContentLoop loop = textDocDao.getLoop(docRef, contentLoopRef.getLoopNo());
+        TextDocLoop loop = textDocDao.getLoop(docRef, contentLoopRef.getLoopNo());
         ContentLoopOps ops = new ContentLoopOps(loop);
 
         if (loop == null) {
@@ -146,10 +146,10 @@ public class DocumentSaver {
 
     @Transactional
     public void changeDocumentDefaultVersion(int docId, int newDefaultDocVersionNo, UserDomainObject publisher) {
-        DocumentVersion currentDefaultVersion = documentVersionDao.getDefaultVersion(docId);
+        DocVersion currentDefaultVersion = documentVersionDao.getDefaultVersion(docId);
 
         if (currentDefaultVersion.getNo() != newDefaultDocVersionNo) {
-            DocumentVersion version = documentVersionDao.getVersion(docId, newDefaultDocVersionNo);
+            DocVersion version = documentVersionDao.getVersion(docId, newDefaultDocVersionNo);
             if (version == null) {
                 throw new IllegalStateException(
                         String.format("Doc %d default version can not be changed. Version no %d does not exists.",
@@ -172,12 +172,12 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public DocumentVersion makeDocumentVersion(List<DocumentDomainObject> docs, UserDomainObject user)
+    public DocVersion makeDocumentVersion(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentDomainObject firstDoc = docs.get(0);
         Meta meta = firstDoc.getMeta().clone();
-        DocumentVersion nextVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
+        DocVersion nextVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
         DocumentSavingVisitor docSavingVisitor = new DocumentSavingVisitor(null, documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc : docs) {
@@ -266,7 +266,7 @@ public class DocumentSaver {
             metaDao.saveI18nMeta(i18nMeta);
         }
 
-        DocumentVersion copyDocVersion = documentVersionDao.createVersion(copyDocId, user.getId());
+        DocVersion copyDocVersion = documentVersionDao.createVersion(copyDocId, user.getId());
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc : docs) {
@@ -332,7 +332,7 @@ public class DocumentSaver {
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(doc, user, null);
 
         meta.setId(null);
-        meta.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
+        meta.setDefaultVersionNo(DocVersion.WORKING_VERSION_NO);
         meta.setDocumentType(doc.getDocumentTypeId());
         Integer docId = saveMeta(meta).getId();
 
@@ -342,7 +342,7 @@ public class DocumentSaver {
 
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
 
-        DocumentVersion version = documentVersionDao.createVersion(docId, user.getId());
+        DocVersion version = documentVersionDao.createVersion(docId, user.getId());
         doc.setVersionNo(version.getNo());
 
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
@@ -453,7 +453,7 @@ public class DocumentSaver {
         String alias = document.getAlias();
 
         if (alias != null) {
-            DocumentProperty property = metaDao.getAliasProperty(alias);
+            DocProperty property = metaDao.getAliasProperty(alias);
             if (property != null) {
                 Integer documentId = document.getId();
 

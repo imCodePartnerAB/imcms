@@ -6,6 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import java.util.Objects;
 
+@Deprecated
 @Embeddable
 public class I18nDocRef {
 
@@ -13,12 +14,12 @@ public class I18nDocRef {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private DocumentLanguage language;
+    private DocLanguage language;
 
-    protected I18nDocRef() {
+    public I18nDocRef() {
     }
 
-    public I18nDocRef(DocRef docRef, DocumentLanguage language) {
+    public I18nDocRef(DocRef docRef, DocLanguage language) {
         this.docRef = docRef;
         this.language = language;
     }
@@ -43,7 +44,7 @@ public class I18nDocRef {
         return docRef;
     }
 
-    public DocumentLanguage getLanguage() {
+    public DocLanguage getLanguage() {
         return language;
     }
 

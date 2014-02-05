@@ -1,5 +1,8 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.mapping.orm.FileDocContent;
+import com.imcode.imcms.mapping.orm.HtmlDocContent;
+import com.imcode.imcms.mapping.orm.UrlDocContent;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -11,9 +14,6 @@ import java.io.File;
 import java.util.Collection;
 
 import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.mapping.orm.FileReference;
-import com.imcode.imcms.mapping.orm.HtmlReference;
-import com.imcode.imcms.mapping.orm.UrlReference;
 
 /**
  * Initializes a document fields depending on document's type.
@@ -34,9 +34,9 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
      *   ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(final FileDocumentDomainObject doc) {
-    	Collection<FileReference> fileReferences = metaDao.getFileReferences(doc.getRef());
+    	Collection<FileDocContent> fileReferences = metaDao.getFileReferences(doc.getRef());
     	
-    	for (FileReference fileRef: fileReferences) {
+    	for (FileDocContent fileRef: fileReferences) {
             String fileId = fileRef.getFileId();           
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
             
@@ -67,12 +67,12 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
     
 
     public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
-    	HtmlReference html = metaDao.getHtmlReference(doc.getRef());
+    	HtmlDocContent html = metaDao.getHtmlReference(doc.getRef());
     	doc.setHtml(html.getHtml());
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject doc) {
-    	UrlReference reference = metaDao.getUrlReference(doc.getRef());
+    	UrlDocContent reference = metaDao.getUrlReference(doc.getRef());
     	doc.setUrl(reference.getUrl());
     }
 

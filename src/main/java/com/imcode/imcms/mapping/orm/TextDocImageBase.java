@@ -1,27 +1,16 @@
 package com.imcode.imcms.mapping.orm;
 
-import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
-import imcode.server.user.UserDomainObject;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import javax.persistence.*;
-import java.util.Date;
 
-/**
- *
- */
-@Entity
-@Table(name = "imcms_text_doc_images_history")
-public class ImageHistory {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+@MappedSuperclass
+public class TextDocImageBase extends DocVersionedI18nContent {
 
     @Transient
     private ImageSource source = new NullImageSource();
@@ -70,64 +59,12 @@ public class ImageHistory {
 
     private TextDocLoopItemRef contentLoopRef;
 
-    private DocRef docRef;
-
-    /**
-     * i18n support
-     */
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "language_id", referencedColumnName = "id")
+    @OneToOne
+    @JoinColumn(name = "language_id")
     private DocLanguage language;
-
-
-    @Column(name = "user_id")
-    private Integer userId;
-
-
-    @Column(name = "modified_dt")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedDt;
 
     private volatile int resize;
 
-    public ImageHistory() {
-    }
-
-    public ImageHistory(ImageDomainObject image, UserDomainObject user) {
-        setDocRef(image.getDocRef());
-        setNo(image.getNo());
-
-        setWidth(image.getWidth());
-        setHeight(image.getHeight());
-        setBorder(image.getBorder());
-        setAlign(image.getAlign());
-        setAlternateText(image.getAlternateText());
-        setLowResolutionUrl(image.getLowResolutionUrl());
-        setVerticalSpace(image.getVerticalSpace());
-        setHorizontalSpace(image.getHorizontalSpace());
-        setTarget(image.getTarget());
-        setLinkUrl(image.getLinkUrl());
-        setImageUrl(image.getUrl());
-        setType(image.getType());
-        setResize(image.getResize());
-
-        setLanguage(image.getLanguage());
-        setContentLoopRef(image.getContentLoopRef());
-        setUserId(user.getId());
-        setModifiedDt(new Date());
-        setFormat(image.getFormat());
-        setCropRegion(image.getCropRegion());
-        setRotateDirection(image.getRotateDirection());
-        setGeneratedFilename(image.getGeneratedFilename());
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public ImageSource getSource() {
         return source;
@@ -257,22 +194,6 @@ public class ImageHistory {
         this.language = language;
     }
 
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Date getModifiedDt() {
-        return modifiedDt;
-    }
-
-    public void setModifiedDt(Date modifiedDt) {
-        this.modifiedDt = modifiedDt;
-    }
-
     public Format getFormat() {
         return Format.findFormat(format);
     }
@@ -305,14 +226,6 @@ public class ImageHistory {
         this.generatedFilename = generatedFilename;
     }
 
-    public DocRef getDocRef() {
-        return docRef;
-    }
-
-    public void setDocRef(DocRef docRef) {
-        this.docRef = docRef;
-    }
-
     public String getName() {
         return name;
     }
@@ -327,63 +240,5 @@ public class ImageHistory {
 
     public void setResize(Resize resize) {
         this.resize = resize == null ? 0 : resize.getOrdinal();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof ImageHistory)) {
-            return false;
-        }
-        final ImageHistory o = (ImageHistory) obj;
-        return new EqualsBuilder()
-                .append(id, o.id)
-                .append(source.toStorageString(), o.getSource().toStorageString())
-                .append(docRef, o.getDocRef())
-                .append(contentLoopRef, o.getContentLoopRef())
-                .append(no, o.getNo())
-                .append(width, o.getWidth())
-                .append(height, o.getHeight())
-                .append(border, o.getBorder())
-                .append(align, o.getAlign())
-                .append(alternateText, o.getAlternateText())
-                .append(lowResolutionUrl, o.getLowResolutionUrl())
-                .append(verticalSpace, o.getVerticalSpace())
-                .append(horizontalSpace, o.getHorizontalSpace())
-                .append(target, o.getTarget())
-                .append(linkUrl, o.getLinkUrl())
-                .append(name, o.getName())
-                .append(cropRegion, o.getCropRegion())
-                .append(language, o.getLanguage())
-                .append(getFormat(), o.getFormat())
-                .append(getRotateDirection(), o.getRotateDirection())
-                .append(getResize(), o.getResize())
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(id)
-                .append(source.toStorageString())
-                .append(docRef)
-                .append(contentLoopRef)
-                .append(no)
-                .append(width)
-                .append(height)
-                .append(border)
-                .append(align)
-                .append(alternateText)
-                .append(lowResolutionUrl)
-                .append(verticalSpace)
-                .append(horizontalSpace)
-                .append(target)
-                .append(linkUrl)
-                .append(name)
-                .append(cropRegion)
-                .append(language)
-                .append(getFormat())
-                .append(getRotateDirection())
-                .append(getResize())
-                .toHashCode();
     }
 }

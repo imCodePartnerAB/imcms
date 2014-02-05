@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.orm.{DocumentLanguage, ImageHistory, DocRef}
+import com.imcode.imcms.mapping.orm.{DocLanguage, ImageHistory, DocRef}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -95,7 +95,7 @@ class ImageDaoSuiteConfig {
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.BasicWithSql,
       TestSetup.hibernate.configurators.addAnnotatedClasses(
-        classOf[DocumentLanguage],
+        classOf[DocLanguage],
         classOf[ImageDomainObject],
         classOf[ImageHistory]
       ),

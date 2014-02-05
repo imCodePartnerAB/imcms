@@ -1,0 +1,36 @@
+package com.imcode.imcms.mapping.orm;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
+@MappedSuperclass
+public abstract class DocVersionedContent {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
+            @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
+    })
+    private DocVersion contentVersion;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public DocVersion getContentVersion() {
+        return contentVersion;
+    }
+
+    public void setContentVersion(DocVersion contentVersion) {
+        this.contentVersion = contentVersion;
+    }
+}

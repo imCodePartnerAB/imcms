@@ -13,18 +13,11 @@ import java.util.Objects;
  */
 @Entity(name = "Menu")
 @Table(name = "imcms_text_doc_menus")
-public class TextDocMenu implements Cloneable, Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class TextDocMenu extends DocVersionedContent implements Cloneable, Serializable {
 
     @NotNull
     @Column(name = "no")
     private Integer no;
-
-    @NotNull
-    private DocRef docRef;
 
     @Column(name = "sort_order")
     private int sortOrder;
@@ -40,36 +33,6 @@ public class TextDocMenu implements Cloneable, Serializable {
     @MapKeyColumn(name = "to_doc_id")
     private Map<Integer, TextDocMenuItem> items = new HashMap<>();
 
-    public TextDocMenu() {
-    }
-
-    public TextDocMenu clone() {
-        try {
-            TextDocMenu clone = (TextDocMenu) super.clone();
-            clone.items = new HashMap<>();
-            for (Map.Entry<Integer, TextDocMenuItem> entry : items.entrySet()) {
-                clone.items.put(entry.getKey(), entry.getValue().clone());
-            }
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(e);
-        }
-    }
-
-    public TextDocMenu(Integer id, int sortOrder) {
-        this.id = id;
-        this.sortOrder = sortOrder;
-        items = new HashMap<>();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public int getSortOrder() {
         return sortOrder;
     }
@@ -80,16 +43,16 @@ public class TextDocMenu implements Cloneable, Serializable {
     }
 
     private boolean equals(TextDocMenu that) {
-        return Objects.equals(id, that.id)
+        return Objects.equals(getId(), that.getNo())
+                && Objects.equals(getContentVersion(), that.getContentVersion())
                 && Objects.equals(no, that.no)
-                && Objects.equals(docRef, that.docRef)
                 && Objects.equals(sortOrder, that.sortOrder)
                 && Objects.equals(items, that.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sortOrder, docRef, items);
+        return Objects.hash(getId(), getContentVersion(), no, sortOrder, items);
     }
 
     public void setSortOrder(int sortOrder) {
@@ -102,14 +65,6 @@ public class TextDocMenu implements Cloneable, Serializable {
 
     public void setNo(Integer no) {
         this.no = no;
-    }
-
-    public DocRef getDocRef() {
-        return docRef;
-    }
-
-    public void setDocRef(DocRef docRef) {
-        this.docRef = docRef;
     }
 
     public Map<Integer, TextDocMenuItem> getItems() {
