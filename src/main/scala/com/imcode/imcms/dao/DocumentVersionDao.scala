@@ -2,13 +2,13 @@ package com.imcode
 package imcms.dao
 
 import com.imcode.imcms.mapping.orm.DocVersion
-import imcode.server.user.UserDomainObject;
-import org.springframework.transaction.annotation.Transactional;
+import imcode.server.user.UserDomainObject
+import org.springframework.transaction.annotation.Transactional
 
 
 import java.util.Date
 import com.imcode.imcms.dao.hibernate.HibernateSupport
-;
+
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class DocumentVersionDao extends HibernateSupport {

@@ -96,7 +96,7 @@ public class Meta implements Serializable, Cloneable {
     private Integer id;
 
     @Column(name = "default_version_no", nullable = false)
-    private int defaultVersionNo = DocVersion.WORKING_VERSION_NO;
+    private int defaultVersionNo;
 
 
     /**
