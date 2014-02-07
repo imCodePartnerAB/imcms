@@ -16,7 +16,7 @@ public abstract class DocVersionedContent {
             @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
             @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
     })
-    private DocVersion contentVersion;
+    private DocVersion docVersion;
 
     public Integer getId() {
         return id;
@@ -26,11 +26,11 @@ public abstract class DocVersionedContent {
         this.id = id;
     }
 
-    public DocVersion getContentVersion() {
-        return contentVersion;
+    public DocVersion getDocVersion() {
+        return docVersion;
     }
 
-    public void setContentVersion(DocVersion contentVersion) {
-        this.contentVersion = contentVersion;
+    public void setDocVersion(DocVersion contentVersion) {
+        this.docVersion = contentVersion;
     }
 }

@@ -1,9 +1,9 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.orm.DocLanguage;
+import com.imcode.imcms.mapping.orm.DocMeta;
 import com.imcode.imcms.mapping.orm.DocVersion;
-import com.imcode.imcms.mapping.orm.I18nMeta;
-import com.imcode.imcms.mapping.orm.Meta;
+import com.imcode.imcms.mapping.orm.DocI18nMeta;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
@@ -18,7 +18,7 @@ import java.util.Set;
 
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.dao.DocumentVersionDao;
+import com.imcode.imcms.dao.DocVersionDao;
 
 /**
  * Loads documents from the database.
@@ -40,7 +40,7 @@ public class DocumentLoader {
     /**
      * Injected by spring.
      */
-    private DocumentVersionDao documentVersionDao;
+    private DocVersionDao documentVersionDao;
 
     /**
      * Initializes document's fields.
@@ -53,8 +53,8 @@ public class DocumentLoader {
      * @param docId document id.
      * @return
      */
-    public Meta loadMeta(Integer docId) {
-        Meta meta = metaDao.getMeta(docId);
+    public DocMeta loadMeta(Integer docId) {
+        DocMeta meta = metaDao.getMeta(docId);
 
         if (meta != null) {
             meta.setActualModifiedDatetime(meta.getModifiedDatetime());
@@ -78,7 +78,7 @@ public class DocumentLoader {
      * @param language
      * @return
      */
-    public <T extends DocumentDomainObject> T loadAndInitDocument(Meta meta, DocVersion version, DocLanguage language) {
+    public <T extends DocumentDomainObject> T loadAndInitDocument(DocMeta meta, DocVersion version, DocLanguage language) {
         return initDocument(this.<T>createDocument(meta, version, language));
     }
 
@@ -86,18 +86,18 @@ public class DocumentLoader {
     /**
      * Creates document instance.
      */
-    private <T extends DocumentDomainObject> T createDocument(Meta meta, DocVersion version, DocLanguage language) {
-        I18nMeta i18nMeta = metaDao.getI18nMeta(meta.getId(), language);
+    private <T extends DocumentDomainObject> T createDocument(DocMeta meta, DocVersion version, DocLanguage language) {
+        DocI18nMeta DocI18nMeta = metaDao.getDocI18nMeta(meta.getId(), language);
 
-        if (i18nMeta == null) {
-            i18nMeta = I18nMeta.builder().docId(meta.getId()).language(language).headline("").menuText("").menuImageURL("").build();
+        if (DocI18nMeta == null) {
+            DocI18nMeta = DocI18nMeta.builder().docId(meta.getId()).language(language).headline("").menuText("").menuImageURL("").build();
         }
 
         T document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
         document.setMeta(meta);
         document.setLanguage(language);
-        document.setI18nMeta(i18nMeta);
+        document.setDocI18nMeta(DocI18nMeta);
 
         document.setVersionNo(version.getNo());
 
@@ -126,7 +126,7 @@ public class DocumentLoader {
     }
 
     // Moved from  DocumentInitializer.initDocuments
-    private void initRoleIdToPermissionSetIdMap(Meta meta) {
+    private void initRoleIdToPermissionSetIdMap(DocMeta meta) {
         RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
                 new RoleIdToDocumentPermissionSetTypeMappings();
 
@@ -139,7 +139,7 @@ public class DocumentLoader {
         meta.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);
     }
 
-    private void initDocumentsPermissionSets(Meta meta) {
+    private void initDocumentsPermissionSets(DocMeta meta) {
         DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
                 meta.getPermissionSetBitsMap(), meta.getPermisionSetEx());
 
@@ -147,7 +147,7 @@ public class DocumentLoader {
     }
 
 
-    private void initDocumentsPermissionSetsForNew(Meta meta) {
+    private void initDocumentsPermissionSetsForNew(DocMeta meta) {
         DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
                 meta.getPermissionSetBitsForNewMap(), meta.getPermisionSetExForNew());
 
@@ -157,7 +157,7 @@ public class DocumentLoader {
 
     private DocumentPermissionSets createDocumentsPermissionSets(
             Map<Integer, Integer> permissionSetBitsMap,
-            Set<Meta.PermisionSetEx> permissionSetEx) {
+            Set<DocMeta.PermisionSetEx> permissionSetEx) {
 
         DocumentPermissionSets permissionSets = new DocumentPermissionSets();
 
@@ -171,7 +171,7 @@ public class DocumentLoader {
             }
         }
 
-        for (Meta.PermisionSetEx ex : permissionSetEx) {
+        for (DocMeta.PermisionSetEx ex : permissionSetEx) {
             Integer setId = ex.getSetId();
             DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
 
@@ -215,11 +215,11 @@ public class DocumentLoader {
         this.documentInitializingVisitor = documentInitializingVisitor;
     }
 
-    public DocumentVersionDao getDocumentVersionDao() {
+    public DocVersionDao getDocumentVersionDao() {
         return documentVersionDao;
     }
 
-    public void setDocumentVersionDao(DocumentVersionDao documentVersionDao) {
+    public void setDocumentVersionDao(DocVersionDao documentVersionDao) {
         this.documentVersionDao = documentVersionDao;
     }
 }

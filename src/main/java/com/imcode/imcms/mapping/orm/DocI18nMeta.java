@@ -1,15 +1,14 @@
 package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Document i18n meta.
  */
-@Entity
+@Entity(name = "I18nMeta")
 @Table(name = "imcms_doc_i18n_meta")
-public class I18nMeta implements Serializable, Cloneable {
+public class DocI18nMeta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,10 +66,10 @@ public class I18nMeta implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof I18nMeta && equals((I18nMeta) o));
+        return o == this || (o instanceof DocI18nMeta && equals((DocI18nMeta) o));
     }
 
-    private boolean equals(I18nMeta that) {
+    private boolean equals(DocI18nMeta that) {
         return Objects.equals(id, that.id)
                 && Objects.equals(docId, that.docId)
                 && Objects.equals(headline, that.headline)
@@ -82,15 +81,5 @@ public class I18nMeta implements Serializable, Cloneable {
     @Override
     public int hashCode() {
         return Objects.hash(id, docId, headline, menuText, menuImageURL, language);
-    }
-
-
-    @Override
-    public I18nMeta clone() {
-        try {
-            return (I18nMeta)super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(e);
-        }
     }
 }

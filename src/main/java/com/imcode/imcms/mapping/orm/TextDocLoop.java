@@ -45,7 +45,7 @@ public class TextDocLoop extends DocVersionedContent {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getContentVersion(), no, nextItemNo, items, version);
+        return Objects.hash(getId(), getDocVersion(), no, nextItemNo, items, version);
     }
 
 
@@ -56,7 +56,7 @@ public class TextDocLoop extends DocVersionedContent {
 
     private boolean equals(TextDocLoop that) {
         return Objects.equals(getId(), that.getId())
-                && Objects.equals(getContentVersion(), that.getContentVersion())
+                && Objects.equals(getDocVersion(), that.getDocVersion())
                 && Objects.equals(no, that.no)
                 && Objects.equals(nextItemNo, that.nextItemNo)
                 && Objects.equals(version, that.version)

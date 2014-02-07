@@ -6,22 +6,22 @@ import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.dao.hibernate.HibernateSupport
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
-class LanguageDao extends HibernateSupport {
+class DocLanguageDao extends HibernateSupport {
 
 
   def getAllLanguages(): JList[DocLanguage] = hibernate.listAll()
 
 
-  def getById(id: JInteger): DocLanguage = hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getById", "id" -> id)
+  def getById(id: JInteger): DocLanguage = hibernate.get[DocLanguage](id)
 
 
   def getByCode(code: String): DocLanguage =
-    hibernate.getByNamedQueryAndNamedParams("I18nLanguage.getByCode", "code" -> code)
+    hibernate.getByNamedQueryAndNamedParams("DocLanguage.getByCode", "code" -> code)
 
 
   def saveLanguage(language: DocLanguage): DocLanguage = language.clone() |> hibernate.saveOrUpdate
 
 
   def deleteLanguage(id: JInteger) =
-    hibernate.bulkUpdateByNamedParams("DELETE FROM I18nLanguage l WHERE l.id = :id", "id" -> id)
+    hibernate.bulkUpdateByNamedParams("DELETE FROM DocLanguage l WHERE l.id = :id", "id" -> id)
 }

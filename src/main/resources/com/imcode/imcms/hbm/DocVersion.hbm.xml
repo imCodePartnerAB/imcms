@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <!-- Unique result -->
+    <query name="DocVersion.getByDocIdAndNo">
+    <![CDATA[
+    SELECT v FROM DocVersion v WHERE v.docId = :docId AND v.no = :no
+    ]]>
+    </query>
+
+
+    <!-- Unique -->
+    <query name="DocVersion.getLatestVersion">
+    <![CDATA[
+	  SELECT v FROM DocVersion v
+	  WHERE v.id = (
+	    SELECT max(v.id) FROM DocVersion v
+	    WHERE v.docId = :docId
+	  )
+    ]]>
+    </query>
+
+    <!-- Unique -->
+    <query name="DocVersion.getDefaultVersion">
+    <![CDATA[
+	 SELECT v FROM Meta m, DocVersion v
+	 WHERE m.defaultVersionNo = v.no AND m.id = v.docId AND m.id = :docId
+    ]]>
+    </query>
+
+    <query name="DocVersion.changeDefaultVersion">
+    <![CDATA[
+	  UPDATE Meta m
+	  SET m.defaultVersionNo = :defaultVersionNo, m.publisherId = :publisherId
+	  WHERE m.id = :docId
+    ]]>
+    </query>
+
+    <!-- Collection -->
+    <query name="DocVersion.getByDocId">
+    <![CDATA[
+      SELECT v FROM DocVersion v WHERE v.docId = :docId
+    ]]>
+    </query>
+
+</hibernate-mapping>

@@ -130,6 +130,6 @@ class MenuDaoSuiteConfig {
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.BasicWithSql,
       TestSetup.hibernate.configurators.addAnnotatedClasses(classOf[MenuDomainObject], classOf[TextDocMenuHistory]),
-      TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Menu.hbm.xml")
+      TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/TextDocMenu.hbm.xml")
     ))
 }

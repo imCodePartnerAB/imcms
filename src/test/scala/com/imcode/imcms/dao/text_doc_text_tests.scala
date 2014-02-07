@@ -225,7 +225,7 @@ class TextDaoSuiteConfig {
   def textDao = new TextDocDao
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def languageDao = new LanguageDao
+  def languageDao = new DocLanguageDao
 
   @Bean
   def hibernatePropertiesConfigurator: (org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration) =
@@ -238,8 +238,8 @@ class TextDaoSuiteConfig {
         classOf[TextDocTextHistory]
       ),
       TestSetup.hibernate.configurators.addXmlFiles(
-        "com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
-        "com/imcode/imcms/hbm/Text.hbm.xml"
+        "com/imcode/imcms/hbm/DocLanguage.hbm.xml",
+        "com/imcode/imcms/hbm/TextDocText.hbm.xml"
       )
     ))
 }

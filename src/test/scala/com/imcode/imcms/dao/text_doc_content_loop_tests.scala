@@ -159,6 +159,6 @@ class ContextLoopDaoSuiteConfig {
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.BasicWithSql,
       TestSetup.hibernate.configurators.addAnnotatedClasses(classOf[TextDocLoop]),
-      TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/ContentLoop.hbm.xml")
+      TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/TextDocLoop.hbm.xml")
     ))
 }

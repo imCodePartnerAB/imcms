@@ -239,7 +239,7 @@ public class Meta implements Serializable, Cloneable {
         return disabledLanguageShowSetting;
     }
 
-    public void setI18nShowMode(DisabledLanguageShowSetting disabledLanguageShowSetting) {
+    public void setI18nShowSettings(DisabledLanguageShowSetting disabledLanguageShowSetting) {
         this.disabledLanguageShowSetting = disabledLanguageShowSetting;
     }
 

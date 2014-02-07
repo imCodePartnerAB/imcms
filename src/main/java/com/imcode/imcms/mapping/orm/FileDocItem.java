@@ -4,14 +4,13 @@
 package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 //ORDER BY default_variant DESC, variant_name
 
 @Entity
 @Table(name = "fileupload_docs")
 @AssociationOverride(
-        name = "contentVersion",
+        name = "docVersion",
         joinColumns = {
                 @JoinColumn(name = "meta_id", referencedColumnName = "doc_id"),
                 @JoinColumn(name = "doc_version_no", referencedColumnName = "no")

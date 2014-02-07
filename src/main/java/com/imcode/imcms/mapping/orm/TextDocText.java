@@ -15,8 +15,8 @@ public class TextDocText extends TextDocTextBase {
 
     private boolean equals(TextDocText that) {
         return Objects.equals(getId(), that.getId())
-                && Objects.equals(getContentVersion(), that.getContentVersion())
-                && Objects.equals(getContentLanguage(), that.getContentLanguage())
+                && Objects.equals(getDocVersion(), that.getDocVersion())
+                && Objects.equals(getDocLanguage(), that.getDocLanguage())
                 && Objects.equals(getType(), that.getType())
                 && Objects.equals(getNo(), that.getNo())
                 && Objects.equals(getLoopItemRef(), that.getLoopItemRef());
@@ -24,6 +24,6 @@ public class TextDocText extends TextDocTextBase {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getContentVersion(), getContentLanguage(), getText(), getType(), getNo(), getLoopItemRef());
+        return Objects.hash(getId(), getDocVersion(), getDocLanguage(), getText(), getType(), getNo(), getLoopItemRef());
     }
 }

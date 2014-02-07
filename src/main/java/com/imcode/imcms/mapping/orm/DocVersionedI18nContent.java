@@ -11,13 +11,13 @@ public abstract class DocVersionedI18nContent extends DocVersionedContent {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "language_id")
-    private DocLanguage contentLanguage;
+    private DocLanguage docLanguage;
 
-    public DocLanguage getContentLanguage() {
-        return contentLanguage;
+    public DocLanguage getDocLanguage() {
+        return docLanguage;
     }
 
-    public void setContentLanguage(DocLanguage contentLanguage) {
-        this.contentLanguage = contentLanguage;
+    public void setDocLanguage(DocLanguage contentLanguage) {
+        this.docLanguage = contentLanguage;
     }
 }

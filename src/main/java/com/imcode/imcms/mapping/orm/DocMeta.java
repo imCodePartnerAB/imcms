@@ -15,9 +15,9 @@ import java.util.*;
  * <p/>
  * Shared by all versions of the same document.
  */
-@Entity
+@Entity(name = "Meta")
 @Table(name = "meta")
-public class Meta implements Serializable, Cloneable {
+public class DocMeta {
 
     /**
      * Create (create only!) permission for template or a document type.
@@ -294,45 +294,6 @@ public class Meta implements Serializable, Cloneable {
 
     @Transient
     private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
-
-
-    @Override
-    public Meta clone() {
-        try {
-            Meta clone = (Meta) super.clone();
-
-            clone.disabledLanguageShowSetting = disabledLanguageShowSetting;
-
-            clone.permisionSetEx = new HashSet<>(permisionSetEx);
-            clone.permisionSetExForNew = new HashSet<>(permisionSetExForNew);
-            clone.permissionSetBitsMap = new HashMap<>(permissionSetBitsMap);
-            clone.permissionSetBitsForNewMap = new HashMap<>(permissionSetBitsForNewMap);
-
-            clone.roleIdToPermissionSetIdMap = new HashMap<>(roleIdToPermissionSetIdMap);
-
-            clone.properties = new HashMap<>(properties);
-            clone.categoryIds = new HashSet<>(categoryIds);
-
-            clone.keywords = new HashSet<>(keywords);
-            clone.enabledLanguages = new HashSet<>(enabledLanguages);
-
-            if (permissionSets != null) {
-                clone.permissionSets = permissionSets.clone();
-            }
-
-            if (permissionSetsForNewDocuments != null) {
-                clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments.clone();
-            }
-
-            if (roleIdToDocumentPermissionSetTypeMappings != null) {
-                clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
-            }
-
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public Integer getId() {
         return id;

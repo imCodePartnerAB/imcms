@@ -5,7 +5,7 @@ package mapping
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.net.sf.ehcache.config.CacheConfiguration
 import _root_.net.sf.ehcache.CacheManager
-import com.imcode.imcms.mapping.orm.{DocLanguage, Meta, I18nDocRef}
+import com.imcode.imcms.mapping.orm.{DocLanguage, DocMeta, I18nDocRef}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api._
 
@@ -23,7 +23,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[DocLangu
     cc.setName(classOf[DocLoaderCachingProxy].getCanonicalName + "." + name)
   }
 
-  val metas = CacheWrapper[DocId, Meta](cacheConfiguration("meats"))
+  val metas = CacheWrapper[DocId, DocMeta](cacheConfiguration("meats"))
   val versionInfos = CacheWrapper[DocId, DocumentVersionInfo](cacheConfiguration("versionInfos"))
   val workingDocs = CacheWrapper[DocCacheKey, DocumentDomainObject](cacheConfiguration("workingDocs"))
   val defaultDocs = CacheWrapper[DocCacheKey, DocumentDomainObject](cacheConfiguration("defaultDocs"))

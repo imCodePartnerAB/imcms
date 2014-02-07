@@ -5,9 +5,6 @@ import java.util.Date;
 
 import javax.persistence.*;
 
-/**
- * Document content version.
- */
 @Entity
 @Table(name = "imcms_doc_versions")
 public class DocVersion implements Cloneable {

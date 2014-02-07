@@ -59,55 +59,6 @@
     ]]>
   </query>
 
-
-
-  <!-- ==================================================================== -->
-  <!-- VERSION -->
-  <!-- ==================================================================== -->
-
-  <!-- Unique -->
-  <query name="DocumentVersion.getLatestVersion">
-    <![CDATA[
-	  SELECT v FROM DocumentVersion v
-	  WHERE v.id IN (
-	    SELECT max(v.id) FROM DocumentVersion v
-	    WHERE v.docId = :docId
-	  )
-    ]]>
-  </query>
-
-  <!-- Unique -->
-  <query name="DocumentVersion.getDefaultVersion">
-    <![CDATA[
-	 SELECT v FROM Meta m, DocumentVersion v 
-	 WHERE m.defaultVersionNo = v.no AND m.id = v.docId AND m.id = :docId
-    ]]>
-  </query>
-
-  <query name="DocumentVersion.changeDefaultVersion">
-    <![CDATA[
-	  UPDATE Meta m
-	  SET m.defaultVersionNo = :defaultVersionNo, m.publisherId = :publisherId
-	  WHERE m.id = :docId
-    ]]>
-  </query>
-    
-
-  <!-- Unique -->
-  <query name="DocumentVersion.getByDocIdAndNo">
-    <![CDATA[
-	  SELECT v FROM DocumentVersion v
-	  WHERE v.docId = :docId AND v.no = :no
-    ]]>
-  </query>
-
-  <!-- Collection -->
-  <query name="DocumentVersion.getByDocId">
-    <![CDATA[
-      SELECT v FROM DocumentVersion v WHERE v.docId = :docId
-    ]]>
-  </query>
-    
   <!-- ==================================================================== -->
   <!-- PROPERTIES -->
   <!-- ==================================================================== -->

@@ -28,7 +28,7 @@ public class DocumentSaver {
 
     private MetaDao metaDao;
 
-    private DocumentVersionDao documentVersionDao;
+    private DocVersionDao documentVersionDao;
 
     private TextDocDao textDocDao;
 
@@ -176,7 +176,7 @@ public class DocumentSaver {
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentDomainObject firstDoc = docs.get(0);
-        Meta meta = firstDoc.getMeta().clone();
+        DocMeta meta = firstDoc.getMeta().clone();
         DocVersion nextVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
         DocumentSavingVisitor docSavingVisitor = new DocumentSavingVisitor(null, documentMapper.getImcmsServices(), user);
 
@@ -246,7 +246,7 @@ public class DocumentSaver {
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentDomainObject firstDoc = docs.get(0);
-        Meta meta = firstDoc.getMeta().clone();
+        DocMeta meta = firstDoc.getMeta().clone();
 
         checkDocumentForSave(firstDoc);
 
@@ -317,7 +317,7 @@ public class DocumentSaver {
     public <T extends DocumentDomainObject> int saveNewDocument(T doc, Set<I18nMeta> i18nMetas, EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        Meta meta = doc.getMeta();
+        DocMeta meta = doc.getMeta();
 
         checkDocumentForSave(doc);
 
@@ -374,7 +374,7 @@ public class DocumentSaver {
     /**
      * @return saved document meta.
      */
-    private Meta saveMeta(Meta meta) {
+    private DocMeta saveMeta(DocMeta meta) {
         meta.setPublicationStatusInt(meta.getPublicationStatus().asInt());
 
         if (meta.getId() == null) {
@@ -481,11 +481,11 @@ public class DocumentSaver {
         this.metaDao = metaDao;
     }
 
-    public DocumentVersionDao getDocumentVersionDao() {
+    public DocVersionDao getDocumentVersionDao() {
         return documentVersionDao;
     }
 
-    public void setDocumentVersionDao(DocumentVersionDao documentVersionDao) {
+    public void setDocumentVersionDao(DocVersionDao documentVersionDao) {
         this.documentVersionDao = documentVersionDao;
     }
 

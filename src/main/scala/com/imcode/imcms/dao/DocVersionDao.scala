@@ -11,7 +11,13 @@ import com.imcode.imcms.dao.hibernate.HibernateSupport
 
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
-class DocumentVersionDao extends HibernateSupport {
+class DocVersionDao extends HibernateSupport {
+
+  def getByDocIdAndNo(docId: Int, no: Int): DocVersion = hibernate.getByNamedQuery(
+    "DocVersion.getByDocIdAndNo",
+    "docId" -> docId,
+    "no" -> no
+  )
 
   /**
    * Creates and returns a new version of a document.
@@ -30,7 +36,7 @@ class DocumentVersionDao extends HibernateSupport {
 
 
   def getLatestVersion(docId: Int): DocVersion = hibernate.getByNamedQueryAndNamedParams(
-    "DocumentVersion.getLatestVersion", "docId" -> docId
+    "DocVersion.getLatestVersion", "docId" -> docId
   )
 
   /**
@@ -40,23 +46,23 @@ class DocumentVersionDao extends HibernateSupport {
    * @return available versions for the document.
    */
   def getAllVersions (docId: Int): JList[DocVersion] = hibernate.listByNamedQueryAndNamedParams(
-    "DocumentVersion.getByDocId", "docId" -> docId
+    "DocVersion.getByDocId", "docId" -> docId
   )
 
 
   def getVersion(docId: Int, no: Int): DocVersion = hibernate.getByNamedQueryAndNamedParams(
-    "DocumentVersion.getByDocIdAndNo", "docId" -> docId, "no" -> no
+    "DocVersion.getByDocIdAndNo", "docId" -> docId, "no" -> no
   )
 
 
   def getDefaultVersion(docId: Int): DocVersion = hibernate.getByNamedQueryAndNamedParams(
-    "DocumentVersion.getDefaultVersion", "docId" -> docId
+    "DocVersion.getDefaultVersion", "docId" -> docId
   )
 
 
   def changeDefaultVersion(newDefaultVersion: DocVersion, publisher: UserDomainObject) {
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
-      "DocumentVersion.changeDefaultVersion",
+      "DocVersion.changeDefaultVersion",
 
       "docId" -> newDefaultVersion.getDocId,
       "defaultVersionNo" -> newDefaultVersion.getNo,

@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import _root_.javax.inject.Inject
 import com.imcode.imcms.api._
 import com.imcode.imcms.mapping.orm._
 import scala.collection.JavaConverters._
@@ -14,23 +15,28 @@ import com.imcode.imcms.dao.hibernate.HibernateSupport
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class TextDocDao extends HibernateSupport {
 
+  @Inject
   @scala.reflect.BeanProperty
-  var languageDao: LanguageDao = _
+  var docLanguageDao: DocLanguageDao = _
+
+  @Inject
+  @scala.reflect.BeanProperty
+  var docVersionDao: DocVersionDao = _
 
   /**
    * Please note that createIfNotExists merely creates an instance of TextDomainObject not a database entry.
    */
-  def getTexts(docRef: DocRef, no: Int, contentRefOpt: Option[TextDocLoopItemRef],
+  def getTexts(docRef: DocRef, no: Int, loopItemRefOpt: Option[TextDocLoopItemRef],
                createIfNotExists: Boolean): JList[TextDomainObject] = {
     for {
       language <- languageDao.getAllLanguages.asScala
       i18nDocRef = I18nDocRef.of(docRef, language)
-      text <- PartialFunction.condOpt(getText(i18nDocRef, no, contentRefOpt)) {
+      text <- PartialFunction.condOpt(getText(i18nDocRef, no, loopItemRefOpt)) {
         case text if text != null => text
         case _ if createIfNotExists => new TextDomainObject |>> { txt =>
           txt.setI18nDocRef(i18nDocRef)
           txt.setNo(no)
-          txt.setContentLoopRef(contentRefOpt.orNull)
+          txt.setContentLoopRef(loopItemRefOpt.orNull)
         }
       }
     } yield text
@@ -43,11 +49,16 @@ class TextDocDao extends HibernateSupport {
   def getTextById(id: Long): TextDomainObject = hibernate.get[TextDomainObject](id)
 
 
-  def deleteTexts(i18nDocRef: I18nDocRef): Int =
+  def deleteTexts(i18nDocRef: I18nDocRef): Int = {
+
+
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
-      "Text.deleteTextsByI18nDocRef",
-      "i18nDocRef" -> i18nDocRef
+      "TextDocText.deleteTextsBy_DocId_and_DocVersionNo_and_DocLanguageCode",
+      "docId" -> i18nDocRef.docId(),
+      "docVersionNo" -> i18nDocRef.versionNo(),
+      "docLanguageCode" -> i18nDocRef.getLanguage.getCode
     )
+  }
 
 
   def saveTextHistory(textHistory: TextDocTextHistory) = hibernate.save(textHistory)

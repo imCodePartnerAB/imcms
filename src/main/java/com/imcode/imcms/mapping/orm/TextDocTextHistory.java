@@ -23,8 +23,8 @@ public class TextDocTextHistory extends TextDocTextBase {
 
     private boolean equals(TextDocTextHistory that) {
         return Objects.equals(getId(), that.getId())
-                && Objects.equals(getContentVersion(), that.getContentVersion())
-                && Objects.equals(getContentLanguage(), that.getContentLanguage())
+                && Objects.equals(getDocVersion(), that.getDocVersion())
+                && Objects.equals(getDocLanguage(), that.getDocLanguage())
                 && Objects.equals(getType(), that.getType())
                 && Objects.equals(getNo(), that.getNo())
                 && Objects.equals(getLoopItemRef(), that.getLoopItemRef())
@@ -34,7 +34,7 @@ public class TextDocTextHistory extends TextDocTextBase {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getContentVersion(), getContentLanguage(), getText(), getType(), getNo(),
+        return Objects.hash(getId(), getDocVersion(), getDocLanguage(), getText(), getType(), getNo(),
                 getLoopItemRef(), modifiedBy, modifiedDt);
     }
 

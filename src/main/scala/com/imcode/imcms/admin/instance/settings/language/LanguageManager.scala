@@ -8,7 +8,7 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import _root_.imcode.server.Imcms
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
-import com.imcode.imcms.dao.{SystemDao, LanguageDao}
+import com.imcode.imcms.dao.{SystemDao, DocLanguageDao}
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
@@ -17,7 +17,7 @@ import com.imcode.imcms.vaadin.server._
 
 //todo delete in use message
 class LanguageManager {
-  private val languageDao = Imcms.getServices.getManagedBean(classOf[LanguageDao])
+  private val languageDao = Imcms.getServices.getManagedBean(classOf[DocLanguageDao])
   private val systemDao = Imcms.getServices.getManagedBean(classOf[SystemDao])
 
   val view = new LanguageManagerView |>> { v =>

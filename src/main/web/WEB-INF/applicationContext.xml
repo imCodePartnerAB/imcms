@@ -68,13 +68,13 @@
     <bean id="dao" abstract="true" class="com.imcode.imcms.dao.hibernate.HibernateSupport"
           p:sessionFactory-ref="sessionFactory"/>
 
-    <bean id="textDocDao" class="com.imcode.imcms.dao.TextDocDao" parent="dao" p:languageDao-ref="languageDao"/>
+    <bean id="textDocDao" class="com.imcode.imcms.dao.TextDocDao" parent="dao"/>
 
     <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao" parent="dao"/>
 
-    <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocumentVersionDao" parent="dao"/>
+    <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocVersionDao" parent="dao"/>
 
-    <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDao" parent="dao"/>
+    <bean id="languageDao" class="com.imcode.imcms.dao.DocLanguageDao" parent="dao"/>
 
     <bean id="categoryMapper" class="com.imcode.imcms.mapping.CategoryMapper" parent="dao"/>
 

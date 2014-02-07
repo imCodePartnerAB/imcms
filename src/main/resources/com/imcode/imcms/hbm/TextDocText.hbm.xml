@@ -5,9 +5,10 @@
 
 <hibernate-mapping>
 
-  <query name="Text.deleteTextsByI18nDocRef">
+    <!-- Bulk delete -->
+    <query name="TextDocText.deleteBy.docVersion_and_docLanguage">
     <![CDATA[
-    DELETE FROM Text t WHERE t.i18nDocRef = :i18nDocRef
+    DELETE FROM TextDocText t WHERE t.docVersion = :docVersion AND t.docLanguage = :docLanguage
     ]]>
   </query>
 

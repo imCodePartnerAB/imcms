@@ -25,7 +25,6 @@ import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import com.imcode.imcms.dao.LanguageDao;
 
 /**
  * Singleton registry.

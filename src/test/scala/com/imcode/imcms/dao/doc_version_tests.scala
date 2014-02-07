@@ -24,14 +24,14 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
     def compare(v1: DocVersion, v2: DocVersion) = v1.getNo.intValue - v2.getNo.intValue
   }
 
-  var versionDao: DocumentVersionDao = _
+  var versionDao: DocVersionDao = _
 
   override def beforeAll() = db.recreate()
 
   override def beforeEach() {
     val ctx = TestSetup.spring.createCtx(classOf[DocVersionDaoSuiteConfig])
 
-    versionDao = ctx.getBean(classOf[DocumentVersionDao])
+    versionDao = ctx.getBean(classOf[DocVersionDao])
 
     db.runScripts("src/test/resources/sql/doc_version.sql")
   }
@@ -158,7 +158,7 @@ class DocVersionDaoSpec extends WordSpec with BeforeAndAfterAll with BeforeAndAf
 class DocVersionDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def versionDao = new DocumentVersionDao
+  def versionDao = new DocVersionDao
 
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
@@ -166,7 +166,7 @@ class DocVersionDaoSuiteConfig {
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.BasicWithSql,
       TestSetup.hibernate.configurators.addAnnotatedClasses(
-        classOf[Meta],
+        classOf[DocMeta],
         classOf[I18nMeta],
         classOf[DocVersion],
         classOf[DocLanguage],

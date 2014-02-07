@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowire
 class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterEach {
 
   var systemDao: SystemDao = _
-  var languageDao: LanguageDao = _
+  var languageDao: DocLanguageDao = _
 
   override def beforeAll() = db.recreate()
 
@@ -25,7 +25,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     val ctx = TestSetup.spring.createCtx(classOf[LanguageDaoSuiteConfig])
 
     systemDao = ctx.getBean(classOf[SystemDao])
-    languageDao = ctx.getBean(classOf[LanguageDao])
+    languageDao = ctx.getBean(classOf[DocLanguageDao])
 
     db.runScripts("src/test/resources/sql/language_dao.sql")
   }
@@ -106,7 +106,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
 class LanguageDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def languageDao = new LanguageDao
+  def languageDao = new DocLanguageDao
 
   @Bean(autowire = Autowire.BY_TYPE)
   def systemDao = new SystemDao
@@ -117,6 +117,6 @@ class LanguageDaoSuiteConfig {
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.BasicWithSql,
       TestSetup.hibernate.configurators.addAnnotatedClasses(classOf[SystemProperty], classOf[DocLanguage]),
-      TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/I18nLanguage.hbm.xml")
+      TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/DocLanguage.hbm.xml")
     ))
 }

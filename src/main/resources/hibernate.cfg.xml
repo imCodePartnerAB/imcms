@@ -7,7 +7,24 @@
     <session-factory>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
 
-        <mapping class="com.imcode.imcms.mapping.orm.Meta"/>
+        <mapping class="com.imcode.imcms.mapping.orm.DocMeta"/>
+        <mapping class="com.imcode.imcms.mapping.orm.DocVersion"/>
+        <mapping class="com.imcode.imcms.mapping.orm.DocLanguage"/>
+        <mapping class="com.imcode.imcms.mapping.orm.DocProperty"/>
+
+        <mapping class="com.imcode.imcms.mapping.orm.TextDocText"/>
+        <mapping class="com.imcode.imcms.mapping.orm.TextDocImage"/>
+        <mapping class="com.imcode.imcms.mapping.orm.TextDocMenu"/>
+        <mapping class="com.imcode.imcms.mapping.orm.TextDocLoop"/>
+        <mapping class="com.imcode.imcms.mapping.orm.TextDocTextHistory"/>
+        <mapping class="com.imcode.imcms.mapping.orm.TextDocImageHistory"/>
+        <mapping class="com.imcode.imcms.mapping.orm.TextDocMenuHistory"/>
+
+        <mapping class="imcode.server.user.UserDomainObject"/>
+        <mapping class="imcode.server.document.textdocument.ImageCacheDomainObject"/>
+
+        <mapping class="imcode.server.document.CategoryTypeDomainObject"/>
+        <mapping class="imcode.server.document.CategoryDomainObject"/>
 
         <mapping class="com.imcode.imcms.mapping.orm.TemplateNames"/>
         <mapping class="com.imcode.imcms.mapping.orm.Include"/>
@@ -17,26 +34,7 @@
 
         <mapping class="com.imcode.imcms.mapping.orm.SystemProperty"/>
         <mapping class="com.imcode.imcms.mapping.orm.I18nMeta"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocLanguage"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocTextHistory"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocImageHistory"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocMenuHistory"/>
         <mapping class="com.imcode.imcms.mapping.orm.IPAccess"/>
-
-
-
-        <mapping class="com.imcode.imcms.mapping.orm.DocVersion"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocProperty"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocLoop"/>
-
-        <mapping class="imcode.server.user.UserDomainObject"/>
-        <mapping class="imcode.server.document.textdocument.ImageDomainObject"/>
-        <mapping class="imcode.server.document.textdocument.TextDomainObject"/>
-        <mapping class="imcode.server.document.textdocument.MenuDomainObject"/>
-        <mapping class="imcode.server.document.textdocument.ImageCacheDomainObject"/>
-
-        <mapping class="imcode.server.document.CategoryTypeDomainObject"/>
-        <mapping class="imcode.server.document.CategoryDomainObject"/>
 
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.Images"/>
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.ExifPK"/>
@@ -57,11 +55,12 @@
 
         <!-- Named queries -->
         <mapping resource="com/imcode/imcms/hbm/Document.hbm.xml"/>
-        <mapping resource="com/imcode/imcms/hbm/ContentLoop.hbm.xml"/>
-        <mapping resource="com/imcode/imcms/hbm/Text.hbm.xml"/>
-        <mapping resource="com/imcode/imcms/hbm/Image.hbm.xml"/>
-        <mapping resource="com/imcode/imcms/hbm/I18nLanguage.hbm.xml"/>
-        <mapping resource="com/imcode/imcms/hbm/Menu.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/DocVersion.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/DocLanguage.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/TextDocLoop.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/TextDocText.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/TextDocImage.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/TextDocMenu.hbm.xml"/>
         <mapping resource="com/imcode/imcms/hbm/ImageCache.hbm.xml"/>
 
         <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Images.hbm.xml"/>

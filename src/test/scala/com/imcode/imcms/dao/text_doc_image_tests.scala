@@ -19,7 +19,7 @@ import imcode.server.document.textdocument.{ContentLoopRef, ImageDomainObject}
 class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterEach {
 
   var textDocDao: TextDocDao = _
-  var languageDao: LanguageDao = _
+  var languageDao: DocLanguageDao = _
   val admin = UserFX.mkSuperAdmin
 
   override def beforeAll() = TestSetup.db.recreate()
@@ -28,7 +28,7 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterE
     val ctx = TestSetup.spring.createCtx(classOf[ImageDaoSuiteConfig])
 
     textDocDao = ctx.getBean(classOf[TextDocDao])
-    languageDao = ctx.getBean(classOf[LanguageDao])
+    languageDao = ctx.getBean(classOf[DocLanguageDao])
 
     TestSetup.db.runScripts("src/test/resources/sql/image_dao.sql")
   }
@@ -84,7 +84,7 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterE
 class ImageDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def languageDao = new LanguageDao
+  def languageDao = new DocLanguageDao
 
   @Bean(autowire = Autowire.BY_TYPE)
   def textDocDao = new TextDocDao
@@ -100,8 +100,8 @@ class ImageDaoSuiteConfig {
         classOf[TextDocImageHistory]
       ),
       TestSetup.hibernate.configurators.addXmlFiles(
-        "com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
-        "com/imcode/imcms/hbm/Image.hbm.xml"
+        "com/imcode/imcms/hbm/DocLanguage.hbm.xml",
+        "com/imcode/imcms/hbm/TextDocImage.hbm.xml"
       )
     ))
 }

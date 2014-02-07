@@ -1,11 +1,11 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.api.DocRef
 import imcode.server.document.DocumentDomainObject
 import org.apache.commons.lang.StringUtils
 import org.springframework.transaction.annotation.Transactional
 
-import com.imcode.imcms.api._
 import com.imcode.imcms.mapping.orm._
 import imcode.server.user.UserDomainObject
 import java.util.Date
@@ -17,7 +17,7 @@ class MetaDao extends HibernateSupport {
   private val META_HEADLINE_MAX_LENGTH = 255
   private val META_TEXT_MAX_LENGTH = 1000
 
-  def getMeta(docId: Int): Meta = hibernate.get[Meta](docId)
+  def getMeta(docId: Int): DocMeta = hibernate.get[DocMeta](docId)
 
   /**  Updates doc's access and modified date-time. */
   def touch(docRef: DocRef, user: UserDomainObject): Unit = touch(docRef, user, new Date)
@@ -33,7 +33,7 @@ class MetaDao extends HibernateSupport {
     )
 
     hibernate.bulkUpdateByNamedParams(
-      """|UPDATE DocumentVersion v SET v.modifiedDt = :modifiedDt, v.modifiedBy = :modifiedBy
+      """|UPDATE DocVersion v SET v.modifiedDt = :modifiedDt, v.modifiedBy = :modifiedBy
          |WHERE v.docId = :docId AND v.no = :docVersionNo""".stripMargin,
 
       "modifiedDt" -> dt,
@@ -108,7 +108,7 @@ class MetaDao extends HibernateSupport {
 
 
 
-  def saveMeta(meta: Meta) = hibernate.saveOrUpdate(meta)
+  def saveMeta(meta: DocMeta) = hibernate.saveOrUpdate(meta)
 
 
   def deleteIncludes(docId: Int) = hibernate.bulkUpdate("delete Include i where i.metaId = ?1", 1 -> docId)

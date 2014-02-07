@@ -192,7 +192,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void updateDocumentI18nMeta(DocumentDomainObject doc, UserDomainObject user) {
         metaDao.deleteI18nMeta(doc.getId(), doc.getLanguage().getId());
 
-        I18nMeta i18nMeta = I18nMeta.builder(doc.getI18nMeta()).id(null).docId(doc.getId()).language(doc.getLanguage()).build();
+        DocI18nMeta i18nMeta = DocI18nMeta.builder(doc.getI18nMeta()).id(null).docId(doc.getId()).language(doc.getLanguage()).build();
 
         metaDao.saveI18nMeta(i18nMeta);
     }
