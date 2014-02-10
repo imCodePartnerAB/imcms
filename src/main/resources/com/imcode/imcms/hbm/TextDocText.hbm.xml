@@ -22,14 +22,14 @@
   <!-- Collection -->
   <query name="Text.getByDocRef">
     <![CDATA[
-    SELECT t FROM Text t WHERE t.i18nDocRef.docRef = :docRef
+    SELECT t FROM Text t WHERE t.i18nDocRef.docIdentity = :docIdentity
     ]]>
   </query>
 
     <!-- Collection -->
   <query name="Text.getByDocRefAndNo">
     <![CDATA[
-    SELECT t FROM Text t WHERE t.i18nDocRef.docRef = :docRef AND t.no = :no
+    SELECT t FROM Text t WHERE t.i18nDocRef.docIdentity = :docIdentity AND t.no = :no
     ]]>
   </query>
 

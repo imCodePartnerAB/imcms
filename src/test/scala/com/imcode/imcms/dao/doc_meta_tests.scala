@@ -74,7 +74,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
       val meta = createMeta()
       val version = versionDao.createVersion(meta.getId, UserFX.mkSuperAdmin.getId)
 
-      metaDao.touch(DocRef.of(meta.getId, 0), UserFX.mkDefaultUser, dt)
+      metaDao.touch(DocumentIdentity.of(meta.getId, 0), UserFX.mkDefaultUser, dt)
 
       val updatedMeta = metaDao.getMeta(meta.getId)
       val updatedVersion = versionDao.getVersion(meta.getId, 0)
@@ -86,33 +86,33 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
   }
 
   ".deleteFileReferences" in {
-    val docRef = DocRefFX.Default
-    metaDao.deleteFileReferences(docRef)
+    val docIdentity = DocRefFX.Default
+    metaDao.deleteFileReferences(docIdentity)
   }
 
   ".saveFileReferences" in {
-    val docRef = DocRefFX.Default
+    val docIdentity = DocRefFX.Default
     val fileRef = new FileDocItem |>> { ref =>
-      ref.setDocRef(docRef)
+      ref.setDocRef(docIdentity)
     }
 
     metaDao.saveFileReference(fileRef)
   }
 
   ".getFileReferences" in {
-    val docRef = DocRefFX.Default
-    metaDao.getFileReferences(docRef)
+    val docIdentity = DocRefFX.Default
+    metaDao.getFileReferences(docIdentity)
   }
 
 
   ".getIncludes" in {
-    val docRef = DocRefFX.Default
-    metaDao.getIncludes(docRef.getDocId)
+    val docIdentity = DocRefFX.Default
+    metaDao.getIncludes(docIdentity.getDocId)
   }
 
   ".deleteIncludes" in {
-    val docRef = DocRefFX.Default
-    metaDao.deleteIncludes(docRef.getDocId)
+    val docIdentity = DocRefFX.Default
+    metaDao.deleteIncludes(docIdentity.getDocId)
   }
 }
 

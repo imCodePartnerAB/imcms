@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.tags;
 
-import com.imcode.imcms.api.DocRef;
+import com.imcode.imcms.api.DocumentIdentity;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.Content;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -21,8 +21,8 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 public class ContentLoopTag2 extends BodyTagSupport {
 
     /** Creates empty content loop. */
-    private static ContentLoop createLoop(DocRef docRef, Integer no) {
-        return ContentLoop.builder().docRef(docRef).no(no).build();
+    private static ContentLoop createLoop(DocumentIdentity documentIdentity, Integer no) {
+        return ContentLoop.builder().docIdentity(documentIdentity).no(no).build();
     }
 
 
@@ -73,7 +73,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
         loop = document.getContentLoop(no);
         
         if (loop == null) {
-        	loop = createLoop(document.getRef(), no);
+        	loop = createLoop(document.getIdentity(), no);
 
            	document.setContentLoop(no, loop);
         }

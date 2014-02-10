@@ -73,8 +73,8 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
             if !state.getItemsMap.containsKey(docId)
             doc <- imcmsServices.getDocumentMapper.getDefaultDocument[DocumentDomainObject](docId).asOption
           } {
-            val docRef = imcmsServices.getDocumentMapper.getDocumentReference(doc)
-            val menuItem = new MenuItemDomainObject(docRef)
+            val docIdentity = imcmsServices.getDocumentMapper.getDocumentReference(doc)
+            val menuItem = new MenuItemDomainObject(docIdentity)
             state.addMenuItemUnchecked(menuItem)
           }
 

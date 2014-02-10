@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.docadmin
 
-import com.imcode.imcms.api.{DocRef, DocumentVersion}
+import com.imcode.imcms.api.{DocumentIdentity, DocumentVersion}
 import java.util.Locale
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
@@ -90,7 +90,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
 
   def wrapTextDocImageEditor(request: VaadinRequest, doc: TextDocumentDomainObject, imageNo: Int): EditorContainerView = {
-    val imageEditor = new ImagesEditor(doc.getRef, imageNo)
+    val imageEditor = new ImagesEditor(doc.getIdentity, imageNo)
     val editorContainerView =  new EditorContainerView("doc.edit_image.title".i)
 
     editorContainerView.mainComponent = imageEditor.view
@@ -336,7 +336,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     }
 
     val textDao = imcmsServices.getManagedBean(classOf[TextDocDao])
-    val texts = textDao.getTextsInAllLanguages(DocRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
+    val texts = textDao.getTextsInAllLanguages(DocumentIdentity.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
 
     for (text <- texts.asScala if text.getI18nDocRef == null) {
       text.setType(TextDomainObject.TEXT_TYPE_HTML)

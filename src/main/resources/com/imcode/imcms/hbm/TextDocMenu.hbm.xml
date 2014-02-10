@@ -11,14 +11,14 @@
   <!-- List -->
   <query name="Menu.getMenusByDocRef">
     <![CDATA[
-    SELECT m FROM Menu m WHERE m.docRef = :docRef
+    SELECT m FROM Menu m WHERE m.docIdentity = :docIdentity
     ]]>
   </query>
 
   <!-- Unique -->
   <query name="Menu.getMenuByDocRefAndNo">
     <![CDATA[
-    SELECT m FROM Menu m WHERE m.docRef = :docRef AND m.no = :no
+    SELECT m FROM Menu m WHERE m.docIdentity = :docIdentity AND m.no = :no
     ]]>
   </query>
 

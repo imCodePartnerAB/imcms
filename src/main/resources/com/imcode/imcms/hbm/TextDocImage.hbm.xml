@@ -7,7 +7,7 @@
 
   <query name="Image.deleteImagesByDocRefAndLanguage">
     <![CDATA[
-    DELETE FROM Image i WHERE i.docRef = :docRef AND i.language = :language
+    DELETE FROM Image i WHERE i.docIdentity = :docIdentity AND i.language = :language
     ]]>
   </query>
 
@@ -44,13 +44,13 @@
 
   <query name="Image.getByDocRef">
     <![CDATA[
-    SELECT i FROM Image i WHERE i.docRef = :docRef
+    SELECT i FROM Image i WHERE i.docIdentity = :docIdentity
     ]]>
   </query>
 
   <query name="Image.getByDocRefAndLanguage">
     <![CDATA[
-    SELECT i FROM Image i WHERE i.docRef = :docRef AND i.language = :language
+    SELECT i FROM Image i WHERE i.docIdentity = :docIdentity AND i.language = :language
     ]]>
   </query>
 

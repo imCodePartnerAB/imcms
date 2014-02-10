@@ -10,6 +10,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
  * Cleans doc's identity data.
  * When new doc is created by cloning an existing one its identity and version fields should be cleared.
  */
+@Deprecated
 public class DocIdentityCleanerVisitor extends DocumentVisitor {
 
     @Override

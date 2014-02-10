@@ -9,14 +9,14 @@ import java.util.List;
 public interface DocumentGetter {
     
     /** 
-     * @return list of working documents. 
+     * @return a list of default documents.
      */ 
     List<DocumentDomainObject> getDocuments(Collection<Integer> docIds);
 
     /**
-     * Returns default document in default language.
+     * Returns default document.
      * 
-     * @param docId document's meta id.
+     * @param docId document's id.
      *
      */
     <T extends DocumentDomainObject> T getDocument(int docId);

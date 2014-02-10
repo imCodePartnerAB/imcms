@@ -36,7 +36,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterEa
     textDocDao.getMenu(DocRef.of(docId, docVersionNo), no) |>> { menu =>
       if (assertExists) {
         assertNotNull("menu exists", menu)
-        assertEquals("docRef", DocRef.of(docId, docVersionNo), menu.getDocRef)
+        assertEquals("docIdentity", DocRef.of(docId, docVersionNo), menu.getDocRef)
         assertEquals("no", docVersionNo, menu.getNo)
       }
     }
@@ -47,7 +47,7 @@ class MenuDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterEa
       if (assertNotEmpty) {
         assertTrue("menus exist", menus.nonEmpty)
         menus.foreach { menu =>
-          assertEquals("docRef", DocRef.of(docId, docVersionNo), menu.getDocRef)
+          assertEquals("docIdentity", DocRef.of(docId, docVersionNo), menu.getDocRef)
         }
       }}
     }

@@ -1,13 +1,6 @@
 package com.imcode.imcms.mapping.orm;
 
-import com.imcode.imcms.api.Document;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSets;
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
-import org.apache.commons.lang.NullArgumentException;
-
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -153,16 +146,6 @@ public class DocMeta {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDatetime;
 
-    /**
-     * (Saved) value of modified dt at the time this meta was actually loaded.
-     * When loaded from the db its value is set to modifiedDatetime.
-     * Used to test if modifiedDatetime was changed explicitly.
-     *
-     * @see com.imcode.imcms.mapping.DocumentSaver#updateDocument
-     */
-    @Transient
-    private Date actualModifiedDatetime;
-
     // CHECKED	
     @Column(name = "disable_search", nullable = false)
     private boolean searchDisabled;
@@ -203,7 +186,7 @@ public class DocMeta {
     @CollectionTable(name = "document_properties", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "key_name")
     @Column(name = "value", nullable = false)
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Map<String, String> properties = new HashMap<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "document_categories", joinColumns = @JoinColumn(name = "meta_id"))
@@ -218,7 +201,7 @@ public class DocMeta {
     @CollectionTable(name = "roles_rights", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "role_id")
     @Column(name = "set_id")
-    private Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<>();
 
 
     /**
@@ -231,7 +214,7 @@ public class DocMeta {
     @CollectionTable(name = "doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "set_id")
     @Column(name = "permission_id")
-    private Map<Integer, Integer> permissionSetBitsMap = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> permissionSetBitsMap = new HashMap<>();
 
 
     /**
@@ -244,7 +227,7 @@ public class DocMeta {
     @CollectionTable(name = "new_doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "set_id")
     @Column(name = "permission_id")
-    private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<>();
 
     /**
      *
@@ -252,13 +235,13 @@ public class DocMeta {
     // For processing after load:
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
-    private Set<PermisionSetEx> permisionSetEx = new HashSet<PermisionSetEx>();
+    private Set<PermisionSetEx> permisionSetEx = new HashSet<>();
 
 
     // For processing after load:
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "new_doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
-    private Set<PermisionSetEx> permisionSetExForNew = new HashSet<PermisionSetEx>();
+    private Set<PermisionSetEx> permisionSetExForNew = new HashSet<>();
 
 
     /**
@@ -270,30 +253,13 @@ public class DocMeta {
             joinColumns = @JoinColumn(name = "doc_id"),
             inverseJoinColumns = @JoinColumn(name = "language_id")
     )
-    private Set<DocLanguage> enabledLanguages = new HashSet<DocLanguage>();
+    private Set<DocLanguage> enabledLanguages = new HashSet<>();
 
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "imcms_doc_keywords", joinColumns = @JoinColumn(name = "doc_id"))
     @Column(name = "value")
-    private Set<String> keywords = new HashSet<String>();
-
-
-    //
-    // Transients are moved from DocumentDomainObject.
-    //
-
-    @Transient
-    private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-
-    @Transient
-    private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
-
-    @Transient
-    private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
-
-    @Transient
-    private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+    private Set<String> keywords = new HashSet<>();
 
     public Integer getId() {
         return id;
@@ -317,13 +283,8 @@ public class DocMeta {
         return documentType;
     }
 
-    @Deprecated
     public void setDocumentType(Integer documentType) {
         this.documentType = documentType;
-    }
-
-    public Integer getDocumentTypeId() {
-        return getDocumentType();
     }
 
     public Integer getCreatorId() {
@@ -373,14 +334,6 @@ public class DocMeta {
 
     public void setModifiedDatetime(Date modifiedDatetime) {
         this.modifiedDatetime = modifiedDatetime;
-    }
-
-    public Date getActualModifiedDatetime() {
-        return actualModifiedDatetime;
-    }
-
-    public void setActualModifiedDatetime(Date actualModifiedDatetime) {
-        this.actualModifiedDatetime = actualModifiedDatetime;
     }
 
     public boolean getSearchDisabled() {
@@ -528,67 +481,6 @@ public class DocMeta {
 
     public void setEnabledLanguages(Set<DocLanguage> languages) {
         this.enabledLanguages = languages != null ? languages : new HashSet<DocLanguage>();
-    }
-
-    // Transient properties
-    public DocumentPermissionSets getPermissionSets() {
-        return permissionSets;
-    }
-
-    public void setPermissionSets(DocumentPermissionSets permissionSets) {
-        this.permissionSets = permissionSets;
-    }
-
-    public DocumentPermissionSets getPermissionSetsForNewDocuments() {
-        return permissionSetsForNewDocuments;
-    }
-
-    public void setPermissionSetsForNew(DocumentPermissionSets permissionSetsForNew) {
-        this.permissionSetsForNewDocuments = permissionSetsForNew;
-    }
-
-    public void setPermissionSetsForNewDocuments(DocumentPermissionSets permissionSetsForNewDocuments) {
-        this.permissionSetsForNewDocuments = permissionSetsForNewDocuments;
-    }
-
-    public RoleIdToDocumentPermissionSetTypeMappings getRoleIdToDocumentPermissionSetTypeMappings() {
-        return roleIdToDocumentPermissionSetTypeMappings;
-    }
-
-    public void setRoleIdToDocumentPermissionSetTypeMappings(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
-        this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings;
-    }
-
-    // transient
-    public void setRoleIdsMappedToDocumentPermissionSetTypes(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
-        this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
-    }
-
-    public Document.PublicationStatus getPublicationStatus() {
-        return publicationStatus;
-    }
-
-    public void setPublicationStatus(Document.PublicationStatus status) {
-        if (null == status) {
-            throw new NullArgumentException("status");
-        }
-        publicationStatus = status;
-    }
-
-    public String getAlias() {
-        return properties.get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
-    }
-
-    public void setAlias(String alias) {
-        if (alias == null) {
-            removeAlis();
-        } else {
-            properties.put(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, alias);
-        }
-    }
-
-    public void removeAlis() {
-        properties.remove(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
     }
 
     public Integer getDefaultVersionNo() {

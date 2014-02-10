@@ -41,19 +41,19 @@
     ]]>
   </query>
 
-  <query name="I18nMeta.getByDocId">
+  <query name="DocAppearance.getByDocId">
     <![CDATA[
     SELECT l FROM I18nMeta l WHERE l.docId = :docId
     ]]>
   </query>    
 
-  <query name="I18nMeta.getByDocIdAndLanguageId">
+  <query name="DocAppearance.getByDocIdAndLanguageId">
     <![CDATA[
     SELECT l FROM I18nMeta l WHERE l.docId = :docId AND l.language.id = :languageId
     ]]>
   </query>
 
-  <query name="I18nMeta.deleteByDocIdAndLanguageId">
+  <query name="DocAppearance.deleteByDocIdAndLanguageId">
     <![CDATA[
     DELETE FROM I18nMeta l WHERE l.docId = :docId AND l.language.id = :languageId
     ]]>
@@ -140,7 +140,7 @@
   <!-- ==================================================================== -->
   <query name="HtmlDoc.getReference">
     <![CDATA[
-    FROM HtmlReference r WHERE r.docRef = :docRef
+    FROM HtmlReference r WHERE r.docIdentity = :docIdentity
     ]]>
   </query>
 
@@ -150,7 +150,7 @@
   <!-- ==================================================================== -->
   <query name="UrlDoc.getReference">
     <![CDATA[
-    FROM UrlReference r WHERE r.docRef = :docRef
+    FROM UrlReference r WHERE r.docIdentity = :docIdentity
     ]]>
   </query>
 
@@ -159,13 +159,13 @@
   <!-- ==================================================================== -->
   <query name="FileDoc.getReferences">
     <![CDATA[
-    FROM FileReference r WHERE r.docRef = :docRef ORDER BY r.defaultFileId DESC, r.fileId
+    FROM FileReference r WHERE r.docIdentity = :docIdentity ORDER BY r.defaultFileId DESC, r.fileId
     ]]>
   </query>
 
   <query name="FileDoc.deleteAllReferences">
     <![CDATA[
-    DELETE FROM FileReference r WHERE r.docRef = :docRef
+    DELETE FROM FileReference r WHERE r.docIdentity = :docIdentity
     ]]>
   </query>
     

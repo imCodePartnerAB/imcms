@@ -8,7 +8,7 @@
   <!-- Unique -->
   <query name="ContentLoop.getByDocRefAndNo">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.docRef = :docRef AND l.no = :no
+    SELECT l FROM ContentLoop l WHERE l.docIdentity = :docIdentity AND l.no = :no
     ]]>
   </query>
 
@@ -16,7 +16,7 @@
   <!-- List -->
   <query name="ContentLoop.getByDocRef">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.docRef = :docRef
+    SELECT l FROM ContentLoop l WHERE l.docIdentity = :docIdentity
     ]]>
   </query>
     

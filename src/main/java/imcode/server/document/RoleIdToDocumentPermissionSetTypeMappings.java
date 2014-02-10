@@ -19,7 +19,7 @@ import org.apache.commons.collections.Transformer;
  */
 public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, Cloneable {
 
-    HashMap<RoleId, DocumentPermissionSetTypeDomainObject> map = new HashMap<RoleId, DocumentPermissionSetTypeDomainObject>() ;
+    HashMap<RoleId, DocumentPermissionSetTypeDomainObject> map = new HashMap<>() ;
 
     @Override
     public RoleIdToDocumentPermissionSetTypeMappings clone() {

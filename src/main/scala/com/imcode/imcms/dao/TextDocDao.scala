@@ -29,8 +29,8 @@ class TextDocDao extends HibernateSupport {
                createIfNotExists: Boolean): JList[TextDocText] = {
     for {
       language <- languageDao.getAllLanguages.asScala
-      docRef = DocRef.of(docVersionRef, language)
-      text <- PartialFunction.condOpt(getText(docRef, no, loopItemRefOpt)) {
+      docIdentity = DocumentIdentity.of(docVersionRef, language)
+      text <- PartialFunction.condOpt(getText(docIdentity, no, loopItemRefOpt)) {
         case text if text != null => text
         case _ if createIfNotExists => new TextDocText |>> { txt =>
           txt.setNo(no)
@@ -48,11 +48,11 @@ class TextDocDao extends HibernateSupport {
   def getTextById(id: Long): TextDocText = hibernate.get[TextDocText](id)
 
 
-  def deleteTexts(ref: DocRef): Int = {
+  def deleteTexts(ref: DocumentIdentity): Int = {
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
       "TextDocText.deleteTextsBy_DocId_and_DocVersionNo_and_DocLanguageCode",
       "docId" -> ref.getId(),
-      "docVersionNo" -> ref.getVersionNo(),
+      "docVersionNo" -> ref.getDocVersionNo(),
       "docLanguageCode" -> ref.getLanguage.getCode
     )
   }
@@ -66,21 +66,21 @@ class TextDocDao extends HibernateSupport {
    */
   def getTextsInAllLanguages(ref: DocVersionRef): JList[TextDocText] =
     hibernate.listByNamedQueryAndNamedParams(
-      "Text.getByDocRef", "docRef" -> docRef
+      "Text.getByDocRef", "docIdentity" -> docIdentity
     )
 
 
   /**
    * Returns text fields for the same doc, version and language.
    */
-  def getTexts(ref: DocRef): JList[TextDocText] =
+  def getTexts(ref: DocumentIdentity): JList[TextDocText] =
     hibernate.listByNamedQueryAndNamedParams(
       "Text.getByI18nDocRef",
       "ref" -> ref
     )
 
 
-  def getText(ref: DocRef, no: Int, contentRefOpt: Option[TextDocLoopItemRef]) = {
+  def getText(ref: DocumentIdentity, no: Int, contentRefOpt: Option[TextDocLoopItemRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
         """select t from Text t where t.ref = :ref and t.no = :no
@@ -122,7 +122,7 @@ class TextDocDao extends HibernateSupport {
 
   def deleteMenus(ref: DocVersionRef) = hibernate.withCurrentSession { session =>
     val scroll = session.getNamedQuery("Menu.getMenusByDocRef")
-      .setParameter("docRef", docRef)
+      .setParameter("docIdentity", docIdentity)
       .setCacheMode(CacheMode.IGNORE)
       .scroll(ScrollMode.FORWARD_ONLY)
 
@@ -151,10 +151,10 @@ class TextDocDao extends HibernateSupport {
                 createIfNotExists: Boolean = false): JList[TextDocImage] = {
     for {
       language <- languageDao.getAllLanguages.asScala
-      image <- PartialFunction.condOpt(getImage(docRef, no, language, contentRefOpt)) {
+      image <- PartialFunction.condOpt(getImage(docIdentity, no, language, contentRefOpt)) {
         case image if image != null => image
         case _ if createIfNotExists => new TextDocImage |>> { img =>
-          img.setDocRef(docRef)
+          img.setDocRef(docIdentity)
           img.setNo(no)
           img.setLanguage(language)
           img.setContentLoopRef(contentRefOpt.orNull)
@@ -164,25 +164,25 @@ class TextDocDao extends HibernateSupport {
   } |> { _.asJava }
 
 
-//  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentRef] = None): Map[DocumentLanguage, Option[TextDocImage]] = {
+//  def getImages(docIdentity: DocRef, no: Int, contentRefOpt: Option[ContentRef] = None): Map[DocumentLanguage, Option[TextDocImage]] = {
 //    (
 //      for (language <- languageDao.getAllLanguages.asScala)
-//      yield language -> getImage(docRef, no, language, contentRefOpt).asOption
+//      yield language -> getImage(docIdentity, no, language, contentRefOpt).asOption
 //    )(breakOut)
 //  }
 
-  def getImage(docRef: DocRef, no: Int, language: DocLanguage, contentRefOpt: Option[TextDocLoopItemRef]) = {
+  def getImage(docIdentity: DocumentIdentity, no: Int, language: DocLanguage, contentRefOpt: Option[TextDocLoopItemRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
-        """select i from Image i where i.docRef = :docRef and i.no = :no
+        """select i from Image i where i.docIdentity = :docIdentity and i.no = :no
            and i.language = :language AND i.contentRef = :contentRef"""
       else
-        """select i from Image i where i.docRef = :docRef and i.no = :no
+        """select i from Image i where i.docIdentity = :docIdentity and i.no = :no
            and i.language = :language AND i.contentRef IS NULL"""
 
     hibernate.withCurrentSession { session =>
       session.createQuery(queryStr) |> { query =>
-        query.setParameter("docRef", docRef)
+        query.setParameter("docIdentity", docIdentity)
           .setParameter("no", no)
           .setParameter("language", language)
 
@@ -202,23 +202,23 @@ class TextDocDao extends HibernateSupport {
   def saveImageHistory(imageHistory: TextDocImageHistory) = hibernate.save(imageHistory)
 
 
-  def getImagesInAllLanguages(docRef: DocRef): JList[TextDocImage] =
+  def getImagesInAllLanguages(docIdentity: DocumentIdentity): JList[TextDocImage] =
     hibernate.listByNamedQueryAndNamedParams[TextDocImage](
-      "Image.getByDocRef", "docRef" -> docRef
+      "Image.getByDocRef", "docIdentity" -> docIdentity
     ) |> ImageUtil.initImagesSources
 
 
-  def getImages(ref: DocRef): JList[TextDocImage] =
+  def getImages(ref: DocumentIdentity): JList[TextDocImage] =
     hibernate.listByNamedQueryAndNamedParams[TextDocImage](
       "Image.getByDocRefAndLanguage",
-      "docRef" -> docRef, "language" -> language
+      "docIdentity" -> docIdentity, "language" -> language
     ) |> ImageUtil.initImagesSources
 
 
 
-  def deleteImages(docRef: DocRef, language: DocLanguage): Int =
+  def deleteImages(docIdentity: DocumentIdentity, language: DocLanguage): Int =
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
-      "Image.deleteImagesByDocRefAndLanguage", "docRef" -> docRef, "language" -> language
+      "Image.deleteImagesByDocRefAndLanguage", "docIdentity" -> docIdentity, "language" -> language
     )
 
   def getLoop(loopId: Long) = hibernate.get[TextDocLoop](loopId)
@@ -230,9 +230,9 @@ class TextDocDao extends HibernateSupport {
    *
    * @return loop or null if loop can not be found.
    */
-  def getLoop(docRef: DocRef, no: Int): TextDocLoop =
+  def getLoop(docIdentity: DocumentIdentity, no: Int): TextDocLoop =
     hibernate.getByNamedQueryAndNamedParams(
-      "ContentLoop.getByDocRefAndNo", "docRef" -> docRef, "no" -> no
+      "ContentLoop.getByDocRefAndNo", "docIdentity" -> docIdentity, "no" -> no
     )
 
 
@@ -241,14 +241,14 @@ class TextDocDao extends HibernateSupport {
 
    * @return document content loops.
    */
-  def getLoops(docRef: DocRef): JList[TextDocLoop] = hibernate.listByNamedQueryAndNamedParams(
-    "ContentLoop.getByDocRef", "docRef" -> docRef
+  def getLoops(docIdentity: DocumentIdentity): JList[TextDocLoop] = hibernate.listByNamedQueryAndNamedParams(
+    "ContentLoop.getByDocRef", "docIdentity" -> docIdentity
   )
 
 
-  def getNextLoopNo(docRef: DocRef): Int = hibernate.getByQuery[JInteger](
-    "select max(l.no) from ContentLoop l where l.docRef = ?1",
-    1 -> docRef
+  def getNextLoopNo(docIdentity: DocumentIdentity): Int = hibernate.getByQuery[JInteger](
+    "select max(l.no) from ContentLoop l where l.docIdentity = ?1",
+    1 -> docIdentity
   ) match {
     case null => 0
     case n => n.intValue + 1
@@ -267,8 +267,8 @@ class TextDocDao extends HibernateSupport {
   }
 
 
-  def deleteLoops(docRef: DocRef) =
-    getLoops(docRef).asScala.map(hibernate.delete).size
+  def deleteLoops(docIdentity: DocumentIdentity) =
+    getLoops(docIdentity).asScala.map(hibernate.delete).size
 
 
   def deleteLoop(loopId: Long) = getLoop(loopId) match {

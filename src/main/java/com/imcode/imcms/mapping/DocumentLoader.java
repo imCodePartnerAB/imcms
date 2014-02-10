@@ -1,24 +1,19 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.dao.DocVersionDao;
+import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.orm.DocAppearance;
 import com.imcode.imcms.mapping.orm.DocLanguage;
 import com.imcode.imcms.mapping.orm.DocMeta;
 import com.imcode.imcms.mapping.orm.DocVersion;
 import imcode.server.ImcmsConstants;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.DocumentPermissionSets;
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.*;
 import imcode.server.user.RoleId;
 
 import java.util.Map;
 import java.util.Set;
-
-import com.imcode.imcms.api.*;
-import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.dao.DocVersionDao;
 
 /**
  * Loads documents from the database.
@@ -53,18 +48,22 @@ public class DocumentLoader {
      * @param docId document id.
      * @return
      */
-    public DocMeta loadMeta(Integer docId) {
-        DocMeta meta = metaDao.getMeta(docId);
+    public Meta loadMeta(Integer docId) {
+        DocMeta ormMeta = metaDao.getMeta(docId);
+
+        if (ormMeta == null) return null;
+
+        Meta meta = OrmToApi.toApi(ormMeta);
 
         if (meta != null) {
             meta.setActualModifiedDatetime(meta.getModifiedDatetime());
 
-            Document.PublicationStatus publicationStatus = publicationStatusFromInt(meta.getPublicationStatusInt());
+            Document.PublicationStatus publicationStatus = publicationStatusFromInt(ormMeta.getPublicationStatusInt());
             meta.setPublicationStatus(publicationStatus);
 
-            initRoleIdToPermissionSetIdMap(meta);
-            initDocumentsPermissionSets(meta);
-            initDocumentsPermissionSetsForNew(meta);
+            initRoleIdToPermissionSetIdMap(meta, ormMeta);
+            initDocumentsPermissionSets(meta, ormMeta);
+            initDocumentsPermissionSetsForNew(meta, ormMeta);
         }
 
         return meta;
@@ -129,11 +128,11 @@ public class DocumentLoader {
     }
 
     // Moved from  DocumentInitializer.initDocuments
-    private void initRoleIdToPermissionSetIdMap(DocMeta meta) {
+    private void initRoleIdToPermissionSetIdMap(Meta meta, DocMeta ormMeta) {
         RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
                 new RoleIdToDocumentPermissionSetTypeMappings();
 
-        for (Map.Entry<Integer, Integer> roleIdToPermissionSetId : meta.getRoleIdToPermissionSetIdMap().entrySet()) {
+        for (Map.Entry<Integer, Integer> roleIdToPermissionSetId : ormMeta.getRoleIdToPermissionSetIdMap().entrySet()) {
             rolePermissionMappings.setPermissionSetTypeForRole(
                     new RoleId(roleIdToPermissionSetId.getKey()),
                     DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
@@ -142,17 +141,17 @@ public class DocumentLoader {
         meta.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);
     }
 
-    private void initDocumentsPermissionSets(DocMeta meta) {
+    private void initDocumentsPermissionSets(Meta meta, DocMeta ormMeta) {
         DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-                meta.getPermissionSetBitsMap(), meta.getPermisionSetEx());
+                ormMeta.getPermissionSetBitsMap(), ormMeta.getPermisionSetEx());
 
         meta.setPermissionSets(permissionSets);
     }
 
 
-    private void initDocumentsPermissionSetsForNew(DocMeta meta) {
+    private void initDocumentsPermissionSetsForNew(Meta meta, DocMeta ormMeta) {
         DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-                meta.getPermissionSetBitsForNewMap(), meta.getPermisionSetExForNew());
+                ormMeta.getPermissionSetBitsForNewMap(), ormMeta.getPermisionSetExForNew());
 
         meta.setPermissionSetsForNew(permissionSets);
     }
@@ -188,7 +187,7 @@ public class DocumentLoader {
     private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {
         if (null != permissionId) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) permissionSet;
-            switch (permissionId.intValue()) {
+            switch (permissionId) {
                 case PERM_CREATE_DOCUMENT:
                     textDocumentPermissionSet.addAllowedDocumentTypeId(permissionData.intValue());
                     break;
@@ -213,8 +212,7 @@ public class DocumentLoader {
         return documentInitializingVisitor;
     }
 
-    public void setDocumentInitializingVisitor(
-            DocumentInitializingVisitor documentInitializingVisitor) {
+    public void setDocumentInitializingVisitor(DocumentInitializingVisitor documentInitializingVisitor) {
         this.documentInitializingVisitor = documentInitializingVisitor;
     }
 

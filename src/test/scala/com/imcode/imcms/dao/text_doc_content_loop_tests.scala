@@ -20,7 +20,7 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 //  }
 //
 //  case class ContentsDesc(count: Int, sort: ContentsSort.Value)
-//  case class ContentLoopDesc(loopId: Long, docRef: DocRef, contentRefOpt: ContentRef, contentsDesc: ContentsDesc)
+//  case class ContentLoopDesc(loopId: Long, docIdentity: DocRef, contentRefOpt: ContentRef, contentsDesc: ContentsDesc)
 //
 //  val loop0 = ContentLoopDesc(0, DocRef.of(1001, 0), ContentRef.of(0, 0), ContentsDesc(count = 0, sort = ContentsSort.Asc))
 //  val loop1 = ContentLoopDesc(1, DocRef.of(1001, 0), ContentRef.of(0, 1), ContentsDesc(count = 1, sort = ContentsSort.Asc))
@@ -75,9 +75,9 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("create empty content loop") {
     TextDocLoop.builder() |> { builder =>
-      val docRef = DocRef.of(1001, 0)
-      builder.docRef(docRef)
-      builder.no(dao.getNextLoopNo(docRef))
+      val docIdentity = DocRef.of(1001, 0)
+      builder.docIdentity(docIdentity)
+      builder.no(dao.getNextLoopNo(docIdentity))
 
       dao.saveLoop(builder.build())
     }
@@ -110,8 +110,8 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("create non empty content loop [with 5 contents]") {
     val contentsCount = 5
-    val docRef = DocRef.of(1001, 0)
-    val loop = TextDocLoop.builder().docRef(docRef).no(dao.getNextLoopNo(docRef)).build() |> { emptyLoop =>
+    val docIdentity = DocRef.of(1001, 0)
+    val loop = TextDocLoop.builder().docIdentity(docIdentity).no(dao.getNextLoopNo(docIdentity)).build() |> { emptyLoop =>
       1.to(contentsCount).foldLeft(emptyLoop) {
         case (loop, _) =>
           val ops = new ContentLoopOps(loop)
@@ -139,10 +139,10 @@ class ContextLoopDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   def getLoop(no: Int): TextDocLoop = getLoop(no, false)
 
-  def getLoop(no: Int, assertLoopNotNull: Boolean) = DocRef.of(1001, 0) |> { docRef =>
-    dao.getLoop(docRef, no) |>> { loop =>
+  def getLoop(no: Int, assertLoopNotNull: Boolean) = DocRef.of(1001, 0) |> { docIdentity =>
+    dao.getLoop(docIdentity, no) |>> { loop =>
       if (assertLoopNotNull)
-        assertNotNull("Loop exists - docRef: %s, no: %s.".format(docRef, no), loop)
+        assertNotNull("Loop exists - docIdentity: %s, no: %s.".format(docIdentity, no), loop)
     }
   }
 }

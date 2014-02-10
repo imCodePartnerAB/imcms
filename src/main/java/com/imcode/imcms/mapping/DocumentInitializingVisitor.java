@@ -34,7 +34,7 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
      *   ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(final FileDocumentDomainObject doc) {
-    	Collection<FileDocItem> fileReferences = metaDao.getFileReferences(doc.getRef());
+    	Collection<FileDocItem> fileReferences = metaDao.getFileReferences(doc.getIdentity());
     	
     	for (FileDocItem fileRef: fileReferences) {
             String fileId = fileRef.getFileId();           
@@ -44,7 +44,7 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
             file.setMimeType(fileRef.getMimeType());
             file.setCreatedAsImage(fileRef.getCreatedAsImage());
             
-            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getRef(), fileId);
+            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getIdentity(), fileId);
             if ( !fileForFileDocument.exists() ) {
                 File oldlyNamedFileForFileDocument = new File(fileForFileDocument.getParentFile(),
                                                               fileForFileDocument.getName()
@@ -67,12 +67,12 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
     
 
     public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
-    	HtmlDocContent html = metaDao.getHtmlReference(doc.getRef());
+    	HtmlDocContent html = metaDao.getHtmlReference(doc.getIdentity());
     	doc.setHtml(html.getHtml());
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject doc) {
-    	UrlDocContent reference = metaDao.getUrlReference(doc.getRef());
+    	UrlDocContent reference = metaDao.getUrlReference(doc.getIdentity());
     	doc.setUrl(reference.getUrl());
     }
 

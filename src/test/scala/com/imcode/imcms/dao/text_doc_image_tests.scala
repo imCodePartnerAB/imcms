@@ -66,13 +66,13 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterE
 	}
 
 	test("save text doc image") {
-    val image = ImageDomainObject.builder().docRef(DocRef.of(1001, 0)).language(mkEnglish).no(1000).build()
+    val image = ImageDomainObject.builder().docIdentity(DocRef.of(1001, 0)).language(mkEnglish).no(1000).build()
 
     textDocDao.saveImage(image)
 	}
 
 	test("save text doc's image history") {
-    val image = ImageDomainObject.builder().docRef(DocRef.of(1001, 0)).language(mkEnglish).no(1000).build()
+    val image = ImageDomainObject.builder().docIdentity(DocRef.of(1001, 0)).language(mkEnglish).no(1000).build()
     val imageHistory = new TextDocImageHistory(image, admin)
 
     textDocDao.saveImageHistory(imageHistory)

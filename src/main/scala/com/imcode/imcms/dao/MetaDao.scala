@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.api.{DocRef}
+import com.imcode.imcms.api.{DocumentIdentity}
 import com.imcode.imcms.mapping.orm._
 import imcode.server.document.DocumentDomainObject
 import org.apache.commons.lang.StringUtils
@@ -20,9 +20,9 @@ class MetaDao extends HibernateSupport {
   def getMeta(docId: Int): DocMeta = hibernate.get[DocMeta](docId)
 
   /**  Updates doc's access and modified date-time. */
-  def touch(docRef: DocRef, user: UserDomainObject): Unit = touch(docRef, user, new Date)
-  def touch(docRef: DocRef, user: UserDomainObject, date: Date): Unit =
-    touch(docRef.getDocId, docRef.getVersionNo, user.getId, date)
+  def touch(docIdentity: DocumentIdentity, user: UserDomainObject): Unit = touch(docIdentity, user, new Date)
+  def touch(docIdentity: DocumentIdentity, user: UserDomainObject, date: Date): Unit =
+    touch(docIdentity.getDocId, docIdentity.getDocVersionNo, user.getId, date)
 
   private def touch(docId: Int, docVersionNo: Int, userId: Int, dt: Date) {
     hibernate.bulkUpdateByNamedParams(
@@ -52,7 +52,7 @@ class MetaDao extends HibernateSupport {
 
   def getI18nMeta(docId: Int, language: DocLanguage): DocAppearance =
     hibernate.getByNamedQueryAndNamedParams[DocAppearance](
-      "DocI18nMeta.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
+      "DocAppearance.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
     ).asOption.getOrElse(
       DocAppearance.builder() |> {
         _.docId(docId)
@@ -66,11 +66,11 @@ class MetaDao extends HibernateSupport {
 
 
   def getI18nMetas(docId: Int): JList[DocAppearance] = hibernate.listByNamedQueryAndNamedParams(
-    "DocI18nMeta.getByDocId", "docId" -> docId
+    "DocAppearance.getByDocId", "docId" -> docId
   )
 
   def deleteI18nMeta(docId: Int, languageId: Int) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
-    "DocI18nMeta.deleteByDocIdAndLanguageId", "docId" -> docId, "languageId" -> languageId
+    "DocAppearance.deleteByDocIdAndLanguageId", "docId" -> docId, "languageId" -> languageId
   )
 
   def saveI18nMeta(i18nMeta: DocAppearance): DocAppearance = {
@@ -117,13 +117,13 @@ class MetaDao extends HibernateSupport {
   def saveInclude(include: Include) = hibernate.saveOrUpdate(include)
 
 
-  def deleteHtmlReference(docRef: DocRef) = hibernate.bulkUpdateByNamedParams(
-    "delete from HtmlReference r where r.docRef = :docRef", "docRef" -> docRef
+  def deleteHtmlReference(docIdentity: DocumentIdentity) = hibernate.bulkUpdateByNamedParams(
+    "delete from HtmlReference r where r.docIdentity = :docIdentity", "docIdentity" -> docIdentity
   )
 
 
-  def deleteUrlReference(docRef: DocRef) = hibernate.bulkUpdateByNamedParams(
-    "delete from UrlReference r where r.docRef = :docRef", "docRef" -> docRef
+  def deleteUrlReference(docIdentity: DocumentIdentity) = hibernate.bulkUpdateByNamedParams(
+    "delete from UrlReference r where r.docIdentity = :docIdentity", "docIdentity" -> docIdentity
   )
 
 
@@ -142,30 +142,30 @@ class MetaDao extends HibernateSupport {
   )
 
 
-  def getFileReferences(docRef: DocRef): JList[FileDocItem] =
+  def getFileReferences(docIdentity: DocumentIdentity): JList[FileDocItem] =
     hibernate.listByNamedQueryAndNamedParams(
-      "FileDoc.getReferences", "docRef" -> docRef
+      "FileDoc.getReferences", "docIdentity" -> docIdentity
     )
 
 
   def saveFileReference(fileRef: FileDocItem) = hibernate.saveOrUpdate(fileRef)
 
 
-  def deleteFileReferences(docRef: DocRef): Int = hibernate.bulkUpdateByNamedQueryAndNamedParams(
-    "FileDoc.deleteAllReferences", "docRef" -> docRef
+  def deleteFileReferences(docIdentity: DocumentIdentity): Int = hibernate.bulkUpdateByNamedQueryAndNamedParams(
+    "FileDoc.deleteAllReferences", "docIdentity" -> docIdentity
   )
 
 
-  def getHtmlReference(docRef: DocRef): HtmlDocContent = hibernate.getByNamedQueryAndNamedParams(
-    "HtmlDoc.getReference", "docRef" -> docRef
+  def getHtmlReference(docIdentity: DocumentIdentity): HtmlDocContent = hibernate.getByNamedQueryAndNamedParams(
+    "HtmlDoc.getReference", "docIdentity" -> docIdentity
   )
 
 
   def saveHtmlReference(reference: HtmlDocContent) = hibernate.saveOrUpdate(reference)
 
 
-  def getUrlReference(docRef: DocRef): UrlDocContent = hibernate.getByNamedQueryAndNamedParams(
-    "UrlDoc.getReference", "docRef" -> docRef
+  def getUrlReference(docIdentity: DocumentIdentity): UrlDocContent = hibernate.getByNamedQueryAndNamedParams(
+    "UrlDoc.getReference", "docIdentity" -> docIdentity
   )
 
 
