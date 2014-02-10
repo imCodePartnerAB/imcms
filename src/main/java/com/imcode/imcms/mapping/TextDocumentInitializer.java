@@ -1,13 +1,12 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.dao.*;
-import com.imcode.imcms.mapping.orm.TextDocLoop;
+import com.imcode.imcms.mapping.orm.*;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,9 +16,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.imcode.imcms.dao.TextDocDao;
-import com.imcode.imcms.mapping.orm.Include;
-import com.imcode.imcms.mapping.orm.TemplateNames;
- 
+
 public class TextDocumentInitializer {
 
     private final static Logger LOG = Logger.getLogger(TextDocumentInitializer.class);
@@ -43,12 +40,12 @@ public class TextDocumentInitializer {
     }
     
     public void initTexts(TextDocumentDomainObject document) {
-    	Collection<TextDomainObject> texts = textDocDao.getTexts(document.getI18nRef());
+    	Collection<TextDocText> texts = textDocDao.getTexts(document.getRef());
 
-    	for (TextDomainObject text: texts) {
+    	for (TextDocText text: texts) {
             Integer no = text.getNo();
 
-            document.setText(no, text);
+            document.setText(no, OrmToApi.toApi(text));
     	}
     }
     
@@ -78,9 +75,9 @@ public class TextDocumentInitializer {
     
     
     public void initImages(TextDocumentDomainObject document) {
-    	Collection<ImageDomainObject> images = textDocDao.getImages(document.getRef(), document.getLanguage());
+    	Collection<TextDocImage> images = textDocDao.getImagesInAllLanguages(document.getRef());
     	
-    	for (ImageDomainObject image: images) {
+    	for (TextDocImage image: images) {
     		document.setImage(image.getNo(), image);
     	}
     }
@@ -116,10 +113,10 @@ public class TextDocumentInitializer {
      */
 	public void initContentLoops(TextDocumentDomainObject document) {
 		List<TextDocLoop> loops = textDocDao.getLoops(document.getRef());
-		Map<Integer, TextDocLoop> loopsMap = new HashMap<>();
+		Map<Integer, ContentLoop> loopsMap = new HashMap<>();
 		
 		for (TextDocLoop loop: loops) {
-			loopsMap.put(loop.getNo(), loop);
+			loopsMap.put(loop.getNo(), OrmToApi.toApi(loop));
 		}
 		
 		document.setContentLoops(loopsMap);

@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.api.DocumentAppearance;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -617,7 +617,7 @@ public class AdminManager extends HttpServlet {
         }
 
         @Override
-        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Set<I18nMeta> i18nMeta, EnumSet<DocumentMapper.SaveOpts> saveOpts, UserDomainObject user)
+        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Set<DocumentAppearance> i18nMeta, EnumSet<DocumentMapper.SaveOpts> saveOpts, UserDomainObject user)
                 throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveNewDocument(document, i18nMeta, saveOpts, user);
         }

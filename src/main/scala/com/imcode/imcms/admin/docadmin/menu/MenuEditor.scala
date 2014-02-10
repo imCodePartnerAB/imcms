@@ -69,7 +69,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
         dlg.setOkButtonHandler {
           for {
             ref <- dlg.projection.selection
-            docId = ref.docId()
+            docId = ref.getDocId()
             if !state.getItemsMap.containsKey(docId)
             doc <- imcmsServices.getDocumentMapper.getDefaultDocument[DocumentDomainObject](docId).asOption
           } {

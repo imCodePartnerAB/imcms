@@ -2,26 +2,36 @@ package com.imcode.imcms.api;
 
 import java.util.Objects;
 
-public class DocRef {
+public final class DocRef {
+
+    public static DocRef of(int docId, int docVersionNo) {
+        return new DocRef(docId, docVersionNo, null);
+    }
+
+    public static DocRef of(int docId, int docVersionNo, DocumentLanguage docLanguage) {
+        return new DocRef(docId, docVersionNo, docLanguage);
+    }
 
     private final int docId;
 
     private final int versionNo;
 
+    private final DocumentLanguage docLanguage;
+
     private final int cachedHashCode;
 
     private final String cachedToString;
 
-    public DocRef(int docId, int versionNo) {
+    public DocRef(int docId, int versionNo, DocumentLanguage docLanguage) {
         this.docId = docId;
         this.versionNo = versionNo;
+        this.docLanguage = docLanguage;
         this.cachedHashCode = Objects.hash(docId, versionNo);
         this.cachedToString = com.google.common.base.Objects.toStringHelper(this)
-                .add("docId", docId).add("docVersionNo", getVersionNo()).toString();
-    }
-
-    public static DocRef of(int docId, int docVersionNo) {
-        return new DocRef(docId, docVersionNo);
+                .add("id", docId)
+                .add("docVersionNo", versionNo)
+                .add("docLanguage", docLanguage)
+                .toString();
     }
 
     public int getDocId() {
@@ -32,14 +42,19 @@ public class DocRef {
         return versionNo;
     }
 
+    public DocumentLanguage getDocLanguage() {
+        return docLanguage;
+    }
+
     @Override
     public boolean equals(Object o) {
         return (o == this) || (o instanceof DocRef && equals((DocRef) o));
     }
 
     private boolean equals(DocRef that) {
-        return this.docId == that.docId && this.versionNo == that.versionNo;
-
+        return docId == that.docId
+                && versionNo == that.versionNo
+                && Objects.equals(docLanguage, that.docLanguage);
     }
 
     @Override

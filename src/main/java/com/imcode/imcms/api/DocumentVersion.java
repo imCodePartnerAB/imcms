@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * Document content version.
  */
-public class DocumentVersion {
+public final class DocumentVersion {
 
     public static class Builder {
         private int no;

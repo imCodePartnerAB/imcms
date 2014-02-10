@@ -24,7 +24,6 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
  * <p/>
  * Holds document content and meta.
  */
-// fixme: ??? language must be 'generic-default', never null ???
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public static final int ID_NEW = 0;
@@ -53,9 +52,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private volatile Meta meta = new Meta();
 
-    private volatile I18nMeta i18nMeta = I18nMeta.builder().build();
+    private volatile DocumentAppearance appearance = DocumentAppearance.builder().build();
 
     private volatile int versionNo = DocumentVersion.WORKING_VERSION_NO;
+
+    private volatile DocumentLanguage language;
 
     @Override
     public DocumentDomainObject clone() {
@@ -86,13 +87,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public DocRef getRef() {
-        return DocRef.of(getId(), getVersionNo());
+        return DocRef.of(getId(), getVersionNo(), getLanguage());
     }
-
-    public I18nDocRef getI18nRef() {
-        return I18nDocRef.of(getRef(), getLanguage());
-    }
-
 
     /**
      * Factory method. Creates new document.
@@ -161,11 +157,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getHeadline() {
-        return i18nMeta.getHeadline();
+        return appearance.getHeadline();
     }
 
     public void setHeadline(String v) {
-        setI18nMeta(I18nMeta.builder(getI18nMeta()).headline(v).build());
+        setAppearance(DocumentAppearance.builder(getAppearance()).headline(v).build());
     }
 
     public int getId() {
@@ -178,11 +174,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getMenuImage() {
-        return i18nMeta.getMenuImageURL();
+        return appearance.getMenuImageURL();
     }
 
     public void setMenuImage(String v) {
-        setI18nMeta(I18nMeta.builder(getI18nMeta()).menuImageURL(v).build());
+        setAppearance(DocumentAppearance.builder(getAppearance()).menuImageURL(v).build());
     }
 
 
@@ -219,12 +215,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getMenuText() {
-        return i18nMeta.getMenuText();
+        return appearance.getMenuText();
     }
 
 
     public void setMenuText(String v) {
-        setI18nMeta(I18nMeta.builder(getI18nMeta()).menuText(v).build());
+        setAppearance(DocumentAppearance.builder(getAppearance()).menuText(v).build());
     }
 
     public Date getModifiedDatetime() {
@@ -494,24 +490,24 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public DocumentLanguage getLanguage() {
-        return i18nMeta.getLanguage();
+        return language;
     }
 
     public void setLanguage(DocumentLanguage language) {
-        setI18nMeta(I18nMeta.builder(getI18nMeta()).language(language).build());
+        this.language = language;
     }
 
 
-    public I18nMeta getI18nMeta() {
-        return i18nMeta;
+    public DocumentAppearance getAppearance() {
+        return appearance;
     }
 
-    public void setI18nMeta(I18nMeta i18nMeta) {
-        if (i18nMeta == null) {
-            throw new IllegalArgumentException("i18nMeta argument can not be null.");
+    public void setAppearance(DocumentAppearance appearance) {
+        if (appearance == null) {
+            throw new IllegalArgumentException("appearance argument can not be null.");
         }
 
-        this.i18nMeta = i18nMeta;
+        this.appearance = appearance;
     }
 
     public boolean isNew() {

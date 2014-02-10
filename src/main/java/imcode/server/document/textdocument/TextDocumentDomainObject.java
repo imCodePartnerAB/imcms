@@ -239,7 +239,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
                 ? null
                 : new ContentKey(no, contentLoopRef);
 
-        TextDomainObject oldText = key == null ? texts.get(no) : loopTexts.get(key);
         TextDomainObject newText = text.clone();
 
         if (key == null) {
@@ -250,7 +249,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             if (loop == null) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Loop does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getI18nRef(), contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
+                        , getRef(), contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
                 );
             }
 
@@ -259,7 +258,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             if (!contentExist) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Content does not exists. DocRef identity: %s, contentRef: %s, text no: %s."
-                        , getI18nRef(), contentLoopRef, no)
+                        , getRef(), contentLoopRef, no)
                 );
             }
 
@@ -337,8 +336,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         ImageDomainObject oldImage = key == null ? images.get(no) : loopImages.get(key);
         ImageDomainObject newImage = image.clone();
-
-        newImage.setLanguage(getLanguage());
 
         if (key == null) {
             images.put(no, newImage);

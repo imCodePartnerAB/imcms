@@ -7,7 +7,6 @@ import com.imcode.imcms.mapping.orm._
 import scala.collection.JavaConverters._
 import scala.collection.breakOut
 import org.hibernate.{ScrollMode, CacheMode}
-import imcode.server.document.textdocument.{ImageDomainObject, MenuDomainObject, TextDomainObject}
 
 import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.dao.hibernate.HibernateSupport
@@ -24,39 +23,37 @@ class TextDocDao extends HibernateSupport {
   var docVersionDao: DocVersionDao = _
 
   /**
-   * Please note that createIfNotExists merely creates an instance of TextDomainObject not a database entry.
+   * Please note that createIfNotExists merely creates non-managed instance of TextDocText.
    */
-  def getTexts(docRef: DocRef, no: Int, loopItemRefOpt: Option[TextDocLoopItemRef],
-               createIfNotExists: Boolean): JList[TextDomainObject] = {
+  def getTextsInAllLanguages(docVersionRef: DocVersionRef, no: Int, loopItemRefOpt: Option[TextDocLoopItemRef],
+               createIfNotExists: Boolean): JList[TextDocText] = {
     for {
       language <- languageDao.getAllLanguages.asScala
-      i18nDocRef = I18nDocRef.of(docRef, language)
-      text <- PartialFunction.condOpt(getText(i18nDocRef, no, loopItemRefOpt)) {
+      docRef = DocRef.of(docVersionRef, language)
+      text <- PartialFunction.condOpt(getText(docRef, no, loopItemRefOpt)) {
         case text if text != null => text
-        case _ if createIfNotExists => new TextDomainObject |>> { txt =>
-          txt.setI18nDocRef(i18nDocRef)
+        case _ if createIfNotExists => new TextDocText |>> { txt =>
           txt.setNo(no)
-          txt.setContentLoopRef(loopItemRefOpt.orNull)
+          //txt.setLoopItemRef()
+          //txt.setContentLoopRef(loopItemRefOpt.orNull)
         }
       }
     } yield text
   } |> { _.asJava }
 
   /** Inserts or updates text. */
-  def saveText(text: TextDomainObject): TextDomainObject = hibernate.saveOrUpdate(text)
+  def saveText(text: TextDocText): TextDocText = hibernate.saveOrUpdate(text)
 
 
-  def getTextById(id: Long): TextDomainObject = hibernate.get[TextDomainObject](id)
+  def getTextById(id: Long): TextDocText = hibernate.get[TextDocText](id)
 
 
-  def deleteTexts(i18nDocRef: I18nDocRef): Int = {
-
-
+  def deleteTexts(ref: DocRef): Int = {
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
       "TextDocText.deleteTextsBy_DocId_and_DocVersionNo_and_DocLanguageCode",
-      "docId" -> i18nDocRef.docId(),
-      "docVersionNo" -> i18nDocRef.versionNo(),
-      "docLanguageCode" -> i18nDocRef.getLanguage.getCode
+      "docId" -> ref.getId(),
+      "docVersionNo" -> ref.getVersionNo(),
+      "docLanguageCode" -> ref.getLanguage.getCode
     )
   }
 
@@ -67,7 +64,7 @@ class TextDocDao extends HibernateSupport {
   /**
    * @return all texts in a doc.
    */
-  def getTexts(docRef: DocRef): JList[TextDomainObject] =
+  def getTextsInAllLanguages(ref: DocVersionRef): JList[TextDocText] =
     hibernate.listByNamedQueryAndNamedParams(
       "Text.getByDocRef", "docRef" -> docRef
     )
@@ -76,54 +73,54 @@ class TextDocDao extends HibernateSupport {
   /**
    * Returns text fields for the same doc, version and language.
    */
-  def getTexts(i18nDocRef: I18nDocRef): JList[TextDomainObject] =
+  def getTexts(ref: DocRef): JList[TextDocText] =
     hibernate.listByNamedQueryAndNamedParams(
       "Text.getByI18nDocRef",
-      "i18nDocRef" -> i18nDocRef
+      "ref" -> ref
     )
 
 
-  def getText(i18nDocRef: I18nDocRef, no: Int, contentRefOpt: Option[TextDocLoopItemRef]) = {
+  def getText(ref: DocRef, no: Int, contentRefOpt: Option[TextDocLoopItemRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
-        """select t from Text t where t.i18nDocRef = :i18nDocRef and t.no = :no
+        """select t from Text t where t.ref = :ref and t.no = :no
            AND t.contentRef = :contentRef"""
       else
-        """select t from Text t where t.i18nDocRef = :i18nDocRef and t.no = :no
+        """select t from Text t where t.ref = :ref and t.no = :no
            AND t.contentRef IS NULL"""
 
     hibernate.withCurrentSession { session =>
       session.createQuery(queryStr) |> { query =>
-        query.setParameter("i18nDocRef", i18nDocRef)
+        query.setParameter("ref", ref)
              .setParameter("no", no)
 
         if (contentRefOpt.isDefined) {
           query.setParameter("contentRef", contentRefOpt.get)
         }
 
-        query.uniqueResult.asInstanceOf[TextDomainObject]
+        query.uniqueResult.asInstanceOf[TextDocText]
       }
     }
   }
 
-  def getMenu(docRef: DocRef, no: Int): MenuDomainObject = hibernate.getByNamedQueryAndNamedParams(
-    "Menu.getMenuByDocRefAndNo", "docRef" -> docRef, "no" -> no
+  def getMenu(ref: DocVersionRef, no: Int): TextDocMenu = hibernate.getByNamedQueryAndNamedParams(
+    "Menu.getMenuByDocRefAndNo", "ref" -> ref, "no" -> no
   )
 
 
-  def getMenus(docRef: DocRef): JList[MenuDomainObject] =
+  def getMenus(ref: DocVersionRef): JList[TextDocMenu] =
     hibernate.listByNamedQueryAndNamedParams(
-      "Menu.getMenusByDocRef", "docRef" -> docRef
+      "Menu.getMenusByDocRef", "ref" -> ref
     )
 
 
-  def saveMenu(menu: MenuDomainObject): MenuDomainObject = hibernate.saveOrUpdate(menu)
+  def saveMenu(menu: TextDocMenu): TextDocMenu = hibernate.saveOrUpdate(menu)
 
 
   def saveMenuHistory(menuHistory: TextDocMenuHistory) = hibernate.save(menuHistory)
 
 
-  def deleteMenus(docRef: DocRef) = hibernate.withCurrentSession { session =>
+  def deleteMenus(ref: DocVersionRef) = hibernate.withCurrentSession { session =>
     val scroll = session.getNamedQuery("Menu.getMenusByDocRef")
       .setParameter("docRef", docRef)
       .setCacheMode(CacheMode.IGNORE)
@@ -145,18 +142,18 @@ class TextDocDao extends HibernateSupport {
   }
 
 
-  def deleteMenu(menu: MenuDomainObject): Unit = hibernate.delete(menu)
+  def deleteMenu(menu: TextDocMenu): Unit = hibernate.delete(menu)
 
   /**
-   * Please note that createIfNotExists creates an instance of ImageDomainObject not a database entry.
+   * Please note that createIfNotExists creates an instance of TextDocImage not a database entry.
    */
-  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[TextDocLoopItemRef] = None,
-                createIfNotExists: Boolean = false): JList[ImageDomainObject] = {
+  def getImagesInAllLanguages(ref: DocVersionRef, no: Int, contentRefOpt: Option[TextDocLoopItemRef] = None,
+                createIfNotExists: Boolean = false): JList[TextDocImage] = {
     for {
       language <- languageDao.getAllLanguages.asScala
       image <- PartialFunction.condOpt(getImage(docRef, no, language, contentRefOpt)) {
         case image if image != null => image
-        case _ if createIfNotExists => new ImageDomainObject |>> { img =>
+        case _ if createIfNotExists => new TextDocImage |>> { img =>
           img.setDocRef(docRef)
           img.setNo(no)
           img.setLanguage(language)
@@ -167,7 +164,7 @@ class TextDocDao extends HibernateSupport {
   } |> { _.asJava }
 
 
-//  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentRef] = None): Map[DocumentLanguage, Option[ImageDomainObject]] = {
+//  def getImages(docRef: DocRef, no: Int, contentRefOpt: Option[ContentRef] = None): Map[DocumentLanguage, Option[TextDocImage]] = {
 //    (
 //      for (language <- languageDao.getAllLanguages.asScala)
 //      yield language -> getImage(docRef, no, language, contentRefOpt).asOption
@@ -193,26 +190,26 @@ class TextDocDao extends HibernateSupport {
           query.setParameter("contentRef", contentRefOpt.get)
         }
 
-        ImageUtil.initImageSource(query.uniqueResult.asInstanceOf[ImageDomainObject])
+        ImageUtil.initImageSource(query.uniqueResult.asInstanceOf[TextDocImage])
       }
     }
   }
 
 
-  def saveImage(image: ImageDomainObject) = hibernate.saveOrUpdate(image)
+  def saveImage(image: TextDocImage) = hibernate.saveOrUpdate(image)
 
 
   def saveImageHistory(imageHistory: TextDocImageHistory) = hibernate.save(imageHistory)
 
 
-  def getImages(docRef: DocRef): JList[ImageDomainObject] =
-    hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
+  def getImagesInAllLanguages(docRef: DocRef): JList[TextDocImage] =
+    hibernate.listByNamedQueryAndNamedParams[TextDocImage](
       "Image.getByDocRef", "docRef" -> docRef
     ) |> ImageUtil.initImagesSources
 
 
-  def getImages(docRef: DocRef, language: DocLanguage): JList[ImageDomainObject] =
-    hibernate.listByNamedQueryAndNamedParams[ImageDomainObject](
+  def getImages(ref: DocRef): JList[TextDocImage] =
+    hibernate.listByNamedQueryAndNamedParams[TextDocImage](
       "Image.getByDocRefAndLanguage",
       "docRef" -> docRef, "language" -> language
     ) |> ImageUtil.initImagesSources

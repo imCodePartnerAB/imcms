@@ -27,7 +27,7 @@ class DocSelectDialog(caption: String, user: UserDomainObject, multiSelect: Bool
 
     projection.listen { selection =>
       val isSingleSelection = selection.size == 1
-      // fixme: invalid test - I18nDocRef
+      // fixme: invalid test - DocRef
       val isTextDocSelection = isSingleSelection && selection.head.isInstanceOf[TextDocumentDomainObject]
 
       w.miDeleteSelectedDocs.setEnabled(selection.nonEmpty)

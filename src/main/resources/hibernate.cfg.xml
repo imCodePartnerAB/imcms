@@ -33,7 +33,7 @@
         <mapping class="com.imcode.imcms.mapping.orm.UrlDocContent"/>
 
         <mapping class="com.imcode.imcms.mapping.orm.SystemProperty"/>
-        <mapping class="com.imcode.imcms.mapping.orm.I18nMeta"/>
+        <mapping class="com.imcode.imcms.mapping.orm.DocAppearance"/>
         <mapping class="com.imcode.imcms.mapping.orm.IPAccess"/>
 
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.Images"/>

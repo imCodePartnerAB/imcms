@@ -73,7 +73,7 @@ if ("getHelpTextInlineEditing".equals(action)) {
         } else {
             textDO = new TextDomainObject() ;
             textDO.setNo(txt_no);
-            textDO.setI18nDocRef(document.getI18nRef());
+            textDO.setDocRef(document.getRef());
             textDO.setContentLoopRef(contentRefOpt.orNull());
         }
 

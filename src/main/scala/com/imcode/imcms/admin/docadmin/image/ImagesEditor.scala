@@ -65,7 +65,7 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
     view.tsImages.removeAllComponents()
     editors.clear()
 
-    for (image <- imcmsServices.getManagedBean(classOf[TextDocDao]).getImages(docRef, imageNo, None, true).asScala) {
+    for (image <- imcmsServices.getManagedBean(classOf[TextDocDao]).getImagesInAllLanguages(docRef, imageNo, None, true).asScala) {
       val imageEditor = new ImageEditor(Some(image))
       view.tsImages.addTab(imageEditor.view, image.getLanguage.getNativeName, Theme.Icon.Language.flag(image.getLanguage))
       editors += imageEditor

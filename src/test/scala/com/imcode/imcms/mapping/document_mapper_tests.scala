@@ -56,7 +56,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val menuTextPrefix = "menu_text_"
 
     val i18nMetas = i18nContentSupport.getLanguages.asScala.map { language =>
-      I18nMeta.builder()
+      DocumentAppearance.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
         .menuText(menuTextPrefix + language.getCode)
@@ -91,7 +91,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val menuTextPrefix = "menu_text_"
 
     val i18nMetas = i18nContentSupport.getLanguages.asScala.map { language =>
-      I18nMeta.builder()
+      DocumentAppearance.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
         .menuText(menuTextPrefix + language.getCode)
@@ -397,7 +397,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     docMapper.saveDocument(textDoc, admin)
 
-    val savedTextDoc: TextDocumentDomainObject = docMapper.getCustomDocument(I18nDocRef.of(textDoc.getRef, textDoc.getLanguage))
+    val savedTextDoc: TextDocumentDomainObject = docMapper.getCustomDocument(DocRef.of(textDoc.getRef, textDoc.getLanguage))
     val savedMenu = savedTextDoc.getMenus.get(0)
 
     assertNotNull(savedMenu)
@@ -668,7 +668,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val text = "text"
     val textDO = new TextDomainObject(text)
 
-    textDO.setI18nDocRef(doc.getI18nRef)
+    textDO.setDocRef(doc.getRef)
     textDO.setNo(no)
 
     expectResult(null, "Text field does not exists") {
@@ -761,7 +761,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
 
   def getMainWorkingDocumentInDefaultLanguage(assertDocExists: Boolean) = {
-    val doc: DocumentDomainObject = docMapper.getCustomDocument(I18nDocRef.of(1001, 0, i18nContentSupport.getDefaultLanguage))
+    val doc: DocumentDomainObject = docMapper.getCustomDocument(DocRef.of(1001, 0, i18nContentSupport.getDefaultLanguage))
 
     if (assertDocExists) {
       assertNotNull(doc)

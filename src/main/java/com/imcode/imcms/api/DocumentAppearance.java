@@ -4,38 +4,31 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Document i18n meta.
+ *
  */
-public class I18nMeta implements Serializable {
+public final class DocumentAppearance implements Serializable {
 
     public static class Builder {
         private String headline;
         private String menuText;
         private String menuImageURL;
-        private DocumentLanguage language;
 
         public Builder() {
         }
 
-        public Builder(I18nMeta i18nMeta) {
-            this.headline = i18nMeta.headline;
-            this.menuText = i18nMeta.menuText;
-            this.menuImageURL = i18nMeta.menuImageURL;
-            this.language = i18nMeta.language;
+        public Builder(DocumentAppearance documentAppearance) {
+            this.headline = documentAppearance.headline;
+            this.menuText = documentAppearance.menuText;
+            this.menuImageURL = documentAppearance.menuImageURL;
         }
 
-        public I18nMeta build() {
-            return new I18nMeta(headline, menuText, menuImageURL, language);
+        public DocumentAppearance build() {
+            return new DocumentAppearance(headline, menuText, menuImageURL);
         }
 
 
         public Builder headline(String headline) {
             this.headline = headline;
-            return this;
-        }
-
-        public Builder language(DocumentLanguage language) {
-            this.language = language;
             return this;
         }
 
@@ -54,7 +47,7 @@ public class I18nMeta implements Serializable {
         return new Builder();
     }
 
-    public static Builder builder(I18nMeta i18nMeta) {
+    public static Builder builder(DocumentAppearance i18nMeta) {
         return new Builder(i18nMeta);
     }
 
@@ -74,30 +67,26 @@ public class I18nMeta implements Serializable {
      */
     private final String menuImageURL;
 
-    private final DocumentLanguage language;
-
-    public I18nMeta(String headline, String menuText, String menuImageURL, DocumentLanguage language) {
+    public DocumentAppearance(String headline, String menuText, String menuImageURL) {
         this.headline = headline;
         this.menuText = menuText;
         this.menuImageURL = menuImageURL;
-        this.language = language;
     }
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof I18nMeta && equals((I18nMeta) o));
+        return o == this || (o instanceof DocumentAppearance && equals((DocumentAppearance) o));
     }
 
-    private boolean equals(I18nMeta that) {
+    private boolean equals(DocumentAppearance that) {
         return Objects.equals(headline, that.headline)
                 && Objects.equals(menuText, that.menuText)
-                && Objects.equals(menuImageURL, that.menuImageURL)
-                && Objects.equals(language, that.language);
+                && Objects.equals(menuImageURL, that.menuImageURL);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(headline, menuText, menuImageURL, language);
+        return Objects.hash(headline, menuText, menuImageURL);
     }
 
     @Override
@@ -106,7 +95,6 @@ public class I18nMeta implements Serializable {
                 .add("headline", headline)
                 .add("menuText", menuText)
                 .add("menuImageUrl", menuImageURL)
-                .add("language", language)
                 .toString();
     }
 
@@ -120,9 +108,5 @@ public class I18nMeta implements Serializable {
 
     public String getMenuImageURL() {
         return menuImageURL;
-    }
-
-    public DocumentLanguage getLanguage() {
-        return language;
     }
 }

@@ -1,7 +1,11 @@
 package com.imcode
 package imcms.mapping
 
-import com.imcode.imcms.api.{I18nMeta, Meta, DocumentLanguage}
+import com.imcode.imcms.api._
+import com.imcode.imcms.mapping.orm.{TextDocLoopItem, TextDocLoopItemRef, TextDocLoop, TextDocText}
+import imcode.server.document.textdocument.{TextDomainObject}
+
+import scala.collection.JavaConverters._
 
 object OrmToApi {
 
@@ -13,7 +17,7 @@ object OrmToApi {
     .build()
 
 
-  def toApi(orm: orm.DocI18nMeta): I18nMeta = I18nMeta.builder
+  def toApi(orm: orm.DocAppearance): DocumentAppearance = DocumentAppearance.builder
     .headline(orm.getHeadline)
     .language(orm.getLanguage |> toApi)
     .menuImageURL(orm.getMenuImageURL)
@@ -57,4 +61,20 @@ object OrmToApi {
     m.setSearchDisabled(orm.getSearchDisabled)
     m.setTarget(orm.getTarget)
   }
+
+
+  def toApi(orm: TextDocText): TextDomainObject = new TextDomainObject |>> { t=>
+    t.setText(orm.getText)
+    t.setType(orm.getType.ordinal())
+    t.setContentLoopRef(orm.getLoopItemRef |> toApi)
+  }
+
+
+  def toApi(orm: TextDocLoopItemRef): ContentLoopRef = ContentLoopRef.of(orm.getLoopNo, orm.getContentNo)
+
+
+  def toApi(orm: TextDocLoop): ContentLoop = ContentLoop.of(orm.getNextItemNo, orm.getItems.asScala.map(toApi).asJava)
+
+
+  def toApi(orm: TextDocLoopItem): Content = Content.of(orm.getNo, orm.isEnabled)
 }

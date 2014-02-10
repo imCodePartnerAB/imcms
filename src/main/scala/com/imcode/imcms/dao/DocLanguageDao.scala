@@ -12,16 +12,16 @@ class DocLanguageDao extends HibernateSupport {
   def getAllLanguages(): JList[DocLanguage] = hibernate.listAll()
 
 
-  def getById(id: JInteger): DocLanguage = hibernate.get[DocLanguage](id)
+  def getById(id: Int): DocLanguage = hibernate.get[DocLanguage](id)
 
 
   def getByCode(code: String): DocLanguage =
     hibernate.getByNamedQueryAndNamedParams("DocLanguage.getByCode", "code" -> code)
 
 
-  def saveLanguage(language: DocLanguage): DocLanguage = language.clone() |> hibernate.saveOrUpdate
+  def saveLanguage(language: DocLanguage): DocLanguage = language |> hibernate.saveOrUpdate
 
 
-  def deleteLanguage(id: JInteger) =
+  def deleteLanguage(id: Int) =
     hibernate.bulkUpdateByNamedParams("DELETE FROM DocLanguage l WHERE l.id = :id", "id" -> id)
 }

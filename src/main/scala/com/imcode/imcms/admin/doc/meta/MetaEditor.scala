@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
-import com.imcode.imcms.api.{DocumentLanguage, I18nMeta}
+import com.imcode.imcms.api.{DocumentLanguage, DocumentAppearance}
 import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 
@@ -36,7 +36,7 @@ import com.imcode.imcms.vaadin.Editor
 //   if this doc has custom target, then adds this target to the targets combo-box as a last item
 class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSupport {
 
-  override type Data = (DocumentDomainObject, Map[DocumentLanguage, I18nMeta])
+  override type Data = (DocumentDomainObject, Map[DocumentLanguage, DocumentAppearance])
 
   private var appearanceEditorOpt = Option.empty[AppearanceEditor]
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
@@ -65,7 +65,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
         case "doc_meta_editor.menu_item.appearance" =>
           if (appearanceEditorOpt.isEmpty) {
-            val i18nMetas: Map[DocumentLanguage, I18nMeta] = doc.getId match {
+            val i18nMetas: Map[DocumentLanguage, DocumentAppearance] = doc.getId match {
               case id if id != DocumentDomainObject.ID_NEW =>
                 imcmsServices.getDocumentMapper.getI18nMetas(id).asScala.map(m => m.getLanguage -> m).toMap
               case _ =>
@@ -122,7 +122,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     }
 
     val dc = doc.clone()
-    val i18nMetas = Map(dc.getLanguage -> dc.getI18nMeta)
+    val i18nMetas = Map(dc.getLanguage -> dc.getAppearance)
 
     Collector(
       Right((dc, i18nMetas))

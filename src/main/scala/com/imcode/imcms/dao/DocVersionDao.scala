@@ -45,7 +45,7 @@ class DocVersionDao extends HibernateSupport {
    * @param docId meta id.
    * @return available versions for the document.
    */
-  def getAllVersions (docId: Int): JList[DocVersion] = hibernate.listByNamedQueryAndNamedParams(
+  def getAllVersions(docId: Int): JList[DocVersion] = hibernate.listByNamedQueryAndNamedParams(
     "DocVersion.getByDocId", "docId" -> docId
   )
 

@@ -17,10 +17,6 @@ public class TextDocLoop extends DocVersionedContent {
     @Column(updatable = false)
     private Integer no;
 
-    @Min(1)
-    @Column(name = "next_content_no")
-    private int nextItemNo;
-
     @Version
     private int version;
 
@@ -32,20 +28,19 @@ public class TextDocLoop extends DocVersionedContent {
     @OrderColumn(name = "ix")
     private List<TextDocLoopItem> items = new LinkedList<>();
 
-//    @Override
-//    public String toString() {
-//        return com.google.common.base.Objects.toStringHelper(this)
-//                .add("id", id)
-//                .add("no", no)
-//                .add("docRef", docRef)
-//                .add("nextContentNo", nextContentNo)
-//                .add("version", version)
-//                .add("items", items).toString();
-//    }
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", getId())
+                .add("docVersion", getDocVersion())
+                .add("no", no)
+                .add("version", version)
+                .add("items", items).toString();
+    }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDocVersion(), no, nextItemNo, items, version);
+        return Objects.hash(getId(), getDocVersion(), no, items, version);
     }
 
 
@@ -58,7 +53,6 @@ public class TextDocLoop extends DocVersionedContent {
         return Objects.equals(getId(), that.getId())
                 && Objects.equals(getDocVersion(), that.getDocVersion())
                 && Objects.equals(no, that.no)
-                && Objects.equals(nextItemNo, that.nextItemNo)
                 && Objects.equals(version, that.version)
                 && Objects.equals(items, that.items);
     }
@@ -69,14 +63,6 @@ public class TextDocLoop extends DocVersionedContent {
 
     public void setNo(Integer no) {
         this.no = no;
-    }
-
-    public int getNextItemNo() {
-        return nextItemNo;
-    }
-
-    public void setNextItemNo(int nextContentNo) {
-        this.nextItemNo = nextContentNo;
     }
 
     public int getVersion() {

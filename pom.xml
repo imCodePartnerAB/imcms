@@ -67,7 +67,7 @@
         <build.webapp.dir>${project.build.directory}/${project.artifactId}</build.webapp.dir>
 
         <solr.version>4.6.1</solr.version>
-        <slf4j.version>1.7.5</slf4j.version>
+        <slf4j.version>1.7.6</slf4j.version>
         <scala.version>2.10.3</scala.version>
         <springframework.version>4.0.1.RELEASE</springframework.version>
 
@@ -214,7 +214,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>16.0</version>
+            <version>16.0.1</version>
         </dependency>
 
         <dependency>

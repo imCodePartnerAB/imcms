@@ -12,7 +12,18 @@ public class TextDocLoopItem implements Serializable, Cloneable {
 
     private int no;
 
-    private boolean enabled = true;
+    private boolean enabled;
+
+    public TextDocLoopItem() {}
+
+    public TextDocLoopItem(int no) {
+        this(no, true);
+    }
+
+    public TextDocLoopItem(int no, boolean enabled) {
+        this.no = no;
+        this.enabled = enabled;
+    }
 
     @Override
     public TextDocLoopItem clone() {

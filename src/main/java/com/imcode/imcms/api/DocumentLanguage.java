@@ -3,7 +3,7 @@ package com.imcode.imcms.api;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class DocumentLanguage implements Serializable {
+public final class DocumentLanguage implements Serializable {
 
     public static Builder builder() {
         return new Builder();

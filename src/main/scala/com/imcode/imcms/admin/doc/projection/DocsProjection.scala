@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.projection
 
-import com.imcode.imcms.api.I18nDocRef
+import com.imcode.imcms.api.DocRef
 import com.imcode.imcms.vaadin.Current
 import com.imcode.util.event.Publisher
 import com.imcode.imcms.vaadin.component._
@@ -43,7 +43,7 @@ import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsView, Indexed
 // fixme: history; history should be represented as a nested module.
 // fixme: security
 // todo: show recently created docs in a separate view
-class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[I18nDocRef]] with ImcmsServicesSupport with Log4jLoggerSupport {
+class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocRef]] with ImcmsServicesSupport with Log4jLoggerSupport {
 
   @transient
   private var history = List.empty[(BasicFilterParams, ExtendedFilterParams)]
@@ -90,7 +90,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
   val docsContainer = new IndexedDocsContainer(user, parentsRenderer, childrenRenderer)
 
   val docsView = new IndexedDocsView(docsContainer) with FullSize |>> { _.setMultiSelect(multiSelect) }
-  private val selectionRef = new AtomicReference(Seq.empty[I18nDocRef])
+  private val selectionRef = new AtomicReference(Seq.empty[DocRef])
 
   val view = new DocsProjectionView(filter.basicView, filter.extendedView, docsView) { w =>
     val filterBasicView = filter.basicView
@@ -117,9 +117,9 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
   }
 
   docsView.addValueChangeHandler { _ =>
-    def fieldsToI8nDocRef(fields: DocumentStoredFields): I18nDocRef = {
+    def fieldsToI8nDocRef(fields: DocumentStoredFields): DocRef = {
       val language = imcmsServices.getDocumentI18nSupport.getByCode(fields.languageCode())
-      I18nDocRef.of(fields.id(), fields.versionNo(), language)
+      DocRef.of(fields.id(), fields.versionNo(), language)
     }
 
     selectionRef.set(docsView.selection.map(docIx => docsContainer.getItem(docIx).fields |> fieldsToI8nDocRef).to[Seq])
@@ -296,7 +296,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
   }  // def createSolrQuery()
 
 
-  def selection: Seq[I18nDocRef] = selectionRef.get
+  def selection: Seq[DocRef] = selectionRef.get
 
   override def notifyListeners(): Unit = notifyListeners(selection)
 }

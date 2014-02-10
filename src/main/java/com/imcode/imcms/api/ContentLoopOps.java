@@ -1,5 +1,7 @@
 package com.imcode.imcms.api;
 
+import com.google.common.base.Optional;
+
 import java.util.LinkedList;
 
 public class ContentLoopOps {
@@ -13,9 +15,9 @@ public class ContentLoopOps {
     }
 
     private ContentLoop addContentAtIndex(int index) {
-        items.add(index, Content.of(contentLoop.getNextContentNo()));
+        items.add(index, createContent());
 
-        return new ContentLoop(contentLoop.getNextContentNo() + 1, items);
+        return new ContentLoop(items);
     }
 
     public ContentLoop addContentFirst() {
@@ -37,31 +39,35 @@ public class ContentLoopOps {
     public ContentLoop enableContent(int contentNo) {
         items.set(contentLoop.findContentByNo(contentNo).get().getIndex(), Content.of(contentNo));
 
-        return new ContentLoop(contentLoop.getNextContentNo(), items);
+        return new ContentLoop(items);
     }
 
     public ContentLoop disableContent(int contentNo) {
         items.set(contentLoop.findContentByNo(contentNo).get().getIndex(), Content.of(contentNo, false));
 
-        return new ContentLoop(contentLoop.getNextContentNo(), items);
+        return new ContentLoop(items);
     }
 
     public ContentLoop deleteContent(int contentNo) {
         items.remove(contentLoop.findContentByNo(contentNo).get().getIndex());
 
-        return new ContentLoop(contentLoop.getNextContentNo(), items);
+        return new ContentLoop(items);
     }
 
     public ContentLoop restoreContent(int contentNo) {
-        int lastContentNo = contentLoop.getNextContentNo() - 1;
-        if (contentNo < 1 || contentNo > lastContentNo) {
-            throw new IllegalStateException(String.format("Illegal content no: %d.", contentNo));
+        if (contentLoop.findContentByNo(contentNo).isPresent()) {
+            return contentLoop;
         }
 
-        if (!contentLoop.findContentByNo(contentNo).isPresent()) {
-            items.add(Content.of(contentNo));
-        }
+        items.add(Content.of(contentNo));
 
-        return new ContentLoop(contentLoop.getNextContentNo(), items);
+        return new ContentLoop(items);
+    }
+
+    private Content createContent() {
+        Optional<ContentLoop.ContentAndIndex> contentAndIndexOpt = contentLoop.findContentWithMaxNo();
+        int contentNo = !contentAndIndexOpt.isPresent() ? 1 : contentAndIndexOpt.get().getContent().getNo() + 1;
+
+        return Content.of(contentNo);
     }
 }

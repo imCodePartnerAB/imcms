@@ -1,6 +1,6 @@
 package com.imcode.imcms.api;
 
-public class Content {
+public final class Content {
 
     public static Content of(int no) {
         return new Content(no, true);

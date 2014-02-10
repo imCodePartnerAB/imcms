@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta.appearance
 
-import com.imcode.imcms.api.{DocumentLanguage, Meta, I18nMeta}
+import com.imcode.imcms.api.{DocumentLanguage, Meta, DocumentAppearance}
 import scala.language.reflectiveCalls
 
 import scala.collection.JavaConverters._
@@ -35,10 +35,10 @@ import com.imcode.imcms.vaadin.Editor
  * @param meta doc's Meta
  * @param i18nMetas doc's i18nMeta-s
  */
-class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) extends Editor with ImcmsServicesSupport {
+class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentAppearance]) extends Editor with ImcmsServicesSupport {
 
   case class Data(
-    i18nMetas: Map[DocumentLanguage, I18nMeta],
+    i18nMetas: Map[DocumentLanguage, DocumentAppearance],
     enabledLanguages: Set[DocumentLanguage],
     disabledLanguageShowSetting: Meta.DisabledLanguageShowSetting,
     alias: Option[String],
@@ -96,7 +96,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, I18nMeta]) e
         i18nMetaEditorViews.collect {
           case i18nMetaEditorWidget if i18nMetaEditorWidget.chkEnabled.checked =>
             val language = i18nMetaEditorWidget.language
-            val i18nMeta = I18nMeta.builder()
+            val i18nMeta = DocumentAppearance.builder()
               .id(i18nMetas.get(language).map(_.getId).orNull)
               .docId(meta.getId)
               .language(language)

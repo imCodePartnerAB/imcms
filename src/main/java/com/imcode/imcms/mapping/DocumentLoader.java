@@ -1,9 +1,9 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.mapping.orm.DocAppearance;
 import com.imcode.imcms.mapping.orm.DocLanguage;
 import com.imcode.imcms.mapping.orm.DocMeta;
 import com.imcode.imcms.mapping.orm.DocVersion;
-import com.imcode.imcms.mapping.orm.DocI18nMeta;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
@@ -87,18 +87,21 @@ public class DocumentLoader {
      * Creates document instance.
      */
     private <T extends DocumentDomainObject> T createDocument(DocMeta meta, DocVersion version, DocLanguage language) {
-        DocI18nMeta DocI18nMeta = metaDao.getDocI18nMeta(meta.getId(), language);
+        DocAppearance i18nMeta = metaDao.getI18nMeta(meta.getId(), language);
 
-        if (DocI18nMeta == null) {
-            DocI18nMeta = DocI18nMeta.builder().docId(meta.getId()).language(language).headline("").menuText("").menuImageURL("").build();
+        if (i18nMeta == null) {
+            i18nMeta = new DocAppearance();
+            i18nMeta.setLanguage(language);
+            i18nMeta.setHeadline("");
+            i18nMeta.setMenuText("");
+            i18nMeta.setMenuImageURL("");
         }
 
         T document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
-        document.setMeta(meta);
-        document.setLanguage(language);
-        document.setDocI18nMeta(DocI18nMeta);
-
+        document.setMeta(OrmToApi.toApi(meta));
+        document.setLanguage(OrmToApi.toApi(language));
+        document.setAppearance(OrmToApi.toApi(i18nMeta));
         document.setVersionNo(version.getNo());
 
         return document;

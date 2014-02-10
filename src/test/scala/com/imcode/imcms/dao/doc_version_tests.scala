@@ -167,7 +167,7 @@ class DocVersionDaoSuiteConfig {
       TestSetup.hibernate.configurators.BasicWithSql,
       TestSetup.hibernate.configurators.addAnnotatedClasses(
         classOf[DocMeta],
-        classOf[I18nMeta],
+        classOf[DocumentAppearance],
         classOf[DocVersion],
         classOf[DocLanguage],
         classOf[DocProperty],

@@ -2,11 +2,13 @@ package com.imcode.imcms.api;
 
 import com.google.common.base.Optional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-public class ContentLoop {
+public final class ContentLoop {
+
+    public static ContentLoop of(List<Content> items) {
+        return new ContentLoop(items);
+    }
 
     public static abstract class ContentAndIndex {
         public abstract Content getContent();
@@ -27,40 +29,29 @@ public class ContentLoop {
         }
     }
 
-    private final int nextContentNo;
-
     private final List<Content> items;
 
     private final int cachedHashCode;
 
     public ContentLoop() {
-        this(1, Collections.<Content>emptyList());
+        this(Collections.<Content>emptyList());
     }
 
-    public ContentLoop(int nextContentNo, List<Content> items) {
-        if (nextContentNo < 1) {
-            throw new IllegalArgumentException(String.format("nextContentNo must be >= 1, but was %d.", nextContentNo));
-        }
+    public ContentLoop(Collection<Content> items) {
+        Map<Integer, Content> itemsMap = new LinkedHashMap<>();
 
         for (Content content : items) {
-            int no = content.getNo();
-            if (no < 1 || no >= nextContentNo) {
-                throw new IllegalArgumentException(String.format(
-                        "A content no must be in range [1..nextContentNo - 1], but was %d.", no));
-            }
+            itemsMap.put(content.getNo(), content);
         }
 
-        this.nextContentNo = nextContentNo;
-        this.items = Collections.unmodifiableList(items);
-        this.cachedHashCode = Objects.hash(nextContentNo, items);
+        this.items = Collections.unmodifiableList(new ArrayList<>(itemsMap.values()));
+        this.cachedHashCode = Objects.hash(items);
     }
 
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("nextContentNo", nextContentNo)
-                .add("items", items).toString();
+        return com.google.common.base.Objects.toStringHelper(this).add("items", items).toString();
     }
 
     @Override
@@ -69,7 +60,7 @@ public class ContentLoop {
     }
 
     private boolean equals(ContentLoop that) {
-        return Objects.equals(items, that.items) && Objects.equals(nextContentNo, that.nextContentNo);
+        return Objects.equals(items, that.items);
     }
 
     @Override
@@ -81,9 +72,6 @@ public class ContentLoop {
         return items;
     }
 
-    public int getNextContentNo() {
-        return nextContentNo;
-    }
 
     public ContentLoopOps ops() {
         return new ContentLoopOps(this);

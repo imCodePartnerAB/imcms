@@ -34,22 +34,22 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterE
   }
 
   test("get text doc's images by no outside of content loop") {
-    val images = textDocDao.getImages(DocRef.of(1001, 0), 1, None, false)
+    val images = textDocDao.getImagesInAllLanguages(DocRef.of(1001, 0), 1, None, false)
     assertEquals(2, images.size)
   }
 
   test("get text doc's images by doc ref and no inside content loop") {
-    val images = textDocDao.getImages(DocRef.of(1001, 0), 1, Some(ContentLoopRef.of(1, 1)), false)
+    val images = textDocDao.getImagesInAllLanguages(DocRef.of(1001, 0), 1, Some(ContentLoopRef.of(1, 1)), false)
     assertEquals(2, images.size)
   }
 
   test("get text doc's images by doc ref") {
-    val images = textDocDao.getImages(DocRef.of(1001, 0))
+    val images = textDocDao.getImagesInAllLanguages(DocRef.of(1001, 0))
     assertEquals(12, images.size)
   }
 
   test("get text doc's images by doc ref and language") {
-    val images = textDocDao.getImages(DocRef.of(1001, 0), mkEnglish)
+    val images = textDocDao.getImagesInAllLanguages(DocRef.of(1001, 0), mkEnglish)
     assertEquals(6, images.size)
   }
 

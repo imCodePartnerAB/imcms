@@ -1,5 +1,7 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.api.DocRef;
+import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.dao.*;
 import com.imcode.imcms.dao.TextDocDao;
 import com.imcode.imcms.mapping.orm.*;
@@ -132,7 +134,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         String filename = "" + docId;
 
-        if (docVersionNo != DocVersion.WORKING_VERSION_NO) {
+        if (docVersionNo != DocumentVersion.WORKING_VERSION_NO) {
             filename += ("_" + docVersionNo);
         }
 
@@ -156,19 +158,19 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, UserDomainObject user) {
         TextDocDao textDao = services.getManagedBean(TextDocDao.class);
 
-        textDao.deleteTexts(textDocument.getI18nRef());
+        textDao.deleteTexts(textDocument.getRef());
         textDao.flush();
 
         for (TextDomainObject text : textDocument.getTexts().values()) {
             text.setId(null);
-            text.setI18nDocRef(textDocument.getI18nRef());
+            text.setDocRef(textDocument.getRef());
 
             saveTextDocumentText(text, user);
         }
 
         for (TextDomainObject text : textDocument.getLoopTexts().values()) {
             text.setId(null);
-            text.setI18nDocRef(textDocument.getI18nRef());
+            text.setDocRef(textDocument.getRef());
 
             saveTextDocumentText(text, user);
         }
@@ -192,7 +194,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void updateDocumentI18nMeta(DocumentDomainObject doc, UserDomainObject user) {
         metaDao.deleteI18nMeta(doc.getId(), doc.getLanguage().getId());
 
-        DocI18nMeta i18nMeta = DocI18nMeta.builder(doc.getI18nMeta()).id(null).docId(doc.getId()).language(doc.getLanguage()).build();
+        DocAppearance i18nMeta = DocAppearance.builder(doc.getAppearance()).id(null).docId(doc.getId()).language(doc.getLanguage()).build();
 
         metaDao.saveI18nMeta(i18nMeta);
     }
@@ -351,10 +353,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
 
-    public void updateTextDocumentMenu(final MenuDomainObject menu, final UserDomainObject user) {
-        textDocDao.saveMenu(menu);
+    public void updateTextDocumentMenu(final DocRef docRef, final MenuDomainObject menu, final UserDomainObject user) {
+        textDocDao.saveMenu(docRef, menu);
 
-        TextDocMenuHistory menuHistory = new TextDocMenuHistory(menu, user);
-        textDocDao.saveMenuHistory(menuHistory);
+        // fixme: save history
+        // TextDocMenuHistory menuHistory = new TextDocMenuHistory(menu, user);
+        // textDocDao.saveMenuHistory(menuHistory);
     }
 }

@@ -5,7 +5,7 @@ package mapping
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.net.sf.ehcache.config.CacheConfiguration
 import _root_.net.sf.ehcache.CacheManager
-import com.imcode.imcms.mapping.orm.{DocLanguage, DocMeta, I18nDocRef}
+import com.imcode.imcms.mapping.orm.{DocLanguage, DocMeta}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api._
 
@@ -95,14 +95,14 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[DocLangu
   /**
    * @return custom doc or null if doc does not exists
    */
-  def getCustomDoc[A <: DocumentDomainObject](ref: I18nDocRef): A = {
-    getMeta(ref.docId) match {
+  def getCustomDoc[A <: DocumentDomainObject](ref: DocRef): A = {
+    getMeta(ref.getDocId) match {
       case null => null.asInstanceOf[A]
       case meta =>
-        val versionInfo = getDocVersionInfo(ref.docId)
-        val version = versionInfo.getVersion(ref.versionNo)
+        val versionInfo = getDocVersionInfo(ref.getDocId)
+        val version = versionInfo.getVersion(ref.getVersionNo)
 
-        docLoader.loadAndInitDocument(meta.clone, version.clone, ref.getLanguage)
+        docLoader.loadAndInitDocument(meta.clone, version.clone, ref.getDocLanguage)
     }
   }
 

@@ -1,12 +1,12 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.api.DocRef
+import com.imcode.imcms.api.{DocRef}
+import com.imcode.imcms.mapping.orm._
 import imcode.server.document.DocumentDomainObject
 import org.apache.commons.lang.StringUtils
 import org.springframework.transaction.annotation.Transactional
 
-import com.imcode.imcms.mapping.orm._
 import imcode.server.user.UserDomainObject
 import java.util.Date
 import com.imcode.imcms.dao.hibernate.HibernateSupport
@@ -50,11 +50,11 @@ class MetaDao extends HibernateSupport {
     "value" -> alias.toLowerCase
   )
 
-  def getI18nMeta(docId: Int, language: DocLanguage): I18nMeta =
-    hibernate.getByNamedQueryAndNamedParams[I18nMeta](
-      "I18nMeta.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
+  def getI18nMeta(docId: Int, language: DocLanguage): DocAppearance =
+    hibernate.getByNamedQueryAndNamedParams[DocAppearance](
+      "DocI18nMeta.getByDocIdAndLanguageId", "docId" -> docId, "languageId" -> language.getId
     ).asOption.getOrElse(
-      I18nMeta.builder() |> {
+      DocAppearance.builder() |> {
         _.docId(docId)
          .language(language)
          .headline("")
@@ -65,22 +65,22 @@ class MetaDao extends HibernateSupport {
     )
 
 
-  def getI18nMetas(docId: Int): JList[I18nMeta] = hibernate.listByNamedQueryAndNamedParams(
-    "I18nMeta.getByDocId", "docId" -> docId
+  def getI18nMetas(docId: Int): JList[DocAppearance] = hibernate.listByNamedQueryAndNamedParams(
+    "DocI18nMeta.getByDocId", "docId" -> docId
   )
 
   def deleteI18nMeta(docId: Int, languageId: Int) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
-    "I18nMeta.deleteByDocIdAndLanguageId", "docId" -> docId, "languageId" -> languageId
+    "DocI18nMeta.deleteByDocIdAndLanguageId", "docId" -> docId, "languageId" -> languageId
   )
 
-  def saveI18nMeta(i18nMeta: I18nMeta): I18nMeta = {
+  def saveI18nMeta(i18nMeta: DocAppearance): DocAppearance = {
     val headline = i18nMeta.getHeadline
     val text = i18nMeta.getMenuText
 
     val headlineThatFitsInDB = headline.take(java.lang.Math.min(headline.length, META_HEADLINE_MAX_LENGTH - 1))
     val textThatFitsInDB = text.take(java.lang.Math.min(text.length, META_TEXT_MAX_LENGTH - 1))
 
-    I18nMeta.builder(i18nMeta) |> {
+    DocAppearance.builder(i18nMeta) |> {
       _.headline(headlineThatFitsInDB)
        .menuText(textThatFitsInDB)
        .build()
