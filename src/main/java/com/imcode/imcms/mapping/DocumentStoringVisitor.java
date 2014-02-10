@@ -207,7 +207,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * @param user
      */
     @Transactional
-    public void saveTextDocumentText(TextDomainObject text, UserDomainObject user) {
+    public void saveTextDocumentText(DocRef ref, int no, TextDomainObject text, UserDomainObject user) {
         TextDocDao textDao = services.getManagedBean(TextDocDao.class);
 
         textDao.saveText(text);

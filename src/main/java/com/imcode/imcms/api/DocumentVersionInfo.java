@@ -1,6 +1,6 @@
-package com.imcode.imcms.mapping;
+package com.imcode.imcms.api;
 
-import com.imcode.imcms.mapping.orm.DocVersion;
+import com.imcode.imcms.api.DocumentVersion;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -21,27 +21,27 @@ public class DocumentVersionInfo implements Serializable {
 	/**
 	 * Latest version;
 	 */
-	private DocVersion latestVersion;
+	private DocumentVersion latestVersion;
 
 	/**
 	 * Working version (version no 0).
 	 */
-	private DocVersion workingVersion;
+	private DocumentVersion workingVersion;
 	
 	/**
 	 * Default version.
 	 */
-	private DocVersion defaultVersion;
+	private DocumentVersion defaultVersion;
 	
 	/**
 	 * Version list sorted ascending.
 	 */
-	private List<DocVersion> versions;
+	private List<DocumentVersion> versions;
 	
 	/**
 	 * Versions map.
 	 */
-	private Map<Integer, DocVersion> versionsMap;
+	private Map<Integer, DocumentVersion> versionsMap;
 
     /**
 	 * Creates new instance of DocumentVersionSupport.
@@ -50,10 +50,10 @@ public class DocumentVersionInfo implements Serializable {
 	 * 
 	 * @param versions document versions list.
 	 */
-	public DocumentVersionInfo(int docId, List<DocVersion> versions, DocVersion workingVersion, DocVersion defaultVersion) {
+	public DocumentVersionInfo(int docId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
 		versionsMap = new TreeMap<>();
 		
-		for (DocVersion version: versions) {
+		for (DocumentVersion version: versions) {
 			versionsMap.put(version.getNo(), version);
 		}
 
@@ -78,44 +78,44 @@ public class DocumentVersionInfo implements Serializable {
 	 * 
 	 * @return version or null if there is no version with such version number.
 	 */				
-	public DocVersion getVersion(Integer no) {
+	public DocumentVersion getVersion(Integer no) {
 		return versionsMap.get(no);
 	}
 
     
-    public static boolean isWorkingVersion(DocVersion version) {
+    public static boolean isWorkingVersion(DocumentVersion version) {
         return version != null && isWorkingVersionNo(version.getNo());
     }
 
     public static boolean isWorkingVersionNo(int no) {
-        return no == DocVersion.WORKING_VERSION_NO;
+        return no == DocumentVersion.WORKING_VERSION_NO;
     }
 	
 	/**
 	 * @returns if given version number belongs to active version.
 	 */
-	public boolean isDefaultVersion(DocVersion version) {
+	public boolean isDefaultVersion(DocumentVersion version) {
 		return version != null && getDefaultVersion().getNo() == version.getNo();
 	}
 	
 	/** 
 	 * @return latest version.
 	 */				
-	public DocVersion getLatestVersion() {
+	public DocumentVersion getLatestVersion() {
 		return latestVersion;
 	}
 	
 	/** 
 	 * @return working version.
 	 */		
-	public DocVersion getWorkingVersion() {
+	public DocumentVersion getWorkingVersion() {
 		return workingVersion;
 	}	
 	
 	/** 
 	 * @return default version of a document.
 	 */
-	public DocVersion getDefaultVersion() {
+	public DocumentVersion getDefaultVersion() {
 		return defaultVersion;
 	}	
 	
@@ -125,7 +125,7 @@ public class DocumentVersionInfo implements Serializable {
 	 *  
 	 * @return unmodifiable list of document's versions.
 	 */
-	public List<DocVersion> getVersions() {
+	public List<DocumentVersion> getVersions() {
 		return versions;
 	}
 	
@@ -136,7 +136,7 @@ public class DocumentVersionInfo implements Serializable {
 		return versions.size(); 
 	}
 
-    public boolean workingIsActive() {
-        return getDefaultVersion().getId().equals(getWorkingVersion().getId());
+    public boolean workingIsDefault() {
+        return getDefaultVersion().getNo() == getWorkingVersion().getNo();
     }
 }

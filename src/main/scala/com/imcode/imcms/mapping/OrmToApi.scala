@@ -9,6 +9,14 @@ import scala.collection.JavaConverters._
 
 object OrmToApi {
 
+  def toApi(orm: orm.DocVersion): DocumentVersion = DocumentVersion.builder
+    .no(orm.getNo)
+    .createdBy(orm.getCreatedBy.getId)
+    .modifiedBy(orm.getModifiedBy.getId)
+    .createdDt(orm.getCreatedDt)
+    .modifiedDt(orm.getModifiedDt)
+    .build()
+
   def toApi(orm: orm.DocLanguage): DocumentLanguage = DocumentLanguage.builder
     .code(orm.getCode)
     .name(orm.getName)

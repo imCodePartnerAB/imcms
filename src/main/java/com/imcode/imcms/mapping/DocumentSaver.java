@@ -1,9 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.DocIdentityCleanerVisitor;
-import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.ContentLoopRef;
-import com.imcode.imcms.api.DocRef;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.*;
 import com.imcode.imcms.dao.TextDocDao;
 import com.imcode.imcms.mapping.orm.*;
@@ -69,20 +67,20 @@ public class DocumentSaver {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      */
     @Transactional
-    public void saveText(DocRef ref, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfMissing(ref, text.getContentLoopRef());
+    public void saveText(DocRef docRef, int no, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        createEnclosingContentLoopIfMissing(docRef, text.getContentLoopRef());
 
-        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(text, user);
+        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(docRef, no, text, user);
 
-        metaDao.touch(ref, user);
+        metaDao.touch(docRef, user);
     }
 
 
     @Transactional
-    public void saveTexts(DocRef docRef, Collection<TextDomainObject> texts, UserDomainObject user)
+    public void saveTexts(DocRef docRef, Map<Integer, TextDomainObject> texts, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         for (TextDomainObject text : texts) {
-            saveText(docRef, text, user);
+            saveText(docRef, no, text, user);
         }
     }
 
@@ -116,7 +114,7 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void saveImage(DocRef docRef, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveImage(DocRef docRef, int no, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         createEnclosingContentLoopIfMissing(docRef, image.getContentLoopRef());
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
@@ -182,11 +180,11 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public DocVersion makeDocumentVersion(List<DocumentDomainObject> docs, UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentDomainObject firstDoc = docs.get(0);
-        DocMeta meta = firstDoc.getMeta().clone();
+        Meta meta = firstDoc.getMeta().clone();
         DocVersion nextVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
         DocumentSavingVisitor docSavingVisitor = new DocumentSavingVisitor(null, documentMapper.getImcmsServices(), user);
 
@@ -216,12 +214,15 @@ public class DocumentSaver {
             }
         }
 
-        return nextVersion;
+        return OrmToApi.toApi(nextVersion);
     }
 
 
     @Transactional
-    public void updateDocument(DocumentDomainObject doc, Set<I18nMeta> i18nMetas, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+    public void updateDocument(DocumentDomainObject doc, Set<DocumentAppearance> i18nMetas, DocumentDomainObject oldDoc,
+                               UserDomainObject user)
+            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+
         checkDocumentForSave(doc);
 
         if (user.canEditPermissionsFor(oldDoc)) {
@@ -324,10 +325,11 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public <T extends DocumentDomainObject> int saveNewDocument(T doc, Set<I18nMeta> i18nMetas, EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
+    public <T extends DocumentDomainObject> int saveNewDocument(T doc, Set<DocumentAppearance> i18nMetas,
+                                                                EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        DocMeta meta = doc.getMeta();
+        Meta meta = doc.getMeta();
 
         checkDocumentForSave(doc);
 
@@ -360,7 +362,7 @@ public class DocumentSaver {
         doc.accept(docCreatingVisitor);
 
         // refactor
-        if (doc instanceof TextDocumentDomainObject && directiveses.contains(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields)) {
+        if (doc instanceof TextDocumentDomainObject && directiveses.contains(DocumentMapper.SaveOpts.CopyDocAppearenceIntoTextFields)) {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
             for (I18nMeta i18nMeta : i18nMetas) {
                 TextDomainObject text1 = new TextDomainObject(i18nMeta.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN);

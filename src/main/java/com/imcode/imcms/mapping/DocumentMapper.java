@@ -38,7 +38,7 @@ public class DocumentMapper implements DocumentGetter {
      */
     public enum SaveOpts {
         // Applies to text document only.
-        CopyI18nMetaTextsIntoTextFields
+        CopyDocAppearenceIntoTextFields
     }
 
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
@@ -49,13 +49,19 @@ public class DocumentMapper implements DocumentGetter {
 
     private ImcmsServices imcmsServices;
 
-    /** instantiated by SpringFramework. */
+    /**
+     * instantiated by SpringFramework.
+     */
     private NativeQueriesDao nativeQueriesDao;
 
-    /** instantiated by SpringFramework. */
+    /**
+     * instantiated by SpringFramework.
+     */
     private DocumentLoader documentLoader;
 
-    /** Document loader caching proxy. Intercepts calls to DocumentLoader. */
+    /**
+     * Document loader caching proxy. Intercepts calls to DocumentLoader.
+     */
     private DocLoaderCachingProxy documentLoaderCachingProxy;
 
     /**
@@ -64,11 +70,16 @@ public class DocumentMapper implements DocumentGetter {
      */
     private DocumentSaver documentSaver;
 
-    /** instantiated by SpringFramework. */
+    /**
+     * instantiated by SpringFramework.
+     */
     private CategoryMapper categoryMapper;
 
-    /** Empty constructor for unit testing. */
-    public DocumentMapper() {}
+    /**
+     * Empty constructor for unit testing.
+     */
+    public DocumentMapper() {
+    }
 
     public DocumentMapper(ImcmsServices services, Database database) {
         this.imcmsServices = services;
@@ -150,18 +161,18 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Sets text doc's template.
-     *
+     * <p/>
      * By default if parent doc type is {@link imcode.server.document.textdocument.TextDocumentDomainObject} its default template is used.
      * It might be overridden however if most privileged permission set type for the current user is either
      * {@link imcode.server.document.DocumentPermissionSetTypeDomainObject#RESTRICTED_1}
      * or
      * {@link imcode.server.document.DocumentPermissionSetTypeDomainObject#RESTRICTED_2}
      * and there is a default template associated with that set type.
-     *
+     * <p/>
      * Please note:
-     *   According to specification only doc of type {@link imcode.server.document.textdocument.TextDocumentDomainObject}
-     *   can be used as parent (of a 'profile').
-     *   NB! for some (undocumented) reason a doc of any type might be used as a parent.
+     * According to specification only doc of type {@link imcode.server.document.textdocument.TextDocumentDomainObject}
+     * can be used as parent (of a 'profile').
+     * NB! for some (undocumented) reason a doc of any type might be used as a parent.
      *
      * @param newTextDocument
      * @param user
@@ -179,7 +190,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         if (templateName == null && parent instanceof TextDocumentDomainObject) {
-            templateName = ((TextDocumentDomainObject)parent).getDefaultTemplateName();
+            templateName = ((TextDocumentDomainObject) parent).getDefaultTemplateName();
         }
 
         if (templateName != null) {
@@ -221,7 +232,6 @@ public class DocumentMapper implements DocumentGetter {
      * @return saved document.
      * @throws DocumentSaveException
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
-     *
      * @see #createDocumentOfTypeFromParent(int, imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      * @see imcode.server.document.DocumentDomainObject#fromDocumentTypeId(int)
      */
@@ -235,15 +245,13 @@ public class DocumentMapper implements DocumentGetter {
             docClone.setLanguage(language);
         }
 
-        DocumentAppearance i18nMeta = DocumentAppearance.builder(docClone.getAppearance()).language(language).build();
-
-        return saveNewDocument(doc, Sets.newHashSet(i18nMeta), user);
+        return saveNewDocument(doc, Sets.newHashSet(doc.getAppearance()), user);
     }
 
 
     /**
      * Saves doc as new.
-     *
+     * <p/>
      * According to the spec, new doc creation UI allows to provide i18nMeta texts
      * in all languages available in the system.
      * However, a DocumentDomainObject has one-to-one relationship with i18nMeta.
@@ -258,7 +266,6 @@ public class DocumentMapper implements DocumentGetter {
      * @return saved document
      * @throws DocumentSaveException
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
-     *
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Set<DocumentAppearance> i18nMetas,
@@ -282,7 +289,7 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Saves doc as new.
-     *
+     * <p/>
      * According to the spec, new doc creation UI allows to provide i18nMeta texts
      * in all languages available in the system.
      * However, a DocumentDomainObject has one-to-one relationship with i18nMeta.
@@ -296,7 +303,6 @@ public class DocumentMapper implements DocumentGetter {
      * @return
      * @throws DocumentSaveException
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
-     *
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Set<DocumentAppearance> i18nMetas, final UserDomainObject user)
@@ -317,7 +323,7 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Updates existing document.
-     *
+     * <p/>
      * See {@link #saveDocument(imcode.server.document.DocumentDomainObject, java.util.Set, imcode.server.user.UserDomainObject)}
      * to learn more about parameters.
      *
@@ -342,16 +348,13 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveTextDocMenu(MenuDomainObject menu, UserDomainObject user)
+    public void saveTextDocMenu(TextDocItemRef<MenuDomainObject> menuRef, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
-        if (menu.getDocRef() == null)
-            throw new IllegalStateException("menu doc ref is not set");
-
         try {
-            documentSaver.saveMenu(menu, user);
+            documentSaver.saveMenu(menuRef.getDocRef(), menuRef.getItem(), user);
         } finally {
-            invalidateDocument(menu.getDocRef().getDocId());
+            invalidateDocument(menuRef.getDocRef().getDocId());
         }
     }
 
@@ -367,10 +370,11 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentVersion makeDocumentVersion(final int docId, final UserDomainObject user)
             throws DocumentSaveException {
 
-        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
+        List<DocumentDomainObject> docs = new LinkedList<>();
 
         for (DocumentLanguage language : imcmsServices.getDocumentI18nSupport().getLanguages()) {
-            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(DocRef.of(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO), language));
+            DocRef docRef = DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO, language);
+            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(docRef);
             docs.add(doc);
         }
 
@@ -590,7 +594,6 @@ public class DocumentMapper implements DocumentGetter {
      * @param user
      * @return working version of new saved document in source document's language.
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
-     *
      * @throws DocumentSaveException
      */
     public <T extends DocumentDomainObject> T copyDocument(final T doc, final UserDomainObject user)
@@ -599,7 +602,7 @@ public class DocumentMapper implements DocumentGetter {
         Integer docId = copyDocument(doc.getRef(), user);
 
         @SuppressWarnings("unchecked")
-        T workingDocument = (T)getWorkingDocument(docId, doc.getLanguage());
+        T workingDocument = (T) getWorkingDocument(docId, doc.getLanguage());
 
         return workingDocument;
     }
@@ -620,7 +623,7 @@ public class DocumentMapper implements DocumentGetter {
 
         Meta meta = documentSaver.getMetaDao().getMeta(docRef.getDocId()).clone();
         List<DocumentAppearance> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docRef.getDocId());
-        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
+        List<DocumentDomainObject> docs = new LinkedList<>();
 
         makeDocumentLookNew(meta, user);
         meta.setId(null);
@@ -690,8 +693,12 @@ public class DocumentMapper implements DocumentGetter {
      * @return custom document in default language.
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
-        return getCustomDocument(DocRef.of(docRef, imcmsServices.getDocumentI18nSupport().getDefaultLanguage()));
+    public <T extends DocumentDomainObject> T getCustomDocumentInDefaultLanguage(DocRef docRef) {
+        return getCustomDocument(
+                DocRef.buillder(docRef)
+                        .docLanguage(imcmsServices.getDocumentI18nSupport().getDefaultLanguage())
+                        .build()
+        );
     }
 
 
@@ -795,25 +802,17 @@ public class DocumentMapper implements DocumentGetter {
      * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
      *
      * @param text - text being saved
-     *
+     * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
-     *
-     * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      */
-    public synchronized void saveTextDocText(TextDomainObject text, UserDomainObject user)
+    public synchronized void saveTextDocText(DocRef docRef, int no, TextDomainObject text, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
 
-        if (text.getI18nDocRef() == null)
-            throw new IllegalStateException("text document identity is not set");
-
-        if (text.getNo() == null)
-            throw new IllegalStateException("text no is not set");
-
         try {
-            documentSaver.saveText(text, user);
+            documentSaver.saveText(docRef, no, text, user);
         } finally {
-            invalidateDocument(text.getI18nDocRef().docId());
+            invalidateDocument(docRef.getDocId());
         }
     }
 
@@ -825,24 +824,21 @@ public class DocumentMapper implements DocumentGetter {
      * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
      *
      * @param texts - texts being saved
-     *
+     * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
-     *
-     * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      */
-    public synchronized void saveTextDocTexts(Collection<TextDomainObject> texts, UserDomainObject user)
+    public synchronized void saveTextDocTexts(Map<DocRef, TextDomainObject> texts, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-
         try {
             documentSaver.saveTexts(texts, user);
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
-            for (TextDomainObject text: texts) {
+            for (TextDomainObject text : texts) {
                 docIds.add(text.getI18nDocRef().docId());
             }
 
-            for (Integer docId: docIds) {
+            for (Integer docId : docIds) {
                 invalidateDocument(docId);
             }
         }
@@ -856,16 +852,18 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * @since 6.0
      */
-    public synchronized void saveTextDocImages(Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocImages(Collection<TextDocItemRef<ImageDomainObject>> images, UserDomainObject user)
+            throws NoPermissionInternalException, DocumentSaveException {
+
         try {
             documentSaver.saveImages(images, user);
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
-            for (ImageDomainObject image: images) {
+            for (ImageDomainObject image : images) {
                 docIds.add(image.getDocRef().getDocId());
             }
 
-            for (Integer docId: docIds) {
+            for (Integer docId : docIds) {
                 invalidateDocument(docId);
             }
         }
@@ -880,20 +878,11 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * @since 6.0
      */
-    public synchronized void saveTextDocImage(ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        if (image.getDocRef() == null)
-            throw new IllegalStateException("image document identity is not set");
-
-        if (image.getNo() == null)
-            throw new IllegalStateException("image no is not set");
-
-        if (image.getLanguage() == null)
-            throw new IllegalStateException("image language is not set");
-
+    public synchronized void saveTextDocImage(TextDocItemRef<ImageDomainObject> image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         try {
-            documentSaver.saveImage(image, user);
+            documentSaver.saveImage(docRef, no, image, user);
         } finally {
-            invalidateDocument(image.getDocRef().getDocId());
+            invalidateDocument(docRef.getDocId());
         }
     }
 
@@ -1018,6 +1007,7 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Sets default document version.
+     *
      * @since 6.0
      */
     public static class SetDefaultDocumentVersionCommand extends DocumentPageFlow.SaveDocumentCommand {

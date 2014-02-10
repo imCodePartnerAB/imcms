@@ -5,12 +5,11 @@ package mapping
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.net.sf.ehcache.config.CacheConfiguration
 import _root_.net.sf.ehcache.CacheManager
-import com.imcode.imcms.mapping.orm.{DocLanguage, DocMeta}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api._
 
 
-class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[DocLanguage], size: Int) {
+class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[DocumentLanguage], size: Int) {
 
   val cacheManager = CacheManager.create()
 
@@ -23,7 +22,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[DocLangu
     cc.setName(classOf[DocLoaderCachingProxy].getCanonicalName + "." + name)
   }
 
-  val metas = CacheWrapper[DocId, DocMeta](cacheConfiguration("meats"))
+  val metas = CacheWrapper[DocId, Meta](cacheConfiguration("meats"))
   val versionInfos = CacheWrapper[DocId, DocumentVersionInfo](cacheConfiguration("versionInfos"))
   val workingDocs = CacheWrapper[DocCacheKey, DocumentDomainObject](cacheConfiguration("workingDocs"))
   val defaultDocs = CacheWrapper[DocCacheKey, DocumentDomainObject](cacheConfiguration("defaultDocs"))
@@ -65,7 +64,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[DocLangu
   /**
    * @return working doc or null if doc does not exists
    */
-  def getWorkingDoc[A <: DocumentDomainObject](docId: DocId, language: DocLanguage): A =
+  def getWorkingDoc[A <: DocumentDomainObject](docId: DocId, language: DocumentLanguage): A =
     workingDocs.getOrPut(DocCacheKey(docId, language.getId)) {
       getMeta(docId) match {
         case null => null
@@ -80,7 +79,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[DocLangu
   /**
    * @return default doc or null if doc does not exists
    */
-  def getDefaultDoc[A <: DocumentDomainObject](docId: DocId, language: DocLanguage): A =
+  def getDefaultDoc[A <: DocumentDomainObject](docId: DocId, language: DocumentLanguage): A =
     defaultDocs.getOrPut(DocCacheKey(docId, language.getId)) {
       getMeta(docId) match {
         case null => null

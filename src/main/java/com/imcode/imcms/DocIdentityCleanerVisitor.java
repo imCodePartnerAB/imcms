@@ -15,9 +15,6 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
     @Override
     public void visitTextDocument(TextDocumentDomainObject doc) {
         visitOtherDocument(doc);
-
-
-
         doc.getTemplateNames().setDocId(null);
     }
 
@@ -31,8 +28,5 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
     @Override
     public void visitFileDocument(FileDocumentDomainObject doc) {
         visitOtherDocument(doc);
-        //for (FileDocumentDomainObject.FileDocumentFile file: doc.getFiles().values()) {
-        //    file.
-        //}
     }
 }

@@ -73,7 +73,7 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 <%@page import="java.util.Iterator"%>
 <%@ page import="imcode.server.ImcmsConstants" %>
 <%@ page import="com.imcode.imcms.mapping.orm.DocLanguage" %>
-<%@ page import="com.imcode.imcms.mapping.DocumentVersionInfo" %>
+<%@ page import="com.imcode.imcms.api.DocumentVersionInfo" %>
 <vel:velocity>
 <style type="text/css">
 /*<![CDATA[*/

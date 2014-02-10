@@ -82,7 +82,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   }
 
 
-  test("save new text doc with [CopyI18nMetaTextsIntoTextFields] save params") {
+  test("save new text doc with [CopyDocAppearenceIntoTextFields] save params") {
     val parentDoc = getMainWorkingDocumentInDefaultLanguage(true)
     val newDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin)
       .asInstanceOf[TextDocumentDomainObject]
@@ -101,7 +101,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val id = docMapper.saveNewDocument(
       newDoc,
       i18nMetas,
-      EnumSet.of(DocumentMapper.SaveOpts.CopyI18nMetaTextsIntoTextFields),
+      EnumSet.of(DocumentMapper.SaveOpts.CopyDocAppearenceIntoTextFields),
       admin).getMeta.getId
 
     i18nContentSupport.getLanguages.asScala.map { language =>

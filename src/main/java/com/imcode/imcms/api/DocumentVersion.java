@@ -8,6 +8,10 @@ import java.util.Objects;
  */
 public final class DocumentVersion {
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder {
         private int no;
         private Integer createdBy;

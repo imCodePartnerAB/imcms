@@ -1,7 +1,7 @@
 <%@ page
 	
 	import="com.imcode.imcms.api.DocumentVersion,
-	        com.imcode.imcms.mapping.DocumentVersionInfo,
+	        com.imcode.imcms.api.DocumentVersionInfo,
 	        com.imcode.imcms.mapping.orm.DocLanguage,
 	        com.imcode.imcms.mapping.DocumentMapper,
 	        com.imcode.imcms.servlet.AdminPanelServlet,

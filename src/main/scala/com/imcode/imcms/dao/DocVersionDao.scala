@@ -25,6 +25,7 @@ class DocVersionDao extends HibernateSupport {
    *
    * @return new document version.
    */
+  // fixme: use lock
   def createVersion(docId: Int, userId: Int): DocVersion = synchronized {
     val no = getLatestVersion(docId) match {
       case null => 0

@@ -4,6 +4,46 @@ import java.util.Objects;
 
 public final class DocRef {
 
+    public static Builder buillder() {
+        return new Builder();
+    }
+
+    public static Builder buillder(DocRef docRef) {
+        return new Builder(docRef);
+    }
+
+    public static class Builder {
+        private int docId;
+        private int versionNo;
+        private DocumentLanguage docLanguage;
+
+        public Builder() {}
+
+        public Builder(DocRef docRef) {
+            this.docId = docRef.docId;
+            this.versionNo = docRef.versionNo;
+            this.docLanguage = docRef.docLanguage;
+        }
+
+        public Builder docId(int docId) {
+            this.docId = docId;
+            return this;
+        }
+        public Builder versionNo(int versionNo) {
+            this.versionNo = versionNo;
+            return this;
+        }
+
+        public Builder docLanguage(DocumentLanguage docLanguage) {
+            this.docLanguage = docLanguage;
+            return this;
+        }
+
+        public DocRef build() {
+            return DocRef.of(docId, versionNo, docLanguage);
+        }
+    }
+
     public static DocRef of(int docId, int docVersionNo) {
         return new DocRef(docId, docVersionNo, null);
     }
