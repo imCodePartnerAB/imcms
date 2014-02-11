@@ -2,14 +2,14 @@ package com.imcode.imcms.api;
 
 import java.util.Objects;
 
-public final class DocumentIdentity {
+public final class DocRef {
 
     public static Builder buillder() {
         return new Builder();
     }
 
-    public static Builder buillder(DocumentIdentity documentIdentity) {
-        return new Builder(documentIdentity);
+    public static Builder buillder(DocRef docRef) {
+        return new Builder(docRef);
     }
 
     public static class Builder {
@@ -19,10 +19,10 @@ public final class DocumentIdentity {
 
         public Builder() {}
 
-        public Builder(DocumentIdentity documentIdentity) {
-            this.docId = documentIdentity.docId;
-            this.docVersionNo = documentIdentity.docVersionNo;
-            this.docLanguage = documentIdentity.docLanguage;
+        public Builder(DocRef docRef) {
+            this.docId = docRef.docId;
+            this.docVersionNo = docRef.docVersionNo;
+            this.docLanguage = docRef.docLanguage;
         }
 
         public Builder docId(int docId) {
@@ -39,17 +39,17 @@ public final class DocumentIdentity {
             return this;
         }
 
-        public DocumentIdentity build() {
-            return DocumentIdentity.of(docId, docVersionNo, docLanguage);
+        public DocRef build() {
+            return DocRef.of(docId, docVersionNo, docLanguage);
         }
     }
 
-    public static DocumentIdentity of(int docId, int docVersionNo) {
-        return new DocumentIdentity(docId, docVersionNo, null);
+    public static DocRef of(int docId, int docVersionNo) {
+        return new DocRef(docId, docVersionNo, null);
     }
 
-    public static DocumentIdentity of(int docId, int docVersionNo, DocumentLanguage docLanguage) {
-        return new DocumentIdentity(docId, docVersionNo, docLanguage);
+    public static DocRef of(int docId, int docVersionNo, DocumentLanguage docLanguage) {
+        return new DocRef(docId, docVersionNo, docLanguage);
     }
 
     private final int docId;
@@ -62,7 +62,7 @@ public final class DocumentIdentity {
 
     private final String cachedToString;
 
-    public DocumentIdentity(int docId, int docVersionNo, DocumentLanguage docLanguage) {
+    public DocRef(int docId, int docVersionNo, DocumentLanguage docLanguage) {
         this.docId = docId;
         this.docVersionNo = docVersionNo;
         this.docLanguage = docLanguage;
@@ -76,10 +76,10 @@ public final class DocumentIdentity {
 
     @Override
     public boolean equals(Object o) {
-        return (o == this) || (o instanceof DocumentIdentity && equals((DocumentIdentity) o));
+        return (o == this) || (o instanceof DocRef && equals((DocRef) o));
     }
 
-    private boolean equals(DocumentIdentity that) {
+    private boolean equals(DocRef that) {
         return docId == that.docId
                 && docVersionNo == that.docVersionNo
                 && Objects.equals(docLanguage, that.docLanguage);

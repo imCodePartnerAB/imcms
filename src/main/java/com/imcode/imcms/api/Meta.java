@@ -16,62 +16,6 @@ import java.util.*;
 public class Meta implements Serializable, Cloneable {
 
     /**
-     * Create (create only!) permission for template or a document type.
-     * <p/>
-     * set_id (actually it is a 'set *type* id') can be: restricted 1 or restricted 2
-     * <p/>
-     * Mapped to doc_permission_set and new_doc_permission_set
-     */
-//    static public class PermisionSetEx {
-//        private Integer setId;
-//
-//        /**
-//         * Document type (1 2 5 7 8) or template group id
-//         */
-//        private Integer permissionData;
-//
-//        /**
-//         * For documents: DatabaseDocumentGetter.PERM_CREATE_DOCUMENT
-//         * For templates: TextDocumentPermissionSetDomainObject.EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID
-//         * ?Bit set value?
-//         */
-//        private Integer permissionId;
-//
-//        public boolean equals(Object o) {
-//            return (this == o) ||
-//                    ((o instanceof PermisionSetEx) && (hashCode() == o.hashCode()));
-//        }
-//
-//        public int hashCode() {
-//            return Objects.hash(setId, permissionId, permissionData);
-//        }
-//
-//        public Integer getPermissionData() {
-//            return permissionData;
-//        }
-//
-//        public void setPermissionData(Integer documentTypeId) {
-//            this.permissionData = documentTypeId;
-//        }
-//
-//        public Integer getPermissionId() {
-//            return permissionId;
-//        }
-//
-//        public void setPermissionId(Integer permissionId) {
-//            this.permissionId = permissionId;
-//        }
-//
-//        public Integer getSetId() {
-//            return setId;
-//        }
-//
-//        public void setSetId(Integer setId) {
-//            this.setId = setId;
-//        }
-//    }
-
-    /**
      * Document show setting for disabled language.
      */
     public static enum DisabledLanguageShowSetting {
@@ -83,7 +27,6 @@ public class Meta implements Serializable, Cloneable {
 
     private volatile int defaultVersionNo = DocumentVersion.WORKING_VERSION_NO;
 
-
     /**
      * Disabled language's content show rule.
      */
@@ -91,9 +34,6 @@ public class Meta implements Serializable, Cloneable {
 
     private volatile Integer activate;
 
-    // For processing after load:
-    // Discrimination column - from old code:
-    // DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(permissionData);
     // todo: rename to documentTypeId
     private volatile Integer documentType;
 
@@ -104,13 +44,6 @@ public class Meta implements Serializable, Cloneable {
     private volatile Boolean linkableByOtherUsers;
 
     private volatile Boolean linkedForUnauthorizedUsers;
-
-    /**
-     * Deprecated with no replacement.
-     */
-    @Deprecated
-    @SuppressWarnings("unused")
-    private volatile String lang_prefix = "";
 
     private volatile Date createdDatetime;
 
@@ -128,56 +61,16 @@ public class Meta implements Serializable, Cloneable {
     private volatile String target;
     private volatile Date archivedDatetime;
     private volatile Integer publisherId;
-
-    // For processing after load:
-    // Should be converted after set - old code:
-    // Document.PublicationStatus publicationStatus = publicationStatusFromInt(publicationStatusInt);
-    // document.setPublicationStatus(publicationStatus);
-    //private volatile Integer publicationStatusInt;
     private volatile Date publicationStartDatetime;
     private volatile Date publicationEndDatetime;
 
-    // These fields were lazy loaded in previous version:
     private volatile Map<String, String> properties = new HashMap<>();
 
     private volatile Set<Integer> categoryIds = new HashSet<>();
 
-    // Set id is either restricted 1 or restricted 2
-    // Roles are user defined or system predefined roles
-    // RoleId to permission-set id mapping.
-    // For processing after load:
-    //private volatile Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<>();
-
-
-    /**
-     * Limited 1 permission set's bits for new document.
-     * Permission set id mapped to bits.
-     */
-    // For processing after load:
-    // permisionId in the table actually is not an 'id' but a bit set value.
-    //private volatile Map<Integer, Integer> permissionSetBitsMap = new HashMap<>();
-
-
-    /**
-     * Limited 1 permission set's bits for a new (inherited) document.
-     * Permission set id mapped to bits.
-     */
-    // For processing after load:
-    // permisionId in the table actually is not an 'id' but a bit set value.
-    //private volatile Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<>();
-
-    // For processing after load:
-    //private volatile Set<PermisionSetEx> permisionSetEx = new HashSet<>();
-
-    // For processing after load:
-//    private volatile Set<PermisionSetEx> permisionSetExForNew = new HashSet<>();
     private volatile Set<DocumentLanguage> enabledLanguages = new HashSet<>();
+
     private volatile Set<String> keywords = new HashSet<>();
-
-
-    //
-    // Transients are moved from DocumentDomainObject.
-    //
 
     private volatile DocumentPermissionSets permissionSets = new DocumentPermissionSets();
 
@@ -194,14 +87,6 @@ public class Meta implements Serializable, Cloneable {
             Meta clone = (Meta) super.clone();
 
             clone.disabledLanguageShowSetting = disabledLanguageShowSetting;
-
-            //clone.permisionSetEx = new HashSet<>(permisionSetEx);
-//            clone.permisionSetExForNew = new HashSet<>(permisionSetExForNew);
-            //clone.permissionSetBitsMap = new HashMap<>(permissionSetBitsMap);
-            //clone.permissionSetBitsForNewMap = new HashMap<>(permissionSetBitsForNewMap);
-
-            //clone.roleIdToPermissionSetIdMap = new HashMap<>(roleIdToPermissionSetIdMap);
-
             clone.properties = new HashMap<>(properties);
             clone.categoryIds = new HashSet<>(categoryIds);
 
@@ -341,14 +226,6 @@ public class Meta implements Serializable, Cloneable {
         this.publisherId = publisherId;
     }
 
-//    public Integer getPublicationStatusInt() {
-//        return publicationStatusInt;
-//    }
-//
-//    public void setPublicationStatusInt(Integer publicationStatusInt) {
-//        this.publicationStatusInt = publicationStatusInt;
-//    }
-
     public Date getPublicationStartDatetime() {
         return publicationStartDatetime;
     }
@@ -365,8 +242,6 @@ public class Meta implements Serializable, Cloneable {
         this.publicationEndDatetime = publicationEndDatetime;
     }
 
-
-    // Lazy loaded properties
     public Map<String, String> getProperties() {
         return properties;
     }
@@ -382,47 +257,6 @@ public class Meta implements Serializable, Cloneable {
     public void setCategoryIds(Set<Integer> categoryIds) {
         this.categoryIds = categoryIds;
     }
-
-//    // For processing after load:
-//    public Map<Integer, Integer> getRoleIdToPermissionSetIdMap() {
-//        return roleIdToPermissionSetIdMap;
-//    }
-//
-//    public void setRoleIdToPermissionSetIdMap(Map<Integer, Integer> roleRights) {
-//        this.roleIdToPermissionSetIdMap = roleRights;
-//    }
-
-//    public Map<Integer, Integer> getPermissionSetBitsMap() {
-//        return permissionSetBitsMap;
-//    }
-
-//    public void setPermissionSetBitsMap(Map<Integer, Integer> permissionSetBits) {
-//        this.permissionSetBitsMap = permissionSetBits;
-//    }
-
-//    public Map<Integer, Integer> getPermissionSetBitsForNewMap() {
-//        return permissionSetBitsForNewMap;
-//    }
-
-//    public void setPermissionSetBitsForNewMap(Map<Integer, Integer> permissionSetBitsForNew) {
-//        this.permissionSetBitsForNewMap = permissionSetBitsForNew;
-//    }
-//
-//    public Set<PermisionSetEx> getPermisionSetEx() {
-//        return permisionSetEx;
-//    }
-//
-//    public void setPermisionSetEx(Set<PermisionSetEx> permisionSetEx) {
-//        this.permisionSetEx = permisionSetEx;
-//    }
-
-//    public Set<PermisionSetEx> getPermisionSetExForNew() {
-//        return permisionSetExForNew;
-//    }
-
-//    public void setPermisionSetExForNew(Set<PermisionSetEx> docPermisionSetExForNew) {
-//        this.permisionSetExForNew = docPermisionSetExForNew;
-//    }
 
     public Integer getActivate() {
         return activate;
@@ -485,7 +319,6 @@ public class Meta implements Serializable, Cloneable {
         this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings;
     }
 
-    // transient
     public void setRoleIdsMappedToDocumentPermissionSetTypes(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
         this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
     }

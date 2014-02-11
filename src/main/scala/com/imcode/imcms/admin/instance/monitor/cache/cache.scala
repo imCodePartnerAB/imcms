@@ -68,7 +68,7 @@ class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Ma
     
     whenSelected(tblMetas) { docId =>
       docLoaderCache.getMeta(docId).getEnabledLanguages.foreach { l =>
-        tblLanguages.addItem(Array(l.getName), l.getId)  
+        tblLanguages.addItem(Array(l.getName), l.getCode)
       }
 
       docLoaderCache.getDocVersionInfo(docId).getVersions.foreach { v =>

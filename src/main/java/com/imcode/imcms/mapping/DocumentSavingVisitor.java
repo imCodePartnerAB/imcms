@@ -35,24 +35,24 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
         HtmlDocContent htmlReference = new HtmlDocContent();
 
-        htmlReference.setDocRef(document.getIdentity());
+        htmlReference.setDocRef(document.getRef());
         htmlReference.setHtml(document.getHtml());
 
-        metaDao.deleteHtmlReference(document.getIdentity());
+        metaDao.deleteHtmlReference(document.getRef());
         metaDao.saveHtmlReference(htmlReference);
     }
 
     // runs inside transaction   
     public void visitUrlDocument(UrlDocumentDomainObject document) {
         UrlDocContent reference = new UrlDocContent();
-        reference.setDocRef(document.getIdentity());
+        reference.setDocRef(document.getRef());
         reference.setUrl(document.getUrl());
         reference.setUrlTarget("");
         reference.setUrlText("");
         reference.setUrlLanguagePrefix("");
         reference.setUrlFrameName("");
 
-        metaDao.deleteUrlReference(document.getIdentity());
+        metaDao.deleteUrlReference(document.getRef());
         metaDao.saveUrlReference(reference);
     }
 

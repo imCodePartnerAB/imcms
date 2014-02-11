@@ -34,17 +34,17 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
      *   ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(final FileDocumentDomainObject doc) {
-    	Collection<FileDocItem> fileReferences = metaDao.getFileReferences(doc.getIdentity());
+    	Collection<FileDocItem> fileDocItems = metaDao.getFileDocItems(doc.getRef());
     	
-    	for (FileDocItem fileRef: fileReferences) {
-            String fileId = fileRef.getFileId();           
+    	for (FileDocItem item : fileDocItems) {
+            String fileId = item.getFileId();
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
             
-            file.setFilename(fileRef.getFilename());
-            file.setMimeType(fileRef.getMimeType());
-            file.setCreatedAsImage(fileRef.getCreatedAsImage());
+            file.setFilename(item.getFilename());
+            file.setMimeType(item.getMimeType());
+            file.setCreatedAsImage(item.getCreatedAsImage());
             
-            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getIdentity(), fileId);
+            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getRef(), fileId);
             if ( !fileForFileDocument.exists() ) {
                 File oldlyNamedFileForFileDocument = new File(fileForFileDocument.getParentFile(),
                                                               fileForFileDocument.getName()
@@ -58,7 +58,7 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
             
             doc.addFile(fileId, file);
             
-            if (fileRef.isDefaultFileId()) {
+            if (item.isDefaultFileId()) {
                 doc.setDefaultFileId(fileId);
             }
     		
@@ -67,12 +67,12 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
     
 
     public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
-    	HtmlDocContent html = metaDao.getHtmlReference(doc.getIdentity());
+    	HtmlDocContent html = metaDao.getHtmlDocContent(doc.getRef());
     	doc.setHtml(html.getHtml());
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject doc) {
-    	UrlDocContent reference = metaDao.getUrlReference(doc.getIdentity());
+    	UrlDocContent reference = metaDao.getUrlDocContent(doc.getRef());
     	doc.setUrl(reference.getUrl());
     }
 

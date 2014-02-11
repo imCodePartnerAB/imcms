@@ -97,9 +97,6 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentAppe
           case i18nMetaEditorWidget if i18nMetaEditorWidget.chkEnabled.checked =>
             val language = i18nMetaEditorWidget.language
             val i18nMeta = DocumentAppearance.builder()
-              .id(i18nMetas.get(language).map(_.getId).orNull)
-              .docId(meta.getId)
-              .language(language)
               .headline(i18nMetaEditorWidget.txtTitle.trimmedValue)
               .menuImageURL(i18nMetaEditorWidget.embLinkImage.trimmedValue)
               .menuText(i18nMetaEditorWidget.txaMenuText.trimmedValue)

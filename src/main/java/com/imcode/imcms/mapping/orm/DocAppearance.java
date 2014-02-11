@@ -4,9 +4,9 @@ import javax.persistence.*;
 import java.util.Objects;
 
 /**
- * Document i18n meta.
+ * Document appearance.
  */
-@Entity(name = "I18nMeta")
+@Entity(name = "Appearance")
 @Table(name = "imcms_doc_i18n_meta")
 public class DocAppearance {
 

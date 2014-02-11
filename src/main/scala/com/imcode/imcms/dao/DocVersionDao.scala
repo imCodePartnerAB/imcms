@@ -32,7 +32,15 @@ class DocVersionDao extends HibernateSupport {
       case version => version.getNo.intValue + 1
     }
 
-    hibernate.save(new DocVersion(docId, no, userId, new Date))
+    val now = new Date
+    val version = new DocVersion |>> { v =>
+      v.setDocId(docId)
+      v.setNo(no)
+      v.setCreatedDt(now)
+      v.setModifiedDt(now)
+    }
+
+    hibernate.save(version)
   }
 
 

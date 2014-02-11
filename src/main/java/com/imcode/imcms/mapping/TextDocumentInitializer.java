@@ -40,7 +40,7 @@ public class TextDocumentInitializer {
     }
     
     public void initTexts(TextDocumentDomainObject document) {
-    	Collection<TextDocText> texts = textDocDao.getTexts(document.getIdentity());
+    	Collection<TextDocText> texts = textDocDao.getTexts(document.getRef());
 
     	for (TextDocText text: texts) {
             Integer no = text.getNo();
@@ -75,7 +75,7 @@ public class TextDocumentInitializer {
     
     
     public void initImages(TextDocumentDomainObject document) {
-    	Collection<TextDocImage> images = textDocDao.getImagesInAllLanguages(document.getIdentity());
+    	Collection<TextDocImage> images = textDocDao.getImagesInAllLanguages(document.getRef());
     	
     	for (TextDocImage image: images) {
     		document.setImage(image.getNo(), image);
@@ -84,7 +84,7 @@ public class TextDocumentInitializer {
 
 
     public void initMenus(TextDocumentDomainObject document) {
-    	Collection<MenuDomainObject> menus = textDocDao.getMenus(document.getIdentity());
+    	Collection<MenuDomainObject> menus = textDocDao.getMenus(document.getRef());
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<>();
 
     	for (MenuDomainObject menu: menus) {
@@ -112,7 +112,7 @@ public class TextDocumentInitializer {
      * @throws IllegalStateException if a content loop is empty i.e. does not have a contents. 
      */
 	public void initContentLoops(TextDocumentDomainObject document) {
-		List<TextDocLoop> loops = textDocDao.getLoops(document.getIdentity());
+		List<TextDocLoop> loops = textDocDao.getLoops(document.getRef());
 		Map<Integer, ContentLoop> loopsMap = new HashMap<>();
 		
 		for (TextDocLoop loop: loops) {

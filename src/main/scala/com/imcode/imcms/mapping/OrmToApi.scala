@@ -2,14 +2,14 @@ package com.imcode
 package imcms.mapping
 
 import com.imcode.imcms.api._
-import com.imcode.imcms.mapping.orm.{TextDocLoopItem, TextDocLoopItemRef, TextDocLoop, TextDocText}
+import com.imcode.imcms.mapping.orm._
 import imcode.server.document.textdocument.{TextDomainObject}
 
 import scala.collection.JavaConverters._
 
 object OrmToApi {
 
-  def toApi(orm: orm.DocVersion): DocumentVersion = DocumentVersion.builder
+  def toApi(orm: DocVersion): DocumentVersion = DocumentVersion.builder
     .no(orm.getNo)
     .createdBy(orm.getCreatedBy.getId)
     .modifiedBy(orm.getModifiedBy.getId)
@@ -17,7 +17,7 @@ object OrmToApi {
     .modifiedDt(orm.getModifiedDt)
     .build()
 
-  def toApi(orm: orm.DocLanguage): DocumentLanguage = DocumentLanguage.builder
+  def toApi(orm: DocLanguage): DocumentLanguage = DocumentLanguage.builder
     .code(orm.getCode)
     .name(orm.getName)
     .nativeName(orm.getNativeName)
@@ -25,17 +25,15 @@ object OrmToApi {
     .build()
 
 
-  def toApi(orm: orm.DocAppearance): DocumentAppearance = DocumentAppearance.builder
+  def toApi(orm: DocAppearance): DocumentAppearance = DocumentAppearance.builder
     .headline(orm.getHeadline)
-    .language(orm.getLanguage |> toApi)
     .menuImageURL(orm.getMenuImageURL)
     .menuText(orm.getMenuText)
     .build()
 
 
-  def toApi(orm: orm.DocMeta): Meta = new Meta |>> { m =>
+  def toApi(orm: DocMeta): Meta = new Meta |>> { m =>
     m.setActivate(orm.getActivate)
-    m.setActualModifiedDatetime(orm.getActualModifiedDatetime)
     m.setAlias(orm.getAlias)
     m.setArchivedDatetime(orm.getArchivedDatetime)
     m.setCategoryIds(orm.getCategoryIds)
@@ -72,7 +70,7 @@ object OrmToApi {
   def toApi(orm: TextDocLoopItemRef): ContentLoopRef = ContentLoopRef.of(orm.getLoopNo, orm.getContentNo)
 
 
-  def toApi(orm: TextDocLoop): ContentLoop = ContentLoop.of(orm.getNextItemNo, orm.getItems.asScala.map(toApi).asJava)
+  def toApi(orm: TextDocLoop): ContentLoop = ContentLoop.of(orm.getItems.asScala.map(toApi).asJava)
 
 
   def toApi(orm: TextDocLoopItem): Content = Content.of(orm.getNo, orm.isEnabled)

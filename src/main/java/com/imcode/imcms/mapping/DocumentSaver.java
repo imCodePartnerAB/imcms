@@ -67,8 +67,8 @@ public class DocumentSaver {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      */
     @Transactional
-    public void saveText(TextDocumentItemIdentity<TextDomainObject> id, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfMissing(id.getDocumentIdentity(), id.getItem().getContentLoopRef());
+    public void saveText(TextDocItemRef<TextDomainObject> id, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        createEnclosingContentLoopIfMissing(id.getDocRef(), id.getItem().getContentLoopRef());
 
         new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(id, user);
 
@@ -77,7 +77,7 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void saveTexts(Collection<TextDocumentItemIdentity<TextDomainObject>> ids, UserDomainObject user)
+    public void saveTexts(Collection<TextDocItemRef<TextDomainObject>> ids, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         for (TextDomainObject text : texts) {
             saveText(docIdentity, no, text, user);
@@ -86,11 +86,11 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void saveMenu(DocumentIdentity documentIdentity, MenuDomainObject menu, UserDomainObject user)
+    public void saveMenu(DocRef docRef, MenuDomainObject menu, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(documentIdentity, menu, user);
+        new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(docRef, menu, user);
 
-        metaDao.touch(documentIdentity, user);
+        metaDao.touch(docRef, user);
     }
 
 
@@ -105,7 +105,7 @@ public class DocumentSaver {
      * @see com.imcode.imcms.servlet.admin.ChangeImage
      */
     @Transactional
-    public void saveImages(Collection<TextDocumentItemIdentity<ImageDomainObject>> ids, UserDomainObject user)
+    public void saveImages(Collection<TextDocItemRef<ImageDomainObject>> ids, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         for (ImageDomainObject id : ids) {
             saveImage(docIdentity, image, user);
@@ -114,14 +114,14 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void saveImage(TextDocumentItemIdentity<ImageDomainObject> id, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveImage(TextDocItemRef<ImageDomainObject> id, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         createEnclosingContentLoopIfMissing(docIdentity, image.getContentLoopRef());
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
         storingVisitor.saveTextDocumentImage(image, user);
 
-        metaDao.touch(id.getDocumentIdentity(), user);
+        metaDao.touch(id.getDocRef(), user);
     }
 
 
@@ -129,12 +129,12 @@ public class DocumentSaver {
      * Creates content loop if item references non-saved enclosing content loop.
      */
     @Transactional
-    public void createEnclosingContentLoopIfMissing(DocumentIdentity documentIdentity, ContentLoopRef contentLoopRef) {
+    public void createEnclosingContentLoopIfMissing(DocRef docRef, ContentLoopRef contentLoopRef) {
         if (contentLoopRef == null) {
             return;
         }
 
-        TextDocLoop ormLoop = textDocDao.getLoop(documentIdentity, contentLoopRef.getLoopNo());
+        TextDocLoop ormLoop = textDocDao.getLoop(docRef, contentLoopRef.getLoopNo());
 
         if (ormLoop == null) {
             ormLoop = new TextDocLoop();
@@ -166,7 +166,7 @@ public class DocumentSaver {
 
             documentVersionDao.changeDefaultVersion(version, publisher);
 
-            metaDao.touch(DocumentIdentity.of(docId, newDefaultDocVersionNo), publisher);
+            metaDao.touch(DocRef.of(docId, newDefaultDocVersionNo), publisher);
         }
     }
 
@@ -240,7 +240,7 @@ public class DocumentSaver {
 
         doc.accept(savingVisitor);
         updateModifiedDtIfNotSetExplicitly(doc);
-        metaDao.touch(doc.getIdentity(), user, doc.getModifiedDatetime());
+        metaDao.touch(doc.getRef(), user, doc.getModifiedDatetime());
     }
 
 
@@ -369,10 +369,10 @@ public class DocumentSaver {
                 TextDomainObject text2 = new TextDomainObject(i18nMeta.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN);
 
                 text1.setNo(1);
-                text1.setDocRef(textDoc.getIdentity());
+                text1.setDocRef(textDoc.getRef());
 
                 text2.setNo(2);
-                text2.setDocRef(textDoc.getIdentity());
+                text2.setDocRef(textDoc.getRef());
 
                 docCreatingVisitor.saveTextDocumentText(text1, user);
                 docCreatingVisitor.saveTextDocumentText(text2, user);

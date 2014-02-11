@@ -43,19 +43,19 @@
 
   <query name="DocAppearance.getByDocId">
     <![CDATA[
-    SELECT l FROM I18nMeta l WHERE l.docId = :docId
+    SELECT l FROM Appearance l WHERE l.docId = :docId
     ]]>
   </query>    
 
-  <query name="DocAppearance.getByDocIdAndLanguageId">
+  <query name="DocAppearance.getByDocIdAndLanguageCode">
     <![CDATA[
-    SELECT l FROM I18nMeta l WHERE l.docId = :docId AND l.language.id = :languageId
+    SELECT l FROM Appearance l WHERE l.docId = :docId AND l.language.code = :languageCode
     ]]>
   </query>
 
-  <query name="DocAppearance.deleteByDocIdAndLanguageId">
+  <query name="DocAppearance.deleteByDocIdAndLanguageCode">
     <![CDATA[
-    DELETE FROM I18nMeta l WHERE l.docId = :docId AND l.language.id = :languageId
+    DELETE FROM Appearance l WHERE l.docId = :docId AND l.language.code = :languageCode
     ]]>
   </query>
 

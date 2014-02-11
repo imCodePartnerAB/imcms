@@ -2,7 +2,6 @@ package com.imcode
 package imcms
 package admin.docadmin.text
 
-import com.imcode.imcms.vaadin.Current
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
@@ -107,8 +106,9 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
 
     for (TextState(text, textWidget) <- states) {
       view.tsTexts.addTab(textWidget) |> { tab =>
-        tab.setCaption(text.getI18nDocRef.getLanguage().getName)
-        tab.setIcon(Theme.Icon.Language.flag(text.getI18nDocRef.getLanguage()))
+        //fixme: rewrite
+        //tab.setCaption(text.getRef.getLanguage().getName)
+        //tab.setIcon(Theme.Icon.Language.flag(text.getI18nDocRef.getLanguage()))
       }
     }
 

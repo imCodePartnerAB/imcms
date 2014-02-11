@@ -33,7 +33,7 @@ class DefaultDocumentLanguageService extends DocumentLanguageService with Log4jL
       null
 
     case property => property.getValue match {
-      case NonNegInt(id) => languageDao.getById(property.getValue.toInt)
+      case NonNegInt(id) => languageDao.getById(property.getValue.toInt).asOption match {
         case Some(language) => language |> OrmToApi.toApi
         case None =>
           logger.error(s"I18n configuration error. Language with id $id does not exists.")
@@ -43,9 +43,10 @@ class DefaultDocumentLanguageService extends DocumentLanguageService with Log4jL
       case other =>
         val msg = s"""|I18n configuration error. Illegal DefaultLanguageId system property value.
                       | Must be non-negativei integer but was $other.
-                   """.stripMargin()
+                   """.stripMargin
 
         logger.error(msg)
         null
+    }
   }
 }

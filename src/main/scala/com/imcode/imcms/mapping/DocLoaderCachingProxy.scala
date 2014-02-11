@@ -5,6 +5,7 @@ package mapping
 import _root_.imcode.server.document.DocumentDomainObject
 import _root_.net.sf.ehcache.config.CacheConfiguration
 import _root_.net.sf.ehcache.CacheManager
+
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api._
 
@@ -13,7 +14,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
 
   val cacheManager = CacheManager.create()
 
-  case class DocCacheKey(docId: DocId, languageId: LanguageId)
+  case class DocCacheKey(docId: DocId, languageCode: String)
 
   def cacheConfiguration(name: String) = new CacheConfiguration |>> { cc =>
     cc.setMaxEntriesLocalHeap(size)
@@ -36,18 +37,19 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
   /**
    * @return doc's meta or null if doc does not exists
    */
-  def getMeta(docId: DocId) = metas.getOrPut(docId) { docLoader.loadMeta(docId) }
+  def getMeta(docId: DocId): Meta = metas.getOrPut(docId) { docLoader.loadMeta(docId) }
 
   /**
    * @return doc's version info or null if doc does not exists
    */
-  def getDocVersionInfo(docId: DocId) = versionInfos.getOrPut(docId) {
+  def getDocVersionInfo(docId: DocId): DocumentVersionInfo = versionInfos.getOrPut(docId) {
     docLoader.getDocumentVersionDao.getAllVersions(docId) match {
       case versions if versions.size == 0 => null
       case versions =>
         val workingVersion = versions.get(0)
         val defaultVersion = docLoader.getDocumentVersionDao.getDefaultVersion(docId)
-        new DocumentVersionInfo(docId, versions, workingVersion, defaultVersion)
+        new DocumentVersionInfo(docId, versions.asScala.map(OrmToApi.toApi).asJava, OrmToApi.toApi(workingVersion),
+          OrmToApi.toApi(defaultVersion))
     }
   }
 
@@ -65,14 +67,19 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
    * @return working doc or null if doc does not exists
    */
   def getWorkingDoc[A <: DocumentDomainObject](docId: DocId, language: DocumentLanguage): A =
-    workingDocs.getOrPut(DocCacheKey(docId, language.getId)) {
+    workingDocs.getOrPut(DocCacheKey(docId, language.getCode)) {
       getMeta(docId) match {
         case null => null
         case meta =>
           val versionInfo = getDocVersionInfo(docId)
           val version = versionInfo.getWorkingVersion
+          val doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType).asInstanceOf[DocumentDomainObject]
 
-          docLoader.loadAndInitDocument(meta.clone, version.clone, language)
+          doc.setMeta(meta.clone())
+          doc.setVersionNo(version.getNo)
+          doc.setLanguage(language)
+
+          docLoader.loadAndInitContent(doc)
       }
     }.asInstanceOf[A]
 
@@ -80,30 +87,41 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
    * @return default doc or null if doc does not exists
    */
   def getDefaultDoc[A <: DocumentDomainObject](docId: DocId, language: DocumentLanguage): A =
-    defaultDocs.getOrPut(DocCacheKey(docId, language.getId)) {
+    defaultDocs.getOrPut(DocCacheKey(docId, language.getCode)) {
       getMeta(docId) match {
-        case null => null
         case meta =>
           val versionInfo = getDocVersionInfo(docId)
           val version = versionInfo.getDefaultVersion
+          val doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType).asInstanceOf[DocumentDomainObject]
 
-          docLoader.loadAndInitDocument(meta.clone, version.clone, language)
+          doc.setMeta(meta.clone())
+          doc.setVersionNo(version.getNo)
+          doc.setLanguage(language)
+
+          docLoader.loadAndInitContent(doc)
       }
     }.asInstanceOf[A]
 
   /**
    * @return custom doc or null if doc does not exists
    */
-  def getCustomDoc[A <: DocumentDomainObject](ref: DocumentIdentity): A = {
+  def getCustomDoc[A <: DocumentDomainObject](ref: DocRef): A = {
     getMeta(ref.getDocId) match {
-      case null => null.asInstanceOf[A]
+      case null => null
       case meta =>
         val versionInfo = getDocVersionInfo(ref.getDocId)
         val version = versionInfo.getVersion(ref.getDocVersionNo)
+        val doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType).asInstanceOf[DocumentDomainObject]
 
-        docLoader.loadAndInitDocument(meta.clone, version.clone, ref.getDocLanguage)
+        doc.setMeta(meta.clone())
+        doc.setVersionNo(version.getNo)
+        doc.setLanguage(ref.getDocLanguage)
+
+        docLoader.loadAndInitContent(doc)
     }
-  }
+  }.asInstanceOf[A]
+
+
 
   def removeDocFromCache(docId: DocId) {
     metas.remove(docId)
@@ -111,7 +129,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
 
     for {
       language <- languages.asScala
-      key = DocCacheKey(docId, language.getId)
+      key = DocCacheKey(docId, language.getCode)
     } {
       workingDocs.remove(key)
       defaultDocs.remove(key)

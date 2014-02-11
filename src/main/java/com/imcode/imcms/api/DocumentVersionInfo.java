@@ -1,7 +1,5 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.api.DocumentVersion;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;

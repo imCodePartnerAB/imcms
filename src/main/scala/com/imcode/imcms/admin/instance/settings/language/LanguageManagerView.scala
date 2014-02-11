@@ -19,7 +19,7 @@ class LanguageManagerView extends VerticalLayout with FullSize {
   val miSetAsDefault = mb.addItem("doc_language_mgr.mi.set_as_default".i)
   val miReload = mb.addItem("mi.reload".i)
   val miHelp = mb.addItem("mi.help".i)
-  val tblLanguages = new Table with BorderlessStyle with SingleSelect[JInteger] with Immediate with FullSize |>> { tbl =>
+  val tblLanguages = new Table with BorderlessStyle with SingleSelect[String] with Immediate with FullSize |>> { tbl =>
     addContainerProperties(tbl,
       PropertyDescriptor[JInteger]("doc_language_mgr.lng_property.id"),
       PropertyDescriptor[String]("doc_language_mgr.lng_property.code"),

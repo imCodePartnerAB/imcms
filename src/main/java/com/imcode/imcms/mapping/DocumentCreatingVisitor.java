@@ -27,7 +27,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
     	HtmlDocContent reference = new HtmlDocContent();
     	
-    	reference.setDocRef(document.getIdentity());
+    	reference.setDocRef(document.getRef());
     	reference.setHtml(document.getHtml());
     	
     	MetaDao dao = services.getManagedBean(MetaDao.class);
@@ -39,7 +39,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     public void visitUrlDocument( UrlDocumentDomainObject document ) {
     	UrlDocContent reference = new UrlDocContent();
     	
-    	reference.setDocRef(document.getIdentity());
+    	reference.setDocRef(document.getRef());
     	reference.setUrlTarget("");
     	reference.setUrlText("");
     	reference.setUrlLanguagePrefix("");

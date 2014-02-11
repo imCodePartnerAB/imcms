@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.docadmin
 
-import com.imcode.imcms.api.{DocumentIdentity, DocumentVersion}
+import com.imcode.imcms.api.{ContentLoopRef, TextDocItemRef, DocRef, DocumentVersion}
 import java.util.Locale
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
@@ -90,7 +90,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
 
   def wrapTextDocImageEditor(request: VaadinRequest, doc: TextDocumentDomainObject, imageNo: Int): EditorContainerView = {
-    val imageEditor = new ImagesEditor(doc.getIdentity, imageNo)
+    val imageEditor = new ImagesEditor(doc.getRef, imageNo)
     val editorContainerView =  new EditorContainerView("doc.edit_image.title".i)
 
     editorContainerView.mainComponent = imageEditor.view
@@ -182,7 +182,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
     def save(close: Boolean) {
       editor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(menu, Current.imcmsUser)
+        imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocItemRef.of(doc.getRef, menuNo, menu), Current.imcmsUser)
         Current.page.showInfoNotification("menu_editor.notification.saved".i)
 
         if (close) {
@@ -331,12 +331,12 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
     val ContentRefExt = """(\d+)_(\d+)""".r
     val contentRefOpt = request.getParameter("contentRef") match {
-      case ContentRefExt(loopNo, contentNo) => ContentLoopRef.of(loopNo.toInt, contentNo.toInt).asOption
+      case ContentRefExt(loopNo, contentNo) => ContentLoopRef.of(loopNo.toInt, contentNo.toInt) |> Some.apply
       case _ => None
     }
 
     val textDao = imcmsServices.getManagedBean(classOf[TextDocDao])
-    val texts = textDao.getTextsInAllLanguages(DocumentIdentity.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
+    val texts = textDao.getTextsInAllLanguages(DocRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
 
     for (text <- texts.asScala if text.getI18nDocRef == null) {
       text.setType(TextDomainObject.TEXT_TYPE_HTML)

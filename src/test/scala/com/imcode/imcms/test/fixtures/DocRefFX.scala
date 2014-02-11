@@ -2,9 +2,9 @@ package com.imcode
 package imcms.test
 package fixtures
 
-import com.imcode.imcms.api.DocumentIdentity
+import com.imcode.imcms.api.DocRef
 
 
 object DocRefFX {
-  val Default: DocumentIdentity = DocumentIdentity.of(DocFX.DefaultId, VersionFX.DefaultNo)
+  val Default: DocRef = DocRef.of(DocFX.DefaultId, VersionFX.DefaultNo)
 }

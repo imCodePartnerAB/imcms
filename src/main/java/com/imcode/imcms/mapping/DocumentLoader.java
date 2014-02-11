@@ -1,17 +1,18 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentAppearance;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.DocVersionDao;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.orm.DocAppearance;
-import com.imcode.imcms.mapping.orm.DocLanguage;
 import com.imcode.imcms.mapping.orm.DocMeta;
-import com.imcode.imcms.mapping.orm.DocVersion;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
 import imcode.server.user.RoleId;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ import java.util.Set;
  * <p/>
  * Instantiated by spring-framework and initialized in DocumentMapper constructor.
  */
+@Service
 public class DocumentLoader {
 
     /**
@@ -27,14 +29,10 @@ public class DocumentLoader {
      */
     public final static int PERM_CREATE_DOCUMENT = 8;
 
-    /**
-     * Injected by spring.
-     */
+    @Inject
     private MetaDao metaDao;
 
-    /**
-     * Injected by spring.
-     */
+    @Inject
     private DocVersionDao documentVersionDao;
 
     /**
@@ -46,7 +44,7 @@ public class DocumentLoader {
      * Loads document's meta.
      *
      * @param docId document id.
-     * @return
+     * @return loaded meta of null if meta with given id does not exists.
      */
     public Meta loadMeta(Integer docId) {
         DocMeta ormMeta = metaDao.getMeta(docId);
@@ -70,52 +68,20 @@ public class DocumentLoader {
     }
 
     /**
-     * Loads and initializes document's fields.
-     *
-     * @param meta
-     * @param version
-     * @param language
-     * @return
+     * Loads and initializes document's content.
      */
-    public <T extends DocumentDomainObject> T loadAndInitDocument(DocMeta meta, DocVersion version, DocLanguage language) {
-        return initDocument(this.<T>createDocument(meta, version, language));
-    }
+    public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
+        DocAppearance ormAppearance = metaDao.getDocAppearance(document.getRef());
+        DocumentAppearance appearance = ormAppearance != null
+                ? OrmToApi.toApi(ormAppearance)
+                : DocumentAppearance.builder().headline("").menuImageURL("").menuText("").build();
 
-
-    /**
-     * Creates document instance.
-     */
-    private <T extends DocumentDomainObject> T createDocument(DocMeta meta, DocVersion version, DocLanguage language) {
-        DocAppearance i18nMeta = metaDao.getI18nMeta(meta.getId(), language);
-
-        if (i18nMeta == null) {
-            i18nMeta = new DocAppearance();
-            i18nMeta.setLanguage(language);
-            i18nMeta.setHeadline("");
-            i18nMeta.setMenuText("");
-            i18nMeta.setMenuImageURL("");
-        }
-
-        T document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
-
-        document.setMeta(OrmToApi.toApi(meta));
-        document.setLanguage(OrmToApi.toApi(language));
-        document.setAppearance(OrmToApi.toApi(i18nMeta));
-        document.setVersionNo(version.getNo());
-
-        return document;
-    }
-
-    /**
-     * Initializes document's fields.
-     */
-    private <T extends DocumentDomainObject> T initDocument(T document) {
-        if (document == null) return null;
-
+        document.setAppearance(appearance);
         document.accept(documentInitializingVisitor);
 
         return document;
     }
+
 
     private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
         Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;

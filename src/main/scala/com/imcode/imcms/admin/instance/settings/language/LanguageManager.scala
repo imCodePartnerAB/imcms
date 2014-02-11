@@ -3,6 +3,7 @@ package imcms
 package admin.instance.settings.language
 
 import com.imcode.imcms.api.DocumentLanguage
+import com.imcode.imcms.mapping.OrmToApi
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
@@ -26,10 +27,11 @@ class LanguageManager {
 
     v.miNew.setCommandHandler { _ => editAndSave(DocumentLanguage.builder().build()) }
     v.miEdit.setCommandHandler { _ =>
-      whenSelected(v.tblLanguages) { id =>
-        languageDao.getById(id) match {
+      whenSelected(v.tblLanguages) { code =>
+        // fixme: use service
+        languageDao.getByCode(code) match {
           case null => reload()
-          case vo => editAndSave(vo)
+          case vo => editAndSave(vo |> OrmToApi.toApi)
         }
       }
     }

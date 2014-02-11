@@ -84,8 +84,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         versionNo = no;
     }
 
-    public DocumentIdentity getIdentity() {
-        return DocumentIdentity.of(getId(), getVersionNo(), getLanguage());
+    public DocRef getRef() {
+        return DocRef.of(getId(), getVersionNo(), getLanguage());
     }
 
     /**

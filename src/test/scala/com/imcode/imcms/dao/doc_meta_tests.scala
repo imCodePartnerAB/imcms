@@ -74,7 +74,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
       val meta = createMeta()
       val version = versionDao.createVersion(meta.getId, UserFX.mkSuperAdmin.getId)
 
-      metaDao.touch(DocumentIdentity.of(meta.getId, 0), UserFX.mkDefaultUser, dt)
+      metaDao.touch(DocRef.of(meta.getId, 0), UserFX.mkDefaultUser, dt)
 
       val updatedMeta = metaDao.getMeta(meta.getId)
       val updatedVersion = versionDao.getVersion(meta.getId, 0)
@@ -101,7 +101,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
   ".getFileReferences" in {
     val docIdentity = DocRefFX.Default
-    metaDao.getFileReferences(docIdentity)
+    metaDao.getFileDocItems(docIdentity)
   }
 
 

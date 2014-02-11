@@ -112,7 +112,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
       (imcmsServices.getDocumentMapper.getDefaultDocument(ref.getDocId(), ref.getDocLanguage()) : DocumentDomainObject) match {
         case null => showMissingDocNotification()
         case doc =>
-          imcmsServices.getDocumentMapper.copyDocument(ref.getDocRef(), projection.user)
+          imcmsServices.getDocumentMapper.copyDocument(ref, projection.user)
           projection.reload()
           Current.page.showInfoNotification("Document has been copied".i)
       }
