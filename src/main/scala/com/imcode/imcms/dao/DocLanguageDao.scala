@@ -9,7 +9,7 @@ import com.imcode.imcms.dao.hibernate.HibernateSupport
 class DocLanguageDao extends HibernateSupport {
 
 
-  def getAllLanguages(): JList[DocLanguage] = hibernate.listAll()
+  def getAllLanguages: JList[DocLanguage] = hibernate.listAll()
 
 
   def getById(id: Int): DocLanguage = hibernate.get[DocLanguage](id)

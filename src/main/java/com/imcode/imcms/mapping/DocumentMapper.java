@@ -22,6 +22,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.oro.text.perl.Perl5Util;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -31,6 +32,7 @@ import java.util.*;
  * Note:
  * Spring is used to instantiate but not to inject NativeQueriesDao, DocumentSaver, DocumentLoader and CategoryMapper.
  */
+@Service
 public class DocumentMapper implements DocumentGetter {
 
     /**
@@ -245,7 +247,7 @@ public class DocumentMapper implements DocumentGetter {
             docClone.setLanguage(language);
         }
 
-        return saveNewDocument(doc, Sets.newHashSet(doc.getAppearance()), user);
+        return saveNewDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getAppearance()), user);
     }
 
 
@@ -256,10 +258,10 @@ public class DocumentMapper implements DocumentGetter {
      * in all languages available in the system.
      * However, a DocumentDomainObject has one-to-one relationship with i18nMeta.
      * To workaround this limitation and provide backward compatibility with legacy API,
-     * i18nMeta-s are passed in a separate parameter and doc's i18nMeta is ignored.
+     * appearances are passed in a separate parameter and doc's appearance is ignored.
      *
      * @param doc
-     * @param i18nMetas
+     * @param appearances
      * @param user
      * @param saveOpts
      * @param <T>
@@ -268,19 +270,19 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Set<DocumentAppearance> i18nMetas,
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, DocumentAppearance> appearances,
                                                               EnumSet<SaveOpts> saveOpts,
                                                               final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        if (i18nMetas.isEmpty()) {
+        if (appearances.isEmpty()) {
             throw new IllegalArgumentException(String.format(
                     "Unable to save new document. i18nMetas must not be empty."));
         }
 
         T docClone = (T) doc.clone();
 
-        int docId = documentSaver.saveNewDocument(docClone, i18nMetas, saveOpts, user);
+        int docId = documentSaver.saveNewDocument(docClone, appearances, saveOpts, user);
 
         invalidateDocument(docId);
 
@@ -297,7 +299,7 @@ public class DocumentMapper implements DocumentGetter {
      * i18nMeta-s are passed in a separate parameter and doc's i18nMeta is ignored.
      *
      * @param doc
-     * @param i18nMetas
+     * @param appearances
      * @param user
      * @param <T>
      * @return
@@ -305,10 +307,10 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Set<DocumentAppearance> i18nMetas, final UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, DocumentAppearance> appearances, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        return saveNewDocument(doc, i18nMetas, EnumSet.noneOf(SaveOpts.class), user);
+        return saveNewDocument(doc, appearances, EnumSet.noneOf(SaveOpts.class), user);
     }
 
 
@@ -317,26 +319,23 @@ public class DocumentMapper implements DocumentGetter {
      */
     public void saveDocument(final DocumentDomainObject doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
-        saveDocument(doc, Sets.newHashSet(doc.getAppearance()), user);
+        saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getAppearance()), user);
     }
 
 
     /**
      * Updates existing document.
-     * <p/>
-     * See {@link #saveDocument(imcode.server.document.DocumentDomainObject, java.util.Set, imcode.server.user.UserDomainObject)}
-     * to learn more about parameters.
      *
      * @since 6.0
      */
-    public void saveDocument(final DocumentDomainObject doc, Set<DocumentAppearance> i18nMetas, final UserDomainObject user)
+    public void saveDocument(final DocumentDomainObject doc, Map<DocumentLanguage, DocumentAppearance> appearances, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
         DocumentDomainObject oldDoc = getCustomDocument(doc.getRef());
 
         try {
-            documentSaver.updateDocument(docClone, i18nMetas, oldDoc, user);
+            documentSaver.updateDocument(docClone, appearances, oldDoc, user);
         } finally {
             invalidateDocument(doc.getId());
         }
@@ -615,6 +614,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return new doc id.
      * @since 6.0
      */
+    //fixme: implement
     public Integer copyDocument(final DocRef docRef, final UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -953,7 +953,7 @@ public class DocumentMapper implements DocumentGetter {
     public Map<DocumentLanguage, DocumentAppearance> getAppearances(int docId) {
         Map<DocumentLanguage, DocumentAppearance> appearancesMap = new HashMap<>();
 
-        List<DocAppearance> ormAppearances = documentSaver.getMetaDao().getI18nMetas(docId);
+        List<DocAppearance> ormAppearances = documentSaver.getMetaDao().getAppearance(docId);
 
         for (DocAppearance ormAppearance : ormAppearances) {
             appearancesMap.put(OrmToApi.toApi(ormAppearance.getLanguage()), OrmToApi.toApi(ormAppearance));
@@ -991,16 +991,15 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
+    @Deprecated
     public static class SaveEditedDocumentCommand extends DocumentPageFlow.SaveDocumentCommand {
 
         @Override
         public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().saveDocument(document, user);
         }
 
         @Override
         public void saveDocumentWithI18nSupport(DocumentDomainObject document, Set<DocumentAppearance> i18nMetas, EnumSet<SaveOpts> saveOpts, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().saveDocument(document, i18nMetas, user);
         }
     }
 

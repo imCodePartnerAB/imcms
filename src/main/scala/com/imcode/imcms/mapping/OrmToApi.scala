@@ -33,7 +33,6 @@ object OrmToApi {
 
 
   def toApi(orm: DocMeta): Meta = new Meta |>> { m =>
-    m.setActivate(orm.getActivate)
     m.setAlias(orm.getAlias)
     m.setArchivedDatetime(orm.getArchivedDatetime)
     m.setCategoryIds(orm.getCategoryIds)

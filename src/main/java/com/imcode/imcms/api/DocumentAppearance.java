@@ -47,8 +47,8 @@ public final class DocumentAppearance implements Serializable {
         return new Builder();
     }
 
-    public static Builder builder(DocumentAppearance i18nMeta) {
-        return new Builder(i18nMeta);
+    public static Builder builder(DocumentAppearance documentAppearance) {
+        return new Builder(documentAppearance);
     }
 
     /**

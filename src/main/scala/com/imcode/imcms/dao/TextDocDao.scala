@@ -53,7 +53,7 @@ class TextDocDao extends HibernateSupport {
       "TextDocText.deleteTextsBy_DocId_and_DocVersionNo_and_DocLanguageCode",
       "docId" -> ref.getDocId(),
       "docVersionNo" -> ref.getDocVersionNo(),
-      "docLanguageCode" -> ref.getLanguage.getCode
+      "docLanguageCode" -> ref.getDocLanguage.getCode
     )
   }
 

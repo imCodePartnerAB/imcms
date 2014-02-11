@@ -48,11 +48,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     protected MetaDao metaDao;
     protected TextDocDao textDocDao;
+    protected DocVersionDao docVersionDao;
 
     public DocumentStoringVisitor(ImcmsServices services) {
         this.services = services;
         this.metaDao = services.getManagedBean(MetaDao.class);
         this.textDocDao  = services.getManagedBean(TextDocDao.class);
+        this.docVersionDao = services.getManagedBean(DocVersionDao.class);
     }
 
     /**
@@ -193,11 +195,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     public void updateDocumentI18nMeta(DocumentDomainObject doc, UserDomainObject user) {
-        metaDao.deleteI18nMeta(doc.getId(), doc.getLanguage().getId());
+        metaDao.deleteAppearance(doc.getId(), doc.getLanguage().getId());
 
         DocAppearance i18nMeta = DocAppearance.builder(doc.getAppearance()).id(null).docId(doc.getId()).language(doc.getLanguage()).build();
 
-        metaDao.saveI18nMeta(i18nMeta);
+        metaDao.saveAppearance(i18nMeta);
     }
 
 
@@ -208,12 +210,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * @param user
      */
     @Transactional
-    public void saveTextDocumentText(TextDocItemRef<TextDomainObject> id, UserDomainObject user) {
+    public void saveTextDocumentText(TextDocItemRef<TextDomainObject> textRef, UserDomainObject user) {
         TextDocDao textDao = services.getManagedBean(TextDocDao.class);
 
-        textDao.saveText(text);
+        textDao.saveText(textRef);
 
-        TextDocTextHistory textHistory = new TextDocTextHistory(text, user);
+        TextDocTextHistory textHistory = new TextDocTextHistory(textRef, user);
         textDao.saveTextHistory(textHistory);
     }
 

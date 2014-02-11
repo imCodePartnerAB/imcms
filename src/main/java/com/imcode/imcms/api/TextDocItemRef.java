@@ -1,7 +1,7 @@
 package com.imcode.imcms.api;
 
 /**
- * Used to uniquely identify an item in the text document - text, image and content loop.
+ * Uniquely identifies an item in the text document - text, image or loop.
  * @param <T>
  */
 public class TextDocItemRef<T> {

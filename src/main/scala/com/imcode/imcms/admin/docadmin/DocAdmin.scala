@@ -11,7 +11,7 @@ import com.vaadin.ui._
 import com.vaadin.server._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.component.dialog.ConfirmationDialog
-import com.imcode.imcms.mapping.DocumentSaveException
+import com.imcode.imcms.mapping.{OrmToApi, DocumentSaveException}
 import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.dao.TextDocDao
 import org.apache.commons.lang3.StringEscapeUtils
@@ -338,7 +338,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     val textDao = imcmsServices.getManagedBean(classOf[TextDocDao])
     val texts = textDao.getTextsInAllLanguages(DocRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
 
-    for (text <- texts.asScala if text.getI18nDocRef == null) {
+    for (text <- texts.asScala.map(OrmToApi.toApi) if text.getContentLoopRef == null) {
       text.setType(TextDomainObject.TEXT_TYPE_HTML)
     }
 

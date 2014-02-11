@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.mapping.orm.DocVersion;
 import com.imcode.imcms.mapping.orm.HtmlDocContent;
 import com.imcode.imcms.mapping.orm.UrlDocContent;
 import imcode.server.ImcmsServices;
@@ -33,10 +34,11 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction   
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
+        DocVersion docVersion = docVersionDao.getVersion(document.getId(), document.getVersionNo());
         HtmlDocContent htmlReference = new HtmlDocContent();
 
-        htmlReference.setDocRef(document.getRef());
         htmlReference.setHtml(document.getHtml());
+        htmlReference.setDocVersion(docVersion);
 
         metaDao.deleteHtmlReference(document.getRef());
         metaDao.saveHtmlReference(htmlReference);
@@ -44,8 +46,11 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction   
     public void visitUrlDocument(UrlDocumentDomainObject document) {
+        DocVersion docVersion = docVersionDao.getVersion(document.getId(), document.getVersionNo());
         UrlDocContent reference = new UrlDocContent();
-        reference.setDocRef(document.getRef());
+
+        reference.setDocVersion(docVersion);
+
         reference.setUrl(document.getUrl());
         reference.setUrlTarget("");
         reference.setUrlText("");

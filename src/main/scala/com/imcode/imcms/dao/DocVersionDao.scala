@@ -25,7 +25,7 @@ class DocVersionDao extends HibernateSupport {
    *
    * @return new document version.
    */
-  // fixme: use lock
+  // fixme: use db lock
   def createVersion(docId: Int, userId: Int): DocVersion = synchronized {
     val no = getLatestVersion(docId) match {
       case null => 0
@@ -68,7 +68,7 @@ class DocVersionDao extends HibernateSupport {
     "DocVersion.getDefaultVersion", "docId" -> docId
   )
 
-
+  // fixme: use db lock
   def changeDefaultVersion(newDefaultVersion: DocVersion, publisher: UserDomainObject) {
     hibernate.bulkUpdateByNamedQueryAndNamedParams(
       "DocVersion.changeDefaultVersion",

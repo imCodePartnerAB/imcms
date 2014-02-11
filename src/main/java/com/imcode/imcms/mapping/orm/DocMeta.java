@@ -100,8 +100,10 @@ public class DocMeta {
     private DisabledLanguageShowSetting disabledLanguageShowSetting = DisabledLanguageShowSetting.DO_NOT_SHOW;
 
     // CHECKED
+    // DEPRECATED?
+    // RB4: this field is never used or referenced, it is merely set to '1' at the insert.
     @Column(name = "activate", nullable = false, updatable = false)
-    private Integer activate;
+    private Integer activate = 1;
 
     // The following fields are mapped to document attributes:
     // CHECKED
@@ -267,15 +269,6 @@ public class DocMeta {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-
-    public DisabledLanguageShowSetting getI18nShowSetting() {
-        return disabledLanguageShowSetting;
-    }
-
-    public void setI18nShowMode(DisabledLanguageShowSetting disabledLanguageShowSetting) {
-        this.disabledLanguageShowSetting = disabledLanguageShowSetting;
     }
 
     // Attributes properties:
@@ -449,14 +442,6 @@ public class DocMeta {
 
     public void setPermisionSetExForNew(Set<PermisionSetEx> docPermisionSetExForNew) {
         this.permisionSetExForNew = docPermisionSetExForNew;
-    }
-
-    public Integer getActivate() {
-        return activate;
-    }
-
-    public void setActivate(Integer activate) {
-        this.activate = activate;
     }
 
     public Set<String> getKeywords() {

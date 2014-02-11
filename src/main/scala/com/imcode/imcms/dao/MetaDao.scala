@@ -56,15 +56,15 @@ class MetaDao extends HibernateSupport {
     )
 
 
-  def getI18nMetas(docId: Int): JList[DocAppearance] = hibernate.listByNamedQueryAndNamedParams(
+  def getAppearance(docId: Int): JList[DocAppearance] = hibernate.listByNamedQueryAndNamedParams(
     "DocAppearance.getByDocId", "docId" -> docId
   )
 
-  def deleteI18nMeta(docId: Int, languageId: Int) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
+  def deleteAppearance(docId: Int, languageId: Int) = hibernate.bulkUpdateByNamedQueryAndNamedParams(
     "DocAppearance.deleteByDocIdAndLanguageId", "docId" -> docId, "languageId" -> languageId
   )
 
-  def saveI18nMeta(docAppearance: DocAppearance): DocAppearance = {
+  def saveAppearance(docAppearance: DocAppearance): DocAppearance = {
     val headline = docAppearance.getHeadline
     val text = docAppearance.getMenuText
 
@@ -162,7 +162,7 @@ class MetaDao extends HibernateSupport {
   def saveUrlReference(reference: UrlDocContent) = hibernate.merge(reference)
 
 
-  def getAllAliases(): JList[String] = hibernate.listByNamedQueryAndNamedParams(
+  def getAllAliases: JList[String] = hibernate.listByNamedQueryAndNamedParams(
     "DocumentProperty.getAllAliases",
 
     "name" -> DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS
@@ -220,7 +220,7 @@ class MetaDao extends HibernateSupport {
   }
 
 
-  def getAllDocumentIds(): JList[JInteger] = hibernate.listByNamedQuery("Meta.getAllDocumentIds")
+  def getAllDocumentIds: JList[JInteger] = hibernate.listByNamedQuery("Meta.getAllDocumentIds")
 
 
   def getDocumentIdsInRange(min: Int, max: Int): JList[JInteger] = hibernate.listByNamedQueryAndNamedParams(
@@ -228,17 +228,17 @@ class MetaDao extends HibernateSupport {
   )
 
 
-  def getMaxDocumentId(): Int = hibernate.getByNamedQuery("Meta.getMaxDocumentId")
+  def getMaxDocumentId: Int = hibernate.getByNamedQuery("Meta.getMaxDocumentId")
 
 
-  def getMinDocumentId(): Int = hibernate.getByNamedQuery("Meta.getMinDocumentId")
+  def getMinDocumentId: Int = hibernate.getByNamedQuery("Meta.getMinDocumentId")
 
 
-  def getMinMaxDocumentIds(): Array[JInteger] =
+  def getMinMaxDocumentIds: Array[JInteger] =
     hibernate.getByNamedQuery[Array[Object]]("Meta.getMinMaxDocumentIds") |> { pair =>
       Array(pair(0).asInstanceOf[JInteger], pair(1).asInstanceOf[JInteger])
     }
 
 
-  def getEnabledLanguages(docId: Int) = sys.error("Not implemented")
+  def getEnabledLanguages(docId: Int) = ???
 }

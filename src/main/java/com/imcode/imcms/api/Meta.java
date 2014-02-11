@@ -32,8 +32,6 @@ public class Meta implements Serializable, Cloneable {
      */
     private volatile DisabledLanguageShowSetting disabledLanguageShowSetting = DisabledLanguageShowSetting.DO_NOT_SHOW;
 
-    private volatile Integer activate;
-
     // todo: rename to documentTypeId
     private volatile Integer documentType;
 
@@ -117,15 +115,6 @@ public class Meta implements Serializable, Cloneable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-
-    public DisabledLanguageShowSetting getI18nShowSetting() {
-        return disabledLanguageShowSetting;
-    }
-
-    public void setI18nShowSettings(DisabledLanguageShowSetting disabledLanguageShowSetting) {
-        this.disabledLanguageShowSetting = disabledLanguageShowSetting;
     }
 
     // Attributes properties:
@@ -256,14 +245,6 @@ public class Meta implements Serializable, Cloneable {
 
     public void setCategoryIds(Set<Integer> categoryIds) {
         this.categoryIds = categoryIds;
-    }
-
-    public Integer getActivate() {
-        return activate;
-    }
-
-    public void setActivate(Integer activate) {
-        this.activate = activate;
     }
 
     public Set<String> getKeywords() {

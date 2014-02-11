@@ -4,7 +4,7 @@ package admin.docadmin.image
 
 import _root_.imcode.server.document.textdocument.ImageDomainObject
 
-import com.imcode.imcms.api.{TextDocItemRef, DocumentLanguage, DocRef}
+import com.imcode.imcms.api.{DocVersionRef, TextDocItemRef, DocumentLanguage, DocRef}
 import com.imcode.imcms.vaadin.{Current, Editor}
 import com.imcode.imcms.vaadin.component._
 
@@ -65,7 +65,8 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
     view.tsImages.removeAllComponents()
     editors.clear()
 
-    for (image <- imcmsServices.getManagedBean(classOf[TextDocDao]).getImagesInAllLanguages(docRef, imageNo, None, true).asScala) {
+    val versionRef = DocVersionRef.buillder.docId(docRef.getDocId).docVersionNo(docRef.getDocVersionNo)
+    for (image <- imcmsServices.getManagedBean(classOf[TextDocDao]).getImagesInAllLanguages(versionRef, imageNo, None, true)) {
       val imageEditor = new ImageEditor(Some(image))
       view.tsImages.addTab(imageEditor.view, image.getLanguage.getNativeName, Theme.Icon.Language.flag(image.getLanguage))
       editors += imageEditor
