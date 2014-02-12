@@ -1,7 +1,8 @@
 package imcode.server.parser;
 
 import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.ContentLoopRef;
+import com.imcode.imcms.api.ContentLoopItemRef;
+import com.imcode.imcms.api.ContentLoopItemRef;
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.servlet.ImcmsFilter;
@@ -397,13 +398,13 @@ public class TagParser {
             no = implicitTextNumber++;
             text = content == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(no, ContentLoopRef.of(loop.getNo(), content.getNo()));
+                    : textDocumentToUse.getText(no, ContentLoopItemRef.of(loop.getNo(), content.getNo()));
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
             text = content == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(no, ContentLoopRef.of(loop.getNo(), content.getNo()));
+                    : textDocumentToUse.getText(no, ContentLoopItemRef.of(loop.getNo(), content.getNo()));
 
             implicitTextNumber = no + 1;
         }
@@ -519,7 +520,7 @@ public class TagParser {
         }
         ImageDomainObject image = loop == null
                 ? textDocumentToUse.getImage(imageIndex)
-                : textDocumentToUse.getImage(imageIndex, ContentLoopRef.of(loop.getNo(), content.getNo()));
+                : textDocumentToUse.getImage(imageIndex, ContentLoopItemRef.of(loop.getNo(), content.getNo()));
 
         if (image == null) {
             image = DEFAULT_IMAGE;

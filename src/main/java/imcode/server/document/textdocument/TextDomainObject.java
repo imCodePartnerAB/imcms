@@ -1,6 +1,7 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.ContentLoopRef;
+import com.imcode.imcms.api.ContentLoopItemRef;
+import com.imcode.imcms.api.ContentLoopItemRef;
 import imcode.util.Parser;
 
 import java.io.Serializable;
@@ -40,7 +41,7 @@ public class TextDomainObject implements Serializable, Cloneable {
             return textDomainObject.clone();
         }
 
-        public Builder contentRef(ContentLoopRef contentLoopRef) {
+        public Builder contentRef(ContentLoopItemRef contentLoopRef) {
             textDomainObject.contentLoopRef = contentLoopRef;
             return this;
         }
@@ -69,7 +70,7 @@ public class TextDomainObject implements Serializable, Cloneable {
 
     private volatile int type;
 
-    private volatile ContentLoopRef contentLoopRef;
+    private volatile ContentLoopItemRef contentLoopRef;
 
     public TextDomainObject() {
         this("");
@@ -183,11 +184,11 @@ public class TextDomainObject implements Serializable, Cloneable {
         }
     }
 
-    public ContentLoopRef getContentLoopRef() {
+    public ContentLoopItemRef getContentLoopRef() {
         return contentLoopRef;
     }
 
-    public void setContentLoopRef(ContentLoopRef contentLoopRef) {
+    public void setContentLoopRef(ContentLoopItemRef contentLoopRef) {
         this.contentLoopRef = contentLoopRef;
     }
 

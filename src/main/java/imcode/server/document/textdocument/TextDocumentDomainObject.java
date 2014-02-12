@@ -1,7 +1,7 @@
 package imcode.server.document.textdocument;
 
 import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.ContentLoopRef;
+import com.imcode.imcms.api.ContentLoopItemRef;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
@@ -26,13 +26,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Content loop unique item key.
      */
-    private static final class ContentKey {
+    public static final class LoopItemKey {
 
         public final int itemNo;
-        public final ContentLoopRef contentLoopRef;
+        public final ContentLoopItemRef contentLoopRef;
         public final int hashCode;
 
-        public ContentKey(int itemNo, ContentLoopRef contentLoopRef) {
+        public LoopItemKey(int itemNo, ContentLoopItemRef contentLoopRef) {
             this.itemNo = itemNo;
             this.contentLoopRef = contentLoopRef;
             this.hashCode = Objects.hash(itemNo, contentLoopRef);
@@ -45,7 +45,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         @Override
         public boolean equals(Object o) {
-            return (o instanceof ContentKey) && o.hashCode() == hashCode();
+            return (o instanceof LoopItemKey) && o.hashCode() == hashCode();
         }
     }
 
@@ -62,13 +62,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Texts in loops.
      */
-    private volatile ConcurrentHashMap<ContentKey, TextDomainObject> loopTexts = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<LoopItemKey, TextDomainObject> loopTexts = new ConcurrentHashMap<>();
 
 
     /**
      * Images in loops.
      */
-    private volatile ConcurrentHashMap<ContentKey, ImageDomainObject> loopImages = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<LoopItemKey, ImageDomainObject> loopImages = new ConcurrentHashMap<>();
 
 
     /**
@@ -174,8 +174,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-    public TextDomainObject getText(int textNo, ContentLoopRef contentLoopRef) {
-        return contentLoopRef == null ? texts.get(textNo) : loopTexts.get(new ContentKey(textNo, contentLoopRef));
+    public TextDomainObject getText(int textNo, ContentLoopItemRef contentLoopRef) {
+        return contentLoopRef == null ? texts.get(textNo) : loopTexts.get(new LoopItemKey(textNo, contentLoopRef));
     }
 
     /**
@@ -234,10 +234,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @return copy of inserted text.
      */
     public TextDomainObject setText(int no, TextDomainObject text) {
-        ContentLoopRef contentLoopRef = text.getContentLoopRef();
-        ContentKey key = contentLoopRef == null
+        ContentLoopItemRef contentLoopRef = text.getContentLoopRef();
+        LoopItemKey key = contentLoopRef == null
                 ? null
-                : new ContentKey(no, contentLoopRef);
+                : new LoopItemKey(no, contentLoopRef);
 
         TextDomainObject newText = text.clone();
 
@@ -331,8 +331,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
 
     public ImageDomainObject setImage(int no, ImageDomainObject image) {
-        ContentLoopRef contentLoopRef = image.getContentLoopRef();
-        ContentKey key = contentLoopRef == null ? null : new ContentKey(no, contentLoopRef);
+        ContentLoopItemRef contentLoopRef = image.getContentLoopRef();
+        LoopItemKey key = contentLoopRef == null ? null : new LoopItemKey(no, contentLoopRef);
 
         ImageDomainObject oldImage = key == null ? images.get(no) : loopImages.get(key);
         ImageDomainObject newImage = image.clone();
@@ -371,8 +371,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return images.get(no);
     }
 
-    public ImageDomainObject getImage(int imageNo, ContentLoopRef contentLoopRef) {
-        return loopImages.get(new ContentKey(imageNo, contentLoopRef));
+    public ImageDomainObject getImage(int imageNo, ContentLoopItemRef contentLoopRef) {
+        return loopImages.get(new LoopItemKey(imageNo, contentLoopRef));
     }
 
     private ConcurrentHashMap<Integer, MenuDomainObject> cloneMenusMap() {
@@ -402,10 +402,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
 
-    private ConcurrentHashMap<ContentKey, ImageDomainObject> cloneLoopImages() {
-        ConcurrentHashMap<ContentKey, ImageDomainObject> imagesClone = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<LoopItemKey, ImageDomainObject> cloneLoopImages() {
+        ConcurrentHashMap<LoopItemKey, ImageDomainObject> imagesClone = new ConcurrentHashMap<>();
 
-        for (Map.Entry<ContentKey, ImageDomainObject> imagesEntry : loopImages.entrySet()) {
+        for (Map.Entry<LoopItemKey, ImageDomainObject> imagesEntry : loopImages.entrySet()) {
             ImageDomainObject image = imagesEntry.getValue().clone();
 
             imagesClone.put(imagesEntry.getKey(), image);
@@ -426,10 +426,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return textsClone;
     }
 
-    private ConcurrentHashMap<ContentKey, TextDomainObject> cloneLoopTexts() {
-        ConcurrentHashMap<ContentKey, TextDomainObject> textsClone = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<LoopItemKey, TextDomainObject> cloneLoopTexts() {
+        ConcurrentHashMap<LoopItemKey, TextDomainObject> textsClone = new ConcurrentHashMap<>();
 
-        for (Map.Entry<ContentKey, TextDomainObject> textsEntry : loopTexts.entrySet()) {
+        for (Map.Entry<LoopItemKey, TextDomainObject> textsEntry : loopTexts.entrySet()) {
             TextDomainObject text = textsEntry.getValue().clone();
 
             textsClone.put(textsEntry.getKey(), text);
@@ -499,11 +499,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return contentLoop;
     }
 
-    public Map<ContentKey, TextDomainObject> getLoopTexts() {
+    public Map<LoopItemKey, TextDomainObject> getLoopTexts() {
         return Collections.unmodifiableMap(loopTexts);
     }
 
-    public Map<ContentKey, ImageDomainObject> getLoopImages() {
+    public Map<LoopItemKey, ImageDomainObject> getLoopImages() {
         return Collections.unmodifiableMap(loopImages);
     }
 }

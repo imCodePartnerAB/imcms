@@ -134,7 +134,7 @@ public class DocumentSaver {
      * Creates content loop if item references non-saved enclosing content loop.
      */
     @Transactional
-    public void createEnclosingContentLoopIfMissing(DocRef docRef, ContentLoopRef contentLoopRef) {
+    public void createEnclosingContentLoopIfMissing(DocRef docRef, ContentLoopItemRef contentLoopRef) {
         if (contentLoopRef == null) {
             return;
         }
@@ -197,7 +197,7 @@ public class DocumentSaver {
             doc.setMeta(meta);
             doc.setVersionNo(nextVersion.getNo());
 
-            docSavingVisitor.updateDocumentI18nMeta(doc, user);
+            docSavingVisitor.updateDocumentAppearance(doc, user);
         }
 
         // Currently only text doc has i18n content.

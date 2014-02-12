@@ -1,7 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.api.ContentLoopItemRef;
 import com.imcode.imcms.dao.TextDocDao;
-import com.imcode.imcms.api.ContentLoopRef;
+import com.imcode.imcms.api.ContentLoopItemRef;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -53,7 +54,7 @@ public class ChangeImage extends HttpServlet {
         String contentNoStr = request.getParameter("content_no");
         Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
-        ContentLoopRef contentLoopRef = loopNo == null || contentNo == null ? null : ContentLoopRef.of(loopNo, contentNo);
+        ContentLoopItemRef contentLoopRef = loopNo == null || contentNo == null ? null : ContentLoopItemRef.of(loopNo, contentNo);
 
         final TextDocumentDomainObject document = documentMapper.getDocument(documentId);
 
@@ -122,13 +123,13 @@ public class ChangeImage extends HttpServlet {
                 }
 
                 try {
-                    services.getDocumentMapper().saveTextDocImages(images, user);
+                    //services.getDocumentMapper().saveTextDocImages(images, user);
                 } catch (NoPermissionToEditDocumentException e) {
                     throw new ShouldHaveCheckedPermissionsEarlierException(e);
                 } catch (NoPermissionToAddDocumentToMenuException e) {
                     throw new ConcurrentDocumentModificationException(e);
-                } catch (DocumentSaveException e) {
-                    throw new ShouldNotBeThrownException(e);
+                //} catch (DocumentSaveException e) {
+                //    throw new ShouldNotBeThrownException(e);
                 }
                 services.updateMainLog("ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
                         " in  " + "[" + document.getId() + "] modified by user: [" +

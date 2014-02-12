@@ -1,6 +1,7 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.ContentLoopRef;
+import com.imcode.imcms.api.ContentLoopItemRef;
+import com.imcode.imcms.api.ContentLoopItemRef;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.util.image.Format;
@@ -22,7 +23,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     private volatile ImageSource source = new NullImageSource();
 
-    private volatile ContentLoopRef contentLoopRef;
+    private volatile ContentLoopItemRef contentLoopRef;
 
     private volatile int width;
 
@@ -105,11 +106,11 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return null;
     }
 
-    public ContentLoopRef getContentLoopRef() {
+    public ContentLoopItemRef getContentLoopRef() {
         return contentLoopRef;
     }
 
-    public void setContentLoopRef(ContentLoopRef contentLoopRef) {
+    public void setContentLoopRef(ContentLoopItemRef contentLoopRef) {
         this.contentLoopRef = contentLoopRef;
     }
 

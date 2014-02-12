@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.docadmin
 
-import com.imcode.imcms.api.{ContentLoopRef, TextDocItemRef, DocRef, DocumentVersion}
+import com.imcode.imcms.api.{ContentLoopItemRef, TextDocItemRef, DocRef, DocumentVersion}
 import java.util.Locale
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
@@ -331,7 +331,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
     val ContentRefExt = """(\d+)_(\d+)""".r
     val contentRefOpt = request.getParameter("contentRef") match {
-      case ContentRefExt(loopNo, contentNo) => ContentLoopRef.of(loopNo.toInt, contentNo.toInt) |> Some.apply
+      case ContentRefExt(loopNo, contentNo) => ContentLoopItemRef.of(loopNo.toInt, contentNo.toInt) |> Some.apply
       case _ => None
     }
 
