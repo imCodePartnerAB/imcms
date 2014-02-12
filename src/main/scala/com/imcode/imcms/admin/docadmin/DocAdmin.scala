@@ -119,7 +119,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
           case Left(errors) => Current.page.showConstraintViolationNotification(errors)
           case Right((editedDoc, i18nMetas)) =>
             try {
-              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, Current.imcmsUser)
+              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, Current.imcmsUser)
               Current.page.showInfoNotification("notification.doc.saved".i)
               Current.page.open(Current.contextPath, "_self")
             } catch {
@@ -348,7 +348,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     val (format, canChangeFormat) = (showModeText, showModeHtml) match {
       case (true, false) => (TextDomainObject.Type.PLAIN_TEXT, false)
       case (false, true) => (TextDomainObject.Type.HTML, false)
-      case _ => (TextDomainObject.Type.values()(texts.asScala.head.getType), true)
+      case _ => (TextDomainObject.Type.values()(texts.asScala.head.getType.ordinal()), true)
     }
 
     val editor = new TextEditor(texts.asScala, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))

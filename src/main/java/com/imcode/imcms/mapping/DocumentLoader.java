@@ -13,8 +13,6 @@ import imcode.server.user.RoleId;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,6 +46,7 @@ public class DocumentLoader {
      * @param docId document id.
      * @return loaded meta of null if meta with given id does not exists.
      */
+    //fixme: alias
     public Meta loadMeta(int docId) {
         DocMeta ormMeta = metaDao.getMeta(docId);
 

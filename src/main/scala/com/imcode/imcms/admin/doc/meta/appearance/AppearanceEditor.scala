@@ -142,7 +142,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentAppe
 
     view.alias.txtAlias.setInputPrompt(meta.getId.asOption.map(_.toString).orNull)
     view.alias.txtAlias.value = meta.getAlias.trimToEmpty
-    view.languages.cbShowMode.select(meta.getI18nShowSetting)
+    view.languages.cbShowMode.select(meta.getDisabledLanguageShowSetting)
 
     for ((target, targetCaption) <- ListMap("_self" -> "Same frame", "_blank" -> "New window", "_top" -> "Replace all")) {
       view.linkTarget.cbTarget.addItem(target, targetCaption)

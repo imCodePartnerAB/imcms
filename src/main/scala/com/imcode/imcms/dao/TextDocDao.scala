@@ -25,7 +25,8 @@ class TextDocDao extends HibernateSupport {
   /**
    * Please note that createIfNotExists merely creates non-managed instance of TextDocText.
    */
-  def getTextsInAllLanguages(docRef: DocRef, no: Int, loopItemRefOpt: Option[ContentLoopRef],
+  //fixme: should return ORM
+  def getTextsInAllLanguages(docRef: DocRef, no: Int, loopItemRefOpt: Option[ContentLoopItemRef],
                createIfNotExists: Boolean): JList[TextDocText] = {
     for {
       language <- docLanguageDao.getAllLanguages.asScala

@@ -3,6 +3,7 @@ package imcms
 package admin.instance.settings.language
 
 import com.imcode.imcms.api.DocumentLanguage
+import com.imcode.imcms.mapping.orm.DocLanguage
 import com.imcode.imcms.mapping.OrmToApi
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
@@ -36,11 +37,11 @@ class LanguageManager {
       }
     }
     v.miDelete.setCommandHandler { _ =>
-      whenSelected(v.tblLanguages) { id =>
+      whenSelected(v.tblLanguages) { code =>
         new ConfirmationDialog("Delete selected language?") |>> { dlg =>
           dlg.setOkButtonHandler {
             Current.ui.privileged(permission) {
-              Ex.allCatch.either(languageDao.deleteLanguage(id)) match {
+              Ex.allCatch.either(languageDao.deleteLanguageByCode(code)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("Language has been deleted")
                 case Left(ex) =>
@@ -55,14 +56,15 @@ class LanguageManager {
       }
     }
     v.miSetAsDefault.setCommandHandler { _ =>
-      whenSelected(v.tblLanguages) { id =>
+      whenSelected(v.tblLanguages) { code =>
         new ConfirmationDialog("Change default language?") |>> { dlg =>
           dlg.setOkButtonHandler {
             Current.ui.privileged(permission) {
+              val id = languageDao.getByCode(code).getId
               val property = systemDao.getProperty("DefaultLanguageId")
               property.setValue(id.toString)
 
-              Ex.allCatch.either(systemDao saveProperty property) match {
+              Ex.allCatch.either(systemDao.saveProperty(property)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("Default language has been changed")
                 case Left(ex) =>
@@ -107,7 +109,12 @@ class LanguageManager {
           voc.enabled(c.chkEnabled.value)
 
           Current.ui.privileged(permission) {
-            Ex.allCatch.either(languageDao saveLanguage voc.build()) match {
+            val language = new DocLanguage
+            // fixme: fil in all fields
+            language.setCode(c.txtCode.trimmedValue)
+            language.setName(c.txtName.trimmedValue)
+
+            Ex.allCatch.either(languageDao.saveLanguage(language)) match {
               case Left(ex) =>
                 // todo: log ex, provide custom dialog with details -> show stack
                 Current.page.showErrorNotification("Internal error, please contact your administrator")
@@ -133,10 +140,10 @@ class LanguageManager {
     val default: JInteger = systemDao.getProperty("DefaultLanguageId").getValue.toInt
     for {
       vo <- languageDao.getAllLanguages.asScala
-      id = vo.getId
-      isDefault = default == id.intValue
-    } view.tblLanguages.addRow(id,
-      id, vo.getCode, vo.getName, vo.getNativeName, !vo.isEnabled: JBoolean, isDefault: JBoolean, null
+      code = vo.getCode
+      isDefault = default == vo.getId.intValue
+    } view.tblLanguages.addRow(code,
+      code, vo.getCode, vo.getName, vo.getNativeName, !vo.isEnabled: JBoolean, isDefault: JBoolean, null
     )
 
     canManage |> { value =>

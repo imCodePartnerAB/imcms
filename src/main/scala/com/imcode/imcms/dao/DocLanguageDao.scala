@@ -24,4 +24,8 @@ class DocLanguageDao extends HibernateSupport {
 
   def deleteLanguage(id: Int) =
     hibernate.bulkUpdateByNamedParams("DELETE FROM DocLanguage l WHERE l.id = :id", "id" -> id)
+
+  def deleteLanguageByCode(code: String) =
+    hibernate.bulkUpdateByNamedParams("DELETE FROM DocLanguage l WHERE l.code = :code", "code" -> code)
+
 }

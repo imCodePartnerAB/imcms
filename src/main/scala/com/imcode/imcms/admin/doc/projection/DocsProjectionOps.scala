@@ -69,7 +69,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
               imcmsServices.getDocumentMapper.saveNewDocument(
                 editedDoc,
-                i18nMetas.values.to[Set].asJava,
+                i18nMetas.asJava,
                 saveOpts,
                 projection.user
               )
@@ -128,7 +128,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
           val dialog = new DocEditorDialog(s"Edit document ${doc.getId}".i, doc)
 
           Dialog.bind(dialog) { case (editedDoc, i18nMetas) =>
-            imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.to[Set].asJava, projection.user)
+            imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.values.asJava, projection.user)
             Current.page.showInfoNotification("Document has been saved".i)
             projection.reload()
           }

@@ -33,13 +33,13 @@ object OrmToApi {
 
 
   def toApi(orm: DocMeta): Meta = new Meta |>> { m =>
-    m.setAlias(orm.getAlias)
     m.setArchivedDatetime(orm.getArchivedDatetime)
     m.setCategoryIds(orm.getCategoryIds)
     m.setDefaultVersionNo(orm.getDefaultVersionNo)
-    m.setDisabledLanguageShowSetting(orm.getDisabledLanguageShowSetting)
+    m.setDisabledLanguageShowSetting(Meta.DisabledLanguageShowSetting.values()(orm.getDisabledLanguageShowSetting.ordinal()))
     m.setDocumentType(orm.getDocumentType)
-    m.setEnabledLanguages(orm.getEnabledLanguages)
+    //fixme
+    //m.setEnabledLanguages(orm.getEnabledLanguages)
     m.setI18nShowSettings(orm.getI18nShowSetting)
     m.setId(orm.getId)
     m.setKeywords(orm.getKeywords)
@@ -66,7 +66,7 @@ object OrmToApi {
   }
 
 
-  def toApi(orm: TextDocLoopItemRef): ContentLoopRef = ContentLoopRef.of(orm.getLoopNo, orm.getContentNo)
+  def toApi(orm: TextDocLoopItemRef): ContentLoopItemRef = ContentLoopItemRef.of(orm.getLoopNo, orm.getContentNo)
 
 
   def toApi(orm: TextDocLoop): ContentLoop = ContentLoop.of(orm.getItems.asScala.map(toApi).asJava)
