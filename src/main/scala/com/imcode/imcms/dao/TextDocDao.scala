@@ -4,6 +4,7 @@ package imcms.dao
 import _root_.javax.inject.Inject
 import com.imcode.imcms.api._
 import com.imcode.imcms.mapping.orm._
+import com.imcode.imcms.mapping.OrmToApi
 import scala.collection.JavaConverters._
 import scala.collection.breakOut
 import org.hibernate.{ScrollMode, CacheMode}
@@ -30,7 +31,7 @@ class TextDocDao extends HibernateSupport {
                createIfNotExists: Boolean): JList[TextDocText] = {
     for {
       language <- docLanguageDao.getAllLanguages.asScala
-      docIdentity = DocRef.of(docRef.getDocId, docRef.getDocVersionNo, language)
+      docIdentity = DocRef.of(docRef.getDocId, docRef.getDocVersionNo, language |> OrmToApi.toApi)
       text <- PartialFunction.condOpt(getText(docIdentity, no, loopItemRefOpt)) {
         case text if text != null => text
         case _ if createIfNotExists => new TextDocText |>> { txt =>
@@ -172,9 +173,9 @@ class TextDocDao extends HibernateSupport {
 //    )(breakOut)
 //  }
 
-  def getImage(docIdentity: DocRef, no: Int, language: DocLanguage, contentRefOpt: Option[TextDocLoopItemRef]) = {
+  def getImage(docVersionRef: DocVersionRef, no: Int, language: DocLanguage, loopItemRefOpt: Option[TextDocLoopItemRef]) = {
     val queryStr =
-      if (contentRefOpt.isDefined)
+      if (loopItemRefOpt.isDefined)
         """select i from Image i where i.docIdentity = :docIdentity and i.no = :no
            and i.language = :language AND i.contentRef = :contentRef"""
       else
@@ -183,12 +184,12 @@ class TextDocDao extends HibernateSupport {
 
     hibernate.withCurrentSession { session =>
       session.createQuery(queryStr) |> { query =>
-        query.setParameter("docIdentity", docIdentity)
+        query.setParameter("docIdentity", docVersionRef)
           .setParameter("no", no)
           .setParameter("language", language)
 
-        if (contentRefOpt.isDefined) {
-          query.setParameter("contentRef", contentRefOpt.get)
+        if (loopItemRefOpt.isDefined) {
+          query.setParameter("contentRef", loopItemRefOpt.get)
         }
 
         ImageUtil.initImageSource(query.uniqueResult.asInstanceOf[TextDocImage])
@@ -212,7 +213,7 @@ class TextDocDao extends HibernateSupport {
   def getImages(ref: DocRef): JList[TextDocImage] =
     hibernate.listByNamedQueryAndNamedParams[TextDocImage](
       "Image.getByDocRefAndLanguage",
-      "docIdentity" -> ref, "language" -> language
+      "docIdentity" -> ref, "language" -> ref.getDocLanguage
     ) |> ImageUtil.initImagesSources
 
 

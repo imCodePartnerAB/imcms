@@ -102,7 +102,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
           case selectedDoc =>
             val dialog = new DocEditorDialog("doc.edit_properties.title".f(docId), selectedDoc)
             Dialog.bind(dialog) { case (modifiedDoc, i18nMetas) =>
-              imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.values.asJava, Current.imcmsUser)
+              imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.asJava, Current.imcmsUser)
               updateMenuView()
             }
 

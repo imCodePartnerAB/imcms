@@ -40,7 +40,6 @@ object OrmToApi {
     m.setDocumentType(orm.getDocumentType)
     //fixme
     //m.setEnabledLanguages(orm.getEnabledLanguages)
-    m.setI18nShowSettings(orm.getI18nShowSetting)
     m.setId(orm.getId)
     m.setKeywords(orm.getKeywords)
     m.setLinkableByOtherUsers(orm.getLinkableByOtherUsers)

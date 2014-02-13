@@ -188,6 +188,14 @@ public class TextDomainObject implements Serializable, Cloneable {
         return contentLoopRef;
     }
 
+    public boolean isContentLoopItem() {
+        return contentLoopRef != null;
+    }
+
+    public boolean isNotContentLoopItem() {
+        return contentLoopRef == null;
+    }
+
     public void setContentLoopRef(ContentLoopItemRef contentLoopRef) {
         this.contentLoopRef = contentLoopRef;
     }

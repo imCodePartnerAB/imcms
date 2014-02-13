@@ -2,7 +2,10 @@ package com.imcode
 package imcms
 package admin.docadmin
 
-import com.imcode.imcms.api.{ContentLoopItemRef, TextDocItemRef, DocRef, DocumentVersion}
+import com.google.common.base.Optional
+import com.imcode.imcms.admin.docadmin.menu.MenuEditorParameters
+import com.imcode.imcms.admin.docadmin.text.TextEditorParameters
+import com.imcode.imcms.api._
 import java.util.Locale
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
@@ -11,7 +14,7 @@ import com.vaadin.ui._
 import com.vaadin.server._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.component.dialog.ConfirmationDialog
-import com.imcode.imcms.mapping.{OrmToApi, DocumentSaveException}
+import com.imcode.imcms.mapping.{TextDocMapper, OrmToApi, DocumentSaveException}
 import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.dao.TextDocDao
 import org.apache.commons.lang3.StringEscapeUtils
@@ -26,6 +29,7 @@ import com.imcode.imcms.admin.docadmin.menu.{MenuEditorParameters, MenuEditor}
 import com.imcode.imcms.admin.docadmin.text.{TextEditor, TextEditorParameters}
 import com.imcode.imcms.admin.docadmin.image.ImagesEditor
 import com.imcode.imcms.vaadin.Current
+import scala.Some
 
 // todo: validate params in filter, create params wrapper, pass params into DocAdmin (no need to examine path in init)?
 // todo: template/group
@@ -330,15 +334,16 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     val showModeEditor = formats.isEmpty && rowsCountOpt.isEmpty
 
     val ContentRefExt = """(\d+)_(\d+)""".r
-    val contentRefOpt = request.getParameter("contentRef") match {
-      case ContentRefExt(loopNo, contentNo) => ContentLoopItemRef.of(loopNo.toInt, contentNo.toInt) |> Some.apply
-      case _ => None
+    val looItemRefOpt = request.getParameter("contentRef") match {
+      case ContentRefExt(loopNo, contentNo) => ContentLoopItemRef.of(loopNo.toInt, contentNo.toInt) |> Optional.of
+      case _ => Optional.absent()
     }
 
-    val textDao = imcmsServices.getManagedBean(classOf[TextDocDao])
-    val texts = textDao.getTextsInAllLanguages(DocRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, contentRefOpt, createIfNotExists = true)
+    // fixme
+    val textDocMapper: TextDocMapper = ???
+    val texts = textDocMapper.getTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, looItemRefOpt, true)
 
-    for (text <- texts.asScala.map(OrmToApi.toApi) if text.getContentLoopRef == null) {
+    for ((language, text) <- texts.asScala if text.isNotContentLoopItem) {
       text.setType(TextDomainObject.TEXT_TYPE_HTML)
     }
 

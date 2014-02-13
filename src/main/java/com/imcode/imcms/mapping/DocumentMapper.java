@@ -1086,5 +1086,4 @@ public class DocumentMapper implements DocumentGetter {
     public void setCategoryMapper(CategoryMapper categoryMapper) {
         this.categoryMapper = categoryMapper;
     }
-
 }
