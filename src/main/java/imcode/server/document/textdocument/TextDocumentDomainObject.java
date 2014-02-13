@@ -1,7 +1,7 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.ContentLoopItemRef;
+import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.api.LoopContentRef;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
@@ -29,13 +29,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public static final class LoopItemKey {
 
         public final int itemNo;
-        public final ContentLoopItemRef contentLoopRef;
+        public final LoopContentRef loopContentRef;
         public final int hashCode;
 
-        public LoopItemKey(int itemNo, ContentLoopItemRef contentLoopRef) {
+        public LoopItemKey(int itemNo, LoopContentRef loopContentRef) {
             this.itemNo = itemNo;
-            this.contentLoopRef = contentLoopRef;
-            this.hashCode = Objects.hash(itemNo, contentLoopRef);
+            this.loopContentRef = loopContentRef;
+            this.hashCode = Objects.hash(itemNo, loopContentRef);
         }
 
         @Override
@@ -97,7 +97,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * <p/>
      * Map key is a content's no in this document.
      */
-    private volatile ConcurrentHashMap<Integer, ContentLoop> contentLoops = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<Integer, Loop> contentLoops = new ConcurrentHashMap<>();
 
 
     public TextDocumentDomainObject() {
@@ -174,8 +174,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-    public TextDomainObject getText(int textNo, ContentLoopItemRef contentLoopRef) {
-        return contentLoopRef == null ? texts.get(textNo) : loopTexts.get(new LoopItemKey(textNo, contentLoopRef));
+    public TextDomainObject getText(int textNo, LoopContentRef loopContentRef) {
+        return loopContentRef == null ? texts.get(textNo) : loopTexts.get(new LoopItemKey(textNo, loopContentRef));
     }
 
     /**
@@ -234,31 +234,31 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @return copy of inserted text.
      */
     public TextDomainObject setText(int no, TextDomainObject text) {
-        ContentLoopItemRef contentLoopRef = text.getContentLoopRef();
-        LoopItemKey key = contentLoopRef == null
+        LoopContentRef loopContentRef = text.getLoopContentRef();
+        LoopItemKey key = loopContentRef == null
                 ? null
-                : new LoopItemKey(no, contentLoopRef);
+                : new LoopItemKey(no, loopContentRef);
 
         TextDomainObject newText = text.clone();
 
         if (key == null) {
             texts.put(no, newText);
         } else {
-            ContentLoop loop = getContentLoop(contentLoopRef.getLoopNo());
+            Loop loop = getContentLoop(loopContentRef.getLoopNo());
 
             if (loop == null) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Loop does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
+                        , getRef(), loopContentRef.getLoopNo(), loopContentRef.getContentNo(), no)
                 );
             }
 
-            boolean contentExist = loop.findContentByNo(contentLoopRef.getContentNo()).isPresent();
+            boolean contentExist = loop.findContentByNo(loopContentRef.getContentNo()).isPresent();
 
             if (!contentExist) {
                 throw new IllegalStateException(String.format(
                         "Invalid text. Content does not exists. DocRef identity: %s, contentRef: %s, text no: %s."
-                        , getRef(), contentLoopRef, no)
+                        , getRef(), loopContentRef, no)
                 );
             }
 
@@ -267,6 +267,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         return newText.clone();
     }
+
+    public TextDomainObject setText(int no, LoopContentRef, )
 
     public Map<Integer, Integer> getIncludesMap() {
         return Collections.unmodifiableMap(includesMap);
@@ -331,8 +333,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
 
     public ImageDomainObject setImage(int no, ImageDomainObject image) {
-        ContentLoopItemRef contentLoopRef = image.getContentLoopRef();
-        LoopItemKey key = contentLoopRef == null ? null : new LoopItemKey(no, contentLoopRef);
+        LoopContentRef loopContentRef = image.getLoopContentRef();
+        LoopItemKey key = loopContentRef == null ? null : new LoopItemKey(no, loopContentRef);
 
         ImageDomainObject oldImage = key == null ? images.get(no) : loopImages.get(key);
         ImageDomainObject newImage = image.clone();
@@ -340,21 +342,21 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         if (key == null) {
             images.put(no, newImage);
         } else {
-            ContentLoop loop = getContentLoop(contentLoopRef.getLoopNo());
+            Loop loop = getContentLoop(loopContentRef.getLoopNo());
 
             if (loop == null) {
                 throw new IllegalStateException(String.format(
                         "Invalid image. Loop does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), contentLoopRef.getLoopNo(), contentLoopRef.getContentNo(), no)
+                        , getRef(), loopContentRef.getLoopNo(), loopContentRef.getContentNo(), no)
                 );
             }
 
-            boolean contentExist = loop.findContentByNo(contentLoopRef.getContentNo()).isPresent();
+            boolean contentExist = loop.findContentByNo(loopContentRef.getContentNo()).isPresent();
 
             if (!contentExist) {
                 throw new IllegalStateException(String.format(
                         "Invalid image. Content does not exists. DocRef: %s, contentRef: %s, image no: %s."
-                        , getRef(), contentLoopRef, no)
+                        , getRef(), loopContentRef, no)
                 );
             }
 
@@ -371,8 +373,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return images.get(no);
     }
 
-    public ImageDomainObject getImage(int imageNo, ContentLoopItemRef contentLoopRef) {
-        return loopImages.get(new LoopItemKey(imageNo, contentLoopRef));
+    public ImageDomainObject getImage(int imageNo, LoopContentRef loopContentRef) {
+            return loopImages.get(new LoopItemKey(imageNo, loopContentRef));
     }
 
     private ConcurrentHashMap<Integer, MenuDomainObject> cloneMenusMap() {
@@ -450,7 +452,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return includesMapClone;
     }
 
-    private ConcurrentHashMap<Integer, ContentLoop> cloneContentLoopsMap() {
+    private ConcurrentHashMap<Integer, Loop> cloneContentLoopsMap() {
         return new ConcurrentHashMap<>(contentLoops);
     }
 
@@ -474,15 +476,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         this.includesMap = new ConcurrentHashMap<>(includesMap);
     }
 
-    public Map<Integer, ContentLoop> getContentLoops() {
+    public Map<Integer, Loop> getContentLoops() {
         return Collections.unmodifiableMap(contentLoops);
     }
 
-    public void setContentLoops(Map<Integer, ContentLoop> contentLoops) {
+    public void setContentLoops(Map<Integer, Loop> contentLoops) {
         this.contentLoops = new ConcurrentHashMap<>(contentLoops);
     }
 
-    public ContentLoop getContentLoop(int no) {
+    public Loop getContentLoop(int no) {
         return contentLoops.get(no);
     }
 
@@ -490,13 +492,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Sets content loop clone passed to the method.
      *
      * @param no          content loop no in this document.
-     * @param contentLoop content loop to set.
+     * @param loop content loop to set.
      * @returncontentLoop set to this document.
      */
-    public ContentLoop setContentLoop(int no, ContentLoop contentLoop) {
-        contentLoops.put(no, contentLoop);
+    public Loop setContentLoop(int no, Loop loop) {
+        contentLoops.put(no, loop);
 
-        return contentLoop;
+        return loop;
     }
 
     public Map<LoopItemKey, TextDomainObject> getLoopTexts() {

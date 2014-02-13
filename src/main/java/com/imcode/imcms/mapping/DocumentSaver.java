@@ -71,7 +71,7 @@ public class DocumentSaver {
      */
     @Transactional
     public void saveText(TextDocItemRef<TextDomainObject> textRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfMissing(textRef.getDocRef(), textRef.getItem().getContentLoopRef());
+        createEnclosingContentLoopIfMissing(textRef.getDocRef(), textRef.getItem().getLoopContentRef());
 
         new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textRef, user);
 
@@ -120,7 +120,7 @@ public class DocumentSaver {
     public void saveImage(TextDocItemRef<ImageDomainObject> imageRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         ImageDomainObject image = imageRef.getItem();
 
-        createEnclosingContentLoopIfMissing(imageRef.getDocRef(), image.getContentLoopRef());
+        createEnclosingContentLoopIfMissing(imageRef.getDocRef(), image.getLoopContentRef());
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
@@ -134,23 +134,23 @@ public class DocumentSaver {
      * Creates content loop if item references non-saved enclosing content loop.
      */
     @Transactional
-    public void createEnclosingContentLoopIfMissing(DocRef docRef, ContentLoopItemRef contentLoopRef) {
-        if (contentLoopRef == null) {
+    public void createEnclosingContentLoopIfMissing(DocRef docRef, LoopContentRef loopContentRef) {
+        if (loopContentRef == null) {
             return;
         }
 
-        TextDocLoop ormLoop = textDocDao.getLoop(docRef, contentLoopRef.getLoopNo());
+        TextDocLoop ormLoop = textDocDao.getLoop(docRef, loopContentRef.getLoopNo());
 
         if (ormLoop == null) {
             ormLoop = new TextDocLoop();
-            ormLoop.setNo(contentLoopRef.getLoopNo());
-            ormLoop.setItems(new LinkedList<>(Arrays.asList(new TextDocLoopItem(contentLoopRef.getContentNo()))));
+            ormLoop.setNo(loopContentRef.getLoopNo());
+            ormLoop.setItems(new LinkedList<>(Arrays.asList(new TextDocLoopContent(loopContentRef.getContentNo()))));
             textDocDao.saveLoop(ormLoop);
         } else {
-            ContentLoop apiLoop = OrmToApi.toApi(ormLoop);
-            int contentNo = contentLoopRef.getContentNo();
+            Loop apiLoop = OrmToApi.toApi(ormLoop);
+            int contentNo = loopContentRef.getContentNo();
             if (!apiLoop.findContentByNo(contentNo).isPresent()) {
-                ormLoop.getItems().add(new TextDocLoopItem(contentNo));
+                ormLoop.getItems().add(new TextDocLoopContent(contentNo));
                 textDocDao.saveLoop(ormLoop);
             }
         }

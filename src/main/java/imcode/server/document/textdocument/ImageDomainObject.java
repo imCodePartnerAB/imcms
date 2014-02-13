@@ -1,7 +1,6 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.ContentLoopItemRef;
-import com.imcode.imcms.api.ContentLoopItemRef;
+import com.imcode.imcms.api.LoopContentRef;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.util.image.Format;
@@ -23,7 +22,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     private volatile ImageSource source = new NullImageSource();
 
-    private volatile ContentLoopItemRef contentLoopRef;
+    private volatile LoopContentRef loopContentRef;
 
     private volatile int width;
 
@@ -106,12 +105,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return null;
     }
 
-    public ContentLoopItemRef getContentLoopRef() {
-        return contentLoopRef;
+    public LoopContentRef getLoopContentRef() {
+        return loopContentRef;
     }
 
-    public void setContentLoopRef(ContentLoopItemRef contentLoopRef) {
-        this.contentLoopRef = contentLoopRef;
+    public void setLoopContentRef(LoopContentRef loopContentRef) {
+        this.loopContentRef = loopContentRef;
     }
 
     public String getUrl() {
@@ -372,7 +371,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     private boolean equals(ImageDomainObject that) {
         return Objects.equals(source.toStorageString(), that.getSource().toStorageString())
-                && Objects.equals(contentLoopRef, that.getContentLoopRef())
+                && Objects.equals(loopContentRef, that.getLoopContentRef())
                 && Objects.equals(width, that.getWidth())
                 && Objects.equals(height, that.getHeight())
                 && Objects.equals(border, that.getBorder())
@@ -394,7 +393,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
     public int hashCode() {
         return Objects.hash(
                 source.toStorageString(),
-                contentLoopRef,
+                loopContentRef,
                 width,
                 height,
                 border,

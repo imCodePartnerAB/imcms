@@ -4,21 +4,21 @@ import com.google.common.base.Optional;
 
 import java.util.*;
 
-public final class ContentLoop {
+public final class Loop {
 
-    public static ContentLoop of(List<Content> items) {
-        return new ContentLoop(items);
+    public static Loop of(List<LoopContent> items) {
+        return new Loop(items);
     }
 
     public static abstract class ContentAndIndex {
-        public abstract Content getContent();
+        public abstract LoopContent getContent();
         public abstract int getIndex();
 
-        public static ContentAndIndex of(final Content content, final int index) {
+        public static ContentAndIndex of(final LoopContent loopContent, final int index) {
             return new ContentAndIndex() {
                 @Override
-                public Content getContent() {
-                    return content;
+                public LoopContent getContent() {
+                    return loopContent;
                 }
 
                 @Override
@@ -29,19 +29,19 @@ public final class ContentLoop {
         }
     }
 
-    private final List<Content> items;
+    private final List<LoopContent> items;
 
     private final int cachedHashCode;
 
-    public ContentLoop() {
-        this(Collections.<Content>emptyList());
+    public Loop() {
+        this(Collections.<LoopContent>emptyList());
     }
 
-    public ContentLoop(Collection<Content> items) {
-        Map<Integer, Content> itemsMap = new LinkedHashMap<>();
+    public Loop(Collection<LoopContent> items) {
+        Map<Integer, LoopContent> itemsMap = new LinkedHashMap<>();
 
-        for (Content content : items) {
-            itemsMap.put(content.getNo(), content);
+        for (LoopContent loopContent : items) {
+            itemsMap.put(loopContent.getNo(), loopContent);
         }
 
         this.items = Collections.unmodifiableList(new ArrayList<>(itemsMap.values()));
@@ -56,10 +56,10 @@ public final class ContentLoop {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof ContentLoop && equals((ContentLoop) o));
+        return o == this || (o instanceof Loop && equals((Loop) o));
     }
 
-    private boolean equals(ContentLoop that) {
+    private boolean equals(Loop that) {
         return Objects.equals(items, that.items);
     }
 
@@ -68,19 +68,19 @@ public final class ContentLoop {
         return cachedHashCode;
     }
 
-    public List<Content> getItems() {
+    public List<LoopContent> getItems() {
         return items;
     }
 
 
-    public ContentLoopOps ops() {
-        return new ContentLoopOps(this);
+    public LoopOps ops() {
+        return new LoopOps(this);
     }
 
     public Optional<ContentAndIndex> findContentByNo(int contentNo) {
         for (int i = 0, k = items.size(); i < k; i++) {
-            Content content = items.get(i);
-            if (content.getNo() == contentNo) return Optional.of(ContentAndIndex.of(content, i));
+            LoopContent loopContent = items.get(i);
+            if (loopContent.getNo() == contentNo) return Optional.of(ContentAndIndex.of(loopContent, i));
         }
 
         return Optional.absent();
@@ -92,17 +92,17 @@ public final class ContentLoop {
         }
 
         int index = 0;
-        Content content = items.get(index);
+        LoopContent loopContent = items.get(index);
 
         for (int i = 1, n = items.size(); i < n; i++) {
-            Content currentContent = items.get(i);
+            LoopContent currentLoopContent = items.get(i);
 
-            if (content.getNo() < currentContent.getNo()) {
-                content = currentContent;
+            if (loopContent.getNo() < currentLoopContent.getNo()) {
+                loopContent = currentLoopContent;
                 index = i;
             }
         }
 
-        return Optional.of(ContentAndIndex.of(content, index));
+        return Optional.of(ContentAndIndex.of(loopContent, index));
     }
 }

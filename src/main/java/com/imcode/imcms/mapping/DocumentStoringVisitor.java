@@ -182,13 +182,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         textDocDao.deleteLoops(textDocument.getRef());
         textDocDao.flush();
 
-        for (Map.Entry<Integer, ContentLoop> e : textDocument.getContentLoops().entrySet()) {
-            ContentLoop loop = e.getValue();
+        for (Map.Entry<Integer, Loop> e : textDocument.getContentLoops().entrySet()) {
+            Loop loop = e.getValue();
             TextDocLoop ormLoop = new TextDocLoop();
-            List<TextDocLoopItem> ormItems = new LinkedList<>();
+            List<TextDocLoopContent> ormItems = new LinkedList<>();
 
-            for (Content content : loop.getItems()) {
-                ormItems.add(new TextDocLoopItem(content.getNo(), content.isEnabled()));
+            for (LoopContent loopContent : loop.getItems()) {
+                ormItems.add(new TextDocLoopContent(loopContent.getNo(), loopContent.isEnabled()));
             }
 
             ormLoop.setNo(e.getKey());
@@ -237,10 +237,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         ormText.setText(text.getText());
         ormText.setType(TextDocType.values()[text.getType()]);
 
-        ContentLoopItemRef loopItemRef = text.getContentLoopRef();
+        LoopContentRef loopItemRef = text.getLoopContentRef();
 
         if (loopItemRef != null) {
-            ormText.setLoopItemRef(new TextDocLoopItemRef(loopItemRef.getLoopNo(), loopItemRef.getContentNo()));
+            ormText.setLoopItemRef(new TextDocContentRef(loopItemRef.getLoopNo(), loopItemRef.getContentNo()));
         }
 
         textDocDao.saveText(ormText);

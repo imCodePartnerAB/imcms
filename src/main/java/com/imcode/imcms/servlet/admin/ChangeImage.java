@@ -1,8 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.ContentLoopItemRef;
+import com.imcode.imcms.api.LoopContentRef;
 import com.imcode.imcms.dao.TextDocDao;
-import com.imcode.imcms.api.ContentLoopItemRef;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -13,7 +12,6 @@ import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuExcept
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
-import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
 
 import java.io.IOException;
@@ -28,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
 import imcode.util.ImcmsImageUtils;
@@ -54,7 +51,7 @@ public class ChangeImage extends HttpServlet {
         String contentNoStr = request.getParameter("content_no");
         Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
-        ContentLoopItemRef contentLoopRef = loopNo == null || contentNo == null ? null : ContentLoopItemRef.of(loopNo, contentNo);
+        LoopContentRef loopContentRef = loopNo == null || contentNo == null ? null : LoopContentRef.of(loopNo, contentNo);
 
         final TextDocumentDomainObject document = documentMapper.getDocument(documentId);
 
@@ -67,15 +64,15 @@ public class ChangeImage extends HttpServlet {
         /**
          * Image DTO. Holds generic properties such as size and border. 
          */
-        final ImageDomainObject defaultImage = contentLoopRef == null
+        final ImageDomainObject defaultImage = loopContentRef == null
                 ? document.getImage(imageIndex)
-                : document.getImage(imageIndex, contentLoopRef);
+                : document.getImage(imageIndex, loopContentRef);
         final ImageDomainObject image = defaultImage != null
                 ? defaultImage
                 : new ImageDomainObject();
 
         //image.setNo(imageIndex);
-        image.setContentLoopRef(contentLoopRef);
+        image.setLoopContentRef(loopContentRef);
 
         // Check if user has image rights
         if (!ImageEditPage.userHasImagePermissionsOnDocument(user, document)) {

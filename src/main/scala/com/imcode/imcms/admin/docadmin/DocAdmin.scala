@@ -335,7 +335,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
     val ContentRefExt = """(\d+)_(\d+)""".r
     val looItemRefOpt = request.getParameter("contentRef") match {
-      case ContentRefExt(loopNo, contentNo) => ContentLoopItemRef.of(loopNo.toInt, contentNo.toInt) |> Optional.of
+      case ContentRefExt(loopNo, contentNo) => LoopContentRef.of(loopNo.toInt, contentNo.toInt) |> Optional.of
       case _ => Optional.absent()
     }
 

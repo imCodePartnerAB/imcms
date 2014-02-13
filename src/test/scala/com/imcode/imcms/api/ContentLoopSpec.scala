@@ -22,32 +22,32 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
     val NextContentNo = 10
   }
 
-  def mkContentLoop(contentsCount: Int = LoopFx.ContentsCount): ContentLoop = {
-    val items = (1 to contentsCount).map(no => Content.of(no))
+  def mkContentLoop(contentsCount: Int = LoopFx.ContentsCount): Loop = {
+    val items = (1 to contentsCount).map(no => LoopContent.of(no))
     val nextContentNo = contentsCount + 1
 
-    new ContentLoop(nextContentNo, util.Arrays.asList(items : _*))
+    new Loop(nextContentNo, util.Arrays.asList(items : _*))
   }
 
 
   "constructor" should {
     "throw IllegalArgumentException if nextContentNo parameter is less than 1" in {
       intercept[IllegalArgumentException] {
-        new ContentLoop(0)
+        new Loop(0)
       }
 
       intercept[IllegalArgumentException] {
-        new ContentLoop(-1)
+        new Loop(-1)
       }
     }
 
     "throw IllegalArgumentException if an item content.no parameter not in range [1..nextContentNo - 1] less than 1" in {
       intercept[IllegalArgumentException] {
-        new ContentLoop(1, util.Arrays.asList(Content.of(1)))
+        new Loop(1, util.Arrays.asList(LoopContent.of(1)))
       }
 
       intercept[IllegalArgumentException] {
-        new ContentLoop(3, util.Arrays.asList(Content.of(1), Content.of(2), Content.of(3)))
+        new Loop(3, util.Arrays.asList(LoopContent.of(1), LoopContent.of(2), LoopContent.of(3)))
       }
     }
   }

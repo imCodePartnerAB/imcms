@@ -171,7 +171,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       var loop = ContentLoopService.builder().no(loopNo).build()
 
       for (contentNo <- 0 until loopNo) {
-        loop = new ContentLoopOps(loop).addContentLast().getLoop()
+        loop = new LoopOps(loop).addContentLast().getLoop()
       }
 
       newDoc.setContentLoop(loopNo, loop)
@@ -202,10 +202,10 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       newDoc.setMenu(no, menu)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = TextDomainObject.builder().contentRef(TextDocLoopItemRef.of(loopNo, contentNo)).build()
+        val text = TextDomainObject.builder().contentRef(TextDocContentRef.of(loopNo, contentNo)).build()
         val image = new ImageDomainObject
 
-        image.setContentLoopRef(TextDocLoopItemRef.of(loopNo, contentNo))
+        image.setLoopContentRef(TextDocContentRef.of(loopNo, contentNo))
 
         text.setText(textPrefix + no + "_%d:%d".format(loopNo, contentNo))
         text.setType(textType)
@@ -249,13 +249,13 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
                    menuItems.values.asScala.map(_.getDocumentId).toSet)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = savedDoc.getText(no, TextDocLoopItemRef.of(loopNo, contentNo))
-        val image = savedDoc.getImage(no, TextDocLoopItemRef.of(loopNo, contentNo))
+        val text = savedDoc.getText(no, TextDocContentRef.of(loopNo, contentNo))
+        val image = savedDoc.getImage(no, TextDocContentRef.of(loopNo, contentNo))
 
         assertNotNull(text)
         assertEquals(no, text.getNo)
-        assertEquals(loopNo, text.getContentLoopRef.getLoopNo)
-        assertEquals(contentNo, text.getContentLoopRef.getContentNo)
+        assertEquals(loopNo, text.getLoopContentRef.getLoopNo)
+        assertEquals(contentNo, text.getLoopContentRef.getContentNo)
         assertEquals(textType, text.getType)
         assertEquals(textPrefix + no + "_%d:%d".format(loopNo, contentNo), text.getText)
 

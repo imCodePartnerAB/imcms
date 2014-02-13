@@ -26,7 +26,7 @@ public class TextDocLoop extends DocVersionedContent {
             joinColumns = @JoinColumn(name = "content_id")
     )
     @OrderColumn(name = "ix")
-    private List<TextDocLoopItem> items = new LinkedList<>();
+    private List<TextDocLoopContent> items = new LinkedList<>();
 
     @Override
     public String toString() {
@@ -73,11 +73,11 @@ public class TextDocLoop extends DocVersionedContent {
         this.version = version;
     }
 
-    public List<TextDocLoopItem> getItems() {
+    public List<TextDocLoopContent> getItems() {
         return items;
     }
 
-    public void setItems(List<TextDocLoopItem> items) {
+    public void setItems(List<TextDocLoopContent> items) {
         this.items = items;
     }
 }

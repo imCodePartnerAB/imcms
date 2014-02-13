@@ -7,48 +7,48 @@ import com.google.common.base.Strings;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ContentLoopItemRef {
+public class LoopContentRef {
 
-    public static ContentLoopItemRef of(int loopNo, int contentNo) {
-        return new ContentLoopItemRef(loopNo, contentNo);
+    public static LoopContentRef of(int loopNo, int contentNo) {
+        return new LoopContentRef(loopNo, contentNo);
     }
 
     private final int loopNo;
 
     private final int contentNo;
 
-    public ContentLoopItemRef(int loopNo, int contentNo) {
+    public LoopContentRef(int loopNo, int contentNo) {
         this.loopNo = loopNo;
         this.contentNo = contentNo;
     }
 
-    public static Optional<ContentLoopItemRef> of(String loopNo, String contentNo) {
+    public static Optional<LoopContentRef> of(String loopNo, String contentNo) {
         Integer loopNoInt = Integer.valueOf(loopNo);
         Integer contentNoInt = Integer.valueOf(contentNo);
 
         return Optional.fromNullable(
                 loopNoInt != null && contentNoInt != null
-                        ? ContentLoopItemRef.of(loopNoInt, contentNoInt)
+                        ? LoopContentRef.of(loopNoInt, contentNoInt)
                         : null
         );
     }
 
-    public static Optional<ContentLoopItemRef> of(String ref) {
+    public static Optional<LoopContentRef> of(String ref) {
         Matcher matcher = Pattern.compile("(\\d+)_(\\d+)").matcher(Strings.nullToEmpty(ref).trim());
 
         return Optional.fromNullable(
                 matcher.find()
-                        ? ContentLoopItemRef.of(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)))
+                        ? LoopContentRef.of(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)))
                         : null
         );
     }
 
     @Override
     public boolean equals(Object o) {
-        return this == o || (o instanceof ContentLoopItemRef && equals((ContentLoopItemRef) o));
+        return this == o || (o instanceof LoopContentRef && equals((LoopContentRef) o));
     }
 
-    private boolean equals(ContentLoopItemRef that) {
+    private boolean equals(LoopContentRef that) {
         return loopNo == that.loopNo && contentNo == that.contentNo;
     }
 

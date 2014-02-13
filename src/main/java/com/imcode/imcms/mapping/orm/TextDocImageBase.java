@@ -55,7 +55,7 @@ public class TextDocImageBase extends DocVersionedI18nContent {
     @Column(name = "gen_file")
     private String generatedFilename;
 
-    private TextDocLoopItemRef contentLoopRef;
+    private TextDocContentRef contentLoopRef;
 
     @OneToOne
     @JoinColumn(name = "language_id")
@@ -167,11 +167,11 @@ public class TextDocImageBase extends DocVersionedI18nContent {
         this.type = type;
     }
 
-    public TextDocLoopItemRef getContentLoopRef() {
+    public TextDocContentRef getContentLoopRef() {
         return contentLoopRef;
     }
 
-    public void setContentLoopRef(TextDocLoopItemRef contentLoopRef) {
+    public void setContentLoopRef(TextDocContentRef contentLoopRef) {
         this.contentLoopRef = contentLoopRef;
     }
 

@@ -7,7 +7,7 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
-public class TextDocLoopItemRef implements Serializable, Cloneable {
+public class TextDocContentRef implements Serializable, Cloneable {
 
     @Column(name = "content_loop_no")
     private int loopNo;
@@ -15,19 +15,19 @@ public class TextDocLoopItemRef implements Serializable, Cloneable {
     @Column(name = "content_no")
     private int contentNo;
 
-    public TextDocLoopItemRef() {}
+    public TextDocContentRef() {}
 
-    public TextDocLoopItemRef(int loopNo, int contentNo) {
+    public TextDocContentRef(int loopNo, int contentNo) {
         this.loopNo = loopNo;
         this.contentNo = contentNo;
     }
 
     @Override
     public boolean equals(Object o) {
-        return this == o || (o instanceof TextDocLoopItemRef && equals((TextDocLoopItemRef) o));
+        return this == o || (o instanceof TextDocContentRef && equals((TextDocContentRef) o));
     }
 
-    private boolean equals(TextDocLoopItemRef that) {
+    private boolean equals(TextDocContentRef that) {
         return loopNo == that.loopNo && contentNo == that.contentNo;
     }
 

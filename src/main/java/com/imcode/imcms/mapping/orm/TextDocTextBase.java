@@ -14,7 +14,7 @@ public class TextDocTextBase extends DocVersionedI18nContent {
 
     private String text;
 
-    private TextDocLoopItemRef loopItemRef;
+    private TextDocContentRef loopItemRef;
 
     public Integer getNo() {
         return no;
@@ -40,11 +40,11 @@ public class TextDocTextBase extends DocVersionedI18nContent {
         this.type = type;
     }
 
-    public TextDocLoopItemRef getLoopItemRef() {
+    public TextDocContentRef getLoopItemRef() {
         return loopItemRef;
     }
 
-    public void setLoopItemRef(TextDocLoopItemRef loopItemRef) {
+    public void setLoopItemRef(TextDocContentRef loopItemRef) {
         this.loopItemRef = loopItemRef;
     }
 }

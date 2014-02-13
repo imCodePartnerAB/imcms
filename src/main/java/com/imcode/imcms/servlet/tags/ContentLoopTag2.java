@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.api.DocRef;
-import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.Content;
+import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.api.LoopContent;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.Utility;
@@ -21,17 +21,17 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 public class ContentLoopTag2 extends BodyTagSupport {
 
     /** Creates empty content loop. */
-    private static ContentLoop createLoop(DocRef docRef, Integer no) {
-        return ContentLoop.builder().docIdentity(docRef).no(no).build();
+    private static Loop createLoop(DocRef docRef, Integer no) {
+        return Loop.builder().docIdentity(docRef).no(no).build();
     }
 
 
 	/** Loop number in a TextDocument. */
     private int no;
 
-    private ContentLoop loop;
+    private Loop loop;
 
-    private Content currentContent;
+    private LoopContent currentLoopContent;
 
     private int contentsCount;
 
@@ -78,7 +78,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
            	document.setContentLoop(no, loop);
         }
 
-        currentContent = null;
+        currentLoopContent = null;
         contentsCount = loop.getItems().size();
         contentIndex = -1;        
 
@@ -102,9 +102,9 @@ public class ContentLoopTag2 extends BodyTagSupport {
             return false;
         }
 
-        currentContent = loop.getItems().get(contentIndex);
+        currentLoopContent = loop.getItems().get(contentIndex);
 
-        if (currentContent.isEnabled()) {
+        if (currentLoopContent.isEnabled()) {
             firstContent = true;
             lastContent = true;
             
@@ -136,7 +136,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
     		request.setAttribute("document", document);
     		request.setAttribute("contentLoop", loop);
-    		request.setAttribute("content", currentContent);
+    		request.setAttribute("content", currentLoopContent);
     		request.setAttribute("flags", parserParameters.getFlags());
     		request.setAttribute("viewFragment", viewFragment);
     		request.setAttribute("contentsCount", contentsCount);
@@ -213,18 +213,18 @@ public class ContentLoopTag2 extends BodyTagSupport {
     }
 
 
-    public ContentLoop getLoop() {
+    public Loop getLoop() {
         return loop;
     }
 
-    public void setLoop(ContentLoop loop) {
+    public void setLoop(Loop loop) {
         this.loop = loop;
     }
 
     /**
      * @return current content.
      */
-    public Content getCurrentContent() {
-        return currentContent;
+    public LoopContent getCurrentLoopContent() {
+        return currentLoopContent;
     }
 }

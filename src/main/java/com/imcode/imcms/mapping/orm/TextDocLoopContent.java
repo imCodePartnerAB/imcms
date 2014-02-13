@@ -8,27 +8,27 @@ import java.util.Objects;
 
 @Embeddable
 @Access(AccessType.FIELD)
-public class TextDocLoopItem implements Serializable, Cloneable {
+public class TextDocLoopContent implements Serializable, Cloneable {
 
     private int no;
 
     private boolean enabled;
 
-    public TextDocLoopItem() {}
+    public TextDocLoopContent() {}
 
-    public TextDocLoopItem(int no) {
+    public TextDocLoopContent(int no) {
         this(no, true);
     }
 
-    public TextDocLoopItem(int no, boolean enabled) {
+    public TextDocLoopContent(int no, boolean enabled) {
         this.no = no;
         this.enabled = enabled;
     }
 
     @Override
-    public TextDocLoopItem clone() {
+    public TextDocLoopContent clone() {
         try {
-            return (TextDocLoopItem) super.clone();
+            return (TextDocLoopContent) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -48,10 +48,10 @@ public class TextDocLoopItem implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof TextDocLoopItem && equals((TextDocLoopItem) o));
+        return o == this || (o instanceof TextDocLoopContent && equals((TextDocLoopContent) o));
     }
 
-    private boolean equals(TextDocLoopItem that) {
+    private boolean equals(TextDocLoopContent that) {
         return this.enabled == that.enabled && this.no == that.no;
     }
 

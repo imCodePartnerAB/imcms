@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.dao.*;
 import com.imcode.imcms.mapping.orm.*;
 import imcode.server.document.GetterDocumentReference;
@@ -113,7 +113,7 @@ public class TextDocumentInitializer {
      */
 	public void initContentLoops(TextDocumentDomainObject document) {
 		List<TextDocLoop> loops = textDocDao.getLoops(document.getRef());
-		Map<Integer, ContentLoop> loopsMap = new HashMap<>();
+		Map<Integer, Loop> loopsMap = new HashMap<>();
 		
 		for (TextDocLoop loop: loops) {
 			loopsMap.put(loop.getNo(), OrmToApi.toApi(loop));
