@@ -5,7 +5,7 @@ package admin.docadmin.image
 import _root_.imcode.server.document.textdocument.ImageDomainObject
 
 import com.google.common.base.Optional
-import com.imcode.imcms.api.{DocVersionRef, TextDocItemRef, DocumentLanguage, DocRef}
+import com.imcode.imcms.api.{DocVersionRef, TextDocumentItemRef, DocumentLanguage, DocRef}
 import com.imcode.imcms.mapping.TextDocMapper
 import com.imcode.imcms.vaadin.{Current, Editor}
 import com.imcode.imcms.vaadin.component._

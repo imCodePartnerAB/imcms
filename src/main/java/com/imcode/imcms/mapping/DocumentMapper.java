@@ -347,7 +347,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveTextDocMenu(TextDocItemRef<MenuDomainObject> menuIdentity, UserDomainObject user)
+    public void saveTextDocMenu(TextDocumentItemRef<MenuDomainObject> menuIdentity, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         try {
@@ -807,7 +807,7 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      */
-    public synchronized void saveTextDocText(TextDocItemRef<TextDomainObject> id, UserDomainObject user)
+    public synchronized void saveTextDocText(TextDocumentItemRef<TextDomainObject> id, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
 
         try {
@@ -829,13 +829,13 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      */
-    public synchronized void saveTextDocTexts(Collection<TextDocItemRef<TextDomainObject>> ids, UserDomainObject user)
+    public synchronized void saveTextDocTexts(Collection<TextDocumentItemRef<TextDomainObject>> ids, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         try {
             documentSaver.saveTexts(ids, user);
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
-            for (TextDocItemRef<?> id : ids) {
+            for (TextDocumentItemRef<?> id : ids) {
                 docIds.add(id.getDocRef().getDocId());
             }
 
@@ -853,14 +853,14 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * @since 6.0
      */
-    public synchronized void saveTextDocImages(Collection<TextDocItemRef<ImageDomainObject>> ids, UserDomainObject user)
+    public synchronized void saveTextDocImages(Collection<TextDocumentItemRef<ImageDomainObject>> ids, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
 
         try {
             documentSaver.saveImages(ids, user);
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
-            for (TextDocItemRef<?> id : ids) {
+            for (TextDocumentItemRef<?> id : ids) {
                 docIds.add(id.getDocRef().getDocId());
             }
 
@@ -879,7 +879,7 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * @since 6.0
      */
-    public synchronized void saveTextDocImage(TextDocItemRef<ImageDomainObject> image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocImage(TextDocumentItemRef<ImageDomainObject> image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         try {
             documentSaver.saveImage(image, user);
         } finally {

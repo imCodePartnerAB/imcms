@@ -186,7 +186,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
     def save(close: Boolean) {
       editor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocItemRef.of(doc.getRef, menuNo, menu), Current.imcmsUser)
+        imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocumentItemRef.of(doc.getRef, menuNo, menu), Current.imcmsUser)
         Current.page.showInfoNotification("menu_editor.notification.saved".i)
 
         if (close) {
@@ -335,7 +335,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
     val ContentRefExt = """(\d+)_(\d+)""".r
     val looItemRefOpt = request.getParameter("contentRef") match {
-      case ContentRefExt(loopNo, contentNo) => LoopContentRef.of(loopNo.toInt, contentNo.toInt) |> Optional.of
+      case ContentRefExt(loopNo, contentNo) => LoopItemRef.of(loopNo.toInt, contentNo.toInt) |> Optional.of
       case _ => Optional.absent()
     }
 

@@ -52,7 +52,7 @@ if ("getHelpTextInlineEditing".equals(action)) {
 	int txt_no  = Integer.parseInt(request.getParameter("txt_no")) ;
 	int format  = Integer.parseInt(request.getParameter("format")) ;
 	String text = request.getParameter("text") ;
-    Optional<LoopContentRef> contentRefOpt = LoopContentRef.of(request.getParameter("content_ref"));
+    Optional<LoopItemRef> contentRefOpt = LoopItemRef.of(request.getParameter("content_ref"));
 	boolean doLog = (null != request.getParameter("do_log")) ;
 	text = text
 		.replace(StringEscapeUtils.escapeHtml("<?imcms:contextpath?>"), "<?imcms:contextpath?>")
@@ -74,7 +74,7 @@ if ("getHelpTextInlineEditing".equals(action)) {
             textDO = new TextDomainObject() ;
             textDO.setNo(txt_no);
             textDO.setDocRef(document.getRef());
-            textDO.setLoopContentRef(contentRefOpt.orNull());
+            textDO.setLoopItemRef(contentRefOpt.orNull());
         }
 
         textDO.setText(text);

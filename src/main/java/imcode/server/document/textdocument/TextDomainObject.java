@@ -1,6 +1,6 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.LoopContentRef;
+import com.imcode.imcms.api.LoopItemRef;
 import imcode.util.Parser;
 
 import java.io.Serializable;
@@ -40,8 +40,8 @@ public class TextDomainObject implements Serializable, Cloneable {
             return textDomainObject.clone();
         }
 
-        public Builder contentRef(LoopContentRef loopContentRef) {
-            textDomainObject.loopContentRef = loopContentRef;
+        public Builder contentRef(LoopItemRef loopItemRef) {
+            textDomainObject.loopItemRef = loopItemRef;
             return this;
         }
 
@@ -69,7 +69,7 @@ public class TextDomainObject implements Serializable, Cloneable {
 
     private volatile int type;
 
-    private volatile LoopContentRef loopContentRef;
+    private volatile LoopItemRef loopItemRef;
 
     public TextDomainObject() {
         this("");
@@ -165,12 +165,12 @@ public class TextDomainObject implements Serializable, Cloneable {
     private boolean equals(TextDomainObject that) {
         return Objects.equals(text, that.text)
                 && Objects.equals(type, that.type)
-                && Objects.equals(loopContentRef, that.loopContentRef);
+                && Objects.equals(loopItemRef, that.loopItemRef);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(text, type, loopContentRef);
+        return Objects.hash(text, type, loopItemRef);
     }
 
 
@@ -183,20 +183,20 @@ public class TextDomainObject implements Serializable, Cloneable {
         }
     }
 
-    public LoopContentRef getLoopContentRef() {
-        return loopContentRef;
+    public LoopItemRef getLoopItemRef() {
+        return loopItemRef;
     }
 
     public boolean isContentLoopItem() {
-        return loopContentRef != null;
+        return loopItemRef != null;
     }
 
     public boolean isNotContentLoopItem() {
-        return loopContentRef == null;
+        return loopItemRef == null;
     }
 
-    public void setLoopContentRef(LoopContentRef loopContentRef) {
-        this.loopContentRef = loopContentRef;
+    public void setLoopItemRef(LoopItemRef loopItemRef) {
+        this.loopItemRef = loopItemRef;
     }
 
     public Type getFormatType() {

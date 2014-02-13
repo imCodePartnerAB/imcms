@@ -61,11 +61,11 @@ object OrmToApi {
   def toApi(orm: TextDocText): TextDomainObject = new TextDomainObject |>> { t=>
     t.setText(orm.getText)
     t.setType(orm.getType.ordinal())
-    t.setLoopContentRef(orm.getLoopItemRef |> toApi)
+    t.setLoopItemRef(orm.getLoopItemRef |> toApi)
   }
 
 
-  def toApi(orm: TextDocContentRef): LoopContentRef = LoopContentRef.of(orm.getLoopNo, orm.getContentNo)
+  def toApi(orm: TextDocContentRef): LoopItemRef = LoopItemRef.of(orm.getLoopNo, orm.getContentNo)
 
 
   def toApi(orm: TextDocLoop): Loop = Loop.of(orm.getItems.asScala.map(toApi).asJava)

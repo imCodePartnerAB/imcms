@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.LoopContentRef;
+import com.imcode.imcms.api.LoopItemRef;
 import com.imcode.imcms.dao.TextDocDao;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -51,7 +51,7 @@ public class ChangeImage extends HttpServlet {
         String contentNoStr = request.getParameter("content_no");
         Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
         Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
-        LoopContentRef loopContentRef = loopNo == null || contentNo == null ? null : LoopContentRef.of(loopNo, contentNo);
+        LoopItemRef loopItemRef = loopNo == null || contentNo == null ? null : LoopItemRef.of(loopNo, contentNo);
 
         final TextDocumentDomainObject document = documentMapper.getDocument(documentId);
 
@@ -64,15 +64,15 @@ public class ChangeImage extends HttpServlet {
         /**
          * Image DTO. Holds generic properties such as size and border. 
          */
-        final ImageDomainObject defaultImage = loopContentRef == null
+        final ImageDomainObject defaultImage = loopItemRef == null
                 ? document.getImage(imageIndex)
-                : document.getImage(imageIndex, loopContentRef);
+                : document.getImage(imageIndex, loopItemRef);
         final ImageDomainObject image = defaultImage != null
                 ? defaultImage
                 : new ImageDomainObject();
 
         //image.setNo(imageIndex);
-        image.setLoopContentRef(loopContentRef);
+        image.setLoopItemRef(loopItemRef);
 
         // Check if user has image rights
         if (!ImageEditPage.userHasImagePermissionsOnDocument(user, document)) {

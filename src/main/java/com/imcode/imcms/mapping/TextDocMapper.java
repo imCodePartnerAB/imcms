@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.google.common.base.Optional;
-import com.imcode.imcms.api.LoopContentRef;
+import com.imcode.imcms.api.LoopItemRef;
 import com.imcode.imcms.api.DocRef;
 import com.imcode.imcms.api.DocVersionRef;
 import com.imcode.imcms.api.DocumentLanguage;
@@ -27,47 +27,47 @@ public class TextDocMapper {
     private TextDocDao textDocDao;
 
 
-    public Map<DocumentLanguage, Map<Integer, TextDomainObject>> getTexts(DocVersionRef ref, Optional<LoopContentRef> loopItemRefOpt, boolean createIfNotExists) {
+    public Map<DocumentLanguage, Map<Integer, TextDomainObject>> getTexts(DocVersionRef ref, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
         throw new NotImplementedException();
     }
 
-    public Map<DocumentLanguage, TextDomainObject> getTexts(DocVersionRef ref, int textNo, Optional<LoopContentRef> loopItemRefOpt, boolean createIfNotExists) {
+    public Map<DocumentLanguage, TextDomainObject> getTexts(DocVersionRef ref, int textNo, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
         throw new NotImplementedException();
     }
 
-    public Map<Integer, TextDomainObject> getTexts(DocRef ref, Optional<LoopContentRef> loopItemRefOpt, boolean createIfNotExists) {
+    public Map<Integer, TextDomainObject> getTexts(DocRef ref, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
         throw new NotImplementedException();
     }
 
-    public TextDomainObject getText(DocRef ref, int textNo, Optional<LoopContentRef> loopItemRefOpt, boolean createIfNotExists) {
-        throw new NotImplementedException();
-    }
-
-
-
-    public Map<DocumentLanguage, ImageDomainObject> getImages(DocVersionRef ref, int textNo, Optional<LoopContentRef> loopItemRefOpt, boolean createIfNotExists) {
-        throw new NotImplementedException();
-    }
-
-    public ImageDomainObject getImage(DocRef ref, int textNo, Optional<LoopContentRef> loopItemRefOpt, boolean createIfNotExists) {
+    public TextDomainObject getText(DocRef ref, int textNo, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
         throw new NotImplementedException();
     }
 
 
 
-    public Map<DocumentLanguage, TextDomainObject> getLoopTexts(DocVersionRef ref, int textNo, LoopContentRef loopItemRef, boolean createIfNotExists) {
+    public Map<DocumentLanguage, ImageDomainObject> getImages(DocVersionRef ref, int textNo, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
         throw new NotImplementedException();
     }
 
-    public Map<DocumentLanguage, TextDomainObject> getLoopText(DocRef ref, int textNo, LoopContentRef loopItemRef, boolean createIfNotExists) {
+    public ImageDomainObject getImage(DocRef ref, int textNo, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
         throw new NotImplementedException();
     }
 
-    public Map<DocumentLanguage, TextDomainObject> getLoopImages(DocVersionRef ref, int textNo, LoopContentRef loopItemRef, boolean createIfNotExists) {
+
+
+    public Map<DocumentLanguage, TextDomainObject> getLoopTexts(DocVersionRef ref, int textNo, LoopItemRef loopItemRef, boolean createIfNotExists) {
         throw new NotImplementedException();
     }
 
-    public Map<DocumentLanguage, TextDomainObject> getLoopImage(DocRef ref, int textNo, LoopContentRef loopItemRef, boolean createIfNotExists) {
+    public Map<DocumentLanguage, TextDomainObject> getLoopText(DocRef ref, int textNo, LoopItemRef loopItemRef, boolean createIfNotExists) {
+        throw new NotImplementedException();
+    }
+
+    public Map<DocumentLanguage, TextDomainObject> getLoopImages(DocVersionRef ref, int textNo, LoopItemRef loopItemRef, boolean createIfNotExists) {
+        throw new NotImplementedException();
+    }
+
+    public Map<DocumentLanguage, TextDomainObject> getLoopImage(DocRef ref, int textNo, LoopItemRef loopItemRef, boolean createIfNotExists) {
         throw new NotImplementedException();
     }
 

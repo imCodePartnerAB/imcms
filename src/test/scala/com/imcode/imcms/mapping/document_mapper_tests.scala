@@ -205,7 +205,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
         val text = TextDomainObject.builder().contentRef(TextDocContentRef.of(loopNo, contentNo)).build()
         val image = new ImageDomainObject
 
-        image.setLoopContentRef(TextDocContentRef.of(loopNo, contentNo))
+        image.setLoopItemRef(TextDocContentRef.of(loopNo, contentNo))
 
         text.setText(textPrefix + no + "_%d:%d".format(loopNo, contentNo))
         text.setType(textType)
@@ -254,8 +254,8 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
         assertNotNull(text)
         assertEquals(no, text.getNo)
-        assertEquals(loopNo, text.getLoopContentRef.getLoopNo)
-        assertEquals(contentNo, text.getLoopContentRef.getContentNo)
+        assertEquals(loopNo, text.getLoopItemRef.getLoopNo)
+        assertEquals(contentNo, text.getLoopItemRef.getContentNo)
         assertEquals(textType, text.getType)
         assertEquals(textPrefix + no + "_%d:%d".format(loopNo, contentNo), text.getText)
 

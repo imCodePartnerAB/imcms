@@ -1,5 +1,6 @@
 package imcode.server.document;
 
+import com.imcode.imcms.mapping.orm.DocVersion;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
@@ -86,6 +87,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public DocRef getRef() {
         return DocRef.of(getId(), getVersionNo(), getLanguage());
+    }
+
+    public DocVersionRef getVersionRef() {
+        return DocVersionRef.of(getId(), getVersionNo());
     }
 
     /**

@@ -166,11 +166,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         textDocDao.flush();
 
         for (Map.Entry<Integer, TextDomainObject> e : textDocument.getTexts().entrySet()) {
-            saveTextDocumentText(TextDocItemRef.of(textDocument.getRef(), e.getKey(), e.getValue()), user);
+            saveTextDocumentText(TextDocumentItemRef.of(textDocument.getRef(), e.getKey(), e.getValue()), user);
         }
 
-        for (Map.Entry<TextDocumentDomainObject.LoopItemKey, TextDomainObject> e : textDocument.getLoopTexts().entrySet()) {
-            saveTextDocumentText(TextDocItemRef.of(textDocument.getRef(), e.getKey().itemNo, e.getValue()), user);
+        for (Map.Entry<LoopItemRef, TextDomainObject> e : textDocument.getLoopTexts().entrySet()) {
+            saveTextDocumentText(TextDocumentItemRef.of(textDocument.getRef(), e.getKey().getItemNo(), e.getValue()), user);
         }
     }
 
@@ -225,7 +225,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * @param user
      */
     @Transactional
-    public void saveTextDocumentText(TextDocItemRef<TextDomainObject> textRef, UserDomainObject user) {
+    public void saveTextDocumentText(TextDocumentItemRef<TextDomainObject> textRef, UserDomainObject user) {
         DocVersion docVersion = docVersionDao.getVersion(textRef.getDocRef().getDocId(), textRef.getDocRef().getDocVersionNo());
         DocLanguage docLanguage = docLanguageDao.getByCode(textRef.getDocRef().getDocLanguage().getCode());
 
@@ -237,7 +237,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         ormText.setText(text.getText());
         ormText.setType(TextDocType.values()[text.getType()]);
 
-        LoopContentRef loopItemRef = text.getLoopContentRef();
+        LoopItemRef loopItemRef = text.getLoopItemRef();
 
         if (loopItemRef != null) {
             ormText.setLoopItemRef(new TextDocContentRef(loopItemRef.getLoopNo(), loopItemRef.getContentNo()));
@@ -380,12 +380,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         textDocDao.deleteMenus(DocVersionRef.of(doc.getId(), docRef.getDocVersionNo()));
 
         for (Map.Entry<Integer, MenuDomainObject> entry : doc.getMenus().entrySet()) {
-            updateTextDocumentMenu(TextDocItemRef.of(docRef, entry.getKey(), entry.getValue()), user);
+            updateTextDocumentMenu(TextDocumentItemRef.of(docRef, entry.getKey(), entry.getValue()), user);
         }
     }
 
     // fixme: implement
-    public void updateTextDocumentMenu(TextDocItemRef<MenuDomainObject> menuRef, UserDomainObject user) {
+    public void updateTextDocumentMenu(TextDocumentItemRef<MenuDomainObject> menuRef, UserDomainObject user) {
         DocVersion docVersion = docVersionDao.getVersion(menuRef.getDocRef().getDocId(), menuRef.getDocRef().getDocVersionNo());
 
         MenuDomainObject menu = menuRef.getItem();

@@ -70,8 +70,8 @@ public class DocumentSaver {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      */
     @Transactional
-    public void saveText(TextDocItemRef<TextDomainObject> textRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfMissing(textRef.getDocRef(), textRef.getItem().getLoopContentRef());
+    public void saveText(TextDocumentItemRef<TextDomainObject> textRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        createEnclosingContentLoopIfMissing(textRef.getDocRef(), textRef.getItem().getLoopItemRef());
 
         new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textRef, user);
 
@@ -80,9 +80,9 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void saveTexts(Collection<TextDocItemRef<TextDomainObject>> textRefs, UserDomainObject user)
+    public void saveTexts(Collection<TextDocumentItemRef<TextDomainObject>> textRefs, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        for (TextDocItemRef<TextDomainObject> textRef : textRefs) {
+        for (TextDocumentItemRef<TextDomainObject> textRef : textRefs) {
             saveText(textRef, user);
         }
     }
@@ -108,19 +108,19 @@ public class DocumentSaver {
      * @see com.imcode.imcms.servlet.admin.ChangeImage
      */
     @Transactional
-    public void saveImages(Collection<TextDocItemRef<ImageDomainObject>> imageRefs, UserDomainObject user)
+    public void saveImages(Collection<TextDocumentItemRef<ImageDomainObject>> imageRefs, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        for (TextDocItemRef<ImageDomainObject> imageRef : imageRefs) {
+        for (TextDocumentItemRef<ImageDomainObject> imageRef : imageRefs) {
             saveImage(imageRef, user);
         }
     }
 
 
     @Transactional
-    public void saveImage(TextDocItemRef<ImageDomainObject> imageRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveImage(TextDocumentItemRef<ImageDomainObject> imageRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         ImageDomainObject image = imageRef.getItem();
 
-        createEnclosingContentLoopIfMissing(imageRef.getDocRef(), image.getLoopContentRef());
+        createEnclosingContentLoopIfMissing(imageRef.getDocRef(), image.getLoopItemRef());
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
@@ -134,21 +134,21 @@ public class DocumentSaver {
      * Creates content loop if item references non-saved enclosing content loop.
      */
     @Transactional
-    public void createEnclosingContentLoopIfMissing(DocRef docRef, LoopContentRef loopContentRef) {
-        if (loopContentRef == null) {
+    public void createEnclosingContentLoopIfMissing(DocRef docRef, LoopItemRef loopItemRef) {
+        if (loopItemRef == null) {
             return;
         }
 
-        TextDocLoop ormLoop = textDocDao.getLoop(docRef, loopContentRef.getLoopNo());
+        TextDocLoop ormLoop = textDocDao.getLoop(docRef, loopItemRef.getLoopNo());
 
         if (ormLoop == null) {
             ormLoop = new TextDocLoop();
-            ormLoop.setNo(loopContentRef.getLoopNo());
-            ormLoop.setItems(new LinkedList<>(Arrays.asList(new TextDocLoopContent(loopContentRef.getContentNo()))));
+            ormLoop.setNo(loopItemRef.getLoopNo());
+            ormLoop.setItems(new LinkedList<>(Arrays.asList(new TextDocLoopContent(loopItemRef.getContentNo()))));
             textDocDao.saveLoop(ormLoop);
         } else {
             Loop apiLoop = OrmToApi.toApi(ormLoop);
-            int contentNo = loopContentRef.getContentNo();
+            int contentNo = loopItemRef.getContentNo();
             if (!apiLoop.findContentByNo(contentNo).isPresent()) {
                 ormLoop.getItems().add(new TextDocLoopContent(contentNo));
                 textDocDao.saveLoop(ormLoop);

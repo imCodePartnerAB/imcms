@@ -53,8 +53,8 @@ class TextsEditor(texts: Map[Int, TextDomainObject]) extends Editor {
       view.tblTexts.addRowWithAutoId(
         no: JInteger,
         text.getType.toString,
-        text.getLoopContentRef.asOption.map(_.getLoopNo).get: JInteger,
-        text.getLoopContentRef.asOption.map(_.getContentNo).get: JInteger,
+        text.getLoopItemRef.asOption.map(_.getLoopNo).get: JInteger,
+        text.getLoopItemRef.asOption.map(_.getContentNo).get: JInteger,
         text.getText
       )
     }

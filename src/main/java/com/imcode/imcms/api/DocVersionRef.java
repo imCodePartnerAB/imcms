@@ -42,21 +42,13 @@ public final class DocVersionRef {
     }
 
     private final int docId;
-
     private final int docVersionNo;
-
     private final int cachedHashCode;
-
-    private final String cachedToString;
 
     public DocVersionRef(int docId, int docVersionNo) {
         this.docId = docId;
         this.docVersionNo = docVersionNo;
         this.cachedHashCode = Objects.hash(docId, docVersionNo);
-        this.cachedToString = com.google.common.base.Objects.toStringHelper(this)
-                .add("id", docId)
-                .add("docVersionNo", docVersionNo)
-                .toString();
     }
 
     @Override
@@ -75,7 +67,10 @@ public final class DocVersionRef {
 
     @Override
     public String toString() {
-        return cachedToString;
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", docId)
+                .add("docVersionNo", docVersionNo)
+                .toString();
     }
 
     public int getDocId() {
