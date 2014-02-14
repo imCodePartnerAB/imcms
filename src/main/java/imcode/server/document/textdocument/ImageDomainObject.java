@@ -1,6 +1,5 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.LoopItemRef;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.util.image.Format;
@@ -21,8 +20,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
     private static final int GEN_FILE_LENGTH = 255;
 
     private volatile ImageSource source = new NullImageSource();
-
-    private volatile LoopItemRef loopItemRef;
 
     private volatile int width;
 
@@ -103,14 +100,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
         }
 
         return null;
-    }
-
-    public LoopItemRef getLoopItemRef() {
-        return loopItemRef;
-    }
-
-    public void setLoopItemRef(LoopItemRef loopItemRef) {
-        this.loopItemRef = loopItemRef;
     }
 
     public String getUrl() {
@@ -371,7 +360,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     private boolean equals(ImageDomainObject that) {
         return Objects.equals(source.toStorageString(), that.getSource().toStorageString())
-                && Objects.equals(loopItemRef, that.getLoopItemRef())
                 && Objects.equals(width, that.getWidth())
                 && Objects.equals(height, that.getHeight())
                 && Objects.equals(border, that.getBorder())
@@ -393,7 +381,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
     public int hashCode() {
         return Objects.hash(
                 source.toStorageString(),
-                loopItemRef,
                 width,
                 height,
                 border,

@@ -1,6 +1,5 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.LoopItemRef;
 import imcode.util.Parser;
 
 import java.io.Serializable;
@@ -21,9 +20,6 @@ public class TextDomainObject implements Serializable, Cloneable {
      */
     public final static int TEXT_TYPE_HTML = 1;
 
-    public enum Type {
-        PLAIN_TEXT, HTML
-    }
 
     public static final class Builder {
         private TextDomainObject textDomainObject;
@@ -40,11 +36,6 @@ public class TextDomainObject implements Serializable, Cloneable {
             return textDomainObject.clone();
         }
 
-        public Builder contentRef(LoopItemRef loopItemRef) {
-            textDomainObject.loopItemRef = loopItemRef;
-            return this;
-        }
-
         public Builder text(String text) {
             textDomainObject.text = text;
             return this;
@@ -52,11 +43,6 @@ public class TextDomainObject implements Serializable, Cloneable {
 
         public Builder type(int type) {
             textDomainObject.type = type;
-            return this;
-        }
-
-        public Builder format(Type type) {
-            textDomainObject.setFormatType(type);
             return this;
         }
     }
@@ -68,8 +54,6 @@ public class TextDomainObject implements Serializable, Cloneable {
     private volatile String text;
 
     private volatile int type;
-
-    private volatile LoopItemRef loopItemRef;
 
     public TextDomainObject() {
         this("");
@@ -129,7 +113,7 @@ public class TextDomainObject implements Serializable, Cloneable {
                 this.type = type;
                 break;
             default:
-                throw new IllegalArgumentException("Illegal text-type.");
+                throw new IllegalArgumentException(String.format("Illegal text-type: %d.", type));
         }
     }
 
@@ -163,14 +147,12 @@ public class TextDomainObject implements Serializable, Cloneable {
     }
 
     private boolean equals(TextDomainObject that) {
-        return Objects.equals(text, that.text)
-                && Objects.equals(type, that.type)
-                && Objects.equals(loopItemRef, that.loopItemRef);
+        return Objects.equals(text, that.text) && Objects.equals(type, that.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(text, type, loopItemRef);
+        return Objects.hash(text, type);
     }
 
 
@@ -181,29 +163,5 @@ public class TextDomainObject implements Serializable, Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }
-    }
-
-    public LoopItemRef getLoopItemRef() {
-        return loopItemRef;
-    }
-
-    public boolean isContentLoopItem() {
-        return loopItemRef != null;
-    }
-
-    public boolean isNotContentLoopItem() {
-        return loopItemRef == null;
-    }
-
-    public void setLoopItemRef(LoopItemRef loopItemRef) {
-        this.loopItemRef = loopItemRef;
-    }
-
-    public Type getFormatType() {
-        return Type.values()[type];
-    }
-
-    public void setFormatType(Type type) {
-        this.type = type.ordinal();
     }
 }

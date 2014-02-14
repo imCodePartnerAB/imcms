@@ -5,21 +5,16 @@ package admin.docadmin.image
 import _root_.imcode.server.document.textdocument.ImageDomainObject
 
 import com.google.common.base.Optional
-import com.imcode.imcms.api.{DocVersionRef, TextDocumentItemRef, DocumentLanguage, DocRef}
+import com.imcode.imcms.api.{DocVersionRef, TextDocumentItemRef, DocRef}
 import com.imcode.imcms.mapping.TextDocMapper
 import com.imcode.imcms.vaadin.{Current, Editor}
 import com.imcode.imcms.vaadin.component._
 
 import scala.collection.mutable
-import scala.collection.JavaConverters._
 import scala.collection.Set
 
-import com.imcode.imcms.dao.TextDocDao
 import com.vaadin.server._
-import com.vaadin.ui.{Button, UI, Image}
-import _root_.imcode.util.ImcmsImageUtils
-import org.slf4j.LoggerFactory
-import com.imcode.imcms.vaadin.component.dialog.OkCancelDialog
+import com.vaadin.ui.Button
 
 // ImageEditParams:
 // ------------------

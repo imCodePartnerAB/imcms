@@ -347,13 +347,13 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveTextDocMenu(TextDocumentItemRef<MenuDomainObject> menuIdentity, UserDomainObject user)
+    public void saveTextDocMenu(TextDocumentItemRef<MenuDomainObject> menuRef, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         try {
-            documentSaver.saveMenu(menuIdentity.getDocRef(), menuIdentity.getItem(), user);
+            documentSaver.saveMenu(menuRef, user);
         } finally {
-            invalidateDocument(menuIdentity.getDocRef().getDocId());
+            invalidateDocument(menuRef.getDocRef().getDocId());
         }
     }
 
@@ -805,7 +805,6 @@ public class DocumentMapper implements DocumentGetter {
      * @param id - text being saved
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      * @see com.imcode.imcms.servlet.admin.SaveText
-     * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      */
     public synchronized void saveTextDocText(TextDocumentItemRef<TextDomainObject> id, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
@@ -814,6 +813,16 @@ public class DocumentMapper implements DocumentGetter {
             documentSaver.saveText(id, user);
         } finally {
             invalidateDocument(id.getDocRef().getDocId());
+        }
+    }
+
+    public synchronized void saveTextDocText(TextDocumentLoopItemRef<TextDomainObject> ref, UserDomainObject user)
+            throws NoPermissionInternalException, DocumentSaveException {
+
+        try {
+            documentSaver.saveText(ref, user);
+        } finally {
+            invalidateDocument(ref.getDocVersionRef().getDocId());
         }
     }
 

@@ -11,6 +11,7 @@ import org.hibernate.{ScrollMode, CacheMode}
 
 import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.dao.hibernate.HibernateSupport
+import imcode.server.document.TextDocumentUtils
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class TextDocDao extends HibernateSupport {
@@ -192,7 +193,7 @@ class TextDocDao extends HibernateSupport {
           query.setParameter("contentRef", loopItemRefOpt.get)
         }
 
-        ImageUtil.initImageSource(query.uniqueResult.asInstanceOf[TextDocImage])
+        TextDocumentUtils.initImageSource(query.uniqueResult.asInstanceOf[TextDocImage])
       }
     }
   }
@@ -207,14 +208,14 @@ class TextDocDao extends HibernateSupport {
   def getImagesInAllLanguages(docRef: DocRef): JList[TextDocImage] =
     hibernate.listByNamedQueryAndNamedParams[TextDocImage](
       "Image.getByDocRef", "docIdentity" -> docRef
-    ) |> ImageUtil.initImagesSources
+    ) |> TextDocumentUtils.initImagesSources
 
 
   def getImages(ref: DocRef): JList[TextDocImage] =
     hibernate.listByNamedQueryAndNamedParams[TextDocImage](
       "Image.getByDocRefAndLanguage",
       "docIdentity" -> ref, "language" -> ref.getDocLanguage
-    ) |> ImageUtil.initImagesSources
+    ) |> TextDocumentUtils.initImagesSources
 
 
 
@@ -232,9 +233,9 @@ class TextDocDao extends HibernateSupport {
    *
    * @return loop or null if loop can not be found.
    */
-  def getLoop(docIdentity: DocRef, no: Int): TextDocLoop =
+  def getLoop(docVersionRef: DocVersionRef, no: Int): TextDocLoop =
     hibernate.getByNamedQueryAndNamedParams(
-      "ContentLoop.getByDocRefAndNo", "docIdentity" -> docIdentity, "no" -> no
+      "ContentLoop.getByDocRefAndNo", "docIdentity" -> docVersionRef, "no" -> no
     )
 
 

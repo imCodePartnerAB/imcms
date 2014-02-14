@@ -21,12 +21,12 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
 
   override val view = new TextEditorView |>> { w =>
     if (!settings.canChangeFormat) {
-      w.miFormatHtml.setEnabled(settings.format == TextDomainObject.Type.HTML)
-      w.miFormatPlain.setEnabled(settings.format == TextDomainObject.Type.PLAIN_TEXT)
+      w.miFormatHtml.setEnabled(settings.format == TextDomainObject.Format.HTML)
+      w.miFormatPlain.setEnabled(settings.format == TextDomainObject.Format.PLAIN_TEXT)
     }
 
-    w.miFormatHtml.setCommandHandler { _ => setFormat(TextDomainObject.Type.HTML) }
-    w.miFormatPlain.setCommandHandler { _ => setFormat(TextDomainObject.Type.PLAIN_TEXT) }
+    w.miFormatHtml.setCommandHandler { _ => setFormat(TextDomainObject.Format.HTML) }
+    w.miFormatPlain.setCommandHandler { _ => setFormat(TextDomainObject.Format.PLAIN_TEXT) }
     w.miHistory.setCommandHandler { _ =>
       new TextHistoryDialog("Restore text", currentText).show()
     }
@@ -56,13 +56,13 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
     }
   }
 
-  private def setFormat(format: TextDomainObject.Type) {
+  private def setFormat(format: TextDomainObject.Format) {
     format match {
-      case TextDomainObject.Type.HTML =>
+      case TextDomainObject.Format.HTML =>
         view.miFormatHtml.setChecked(true)
         view.miFormatPlain.setChecked(false)
 
-      case TextDomainObject.Type.PLAIN_TEXT =>
+      case TextDomainObject.Format.PLAIN_TEXT =>
         view.miFormatHtml.setChecked(false)
         view.miFormatPlain.setChecked(true)
     }
@@ -79,7 +79,7 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
       TextState(
         text,
         format |> {
-          case TextDomainObject.Type.HTML =>
+          case TextDomainObject.Format.HTML =>
             val config = new CKEditorConfig
             config.useCompactTags()
             config.disableElementsPath()
@@ -92,7 +92,7 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
             new CKEditorTextField(config) with FullSize |>> { ckEditor =>
               //ckEditor.
             }
-          case TextDomainObject.Type.PLAIN_TEXT => settings.rowCountOpt match {
+          case TextDomainObject.Format.PLAIN_TEXT => settings.rowCountOpt match {
             case Some(1) => new TextField with FullWidth
             case _ => new TextArea with FullSize
           }
@@ -115,7 +115,7 @@ class TextEditor(texts: Seq[TextDomainObject], settings: TextEditorParameters) e
     selectedTabPositionOpt.foreach(view.tsTexts.setSelectedTab)
 
     format |> {
-      case TextDomainObject.Type.HTML => ("Format: HTML", Theme.Icon.TextFormatHtml16)
+      case TextDomainObject.Format.HTML => ("Format: HTML", Theme.Icon.TextFormatHtml16)
       case _ => ("Format: Plain text", Theme.Icon.TextFormatPlain16)
     } |> {
       case (formatTypeName, formatTypeIcon) =>

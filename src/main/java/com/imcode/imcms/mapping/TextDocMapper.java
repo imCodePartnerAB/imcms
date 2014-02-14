@@ -1,12 +1,12 @@
 package com.imcode.imcms.mapping;
 
 import com.google.common.base.Optional;
-import com.imcode.imcms.api.LoopItemRef;
-import com.imcode.imcms.api.DocRef;
-import com.imcode.imcms.api.DocVersionRef;
-import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.TextDocDao;
+import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Service;
@@ -14,9 +14,11 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.Map;
 
 @Service
+@Transactional
 // fixme: implment
 public class TextDocMapper {
 
@@ -27,63 +29,102 @@ public class TextDocMapper {
     private TextDocDao textDocDao;
 
 
-    public Map<DocumentLanguage, Map<Integer, TextDomainObject>> getTexts(DocVersionRef ref, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
+    // -----------------------------------------------------------------------------------------------------------------
+    public Map<DocumentLanguage, Map<Integer, TextDomainObject>> getTexts(DocVersionRef docVersionRef) {
         throw new NotImplementedException();
     }
 
-    public Map<DocumentLanguage, TextDomainObject> getTexts(DocVersionRef ref, int textNo, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
+    public Map<DocumentLanguage, Optional<TextDomainObject>> getTexts(DocVersionRef docVersionRef, int textNo) {
         throw new NotImplementedException();
     }
 
-    public Map<Integer, TextDomainObject> getTexts(DocRef ref, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
+    public Map<Integer, TextDomainObject> getTexts(DocRef docRef) {
         throw new NotImplementedException();
     }
 
-    public TextDomainObject getText(DocRef ref, int textNo, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
+    public Optional<TextDomainObject> getText(DocRef docRef, int textNo) {
+        throw new NotImplementedException();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public Map<DocumentLanguage, Map<LoopItemRef, TextDomainObject>> getLoopTexts(DocVersionRef docVersionRef) {
+        throw new NotImplementedException();
+    }
+
+    public Map<DocumentLanguage, Optional<TextDomainObject>> getLoopTexts(DocVersionRef docVersionRef, LoopItemRef loopItemRef) {
+        throw new NotImplementedException();
+    }
+
+    public Map<LoopItemRef, TextDomainObject> getLoopTexts(DocRef docRef) {
+        throw new NotImplementedException();
+    }
+
+    public Optional<TextDomainObject> getLoopText(DocRef docRef, LoopItemRef loopItemRef) {
+        throw new NotImplementedException();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public Map<DocumentLanguage, Map<Integer, ImageDomainObject>> getImages(DocVersionRef docVersionRef) {
+        throw new NotImplementedException();
+    }
+
+    public Map<DocumentLanguage, Optional<ImageDomainObject>> getImages(DocVersionRef docVersionRef, int textNo) {
+        throw new NotImplementedException();
+    }
+
+    public Map<Integer, ImageDomainObject> getImages(DocRef docRef) {
+        throw new NotImplementedException();
+    }
+
+    public Optional<ImageDomainObject> getImage(DocRef docRef, int textNo) {
+        throw new NotImplementedException();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public Map<DocumentLanguage, Map<LoopItemRef, ImageDomainObject>> getLoopImages(DocVersionRef docVersionRef) {
+        throw new NotImplementedException();
+    }
+
+    public Map<DocumentLanguage, Optional<ImageDomainObject>> getLoopImages(DocVersionRef docVersionRef, LoopItemRef loopItemRef) {
+        throw new NotImplementedException();
+    }
+
+    public Map<LoopItemRef, ImageDomainObject> getLoopImages(DocRef docRef) {
+        throw new NotImplementedException();
+    }
+
+    public Optional<ImageDomainObject> getLoopImage(DocRef docRef, LoopItemRef loopItemRef) {
+        throw new NotImplementedException();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public Map<Integer, Loop> getLoops(DocVersionRef docVersionRef) {
+        throw new NotImplementedException();
+    }
+
+    public Optional<Loop> getLoop(DocVersionRef docVersionRef, int no) {
         throw new NotImplementedException();
     }
 
 
-
-    public Map<DocumentLanguage, ImageDomainObject> getImages(DocVersionRef ref, int textNo, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
+    // -----------------------------------------------------------------------------------------------------------------
+    public Map<Integer, MenuDomainObject> getMenus(DocVersionRef docVersionRef) {
         throw new NotImplementedException();
     }
 
-    public ImageDomainObject getImage(DocRef ref, int textNo, Optional<LoopItemRef> loopItemRefOpt, boolean createIfNotExists) {
-        throw new NotImplementedException();
+    private void initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
+
+        for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
+            Integer referencedDocumentId = entry.getKey();
+            MenuItemDomainObject menuItem = entry.getValue();
+            GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, documentGetter);
+
+            menuItem.setDocumentReference(gtr);
+        }
     }
 
 
-
-    public Map<DocumentLanguage, TextDomainObject> getLoopTexts(DocVersionRef ref, int textNo, LoopItemRef loopItemRef, boolean createIfNotExists) {
-        throw new NotImplementedException();
-    }
-
-    public Map<DocumentLanguage, TextDomainObject> getLoopText(DocRef ref, int textNo, LoopItemRef loopItemRef, boolean createIfNotExists) {
-        throw new NotImplementedException();
-    }
-
-    public Map<DocumentLanguage, TextDomainObject> getLoopImages(DocVersionRef ref, int textNo, LoopItemRef loopItemRef, boolean createIfNotExists) {
-        throw new NotImplementedException();
-    }
-
-    public Map<DocumentLanguage, TextDomainObject> getLoopImage(DocRef ref, int textNo, LoopItemRef loopItemRef, boolean createIfNotExists) {
-        throw new NotImplementedException();
-    }
-
-
-
-    public Map<DocumentLanguage, TextDomainObject> getAllTexts(DocVersionRef ref, int textNo, boolean createIfNotExists) {
-        throw new NotImplementedException();
-    }
-
-    public Map<DocumentLanguage, TextDomainObject> getAllImages(DocVersionRef ref, int textNo, boolean createIfNotExists) {
-        throw new NotImplementedException();
-    }
-
-    // get loop
     // get menu
-    // get templates
-
-
+    // get template
+    // get include
 }

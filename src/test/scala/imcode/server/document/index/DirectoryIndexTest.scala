@@ -1,12 +1,12 @@
 package imcode.server.document.index
 
-import com.imcode.imcms.api.{DocRef, DocumentVersion, DocumentAppearance}
+import com.imcode.imcms.api.{DocVersionRef, DocRef, DocumentVersion, DocumentAppearance}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
 import com.imcode.imcms.test.TestSetup
 import org.scalatest.mock.MockitoSugar.mock
-import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
+import com.imcode.imcms.mapping.{TextDocMapper, CategoryMapper, DocumentMapper}
 import com.imcode.imcms.dao.TextDocDao
 import org.mockito.Mockito
 import org.mockito.Matchers._
@@ -95,7 +95,7 @@ class DirectoryIndexFixture {
 
   private val documentMapperMock = mock[DocumentMapper]
   private val categoryMapperMock = mock[CategoryMapper]
-  private val textDocDaoMock = mock[TextDocDao]
+  private val textDocMapperMock = mock[TextDocMapper]
 
   Mockito.when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer(new Answer[JSet[CategoryDomainObject]]() {
      def answer(invocation: InvocationOnMock): JSet[CategoryDomainObject] = {
@@ -124,11 +124,11 @@ class DirectoryIndexFixture {
       i18nMetas.getOrElse(Seq(doc.getAppearance)).asJava
     )
 
-    Mockito.when(textDocDaoMock.getTextsInAllLanguages(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    Mockito.when(textDocMapperMock.getTexts(DocVersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       texts.getOrElse(Seq(doc.getTexts.values.asScala, doc.getLoopTexts.values.asScala).flatten).asJava
     )
 
-    Mockito.when(textDocDaoMock.getImagesInAllLanguages(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    Mockito.when(textDocMapperMock.getImagesInAllLanguages(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       images.getOrElse(Seq(doc.getImages.values.asScala, doc.getLoopImages.values.asScala).flatten).asJava
     )
   }

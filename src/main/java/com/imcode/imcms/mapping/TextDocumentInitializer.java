@@ -1,12 +1,11 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.api.LoopItemRef;
 import com.imcode.imcms.dao.*;
 import com.imcode.imcms.mapping.orm.*;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,6 +26,8 @@ public class TextDocumentInitializer {
     
     private TextDocDao textDocDao;
 
+    private TextDocMapper textDocMapper;
+
     /**
 	 * Initializes text document.
      */
@@ -40,20 +41,20 @@ public class TextDocumentInitializer {
     }
     
     public void initTexts(TextDocumentDomainObject document) {
-    	Collection<TextDocText> texts = textDocDao.getTexts(document.getRef());
+        for (Map.Entry<Integer, TextDomainObject> e: textDocMapper.getTexts(document.getRef()).entrySet()) {
+            document.setText(e.getKey(), e.getValue());
+        }
 
-    	for (TextDocText text: texts) {
-            Integer no = text.getNo();
-
-            document.setText(no, OrmToApi.toApi(text));
-    	}
+        for (Map.Entry<LoopItemRef, TextDomainObject> e: textDocMapper.getLoopTexts(document.getRef()).entrySet()) {
+            document.setText(e.getKey(), e.getValue());
+        }
     }
     
     
     public void initIncludes(TextDocumentDomainObject document) {
     	Collection<Include> includes = metaDao.getIncludes(document.getMeta().getId());
     	
-    	Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
+    	Map<Integer, Integer> includesMap = new HashMap<>();
     	
     	for (Include include: includes) {
     		includesMap.put(include.getIndex(), include.getIncludedDocumentId());
@@ -75,28 +76,23 @@ public class TextDocumentInitializer {
     
     
     public void initImages(TextDocumentDomainObject document) {
-    	Collection<TextDocImage> images = textDocDao.getImagesInAllLanguages(document.getRef());
-    	
-    	for (TextDocImage image: images) {
-    		document.setImage(image.getNo(), image);
+    	for (Map.Entry<Integer, ImageDomainObject> e: textDocMapper.getImages(document.getRef()).entrySet()) {
+    		document.setImage(e.getKey(), e.getValue());
     	}
+
+        for (Map.Entry<LoopItemRef, ImageDomainObject> e: textDocMapper.getLoopImages(document.getRef()).entrySet()) {
+            document.setImage(e.getKey(), e.getValue());
+        }
     }
 
 
     public void initMenus(TextDocumentDomainObject document) {
-    	Collection<MenuDomainObject> menus = textDocDao.getMenus(document.getRef());
-    	Map<Integer, MenuDomainObject> menusMap = new HashMap<>();
-
-    	for (MenuDomainObject menu: menus) {
-    		initMenuItems(menu, documentGetter);
-	    	
-	    	menusMap.put(menu.getNo(), menu);
-    	}
-    	
-    	document.setMenus(menusMap);
-    }   
+        for (Map.Entry<Integer, MenuDomainObject> e: textDocMapper.getMenus(document.getVersionRef()).entrySet()) {
+            document.setMenu(e.getKey(), initMenuItems(e.getValue(), documentGetter));
+        }
+    }
     
-    private void initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
+    private MenuDomainObject initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
     	
     	for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
     		Integer referencedDocumentId = entry.getKey();
@@ -105,6 +101,8 @@ public class TextDocumentInitializer {
     		
     		menuItem.setDocumentReference(gtr);
     	}
+
+        return menu;
     }
 
 

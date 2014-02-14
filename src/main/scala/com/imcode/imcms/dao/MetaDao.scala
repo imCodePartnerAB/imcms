@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.api.{DocRef}
+import com.imcode.imcms.api.{DocVersionRef, DocRef}
 import com.imcode.imcms.mapping.orm._
 import imcode.server.document.DocumentDomainObject
 import org.apache.commons.lang.StringUtils
@@ -22,6 +22,10 @@ class MetaDao extends HibernateSupport {
   /**  Updates doc's access and modified date-time. */
   def touch(docIdentity: DocRef, user: UserDomainObject): Unit = touch(docIdentity, user, new Date)
   def touch(docIdentity: DocRef, user: UserDomainObject, date: Date): Unit =
+    touch(docIdentity.getDocId, docIdentity.getDocVersionNo, user.getId, date)
+
+  def touch(docIdentity: DocVersionRef, user: UserDomainObject): Unit = touch(docIdentity, user, new Date)
+  def touch(docIdentity: DocVersionRef, user: UserDomainObject, date: Date): Unit =
     touch(docIdentity.getDocId, docIdentity.getDocVersionNo, user.getId, date)
 
   private def touch(docId: Int, docVersionNo: Int, userId: Int, dt: Date) {

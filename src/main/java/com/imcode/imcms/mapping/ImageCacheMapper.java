@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.dao.ImageUtil;
+import imcode.server.document.TextDocumentUtils;
 import imcode.server.document.textdocument.FileDocumentImageSource;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -135,7 +135,7 @@ public class ImageCacheMapper {
                 .getNamedQuery("Image.allImages")
                 .list();
 
-        ImageUtil.initImagesSources(images);
+        TextDocumentUtils.initImagesSources(images);
 
 	    return images;
 	}

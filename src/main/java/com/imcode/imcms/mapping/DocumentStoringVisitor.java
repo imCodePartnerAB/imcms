@@ -237,18 +237,40 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         ormText.setText(text.getText());
         ormText.setType(TextDocType.values()[text.getType()]);
 
-        LoopItemRef loopItemRef = text.getLoopItemRef();
-
-        if (loopItemRef != null) {
-            ormText.setLoopItemRef(new TextDocContentRef(loopItemRef.getLoopNo(), loopItemRef.getContentNo()));
-        }
-
         textDocDao.saveText(ormText);
 
         // fixme: implement history
         //TextDocTextHistory textHistory = new TextDocTextHistory(textRef, user);
         //textDao.saveTextHistory(textHistory);
     }
+
+    @Transactional
+    //fixme: implement
+    public void saveTextDocumentText(TextDocumentLoopItemRef<TextDomainObject> textRef, UserDomainObject user) {
+//        DocVersion docVersion = docVersionDao.getVersion(textRef.getDocRef().getDocId(), textRef.getDocRef().getDocVersionNo());
+//        DocLanguage docLanguage = docLanguageDao.getByCode(textRef.getDocRef().getDocLanguage().getCode());
+//
+//        TextDomainObject text = textRef.getItem();
+//        TextDocText ormText = new TextDocText();
+//
+//        ormText.setDocLanguage(docLanguage);
+//        ormText.setDocVersion(docVersion);
+//        ormText.setText(text.getText());
+//        ormText.setType(TextDocType.values()[text.getType()]);
+//
+//        LoopItemRef loopItemRef = text.getLoopItemRef();
+//
+//        if (loopItemRef != null) {
+//            ormText.setLoopItemRef(new TextDocContentRef(loopItemRef.getLoopNo(), loopItemRef.getContentNo()));
+//        }
+//
+//        textDocDao.saveText(ormText);
+
+        // fixme: implement history
+        //TextDocTextHistory textHistory = new TextDocTextHistory(textRef, user);
+        //textDao.saveTextHistory(textHistory);
+    }
+
 
     /**
      * Saves text document's image.

@@ -3,8 +3,6 @@ package imcms
 package admin.docadmin
 
 import com.google.common.base.Optional
-import com.imcode.imcms.admin.docadmin.menu.MenuEditorParameters
-import com.imcode.imcms.admin.docadmin.text.TextEditorParameters
 import com.imcode.imcms.api._
 import java.util.Locale
 import scala.collection.JavaConverters._
@@ -14,9 +12,8 @@ import com.vaadin.ui._
 import com.vaadin.server._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.component.dialog.ConfirmationDialog
-import com.imcode.imcms.mapping.{TextDocMapper, OrmToApi, DocumentSaveException}
+import com.imcode.imcms.mapping.{TextDocMapper, DocumentSaveException}
 import com.imcode.imcms.ImcmsServicesSupport
-import com.imcode.imcms.dao.TextDocDao
 import org.apache.commons.lang3.StringEscapeUtils
 
 import _root_.imcode.server.document.textdocument._
@@ -351,9 +348,9 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     val preferredLanguage = Imcms.getUser.getDocGetterCallback.documentLanguages.preferred
 
     val (format, canChangeFormat) = (showModeText, showModeHtml) match {
-      case (true, false) => (TextDomainObject.Type.PLAIN_TEXT, false)
-      case (false, true) => (TextDomainObject.Type.HTML, false)
-      case _ => (TextDomainObject.Type.values()(texts.asScala.head.getType.ordinal()), true)
+      case (true, false) => (TextDomainObject.Format.PLAIN_TEXT, false)
+      case (false, true) => (TextDomainObject.Format.HTML, false)
+      case _ => (TextDomainObject.Format.values()(texts.asScala.head.getType.ordinal()), true)
     }
 
     val editor = new TextEditor(texts.asScala, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))

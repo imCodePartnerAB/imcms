@@ -7,22 +7,16 @@ package com.imcode.imcms.api;
 public class TextDocumentItemRef<T> {
 
     public static <T> TextDocumentItemRef<T> of(DocRef docRef, int itemNo, T item) {
-        return new TextDocumentItemRef<>(docRef, itemNo, null, item);
-    }
-
-    public static <T> TextDocumentItemRef<T> of(DocRef docRef, int itemNo, LoopItemRef loopItemRef, T item) {
-        return new TextDocumentItemRef<>(docRef, itemNo, loopItemRef, item);
+        return new TextDocumentItemRef<>(docRef, itemNo, item);
     }
 
     private final DocRef docRef;
     private final int itemNo;
-    private final LoopItemRef loopItemRef;
     private final T item;
 
-    public TextDocumentItemRef(DocRef docRef, int itemNo, LoopItemRef loopItemRef, T item) {
+    public TextDocumentItemRef(DocRef docRef, int itemNo, T item) {
         this.docRef = docRef;
         this.itemNo = itemNo;
-        this.loopItemRef = loopItemRef;
         this.item = item;
     }
 
@@ -32,10 +26,6 @@ public class TextDocumentItemRef<T> {
 
     public int getItemNo() {
         return itemNo;
-    }
-
-    public LoopItemRef getLoopItemRef() {
-        return loopItemRef;
     }
 
     public T getItem() {

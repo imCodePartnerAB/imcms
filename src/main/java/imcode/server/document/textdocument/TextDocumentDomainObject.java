@@ -2,14 +2,13 @@ package imcode.server.document.textdocument;
 
 import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.api.LoopItemRef;
+import com.imcode.imcms.mapping.orm.TemplateNames;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.imcode.imcms.mapping.orm.TemplateNames;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
@@ -37,7 +36,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Texts in loops.
      */
     private volatile ConcurrentHashMap<LoopItemRef, TextDomainObject> loopTexts = new ConcurrentHashMap<>();
-
 
     /**
      * Images in loops.
@@ -125,6 +123,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Returns menu.
      * If menu does not exists creates and adds menu to this document.
+     *
      * @param menuNo
      * @return Menu
      */
@@ -148,8 +147,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-    public TextDomainObject getText(int textNo, LoopItemRef loopItemRef) {
-        return loopItemRef == null ? texts.get(textNo) : loopTexts.get(new LoopItemRef(textNo, loopItemRef));
+    public TextDomainObject getText(LoopItemRef loopItemRef) {
+        Objects.requireNonNull(loopItemRef);
+
+        return loopTexts.get(loopItemRef);
     }
 
     /**
@@ -185,64 +186,36 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @param no
      * @param menu
-     * @return a copy of added menu.
      */
-    public MenuDomainObject setMenu(int no, MenuDomainObject menu) {
+    // fixme: check sort order vs RB4
+    public void setMenu(int no, MenuDomainObject menu) {
         MenuDomainObject newMenu = menu.clone();
         MenuDomainObject oldMenu = menus.get(no);
 
         if (oldMenu != null) newMenu.setSortOrder(oldMenu.getSortOrder());
 
         menus.put(no, newMenu);
-
-        return newMenu.clone();
     }
 
     /**
      * Inserts a text to this document.
      * <p/>
-     * If a text belongs to a content loop then both loop and its content must exist in this document.
      *
-     * @param no text position in the document.
+     * @param no   text position in the document.
      * @param text text being inserted.
-     * @return copy of inserted text.
      */
-    public TextDomainObject setText(int no, TextDomainObject text) {
-        LoopItemRef loopItemRef = text.getLoopItemRef();
-        LoopItemRef key = loopItemRef == null
-                ? null
-                : new LoopItemRef(no, loopItemRef);
+    public void setText(int no, TextDomainObject text) {
+        Objects.requireNonNull(text);
 
-        TextDomainObject newText = text.clone();
-
-        if (key == null) {
-            texts.put(no, newText);
-        } else {
-            Loop loop = getContentLoop(loopItemRef.getLoopNo());
-
-            if (loop == null) {
-                throw new IllegalStateException(String.format(
-                        "Invalid text. Loop does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), loopItemRef.getLoopNo(), loopItemRef.getContentNo(), no)
-                );
-            }
-
-            boolean contentExist = loop.findContentByNo(loopItemRef.getContentNo()).isPresent();
-
-            if (!contentExist) {
-                throw new IllegalStateException(String.format(
-                        "Invalid text. Content does not exists. DocRef identity: %s, contentRef: %s, text no: %s."
-                        , getRef(), loopItemRef, no)
-                );
-            }
-
-            loopTexts.put(key, newText);
-        }
-
-        return newText.clone();
+        texts.put(no, text.clone());
     }
 
-    public TextDomainObject setText(int no, LoopItemRef, )
+    public void setText(LoopItemRef loopItemRef, TextDomainObject text) {
+        Objects.requireNonNull(loopItemRef);
+        Objects.requireNonNull(text);
+
+        loopTexts.put(loopItemRef, text);
+    }
 
     public Map<Integer, Integer> getIncludesMap() {
         return Collections.unmodifiableMap(includesMap);
@@ -306,49 +279,41 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
 
-    public ImageDomainObject setImage(int no, ImageDomainObject image) {
-        LoopItemRef loopItemRef = image.getLoopItemRef();
-        LoopItemRef key = loopItemRef == null ? null : new LoopItemRef(no, loopItemRef);
+    public void setImage(int no, ImageDomainObject image) {
+        Objects.requireNonNull(image);
+        images.put(no, image);
+    }
 
-        ImageDomainObject oldImage = key == null ? images.get(no) : loopImages.get(key);
-        ImageDomainObject newImage = image.clone();
+    public void setImage(LoopItemRef loopItemRef, ImageDomainObject image) {
+        Objects.requireNonNull(loopItemRef);
+        Objects.requireNonNull(image);
 
-        if (key == null) {
-            images.put(no, newImage);
-        } else {
-            Loop loop = getContentLoop(loopItemRef.getLoopNo());
-
-            if (loop == null) {
-                throw new IllegalStateException(String.format(
-                        "Invalid image. Loop does not exists. Doc identity: %s, loop no: %s, content no: %s, text no: %s."
-                        , getRef(), loopItemRef.getLoopNo(), loopItemRef.getContentNo(), no)
-                );
-            }
-
-            boolean contentExist = loop.findContentByNo(loopItemRef.getContentNo()).isPresent();
-
-            if (!contentExist) {
-                throw new IllegalStateException(String.format(
-                        "Invalid image. Content does not exists. DocRef: %s, contentRef: %s, image no: %s."
-                        , getRef(), loopItemRef, no)
-                );
-            }
-
-            loopImages.put(key, newImage);
-        }
-
-        return newImage.clone();
+        loopImages.put(loopItemRef, image);
     }
 
     /**
      * @return image outside of content loop.
      */
     public ImageDomainObject getImage(int no) {
+        ImageDomainObject image = images.get(no);
+        if (image == null) {
+            image = new ImageDomainObject();
+            images.put(no, image);
+        }
+
         return images.get(no);
     }
 
-    public ImageDomainObject getImage(int imageNo, LoopItemRef loopItemRef) {
-            return loopImages.get(new LoopItemRef(imageNo, loopItemRef));
+    public ImageDomainObject getImage(LoopItemRef loopItemRef) {
+        Objects.requireNonNull(loopItemRef);
+
+        ImageDomainObject image = loopImages.get(loopItemRef);
+        if (image == null) {
+            image = new ImageDomainObject();
+            loopImages.put(loopItemRef, image);
+        }
+
+        return image;
     }
 
     private ConcurrentHashMap<Integer, MenuDomainObject> cloneMenusMap() {
@@ -465,7 +430,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Sets content loop clone passed to the method.
      *
-     * @param no          content loop no in this document.
+     * @param no   content loop no in this document.
      * @param loop content loop to set.
      * @returncontentLoop set to this document.
      */
