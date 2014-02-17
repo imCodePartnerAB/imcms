@@ -160,13 +160,13 @@ public class DocumentSaver {
         if (ormLoop == null) {
             ormLoop = new TextDocLoop();
             ormLoop.setNo(loopItemRef.getLoopNo());
-            ormLoop.setEntries(new LinkedList<>(Arrays.asList(new TextDocLoopEntry(loopItemRef.getEntryNo()))));
+            ormLoop.setEntries(new LinkedList<>(Arrays.asList(new Entry(loopItemRef.getEntryNo()))));
             textDocDao.saveLoop(ormLoop);
         } else {
             Loop apiLoop = OrmToApi.toApi(ormLoop);
             int contentNo = loopItemRef.getEntryNo();
             if (!apiLoop.findEntryByNo(contentNo).isPresent()) {
-                ormLoop.getEntries().add(new TextDocLoopEntry(contentNo));
+                ormLoop.getEntries().add(new Entry(contentNo));
                 textDocDao.saveLoop(ormLoop);
             }
         }

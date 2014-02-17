@@ -50,13 +50,13 @@ class TextsEditor(texts: Map[Int, TextDomainObject]) extends Editor {
     view.tblTexts.removeAllItems()
 
     for ((no, text) <- state) {
-      view.tblTexts.addRowWithAutoId(
-        no: JInteger,
-        text.getType.toString,
-        text.getLoopItemRef.asOption.map(_.getLoopNo).get: JInteger,
-        text.getLoopItemRef.asOption.map(_.getContentNo).get: JInteger,
-        text.getText
-      )
+//      view.tblTexts.addRowWithAutoId(
+//        no: JInteger,
+//        text.getType.toString,
+//        text.getLoopItemRef.asOption.map(_.getLoopNo).get: JInteger,
+//        text.getLoopItemRef.asOption.map(_.getContentNo).get: JInteger,
+//        text.getText
+//      )
     }
   }
 

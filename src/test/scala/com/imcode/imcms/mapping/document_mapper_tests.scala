@@ -202,10 +202,10 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       newDoc.setMenu(no, menu)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = TextDomainObject.builder().contentRef(TextDocContentRef.of(loopNo, contentNo)).build()
+        val text = TextDomainObject.builder().contentRef(TextDocLoopEntry.of(loopNo, contentNo)).build()
         val image = new ImageDomainObject
 
-        image.setLoopItemRef(TextDocContentRef.of(loopNo, contentNo))
+        image.setLoopItemRef(TextDocLoopEntry.of(loopNo, contentNo))
 
         text.setText(textPrefix + no + "_%d:%d".format(loopNo, contentNo))
         text.setType(textType)
@@ -249,8 +249,8 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
                    menuItems.values.asScala.map(_.getDocumentId).toSet)
 
       for (loopNo <- 0 until loopsCount; contentNo <- 0 until loopNo) {
-        val text = savedDoc.getText(no, TextDocContentRef.of(loopNo, contentNo))
-        val image = savedDoc.getImage(no, TextDocContentRef.of(loopNo, contentNo))
+        val text = savedDoc.getText(no, TextDocLoopEntry.of(loopNo, contentNo))
+        val image = savedDoc.getImage(no, TextDocLoopEntry.of(loopNo, contentNo))
 
         assertNotNull(text)
         assertEquals(no, text.getNo)

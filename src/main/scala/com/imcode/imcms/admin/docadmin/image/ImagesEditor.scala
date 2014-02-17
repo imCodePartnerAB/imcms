@@ -12,9 +12,12 @@ import com.imcode.imcms.vaadin.component._
 
 import scala.collection.mutable
 import scala.collection.Set
+import scala.collection.JavaConverters._
 
 import com.vaadin.server._
 import com.vaadin.ui.Button
+import imcode.server.document.TextDocumentUtils
+
 
 // ImageEditParams:
 // ------------------
@@ -65,9 +68,9 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
     // fixme
     val textDocMapper: TextDocMapper = ???
     val versionRef = DocVersionRef.buillder.docId(docRef.getDocId).docVersionNo(docRef.getDocVersionNo).build()
-    for (image <- textDocMapper.getImages(versionRef, imageNo, Optional.absent(), true)) {
+    for ((language, image) <- textDocMapper.getImages(versionRef, imageNo).asScala.map { case (l, i) => l -> i.or(TextDocumentUtils.createDefaultImage()) }) {
       val imageEditor = new ImageEditor(Some(image))
-      view.tsImages.addTab(imageEditor.view, image.getLanguage.getNativeName, Theme.Icon.Language.flag(image.getLanguage))
+      view.tsImages.addTab(imageEditor.view, language.getNativeName, Theme.Icon.Language.flag(language))
       editors += imageEditor
     }
   }

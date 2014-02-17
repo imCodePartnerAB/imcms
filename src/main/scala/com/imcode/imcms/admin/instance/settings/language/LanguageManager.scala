@@ -88,13 +88,13 @@ class LanguageManager {
 
   /** Edit in modal dialog. */
   private def editAndSave(vo: DocumentLanguage) {
-    val id = vo.getId
-    val isNew = id == null
+    val code = vo.getCode
+    val isNew = code == null
     val dialogTitle = if (isNew) "doc_language_editor_dlg_title.new".i else "doc_language_editor_dlg_title.edit".f(vo.getName)
 
     val dlg = new OkCancelDialog(dialogTitle) with OKCaptionIsSave
     dlg.mainComponent = new LanguageEditorView |>> { c =>
-      c.txtId.value = if (isNew) "" else id.toString
+      c.txtId.value = if (isNew) "" else ""
       c.txtCode.value = vo.getCode.trimToEmpty
       c.txtName.value = vo.getName.trimToEmpty
       c.txtNativeName.value = vo.getNativeName.trimToEmpty

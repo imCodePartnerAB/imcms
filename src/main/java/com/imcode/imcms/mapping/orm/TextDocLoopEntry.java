@@ -1,61 +1,51 @@
 package com.imcode.imcms.mapping.orm;
 
+import com.google.common.base.Objects;
+
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
-import java.util.Objects;
 
 @Embeddable
-public class TextDocLoopEntry {
+public class TextDocLoopEntry implements Serializable, Cloneable {
 
-    private int no;
+    @Column(name = "content_loop_no")
+    private int loopNo;
 
-    private boolean enabled;
+    @Column(name = "content_no")
+    private int contentNo;
 
     public TextDocLoopEntry() {}
 
-    public TextDocLoopEntry(int no) {
-        this(no, true);
-    }
-
-    public TextDocLoopEntry(int no, boolean enabled) {
-        this.no = no;
-        this.enabled = enabled;
-    }
-
-    @Override
-    public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("no", no)
-                .add("enabled", enabled).toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(no, enabled);
+    public TextDocLoopEntry(int loopNo, int contentNo) {
+        this.loopNo = loopNo;
+        this.contentNo = contentNo;
     }
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof TextDocLoopEntry && equals((TextDocLoopEntry) o));
+        return this == o || (o instanceof TextDocLoopEntry && equals((TextDocLoopEntry) o));
     }
 
     private boolean equals(TextDocLoopEntry that) {
-        return this.enabled == that.enabled && this.no == that.no;
+        return loopNo == that.loopNo && contentNo == that.contentNo;
     }
 
-    public int getNo() {
-        return no;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(loopNo, contentNo);
     }
 
-    public void setNo(int no) {
-        this.no = no;
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this).add("contentNo", contentNo).add("loopNo", loopNo).toString();
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public int getLoopNo() {
+        return loopNo;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public int getContentNo() {
+        return contentNo;
     }
 }

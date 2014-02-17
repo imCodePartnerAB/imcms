@@ -14,6 +14,64 @@ import java.util.*;
 @Table(name = "imcms_text_doc_content_loops")
 public class TextDocLoop extends DocVersionedContent {
 
+
+    @Embeddable
+    public class Entry {
+
+        private int no;
+
+        private boolean enabled;
+
+        public Entry() {}
+
+        public Entry(int no) {
+            this(no, true);
+        }
+
+        public Entry(int no, boolean enabled) {
+            this.no = no;
+            this.enabled = enabled;
+        }
+
+        @Override
+        public String toString() {
+            return com.google.common.base.Objects.toStringHelper(this)
+                    .add("no", no)
+                    .add("enabled", enabled).toString();
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(no, enabled);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o == this || (o instanceof Entry && equals((Entry) o));
+        }
+
+        private boolean equals(Entry that) {
+            return this.enabled == that.enabled && this.no == that.no;
+        }
+
+        public int getNo() {
+            return no;
+        }
+
+        public void setNo(int no) {
+            this.no = no;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+    }
+
+
     @Min(1)
     @NotNull
     @Column(updatable = false)
@@ -33,7 +91,7 @@ public class TextDocLoop extends DocVersionedContent {
             joinColumns = @JoinColumn(name = "content_id")
     )
     @OrderColumn(name = "ix")
-    private List<TextDocLoopEntry> entries = new LinkedList<>();
+    private List<Entry> entries = new LinkedList<>();
 
     @Override
     public String toString() {
@@ -80,11 +138,11 @@ public class TextDocLoop extends DocVersionedContent {
         this.version = version;
     }
 
-    public List<TextDocLoopEntry> getEntries() {
+    public List<Entry> getEntries() {
         return entries;
     }
 
-    public void setEntries(List<TextDocLoopEntry> items) {
+    public void setEntries(List<Entry> items) {
         this.entries = items;
     }
 

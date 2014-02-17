@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.api.DocRef;
 import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.api.LoopEntry;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.Utility;
@@ -18,11 +17,12 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 /**
  * Content loop tag v2.
  */
+//fixme: reimplement
 public class ContentLoopTag2 extends BodyTagSupport {
 
     /** Creates empty content loop. */
     private static Loop createLoop(DocRef docRef, Integer no) {
-        return Loop.builder().docIdentity(docRef).no(no).build();
+        return new Loop();
     }
 
 
@@ -30,8 +30,6 @@ public class ContentLoopTag2 extends BodyTagSupport {
     private int no;
 
     private Loop loop;
-
-    private LoopEntry currentLoopEntry;
 
     private int contentsCount;
 
@@ -78,8 +76,8 @@ public class ContentLoopTag2 extends BodyTagSupport {
            	document.setContentLoop(no, loop);
         }
 
-        currentLoopEntry = null;
-        contentsCount = loop.getItems().size();
+        //currentLoopEntry = null;
+        //contentsCount = loop.getItems().size();
         contentIndex = -1;        
 
         return contentsCount == 0 || !nextContent()
@@ -102,30 +100,32 @@ public class ContentLoopTag2 extends BodyTagSupport {
             return false;
         }
 
-        currentLoopEntry = loop.getItems().get(contentIndex);
 
-        if (currentLoopEntry.isEnabled()) {
-            firstContent = true;
-            lastContent = true;
-            
-            for (int i = contentIndex - 1; i > -1; i--) {
-                if (loop.getItems().get(i).isEnabled()) {
-                    firstContent = false;
-                    break;
-                }
-            }
-
-            for (int i = contentIndex + 1; i < contentsCount; i++) {
-                if (loop.getItems().get(i).isEnabled()) {
-                    lastContent = false;
-                    break;
-                }
-            }
-
-            return true;
-        } else {
-            return nextContent();
-        }
+        return true;
+//        currentLoopEntry = loop.getItems().get(contentIndex);
+//
+//        if (currentLoopEntry.isEnabled()) {
+//            firstContent = true;
+//            lastContent = true;
+//
+//            for (int i = contentIndex - 1; i > -1; i--) {
+//                if (loop.getItems().get(i).isEnabled()) {
+//                    firstContent = false;
+//                    break;
+//                }
+//            }
+//
+//            for (int i = contentIndex + 1; i < contentsCount; i++) {
+//                if (loop.getItems().get(i).isEnabled()) {
+//                    lastContent = false;
+//                    break;
+//                }
+//            }
+//
+//            return true;
+//        } else {
+//            return nextContent();
+//        }
 	}
 
 
@@ -136,7 +136,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
     		request.setAttribute("document", document);
     		request.setAttribute("contentLoop", loop);
-    		request.setAttribute("content", currentLoopEntry);
+    		//request.setAttribute("content", currentLoopEntry);
     		request.setAttribute("flags", parserParameters.getFlags());
     		request.setAttribute("viewFragment", viewFragment);
     		request.setAttribute("contentsCount", contentsCount);
@@ -219,12 +219,5 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
     public void setLoop(Loop loop) {
         this.loop = loop;
-    }
-
-    /**
-     * @return current content.
-     */
-    public LoopEntry getCurrentLoopEntry() {
-        return currentLoopEntry;
     }
 }

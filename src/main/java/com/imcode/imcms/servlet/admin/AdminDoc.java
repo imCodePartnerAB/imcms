@@ -72,20 +72,7 @@ public class AdminDoc extends HttpServlet {
             // forward foes not work ... some problems with vaadin bootstrap js.
             String contextPath = req.getContextPath();
             if (contextPath == "/") contextPath = "";
-            if (pageFlow instanceof EditDocumentInformationPageFlow) {
-                res.sendRedirect(contextPath + "/docadmin?docId=" + document.getId() + "#info");
-                //getServletContext().getRequestDispatcher("/docadmin?docId=" + document.getId() + "#info").forward(req, res);
-            } else if (pageFlow instanceof EditDocumentPermissionsPageFlow) {
-                //getServletContext().getRequestDispatcher("/docadmin?docId=" + document.getId() + "#access").forward(req, res);
-                res.sendRedirect(contextPath + "/docadmin?docId=" + document.getId() + "#access");
-            } else if (pageFlow instanceof EditHtmlDocumentPageFlow
-                    || pageFlow instanceof EditUrlDocumentPageFlow
-                    || pageFlow instanceof EditFileDocumentPageFlow) {
-                //getServletContext().getRequestDispatcher("/docadmin?docId=" + document.getId() + "#content").forward(req, res);
-                res.sendRedirect(contextPath + "/docadmin?docId=" + document.getId() + "#content");
-            } else {
                 pageFlow.dispatch(req, res);
-            }
 
         } else {
             Utility.setDefaultHtmlContentType(res);
@@ -107,18 +94,13 @@ public class AdminDoc extends HttpServlet {
 
         PageFlow pageFlow = null;
         if (ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags && user.canEditDocumentInformationFor(document)) {
-            pageFlow = new EditDocumentInformationPageFlow(document, returnCommand, saveDocumentCommand);
         } else if (ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)) {
-            pageFlow = new EditDocumentPermissionsPageFlow(document, returnCommand, saveDocumentCommand);
         } else if (document instanceof HtmlDocumentDomainObject
                 && ImcmsConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags) {
-            pageFlow = new EditHtmlDocumentPageFlow((HtmlDocumentDomainObject) document, returnCommand, saveDocumentCommand);
         } else if (document instanceof UrlDocumentDomainObject
                 && ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags) {
-            pageFlow = new EditUrlDocumentPageFlow((UrlDocumentDomainObject) document, returnCommand, saveDocumentCommand);
         } else if (document instanceof FileDocumentDomainObject
                 && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags) {
-            pageFlow = new EditFileDocumentPageFlow((FileDocumentDomainObject) document, getServletContext(), returnCommand, saveDocumentCommand, null);
         } else if (ImcmsConstants.DISPATCH_FLAG__PUBLISH == flags) {
             pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.MakeDocumentVersionCommand(), user);
         } else if (ImcmsConstants.DISPATCH_FLAG__SET_DEFAULT_VERSION == flags) {

@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 
 import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.admin.ImageCropPage.CropResult;
@@ -60,7 +59,6 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_ALT = "alt_text";
     public static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
     public static final String REQUEST_PARAMETER__LINK_URL = "imageref_link";
-    public static final String REQUEST_PARAMETER__LINK_TARGET = EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET;
     public static final String REQUEST_PARAMETER__FORMAT = "format";
     public static final String REQUEST_PARAMETER__FORMAT_EXTENSION = "format_ext";
     public static final String REQUEST_PARAMETER__CROP_X1 = "crop_x1";

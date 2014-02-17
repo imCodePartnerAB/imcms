@@ -32,7 +32,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.flow.Page;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -279,9 +278,6 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
                 documentFinder.forwardWithPage(request, response, SearchDocumentsPage.this);
             }
         };
-        EditDocumentInformationPageFlow editDocumentInformationPageFlow = new EditDocumentInformationPageFlow(documentSelectedForEditing, returnCommand, new DocumentMapper.SaveEditedDocumentCommand());
-        editDocumentInformationPageFlow.setAdminButtonsHidden(true);
-        editDocumentInformationPageFlow.dispatch(request, response);
     }
 
     public String getParameterStringWithParameter(HttpServletRequest request,

@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.mapping.orm.TextDocLoopEntry,
+<%@ page import="com.imcode.imcms.mapping.orm.Entry,
                  com.imcode.imcms.mapping.orm.TextDocLoop,
                  imcode.server.Imcms,
                  imcode.server.document.DocumentDomainObject,
@@ -34,7 +34,7 @@
         url += "&rows=" + rows;
     }
 
-    TextDocLoopEntry loopContent = (TextDocLoopEntry) request.getAttribute("tag.text.loop.content");
+    Entry loopContent = (Entry) request.getAttribute("tag.text.loop.content");
 
     if (loopContent != null) {
         TextDocLoop loop = (TextDocLoop) request.getAttribute("tag.text.loop");

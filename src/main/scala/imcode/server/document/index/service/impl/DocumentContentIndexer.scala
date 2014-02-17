@@ -32,8 +32,8 @@ class DocumentContentIndexer(fileDocFileFilter: FileDocumentDomainObject.FileDoc
   def indexTextDoc(doc: TextDocumentDomainObject, indexDoc: SolrInputDocument): SolrInputDocument = indexDoc |>> { _ =>
     indexDoc.addField(DocumentIndex.FIELD__TEMPLATE, doc.getTemplateName)
 
-    val texts = Seq(doc.getTexts.asScala.toList, doc.getLoopTexts.asScala.map { case (key, text) => (key.itemNo, text) }.toList).flatten
-    val images = Seq(doc.getImages.asScala.toList, doc.getLoopImages.asScala.map { case (key, image) => (key.itemNo, image) }.toList).flatten
+    val texts = Seq(doc.getTexts.asScala.toList, doc.getLoopTexts.asScala.map { case (key, text) => (key.getItemNo, text) }.toList).flatten
+    val images = Seq(doc.getImages.asScala.toList, doc.getLoopImages.asScala.map { case (key, image) => (key.getItemNo, image) }.toList).flatten
     val menus = doc.getMenus.values.asScala
 
     for ((no, text) <- doc.getTexts.asScala) {

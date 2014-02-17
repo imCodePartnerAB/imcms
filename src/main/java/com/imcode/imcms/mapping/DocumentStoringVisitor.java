@@ -185,10 +185,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         for (Map.Entry<Integer, Loop> e : textDocument.getContentLoops().entrySet()) {
             Loop loop = e.getValue();
             TextDocLoop ormLoop = new TextDocLoop();
-            List<TextDocLoopEntry> ormItems = new LinkedList<>();
+            List<Entry> ormItems = new LinkedList<>();
 
             for (LoopEntry loopEntry : loop.getItems()) {
-                ormItems.add(new TextDocLoopEntry(loopEntry.getNo(), loopEntry.isEnabled()));
+                ormItems.add(new Entry(loopEntry.getNo(), loopEntry.isEnabled()));
             }
 
             ormLoop.setNo(e.getKey());

@@ -19,11 +19,11 @@ public class TextDocText extends TextDocTextBase {
                 && Objects.equals(getDocLanguage(), that.getDocLanguage())
                 && Objects.equals(getType(), that.getType())
                 && Objects.equals(getNo(), that.getNo())
-                && Objects.equals(getLoopItemRef(), that.getLoopItemRef());
+                && Objects.equals(getLoopEntry(), that.getLoopEntry());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDocVersion(), getDocLanguage(), getText(), getType(), getNo(), getLoopItemRef());
+        return Objects.hash(getId(), getDocVersion(), getDocLanguage(), getText(), getType(), getNo(), getLoopEntry());
     }
 }

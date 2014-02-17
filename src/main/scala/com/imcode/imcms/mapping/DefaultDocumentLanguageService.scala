@@ -3,7 +3,7 @@ package imcms.mapping
 
 import javax.inject.Inject
 import com.imcode.imcms.dao.{SystemDao, DocLanguageDao}
-import java.util
+import _root_.java.util
 import com.imcode.imcms.api.{DocumentLanguage, DocumentLanguageService}
 import scala.beans.BeanProperty
 import scala.collection.JavaConverters._
@@ -21,7 +21,7 @@ class DefaultDocumentLanguageService extends DocumentLanguageService with Log4jL
 
   override def getByCode(code: String): DocumentLanguage = languageDao.getByCode(code) |> OrmToApi.toApi
 
-  override def getLanguages: util.List[DocumentLanguage] = {
+  override def getAllLanguages: util.List[DocumentLanguage] = {
     languageDao.getAllLanguages.asScala.map(OrmToApi.toApi).asJava
   }
 

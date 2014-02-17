@@ -45,9 +45,9 @@ object OrmToApi {
     m.setLinkableByOtherUsers(orm.getLinkableByOtherUsers)
     m.setLinkedForUnauthorizedUsers(orm.getLinkedForUnauthorizedUsers)
     m.setModifiedDatetime(orm.getModifiedDatetime)
-    m.setPermissionSets(orm.getPermissionSets)
-    m.setPermissionSetsForNew(orm.getPermisionSetExForNew)
-    m.setPermissionSetsForNewDocuments(orm.getPermissionSetsForNewDocuments)
+    //m.setPermissionSets(orm.getPermissionSets)
+    //m.setPermissionSetsForNew(orm.getPermisionSetExForNew)
+    //m.setPermissionSetsForNewDocuments(orm.getPermissionSetsForNewDocuments)
     m.setProperties(orm.getProperties)
     m.setPublicationEndDatetime(orm.getPublicationEndDatetime)
     m.setPublicationStartDatetime(orm.getPublicationStartDatetime)
@@ -61,15 +61,11 @@ object OrmToApi {
   def toApi(orm: TextDocText): TextDomainObject = new TextDomainObject |>> { t=>
     t.setText(orm.getText)
     t.setType(orm.getType.ordinal())
-    t.setLoopItemRef(orm.getLoopItemRef |> toApi)
   }
 
 
-  def toApi(orm: TextDocContentRef): LoopItemRef = LoopItemRef.of(orm.getLoopNo, orm.getContentNo)
-
-
-  def toApi(orm: TextDocLoop): Loop = Loop.of(orm.getEntries.asScala.map(toApi).asJava)
-
-
-  def toApi(orm: TextDocLoopEntry): LoopEntry = LoopEntry.of(orm.getNo, orm.isEnabled)
+  def toApi(orm: TextDocLoop): Loop = {
+    val entries = orm.getEntries.asScala.map(e => Int.box(e.getNo) -> Boolean.box(e.isEnabled)).toMap.asJava
+    Loop.of(entries, orm.getNextEntryNo)
+  }
 }

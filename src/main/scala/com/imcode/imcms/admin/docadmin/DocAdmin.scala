@@ -2,7 +2,6 @@ package com.imcode
 package imcms
 package admin.docadmin
 
-import com.google.common.base.Optional
 import com.imcode.imcms.api._
 import java.util.Locale
 import scala.collection.JavaConverters._
@@ -20,13 +19,13 @@ import _root_.imcode.server.document.textdocument._
 import _root_.imcode.server.{ImcmsConstants, Imcms}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
-import _root_.imcode.server.document.{DocumentDomainObject, NoPermissionToEditDocumentException}
+import imcode.server.document.{TextDocumentUtils, DocumentDomainObject, NoPermissionToEditDocumentException}
 
 import com.imcode.imcms.admin.docadmin.menu.{MenuEditorParameters, MenuEditor}
 import com.imcode.imcms.admin.docadmin.text.{TextEditor, TextEditorParameters}
 import com.imcode.imcms.admin.docadmin.image.ImagesEditor
 import com.imcode.imcms.vaadin.Current
-import scala.Some
+import scala.collection.JavaConverters._
 
 // todo: validate params in filter, create params wrapper, pass params into DocAdmin (no need to examine path in init)?
 // todo: template/group
@@ -330,17 +329,22 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     val showModeHtml = formats.isEmpty || formats.contains("html") || formats.contains("none")
     val showModeEditor = formats.isEmpty && rowsCountOpt.isEmpty
 
-    val ContentRefExt = """(\d+)_(\d+)""".r
-    val looItemRefOpt = request.getParameter("contentRef") match {
-      case ContentRefExt(loopNo, contentNo) => LoopItemRef.of(loopNo.toInt, contentNo.toInt) |> Optional.of
-      case _ => Optional.absent()
+    val LoopItemRefRE = """(\d+)_(\d+)_(\d+)""".r
+    val loopItemRefOpt = request.getParameter("contentRef") match {
+      case LoopItemRefRE(loopNo, contentNo, itemNo) => LoopItemRef.of(loopNo.toInt, contentNo.toInt, itemNo.toInt) |> opt
+      case _ => None
     }
 
     // fixme
     val textDocMapper: TextDocMapper = ???
-    val texts = textDocMapper.getTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo, looItemRefOpt, true)
+    val texts = (loopItemRefOpt match {
+      case Some(loopItemRef) => textDocMapper.getLoopTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), loopItemRef)
+      case _ => textDocMapper.getTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo)
+    }).asScala.map {
+      case (language, textOpt) =>language -> textOpt.or(TextDocumentUtils.createDefaultText())
+    }
 
-    for ((language, text) <- texts.asScala if text.isNotContentLoopItem) {
+    for ((language, text) <- texts) {
       text.setType(TextDomainObject.TEXT_TYPE_HTML)
     }
 
@@ -350,10 +354,10 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     val (format, canChangeFormat) = (showModeText, showModeHtml) match {
       case (true, false) => (TextDomainObject.Format.PLAIN_TEXT, false)
       case (false, true) => (TextDomainObject.Format.HTML, false)
-      case _ => (TextDomainObject.Format.values()(texts.asScala.head.getType.ordinal()), true)
+      case _ => (TextDomainObject.Format.values()(texts.head._2.getType), true)
     }
 
-    val editor = new TextEditor(texts.asScala, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))
+    val editor = new TextEditor(texts.values.toSeq, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))
 
     w.mainComponent = editor.view
     editor.view.setSize(900, 600)
@@ -377,7 +381,8 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
       editor.collectValues().right.get |> { texts =>
         // -check permissionSet.getEditTexts()
         try {
-          imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, Current.imcmsUser)
+          //fixme:
+          //imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, Current.imcmsUser)
           val user = new UserDomainObject() // todo: fixme
           imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
           if (closeAfterSave) closeEditor()

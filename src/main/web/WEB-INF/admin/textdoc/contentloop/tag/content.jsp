@@ -4,7 +4,7 @@
 <%@page import="com.imcode.imcms.web.admin.ContentLoopController"%>
 <%@page import="com.imcode.imcms.mapping.orm.TextDocLoop"%>
 <%@page import="java.util.List"%>
-<%@page import="com.imcode.imcms.mapping.orm.TextDocLoopEntry"%>
+<%@page import="com.imcode.imcms.mapping.orm.Entry"%>
 
 <% 
 int contentsCount = (Integer)request.getAttribute("contentsCount");

@@ -10,6 +10,10 @@ import java.util.Objects;
  */
 public class TextDomainObject implements Serializable, Cloneable {
 
+    public enum Format {
+        PLAIN_TEXT, HTML
+    }
+
     /**
      * Plain text, with linebreaks.
      */

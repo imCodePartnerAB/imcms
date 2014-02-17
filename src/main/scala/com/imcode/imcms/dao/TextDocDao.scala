@@ -28,19 +28,11 @@ class TextDocDao extends HibernateSupport {
    * Please note that createIfNotExists merely creates non-managed instance of TextDocText.
    */
   //fixme: should return ORM
-  def getTextsInAllLanguages(docRef: DocRef, no: Int, loopItemRefOpt: Option[LoopItemRef],
-               createIfNotExists: Boolean): JList[TextDocText] = {
+  def getTextsInAllLanguages(docRef: DocRef, no: Int, loopItemRefOpt: Option[LoopItemRef], createIfNotExists: Boolean): JList[TextDocText] = {
     for {
       language <- docLanguageDao.getAllLanguages.asScala
       docIdentity = DocRef.of(docRef.getDocId, docRef.getDocVersionNo, language |> OrmToApi.toApi)
-      text <- PartialFunction.condOpt(getText(docIdentity, no, loopItemRefOpt)) {
-        case text if text != null => text
-        case _ if createIfNotExists => new TextDocText |>> { txt =>
-          txt.setNo(no)
-          //txt.setLoopItemRef()
-          //txt.setContentLoopRef(loopItemRefOpt.orNull)
-        }
-      }
+      text <- getText(docRef, no, loopItemRefOpt).asOption
     } yield text
   } |> { _.asJava }
 
@@ -83,7 +75,7 @@ class TextDocDao extends HibernateSupport {
     )
 
 
-  def getText(ref: DocRef, no: Int, contentRefOpt: Option[TextDocContentRef]) = {
+  def getText(ref: DocRef, no: Int, contentRefOpt: Option[LoopItemRef]) = {
     val queryStr =
       if (contentRefOpt.isDefined)
         """select t from Text t where t.ref = :ref and t.no = :no
@@ -150,19 +142,11 @@ class TextDocDao extends HibernateSupport {
   /**
    * Please note that createIfNotExists creates an instance of TextDocImage not a database entry.
    */
-  def getImagesInAllLanguages(ref: DocVersionRef, no: Int, contentRefOpt: Option[TextDocContentRef] = None,
+  def getImagesInAllLanguages(ref: DocVersionRef, no: Int, contentRefOpt: Option[TextDocLoopEntry] = None,
                 createIfNotExists: Boolean = false): JList[TextDocImage] = {
     for {
       language <- docLanguageDao.getAllLanguages.asScala
-      image <- PartialFunction.condOpt(getImage(docIdentity, no, language, contentRefOpt)) {
-        case image if image != null => image
-        case _ if createIfNotExists => new TextDocImage |>> { img =>
-          img.setDocRef(docIdentity)
-          img.setNo(no)
-          img.setLanguage(language)
-          img.setContentLoopRef(contentRefOpt.orNull)
-        }
-      }
+      image <- getImage(ref, no, language, contentRefOpt).asOption
     } yield image
   } |> { _.asJava }
 
@@ -174,7 +158,7 @@ class TextDocDao extends HibernateSupport {
 //    )(breakOut)
 //  }
 
-  def getImage(docVersionRef: DocVersionRef, no: Int, language: DocLanguage, loopItemRefOpt: Option[TextDocContentRef]) = {
+  def getImage(docVersionRef: DocVersionRef, no: Int, language: DocLanguage, loopItemRefOpt: Option[TextDocLoopEntry]): TextDocImage = {
     val queryStr =
       if (loopItemRefOpt.isDefined)
         """select i from Image i where i.docIdentity = :docIdentity and i.no = :no
@@ -193,7 +177,9 @@ class TextDocDao extends HibernateSupport {
           query.setParameter("contentRef", loopItemRefOpt.get)
         }
 
-        TextDocumentUtils.initImageSource(query.uniqueResult.asInstanceOf[TextDocImage])
+        query.uniqueResult.asInstanceOf[TextDocImage]
+        //fixme:
+        //TextDocumentUtils.initImageSource()
       }
     }
   }
@@ -208,14 +194,18 @@ class TextDocDao extends HibernateSupport {
   def getImagesInAllLanguages(docRef: DocRef): JList[TextDocImage] =
     hibernate.listByNamedQueryAndNamedParams[TextDocImage](
       "Image.getByDocRef", "docIdentity" -> docRef
-    ) |> TextDocumentUtils.initImagesSources
+    )
+  //fixme
+  //|> TextDocumentUtils.initImagesSources
 
 
   def getImages(ref: DocRef): JList[TextDocImage] =
     hibernate.listByNamedQueryAndNamedParams[TextDocImage](
       "Image.getByDocRefAndLanguage",
       "docIdentity" -> ref, "language" -> ref.getDocLanguage
-    ) |> TextDocumentUtils.initImagesSources
+    )
+  // fixme
+  //|> TextDocumentUtils.initImagesSources
 
 
 
