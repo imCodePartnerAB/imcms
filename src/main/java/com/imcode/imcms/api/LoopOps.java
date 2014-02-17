@@ -1,73 +1,81 @@
 package com.imcode.imcms.api;
 
-import com.google.common.base.Optional;
-
-import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class LoopOps {
 
     private final Loop loop;
-    private final LinkedList<LoopContent> items;
 
     public LoopOps(Loop loop) {
         this.loop = loop;
-        this.items = new LinkedList<>(loop.getItems());
     }
 
-    private Loop addContentAtIndex(int index) {
-        items.add(index, createContent());
+    private Loop addEntryAtIndex(int index) {
+        Map<Integer, Boolean> entries = new LinkedHashMap<>();
+        Iterator<Map.Entry<Integer, Boolean>> iterator = loop.getEntries().entrySet().iterator();
 
-        return new Loop(items);
-    }
-
-    public Loop addContentFirst() {
-        return addContentAtIndex(0);
-    }
-
-    public Loop addContentLast() {
-        return addContentAtIndex(items.size());
-    }
-
-    public Loop addContentAfter(int contentNo) {
-        return addContentAtIndex(loop.findContentByNo(contentNo).get().getIndex() + 1);
-    }
-
-    public Loop addContentBefore(int contentNo) {
-        return addContentAtIndex(loop.findContentByNo(contentNo).get().getIndex());
-    }
-
-    public Loop enableContent(int contentNo) {
-        items.set(loop.findContentByNo(contentNo).get().getIndex(), LoopContent.of(contentNo));
-
-        return new Loop(items);
-    }
-
-    public Loop disableContent(int contentNo) {
-        items.set(loop.findContentByNo(contentNo).get().getIndex(), LoopContent.of(contentNo, false));
-
-        return new Loop(items);
-    }
-
-    public Loop deleteContent(int contentNo) {
-        items.remove(loop.findContentByNo(contentNo).get().getIndex());
-
-        return new Loop(items);
-    }
-
-    public Loop restoreContent(int contentNo) {
-        if (loop.findContentByNo(contentNo).isPresent()) {
-            return loop;
+        for (int i = 0; i < index; i++) {
+            Map.Entry<Integer, Boolean> entry = iterator.next();
+            entries.put(entry.getKey(), entry.getValue());
         }
 
-        items.add(LoopContent.of(contentNo));
+        entries.put(loop.getNextEntryNo(), true);
 
-        return new Loop(items);
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Boolean> entry = iterator.next();
+            entries.put(entry.getKey(), entry.getValue());
+        }
+
+        return Loop.of(entries, loop.getNextEntryNo() + 1);
     }
 
-    private LoopContent createContent() {
-        Optional<Loop.ContentAndIndex> contentAndIndexOpt = loop.findContentWithMaxNo();
-        int contentNo = !contentAndIndexOpt.isPresent() ? 1 : contentAndIndexOpt.get().getContent().getNo() + 1;
+    public Loop addEntryFirst() {
+        return addEntryAtIndex(0);
+    }
 
-        return LoopContent.of(contentNo);
+    public Loop addEntryLast() {
+        return addEntryAtIndex(loop.getEntries().size());
+    }
+
+    public Loop addEntryAfter(int entryNo) {
+        return addEntryAtIndex(loop.findEntryIndexByNo(entryNo).get() + 1);
+    }
+
+    public Loop addEntryBefore(int entryNo) {
+        return addEntryAtIndex(loop.findEntryIndexByNo(entryNo).get());
+    }
+
+    public Loop enableEntry(int entryNo) {
+        Map<Integer, Boolean> entries = new LinkedHashMap<>(loop.getEntries());
+
+        entries.put(entryNo, true);
+
+        return new Loop(entries, loop.getNextEntryNo());
+    }
+
+    public Loop disableEntry(int entryNo) {
+        Map<Integer, Boolean> entries = new LinkedHashMap<>(loop.getEntries());
+
+        entries.put(entryNo, false);
+
+        return new Loop(entries, loop.getNextEntryNo());
+    }
+
+    public Loop deleteEntry(int entryNo) {
+        Map<Integer, Boolean> entries = new LinkedHashMap<>(loop.getEntries());
+
+        entries.remove(entryNo);
+
+        return new Loop(entries, loop.getNextEntryNo());
+    }
+
+    public Loop restoreEntry(int entryNo) {
+        Map<Integer, Boolean> entries = new LinkedHashMap<>(loop.getEntries());
+
+        entries.put(entryNo, true);
+
+        return new Loop(entries, loop.getNextEntryNo());
     }
 }

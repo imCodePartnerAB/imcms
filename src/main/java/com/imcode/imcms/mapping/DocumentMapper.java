@@ -816,7 +816,7 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public synchronized void saveTextDocText(TextDocumentLoopItemRef<TextDomainObject> ref, UserDomainObject user)
+    public synchronized void saveTextDocText(LoopItemWrapper<TextDomainObject> ref, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
 
         try {

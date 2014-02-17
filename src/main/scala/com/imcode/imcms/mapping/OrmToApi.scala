@@ -68,8 +68,8 @@ object OrmToApi {
   def toApi(orm: TextDocContentRef): LoopItemRef = LoopItemRef.of(orm.getLoopNo, orm.getContentNo)
 
 
-  def toApi(orm: TextDocLoop): Loop = Loop.of(orm.getItems.asScala.map(toApi).asJava)
+  def toApi(orm: TextDocLoop): Loop = Loop.of(orm.getEntries.asScala.map(toApi).asJava)
 
 
-  def toApi(orm: TextDocLoopContent): LoopContent = LoopContent.of(orm.getNo, orm.isEnabled)
+  def toApi(orm: TextDocLoopEntry): LoopEntry = LoopEntry.of(orm.getNo, orm.isEnabled)
 }

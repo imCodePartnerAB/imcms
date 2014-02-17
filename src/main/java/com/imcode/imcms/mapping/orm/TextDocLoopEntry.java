@@ -1,37 +1,25 @@
 package com.imcode.imcms.mapping.orm;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-@Access(AccessType.FIELD)
-public class TextDocLoopContent implements Serializable, Cloneable {
+public class TextDocLoopEntry {
 
     private int no;
 
     private boolean enabled;
 
-    public TextDocLoopContent() {}
+    public TextDocLoopEntry() {}
 
-    public TextDocLoopContent(int no) {
+    public TextDocLoopEntry(int no) {
         this(no, true);
     }
 
-    public TextDocLoopContent(int no, boolean enabled) {
+    public TextDocLoopEntry(int no, boolean enabled) {
         this.no = no;
         this.enabled = enabled;
-    }
-
-    @Override
-    public TextDocLoopContent clone() {
-        try {
-            return (TextDocLoopContent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -48,10 +36,10 @@ public class TextDocLoopContent implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof TextDocLoopContent && equals((TextDocLoopContent) o));
+        return o == this || (o instanceof TextDocLoopEntry && equals((TextDocLoopEntry) o));
     }
 
-    private boolean equals(TextDocLoopContent that) {
+    private boolean equals(TextDocLoopEntry that) {
         return this.enabled == that.enabled && this.no == that.no;
     }
 

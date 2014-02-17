@@ -76,7 +76,7 @@ public class DocumentSaver {
     }
 
     @Transactional
-    public void saveText(TextDocumentLoopItemRef<TextDomainObject> textRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveText(LoopItemWrapper<TextDomainObject> textRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         createEnclosingContentLoopIfMissing(textRef.getDocVersionRef(), textRef.getLoopItemRef());
 
         new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textRef, user);
@@ -133,7 +133,7 @@ public class DocumentSaver {
     }
 
     @Transactional
-    public void saveImage(TextDocumentLoopItemRef<ImageDomainObject> imageRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveImage(LoopItemWrapper<ImageDomainObject> imageRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         ImageDomainObject image = imageRef.getItem();
 
         createEnclosingContentLoopIfMissing(imageRef.getDocVersionRef(), imageRef.getLoopItemRef());
@@ -160,13 +160,13 @@ public class DocumentSaver {
         if (ormLoop == null) {
             ormLoop = new TextDocLoop();
             ormLoop.setNo(loopItemRef.getLoopNo());
-            ormLoop.setItems(new LinkedList<>(Arrays.asList(new TextDocLoopContent(loopItemRef.getContentNo()))));
+            ormLoop.setEntries(new LinkedList<>(Arrays.asList(new TextDocLoopEntry(loopItemRef.getEntryNo()))));
             textDocDao.saveLoop(ormLoop);
         } else {
             Loop apiLoop = OrmToApi.toApi(ormLoop);
-            int contentNo = loopItemRef.getContentNo();
-            if (!apiLoop.findContentByNo(contentNo).isPresent()) {
-                ormLoop.getItems().add(new TextDocLoopContent(contentNo));
+            int contentNo = loopItemRef.getEntryNo();
+            if (!apiLoop.findEntryByNo(contentNo).isPresent()) {
+                ormLoop.getEntries().add(new TextDocLoopEntry(contentNo));
                 textDocDao.saveLoop(ormLoop);
             }
         }

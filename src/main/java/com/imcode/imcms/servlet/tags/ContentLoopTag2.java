@@ -2,7 +2,7 @@ package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.api.DocRef;
 import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.api.LoopContent;
+import com.imcode.imcms.api.LoopEntry;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.Utility;
@@ -31,7 +31,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
     private Loop loop;
 
-    private LoopContent currentLoopContent;
+    private LoopEntry currentLoopEntry;
 
     private int contentsCount;
 
@@ -78,7 +78,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
            	document.setContentLoop(no, loop);
         }
 
-        currentLoopContent = null;
+        currentLoopEntry = null;
         contentsCount = loop.getItems().size();
         contentIndex = -1;        
 
@@ -102,9 +102,9 @@ public class ContentLoopTag2 extends BodyTagSupport {
             return false;
         }
 
-        currentLoopContent = loop.getItems().get(contentIndex);
+        currentLoopEntry = loop.getItems().get(contentIndex);
 
-        if (currentLoopContent.isEnabled()) {
+        if (currentLoopEntry.isEnabled()) {
             firstContent = true;
             lastContent = true;
             
@@ -136,7 +136,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
     		request.setAttribute("document", document);
     		request.setAttribute("contentLoop", loop);
-    		request.setAttribute("content", currentLoopContent);
+    		request.setAttribute("content", currentLoopEntry);
     		request.setAttribute("flags", parserParameters.getFlags());
     		request.setAttribute("viewFragment", viewFragment);
     		request.setAttribute("contentsCount", contentsCount);
@@ -224,7 +224,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
     /**
      * @return current content.
      */
-    public LoopContent getCurrentLoopContent() {
-        return currentLoopContent;
+    public LoopEntry getCurrentLoopEntry() {
+        return currentLoopEntry;
     }
 }

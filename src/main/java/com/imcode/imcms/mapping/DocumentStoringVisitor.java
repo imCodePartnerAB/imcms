@@ -185,14 +185,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         for (Map.Entry<Integer, Loop> e : textDocument.getContentLoops().entrySet()) {
             Loop loop = e.getValue();
             TextDocLoop ormLoop = new TextDocLoop();
-            List<TextDocLoopContent> ormItems = new LinkedList<>();
+            List<TextDocLoopEntry> ormItems = new LinkedList<>();
 
-            for (LoopContent loopContent : loop.getItems()) {
-                ormItems.add(new TextDocLoopContent(loopContent.getNo(), loopContent.isEnabled()));
+            for (LoopEntry loopEntry : loop.getItems()) {
+                ormItems.add(new TextDocLoopEntry(loopEntry.getNo(), loopEntry.isEnabled()));
             }
 
             ormLoop.setNo(e.getKey());
-            ormLoop.setItems(ormItems);
+            ormLoop.setEntries(ormItems);
 
             textDocDao.saveLoop(ormLoop);
         }
@@ -246,7 +246,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     //fixme: implement
-    public void saveTextDocumentText(TextDocumentLoopItemRef<TextDomainObject> textRef, UserDomainObject user) {
+    public void saveTextDocumentText(LoopItemWrapper<TextDomainObject> textRef, UserDomainObject user) {
 //        DocVersion docVersion = docVersionDao.getVersion(textRef.getDocRef().getDocId(), textRef.getDocRef().getDocVersionNo());
 //        DocLanguage docLanguage = docLanguageDao.getByCode(textRef.getDocRef().getDocLanguage().getCode());
 //

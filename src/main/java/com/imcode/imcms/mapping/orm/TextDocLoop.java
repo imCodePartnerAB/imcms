@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 /**
@@ -14,8 +15,14 @@ import java.util.*;
 public class TextDocLoop extends DocVersionedContent {
 
     @Min(1)
+    @NotNull
     @Column(updatable = false)
     private Integer no;
+
+    @Min(1)
+    @NotNull
+    @Column(name = "next_content_no")
+    private Integer nextEntryNo;
 
     @Version
     private int version;
@@ -26,7 +33,7 @@ public class TextDocLoop extends DocVersionedContent {
             joinColumns = @JoinColumn(name = "content_id")
     )
     @OrderColumn(name = "ix")
-    private List<TextDocLoopContent> items = new LinkedList<>();
+    private List<TextDocLoopEntry> entries = new LinkedList<>();
 
     @Override
     public String toString() {
@@ -35,12 +42,12 @@ public class TextDocLoop extends DocVersionedContent {
                 .add("docVersion", getDocVersion())
                 .add("no", no)
                 .add("version", version)
-                .add("items", items).toString();
+                .add("entries", entries).toString();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDocVersion(), no, items, version);
+        return Objects.hash(getId(), getDocVersion(), no, entries, version);
     }
 
 
@@ -54,7 +61,7 @@ public class TextDocLoop extends DocVersionedContent {
                 && Objects.equals(getDocVersion(), that.getDocVersion())
                 && Objects.equals(no, that.no)
                 && Objects.equals(version, that.version)
-                && Objects.equals(items, that.items);
+                && Objects.equals(entries, that.entries);
     }
 
     public Integer getNo() {
@@ -73,11 +80,19 @@ public class TextDocLoop extends DocVersionedContent {
         this.version = version;
     }
 
-    public List<TextDocLoopContent> getItems() {
-        return items;
+    public List<TextDocLoopEntry> getEntries() {
+        return entries;
     }
 
-    public void setItems(List<TextDocLoopContent> items) {
-        this.items = items;
+    public void setEntries(List<TextDocLoopEntry> items) {
+        this.entries = items;
+    }
+
+    public Integer getNextEntryNo() {
+        return nextEntryNo;
+    }
+
+    public void setNextEntryNo(Integer nextEntryNo) {
+        this.nextEntryNo = nextEntryNo;
     }
 }

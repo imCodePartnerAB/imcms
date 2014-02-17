@@ -23,7 +23,7 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
   }
 
   def mkContentLoop(contentsCount: Int = LoopFx.ContentsCount): Loop = {
-    val items = (1 to contentsCount).map(no => LoopContent.of(no))
+    val items = (1 to contentsCount).map(no => LoopEntry.of(no))
     val nextContentNo = contentsCount + 1
 
     new Loop(nextContentNo, util.Arrays.asList(items : _*))
@@ -43,11 +43,11 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
 
     "throw IllegalArgumentException if an item content.no parameter not in range [1..nextContentNo - 1] less than 1" in {
       intercept[IllegalArgumentException] {
-        new Loop(1, util.Arrays.asList(LoopContent.of(1)))
+        new Loop(1, util.Arrays.asList(LoopEntry.of(1)))
       }
 
       intercept[IllegalArgumentException] {
-        new Loop(3, util.Arrays.asList(LoopContent.of(1), LoopContent.of(2), LoopContent.of(3)))
+        new Loop(3, util.Arrays.asList(LoopEntry.of(1), LoopEntry.of(2), LoopEntry.of(3)))
       }
     }
   }
@@ -55,10 +55,10 @@ class ContentLoopSpec extends WordSpec with BeforeAndAfterEach {
   "ContentLoop.ops.addContentFirst" should {
     "return a new ContentLoop with a new Content as a first item" in {
       val loop = mkContentLoop()
-      val newLoop = loop.ops.addContentFirst()
+      val newLoop = loop.ops.addEntryFirst()
 
       assertThat("new loop has a new item", newLoop.getItems.size(), is(loop.getItems.size() + 1))
-      assertThat("new item was added first", newLoop.findContentByNo(loop.getNextContentNo).get.getIndex, is(0))
+      assertThat("new item was added first", newLoop.findEntryByNo(loop.getNextContentNo).get.getIndex, is(0))
       assertThat("added content was assigned loop.nextContentNo value", newLoop.getItems.get(0).getNo, is(loop.getNextContentNo))
       assertThat("new loop nextContentNo was incremented", newLoop.getNextContentNo, is(loop.getNextContentNo + 1))
     }

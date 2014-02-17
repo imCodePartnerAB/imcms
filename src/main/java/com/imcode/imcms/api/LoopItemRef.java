@@ -16,20 +16,20 @@ import java.util.regex.Pattern;
  */
 public class LoopItemRef {
 
-    public static LoopItemRef of(int loopNo, int contentNo, int itemNo) {
-        return new LoopItemRef(loopNo, contentNo, itemNo);
+    public static LoopItemRef of(int loopNo, int entryNo, int itemNo) {
+        return new LoopItemRef(loopNo, entryNo, itemNo);
     }
 
     private final int loopNo;
-    private final int contentNo;
+    private final int entryNo;
     private final int itemNo;
     private final int cachedHashCode;
 
-    public LoopItemRef(int loopNo, int contentNo, int itemNo) {
+    public LoopItemRef(int loopNo, int entryNo, int itemNo) {
         this.loopNo = loopNo;
-        this.contentNo = contentNo;
+        this.entryNo = entryNo;
         this.itemNo = itemNo;
-        this.cachedHashCode = Objects.hash(loopNo, contentNo, itemNo);
+        this.cachedHashCode = Objects.hash(loopNo, entryNo, itemNo);
     }
 
     public static Optional<LoopItemRef> of(String loopNo, String contentNo, String itemNo) {
@@ -60,7 +60,7 @@ public class LoopItemRef {
     }
 
     private boolean equals(LoopItemRef that) {
-        return loopNo == that.loopNo && contentNo == that.contentNo && itemNo == that.itemNo;
+        return loopNo == that.loopNo && entryNo == that.entryNo && itemNo == that.itemNo;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class LoopItemRef {
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
-                .add("contentNo", contentNo)
+                .add("entryNo", entryNo)
                 .add("loopNo", loopNo)
                 .add("itemNo", itemNo)
                 .toString();
@@ -81,8 +81,8 @@ public class LoopItemRef {
         return loopNo;
     }
 
-    public int getContentNo() {
-        return contentNo;
+    public int getEntryNo() {
+        return entryNo;
     }
 
     public int getItemNo() {

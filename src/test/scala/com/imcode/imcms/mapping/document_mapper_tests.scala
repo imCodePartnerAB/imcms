@@ -171,7 +171,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       var loop = ContentLoopService.builder().no(loopNo).build()
 
       for (contentNo <- 0 until loopNo) {
-        loop = new LoopOps(loop).addContentLast().getLoop()
+        loop = new LoopOps(loop).addEntryLast().getLoop()
       }
 
       newDoc.setContentLoop(loopNo, loop)

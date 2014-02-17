@@ -6,52 +6,35 @@ import java.util.*;
 
 public final class Loop {
 
-    public static Loop of(List<LoopContent> items) {
-        return new Loop(items);
+    public static Loop of(Map<Integer, Boolean> entries, int nextContentNo) {
+        return new Loop(entries, nextContentNo);
     }
 
-    public static abstract class ContentAndIndex {
-        public abstract LoopContent getContent();
-        public abstract int getIndex();
-
-        public static ContentAndIndex of(final LoopContent loopContent, final int index) {
-            return new ContentAndIndex() {
-                @Override
-                public LoopContent getContent() {
-                    return loopContent;
-                }
-
-                @Override
-                public int getIndex() {
-                    return index;
-                }
-            };
-        }
+    public static Loop empty() {
+        return new Loop();
     }
 
-    private final List<LoopContent> items;
+    private final Map<Integer, Boolean> entries;
+
+    private final int nextEntryNo;
 
     private final int cachedHashCode;
 
     public Loop() {
-        this(Collections.<LoopContent>emptyList());
+        this(Collections.<Integer, Boolean>emptyMap(), 1);
     }
 
-    public Loop(Collection<LoopContent> items) {
-        Map<Integer, LoopContent> itemsMap = new LinkedHashMap<>();
-
-        for (LoopContent loopContent : items) {
-            itemsMap.put(loopContent.getNo(), loopContent);
-        }
-
-        this.items = Collections.unmodifiableList(new ArrayList<>(itemsMap.values()));
-        this.cachedHashCode = Objects.hash(items);
+    public Loop(Map<Integer, Boolean> entries, int nextEntryNo) {
+        this.entries = Collections.unmodifiableMap(new LinkedHashMap<>(entries));
+        this.nextEntryNo = nextEntryNo;
+        this.cachedHashCode = Objects.hash(entries, nextEntryNo);
     }
-
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this).add("items", items).toString();
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("nextEntryNo", nextEntryNo)
+                .add("entries", entries).toString();
     }
 
     @Override
@@ -60,7 +43,7 @@ public final class Loop {
     }
 
     private boolean equals(Loop that) {
-        return Objects.equals(items, that.items);
+        return Objects.equals(entries, that.entries);
     }
 
     @Override
@@ -68,41 +51,25 @@ public final class Loop {
         return cachedHashCode;
     }
 
-    public List<LoopContent> getItems() {
-        return items;
+    public Map<Integer, Boolean> getEntries() {
+        return entries;
     }
 
+    public int getNextEntryNo() {
+        return nextEntryNo;
+    }
 
     public LoopOps ops() {
         return new LoopOps(this);
     }
 
-    public Optional<ContentAndIndex> findContentByNo(int contentNo) {
-        for (int i = 0, k = items.size(); i < k; i++) {
-            LoopContent loopContent = items.get(i);
-            if (loopContent.getNo() == contentNo) return Optional.of(ContentAndIndex.of(loopContent, i));
+    public Optional<Integer> findEntryIndexByNo(int no) {
+        Iterator<Integer> nos = entries.keySet().iterator();
+
+        for (int i = 0; nos.hasNext(); i++) {
+            if (nos.next() == no) return Optional.of(i);
         }
 
         return Optional.absent();
-    }
-
-    public Optional<ContentAndIndex> findContentWithMaxNo() {
-        if (items.size() == 0) {
-            return Optional.absent();
-        }
-
-        int index = 0;
-        LoopContent loopContent = items.get(index);
-
-        for (int i = 1, n = items.size(); i < n; i++) {
-            LoopContent currentLoopContent = items.get(i);
-
-            if (loopContent.getNo() < currentLoopContent.getNo()) {
-                loopContent = currentLoopContent;
-                index = i;
-            }
-        }
-
-        return Optional.of(ContentAndIndex.of(loopContent, index));
     }
 }
