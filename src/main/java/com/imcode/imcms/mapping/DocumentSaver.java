@@ -66,10 +66,9 @@ public class DocumentSaver {
      * If text is enclosed into unsaved content loop then the loop must also exist in document.
      *
      * @throws IllegalStateException if a text refers non-existing content loop.
-     * @see com.imcode.imcms.servlet.admin.SaveText
      */
     @Transactional
-    public void saveText(TextDocumentItemRef<TextDomainObject> textRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveText(TextDocumentItemWrapper<TextDomainObject> textRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textRef, user);
 
         metaDao.touch(textRef.getDocRef(), user);
@@ -86,16 +85,16 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void saveTexts(Collection<TextDocumentItemRef<TextDomainObject>> textRefs, UserDomainObject user)
+    public void saveTexts(Collection<TextDocumentItemWrapper<TextDomainObject>> textRefs, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        for (TextDocumentItemRef<TextDomainObject> textRef : textRefs) {
+        for (TextDocumentItemWrapper<TextDomainObject> textRef : textRefs) {
             saveText(textRef, user);
         }
     }
 
 
     @Transactional
-    public void saveMenu(TextDocumentItemRef<MenuDomainObject> menuRef, UserDomainObject user)
+    public void saveMenu(TextDocumentItemWrapper<MenuDomainObject> menuRef, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(menuRef, user);
 
@@ -113,16 +112,16 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public void saveImages(Collection<TextDocumentItemRef<ImageDomainObject>> imageRefs, UserDomainObject user)
+    public void saveImages(Collection<TextDocumentItemWrapper<ImageDomainObject>> imageRefs, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        for (TextDocumentItemRef<ImageDomainObject> imageRef : imageRefs) {
+        for (TextDocumentItemWrapper<ImageDomainObject> imageRef : imageRefs) {
             saveImage(imageRef, user);
         }
     }
 
 
     @Transactional
-    public void saveImage(TextDocumentItemRef<ImageDomainObject> imageRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveImage(TextDocumentItemWrapper<ImageDomainObject> imageRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         ImageDomainObject image = imageRef.getItem();
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
@@ -160,13 +159,13 @@ public class DocumentSaver {
         if (ormLoop == null) {
             ormLoop = new TextDocLoop();
             ormLoop.setNo(loopItemRef.getLoopNo());
-            ormLoop.setEntries(new LinkedList<>(Arrays.asList(new Entry(loopItemRef.getEntryNo()))));
+            ormLoop.getEntries().add(new TextDocLoop.Entry(loopItemRef.getEntryNo()));
             textDocDao.saveLoop(ormLoop);
         } else {
             Loop apiLoop = OrmToApi.toApi(ormLoop);
             int contentNo = loopItemRef.getEntryNo();
-            if (!apiLoop.findEntryByNo(contentNo).isPresent()) {
-                ormLoop.getEntries().add(new Entry(contentNo));
+            if (!apiLoop.findEntryIndexByNo(contentNo).isPresent()) {
+                ormLoop.getEntries().add(new TextDocLoop.Entry(contentNo));
                 textDocDao.saveLoop(ormLoop);
             }
         }

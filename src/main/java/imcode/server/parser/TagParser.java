@@ -1,6 +1,7 @@
 package imcode.server.parser;
 
 import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.api.LoopEntryRef;
 import com.imcode.imcms.api.LoopItemRef;
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -366,7 +367,7 @@ public class TagParser {
 
 
     public String tagText(Properties attributes) {
-        return tagText(attributes, null, null);
+        return tagText(attributes, null);
     }
 
     /**
@@ -382,7 +383,7 @@ public class TagParser {
      *                   - formats
      *                   - rows
      */
-    public String tagText(Properties attributes, Loop loop, Loop content) {
+    public String tagText(Properties attributes, LoopEntryRef loopEntryRef) {
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
 
         if (shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse == null) {
@@ -395,15 +396,15 @@ public class TagParser {
         TextDomainObject text;
         if (null == noStr) {
             no = implicitTextNumber++;
-            text = content == null
+            text = loopEntryRef == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(no, LoopItemRef.of(loop.getNo(), content.getNo()));
+                    : textDocumentToUse.getText(LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), no));
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
-            text = content == null
+            text = loopEntryRef == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(no, LoopItemRef.of(loop.getNo(), content.getNo()));
+                    : textDocumentToUse.getText(LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), no));
 
             implicitTextNumber = no + 1;
         }
@@ -429,9 +430,9 @@ public class TagParser {
             request.setAttribute("formats", formats);
             request.setAttribute("rows", attributes.getProperty("rows"));
 
-            if (content != null) {
-                request.setAttribute("tag.text.loop", loop);
-                request.setAttribute("tag.text.loop.content", content);
+            if (loopEntryRef != null) {
+                //fixme: check receiver
+                request.setAttribute("tag.text.loop", loopEntryRef);
             }
 
             try {
@@ -486,22 +487,19 @@ public class TagParser {
      * @param attributes The attributes of the image tag
      */
     public String tagImage(Properties attributes) {
-        Loop loop = null;
-        Loop content = null;
-
         return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document,
-                documentRequest.getHttpServletRequest(), service, loop, content);
+                documentRequest.getHttpServletRequest(), service, null);
     }
 
-    public String tagImage(Properties attributes, Loop loop, Loop content) {
+    public String tagImage(Properties attributes, LoopEntryRef loopEntryRef) {
         return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document,
-                documentRequest.getHttpServletRequest(), service, loop, content);
+                documentRequest.getHttpServletRequest(), service, loopEntryRef);
     }
 
     public String tagImage(Properties attributes, boolean imageMode, int[] implicitImageIndex,
                            UserDomainObject user, TextDocumentDomainObject document,
                            HttpServletRequest httpServletRequest, ImcmsServices service,
-                           Loop loop, Loop content) {
+                           LoopEntryRef loopEntryRef) {
 
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
         if (shouldOutputNothingAccordingToMode(attributes, imageMode) || textDocumentToUse == null) {
@@ -517,9 +515,9 @@ public class TagParser {
             imageIndex = Integer.parseInt(noStr);
             implicitImageIndex[0] = imageIndex + 1;
         }
-        ImageDomainObject image = loop == null
+        ImageDomainObject image = loopEntryRef == null
                 ? textDocumentToUse.getImage(imageIndex)
-                : textDocumentToUse.getImage(imageIndex, LoopItemRef.of(loop.getNo(), content.getNo()));
+                : textDocumentToUse.getImage(LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageIndex));
 
         if (image == null) {
             image = DEFAULT_IMAGE;
@@ -556,16 +554,17 @@ public class TagParser {
             }
 
 
-            List<String> replaceTags = new ArrayList<String>(replace_tags.length + 4);
+            List<String> replaceTags = new ArrayList<>(replace_tags.length + 4);
             CollectionUtils.addAll(replaceTags, replace_tags);
             replaceTags.add("#image_width#");
             replaceTags.add(imageWidth);
             replaceTags.add("#image_height#");
             replaceTags.add(imageHeight);
-            replaceTags.add("#loop_no#");
-            replaceTags.add(loop != null ? loop.getNo().toString() : "");
-            replaceTags.add("#content_no#");
-            replaceTags.add(content != null ? Integer.toString(content.getNo()) : "");
+            //fixme: check receiver
+            replaceTags.add("#loop__entry_ref#");
+            replaceTags.add(loopEntryRef != null ? loopEntryRef.toString() : "");
+            //replaceTags.add("#content_no#");
+            //replaceTags.add(content != null ? Integer.toString(content.getNo()) : "");
 
             imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
         }

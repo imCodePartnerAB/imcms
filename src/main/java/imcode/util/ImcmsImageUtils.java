@@ -37,6 +37,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+//fixme: image no + image in a loop
 public class ImcmsImageUtils {
     private static final Log log = LogFactory.getLog(ImcmsImageUtils.class);
     
@@ -277,7 +278,8 @@ public class ImcmsImageUtils {
             builder.append("&meta_id=");
             builder.append(metaId);
 
-            Integer imageIndex = image.getNo();
+            //fixme: provide image no
+            Integer imageIndex = null;//image.getNo();
             if (imageIndex != null) {
                 builder.append("&no=");
                 builder.append(imageIndex);

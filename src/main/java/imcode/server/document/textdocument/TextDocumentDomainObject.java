@@ -69,7 +69,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * <p/>
      * Map key is a content's no in this document.
      */
-    private volatile ConcurrentHashMap<Integer, Loop> contentLoops = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<Integer, Loop> loops = new ConcurrentHashMap<>();
 
 
     public TextDocumentDomainObject() {
@@ -91,7 +91,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         clone.templateNames = cloneTemplateNames();
         clone.texts = cloneTexts();
         clone.loopTexts = cloneLoopTexts();
-        clone.contentLoops = cloneContentLoopsMap();
+        clone.loops = cloneLoopsMap();
 
         return clone;
     }
@@ -170,7 +170,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllContentLoops() {
-        contentLoops.clear();
+        loops.clear();
     }
 
     public void removeAllTexts() {
@@ -391,8 +391,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return includesMapClone;
     }
 
-    private ConcurrentHashMap<Integer, Loop> cloneContentLoopsMap() {
-        return new ConcurrentHashMap<>(contentLoops);
+    private ConcurrentHashMap<Integer, Loop> cloneLoopsMap() {
+        return new ConcurrentHashMap<>(loops);
     }
 
     public TemplateNames getTemplateNames() {
@@ -415,16 +415,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         this.includesMap = new ConcurrentHashMap<>(includesMap);
     }
 
-    public Map<Integer, Loop> getContentLoops() {
-        return Collections.unmodifiableMap(contentLoops);
+    public Map<Integer, Loop> getLoops() {
+        return Collections.unmodifiableMap(loops);
     }
 
-    public void setContentLoops(Map<Integer, Loop> contentLoops) {
-        this.contentLoops = new ConcurrentHashMap<>(contentLoops);
+    public void setLoops(Map<Integer, Loop> loops) {
+        this.loops = new ConcurrentHashMap<>(loops);
     }
 
     public Loop getContentLoop(int no) {
-        return contentLoops.get(no);
+        return loops.get(no);
     }
 
     /**
@@ -435,7 +435,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @returncontentLoop set to this document.
      */
     public Loop setContentLoop(int no, Loop loop) {
-        contentLoops.put(no, loop);
+        loops.put(no, loop);
 
         return loop;
     }

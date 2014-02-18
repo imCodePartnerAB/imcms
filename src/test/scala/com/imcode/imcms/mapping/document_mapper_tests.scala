@@ -777,7 +777,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 //    @DataProvider
 //    public Object[][] contentInfo() {
 //        TextDocumentDomainObject doc = getMainWorkingDocumentInDefaultLanguage(true);
-//        ContentLoop existingContentLoop = doc.getContentLoops().values().iterator().next();
+//        ContentLoop existingContentLoop = doc.getLoops().values().iterator().next();
 //        ContentLoop unsavedContentLoop = Factory.createNextContentLoop(doc);
 //
 //        unsavedContentLoop.addFirstContent();

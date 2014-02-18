@@ -117,7 +117,7 @@ public class TextDocumentInitializer {
 			loopsMap.put(loop.getNo(), OrmToApi.toApi(loop));
 		}
 		
-		document.setContentLoops(loopsMap);
+		document.setLoops(loopsMap);
 	}
 
 	public MetaDao getMetaDao() {

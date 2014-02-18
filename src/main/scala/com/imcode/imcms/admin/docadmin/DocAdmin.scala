@@ -182,7 +182,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
     def save(close: Boolean) {
       editor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocumentItemRef.of(doc.getRef, menuNo, menu), Current.imcmsUser)
+        imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocumentItemWrapper.of(doc.getRef, menuNo, menu), Current.imcmsUser)
         Current.page.showInfoNotification("menu_editor.notification.saved".i)
 
         if (close) {

@@ -16,7 +16,7 @@ public class TextDocLoop extends DocVersionedContent {
 
 
     @Embeddable
-    public class Entry {
+    public static class Entry {
 
         private int no;
 
