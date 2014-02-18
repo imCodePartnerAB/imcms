@@ -9,7 +9,6 @@ import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.SearchDocumentsPage;
-import com.imcode.imcms.servlet.admin.DocumentCreator;
 import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
 import com.imcode.imcms.servlet.beans.AdminManagerSubreport;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -113,8 +112,6 @@ public class AdminManager extends HttpServlet {
                     DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new SaveNewDocumentCommand();
                     DispatchCommand returnCommand = new ShowRecentChangesPageCommand();
 
-                    DocumentCreator documentCreator = new DocumentCreator(saveNewDocumentCommand, returnCommand, getServletContext());
-                    documentCreator.createDocumentAndDispatchToCreatePageFlow(documentTypeId, parentDocument, request, response);
                 }
             } catch (NumberFormatException nfe) {
                 createAndShowAdminManagerPage(request, response, ERROR_MESSAGE__NO_PARENT_ID, PARAMETER_VALUE__SHOW_CREATE);

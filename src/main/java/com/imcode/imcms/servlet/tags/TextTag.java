@@ -12,6 +12,8 @@ public class TextTag extends SimpleImcmsTag {
 //
 //
 //        return tagParser.tagText(attributes, loop, content);
+        //fixme:
+        return tagParser.tagText(attributes, null);
     }
 
     public void setRows(int rows) {
