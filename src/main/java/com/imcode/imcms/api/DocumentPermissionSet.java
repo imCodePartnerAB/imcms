@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import com.imcode.util.CountingIterator;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -8,8 +9,6 @@ import imcode.server.document.TextDocumentPermissionSetDomainObject;
 
 import java.util.List;
 import java.util.Set;
-
-import com.imcode.util.CountingIterator;
 
 public class DocumentPermissionSet {
 

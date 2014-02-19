@@ -12,7 +12,7 @@
     TextDocument parentDocument = documentService.getTextDocument( parentId );
 
     TextDocument textDocument = documentService.createNewTextDocument( parentDocument ) ;
-    textDocument.setHeadline(DocumentI18nSupport.getCurrentLanguage(), "Textdocument created from API" );
+    textDocument.setHeadline(DocumentLanguageSupport.getCurrentLanguage(), "Textdocument created from API" );
     textDocument.setPlainTextField( 1, "Test text field" );
     textDocument.setPublicationStartDatetime( new Date() );
     textDocument.setPublicationStatus(Document.PublicationStatus.APPROVED);
@@ -25,7 +25,7 @@ with link from the document with id "<a href="<%= request.getContextPath() %>/se
 
 <%
     UrlDocument urlDocument = documentService.createNewUrlDocument( parentDocument );
-    urlDocument.setHeadline(DocumentI18nSupport.getCurrentLanguage(),  "URL-document created from API" );
+    urlDocument.setHeadline(DocumentLanguageSupport.getCurrentLanguage(),  "URL-document created from API" );
     urlDocument.setUrl( "www.imcode.com" );
     urlDocument.setPublicationStartDatetime( new Date() );
     urlDocument.setPublicationStatus(Document.PublicationStatus.APPROVED);
@@ -40,7 +40,7 @@ with link from the document with id "<a href="<%= request.getContextPath() %>/se
 
 <%
     FileDocument fileDocument = documentService.createNewFileDocument( parentDocument ) ;
-    fileDocument.setHeadline(DocumentI18nSupport.getCurrentLanguage(),  "Filedocument created from API");
+    fileDocument.setHeadline(DocumentLanguageSupport.getCurrentLanguage(),  "Filedocument created from API");
     //FileDocument.FileDocumentFile file = new FileDocument.FileDocumentFile( new FileDataSource("file.txt"));
     FileDocument.FileDocumentFile file = new FileDocument.FileDocumentFile( new StringDataSource("This is the contents of the file."));
     fileDocument.addFile( "text", file );

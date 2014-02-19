@@ -118,8 +118,7 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
 
   docsView.addValueChangeHandler { _ =>
     def fieldsToI8nDocRef(fields: DocumentStoredFields): DocRef = {
-      val language = imcmsServices.getDocumentI18nSupport.getByCode(fields.languageCode())
-      DocRef.of(fields.id(), fields.versionNo(), language)
+      DocRef.of(fields.id(), fields.versionNo(), fields.languageCode())
     }
 
     selectionRef.set(docsView.selection.map(docIx => docsContainer.getItem(docIx).fields |> fieldsToI8nDocRef).to[Seq])

@@ -41,7 +41,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
         new InformationDialog("Please select a text document you want to use as a template".i).show()
 
       case selection => selection.head |> { ref =>
-        (imcmsServices.getDocumentMapper.getDefaultDocument(ref.getDocId, ref.getDocLanguage) : DocumentDomainObject) match {
+        (imcmsServices.getDocumentMapper.getDefaultDocument(ref.getDocId, ref.getDocLanguageCode) : DocumentDomainObject) match {
           case null => showMissingDocNotification()
 
           case selectedDoc if !selectedDoc.isInstanceOf[TextDocumentDomainObject] =>
@@ -109,7 +109,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   def copySelectedDoc() {
     whenSingleton(projection.selection) { ref =>
-      (imcmsServices.getDocumentMapper.getDefaultDocument(ref.getDocId, ref.getDocLanguage) : DocumentDomainObject) match {
+      (imcmsServices.getDocumentMapper.getDefaultDocument(ref.getDocId, ref.getDocLanguageCode) : DocumentDomainObject) match {
         case null => showMissingDocNotification()
         case doc =>
           imcmsServices.getDocumentMapper.copyDocument(ref, projection.user)
@@ -122,7 +122,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   def editSelectedDoc() {
     whenSingleton(projection.selection) { ref =>
-      (imcmsServices.getDocumentMapper.getWorkingDocument(ref.getDocId, ref.getDocLanguage) : DocumentDomainObject) match {
+      (imcmsServices.getDocumentMapper.getWorkingDocument(ref.getDocId, ref.getDocLanguageCode) : DocumentDomainObject) match {
         case null => showMissingDocNotification()
         case doc =>
           val dialog = new DocEditorDialog(s"Edit document ${doc.getId}".i, doc)

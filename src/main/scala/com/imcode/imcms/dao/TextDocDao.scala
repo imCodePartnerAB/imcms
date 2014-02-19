@@ -31,8 +31,8 @@ class TextDocDao extends HibernateSupport {
   def getTextsInAllLanguages(docRef: DocRef, no: Int, loopItemRefOpt: Option[LoopItemRef], createIfNotExists: Boolean): JList[TextDocText] = {
     for {
       language <- docLanguageDao.getAllLanguages.asScala
-      docIdentity = DocRef.of(docRef.getDocId, docRef.getDocVersionNo, language |> OrmToApi.toApi)
-      text <- getText(docRef, no, loopItemRefOpt).asOption
+      docRef2 = DocRef.of(docRef.getDocId, docRef.getDocVersionNo, language.getCode)
+      text <- getText(docRef2, no, loopItemRefOpt).asOption
     } yield text
   } |> { _.asJava }
 
@@ -48,7 +48,7 @@ class TextDocDao extends HibernateSupport {
       "TextDocText.deleteTextsBy_DocId_and_DocVersionNo_and_DocLanguageCode",
       "docId" -> ref.getDocId(),
       "docVersionNo" -> ref.getDocVersionNo(),
-      "docLanguageCode" -> ref.getDocLanguage.getCode
+      "docLanguageCode" -> ref.getDocLanguageCode
     )
   }
 
@@ -202,7 +202,7 @@ class TextDocDao extends HibernateSupport {
   def getImages(ref: DocRef): JList[TextDocImage] =
     hibernate.listByNamedQueryAndNamedParams[TextDocImage](
       "Image.getByDocRefAndLanguage",
-      "docIdentity" -> ref, "language" -> ref.getDocLanguage
+      "docIdentity" -> ref, "language" -> ref.getDocLanguageCode
     )
   // fixme
   //|> TextDocumentUtils.initImagesSources

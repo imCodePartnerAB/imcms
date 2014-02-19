@@ -1,6 +1,6 @@
 package imcode.server ;
 
-import com.imcode.imcms.api.DocumentI18nSupport;
+import com.imcode.imcms.api.DocumentLanguageSupport;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -112,7 +112,7 @@ public interface ImcmsServices {
     
     KerberosLoginService getKerberosLoginService();
 
-    DocumentI18nSupport getDocumentI18nSupport();
+    DocumentLanguageSupport getDocumentLanguageSupport();
 
     <T> T getManagedBean(Class<T> requiredType);
 

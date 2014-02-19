@@ -10,7 +10,7 @@ import scala.collection.JavaConverters._
 import com.imcode.imcms.api._
 
 
-class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[DocumentLanguage], size: Int) {
+class DocLoaderCachingProxy(docLoader: DocumentLoader, docLanguageSupport: DocumentLanguageSupport, size: Int) {
 
   val cacheManager = CacheManager.create()
 
@@ -66,8 +66,8 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
   /**
    * @return working doc or null if doc does not exists
    */
-  def getWorkingDoc[A <: DocumentDomainObject](docId: DocId, language: DocumentLanguage): A =
-    workingDocs.getOrPut(DocCacheKey(docId, language.getCode)) {
+  def getWorkingDoc[A <: DocumentDomainObject](docId: DocId, docLanguageCode: String): A =
+    workingDocs.getOrPut(DocCacheKey(docId, docLanguageCode)) {
       getMeta(docId) match {
         case null => null
         case meta =>
@@ -77,7 +77,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
 
           doc.setMeta(meta.clone())
           doc.setVersionNo(version.getNo)
-          doc.setLanguage(language)
+          doc.setLanguage(docLanguageSupport.getByCode(docLanguageCode))
 
           docLoader.loadAndInitContent(doc)
       }
@@ -86,8 +86,8 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
   /**
    * @return default doc or null if doc does not exists
    */
-  def getDefaultDoc[A <: DocumentDomainObject](docId: DocId, language: DocumentLanguage): A =
-    defaultDocs.getOrPut(DocCacheKey(docId, language.getCode)) {
+  def getDefaultDoc[A <: DocumentDomainObject](docId: DocId, docLanguageCode: String): A =
+    defaultDocs.getOrPut(DocCacheKey(docId, docLanguageCode)) {
       getMeta(docId) match {
         case meta =>
           val versionInfo = getDocVersionInfo(docId)
@@ -96,7 +96,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
 
           doc.setMeta(meta.clone())
           doc.setVersionNo(version.getNo)
-          doc.setLanguage(language)
+          doc.setLanguage(docLanguageSupport.getByCode(docLanguageCode))
 
           docLoader.loadAndInitContent(doc)
       }
@@ -115,7 +115,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
 
         doc.setMeta(meta.clone())
         doc.setVersionNo(version.getNo)
-        doc.setLanguage(ref.getDocLanguage)
+        doc.setLanguage(docLanguageSupport.getByCode(ref.getDocLanguageCode))
 
         docLoader.loadAndInitContent(doc)
     }
@@ -128,8 +128,8 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, languages: JList[Document
     versionInfos.remove(docId)
 
     for {
-      language <- languages.asScala
-      key = DocCacheKey(docId, language.getCode)
+      code <- docLanguageSupport.getCodes.asScala
+      key = DocCacheKey(docId, code)
     } {
       workingDocs.remove(key)
       defaultDocs.remove(key)

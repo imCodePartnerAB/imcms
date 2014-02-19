@@ -15,14 +15,14 @@ public final class DocRef {
     public static class Builder {
         private int docId;
         private int docVersionNo;
-        private DocumentLanguage docLanguage;
+        private String docLanguageCode;
 
         public Builder() {}
 
         public Builder(DocRef docRef) {
             this.docId = docRef.docId;
             this.docVersionNo = docRef.docVersionNo;
-            this.docLanguage = docRef.docLanguage;
+            this.docLanguageCode = docRef.docLanguageCode;
         }
 
         public Builder docId(int docId) {
@@ -34,13 +34,13 @@ public final class DocRef {
             return this;
         }
 
-        public Builder docLanguage(DocumentLanguage docLanguage) {
-            this.docLanguage = docLanguage;
+        public Builder docLanguageCode(String docLanguageCode) {
+            this.docLanguageCode = docLanguageCode;
             return this;
         }
 
         public DocRef build() {
-            return DocRef.of(docId, docVersionNo, docLanguage);
+            return DocRef.of(docId, docVersionNo, docLanguageCode);
         }
     }
 
@@ -48,29 +48,29 @@ public final class DocRef {
         return new DocRef(docId, docVersionNo, null);
     }
 
-    public static DocRef of(int docId, int docVersionNo, DocumentLanguage docLanguage) {
-        return new DocRef(docId, docVersionNo, docLanguage);
+    public static DocRef of(int docId, int docVersionNo, String docLanguageCode) {
+        return new DocRef(docId, docVersionNo, docLanguageCode);
     }
 
     private final int docId;
 
     private final int docVersionNo;
 
-    private final DocumentLanguage docLanguage;
+    private final String docLanguageCode;
 
     private final int cachedHashCode;
 
     private final String cachedToString;
 
-    public DocRef(int docId, int docVersionNo, DocumentLanguage docLanguage) {
+    public DocRef(int docId, int docVersionNo, String docLanguageCode) {
         this.docId = docId;
         this.docVersionNo = docVersionNo;
-        this.docLanguage = docLanguage;
+        this.docLanguageCode = docLanguageCode;
         this.cachedHashCode = Objects.hash(docId, docVersionNo);
         this.cachedToString = com.google.common.base.Objects.toStringHelper(this)
                 .add("id", docId)
                 .add("docVersionNo", docVersionNo)
-                .add("docLanguage", docLanguage)
+                .add("docLanguageCode", docLanguageCode)
                 .toString();
     }
 
@@ -82,7 +82,7 @@ public final class DocRef {
     private boolean equals(DocRef that) {
         return docId == that.docId
                 && docVersionNo == that.docVersionNo
-                && Objects.equals(docLanguage, that.docLanguage);
+                && Objects.equals(docLanguageCode, that.docLanguageCode);
     }
 
     @Override
@@ -103,8 +103,12 @@ public final class DocRef {
         return docVersionNo;
     }
 
-    public DocumentLanguage getDocLanguage() {
-        return docLanguage;
+    public String getDocLanguageCode() {
+        return docLanguageCode;
+    }
+
+    public DocVersionRef getDocVersionRef() {
+        return DocVersionRef.of(docId, docVersionNo);
     }
 }
 

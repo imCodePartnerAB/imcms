@@ -19,7 +19,7 @@ class DocGetterCallbackSuite extends FunSuite {
   val i18nContentSupport = LanguageFX.mkI18nSupport()
   val services = mock(classOf[ImcmsServices])
 
-  when(services.getDocumentI18nSupport).thenReturn(i18nContentSupport)
+  when(services.getDocumentLanguageSupport).thenReturn(i18nContentSupport)
 
   test("default user - no params") {
     val request = MockitoSugar.mock[HttpServletRequest]

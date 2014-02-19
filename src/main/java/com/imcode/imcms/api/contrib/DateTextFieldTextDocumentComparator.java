@@ -1,15 +1,13 @@
 package com.imcode.imcms.api.contrib;
 
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.TextDocument;
 import imcode.util.DateConstants;
+import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.TextDocument;
 
 /**
  * Compares text-documents by a date in a textfield.

@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Refers to text doc loop entry.
  */
 public class LoopEntryRef {
 

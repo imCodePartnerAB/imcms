@@ -1,22 +1,16 @@
 package imcode.server.document;
 
-import com.imcode.imcms.mapping.orm.DocVersion;
+import com.imcode.imcms.api.*;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.imcode.imcms.api.*;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Parent of all imCMS document types.
@@ -55,7 +49,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private volatile int versionNo = DocumentVersion.WORKING_VERSION_NO;
 
-    private volatile DocumentLanguage language;
+    private volatile DocumentLanguage language = DocumentLanguage.builder().code("en").enabled(true).build();
 
     @Override
     public DocumentDomainObject clone() {
@@ -86,7 +80,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public DocRef getRef() {
-        return DocRef.of(getId(), getVersionNo(), getLanguage());
+        return DocRef.of(getId(), getVersionNo(), getLanguage().getCode());
     }
 
     public DocVersionRef getVersionRef() {
@@ -121,7 +115,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 throw new IllegalArgumentException(errorMessage);
         }
 
-        document.setLanguage(Imcms.getServices().getDocumentI18nSupport().getDefaultLanguage());
+        document.setLanguage(Imcms.getServices().getDocumentLanguageSupport().getDefaultLanguage());
         document.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
 
         return (T) document;
@@ -485,9 +479,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setMeta(Meta meta) {
-        if (meta == null) {
-            throw new IllegalArgumentException("Meta argument can not be null.");
-        }
+        Objects.requireNonNull(meta, "meta argument can not be null.");
 
         this.meta = meta.clone();
     }
@@ -497,6 +489,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setLanguage(DocumentLanguage language) {
+        Objects.requireNonNull(language, "language argument can not be null.");
+
         this.language = language;
     }
 
@@ -506,9 +500,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setAppearance(DocumentAppearance appearance) {
-        if (appearance == null) {
-            throw new IllegalArgumentException("appearance argument can not be null.");
-        }
+        Objects.requireNonNull(appearance, "appearance argument can not be null.");
 
         this.appearance = appearance;
     }

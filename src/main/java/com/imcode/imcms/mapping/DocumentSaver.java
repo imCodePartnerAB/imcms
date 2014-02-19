@@ -68,21 +68,13 @@ public class DocumentSaver {
      * @throws IllegalStateException if a text refers non-existing content loop.
      */
     @Transactional
-    public void saveText(TextDocumentItemWrapper<TextDomainObject> textRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textRef, user);
+    public void saveText(TextDocumentItemWrapper<TextDomainObject> textWrapper, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        createLoopEntry(textWrapper.getDocRef(), textWrapper.getLoopEntryRef());
 
-        metaDao.touch(textRef.getDocRef(), user);
+        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textWrapper, user);
+
+        metaDao.touch(textWrapper.getDocRef(), user);
     }
-
-    @Transactional
-    public void saveText(LoopItemWrapper<TextDomainObject> textRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createEnclosingContentLoopIfMissing(textRef.getDocVersionRef(), textRef.getLoopItemRef());
-
-        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textRef, user);
-
-        metaDao.touch(textRef.getDocVersionRef(), user);
-    }
-
 
     @Transactional
     public void saveTexts(Collection<TextDocumentItemWrapper<TextDomainObject>> textRefs, UserDomainObject user)
@@ -124,6 +116,8 @@ public class DocumentSaver {
     public void saveImage(TextDocumentItemWrapper<ImageDomainObject> imageRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         ImageDomainObject image = imageRef.getItem();
 
+        createLoopEntry(imageRef.getDocRef(), imageRef.getLoopEntryRef());
+
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
         storingVisitor.saveTextDocumentImage(image, user);
@@ -131,39 +125,25 @@ public class DocumentSaver {
         metaDao.touch(imageRef.getDocRef(), user);
     }
 
-    @Transactional
-    public void saveImage(LoopItemWrapper<ImageDomainObject> imageRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        ImageDomainObject image = imageRef.getItem();
-
-        createEnclosingContentLoopIfMissing(imageRef.getDocVersionRef(), imageRef.getLoopItemRef());
-
-        DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
-
-        storingVisitor.saveTextDocumentImage(image, user);
-
-        metaDao.touch(imageRef.getDocVersionRef(), user);
-    }
-
-
     /**
      * Creates content loop if item references non-saved enclosing content loop.
      */
     @Transactional
-    public void createEnclosingContentLoopIfMissing(DocVersionRef docVersionRef, LoopItemRef loopItemRef) {
-        if (loopItemRef == null) {
+    public void createLoopEntry(DocRef docRef, LoopEntryRef loopEntryRef) {
+        if (loopEntryRef == null) {
             return;
         }
 
-        TextDocLoop ormLoop = textDocDao.getLoop(docVersionRef, loopItemRef.getLoopNo());
+        TextDocLoop ormLoop = textDocDao.getLoop(docRef.getDocVersionRef(), loopEntryRef.getLoopNo());
 
         if (ormLoop == null) {
             ormLoop = new TextDocLoop();
-            ormLoop.setNo(loopItemRef.getLoopNo());
-            ormLoop.getEntries().add(new TextDocLoop.Entry(loopItemRef.getEntryNo()));
+            ormLoop.setNo(loopEntryRef.getLoopNo());
+            ormLoop.getEntries().add(new TextDocLoop.Entry(loopEntryRef.getEntryNo()));
             textDocDao.saveLoop(ormLoop);
         } else {
             Loop apiLoop = OrmToApi.toApi(ormLoop);
-            int contentNo = loopItemRef.getEntryNo();
+            int contentNo = loopEntryRef.getEntryNo();
             if (!apiLoop.findEntryIndexByNo(contentNo).isPresent()) {
                 ormLoop.getEntries().add(new TextDocLoop.Entry(contentNo));
                 textDocDao.saveLoop(ormLoop);
@@ -258,7 +238,7 @@ public class DocumentSaver {
         for (Map.Entry<DocumentLanguage, DocumentAppearance> e : appearances.entrySet()) {
             DocumentLanguage language = e.getKey();
             DocumentAppearance appearance = e.getValue();
-            DocAppearance ormAppearance = metaDao.getDocAppearance(DocRef.of(doc.getId(), doc.getVersionNo(), language));
+            DocAppearance ormAppearance = metaDao.getDocAppearance(DocRef.of(doc.getId(), doc.getVersionNo(), language.getCode()));
             if (ormAppearance == null) {
                 ormAppearance = new DocAppearance();
             }

@@ -8,8 +8,8 @@ public final class DocVersionRef {
         return new Builder();
     }
 
-    public static Builder buillder(DocVersionRef docRef) {
-        return new Builder(docRef);
+    public static Builder buillder(DocVersionRef docVersionRef) {
+        return new Builder(docVersionRef);
     }
 
     public static class Builder {
@@ -18,9 +18,9 @@ public final class DocVersionRef {
 
         public Builder() {}
 
-        public Builder(DocVersionRef docRef) {
-            this.docId = docRef.docId;
-            this.docVersionNo = docRef.docVersionNo;
+        public Builder(DocVersionRef docVersionRef) {
+            this.docId = docVersionRef.docId;
+            this.docVersionNo = docVersionRef.docVersionNo;
         }
 
         public Builder docId(int docId) {

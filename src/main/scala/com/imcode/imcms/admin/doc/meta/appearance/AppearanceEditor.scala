@@ -47,8 +47,8 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentAppe
 
   // i18nMetas sorted by language (default always first) and native name
   private val i18nMetaEditorViews: Seq[I18nMetaEditorView] = {
-    val defaultLanguage = imcmsServices.getDocumentI18nSupport.getDefaultLanguage
-    val languages = imcmsServices.getDocumentI18nSupport.getLanguages.asScala.sortWith {
+    val defaultLanguage = imcmsServices.getDocumentLanguageSupport.getDefaultLanguage
+    val languages = imcmsServices.getDocumentLanguageSupport.getLanguages.asScala.sortWith {
       case (l1, _) if l1 == defaultLanguage => true
       case (_, l2) if l2 == defaultLanguage => false
       case (l1, l2) => l1.getNativeName < l2.getNativeName
@@ -118,7 +118,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentAppe
 
   // Default language checkbox is be always checked.
   override def resetValues() {
-    val defaultLanguage = imcmsServices.getDocumentI18nSupport.getDefaultLanguage
+    val defaultLanguage = imcmsServices.getDocumentLanguageSupport.getDefaultLanguage
 
     for (i18nMetaEditorWidget <- i18nMetaEditorViews) {
       val isDefaultLanguage = i18nMetaEditorWidget.language == defaultLanguage

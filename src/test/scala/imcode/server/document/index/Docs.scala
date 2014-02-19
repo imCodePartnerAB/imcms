@@ -32,7 +32,7 @@ class DocIndexingMocksSetup {
 
   Mockito.when(documentMapperMock.getImcmsServices).thenReturn(servicesMock)
 
-  Mockito.when(servicesMock.getDocumentI18nSupport).thenReturn(LanguageFX.mkI18nSupport())
+  Mockito.when(servicesMock.getDocumentLanguageSupport).thenReturn(LanguageFX.mkI18nSupport())
 
   Mockito.when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer { args: Array[AnyRef] =>
     val availableCategories = for {

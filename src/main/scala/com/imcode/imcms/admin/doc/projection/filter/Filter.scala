@@ -67,12 +67,12 @@ class Filter extends ImcmsServicesSupport {
 
     val isChecked: (DocumentLanguage => Boolean) = {
       val languages = parameters.languagesOpt.getOrElse(Set.empty)
-      language => (languages.isEmpty && imcmsServices.getDocumentI18nSupport.isDefault(language)) || languages.contains(language)
+      language => (languages.isEmpty && imcmsServices.getDocumentLanguageSupport.isDefault(language)) || languages.contains(language)
     }
 
     basicView.languages.layout.removeAllComponents()
 
-    for (language <- imcmsServices.getDocumentI18nSupport.getLanguages.asScala) {
+    for (language <- imcmsServices.getDocumentLanguageSupport.getLanguages.asScala) {
       val chkLanguage = new CheckBox(language.getNativeName) with TypedData[DocumentLanguage] |>> { chk =>
         chk.setIcon(Theme.Icon.Language.flag(language))
         chk.data = language

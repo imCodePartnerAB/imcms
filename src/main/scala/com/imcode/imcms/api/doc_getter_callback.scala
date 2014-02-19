@@ -28,7 +28,7 @@ object DocGetterCallbacks {
   /** Creates a callback and sets it to the user. */
   def updateUserDocGetterCallback(request: HttpServletRequest, services: ImcmsServices, user: UserDomainObject) {
     val currentDocGetterCallback = user.getDocGetterCallback
-    val docI18nSupport = services.getDocumentI18nSupport
+    val docI18nSupport = services.getDocumentLanguageSupport
     val defaultLanguage = docI18nSupport.getDefaultLanguage
     val preferredLanguage = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE).trimToOption
                    .flatMap(code => docI18nSupport.getByCode(code).asOption)
@@ -104,7 +104,7 @@ case class WorkingDocGetterCallback(documentLanguages: DocumentLanguages, select
 
 case class CustomDocGetterCallback(documentLanguages: DocumentLanguages, selectedDocId: Int, selectedDocVersionNo: Int) extends DocGetterCallback {
   def getDoc[A <: DocumentDomainObject](docId: Int, user: UserDomainObject, docMapper: DocumentMapper): A =
-    if (selectedDocId == docId) docMapper.getCustomDocument(DocRef.of(selectedDocId, selectedDocVersionNo, documentLanguages.preferred))
+    if (selectedDocId == docId) docMapper.getCustomDocument(DocRef.of(selectedDocId, selectedDocVersionNo, documentLanguages.preferred.getCode))
     else DefaultDocGetterCallback(documentLanguages).getDoc(docId, user, docMapper)
 }
 

@@ -1,6 +1,6 @@
 package imcode.server;
 
-import com.imcode.imcms.api.DocumentI18nSupport;
+import com.imcode.imcms.api.DocumentLanguageSupport;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
@@ -103,7 +103,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
-    private DocumentI18nSupport documentI18nSupport;
+    private DocumentLanguageSupport documentLanguageSupport;
     private ApplicationContext applicationContext;
 
 
@@ -125,13 +125,13 @@ public class DefaultImcmsServices implements ImcmsServices {
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
                                 ApplicationContext applicationContext,
-                                DocumentI18nSupport documentI18nSupport) {
+                                DocumentLanguageSupport documentLanguageSupport) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
         this.applicationContext = applicationContext;
-        this.documentI18nSupport = documentI18nSupport;
+        this.documentLanguageSupport = documentLanguageSupport;
 
         initConfig(props);
         initSso();
@@ -868,12 +868,12 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.documentMapper = documentMapper;
     }
 
-    public DocumentI18nSupport getDocumentI18nSupport() {
-        return documentI18nSupport;
+    public DocumentLanguageSupport getDocumentLanguageSupport() {
+        return documentLanguageSupport;
     }
 
-    public void setDocumentI18nSupport(DocumentI18nSupport documentI18nSupport) {
-        this.documentI18nSupport = documentI18nSupport;
+    public void setDocumentLanguageSupport(DocumentLanguageSupport documentLanguageSupport) {
+        this.documentLanguageSupport = documentLanguageSupport;
     }
 
     @Override

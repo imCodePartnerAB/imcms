@@ -822,7 +822,7 @@
     </error-page>
 
     <error-page>
-        <exception-type>com.imcode.imcms.api.I18nDisabledException</exception-type>
+        <exception-type>com.imcode.imcms.api.DocumentLanguageDisabledException</exception-type>
         <location>/imcms/404.jsp</location>
     </error-page>
 

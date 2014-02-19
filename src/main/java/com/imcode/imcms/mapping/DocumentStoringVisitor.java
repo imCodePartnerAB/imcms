@@ -202,7 +202,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     @Transactional
     public void updateDocumentAppearance(DocumentDomainObject doc, UserDomainObject user) {
         DocRef docRef = doc.getRef();
-        DocLanguage docLanguage = docLanguageDao.getByCode(docRef.getDocLanguage().getCode());
+        DocLanguage docLanguage = docLanguageDao.getByCode(docRef.getDocLanguageCode());
 
         metaDao.deleteAppearance(docRef);
 
@@ -221,50 +221,27 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     /**
      * Saves text document's text.
      *
-     * @param textRef
+     * @param textWrapper
      * @param user
      */
     @Transactional
-    public void saveTextDocumentText(TextDocumentItemWrapper<TextDomainObject> textRef, UserDomainObject user) {
-        DocVersion docVersion = docVersionDao.getVersion(textRef.getDocRef().getDocId(), textRef.getDocRef().getDocVersionNo());
-        DocLanguage docLanguage = docLanguageDao.getByCode(textRef.getDocRef().getDocLanguage().getCode());
+    public void saveTextDocumentText(TextDocumentItemWrapper<TextDomainObject> textWrapper, UserDomainObject user) {
+        DocVersion docVersion = docVersionDao.getVersion(textWrapper.getDocRef().getDocId(), textWrapper.getDocRef().getDocVersionNo());
+        DocLanguage docLanguage = docLanguageDao.getByCode(textWrapper.getDocRef().getDocLanguageCode());
 
-        TextDomainObject text = textRef.getItem();
+        TextDomainObject text = textWrapper.getItem();
         TextDocText ormText = new TextDocText();
 
         ormText.setDocLanguage(docLanguage);
         ormText.setDocVersion(docVersion);
         ormText.setText(text.getText());
         ormText.setType(TextDocType.values()[text.getType()]);
+        LoopEntryRef loopEntryRef = textWrapper.getLoopEntryRef();
+        if (loopEntryRef != null) {
+            ormText.setLoopEntry(new TextDocLoopEntry(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo()));
+        }
 
         textDocDao.saveText(ormText);
-
-        // fixme: implement history
-        //TextDocTextHistory textHistory = new TextDocTextHistory(textRef, user);
-        //textDao.saveTextHistory(textHistory);
-    }
-
-    @Transactional
-    //fixme: implement
-    public void saveTextDocumentText(LoopItemWrapper<TextDomainObject> textRef, UserDomainObject user) {
-//        DocVersion docVersion = docVersionDao.getVersion(textRef.getDocRef().getDocId(), textRef.getDocRef().getDocVersionNo());
-//        DocLanguage docLanguage = docLanguageDao.getByCode(textRef.getDocRef().getDocLanguage().getCode());
-//
-//        TextDomainObject text = textRef.getItem();
-//        TextDocText ormText = new TextDocText();
-//
-//        ormText.setDocLanguage(docLanguage);
-//        ormText.setDocVersion(docVersion);
-//        ormText.setText(text.getText());
-//        ormText.setType(TextDocType.values()[text.getType()]);
-//
-//        LoopItemRef loopItemRef = text.getLoopItemRef();
-//
-//        if (loopItemRef != null) {
-//            ormText.setLoopItemRef(new TextDocContentRef(loopItemRef.getLoopNo(), loopItemRef.getContentNo()));
-//        }
-//
-//        textDocDao.saveText(ormText);
 
         // fixme: implement history
         //TextDocTextHistory textHistory = new TextDocTextHistory(textRef, user);

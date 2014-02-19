@@ -1,9 +1,8 @@
 package com.imcode.imcms.api;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import javax.sql.DataSource;
 
 public class DatabaseService {
 

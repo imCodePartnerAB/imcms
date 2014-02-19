@@ -1,15 +1,13 @@
 package com.imcode.imcms.api;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Document I18n support.
+ * Document language support.
  *
  * @see com.imcode.imcms.servlet.ImcmsFilter
  */
-public class DocumentI18nSupport {
+public class DocumentLanguageSupport {
 
     private final DocumentLanguage defaultLanguage;
 
@@ -19,15 +17,15 @@ public class DocumentI18nSupport {
 
     private final List<DocumentLanguage> languages;
 
-    public DocumentI18nSupport(Map<String, DocumentLanguage> languagesByCodes, Map<String, DocumentLanguage> languagesByHosts, DocumentLanguage defaultLanguage) {
-        this.languagesByCodes = languagesByCodes;
-        this.languagesByHosts = languagesByHosts;
+    public DocumentLanguageSupport(List<DocumentLanguage> languages, Map<String, DocumentLanguage> languagesByHosts, DocumentLanguage defaultLanguage) {
+        this.languagesByHosts = Collections.unmodifiableMap(languagesByHosts);
         this.defaultLanguage = defaultLanguage;
 
-        languages = new LinkedList<>();
+        this.languages = Collections.unmodifiableList(languages);
+        this.languagesByCodes = new HashMap<>();
 
-        for (DocumentLanguage language: languagesByCodes.values()) {
-            languages.add(language);
+        for (DocumentLanguage language: languages) {
+            languagesByCodes.put(language.getCode(), language);
         }
     }
 
@@ -50,5 +48,9 @@ public class DocumentI18nSupport {
 
     public DocumentLanguage getForHost(String host) {
         return languagesByHosts.get(host.toLowerCase());
+    }
+
+    public Set<String> getCodes() {
+        return languagesByCodes.keySet();
     }
 }

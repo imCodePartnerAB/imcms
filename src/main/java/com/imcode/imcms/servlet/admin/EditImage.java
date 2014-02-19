@@ -1,5 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.api.DocRef;
+import com.imcode.imcms.api.TextDocumentItemWrapper;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.Imcms;
 
@@ -46,13 +48,13 @@ public class EditImage extends HttpServlet {
         ImageEditPage imageEditPage = new ImageEditPage(null, image, null, "", getServletContext(), imageCommand, returnCommand, false, 0, 0);
 
         // Page should contain at least one image to edit.
-        List<ImageDomainObject> images = new ArrayList<ImageDomainObject>(1);
-        images.add(image);
+        List<TextDocumentItemWrapper<ImageDomainObject>> images = new ArrayList<>(1);
+        images.add(TextDocumentItemWrapper.of(DocRef.of(metaId, 0, "en"), 0, image));
         imageEditPage.setImages(images);
 
         imageEditPage.updateFromRequest(request);
 
-        ImageDomainObject editImage = imageEditPage.getImages().get(0);
+        ImageDomainObject editImage = imageEditPage.getImages().get(0).getItem();
         editImage.setGeneratedFilename(request.getParameter(REQUEST_PARAMETER__GENFILE));
 
         imageEditPage.forward(request, response);
@@ -75,10 +77,10 @@ public class EditImage extends HttpServlet {
      */
     private static class ImageRetrievalCommand implements Handler<ImageEditResult> {
 
-        private List<ImageDomainObject> images;
+        private List<TextDocumentItemWrapper<ImageDomainObject>> images;
 
         public ImageDomainObject getImage() {
-            return (images != null ? images.get(0) : null);
+            return (images != null ? images.get(0).getItem() : null);
         }
 
         public void handle(ImageEditResult editResult) {

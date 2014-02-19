@@ -1,7 +1,6 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.util.ChainableReversibleNullComparator;
 import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
@@ -10,7 +9,10 @@ import imcode.server.user.RoleId;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class Document implements Serializable {
 
@@ -143,7 +145,7 @@ public class Document implements Serializable {
     }
 
 
-    public Integer getVersionNo() {
+    public int getVersionNo() {
         return internalDocument.getVersionNo();
     }
 

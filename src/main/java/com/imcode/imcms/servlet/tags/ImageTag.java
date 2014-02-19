@@ -5,12 +5,14 @@ import imcode.server.parser.TagParser;
 public class ImageTag extends SimpleImcmsTag {
 
     protected String getContent(TagParser tagParser) {
+        //fixme
 //        ContentLoopTag2 clTag = (ContentLoopTag2)findAncestorWithClass(this, ContentLoopTag2.class);
 //        ContentLoop loop =  clTag == null ? null : clTag.getLoop();
 //        Content content = clTag == null ? null : clTag.getCurrentContent();
 //
 //
 //        return tagParser.tagImage(attributes, loop, content);
+        return "";
     }
 
     public void setMode(String mode) {

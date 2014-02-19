@@ -3,11 +3,10 @@ package com.imcode.imcms.api;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.ImcmsImageUtils;
-
-import java.util.Properties;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang.StringEscapeUtils;
+import java.util.Properties;
 
 public class Image {
 

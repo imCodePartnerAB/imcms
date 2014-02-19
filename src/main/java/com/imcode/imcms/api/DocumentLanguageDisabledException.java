@@ -2,13 +2,13 @@ package com.imcode.imcms.api;
 
 import imcode.server.document.DocumentDomainObject;
 
-public class I18nDisabledException extends I18nException {
+public class DocumentLanguageDisabledException extends DocumentLanguageException {
 
 	private DocumentDomainObject document;
 	
 	private DocumentLanguage language;
 	
-	public I18nDisabledException(DocumentDomainObject document, DocumentLanguage language) {
+	public DocumentLanguageDisabledException(DocumentDomainObject document, DocumentLanguage language) {
 		this.document = document;
 		this.language = language;
 	}

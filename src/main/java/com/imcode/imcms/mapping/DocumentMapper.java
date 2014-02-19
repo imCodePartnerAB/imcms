@@ -93,7 +93,7 @@ public class DocumentMapper implements DocumentGetter {
         documentLoader = services.getManagedBean(DocumentLoader.class);
         documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
 
-        documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getDocumentI18nSupport().getLanguages(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
 
         nativeQueriesDao = services.getManagedBean(NativeQueriesDao.class);
         categoryMapper = services.getManagedBean(CategoryMapper.class);
@@ -243,7 +243,7 @@ public class DocumentMapper implements DocumentGetter {
         DocumentLanguage language = docClone.getLanguage();
 
         if (language == null) {
-            language = imcmsServices.getDocumentI18nSupport().getDefaultLanguage();
+            language = imcmsServices.getDocumentLanguageSupport().getDefaultLanguage();
             docClone.setLanguage(language);
         }
 
@@ -371,8 +371,8 @@ public class DocumentMapper implements DocumentGetter {
 
         List<DocumentDomainObject> docs = new LinkedList<>();
 
-        for (DocumentLanguage language : imcmsServices.getDocumentI18nSupport().getLanguages()) {
-            DocRef docRef = DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO, language);
+        for (DocumentLanguage language : imcmsServices.getDocumentLanguageSupport().getLanguages()) {
+            DocRef docRef = DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO, language.getCode());
             DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(docRef);
             docs.add(doc);
         }
@@ -676,7 +676,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId) {
-        return getDefaultDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
+        return getDefaultDocument(docId, imcmsServices.getDocumentLanguageSupport().getDefaultLanguage());
     }
 
 
@@ -686,7 +686,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getWorkingDocument(int docId) {
-        return getWorkingDocument(docId, imcmsServices.getDocumentI18nSupport().getDefaultLanguage());
+        return getWorkingDocument(docId, imcmsServices.getDocumentLanguageSupport().getDefaultLanguage());
     }
 
 
@@ -697,7 +697,7 @@ public class DocumentMapper implements DocumentGetter {
     public <T extends DocumentDomainObject> T getCustomDocumentInDefaultLanguage(DocRef docRef) {
         return getCustomDocument(
                 DocRef.buillder(docRef)
-                        .docLanguage(imcmsServices.getDocumentI18nSupport().getDefaultLanguage())
+                        .docLanguageCode(imcmsServices.getDocumentLanguageSupport().getDefaultLanguage().getCode())
                         .build()
         );
     }
@@ -727,7 +727,17 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getWorkingDocument(int docId, DocumentLanguage language) {
-        return documentLoaderCachingProxy.getWorkingDoc(docId, language);
+        return getWorkingDocument(docId, language.getCode());
+    }
+
+    /**
+     * @param docId
+     * @param docLanguageCode
+     * @return working document
+     * @since 6.0
+     */
+    public <T extends DocumentDomainObject> T getWorkingDocument(int docId, String docLanguageCode) {
+        return documentLoaderCachingProxy.getWorkingDoc(docId, docLanguageCode);
     }
 
     /**
@@ -737,7 +747,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language) {
-        return documentLoaderCachingProxy.getDefaultDoc(docId, language);
+        return documentLoaderCachingProxy.getDefaultDoc(docId, language.getCode());
     }
 
 
@@ -748,7 +758,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId, String languageCode) {
-        return documentLoaderCachingProxy.getDefaultDoc(docId, getImcmsServices().getDocumentI18nSupport().getByCode(languageCode));
+        return documentLoaderCachingProxy.getDefaultDoc(docId, languageCode);
     }
 
 
@@ -760,8 +770,8 @@ public class DocumentMapper implements DocumentGetter {
      * @return custom document
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T getCustomDocument(DocRef i18nDocRef) {
-        return documentLoaderCachingProxy.getCustomDoc(i18nDocRef);
+    public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
+        return documentLoaderCachingProxy.getCustomDoc(docRef);
     }
 
 
@@ -802,27 +812,15 @@ public class DocumentMapper implements DocumentGetter {
      * <p/>
      * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
      *
-     * @param id - text being saved
+     * @param textWrapper - text being saved
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
-     * @see com.imcode.imcms.servlet.admin.SaveText
      */
-    public synchronized void saveTextDocText(TextDocumentItemWrapper<TextDomainObject> id, UserDomainObject user)
+    public synchronized void saveTextDocText(TextDocumentItemWrapper<TextDomainObject> textWrapper, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-
         try {
-            documentSaver.saveText(id, user);
+            documentSaver.saveText(textWrapper, user);
         } finally {
-            invalidateDocument(id.getDocRef().getDocId());
-        }
-    }
-
-    public synchronized void saveTextDocText(LoopItemWrapper<TextDomainObject> ref, UserDomainObject user)
-            throws NoPermissionInternalException, DocumentSaveException {
-
-        try {
-            documentSaver.saveText(ref, user);
-        } finally {
-            invalidateDocument(ref.getDocVersionRef().getDocId());
+            invalidateDocument(textWrapper.getDocRef().getDocId());
         }
     }
 
@@ -835,7 +833,6 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @param ids - texts being saved
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
-     * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      */
     public synchronized void saveTextDocTexts(Collection<TextDocumentItemWrapper<TextDomainObject>> ids, UserDomainObject user)
@@ -910,7 +907,7 @@ public class DocumentMapper implements DocumentGetter {
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
         DocumentLanguage language = callback != null
                 ? callback.documentLanguages().preferred()
-                : imcmsServices.getDocumentI18nSupport().getDefaultLanguage();
+                : imcmsServices.getDocumentLanguageSupport().getDefaultLanguage();
 
         List<DocumentDomainObject> docs = new LinkedList<>();
 

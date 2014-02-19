@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.LoopEntryRef;
 import com.imcode.imcms.api.LoopItemRef;
+import com.imcode.imcms.api.TextDocumentItemWrapper;
 import com.imcode.imcms.dao.TextDocDao;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -49,7 +50,7 @@ public class ChangeImage extends HttpServlet {
         final DocumentMapper documentMapper = imcref.getDocumentMapper();
         final Integer documentId = Integer.parseInt(request.getParameter("meta_id"));
         //fixme: check params name
-        String loopEntryRefStr = request.getParameter("loop_entry_ref");
+        String loopEntryRefStr = request.getParameter("loop_entry");
         LoopEntryRef loopEntryRef = LoopEntryRef.of(loopEntryRefStr).orNull();
 
         final TextDocumentDomainObject document = documentMapper.getDocument(documentId);
@@ -93,13 +94,13 @@ public class ChangeImage extends HttpServlet {
         Handler<ImageEditResult> imageCommand = new Handler<ImageEditResult>() {
             public void handle(ImageEditResult editResult) {
                 boolean shareImages = editResult.isShareImages();
-                List<ImageDomainObject> images = editResult.getEditedImages();
+                List<TextDocumentItemWrapper<ImageDomainObject>> images = editResult.getEditedImages();
 
                 ImcmsServices services = Imcms.getServices();
                 String firstGeneratedFilename = null;
 
                 for (int i = 0, len = images.size(); i < len; ++i) {
-                    ImageDomainObject editImage = images.get(i);
+                    ImageDomainObject editImage = images.get(i).getItem();
 
                     boolean first = (i == 0);
 
@@ -116,6 +117,7 @@ public class ChangeImage extends HttpServlet {
                 }
 
                 try {
+                    //fixme:
                     //services.getDocumentMapper().saveTextDocImages(images, user);
                 } catch (NoPermissionToEditDocumentException e) {
                     throw new ShouldHaveCheckedPermissionsEarlierException(e);
@@ -132,9 +134,10 @@ public class ChangeImage extends HttpServlet {
 
         };
 
+        //fixme:
         TextDocDao textDocDao = Imcms.getServices().getManagedBean(TextDocDao.class);
 
-        List<ImageDomainObject> images = null;//textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
+        List<TextDocumentItemWrapper<ImageDomainObject>> images = null;//textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
 
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);

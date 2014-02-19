@@ -56,7 +56,7 @@ class MetaDao extends HibernateSupport {
 
   def getDocAppearance(docRef: DocRef): DocAppearance =
     hibernate.getByNamedQueryAndNamedParams[DocAppearance](
-      "DocAppearance.getByDocIdAndLanguageId", "docId" -> docRef.getDocId, "languageCode" -> docRef.getDocLanguage.getCode
+      "DocAppearance.getByDocIdAndLanguageId", "docId" -> docRef.getDocId, "languageCode" -> docRef.getDocLanguageCode
     )
 
 

@@ -5,7 +5,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.imcode.imcms.api.DocumentI18nSupport;
+import com.imcode.imcms.api.DocumentLanguageSupport;
 import com.imcode.imcms.api.DocumentLanguage;
 import org.springframework.web.servlet.LocaleResolver;
 
@@ -17,7 +17,7 @@ public class ImcmsLocaleResolver implements LocaleResolver {
     }
 
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
-        DocumentI18nSupport i18nContentSupport = Imcms.getServices().getDocumentI18nSupport();
+        DocumentLanguageSupport i18nContentSupport = Imcms.getServices().getDocumentLanguageSupport();
 
         DocumentLanguage language = i18nContentSupport.getByCode(locale.getLanguage());
         if (language == null) {
