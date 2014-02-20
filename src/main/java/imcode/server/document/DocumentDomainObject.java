@@ -1,6 +1,8 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.*;
+import com.imcode.imcms.mapping.DocRef;
+import com.imcode.imcms.mapping.DocVersionRef;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -49,6 +51,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private volatile int versionNo = DocumentVersion.WORKING_VERSION_NO;
 
+    /*
+     * Stub.
+     * Documents instances are created directly (using new) only in tests.
+     * In production instances are created via factories that are responsible for injecting an appropriate language.
+     */
     private volatile DocumentLanguage language = DocumentLanguage.builder().code("en").enabled(true).build();
 
     @Override

@@ -1,12 +1,12 @@
 package imcode.server.document.index
 
-import com.imcode.imcms.api.{DocVersionRef, DocRef, DocumentVersion, DocumentCommonContent}
+import com.imcode.imcms.api.{DocumentVersion, DocumentCommonContent}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
 import com.imcode.imcms.test.TestSetup
 import org.scalatest.mock.MockitoSugar.mock
-import com.imcode.imcms.mapping.{TextDocMapper, CategoryMapper, DocumentMapper}
+import com.imcode.imcms.mapping.{DocVersionRef, TextDocMapper, CategoryMapper, DocumentMapper}
 import com.imcode.imcms.dao.TextDocDao
 import org.mockito.Mockito
 import org.mockito.Matchers._

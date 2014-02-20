@@ -4,7 +4,7 @@ package imcms.dao
 import _root_.javax.inject.Inject
 import com.imcode.imcms.api._
 import com.imcode.imcms.mapping.orm._
-import com.imcode.imcms.mapping.OrmToApi
+import com.imcode.imcms.mapping.{DocVersionRef, DocRef, LoopItemRef, OrmToApi}
 import scala.collection.JavaConverters._
 import scala.collection.breakOut
 import org.hibernate.{ScrollMode, CacheMode}

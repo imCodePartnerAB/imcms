@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.projection
 
-import com.imcode.imcms.api.DocRef
+import com.imcode.imcms.mapping.DocRef
 import com.imcode.imcms.vaadin.Current
 import com.imcode.util.event.Publisher
 import com.imcode.imcms.vaadin.component._

@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.DocRef
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test.TestSetup.db

@@ -347,13 +347,13 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveTextDocMenu(TextDocumentItemWrapper<MenuDomainObject> menuRef, UserDomainObject user)
+    public void saveTextDocMenu(TextDocumentMenuWrapper menuWrapper, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         try {
-            documentSaver.saveMenu(menuRef, user);
+            documentSaver.saveMenu(menuWrapper, user);
         } finally {
-            invalidateDocument(menuRef.getDocRef().getDocId());
+            invalidateDocument(menuWrapper.getDocId());
         }
     }
 
@@ -815,7 +815,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param textWrapper - text being saved
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      */
-    public synchronized void saveTextDocText(TextDocumentItemWrapper<TextDomainObject> textWrapper, UserDomainObject user)
+    public synchronized void saveTextDocText(TextDocumentTextWrapper textWrapper, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         try {
             documentSaver.saveText(textWrapper, user);
@@ -831,18 +831,18 @@ public class DocumentMapper implements DocumentGetter {
      * <p/>
      * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
      *
-     * @param ids - texts being saved
+     * @param texts - texts being saved
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      */
-    public synchronized void saveTextDocTexts(Collection<TextDocumentItemWrapper<TextDomainObject>> ids, UserDomainObject user)
+    public synchronized void saveTextDocTexts(Collection<TextDocumentTextWrapper> texts, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         try {
-            documentSaver.saveTexts(ids, user);
+            documentSaver.saveTexts(texts, user);
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
-            for (TextDocumentItemWrapper<?> id : ids) {
-                docIds.add(id.getDocRef().getDocId());
+            for (TextDocumentTextWrapper textWrapper : texts) {
+                docIds.add(textWrapper.getDocId());
             }
 
             for (Integer docId : docIds) {
@@ -859,15 +859,15 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * @since 6.0
      */
-    public synchronized void saveTextDocImages(Collection<TextDocumentItemWrapper<ImageDomainObject>> ids, UserDomainObject user)
+    public synchronized void saveTextDocImages(Collection<TextDocumentImageWrapper> images, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
 
         try {
-            documentSaver.saveImages(ids, user);
+            documentSaver.saveImages(images, user);
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
-            for (TextDocumentItemWrapper<?> id : ids) {
-                docIds.add(id.getDocRef().getDocId());
+            for (TextDocumentImageWrapper image : images) {
+                docIds.add(image.getDocId());
             }
 
             for (Integer docId : docIds) {
@@ -885,7 +885,7 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * @since 6.0
      */
-    public synchronized void saveTextDocImage(TextDocumentItemWrapper<ImageDomainObject> image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocImage(TextDocumentImageWrapper image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         try {
             documentSaver.saveImage(image, user);
         } finally {

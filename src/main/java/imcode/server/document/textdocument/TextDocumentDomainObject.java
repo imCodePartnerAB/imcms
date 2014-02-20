@@ -1,7 +1,7 @@
 package imcode.server.document.textdocument;
 
 import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.api.LoopItemRef;
+import com.imcode.imcms.mapping.LoopItemRef;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;

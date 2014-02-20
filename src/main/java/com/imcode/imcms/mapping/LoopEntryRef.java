@@ -1,4 +1,4 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;

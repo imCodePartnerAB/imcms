@@ -68,7 +68,7 @@ public class DocumentSaver {
      * @throws IllegalStateException if a text refers non-existing content loop.
      */
     @Transactional
-    public void saveText(TextDocumentItemWrapper<TextDomainObject> textWrapper, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveText(TextDocumentTextWrapper textWrapper, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         createLoopEntry(textWrapper.getDocRef(), textWrapper.getLoopEntryRef());
 
         new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textWrapper, user);
@@ -77,20 +77,20 @@ public class DocumentSaver {
     }
 
     @Transactional
-    public void saveTexts(Collection<TextDocumentItemWrapper<TextDomainObject>> textRefs, UserDomainObject user)
+    public void saveTexts(Collection<TextDocumentTextWrapper> texts, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        for (TextDocumentItemWrapper<TextDomainObject> textRef : textRefs) {
-            saveText(textRef, user);
+        for (TextDocumentTextWrapper textWrapper : texts) {
+            saveText(textWrapper, user);
         }
     }
 
 
     @Transactional
-    public void saveMenu(TextDocumentItemWrapper<MenuDomainObject> menuRef, UserDomainObject user)
+    public void saveMenu(TextDocumentMenuWrapper menuWrapper, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(menuRef, user);
+        new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(menuWrapper, user);
 
-        metaDao.touch(menuRef.getDocRef(), user);
+        metaDao.touch(menuWrapper.getDocVersionRef(), user);
     }
 
 
@@ -98,31 +98,31 @@ public class DocumentSaver {
      * Saves changed text-document image(s).
      * If an image is enclosed into unsaved content loop then this content loop is also saved.
      *
-     * @param imageRefs
+     * @param images
      * @param user
      * @throws NoPermissionInternalException
      * @throws DocumentSaveException
      */
     @Transactional
-    public void saveImages(Collection<TextDocumentItemWrapper<ImageDomainObject>> imageRefs, UserDomainObject user)
+    public void saveImages(Collection<TextDocumentImageWrapper> images, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        for (TextDocumentItemWrapper<ImageDomainObject> imageRef : imageRefs) {
-            saveImage(imageRef, user);
+        for (TextDocumentImageWrapper imageWrapper : images) {
+            saveImage(imageWrapper, user);
         }
     }
 
 
     @Transactional
-    public void saveImage(TextDocumentItemWrapper<ImageDomainObject> imageRef, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        ImageDomainObject image = imageRef.getItem();
+    public void saveImage(TextDocumentImageWrapper imageWrapper, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        ImageDomainObject image = imageWrapper.getImage();
 
-        createLoopEntry(imageRef.getDocRef(), imageRef.getLoopEntryRef());
+        createLoopEntry(imageWrapper.getDocRef(), imageWrapper.getLoopEntryRef());
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
         storingVisitor.saveTextDocumentImage(image, user);
 
-        metaDao.touch(imageRef.getDocRef(), user);
+        metaDao.touch(imageWrapper.getDocRef(), user);
     }
 
     /**

@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.LoopEntryRef;
-import com.imcode.imcms.api.LoopItemRef;
-import com.imcode.imcms.api.TextDocumentItemWrapper;
+import com.imcode.imcms.mapping.LoopEntryRef;
+import com.imcode.imcms.mapping.LoopItemRef;
+import com.imcode.imcms.mapping.TextDocumentImageWrapper;
 import com.imcode.imcms.dao.TextDocDao;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -94,13 +94,13 @@ public class ChangeImage extends HttpServlet {
         Handler<ImageEditResult> imageCommand = new Handler<ImageEditResult>() {
             public void handle(ImageEditResult editResult) {
                 boolean shareImages = editResult.isShareImages();
-                List<TextDocumentItemWrapper<ImageDomainObject>> images = editResult.getEditedImages();
+                List<TextDocumentImageWrapper> images = editResult.getEditedImages();
 
                 ImcmsServices services = Imcms.getServices();
                 String firstGeneratedFilename = null;
 
                 for (int i = 0, len = images.size(); i < len; ++i) {
-                    ImageDomainObject editImage = images.get(i).getItem();
+                    ImageDomainObject editImage = images.get(i).getImage();
 
                     boolean first = (i == 0);
 
@@ -137,7 +137,7 @@ public class ChangeImage extends HttpServlet {
         //fixme:
         TextDocDao textDocDao = Imcms.getServices().getManagedBean(TextDocDao.class);
 
-        List<TextDocumentItemWrapper<ImageDomainObject>> images = null;//textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
+        List<TextDocumentImageWrapper> images = null;//textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
 
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);

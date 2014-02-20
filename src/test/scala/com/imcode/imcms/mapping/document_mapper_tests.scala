@@ -17,7 +17,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test._
 import com.imcode.imcms.test.TestSetup
-import com.imcode.imcms.mapping.{DocumentStoringVisitor, DocumentMapper}
+import com.imcode.imcms.mapping.{DocRef, DocumentStoringVisitor, DocumentMapper}
 import com.imcode.imcms.api._
 import com.imcode.imcms.api.TextDocument.TextField
 

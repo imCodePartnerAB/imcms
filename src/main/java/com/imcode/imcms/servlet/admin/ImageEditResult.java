@@ -1,40 +1,38 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.TextDocumentItemWrapper;
-import imcode.server.document.textdocument.ImageDomainObject;
+import com.imcode.imcms.mapping.TextDocumentImageWrapper;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class ImageEditResult {
     private boolean shareImages;
-    private List<TextDocumentItemWrapper<ImageDomainObject>> editedImages;
-    private List<TextDocumentItemWrapper<ImageDomainObject>> origImages;
+    private List<TextDocumentImageWrapper> editedImages;
+    private List<TextDocumentImageWrapper> origImages;
 
 
     public ImageEditResult() {
     }
 
-    public ImageEditResult(boolean shareImages, List<TextDocumentItemWrapper<ImageDomainObject>> origImages, List<TextDocumentItemWrapper<ImageDomainObject>> editedImages) {
+    public ImageEditResult(boolean shareImages, List<TextDocumentImageWrapper> origImages, List<TextDocumentImageWrapper> editedImages) {
         this.shareImages = shareImages;
         this.origImages = origImages;
         this.editedImages = editedImages;
     }
 
     
-    public List<TextDocumentItemWrapper<ImageDomainObject>> getEditedImages() {
+    public List<TextDocumentImageWrapper> getEditedImages() {
         return editedImages;
     }
 
-    public void setEditedImages(List<TextDocumentItemWrapper<ImageDomainObject>> editedImages) {
+    public void setEditedImages(List<TextDocumentImageWrapper> editedImages) {
         this.editedImages = editedImages;
     }
 
-    public List<TextDocumentItemWrapper<ImageDomainObject>> getOrigImages() {
+    public List<TextDocumentImageWrapper> getOrigImages() {
         return origImages;
     }
 
-    public void setOrigImages(List<TextDocumentItemWrapper<ImageDomainObject>> origImages) {
+    public void setOrigImages(List<TextDocumentImageWrapper> origImages) {
         this.origImages = origImages;
     }
 

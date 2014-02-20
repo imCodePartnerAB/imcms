@@ -1,9 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.DocRef;
-import com.imcode.imcms.api.TextDocumentItemWrapper;
+import com.imcode.imcms.mapping.DocRef;
+import com.imcode.imcms.mapping.TextDocumentImageWrapper;
 import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.Imcms;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,13 +47,13 @@ public class EditImage extends HttpServlet {
         ImageEditPage imageEditPage = new ImageEditPage(null, image, null, "", getServletContext(), imageCommand, returnCommand, false, 0, 0);
 
         // Page should contain at least one image to edit.
-        List<TextDocumentItemWrapper<ImageDomainObject>> images = new ArrayList<>(1);
-        images.add(TextDocumentItemWrapper.of(DocRef.of(metaId, 0, "en"), 0, image));
+        List<TextDocumentImageWrapper> images = new ArrayList<>(1);
+        images.add(TextDocumentImageWrapper.of(DocRef.of(metaId, 0, "en"), 0, image));
         imageEditPage.setImages(images);
 
         imageEditPage.updateFromRequest(request);
 
-        ImageDomainObject editImage = imageEditPage.getImages().get(0).getItem();
+        ImageDomainObject editImage = imageEditPage.getImages().get(0).getImage();
         editImage.setGeneratedFilename(request.getParameter(REQUEST_PARAMETER__GENFILE));
 
         imageEditPage.forward(request, response);
@@ -77,10 +76,10 @@ public class EditImage extends HttpServlet {
      */
     private static class ImageRetrievalCommand implements Handler<ImageEditResult> {
 
-        private List<TextDocumentItemWrapper<ImageDomainObject>> images;
+        private List<TextDocumentImageWrapper> images;
 
         public ImageDomainObject getImage() {
-            return (images != null ? images.get(0).getItem() : null);
+            return (images != null ? images.get(0).getImage() : null);
         }
 
         public void handle(ImageEditResult editResult) {

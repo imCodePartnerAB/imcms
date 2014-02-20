@@ -1,8 +1,7 @@
 package imcode.server.parser;
 
-import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.api.LoopEntryRef;
-import com.imcode.imcms.api.LoopItemRef;
+import com.imcode.imcms.mapping.LoopEntryRef;
+import com.imcode.imcms.mapping.LoopItemRef;
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.servlet.ImcmsFilter;

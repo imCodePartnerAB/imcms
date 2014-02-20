@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.api.LoopItemRef;
 import com.imcode.imcms.dao.*;
 import com.imcode.imcms.mapping.orm.*;
 import imcode.server.document.GetterDocumentReference;
