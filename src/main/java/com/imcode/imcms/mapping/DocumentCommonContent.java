@@ -1,4 +1,4 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping;
 
 import java.io.Serializable;
 import java.util.Objects;

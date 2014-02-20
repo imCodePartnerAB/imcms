@@ -47,9 +47,9 @@ public class BackDoc extends HttpServlet {
         if (null != lastTextDocument ) {
             redirectToDocumentId( req, res, lastTextDocument.getId() );
         } else {
-            DocumentLanguageSupport i18nContentSupport = imcref.getDocumentLanguageSupport();
-            DocumentLanguages contentLanguages = new DocumentLanguages(i18nContentSupport.getDefaultLanguage(), i18nContentSupport.getDefaultLanguage());
-            DocGetterCallback callback = new DefaultDocGetterCallback(contentLanguages);
+            DocumentLanguageSupport documentLanguageSupport = imcref.getDocumentLanguageSupport();
+            DocumentLanguages documentLanguages = new DocumentLanguages(documentLanguageSupport.getDefaultLanguage(), documentLanguageSupport.getDefaultLanguage());
+            DocGetterCallback callback = new DefaultDocGetterCallback(documentLanguages);
             Imcms.getUser().setDocGetterCallback(callback);
             redirectToDocumentId( req, res, imcref.getSystemData().getStartDocument() );
         }

@@ -3,6 +3,7 @@ package imcms
 package admin.doc.meta.appearance
 
 import com.imcode.imcms.api._
+import com.imcode.imcms.mapping.Meta
 import com.vaadin.ui._
 
 import com.imcode.imcms.vaadin.component._

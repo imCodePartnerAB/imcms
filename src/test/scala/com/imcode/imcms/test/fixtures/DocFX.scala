@@ -2,7 +2,8 @@ package com.imcode
 package imcms.test
 package fixtures
 
-import com.imcode.imcms.api.{DocumentLanguage, DocumentCommonContent}
+import com.imcode.imcms.api.DocumentLanguage
+import com.imcode.imcms.mapping.DocumentCommonContent
 import scala.collection.JavaConverters._
 import imcode.server.user.RoleId
 import imcode.server.document.DocumentPermissionSetTypeDomainObject

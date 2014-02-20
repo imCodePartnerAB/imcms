@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.DocumentCommonContent
 import org.junit.Assert._
 import scala.collection.JavaConverters._
 import org.junit.runner.RunWith

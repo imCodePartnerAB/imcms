@@ -14,7 +14,7 @@ import org.apache.lucene.search.Sort;
 import java.util.AbstractList;
 import java.util.List;
 
-public class  DocumentService {
+public class DocumentService {
 
     private final ContentManagementSystem contentManagementSystem;
 
@@ -25,7 +25,7 @@ public class  DocumentService {
     static Document wrapDocumentDomainObject(DocumentDomainObject document,
                                              ContentManagementSystem contentManagementSystem) {
         if (null == document) {
-            return null ;
+            return null;
         }
         ApiWrappingDocumentVisitor apiWrappingDocumentVisitor = new ApiWrappingDocumentVisitor(contentManagementSystem);
         document.accept(apiWrappingDocumentVisitor);
@@ -37,14 +37,14 @@ public class  DocumentService {
      * instead.
      *
      * @param documentIdString The unique id or name of the document requested, can be either the int value also known as "meta_id"
-     * or the document name also known as "alias".
+     *                         or the document name also known as "alias".
      * @return The document The type is usually a subclass to document, if there exist one.
      * @throws NoPermissionException If the current user dosen't have the rights to read this document.
      */
     public Document getDocument(String documentIdString) throws NoPermissionException {
         DocumentDomainObject doc = getDocumentMapper().getDocument(documentIdString);
         Document result = null;
-        if ( null != doc ) {
+        if (null != doc) {
             result = wrapDocumentDomainObject(doc, contentManagementSystem);
         }
         return result;
@@ -59,12 +59,12 @@ public class  DocumentService {
      * @throws NoPermissionException If the current user dosen't have the rights to read this document.
      */
     public Document getDocument(int documentId) throws NoPermissionException {
-        return getDocument(""+documentId);
+        return getDocument("" + documentId);
     }
 
     /**
      * @param documentIdString The unique id or name of the document requested, can be either the int value alsp known as "meta_id"
-     * or the document name also known as "alias".
+     *                         or the document name also known as "alias".
      * @return The document
      * @throws NoPermissionException If the current user dosen't have the rights to read this document.
      */
@@ -78,12 +78,12 @@ public class  DocumentService {
      * @throws NoPermissionException If the current user dosen't have the rights to read this document.
      */
     public TextDocument getTextDocument(int documentId) throws NoPermissionException {
-        return (TextDocument) getDocument(""+documentId);
+        return (TextDocument) getDocument("" + documentId);
     }
 
     /**
      * @param documentIdString The unique id or name of the document requested, can be either the int value also known as "meta_id"
-     * or the document name also known as "alias".
+     *                         or the document name also known as "alias".
      * @return The document
      * @throws NoPermissionException If the current user dosen't have the rights to read this document.
      */
@@ -116,26 +116,28 @@ public class  DocumentService {
         return wrapDocumentDomainObject(getDocumentMapper().createDocumentOfTypeFromParent(doctype, parent.getInternal(), contentManagementSystem.getCurrentUser().getInternal()), contentManagementSystem);
     }
 
-    /** Saves the changes to a modified document. Note that this method is synchronized. */
+    /**
+     * Saves the changes to a modified document. Note that this method is synchronized.
+     */
     public synchronized void saveChanges(Document document) throws NoPermissionException, SaveException {
         try {
-            if ( 0 == document.getId() ) {
+            if (0 == document.getId()) {
                 getDocumentMapper().saveNewDocument(document.getInternal(), contentManagementSystem.getCurrentUser().getInternal());
             } else {
                 getDocumentMapper().saveDocument(document.getInternal(), contentManagementSystem.getCurrentUser().getInternal());
             }
-        } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
+        } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
             throw new MaxCategoriesOfTypeExceededException(e);
         } catch (AliasAlreadyExistsInternalException e) {
             throw new AliasAlreadyExistsException(e);
         } catch (DocumentSaveException e) {
-            throw new SaveException(e) ;
+            throw new SaveException(e);
         }
     }
 
     public Category getCategory(CategoryType categoryType, String categoryName) {
         final CategoryDomainObject category = getCategoryMapper().getCategoryByTypeAndName(categoryType.getInternal(), categoryName);
-        if ( null != category ) {
+        if (null != category) {
             return new Category(category);
         } else {
             return null;
@@ -148,7 +150,7 @@ public class  DocumentService {
 
     public Category getCategory(int categoryId) {
         final CategoryDomainObject category = getCategoryMapper().getCategoryById(categoryId);
-        if ( null != category ) {
+        if (null != category) {
             return new Category(category);
         } else {
             return null;
@@ -166,7 +168,7 @@ public class  DocumentService {
     }
 
     private CategoryType returnCategoryTypeAPIObjectOrNull(final CategoryTypeDomainObject categoryType) {
-        if ( null != categoryType ) {
+        if (null != categoryType) {
             return new CategoryType(categoryType);
         }
         return null;
@@ -176,7 +178,7 @@ public class  DocumentService {
         // Allow everyone to get a CategoryType. No security check.
         CategoryDomainObject[] categoryDomainObjects = getCategoryMapper().getAllCategoriesOfType(categoryType.getInternal());
         Category[] categories = new Category[categoryDomainObjects.length];
-        for ( int i = 0; i < categoryDomainObjects.length; i++ ) {
+        for (int i = 0; i < categoryDomainObjects.length; i++) {
             CategoryDomainObject categoryDomainObject = categoryDomainObjects[i];
             categories[i] = new Category(categoryDomainObject);
         }
@@ -186,7 +188,7 @@ public class  DocumentService {
     public CategoryType[] getAllCategoryTypes() {
         CategoryTypeDomainObject[] categoryTypeDomainObjects = getCategoryMapper().getAllCategoryTypes();
         CategoryType[] categoryTypes = new CategoryType[categoryTypeDomainObjects.length];
-        for ( int i = 0; i < categoryTypeDomainObjects.length; i++ ) {
+        for (int i = 0; i < categoryTypeDomainObjects.length; i++) {
             CategoryTypeDomainObject categoryTypeDomainObject = categoryTypeDomainObjects[i];
             categoryTypes[i] = new CategoryType(categoryTypeDomainObject);
         }
@@ -199,11 +201,10 @@ public class  DocumentService {
      * @return The newly created category type.
      * @throws NoPermissionException
      * @throws CategoryTypeAlreadyExistsException
-     *
      */
     public CategoryType createNewCategoryType(String name,
                                               int maxChoices) throws NoPermissionException, CategoryTypeAlreadyExistsException {
-        if ( getCategoryMapper().isUniqueCategoryTypeName(name) ) {
+        if (getCategoryMapper().isUniqueCategoryTypeName(name)) {
             CategoryTypeDomainObject newCategoryTypeDO = new CategoryTypeDomainObject(0, name, maxChoices, false);
             newCategoryTypeDO = getCategoryMapper().addCategoryTypeToDb(newCategoryTypeDO);
             return new CategoryType(newCategoryTypeDO);
@@ -211,7 +212,6 @@ public class  DocumentService {
             throw new CategoryTypeAlreadyExistsException("A category with name " + name + " already exists.");
         }
     }
-
 
 
     public List getDocuments(final SearchQuery query) throws SearchException {
@@ -230,7 +230,7 @@ public class  DocumentService {
                 }
             }, contentManagementSystem.getCurrentUser().getInternal());
             return new ApiDocumentWrappingList(documentList, contentManagementSystem);
-        } catch ( RuntimeException e ) {
+        } catch (RuntimeException e) {
             throw new SearchException(e);
         }
     }
@@ -261,7 +261,7 @@ public class  DocumentService {
     }
 
     public Document[] search(SearchQuery query) throws SearchException {
-        List documents = getDocuments(query) ;
+        List documents = getDocuments(query);
         return (Document[]) documents.toArray(new Document[documents.size()]);
     }
 
@@ -338,11 +338,11 @@ public class  DocumentService {
         }
 
         public Object remove(int index) {
-            return wrapDocumentDomainObject((DocumentDomainObject) documentList.remove(index), contentManagementSystem) ;
+            return wrapDocumentDomainObject((DocumentDomainObject) documentList.remove(index), contentManagementSystem);
         }
 
         public Object set(int index, Object element) {
-            return wrapDocumentDomainObject((DocumentDomainObject) documentList.set(index, ((Document)element).getInternal()), contentManagementSystem) ;
+            return wrapDocumentDomainObject((DocumentDomainObject) documentList.set(index, ((Document) element).getInternal()), contentManagementSystem);
         }
     }
 }

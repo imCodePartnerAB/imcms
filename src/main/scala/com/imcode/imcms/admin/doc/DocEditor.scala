@@ -4,7 +4,8 @@ package admin.doc
 
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.content.htmldoc.HtmlDocContentEditor
-import com.imcode.imcms.api.{DocumentLanguage, DocumentCommonContent}
+import com.imcode.imcms.api.DocumentLanguage
+import com.imcode.imcms.mapping.DocumentCommonContent
 import com.vaadin.ui.themes.Reindeer
 import imcode.server.document.{HtmlDocumentDomainObject, UrlDocumentDomainObject, FileDocumentDomainObject, DocumentDomainObject}
 import com.imcode.imcms.admin.doc.meta.MetaEditor

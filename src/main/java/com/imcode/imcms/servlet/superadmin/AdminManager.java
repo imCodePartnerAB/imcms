@@ -1,11 +1,9 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.api.DocumentCommonContent;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
-import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.SearchDocumentsPage;

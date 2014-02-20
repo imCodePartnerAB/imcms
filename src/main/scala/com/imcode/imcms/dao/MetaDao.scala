@@ -1,7 +1,6 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.api.DocVersionRef
 import com.imcode.imcms.mapping.{DocVersionRef, DocRef}
 import com.imcode.imcms.mapping.orm._
 import imcode.server.document.DocumentDomainObject

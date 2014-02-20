@@ -2,7 +2,8 @@ package com.imcode
 package imcms
 package admin.doc.meta.appearance
 
-import com.imcode.imcms.api.{DocumentLanguage, Meta, DocumentCommonContent}
+import com.imcode.imcms.api.DocumentLanguage
+import com.imcode.imcms.mapping.{DocumentCommonContent, Meta}
 import scala.language.reflectiveCalls
 
 import scala.collection.JavaConverters._

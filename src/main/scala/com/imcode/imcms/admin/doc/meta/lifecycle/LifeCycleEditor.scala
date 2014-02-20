@@ -2,7 +2,8 @@ package com.imcode
 package imcms
 package admin.doc.meta.lifecycle
 
-import com.imcode.imcms.api.{DocumentVersion, Meta}
+import com.imcode.imcms.api.DocumentVersion
+import com.imcode.imcms.mapping.Meta
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api.Document
 

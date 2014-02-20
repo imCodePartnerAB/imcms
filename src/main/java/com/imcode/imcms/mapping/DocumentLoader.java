@@ -1,8 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentCommonContent;
-import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.DocVersionDao;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.orm.DocCommonContent;

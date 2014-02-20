@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -28,6 +29,10 @@ public class TextDocMapper {
     @Inject
     private TextDocDao textDocDao;
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public List<TextDocumentTextWrapper> getAllTexts(DocVersionRef docVersionRef) {
+        throw new NotImplementedException();
+    }
 
     // -----------------------------------------------------------------------------------------------------------------
     public Map<DocumentLanguage, Map<Integer, TextDomainObject>> getTexts(DocVersionRef docVersionRef) {
@@ -60,6 +65,11 @@ public class TextDocMapper {
     }
 
     public Optional<TextDomainObject> getLoopText(DocRef docRef, LoopItemRef loopItemRef) {
+        throw new NotImplementedException();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public List<TextDocumentImageWrapper> getAllImages(DocVersionRef docVersionRef) {
         throw new NotImplementedException();
     }
 

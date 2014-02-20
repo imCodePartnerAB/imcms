@@ -1,5 +1,8 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSets;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
