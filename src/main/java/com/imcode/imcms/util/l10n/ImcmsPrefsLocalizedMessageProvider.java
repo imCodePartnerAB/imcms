@@ -14,7 +14,7 @@ import org.apache.commons.lang.UnhandledException;
 public class ImcmsPrefsLocalizedMessageProvider extends LocalizedMessageProvider {
 
     public ResourceBundle getResourceBundle(String languageIso639_2) {
-        String propertiesFilename = "imcms_"+languageIso639_2 + ".properties";
+        String propertiesFilename = "imcms_" + languageIso639_2 + ".properties";
         try {
             final Properties languageProperties = Prefs.getProperties(propertiesFilename);
             return new ResourceBundle() {
@@ -26,7 +26,7 @@ public class ImcmsPrefsLocalizedMessageProvider extends LocalizedMessageProvider
                     return new IteratorEnumeration(languageProperties.keySet().iterator());
                 }
             };
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             throw new UnhandledException(e);
         }
     }

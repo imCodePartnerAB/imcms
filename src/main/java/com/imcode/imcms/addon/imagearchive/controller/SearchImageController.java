@@ -35,14 +35,14 @@ import com.imcode.imcms.api.User;
 @Controller
 public class SearchImageController {
     private static final Pattern PAGE_PATTERN = Pattern.compile("/web/archive/page/(\\d+)/?");
-    
+
     private static final String PAGINATION_KEY = Utils.makeKey(SearchImageController.class, "pagination");
     private static final String COMMAND_KEY = Utils.makeKey(SearchImageController.class, "command");
-    
+
     @Autowired
     private Facade facade;
-    
-    
+
+
     @RequestMapping({"/archive", "/archive/"})
     public ModelAndView indexHandler(
             @ModelAttribute("search") SearchImageCommand command,
@@ -54,14 +54,14 @@ public class SearchImageController {
         if (returnTo != null) {
             session.setAttribute(SessionConstants.IMCMS_RETURN_URL, returnTo);
         }
-        
+
         ArchiveSession archiveSession = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
 
         ModelAndView mav = new ModelAndView("image_archive/pages/search_image");
         Pagination pag = getPagination(archiveSession);
-        
+
         if (request.getParameter("show") == null) {
             SearchImageCommand cmd = (SearchImageCommand) archiveSession.get(COMMAND_KEY);
             if (cmd != null) {
@@ -71,97 +71,97 @@ public class SearchImageController {
             archiveSession.put(COMMAND_KEY, command);
             pag.setCurrentPage(0);
         }
-        
+
         if (command.isClear()) {
             command.copyFrom(new SearchImageCommand());
         }
-        
+
         mav.addObject("search", command);
-        
+
         List<Categories> categories = facade.getRoleService().findCategories(user, Roles.ALL_PERMISSIONS);
         mav.addObject("categories", categories);
         mav.addObject("keywords", facade.getImageService().findKeywords());
         mav.addObject("artists", facade.getRoleService().findArtists(user));
-        
+
         SearchImageValidator validator = new SearchImageValidator(facade, user);
         ValidationUtils.invokeValidator(validator, command, result);
-        
+
         if (result.hasErrors()) {
             return mav;
         }
-        
+
         archiveSession.put(COMMAND_KEY, command);
-        
+
         List<Integer> categoryIds = new ArrayList<Integer>(categories.size());
         for (Categories category : categories) {
             categoryIds.add(category.getId());
         }
-        
+
         int imageCount = facade.getImageService().searchImagesCount(command, categoryIds, user);
         mav.addObject("imageCount", imageCount);
-        
+
         pag.setPageSize(command.getResultsPerPage());
         pag.update(imageCount);
         List<Images> images = facade.getImageService().searchImages(command, pag, categoryIds, user);
-        
+
         mav.addObject("images", images);
         mav.addObject("pag", pag);
-        
+
         return mav;
     }
-    
+
     @RequestMapping("/archive/page/*")
     public ModelAndView pageHandler(HttpServletRequest request) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        
+
         SearchImageCommand command = (SearchImageCommand) session.get(COMMAND_KEY);
         if (command == null) {
             return new ModelAndView("redirect:/web/archive/");
         }
-        
+
         Pagination pag = getPagination(session);
         pag.setCurrentPage(getPage(request));
-        
+
         ModelAndView mav = new ModelAndView("image_archive/pages/search_image");
         mav.addObject("search", command);
         mav.addObject("pag", pag);
-        
+
         List<Categories> categories = facade.getRoleService().findCategories(user, Roles.ALL_PERMISSIONS);
         mav.addObject("categories", categories);
         mav.addObject("keywords", facade.getImageService().findKeywords());
         mav.addObject("artists", facade.getRoleService().findArtists(user));
-        
+
         List<Integer> categoryIds = new ArrayList<Integer>(categories.size());
         for (Categories category : categories) {
             categoryIds.add(category.getId());
         }
-        
+
         int imageCount = facade.getImageService().searchImagesCount(command, categoryIds, user);
         mav.addObject("imageCount", imageCount);
-        
+
         pag.update(imageCount);
         List<Images> images = facade.getImageService().searchImages(command, pag, categoryIds, user);
-        
+
         mav.addObject("images", images);
 
         return mav;
     }
-    
+
     private static Pagination getPagination(ArchiveSession session) {
         Pagination pag = (Pagination) session.get(PAGINATION_KEY);
         if (pag == null) {
             pag = new Pagination(SearchImageCommand.DEFAULT_PAGE_SIZE);
             session.put(PAGINATION_KEY, pag);
         }
-        
+
         return pag;
     }
-    
+
     private static int getPage(HttpServletRequest request) {
         Matcher matcher = PAGE_PATTERN.matcher(request.getRequestURI());
-        
+
         int page = 0;
         if (matcher.find()) {
             try {
@@ -170,7 +170,7 @@ public class SearchImageController {
             } catch (NumberFormatException ex) {
             }
         }
-        
+
         return page;
     }
 }

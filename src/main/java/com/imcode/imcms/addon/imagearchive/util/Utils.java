@@ -38,8 +38,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
-    
-    
+
+
     public static void addNoCacheHeaders(HttpServletResponse response) {
         response.setHeader("Cache-Control", "no-cache, must-revalidate, max_age=0, no-store");
         response.setHeader("Pragma", "no-cache");
@@ -53,39 +53,39 @@ public class Utils {
             log.warn(ex.getMessage(), ex);
         }
     }
-    
+
     public static String makeKey(Class<?> klass, String suffix) {
         return String.format("%s.%s", klass.getName(), suffix);
     }
-    
+
     public static Date min(Date date1, Date date2) {
         if (date1 == null && date2 == null) {
             return null;
         }
-        
+
         if (date1 == null) {
             return date2;
         } else if (date2 == null) {
             return date1;
         }
-        
+
         return (date1.getTime() < date2.getTime() ? date1 : date2);
     }
-    
+
     public static Date max(Date date1, Date date2) {
         if (date1 == null && date2 == null) {
             return null;
         }
-        
+
         if (date1 == null) {
             return date2;
         } else if (date2 == null) {
             return date1;
         }
-        
+
         return (date1.getTime() < date2.getTime() ? date2 : date1);
     }
-    
+
     public static void redirectToLogin(HttpServletRequest request, HttpServletResponse response, Facade facade) {
         try {
             response.sendRedirect(request.getContextPath() + "/login/");
@@ -93,24 +93,24 @@ public class Utils {
             log.warn(ex.getMessage(), ex);
         }
     }
-        
+
     public static String encodeUrl(String value) {
         try {
             return URLEncoder.encode(value, "UTF-8");
         } catch (UnsupportedEncodingException ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return null;
     }
-    
+
     public static String decodeUrl(String value) {
         try {
             return URLDecoder.decode(value, "UTF-8");
         } catch (UnsupportedEncodingException ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return null;
     }
 
@@ -151,7 +151,7 @@ public class Utils {
 
         for (File subdir : subdirs) {
             Libraries subLib = matchPathToLibrary(subdir, allLibs);
-            if(subLib == null) {
+            if (subLib == null) {
                 return;
             }
             subLibIds.add(subLib.getId());
@@ -160,10 +160,10 @@ public class Utils {
     }
 
     private static Libraries matchPathToLibrary(File path, List<Libraries> allLibraries) {
-        for(Libraries lib: allLibraries) {
-            if(lib.getFilepath() != null) {
+        for (Libraries lib : allLibraries) {
+            if (lib.getFilepath() != null) {
                 File f = new File(lib.getFilepath(), lib.getFolderNm());
-                if(path.equals(f)) {
+                if (path.equals(f)) {
                     return lib;
                 }
             }
@@ -176,7 +176,7 @@ public class Utils {
         MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
         MediaType jsonMimeType = MediaType.parseMediaType("application/json");
 
-        if(jsonConverter.canWrite(object.getClass(), jsonMimeType)) {
+        if (jsonConverter.canWrite(object.getClass(), jsonMimeType)) {
             try {
                 jsonConverter.write(object, jsonMimeType, new ServletServerHttpResponse(response));
             } catch (IOException e) {
@@ -198,26 +198,26 @@ public class Utils {
     }
 
     public static List<Categories> getCategoriesRequiredToUse(Images img, Facade facade, User user) {
-        if(user.isSuperAdmin()) {
+        if (user.isSuperAdmin()) {
             return Collections.emptyList();
         }
-        
+
         List<Categories> userCategories = facade.getRoleService().findCategories(user, Roles.ALL_PERMISSIONS);
         List<Categories> imageCategories = img.getCategories();
         List<Categories> categoriesesUserCantUse = Collections.emptyList();
-        if(imageCategories != null) {
+        if (imageCategories != null) {
             categoriesesUserCantUse = (List<Categories>) CollectionUtils.subtract(imageCategories, userCategories);
         }
 
         /* Not an image uploaded by the user, return image's categories the user can't use or edit(so they know what to
          get to be able to activate) */
-        if(img.getUsersId() != user.getId() && categoriesesUserCantUse.size() > 0){
+        if (img.getUsersId() != user.getId() && categoriesesUserCantUse.size() > 0) {
             return categoriesesUserCantUse;
         }
 
         return categoriesesUserCantUse;
     }
-    
+
     private Utils() {
     }
 }

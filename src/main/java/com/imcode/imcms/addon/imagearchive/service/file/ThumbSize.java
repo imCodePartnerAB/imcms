@@ -4,10 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ThumbSize {
-    SMALL("small", 150, 113), 
+    SMALL("small", 150, 113),
     MEDIUM("medium", 300, 225);
 
     private static final Map<String, ThumbSize> nameEnumMap = new HashMap<String, ThumbSize>(ThumbSize.values().length);
+
     static {
         for (ThumbSize thumbSize : ThumbSize.values()) {
             nameEnumMap.put(thumbSize.name, thumbSize);

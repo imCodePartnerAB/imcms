@@ -16,31 +16,31 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 public class UserFinder extends WebComponent {
 
     private boolean usersAddable;
-    private boolean nullSelectable ;
-    private LocalizedMessage selectButtonText ;
-    private LocalizedMessage headline ;
+    private boolean nullSelectable;
+    private LocalizedMessage selectButtonText;
+    private LocalizedMessage headline;
 
     private SelectUserCommand selectUserCommand;
 
-    public static UserFinder getInstance( HttpServletRequest request ) {
-        UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
-        if ( null == userFinder ) {
+    public static UserFinder getInstance(HttpServletRequest request) {
+        UserFinder userFinder = (UserFinder) HttpSessionUtils.getSessionAttributeWithNameInRequest(request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE);
+        if (null == userFinder) {
             userFinder = new UserFinder();
         }
         return userFinder;
     }
 
-    public void setUsersAddable( boolean usersAddable ) {
+    public void setUsersAddable(boolean usersAddable) {
         this.usersAddable = usersAddable;
     }
 
-    public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( this, request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
+    public void forward(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute(this, request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE);
         UserBrowser.UserBrowserPage userBrowserPage = new UserBrowser.UserBrowserPage();
-        userBrowserPage.forward( request, response );
+        userBrowserPage.forward(request, response);
     }
 
-    public void setSelectButtonText( LocalizedMessage buttonText ) {
+    public void setSelectButtonText(LocalizedMessage buttonText) {
         this.selectButtonText = buttonText;
     }
 
@@ -56,15 +56,15 @@ public class UserFinder extends WebComponent {
         return nullSelectable;
     }
 
-    public void setNullSelectable( boolean nullSelectable ) {
+    public void setNullSelectable(boolean nullSelectable) {
         this.nullSelectable = nullSelectable;
     }
 
-    public void selectUser( UserDomainObject selectedUser, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        this.selectUserCommand.selectUser(selectedUser,request,response) ;
+    public void selectUser(UserDomainObject selectedUser, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        this.selectUserCommand.selectUser(selectedUser, request, response);
     }
 
-    public void setSelectUserCommand( SelectUserCommand selectUserCommand ) {
+    public void setSelectUserCommand(SelectUserCommand selectUserCommand) {
         this.selectUserCommand = selectUserCommand;
     }
 
@@ -72,13 +72,13 @@ public class UserFinder extends WebComponent {
         return headline;
     }
 
-    public void setHeadline( LocalizedMessage headline ) {
+    public void setHeadline(LocalizedMessage headline) {
         this.headline = headline;
     }
 
     public static interface SelectUserCommand extends Serializable {
 
-        void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
-                                HttpServletResponse response ) throws ServletException, IOException ;
+        void selectUser(UserDomainObject selectedUser, HttpServletRequest request,
+                        HttpServletResponse response) throws ServletException, IOException;
     }
 }

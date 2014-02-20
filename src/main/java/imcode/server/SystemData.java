@@ -1,7 +1,7 @@
-package imcode.server ;
+package imcode.server;
 
 /**
-   Storage-container for systemdata
+ * Storage-container for systemdata
  */
 public class SystemData implements java.io.Serializable {
 
@@ -10,22 +10,34 @@ public class SystemData implements java.io.Serializable {
      */
     private final static int DEFAULT_USER_LOGIN_PASSWORD_EXPIRATION_INTERVAL = 24;
 
-    /** The startdocument **/
-    private int startDocument ;
+    /**
+     * The startdocument *
+     */
+    private int startDocument;
 
-    /** The servermaster */
-    private String serverMaster ;
+    /**
+     * The servermaster
+     */
+    private String serverMaster;
 
-    /** The servermaster's address */
-    private String serverMasterAddress ;
+    /**
+     * The servermaster's address
+     */
+    private String serverMasterAddress;
 
-    /** The webmaster */
-    private String webMaster ;
+    /**
+     * The webmaster
+     */
+    private String webMaster;
 
-    /** The webmaster's address */
-    private String webMasterAddress ;
+    /**
+     * The webmaster's address
+     */
+    private String webMasterAddress;
 
-    /** The systemmessage */
+    /**
+     * The systemmessage
+     */
     private String systemMessage;
 
     /**
@@ -33,63 +45,83 @@ public class SystemData implements java.io.Serializable {
      */
     private int userLoginPasswordResetExpirationInterval = DEFAULT_USER_LOGIN_PASSWORD_EXPIRATION_INTERVAL;
 
-    /** Get the startdocument **/
+    /**
+     * Get the startdocument *
+     */
     public int getStartDocument() {
-	return startDocument ;
+        return startDocument;
     }
 
-    /** Get the servermaster */
+    /**
+     * Get the servermaster
+     */
     public String getServerMaster() {
-	return serverMaster ;
+        return serverMaster;
     }
 
-    /** Get the servermaster's address */
+    /**
+     * Get the servermaster's address
+     */
     public String getServerMasterAddress() {
-	return serverMasterAddress ;
+        return serverMasterAddress;
     }
 
-    /** Get the webmaster */
+    /**
+     * Get the webmaster
+     */
     public String getWebMaster() {
-	return webMaster ;
+        return webMaster;
     }
 
-    /** Get the webmaster's address */
+    /**
+     * Get the webmaster's address
+     */
     public String getWebMasterAddress() {
-	return webMasterAddress ;
+        return webMasterAddress;
     }
 
-    /** Get the systemmessage */
+    /**
+     * Get the systemmessage
+     */
     public String getSystemMessage() {
-	return systemMessage ;
+        return systemMessage;
     }
 
 
     public void setStartDocument(int startDocument) {
-	this.startDocument = startDocument ;
+        this.startDocument = startDocument;
     }
 
     public void setServerMaster(String serverMaster) {
-	this.serverMaster = serverMaster ;
+        this.serverMaster = serverMaster;
     }
 
-    /** Get the servermaster's address */
+    /**
+     * Get the servermaster's address
+     */
     public void setServerMasterAddress(String serverMasterAddress) {
-	this.serverMasterAddress = serverMasterAddress ;
+        this.serverMasterAddress = serverMasterAddress;
     }
 
-    /** Get the webmaster */
+    /**
+     * Get the webmaster
+     */
     public void setWebMaster(String webMaster) {
-	this.webMaster = webMaster ;
+        this.webMaster = webMaster;
     }
 
-    /** Get the webmaster's address */
+    /**
+     * Get the webmaster's address
+     */
     public void setWebMasterAddress(String webMasterAddress) {
-	this.webMasterAddress = webMasterAddress ;
+        this.webMasterAddress = webMasterAddress;
     }
 
-    /** Get the systemmessage */
+    /**
+     * Get the systemmessage
+     */
     public void setSystemMessage(String systemMessage) {
-	this.systemMessage = systemMessage ;
+        this.systemMessage = systemMessage;
     }
 
     /**

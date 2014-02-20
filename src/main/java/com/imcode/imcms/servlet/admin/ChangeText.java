@@ -26,34 +26,34 @@ public class ChangeText extends HttpServlet {
 
     private static final String JSP__CHANGE_TEXT = "change_text.jsp";
 
-    public void doGet( HttpServletRequest request, HttpServletResponse res ) throws ServletException, IOException {
-        Utility.setDefaultHtmlContentType( res );
+    public void doGet(HttpServletRequest request, HttpServletResponse res) throws ServletException, IOException {
+        Utility.setDefaultHtmlContentType(res);
 
-        UserDomainObject user = Utility.getLoggedOnUser( request );
+        UserDomainObject user = Utility.getLoggedOnUser(request);
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        int documentId = Integer.parseInt( request.getParameter( "meta_id" ) );
-        TextDocumentDomainObject textDocument = documentMapper.getDocument( documentId );
+        int documentId = Integer.parseInt(request.getParameter("meta_id"));
+        TextDocumentDomainObject textDocument = documentMapper.getDocument(documentId);
 
-        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
+        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(textDocument);
 
-        if ( !textDocumentPermissionSet.getEditTexts() ) {	// Checking to see if user may edit this
-            AdminDoc.adminDoc( documentId, user, request, res, getServletContext() );
+        if (!textDocumentPermissionSet.getEditTexts()) {    // Checking to see if user may edit this
+            AdminDoc.adminDoc(documentId, user, request, res, getServletContext());
             return;
         }
 
-        int textIndex = Integer.parseInt( request.getParameter( "txt" ) );
-        String label = null == request.getParameter( "label" ) ? "" : request.getParameter( "label" );
+        int textIndex = Integer.parseInt(request.getParameter("txt"));
+        String label = null == request.getParameter("label") ? "" : request.getParameter("label");
 
-        TextDomainObject text = textDocument.getText( textIndex );
-        if ( null == text ) {
-            text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_HTML );
+        TextDomainObject text = textDocument.getText(textIndex);
+        if (null == text) {
+            text = new TextDomainObject("", TextDomainObject.TEXT_TYPE_HTML);
         }
-        String[] formats = request.getParameterValues("format") ;
-        String rows = StringUtils.defaultString(request.getParameter("rows")) ;
-        String width = StringUtils.defaultString(request.getParameter("width")) ;
-        String returnUrl = StringUtils.defaultString(request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL)) ;
-        TextEditPage page = new TextEditPage( documentId, textIndex, text, label, formats, rows, width, returnUrl );
-        page.forward( request, res, user );
+        String[] formats = request.getParameterValues("format");
+        String rows = StringUtils.defaultString(request.getParameter("rows"));
+        String width = StringUtils.defaultString(request.getParameter("width"));
+        String returnUrl = StringUtils.defaultString(request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL));
+        TextEditPage page = new TextEditPage(documentId, textIndex, text, label, formats, rows, width, returnUrl);
+        page.forward(request, res, user);
 
     }
 
@@ -75,7 +75,7 @@ public class ChangeText extends HttpServlet {
             EDITOR
         }
 
-        public TextEditPage( int documentId, int textIndex, TextDomainObject text, String label, String[] formats, String rows, String width, String returnUrl ) {
+        public TextEditPage(int documentId, int textIndex, TextDomainObject text, String label, String[] formats, String rows, String width, String returnUrl) {
             this.documentId = documentId;
             this.text = text;
             this.textIndex = textIndex;
@@ -122,10 +122,10 @@ public class ChangeText extends HttpServlet {
             return returnUrl;
         }
 
-        public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
-            request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+        public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
+            request.setAttribute(REQUEST_ATTRIBUTE__PAGE, this);
             String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__CHANGE_TEXT;
-            request.getRequestDispatcher( forwardPath ).forward( request, response );
+            request.getRequestDispatcher(forwardPath).forward(request, response);
         }
 
     }

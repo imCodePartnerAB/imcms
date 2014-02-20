@@ -15,32 +15,32 @@ import org.apache.commons.lang.UnhandledException;
 
 public class CollectingHttpServletResponse extends HttpServletResponseWrapper {
 
-    StringWriter stringWriter = new StringWriter() ;
-    PrintWriter printWriter = new PrintWriter( stringWriter ) ;
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter printWriter = new PrintWriter(stringWriter);
 
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     ServletOutputStream servletOutputStream = new ServletOutputStream() {
-        public void write( int b ) {
-            byteArrayOutputStream.write( b );
+        public void write(int b) {
+            byteArrayOutputStream.write(b);
         }
     };
 
-    private boolean alreadyCalled ;
+    private boolean alreadyCalled;
 
-    public CollectingHttpServletResponse( HttpServletResponse response ) {
-        super( response );
+    public CollectingHttpServletResponse(HttpServletResponse response) {
+        super(response);
     }
 
     private void checkCalled() throws IOException {
-        if ( alreadyCalled ) {
-            throw new IOException( "getOutputStream() or getWriter() already called." );
+        if (alreadyCalled) {
+            throw new IOException("getOutputStream() or getWriter() already called.");
         }
         alreadyCalled = true;
     }
 
     public PrintWriter getWriter() throws IOException {
         checkCalled();
-        return printWriter ;
+        return printWriter;
     }
 
     public ServletOutputStream getOutputStream() throws IOException {
@@ -55,12 +55,12 @@ public class CollectingHttpServletResponse extends HttpServletResponseWrapper {
             printWriter.flush();
             stringWriter.flush();
             if (byteArrayOutputStream.size() > 0) {
-                return byteArrayOutputStream.toString(Imcms.DEFAULT_ENCODING ) ;
+                return byteArrayOutputStream.toString(Imcms.DEFAULT_ENCODING);
             } else {
                 return stringWriter.toString();
             }
-        } catch ( IOException e ) {
-            throw new UnhandledException( e );
+        } catch (IOException e) {
+            throw new UnhandledException(e);
         }
     }
 }

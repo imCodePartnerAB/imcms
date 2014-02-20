@@ -40,7 +40,7 @@ public class SearchResult {
     }
 
     public long start() {
-        return  solrDocumentList.getStart();
+        return solrDocumentList.getStart();
     }
 
     public int size() {

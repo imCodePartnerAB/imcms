@@ -6,7 +6,7 @@ import org.apache.commons.lang.ClassUtils;
 
 public class IdNamePair implements Comparable, Serializable, Cloneable {
 
-    private IdObjectPair idObjectPair ;
+    private IdObjectPair idObjectPair;
 
     public IdNamePair(int id, String name) {
         idObjectPair = new IdObjectPair(id, name);
@@ -21,10 +21,10 @@ public class IdNamePair implements Comparable, Serializable, Cloneable {
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
@@ -38,18 +38,18 @@ public class IdNamePair implements Comparable, Serializable, Cloneable {
         return idObjectPair.hashCode();
     }
 
-    public int compareTo( Object o ) {
-        return getName().compareToIgnoreCase( ( (IdNamePair)o ).getName() );
+    public int compareTo(Object o) {
+        return getName().compareToIgnoreCase(((IdNamePair) o).getName());
     }
 
     public String toString() {
-        return "("+ ClassUtils.getShortClassName(getClass())+" "+idObjectPair+")";
+        return "(" + ClassUtils.getShortClassName(getClass()) + " " + idObjectPair + ")";
     }
 
     @Override
     public IdNamePair clone() {
         try {
-            IdNamePair o = (IdNamePair)super.clone();
+            IdNamePair o = (IdNamePair) super.clone();
             o.idObjectPair = new IdObjectPair(getId(), getName());
             return o;
         } catch (CloneNotSupportedException e) {

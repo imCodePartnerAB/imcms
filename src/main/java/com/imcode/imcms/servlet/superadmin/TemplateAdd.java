@@ -32,40 +32,40 @@ public class TemplateAdd extends HttpServlet {
     private static final String REQUEST_PARAMETER__ACTION = "action";
     private static final String REQUEST_PARAMETER__LANGUAGE = "language";
 
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ImcmsServices imcref = Imcms.getServices();
 
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !user.isSuperAdmin() ) {
-            Utility.redirectToStartDocument( req, res );
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+        if (!user.isSuperAdmin()) {
+            Utility.redirectToStartDocument(req, res);
             return;
         }
 
         ServletOutputStream out = res.getOutputStream();
 
         // Redirected here with bogus parameter, no-cache workaround
-        if ( req.getParameter( REQUEST_PARAMETER__ACTION ) != null ) {
-            if ( req.getParameter( REQUEST_PARAMETER__ACTION ).equals( "return" ) ) {
-                Utility.setDefaultHtmlContentType( res );
+        if (req.getParameter(REQUEST_PARAMETER__ACTION) != null) {
+            if (req.getParameter(REQUEST_PARAMETER__ACTION).equals("return")) {
+                Utility.setDefaultHtmlContentType(res);
 
                 List vec = new ArrayList();
-                vec.add( "#buttonName#" );
-                vec.add( "return" );
-                vec.add( "#formAction#" );
-                vec.add( "TemplateAdmin" );
-                vec.add( "#formTarget#" );
-                vec.add( "_top" );
-                out.write( imcref.getAdminTemplate("back_button.html", user, vec).getBytes("8859_1") );
+                vec.add("#buttonName#");
+                vec.add("return");
+                vec.add("#formAction#");
+                vec.add("TemplateAdmin");
+                vec.add("#formTarget#");
+                vec.add("_top");
+                out.write(imcref.getAdminTemplate("back_button.html", user, vec).getBytes("8859_1"));
             }
         }
 
     }
 
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ImcmsServices imcref = Imcms.getServices();
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !user.isSuperAdmin() ) {
-            Utility.redirectToStartDocument( req, res );
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+        if (!user.isSuperAdmin()) {
+            Utility.redirectToStartDocument(req, res);
             return;
         }
 
@@ -75,57 +75,57 @@ public class TemplateAdd extends HttpServlet {
 
         MultipartHttpServletRequest request = new MultipartHttpServletRequest(req);
 
-        if ( request.getParameter( "cancel" ) != null ) {
-            res.sendRedirect( "TemplateAdmin" );
+        if (request.getParameter("cancel") != null) {
+            res.sendRedirect("TemplateAdmin");
             return;
         }
 
-        String language = request.getParameter( REQUEST_PARAMETER__LANGUAGE );
+        String language = request.getParameter(REQUEST_PARAMETER__LANGUAGE);
 
         String simpleName = request.getParameter(REQUEST_PARAMETER__NAME);
-        if ( simpleName == null || simpleName.equals( "" ) ) {
+        if (simpleName == null || simpleName.equals("")) {
             List vec = new ArrayList();
-            vec.add( "#language#" );
-            vec.add( language );
-            String htmlStr = imcref.getAdminTemplate( "template_upload_name_blank.html", user, vec );
-            Utility.setDefaultHtmlContentType( res );
-            out.print( htmlStr );
+            vec.add("#language#");
+            vec.add(language);
+            String htmlStr = imcref.getAdminTemplate("template_upload_name_blank.html", user, vec);
+            Utility.setDefaultHtmlContentType(res);
+            out.print(htmlStr);
             return;
         }
 
-        FileItem file = request.getParameterFileItem( REQUEST_PARAMETER__FILE );
-        if ( file == null || file.getSize() == 0 ) {
+        FileItem file = request.getParameterFileItem(REQUEST_PARAMETER__FILE);
+        if (file == null || file.getSize() == 0) {
             List vec = new ArrayList();
-            vec.add( "#language#" );
-            vec.add( language );
+            vec.add("#language#");
+            vec.add(language);
             String htmlStr = imcref.getAdminTemplate("template_upload_file_blank.html", user, vec);
-            Utility.setDefaultHtmlContentType( res );
-            out.print( htmlStr );
+            Utility.setDefaultHtmlContentType(res);
+            out.print(htmlStr);
             return;
         }
 
-        String filename = request.getParameterFileItem( REQUEST_PARAMETER__FILE ).getName();
-        File fn = new File( filename );
+        String filename = request.getParameterFileItem(REQUEST_PARAMETER__FILE).getName();
+        File fn = new File(filename);
         boolean overwrite = request.getParameter(REQUEST_PARAMETER__OVERWRITE) != null;
         String htmlStr;
 
-        int result = imcref.getTemplateMapper().saveTemplate( simpleName, fn.getName(), file.getInputStream(), overwrite);
-        if ( result == -2 ) {
+        int result = imcref.getTemplateMapper().saveTemplate(simpleName, fn.getName(), file.getInputStream(), overwrite);
+        if (result == -2) {
             List vec = new ArrayList();
-            vec.add( "#language#" );
-            vec.add( language );
-            htmlStr = imcref.getAdminTemplate( "template_upload_error.html", user, vec );
-        } else if ( result == -1 ) {
+            vec.add("#language#");
+            vec.add(language);
+            htmlStr = imcref.getAdminTemplate("template_upload_error.html", user, vec);
+        } else if (result == -1) {
             List vec = new ArrayList();
-            vec.add( "#language#" );
-            vec.add( language );
-            htmlStr = imcref.getAdminTemplate( "template_upload_file_exists.html", user, vec );
+            vec.add("#language#");
+            vec.add(language);
+            htmlStr = imcref.getAdminTemplate("template_upload_file_exists.html", user, vec);
         } else {
             TemplateDomainObject template = templateMapper.getTemplateByName(simpleName);
 
-            String[] templateGroupIdStrings = request.getParameterValues( "templategroup" );
-            if ( templateGroupIdStrings != null ) {
-                for ( String templateGroupIdString : templateGroupIdStrings ) {
+            String[] templateGroupIdStrings = request.getParameterValues("templategroup");
+            if (templateGroupIdStrings != null) {
+                for (String templateGroupIdString : templateGroupIdStrings) {
                     int templateGroupId = Integer.parseInt(templateGroupIdString);
                     TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById(templateGroupId);
                     templateMapper.removeTemplateFromGroup(template, templateGroup);
@@ -134,12 +134,12 @@ public class TemplateAdd extends HttpServlet {
             }
 
             List vec = new ArrayList();
-            vec.add( "#language#" );
-            vec.add( language );
-            htmlStr = imcref.getAdminTemplate( "template_upload_done.html", user, vec );
+            vec.add("#language#");
+            vec.add(language);
+            htmlStr = imcref.getAdminTemplate("template_upload_done.html", user, vec);
         }
-        Utility.setDefaultHtmlContentType( res );
-        out.print( htmlStr );
+        Utility.setDefaultHtmlContentType(res);
+        out.print(htmlStr);
     }
 
 }

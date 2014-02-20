@@ -6,7 +6,9 @@ import org.apache.lucene.search.Sort;
 public interface DocumentQuery {
 
     Query getQuery();
+
     Sort getSort();
+
     boolean isLogged();
 
 }

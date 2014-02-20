@@ -7,6 +7,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+
 import java.io.IOException;
 import javax.security.auth.Subject;
 import javax.security.auth.kerberos.KerberosPrincipal;
@@ -16,6 +17,7 @@ import javax.security.auth.login.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -44,7 +46,7 @@ public class KerberosLoginService {
             initLoginContext();
         }
     }
-    
+
     private synchronized void initLoginContext() {
         if (loggedIn) {
             return;
@@ -139,7 +141,7 @@ public class KerberosLoginService {
     }
 
     private KerberosLoginResult loginToImcms(EstablishContextResult authResult, HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                                             HttpServletResponse response) throws ServletException, IOException {
 
         log.info("Client principal name: " + authResult.getClientPrincipalName());
 

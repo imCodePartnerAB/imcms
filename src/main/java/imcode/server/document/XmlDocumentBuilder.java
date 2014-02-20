@@ -30,12 +30,12 @@ public class XmlDocumentBuilder {
         currentUser = user;
         try {
             xmlDocument = createXmlDocument();
-            Element imcmsElement = xmlDocument.createElement( "imcms" );
-            documentsElement = xmlDocument.createElement( "documents" ) ;
-            imcmsElement.appendChild( documentsElement ) ;
-            xmlDocument.appendChild( imcmsElement );
-        } catch ( ParserConfigurationException e ) {
-            throw new UnhandledException( e );
+            Element imcmsElement = xmlDocument.createElement("imcms");
+            documentsElement = xmlDocument.createElement("documents");
+            imcmsElement.appendChild(documentsElement);
+            xmlDocument.appendChild(imcmsElement);
+        } catch (ParserConfigurationException e) {
+            throw new UnhandledException(e);
         }
 
     }
@@ -47,11 +47,11 @@ public class XmlDocumentBuilder {
     }
 
     public void addDocument(DocumentDomainObject document) {
-        XmlBuildingDocumentVisitor documentVisitor = new XmlBuildingDocumentVisitor( xmlDocument, currentUser);
-        document.accept( documentVisitor );
+        XmlBuildingDocumentVisitor documentVisitor = new XmlBuildingDocumentVisitor(xmlDocument, currentUser);
+        document.accept(documentVisitor);
         Element documentElement = documentVisitor.getDocumentElement();
-        documentElement.setAttribute( "id", "" + document.getId() );
-        documentsElement.appendChild( documentElement ) ;
+        documentElement.setAttribute("id", "" + document.getId());
+        documentsElement.appendChild(documentElement);
     }
 
     public Document getXmlDocument() {
@@ -66,7 +66,7 @@ public class XmlDocumentBuilder {
 
 
         XmlBuildingDocumentVisitor(Document xmlDocument, UserDomainObject currentUser) {
-            this.xmlDocument = xmlDocument ;
+            this.xmlDocument = xmlDocument;
             this.currentUser = currentUser;
         }
 
@@ -74,86 +74,86 @@ public class XmlDocumentBuilder {
             return documentElement;
         }
 
-        public void visitTextDocument( TextDocumentDomainObject textDocument ) {
-            Element documentElement = xmlDocument.createElement( "textdocument" ) ;
-            createTextElements( textDocument, documentElement );
-            createImageElements( textDocument, documentElement );
-            createMenuElements( textDocument, documentElement );
+        public void visitTextDocument(TextDocumentDomainObject textDocument) {
+            Element documentElement = xmlDocument.createElement("textdocument");
+            createTextElements(textDocument, documentElement);
+            createImageElements(textDocument, documentElement);
+            createMenuElements(textDocument, documentElement);
 
-            this.documentElement = documentElement ;
+            this.documentElement = documentElement;
         }
 
-        private void createTextElements( TextDocumentDomainObject textDocument, Element textDocumentElement ) {
+        private void createTextElements(TextDocumentDomainObject textDocument, Element textDocumentElement) {
             Map texts = textDocument.getTexts();
-            for ( Iterator iterator = texts.entrySet().iterator(); iterator.hasNext(); ) {
-                Map.Entry entry = (Map.Entry)iterator.next();
-                Integer textIndex = (Integer)entry.getKey();
-                TextDomainObject text = (TextDomainObject)entry.getValue();
-                Element textElement = createTextElement( textIndex, text );
-                textDocumentElement.appendChild( textElement );
+            for (Iterator iterator = texts.entrySet().iterator(); iterator.hasNext(); ) {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                Integer textIndex = (Integer) entry.getKey();
+                TextDomainObject text = (TextDomainObject) entry.getValue();
+                Element textElement = createTextElement(textIndex, text);
+                textDocumentElement.appendChild(textElement);
             }
         }
 
-        private Element createTextElement( Integer textIndex, TextDomainObject text ) {
-            Element textElement = xmlDocument.createElement( "text" );
-            textElement.setAttribute( "index", "" + textIndex );
-            textElement.setAttribute( "type", TextDomainObject.TEXT_TYPE_PLAIN == text.getType() ? "text" : "html" );
-            Text textNode = xmlDocument.createTextNode( text.getText() );
-            textElement.appendChild( textNode );
+        private Element createTextElement(Integer textIndex, TextDomainObject text) {
+            Element textElement = xmlDocument.createElement("text");
+            textElement.setAttribute("index", "" + textIndex);
+            textElement.setAttribute("type", TextDomainObject.TEXT_TYPE_PLAIN == text.getType() ? "text" : "html");
+            Text textNode = xmlDocument.createTextNode(text.getText());
+            textElement.appendChild(textNode);
             return textElement;
         }
 
-        private void createImageElements( TextDocumentDomainObject textDocument, Element textDocumentElement ) {
+        private void createImageElements(TextDocumentDomainObject textDocument, Element textDocumentElement) {
             Map images = textDocument.getImages();
-            for ( Iterator iterator = images.entrySet().iterator(); iterator.hasNext(); ) {
-                Map.Entry entry = (Map.Entry)iterator.next();
-                Integer imageIndex = (Integer)entry.getKey();
-                ImageDomainObject image = (ImageDomainObject)entry.getValue();
-                Element imageElement = createImageElement( imageIndex, image);
-                textDocumentElement.appendChild( imageElement );
+            for (Iterator iterator = images.entrySet().iterator(); iterator.hasNext(); ) {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                Integer imageIndex = (Integer) entry.getKey();
+                ImageDomainObject image = (ImageDomainObject) entry.getValue();
+                Element imageElement = createImageElement(imageIndex, image);
+                textDocumentElement.appendChild(imageElement);
             }
         }
 
         private Element createImageElement(Integer imageIndex, ImageDomainObject image) {
-            Element imageElement = xmlDocument.createElement( "image" );
-            imageElement.setAttribute( "index", "" + imageIndex );
-            imageElement.setAttribute( "path", image.getUrlPath( "" )  );
+            Element imageElement = xmlDocument.createElement("image");
+            imageElement.setAttribute("index", "" + imageIndex);
+            imageElement.setAttribute("path", image.getUrlPath(""));
             return imageElement;
         }
 
         private void createMenuElements(TextDocumentDomainObject textDocument, Element textDocumentElement) {
-            Map menus = textDocument.getMenus() ;
-            for ( Iterator iterator = menus.entrySet().iterator(); iterator.hasNext(); ) {
-                Map.Entry entry = (Map.Entry)iterator.next();
-                Integer menuIndex = (Integer)entry.getKey();
-                MenuDomainObject menu = (MenuDomainObject)entry.getValue();
-                Element menuElement = createMenuElement( menuIndex, menu);
-                textDocumentElement.appendChild( menuElement );
+            Map menus = textDocument.getMenus();
+            for (Iterator iterator = menus.entrySet().iterator(); iterator.hasNext(); ) {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                Integer menuIndex = (Integer) entry.getKey();
+                MenuDomainObject menu = (MenuDomainObject) entry.getValue();
+                Element menuElement = createMenuElement(menuIndex, menu);
+                textDocumentElement.appendChild(menuElement);
             }
         }
 
         private Element createMenuElement(Integer menuIndex, MenuDomainObject menu) {
-            Element menuElement = xmlDocument.createElement( "menu" );
-            menuElement.setAttribute( "index", "" + menuIndex );
+            Element menuElement = xmlDocument.createElement("menu");
+            menuElement.setAttribute("index", "" + menuIndex);
             createMenuItemElements(menu, menuElement);
             return menuElement;
         }
 
         private void createMenuItemElements(MenuDomainObject menu, Element menuElement) {
-            MenuItemDomainObject[] menuItems = menu.getMenuItems() ;
+            MenuItemDomainObject[] menuItems = menu.getMenuItems();
             for (int i = 0; i < menuItems.length; i++) {
                 MenuItemDomainObject menuItem = menuItems[i];
                 DocumentDomainObject document = menuItem.getDocument();
-                if ( currentUser.canAccess(document) && document.isPublished() || currentUser.canEdit(document) ) {
-                    Element menuItemElement = createMenuItemElement( menuItem.getDocument());
-                    menuElement.appendChild( menuItemElement );
+                if (currentUser.canAccess(document) && document.isPublished() || currentUser.canEdit(document)) {
+                    Element menuItemElement = createMenuItemElement(menuItem.getDocument());
+                    menuElement.appendChild(menuItemElement);
                 }
             }
         }
 
         private Element createMenuItemElement(DocumentDomainObject document) {
-            Element menuItemElement = xmlDocument.createElement( "menuItem" );
-            menuItemElement.setAttribute( "documentid", "" + document.getId() );
+            Element menuItemElement = xmlDocument.createElement("menuItem");
+            menuItemElement.setAttribute("documentid", "" + document.getId());
             return menuItemElement;
         }
     }

@@ -15,46 +15,46 @@ import org.springframework.transaction.annotation.Transactional;
  * Not a public API. Must not be used directly.
  */
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
-	
-	private UserDomainObject currentUser;
-    
+
+    private UserDomainObject currentUser;
+
     public DocumentCreatingVisitor(ImcmsServices services, UserDomainObject currentUser) {
         super(services);
-        this.currentUser = currentUser;        
+        this.currentUser = currentUser;
     }
-    
+
     @Transactional
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
-    	HtmlDocContent reference = new HtmlDocContent();
+        HtmlDocContent reference = new HtmlDocContent();
 
         //fixme
-    	//reference.setDocRef(document.getRef());
-    	reference.setHtml(document.getHtml());
-    	
-    	MetaDao dao = services.getManagedBean(MetaDao.class);
-    	
-    	dao.saveHtmlReference(reference);
+        //reference.setDocRef(document.getRef());
+        reference.setHtml(document.getHtml());
+
+        MetaDao dao = services.getManagedBean(MetaDao.class);
+
+        dao.saveHtmlReference(reference);
     }
 
     @Transactional
-    public void visitUrlDocument( UrlDocumentDomainObject document ) {
-    	UrlDocContent reference = new UrlDocContent();
+    public void visitUrlDocument(UrlDocumentDomainObject document) {
+        UrlDocContent reference = new UrlDocContent();
 
         //fixme
-    	//reference.setDocRef(document.getRef());
-    	reference.setUrlTarget("");
-    	reference.setUrlText("");
-    	reference.setUrlLanguagePrefix("");
-    	reference.setUrlFrameName("");
-    	reference.setUrl(document.getUrl());
-    	
-    	MetaDao dao = services.getManagedBean(MetaDao.class);
-    	
-    	dao.saveUrlReference(reference);    	
+        //reference.setDocRef(document.getRef());
+        reference.setUrlTarget("");
+        reference.setUrlText("");
+        reference.setUrlLanguagePrefix("");
+        reference.setUrlFrameName("");
+        reference.setUrl(document.getUrl());
+
+        MetaDao dao = services.getManagedBean(MetaDao.class);
+
+        dao.saveUrlReference(reference);
     }
 
     @Transactional
-    public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
+    public void visitTextDocument(final TextDocumentDomainObject textDocument) {
         updateTextDocumentContentLoops(textDocument, currentUser);
         updateTextDocumentTemplateNames(textDocument, currentUser);
         updateTextDocumentTexts(textDocument, currentUser);

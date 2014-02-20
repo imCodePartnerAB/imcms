@@ -15,7 +15,7 @@ public interface DocumentFinderPage {
 
     void setDocumentsFound(List documentsFound);
 
-    void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException ;
+    void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 
     void setDocumentFinder(DocumentFinder documentFinder);
 }

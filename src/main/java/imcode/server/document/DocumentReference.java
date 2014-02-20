@@ -12,17 +12,17 @@ public abstract class DocumentReference implements Cloneable {
         return documentId;
     }
 
-    public abstract DocumentDomainObject getDocument() ;
+    public abstract DocumentDomainObject getDocument();
 
     public int hashCode() {
-        return documentId ;
+        return documentId;
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
@@ -34,6 +34,6 @@ public abstract class DocumentReference implements Cloneable {
 
     @Override
     public DocumentReference clone() throws CloneNotSupportedException {
-        return (DocumentReference)super.clone();
+        return (DocumentReference) super.clone();
     }
 }

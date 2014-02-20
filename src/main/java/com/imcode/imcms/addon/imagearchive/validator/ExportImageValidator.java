@@ -7,7 +7,7 @@ import org.springframework.validation.Validator;
 public class ExportImageValidator implements Validator {
     public void validate(Object target, Errors errors) {
         ExportImageCommand command = (ExportImageCommand) target;
-        
+
         Integer quality = command.getQuality();
         if (quality == null) {
             quality = 100;
@@ -16,11 +16,11 @@ public class ExportImageValidator implements Validator {
             quality = Math.min(quality, 100);
         }
         command.setQuality(quality);
-        
+
         Integer width = command.getWidth();
         if (width != null) {
             int w = width;
-            
+
             if (w < 1) {
                 width = 1;
             } else if (w > 10000) {
@@ -28,11 +28,11 @@ public class ExportImageValidator implements Validator {
             }
         }
         command.setWidth(width);
-        
+
         Integer height = command.getHeight();
         if (height != null) {
             int h = height;
-            
+
             if (h < 1) {
                 height = 1;
             } else if (h > 10000) {
@@ -41,7 +41,7 @@ public class ExportImageValidator implements Validator {
         }
         command.setHeight(height);
     }
-    
+
     @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return ExportImageCommand.class.isAssignableFrom(clazz);

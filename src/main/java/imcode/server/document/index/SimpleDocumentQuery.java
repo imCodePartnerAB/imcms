@@ -16,7 +16,7 @@ public class SimpleDocumentQuery implements DocumentQuery {
     }
 
     public SimpleDocumentQuery(Query query) {
-        this(query,null,false);
+        this(query, null, false);
     }
 
     public Query getQuery() {

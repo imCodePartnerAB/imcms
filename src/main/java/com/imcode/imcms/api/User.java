@@ -11,7 +11,7 @@ public class User {
         return internalUser;
     }
 
-    User( UserDomainObject internalUser ) {
+    User(UserDomainObject internalUser) {
         this.internalUser = internalUser;
     }
 
@@ -102,15 +102,15 @@ public class User {
      * @since 2.0
      */
     public boolean hasRole(Role role) {
-        return internalUser.hasRoleId(role.getInternal().getId()) ;
+        return internalUser.hasRoleId(role.getInternal().getId());
     }
 
     public boolean isDefaultUser() {
-        return internalUser.isDefaultUser() ;
+        return internalUser.isDefaultUser();
     }
 
     public boolean isSuperAdmin() {
-        return internalUser.isSuperAdmin() ;
+        return internalUser.isSuperAdmin();
     }
 
     public boolean isUserAdmin() {
@@ -118,20 +118,20 @@ public class User {
     }
 
     public boolean canEdit(Document document) {
-        return internalUser.canEdit(document.getInternal()) ;
+        return internalUser.canEdit(document.getInternal());
     }
 
-    public boolean equals( Object o ) {
-        if ( this == o ) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof User ) ) {
+        if (!(o instanceof User)) {
             return false;
         }
 
-        final User user = (User)o;
+        final User user = (User) o;
 
-        if ( internalUser != null ? !internalUser.equals( user.internalUser ) : user.internalUser != null ) {
+        if (internalUser != null ? !internalUser.equals(user.internalUser) : user.internalUser != null) {
             return false;
         }
 
@@ -148,10 +148,10 @@ public class User {
     public Role[] getRoles() {
         RoleId[] roleDOs = internalUser.getRoleIds();
         Role[] roles = new Role[roleDOs.length];
-        for ( int i = 0; i < roleDOs.length; i++ ) {
+        for (int i = 0; i < roleDOs.length; i++) {
             roles[i] = new Role(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleDOs[i]));
         }
-        return roles ;
+        return roles;
     }
 
     /**
@@ -159,10 +159,10 @@ public class User {
      */
     public void setRoles(Role[] roles) {
         RoleId[] roleIds = new RoleId[roles.length];
-        for ( int i = 0; i < roles.length; i++ ) {
+        for (int i = 0; i < roles.length; i++) {
             roleIds[i] = roles[i].getInternal().getId();
         }
-        internalUser.setRoleIds( roleIds );
+        internalUser.setRoleIds(roleIds);
     }
 
     /**
@@ -176,94 +176,94 @@ public class User {
      * @since 2.0
      */
     public void removeRole(Role role) {
-        internalUser.removeRoleId(role.getInternal().getId()) ;
+        internalUser.removeRoleId(role.getInternal().getId());
     }
 
-    public void setActive( boolean active ) {
-        internalUser.setActive( active );
+    public void setActive(boolean active) {
+        internalUser.setActive(active);
     }
 
-    public void setAddress( String address ) {
-        internalUser.setAddress( address );
+    public void setAddress(String address) {
+        internalUser.setAddress(address);
     }
 
-    public void setCity( String city ) {
-        internalUser.setCity( city );
+    public void setCity(String city) {
+        internalUser.setCity(city);
     }
 
-    public void setCompany( String company ) {
-        internalUser.setCompany( company );
+    public void setCompany(String company) {
+        internalUser.setCompany(company);
     }
 
-    public void setCountry( String country ) {
-        internalUser.setCountry( country );
+    public void setCountry(String country) {
+        internalUser.setCountry(country);
     }
 
     /**
      * @deprecated Use {@link #setProvince(String)}. Will be removed in 4.0.
      */
-    public void setCountyCouncil( String countyCouncil ) {
-        internalUser.setProvince( countyCouncil );
+    public void setCountyCouncil(String countyCouncil) {
+        internalUser.setProvince(countyCouncil);
     }
 
-    public void setEmailAddress( String emailAddress ) {
-        internalUser.setEmailAddress( emailAddress );
+    public void setEmailAddress(String emailAddress) {
+        internalUser.setEmailAddress(emailAddress);
     }
 
-    public void setFaxPhone( String faxphone ) {
-        internalUser.setFaxPhone( faxphone );
+    public void setFaxPhone(String faxphone) {
+        internalUser.setFaxPhone(faxphone);
     }
 
     public String getFaxPhone() {
         return internalUser.getFaxPhone();
     }
 
-    public void setFirstName( String firstName ) {
-        internalUser.setFirstName( firstName );
+    public void setFirstName(String firstName) {
+        internalUser.setFirstName(firstName);
     }
 
-    public void setHomePhone( String homephone ) {
-        internalUser.setHomePhone( homephone );
+    public void setHomePhone(String homephone) {
+        internalUser.setHomePhone(homephone);
     }
 
-    public void setLastName( String lastName ) {
-        internalUser.setLastName( lastName );
+    public void setLastName(String lastName) {
+        internalUser.setLastName(lastName);
     }
 
-    public void setLoginName( String loginName ) {
-        internalUser.setLoginName( loginName );
+    public void setLoginName(String loginName) {
+        internalUser.setLoginName(loginName);
     }
 
-    public void setMobilePhone( String mobilephone ) {
-        internalUser.setMobilePhone( mobilephone );
+    public void setMobilePhone(String mobilephone) {
+        internalUser.setMobilePhone(mobilephone);
     }
 
-    public void setOtherPhone( String otherphone ) {
-        internalUser.setOtherPhone( otherphone );
+    public void setOtherPhone(String otherphone) {
+        internalUser.setOtherPhone(otherphone);
     }
 
-    public void setPassword( String password ) {
-        internalUser.setPassword( password );
+    public void setPassword(String password) {
+        internalUser.setPassword(password);
     }
 
-    public void setTitle( String title ) {
-        internalUser.setTitle( title );
+    public void setTitle(String title) {
+        internalUser.setTitle(title);
     }
 
-    public void setWorkPhone( String workphone ) {
-        internalUser.setWorkPhone( workphone );
+    public void setWorkPhone(String workphone) {
+        internalUser.setWorkPhone(workphone);
     }
 
-    public void setZip( String zip ) {
-        internalUser.setZip( zip );
+    public void setZip(String zip) {
+        internalUser.setZip(zip);
     }
 
-    public void setLanguage( Language language ) {
-        internalUser.setLanguageIso639_2( language.getIsoCode639_2() );
+    public void setLanguage(Language language) {
+        internalUser.setLanguageIso639_2(language.getIsoCode639_2());
     }
 
     public Language getLanguage() {
-        return Language.getLanguageByISO639_2( internalUser.getLanguageIso639_2() ) ;
+        return Language.getLanguageByISO639_2(internalUser.getLanguageIso639_2());
     }
 
     public String getSessionId() {

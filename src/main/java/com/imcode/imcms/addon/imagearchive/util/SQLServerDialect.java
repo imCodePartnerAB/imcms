@@ -8,6 +8,7 @@ import org.hibernate.dialect.function.SQLFunction;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.type.Type;
+
 // todo: check in use
 public class SQLServerDialect extends org.hibernate.dialect.SQLServerDialect {
     public SQLServerDialect() {

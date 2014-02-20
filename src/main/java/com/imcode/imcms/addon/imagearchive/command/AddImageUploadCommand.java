@@ -16,7 +16,7 @@ public class AddImageUploadCommand {
     public void setFile(CommonsMultipartFile file) {
         this.file = file;
     }
-    
+
     public int getFileCount() {
         return fileCount;
     }

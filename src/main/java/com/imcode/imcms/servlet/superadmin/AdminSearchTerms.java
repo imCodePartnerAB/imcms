@@ -33,8 +33,8 @@ public class AdminSearchTerms extends HttpServlet {
 
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {
-        UserDomainObject user = Utility.getLoggedOnUser( request );
-        if ( !user.isSuperAdmin() ) {
+        UserDomainObject user = Utility.getLoggedOnUser(request);
+        if (!user.isSuperAdmin()) {
             Utility.forwardToLogin(request, response);
             return;
         }
@@ -44,14 +44,14 @@ public class AdminSearchTerms extends HttpServlet {
 
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response) throws ServletException, IOException {
-        UserDomainObject user = Utility.getLoggedOnUser( request );
-        if ( !user.isSuperAdmin() ) {
+        UserDomainObject user = Utility.getLoggedOnUser(request);
+        if (!user.isSuperAdmin()) {
             Utility.forwardToLogin(request, response);
             return;
         }
 
         if (null != request.getParameter(OkCancelPage.REQUEST_PARAMETER__CANCEL)) {
-            response.sendRedirect(request.getContextPath()+"/servlet/AdminManager");
+            response.sendRedirect(request.getContextPath() + "/servlet/AdminManager");
             return;
         }
         Date fromDate = getDateParameter(request, "from_date");
@@ -65,7 +65,7 @@ public class AdminSearchTerms extends HttpServlet {
         Date date = null;
         try {
             date = dateFormat.parse(parameterValue);
-        } catch ( ParseException e ) {
+        } catch (ParseException e) {
 
         }
         return date;
@@ -83,11 +83,11 @@ public class AdminSearchTerms extends HttpServlet {
             whereClauses.add("datetime < ?");
             parameters.add(new Timestamp(toDate.getTime()));
         }
-        String whereClausesString = whereClauses.isEmpty() ? "" : " WHERE "+StringUtils.join(whereClauses.iterator(), " AND ");
-        DatabaseCommand queryCommand = new SqlQueryDatabaseCommand("SELECT term, COUNT(term) c FROM document_search_log"+whereClausesString+
-                                                                   " GROUP BY term ORDER BY c DESC, term", 
-                                                                   parameters.toArray(new Object[parameters.size()]),
-                                                                   new CollectionHandler(new ArrayList(), new TermCountFactory()));
+        String whereClausesString = whereClauses.isEmpty() ? "" : " WHERE " + StringUtils.join(whereClauses.iterator(), " AND ");
+        DatabaseCommand queryCommand = new SqlQueryDatabaseCommand("SELECT term, COUNT(term) c FROM document_search_log" + whereClausesString +
+                " GROUP BY term ORDER BY c DESC, term",
+                parameters.toArray(new Object[parameters.size()]),
+                new CollectionHandler(new ArrayList(), new TermCountFactory()));
         return (List<TermCount>) database.execute(queryCommand);
     }
 
@@ -95,10 +95,10 @@ public class AdminSearchTerms extends HttpServlet {
                         HttpServletResponse response) throws ServletException, IOException {
         if (search) {
             request.setAttribute("fromDate", fromDate);
-            request.setAttribute("toDate", Utility.addDate(toDate,-1));
+            request.setAttribute("toDate", Utility.addDate(toDate, -1));
             request.setAttribute("termCounts", getTermCounts(fromDate, toDate));
         }
-        request.getRequestDispatcher( "/WEB-INF/jsp/imcms/document_search_terms.jsp" ).forward( request, response );
+        request.getRequestDispatcher("/WEB-INF/jsp/imcms/document_search_terms.jsp").forward(request, response);
     }
 
     public static class TermCount {

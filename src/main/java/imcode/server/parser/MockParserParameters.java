@@ -6,15 +6,15 @@ public class MockParserParameters extends ParserParameters {
 
     private boolean menuMode;
 
-    public MockParserParameters( DocumentRequest documentRequest ) {
-        super( documentRequest );
+    public MockParserParameters(DocumentRequest documentRequest) {
+        super(documentRequest);
     }
 
     public boolean isMenuMode() {
-        return menuMode ;
+        return menuMode;
     }
 
-    public void setMenuMode( boolean menuMode ) {
+    public void setMenuMode(boolean menuMode) {
         this.menuMode = menuMode;
     }
 

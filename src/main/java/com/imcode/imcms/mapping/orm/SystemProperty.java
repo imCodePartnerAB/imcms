@@ -6,12 +6,12 @@ import javax.persistence.*;
  *
  */
 @Entity
-@Table(name="sys_types")
-@SecondaryTable(name="sys_data", pkJoinColumns=@PrimaryKeyJoinColumn(name="type_id"))
+@Table(name = "sys_types")
+@SecondaryTable(name = "sys_data", pkJoinColumns = @PrimaryKeyJoinColumn(name = "type_id"))
 public class SystemProperty {
 
     @Id
-    @Column(name="type_id")
+    @Column(name = "type_id")
     private Integer id;
 
     private String name;
@@ -44,6 +44,6 @@ public class SystemProperty {
     }
 
     public Integer getValueAsInteger() {
-        return Integer.valueOf(value);        
+        return Integer.valueOf(value);
     }
 }

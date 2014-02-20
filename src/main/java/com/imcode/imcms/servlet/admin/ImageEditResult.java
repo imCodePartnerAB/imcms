@@ -19,7 +19,7 @@ public class ImageEditResult {
         this.editedImages = editedImages;
     }
 
-    
+
     public List<TextDocumentImageWrapper> getEditedImages() {
         return editedImages;
     }

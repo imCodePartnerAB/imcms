@@ -27,7 +27,7 @@ public class LibraryChildren extends TagSupport {
                 JspWriter out = pageContext.getOut();
                 LibrariesDto lib = getLibrary();
                 String currentLibraryClass = "";
-                if(getCurrentLibrary().getId() == lib.getId()) {
+                if (getCurrentLibrary().getId() == lib.getId()) {
                     currentLibraryClass = " class='currentLibrary'";
                 }
                 out.print("<li data-library-id='" + lib.getId() + "'>" + "<span" + currentLibraryClass + ">" + lib.getLibraryNm() + "</span>");
@@ -62,12 +62,12 @@ public class LibraryChildren extends TagSupport {
 
         for (File subdir : subdirs) {
             LibrariesDto subLib = matchPathToLibrary(subdir);
-            if(subLib == null) {
+            if (subLib == null) {
                 return;
             }
             output.print("<ul>");
             String currentLibraryClass = "";
-            if(getCurrentLibrary().getId() == subLib.getId()) {
+            if (getCurrentLibrary().getId() == subLib.getId()) {
                 currentLibraryClass = " class='currentLibrary'";
             }
             output.print("<li data-library-id='" + subLib.getId() + "'>" + "<span" + currentLibraryClass + ">" + subdir.getName() + "</span>");
@@ -78,10 +78,10 @@ public class LibraryChildren extends TagSupport {
     }
 
     private LibrariesDto matchPathToLibrary(File path) {
-        for(LibrariesDto lib: getLibraries()) {
-            if(lib.getFilepath() != null) {
+        for (LibrariesDto lib : getLibraries()) {
+            if (lib.getFilepath() != null) {
                 File f = new File(lib.getFilepath(), lib.getFolderNm());
-                if(path.equals(f)) {
+                if (path.equals(f)) {
                     return lib;
                 }
             }

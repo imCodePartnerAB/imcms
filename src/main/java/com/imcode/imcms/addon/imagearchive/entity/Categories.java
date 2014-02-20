@@ -10,36 +10,36 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="categories")
+@Table(name = "categories")
 public class Categories implements Serializable {
     private static final long serialVersionUID = 7533187253952781894L;
-    
+
     @Id
-    @Column(name="category_id", nullable=false)
+    @Column(name = "category_id", nullable = false)
     @GeneratedValue
     private int id;
-    
-    @Column(name="category_type_id", nullable=false)
+
+    @Column(name = "category_type_id", nullable = false)
     private int typeId;
-    
+
     @ManyToOne
-    @JoinColumn(name="category_type_id", referencedColumnName="category_type_id", insertable=false, updatable=false)
+    @JoinColumn(name = "category_type_id", referencedColumnName = "category_type_id", insertable = false, updatable = false)
     private CategoryTypes type;
-    
-    @Column(name="name", length=128, nullable=false)
+
+    @Column(name = "name", length = 128, nullable = false)
     private String name;
-    
-    @Column(name="description", length=500)
+
+    @Column(name = "description", length = 500)
     private String description;
-    
-    @Column(name="image", length=255, nullable=false)
+
+    @Column(name = "image", length = 255, nullable = false)
     private String image;
 
-    
+
     public Categories() {
     }
 
-    
+
     public String getDescription() {
         return description;
     }
@@ -87,23 +87,23 @@ public class Categories implements Serializable {
     public void setTypeId(int typeId) {
         this.typeId = typeId;
     }
-    
-    
+
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final Categories other = (Categories) obj;
         if (this.id != other.id) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -111,13 +111,13 @@ public class Categories implements Serializable {
     public int hashCode() {
         int hash = 7;
         hash = 97 * hash + this.id;
-        
+
         return hash;
     }
 
     @Override
     public String toString() {
-        return String.format("com.imcode.imcms.addon.imagearchive.entity.Categories[id: %d, typeId: %d, name: %s]", 
+        return String.format("com.imcode.imcms.addon.imagearchive.entity.Categories[id: %d, typeId: %d, name: %s]",
                 id, typeId, name);
     }
 }

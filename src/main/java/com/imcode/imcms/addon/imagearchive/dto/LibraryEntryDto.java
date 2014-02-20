@@ -7,17 +7,17 @@ import java.util.Date;
 
 public class LibraryEntryDto implements Serializable {
     private static final long serialVersionUID = 1795450778722286059L;
-    
+
     private String fileName;
     private int fileSize;
     private long lastModified;
     private ImageInfo imageInfo;
 
-    
+
     public LibraryEntryDto() {
     }
 
-    
+
     public String getFileName() {
         return fileName;
     }
@@ -33,7 +33,7 @@ public class LibraryEntryDto implements Serializable {
     public void setFileSize(int fileSize) {
         this.fileSize = fileSize;
     }
-    
+
     public boolean isFileSizeMB() {
         return fileSize >= (1024 * 1024);
     }
@@ -45,7 +45,7 @@ public class LibraryEntryDto implements Serializable {
     public void setLastModified(long lastModified) {
         this.lastModified = lastModified;
     }
-    
+
     public Date getLastModifiedDate() {
         return new Date(lastModified);
     }
@@ -63,16 +63,16 @@ public class LibraryEntryDto implements Serializable {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final LibraryEntryDto other = (LibraryEntryDto) obj;
         if (this.fileName == null || !this.fileName.equals(other.fileName)) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -80,7 +80,7 @@ public class LibraryEntryDto implements Serializable {
     public int hashCode() {
         int hash = 7;
         hash = 97 * hash + (this.fileName != null ? this.fileName.hashCode() : 0);
-        
+
         return hash;
     }
 }

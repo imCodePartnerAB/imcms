@@ -27,7 +27,7 @@ public class Parser {
      */
     private static void parseDoc(StringBuffer sb, String[] tagsAndData) {
         if (sb == null) {
-            return ;
+            return;
         }
         int length;
         for (int i = 0; i < tagsAndData.length; i += 2) {

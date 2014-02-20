@@ -7,6 +7,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 import imcode.util.image.Format;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -52,7 +54,7 @@ public class ImagePreview extends HttpServlet {
         if (!imageFile.getAbsolutePath().startsWith(root.getCanonicalPath())) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
-            
+
         } else if (!imageFile.exists()) {
             log.error("Source image doesn't exist: " + imageFile);
             send404(response);
@@ -71,7 +73,7 @@ public class ImagePreview extends HttpServlet {
         }
 
         int width = NumberUtils.toInt(request.getParameter("width"));
-		int height = NumberUtils.toInt(request.getParameter("height"));
+        int height = NumberUtils.toInt(request.getParameter("height"));
 
         if (width < 0) {
             log.error("Invalid width: " + width);
@@ -109,18 +111,18 @@ public class ImagePreview extends HttpServlet {
         try {
             boolean result = ImcmsImageUtils.generateImage(imageFile, tempFile, format,
                     width, height, cropRegion, rotateDirection);
-            
+
             if (result) {
                 String contentType = (format != null ? format.getMimeType() : "application/octet-stream");
                 response.addHeader("ETag", etag);
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.setContentType(contentType);
                 response.setContentLength((int) tempFile.length());
-                
+
                 inputStream = new FileInputStream(tempFile);
-                
+
                 IOUtils.copy(inputStream, response.getOutputStream());
-                
+
             } else {
                 send404(response);
             }

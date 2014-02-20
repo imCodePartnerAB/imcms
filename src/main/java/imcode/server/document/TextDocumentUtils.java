@@ -7,7 +7,8 @@ import java.util.Objects;
 
 public final class TextDocumentUtils {
 
-    private TextDocumentUtils() {}
+    private TextDocumentUtils() {
+    }
 
     public static TextDomainObject createDefaultText() {
         return new TextDomainObject();
@@ -17,7 +18,9 @@ public final class TextDocumentUtils {
         return new ImageDomainObject();
     }
 
-    /** Inits text docs images sources. */
+    /**
+     * Inits text docs images sources.
+     */
     public static List<ImageDomainObject> initImagesSources(List<ImageDomainObject> images) {
         for (ImageDomainObject image : images) {
             initImageSource(image);
@@ -26,7 +29,9 @@ public final class TextDocumentUtils {
         return images;
     }
 
-    /** Inits text doc's image source. */
+    /**
+     * Inits text doc's image source.
+     */
     public static ImageDomainObject initImageSource(ImageDomainObject image) {
         String url = image.getUrl();
         Integer type = image.getType();

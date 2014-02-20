@@ -36,15 +36,15 @@ public class CompositeList extends AbstractList implements Serializable {
     }
 
     private Object operateOnIndex(int index, ListIndexOperation listIndexOperation) {
-        if ( index < 0 ) {
+        if (index < 0) {
             throw new IndexOutOfBoundsException("" + index);
         }
-        synchronized ( lists ) {
+        synchronized (lists) {
             int firstIndexInList = 0;
-            for ( Iterator iterator = lists.iterator(); iterator.hasNext(); ) {
+            for (Iterator iterator = lists.iterator(); iterator.hasNext(); ) {
                 List list = (List) iterator.next();
                 int indexInList = index - firstIndexInList;
-                if ( indexInList < list.size() ) {
+                if (indexInList < list.size()) {
                     return listIndexOperation.operate(list, indexInList);
                 }
                 firstIndexInList += list.size();
@@ -54,9 +54,9 @@ public class CompositeList extends AbstractList implements Serializable {
     }
 
     public int size() {
-        synchronized ( lists ) {
+        synchronized (lists) {
             int size = 0;
-            for ( Iterator iterator = lists.iterator(); iterator.hasNext(); ) {
+            for (Iterator iterator = lists.iterator(); iterator.hasNext(); ) {
                 List list = (List) iterator.next();
                 size += list.size();
             }
@@ -66,7 +66,7 @@ public class CompositeList extends AbstractList implements Serializable {
 
     public boolean contains(Object o) {
         synchronized (lists) {
-            for ( Iterator iterator = lists.iterator(); iterator.hasNext(); ) {
+            for (Iterator iterator = lists.iterator(); iterator.hasNext(); ) {
                 List list = (List) iterator.next();
                 if (list.contains(o)) {
                     return true;

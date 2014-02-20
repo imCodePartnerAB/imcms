@@ -9,23 +9,23 @@ public class FileInputStreamSource implements InputStreamSource {
 
     private final File file;
 
-    public FileInputStreamSource( File file ) {
+    public FileInputStreamSource(File file) {
         this.file = file;
     }
 
     public InputStream getInputStream() throws IOException {
-        return new FileInputStream( file );
+        return new FileInputStream(file);
     }
 
     public long getSize() throws IOException {
-	return (file.isFile() ? file.length() : 0);
+        return (file.isFile() ? file.length() : 0);
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 

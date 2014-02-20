@@ -30,16 +30,16 @@ public class LibraryService {
 
     @Autowired
     private SessionFactory factory;
-    
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Libraries findLibraryById(int libraryId) {
 
         return (Libraries) factory.getCurrentSession()
                 .createQuery(
-                "SELECT lib.id AS id, lib.folderNm AS folderNm, lib.libraryNm AS libraryNm, " +
-                "lib.filepath AS filepath, lib.libraryType AS libraryType " +
-                "FROM Libraries lib WHERE lib.id = :libraryId")
+                        "SELECT lib.id AS id, lib.folderNm AS folderNm, lib.libraryNm AS libraryNm, " +
+                                "lib.filepath AS filepath, lib.libraryType AS libraryType " +
+                                "FROM Libraries lib WHERE lib.id = :libraryId")
                 .setInteger("libraryId", libraryId)
                 .setResultTransformer(Transformers.aliasToBean(Libraries.class))
                 .uniqueResult();
@@ -105,13 +105,13 @@ public class LibraryService {
         session.flush();
 
     }
-    
+
     private void syncOldLibraryFolders() {
         Session session = factory.getCurrentSession();
 
         File[] oldLibraryFiles = facade.getConfig().getOldLibraryPaths();
         Set<File> files = new HashSet<File>();
-        for(File f: oldLibraryFiles) {
+        for (File f : oldLibraryFiles) {
             List<File> tmp = facade.getFileService().getSubdirs(f, new FileFilter() {
                 public boolean accept(File file) {
                     String name = file.getName();
@@ -122,7 +122,7 @@ public class LibraryService {
 
             files.addAll(tmp);
         }
-        
+
         CollectionUtils.addAll(files, oldLibraryFiles);
 
         if (files.isEmpty()) {
@@ -136,7 +136,7 @@ public class LibraryService {
 
         List<Libraries> existingLibraries = session.createQuery(
                 "SELECT lib.id AS id, lib.folderNm AS folderNm, lib.filepath AS filepath " +
-                "FROM Libraries lib WHERE lib.libraryType = :typeOld")
+                        "FROM Libraries lib WHERE lib.libraryType = :typeOld")
                 .setShort("typeOld", Libraries.TYPE_OLD_LIBRARY)
                 .setResultTransformer(Transformers.aliasToBean(Libraries.class))
                 .list();
@@ -179,55 +179,55 @@ public class LibraryService {
             session.persist(lib);
         }
         session.flush();
-        
+
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Libraries> findLibraries() {
-        
+
         return factory.getCurrentSession()
                 .createQuery(
-                "SELECT lib.id AS id, lib.folderNm AS folderNm, lib.libraryNm AS libraryNm, " +
-                "lib.filepath AS filepath, lib.libraryType AS libraryType FROM Libraries lib " +
-                "ORDER BY lib.folderNm")
+                        "SELECT lib.id AS id, lib.folderNm AS folderNm, lib.libraryNm AS libraryNm, " +
+                                "lib.filepath AS filepath, lib.libraryType AS libraryType FROM Libraries lib " +
+                                "ORDER BY lib.folderNm")
                 .setResultTransformer(Transformers.aliasToBean(Libraries.class))
                 .list();
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Roles> findAvailableRoles(int libraryId) {
-        
+
         return factory.getCurrentSession()
                 .createQuery(
-                "SELECT r.id AS id, r.roleName AS roleName FROM Roles r " +
-                "WHERE NOT EXISTS (FROM LibraryRoles lr WHERE lr.roleId = r.id AND lr.libraryId = :libraryId) " +
-                "ORDER BY r.roleName")
+                        "SELECT r.id AS id, r.roleName AS roleName FROM Roles r " +
+                                "WHERE NOT EXISTS (FROM LibraryRoles lr WHERE lr.roleId = r.id AND lr.libraryId = :libraryId) " +
+                                "ORDER BY r.roleName")
                 .setInteger("libraryId", libraryId)
                 .setResultTransformer(Transformers.aliasToBean(Roles.class))
                 .list();
     }
 
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Roles> findRoles() {
 
         return factory.getCurrentSession()
                 .createQuery(
-                "SELECT r.id AS id, r.roleName AS roleName FROM Roles r " +
-                "ORDER BY r.roleName")
+                        "SELECT r.id AS id, r.roleName AS roleName FROM Roles r " +
+                                "ORDER BY r.roleName")
                 .setResultTransformer(Transformers.aliasToBean(Roles.class))
                 .list();
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<LibraryRolesDto> findLibraryRoles(int libraryId) {
-        
+
         return factory.getCurrentSession()
                 .getNamedQuery("libraryRoles")
                 .setInteger("libraryId", libraryId)
                 .setResultTransformer(Transformers.aliasToBean(LibraryRolesDto.class))
                 .list();
     }
-    
+
     public void updateLibraryRoles(int libraryId, String libraryNm, List<LibraryRolesDto> libraryRoles) {
 
         Session session = factory.getCurrentSession();
@@ -246,7 +246,7 @@ public class LibraryService {
         List<Integer> idsOfSubLibraries = Utils.getLibrarySubLibriesIds(library, allLibraries);
         List<Integer> libraryTreeIds = new ArrayList<Integer>();
         libraryTreeIds.add(library.getId());
-        for(Integer subLibId: idsOfSubLibraries) {
+        for (Integer subLibId : idsOfSubLibraries) {
             libraryTreeIds.add(subLibId);
         }
 
@@ -269,7 +269,7 @@ public class LibraryService {
                 .setParameterList("libraryIds", libraryTreeIds)
                 .list();
 
-        if(existingRoleIds == null) {
+        if (existingRoleIds == null) {
             existingRoleIds = new ArrayList<Integer>();
         }
 
@@ -296,7 +296,7 @@ public class LibraryService {
 
 
         Collection<LibraryRolesDto> toCreate = roleMap.values();
-        for(Integer libId: libraryTreeIds) {
+        for (Integer libId : libraryTreeIds) {
             for (LibraryRolesDto libraryRoleDto : toCreate) {
                 LibraryRoles libraryRole = new LibraryRoles();
                 libraryRole.setLibraryId(libId);
@@ -310,7 +310,7 @@ public class LibraryService {
 
         Query updateQuery = session.createQuery(
                 "UPDATE LibraryRoles lr SET lr.canUse = :canUse, lr.canChange = :canChange, lr.updatedDt = current_timestamp() " +
-                "WHERE lr.libraryId IN (:libraryIds) AND lr.roleId = :roleId")
+                        "WHERE lr.libraryId IN (:libraryIds) AND lr.roleId = :roleId")
                 .setParameterList("libraryIds", libraryTreeIds);
         for (LibraryRolesDto libraryRoleDto : toUpdate) {
             updateQuery.setInteger("roleId", libraryRoleDto.getRoleId())
@@ -319,10 +319,10 @@ public class LibraryService {
         }
 
         session.flush();
-        
+
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<LibrariesDto> findLibraries(User user) {
 
         Session session = factory.getCurrentSession();
@@ -343,21 +343,21 @@ public class LibraryService {
         return session.createQuery(
                 "SELECT DISTINCT lib.id AS id, lib.libraryNm AS libraryNm, lib.filepath AS filepath, lib.folderNm AS folderNm" +
                         " FROM LibraryRoles lr INNER JOIN lr.library lib " +
-                "WHERE lr.roleId IN (:roleIds) ORDER BY lib.libraryNm ")
+                        "WHERE lr.roleId IN (:roleIds) ORDER BY lib.libraryNm ")
                 .setParameterList("roleIds", roleIds)
                 .setResultTransformer(Transformers.aliasToBean(LibrariesDto.class))
                 .list();
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public LibrariesDto findLibraryById(User user, int libraryId) {
 
         Session session = factory.getCurrentSession();
 
         LibrariesDto library = (LibrariesDto) session.createQuery(
                 "SELECT lib.id AS id, lib.libraryNm AS libraryNm, lib.folderNm AS folderNm, " +
-                "lib.filepath AS filepath, lib.libraryType AS libraryType " +
-                "FROM Libraries lib WHERE lib.id = :libraryId")
+                        "lib.filepath AS filepath, lib.libraryType AS libraryType " +
+                        "FROM Libraries lib WHERE lib.id = :libraryId")
                 .setInteger("libraryId", libraryId)
                 .setResultTransformer(Transformers.aliasToBean(LibrariesDto.class))
                 .uniqueResult();

@@ -50,31 +50,31 @@ import java.util.Map;
 @Controller
 public class ExternalFilesController {
     private static final Log log = LogFactory.getLog(ExternalFilesController.class);
-    
+
     private static final String LIBRARY_KEY = Utils.makeKey(ExternalFilesController.class, "library");
     private static final String SORT_KEY = Utils.makeKey(ExternalFilesController.class, "sortBy");
-    
+
     private static final String IMAGE_KEY = Utils.makeKey(ExternalFilesController.class, "image");
     private static final String KEYWORDS_KEY = Utils.makeKey(ExternalFilesController.class, "keywords");
     private static final String IMAGE_KEYWORDS_KEY = Utils.makeKey(ExternalFilesController.class, "imageKeywords");
-    
+
     @Autowired
     private Facade facade;
-    
-    
+
+
     @RequestMapping("/archive/external-files")
     public ModelAndView indexHandler(
             HttpServletRequest request) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        
+
         if (user.isDefaultUser()) {
             return new ModelAndView("redirect:/web/archive/");
         }
-        
+
         ModelAndView mav = new ModelAndView("image_archive/pages/external_files/external_files");
-        
+
         List<LibrariesDto> libraries = facade.getLibraryService().findLibraries(user);
         final List<File> firstLevelLibraries = facade.getFileService().listFirstLevelLibraryFolders();
         CollectionUtils.filter(libraries, new Predicate() {
@@ -84,7 +84,7 @@ public class ExternalFilesController {
             }
         });
         List<LibrariesDto> allLibraries = facade.getLibraryService().findLibraries(user);
-        
+
         LibrariesDto library = getLibrary(session, user);
         LibrarySort sortBy = getSortBy(session);
         List<LibraryEntryDto> libraryEntries = facade.getFileService().listLibraryEntries(library, sortBy);
@@ -95,7 +95,7 @@ public class ExternalFilesController {
         mav.addObject("libraryEntries", libraryEntries);
         mav.addObject("sortBy", sortBy);
         mav.addObject("externalFiles", new ExternalFilesCommand());
-        
+
         return mav;
     }
 
@@ -107,11 +107,11 @@ public class ExternalFilesController {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        
+
         if (user.isDefaultUser()) {
             return "redirect:/web/archive/";
         }
-        
+
         if (id != null) {
             LibrariesDto library;
             if (id == LibrariesDto.USER_LIBRARY_ID) {
@@ -121,14 +121,14 @@ public class ExternalFilesController {
             }
             session.put(LIBRARY_KEY, library);
         }
-        
+
         return "redirect:/web/archive/external-files";
     }
 
     /* Changes sorting. Called each time sorting order is changed in library entry table(ajax) */
     @RequestMapping("/archive/external-files/sort")
     public String changeSortByHandler(
-            @RequestParam(required=false) String sortBy,
+            @RequestParam(required = false) String sortBy,
             HttpServletRequest request) {
         ArchiveSession session = ArchiveSession.getSession(request);
 
@@ -149,25 +149,25 @@ public class ExternalFilesController {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        
+
         if (user.isDefaultUser()) {
             return new ModelAndView("redirect:/web/archive/");
         }
-        
+
         LibrariesDto library = getLibrary(session, user);
         if (library == null) {
             return new ModelAndView("redirect:/web/archive/external-files");
         }
-        
+
         if (command.getActivate() != null) {
             String[] fileNames = command.getFileNames();
             if (!library.isCanUse() || fileNames == null || fileNames.length == 0) {
                 return new ModelAndView("redirect:/web/archive/external-files");
             }
-            
+
             ModelAndView mav = new ModelAndView("image_archive/pages/external_files/external_files");
             mav.addObject("activate", true);
-            
+
             if (fileNames.length == 1) {
                 Images image;
                 boolean alreadyInArchive =
@@ -175,13 +175,13 @@ public class ExternalFilesController {
                 if (alreadyInArchive || (image = activateImage(library, fileNames[0], user)) == null) {
                     ModelAndView tmp = new ModelAndView("redirect:/web/archive/external-files");
                     tmp.addObject("activateError", true);
-                    if(alreadyInArchive) {
+                    if (alreadyInArchive) {
                         tmp.addObject("alreadyInArchive", true);
                     }
                     return tmp;
                 }
                 session.put(IMAGE_KEY, image);
-                
+
                 ChangeImageDataCommand changeData = new ChangeImageDataCommand();
                 changeData.fromImage(image);
                 mav.addObject("changeData", changeData);
@@ -212,21 +212,21 @@ public class ExternalFilesController {
                             generalActivationErrorOccured |= true;
                             continue;
                         }
-                        
-                        tuples.add(new Object[] {imageFile, imageInfo, fileName});
+
+                        tuples.add(new Object[]{imageFile, imageInfo, fileName});
                     } catch (Exception ex) {
                         log.warn(ex.getMessage(), ex);
                     }
                 }
-                
+
                 if (!tuples.isEmpty()) {
                     facade.getImageService().createImages(tuples, user);
                 }
 
-                if(generalActivationErrorOccured) {
+                if (generalActivationErrorOccured) {
                     ModelAndView tmp = new ModelAndView("redirect:/web/archive/external-files");
                     tmp.addObject("activateError", true);
-                    if(oneOfTheImageIsAlreadyInArchive) {
+                    if (oneOfTheImageIsAlreadyInArchive) {
                         tmp.addObject("alreadyInArchive", true);
                     }
 
@@ -235,7 +235,7 @@ public class ExternalFilesController {
 
                 return new ModelAndView("redirect:/web/archive/external-files");
             }
-            
+
             return mav;
         } else if (command.getErase() != null && library.isUserLibrary()) {
             String[] fileNames = command.getFileNames();
@@ -245,7 +245,7 @@ public class ExternalFilesController {
                 }
             }
         }
-        
+
         return new ModelAndView("redirect:/web/archive/external-files");
     }
 
@@ -257,9 +257,9 @@ public class ExternalFilesController {
      * no form is shown*/
     @RequestMapping("/archive/external-files/upload")
     public void uploadHandler(ExternalFilesCommand externalFilesUpload,
-            BindingResult result,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+                              BindingResult result,
+                              HttpServletRequest request,
+                              HttpServletResponse response) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
@@ -301,15 +301,15 @@ public class ExternalFilesController {
         }
 
         List<String> errors = new ArrayList<String>();
-        if(result.hasErrors()) {
-            for(FieldError error: result.getFieldErrors()) {
+        if (result.hasErrors()) {
+            for (FieldError error : result.getFieldErrors()) {
                 errors.add(facade.getCommonService().getMessage(error.getCode(), request.getLocale(), error.getArguments()));
             }
             status.setErrors(errors);
         } else {
             status.setRedirectOnAllComplete(contextPath + "/web/archive/external-files");
         }
-        
+
         Utils.writeJSON(status, response);
     }
 
@@ -319,13 +319,13 @@ public class ExternalFilesController {
         if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null) {
             return null;
         }
-        
+
         try {
             return facade.getImageService().createImage(imageFile, imageInfo, fileName, user);
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return null;
     }
 
@@ -339,100 +339,100 @@ public class ExternalFilesController {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        
+
         Images image = (Images) session.get(IMAGE_KEY);
         if (user.isDefaultUser()) {
             return new ModelAndView("redirect:/web/archive/");
         } else if (image == null) {
             return new ModelAndView("redirect:/web/archive/external-files");
         }
-        
+
         if (saveCommand.getCancel() != null) {
             facade.getImageService().deleteImage(image.getId());
             session.remove(IMAGE_KEY);
             session.remove(KEYWORDS_KEY);
             session.remove(IMAGE_KEYWORDS_KEY);
-            
+
             return new ModelAndView("redirect:/web/archive/external-files");
         }
-        
+
         ChangeImageDataValidator validator = new ChangeImageDataValidator(facade, user);
         ValidationUtils.invokeValidator(validator, changeData, result);
-        
+
         ModelAndView mav = new ModelAndView("image_archive/pages/external_files/external_files");
         mav.addObject("activate", true);
         mav.addObject("image", image);
-        
+
         List<String> keywords = changeData.getKeywordNames();
         List<String> imageKeywords = changeData.getImageKeywordNames();
         session.put(KEYWORDS_KEY, keywords);
         session.put(IMAGE_KEYWORDS_KEY, imageKeywords);
         mav.addObject("keywords", keywords);
         mav.addObject("imageKeywords", imageKeywords);
-        
+
         if (saveCommand.getRotateLeft() != null || saveCommand.getRotateRight() != null) {
             if (saveCommand.getRotateLeft() != null) {
                 facade.getFileService().rotateImage(image.getId(), -90, false);
             } else {
                 facade.getFileService().rotateImage(image.getId(), 90, false);
             }
-            
+
             mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
             mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));
-            
+
             return mav;
         } else if (result.hasErrors()) {
             mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
             mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));
-            
+
             return mav;
         }
-        
+
         changeData.toImage(image);
-        
+
         try {
             facade.getImageService().updateData(image, changeData.getCategoryIds(), imageKeywords);
-            
+
             if (saveCommand.getSaveActivate() != null) {
                 session.remove(IMAGE_KEY);
                 session.remove(KEYWORDS_KEY);
                 session.remove(IMAGE_KEYWORDS_KEY);
-                
+
                 return new ModelAndView("redirect:/web/archive/external-files");
             } else if (saveCommand.getSaveUse() != null) {
                 session.remove(IMAGE_KEY);
                 session.remove(KEYWORDS_KEY);
                 session.remove(IMAGE_KEYWORDS_KEY);
-                
+
                 return new ModelAndView("redirect:/web/archive/use?id=" + image.getId());
             } else if (saveCommand.getSaveImageCard() != null) {
                 session.remove(IMAGE_KEY);
                 session.remove(KEYWORDS_KEY);
                 session.remove(IMAGE_KEYWORDS_KEY);
-                
+
                 return new ModelAndView("redirect:/web/archive/image/" + image.getId());
             }
-            
+
             mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
             mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));
         } catch (Exception ex) {
             log.fatal(ex.getMessage(), ex);
-            
+
             return new ModelAndView("redirect:/web/archive/external-files");
         }
-        
+
         return mav;
     }
-    
+
     @RequestMapping("/archive/external-files/preview")
     public ModelAndView previewHandler(
-            @RequestParam(required=false) Integer id, 
-            @RequestParam(required=false) String name, 
+            @RequestParam(required = false) Integer id,
+            @RequestParam(required = false) String name,
             HttpServletRequest request) {
-        
+
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        
+
         LibrariesDto library = null;
         ImageInfo imageInfo = null;
         if (!user.isDefaultUser() && id != null) {
@@ -441,9 +441,9 @@ public class ExternalFilesController {
             } else {
                 library = facade.getLibraryService().findLibraryById(user, id);
             }
-            
+
             name = StringUtils.trimToNull(name);
-            
+
             if (name != null) {
                 File imageFile = facade.getFileService().getImageFileFromLibrary(library, name);
                 if (imageFile != null) {
@@ -451,21 +451,21 @@ public class ExternalFilesController {
                 }
             }
         }
-        
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("user", user);
         model.put("library", library);
         model.put("imageInfo", imageInfo);
         model.put("name", name);
-        
+
         return new ModelAndView("image_archive/pages/external_files/preview", model);
     }
 
     /* Used by small tooltip when moving cursor over filenames in library entry list */
     @RequestMapping("/archive/external-files/preview-tooltip")
     public ModelAndView previewTooltipHandler(
-            @RequestParam(required=false) Integer id,
-            @RequestParam(required=false) String name,
+            @RequestParam(required = false) Integer id,
+            @RequestParam(required = false) String name,
             HttpServletRequest request) {
 
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
@@ -488,15 +488,15 @@ public class ExternalFilesController {
             if (name != null) {
                 File imageFile = facade.getFileService().getImageFileFromLibrary(library, name);
                 List<Images> images = Utils.isInArchive(imageFile, facade);
-                if(images.size() > 0) {
-                    for(Images image: images) {
+                if (images.size() > 0) {
+                    for (Images image : images) {
                         /* we only need one case of missing categories */
-                        if(!noCategories){
+                        if (!noCategories) {
                             noCategories = image.getCategories() == null || image.getCategories().size() == 0;
                         }
 
                         List<String> categoryNames = new ArrayList<String>();
-                        for(Categories cat: Utils.getCategoriesRequiredToUse(image, facade, user)) {
+                        for (Categories cat : Utils.getCategoriesRequiredToUse(image, facade, user)) {
                             categoryNames.add(cat.getName());
                         }
 
@@ -522,55 +522,55 @@ public class ExternalFilesController {
 
         return new ModelAndView("image_archive/pages/external_files/preview-tooltip", model);
     }
-    
+
     @RequestMapping("/archive/external-files/image")
     public String imageHandler(
-            @RequestParam(required=false) Integer id, 
-            @RequestParam(required=false) String name, 
-            HttpServletRequest request, 
+            @RequestParam(required = false) Integer id,
+            @RequestParam(required = false) String name,
+            HttpServletRequest request,
             HttpServletResponse response) {
-        
+
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        
+
         if (user.isDefaultUser() || id == null) {
             Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
-        
+
         LibrariesDto library;
         if (id == LibrariesDto.USER_LIBRARY_ID) {
             library = LibrariesDto.userLibrary(user);
         } else {
             library = facade.getLibraryService().findLibraryById(user, id);
         }
-        
+
         if (library == null || !library.isCanUse()) {
             Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
-        
+
         File imageFile = facade.getFileService().getImageFileFromLibrary(library, name);
         if (imageFile == null) {
             Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
-        
+
         try {
             byte[] data = new ImageOp().input(imageFile)
                     .outputFormat(Format.JPEG)
                     .processToByteArray();
-            
+
             if (data == null) {
                 Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
-            
+
                 return null;
             }
-            
+
             Utils.addNoCacheHeaders(response);
             response.setContentLength(data.length);
             response.setContentType("image/jpeg");
-            
+
             OutputStream output = null;
             try {
                 output = new BufferedOutputStream(response.getOutputStream());
@@ -582,13 +582,13 @@ public class ExternalFilesController {
             }
         } catch (Exception ex) {
             Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
-            
+
             return null;
         }
-        
+
         return null;
     }
-    
+
     private LibrariesDto getLibrary(ArchiveSession session, User user) {
         LibrariesDto library = (LibrariesDto) session.get(LIBRARY_KEY);
         if (library != null && !library.isUserLibrary()) {
@@ -598,10 +598,10 @@ public class ExternalFilesController {
             library = LibrariesDto.userLibrary(user);
             session.put(LIBRARY_KEY, library);
         }
-        
+
         return library;
     }
-    
+
     private static LibrarySort getSortBy(ArchiveSession session) {
         LibrarySort sortBy = (LibrarySort) session.get(SORT_KEY);
         if (sortBy == null) {
@@ -609,7 +609,7 @@ public class ExternalFilesController {
             sortBy.setDirection(LibrarySort.DIRECTION.ASC);
             session.put(SORT_KEY, sortBy);
         }
-        
+
         return sortBy;
     }
 }

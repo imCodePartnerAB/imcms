@@ -30,22 +30,22 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 @Controller
 public class GeneralController {
     private static final Log log = LogFactory.getLog(GeneralController.class);
-    
+
     @Autowired
     private Facade facade;
-    
+
     @Autowired
     private SessionLocaleResolver localeResolver;
 
     @RequestMapping("/archive/language")
     public ModelAndView languageChangeHandler(
-            @RequestParam(required=false) String lang, 
-            @RequestParam(required=false) String redir, 
+            @RequestParam(required = false) String lang,
+            @RequestParam(required = false) String redir,
             HttpServletResponse response,
             HttpServletRequest request) {
         lang = StringUtils.trimToNull(lang);
         redir = StringUtils.trimToNull(redir);
-        
+
         if (lang != null && facade.getConfig().getLanguages().containsValue(lang)) {
             localeResolver.setLocale(request, response, new Locale(lang));
         }
@@ -59,31 +59,31 @@ public class GeneralController {
         } else {
             return new ModelAndView("redirect:/archive");
         }
-        
+
         return null;
     }
-    
+
     @RequestMapping("/archive/use")
     public String useInImcmsHandler(
-            @RequestParam(required=false) Long id, 
-            HttpServletRequest request, 
-            HttpServletResponse response, 
+            @RequestParam(required = false) Long id,
+            HttpServletRequest request,
+            HttpServletResponse response,
             HttpSession session) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        
+
         String returnTo = SessionUtils.getImcmsReturnToUrl(session);
-        
+
         if (user.isDefaultUser()) {
             return "redirect:/web/archive";
         } else if (id == null || returnTo == null || !facade.getImageService().canUseImage(user, id)) {
             return "redirect:/web/archive";
         }
-        
+
         String imageName = facade.getImageService().findImageName(id);
         String fileName = facade.getFileService().transferImageToImcms(id);
         String altText = StringUtils.defaultString(facade.getImageService().findImageAltText(id));
-        
+
         StringBuilder builder = new StringBuilder(returnTo);
         builder.append("&archive_img_id=");
         builder.append(id);
@@ -91,56 +91,56 @@ public class GeneralController {
         builder.append(Utils.encodeUrl(imageName));
         builder.append("&archive_file_nm=");
         builder.append(Utils.encodeUrl(fileName));
-        if(!"".equals(altText)) {
+        if (!"".equals(altText)) {
             builder.append("&" + ImageEditPage.REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT + "=");
             builder.append(Utils.encodeUrl(altText));
         }
-        
+
         try {
             response.sendRedirect(builder.toString());
         } catch (IOException ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         session.removeAttribute(SessionConstants.IMCMS_RETURN_URL);
-        
+
         return null;
     }
-    
+
     @RequestMapping("/archive/back")
     public String backToImcmsHandler(HttpServletResponse response, HttpSession session) {
         String returnTo = SessionUtils.getImcmsReturnToUrl(session);
         if (returnTo == null) {
             return "redirect:/web/archive";
         }
-        
+
         session.removeAttribute(SessionConstants.IMCMS_RETURN_URL);
-        
+
         try {
             response.sendRedirect(returnTo);
         } catch (IOException ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return null;
     }
-    
+
     @RequestMapping("/archive/service/keyword/add")
     public void addKeywordHandler(
-    		@RequestParam(required=false) String keyword, 
-    		HttpServletResponse response) {
-    	Utils.addNoCacheHeaders(response);
-    	
-    	keyword = StringUtils.trimToEmpty(keyword);
-    	
-    	if (StringUtils.isEmpty(keyword)) {
-    		Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
-    	} else {
-    		keyword = StringUtils.substring(keyword, 0, 50);
-    		facade.getImageService().createKeyword(keyword);
-    		
-    		response.setStatus(HttpServletResponse.SC_OK);
-    	}
+            @RequestParam(required = false) String keyword,
+            HttpServletResponse response) {
+        Utils.addNoCacheHeaders(response);
+
+        keyword = StringUtils.trimToEmpty(keyword);
+
+        if (StringUtils.isEmpty(keyword)) {
+            Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
+        } else {
+            keyword = StringUtils.substring(keyword, 0, 50);
+            facade.getImageService().createKeyword(keyword);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+        }
     }
 
     @RequestMapping("/archive/logOut")
@@ -151,7 +151,7 @@ public class GeneralController {
     ) {
         Utility.makeUserLoggedOut(request);
 
-        if(redirectTo != null) {
+        if (redirectTo != null) {
             try {
                 response.sendRedirect(redirectTo);
             } catch (IOException e) {

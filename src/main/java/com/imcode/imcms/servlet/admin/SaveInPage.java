@@ -41,77 +41,77 @@ public class SaveInPage extends HttpServlet {
     /**
      * doPost()
      */
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ImcmsServices services = Imcms.getServices();
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser(req);
         DocumentMapper documentMapper = services.getDocumentMapper();
 
-        int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
+        int documentId = Integer.parseInt(req.getParameter("meta_id"));
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentMapper.getDocument(documentId);
 
         TemplateMapper templateMapper = services.getTemplateMapper();
 
-        TemplateDomainObject requestedTemplate = getRequestedTemplate( req, templateMapper );
+        TemplateDomainObject requestedTemplate = getRequestedTemplate(req, templateMapper);
 
-        TemplateGroupDomainObject requestedTemplateGroup = getRequestedTemplateGroup( req, templateMapper );
+        TemplateGroupDomainObject requestedTemplateGroup = getRequestedTemplateGroup(req, templateMapper);
 
-        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
+        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(textDocument);
         Set allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds();
 
         // Check if user has write rights
-        if ( !textDocumentPermissionSet.getEditTemplates()
-             || null != requestedTemplateGroup && !allowedTemplateGroupIds.contains(new Integer(requestedTemplateGroup.getId()))) {
+        if (!textDocumentPermissionSet.getEditTemplates()
+                || null != requestedTemplateGroup && !allowedTemplateGroupIds.contains(new Integer(requestedTemplateGroup.getId()))) {
             errorNoPermission(documentId, user, req, res);
             return;
         }
 
-        if ( req.getParameter( "update" ) != null ) {
+        if (req.getParameter("update") != null) {
             Writer out = res.getWriter();
 
-            req.getSession().setAttribute( "flags", new Integer( 0 ) );
+            req.getSession().setAttribute("flags", new Integer(0));
 
-            if ( requestedTemplate == null ) {
+            if (requestedTemplate == null) {
                 errorNoTemplateSelected(documentId, services, user, out);
                 return;
             } else if (!templateMapper.templateGroupContains(requestedTemplateGroup, requestedTemplate)) {
                 errorNoPermission(documentId, user, req, res);
-                return ;
+                return;
             }
 
             // save textdoc
-            textDocument.setTemplateName( requestedTemplate.getName() );
-            if ( null != requestedTemplateGroup ) {
-                textDocument.setTemplateGroupId( requestedTemplateGroup.getId() );
+            textDocument.setTemplateName(requestedTemplate.getName());
+            if (null != requestedTemplateGroup) {
+                textDocument.setTemplateGroupId(requestedTemplateGroup.getId());
             }
             try {
-                documentMapper.saveDocument( textDocument, user );
-                services.updateMainLog( "Text docs  [" + textDocument.getId() + "] updated by user: [" + user.getFullName()
-                                        + "]" );
-            } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
+                documentMapper.saveDocument(textDocument, user);
+                services.updateMainLog("Text docs  [" + textDocument.getId() + "] updated by user: [" + user.getFullName()
+                        + "]");
+            } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
                 throw new UnhandledException(e);
-            } catch ( NoPermissionToEditDocumentException e ) {
+            } catch (NoPermissionToEditDocumentException e) {
                 throw new ShouldHaveCheckedPermissionsEarlierException(e);
-            } catch ( NoPermissionToAddDocumentToMenuException e ) {
+            } catch (NoPermissionToAddDocumentToMenuException e) {
                 throw new ConcurrentDocumentModificationException(e);
             } catch (DocumentSaveException e) {
                 throw new ShouldNotBeThrownException(e);
             }
 
-            Utility.setDefaultHtmlContentType( res );
+            Utility.setDefaultHtmlContentType(res);
             //AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
-            res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE );
+            res.sendRedirect("AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE);
 
-        } else if ( req.getParameter( "change_group" ) != null ) {
-            Utility.setDefaultHtmlContentType( res );
+        } else if (req.getParameter("change_group") != null) {
+            Utility.setDefaultHtmlContentType(res);
 
-            req.getSession().setAttribute( "flags", ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE );
+            req.getSession().setAttribute("flags", ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE);
 
-            if ( null != requestedTemplateGroup ) {
-                user.setTemplateGroup( requestedTemplateGroup );
+            if (null != requestedTemplateGroup) {
+                user.setTemplateGroup(requestedTemplateGroup);
             }
 
             //AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
-            res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE );
+            res.sendRedirect("AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE);
 
         }
     }
@@ -119,33 +119,33 @@ public class SaveInPage extends HttpServlet {
     private void errorNoPermission(int documentId, UserDomainObject user, HttpServletRequest req,
                                    HttpServletResponse res
     ) throws IOException, ServletException {
-        Utility.setDefaultHtmlContentType( res );
+        Utility.setDefaultHtmlContentType(res);
 
         //AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
-        res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE );
+        res.sendRedirect("AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE);
     }
 
     private void errorNoTemplateSelected(int documentId, ImcmsServices services, UserDomainObject user,
                                          Writer out) throws IOException {
         List vec = new ArrayList();
-        vec.add( "#meta_id#" );
-        vec.add( String.valueOf( documentId ) );
-        String htmlStr = services.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
-        out.write( htmlStr );
+        vec.add("#meta_id#");
+        vec.add(String.valueOf(documentId));
+        String htmlStr = services.getAdminTemplate("inPage_admin_no_template.html", user, vec);
+        out.write(htmlStr);
     }
 
-    private TemplateGroupDomainObject getRequestedTemplateGroup( HttpServletRequest req, TemplateMapper templateMapper ) {
+    private TemplateGroupDomainObject getRequestedTemplateGroup(HttpServletRequest req, TemplateMapper templateMapper) {
         try {
-            return templateMapper.getTemplateGroupById( Integer.parseInt( req.getParameter( "group" ) ) );
-        } catch ( NumberFormatException nfe ) {
+            return templateMapper.getTemplateGroupById(Integer.parseInt(req.getParameter("group")));
+        } catch (NumberFormatException nfe) {
             return null;
         }
     }
 
-    private TemplateDomainObject getRequestedTemplate( HttpServletRequest req, TemplateMapper templateMapper ) {
+    private TemplateDomainObject getRequestedTemplate(HttpServletRequest req, TemplateMapper templateMapper) {
         try {
-            return templateMapper.getTemplateByName( req.getParameter( "template" ) );
-        } catch ( NumberFormatException nfe ) {
+            return templateMapper.getTemplateByName(req.getParameter("template"));
+        } catch (NumberFormatException nfe) {
             return null;
         }
     }

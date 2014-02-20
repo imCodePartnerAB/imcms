@@ -16,26 +16,26 @@ public class ImageTag extends SimpleImcmsTag {
     }
 
     public void setMode(String mode) {
-        attributes.setProperty("mode", mode) ;
+        attributes.setProperty("mode", mode);
     }
 
     public void setStyle(String style) {
-        attributes.setProperty("style", style) ;
+        attributes.setProperty("style", style);
     }
 
     public void setStyleClass(String styleClass) {
-        attributes.setProperty("class", styleClass) ;
+        attributes.setProperty("class", styleClass);
     }
 
     public void setUsemap(String usemap) {
-        attributes.setProperty("usemap", usemap) ;
+        attributes.setProperty("usemap", usemap);
     }
-    
+
     public void setStyleId(String id) {
-        attributes.setProperty("id", id) ;
+        attributes.setProperty("id", id);
     }
 
     public void setDocument(String documentName) {
-        attributes.setProperty("document", documentName) ;
+        attributes.setProperty("document", documentName);
     }
 }

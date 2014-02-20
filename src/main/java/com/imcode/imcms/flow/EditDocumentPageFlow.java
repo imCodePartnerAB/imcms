@@ -14,30 +14,30 @@ public abstract class EditDocumentPageFlow extends DocumentPageFlow {
     public final static String URL_I15D_PAGE__PREFIX = "/imcms/";
     public static final String PAGE__EDIT = "edit";
 
-    protected EditDocumentPageFlow( final DocumentDomainObject document, DispatchCommand returnCommand,
-                                    SaveDocumentCommand saveDocumentCommand ) {
-        super( returnCommand, saveDocumentCommand );
-        this.document = document ;
+    protected EditDocumentPageFlow(final DocumentDomainObject document, DispatchCommand returnCommand,
+                                   SaveDocumentCommand saveDocumentCommand) {
+        super(returnCommand, saveDocumentCommand);
+        this.document = document;
     }
 
     public DocumentDomainObject getDocument() {
-        return document ;
+        return document;
     }
 
-    protected void dispatchFromPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
-        dispatchFromEditPage( request, response, page );
+    protected void dispatchFromPage(HttpServletRequest request, HttpServletResponse response, String page) throws IOException, ServletException {
+        dispatchFromEditPage(request, response, page);
     }
 
-    protected void dispatchOk( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
-        dispatchOkFromEditPage( request, response );
+    protected void dispatchOk(HttpServletRequest request, HttpServletResponse response, String page) throws IOException, ServletException {
+        dispatchOkFromEditPage(request, response);
         if (!response.isCommitted()) {
-            saveDocumentAndReturn( request, response );            
+            saveDocumentAndReturn(request, response);
         }
     }
 
-    protected abstract void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response,
-                                                  String page ) throws IOException, ServletException;
+    protected abstract void dispatchFromEditPage(HttpServletRequest request, HttpServletResponse response,
+                                                 String page) throws IOException, ServletException;
 
-    protected abstract void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
+    protected abstract void dispatchOkFromEditPage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
 
 }

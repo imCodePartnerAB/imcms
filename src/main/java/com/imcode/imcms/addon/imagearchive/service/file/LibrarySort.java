@@ -33,13 +33,13 @@ public enum LibrarySort {
 
     private static final Map<String, LibrarySort> nameEnumMap =
             new HashMap<String, LibrarySort>(LibrarySort.values().length);
-    
+
     static {
         for (LibrarySort sort : LibrarySort.values()) {
             nameEnumMap.put(sort.getName(), sort);
         }
     }
-    
+
     public static final LibrarySort findByName(String name) {
         String[] parts = name.split("-");
         LibrarySort sortOrder = values()[Integer.parseInt(parts[0])];
@@ -47,9 +47,9 @@ public enum LibrarySort {
 
         return sortOrder;
     }
-    
+
     private final String name;
-    
+
     private LibrarySort(String name) {
         this.name = name;
     }

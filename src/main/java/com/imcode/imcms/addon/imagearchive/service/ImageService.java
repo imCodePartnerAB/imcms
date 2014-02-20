@@ -48,18 +48,18 @@ import org.hibernate.SessionFactory;
 public class ImageService {
     private static final Pattern LIKE_SPECIAL_PATTERN = Pattern.compile("([%_|])");
     private static final Log log = LogFactory.getLog(ImageService.class);
-    
+
     @Autowired
     private Facade facade;
 
     @Autowired
     private SessionFactory factory;
-    
+
     @Autowired
     private PlatformTransactionManager txManager;
-    
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Images findById(long imageId, User user) {
         Session session = factory.getCurrentSession();
 
@@ -83,7 +83,7 @@ public class ImageService {
         } else {
             List<Categories> imageCategories = image.getCategories();
             List<Integer> categoryIds = new ArrayList<Integer>();
-            for(Categories c: imageCategories) {
+            for (Categories c : imageCategories) {
                 categoryIds.add(c.getId());
             }
             Set<Integer> roleIds = facade.getUserService().getRoleIdsWithPermission(user, categoryIds, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
@@ -91,7 +91,7 @@ public class ImageService {
             if (!roleIds.isEmpty()) {
                 long count = (Long) session.createQuery(
                         "SELECT count(cr.roleId) FROM CategoryRoles cr, ImageCategories ic " +
-                        "WHERE ic.categoryId = cr.categoryId AND ic.imageId = :imageId AND cr.roleId IN (:roleIds) ")
+                                "WHERE ic.categoryId = cr.categoryId AND ic.imageId = :imageId AND cr.roleId IN (:roleIds) ")
                         .setLong("imageId", imageId)
                         .setParameterList("roleIds", roleIds)
                         .uniqueResult();
@@ -101,8 +101,8 @@ public class ImageService {
 
         return image;
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Exif findExifByPK(long imageId, short type) {
         return (Exif) factory.getCurrentSession()
                 .get(Exif.class, new ExifPK(imageId, type));
@@ -145,7 +145,7 @@ public class ImageService {
                     IOUtils.closeQuietly(inputStream);
                     ImageInfo imageInfo = ImageOp.getImageInfo(entryFile);
                     if (imageInfo == null || imageInfo.getFormat() == null
-                        || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1) {
+                            || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1) {
                         continue;
                     }
                     this.createImageActivated(entryFile, imageInfo, fileName, user);
@@ -224,8 +224,8 @@ public class ImageService {
         }
 
         Exif changedExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_CHANGED,
-                    manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
-                    resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
+                manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
         Exif originalExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_ORIGINAL,
                 manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
                 resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
@@ -264,7 +264,7 @@ public class ImageService {
 
     public Images createImage(File tempFile, ImageInfo imageInfo, String imageName, User user) {
         Images image = new Images();
-        
+
         String copyright = "";
         String description = "";
         String artist = "";
@@ -311,16 +311,16 @@ public class ImageService {
         }
 
         Exif changedExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_CHANGED,
-                    manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
-                    resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
+                manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
         Exif originalExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_ORIGINAL,
                 manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
                 resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
-        
+
         String uploadedBy = String.format("%s %s", user.getFirstName(), user.getLastName()).trim();
         image.setUploadedBy(uploadedBy);
         image.setUsersId(user.getId());
-        
+
         image.setImageNm(StringUtils.substring(imageName, 0, 255));
         image.setFormat(imageInfo.getFormat().getOrdinal());
         image.setFileSize((int) tempFile.length());
@@ -329,24 +329,24 @@ public class ImageService {
 
         Session session = factory.getCurrentSession();
         session.persist(image);
-        
+
         originalExif.setImageId(image.getId());
         changedExif.setImageId(image.getId());
         session.persist(originalExif);
         session.persist(changedExif);
-        
+
         session.flush();
         image.setChangedExif(changedExif);
-        
+
         if (!facade.getFileService().storeImage(tempFile, image.getId(), false)) {
             txManager.rollback(txManager.getTransaction(null));
-            
+
             return null;
         }
-        
+
         return image;
     }
-    
+
     public void createImages(List<Object[]> tuples, User user) {
         Session session = factory.getCurrentSession();
 
@@ -354,7 +354,7 @@ public class ImageService {
             File tempFile = (File) tuple[0];
             ImageInfo imageInfo = (ImageInfo) tuple[1];
             String imageName = (String) tuple[2];
-            
+
             String copyright = "";
             String description = "";
             String artist = "";
@@ -399,14 +399,14 @@ public class ImageService {
                 dateOriginal = data.getDateOriginal();
                 dateDigitized = data.getDateDigitized();
             }
-            
+
             Exif changedExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_CHANGED,
-                        manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
-                        resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
+                    manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
+                    resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
             Exif originalExif = new Exif(xResolution, yResolution, description, artist, copyright, Exif.TYPE_ORIGINAL,
                     manufacturer, model, compression, exposure, exposureProgram, fStop, flash, focalLength, colorSpace,
                     resolutionUnit, pixelXDimension, pixelYDimension, dateOriginal, dateDigitized, ISO);
-            
+
             Images image = new Images();
             String uploadedBy = String.format("%s %s", user.getFirstName(), user.getLastName()).trim();
             image.setUploadedBy(uploadedBy);
@@ -425,12 +425,12 @@ public class ImageService {
             changedExif.setImageId(image.getId());
             session.persist(originalExif);
             session.persist(changedExif);
-            
+
             facade.getFileService().storeImage(tempFile, image.getId(), false);
         }
         session.flush();
     }
-    
+
     public void deleteImage(long imageId) {
         Session session = factory.getCurrentSession();
 
@@ -449,10 +449,10 @@ public class ImageService {
         session.createQuery("DELETE Images im WHERE im.id = :imageId")
                 .setLong("imageId", imageId)
                 .executeUpdate();
-        
+
         facade.getFileService().deleteImage(imageId);
     }
-    
+
     public void updateFullData(Images image, List<Integer> categoryIds, List<String> imageKeywords) {
 
         Session session = factory.getCurrentSession();
@@ -486,11 +486,11 @@ public class ImageService {
         query.setParameter("exposure", changedExif.getExposure(), new DoubleType());
         query.setParameter("exposureProgram", changedExif.getExposureProgram(), new StringType());
         query.setParameter("fStop", changedExif.getfStop(), new FloatType());
-        if(changedExif.getFlash() != null) {
-            query.setParameter("flash", changedExif.getFlash());   
+        if (changedExif.getFlash() != null) {
+            query.setParameter("flash", changedExif.getFlash());
         } else {
             query.setParameter("flash", null, new IntegerType());
-        }        
+        }
         query.setParameter("focalLength", changedExif.getFocalLength(), new FloatType());
         query.setParameter("colorSpace", changedExif.getColorSpace(), new StringType());
         query.setParameter("resolutionUnit", changedExif.getResolutionUnit(), new IntegerType());
@@ -516,11 +516,11 @@ public class ImageService {
         query.setParameter("exposure", originalExif.getExposure(), new DoubleType());
         query.setParameter("exposureProgram", originalExif.getExposureProgram(), new StringType());
         query.setParameter("fStop", originalExif.getfStop(), new FloatType());
-        if(originalExif.getFlash() != null) {
-            query.setParameter("flash", originalExif.getFlash());   
+        if (originalExif.getFlash() != null) {
+            query.setParameter("flash", originalExif.getFlash());
         } else {
             query.setParameter("flash", null, new IntegerType());
-        }        
+        }
         query.setParameter("focalLength", originalExif.getFocalLength(), new FloatType());
         query.setParameter("colorSpace", originalExif.getColorSpace(), new StringType());
         query.setParameter("resolutionUnit", originalExif.getResolutionUnit(), new IntegerType());
@@ -537,7 +537,7 @@ public class ImageService {
         updateImageKeywords(session, image, imageKeywords);
 
     }
-    
+
     public void updateData(Images image, List<Integer> categoryIds, List<String> imageKeywords) {
 
         Session session = factory.getCurrentSession();
@@ -567,7 +567,7 @@ public class ImageService {
         updateImageKeywords(session, image, imageKeywords);
 
     }
-    
+
     private static void updateImageCategories(Session session, Images image, List<Integer> categoryIds) {
         if (categoryIds.isEmpty()) {
             session.createQuery("DELETE FROM ImageCategories ic WHERE ic.imageId = :imageId")
@@ -575,7 +575,7 @@ public class ImageService {
                     .executeUpdate();
             return;
         }
-        
+
         session.createQuery(
                 "DELETE FROM ImageCategories ic WHERE ic.imageId = :imageId AND ic.categoryId NOT IN (:categoryIds)")
                 .setLong("imageId", image.getId())
@@ -598,7 +598,7 @@ public class ImageService {
         }
         session.flush();
     }
-    
+
     private static void updateImageKeywords(Session session, Images image, List<String> imageKeywords) {
         long imageId = image.getId();
         if (imageKeywords.isEmpty()) {
@@ -608,7 +608,7 @@ public class ImageService {
         } else {
             List<Keywords> existingKeywords = session.createQuery(
                     "SELECT k.id AS id, k.keywordNm AS keywordNm FROM Keywords k " +
-                    "WHERE k.keywordNm IN (:keywords) ")
+                            "WHERE k.keywordNm IN (:keywords) ")
                     .setParameterList("keywords", imageKeywords)
                     .setResultTransformer(Transformers.aliasToBean(Keywords.class))
                     .list();
@@ -665,7 +665,7 @@ public class ImageService {
             session.flush();
         }
     }
-    
+
     public void archiveImage(long imageId) {
 
         factory.getCurrentSession()
@@ -695,24 +695,24 @@ public class ImageService {
 
         return images;
     }
-    
-    private Query buildSearchImagesQuery(SearchImageCommand command, boolean count, 
-            List<Integer> categoryIds, User user) {
+
+    private Query buildSearchImagesQuery(SearchImageCommand command, boolean count,
+                                         List<Integer> categoryIds, User user) {
 
         StringBuilder builder = new StringBuilder();
-        
+
         builder.append("SELECT ");
-        
+
         if (count) {
             builder.append("count(DISTINCT im.id) ");
         } else {
             builder.append(
-            		"DISTINCT im.id AS id, im.imageNm AS imageNm, im.width AS width, im.height AS height, " +
-            		"         e.artist AS artist, im.createdDt as createdDt, e.description, im.fileSize AS fileSize ");
+                    "DISTINCT im.id AS id, im.imageNm AS imageNm, im.width AS width, im.height AS height, " +
+                            "         e.artist AS artist, im.createdDt as createdDt, e.description, im.fileSize AS fileSize ");
         }
-        
+
         builder.append("FROM Images im ");
-        
+
         List<Integer> categoryId = command.getCategoryIds();
         if (user.isSuperAdmin()) {
             if (SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryId)) {
@@ -731,21 +731,21 @@ public class ImageService {
         } else {
             builder.append("INNER JOIN im.categories c ");
         }
-        
+
         long keywordId = command.getKeywordId();
         if (keywordId != SearchImageCommand.KEYWORD_ALL) {
             builder.append("INNER JOIN im.keywords k ");
         } else {
             builder.append("LEFT OUTER JOIN im.keywords k ");
         }
-        
+
         builder.append(", Exif e WHERE e.imageId = im.id AND e.type = :changedType ");
-        
+
         String artist = command.getArtist();
         if (artist != null) {
             builder.append("AND lower(e.artist) = :artist ");
         }
-        
+
         Short status;
         switch (command.getShow()) {
             case SearchImageCommand.SHOW_ERASED:
@@ -760,9 +760,8 @@ public class ImageService {
                 builder.append("AND im.status = :status ");
                 status = Images.STATUS_ACTIVE;
         }
-        
-        
-        
+
+
         if (user.isSuperAdmin()) {
             if (SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryId)) {
                 builder.append("AND im.categories IS EMPTY ");
@@ -771,34 +770,34 @@ public class ImageService {
             }
         } else if (SearchImageCommand.CATEGORY_ALL.equals(categoryId)) {
             builder.append("AND (");
-            
+
             if (!categoryIds.isEmpty()) {
                 builder.append("c.id IN (:categoryIds) ");
             }
-            
+
             if (!categoryIds.isEmpty() && !user.isDefaultUser()) {
                 builder.append("OR ");
             }
-            
+
             if (!user.isDefaultUser()) {
                 builder.append("im.usersId = :usersId ");
             }
-            
+
             builder.append(") ");
         } else if (SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryId)) {
             builder.append("AND im.categories IS EMPTY AND im.usersId = :usersId ");
         } else {
             builder.append("AND c.id IN (:categoryId) ");
         }
-        
+
         if (keywordId != SearchImageCommand.KEYWORD_ALL) {
             builder.append("AND k.id = :keywordId ");
         }
-        
+
         String freetext = command.getFreetext();
         if (freetext != null) {
             freetext = LIKE_SPECIAL_PATTERN.matcher(freetext).replaceAll("|$1");
-            if(command.isFileNamesOnly()) {
+            if (command.isFileNamesOnly()) {
                 builder.append("AND (lower(im.imageNm) LIKE :freetext ESCAPE '|') ");
             } else {
                 builder.append("AND (lower(im.imageNm) LIKE :freetext ESCAPE '|' " +
@@ -808,16 +807,16 @@ public class ImageService {
                         "OR lower(k.keywordNm) LIKE :freetext ESCAPE '|') ");
             }
         }
-        
+
         Date licenseDt = command.getLicenseDate();
         Date licenseEndDt = command.getLicenseEndDate();
         if (licenseDt != null && licenseEndDt != null) {
             Date min = Utils.min(licenseDt, licenseEndDt);
             Date max = Utils.max(licenseDt, licenseEndDt);
-            
+
             licenseDt = min;
             licenseEndDt = max;
-            
+
             builder.append("AND im.licenseDt <= :licenseDt AND im.licenseEndDt >= :licenseEndDt ");
         } else if (licenseDt != null) {
             builder.append("AND im.licenseDt >= :licenseDt ");
@@ -842,7 +841,7 @@ public class ImageService {
                     break;
             }
 
-            switch(command.getSortOrder()) {
+            switch (command.getSortOrder()) {
                 case SearchImageCommand.SORT_DESCENDING:
                     builder.append("DESC ");
                     break;
@@ -851,18 +850,18 @@ public class ImageService {
                     break;
             }
         }
-        
+
         Query query = factory.getCurrentSession()
                 .createQuery(builder.toString())
                 .setShort("changedType", Exif.TYPE_CHANGED);
-        
+
         if (artist != null) {
             query.setString("artist", artist.toLowerCase());
         }
         if (status != null) {
             query.setShort("status", status);
         }
-        
+
         if (user.isSuperAdmin()) {
             if (!SearchImageCommand.CATEGORY_NO_CATEGORY.equals(categoryId) && !SearchImageCommand.CATEGORY_ALL.equals(categoryId)) {
                 query.setParameterList("categoryId", categoryId);
@@ -871,7 +870,7 @@ public class ImageService {
             if (!categoryIds.isEmpty()) {
                 query.setParameterList("categoryIds", categoryIds);
             }
-            
+
             if (!user.isDefaultUser()) {
                 query.setInteger("usersId", user.getId());
             }
@@ -880,7 +879,7 @@ public class ImageService {
         } else {
             query.setParameterList("categoryId", categoryId);
         }
-        
+
         if (keywordId != SearchImageCommand.KEYWORD_ALL) {
             query.setLong("keywordId", keywordId);
         }
@@ -899,29 +898,29 @@ public class ImageService {
         if (activeEndDt != null) {
             query.setDate("activeEndDt", activeEndDt);
         }
-        
+
         return query;
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public int searchImagesCount(SearchImageCommand command, List<Integer> categoryIds, User user) {
         if (user.isDefaultUser() && categoryIds.isEmpty()) {
             return 0;
         }
-        
+
         long count = (Long) buildSearchImagesQuery(command, true, categoryIds, user)
                 .uniqueResult();
-        
+
         return (int) count;
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Images> searchImages(SearchImageCommand command, Pagination pag, List<Integer> categoryIds, User user) {
-        
+
         if (user.isDefaultUser() && categoryIds.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
-        
+
         List<Map<String, Object>> result = buildSearchImagesQuery(command, false, categoryIds, user)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .setFirstResult(pag.getStartPosition())
@@ -947,20 +946,20 @@ public class ImageService {
 
         return images;
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Categories> findImageCategories(long imageId) {
 
         return factory.getCurrentSession()
                 .createQuery(
-                "SELECT c.id AS id, c.name AS name FROM ImageCategories ic INNER JOIN ic.category c " +
-                "WHERE ic.imageId = :imageId AND c.type.name = 'Images' ORDER BY c.name ")
+                        "SELECT c.id AS id, c.name AS name FROM ImageCategories ic INNER JOIN ic.category c " +
+                                "WHERE ic.imageId = :imageId AND c.type.name = 'Images' ORDER BY c.name ")
                 .setLong("imageId", imageId)
                 .setResultTransformer(Transformers.aliasToBean(Categories.class))
                 .list();
     }
 
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Categories> findAvailableImageCategories(long imageId, User user) {
 
         Session session = factory.getCurrentSession();
@@ -985,7 +984,7 @@ public class ImageService {
     }
 
     /* checks if the given user has 'use' permission to the categories with given ids */
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public boolean canUseCategories(User user, List<Integer> categoryIds) {
 
         if (user.isSuperAdmin()) {
@@ -999,15 +998,15 @@ public class ImageService {
 
         long count = (Long) factory.getCurrentSession().createQuery(
                 "SELECT count(DISTINCT cr.categoryId) FROM CategoryRoles cr " +
-                "WHERE cr.roleId IN (:roleIds) AND cr.categoryId IN (:categoryIds) ")
+                        "WHERE cr.roleId IN (:roleIds) AND cr.categoryId IN (:categoryIds) ")
                 .setParameterList("roleIds", roleIds)
                 .setParameterList("categoryIds", categoryIds)
                 .uniqueResult();
 
         return count == categoryIds.size();
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<String> findAvailableKeywords(long imageId) {
 
         return factory.getCurrentSession()
@@ -1015,19 +1014,19 @@ public class ImageService {
                 .setLong("imageId", imageId)
                 .list();
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<String> findImageKeywords(long imageId) {
 
         return factory.getCurrentSession()
                 .createQuery(
-                "SELECT k.keywordNm FROM ImageKeywords ik INNER JOIN ik.keyword k " +
-                "WHERE ik.imageId = :imageId ORDER BY k.keywordNm")
+                        "SELECT k.keywordNm FROM ImageKeywords ik INNER JOIN ik.keyword k " +
+                                "WHERE ik.imageId = :imageId ORDER BY k.keywordNm")
                 .setLong("imageId", imageId)
                 .list();
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Keywords> findKeywords() {
 
         return factory.getCurrentSession()
@@ -1035,15 +1034,15 @@ public class ImageService {
                 .setResultTransformer(Transformers.aliasToBean(Keywords.class))
                 .list();
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public boolean canUseImage(User user, long imageId) {
         if (user.isSuperAdmin()) {
             return true;
         }
 
         Session session = factory.getCurrentSession();
-        
+
         Integer usersId = (Integer) session.createQuery("SELECT im.usersId FROM Images im WHERE im.id = :imageId")
                 .setLong("imageId", imageId)
                 .uniqueResult();
@@ -1058,15 +1057,15 @@ public class ImageService {
 
         long count = (Long) session.createQuery(
                 "SELECT count(ic.imageId) FROM CategoryRoles cr, ImageCategories ic " +
-                "WHERE cr.roleId IN (:roleIds) AND cr.categoryId = ic.categoryId AND ic.imageId = :imageId")
+                        "WHERE cr.roleId IN (:roleIds) AND cr.categoryId = ic.categoryId AND ic.imageId = :imageId")
                 .setParameterList("roleIds", roleIds)
                 .setLong("imageId", imageId)
                 .uniqueResult();
 
         return count > 0L;
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public String findImageName(long imageId) {
 
         return (String) factory.getCurrentSession()
@@ -1075,7 +1074,7 @@ public class ImageService {
                 .uniqueResult();
     }
 
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public String findImageAltText(long imageId) {
 
         return (String) factory.getCurrentSession()
@@ -1083,22 +1082,22 @@ public class ImageService {
                 .setLong("imageId", imageId)
                 .uniqueResult();
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public void setImageMetaIds(Images image) {
 
         List<Integer> metaIds = factory.getCurrentSession()
                 .createSQLQuery(
-                "SELECT DISTINCT i.doc_id FROM imcms_text_doc_images i WHERE i.archive_image_id = :imageId ORDER BY i.doc_id")
+                        "SELECT DISTINCT i.doc_id FROM imcms_text_doc_images i WHERE i.archive_image_id = :imageId ORDER BY i.doc_id")
                 .setLong("imageId", image.getId())
                 .list();
 
         image.setMetaIds(metaIds);
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public void setUsedInImcms(List<Images> images) {
-        
+
         Map<Long, Images> imageMap = new HashMap<Long, Images>(images.size());
         for (Images image : images) {
             imageMap.put(image.getId(), image);
@@ -1106,7 +1105,7 @@ public class ImageService {
 
         List<BigInteger> result = factory.getCurrentSession()
                 .createSQLQuery(
-                "SELECT DISTINCT i.archive_image_id FROM imcms_text_doc_images i WHERE i.archive_image_id IN (:imageIds)")
+                        "SELECT DISTINCT i.archive_image_id FROM imcms_text_doc_images i WHERE i.archive_image_id IN (:imageIds)")
                 .setParameterList("imageIds", imageMap.keySet())
                 .list();
 
@@ -1114,10 +1113,10 @@ public class ImageService {
             imageMap.get(id.longValue()).setUsedInImcms(true);
         }
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public void setImagesMetaIds(List<Images> images) {
-        
+
         Map<Long, Images> imageMap = new HashMap<Long, Images>(images.size());
         for (Images image : images) {
             imageMap.put(image.getId(), image);
@@ -1125,8 +1124,8 @@ public class ImageService {
 
         List<Object[]> result = factory.getCurrentSession()
                 .createSQLQuery(
-                "SELECT DISTINCT i.archive_image_id, i.doc_id FROM imcms_text_doc_images i WHERE i.archive_image_id IN (:imageIds) " +
-                "ORDER BY i.archive_image_id, i.doc_id")
+                        "SELECT DISTINCT i.archive_image_id, i.doc_id FROM imcms_text_doc_images i WHERE i.archive_image_id IN (:imageIds) " +
+                                "ORDER BY i.archive_image_id, i.doc_id")
                 .setParameterList("imageIds", imageMap.keySet())
                 .list();
 
@@ -1144,7 +1143,7 @@ public class ImageService {
             currentMetaIds.add(metaId);
         }
     }
-    
+
     public void createKeyword(final String keyword) {
         Session session = factory.getCurrentSession();
 

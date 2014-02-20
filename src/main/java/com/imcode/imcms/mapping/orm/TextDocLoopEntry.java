@@ -15,7 +15,8 @@ public class TextDocLoopEntry implements Serializable, Cloneable {
     @Column(name = "content_no")
     private int contentNo;
 
-    public TextDocLoopEntry() {}
+    public TextDocLoopEntry() {
+    }
 
     public TextDocLoopEntry(int loopNo, int contentNo) {
         this.loopNo = loopNo;

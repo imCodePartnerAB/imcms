@@ -7,6 +7,6 @@ import com.imcode.imcms.mapping.DocumentSaveException;
  */
 public class MaxCategoryDomainObjectsOfTypeExceededException extends DocumentSaveException {
     public MaxCategoryDomainObjectsOfTypeExceededException(String message) {
-        super(message) ;
+        super(message);
     }
 }

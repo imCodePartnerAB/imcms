@@ -6,28 +6,28 @@ import imcode.util.io.InputStreamSource;
 import java.util.Date;
 
 public class NullImageSource extends ImageSource {
-    public InputStreamSource getInputStreamSource( ) {
+    public InputStreamSource getInputStreamSource() {
         return new EmptyInputStreamSource();
     }
 
-    public String getUrlPathRelativeToContextPath( ) {
+    public String getUrlPathRelativeToContextPath() {
         return "";
     }
 
-    public String toStorageString( ) {
+    public String toStorageString() {
         return "";
     }
 
     @Override
     public boolean isEmpty() {
-	return true;
+        return true;
     }
 
-    public int getTypeId( ) {
+    public int getTypeId() {
         return ImageSource.IMAGE_TYPE_ID__NULL;
     }
 
-    public Date getModifiedDatetime( ) {
+    public Date getModifiedDatetime() {
         return null;
     }
 

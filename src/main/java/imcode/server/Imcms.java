@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.*;
 
 import javax.sql.DataSource;
+
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
@@ -247,7 +248,7 @@ public class Imcms {
         Map<String, DocumentLanguage> languagesByCodes = Maps.newHashMap();
         Map<String, DocumentLanguage> languagesByHosts = Maps.newHashMap();
 
-        for (DocumentLanguage language: languages) {
+        for (DocumentLanguage language : languages) {
             languagesByCodes.put(language.getCode(), language);
         }
 

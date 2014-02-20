@@ -52,7 +52,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public DocumentStoringVisitor(ImcmsServices services) {
         this.services = services;
         this.metaDao = services.getManagedBean(MetaDao.class);
-        this.textDocDao  = services.getManagedBean(TextDocDao.class);
+        this.textDocDao = services.getManagedBean(TextDocDao.class);
         this.docVersionDao = services.getManagedBean(DocVersionDao.class);
         this.docLanguageDao = services.getManagedBean(DocLanguageDao.class);
     }
@@ -257,16 +257,16 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         image.setUrl(image.getSource().toStorageString());
         image.setType(image.getSource().getTypeId());
 
-       // fixme: implement
-       // textDocDao.saveImage(image);
+        // fixme: implement
+        // textDocDao.saveImage(image);
 
-       // TextDocImageHistory textDocImageHistory = new TextDocImageHistory(image, user);
-       // textDocDao.saveImageHistory(textDocImageHistory);
+        // TextDocImageHistory textDocImageHistory = new TextDocImageHistory(image, user);
+        // textDocDao.saveImageHistory(textDocImageHistory);
     }
 
 
     @Transactional
-    // fixme: implement
+        // fixme: implement
     void updateTextDocumentImages(TextDocumentDomainObject doc, UserDomainObject user) {
 //        DocLanguage language = doc.getLanguage();
 //

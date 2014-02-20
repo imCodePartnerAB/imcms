@@ -16,7 +16,8 @@ public final class DocVersionRef {
         private int docId;
         private int docVersionNo;
 
-        public Builder() {}
+        public Builder() {
+        }
 
         public Builder(DocVersionRef docVersionRef) {
             this.docId = docVersionRef.docId;
@@ -27,6 +28,7 @@ public final class DocVersionRef {
             this.docId = docId;
             return this;
         }
+
         public Builder docVersionNo(int docVersionNo) {
             this.docVersionNo = docVersionNo;
             return this;

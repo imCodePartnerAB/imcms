@@ -6,15 +6,15 @@ public class MailService {
 
     private SMTP smtp;
 
-    MailService( SMTP smtp ) {
+    MailService(SMTP smtp) {
         this.smtp = smtp;
     }
 
     public void sendMail(Mail mail) throws MailException {
         try {
-            smtp.sendMail( mail.getInternal() );
-        } catch ( Exception e ) {
-            throw new MailException( e );
+            smtp.sendMail(mail.getInternal());
+        } catch (Exception e) {
+            throw new MailException(e);
         }
     }
 }

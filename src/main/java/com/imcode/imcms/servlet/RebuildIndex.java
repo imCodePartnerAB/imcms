@@ -13,16 +13,16 @@ import javax.servlet.http.HttpServletResponse;
 
 public class RebuildIndex extends HttpServlet {
 
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser(req);
 
-        if ( !user.isSuperAdmin() ) {
-            res.sendError( HttpServletResponse.SC_FORBIDDEN );
+        if (!user.isSuperAdmin()) {
+            res.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
-        Imcms.getServices().getDocumentMapper().getDocumentIndex().rebuild() ;
-        res.getOutputStream().println( "Started rebuild of index." );
+        Imcms.getServices().getDocumentMapper().getDocumentIndex().rebuild();
+        res.getOutputStream().println("Started rebuild of index.");
     }
 }

@@ -18,144 +18,144 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-@Entity(name="ImageCache")
-@Table(name="imcms_text_doc_images_cache")
+@Entity(name = "ImageCache")
+@Table(name = "imcms_text_doc_images_cache")
 public class ImageCacheDomainObject implements Serializable {
-	private static final long serialVersionUID = -2547384841538448930L;
-	
-	public static final short TYPE_PATH = 1;
-	public static final short TYPE_FILE_DOCUMENT = 2;
-	public static final short TYPE_URL = 3;
+    private static final long serialVersionUID = -2547384841538448930L;
+
+    public static final short TYPE_PATH = 1;
+    public static final short TYPE_FILE_DOCUMENT = 2;
+    public static final short TYPE_URL = 3;
 
     @Id
-    @Column(name="id", length=40, nullable=false)
-	private String id;
+    @Column(name = "id", length = 40, nullable = false)
+    private String id;
 
-    @Column(name="resource", length=255, nullable=false)
-	private String resource;
+    @Column(name = "resource", length = 255, nullable = false)
+    private String resource;
 
-    @Column(name="cache_type", nullable=false)
-	private short type;
+    @Column(name = "cache_type", nullable = false)
+    private short type;
 
-    @Column(name="file_size", nullable=false)
-	private int fileSize;
+    @Column(name = "file_size", nullable = false)
+    private int fileSize;
 
-    @Column(name="frequency", nullable=false)
-	private int frequency;
+    @Column(name = "frequency", nullable = false)
+    private int frequency;
 
-    @Column(name="format", nullable=false)
+    @Column(name = "format", nullable = false)
     private short format;
-	
-    @Column(name="rotate_angle", nullable=false)
+
+    @Column(name = "rotate_angle", nullable = false)
     private short rotateAngle;
 
-    @Column(name="width", nullable=false)
-	private int width;
+    @Column(name = "width", nullable = false)
+    private int width;
 
-    @Column(name="height", nullable=false)
-	private int height;
+    @Column(name = "height", nullable = false)
+    private int height;
 
-    @Column(name="crop_x1", nullable=false)
+    @Column(name = "crop_x1", nullable = false)
     private int cropX1;
 
-    @Column(name="crop_y1", nullable=false)
+    @Column(name = "crop_y1", nullable = false)
     private int cropY1;
 
-    @Column(name="crop_x2", nullable=false)
+    @Column(name = "crop_x2", nullable = false)
     private int cropX2;
 
-    @Column(name="crop_y2", nullable=false)
+    @Column(name = "crop_y2", nullable = false)
     private int cropY2;
 
-    @Column(name="created_dt", nullable=false)
+    @Column(name = "created_dt", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
-    
-    
+
+
     public ImageCacheDomainObject() {
-	}
-    
-	public ImageCacheDomainObject(String id, String resource,  
-			short type, int fileSize, int frequency, Format format, int width, int height, 
-			CropRegion cropRegion, RotateDirection rotateDirection, Timestamp createdDate) {
-		this.id = id;
-		this.resource = resource;
-		this.type = type;
-		this.fileSize = fileSize;
-		this.frequency = frequency;
+    }
+
+    public ImageCacheDomainObject(String id, String resource,
+                                  short type, int fileSize, int frequency, Format format, int width, int height,
+                                  CropRegion cropRegion, RotateDirection rotateDirection, Timestamp createdDate) {
+        this.id = id;
+        this.resource = resource;
+        this.type = type;
+        this.fileSize = fileSize;
+        this.frequency = frequency;
         setFormat(format);
-		this.width = width;
-		this.height = height;
+        this.width = width;
+        this.height = height;
         setCropRegion(cropRegion);
-		setRotateDirection(rotateDirection);
-		this.createdDate = createdDate;
-	}
-	
-	public void generateId() {
-		StringBuilder builder = new StringBuilder();
-		builder.append(resource);
-		builder.append(type);
-		builder.append(format);
-		builder.append(width);
-		builder.append(height);
+        setRotateDirection(rotateDirection);
+        this.createdDate = createdDate;
+    }
+
+    public void generateId() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(resource);
+        builder.append(type);
+        builder.append(format);
+        builder.append(width);
+        builder.append(height);
 
         CropRegion cropRegion = getCropRegion();
-		if (cropRegion.isValid()) {
-			builder.append(cropRegion.getCropX1());
-			builder.append(cropRegion.getCropY1());
-			builder.append(cropRegion.getCropX2());
-			builder.append(cropRegion.getCropY2());
-		} else {
-			builder.append("-1-1-1-1");
-		}
+        if (cropRegion.isValid()) {
+            builder.append(cropRegion.getCropX1());
+            builder.append(cropRegion.getCropY1());
+            builder.append(cropRegion.getCropX2());
+            builder.append(cropRegion.getCropY2());
+        } else {
+            builder.append("-1-1-1-1");
+        }
 
         RotateDirection rotateDirection = getRotateDirection();
-		if (rotateDirection != RotateDirection.NORTH) {
-		    builder.append(rotateDirection.getAngle());
-		}
-		
-		id = DigestUtils.shaHex(builder.toString());
-	}
-	
-	public String getId() {
-		return id;
-	}
+        if (rotateDirection != RotateDirection.NORTH) {
+            builder.append(rotateDirection.getAngle());
+        }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+        id = DigestUtils.shaHex(builder.toString());
+    }
 
-	public String getResource() {
-		return resource;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setResource(String resource) {
-		this.resource = resource;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public short getType() {
-		return type;
-	}
+    public String getResource() {
+        return resource;
+    }
 
-	public void setType(short type) {
-		this.type = type;
-	}
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
 
-	public int getWidth() {
-		return width;
-	}
+    public short getType() {
+        return type;
+    }
 
-	public void setWidth(int width) {
-		this.width = width;
-	}
+    public void setType(short type) {
+        this.type = type;
+    }
 
-	public int getHeight() {
-		return height;
-	}
+    public int getWidth() {
+        return width;
+    }
 
-	public void setHeight(int height) {
-		this.height = height;
-	}
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
     public Date getCreatedDate() {
         return createdDate;
@@ -165,21 +165,21 @@ public class ImageCacheDomainObject implements Serializable {
         this.createdDate = createdDate;
     }
 
-	public int getFileSize() {
-		return fileSize;
-	}
+    public int getFileSize() {
+        return fileSize;
+    }
 
-	public void setFileSize(int fileSize) {
-		this.fileSize = fileSize;
-	}
+    public void setFileSize(int fileSize) {
+        this.fileSize = fileSize;
+    }
 
-	public int getFrequency() {
-		return frequency;
-	}
+    public int getFrequency() {
+        return frequency;
+    }
 
-	public void setFrequency(int frequency) {
-		this.frequency = frequency;
-	}
+    public void setFrequency(int frequency) {
+        this.frequency = frequency;
+    }
 
     public Format getFormat() {
         return Format.findFormat(format);
@@ -216,28 +216,28 @@ public class ImageCacheDomainObject implements Serializable {
     }
 
     @Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-				.append(id)
-				.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof ImageCacheDomainObject)) {
-			return false;
-		}
-		
-		final ImageCacheDomainObject o = (ImageCacheDomainObject) obj;
-		
-		return new EqualsBuilder()
-				.append(id, o.getId())
-				.isEquals();
-	}
-	
-	@Override
-	public String toString() {
-		return String.format("imcode.server.document.textdocument.ImageCacheDomainObject" +
-				"[id: %s, resource: %s, type: %d, format: %s]", id, resource, type, format);
-	}
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(id)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ImageCacheDomainObject)) {
+            return false;
+        }
+
+        final ImageCacheDomainObject o = (ImageCacheDomainObject) obj;
+
+        return new EqualsBuilder()
+                .append(id, o.getId())
+                .isEquals();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("imcode.server.document.textdocument.ImageCacheDomainObject" +
+                "[id: %s, resource: %s, type: %d, format: %s]", id, resource, type, format);
+    }
 }

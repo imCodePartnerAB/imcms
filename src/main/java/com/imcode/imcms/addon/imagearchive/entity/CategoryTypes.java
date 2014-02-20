@@ -8,32 +8,32 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="category_types")
+@Table(name = "category_types")
 public class CategoryTypes implements Serializable {
     private static final long serialVersionUID = -7036783245514725184L;
-    
+
     @Id
-    @Column(name="category_type_id", nullable=false)
+    @Column(name = "category_type_id", nullable = false)
     @GeneratedValue
     private int id;
-    
-    @Column(name="name", length=128, nullable=false)
+
+    @Column(name = "name", length = 128, nullable = false)
     private String name;
-    
-    @Column(name="max_choices", nullable=false)
+
+    @Column(name = "max_choices", nullable = false)
     private int maxChoices;
-    
-    @Column(name="inherited", nullable=false)
+
+    @Column(name = "inherited", nullable = false)
     private boolean inherited;
-    
-    @Column(name="is_image_archive", nullable=false)
+
+    @Column(name = "is_image_archive", nullable = false)
     private boolean imageArchive;
 
-    
+
     public CategoryTypes() {
     }
 
-    
+
     public int getId() {
         return id;
     }
@@ -74,22 +74,22 @@ public class CategoryTypes implements Serializable {
         this.imageArchive = imageArchive;
     }
 
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final CategoryTypes other = (CategoryTypes) obj;
         if (this.id != other.id) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -97,7 +97,7 @@ public class CategoryTypes implements Serializable {
     public int hashCode() {
         int hash = 5;
         hash = 59 * hash + this.id;
-        
+
         return hash;
     }
 

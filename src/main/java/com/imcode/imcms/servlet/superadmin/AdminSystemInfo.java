@@ -22,7 +22,7 @@ import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 
 public class AdminSystemInfo extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger( AdminSystemInfo.class.getName() );
+    private final static Logger log = Logger.getLogger(AdminSystemInfo.class.getName());
 
     private final static String HTML_TEMPLATE = "AdminSystemMessage.htm";
 
@@ -65,8 +65,8 @@ public class AdminSystemInfo extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
 
         // Lets check if the user is an admin, otherwise throw him out.
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !user.isSuperAdmin() ) {
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+        if (!user.isSuperAdmin()) {
             String header = "Error in AdminSystemInfo. ";
             Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
@@ -114,11 +114,11 @@ public class AdminSystemInfo extends HttpServlet {
             String serverMasterEmail = req.getParameter("SERVER_MASTER_EMAIL") == null ? "" : req.getParameter("SERVER_MASTER_EMAIL");
 
             // Lets validate the parameters
-            if (serverMaster.equalsIgnoreCase("") || !Utility.isValidEmail( serverMasterEmail )) {
+            if (serverMaster.equalsIgnoreCase("") || !Utility.isValidEmail(serverMasterEmail)) {
                 String header = "Error in AdminSystemInfo, servermaster info.";
                 Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters")
-                             + "<br>";
+                        + "<br>";
                 AdminRoles.printErrorMessage(req, res, header, msg);
                 return;
             }
@@ -142,11 +142,11 @@ public class AdminSystemInfo extends HttpServlet {
             String webMasterEmail = req.getParameter("WEB_MASTER_EMAIL") == null ? "" : req.getParameter("WEB_MASTER_EMAIL");
 
             // Lets validate the parameters
-            if (webMaster.equalsIgnoreCase("") || !Utility.isValidEmail( webMasterEmail )) {
+            if (webMaster.equalsIgnoreCase("") || !Utility.isValidEmail(webMasterEmail)) {
                 String header = "Error in AdminSystemInfo, webmaster info.";
                 Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters")
-                             + "<br>";
+                        + "<br>";
                 AdminRoles.printErrorMessage(req, res, header, msg);
                 return;
             }

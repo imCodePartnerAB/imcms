@@ -8,25 +8,25 @@ import java.util.List;
 
 public class SearchImageCommand implements Serializable {
     private static final long serialVersionUID = 844191223450843364L;
-    
+
     public static final short SHOW_ALL = 0;
     public static final short SHOW_NEW = 1;
     public static final short SHOW_ERASED = 2;
     public static final short SHOW_WITH_VALID_LICENCE = 3;
-    
+
     public static final List<Integer> CATEGORY_ALL = Arrays.asList(-1);
     public static final List<Integer> CATEGORY_NO_CATEGORY = Arrays.asList(-2);
     public static final long KEYWORD_ALL = -1;
-    
+
     public static final short SORT_BY_ARTIST = 0;
     public static final short SORT_BY_ALPHABET = 1;
     public static final short SORT_BY_ENTRY_DATE = 2;
 
     public static final short SORT_ASCENDING = 0;
     public static final short SORT_DESCENDING = 1;
-    
+
     public static final int DEFAULT_PAGE_SIZE = 10;
-    
+
     private short show = SHOW_ALL;
     private List<Integer> categoryIds = CATEGORY_ALL;
     private long keywordId = KEYWORD_ALL;
@@ -40,7 +40,7 @@ public class SearchImageCommand implements Serializable {
     private short sortBy = SORT_BY_ENTRY_DATE;
     private short sortOrder = SORT_DESCENDING;
     private String clearAction;
-    
+
     private Date licenseDate;
     private Date licenseEndDate;
     private Date activeDate;
@@ -49,11 +49,11 @@ public class SearchImageCommand implements Serializable {
     private boolean fileNamesOnly;
     private boolean isUnfolded;
 
-    
+
     public SearchImageCommand() {
     }
 
-    
+
     public void copyFrom(SearchImageCommand command) {
         this.show = command.getShow();
         this.categoryIds = command.getCategoryIds();
@@ -67,7 +67,7 @@ public class SearchImageCommand implements Serializable {
         this.resultsPerPage = command.getResultsPerPage();
         this.sortBy = command.getSortBy();
         this.sortOrder = command.getSortOrder();
-        
+
         this.licenseDate = command.getLicenseDate();
         this.licenseEndDate = command.getLicenseEndDate();
         this.activeDate = command.getActiveDate();
@@ -75,12 +75,12 @@ public class SearchImageCommand implements Serializable {
         this.fileNamesOnly = command.isFileNamesOnly();
         this.isUnfolded = command.isUnfolded();
     }
-    
-    
+
+
     public boolean isClear() {
         return clearAction != null;
     }
-    
+
     public String getActiveDt() {
         return activeDt;
     }

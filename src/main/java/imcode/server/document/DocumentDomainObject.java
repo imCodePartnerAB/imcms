@@ -18,7 +18,7 @@ import java.util.*;
 
 /**
  * Parent of all imCMS document types.
- *
+ * <p/>
  * Holds document meta and a content.
  */
 public abstract class DocumentDomainObject implements Cloneable, Serializable {

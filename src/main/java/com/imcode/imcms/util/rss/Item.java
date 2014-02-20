@@ -12,7 +12,7 @@ public interface Item {
 
     String getDescription();
 
-    Map<NameSpace,Map<String,String>> getNameSpaceStrings();
+    Map<NameSpace, Map<String, String>> getNameSpaceStrings();
 
     Map<NameSpace, DynaBean> getNameSpaceBeans();
 }

@@ -7,14 +7,14 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class CategoryRolesPK implements Serializable {
     private static final long serialVersionUID = -4975712786681516776L;
-    
-    @Column(name="category_id", nullable=false)
+
+    @Column(name = "category_id", nullable = false)
     private int categoryId;
-    
-    @Column(name="role_id", nullable=false)
+
+    @Column(name = "role_id", nullable = false)
     private int roleId;
-    
-    
+
+
     public CategoryRolesPK() {
     }
 
@@ -22,8 +22,8 @@ public class CategoryRolesPK implements Serializable {
         this.categoryId = categoryId;
         this.roleId = roleId;
     }
-    
-    
+
+
     public int getCategoryId() {
         return categoryId;
     }
@@ -40,26 +40,26 @@ public class CategoryRolesPK implements Serializable {
         this.roleId = roleId;
     }
 
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final CategoryRolesPK other = (CategoryRolesPK) obj;
         if (this.categoryId != other.categoryId) {
             return false;
         }
-        
+
         if (this.roleId != other.roleId) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -68,13 +68,13 @@ public class CategoryRolesPK implements Serializable {
         int hash = 5;
         hash = 83 * hash + this.categoryId;
         hash = 83 * hash + this.roleId;
-        
+
         return hash;
     }
 
     @Override
     public String toString() {
-        return String.format("com.imcode.imcms.addon.imagearchive.entity.CategoryRolesPK[categoryId: %d, roleId: %d]", 
+        return String.format("com.imcode.imcms.addon.imagearchive.entity.CategoryRolesPK[categoryId: %d, roleId: %d]",
                 categoryId, roleId);
     }
 }

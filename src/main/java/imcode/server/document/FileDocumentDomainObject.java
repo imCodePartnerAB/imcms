@@ -15,7 +15,7 @@ import org.apache.commons.lang.UnhandledException;
 /**
  * A FileDocumentDomainObject contains a collection files.
  * In this context a file is set of attributes associated with a data {@link FileDocumentFile}.
- * 
+ * <p/>
  * A file is identified by fileId - a string which is unique to a FileDocumentDomainObject.
  */
 public class FileDocumentDomainObject extends DocumentDomainObject {
@@ -33,37 +33,36 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         return DocumentTypeDomainObject.FILE;
     }
 
-    public void accept( DocumentVisitor documentVisitor ) {
-        documentVisitor.visitFileDocument( this );
+    public void accept(DocumentVisitor documentVisitor) {
+        documentVisitor.visitFileDocument(this);
     }
 
-    public void addFile( String fileId, FileDocumentFile file ) {
-        if ( null == fileId ) {
-            throw new NullArgumentException( "fileId" );
+    public void addFile(String fileId, FileDocumentFile file) {
+        if (null == fileId) {
+            throw new NullArgumentException("fileId");
         }
-        if ( !files.containsKey( defaultFileId ) ) {
+        if (!files.containsKey(defaultFileId)) {
             defaultFileId = fileId;
         }
-        FileDocumentFile fileClone = cloneFile( file );
-        fileClone.setId( fileId );
-        files.put( fileId, fileClone );
+        FileDocumentFile fileClone = cloneFile(file);
+        fileClone.setId(fileId);
+        files.put(fileId, fileClone);
     }
 
-    
+
     /**
      * @param file file to clone
-     *
-     * @return file clone or null if provided file is null 
+     * @return file clone or null if provided file is null
      */
-    private FileDocumentFile cloneFile( FileDocumentFile file ) {
+    private FileDocumentFile cloneFile(FileDocumentFile file) {
         if (null == file) {
-            return null ;
+            return null;
         }
         FileDocumentFile fileClone;
         try {
-            fileClone = (FileDocumentFile)file.clone();
-        } catch ( CloneNotSupportedException e ) {
-            throw new UnhandledException( e );
+            fileClone = (FileDocumentFile) file.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new UnhandledException(e);
         }
         return fileClone;
     }
@@ -74,34 +73,34 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         return map;
     }
 
-    
+
     @SuppressWarnings("unchecked")
     private Map<String, FileDocumentFile> createFilesMap() {
-        return MapUtils.orderedMap( new HashMap<String, FileDocumentFile>() );
+        return MapUtils.orderedMap(new HashMap<String, FileDocumentFile>());
     }
 
-    public FileDocumentFile getFile( String fileId ) {
-        return cloneFile(files.get( fileId ) );
+    public FileDocumentFile getFile(String fileId) {
+        return cloneFile(files.get(fileId));
     }
 
-    public FileDocumentFile removeFile( String fileId ) {
-        FileDocumentFile fileDocumentFile = files.remove( fileId );
-        selectDefaultFileName( fileId );
+    public FileDocumentFile removeFile(String fileId) {
+        FileDocumentFile fileDocumentFile = files.remove(fileId);
+        selectDefaultFileName(fileId);
         return fileDocumentFile;
     }
 
-    private void selectDefaultFileName( String fileId ) {
-        if ( files.isEmpty() ) {
+    private void selectDefaultFileName(String fileId) {
+        if (files.isEmpty()) {
             defaultFileId = null;
-        } else if ( defaultFileId.equals( fileId ) ) {
-            defaultFileId = (String)Utility.firstElementOfSetByOrderOf( files.keySet(), String.CASE_INSENSITIVE_ORDER );
+        } else if (defaultFileId.equals(fileId)) {
+            defaultFileId = (String) Utility.firstElementOfSetByOrderOf(files.keySet(), String.CASE_INSENSITIVE_ORDER);
         }
     }
 
-    public void setDefaultFileId( String defaultFileId ) {
-        if ( !files.containsKey( defaultFileId ) ) {
-            throw new IllegalArgumentException( "Cannot set defaultFileId to non-existant key "
-                                                + defaultFileId );
+    public void setDefaultFileId(String defaultFileId) {
+        if (!files.containsKey(defaultFileId)) {
+            throw new IllegalArgumentException("Cannot set defaultFileId to non-existant key "
+                    + defaultFileId);
         }
         this.defaultFileId = defaultFileId;
     }
@@ -110,46 +109,45 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         return defaultFileId;
     }
 
-    
+
     /**
-     * 
      * @param fileId
-     * @return file with fileId or default file if fileId is null or there is no file with a such id. 
+     * @return file with fileId or default file if fileId is null or there is no file with a such id.
      */
-    public FileDocumentFile getFileOrDefault( String fileId ) {
-        if ( null == fileId ) {
+    public FileDocumentFile getFileOrDefault(String fileId) {
+        if (null == fileId) {
             return getDefaultFile();
         }
-        FileDocumentFile fileDocumentFile = getFile( fileId );
-        if ( null == fileDocumentFile ) {
+        FileDocumentFile fileDocumentFile = getFile(fileId);
+        if (null == fileDocumentFile) {
             fileDocumentFile = getDefaultFile();
         }
         return fileDocumentFile;
     }
 
     public FileDocumentFile getDefaultFile() {
-        return getFile( defaultFileId );
+        return getFile(defaultFileId);
 
     }
 
-    public void changeFileId( String oldFileId, String newFileId ) {
-        if ( null == oldFileId ) {
-            throw new NullArgumentException( "oldFileId" );
+    public void changeFileId(String oldFileId, String newFileId) {
+        if (null == oldFileId) {
+            throw new NullArgumentException("oldFileId");
         }
-        if ( null == newFileId ) {
-            throw new NullArgumentException( "newFileId" );
+        if (null == newFileId) {
+            throw new NullArgumentException("newFileId");
         }
-        if ( !files.containsKey( oldFileId ) ) {
-            throw new IllegalStateException( "There is no file with the id " + oldFileId );
+        if (!files.containsKey(oldFileId)) {
+            throw new IllegalStateException("There is no file with the id " + oldFileId);
         }
-        if ( oldFileId.equals( newFileId ) ) {
+        if (oldFileId.equals(newFileId)) {
             return;
         }
-        if ( files.containsKey( newFileId ) ) {
-            throw new IllegalStateException( "There already is a file with the id " + newFileId );
+        if (files.containsKey(newFileId)) {
+            throw new IllegalStateException("There already is a file with the id " + newFileId);
         }
-        addFile( newFileId, files.remove( oldFileId ) );
-        if ( defaultFileId.equals( oldFileId ) ) {
+        addFile(newFileId, files.remove(oldFileId));
+        if (defaultFileId.equals(oldFileId)) {
             defaultFileId = newFileId;
         }
     }
@@ -157,7 +155,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
     /**
      * File attributes associated with a data.
-     * 
+     *
      * @see imcode.util.io.InputStreamSource
      */
     public static class FileDocumentFile implements Cloneable, Serializable {
@@ -166,7 +164,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
         /**
          * If this object represent a new file then assigned by the system before the file is stored in a FS.
-         * Otherwise set by the system when FileDocumentDomainObject is initialized.  
+         * Otherwise set by the system when FileDocumentDomainObject is initialized.
          */
         private String filename;
 
@@ -178,7 +176,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
             return filename;
         }
 
-        public void setFilename( String v ) {
+        public void setFilename(String v) {
             this.filename = v;
         }
 
@@ -186,11 +184,11 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
             return mimeType;
         }
 
-        public void setMimeType( String mimeType ) {
+        public void setMimeType(String mimeType) {
             this.mimeType = mimeType;
         }
 
-        public void setInputStreamSource( InputStreamSource inputStreamSource ) {
+        public void setInputStreamSource(InputStreamSource inputStreamSource) {
             this.inputStreamSource = inputStreamSource;
         }
 
@@ -198,7 +196,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
             return new ExceptionFreeInputStreamSource(inputStreamSource);
         }
 
-        public void setCreatedAsImage( boolean createdAsImage ) {
+        public void setCreatedAsImage(boolean createdAsImage) {
             this.createdAsImage = createdAsImage;
         }
 
@@ -206,7 +204,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
             return createdAsImage;
         }
 
-        public void setId( String id ) {
+        public void setId(String id) {
             this.id = id;
         }
 
@@ -215,7 +213,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         }
 
         public FileDocumentFile clone() throws CloneNotSupportedException {
-            return (FileDocumentFile)super.clone();
+            return (FileDocumentFile) super.clone();
         }
     }
 }

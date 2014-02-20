@@ -40,7 +40,7 @@ public class TextDocImageBase extends DocVersionedI18nContent {
     private String imageUrl = "";
 
     @Column(name = "image_name")
-    private  String name = "";
+    private String name = "";
 
     private Integer type;
 
@@ -61,7 +61,7 @@ public class TextDocImageBase extends DocVersionedI18nContent {
     @JoinColumn(name = "language_id")
     private DocLanguage language;
 
-    private  int resize;
+    private int resize;
 
     public Integer getNo() {
         return no;

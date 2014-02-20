@@ -72,7 +72,7 @@ public class AdminDoc extends HttpServlet {
             // forward foes not work ... some problems with vaadin bootstrap js.
             String contextPath = req.getContextPath();
             if (contextPath == "/") contextPath = "";
-                pageFlow.dispatch(req, res);
+            pageFlow.dispatch(req, res);
 
         } else {
             Utility.setDefaultHtmlContentType(res);

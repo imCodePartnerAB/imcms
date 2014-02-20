@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class ExternalFilesSaveImageCommand implements Serializable {
     private static final long serialVersionUID = 8285187972176419902L;
-    
+
     private String save;
     private String saveActivate;
     private String saveUse;
@@ -13,11 +13,11 @@ public class ExternalFilesSaveImageCommand implements Serializable {
     private String rotateRight;
     private String rotateLeft;
 
-    
+
     public ExternalFilesSaveImageCommand() {
     }
 
-    
+
     public String getCancel() {
         return cancel;
     }

@@ -34,43 +34,43 @@ import com.imcode.imcms.api.User;
 @Controller
 public class AddImageController {
     private static final Log log = LogFactory.getLog(AddImageController.class);
-    
+
     private static final String IMAGE_KEY = Utils.makeKey(AddImageController.class, "image");
     private static final String KEYWORDS_KEY = Utils.makeKey(AddImageController.class, "keywords");
     private static final String IMAGE_KEYWORDS_KEY = Utils.makeKey(AddImageController.class, "imageKeywords");
-    
+
     @Autowired
     private Facade facade;
-    
-    
+
+
     @SuppressWarnings("unchecked")
     @RequestMapping("/archive/add-image")
     public ModelAndView indexHandler(HttpServletRequest request, HttpServletResponse response) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        
+
         if (user.isDefaultUser()) {
             return new ModelAndView("redirect:/web/archive/");
         }
-        
+
         ModelAndView mav = new ModelAndView("image_archive/pages/add_image");
-        
+
         mav.addObject("upload", new AddImageUploadCommand());
-        
+
         Images image = (Images) session.get(IMAGE_KEY);
         List<String> keywords = (List<String>) session.get(KEYWORDS_KEY);
         List<String> imageKeywords = (List<String>) session.get(IMAGE_KEYWORDS_KEY);
         if (image != null) {
             mav.addObject("image", image);
             mav.addObject("format", Format.findFormat(image.getFormat()));
-            
+
             ChangeImageDataCommand changeData = new ChangeImageDataCommand();
             changeData.fromImage(image);
             mav.addObject("changeData", changeData);
             mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
             mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));
-            
+
             if (keywords == null) {
                 keywords = facade.getImageService().findAvailableKeywords(image.getId());
             }
@@ -80,7 +80,7 @@ public class AddImageController {
             mav.addObject("keywords", keywords);
             mav.addObject("imageKeywords", imageKeywords);
         }
-        
+
         return mav;
     }
 
@@ -89,43 +89,43 @@ public class AddImageController {
      * One request, one file */
     @RequestMapping("/archive/add-image/upload")
     public void uploadHandler(
-            @ModelAttribute("upload") AddImageUploadCommand command, 
+            @ModelAttribute("upload") AddImageUploadCommand command,
             BindingResult result,
-            HttpServletRequest request, 
+            HttpServletRequest request,
             HttpServletResponse response) {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         UploadResponse status = new UploadResponse();
         String contextPath = request.getContextPath();
-        
+
         if (user.isDefaultUser()) {
             status.setRedirect(contextPath + "/web/archive");
             Utils.writeJSON(status, response);
             return;
         }
-        
+
         ImageUploadValidator validator = new ImageUploadValidator(facade);
         ValidationUtils.invokeValidator(validator, command.getFile(), result);
 
         if (!result.hasErrors()) {
             try {
-                if(validator.isZipFile()) {
+                if (validator.isZipFile()) {
                     facade.getImageService().createImagesFromZip(validator.getTempFile(), user);
                 } else {
                     Images image;
-                    if(command.getFileCount() > 1) {
+                    if (command.getFileCount() > 1) {
                         image = facade.getImageService().createImageActivated(validator.getTempFile(),
-                            validator.getImageInfo(), validator.getImageName(), user);
+                                validator.getImageInfo(), validator.getImageName(), user);
                     } else {
                         image = facade.getImageService().createImage(validator.getTempFile(),
-                            validator.getImageInfo(), validator.getImageName(), user);
+                                validator.getImageInfo(), validator.getImageName(), user);
                     }
 
                     if (image == null) {
                         result.rejectValue("file", "archive.addImage.invalidImageError");
                     } else {
-                        if(command.getFileCount() == 1) {
+                        if (command.getFileCount() == 1) {
                             session.put(IMAGE_KEY, image);
                             status.setRedirect(contextPath + "/web/archive/add-image");
                         }
@@ -141,8 +141,8 @@ public class AddImageController {
 
 
         List<String> errors = new ArrayList<String>();
-        if(result.hasErrors()) {
-            for(FieldError error: result.getFieldErrors()) {
+        if (result.hasErrors()) {
+            for (FieldError error : result.getFieldErrors()) {
                 errors.add(facade.getCommonService().getMessage(error.getCode(), request.getLocale(), error.getArguments()));
             }
             status.setErrors(errors);
@@ -150,7 +150,7 @@ public class AddImageController {
 
         Utils.writeJSON(status, response);
     }
-    
+
     @RequestMapping("/archive/add-image/change")
     public ModelAndView changeDataHandler(
             @ModelAttribute("changeData") ChangeImageDataCommand changeData,
@@ -160,86 +160,86 @@ public class AddImageController {
         ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
-        
+
         if (user.isDefaultUser()) {
             return new ModelAndView("redirect:/web/archive/");
         }
-        
+
         Images image = (Images) session.get(IMAGE_KEY);
         if (image == null) {
             return new ModelAndView("redirect:/web/archive/add-image");
         }
-        
+
         if (action.isDiscontinue()) {
             facade.getImageService().deleteImage(image.getId());
             session.remove(IMAGE_KEY);
             session.remove(KEYWORDS_KEY);
             session.remove(IMAGE_KEYWORDS_KEY);
-            
+
             return new ModelAndView("redirect:/web/archive/add-image");
         }
-        
+
         ChangeImageDataValidator validator = new ChangeImageDataValidator(facade, user);
         ValidationUtils.invokeValidator(validator, changeData, result);
-        
+
         ModelAndView mav = new ModelAndView("image_archive/pages/add_image");
         mav.addObject("image", image);
         mav.addObject("format", Format.findFormat(image.getFormat()));
-        
+
         List<String> keywords = changeData.getKeywordNames();
         List<String> imageKeywords = changeData.getImageKeywordNames();
         session.put(KEYWORDS_KEY, keywords);
         session.put(IMAGE_KEYWORDS_KEY, imageKeywords);
         mav.addObject("keywords", keywords);
         mav.addObject("imageKeywords", imageKeywords);
-        
+
         if (action.getRotateLeft() != null) {
             facade.getFileService().rotateImage(image.getId(), -90, false);
         } else if (action.getRotateRight() != null) {
             facade.getFileService().rotateImage(image.getId(), 90, false);
         }
-        
+
         if (result.hasErrors() || action.isRotate()) {
             mav.addObject("upload", new AddImageUploadCommand());
             mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
             mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));
-            
+
             return mav;
         }
-        
+
         changeData.toImage(image);
-        
+
         try {
             facade.getImageService().updateData(image, changeData.getCategoryIds(), imageKeywords);
-            
+
             if (action.isAdd()) {
                 session.remove(IMAGE_KEY);
                 session.remove(KEYWORDS_KEY);
                 session.remove(IMAGE_KEYWORDS_KEY);
-                
+
                 return new ModelAndView("redirect:/web/archive/add-image");
             } else if (action.isUse()) {
                 session.remove(IMAGE_KEY);
                 session.remove(KEYWORDS_KEY);
                 session.remove(IMAGE_KEYWORDS_KEY);
-                
+
                 return new ModelAndView("redirect:/web/archive/use?id=" + image.getId());
             } else if (action.isImageCard()) {
                 session.remove(IMAGE_KEY);
                 session.remove(KEYWORDS_KEY);
                 session.remove(IMAGE_KEYWORDS_KEY);
-                
+
                 return new ModelAndView("redirect:/web/archive/image/" + image.getId());
             }
-            
+
             mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
             mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));
         } catch (Exception ex) {
             log.fatal(ex.getMessage(), ex);
-            
+
             return new ModelAndView("redirect:/web/archive/add-image");
         }
-        
+
         return mav;
     }
 }

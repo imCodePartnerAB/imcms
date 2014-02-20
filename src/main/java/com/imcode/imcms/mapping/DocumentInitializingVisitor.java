@@ -17,86 +17,86 @@ import com.imcode.imcms.dao.MetaDao;
 
 /**
  * Initializes a document fields depending on document's type.
- * 
+ * <p/>
  * Document's fields are queried from a database.
  */
 public class DocumentInitializingVisitor extends DocumentVisitor {
 
     private TextDocumentInitializer textDocumentInitializer;
-    
+
     private MetaDao metaDao;
 
     /**
      * Initializes file document.
-     *
+     * <p/>
      * Undocumented behavior:
-     *   ?? If file is missing in FS this is not an error.
-     *   ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
+     * ?? If file is missing in FS this is not an error.
+     * ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(final FileDocumentDomainObject doc) {
-    	Collection<FileDocItem> fileDocItems = metaDao.getFileDocItems(doc.getRef());
-    	
-    	for (FileDocItem item : fileDocItems) {
+        Collection<FileDocItem> fileDocItems = metaDao.getFileDocItems(doc.getRef());
+
+        for (FileDocItem item : fileDocItems) {
             String fileId = item.getFileId();
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
-            
+
             file.setFilename(item.getFilename());
             file.setMimeType(item.getMimeType());
             file.setCreatedAsImage(item.getCreatedAsImage());
-            
+
             File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getRef(), fileId);
-            if ( !fileForFileDocument.exists() ) {
+            if (!fileForFileDocument.exists()) {
                 File oldlyNamedFileForFileDocument = new File(fileForFileDocument.getParentFile(),
-                                                              fileForFileDocument.getName()
-                                                              + "_se");
-                if ( oldlyNamedFileForFileDocument.exists() ) {
+                        fileForFileDocument.getName()
+                                + "_se");
+                if (oldlyNamedFileForFileDocument.exists()) {
                     fileForFileDocument = oldlyNamedFileForFileDocument;
                 }
             }
-            
+
             file.setInputStreamSource(new FileInputStreamSource(fileForFileDocument));
-            
+
             doc.addFile(fileId, file);
-            
+
             if (item.isDefaultFileId()) {
                 doc.setDefaultFileId(fileId);
             }
-    		
-    	}
+
+        }
     }
-    
+
 
     public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
-    	HtmlDocContent html = metaDao.getHtmlDocContent(doc.getRef());
-    	doc.setHtml(html.getHtml());
+        HtmlDocContent html = metaDao.getHtmlDocContent(doc.getRef());
+        doc.setHtml(html.getHtml());
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject doc) {
-    	UrlDocContent reference = metaDao.getUrlDocContent(doc.getRef());
-    	doc.setUrl(reference.getUrl());
+        UrlDocContent reference = metaDao.getUrlDocContent(doc.getRef());
+        doc.setUrl(reference.getUrl());
     }
 
-    
+
     /**
-     * 
+     *
      */
     public void visitTextDocument(final TextDocumentDomainObject document) {
-        textDocumentInitializer.initialize(document) ;
+        textDocumentInitializer.initialize(document);
     }
 
-	public MetaDao getMetaDao() {
-		return metaDao;
-	}
+    public MetaDao getMetaDao() {
+        return metaDao;
+    }
 
-	public void setMetaDao(MetaDao metaDao) {
-		this.metaDao = metaDao;
-	}
+    public void setMetaDao(MetaDao metaDao) {
+        this.metaDao = metaDao;
+    }
 
-	public TextDocumentInitializer getTextDocumentInitializer() {
-		return textDocumentInitializer;
-	}
+    public TextDocumentInitializer getTextDocumentInitializer() {
+        return textDocumentInitializer;
+    }
 
-	public void setTextDocumentInitializer(TextDocumentInitializer textDocumentInitializer) {
-		this.textDocumentInitializer = textDocumentInitializer;
-	}
+    public void setTextDocumentInitializer(TextDocumentInitializer textDocumentInitializer) {
+        this.textDocumentInitializer = textDocumentInitializer;
+    }
 }

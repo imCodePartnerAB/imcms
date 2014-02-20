@@ -22,13 +22,13 @@ public class TextDocumentInitializer {
     private DocumentGetter documentGetter;
 
     private MetaDao metaDao;
-    
+
     private TextDocDao textDocDao;
 
     private TextDocMapper textDocMapper;
 
     /**
-	 * Initializes text document.
+     * Initializes text document.
      */
     public void initialize(TextDocumentDomainObject document) {
         initContentLoops(document);
@@ -38,108 +38,108 @@ public class TextDocumentInitializer {
         initIncludes(document);
         initTemplateNames(document);
     }
-    
+
     public void initTexts(TextDocumentDomainObject document) {
-        for (Map.Entry<Integer, TextDomainObject> e: textDocMapper.getTexts(document.getRef()).entrySet()) {
+        for (Map.Entry<Integer, TextDomainObject> e : textDocMapper.getTexts(document.getRef()).entrySet()) {
             document.setText(e.getKey(), e.getValue());
         }
 
-        for (Map.Entry<LoopItemRef, TextDomainObject> e: textDocMapper.getLoopTexts(document.getRef()).entrySet()) {
+        for (Map.Entry<LoopItemRef, TextDomainObject> e : textDocMapper.getLoopTexts(document.getRef()).entrySet()) {
             document.setText(e.getKey(), e.getValue());
         }
     }
-    
-    
+
+
     public void initIncludes(TextDocumentDomainObject document) {
-    	Collection<Include> includes = metaDao.getIncludes(document.getMeta().getId());
-    	
-    	Map<Integer, Integer> includesMap = new HashMap<>();
-    	
-    	for (Include include: includes) {
-    		includesMap.put(include.getIndex(), include.getIncludedDocumentId());
-    	}
-    	
-    	document.setIncludesMap(includesMap);
-    }
-    
-    
-    public void initTemplateNames(TextDocumentDomainObject document) {
-    	TemplateNames templateNames = metaDao.getTemplateNames(document.getMeta().getId());
-    	
-    	if (templateNames == null) {
-    		templateNames = new TemplateNames();
-    	}
-    	
-    	document.setTemplateNames(templateNames);
-    }    
-    
-    
-    public void initImages(TextDocumentDomainObject document) {
-    	for (Map.Entry<Integer, ImageDomainObject> e: textDocMapper.getImages(document.getRef()).entrySet()) {
-    		document.setImage(e.getKey(), e.getValue());
-    	}
+        Collection<Include> includes = metaDao.getIncludes(document.getMeta().getId());
 
-        for (Map.Entry<LoopItemRef, ImageDomainObject> e: textDocMapper.getLoopImages(document.getRef()).entrySet()) {
+        Map<Integer, Integer> includesMap = new HashMap<>();
+
+        for (Include include : includes) {
+            includesMap.put(include.getIndex(), include.getIncludedDocumentId());
+        }
+
+        document.setIncludesMap(includesMap);
+    }
+
+
+    public void initTemplateNames(TextDocumentDomainObject document) {
+        TemplateNames templateNames = metaDao.getTemplateNames(document.getMeta().getId());
+
+        if (templateNames == null) {
+            templateNames = new TemplateNames();
+        }
+
+        document.setTemplateNames(templateNames);
+    }
+
+
+    public void initImages(TextDocumentDomainObject document) {
+        for (Map.Entry<Integer, ImageDomainObject> e : textDocMapper.getImages(document.getRef()).entrySet()) {
+            document.setImage(e.getKey(), e.getValue());
+        }
+
+        for (Map.Entry<LoopItemRef, ImageDomainObject> e : textDocMapper.getLoopImages(document.getRef()).entrySet()) {
             document.setImage(e.getKey(), e.getValue());
         }
     }
 
 
     public void initMenus(TextDocumentDomainObject document) {
-        for (Map.Entry<Integer, MenuDomainObject> e: textDocMapper.getMenus(document.getVersionRef()).entrySet()) {
+        for (Map.Entry<Integer, MenuDomainObject> e : textDocMapper.getMenus(document.getVersionRef()).entrySet()) {
             document.setMenu(e.getKey(), initMenuItems(e.getValue(), documentGetter));
         }
     }
-    
+
     private MenuDomainObject initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
-    	
-    	for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
-    		Integer referencedDocumentId = entry.getKey();
-    		MenuItemDomainObject menuItem = entry.getValue();
-    		GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, documentGetter);
-    		
-    		menuItem.setDocumentReference(gtr);
-    	}
+
+        for (Map.Entry<Integer, MenuItemDomainObject> entry : menu.getItemsMap().entrySet()) {
+            Integer referencedDocumentId = entry.getKey();
+            MenuItemDomainObject menuItem = entry.getValue();
+            GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, documentGetter);
+
+            menuItem.setDocumentReference(gtr);
+        }
 
         return menu;
     }
 
 
     /**
-     * @throws IllegalStateException if a content loop is empty i.e. does not have a contents. 
+     * @throws IllegalStateException if a content loop is empty i.e. does not have a contents.
      */
-	public void initContentLoops(TextDocumentDomainObject document) {
-		List<TextDocLoop> loops = textDocDao.getLoops(document.getRef());
-		Map<Integer, Loop> loopsMap = new HashMap<>();
-		
-		for (TextDocLoop loop: loops) {
-			loopsMap.put(loop.getNo(), OrmToApi.toApi(loop));
-		}
-		
-		document.setLoops(loopsMap);
-	}
+    public void initContentLoops(TextDocumentDomainObject document) {
+        List<TextDocLoop> loops = textDocDao.getLoops(document.getRef());
+        Map<Integer, Loop> loopsMap = new HashMap<>();
 
-	public MetaDao getMetaDao() {
-		return metaDao;
-	}
+        for (TextDocLoop loop : loops) {
+            loopsMap.put(loop.getNo(), OrmToApi.toApi(loop));
+        }
 
-	public void setMetaDao(MetaDao metaDao) {
-		this.metaDao = metaDao;
-	}
+        document.setLoops(loopsMap);
+    }
 
-	public TextDocDao getTextDocDao() {
-		return textDocDao;
-	}
+    public MetaDao getMetaDao() {
+        return metaDao;
+    }
 
-	public void setTextDocDao(TextDocDao textDocDao) {
-		this.textDocDao = textDocDao;
-	}
+    public void setMetaDao(MetaDao metaDao) {
+        this.metaDao = metaDao;
+    }
 
-	public DocumentGetter getDocumentGetter() {
-		return documentGetter;
-	}
+    public TextDocDao getTextDocDao() {
+        return textDocDao;
+    }
 
-	public void setDocumentGetter(DocumentGetter documentGetter) {
-		this.documentGetter = documentGetter;
-	}	
+    public void setTextDocDao(TextDocDao textDocDao) {
+        this.textDocDao = textDocDao;
+    }
+
+    public DocumentGetter getDocumentGetter() {
+        return documentGetter;
+    }
+
+    public void setDocumentGetter(DocumentGetter documentGetter) {
+        this.documentGetter = documentGetter;
+    }
 }

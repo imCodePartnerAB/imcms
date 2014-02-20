@@ -22,7 +22,8 @@ public class TextDocLoop extends DocVersionedContent {
 
         private boolean enabled;
 
-        public Entry() {}
+        public Entry() {
+        }
 
         public Entry(int no) {
             this(no, true);

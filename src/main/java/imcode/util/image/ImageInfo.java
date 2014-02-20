@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class ImageInfo implements Serializable {
     private static final long serialVersionUID = 8901634883271727973L;
-    
+
     private Format format;
     private int width;
     private int height;
 
-    
+
     public ImageInfo() {
     }
 
@@ -28,7 +28,7 @@ public class ImageInfo implements Serializable {
         this.height = height;
     }
 
-    
+
     public Format getFormat() {
         return format;
     }

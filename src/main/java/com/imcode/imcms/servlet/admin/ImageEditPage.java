@@ -36,8 +36,10 @@ import imcode.server.document.textdocument.ImageArchiveImageSource;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
+
 import java.net.URLEncoder;
 import java.util.ArrayList;
+
 import org.apache.commons.lang.math.NumberUtils;
 
 public class ImageEditPage extends OkCancelPage {
@@ -76,7 +78,7 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT = "archive_img_alt_text";
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
     static final LocalizedMessage ERROR_MESSAGE__FILE_NOT_IMAGE = new LocalizedMessage("error/servlet/images/file_not_image");
-    public static final Format[] ALLOWED_FORMATS = new Format[] { Format.GIF, Format.JPEG, Format.PNG };
+    public static final Format[] ALLOWED_FORMATS = new Format[]{Format.GIF, Format.JPEG, Format.PNG};
 
     public static final String REQUEST_PARAMETER__SHARE_IMAGE = "share_image";
 
@@ -111,8 +113,8 @@ public class ImageEditPage extends OkCancelPage {
         this.image = image;
         this.label = label;
         this.imageCommand = imageCommand;
-        this.heading = heading ;
-        this.linkable = linkable ;
+        this.heading = heading;
+        this.linkable = linkable;
         this.forcedWidth = forcedWidth;
         this.forcedHeight = forcedHeight;
 
@@ -196,7 +198,7 @@ public class ImageEditPage extends OkCancelPage {
             if (archiveImageId != null) {
                 img.setArchiveImageId(archiveImageId);
             }
-            if(altText != null) {
+            if (altText != null) {
                 img.setAlternateText(altText);
             }
         }
@@ -209,23 +211,23 @@ public class ImageEditPage extends OkCancelPage {
         ImageDomainObject image = new ImageDomainObject();
         try {
             image.setWidth(Integer.parseInt(req.getParameter(REQUEST_PARAMETER__IMAGE_WIDTH)));
-        } catch ( NumberFormatException ignored ) {
+        } catch (NumberFormatException ignored) {
         }
         try {
             image.setHeight(Integer.parseInt(req.getParameter(REQUEST_PARAMETER__IMAGE_HEIGHT)));
-        } catch ( NumberFormatException ignored ) {
+        } catch (NumberFormatException ignored) {
         }
         try {
             image.setBorder(Integer.parseInt(req.getParameter(REQUEST_PARAMETER__IMAGE_BORDER)));
-        } catch ( NumberFormatException ignored ) {
+        } catch (NumberFormatException ignored) {
         }
         try {
             image.setVerticalSpace(Integer.parseInt(req.getParameter(REQUEST_PARAMETER__VERTICAL_SPACE)));
-        } catch ( NumberFormatException ignored ) {
+        } catch (NumberFormatException ignored) {
         }
         try {
             image.setHorizontalSpace(Integer.parseInt(req.getParameter(REQUEST_PARAMETER__HORIZONTAL_SPACE)));
-        } catch ( NumberFormatException ignored ) {
+        } catch (NumberFormatException ignored) {
         }
 
         String imageName = StringUtils.trimToEmpty(req.getParameter(REQUEST_PARAMETER__IMAGE_NAME));
@@ -239,7 +241,7 @@ public class ImageEditPage extends OkCancelPage {
 //        }
 
         String imageUrl = req.getParameter(REQUEST_PARAMETER__IMAGE_URL);
-        if ( null != imageUrl && imageUrl.startsWith(req.getContextPath()) ) {
+        if (null != imageUrl && imageUrl.startsWith(req.getContextPath())) {
             imageUrl = imageUrl.substring(req.getContextPath().length());
         }
 
@@ -288,7 +290,7 @@ public class ImageEditPage extends OkCancelPage {
 
             } else {
                 imageUrl = req.getParameter(REQUEST_PARAMETER__IMAGE_URL + suffix);
-                if ( null != imageUrl && imageUrl.startsWith(req.getContextPath()) ) {
+                if (null != imageUrl && imageUrl.startsWith(req.getContextPath())) {
                     imageUrl = imageUrl.substring(req.getContextPath().length());
                 }
 
@@ -350,7 +352,7 @@ public class ImageEditPage extends OkCancelPage {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
 
-        if ( null != request.getParameter(REQUEST_PARAMETER__DELETE_BUTTON) ) {
+        if (null != request.getParameter(REQUEST_PARAMETER__DELETE_BUTTON)) {
             NullImageSource source = new NullImageSource();
 
             for (TextDocumentImageWrapper wrapper : images) {
@@ -362,16 +364,16 @@ public class ImageEditPage extends OkCancelPage {
             image = images.get(0).getImage();
 
             forward(request, response);
-        } else if ( null != request.getParameter(REQUEST_PARAMETER__PREVIEW_BUTTON) ) {
+        } else if (null != request.getParameter(REQUEST_PARAMETER__PREVIEW_BUTTON)) {
 
             forward(request, response);
-        } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON) ) {
+        } else if (null != request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON)) {
             goToImageBrowser(request, response);
         } else if (request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON) != null) {
             goToImageArchive(request, response);
         } else if (request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE) != null) {
             forward(request, response);
-        } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_CROP_IMAGE) ) {
+        } else if (null != request.getParameter(REQUEST_PARAMETER__GO_TO_CROP_IMAGE)) {
             goToCropImage(request, response);
         }
     }
@@ -459,7 +461,7 @@ public class ImageEditPage extends OkCancelPage {
                 int height = image.getHeight();
 
                 // TODO i18n: refactor
-                for (TextDocumentImageWrapper wrapper: images) {
+                for (TextDocumentImageWrapper wrapper : images) {
                     ImageDomainObject i18nImage = wrapper.getImage();
                     if (shareImages || wrapper.getDocLanguageCode().equals(i18nCode)) {
                         setNewSourceAndClearProps(i18nImage, new ImagesPathRelativePathImageSource(imageUrl));
@@ -486,7 +488,7 @@ public class ImageEditPage extends OkCancelPage {
     }
 
     public ImageDomainObject getImageByLangCode(String langCode) {
-        for (TextDocumentImageWrapper wrapper: images) {
+        for (TextDocumentImageWrapper wrapper : images) {
             ImageDomainObject img = wrapper.getImage();
             if (wrapper.getDocLanguageCode().equals(langCode)) {
                 return img;
@@ -502,7 +504,7 @@ public class ImageEditPage extends OkCancelPage {
         }
 
         ImageDomainObject img = null;
-        for (TextDocumentImageWrapper wrapper: images) {
+        for (TextDocumentImageWrapper wrapper : images) {
             if (wrapper.getDocLanguageCode().equals(langCode)) {
                 img = wrapper.getImage();
                 break;
@@ -528,7 +530,7 @@ public class ImageEditPage extends OkCancelPage {
         }
         imageFormat = (allowedFormat ? imageFormat : Format.PNG);
 
-        for (TextDocumentImageWrapper wrapper: images) {
+        for (TextDocumentImageWrapper wrapper : images) {
             wrapper.getImage().setFormat(imageFormat);
         }
     }
@@ -547,7 +549,7 @@ public class ImageEditPage extends OkCancelPage {
     }
 
     public boolean canAddImageFiles(UserDomainObject user) {
-        return user.canCreateDocumentOfTypeIdFromParent( DocumentTypeDomainObject.FILE_ID, document );
+        return user.canCreateDocumentOfTypeIdFromParent(DocumentTypeDomainObject.FILE_ID, document);
     }
 
     public boolean isLinkable() {

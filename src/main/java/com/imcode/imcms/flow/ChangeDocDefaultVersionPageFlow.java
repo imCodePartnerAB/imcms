@@ -13,45 +13,45 @@ import javax.servlet.http.HttpServletResponse;
 // Experimental
 public class ChangeDocDefaultVersionPageFlow extends DocumentPageFlow {
 
-	private DocumentDomainObject document;
-	
-	private UserDomainObject user;
-	
-	public ChangeDocDefaultVersionPageFlow(DocumentDomainObject document, DispatchCommand returnCommand,
-			SaveDocumentCommand saveDocumentCommand, UserDomainObject user) {
-		super(returnCommand, saveDocumentCommand);
-		
-		this.document = document;
-		this.user = user;
-	}
+    private DocumentDomainObject document;
 
-	@Override
-	public DocumentDomainObject getDocument() {
-		return document;
-	}
+    private UserDomainObject user;
 
-	@Override
-	protected void dispatchFromPage(HttpServletRequest request,
-			HttpServletResponse response, String page) throws IOException,
-			ServletException {
-		// TODO Auto-generated method stub
-		
-	}
+    public ChangeDocDefaultVersionPageFlow(DocumentDomainObject document, DispatchCommand returnCommand,
+                                           SaveDocumentCommand saveDocumentCommand, UserDomainObject user) {
+        super(returnCommand, saveDocumentCommand);
 
-	@Override
-	protected void dispatchOk(HttpServletRequest request,
-			HttpServletResponse response, String page) throws IOException,
-			ServletException {
-		// TODO Auto-generated method stub
-		
-	}
+        this.document = document;
+        this.user = user;
+    }
 
-	@Override
-	protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-	    saveDocument( request );
-    	//dispatchReturn( request, response );
-		request.getRequestDispatcher("/servlet/GetDoc").forward(request, response);
-	}
-	
-	
+    @Override
+    public DocumentDomainObject getDocument() {
+        return document;
+    }
+
+    @Override
+    protected void dispatchFromPage(HttpServletRequest request,
+                                    HttpServletResponse response, String page) throws IOException,
+            ServletException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected void dispatchOk(HttpServletRequest request,
+                              HttpServletResponse response, String page) throws IOException,
+            ServletException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        saveDocument(request);
+        //dispatchReturn( request, response );
+        request.getRequestDispatcher("/servlet/GetDoc").forward(request, response);
+    }
+
+
 }

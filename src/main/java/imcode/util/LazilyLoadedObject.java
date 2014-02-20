@@ -10,18 +10,18 @@ public class LazilyLoadedObject<E extends LazilyLoadedObject.Copyable<E>> implem
     private E object;
 
     public LazilyLoadedObject(Loader<E> loader) {
-        this.loader = loader ;
+        this.loader = loader;
     }
 
     public Object get() {
-        load() ;
+        load();
         return object;
     }
 
     public void load() {
         if (!isLoaded()) {
             E loaded = loader.load();
-            object = loaded.copy() ;
+            object = loaded.copy();
             setLoaded();
         }
     }
@@ -33,26 +33,26 @@ public class LazilyLoadedObject<E extends LazilyLoadedObject.Copyable<E>> implem
     public Object clone() throws CloneNotSupportedException {
         LazilyLoadedObject clone = (LazilyLoadedObject) super.clone();
         if (null != object) {
-            clone.object = object.copy() ;
+            clone.object = object.copy();
         }
-        return clone ;
+        return clone;
     }
 
     public void set(E o) {
         setLoaded();
-        object = o ;
+        object = o;
     }
 
     private void setLoaded() {
-        loader = null ;
+        loader = null;
     }
 
     public interface Loader<L extends Copyable> extends Serializable {
-        L load() ;
+        L load();
     }
 
     public interface Copyable<C extends Copyable> extends Serializable {
-        C copy() ;
+        C copy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

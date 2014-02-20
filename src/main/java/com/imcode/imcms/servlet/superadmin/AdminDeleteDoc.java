@@ -25,7 +25,7 @@ import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 
 public class AdminDeleteDoc extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger( AdminDeleteDoc.class.getName() );
+    private final static Logger log = Logger.getLogger(AdminDeleteDoc.class.getName());
 
     private final static String HTML_TEMPLATE = "AdminDeleteDoc.htm";
 
@@ -40,7 +40,7 @@ public class AdminDeleteDoc extends HttpServlet {
         // Lets verify that this user is an admin
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if ( !user.isSuperAdmin() ) {
+        if (!user.isSuperAdmin()) {
             AdminIpAccess.printNonAdminError(imcref, user, req, res, getClass());
         } else {
             Map vm = new HashMap();
@@ -55,15 +55,15 @@ public class AdminDeleteDoc extends HttpServlet {
 
         // Lets check if the user is an admin, otherwise throw him out.
         ImcmsServices imcref = Imcms.getServices();
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !user.isSuperAdmin() ) {
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+        if (!user.isSuperAdmin()) {
             AdminIpAccess.printNonAdminError(imcref, user, req, res, getClass());
         } else {
-            if ( req.getParameter("DELETE_DOC") != null ) {
+            if (req.getParameter("DELETE_DOC") != null) {
 
                 // Lets get the parameters from html page and validate them
                 Properties params = getParameters(req);
-                if ( !validateParameters(params) ) {
+                if (!validateParameters(params)) {
                     String header = "Error in AdminDeleteDoc.";
                     Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_valid_metaid") + "<br>";
@@ -74,17 +74,17 @@ public class AdminDeleteDoc extends HttpServlet {
 
                 // OK, Lets check that the metaid were gonna delete exists in db
                 int metaId = Integer.parseInt(params.getProperty("DEL_META_ID"));
-                final Object[] parameters = new String[] { ""
-                                                           + metaId };
+                final Object[] parameters = new String[]{""
+                        + metaId};
                 String foundMetaId = (String) imcref.getProcedureExecutor().executeProcedure("FindMetaId", parameters, new ObjectFromFirstRowResultSetHandler(new StringFromRowFactory()));
                 log.debug("FoundMetaId: " + foundMetaId);
 
-                if ( foundMetaId == null ) {
+                if (foundMetaId == null) {
                     String header = "Error in AdminDeleteDoc. ";
                     Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( "
-                                 + metaId
-                                 + " ) <br>";
+                            + metaId
+                            + " ) <br>";
                     log.debug(header + "- metaid could not be found in db");
                     AdminRoles.printErrorMessage(req, res, header, msg);
                     return;
@@ -95,11 +95,11 @@ public class AdminDeleteDoc extends HttpServlet {
                 DocumentDomainObject document = documentMapper.getDocument(metaId);
                 documentMapper.deleteDocument(document, user);
                 imcref.updateMainLog("Document  " + "[" + document.getId() +
-                                     "] ALL deleted by user: [" + user.getFullName() + "]");
+                        "] ALL deleted by user: [" + user.getFullName() + "]");
 
                 doGet(req, res);
                 //this.goAdminUsers(req, res) ;
-            } else if ( req.getParameter("GO_BACK") != null ) {
+            } else if (req.getParameter("GO_BACK") != null) {
                 String url = "AdminManager";
                 res.sendRedirect(url);
             } else {
@@ -130,7 +130,7 @@ public class AdminDeleteDoc extends HttpServlet {
 
     private boolean validateParameters(Properties params) {
 
-        if ( params.values().contains("") ) { 
+        if (params.values().contains("")) {
             return false;
         }
         try {

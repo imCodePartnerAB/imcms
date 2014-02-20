@@ -8,21 +8,25 @@ package com.imcode.imcms.addon.imagearchive.util.treemenu;
  * Time: 15:24:55
  */
 public class BreadCrumbItem {
-	String headline ;
-	String alias ;
-	boolean isActivePage ;
-	public BreadCrumbItem (String headline, String alias, boolean activePage) {
-		this.headline = headline;
-		this.alias = alias;
-		isActivePage = activePage;
-	}
-	public String getHeadline () {
-		return headline;
-	}
-	public String getAlias () {
-		return alias;
-	}
-	public boolean isActivePage () {
-		return isActivePage;
-	}
+    String headline;
+    String alias;
+    boolean isActivePage;
+
+    public BreadCrumbItem(String headline, String alias, boolean activePage) {
+        this.headline = headline;
+        this.alias = alias;
+        isActivePage = activePage;
+    }
+
+    public String getHeadline() {
+        return headline;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public boolean isActivePage() {
+        return isActivePage;
+    }
 }

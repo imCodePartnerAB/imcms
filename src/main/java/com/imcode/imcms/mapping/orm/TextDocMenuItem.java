@@ -6,10 +6,10 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class TextDocMenuItem {
 
-    @Column(name="manual_sort_order")
+    @Column(name = "manual_sort_order")
     private Integer sortKey;
 
-    @Column(name="tree_sort_index")
+    @Column(name = "tree_sort_index")
     private String treeSortIndex;
 
     public Integer getSortKey() {

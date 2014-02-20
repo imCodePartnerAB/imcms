@@ -1,18 +1,19 @@
 package com.imcode.imcms.addon.imagearchive.dto;
 
 import com.imcode.imcms.addon.imagearchive.entity.LibraryRoles;
+
 import java.io.Serializable;
 
 public class LibraryRolesDto implements Serializable {
     private static final long serialVersionUID = -5763624822654311529L;
-    
+
     private int roleId;
     private int permissions;
     private String roleName;
     private boolean canUse;
     private boolean canChange;
 
-    
+
     public LibraryRolesDto() {
     }
 
@@ -40,7 +41,7 @@ public class LibraryRolesDto implements Serializable {
         this.roleName = roleName;
     }
 
-        public boolean isCanUse() {
+    public boolean isCanUse() {
         return canUse;
     }
 
@@ -56,22 +57,22 @@ public class LibraryRolesDto implements Serializable {
         this.canChange = canChange;
     }
 
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final LibraryRolesDto other = (LibraryRolesDto) obj;
         if (this.roleId != other.roleId) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -79,7 +80,7 @@ public class LibraryRolesDto implements Serializable {
     public int hashCode() {
         int hash = 3;
         hash = 53 * hash + this.roleId;
-        
+
         return hash;
     }
 }

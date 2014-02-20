@@ -19,11 +19,11 @@ import org.apache.commons.lang.math.NumberUtils;
 import java.util.ArrayList;
 
 /**
- * Used to edit/insert image in (Xina) editor. 
+ * Used to edit/insert image in (Xina) editor.
  */
 public class EditImage extends HttpServlet {
 
-    private static final String REQUEST_ATTRIBUTE__IMAGE = EditImage.class+".image";
+    private static final String REQUEST_ATTRIBUTE__IMAGE = EditImage.class + ".image";
     private static final String REQUEST_ATTRIBUTE__META_ID = EditImage.class + ".metaId";
     public static final String REQUEST_PARAMETER__RETURN = "return";
     public static final String REQUEST_PARAMETER__GENFILE = "gen_file";
@@ -60,7 +60,7 @@ public class EditImage extends HttpServlet {
     }
 
     public static String linkTo(HttpServletRequest request, String returnPath) {
-        return request.getContextPath()+"/servlet/EditImage?"+REQUEST_PARAMETER__RETURN+"="+returnPath ;
+        return request.getContextPath() + "/servlet/EditImage?" + REQUEST_PARAMETER__RETURN + "=" + returnPath;
     }
 
     public static ImageDomainObject getImage(HttpServletRequest request) {
@@ -72,7 +72,7 @@ public class EditImage extends HttpServlet {
     }
 
     /**
-     * This Command to retrieve image to (Xina) editor.  
+     * This Command to retrieve image to (Xina) editor.
      */
     private static class ImageRetrievalCommand implements Handler<ImageEditResult> {
 

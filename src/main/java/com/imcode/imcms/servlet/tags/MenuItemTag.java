@@ -11,9 +11,9 @@ public class MenuItemTag extends TagSupport {
     }
 
     public int doEndTag() throws JspException {
-        MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class) ;
+        MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class);
         if (menuTag == null) {
-            throw new JspTagException("menuitem must be enclosed in a menuloop or menu.") ;
+            throw new JspTagException("menuitem must be enclosed in a menuloop or menu.");
         }
         menuTag.invalidateMenuItem();
         return EVAL_PAGE;

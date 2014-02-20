@@ -15,6 +15,6 @@ public class CopyableHashMap extends HashMap implements LazilyLoadedObject.Copya
     }
 
     public CopyableHashMap copy() {
-        return new CopyableHashMap(this) ;
+        return new CopyableHashMap(this);
     }
 }

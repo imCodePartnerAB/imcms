@@ -64,13 +64,13 @@ public class GetDoc extends HttpServlet {
 
     /**
      * Renders document.
-     *
+     * <p/>
      * This method is called only from doGet and from AdminDoc.adminDoc if a user does not have rights to edit a document.
      *
      * @see com.imcode.imcms.servlet.admin.AdminDoc#adminDoc
      */
     public static void viewDoc(String documentId, HttpServletRequest req,
-                         HttpServletResponse res) throws IOException, ServletException {
+                               HttpServletResponse res) throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument(documentId);
@@ -85,7 +85,7 @@ public class GetDoc extends HttpServlet {
 
     /**
      * This method is called from viewDoc and from ImcmsFilter.handleDocumentUrl only.
-     *  
+     *
      * @see ImcmsFilter
      */
     public static void viewDoc(DocumentDomainObject document, HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
@@ -108,29 +108,29 @@ public class GetDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession(true);
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser(req);
         DocumentMapper documentMapper = imcref.getDocumentMapper();
 
-        if ( null == document ) {
+        if (null == document) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return ;
-        }                                
+            return;
+        }
 
         Stack<BackDoc.HistoryElement> history = (Stack<BackDoc.HistoryElement>) req.getSession().getAttribute("history");
-        if ( history == null ) {
+        if (history == null) {
             history = new Stack<BackDoc.HistoryElement>();
             req.getSession().setAttribute("history", history);
         }
 
         Integer docId = document.getId();
-        if ( isTextDocument(document) && ( history.empty() || !history.peek().docId.equals(docId))) {
+        if (isTextDocument(document) && (history.empty() || !history.peek().docId.equals(docId))) {
             history.push(new BackDoc.HistoryElement(docId, user.getDocGetterCallback()));
         }
 
         String referrer = req.getHeader(HTTP_HEADER_REFERRER);
         DocumentDomainObject referringDocument = null;
         Perl5Util perlrx = new Perl5Util();
-        if ( null != referrer && perlrx.match("/meta_id=(\\d+)/", referrer) ) {
+        if (null != referrer && perlrx.match("/meta_id=(\\d+)/", referrer)) {
             int referring_meta_id = Integer.parseInt(perlrx.group(1));
             referringDocument = documentMapper.getDocument(referring_meta_id);
         }
@@ -141,14 +141,14 @@ public class GetDoc extends HttpServlet {
         Cookie[] cookies = req.getCookies();
         HashMap cookieHash = new HashMap();
 
-        for ( int i = 0; cookies != null && i < cookies.length; ++i ) {
+        for (int i = 0; cookies != null && i < cookies.length; ++i) {
             Cookie currentCookie = cookies[i];
             cookieHash.put(currentCookie.getName(), currentCookie.getValue());
         }
 
         Revisits revisits = new Revisits();
 
-        if ( cookieHash.get("imVisits") == null ) {
+        if (cookieHash.get("imVisits") == null) {
             Date now = new Date();
             long lNow = now.getTime();
             String sNow = "" + lNow;
@@ -163,14 +163,14 @@ public class GetDoc extends HttpServlet {
         }
         documentRequest.setRevisits(revisits);
 
-        if ( !user.canAccess(document) ) {
+        if (!user.canAccess(document)) {
             if (imcref.getConfig().isSsoEnabled() && user.isDefaultUser()) {
                 KerberosLoginResult loginResult = imcref.getKerberosLoginService().login(req, res);
-                
+
                 if (loginResult.getStatus() == KerberosLoginStatus.SUCCESS) {
                     privateGetDoc(document, res, req);
                 }
-                
+
                 return;
             }
 
@@ -178,25 +178,25 @@ public class GetDoc extends HttpServlet {
             return;
         }
 
-        if ( !document.isPublished() && !user.canEdit(document) ) {
+        if (!document.isPublished() && !user.canEdit(document)) {
             res.setStatus(HttpServletResponse.SC_FORBIDDEN);
             Utility.setDefaultHtmlContentType(res);
             imcref.getAdminTemplate(NO_ACTIVE_DOCUMENT_URL, user, null);
             return;
         }
-        
-        if ( document instanceof UrlDocumentDomainObject ) {
-            String url_ref = ( (UrlDocumentDomainObject) document ).getUrl();
+
+        if (document instanceof UrlDocumentDomainObject) {
+            String url_ref = ((UrlDocumentDomainObject) document).getUrl();
             res.sendRedirect(url_ref);
             // Log to accesslog
             TRACK_LOG.info(documentRequest);
-            return ;
-        } else if ( document instanceof HtmlDocumentDomainObject ) {
+            return;
+        } else if (document instanceof HtmlDocumentDomainObject) {
             Utility.setDefaultHtmlContentType(res);
-            String htmlDocumentData = ((HtmlDocumentDomainObject)document).getHtml();
+            String htmlDocumentData = ((HtmlDocumentDomainObject) document).getHtml();
             TRACK_LOG.info(documentRequest);
             res.getWriter().write(htmlDocumentData);
-        } else if ( document instanceof FileDocumentDomainObject ) {
+        } else if (document instanceof FileDocumentDomainObject) {
             String fileId = req.getParameter(REQUEST_PARAMETER__FILE_ID);
             FileDocumentDomainObject fileDocument = (FileDocumentDomainObject) document;
             FileDocumentDomainObject.FileDocumentFile file = fileDocument.getFileOrDefault(fileId);
@@ -205,9 +205,9 @@ public class GetDoc extends HttpServlet {
             InputStream fr;
             try {
                 fr = new BufferedInputStream(file.getInputStreamSource().getInputStream());
-            } catch ( IOException ex ) {
+            } catch (IOException ex) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND);
-                return ;
+                return;
             }
 
             // Workaround for #11619 - Android device refuses to download a file from build-in browser.
@@ -218,9 +218,9 @@ public class GetDoc extends HttpServlet {
 
             int len = fr.available();
             String content_disposition = (attachment ? "attachment" : "inline")
-                                         + "; filename=\""
-                                         + filename
-                                         + "\"";
+                    + "; filename=\""
+                    + filename
+                    + "\"";
 
             ServletOutputStream out = null;
 
@@ -233,7 +233,7 @@ public class GetDoc extends HttpServlet {
 
                 try {
                     IOUtils.copy(fr, out);
-                } catch ( SocketException ex ) {
+                } catch (SocketException ex) {
                     LOG.debug("Exception occurred", ex);
                 }
             } finally {

@@ -35,18 +35,18 @@ public class ExifUtils {
     /* spec. used: http://www.exif.org/Exif2-2.PDF */
     public static final SimpleDateFormat tiffExifDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
     private static final Log log = LogFactory.getLog(ExifUtils.class);
-    
+
     private static final Pattern HTML_ENTITY_PATTERN = Pattern.compile("&#[0-9a-z]+;");
-    
+
     public static ExifData getExifData(File file) {
         try {
             ImageFormat imageFormat = Sanselan.guessFormat(file);
             if (imageFormat.equals(ImageFormat.IMAGE_FORMAT_UNKNOWN)) {
                 return null;
             }
-            
+
             IImageMetadata metadata = Sanselan.getMetadata(file);
-            
+
             String imageDescription;
             String userComment = null;
             String copyright;
@@ -68,10 +68,10 @@ public class ExifUtils {
             Integer pixelXDimension;
             Integer pixelYDimension;
             Integer ISO;
-            
+
             if (metadata instanceof TiffImageMetadata) {
                 TiffImageMetadata tiffMetadata = (TiffImageMetadata) metadata;
-                
+
                 imageDescription = getTiffTagValue(TiffConstants.TIFF_TAG_IMAGE_DESCRIPTION, tiffMetadata);
                 copyright = getTiffTagValue(TiffConstants.TIFF_TAG_COPYRIGHT, tiffMetadata);
                 artist = getTiffTagValue(TiffConstants.TIFF_TAG_ARTIST, tiffMetadata);
@@ -94,7 +94,7 @@ public class ExifUtils {
                 ISO = getTiffTagValue(TiffConstants.EXIF_TAG_ISO, tiffMetadata);
             } else if (metadata instanceof JpegImageMetadata) {
                 JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
-                
+
                 imageDescription = getExifTagValue(ExifTagConstants.EXIF_TAG_IMAGE_DESCRIPTION, jpegMetadata);
                 userComment = getExifTagValue(ExifTagConstants.EXIF_TAG_USER_COMMENT, jpegMetadata);
                 copyright = getExifTagValue(ExifTagConstants.EXIF_TAG_COPYRIGHT, jpegMetadata);
@@ -119,53 +119,53 @@ public class ExifUtils {
             } else {
                 return null;
             }
-            
+
             ExifData data = new ExifData();
             if (imageDescription != null || userComment != null) {
                 if (imageDescription != null && userComment != null) {
                     imageDescription = imageDescription.trim();
                     userComment = userComment.trim();
-                    
+
                     String value = userComment.length() > imageDescription.length() ? userComment : imageDescription;
                     if (containsHtmlEntities(value)) {
-                    	value = StringEscapeUtils.unescapeHtml(value);
+                        value = StringEscapeUtils.unescapeHtml(value);
                     }
-                    
+
                     data.setDescription(value);
                 } else if (imageDescription != null) {
-                	imageDescription = imageDescription.trim();
-                	
-                	if (containsHtmlEntities(imageDescription)) {
-                		imageDescription = StringEscapeUtils.unescapeHtml(imageDescription);
-                	}
-                	
+                    imageDescription = imageDescription.trim();
+
+                    if (containsHtmlEntities(imageDescription)) {
+                        imageDescription = StringEscapeUtils.unescapeHtml(imageDescription);
+                    }
+
                     data.setDescription(imageDescription);
                 } else {
-                	userComment = userComment.trim();
-                	
-                	if (containsHtmlEntities(userComment)) {
-                		userComment = StringEscapeUtils.unescapeHtml(userComment);
-                	}
-                	
+                    userComment = userComment.trim();
+
+                    if (containsHtmlEntities(userComment)) {
+                        userComment = StringEscapeUtils.unescapeHtml(userComment);
+                    }
+
                     data.setDescription(userComment);
                 }
             }
             if (copyright != null) {
-            	copyright = copyright.trim();
-            	
-            	if (containsHtmlEntities(copyright)) {
-            		copyright = StringEscapeUtils.unescapeHtml(copyright);
-            	}
-            	
+                copyright = copyright.trim();
+
+                if (containsHtmlEntities(copyright)) {
+                    copyright = StringEscapeUtils.unescapeHtml(copyright);
+                }
+
                 data.setCopyright(copyright);
             }
             if (artist != null) {
-            	artist = artist.trim();
-            	
-            	if (containsHtmlEntities(artist)) {
-            		artist = StringEscapeUtils.unescapeHtml(artist);
-            	}
-            	
+                artist = artist.trim();
+
+                if (containsHtmlEntities(artist)) {
+                    artist = StringEscapeUtils.unescapeHtml(artist);
+                }
+
                 data.setArtist(artist);
             }
             if (xResolution != null && xResolution.intValue() > 0) {
@@ -176,20 +176,20 @@ public class ExifUtils {
                 data.setyResolution(xResolution.intValue());
             }
 
-            if(StringUtils.isNotBlank(manufacturer)) {
+            if (StringUtils.isNotBlank(manufacturer)) {
                 manufacturer = manufacturer.trim();
 
-                if(containsHtmlEntities(manufacturer)) {
+                if (containsHtmlEntities(manufacturer)) {
                     manufacturer = StringEscapeUtils.unescapeHtml(manufacturer);
                 }
 
                 data.setManufacturer(manufacturer);
             }
 
-            if(StringUtils.isNotBlank(model)) {
+            if (StringUtils.isNotBlank(model)) {
                 model = model.trim();
 
-                if(containsHtmlEntities(model)) {
+                if (containsHtmlEntities(model)) {
                     model = StringEscapeUtils.unescapeHtml(model);
                 }
 
@@ -202,20 +202,22 @@ public class ExifUtils {
             data.setExposureProgram(exposureProgram);
             data.setfStop(fStop);
 
-            if(dateDigitized != null) {
+            if (dateDigitized != null) {
                 Date tmpDate = null;
-                try{
+                try {
                     tmpDate = tiffExifDateFormat.parse(dateDigitized);
-                }catch(ParseException e){}
-                
+                } catch (ParseException e) {
+                }
+
                 data.setDateDigitized(tmpDate);
             }
 
-            if(dateOriginal != null) {
+            if (dateOriginal != null) {
                 Date tmpDate = null;
-                try{
+                try {
                     tmpDate = tiffExifDateFormat.parse(dateOriginal);
-                }catch(ParseException e){}
+                } catch (ParseException e) {
+                }
 
                 data.setDateOriginal(tmpDate);
             }
@@ -226,12 +228,12 @@ public class ExifUtils {
             data.setPixelXDimension(pixelXDimension);
             data.setPixelYDimension(pixelYDimension);
             data.setISO(ISO);
-            
+
             return data;
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return null;
     }
 
@@ -239,110 +241,110 @@ public class ExifUtils {
     /* methods for getting human-readable exif values */
     // for tiff
     public static String getTiffCompressionName(Integer compressionValue) {
-        if(compressionValue == null) {
+        if (compressionValue == null) {
             return null;
         }
 
         String compressionName = null;
         switch (compressionValue) {
-           case TiffConstants.COMPRESSION_VALUE_CCITT_1D:
-               compressionName = "CCITT 1D";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_T4_GROUP_3_FAX:
-               compressionName = "T4 GROUP 3 FAX";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_T6_GROUP_4_FAX:
-               compressionName = "T6 GROUP 4 FAX";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_LZW:
-               compressionName = "LZW";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_JPEG_OLD_STYLE:
-               compressionName = "JPEG OLD STYLE";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_JPEG:
-               compressionName = "JPEG";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_ADOBE_DEFLATE:
-               compressionName = "ADOBE DEFLATE";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_JBIG_B_AND_W:
-               compressionName = "JBIG B AND W";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_JBIG_COLOR:
-               compressionName = "JBIG COLOR";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_NEXT:
-               compressionName = "NEXT";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_EPSON_ERF_COMPRESSED:
-               compressionName = "EPSON ERF COMPRESSED";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_CCIRLEW:
-               compressionName = "CCIRLEW";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_PACK_BITS:
-               compressionName = "PACK BITS";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_IT8CTPAD:
-               compressionName = "IT8CTPAD";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_IT8LW:
-               compressionName = "IT8LW";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_IT8MP:
-               compressionName = "IT8MP";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_IT8BL:
-               compressionName = "IT8BL";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_PIXAR_FILM:
-               compressionName = "PIXAR FILM";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_PIXAR_LOG:
-               compressionName = "PIXAR LOG";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_DEFLATE:
-               compressionName = "DEFLATE";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_DCS:
-               compressionName = "DCS";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_JBIG:
-               compressionName = "JBIG";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_SGILOG:
-               compressionName = "SGILOG";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_SGILOG_24:
-               compressionName = "SGILOG 24";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_JPEG_2000:
-               compressionName = "JPEG 2000";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_NIKON_NEF_COMPRESSED:
-               compressionName = "NIKON NEF COMPRESSED";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_KODAK_DCR_COMPRESSED:
-               compressionName = "KODAK DCR COMPRESSED";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_PENTAX_PEF_COMPRESSED:
-               compressionName = "PENTAX PEF COMPRESSED";
-               break;
-           case TiffConstants.COMPRESSION_VALUE_THUNDERSCAN:
-               compressionName = "THUNDERSCAN";
-               break;
+            case TiffConstants.COMPRESSION_VALUE_CCITT_1D:
+                compressionName = "CCITT 1D";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_T4_GROUP_3_FAX:
+                compressionName = "T4 GROUP 3 FAX";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_T6_GROUP_4_FAX:
+                compressionName = "T6 GROUP 4 FAX";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_LZW:
+                compressionName = "LZW";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_JPEG_OLD_STYLE:
+                compressionName = "JPEG OLD STYLE";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_JPEG:
+                compressionName = "JPEG";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_ADOBE_DEFLATE:
+                compressionName = "ADOBE DEFLATE";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_JBIG_B_AND_W:
+                compressionName = "JBIG B AND W";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_JBIG_COLOR:
+                compressionName = "JBIG COLOR";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_NEXT:
+                compressionName = "NEXT";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_EPSON_ERF_COMPRESSED:
+                compressionName = "EPSON ERF COMPRESSED";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_CCIRLEW:
+                compressionName = "CCIRLEW";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_PACK_BITS:
+                compressionName = "PACK BITS";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_IT8CTPAD:
+                compressionName = "IT8CTPAD";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_IT8LW:
+                compressionName = "IT8LW";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_IT8MP:
+                compressionName = "IT8MP";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_IT8BL:
+                compressionName = "IT8BL";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_PIXAR_FILM:
+                compressionName = "PIXAR FILM";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_PIXAR_LOG:
+                compressionName = "PIXAR LOG";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_DEFLATE:
+                compressionName = "DEFLATE";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_DCS:
+                compressionName = "DCS";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_JBIG:
+                compressionName = "JBIG";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_SGILOG:
+                compressionName = "SGILOG";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_SGILOG_24:
+                compressionName = "SGILOG 24";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_JPEG_2000:
+                compressionName = "JPEG 2000";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_NIKON_NEF_COMPRESSED:
+                compressionName = "NIKON NEF COMPRESSED";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_KODAK_DCR_COMPRESSED:
+                compressionName = "KODAK DCR COMPRESSED";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_PENTAX_PEF_COMPRESSED:
+                compressionName = "PENTAX PEF COMPRESSED";
+                break;
+            case TiffConstants.COMPRESSION_VALUE_THUNDERSCAN:
+                compressionName = "THUNDERSCAN";
+                break;
         }
 
         return compressionName;
-   }
+    }
 
     public static Flash getTiffFlash(Integer flashValue) {
         Flash flash;
 
-        if(null == flashValue) {
+        if (null == flashValue) {
             flash = Flash.NOT_FIRED;
-        } else if(flashValue == TiffConstants.FLASH_VALUE_FIRED
+        } else if (flashValue == TiffConstants.FLASH_VALUE_FIRED
                 || flashValue == TiffConstants.FLASH_VALUE_FIRED_RETURN_NOT_DETECTED
                 || flashValue == TiffConstants.FLASH_VALUE_FIRED_RETURN_DETECTED
                 || flashValue == TiffConstants.FLASH_VALUE_ON
@@ -352,7 +354,7 @@ public class ExifUtils {
                 || flashValue == TiffConstants.FLASH_VALUE_AUTO_FIRED_RETURN_NOT_DETECTED
                 || flashValue == TiffConstants.FLASH_VALUE_AUTO_FIRED_RETURN_DETECTED) {
             flash = Flash.FIRED;
-        } else if(flashValue == TiffConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION
+        } else if (flashValue == TiffConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION
                 || flashValue == TiffConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION_RETURN_DETECTED
                 || flashValue == TiffConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION_RETURN_NOT_DETECTED
                 || flashValue == TiffConstants.FLASH_VALUE_AUTO_FIRED_RED_EYE_REDUCTION
@@ -370,12 +372,12 @@ public class ExifUtils {
     }
 
     public static String getTiffExposureProgram(Integer exposureProgramValue) {
-        if(exposureProgramValue == null || exposureProgramValue == 0) {
+        if (exposureProgramValue == null || exposureProgramValue == 0) {
             // not defined or unknown
             return null;
         }
 
-        switch(exposureProgramValue) {
+        switch (exposureProgramValue) {
             case TiffConstants.EXPOSURE_PROGRAM_VALUE_PROGRAM_AE:
                 return "Program AE";
             case TiffConstants.EXPOSURE_PROGRAM_VALUE_APERTURE_PRIORITY_AE:
@@ -397,11 +399,11 @@ public class ExifUtils {
     }
 
     public static String getTiffColorSpace(Integer colorSpaceValue) {
-        if(colorSpaceValue == null) {
+        if (colorSpaceValue == null) {
             return null;
         }
 
-        switch(colorSpaceValue) {
+        switch (colorSpaceValue) {
             case TiffConstants.COLOR_SPACE_VALUE_ADOBE_RGB:
                 return "Adobe RGB";
             default:
@@ -411,111 +413,111 @@ public class ExifUtils {
 
     // for jpeg
     public static String getExifCompressionName(Integer compressionValue) {
-        if(compressionValue == null) {
+        if (compressionValue == null) {
             return null;
         }
 
         String compressionName = null;
         switch (compressionValue) {
-           case ExifTagConstants.COMPRESSION_VALUE_CCITT_1D:
-               compressionName = "CCITT 1D";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_T4_GROUP_3_FAX:
-               compressionName = "T4 GROUP 3 FAX";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_T6_GROUP_4_FAX:
-               compressionName = "T6 GROUP 4 FAX";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_LZW:
-               compressionName = "LZW";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_JPEG_OLD_STYLE:
-               compressionName = "JPEG OLD STYLE";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_JPEG:
-               compressionName = "JPEG";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_ADOBE_DEFLATE:
-               compressionName = "ADOBE DEFLATE";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_JBIG_B_AND_W:
-               compressionName = "JBIG B AND W";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_JBIG_COLOR:
-               compressionName = "JBIG COLOR";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_NEXT:
-               compressionName = "NEXT";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_EPSON_ERF_COMPRESSED:
-               compressionName = "EPSON ERF COMPRESSED";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_CCIRLEW:
-               compressionName = "CCIRLEW";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_PACK_BITS:
-               compressionName = "PACK BITS";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_IT8CTPAD:
-               compressionName = "IT8CTPAD";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_IT8LW:
-               compressionName = "IT8LW";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_IT8MP:
-               compressionName = "IT8MP";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_IT8BL:
-               compressionName = "IT8BL";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_PIXAR_FILM:
-               compressionName = "PIXAR FILM";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_PIXAR_LOG:
-               compressionName = "PIXAR LOG";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_DEFLATE:
-               compressionName = "DEFLATE";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_DCS:
-               compressionName = "DCS";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_JBIG:
-               compressionName = "JBIG";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_SGILOG:
-               compressionName = "SGILOG";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_SGILOG_24:
-               compressionName = "SGILOG 24";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_JPEG_2000:
-               compressionName = "JPEG 2000";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_NIKON_NEF_COMPRESSED:
-               compressionName = "NIKON NEF COMPRESSED";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_KODAK_DCR_COMPRESSED:
-               compressionName = "KODAK DCR COMPRESSED";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_PENTAX_PEF_COMPRESSED:
-               compressionName = "PENTAX PEF COMPRESSED";
-               break;
-           case ExifTagConstants.COMPRESSION_VALUE_THUNDERSCAN:
-               compressionName = "THUNDERSCAN";
-               break;
+            case ExifTagConstants.COMPRESSION_VALUE_CCITT_1D:
+                compressionName = "CCITT 1D";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_T4_GROUP_3_FAX:
+                compressionName = "T4 GROUP 3 FAX";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_T6_GROUP_4_FAX:
+                compressionName = "T6 GROUP 4 FAX";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_LZW:
+                compressionName = "LZW";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_JPEG_OLD_STYLE:
+                compressionName = "JPEG OLD STYLE";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_JPEG:
+                compressionName = "JPEG";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_ADOBE_DEFLATE:
+                compressionName = "ADOBE DEFLATE";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_JBIG_B_AND_W:
+                compressionName = "JBIG B AND W";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_JBIG_COLOR:
+                compressionName = "JBIG COLOR";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_NEXT:
+                compressionName = "NEXT";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_EPSON_ERF_COMPRESSED:
+                compressionName = "EPSON ERF COMPRESSED";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_CCIRLEW:
+                compressionName = "CCIRLEW";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_PACK_BITS:
+                compressionName = "PACK BITS";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_IT8CTPAD:
+                compressionName = "IT8CTPAD";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_IT8LW:
+                compressionName = "IT8LW";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_IT8MP:
+                compressionName = "IT8MP";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_IT8BL:
+                compressionName = "IT8BL";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_PIXAR_FILM:
+                compressionName = "PIXAR FILM";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_PIXAR_LOG:
+                compressionName = "PIXAR LOG";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_DEFLATE:
+                compressionName = "DEFLATE";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_DCS:
+                compressionName = "DCS";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_JBIG:
+                compressionName = "JBIG";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_SGILOG:
+                compressionName = "SGILOG";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_SGILOG_24:
+                compressionName = "SGILOG 24";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_JPEG_2000:
+                compressionName = "JPEG 2000";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_NIKON_NEF_COMPRESSED:
+                compressionName = "NIKON NEF COMPRESSED";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_KODAK_DCR_COMPRESSED:
+                compressionName = "KODAK DCR COMPRESSED";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_PENTAX_PEF_COMPRESSED:
+                compressionName = "PENTAX PEF COMPRESSED";
+                break;
+            case ExifTagConstants.COMPRESSION_VALUE_THUNDERSCAN:
+                compressionName = "THUNDERSCAN";
+                break;
         }
 
         return compressionName;
-   }
+    }
 
     public static Flash getExifFlash(Integer flashValue) {
         Flash flash;
 
         /* strobe counts as flash here, can differenciate if needed. */
-        if(null == flashValue) {
+        if (null == flashValue) {
             flash = Flash.NOT_FIRED;
-        } else if(flashValue == ExifTagConstants.FLASH_VALUE_FIRED
+        } else if (flashValue == ExifTagConstants.FLASH_VALUE_FIRED
                 || flashValue == ExifTagConstants.FLASH_VALUE_FIRED_RETURN_NOT_DETECTED
                 || flashValue == ExifTagConstants.FLASH_VALUE_FIRED_RETURN_DETECTED
                 || flashValue == ExifTagConstants.FLASH_VALUE_ON
@@ -525,7 +527,7 @@ public class ExifUtils {
                 || flashValue == ExifTagConstants.FLASH_VALUE_AUTO_FIRED_RETURN_NOT_DETECTED
                 || flashValue == ExifTagConstants.FLASH_VALUE_AUTO_FIRED_RETURN_DETECTED) {
             flash = Flash.FIRED;
-        } else if(flashValue == ExifTagConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION
+        } else if (flashValue == ExifTagConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION
                 || flashValue == ExifTagConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION_RETURN_DETECTED
                 || flashValue == ExifTagConstants.FLASH_VALUE_FIRED_RED_EYE_REDUCTION_RETURN_NOT_DETECTED
                 || flashValue == ExifTagConstants.FLASH_VALUE_AUTO_FIRED_RED_EYE_REDUCTION
@@ -543,12 +545,12 @@ public class ExifUtils {
     }
 
     public static String getExifExposureProgram(Integer exposureProgramValue) {
-        if(exposureProgramValue == null || exposureProgramValue == 0) {
+        if (exposureProgramValue == null || exposureProgramValue == 0) {
             // not defined or unknown
             return null;
         }
 
-        switch(exposureProgramValue) {
+        switch (exposureProgramValue) {
             case ExifTagConstants.EXPOSURE_PROGRAM_VALUE_PROGRAM_AE:
                 return "Normal Program";
             case ExifTagConstants.EXPOSURE_PROGRAM_VALUE_APERTURE_PRIORITY_AE:
@@ -570,11 +572,11 @@ public class ExifUtils {
     }
 
     public static String getExifColorSpace(Integer colorSpaceValue) {
-        if(colorSpaceValue == null) {
+        if (colorSpaceValue == null) {
             return null;
         }
 
-        switch(colorSpaceValue) {
+        switch (colorSpaceValue) {
             case ExifTagConstants.COLOR_SPACE_VALUE_ADOBE_RGB:
                 return "Adobe RGB";
             default:
@@ -582,57 +584,57 @@ public class ExifUtils {
         }
     }
 
-    
+
     public static boolean writeExifData(File input, ExifData data, File output) {
         try {
             TiffOutputSet outputSet = null;
-            
+
             IImageMetadata metadata = Sanselan.getMetadata(input);
             if (metadata != null && (metadata instanceof JpegImageMetadata)) {
                 JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
-                
+
                 TiffImageMetadata exif = jpegMetadata.getExif();
                 if (exif != null) {
                     outputSet = exif.getOutputSet();
                 }
             }
-            
+
             if (outputSet == null) {
                 outputSet = new TiffOutputSet();
             }
-            
+
             removeTagIfExists(ExifTagConstants.EXIF_TAG_IMAGE_DESCRIPTION, outputSet);
             removeTagIfExists(ExifTagConstants.EXIF_TAG_USER_COMMENT, outputSet);
             removeTagIfExists(ExifTagConstants.EXIF_TAG_ARTIST, outputSet);
             removeTagIfExists(ExifTagConstants.EXIF_TAG_COPYRIGHT, outputSet);
-            
+
             String description = data.getDescription();
             if (description != null) {
                 addAsciiTag(ExifTagConstants.EXIF_TAG_IMAGE_DESCRIPTION, description, outputSet);
                 addAsciiTag(ExifTagConstants.EXIF_TAG_USER_COMMENT, description, outputSet);
             }
-            
+
             String artist = data.getArtist();
             if (artist != null) {
                 addAsciiTag(ExifTagConstants.EXIF_TAG_ARTIST, artist, outputSet);
             }
-            
+
             String copyright = data.getCopyright();
             if (copyright != null) {
                 addAsciiTag(ExifTagConstants.EXIF_TAG_COPYRIGHT, copyright, outputSet);
             }
-            
+
             OutputStream outputStream = null;
             try {
                 outputStream = new BufferedOutputStream(new FileOutputStream(output));
-                
+
                 new ExifRewriter().updateExifMetadataLossless(input, outputStream, outputSet);
                 outputStream.flush();
-                
+
                 return true;
             } catch (Exception ex) {
                 log.warn(ex.getMessage(), ex);
-                
+
                 return false;
             } finally {
                 IOUtils.closeQuietly(outputStream);
@@ -640,10 +642,10 @@ public class ExifUtils {
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return false;
     }
-    
+
     private static void addAsciiTag(TagInfo tagInfo, String tagValue, TiffOutputSet outputSet) {
         try {
             FieldType fieldType = TiffFieldTypeConstants.FIELD_TYPE_ASCII;
@@ -656,13 +658,13 @@ public class ExifUtils {
             log.warn(ex.getMessage(), ex);
         }
     }
-    
+
     private static void removeTagIfExists(TagInfo tagInfo, TiffOutputSet outputSet) {
         if (outputSet.findField(tagInfo) != null) {
             outputSet.removeField(tagInfo);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private static <T> T getTiffTagValue(TagInfo tagInfo, TiffImageMetadata metadata) {
         try {
@@ -673,10 +675,10 @@ public class ExifUtils {
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return null;
     }
-    
+
     @SuppressWarnings("unchecked")
     private static <T> T getExifTagValue(TagInfo tagInfo, JpegImageMetadata metadata) {
         try {
@@ -687,14 +689,14 @@ public class ExifUtils {
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return null;
     }
-    
+
     private static boolean containsHtmlEntities(String value) {
-    	return value != null && HTML_ENTITY_PATTERN.matcher(value).find();
+        return value != null && HTML_ENTITY_PATTERN.matcher(value).find();
     }
-    
+
     private ExifUtils() {
     }
 }

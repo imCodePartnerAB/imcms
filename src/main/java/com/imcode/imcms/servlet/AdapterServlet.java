@@ -19,10 +19,10 @@ public class AdapterServlet extends HttpServlet {
 
         if (uri.endsWith("/servlet/ChangeMenu")) {
             String url = String.format("%s/docadmin/menu?docId=%s&menuNo=%s&%s",
-                                    request.getContextPath(),
-                                    request.getParameter("documentId"),
-                                    request.getParameter("menuIndex"),
-                                    request.getQueryString());
+                    request.getContextPath(),
+                    request.getParameter("documentId"),
+                    request.getParameter("menuIndex"),
+                    request.getQueryString());
 
             response.sendRedirect(url);
         } else {

@@ -22,9 +22,9 @@ public class MenuItemItem extends DublinCoreItem {
 
     public Map<NameSpace, Map<String, String>> getNameSpaceStrings() {
         Map<NameSpace, Map<String, String>> nameSpaces = super.getNameSpaceStrings();
-        nameSpaces.put(IMCMS_MENU_NAME_SPACE, ArrayUtils.toMap(new Object[][] {
-                { "target", menuItem.getDocument().getTarget() },
-                { "treeKey", menuItem.getTreeKey().toString() }
+        nameSpaces.put(IMCMS_MENU_NAME_SPACE, ArrayUtils.toMap(new Object[][]{
+                {"target", menuItem.getDocument().getTarget()},
+                {"treeKey", menuItem.getTreeKey().toString()}
         }));
         return nameSpaces;
     }

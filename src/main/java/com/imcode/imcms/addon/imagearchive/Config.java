@@ -14,15 +14,15 @@ public class Config {
     private String usersLibraryFolder;
     private File[] oldLibraryPaths;
     private BidiMap languages;
-    
+
     private long maxImageUploadSize;
     private long maxZipUploadSize;
-    
-    
+
+
     public Config() {
     }
 
-    
+
     public File getStoragePath() {
         return FileUtility.getFileFromWebappRelativePath(storagePath.toString());
     }

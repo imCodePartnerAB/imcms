@@ -8,7 +8,7 @@ public class IntervalSchedule {
     private long scheduleInterval;
     private long scheduledTime;
 
-    public IntervalSchedule( long scheduleInterval ) {
+    public IntervalSchedule(long scheduleInterval) {
         this.scheduleInterval = scheduleInterval;
         this.scheduledTime = scheduleInterval;
         this.stopWatch = new StopWatch();
@@ -16,7 +16,7 @@ public class IntervalSchedule {
     }
 
     public boolean isTime() {
-        if ( stopWatch.getTime() < scheduledTime ) {
+        if (stopWatch.getTime() < scheduledTime) {
             return false;
         }
         scheduledTime += scheduleInterval;

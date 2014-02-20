@@ -184,7 +184,7 @@ public class DocumentPermissionSetMapper {
 
             permisionSetEx.add(setEx);
         }
-    	
+
     	/*
         String table = getExtendedPermissionsTable(forNewDocuments);        
         String sqlInsertCreatableDocumentTypeId = "INSERT INTO " + table + " VALUES(?,?,"

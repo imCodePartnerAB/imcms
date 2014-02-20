@@ -28,37 +28,37 @@ public class ThumbnailController {
 
     @RequestMapping("/archive/thumb")
     public String thumbHandler(
-            @RequestParam(required=false) Long id, 
-            @RequestParam(required=false) String size, 
-            @RequestParam(required=false) Boolean tmp, 
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String size,
+            @RequestParam(required = false) Boolean tmp,
             HttpServletResponse response) {
         size = StringUtils.trimToNull(size);
         ThumbSize thumbSize;
-        
+
         if (id == null || size == null || (thumbSize = ThumbSize.findByName(size)) == null) {
             Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
-            
+
             return null;
         }
-        
+
         tmp = (tmp != null && tmp.booleanValue());
-        
+
         InputStream inputStream = null;
         try {
             Object[] pair = facade.getFileService().getImageThumbnail(id, thumbSize, tmp);
             if (pair == null) {
                 Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
-                
+
                 return null;
             }
-            
+
             long length = (Long) pair[0];
             inputStream = (InputStream) pair[1];
-            
+
             response.setContentType("image/jpeg");
             response.setContentLength((int) length);
             response.setHeader("Content-Disposition", String.format("inline; file=thumb_small_%d.jpg", id));
-            
+
             OutputStream output = null;
             try {
                 output = new BufferedOutputStream(response.getOutputStream());
@@ -71,33 +71,33 @@ public class ThumbnailController {
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
-        
+
         return null;
     }
-    
+
     @RequestMapping("/archive/preview")
     public String previewHandler(
-            @RequestParam(required=false) Long id, 
-            @RequestParam(required=false) Boolean tmp, 
-            HttpServletResponse response, 
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) Boolean tmp,
+            HttpServletResponse response,
             Map<String, Object> model) {
         if (id == null) {
             Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
-            
+
             return null;
         }
-        
+
         tmp = (tmp != null ? tmp : false);
-        
+
         model.put("imageId", id);
         model.put("temporary", tmp);
-        
+
         return "image_archive/pages/preview";
     }
 
     @RequestMapping("/archive/detailed_thumb")
     public String detailedThumbnail(
-            @RequestParam(required=true) Long id,
+            @RequestParam(required = true) Long id,
             HttpServletResponse response,
             HttpServletRequest request,
             Map<String, Object> model
@@ -116,36 +116,36 @@ public class ThumbnailController {
 
         return "image_archive/pages/detailed_thumb";
     }
-    
+
     @RequestMapping("/archive/preview_img")
     public String previewImageHandler(
-            @RequestParam(required=false) Long id, 
-            @RequestParam(required=false) Boolean tmp, 
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) Boolean tmp,
             HttpServletResponse response) {
         if (id == null) {
             Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
-            
+
             return null;
         }
-        
+
         tmp = (tmp != null ? tmp : false);
-        
+
         InputStream inputStream = null;
         try {
             Object[] pair = facade.getFileService().getImageFull(id, tmp);
             if (pair == null) {
                 Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
-                
+
                 return null;
             }
-            
+
             long length = (Long) pair[0];
             inputStream = (InputStream) pair[1];
-            
+
             response.setContentType("image/jpeg");
             response.setContentLength((int) length);
             response.setHeader("Content-Disposition", String.format("inline; file=preview_%d.jpg", id));
-            
+
             OutputStream output = null;
             try {
                 output = new BufferedOutputStream(response.getOutputStream());
@@ -158,7 +158,7 @@ public class ThumbnailController {
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
-        
+
         return null;
     }
 }

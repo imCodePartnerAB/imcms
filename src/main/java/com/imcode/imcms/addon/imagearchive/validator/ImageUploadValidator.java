@@ -15,19 +15,19 @@ import imcode.util.image.ImageOp;
 
 public class ImageUploadValidator implements Validator {
     private static final Log log = LogFactory.getLog(ImageUploadValidator.class);
-    
+
     private Facade facade;
     private File tempFile;
     private ImageInfo imageInfo;
     private String imageName;
     private boolean zipFile;
 
-    
+
     public ImageUploadValidator(Facade facade) {
         this.facade = facade;
     }
-    
-    
+
+
     @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return CommonsMultipartFile.class.isAssignableFrom(clazz);
@@ -74,7 +74,7 @@ public class ImageUploadValidator implements Validator {
 
             if (sizeError) {
                 size /= (1024.0 * 1024.0);
-                errors.rejectValue("file", "archive.addImage.sizeError", new Object[] {size}, "???");
+                errors.rejectValue("file", "archive.addImage.sizeError", new Object[]{size}, "???");
 
                 return;
             }
@@ -93,16 +93,16 @@ public class ImageUploadValidator implements Validator {
             file.getFileItem().delete();
         }
     }
-    
-    
+
+
     public File getTempFile() {
         return tempFile;
     }
-    
+
     public ImageInfo getImageInfo() {
         return imageInfo;
     }
-    
+
     public String getImageName() {
         return imageName;
     }

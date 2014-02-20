@@ -13,32 +13,32 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="archive_image_categories")
+@Table(name = "archive_image_categories")
 @IdClass(ImageCategoriesPK.class)
 public class ImageCategories implements Serializable {
     private static final long serialVersionUID = -5295771796587859459L;
-    
+
     @Id
-    @Column(name="image_id", nullable=false)
+    @Column(name = "image_id", nullable = false)
     private long imageId;
-    
+
     @ManyToOne
-    @JoinColumn(name="image_id", referencedColumnName="id", insertable=false, updatable=false)
+    @JoinColumn(name = "image_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Images image;
-    
+
     @Id
-    @Column(name="category_id", nullable=false)
+    @Column(name = "category_id", nullable = false)
     private int categoryId;
-    
+
     @ManyToOne
-    @JoinColumn(name="category_id", referencedColumnName="category_id", insertable=false, updatable=false)
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id", insertable = false, updatable = false)
     private Categories category;
-    
-    @Column(name="created_dt", nullable=false)
+
+    @Column(name = "created_dt", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt = new Date();
-    
-    
+
+
     public ImageCategories() {
     }
 
@@ -47,7 +47,7 @@ public class ImageCategories implements Serializable {
         this.categoryId = categoryId;
     }
 
-    
+
     public Categories getCategory() {
         return category;
     }
@@ -88,26 +88,26 @@ public class ImageCategories implements Serializable {
         this.createdDt = createdDt;
     }
 
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final ImageCategories other = (ImageCategories) obj;
         if (this.imageId != other.imageId) {
             return false;
         }
-        
+
         if (this.categoryId != other.categoryId) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -116,13 +116,13 @@ public class ImageCategories implements Serializable {
         int hash = 3;
         hash = 37 * hash + (int) (this.imageId ^ (this.imageId >>> 32));
         hash = 37 * hash + this.categoryId;
-        
+
         return hash;
     }
 
     @Override
     public String toString() {
-        return String.format("com.imcode.imcms.addon.imagearchive.entity.ImageCategories[imageId: %d, categoryId: %d]", 
+        return String.format("com.imcode.imcms.addon.imagearchive.entity.ImageCategories[imageId: %d, categoryId: %d]",
                 imageId, categoryId);
     }
 }

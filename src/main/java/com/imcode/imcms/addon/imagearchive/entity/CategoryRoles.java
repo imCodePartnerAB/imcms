@@ -13,28 +13,28 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="archive_category_roles")
+@Table(name = "archive_category_roles")
 @IdClass(CategoryRolesPK.class)
 public class CategoryRoles implements Serializable {
     private static final long serialVersionUID = 3157190579405342495L;
-    
+
     @Id
-    @Column(name="category_id", nullable=false)
+    @Column(name = "category_id", nullable = false)
     private int categoryId;
-    
+
     @ManyToOne
-    @JoinColumn(name="category_id", referencedColumnName="category_id", insertable=false, updatable=false)
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id", insertable = false, updatable = false)
     private Categories category;
-    
+
     @Id
-    @Column(name="role_id", nullable=false)
+    @Column(name = "role_id", nullable = false)
     private int roleId;
-    
+
     @ManyToOne
-    @JoinColumn(name="role_id", referencedColumnName="role_id", insertable=false, updatable=false)
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id", insertable = false, updatable = false)
     private Roles role;
-    
-    @Column(name="created_dt", nullable=false)
+
+    @Column(name = "created_dt", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt = new Date();
 
@@ -43,7 +43,7 @@ public class CategoryRoles implements Serializable {
 
     @Column(name = "canChange", nullable = false)
     private Boolean canChange;
-    
+
     public CategoryRoles() {
     }
 
@@ -54,7 +54,7 @@ public class CategoryRoles implements Serializable {
         this.canChange = canChange;
     }
 
-    
+
     public Categories getCategory() {
         return category;
     }
@@ -110,27 +110,27 @@ public class CategoryRoles implements Serializable {
     public void setcanChange(Boolean canChange) {
         this.canChange = canChange;
     }
-    
-    
+
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final CategoryRoles other = (CategoryRoles) obj;
         if (this.categoryId != other.categoryId) {
             return false;
         }
-        
+
         if (this.roleId != other.roleId) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -139,13 +139,13 @@ public class CategoryRoles implements Serializable {
         int hash = 7;
         hash = 43 * hash + this.categoryId;
         hash = 43 * hash + this.roleId;
-        
+
         return hash;
     }
 
     @Override
     public String toString() {
-        return String.format("com.imcode.imcms.addon.imagearchive.entity.CategoryRoles[categoryId: %d, roleId: %d]", 
+        return String.format("com.imcode.imcms.addon.imagearchive.entity.CategoryRoles[categoryId: %d, roleId: %d]",
                 categoryId, roleId);
     }
 }

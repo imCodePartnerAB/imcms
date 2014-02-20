@@ -1,6 +1,7 @@
 package imcode.server.document.index;
 
 import java.util.Arrays;
+
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanClause;
@@ -11,12 +12,12 @@ public class DefaultQueryParser implements QueryParser {
 
     public Query parse(String queryString) throws ParseException {
         String[] fields = new String[]{
-            DocumentIndex.FIELD__META_ID,
-            DocumentIndex.FIELD__META_HEADLINE,
-            DocumentIndex.FIELD__META_TEXT,
-            DocumentIndex.FIELD__TEXT,
-            DocumentIndex.FIELD__KEYWORD,
-            DocumentIndex.FIELD__ALIAS
+                DocumentIndex.FIELD__META_ID,
+                DocumentIndex.FIELD__META_HEADLINE,
+                DocumentIndex.FIELD__META_TEXT,
+                DocumentIndex.FIELD__TEXT,
+                DocumentIndex.FIELD__KEYWORD,
+                DocumentIndex.FIELD__ALIAS
         };
 
         BooleanClause.Occur[] flags = new BooleanClause.Occur[fields.length];

@@ -6,10 +6,10 @@ public class DirectDocumentReference extends DocumentReference {
 
     public DirectDocumentReference(DocumentDomainObject document) {
         super(document.getId());
-        this.document = document ;
+        this.document = document;
     }
 
     public DocumentDomainObject getDocument() {
-        return document ;
+        return document;
     }
 }

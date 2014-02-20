@@ -3,15 +3,15 @@ package com.imcode.imcms.servlet.beans;
 import imcode.server.document.DocumentDomainObject;
 
 public class AdminManagerSubReportListItemBean {
-    DocumentDomainObject document ;
-    int index ;
-    boolean expanded ;
+    DocumentDomainObject document;
+    int index;
+    boolean expanded;
 
     public DocumentDomainObject getDocument() {
         return document;
     }
 
-    public void setDocument( DocumentDomainObject document ) {
+    public void setDocument(DocumentDomainObject document) {
         this.document = document;
     }
 
@@ -19,7 +19,7 @@ public class AdminManagerSubReportListItemBean {
         return expanded;
     }
 
-    public void setExpanded( boolean expanded ) {
+    public void setExpanded(boolean expanded) {
         this.expanded = expanded;
     }
 
@@ -27,7 +27,7 @@ public class AdminManagerSubReportListItemBean {
         return index;
     }
 
-    public void setIndex( int index ) {
+    public void setIndex(int index) {
         this.index = index;
     }
 }

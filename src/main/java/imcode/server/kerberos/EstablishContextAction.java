@@ -1,6 +1,7 @@
 package imcode.server.kerberos;
 
 import java.security.PrivilegedAction;
+
 import org.apache.log4j.Logger;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
@@ -18,7 +19,7 @@ class EstablishContextAction implements PrivilegedAction<EstablishContextResult>
         this.requestToken = requestToken;
     }
 
-    
+
     public EstablishContextResult run() {
         GSSContext context = null;
 
@@ -27,7 +28,7 @@ class EstablishContextAction implements PrivilegedAction<EstablishContextResult>
             context = manager.createContext((GSSCredential) null);
 
             byte[] responseToken = context.acceptSecContext(requestToken, 0, requestToken.length);
-            
+
             EstablishContextResult result = new EstablishContextResult();
             result.setSpnegoResponseToken(responseToken);
             result.setEstablished(context.isEstablished());

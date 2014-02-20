@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 
 public class StartDoc extends HttpServlet {
 
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         int meta_id = Imcms.getServices().getSystemData().getStartDocument();
-        req.getRequestDispatcher( "/servlet/GetDoc?meta_id="+meta_id ).forward( req, res );
+        req.getRequestDispatcher("/servlet/GetDoc?meta_id=" + meta_id).forward(req, res);
     }
 
-    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        doGet( request, response );
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
     }
 }

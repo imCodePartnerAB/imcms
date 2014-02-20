@@ -507,7 +507,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
         private boolean equals(CropRegion cropRegion) {
             return cropX1 == cropRegion.cropX1 && cropY1 == cropRegion.cropY1 &&
-                   cropX2 == cropRegion.cropX2 && cropY2 == cropRegion.cropY2;
+                    cropX2 == cropRegion.cropX2 && cropY2 == cropRegion.cropY2;
         }
 
         @Override

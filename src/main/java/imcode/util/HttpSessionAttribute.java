@@ -2,8 +2,8 @@ package imcode.util;
 
 public interface HttpSessionAttribute {
 
-    void setSessionAttributeName( String sessionAttributeName ) ;
+    void setSessionAttributeName(String sessionAttributeName);
 
-    String getSessionAttributeName() ;
+    String getSessionAttributeName();
 
 }

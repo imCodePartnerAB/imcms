@@ -37,35 +37,35 @@ public class BackDoc extends HttpServlet {
     /**
      * doGet()
      */
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ImcmsServices imcref = Imcms.getServices();
-        Utility.setDefaultHtmlContentType( res );
+        Utility.setDefaultHtmlContentType(res);
 
-        Stack<HistoryElement> history = (Stack<HistoryElement>)req.getSession().getAttribute( "history" );
-        DocumentDomainObject lastTextDocument = getNextToLastTextDocumentFromHistory( history, imcref );
+        Stack<HistoryElement> history = (Stack<HistoryElement>) req.getSession().getAttribute("history");
+        DocumentDomainObject lastTextDocument = getNextToLastTextDocumentFromHistory(history, imcref);
 
-        if (null != lastTextDocument ) {
-            redirectToDocumentId( req, res, lastTextDocument.getId() );
+        if (null != lastTextDocument) {
+            redirectToDocumentId(req, res, lastTextDocument.getId());
         } else {
             DocumentLanguageSupport documentLanguageSupport = imcref.getDocumentLanguageSupport();
             DocumentLanguages documentLanguages = new DocumentLanguages(documentLanguageSupport.getDefaultLanguage(), documentLanguageSupport.getDefaultLanguage());
             DocGetterCallback callback = new DefaultDocGetterCallback(documentLanguages);
             Imcms.getUser().setDocGetterCallback(callback);
-            redirectToDocumentId( req, res, imcref.getSystemData().getStartDocument() );
+            redirectToDocumentId(req, res, imcref.getSystemData().getStartDocument());
         }
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        doGet(req,res);
+        doGet(req, res);
     }
 
-    private void redirectToDocumentId( HttpServletRequest request, HttpServletResponse response, int meta_id ) throws IOException {
-        DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument( meta_id ) ;
-        response.sendRedirect( Utility.getAbsolutePathToDocument( request, document ) );
+    private void redirectToDocumentId(HttpServletRequest request, HttpServletResponse response, int meta_id) throws IOException {
+        DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(meta_id);
+        response.sendRedirect(Utility.getAbsolutePathToDocument(request, document));
     }
 
     // todo: refactor
-    public static DocumentDomainObject getNextToLastTextDocumentFromHistory( Stack<HistoryElement> history, ImcmsServices imcref ) {
+    public static DocumentDomainObject getNextToLastTextDocumentFromHistory(Stack<HistoryElement> history, ImcmsServices imcref) {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         HistoryElement he = history.pop();
         Imcms.getUser().setDocGetterCallback(he.docGetterCallback);
@@ -75,7 +75,7 @@ public class BackDoc extends HttpServlet {
             he = history.pop();
             Imcms.getUser().setDocGetterCallback(he.docGetterCallback);
             document = documentMapper.getDocument(he.docId);
-            if (isTextDocument( document)) {
+            if (isTextDocument(document)) {
                 break;
             }
         }

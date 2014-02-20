@@ -9,8 +9,8 @@ import org.springframework.context.MessageSource;
 public class CommonService {
     @Autowired
     private MessageSource messageSource;
-    
-    
+
+
     public String getMessage(String key, Locale locale, Object... args) {
         return messageSource.getMessage(key, args, locale);
     }

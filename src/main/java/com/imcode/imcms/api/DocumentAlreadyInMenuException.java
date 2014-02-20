@@ -5,8 +5,8 @@ package com.imcode.imcms.api;
  */
 public class DocumentAlreadyInMenuException extends Exception {
 
-    public DocumentAlreadyInMenuException( String message ) {
-        super(message) ;
+    public DocumentAlreadyInMenuException(String message) {
+        super(message);
     }
 
 }

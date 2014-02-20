@@ -6,11 +6,11 @@ import org.apache.commons.lang.ClassUtils;
 
 public class IdObjectPair implements Serializable {
 
-    private final int id ;
+    private final int id;
     private final Object object;
 
     public IdObjectPair(int id, Object object) {
-        this.id = id ;
+        this.id = id;
         this.object = object;
     }
 
@@ -23,14 +23,14 @@ public class IdObjectPair implements Serializable {
     }
 
     public String toString() {
-        return "("+ ClassUtils.getShortClassName(getClass()) +" "+id+" "+object.toString()+")" ;
+        return "(" + ClassUtils.getShortClassName(getClass()) + " " + id + " " + object.toString() + ")";
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 

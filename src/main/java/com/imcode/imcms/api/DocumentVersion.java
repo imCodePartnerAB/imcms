@@ -66,7 +66,7 @@ public final class DocumentVersion {
         this.createdBy = createdBy;
         this.createdDt = new Date(createdDt.getTime());
         this.modifiedBy = modifiedBy;
-        this.modifiedDt =  new Date(modifiedDt.getTime());
+        this.modifiedDt = new Date(modifiedDt.getTime());
     }
 
     @Override
@@ -76,11 +76,11 @@ public final class DocumentVersion {
 
     protected boolean equal(DocumentVersion that) {
         return //that.canEqual(this)
-               Objects.equals(this.no, that.no)
-                && Objects.equals(this.createdBy, that.createdBy)
-                && Objects.equals(this.createdDt, that.createdDt)
-                && Objects.equals(this.modifiedBy, that.modifiedBy)
-                && Objects.equals(this.modifiedDt, that.modifiedDt);
+                Objects.equals(this.no, that.no)
+                        && Objects.equals(this.createdBy, that.createdBy)
+                        && Objects.equals(this.createdDt, that.createdDt)
+                        && Objects.equals(this.modifiedBy, that.modifiedBy)
+                        && Objects.equals(this.modifiedDt, that.modifiedDt);
 
     }
 

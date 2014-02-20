@@ -124,7 +124,7 @@ public class TextDocMapper {
 
     private void initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
 
-        for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
+        for (Map.Entry<Integer, MenuItemDomainObject> entry : menu.getItemsMap().entrySet()) {
             Integer referencedDocumentId = entry.getKey();
             MenuItemDomainObject menuItem = entry.getValue();
             GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, documentGetter);

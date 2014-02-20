@@ -24,7 +24,7 @@ public class DocumentLanguageSupport {
         this.languages = Collections.unmodifiableList(languages);
         this.languagesByCodes = new HashMap<>();
 
-        for (DocumentLanguage language: languages) {
+        for (DocumentLanguage language : languages) {
             languagesByCodes.put(language.getCode(), language);
         }
     }

@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 
 public class CachingLocalizedMessageProvider extends LocalizedMessageProvider {
 
-    private final LocalizedMessageProvider provider ;
+    private final LocalizedMessageProvider provider;
     private final Map<String, ResourceBundle> bundleMap = new HashMap();
 
     public CachingLocalizedMessageProvider(LocalizedMessageProvider provider) {
@@ -19,11 +19,11 @@ public class CachingLocalizedMessageProvider extends LocalizedMessageProvider {
 
     public ResourceBundle getResourceBundle(String languageIso639_2) {
         ResourceBundle resourceBundle = bundleMap.get(languageIso639_2);
-        if ( null == resourceBundle ) {
+        if (null == resourceBundle) {
             resourceBundle = provider.getResourceBundle(languageIso639_2);
             bundleMap.put(languageIso639_2, resourceBundle);
         }
-        return resourceBundle ;
+        return resourceBundle;
     }
 
 }

@@ -21,7 +21,9 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class VerifyUser extends HttpServlet {
 
-    /** Too many sessions message key. */
+    /**
+     * Too many sessions message key.
+     */
     private final static LocalizedMessage LOGIN_MSG__TOO_MANY_SESSIONS
             = new LocalizedMessage("templates/login/TooManySessions");
 
@@ -49,9 +51,9 @@ public class VerifyUser extends HttpServlet {
 
         ContentManagementSystem cms = ContentManagementSystem.login(req, name, passwd);
 
-        if ( null != cms ) {
+        if (null != cms) {
             User currentUser = cms.getCurrentUser();
-            if ( req.getParameter(REQUEST_PARAMETER__EDIT_USER) != null && !currentUser.isDefaultUser() ) {
+            if (req.getParameter(REQUEST_PARAMETER__EDIT_USER) != null && !currentUser.isDefaultUser()) {
                 goToEditUserPage(currentUser, res, req);
             } else {
                 goToLoginSuccessfulPage(req, res);
@@ -70,7 +72,7 @@ public class VerifyUser extends HttpServlet {
         req.getRequestDispatcher(loginPage).forward(req, res);
     }
 
-    
+
     public static void forwardToLoginPageTooManySessions(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         forwardToLogin(req, res, LOGIN_MSG__TOO_MANY_SESSIONS);
     }
@@ -78,10 +80,8 @@ public class VerifyUser extends HttpServlet {
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
         req.getRequestDispatcher("/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2()
-                                 + "/login/index.jsp").forward(req, res);
+                + "/login/index.jsp").forward(req, res);
     }
-
-
 
 
     private void goToLoginSuccessfulPage(HttpServletRequest req,
@@ -91,7 +91,7 @@ public class VerifyUser extends HttpServlet {
     }
 
     private void goToEditUserPage(User user, HttpServletResponse res, HttpServletRequest req) throws IOException, ServletException {
-        UserDomainObject internalUser = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUser(user.getId()) ;
+        UserDomainObject internalUser = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUser(user.getId());
         DispatchCommand returnCommand = new GoToLoginSuccessfulPageCommand();
         UserEditorPage userEditorPage = new UserEditorPage(internalUser, new AdminUser.SaveUserAndReturnCommand(internalUser, returnCommand), returnCommand);
         userEditorPage.forward(req, res);
@@ -102,17 +102,17 @@ public class VerifyUser extends HttpServlet {
                              HttpServletResponse response) throws IOException, ServletException {
             String nexturl = "StartDoc";
             HttpSession session = request.getSession(true);
-            if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null ) {
+            if (session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null) {
                 nexturl = "GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
                 session.removeAttribute(SESSION_ATTRIBUTE__NEXT_META);
-            } else if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL) != null ) {
+            } else if (session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL) != null) {
                 nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL);
                 session.removeAttribute(SESSION_ATTRIBUTE__NEXT_URL);
-            } else if ( request.getParameter(REQUEST_PARAMETER__NEXT_URL) != null ) {
+            } else if (request.getParameter(REQUEST_PARAMETER__NEXT_URL) != null) {
                 nexturl = request.getParameter(REQUEST_PARAMETER__NEXT_URL);
-            } else if ( request.getParameter(REQUEST_PARAMETER__NEXT_META) != null ) {
+            } else if (request.getParameter(REQUEST_PARAMETER__NEXT_META) != null) {
                 nexturl = "GetDoc?meta_id=" + request.getParameter(REQUEST_PARAMETER__NEXT_META);
-            } else if ( session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET) != null ) {
+            } else if (session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET) != null) {
                 nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
                 session.removeAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
             }

@@ -17,96 +17,96 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name="archive_images")
+@Table(name = "archive_images")
 public class Images implements Serializable {
     private static final long serialVersionUID = -1831641612874730366L;
-    
+
     public static final short STATUS_UPLOADED = 0;
     public static final short STATUS_ACTIVE = 1;
     public static final short STATUS_ARCHIVED = 2;
-    
-    
+
+
     @Id
     @GeneratedValue
     private long id;
-    
-    @Column(name="image_nm", length=255, nullable=false)
+
+    @Column(name = "image_nm", length = 255, nullable = false)
     private String imageNm = "";
-    
-    @Column(name="format", nullable=false)
+
+    @Column(name = "format", nullable = false)
     private int format;
-    
-    @Column(name="width", nullable=false)
+
+    @Column(name = "width", nullable = false)
     private int width;
-    
-    @Column(name="height", nullable=false)
+
+    @Column(name = "height", nullable = false)
     private int height;
-    
-    @Column(name="file_size", nullable=false)
+
+    @Column(name = "file_size", nullable = false)
     private int fileSize;
-    
-    @Column(name="uploaded_by", length=130, nullable=false)
+
+    @Column(name = "uploaded_by", length = 130, nullable = false)
     private String uploadedBy = "";
-    
-    @Column(name="users_id", nullable=false)
+
+    @Column(name = "users_id", nullable = false)
     private int usersId;
-    
-    @Column(name="status", nullable=false)
+
+    @Column(name = "status", nullable = false)
     private short status = STATUS_UPLOADED;
-    
-    @Column(name="created_dt", nullable=false)
+
+    @Column(name = "created_dt", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt = new Date();
-    
-    @Column(name="updated_dt", nullable=false)
+
+    @Column(name = "updated_dt", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDt = new Date();
-    
-    @Column(name="license_dt")
+
+    @Column(name = "license_dt")
     @Temporal(TemporalType.DATE)
     private Date licenseDt;
-    
-    @Column(name="license_end_dt")
+
+    @Column(name = "license_end_dt")
     @Temporal(TemporalType.DATE)
     private Date licenseEndDt;
 
-    @Column(name="alt_text")
+    @Column(name = "alt_text")
     private String altText;
-    
+
     @OneToMany
     @JoinTable(
-        name="archive_image_categories",
-        joinColumns=@JoinColumn(name="image_id", nullable=false, insertable=false, updatable=false), 
-        inverseJoinColumns=@JoinColumn(name="category_id", nullable=false, insertable=false, updatable=false)
+            name = "archive_image_categories",
+            joinColumns = @JoinColumn(name = "image_id", nullable = false, insertable = false, updatable = false),
+            inverseJoinColumns = @JoinColumn(name = "category_id", nullable = false, insertable = false, updatable = false)
     )
     @OrderBy("name")
     private List<Categories> categories;
-    
+
     @OneToMany
     @JoinTable(
-        name="archive_image_keywords", 
-        joinColumns=@JoinColumn(name="image_id", nullable=false, insertable=false, updatable=false), 
-        inverseJoinColumns=@JoinColumn(name="keyword_id", nullable=false, insertable=false, updatable=false)
+            name = "archive_image_keywords",
+            joinColumns = @JoinColumn(name = "image_id", nullable = false, insertable = false, updatable = false),
+            inverseJoinColumns = @JoinColumn(name = "keyword_id", nullable = false, insertable = false, updatable = false)
     )
     @OrderBy("keywordNm")
     private List<Keywords> keywords;
-    
+
     @Transient
     private Exif changedExif;
-    
+
     @Transient
     private Exif originalExif;
-    
+
     @Transient
     private List<Integer> metaIds;
-    
+
     @Transient
     private boolean usedInImcms;
-    
+
     @Transient
     private boolean canChange;
 
-    
+
     public Images() {
     }
 
@@ -261,12 +261,12 @@ public class Images implements Serializable {
     public void setOriginalExif(Exif originalExif) {
         this.originalExif = originalExif;
     }
-    
+
     public void setArtist(String artist) {
         changedExif = new Exif();
         changedExif.setArtist(artist);
     }
-    
+
     public boolean isArchived() {
         return status == STATUS_ARCHIVED;
     }
@@ -287,22 +287,22 @@ public class Images implements Serializable {
         this.canChange = canChange;
     }
 
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final Images other = (Images) obj;
         if (this.id != other.id) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -310,13 +310,13 @@ public class Images implements Serializable {
     public int hashCode() {
         int hash = 7;
         hash = 41 * hash + (int) (this.id ^ (this.id >>> 32));
-        
+
         return hash;
     }
 
     @Override
     public String toString() {
-        return String.format("com.imcode.imcms.addon.imagearchive.entity.Images[id: %d, imageNm: %s, uploadedBy: %s]", 
+        return String.format("com.imcode.imcms.addon.imagearchive.entity.Images[id: %d, imageNm: %s, uploadedBy: %s]",
                 id, imageNm, uploadedBy);
     }
 }

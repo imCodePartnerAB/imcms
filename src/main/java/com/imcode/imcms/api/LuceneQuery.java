@@ -13,5 +13,5 @@ public class LuceneQuery extends SearchQuery {
     Query getQuery() {
         return query;
     }
-    
+
 }

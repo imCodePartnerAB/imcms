@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 public class InputStreamSourceWrapper implements InputStreamSource {
 
-    private final InputStreamSource inputStreamSource ;
+    private final InputStreamSource inputStreamSource;
 
     public InputStreamSourceWrapper(InputStreamSource inputStreamSource) {
         this.inputStreamSource = inputStreamSource;
@@ -20,15 +20,15 @@ public class InputStreamSourceWrapper implements InputStreamSource {
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || !(o instanceof InputStreamSource) ) {
+        if (o == null || !(o instanceof InputStreamSource)) {
             return false;
         }
-        InputStreamSource otherInputStreamSource = (InputStreamSource) o ;
+        InputStreamSource otherInputStreamSource = (InputStreamSource) o;
         while (o instanceof InputStreamSourceWrapper) {
-            otherInputStreamSource = ((InputStreamSourceWrapper)o).getInputStreamSource() ;
+            otherInputStreamSource = ((InputStreamSourceWrapper) o).getInputStreamSource();
         }
 
         return inputStreamSource.equals(otherInputStreamSource);

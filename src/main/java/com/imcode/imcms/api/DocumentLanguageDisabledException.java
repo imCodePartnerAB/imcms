@@ -4,28 +4,28 @@ import imcode.server.document.DocumentDomainObject;
 
 public class DocumentLanguageDisabledException extends DocumentLanguageException {
 
-	private DocumentDomainObject document;
-	
-	private DocumentLanguage language;
-	
-	public DocumentLanguageDisabledException(DocumentDomainObject document, DocumentLanguage language) {
-		this.document = document;
-		this.language = language;
-	}
+    private DocumentDomainObject document;
 
-	public DocumentDomainObject getDocument() {
-		return document;
-	}
+    private DocumentLanguage language;
 
-	public void setDocument(DocumentDomainObject document) {
-		this.document = document;
-	}
+    public DocumentLanguageDisabledException(DocumentDomainObject document, DocumentLanguage language) {
+        this.document = document;
+        this.language = language;
+    }
 
-	public DocumentLanguage getLanguage() {
-		return language;
-	}
+    public DocumentDomainObject getDocument() {
+        return document;
+    }
 
-	public void setLanguage(DocumentLanguage language) {
-		this.language = language;
-	}
+    public void setDocument(DocumentDomainObject document) {
+        this.document = document;
+    }
+
+    public DocumentLanguage getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(DocumentLanguage language) {
+        this.language = language;
+    }
 }

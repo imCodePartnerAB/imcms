@@ -2,6 +2,7 @@ package com.imcode.imcms.addon.imagearchive.command;
 
 import com.imcode.imcms.addon.imagearchive.entity.Exif;
 import com.imcode.imcms.addon.imagearchive.entity.Images;
+
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -9,12 +10,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class ChangeImageDataCommand implements Serializable {
     private static final long serialVersionUID = 7628469804368247486L;
-    
+
     private String imageNm;
     private String description;
     private String categories;
@@ -25,51 +27,51 @@ public class ChangeImageDataCommand implements Serializable {
     private String copyright;
     private String licenseDt;
     private String licenseEndDt;
-    
+
     private boolean changedFile;
     private int rotation = 0;
     private CommonsMultipartFile file;
-    
+
     private Date licenseDate;
     private Date licenseEndDate;
     private String altText;
-    
+
     private List<Integer> categoryIds = new ArrayList<Integer>();
     private List<String> keywordNames = new ArrayList<String>();
     private List<String> imageKeywordNames = new ArrayList<String>();
-    
-    
+
+
     public ChangeImageDataCommand() {
     }
 
-    
+
     public void fromImage(Images image) {
         Exif exif = image.getChangedExif();
-        
+
         this.artist = exif.getArtist();
         this.copyright = exif.getCopyright();
         this.description = exif.getDescription();
         this.imageNm = image.getImageNm();
         this.uploadedBy = image.getUploadedBy();
         this.altText = image.getAltText();
-        
+
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        
+
         if (image.getLicenseDt() != null) {
             this.licenseDt = df.format(image.getLicenseDt());
         }
-        
+
         if (image.getLicenseEndDt() != null) {
             this.licenseEndDt = df.format(image.getLicenseEndDt());
         }
     }
-    
+
     public void toImage(Images image) {
         Exif exif = image.getChangedExif();
         exif.setDescription(StringUtils.trimToEmpty(description));
         exif.setArtist(StringUtils.trimToEmpty(artist));
         exif.setCopyright(StringUtils.trimToEmpty(copyright));
-        
+
         image.setImageNm(StringUtils.trimToEmpty(imageNm));
         image.setUploadedBy(StringUtils.trimToEmpty(uploadedBy));
         image.setLicenseDt(licenseDate);
@@ -157,7 +159,7 @@ public class ChangeImageDataCommand implements Serializable {
         if (categories != null) {
             String[] parts = categories.split(",");
             categoryIds = new ArrayList<Integer>(parts.length);
-            
+
             for (String part : parts) {
                 try {
                     categoryIds.add(Integer.parseInt(part, 10));
@@ -165,7 +167,7 @@ public class ChangeImageDataCommand implements Serializable {
                 }
             }
         }
-        
+
         this.categories = categories;
     }
 
@@ -182,11 +184,11 @@ public class ChangeImageDataCommand implements Serializable {
         imageKeywords = StringUtils.trimToNull(imageKeywords);
         if (imageKeywords != null) {
             String[] parts = imageKeywords.split("/");
-            
+
             for (String part : parts) {
                 try {
                     part = URLDecoder.decode(part, "UTF-8").trim();
-                    
+
                     if (!StringUtils.isEmpty(part)) {
                         imageKeywordNames.add(StringUtils.substring(part.toLowerCase(), 0, 50));
                     }
@@ -194,7 +196,7 @@ public class ChangeImageDataCommand implements Serializable {
                 }
             }
         }
-        
+
         this.imageKeywords = imageKeywords;
     }
 
@@ -207,11 +209,11 @@ public class ChangeImageDataCommand implements Serializable {
         StringUtils.trimToNull(keywords);
         if (keywords != null) {
             String[] parts = keywords.split("/");
-            
+
             for (String part : parts) {
                 try {
                     part = URLDecoder.decode(part, "UTF-8").trim();
-                    
+
                     if (!StringUtils.isEmpty(part)) {
                         keywordNames.add(StringUtils.substring(part.toLowerCase(), 0, 50));
                     }
@@ -219,7 +221,7 @@ public class ChangeImageDataCommand implements Serializable {
                 }
             }
         }
-        
+
         this.keywords = keywords;
     }
 

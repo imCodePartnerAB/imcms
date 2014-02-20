@@ -57,10 +57,10 @@ public class MockImcmsServices implements ImcmsServices {
     private Config config = new Config();
     private KerberosLoginService kerberosLoginService;
 
-    public UserDomainObject verifyUser( String login, String password ) {
+    public UserDomainObject verifyUser(String login, String password) {
         return null;
     }
-    
+
     public UserDomainObject verifyUser(String clientPrincipalName) {
         return null;
     }
@@ -74,12 +74,12 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     // set session counter
-    public void setSessionCounter( int value ) {
+    public void setSessionCounter(int value) {
 
     }
 
     // set  session counter date
-    public void setSessionCounterDate( Date date ) {
+    public void setSessionCounterDate(Date date) {
 
     }
 
@@ -89,18 +89,18 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     // parsedoc use template
-    public String getAdminTemplate( String adminTemplateName, UserDomainObject user, List tagsWithReplacements ) {
+    public String getAdminTemplate(String adminTemplateName, UserDomainObject user, List tagsWithReplacements) {
         return null;
     }
 
     // parseExternaldoc use template
-    public String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
-                                            String directory ) {
+    public String getTemplateFromDirectory(String adminTemplateName, UserDomainObject user, List variables,
+                                           String directory) {
         return null;
     }
 
     // get doctype
-    public int getDocType( int meta_id ) {
+    public int getDocType(int meta_id) {
         return 0;
     }
 
@@ -108,11 +108,11 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public void setSystemData( SystemData sd ) {
+    public void setSystemData(SystemData sd) {
 
     }
 
-    public String[][] getAllDocumentTypes( String langPrefixStr ) {
+    public String[][] getAllDocumentTypes(String langPrefixStr) {
         return new String[0][];
     }
 
@@ -124,7 +124,7 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public void updateMainLog( String logMessage ) {
+    public void updateMainLog(String logMessage) {
 
     }
 
@@ -133,7 +133,7 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
-        return imcmsAuthenticatorAndUserAndRoleMapper ;
+        return imcmsAuthenticatorAndUserAndRoleMapper;
     }
 
     public TemplateMapper getTemplateMapper() {
@@ -152,11 +152,11 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public VelocityEngine getVelocityEngine( UserDomainObject user ) {
+    public VelocityEngine getVelocityEngine(UserDomainObject user) {
         return null;
     }
 
-    public VelocityContext getVelocityContext( UserDomainObject user ) {
+    public VelocityContext getVelocityContext(UserDomainObject user) {
         return null;
     }
 
@@ -165,11 +165,11 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public Database getDatabase() {
-        return database ;
+        return database;
     }
 
     public CategoryMapper getCategoryMapper() {
-        return categoryMapper ;
+        return categoryMapper;
     }
 
     public LanguageMapper getLanguageMapper() {
@@ -177,15 +177,15 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public ImageCacheMapper getImageCacheMapper() {
-    	return imageCacheMapper;
+        return imageCacheMapper;
     }
 
     public CachingFileLoader getFileCache() {
-        return null ;
+        return null;
     }
 
     public RoleGetter getRoleGetter() {
-        return roleGetter ;
+        return roleGetter;
     }
 
     public ProcedureExecutor getProcedureExecutor() {
@@ -203,29 +203,29 @@ public class MockImcmsServices implements ImcmsServices {
     public KeyStore getKeyStore() {
         return keyStore;
     }
-    
+
     public KerberosLoginService getKerberosLoginService() {
         return kerberosLoginService;
     }
-    
+
     public void setImcmsAuthenticatorAndUserAndRoleMapper(
-            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper ) {
+            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper) {
         this.imcmsAuthenticatorAndUserAndRoleMapper = imcmsAuthenticatorAndUserAndRoleMapper;
     }
 
-    public void setDatabase( Database database ) {
+    public void setDatabase(Database database) {
         this.database = database;
     }
 
-    public void setKeyStore( KeyStore keyStore ) {
+    public void setKeyStore(KeyStore keyStore) {
         this.keyStore = keyStore;
     }
 
-    public void setTemplateMapper( TemplateMapper templateMapper ) {
+    public void setTemplateMapper(TemplateMapper templateMapper) {
         this.templateMapper = templateMapper;
     }
 
-    public void setDocumentMapper( DocumentMapper documentMapper ) {
+    public void setDocumentMapper(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
 
@@ -252,10 +252,10 @@ public class MockImcmsServices implements ImcmsServices {
     public void setKerberosLoginService(KerberosLoginService kerberosLoginService) {
         this.kerberosLoginService = kerberosLoginService;
     }
-    
-	public WebApplicationContext getWebApplicationContext() {
-		return null;
-	}
+
+    public WebApplicationContext getWebApplicationContext() {
+        return null;
+    }
 
     public DocumentLanguageSupport getDocumentLanguageSupport() {
         return null;

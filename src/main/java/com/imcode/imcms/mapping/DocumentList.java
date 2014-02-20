@@ -17,7 +17,7 @@ class DocumentList extends AbstractList<DocumentDomainObject> implements Seriali
     DocumentList(Map documentMap) {
         map = Collections.synchronizedMap(documentMap);
         list = new ArrayList(documentMap.size());
-        for ( Object result : map.values() ) {
+        for (Object result : map.values()) {
             DocumentDomainObject document = (DocumentDomainObject) result;
             list.add(document);
         }
@@ -32,7 +32,7 @@ class DocumentList extends AbstractList<DocumentDomainObject> implements Seriali
 
     public synchronized DocumentDomainObject set(int index, DocumentDomainObject document) {
         DocumentDomainObject previousDocument = list.set(index, document);
-        if ( null != previousDocument ) {
+        if (null != previousDocument) {
             map.remove(new Integer(previousDocument.getId()));
         }
         map.put(new Integer(document.getId()), document);
@@ -61,9 +61,9 @@ class DocumentList extends AbstractList<DocumentDomainObject> implements Seriali
         if (o instanceof Integer) {
             documentId = (Integer) o;
         } else {
-            DocumentDomainObject document = (DocumentDomainObject) o ;
+            DocumentDomainObject document = (DocumentDomainObject) o;
             documentId = document.getId();
         }
-        return map.containsKey(documentId) ;
+        return map.containsKey(documentId);
     }
 }

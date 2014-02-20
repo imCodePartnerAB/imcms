@@ -10,16 +10,16 @@ import org.apache.commons.dbutils.ResultSetHandler;
 
 public class StringArrayResultSetHandler implements ResultSetHandler {
 
-    public Object handle( ResultSet resultSet ) throws SQLException {
+    public Object handle(ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         List results = new ArrayList();
-        while ( resultSet.next() ) {
-            for ( int i = 1; i <= columnCount; i++ ) {
-                String s = resultSet.getString( i );
-                results.add( s );
+        while (resultSet.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                String s = resultSet.getString(i);
+                results.add(s);
             }
         }
-        return (String[])results.toArray( new String[results.size()] );
+        return (String[]) results.toArray(new String[results.size()]);
     }
 }

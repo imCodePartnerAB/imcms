@@ -23,19 +23,19 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class AdminUser extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger( AdminUser.class.getName() );
+    private final static Logger log = Logger.getLogger(AdminUser.class.getName());
     private final static String CHANGE_EXTERNAL_USER_URL = "/jsp/changeexternaluser.jsp";
-    private static final LocalizedMessage BUTTON_TEXT__EDIT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/2006" );
-    private static final LocalizedMessage HEADLINE__EDIT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/4/1" );
+    private static final LocalizedMessage BUTTON_TEXT__EDIT_USER = new LocalizedMessage("templates/sv/AdminChangeUser.htm/2006");
+    private static final LocalizedMessage HEADLINE__EDIT_USER = new LocalizedMessage("templates/sv/AdminChangeUser.htm/4/1");
     public final static String USER_LOGIN_NAME_PARAMETER_NAME = "loginname";
 
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        final UserDomainObject user = Utility.getLoggedOnUser( req );
-        Utility.setDefaultHtmlContentType( res );
+        final UserDomainObject user = Utility.getLoggedOnUser(req);
+        Utility.setDefaultHtmlContentType(res);
 
         // Lets verify that the user is an admin, otherwise throw him out.
-        if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
+        if (!user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole()) {
             String header = "Error in AdminUser.";
             Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
@@ -45,47 +45,47 @@ public class AdminUser extends HttpServlet {
         }
 
         UserFinder userFinder = new UserFinder();
-        userFinder.setUsersAddable( true );
-        userFinder.setHeadline( HEADLINE__EDIT_USER ) ;
-        userFinder.setSelectButtonText( BUTTON_TEXT__EDIT_USER );
-        userFinder.setSelectUserCommand( new UserFinder.SelectUserCommand() {
-            public void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
-                                    HttpServletResponse response ) throws ServletException, IOException {
-                gotoChangeUser( request, response, user, selectedUser );
+        userFinder.setUsersAddable(true);
+        userFinder.setHeadline(HEADLINE__EDIT_USER);
+        userFinder.setSelectButtonText(BUTTON_TEXT__EDIT_USER);
+        userFinder.setSelectUserCommand(new UserFinder.SelectUserCommand() {
+            public void selectUser(UserDomainObject selectedUser, HttpServletRequest request,
+                                   HttpServletResponse response) throws ServletException, IOException {
+                gotoChangeUser(request, response, user, selectedUser);
             }
-        } );
-        userFinder.setCancelCommand( new DispatchCommand() {
-            public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                request.getRequestDispatcher( "AdminManager" ).forward( request, response );
+        });
+        userFinder.setCancelCommand(new DispatchCommand() {
+            public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+                request.getRequestDispatcher("AdminManager").forward(request, response);
             }
-        } );
-        userFinder.forward( req, res );
+        });
+        userFinder.forward(req, res);
     }
 
-    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        response.sendRedirect( "AdminManager" );
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.sendRedirect("AdminManager");
     }
 
-    private void gotoChangeUser( HttpServletRequest req, HttpServletResponse res, UserDomainObject user,
-                                 UserDomainObject userToChange ) throws IOException, ServletException {
-        if ( !userToChange.isImcmsExternal() ) {
-            redirectChangeUser( req, res, user, userToChange );
+    private void gotoChangeUser(HttpServletRequest req, HttpServletResponse res, UserDomainObject user,
+                                UserDomainObject userToChange) throws IOException, ServletException {
+        if (!userToChange.isImcmsExternal()) {
+            redirectChangeUser(req, res, user, userToChange);
         } else {
             String queryString = "?"
-                                 + URLEncoder.encode( USER_LOGIN_NAME_PARAMETER_NAME, "UTF-8" )
-                                 + "="
-                                 + URLEncoder.encode( userToChange.getLoginName(), "UTF-8" );
-            RequestDispatcher rd = req.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2()
-                                                             + CHANGE_EXTERNAL_USER_URL
-                                                             + queryString );
-            rd.forward( req, res );
+                    + URLEncoder.encode(USER_LOGIN_NAME_PARAMETER_NAME, "UTF-8")
+                    + "="
+                    + URLEncoder.encode(userToChange.getLoginName(), "UTF-8");
+            RequestDispatcher rd = req.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2()
+                    + CHANGE_EXTERNAL_USER_URL
+                    + queryString);
+            rd.forward(req, res);
         }
     }
 
-    private void redirectChangeUser( HttpServletRequest req, HttpServletResponse res, UserDomainObject user,
-                                     final UserDomainObject userToChange ) throws IOException, ServletException {
+    private void redirectChangeUser(HttpServletRequest req, HttpServletResponse res, UserDomainObject user,
+                                    final UserDomainObject userToChange) throws IOException, ServletException {
 
-        if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() && !userToChange.equals( user ) ) {
+        if (!user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() && !userToChange.equals(user)) {
             String header = "Error in AdminUser, change user.";
             Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/AdminUser/user_have_no_permission") + "<br>";

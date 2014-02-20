@@ -6,7 +6,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class IdLocalizedNamePair implements Serializable {
 
-    private final IdObjectPair idObjectPair ;
+    private final IdObjectPair idObjectPair;
 
     public IdLocalizedNamePair(int id, LocalizedMessage name) {
         idObjectPair = new IdObjectPair(id, name);
@@ -21,10 +21,10 @@ public class IdLocalizedNamePair implements Serializable {
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 

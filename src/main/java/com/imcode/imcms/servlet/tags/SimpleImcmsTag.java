@@ -24,33 +24,33 @@ public abstract class SimpleImcmsTag extends TagSupport {
             String content = getContent(tagParser);
             String contentWithPreAndPost = TagParser.addPreAndPost(attributes, content);
             pageContext.getOut().print(contentWithPreAndPost);
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             throw new JspException(e);
-        } catch ( RuntimeException e ) {
+        } catch (RuntimeException e) {
             throw new JspException(e);
         }
         return SKIP_BODY;
     }
 
-    protected abstract String getContent(TagParser tagParser) ;
+    protected abstract String getContent(TagParser tagParser);
 
     public void setNo(int no) {
-        attributes.setProperty("no", ""+no) ;
+        attributes.setProperty("no", "" + no);
     }
-    
+
     public void setVersion(int version) {
-        attributes.setProperty("version", "" + version) ;
-    }    
+        attributes.setProperty("version", "" + version);
+    }
 
     public void setLabel(String label) {
-        attributes.setProperty("label", label) ;
+        attributes.setProperty("label", label);
     }
 
     public void setPre(String pre) {
-        attributes.setProperty("pre", pre) ;
+        attributes.setProperty("pre", pre);
     }
 
     public void setPost(String post) {
-        attributes.setProperty("post", post) ;
+        attributes.setProperty("post", post);
     }
 }

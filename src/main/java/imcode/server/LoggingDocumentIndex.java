@@ -43,7 +43,7 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
     @Override
     public com.imcode.imcms.api.SearchResult<DocumentDomainObject> search(DocumentQuery documentQuery, UserDomainObject searchingUser, int startPosition,
-                                                     int maxResults) throws IndexException {
+                                                                          int maxResults) throws IndexException {
 
         Query query = documentQuery.getQuery();
         logTerms(getTerms(query));

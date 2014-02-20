@@ -11,28 +11,30 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity(name="CategoryType")
-@Table(name="category_types")
+@Entity(name = "CategoryType")
+@Table(name = "category_types")
 public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializable {
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="category_type_id")	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_type_id")
     private Integer id;
-	
-	@Column(name="name")
-    private String name ;
-	
-	@Column(name="max_choices")
-    private int maxChoices ;
-	
-	@Column(name="inherited")
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "max_choices")
+    private int maxChoices;
+
+    @Column(name = "inherited")
     private boolean inherited;
 
-    @Column(name="is_image_archive", nullable=false)
+    @Column(name = "is_image_archive", nullable = false)
     private boolean imageArchive;
 
-	public CategoryTypeDomainObject() {}
-			
+    public CategoryTypeDomainObject() {
+    }
+
     public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited) {
         this.id = id;
         this.name = name;
@@ -64,7 +66,7 @@ public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializ
         return inherited;
     }
 
-    public void setInherited( boolean inherited ) {
+    public void setInherited(boolean inherited) {
         this.inherited = inherited;
     }
 
@@ -77,9 +79,9 @@ public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializ
     }
 
     public boolean equals(Object o) {
-    	return this == o 
-    		|| (o instanceof CategoryTypeDomainObject && 
-    		   ((CategoryTypeDomainObject)o).getId() == getId());
+        return this == o
+                || (o instanceof CategoryTypeDomainObject &&
+                ((CategoryTypeDomainObject) o).getId() == getId());
     }
 
     public int hashCode() {
@@ -87,11 +89,11 @@ public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializ
     }
 
     public String toString() {
-        return getName() ;
+        return getName();
     }
 
-    public int compareTo( Object o ) {
-        return name.compareToIgnoreCase( ((CategoryTypeDomainObject)o).name) ;
+    public int compareTo(Object o) {
+        return name.compareToIgnoreCase(((CategoryTypeDomainObject) o).name);
     }
 
     public boolean hasImages() {
@@ -99,7 +101,7 @@ public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializ
         boolean hasImages = false;
         for (int i = 0; i < categories.length; i++) {
             CategoryDomainObject category = categories[i];
-            if( !"".equals(category.getImageUrl()) ) {
+            if (!"".equals(category.getImageUrl())) {
                 hasImages = true;
                 break;
             }
@@ -122,7 +124,7 @@ public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializ
     @Override
     public CategoryTypeDomainObject clone() {
         try {
-            return (CategoryTypeDomainObject)super.clone();
+            return (CategoryTypeDomainObject) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }

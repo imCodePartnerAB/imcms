@@ -1,4 +1,4 @@
-package imcode.server ;
+package imcode.server;
 
 import com.imcode.imcms.api.DocumentLanguageSupport;
 import imcode.server.document.TemplateMapper;
@@ -29,48 +29,50 @@ import imcode.server.kerberos.KerberosLoginService;
 
 public interface ImcmsServices {
 
-    /** Verify a Internet/Intranet user. Data from any SQL Database. **/
+    /**
+     * Verify a Internet/Intranet user. Data from any SQL Database. *
+     */
     UserDomainObject verifyUser(String login, String password);
-    
+
     // Verify a Intranet user based on a Kerberos client principal name.
     UserDomainObject verifyUser(String clientPrincipalName);
 
-    void parsePage(ParserParameters paramsToParse, Writer out) throws IOException ;
+    void parsePage(ParserParameters paramsToParse, Writer out) throws IOException;
 
     void incrementSessionCounter();
 
     // set session counter
-    void setSessionCounter(int value)  ;
+    void setSessionCounter(int value);
 
     // set  session counter date
-    void setSessionCounterDate(Date date)  ;
+    void setSessionCounterDate(Date date);
 
     // set  session counter date
-    Date getSessionCounterDate()  ;
+    Date getSessionCounterDate();
 
     // parsedoc use template
-    String getAdminTemplate( String adminTemplateName, UserDomainObject user, java.util.List tagsWithReplacements )  ;
+    String getAdminTemplate(String adminTemplateName, UserDomainObject user, java.util.List tagsWithReplacements);
 
     // parseExternaldoc use template
-    String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
-                                     String directory )
+    String getTemplateFromDirectory(String adminTemplateName, UserDomainObject user, java.util.List variables,
+                                    String directory)
     ;
 
     // get doctype
     int getDocType(int meta_id)
     ;
 
-    SystemData getSystemData()  ;
+    SystemData getSystemData();
 
-    void setSystemData(SystemData sd)  ;
+    void setSystemData(SystemData sd);
 
-    String[][] getAllDocumentTypes(String langPrefixStr)  ;
+    String[][] getAllDocumentTypes(String langPrefixStr);
 
     int getSessionCounter();
 
     String getSessionCounterDateAsString();
 
-    void updateMainLog( String logMessage );
+    void updateMainLog(String logMessage);
 
     DocumentMapper getDocumentMapper();
 
@@ -86,7 +88,7 @@ public interface ImcmsServices {
 
     VelocityEngine getVelocityEngine(UserDomainObject user);
 
-    VelocityContext getVelocityContext( UserDomainObject user );
+    VelocityContext getVelocityContext(UserDomainObject user);
 
     Config getConfig();
 
@@ -109,7 +111,7 @@ public interface ImcmsServices {
     UserDomainObject verifyUserByIpOrDefault(String remoteAddr);
 
     LocalizedMessageProvider getLocalizedMessageProvider();
-    
+
     KerberosLoginService getKerberosLoginService();
 
     DocumentLanguageSupport getDocumentLanguageSupport();

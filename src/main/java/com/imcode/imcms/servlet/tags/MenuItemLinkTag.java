@@ -15,9 +15,9 @@ import javax.servlet.jsp.tagext.TagSupport;
 public class MenuItemLinkTag extends TagSupport {
 
     public int doStartTag() throws JspException {
-        MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class) ;
+        MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class);
         if (menuTag == null) {
-            throw new JspTagException("menuitem must be enclosed in a menuloop or menu.") ;
+            throw new JspTagException("menuitem must be enclosed in a menuloop or menu.");
         }
         MenuItemDomainObject menuItem = menuTag.getMenuItem();
         if (null == menuItem) {
@@ -27,8 +27,8 @@ public class MenuItemLinkTag extends TagSupport {
         DocumentDomainObject document = menuItem.getDocument();
         String pathToDocument = MenuParser.getPathToDocument(request, document, menuTag.getTemplate());
         try {
-            pageContext.getOut().print("<a href=\"" + pathToDocument+"\" target=\""+ document.getTarget()+"\">");
-        } catch ( IOException e ) {
+            pageContext.getOut().print("<a href=\"" + pathToDocument + "\" target=\"" + document.getTarget() + "\">");
+        } catch (IOException e) {
             throw new JspException(e);
         }
         return EVAL_BODY_INCLUDE;
@@ -37,7 +37,7 @@ public class MenuItemLinkTag extends TagSupport {
     public int doEndTag() throws JspException {
         try {
             pageContext.getOut().print("</a>");
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             throw new JspException(e);
         }
         return EVAL_PAGE;

@@ -41,16 +41,16 @@ public class ImageArchiveTag extends BodyTagSupport {
             /* set by top.jsp, which is used only on major pages(aka not previews and overlays) to redirect to the last
             * visited page inside iframe when switching languages using imcms lang switch(aka meta-id?imcms.document.language=lang)
             * */
-            String redirectTo = (String)request.getSession().getAttribute(IMAGE_ARCHIVE_LAST_VISITED_PAGE_URL);
+            String redirectTo = (String) request.getSession().getAttribute(IMAGE_ARCHIVE_LAST_VISITED_PAGE_URL);
             boolean toTheSearchPage = request.getParameter("toArchiveSearchPage") != null;
-            if(redirectTo != null && !toTheSearchPage) {
+            if (redirectTo != null && !toTheSearchPage) {
                 archiveUri = redirectTo;
             }
 
             String currentLocale = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred().getCode();
             request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, new Locale(currentLocale));
             if (user.canAccess(document)) {
-                String iframe = "<iframe src='" + archiveUri +"' ";
+                String iframe = "<iframe src='" + archiveUri + "' ";
                 if (getStyleClass() != null && !"".equals(getStyleClass())) {
                     iframe += "class='" + styleClass + "' ";
                 }
@@ -71,7 +71,7 @@ public class ImageArchiveTag extends BodyTagSupport {
     public int doAfterBody() {
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
         HttpSession session = request.getSession();
-        if(getBodyContent() != null) {
+        if (getBodyContent() != null) {
             String body = getBodyContent().getString().trim();
             body = body.replace("\"", "\\\"");
             body = body.replace("'", "\'");
@@ -82,7 +82,7 @@ public class ImageArchiveTag extends BodyTagSupport {
     }
 
     /* Class name(s) set for the iframe produces */
-    public String getStyleClass(){
+    public String getStyleClass() {
         return this.styleClass;
     }
 

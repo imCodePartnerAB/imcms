@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Customizable permissions sets (restricted-1 and restricted-2) for doc and doc's profile.
- *
+ * <p/>
  * Note: Unfortunately the name of this class is a bit misleading.
  *
  * @see DocumentPermissionSetTypeDomainObject
@@ -13,9 +13,9 @@ import java.io.Serializable;
  */
 public class DocumentPermissionSets implements Serializable, Cloneable {
 
-    private DocumentPermissionSetDomainObject[] permissionSets = new DocumentPermissionSetDomainObject[] {
-            new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1 ),
-            new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_2 )
+    private DocumentPermissionSetDomainObject[] permissionSets = new DocumentPermissionSetDomainObject[]{
+            new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_1),
+            new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_2)
     };
 
     public void setRestricted1(DocumentPermissionSetDomainObject restricted1) {
@@ -35,21 +35,21 @@ public class DocumentPermissionSets implements Serializable, Cloneable {
     }
 
     public DocumentPermissionSetDomainObject getRestricted(int n) {
-        return permissionSets[n-1] ;
+        return permissionSets[n - 1];
     }
 
     @Override
     public DocumentPermissionSets clone() {
-    	try {
-	        DocumentPermissionSets clone = (DocumentPermissionSets) super.clone();
-	        clone.permissionSets = new DocumentPermissionSetDomainObject[] {
-	                (DocumentPermissionSetDomainObject) permissionSets[0].clone(),
-	                (DocumentPermissionSetDomainObject) permissionSets[1].clone()
-	        };
-	        
-	        return clone ;
-    	} catch (CloneNotSupportedException e) {
-    		throw new AssertionError(e);
-    	}    	
+        try {
+            DocumentPermissionSets clone = (DocumentPermissionSets) super.clone();
+            clone.permissionSets = new DocumentPermissionSetDomainObject[]{
+                    (DocumentPermissionSetDomainObject) permissionSets[0].clone(),
+                    (DocumentPermissionSetDomainObject) permissionSets[1].clone()
+            };
+
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 }

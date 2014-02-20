@@ -2,7 +2,7 @@ package com.imcode.imcms.addon.imagearchive.service.exception;
 
 public class CategoryExistsException extends RuntimeException {
     private static final long serialVersionUID = 1740190300693433518L;
-    
+
 
     public CategoryExistsException() {
     }

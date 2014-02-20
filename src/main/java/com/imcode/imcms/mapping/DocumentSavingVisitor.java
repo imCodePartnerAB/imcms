@@ -19,10 +19,14 @@ import imcode.server.user.UserDomainObject;
  */
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
-    /** Current version of a document. */
+    /**
+     * Current version of a document.
+     */
     private DocumentDomainObject oldDocument;
 
-    /** An user performing save operation. */
+    /**
+     * An user performing save operation.
+     */
     private UserDomainObject savingUser;
 
     public DocumentSavingVisitor(DocumentDomainObject documentInDatabase,

@@ -6,6 +6,6 @@ package com.imcode.imcms.api;
 public class MaxCategoriesOfTypeExceededException extends SaveException {
 
     MaxCategoriesOfTypeExceededException(Throwable cause) {
-        super(cause) ;
+        super(cause);
     }
 }

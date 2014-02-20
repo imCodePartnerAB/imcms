@@ -1,4 +1,4 @@
-package imcode.util ;
+package imcode.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +26,9 @@ public class Prefs {
         configPath = confPath;
     }
 
-    /** Flushes the cache, causing the files to be loaded again, when they are needed. */
+    /**
+     * Flushes the cache, causing the files to be loaded again, when they are needed.
+     */
     public static void flush() {
         CACHE.clear();
     }
@@ -50,14 +52,14 @@ public class Prefs {
 
     private static Properties getProperties(File file) throws IOException {
         Properties properties = CACHE.get(file);
-        if ( properties == null ) {
+        if (properties == null) {
             FileInputStream in = null;
             try {
                 in = new FileInputStream(file);
                 properties = new Properties();
                 properties.load(in);
                 CACHE.put(file, properties);
-            } catch ( IOException ex ) {
+            } catch (IOException ex) {
                 throw new IOException("Prefs: File not found: " + file.getAbsolutePath());
             } finally {
                 if (null != in) {
@@ -65,7 +67,7 @@ public class Prefs {
                 }
             }
         }
-        
+
         return properties;
     }
 }

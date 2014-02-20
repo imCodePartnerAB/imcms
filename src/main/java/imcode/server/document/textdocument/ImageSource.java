@@ -20,49 +20,49 @@ public abstract class ImageSource implements Serializable {
     private ImageInfo cachedImageInfo;
     private Date cachedImageInfoTime;
 
-    public abstract InputStreamSource getInputStreamSource( );
+    public abstract InputStreamSource getInputStreamSource();
 
-    public abstract String getUrlPathRelativeToContextPath( );
+    public abstract String getUrlPathRelativeToContextPath();
 
-    public abstract String toStorageString( );
+    public abstract String toStorageString();
 
-    public abstract int getTypeId( );
+    public abstract int getTypeId();
 
-    public abstract Date getModifiedDatetime( );
+    public abstract Date getModifiedDatetime();
 
     ImageSize getImageSize() throws IOException {
-    	ImageInfo imageInfo = getImageInfo();
-    	if (imageInfo != null) {
-    		return new ImageSize(imageInfo.getWidth(), imageInfo.getHeight());
-    	}
+        ImageInfo imageInfo = getImageInfo();
+        if (imageInfo != null) {
+            return new ImageSize(imageInfo.getWidth(), imageInfo.getHeight());
+        }
 
-    	return new ImageSize(0, 0);
+        return new ImageSize(0, 0);
     }
 
 
     ImageInfo getImageInfo() throws IOException {
-    	if (getInputStreamSource().getSize() > 0) {
-    		Date modifiedDatetime = getModifiedDatetime();
-    		if (cachedImageInfoTime == null || modifiedDatetime.after(cachedImageInfoTime)) {
-    			cachedImageInfo = getNonCachedImageInfo();
-    			cachedImageInfoTime = modifiedDatetime;
-    		}
+        if (getInputStreamSource().getSize() > 0) {
+            Date modifiedDatetime = getModifiedDatetime();
+            if (cachedImageInfoTime == null || modifiedDatetime.after(cachedImageInfoTime)) {
+                cachedImageInfo = getNonCachedImageInfo();
+                cachedImageInfoTime = modifiedDatetime;
+            }
 
-    		return cachedImageInfo;
-    	}
+            return cachedImageInfo;
+        }
 
-    	return null;
+        return null;
     }
 
     ImageInfo getNonCachedImageInfo() throws IOException {
-    	return ImageOp.getImageInfo(Imcms.getServices().getConfig(), getInputStreamSource().getInputStream());
+        return ImageOp.getImageInfo(Imcms.getServices().getConfig(), getInputStreamSource().getInputStream());
     }
 
-    public boolean isEmpty( ) {
+    public boolean isEmpty() {
         try {
-            return getInputStreamSource().getSize() <= 0 ;
-        } catch ( IOException e ) {
-            return true ;
+            return getInputStreamSource().getSize() <= 0;
+        } catch (IOException e) {
+            return true;
         }
     }
 

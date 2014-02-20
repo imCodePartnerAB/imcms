@@ -10,8 +10,8 @@ import org.apache.lucene.queryparser.classic.ParseException;
 
 public class BadQueryException extends Exception {
 
-    public BadQueryException( String queryString, ParseException cause ) {
-        super("Bad query: "+queryString,cause) ;
+    public BadQueryException(String queryString, ParseException cause) {
+        super("Bad query: " + queryString, cause);
     }
 
 }

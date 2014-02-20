@@ -15,12 +15,12 @@ public class AdminManagerSearchPage extends SearchDocumentsPage {
 
     private AdminManager.AdminManagerPage adminManagerPage;
 
-    public AdminManagerSearchPage( AdminManager.AdminManagerPage adminManagerPage ) {
+    public AdminManagerSearchPage(AdminManager.AdminManagerPage adminManagerPage) {
         this.adminManagerPage = adminManagerPage;
     }
 
     public String getPath(HttpServletRequest request) {
-        UserDomainObject user = Utility.getLoggedOnUser( request );
+        UserDomainObject user = Utility.getLoggedOnUser(request);
         return "/imcms/" + user.getLanguageIso639_2() + "/jsp/admin/admin_manager.jsp";
     }
 

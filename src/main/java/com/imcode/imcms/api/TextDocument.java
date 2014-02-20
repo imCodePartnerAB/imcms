@@ -29,7 +29,7 @@ public class TextDocument extends Document {
 
     /**
      * @return A SortedMap that contains the textFileds index as keys, and instaces of TextFields as values. Only the
-     *         TextFields that contains any text is returned.
+     * TextFields that contains any text is returned.
      */
     public SortedMap<Integer, TextField> getTextFields() {
         Predicate predicate = new Predicate() {
@@ -54,7 +54,7 @@ public class TextDocument extends Document {
 
     /**
      * @return A SortedMap that contains the images index as keys, and instaces of Image as values. Only the
-     *         Image that has an url is returned.
+     * Image that has an url is returned.
      */
     public SortedMap<Integer, Image> getImages() {
         Predicate predicate = new Predicate() {
@@ -80,7 +80,7 @@ public class TextDocument extends Document {
 
     /**
      * @return A SortedMap that contains the index of the include as keys, and instaces of Document as values. Only the
-     *         includes that has a document is returned.
+     * includes that has a document is returned.
      */
     public SortedMap<Integer, Document> getIncludes() {
         Predicate predicate = new Predicate() {

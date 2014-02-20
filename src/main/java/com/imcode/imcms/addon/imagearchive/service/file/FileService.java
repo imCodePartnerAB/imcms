@@ -37,131 +37,131 @@ import imcode.util.image.ImageOp;
 
 public class FileService {
     private static final Log log = LogFactory.getLog(FileService.class);
-    
-    public static final String[] IMAGE_EXTENSIONS = new String[] { 
-        "ai", "bmp", "eps", "gif", 
-        "jpeg", "jpg", "pct", "pdf", "pic", "pict", 
-        "png", "ps", "psd", "svg", 
-        "tif", "tiff", "xcf",
-        "AI", "BMP", "EPC", "GIF",
-        "JPEG", "JPG", "PCT", "PDF", "PIC", "PICT",
-        "PNG", "PS", "PSD", "SVG",
-        "TIF", "TIFF", "XCF",
+
+    public static final String[] IMAGE_EXTENSIONS = new String[]{
+            "ai", "bmp", "eps", "gif",
+            "jpeg", "jpg", "pct", "pdf", "pic", "pict",
+            "png", "ps", "psd", "svg",
+            "tif", "tiff", "xcf",
+            "AI", "BMP", "EPC", "GIF",
+            "JPEG", "JPG", "PCT", "PDF", "PIC", "PICT",
+            "PNG", "PS", "PSD", "SVG",
+            "TIF", "TIFF", "XCF",
     };
     public static final Set<String> IMAGE_EXTENSIONS_SET = new HashSet<String>(Arrays.asList(IMAGE_EXTENSIONS));
-    
-    
+
+
     public static final Pattern FILENAME_PATTERN = Pattern.compile("^.*?/?([^/\\:]+?)$");
     public static final String OSX_RESOURCE_FORK_PREFIX = "__MACOSX/";
-    
+
     private static final String IMAGE_ORIGINAL_INFIX = "orig";
     private static final String IMAGE_FULL_INFIX = "full";
     private static final String IMAGE_SMALL_THUMB_INFIX = ThumbSize.SMALL.getName();
     private static final String IMAGE_MEDIUM_THUMB_INFIX = ThumbSize.MEDIUM.getName();
-    
-    
+
+
     @Autowired
     private Config config;
-    
-    
+
+
     public File createTemporaryFile(String prefix) {
         try {
             return File.createTempFile(prefix, ".tmp", config.getTmpPath());
         } catch (IOException ex) {
             log.fatal(ex.getMessage(), ex);
         }
-        
+
         return null;
     }
-    
+
     public File getImageRootPath(long imageId) {
         return new File(config.getStoragePath(), Long.toString(imageId));
     }
-    
+
     public File getImageFile(long imageId, String infix, boolean temporary) {
         StringBuilder filenameBuilder = new StringBuilder();
-        
+
         filenameBuilder.append(imageId);
         filenameBuilder.append("_");
         filenameBuilder.append(infix);
-        
+
         if (temporary) {
             filenameBuilder.append("_tmp");
         }
-        
+
         return new File(getImageRootPath(imageId), filenameBuilder.toString());
     }
-    
+
     public File getImageOriginalFile(long imageId, boolean temporary) {
         return getImageFile(imageId, IMAGE_ORIGINAL_INFIX, temporary);
     }
-    
+
     public File getImageFullFile(long imageId, boolean temporary) {
         return getImageFile(imageId, IMAGE_FULL_INFIX, temporary);
     }
-    
+
     public boolean storeImage(File tempFile, long imageId, boolean temporary) {
         File originalFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, temporary);
         File fullFile = getImageFile(imageId, IMAGE_FULL_INFIX, temporary);
         File thumbSmallFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, temporary);
         File thumbMedFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, temporary);
-        
+
         try {
             originalFile.getParentFile().mkdirs();
 
             FileUtils.copyFile(tempFile, originalFile);
-            
+
             new ImageOp().input(originalFile)
                     .outputFormat(Format.JPEG)
                     .processToFile(fullFile);
-            
+
             generateThumbnail(fullFile, thumbSmallFile, ThumbSize.SMALL);
             generateThumbnail(fullFile, thumbMedFile, ThumbSize.MEDIUM);
-            
+
             return true;
         } catch (IOException ex) {
             log.fatal(ex.getMessage(), ex);
-            
+
             thumbSmallFile.delete();
             thumbMedFile.delete();
             fullFile.delete();
             originalFile.delete();
         }
-        
+
         return false;
     }
-    
+
     private void generateThumbnail(File inputFile, File outputFile, ThumbSize thumbnailSize) {
         new ImageOp().input(inputFile)
-            .resizeProportional(thumbnailSize.getWidth(), thumbnailSize.getHeight(), Color.WHITE, Gravity.CENTER)
-            .outputFormat(Format.JPEG)
-            .processToFile(outputFile);
+                .resizeProportional(thumbnailSize.getWidth(), thumbnailSize.getHeight(), Color.WHITE, Gravity.CENTER)
+                .outputFormat(Format.JPEG)
+                .processToFile(outputFile);
     }
-    
+
     public void rotateImage(long imageId, int angle, boolean temporary) {
         File fullFile = getImageFile(imageId, IMAGE_FULL_INFIX, temporary);
         File thumbSmallFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, temporary);
         File thumbMedFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, temporary);
-        
+
         new ImageOp().input(fullFile)
                 .rotate(angle)
                 .processToFile(fullFile);
-        
+
         generateThumbnail(fullFile, thumbSmallFile, ThumbSize.SMALL);
         generateThumbnail(fullFile, thumbMedFile, ThumbSize.MEDIUM);
     }
-    
+
     public void copyTemporaryImageToCurrent(long imageId) {
         File originalFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, false);
         File fullFile = getImageFile(imageId, IMAGE_FULL_INFIX, false);
         File thumbSmallFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, false);
         File thumbMedFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, false);
-        
+
         File originalTempFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, true);
         File fullTempFile = getImageFile(imageId, IMAGE_FULL_INFIX, true);
         File thumbSmallTempFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, true);
         File thumbMedTempFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, true);
-        
+
         try {
             FileUtils.copyFile(originalTempFile, originalFile);
             FileUtils.copyFile(fullTempFile, fullFile);
@@ -171,21 +171,21 @@ public class FileService {
             throw new RuntimeException(ex);
         }
     }
-    
+
     public void createTemporaryCopyOfCurrentImage(long imageId) {
         File originalFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, false);
         File fullFile = getImageFile(imageId, IMAGE_FULL_INFIX, false);
         File thumbSmallFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, false);
         File thumbMedFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, false);
-        
+
         File originalTempFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, true);
         File fullTempFile = getImageFile(imageId, IMAGE_FULL_INFIX, true);
         File thumbSmallTempFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, true);
         File thumbMedTempFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, true);
-        
+
         try {
             FileUtils.copyFile(originalFile, originalTempFile);
-            FileUtils.copyFile( fullFile, fullTempFile);
+            FileUtils.copyFile(fullFile, fullTempFile);
             FileUtils.copyFile(thumbSmallFile, thumbSmallTempFile);
             FileUtils.copyFile(thumbMedFile, thumbMedTempFile);
         } catch (Exception ex) {
@@ -193,104 +193,104 @@ public class FileService {
             FileUtils.deleteQuietly(fullTempFile);
             FileUtils.deleteQuietly(thumbSmallTempFile);
             FileUtils.deleteQuietly(thumbMedTempFile);
-            
+
             throw new RuntimeException(ex);
         }
     }
-    
+
     public void deleteTemporaryImage(long imageId) {
         File originalTempFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, true);
         File fullTempFile = getImageFile(imageId, IMAGE_FULL_INFIX, true);
         File thumbSmallTempFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, true);
         File thumbMedTempFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, true);
-        
+
         originalTempFile.delete();
         fullTempFile.delete();
         thumbSmallTempFile.delete();
         thumbMedTempFile.delete();
     }
-    
+
     public void deleteImage(long imageId) {
         File rootPath = new File(config.getStoragePath(), Long.toString(imageId));
-        
+
         try {
             FileUtils.deleteDirectory(rootPath);
         } catch (Exception ex) {
             log.fatal(ex.getMessage(), ex);
         }
     }
-    
+
     public Object[] getImageThumbnail(long imageId, ThumbSize thumbSize, boolean temporary) {
         try {
             String temp = (temporary ? "_tmp" : "");
-            
+
             File rootPath = new File(config.getStoragePath(), Long.toString(imageId));
-            
+
             File thumbFile = new File(rootPath, String.format("%d_%s%s", imageId, thumbSize.getName(), temp));
-            
+
             if (!thumbFile.exists()) {
                 return null;
             }
-            
-            return new Object[] {
-                thumbFile.length(), 
-                FileUtils.openInputStream(thumbFile)
+
+            return new Object[]{
+                    thumbFile.length(),
+                    FileUtils.openInputStream(thumbFile)
             };
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return null;
     }
-    
+
     public Object[] getImageFull(long imageId, boolean temporary) {
         try {
             String temp = (temporary ? "_tmp" : "");
-            
+
             File rootPath = new File(config.getStoragePath(), Long.toString(imageId));
-            
+
             File fullFile = new File(rootPath, String.format("%d_full%s", imageId, temp));
-            
+
             if (!fullFile.exists()) {
                 return null;
             }
-            
-            return new Object[] {
-                fullFile.length(), 
-                FileUtils.openInputStream(fullFile)
+
+            return new Object[]{
+                    fullFile.length(),
+                    FileUtils.openInputStream(fullFile)
             };
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return null;
     }
-    
+
     public String transferImageToImcms(long imageId) {
         String filename = String.format("archive_img%d.jpg", imageId);
-        
+
         File rootPath = new File(config.getStoragePath(), Long.toString(imageId));
-        
+
         File fullFile = new File(rootPath, String.format("%d_full", imageId));
-        
+
         File imcmsFile = new File(config.getImagesPath(), filename);
-        
+
         try {
             FileUtils.copyFile(fullFile, imcmsFile);
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
         }
-        
+
         return filename;
     }
 
     public List<File> getSubdirs(File file, FileFilter filter) {
-        if(file == null) {
+        if (file == null) {
             return Collections.emptyList();
         }
 
         File[] subDirsTmp = file.listFiles(filter);
-        if(subDirsTmp == null) {
+        if (subDirsTmp == null) {
             subDirsTmp = new File[0];
         }
 
@@ -298,7 +298,7 @@ public class FileService {
         subdirs = new ArrayList<File>(subdirs);
 
         List<File> deepSubdirs = new ArrayList<File>();
-        for(File subdir : subdirs) {
+        for (File subdir : subdirs) {
             deepSubdirs.addAll(getSubdirs(subdir, filter));
         }
 
@@ -319,11 +319,11 @@ public class FileService {
             }
         });
 
-        if(oldLibrariesPaths != null) {
+        if (oldLibrariesPaths != null) {
             firstLevelLibraryFolder.addAll(Arrays.asList(oldLibrariesPaths));
         }
 
-        if(files != null) {
+        if (files != null) {
             firstLevelLibraryFolder.addAll(Arrays.asList(files));
         }
 
@@ -343,7 +343,7 @@ public class FileService {
         });
 
         if (files == null) {
-        	return Collections.emptyList();
+            return Collections.emptyList();
         }
 
         return files;
@@ -404,7 +404,7 @@ public class FileService {
 
     public boolean storeZipToLibrary(LibrariesDto library, File tempFile) {
         File parent;
-        
+
         if (library.isUserLibrary()) {
             parent = new File(config.getLibrariesPath(), config.getUsersLibraryFolder());
 
@@ -430,7 +430,7 @@ public class FileService {
                 Matcher matcher = FILENAME_PATTERN.matcher(fileName);
 
                 /* skipping OSX resource forks(__MAXOSC/) */
-                if (fileName.startsWith(FileService.OSX_RESOURCE_FORK_PREFIX) ||!matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
+                if (fileName.startsWith(FileService.OSX_RESOURCE_FORK_PREFIX) || !matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
                     continue;
                 }
 
@@ -489,18 +489,18 @@ public class FileService {
 
     private File getLibraryFile(LibrariesDto library, String fileName) {
         File parent;
-        
+
         if (library.isUserLibrary()) {
             parent = new File(config.getLibrariesPath(), config.getUsersLibraryFolder());
-            
+
         } else if (library.getLibraryType() == Libraries.TYPE_OLD_LIBRARY) {
             parent = new File(library.getFilepath());
-            
+
         } else {
             parent = new File(library.getFilepath());
 
         }
-        
+
         return new File(parent, String.format("%s/%s", library.getFolderNm(), fileName));
     }
 }

@@ -22,19 +22,19 @@ public abstract class DocumentPageFlow extends PageFlow {
 
     protected final DocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
 
-    protected DocumentPageFlow(DispatchCommand returnCommand, SaveDocumentCommand saveDocumentCommand ) {
-        super( returnCommand );
+    protected DocumentPageFlow(DispatchCommand returnCommand, SaveDocumentCommand saveDocumentCommand) {
+        super(returnCommand);
         this.saveDocumentCommand = saveDocumentCommand;
     }
 
-    public abstract DocumentDomainObject getDocument() ;
+    public abstract DocumentDomainObject getDocument();
 
-    protected synchronized void saveDocument( HttpServletRequest request ) {
+    protected synchronized void saveDocument(HttpServletRequest request) {
         try {
-            saveDocumentCommand.saveDocument( getDocument(), Utility.getLoggedOnUser( request ) );
-        } catch ( NoPermissionToEditDocumentException e ) {
+            saveDocumentCommand.saveDocument(getDocument(), Utility.getLoggedOnUser(request));
+        } catch (NoPermissionToEditDocumentException e) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
-        } catch ( NoPermissionToAddDocumentToMenuException e ) {
+        } catch (NoPermissionToAddDocumentToMenuException e) {
             throw new ConcurrentDocumentModificationException(e);
         } catch (DocumentSaveException e) {
             throw new UnhandledException(e);
@@ -42,22 +42,20 @@ public abstract class DocumentPageFlow extends PageFlow {
     }
 
 
-    
-
-    protected void saveDocumentAndReturn( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        saveDocument( request );
-        dispatchReturn( request, response );
+    protected void saveDocumentAndReturn(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        saveDocument(request);
+        dispatchReturn(request, response);
     }
 
-    public static DocumentPageFlow fromRequest( HttpServletRequest request ) {
-        return (DocumentPageFlow)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+    public static DocumentPageFlow fromRequest(HttpServletRequest request) {
+        return (DocumentPageFlow) HttpSessionUtils.getSessionAttributeWithNameInRequest(request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW);
     }
 
 
     public static abstract class SaveDocumentCommand implements Serializable {
-        
+
         public abstract void saveDocument(DocumentDomainObject document, UserDomainObject user)
-               throws NoPermissionInternalException, DocumentSaveException;
+                throws NoPermissionInternalException, DocumentSaveException;
 
     }
 }

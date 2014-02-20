@@ -10,6 +10,6 @@ public class EmptyEnumeration<E> implements Enumeration<E> {
     }
 
     public E nextElement() {
-        throw new NoSuchElementException() ;
+        throw new NoSuchElementException();
     }
 }

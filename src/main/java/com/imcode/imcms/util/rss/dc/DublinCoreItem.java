@@ -29,15 +29,15 @@ public class DublinCoreItem implements Item {
         return dublinCoreTerms.getDescription();
     }
 
-    public Map<NameSpace,Map<String,String>> getNameSpaceStrings() {
+    public Map<NameSpace, Map<String, String>> getNameSpaceStrings() {
         return new DublinCoreTermsMapFactory().getNameSpaceStrings(dublinCoreTerms);
     }
 
     public Map<NameSpace, DynaBean> getNameSpaceBeans() {
         WrapDynaBean dublinCoreDynaBean = new WrapDynaBean(dublinCoreTerms);
-        return ArrayUtils.toMap(new Object[][] {
-                { DublinCoreTerms.DUBLIN_CORE_ELEMENTS_NAME_SPACE, dublinCoreDynaBean },
-                { DublinCoreTerms.DUBLIN_CORE_TERMS_NAME_SPACE, dublinCoreDynaBean },
+        return ArrayUtils.toMap(new Object[][]{
+                {DublinCoreTerms.DUBLIN_CORE_ELEMENTS_NAME_SPACE, dublinCoreDynaBean},
+                {DublinCoreTerms.DUBLIN_CORE_TERMS_NAME_SPACE, dublinCoreDynaBean},
         });
     }
 }

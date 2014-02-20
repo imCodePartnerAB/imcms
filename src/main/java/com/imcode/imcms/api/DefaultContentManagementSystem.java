@@ -19,42 +19,42 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
     volatile UserDomainObject currentUser;
     protected ImcmsServices service;
 
-    public DefaultContentManagementSystem( ImcmsServices service, UserDomainObject accessor ) {
-        this.service = service ;
+    public DefaultContentManagementSystem(ImcmsServices service, UserDomainObject accessor) {
+        this.service = service;
         currentUser = accessor;
     }
 
     public static DefaultContentManagementSystem create(ImcmsServices service, UserDomainObject accessor,
                                                         DataSource apiDataSource) {
-        DefaultContentManagementSystem contentManagementSystem = new DefaultContentManagementSystem( service, accessor );
+        DefaultContentManagementSystem contentManagementSystem = new DefaultContentManagementSystem(service, accessor);
         contentManagementSystem.init(apiDataSource);
-        return contentManagementSystem ;
+        return contentManagementSystem;
     }
 
     private void init(DataSource apiDataSource) {
-        userService = new UserService( this );
-        documentService = new DocumentService( this ) ;
-        templateService = new TemplateService( this );
-        databaseService = new DatabaseService( apiDataSource );
-        mailService = new MailService(service.getSMTP()) ;
+        userService = new UserService(this);
+        documentService = new DocumentService(this);
+        templateService = new TemplateService(this);
+        databaseService = new DatabaseService(apiDataSource);
+        mailService = new MailService(service.getSMTP());
     }
 
     protected Object clone() throws CloneNotSupportedException {
-        DefaultContentManagementSystem clone = (DefaultContentManagementSystem)super.clone() ;
-        clone.currentUser = (UserDomainObject)currentUser.clone() ;
-        return clone ;
+        DefaultContentManagementSystem clone = (DefaultContentManagementSystem) super.clone();
+        clone.currentUser = (UserDomainObject) currentUser.clone();
+        return clone;
     }
 
-    public UserService getUserService(){
+    public UserService getUserService() {
         return userService;
     }
 
-    public DocumentService getDocumentService(){
+    public DocumentService getDocumentService() {
         return documentService;
     }
 
     public User getCurrentUser() {
-        return new User(currentUser.clone()) ;
+        return new User(currentUser.clone());
     }
 
     public DatabaseService getDatabaseService() {
@@ -66,22 +66,22 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
     }
 
     public MailService getMailService() {
-        return mailService ;
+        return mailService;
     }
 
     ImcmsServices getInternal() {
-        return service ;
+        return service;
     }
 
-    public void runAsSuperadmin( ContentManagementSystemRunnable runnable ) throws NoPermissionException {
+    public void runAsSuperadmin(ContentManagementSystemRunnable runnable) throws NoPermissionException {
         KeyStore keyStore = service.getKeyStore();
         Class clazz = runnable.getClass();
-        if (!Utility.classIsSignedByCertificatesInKeyStore( clazz, keyStore )) {
-            throw new NoPermissionException("Class "+clazz.getName()+" is not signed by certificates in keystore.") ;
+        if (!Utility.classIsSignedByCertificatesInKeyStore(clazz, keyStore)) {
+            throw new NoPermissionException("Class " + clazz.getName() + " is not signed by certificates in keystore.");
         }
-        DefaultContentManagementSystem cms = create( service, (UserDomainObject)currentUser.clone(), Imcms.getApiDataSource());
-        cms.currentUser.addRoleId( RoleId.SUPERADMIN );
-        runnable.runWith( cms );
+        DefaultContentManagementSystem cms = create(service, (UserDomainObject) currentUser.clone(), Imcms.getApiDataSource());
+        cms.currentUser.addRoleId(RoleId.SUPERADMIN);
+        runnable.runWith(cms);
         cms.currentUser = null;
     }
 }

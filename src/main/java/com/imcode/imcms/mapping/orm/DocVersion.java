@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping.orm;
 
 import com.google.common.base.Objects;
+
 import java.util.Date;
 
 import javax.persistence.*;

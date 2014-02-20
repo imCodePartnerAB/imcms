@@ -1,23 +1,24 @@
 package com.imcode.imcms.addon.imagearchive.command;
 
 import java.io.Serializable;
+
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class ExternalFilesCommand implements Serializable {
     private static final long serialVersionUID = 7135495070544485257L;
-    
+
     private CommonsMultipartFile file;
     private String[] fileNames;
-    
+
     private String upload;
     private String activate;
     private String erase;
-    
-    
+
+
     public ExternalFilesCommand() {
     }
 
-    
+
     public String getActivate() {
         return activate;
     }

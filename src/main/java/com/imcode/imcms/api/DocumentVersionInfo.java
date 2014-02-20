@@ -10,77 +10,75 @@ import java.util.TreeMap;
  * Document's version info.
  */
 public class DocumentVersionInfo implements Serializable {
-	
-	/**
-	 * Document's doc id.
-	 */
-	private int docId;
-	
-	/**
-	 * Latest version;
-	 */
-	private DocumentVersion latestVersion;
-
-	/**
-	 * Working version (version no 0).
-	 */
-	private DocumentVersion workingVersion;
-	
-	/**
-	 * Default version.
-	 */
-	private DocumentVersion defaultVersion;
-	
-	/**
-	 * Version list sorted ascending.
-	 */
-	private List<DocumentVersion> versions;
-	
-	/**
-	 * Versions map.
-	 */
-	private Map<Integer, DocumentVersion> versionsMap;
 
     /**
-	 * Creates new instance of DocumentVersionSupport.
-	 * 
-	 * @param docId documentId.
-	 * 
-	 * @param versions document versions list.
-	 */
-	public DocumentVersionInfo(int docId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
-		versionsMap = new TreeMap<>();
-		
-		for (DocumentVersion version: versions) {
-			versionsMap.put(version.getNo(), version);
-		}
+     * Document's doc id.
+     */
+    private int docId;
+
+    /**
+     * Latest version;
+     */
+    private DocumentVersion latestVersion;
+
+    /**
+     * Working version (version no 0).
+     */
+    private DocumentVersion workingVersion;
+
+    /**
+     * Default version.
+     */
+    private DocumentVersion defaultVersion;
+
+    /**
+     * Version list sorted ascending.
+     */
+    private List<DocumentVersion> versions;
+
+    /**
+     * Versions map.
+     */
+    private Map<Integer, DocumentVersion> versionsMap;
+
+    /**
+     * Creates new instance of DocumentVersionSupport.
+     *
+     * @param docId    documentId.
+     * @param versions document versions list.
+     */
+    public DocumentVersionInfo(int docId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
+        versionsMap = new TreeMap<>();
+
+        for (DocumentVersion version : versions) {
+            versionsMap.put(version.getNo(), version);
+        }
 
         this.workingVersion = workingVersion;
         this.defaultVersion = defaultVersion;
         this.latestVersion = versions.get(versions.size() - 1);
 
-		this.docId = docId;
-		this.versions = Collections.unmodifiableList(versions);
-		this.versionsMap = Collections.unmodifiableMap(versionsMap);			
-	}
+        this.docId = docId;
+        this.versions = Collections.unmodifiableList(versions);
+        this.versionsMap = Collections.unmodifiableMap(versionsMap);
+    }
 
     /**
-	 * @return document id.
-	 */
-	public int getDocId() {
-		return docId;
-	}
-	
-	/** 
-	 * @param no version number.
-	 * 
-	 * @return version or null if there is no version with such version number.
-	 */				
-	public DocumentVersion getVersion(Integer no) {
-		return versionsMap.get(no);
-	}
+     * @return document id.
+     */
+    public int getDocId() {
+        return docId;
+    }
 
-    
+    /**
+     * @param no version number.
+     * @return version or null if there is no version with such version number.
+     */
+    public DocumentVersion getVersion(Integer no) {
+        return versionsMap.get(no);
+    }
+
+
     public static boolean isWorkingVersion(DocumentVersion version) {
         return version != null && isWorkingVersionNo(version.getNo());
     }
@@ -88,51 +86,51 @@ public class DocumentVersionInfo implements Serializable {
     public static boolean isWorkingVersionNo(int no) {
         return no == DocumentVersion.WORKING_VERSION_NO;
     }
-	
-	/**
-	 * @returns if given version number belongs to active version.
-	 */
-	public boolean isDefaultVersion(DocumentVersion version) {
-		return version != null && getDefaultVersion().getNo() == version.getNo();
-	}
-	
-	/** 
-	 * @return latest version.
-	 */				
-	public DocumentVersion getLatestVersion() {
-		return latestVersion;
-	}
-	
-	/** 
-	 * @return working version.
-	 */		
-	public DocumentVersion getWorkingVersion() {
-		return workingVersion;
-	}	
-	
-	/** 
-	 * @return default version of a document.
-	 */
-	public DocumentVersion getDefaultVersion() {
-		return defaultVersion;
-	}	
-	
-	/** 
-	 * Return unmodifiable map of document's version 
-	 * sorted by number in ascending order.
-	 *  
-	 * @return unmodifiable list of document's versions.
-	 */
-	public List<DocumentVersion> getVersions() {
-		return versions;
-	}
-	
-	/**
-	 * @return document's versions count.
-	 */			
-	public int getVersionsCount() {
-		return versions.size(); 
-	}
+
+    /**
+     * @returns if given version number belongs to active version.
+     */
+    public boolean isDefaultVersion(DocumentVersion version) {
+        return version != null && getDefaultVersion().getNo() == version.getNo();
+    }
+
+    /**
+     * @return latest version.
+     */
+    public DocumentVersion getLatestVersion() {
+        return latestVersion;
+    }
+
+    /**
+     * @return working version.
+     */
+    public DocumentVersion getWorkingVersion() {
+        return workingVersion;
+    }
+
+    /**
+     * @return default version of a document.
+     */
+    public DocumentVersion getDefaultVersion() {
+        return defaultVersion;
+    }
+
+    /**
+     * Return unmodifiable map of document's version
+     * sorted by number in ascending order.
+     *
+     * @return unmodifiable list of document's versions.
+     */
+    public List<DocumentVersion> getVersions() {
+        return versions;
+    }
+
+    /**
+     * @return document's versions count.
+     */
+    public int getVersionsCount() {
+        return versions.size();
+    }
 
     public boolean workingIsDefault() {
         return getDefaultVersion().getNo() == getWorkingVersion().getNo();

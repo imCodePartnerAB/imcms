@@ -6,10 +6,10 @@ package com.imcode.imcms.api;
 public class SaveException extends Exception {
 
     public SaveException(String message, Throwable cause) {
-        super(message, cause) ;
+        super(message, cause);
     }
 
-    public SaveException( Throwable cause ) {
-        super(cause) ;
+    public SaveException(Throwable cause) {
+        super(cause);
     }
 }

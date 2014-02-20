@@ -7,14 +7,14 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class LibraryRolesPK implements Serializable {
     private static final long serialVersionUID = -291154922220606569L;
-    
-    @Column(name="library_id", nullable=false)
+
+    @Column(name = "library_id", nullable = false)
     private int libraryId;
-    
-    @Column(name="role_id", nullable=false)
+
+    @Column(name = "role_id", nullable = false)
     private int roleId;
 
-    
+
     public LibraryRolesPK() {
     }
 
@@ -23,7 +23,7 @@ public class LibraryRolesPK implements Serializable {
         this.roleId = roleId;
     }
 
-    
+
     public int getLibraryId() {
         return libraryId;
     }
@@ -40,26 +40,26 @@ public class LibraryRolesPK implements Serializable {
         this.roleId = roleId;
     }
 
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final LibraryRolesPK other = (LibraryRolesPK) obj;
         if (this.libraryId != other.libraryId) {
             return false;
         }
-        
+
         if (this.roleId != other.roleId) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -68,13 +68,13 @@ public class LibraryRolesPK implements Serializable {
         int hash = 7;
         hash = 79 * hash + this.libraryId;
         hash = 79 * hash + this.roleId;
-        
+
         return hash;
     }
 
     @Override
     public String toString() {
-        return String.format("com.imcode.imcms.addon.imagearchive.entity.LibraryRolesPK[libraryId: %d, roleId: %d]", 
+        return String.format("com.imcode.imcms.addon.imagearchive.entity.LibraryRolesPK[libraryId: %d, roleId: %d]",
                 libraryId, roleId);
     }
 }

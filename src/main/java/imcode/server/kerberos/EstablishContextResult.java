@@ -6,11 +6,11 @@ class EstablishContextResult {
     private byte[] spnegoResponseToken;
     private String clientPrincipalName;
 
-    
+
     public EstablishContextResult() {
     }
 
-    
+
     public String getClientPrincipalName() {
         return clientPrincipalName;
     }

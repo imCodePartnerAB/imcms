@@ -23,11 +23,11 @@ public class Facade {
     @Autowired
     private CategoryService categoryService;
 
-    
+
     public Facade() {
     }
-    
-    
+
+
     public Config getConfig() {
         return config;
     }
@@ -55,7 +55,7 @@ public class Facade {
     public LibraryService getLibraryService() {
         return libraryService;
     }
-    
+
     public CategoryService getCategoryService() {
         return categoryService;
     }

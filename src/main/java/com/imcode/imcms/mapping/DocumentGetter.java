@@ -7,22 +7,22 @@ import java.util.Collection;
 import java.util.List;
 
 public interface DocumentGetter {
-    
-    /** 
+
+    /**
      * @return a list of default documents.
-     */ 
+     */
     List<DocumentDomainObject> getDocuments(Collection<Integer> docIds);
 
     /**
      * Returns default document.
-     * 
-     * @param docId document's id.
      *
+     * @param docId document's id.
      */
     <T extends DocumentDomainObject> T getDocument(int docId);
 
     /**
      * Returns default document
+     *
      * @param docId
      * @return
      */

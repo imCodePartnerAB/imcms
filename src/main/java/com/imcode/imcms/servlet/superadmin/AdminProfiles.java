@@ -35,7 +35,7 @@ public class AdminProfiles extends HttpServlet {
 
         public String suffixFrom(HttpServletRequest request) {
             Map<String, String[]> parameterMap = (Map<String, String[]>) request.getParameterMap();
-            for ( String parameterName : parameterMap.keySet() ) {
+            for (String parameterName : parameterMap.keySet()) {
                 String prefix = toString();
                 if (parameterName.startsWith(prefix)) {
                     return parameterName.substring(prefix.length());
@@ -57,7 +57,7 @@ public class AdminProfiles extends HttpServlet {
                          HttpServletResponse response) throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
         if ("/list".equals(pathInfo)) {
-            list(request,response);
+            list(request, response);
         } else if ("/edit".equals(pathInfo)) {
             edit(request, response, new ProfileMapper.SimpleProfile("", "", ""));
         }
@@ -69,7 +69,7 @@ public class AdminProfiles extends HttpServlet {
         ProfileMapper profileMapper = getProfileMapper();
         if ("/list".equals(pathInfo)) {
             if (Parameter.BACK.in(request)) {
-                response.sendRedirect(request.getContextPath()+"/servlet/AdminManager");
+                response.sendRedirect(request.getContextPath() + "/servlet/AdminManager");
                 return;
             }
             String editId = Parameter.EDIT_PREFIX.suffixFrom(request);
@@ -88,17 +88,17 @@ public class AdminProfiles extends HttpServlet {
             list(request, response);
         } else if ("/edit".equals(pathInfo)) {
             if (Parameter.BACK.in(request)) {
-                response.sendRedirect(request.getContextPath()+"/imcms/admin/profile/list");
+                response.sendRedirect(request.getContextPath() + "/imcms/admin/profile/list");
                 return;
             }
             String id = Parameter.PROFILE_ID.from(request);
             String name = Parameter.PROFILE_NAME.from(request);
             String documentName = Parameter.PROFILE_DOCUMENT_NAME.from(request);
-            if ( null == ContentManagementSystem.fromRequest(request).getDocumentService().getDocument(documentName) ) {
+            if (null == ContentManagementSystem.fromRequest(request).getDocumentService().getDocument(documentName)) {
                 edit(request, response, new ProfileMapper.SimpleProfile(id, name, ""));
                 return;
             }
-            if ( StringUtils.isNotBlank(id) ) {
+            if (StringUtils.isNotBlank(id)) {
                 profileMapper.update(new ProfileMapper.SimpleProfile(id, name, documentName));
             } else {
                 profileMapper.create(new ProfileMapper.SimpleProfile(null, name, documentName));
@@ -106,7 +106,6 @@ public class AdminProfiles extends HttpServlet {
             list(request, response);
         }
     }
-
 
 
     private void edit(HttpServletRequest request, HttpServletResponse response,

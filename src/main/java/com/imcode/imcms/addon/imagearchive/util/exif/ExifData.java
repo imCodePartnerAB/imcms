@@ -34,7 +34,7 @@ public class ExifData implements Serializable {
     public ExifData() {
     }
 
-    
+
     public String getArtist() {
         return artist;
     }

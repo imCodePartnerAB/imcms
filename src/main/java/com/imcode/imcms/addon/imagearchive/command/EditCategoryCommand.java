@@ -4,16 +4,16 @@ import java.io.Serializable;
 
 public class EditCategoryCommand implements Serializable {
     private static final long serialVersionUID = -2594211214373510323L;
-    
+
     private boolean showEditCategory;
     private int editCategoryId;
     private int editCategoryType;
     private String editCategoryName;
-    
-    
+
+
     public EditCategoryCommand() {
     }
-    
+
 
     public int getEditCategoryId() {
         return editCategoryId;

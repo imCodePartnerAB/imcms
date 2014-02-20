@@ -20,21 +20,21 @@ import org.hibernate.SessionFactory;
 public class CategoryService {
     @Autowired
     private SessionFactory factory;
-    
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<CategoryTypes> getCategoryTypes() {
 
         List<CategoryTypes> types = factory.getCurrentSession()
                 .createQuery(
-                "SELECT ct.id AS id, ct.name AS name FROM CategoryTypes ct WHERE ct.imageArchive = TRUE ORDER BY ct.name")
+                        "SELECT ct.id AS id, ct.name AS name FROM CategoryTypes ct WHERE ct.imageArchive = TRUE ORDER BY ct.name")
                 .setResultTransformer(Transformers.aliasToBean(CategoryTypes.class))
                 .list();
 
         return types;
     }
 
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<CategoryRoles> findCategoryRoles(Roles role) {
         List<CategoryRoles> categoryRoles = factory.getCurrentSession()
                 .createQuery("SELECT cr.categoryId AS categoryId, cr.roleId AS roleId, cr.canUse AS canUse, cr.canChange AS canChange " +
@@ -46,12 +46,12 @@ public class CategoryService {
         return categoryRoles;
     }
 
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public boolean existsCategory(String categoryName, int categoryTypeId) {
-        
+
         Integer existingCategoryId = (Integer) factory.getCurrentSession()
                 .createQuery(
-                "SELECT c.id FROM Categories c WHERE c.name = :name AND c.type.id = :typeId")
+                        "SELECT c.id FROM Categories c WHERE c.name = :name AND c.type.id = :typeId")
                 .setString("name", categoryName)
                 .setInteger("typeId", categoryTypeId)
                 .setMaxResults(1)
@@ -59,14 +59,14 @@ public class CategoryService {
 
         return existingCategoryId != null;
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public boolean existsCategory(int categoryId, String newCategoryName) {
 
         Integer existingCategoryId = (Integer) factory.getCurrentSession()
                 .createQuery(
-                "SELECT c.id FROM Categories c " +
-                "WHERE c.name = :newName AND c.id <> :categoryId AND c.type.name = 'Images'")
+                        "SELECT c.id FROM Categories c " +
+                                "WHERE c.name = :newName AND c.id <> :categoryId AND c.type.name = 'Images'")
                 .setString("newName", newCategoryName)
                 .setInteger("categoryId", categoryId)
                 .setMaxResults(1)
@@ -74,7 +74,7 @@ public class CategoryService {
 
         return existingCategoryId != null;
     }
-    
+
     public Categories createCategory(String categoryName, int categoryTypeId) throws CategoryExistsException {
         Session session = factory.getCurrentSession();
 
@@ -102,34 +102,34 @@ public class CategoryService {
 
         return category;
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Categories getCategory(int categoryId) {
 
         Categories category = (Categories) factory.getCurrentSession()
                 .createQuery(
-                "SELECT c.id AS id, c.name AS name, c.typeId AS typeId FROM Categories c WHERE c.id = :id")
+                        "SELECT c.id AS id, c.name AS name, c.typeId AS typeId FROM Categories c WHERE c.id = :id")
                 .setInteger("id", categoryId)
                 .setResultTransformer(Transformers.aliasToBean(Categories.class))
                 .uniqueResult();
 
         return category;
     }
-    
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Categories> getCategories() {
-        
+
         List<Categories> categories = factory.getCurrentSession()
                 .createQuery(
-                "SELECT c.id AS id, c.name AS name, c.typeId AS typeId FROM Categories c " +
-                "WHERE c.type.name = :typeName ORDER BY c.name")
+                        "SELECT c.id AS id, c.name AS name, c.typeId AS typeId FROM Categories c " +
+                                "WHERE c.type.name = :typeName ORDER BY c.name")
                 .setString("typeName", "Images")
                 .setResultTransformer(Transformers.aliasToBean(Categories.class))
                 .list();
 
         return categories;
     }
-    
+
     public void deleteCategory(int categoryId) {
         Session session = factory.getCurrentSession();
 
@@ -150,7 +150,7 @@ public class CategoryService {
                 .setInteger("id", categoryId)
                 .executeUpdate();
     }
-    
+
     public void updateCategory(int categoryId, String categoryName, int typeId) throws CategoryExistsException {
         if (existsCategory(categoryId, categoryName)) {
             throw new CategoryExistsException();
@@ -158,7 +158,7 @@ public class CategoryService {
 
         factory.getCurrentSession()
                 .createQuery(
-                "UPDATE Categories c SET c.name = :name, c.typeId = :typeId WHERE c.id = :categoryId")
+                        "UPDATE Categories c SET c.name = :name, c.typeId = :typeId WHERE c.id = :categoryId")
                 .setString("name", categoryName)
                 .setInteger("typeId", typeId)
                 .setInteger("categoryId", categoryId)

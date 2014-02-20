@@ -3,20 +3,21 @@ package com.imcode.imcms.mapping.orm;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ip_accesses")
+@Table(name = "ip_accesses")
 public class IPAccess implements Cloneable {
 
-    @Id  @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="ip_access_id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ip_access_id")
     private Integer id;
 
-    @Column(name="ip_start")
+    @Column(name = "ip_start")
     private String start;
 
-    @Column(name="ip_end")
+    @Column(name = "ip_end")
     private String end;
 
-    @Column(name="user_id")
+    @Column(name = "user_id")
     private Integer userId;
 
     public Integer getId() {
@@ -53,6 +54,6 @@ public class IPAccess implements Cloneable {
 
     @Override
     public IPAccess clone() throws CloneNotSupportedException {
-        return (IPAccess)super.clone();
+        return (IPAccess) super.clone();
     }
 }

@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 
 import java.beans.PropertyEditorSupport;
 import java.io.File;
+
 import org.apache.commons.lang.StringUtils;
 
 public class FileEditor extends PropertyEditorSupport {
@@ -21,7 +22,7 @@ public class FileEditor extends PropertyEditorSupport {
                 file = new File(imcmsPath, text);
             }
         }
-        
+
         setValue(file);
     }
 }

@@ -5,10 +5,10 @@ import java.io.Serializable;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class RolePermissionDomainObject implements Serializable {
-    private int id ;
-    private LocalizedMessage description ;
+    private int id;
+    private LocalizedMessage description;
 
-    RolePermissionDomainObject( int id, LocalizedMessage description ) {
+    RolePermissionDomainObject(int id, LocalizedMessage description) {
         this.id = id;
         this.description = description;
     }
@@ -18,11 +18,11 @@ public class RolePermissionDomainObject implements Serializable {
     }
 
     public int hashCode() {
-        return id ;
+        return id;
     }
 
-    public boolean equals( Object obj ) {
-        return obj instanceof RolePermissionDomainObject && ((RolePermissionDomainObject)obj).id == id ;
+    public boolean equals(Object obj) {
+        return obj instanceof RolePermissionDomainObject && ((RolePermissionDomainObject) obj).id == id;
     }
 
     public LocalizedMessage getDescription() {

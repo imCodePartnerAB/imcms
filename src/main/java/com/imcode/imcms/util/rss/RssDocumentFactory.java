@@ -4,5 +4,5 @@ import org.w3c.dom.Document;
 
 public interface RssDocumentFactory {
 
-    Document createRssDocument(Channel channel) ;
+    Document createRssDocument(Channel channel);
 }

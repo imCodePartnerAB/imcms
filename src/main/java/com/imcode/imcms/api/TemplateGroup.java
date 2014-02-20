@@ -23,21 +23,21 @@ public class TemplateGroup {
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof TemplateGroup ) ) {
+        if (!(o instanceof TemplateGroup)) {
             return false;
         }
 
         final TemplateGroup templateGroup = (TemplateGroup) o;
 
-        return internalTemplateGroup.equals(templateGroup.internalTemplateGroup) ;
+        return internalTemplateGroup.equals(templateGroup.internalTemplateGroup);
 
     }
 
     public int hashCode() {
-        return internalTemplateGroup.hashCode() ;
+        return internalTemplateGroup.hashCode();
 
     }
 }

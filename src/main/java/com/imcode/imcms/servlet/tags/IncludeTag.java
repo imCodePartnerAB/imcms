@@ -5,7 +5,7 @@ import imcode.server.parser.TagParser;
 public class IncludeTag extends SimpleImcmsTag {
 
     protected String getContent(TagParser tagParser) {
-        return tagParser.tagInclude(attributes) ;
+        return tagParser.tagInclude(attributes);
     }
 
     public void setPath(String path) {
@@ -17,7 +17,7 @@ public class IncludeTag extends SimpleImcmsTag {
     }
 
     public void setDocument(String documentId) {
-        attributes.setProperty("document", documentId) ;
+        attributes.setProperty("document", documentId);
     }
 
     public void setFile(String filename) {

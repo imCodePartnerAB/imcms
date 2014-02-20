@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class Functions {
     private static final Pattern NEWLINE_PATTERN = Pattern.compile("\r\n?");
-    
+
     public static String newlineToBr(String value) {
         if (value == null) {
             return null;
@@ -25,27 +25,27 @@ public class Functions {
             return NEWLINE_PATTERN.matcher(value).replaceAll("<br/>");
         }
     }
-    
+
     public static String abbreviate(String value, int maxLength) {
         return StringUtils.abbreviate(value, maxLength);
     }
-    
+
     public static <T> String join(Collection<T> elements, String separator) {
         if (elements == null || elements.isEmpty()) {
             return "";
         }
-        
+
         StringBuilder builder = new StringBuilder();
-        
+
         Iterator<T> it = elements.iterator();
         while (it.hasNext()) {
             builder.append(it.next());
-            
+
             if (it.hasNext()) {
                 builder.append(separator);
             }
         }
-        
+
         return builder.toString();
     }
 
@@ -64,7 +64,7 @@ public class Functions {
     }
 
     public static String doubleToFractionsString(Double number) {
-        if(number == null) {
+        if (number == null) {
             return null;
         }
 

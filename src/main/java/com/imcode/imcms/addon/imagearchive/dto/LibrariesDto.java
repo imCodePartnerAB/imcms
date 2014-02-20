@@ -6,9 +6,9 @@ import com.imcode.imcms.api.User;
 
 public class LibrariesDto implements Serializable {
     private static final long serialVersionUID = -2489487888347287580L;
-    
+
     public static final int USER_LIBRARY_ID = -1;
-    
+
     private int id;
     private String libraryNm;
     private String folderNm;
@@ -16,21 +16,21 @@ public class LibrariesDto implements Serializable {
     private short libraryType;
     private boolean canUse;
     private boolean canChange;
-    
-    
+
+
     public LibrariesDto() {
     }
-    
+
     public static LibrariesDto userLibrary(User user) {
         LibrariesDto library = new LibrariesDto();
         library.setId(USER_LIBRARY_ID);
         library.setFolderNm(Integer.toString(user.getId()));
         library.setCanChange(true);
         library.setCanUse(true);
-        
+
         return library;
     }
-    
+
     public String getFolderNm() {
         return folderNm;
     }
@@ -86,27 +86,27 @@ public class LibrariesDto implements Serializable {
     public void setLibraryType(short libraryType) {
         this.libraryType = libraryType;
     }
-    
+
     public boolean isUserLibrary() {
         return id == USER_LIBRARY_ID;
     }
-    
-    
+
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final LibrariesDto other = (LibrariesDto) obj;
         if (this.id != other.id) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -114,7 +114,7 @@ public class LibrariesDto implements Serializable {
     public int hashCode() {
         int hash = 5;
         hash = 79 * hash + this.id;
-        
+
         return hash;
     }
 }

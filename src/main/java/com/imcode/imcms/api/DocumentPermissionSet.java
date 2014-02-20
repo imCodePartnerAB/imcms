@@ -98,7 +98,7 @@ public class DocumentPermissionSet {
             Set<Integer> allowedTemplateGroupIds = ((TextDocumentPermissionSetDomainObject) internalDocPermSet).getAllowedTemplateGroupIds();
             List<TemplateGroupDomainObject> allowedTemplateGroups = Imcms.getServices().getTemplateMapper().getTemplateGroups(allowedTemplateGroupIds);
             String[] templateGroupNames = new String[allowedTemplateGroupIds.size()];
-            for (CountingIterator<TemplateGroupDomainObject> iterator = new CountingIterator<>(allowedTemplateGroups.iterator()); iterator.hasNext();) {
+            for (CountingIterator<TemplateGroupDomainObject> iterator = new CountingIterator<>(allowedTemplateGroups.iterator()); iterator.hasNext(); ) {
                 TemplateGroupDomainObject templateGroup = iterator.next();
                 templateGroupNames[iterator.getCount() - 1] = templateGroup.getName();
             }

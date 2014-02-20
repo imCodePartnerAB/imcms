@@ -63,10 +63,10 @@ public final class DocumentLanguage implements Serializable {
     private final boolean enabled;
 
     /**
-     * @param code language ISO 639-1 code.
-     * @param name language name
+     * @param code       language ISO 639-1 code.
+     * @param name       language name
      * @param nativeName language native name
-     * @param enabled language enabled status
+     * @param enabled    language enabled status
      */
     public DocumentLanguage(String code, String name, String nativeName, boolean enabled) {
         this.code = code;

@@ -10,7 +10,7 @@ public class DocumentPermissionSetType {
     public final static DocumentPermissionSetType READ = new DocumentPermissionSetType(DocumentPermissionSetTypeDomainObject.READ);
     public final static DocumentPermissionSetType NONE = new DocumentPermissionSetType(DocumentPermissionSetTypeDomainObject.NONE);
 
-    private final DocumentPermissionSetTypeDomainObject internal ;
+    private final DocumentPermissionSetTypeDomainObject internal;
 
     DocumentPermissionSetType(DocumentPermissionSetTypeDomainObject internal) {
         this.internal = internal;

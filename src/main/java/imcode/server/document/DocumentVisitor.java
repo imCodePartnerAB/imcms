@@ -4,22 +4,22 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 public class DocumentVisitor {
 
-    public void visitTextDocument( TextDocumentDomainObject textDocument ) {
-        visitOtherDocument( textDocument ) ;
+    public void visitTextDocument(TextDocumentDomainObject textDocument) {
+        visitOtherDocument(textDocument);
     }
 
-    public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
-        visitOtherDocument( fileDocument );
+    public void visitFileDocument(FileDocumentDomainObject fileDocument) {
+        visitOtherDocument(fileDocument);
     }
 
-    public void visitHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
-        visitOtherDocument( htmlDocument );
+    public void visitHtmlDocument(HtmlDocumentDomainObject htmlDocument) {
+        visitOtherDocument(htmlDocument);
     }
 
-    public void visitUrlDocument( UrlDocumentDomainObject urlDocument ) {
-        visitOtherDocument( urlDocument );
+    public void visitUrlDocument(UrlDocumentDomainObject urlDocument) {
+        visitOtherDocument(urlDocument);
     }
 
-    protected void visitOtherDocument( DocumentDomainObject otherDocument ) {
+    protected void visitOtherDocument(DocumentDomainObject otherDocument) {
     }
 }

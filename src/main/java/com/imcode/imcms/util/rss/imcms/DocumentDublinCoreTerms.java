@@ -37,7 +37,7 @@ public class DocumentDublinCoreTerms implements DublinCoreTerms {
             }
 
             public String getName() {
-                return document.getCreator().getFirstName()+" "+document.getCreator().getLastName();
+                return document.getCreator().getFirstName() + " " + document.getCreator().getLastName();
             }
         };
     }

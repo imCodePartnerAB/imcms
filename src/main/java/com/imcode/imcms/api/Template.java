@@ -14,16 +14,18 @@ public class Template {
         return internalTemplate.getName();
     }
 
-    /** @deprecated Returns 0, use {@link #getName()} instead. **/
+    /**
+     * @deprecated Returns 0, use {@link #getName()} instead. *
+     */
     public int getId() {
         return 0;
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof Template ) ) {
+        if (!(o instanceof Template)) {
             return false;
         }
 
@@ -34,7 +36,7 @@ public class Template {
     }
 
     public int hashCode() {
-        return internalTemplate.hashCode() ;
+        return internalTemplate.hashCode();
     }
 
     TemplateDomainObject getInternal() {

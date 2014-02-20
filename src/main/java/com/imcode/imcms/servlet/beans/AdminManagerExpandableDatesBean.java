@@ -15,11 +15,11 @@ public class AdminManagerExpandableDatesBean {
         return expanded;
     }
 
-    public void setDocument( DocumentDomainObject document ) {
+    public void setDocument(DocumentDomainObject document) {
         this.document = document;
     }
 
-    public void setExpanded( boolean expanded ) {
+    public void setExpanded(boolean expanded) {
         this.expanded = expanded;
     }
 }

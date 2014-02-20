@@ -28,8 +28,8 @@ public class ListDocumentAliasPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__LIST_END = "end";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
 
-    public String startString ;
-    public String endString ;
+    public String startString;
+    public String endString;
     public Set<String> aliasInSelectedRange = new TreeSet<String>();
 
     public ListDocumentAliasPage(DispatchCommand okDispatchCommand, DispatchCommand cancelDispatchCommand, HttpServletRequest request) {
@@ -38,25 +38,25 @@ public class ListDocumentAliasPage extends OkCancelPage {
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
-        startString = StringUtils.defaultString(request.getParameter( REQUEST_PARAMETER__LIST_START ), "A");
-        endString = StringUtils.defaultString(request.getParameter( REQUEST_PARAMETER__LIST_END ), "Ö");
+        startString = StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LIST_START), "A");
+        endString = StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LIST_END), "Ö");
     }
 
     protected void dispatchOther(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
-        DocumentMapper documentMapper = imcref.getDocumentMapper() ;
-        List alphaRange = Arrays.asList(new String[]{"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Å","Ä","Ö" });
-        if(!alphaRange.contains(startString.toUpperCase())) {
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        List alphaRange = Arrays.asList(new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Å", "Ä", "Ö"});
+        if (!alphaRange.contains(startString.toUpperCase())) {
             startString = alphaRange.get(0).toString();
         }
         if (alphaRange.indexOf(endString.toUpperCase()) < alphaRange.indexOf(startString.toUpperCase())) {
             endString = startString;
         }
-        if ( request.getParameter( REQUEST_PARAMETER_BUTTON__LIST ) != null ) {
-            List selectedRange = alphaRange.subList(alphaRange.indexOf(startString.toUpperCase()), alphaRange.indexOf(endString.toUpperCase())+1);
+        if (request.getParameter(REQUEST_PARAMETER_BUTTON__LIST) != null) {
+            List selectedRange = alphaRange.subList(alphaRange.indexOf(startString.toUpperCase()), alphaRange.indexOf(endString.toUpperCase()) + 1);
             aliasInSelectedRange.clear();
             for (String alias : documentMapper.getAllDocumentAlias()) {
-                if (alias.length() > 0 && selectedRange.contains(alias.toUpperCase().substring(0,1))) {
+                if (alias.length() > 0 && selectedRange.contains(alias.toUpperCase().substring(0, 1))) {
                     aliasInSelectedRange.add(alias);
                 }
             }
@@ -65,9 +65,9 @@ public class ListDocumentAliasPage extends OkCancelPage {
     }
 
     public String getPath(HttpServletRequest request) {
-        UserDomainObject user = Utility.getLoggedOnUser( request );
+        UserDomainObject user = Utility.getLoggedOnUser(request);
         return "/imcms/" + user.getLanguageIso639_2()
-               + "/jsp/document_alias_list.jsp";
+                + "/jsp/document_alias_list.jsp";
     }
 
 }

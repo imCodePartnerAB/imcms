@@ -2,11 +2,11 @@ package com.imcode.imcms.servlet.beans;
 
 public class Tab {
 
-    String name ;
-    String text ;
-    String uri ;
+    String name;
+    String text;
+    String uri;
 
-    public Tab( String name, String text, String uri ) {
+    public Tab(String name, String text, String uri) {
 
         this.name = name;
         this.text = text;
@@ -18,7 +18,7 @@ public class Tab {
     }
 
     public String getText() {
-        return text ;
+        return text;
     }
 
     public String getUri() {

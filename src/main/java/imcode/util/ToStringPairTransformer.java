@@ -7,5 +7,5 @@ public abstract class ToStringPairTransformer implements Transformer {
         return transformToStringPair(object);
     }
 
-    protected abstract String[] transformToStringPair(Object object) ;
+    protected abstract String[] transformToStringPair(Object object);
 }

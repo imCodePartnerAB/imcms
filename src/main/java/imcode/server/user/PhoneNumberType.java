@@ -28,7 +28,7 @@ public class PhoneNumberType extends IdLocalizedNamePair {
     }
 
     public static PhoneNumberType getPhoneNumberTypeById(int phoneTypeId) {
-        return ALL_PHONE_TYPES[phoneTypeId] ;
+        return ALL_PHONE_TYPES[phoneTypeId];
     }
 
 }

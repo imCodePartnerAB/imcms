@@ -8,5 +8,5 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public interface DispatchCommand extends Serializable {
-    void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
+    void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
 }

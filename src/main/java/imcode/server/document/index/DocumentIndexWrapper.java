@@ -13,7 +13,7 @@ public class DocumentIndexWrapper implements DocumentIndex {
     private final DocumentIndex index;
 
     public DocumentIndexWrapper(DocumentIndex index) {
-        this.index = index ;
+        this.index = index;
     }
 
     public void indexDocument(DocumentDomainObject document) throws IndexException {

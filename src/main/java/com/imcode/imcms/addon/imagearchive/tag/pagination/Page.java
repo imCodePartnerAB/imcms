@@ -8,15 +8,15 @@ public final class Page {
     public static Page page(int page) {
         return new Page(page, false, false);
     }
-    
+
     public static Page selected(int page) {
         return new Page(page, true, false);
     }
-    
+
     public static Page ellipse() {
         return new Page(0, false, true);
     }
-    
+
     private Page(int page, boolean selected, boolean ellipse) {
         this.page = page;
         this.selected = selected;

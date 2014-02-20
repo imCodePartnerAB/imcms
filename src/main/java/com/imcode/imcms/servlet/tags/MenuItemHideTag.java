@@ -7,11 +7,11 @@ import javax.servlet.jsp.tagext.TagSupport;
 public class MenuItemHideTag extends TagSupport {
 
     public int doStartTag() throws JspException {
-        MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class) ;
+        MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class);
         if (menuTag == null) {
-            throw new JspTagException("menuitem must be enclosed in a menuloop or menu.") ;
+            throw new JspTagException("menuitem must be enclosed in a menuloop or menu.");
         }
-        if ( null == menuTag.getMenuItem() ) {
+        if (null == menuTag.getMenuItem()) {
             return SKIP_BODY;
         }
         return EVAL_BODY_INCLUDE;

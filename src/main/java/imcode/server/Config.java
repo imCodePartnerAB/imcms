@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Base application configuration.
- *
+ * <p/>
  * Fields names matches properties names in server.properties configuration file.
  */
 public class Config {
@@ -23,24 +23,26 @@ public class Config {
     private long imageCacheMaxSize;
     /**
      * Path to ImageMagick 'bin' directory.<br/>
-    {@link imcode.server.DefaultImcmsServices#createConfigFromProperties DefaultImcmsServices.createConfigFromProperties} sets
-     {@link imcode.server.DefaultImcmsServices.WebappRelativeFileConverter WebappRelativeFileConverter} for File type, that's why this field is a String. 
+     * {@link imcode.server.DefaultImcmsServices#createConfigFromProperties DefaultImcmsServices.createConfigFromProperties} sets
+     * {@link imcode.server.DefaultImcmsServices.WebappRelativeFileConverter WebappRelativeFileConverter} for File type, that's why this field is a String.
      */
     private String imageMagickPath;
     private String imageUrl;
     private String smtpServer;
     private int smtpPort;
 
-    /** Admin interface language. Not related to default content language (I18nLanguage). */
+    /**
+     * Admin interface language. Not related to default content language (I18nLanguage).
+     */
     private String defaultLanguage;
-    
+
     private String sessionCookieDomain;
     private String fileAdminRootPaths;
     private float indexingSchedulePeriodInMinutes;
     private String documentPathPrefix;
-    private int documentCacheMaxSize = 100 ;
-    private String keyStorePath ;
-    private String keyStoreType ;
+    private int documentCacheMaxSize = 100;
+    private String keyStorePath;
+    private String keyStoreType;
     private String workaroundUriEncoding;
     private boolean secureLoginRequired;
 
@@ -82,40 +84,40 @@ public class Config {
     }
 
     public void setWorkaroundUriEncoding(String workaroundUriEncoding) {
-        Charset charset = StringUtils.isNotBlank(workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset() ;
+        Charset charset = StringUtils.isNotBlank(workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset();
         this.workaroundUriEncoding = charset.name();
     }
 
-    public void setTemplatePath( File templatePath ) {
+    public void setTemplatePath(File templatePath) {
         this.templatePath = templatePath;
     }
 
-    public void setIncludePath( File includePath ) {
+    public void setIncludePath(File includePath) {
         this.includePath = includePath;
     }
 
-    public void setFilePath( File filePath ) {
+    public void setFilePath(File filePath) {
         this.filePath = filePath;
     }
 
-    public void setImageUrl( String imageUrl ) {
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public void setSmtpServer( String smtpServer ) {
+    public void setSmtpServer(String smtpServer) {
         this.smtpServer = smtpServer;
     }
 
-    public void setSmtpPort( int smtpPort ) {
+    public void setSmtpPort(int smtpPort) {
         this.smtpPort = smtpPort;
     }
 
-    public void setDefaultLanguage( String defaultLanguage ) {
+    public void setDefaultLanguage(String defaultLanguage) {
         try {
-            if ( defaultLanguage.length() < 3 ) {
-                defaultLanguage = LanguageMapper.convert639_1to639_2( defaultLanguage );
+            if (defaultLanguage.length() < 3) {
+                defaultLanguage = LanguageMapper.convert639_1to639_2(defaultLanguage);
             }
-        } catch ( LanguageMapper.LanguageNotSupportedException e1 ) {
+        } catch (LanguageMapper.LanguageNotSupportedException e1) {
             defaultLanguage = null;
         }
         this.defaultLanguage = defaultLanguage;
@@ -153,7 +155,7 @@ public class Config {
         return sessionCookieDomain;
     }
 
-    public void setSessionCookieDomain( String sessionCookieDomain ) {
+    public void setSessionCookieDomain(String sessionCookieDomain) {
         this.sessionCookieDomain = sessionCookieDomain;
     }
 
@@ -161,7 +163,7 @@ public class Config {
         return imagePath;
     }
 
-    public void setImagePath( File imagePath ) {
+    public void setImagePath(File imagePath) {
         this.imagePath = imagePath;
         this.imagePath = imagePath;
     }
@@ -170,7 +172,7 @@ public class Config {
         return fileAdminRootPaths;
     }
 
-    public void setFileAdminRootPaths( String fileAdminRootPaths ) {
+    public void setFileAdminRootPaths(String fileAdminRootPaths) {
         this.fileAdminRootPaths = fileAdminRootPaths;
     }
 
@@ -178,7 +180,7 @@ public class Config {
         return indexingSchedulePeriodInMinutes;
     }
 
-    public void setIndexingSchedulePeriodInMinutes( float indexingSchedulePeriodInMinutes ) {
+    public void setIndexingSchedulePeriodInMinutes(float indexingSchedulePeriodInMinutes) {
         this.indexingSchedulePeriodInMinutes = indexingSchedulePeriodInMinutes;
     }
 
@@ -186,7 +188,7 @@ public class Config {
         return documentPathPrefix;
     }
 
-    public void setDocumentPathPrefix( String documentPathPrefix ) {
+    public void setDocumentPathPrefix(String documentPathPrefix) {
         this.documentPathPrefix = documentPathPrefix;
     }
 
@@ -194,7 +196,7 @@ public class Config {
         return documentCacheMaxSize;
     }
 
-    public void setDocumentCacheMaxSize( int documentCacheMaxSize ) {
+    public void setDocumentCacheMaxSize(int documentCacheMaxSize) {
         this.documentCacheMaxSize = documentCacheMaxSize;
     }
 
@@ -202,7 +204,7 @@ public class Config {
         return keyStorePath;
     }
 
-    public void setKeyStorePath( String keyStorePath ) {
+    public void setKeyStorePath(String keyStorePath) {
         this.keyStorePath = keyStorePath;
     }
 
@@ -210,9 +212,9 @@ public class Config {
         return keyStoreType;
     }
 
-    public void setKeyStoreType( String keyStoreType ) {
+    public void setKeyStoreType(String keyStoreType) {
         if (StringUtils.isBlank(keyStoreType)) {
-            keyStoreType = KeyStore.getDefaultType() ;
+            keyStoreType = KeyStore.getDefaultType();
         }
         this.keyStoreType = keyStoreType;
     }
@@ -330,7 +332,7 @@ public class Config {
     public void setSuperadminLoginPasswordResetAllowed(boolean superadminLoginPasswordResetAllowed) {
         this.superadminLoginPasswordResetAllowed = superadminLoginPasswordResetAllowed;
     }
-    
+
     public boolean isSsoEnabled() {
         return ssoEnabled;
     }

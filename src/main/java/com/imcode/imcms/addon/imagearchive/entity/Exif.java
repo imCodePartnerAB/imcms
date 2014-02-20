@@ -7,52 +7,52 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="archive_exif")
+@Table(name = "archive_exif")
 @IdClass(ExifPK.class)
 public class Exif implements Serializable {
     private static final long serialVersionUID = 8753082342920008037L;
-    
+
     public static final short TYPE_ORIGINAL = 0;
     public static final short TYPE_CHANGED = 1;
-    
+
     @Id
-    @Column(name="image_id", nullable=false)
+    @Column(name = "image_id", nullable = false)
     private long imageId;
-    
+
     @Id
-    @Column(name="exif_type", nullable=false)
+    @Column(name = "exif_type", nullable = false)
     private short type = TYPE_ORIGINAL;
-    
-    @Column(name="x_resolution")
+
+    @Column(name = "x_resolution")
     private Integer xResolution;
 
-    @Column(name="y_resolution")
+    @Column(name = "y_resolution")
     private Integer yResolution;
-    
-    @Column(name="description", length=255, nullable=false)
+
+    @Column(name = "description", length = 255, nullable = false)
     private String description = "";
-    
-    @Column(name="artist", length=255, nullable=false)
+
+    @Column(name = "artist", length = 255, nullable = false)
     private String artist = "";
-    
-    @Column(name="copyright", length=255, nullable=false)
+
+    @Column(name = "copyright", length = 255, nullable = false)
     private String copyright = "";
-    
-    @Column(name="created_dt", nullable=false)
+
+    @Column(name = "created_dt", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt = new Date();
-    
-    @Column(name="updated_dt", nullable=false)
+
+    @Column(name = "updated_dt", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDt = new Date();
 
-    @Column(name="manufacturer")
+    @Column(name = "manufacturer")
     private String manufacturer;
 
-    @Column(name="model")
+    @Column(name = "model")
     private String model;
 
-    @Column(name="compression")
+    @Column(name = "compression")
     private String compression;
 
     @Column(name = "exposure")
@@ -93,11 +93,11 @@ public class Exif implements Serializable {
 
     @Column(name = "ISO")
     private Integer ISO;
-    
-    
+
+
     public Exif() {
     }
-    
+
     public Exif(Integer xResolution, Integer yResolution, String description, String artist, String copyright, short type,
                 String manufacturer, String model, String compression, Double exposure, String exposureProgram, Float fStop,
                 Flash flash, Float focalLength, String colorSpace, Integer resolutionUnit,
@@ -125,7 +125,7 @@ public class Exif implements Serializable {
         this.ISO = ISO;
     }
 
-    
+
     public String getArtist() {
         return artist;
     }
@@ -323,20 +323,20 @@ public class Exif implements Serializable {
         if (obj == null) {
             return false;
         }
-        
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final Exif other = (Exif) obj;
         if (this.imageId != other.imageId) {
             return false;
         }
-        
+
         if (this.type != other.type) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -345,13 +345,13 @@ public class Exif implements Serializable {
         int hash = 7;
         hash = 17 * hash + (int) (this.imageId ^ (this.imageId >>> 32));
         hash = 17 * hash + this.type;
-        
+
         return hash;
     }
 
     @Override
     public String toString() {
-        return String.format("com.imcode.imcms.addon.imagearchive.entity.Exif[imageId: %d, type: %d]", 
+        return String.format("com.imcode.imcms.addon.imagearchive.entity.Exif[imageId: %d, type: %d]",
                 imageId, type);
     }
 }

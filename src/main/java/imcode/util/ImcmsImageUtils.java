@@ -27,11 +27,13 @@ import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -40,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
 //fixme: image no + image in a loop
 public class ImcmsImageUtils {
     private static final Log log = LogFactory.getLog(ImcmsImageUtils.class);
-    
+
 
     private ImcmsImageUtils() {
     }
@@ -48,7 +50,7 @@ public class ImcmsImageUtils {
     public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
         return getImageHtmlTag(image, request, attributes, false);
     }
-    
+
     public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes, boolean absoluteUrl) {
         return getImageHtmlTag(image, request, attributes, absoluteUrl, false);
     }
@@ -58,14 +60,14 @@ public class ImcmsImageUtils {
     }
 
     private static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes,
-            boolean absoluteUrl, boolean forPreview) {
-        
-        StringBuffer imageTagBuffer = new StringBuffer(96);
-        if ( image.getSize() > 0 ) {
+                                          boolean absoluteUrl, boolean forPreview) {
 
-            if ( StringUtils.isNotBlank(image.getLinkUrl()) ) {
+        StringBuffer imageTagBuffer = new StringBuffer(96);
+        if (image.getSize() > 0) {
+
+            if (StringUtils.isNotBlank(image.getLinkUrl())) {
                 imageTagBuffer.append("<a href=\"").append(StringEscapeUtils.escapeHtml(image.getLinkUrl())).append("\"");
-                if ( !"".equals(image.getTarget()) ) {
+                if (!"".equals(image.getTarget())) {
                     imageTagBuffer.append(" target=\"").append(StringEscapeUtils.escapeHtml(image.getTarget())).append("\"");
                 }
                 imageTagBuffer.append('>');
@@ -80,9 +82,9 @@ public class ImcmsImageUtils {
 
             if (absoluteUrl) {
                 StringBuffer requestURL = request.getRequestURL();
-                urlEscapedImageUrl = requestURL.substring(0,StringUtils.ordinalIndexOf(requestURL.toString(), "/", 3))+urlEscapedImageUrl;
+                urlEscapedImageUrl = requestURL.substring(0, StringUtils.ordinalIndexOf(requestURL.toString(), "/", 3)) + urlEscapedImageUrl;
             }
-            
+
             imageTagBuffer.append("<img src=\"").append(StringEscapeUtils.escapeHtml(urlEscapedImageUrl)).append("\"");
 
             imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
@@ -90,20 +92,20 @@ public class ImcmsImageUtils {
 
             String id = image.getName();
             String idAttribute = attributes.getProperty("id");
-            if ( StringUtils.isNotBlank(idAttribute) ) {
+            if (StringUtils.isNotBlank(idAttribute)) {
                 id = idAttribute;
             }
-            if ( StringUtils.isNotBlank(id) ) {
+            if (StringUtils.isNotBlank(id)) {
                 imageTagBuffer.append(" id=\"").append(StringEscapeUtils.escapeHtml(id)).append("\"");
             }
 
             String classAttribute = attributes.getProperty("class");
-            if ( null != classAttribute ) {
+            if (null != classAttribute) {
                 imageTagBuffer.append(" class=\"").append(StringEscapeUtils.escapeHtml(classAttribute)).append("\"");
             }
 
             String usemapAttribute = attributes.getProperty("usemap");
-            if ( null != usemapAttribute ) {
+            if (null != usemapAttribute) {
                 imageTagBuffer.append(" usemap=\"").append(StringEscapeUtils.escapeHtml(usemapAttribute)).append("\"");
             }
 
@@ -114,11 +116,11 @@ public class ImcmsImageUtils {
             int width = image.getWidth();
             int height = image.getHeight();
 
-            if ( 0 != width ) {
+            if (0 != width) {
                 imageTagBuffer.append(" width=\"").append(width).append("\"");
                 styleBuffer.append(" width: ").append(width).append("px;");
             }
-            if ( 0 != height ) {
+            if (0 != height) {
                 imageTagBuffer.append(" height=\"").append(height).append("\"");
                 styleBuffer.append(" height: ").append(height).append("px;");
             }
@@ -127,25 +129,25 @@ public class ImcmsImageUtils {
                     .append(image.getVerticalSpace()).append("px ")
                     .append(image.getHorizontalSpace()).append("px;");
 
-            if ( StringUtils.isNotBlank(image.getAlign()) && "left".equals(image.getAlign()) ) {
+            if (StringUtils.isNotBlank(image.getAlign()) && "left".equals(image.getAlign())) {
                 styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
             }
-            if ( StringUtils.isNotBlank(image.getAlign()) && "right".equals(image.getAlign()) ) {
+            if (StringUtils.isNotBlank(image.getAlign()) && "right".equals(image.getAlign())) {
                 styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
             }
-            if ( StringUtils.isNotBlank(image.getAlign()) && !"none".equals(image.getAlign()) ) {
+            if (StringUtils.isNotBlank(image.getAlign()) && !"none".equals(image.getAlign())) {
                 styleBuffer.append(" vertical-align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
             }
 
             String styleAttribute = attributes.getProperty("style");
-            if ( null != styleAttribute ) {
+            if (null != styleAttribute) {
                 styleBuffer.append(" ").append(styleAttribute);
             }
 
             imageTagBuffer.append(" style=\"").append(StringEscapeUtils.escapeHtml(styleBuffer.toString())).append("\"");
 
             imageTagBuffer.append(" />");
-            if ( StringUtils.isNotBlank(image.getLinkUrl()) ) {
+            if (StringUtils.isNotBlank(image.getLinkUrl())) {
                 imageTagBuffer.append("</a>");
             }
         }
@@ -158,11 +160,11 @@ public class ImcmsImageUtils {
 
     public static String getImageUrl(ImageDomainObject image, String contextPath, boolean includeQueryParams) {
         String generatedFilename = image.getGeneratedFilename();
-        
+
         if (generatedFilename == null) {
             return getImageHandlingUrl(image, contextPath);
         }
-        
+
         String url = image.getGeneratedUrlPath(contextPath);
 
         if (includeQueryParams) {
@@ -200,7 +202,7 @@ public class ImcmsImageUtils {
 
     @Deprecated
     public static String getImageHandlingUrl(ImageDomainObject image, String contextPath) {
-        
+
         return contextPath + "/imagehandling" + getImageQueryString(image, false);
     }
 
@@ -218,12 +220,12 @@ public class ImcmsImageUtils {
         StringBuilder builder = new StringBuilder("?");
 
         if (!forPreview && image.getSource() instanceof FileDocumentImageSource) {
-        	FileDocumentImageSource source = (FileDocumentImageSource) image.getSource();
-        	builder.append("file_id=");
-        	builder.append(source.getFileDocument().getId());
+            FileDocumentImageSource source = (FileDocumentImageSource) image.getSource();
+            builder.append("file_id=");
+            builder.append(source.getFileDocument().getId());
         } else {
-        	builder.append("path=");
-        	builder.append(Utility.encodeUrl(image.getUrlPathRelativeToContextPath()));
+            builder.append("path=");
+            builder.append(Utility.encodeUrl(image.getUrlPathRelativeToContextPath()));
         }
 
         builder.append("&width=");
@@ -232,13 +234,13 @@ public class ImcmsImageUtils {
         builder.append(image.getHeight());
 
         if (image.getFormat() != null) {
-        	builder.append("&format=");
-        	builder.append(image.getFormat().getExtension());
+            builder.append("&format=");
+            builder.append(image.getFormat().getExtension());
         }
 
         CropRegion region = image.getCropRegion();
         if (region.isValid()) {
-        	builder.append("&crop_x1=");
+            builder.append("&crop_x1=");
             builder.append(region.getCropX1());
             builder.append("&crop_y1=");
             builder.append(region.getCropY1());
@@ -333,12 +335,12 @@ public class ImcmsImageUtils {
 
     public static ImageSource createImageSourceFromString(String imageUrl) {
         ImageSource imageSource = new NullImageSource();
-        if ( StringUtils.isNotBlank(imageUrl) ) {
+        if (StringUtils.isNotBlank(imageUrl)) {
             ImcmsServices services = Imcms.getServices();
             DocumentMapper documentMapper = services.getDocumentMapper();
             String documentIdString = ImcmsFilter.getDocumentIdString(services, imageUrl);
             DocumentDomainObject document = documentMapper.getDocument(documentIdString);
-            if ( document instanceof FileDocumentDomainObject ) {
+            if (document instanceof FileDocumentDomainObject) {
                 imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));
             } else {
                 String imageArchiveImagesUrl = ImageArchiveImageSource.getImagesUrlPath();
@@ -346,17 +348,17 @@ public class ImcmsImageUtils {
                 if (imageUrl.startsWith(imageArchiveImagesUrl)) {
                     imageUrl = imageUrl.substring(imageArchiveImagesUrl.length());
 
-		    if (StringUtils.isNotBlank(imageUrl)) {
-			imageSource = new ImageArchiveImageSource(imageUrl);
-		    }
+                    if (StringUtils.isNotBlank(imageUrl)) {
+                        imageSource = new ImageArchiveImageSource(imageUrl);
+                    }
                 } else {
                     if (imageUrl.startsWith(imagesPath)) {
                         imageUrl = imageUrl.substring(imagesPath.length());
                     }
 
-		    if (StringUtils.isNotBlank(imageUrl)) {
-			imageSource = new ImagesPathRelativePathImageSource(imageUrl);
-		    }
+                    if (StringUtils.isNotBlank(imageUrl)) {
+                        imageSource = new ImagesPathRelativePathImageSource(imageUrl);
+                    }
                 }
             }
         }
@@ -435,7 +437,7 @@ public class ImcmsImageUtils {
     }
 
     public static boolean generateImage(File imageFile, File destFile, Format format, int width, int height,
-            CropRegion cropRegion, RotateDirection rotateDir) {
+                                        CropRegion cropRegion, RotateDirection rotateDir) {
 
         ImageOp operation = new ImageOp().input(imageFile);
 
@@ -468,7 +470,7 @@ public class ImcmsImageUtils {
     }
 
     public static String getImageETag(String path, File imageFile, Format format, int width, int height,
-            CropRegion cropRegion, RotateDirection rotateDirection) {
+                                      CropRegion cropRegion, RotateDirection rotateDirection) {
 
         StringBuilder builder = new StringBuilder();
         builder.append(path);

@@ -24,22 +24,22 @@ public class FragmentingDocumentGetter extends DocumentGetterWrapper {
 
     public List<DocumentDomainObject> getDocuments(final Collection<Integer> documentIds) {
         if (documentIds.isEmpty()) {
-            return Collections.emptyList() ;
+            return Collections.emptyList();
         }
-        List<Integer> documentIdList = new ArrayList<Integer>(documentIds) ;
+        List<Integer> documentIdList = new ArrayList<Integer>(documentIds);
         CompositeList compositeDocumentList = new CompositeList();
-        for (int i = 0; i < documentIds.size(); i += DOCUMENTS_PER_FRAGMENT ) {
-            int toIndex = Math.min(documentIds.size(), i+DOCUMENTS_PER_FRAGMENT) ;
+        for (int i = 0; i < documentIds.size(); i += DOCUMENTS_PER_FRAGMENT) {
+            int toIndex = Math.min(documentIds.size(), i + DOCUMENTS_PER_FRAGMENT);
             List<Integer> documentIdSubList = documentIdList.subList(i, toIndex);
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
             List<DocumentDomainObject> documentList = super.getDocuments(documentIdSubList);
             stopWatch.stop();
             if (log.isTraceEnabled()) {
-                log.trace("Got "+documentList.size()+" documents in "+stopWatch.getTime()+"ms.") ;
+                log.trace("Got " + documentList.size() + " documents in " + stopWatch.getTime() + "ms.");
             }
             compositeDocumentList.addList(documentList);
         }
-        return compositeDocumentList ;
+        return compositeDocumentList;
     }
 }

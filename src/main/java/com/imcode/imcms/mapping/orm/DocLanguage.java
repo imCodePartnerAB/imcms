@@ -49,7 +49,7 @@ public class DocLanguage implements Serializable, Cloneable {
     @Override
     public DocLanguage clone() {
         try {
-            return (DocLanguage)super.clone();
+            return (DocLanguage) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }

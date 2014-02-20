@@ -16,37 +16,37 @@ import java.util.Map;
 
 public class FileDocument extends Document {
 
-    public final static int TYPE_ID = DocumentTypeDomainObject.FILE_ID ;
+    public final static int TYPE_ID = DocumentTypeDomainObject.FILE_ID;
 
-    FileDocument( FileDocumentDomainObject document, ContentManagementSystem contentManagementSystem ) {
-        super( document, contentManagementSystem );
+    FileDocument(FileDocumentDomainObject document, ContentManagementSystem contentManagementSystem) {
+        super(document, contentManagementSystem);
     }
 
     private FileDocumentDomainObject getInternalFileDocument() {
-        return (FileDocumentDomainObject)getInternal() ;
+        return (FileDocumentDomainObject) getInternal();
     }
 
-    public FileDocumentFile getFile( String fileId ) {
-        return new FileDocumentFile(getInternalFileDocument().getFile( fileId ));
+    public FileDocumentFile getFile(String fileId) {
+        return new FileDocumentFile(getInternalFileDocument().getFile(fileId));
     }
 
-    public FileDocumentFile removeFile( String fileId ) {
-        return new FileDocumentFile( getInternalFileDocument().removeFile( fileId ) );
+    public FileDocumentFile removeFile(String fileId) {
+        return new FileDocumentFile(getInternalFileDocument().removeFile(fileId));
     }
 
     public FileDocumentFile[] getFiles() {
         Map filesMap = getInternalFileDocument().getFiles();
         List files = TransformedList.decorate(new ArrayList(filesMap.size()), new Transformer() {
-            public Object transform( Object input ) {
-                return new FileDocumentFile( (FileDocumentDomainObject.FileDocumentFile)input ) ;
+            public Object transform(Object input) {
+                return new FileDocumentFile((FileDocumentDomainObject.FileDocumentFile) input);
             }
-        }) ;
-        files.addAll( filesMap.values() ) ;
-        return (FileDocumentFile[])files.toArray( new FileDocumentFile[files.size()] );
+        });
+        files.addAll(filesMap.values());
+        return (FileDocumentFile[]) files.toArray(new FileDocumentFile[files.size()]);
     }
 
-    public FileDocumentFile getFileOrDefault( String fileId ) {
-        return new FileDocumentFile( getInternalFileDocument().getFileOrDefault( fileId ) );
+    public FileDocumentFile getFileOrDefault(String fileId) {
+        return new FileDocumentFile(getInternalFileDocument().getFileOrDefault(fileId));
     }
 
     public String getDefaultFileId() {
@@ -54,31 +54,31 @@ public class FileDocument extends Document {
     }
 
     public FileDocumentFile getDefaultFile() {
-        return new FileDocumentFile( getInternalFileDocument().getDefaultFile() );
+        return new FileDocumentFile(getInternalFileDocument().getDefaultFile());
     }
 
-    public void addFile( String fileId, FileDocumentFile file) {
-        getInternalFileDocument().addFile( fileId, file.getInternal() );
+    public void addFile(String fileId, FileDocumentFile file) {
+        getInternalFileDocument().addFile(fileId, file.getInternal());
     }
 
     public static class FileDocumentFile implements DataSource {
 
-        private FileDocumentDataSource dataSource ;
+        private FileDocumentDataSource dataSource;
 
-        public FileDocumentFile( DataSource dataSource ) {
+        public FileDocumentFile(DataSource dataSource) {
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
-            file.setFilename( dataSource.getName() );
-            file.setMimeType( dataSource.getContentType() );
-            file.setInputStreamSource( new DataSourceInputStreamSource( dataSource ));
-            this.dataSource = new FileDocumentDataSource( file ) ;
+            file.setFilename(dataSource.getName());
+            file.setMimeType(dataSource.getContentType());
+            file.setInputStreamSource(new DataSourceInputStreamSource(dataSource));
+            this.dataSource = new FileDocumentDataSource(file);
         }
 
-        public FileDocumentFile( FileDocumentDomainObject.FileDocumentFile file ) {
-            dataSource = new FileDocumentDataSource( file ) ;
+        public FileDocumentFile(FileDocumentDomainObject.FileDocumentFile file) {
+            dataSource = new FileDocumentDataSource(file);
         }
 
         public FileDocumentDomainObject.FileDocumentFile getInternal() {
-            return dataSource.getFile() ;
+            return dataSource.getFile();
         }
 
         public String getContentType() {
@@ -93,13 +93,15 @@ public class FileDocument extends Document {
             return dataSource.getName();
         }
 
-        /** @throws UnsupportedOperationException */
+        /**
+         * @throws UnsupportedOperationException
+         */
         public OutputStream getOutputStream() throws IOException {
-            throw new UnsupportedOperationException() ;
+            throw new UnsupportedOperationException();
         }
 
         public long getSize() throws IOException {
-            return dataSource.getFile().getInputStreamSource().getSize() ;
+            return dataSource.getFile().getInputStreamSource().getSize();
         }
 
         public String getId() {
@@ -112,7 +114,7 @@ public class FileDocument extends Document {
 
         private FileDocumentDomainObject.FileDocumentFile file;
 
-        private FileDocumentDataSource( FileDocumentDomainObject.FileDocumentFile file ) {
+        private FileDocumentDataSource(FileDocumentDomainObject.FileDocumentFile file) {
             this.file = file;
         }
 
@@ -141,7 +143,7 @@ public class FileDocument extends Document {
 
         private final DataSource dataSource;
 
-        private DataSourceInputStreamSource( DataSource dataSource ) {
+        private DataSourceInputStreamSource(DataSource dataSource) {
             this.dataSource = dataSource;
         }
 
