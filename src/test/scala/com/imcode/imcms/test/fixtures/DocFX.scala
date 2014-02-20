@@ -2,7 +2,7 @@ package com.imcode
 package imcms.test
 package fixtures
 
-import com.imcode.imcms.api.{DocumentLanguage, DocumentAppearance}
+import com.imcode.imcms.api.{DocumentLanguage, DocumentCommonContent}
 import scala.collection.JavaConverters._
 import imcode.server.user.RoleId
 import imcode.server.document.DocumentPermissionSetTypeDomainObject
@@ -43,11 +43,11 @@ object DocFX {
       m.setPermissionSetTypeForRole(RoleId.SUPERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
     }
 
-    doc.getAppearance |> { m =>
-      DocumentAppearance.builder(m)
+    doc.getCommonContent |> { m =>
+      DocumentCommonContent.builder(m)
         .headline("i18n_meta_headline_%d_%s".format(docId, language.getCode))
         .menuText("i18n_meta_menu_text_%d_%s".format(docId, language.getCode))
-        .build() |> doc.setAppearance
+        .build() |> doc.setCommonContent
     }
 
     doc.setProperties(0.until(10).map(n => ("property_name_%d_%d".format(docId, n), "property_value_%d_%d".format(docId, n))).

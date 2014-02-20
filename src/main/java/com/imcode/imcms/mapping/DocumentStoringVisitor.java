@@ -206,8 +206,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         metaDao.deleteAppearance(docRef);
 
-        DocumentAppearance appearance = doc.getAppearance();
-        DocAppearance ormAppearance = new DocAppearance();
+        DocumentCommonContent appearance = doc.getCommonContent();
+        DocCommonContent ormAppearance = new DocCommonContent();
         ormAppearance.setDocId(docRef.getDocId());
         ormAppearance.setLanguage(docLanguage);
         ormAppearance.setHeadline(appearance.getHeadline());

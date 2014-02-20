@@ -45,7 +45,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private volatile Meta meta = new Meta();
 
-    private volatile DocumentAppearance appearance = DocumentAppearance.builder().build();
+    private volatile DocumentCommonContent appearance = DocumentCommonContent.builder().build();
 
     private volatile int versionNo = DocumentVersion.WORKING_VERSION_NO;
 
@@ -158,7 +158,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setHeadline(String v) {
-        setAppearance(DocumentAppearance.builder(getAppearance()).headline(v).build());
+        setCommonContent(DocumentCommonContent.builder(getCommonContent()).headline(v).build());
     }
 
     public int getId() {
@@ -175,7 +175,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setMenuImage(String v) {
-        setAppearance(DocumentAppearance.builder(getAppearance()).menuImageURL(v).build());
+        setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuImageURL(v).build());
     }
 
 
@@ -217,7 +217,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 
     public void setMenuText(String v) {
-        setAppearance(DocumentAppearance.builder(getAppearance()).menuText(v).build());
+        setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuText(v).build());
     }
 
     public Date getModifiedDatetime() {
@@ -495,12 +495,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
 
-    public DocumentAppearance getAppearance() {
+    public DocumentCommonContent getCommonContent() {
         return appearance;
     }
 
-    public void setAppearance(DocumentAppearance appearance) {
-        Objects.requireNonNull(appearance, "appearance argument can not be null.");
+    public void setCommonContent(DocumentCommonContent appearance) {
+        Objects.requireNonNull(appearance, "commonContent argument can not be null.");
 
         this.appearance = appearance;
     }

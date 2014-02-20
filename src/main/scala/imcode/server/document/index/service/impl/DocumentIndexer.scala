@@ -41,7 +41,7 @@ class DocumentIndexer(
     indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, languageCode)
     indexDoc.addField(DocumentIndex.FIELD__SEARCH_ENABLED, !doc.isSearchDisabled)
 
-    doc.getAppearance |> { l =>
+    doc.getCommonContent |> { l =>
       val headline = l.getHeadline
       val menuText = l.getMenuText
 

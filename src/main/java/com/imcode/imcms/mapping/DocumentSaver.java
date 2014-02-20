@@ -218,7 +218,7 @@ public class DocumentSaver {
 
     //fixme: meta permissions
     @Transactional
-    public void updateDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentAppearance> appearances, DocumentDomainObject oldDoc,
+    public void updateDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> appearances, DocumentDomainObject oldDoc,
                                UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -235,12 +235,12 @@ public class DocumentSaver {
 
         saveMeta(doc.getMeta());
 
-        for (Map.Entry<DocumentLanguage, DocumentAppearance> e : appearances.entrySet()) {
+        for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
             DocumentLanguage language = e.getKey();
-            DocumentAppearance appearance = e.getValue();
-            DocAppearance ormAppearance = metaDao.getDocAppearance(DocRef.of(doc.getId(), doc.getVersionNo(), language.getCode()));
+            DocumentCommonContent appearance = e.getValue();
+            DocCommonContent ormAppearance = metaDao.getDocAppearance(DocRef.of(doc.getId(), doc.getVersionNo(), language.getCode()));
             if (ormAppearance == null) {
-                ormAppearance = new DocAppearance();
+                ormAppearance = new DocCommonContent();
             }
 
             ormAppearance.setHeadline(appearance.getHeadline());
@@ -344,7 +344,7 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public <T extends DocumentDomainObject> int saveNewDocument(T doc, Map<DocumentLanguage, DocumentAppearance> appearances,
+    public <T extends DocumentDomainObject> int saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
                                                                 EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -367,9 +367,9 @@ public class DocumentSaver {
         meta.setDocumentType(doc.getDocumentTypeId());
         Integer docId = saveMeta(meta);
 
-        for (Map.Entry<DocumentLanguage, DocumentAppearance> e : appearances.entrySet()) {
-            DocumentAppearance appearance = e.getValue();
-            DocAppearance ormAppearance = new DocAppearance();
+        for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
+            DocumentCommonContent appearance = e.getValue();
+            DocCommonContent ormAppearance = new DocCommonContent();
             DocLanguage ormLanguage = docLanguageDao.getByCode(e.getKey().getCode());
 
             ormAppearance.setDocId(docId);
@@ -391,12 +391,12 @@ public class DocumentSaver {
         doc.accept(docCreatingVisitor);
 
         // refactor
-        if (doc instanceof TextDocumentDomainObject && directiveses.contains(DocumentMapper.SaveOpts.CopyDocAppearenceIntoTextFields)) {
+        if (doc instanceof TextDocumentDomainObject && directiveses.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
             DocVersion ormVersion = documentVersionDao.getByDocIdAndNo(doc.getId(), doc.getVersionNo());
 
-            for (Map.Entry<DocumentLanguage, DocumentAppearance> e : appearances.entrySet()) {
-                DocumentAppearance appearance = e.getValue();
+            for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
+                DocumentCommonContent appearance = e.getValue();
                 DocLanguage ormLanguage = docLanguageDao.getByCode(e.getKey().getCode());
 
 

@@ -6,13 +6,13 @@ import com.imcode.imcms.vaadin.component._
 
 class NewTextDocContentEditorView extends VerticalLayout with FullSize with Spacing with Margin {
 
-  val chkCopyI18nMetaTextsToTextFields = new CheckBox("Copy link heading & subheading to text 1 & text 2")
+  val chkCopyDocCommonContentIntoTextFields = new CheckBox("Copy link heading & subheading to text 1 & text 2")
                                            with Immediate
 
   private val lytContent = new VerticalLayout with Margin
   private val pnlOptions = new Panel("Options", lytContent) with FullSize
 
-  lytContent.addComponents(chkCopyI18nMetaTextsToTextFields)
+  lytContent.addComponents(chkCopyDocCommonContentIntoTextFields)
 
   addComponent(pnlOptions)
 }

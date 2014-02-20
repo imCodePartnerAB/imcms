@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- *
+ * Content common to all document types.
  */
-public final class DocumentAppearance implements Serializable {
+public final class DocumentCommonContent implements Serializable {
 
     public static class Builder {
         private String headline;
@@ -16,14 +16,14 @@ public final class DocumentAppearance implements Serializable {
         public Builder() {
         }
 
-        public Builder(DocumentAppearance documentAppearance) {
-            this.headline = documentAppearance.headline;
-            this.menuText = documentAppearance.menuText;
-            this.menuImageURL = documentAppearance.menuImageURL;
+        public Builder(DocumentCommonContent documentCommonContent) {
+            this.headline = documentCommonContent.headline;
+            this.menuText = documentCommonContent.menuText;
+            this.menuImageURL = documentCommonContent.menuImageURL;
         }
 
-        public DocumentAppearance build() {
-            return new DocumentAppearance(headline, menuText, menuImageURL);
+        public DocumentCommonContent build() {
+            return new DocumentCommonContent(headline, menuText, menuImageURL);
         }
 
 
@@ -47,8 +47,8 @@ public final class DocumentAppearance implements Serializable {
         return new Builder();
     }
 
-    public static Builder builder(DocumentAppearance documentAppearance) {
-        return new Builder(documentAppearance);
+    public static Builder builder(DocumentCommonContent documentCommonContent) {
+        return new Builder(documentCommonContent);
     }
 
     /**
@@ -63,11 +63,11 @@ public final class DocumentAppearance implements Serializable {
     private final String menuText;
 
     /**
-     * Menu item image.
+     * Menu item image url.
      */
     private final String menuImageURL;
 
-    public DocumentAppearance(String headline, String menuText, String menuImageURL) {
+    public DocumentCommonContent(String headline, String menuText, String menuImageURL) {
         this.headline = headline;
         this.menuText = menuText;
         this.menuImageURL = menuImageURL;
@@ -75,10 +75,10 @@ public final class DocumentAppearance implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof DocumentAppearance && equals((DocumentAppearance) o));
+        return o == this || (o instanceof DocumentCommonContent && equals((DocumentCommonContent) o));
     }
 
-    private boolean equals(DocumentAppearance that) {
+    private boolean equals(DocumentCommonContent that) {
         return Objects.equals(headline, that.headline)
                 && Objects.equals(menuText, that.menuText)
                 && Objects.equals(menuImageURL, that.menuImageURL);

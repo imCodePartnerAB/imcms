@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta.appearance
 
-import com.imcode.imcms.api.{DocumentLanguage, Meta, DocumentAppearance}
+import com.imcode.imcms.api.{DocumentLanguage, Meta, DocumentCommonContent}
 import scala.language.reflectiveCalls
 
 import scala.collection.JavaConverters._
@@ -35,10 +35,10 @@ import com.imcode.imcms.vaadin.Editor
  * @param meta doc's Meta
  * @param i18nMetas doc's i18nMeta-s
  */
-class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentAppearance]) extends Editor with ImcmsServicesSupport {
+class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentCommonContent]) extends Editor with ImcmsServicesSupport {
 
   case class Data(
-    i18nMetas: Map[DocumentLanguage, DocumentAppearance],
+    i18nMetas: Map[DocumentLanguage, DocumentCommonContent],
     enabledLanguages: Set[DocumentLanguage],
     disabledLanguageShowSetting: Meta.DisabledLanguageShowSetting,
     alias: Option[String],
@@ -46,7 +46,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentAppe
   )
 
   // i18nMetas sorted by language (default always first) and native name
-  private val i18nMetaEditorViews: Seq[I18nMetaEditorView] = {
+  private val i18nMetaEditorViews: Seq[CommonContentEditorView] = {
     val defaultLanguage = imcmsServices.getDocumentLanguageSupport.getDefaultLanguage
     val languages = imcmsServices.getDocumentLanguageSupport.getLanguages.asScala.sortWith {
       case (l1, _) if l1 == defaultLanguage => true
@@ -57,7 +57,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentAppe
     for (language <- languages)
     yield {
       val caption = language.getNativeName + (if (language == defaultLanguage) " (default)" else "")
-      new I18nMetaEditorView(language, caption)
+      new CommonContentEditorView(language, caption)
     }
   }
 
@@ -96,7 +96,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentAppe
         i18nMetaEditorViews.collect {
           case i18nMetaEditorWidget if i18nMetaEditorWidget.chkEnabled.checked =>
             val language = i18nMetaEditorWidget.language
-            val i18nMeta = DocumentAppearance.builder()
+            val i18nMeta = DocumentCommonContent.builder()
               .headline(i18nMetaEditorWidget.txtTitle.trimmedValue)
               .menuImageURL(i18nMetaEditorWidget.embLinkImage.trimmedValue)
               .menuText(i18nMetaEditorWidget.txaMenuText.trimmedValue)

@@ -1,7 +1,7 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.api.DocumentAppearance;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.NoPermissionInternalException;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -10,21 +10,13 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.EnumSet;
-import java.util.Set;
+import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.NotImplementedException;
-
-import com.imcode.imcms.mapping.DocumentSaveException;
-import com.imcode.imcms.mapping.NoPermissionInternalException;
+import java.io.IOException;
+import java.io.Serializable;
 
 public abstract class DocumentPageFlow extends PageFlow {
 
@@ -67,13 +59,5 @@ public abstract class DocumentPageFlow extends PageFlow {
         public abstract void saveDocument(DocumentDomainObject document, UserDomainObject user)
                throws NoPermissionInternalException, DocumentSaveException;
 
-
-        public void saveDocumentWithI18nSupport(
-                DocumentDomainObject document, Set<DocumentAppearance> i18nMetas,
-                EnumSet<DocumentMapper.SaveOpts> saveOpts,
-                UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-
-            throw new NotImplementedException();
-        }
     }
 }

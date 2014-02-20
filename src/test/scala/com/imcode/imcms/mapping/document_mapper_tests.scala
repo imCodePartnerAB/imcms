@@ -56,7 +56,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val menuTextPrefix = "menu_text_"
 
     val i18nMetas = i18nContentSupport.getLanguages.asScala.map { language =>
-      DocumentAppearance.builder()
+      DocumentCommonContent.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
         .menuText(menuTextPrefix + language.getCode)
@@ -82,7 +82,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
   }
 
 
-  test("save new text doc with [CopyDocAppearenceIntoTextFields] save params") {
+  test("save new text doc with [CopyDocCommonContentIntoTextFields] save params") {
     val parentDoc = getMainWorkingDocumentInDefaultLanguage(true)
     val newDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin)
       .asInstanceOf[TextDocumentDomainObject]
@@ -91,7 +91,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val menuTextPrefix = "menu_text_"
 
     val i18nMetas = i18nContentSupport.getLanguages.asScala.map { language =>
-      DocumentAppearance.builder()
+      DocumentCommonContent.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
         .menuText(menuTextPrefix + language.getCode)
@@ -101,7 +101,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val id = docMapper.saveNewDocument(
       newDoc,
       i18nMetas,
-      EnumSet.of(DocumentMapper.SaveOpts.CopyDocAppearenceIntoTextFields),
+      EnumSet.of(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields),
       admin).getMeta.getId
 
     i18nContentSupport.getLanguages.asScala.map { language =>

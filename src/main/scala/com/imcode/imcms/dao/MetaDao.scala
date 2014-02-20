@@ -54,13 +54,13 @@ class MetaDao extends HibernateSupport {
     "value" -> alias.toLowerCase
   )
 
-  def getDocAppearance(docRef: DocRef): DocAppearance =
-    hibernate.getByNamedQueryAndNamedParams[DocAppearance](
+  def getDocAppearance(docRef: DocRef): DocCommonContent =
+    hibernate.getByNamedQueryAndNamedParams[DocCommonContent](
       "DocAppearance.getByDocIdAndLanguageId", "docId" -> docRef.getDocId, "languageCode" -> docRef.getDocLanguageCode
     )
 
 
-  def getAppearance(docId: Int): JList[DocAppearance] = hibernate.listByNamedQueryAndNamedParams(
+  def getAppearance(docId: Int): JList[DocCommonContent] = hibernate.listByNamedQueryAndNamedParams(
     "DocAppearance.getByDocId", "docId" -> docId
   )
 
@@ -69,7 +69,7 @@ class MetaDao extends HibernateSupport {
     case appearance => hibernate.delete(appearance); 1
   }
 
-  def saveAppearance(docAppearance: DocAppearance): DocAppearance = {
+  def saveAppearance(docAppearance: DocCommonContent): DocCommonContent = {
     val headline = docAppearance.getHeadline
     val text = docAppearance.getMenuText
 

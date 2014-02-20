@@ -8,7 +8,7 @@ import java.util.Objects;
  */
 @Entity(name = "Appearance")
 @Table(name = "imcms_doc_i18n_meta")
-public class DocAppearance {
+public class DocCommonContent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,10 +42,10 @@ public class DocAppearance {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof DocAppearance && equals((DocAppearance) o));
+        return o == this || (o instanceof DocCommonContent && equals((DocCommonContent) o));
     }
 
-    private boolean equals(DocAppearance that) {
+    private boolean equals(DocCommonContent that) {
         return Objects.equals(id, that.id)
                 && Objects.equals(docId, that.docId)
                 && Objects.equals(headline, that.headline)

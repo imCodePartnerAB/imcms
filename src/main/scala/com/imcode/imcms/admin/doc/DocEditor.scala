@@ -4,7 +4,7 @@ package admin.doc
 
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.content.htmldoc.HtmlDocContentEditor
-import com.imcode.imcms.api.{DocumentLanguage, DocumentAppearance}
+import com.imcode.imcms.api.{DocumentLanguage, DocumentCommonContent}
 import com.vaadin.ui.themes.Reindeer
 import imcode.server.document.{HtmlDocumentDomainObject, UrlDocumentDomainObject, FileDocumentDomainObject, DocumentDomainObject}
 import com.imcode.imcms.admin.doc.meta.MetaEditor
@@ -18,7 +18,7 @@ import com.imcode.imcms.admin.doc.content.filedoc.FileDocContentEditor
 
 class DocEditor(doc: DocumentDomainObject) extends Editor {
 
-  override type Data = (DocumentDomainObject, Map[DocumentLanguage, DocumentAppearance])
+  override type Data = (DocumentDomainObject, Map[DocumentLanguage, DocumentCommonContent])
 
   val metaEditor = new MetaEditor(doc)
   val contentEditor = doc match {
@@ -43,13 +43,13 @@ class DocEditor(doc: DocumentDomainObject) extends Editor {
   override def collectValues(): ErrorsOrData = (metaEditor.collectValues(), contentEditor.collectValues()) match {
     case (Left(errors), _) => Left(errors)
     case (_, Left(errors)) => Left(errors)
-    case (Right((metaDoc, i18nMetas)), Right(contentDoc)) =>
+    case (Right((metaDoc, commonContents)), Right(contentDoc)) =>
       val mergedDoc = contentDoc.clone()
 
       mergedDoc.setMeta(metaDoc.getMeta)
       mergedDoc.setVersionNo(metaDoc.getVersionNo)
-      mergedDoc.setAppearance(metaDoc.getAppearance)
+      mergedDoc.setCommonContent(metaDoc.getCommonContent)
 
-      Right((mergedDoc, i18nMetas))
+      Right((mergedDoc, commonContents))
   }
 }

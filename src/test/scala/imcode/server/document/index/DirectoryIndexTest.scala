@@ -1,6 +1,6 @@
 package imcode.server.document.index
 
-import com.imcode.imcms.api.{DocVersionRef, DocRef, DocumentVersion, DocumentAppearance}
+import com.imcode.imcms.api.{DocVersionRef, DocRef, DocumentVersion, DocumentCommonContent}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
@@ -12,7 +12,7 @@ import org.mockito.Mockito
 import org.mockito.Matchers._
 import com.imcode._
 import org.mockito.stubbing.Answer
-import imcode.server.document.CategoryDomainObject
+import imcode.server.document.{DocumentDomainObject, CategoryDomainObject}
 import org.mockito.invocation.InvocationOnMock
 import scala.collection.JavaConverters._
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
@@ -113,22 +113,22 @@ class DirectoryIndexFixture {
 
 
   def addTextDocMock(doc: TextDocumentDomainObject,
-                     i18nMetas: Option[Seq[DocumentAppearance]] = None,
+                     i18nMetas: Option[Seq[DocumentCommonContent]] = None,
                      texts: Option[Seq[TextDomainObject]] = None,
                      images: Option[Seq[ImageDomainObject]] = None) {
 
-    val docId = doc.isNew ensuring (_ != true, "document must not be new")
+    val docId = doc.getId ensuring (_ != DocumentDomainObject.ID_NEW, "document must not be new")
 
     Mockito.when(documentMapperMock.getDefaultDocument[TextDocumentDomainObject](docId)).thenReturn(doc)
     Mockito.when(documentMapperMock.getAppearances(docId)).thenReturn(
-      i18nMetas.getOrElse(Seq(doc.getAppearance)).asJava
+      i18nMetas.getOrElse(Seq(doc.getCommonContent)).asJava
     )
 
     Mockito.when(textDocMapperMock.getTexts(DocVersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       texts.getOrElse(Seq(doc.getTexts.values.asScala, doc.getLoopTexts.values.asScala).flatten).asJava
     )
 
-    Mockito.when(textDocMapperMock.getImagesInAllLanguages(DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    Mockito.when(textDocMapperMock.getImages(DocVersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       images.getOrElse(Seq(doc.getImages.values.asScala, doc.getLoopImages.values.asScala).flatten).asJava
     )
   }

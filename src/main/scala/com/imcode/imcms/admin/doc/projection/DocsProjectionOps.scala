@@ -60,8 +60,8 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
             val dialog = new DocEditorDialog(dlgCaption, newDoc)
             Dialog.bind(dialog) { case (editedDoc, i18nMetas) =>
               val saveOpts = dialog.editor.contentEditor match {
-                case contentEditor: NewTextDocContentEditor if contentEditor.view.chkCopyI18nMetaTextsToTextFields.checked =>
-                  java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyDocAppearenceIntoTextFields)
+                case contentEditor: NewTextDocContentEditor if contentEditor.view.chkCopyDocCommonContentIntoTextFields.checked =>
+                  java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)
 
                 case _ =>
                   java.util.EnumSet.noneOf(classOf[DocumentMapper.SaveOpts])

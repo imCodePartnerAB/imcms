@@ -1,11 +1,11 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentAppearance;
+import com.imcode.imcms.api.DocumentCommonContent;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.DocVersionDao;
 import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.mapping.orm.DocAppearance;
+import com.imcode.imcms.mapping.orm.DocCommonContent;
 import com.imcode.imcms.mapping.orm.DocMeta;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
@@ -72,12 +72,12 @@ public class DocumentLoader {
      * Loads and initializes document's content.
      */
     public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
-        DocAppearance ormAppearance = metaDao.getDocAppearance(document.getRef());
-        DocumentAppearance appearance = ormAppearance != null
+        DocCommonContent ormAppearance = metaDao.getDocAppearance(document.getRef());
+        DocumentCommonContent appearance = ormAppearance != null
                 ? OrmToApi.toApi(ormAppearance)
-                : DocumentAppearance.builder().headline("").menuImageURL("").menuText("").build();
+                : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build();
 
-        document.setAppearance(appearance);
+        document.setCommonContent(appearance);
         document.accept(documentInitializingVisitor);
 
         return document;

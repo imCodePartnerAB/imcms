@@ -6,7 +6,7 @@ import com.imcode.imcms.DocIdentityCleanerVisitor;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.mapping.orm.DocAppearance;
+import com.imcode.imcms.mapping.orm.DocCommonContent;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -40,7 +40,7 @@ public class DocumentMapper implements DocumentGetter {
      */
     public enum SaveOpts {
         // Applies to text document only.
-        CopyDocAppearenceIntoTextFields
+        CopyDocCommonContentIntoTextFields
     }
 
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
@@ -247,7 +247,7 @@ public class DocumentMapper implements DocumentGetter {
             docClone.setLanguage(language);
         }
 
-        return saveNewDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getAppearance()), user);
+        return saveNewDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
     }
 
 
@@ -270,7 +270,7 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, DocumentAppearance> appearances,
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
                                                               EnumSet<SaveOpts> saveOpts,
                                                               final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
@@ -307,7 +307,7 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, DocumentAppearance> appearances, final UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, DocumentCommonContent> appearances, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         return saveNewDocument(doc, appearances, EnumSet.noneOf(SaveOpts.class), user);
@@ -319,7 +319,7 @@ public class DocumentMapper implements DocumentGetter {
      */
     public void saveDocument(final DocumentDomainObject doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
-        saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getAppearance()), user);
+        saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
     }
 
 
@@ -328,7 +328,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveDocument(final DocumentDomainObject doc, Map<DocumentLanguage, DocumentAppearance> appearances, final UserDomainObject user)
+    public void saveDocument(final DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> appearances, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
@@ -950,18 +950,18 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public DocumentAppearance getI18nMeta(DocRef docRef) {
-        DocAppearance ormAppearance = documentSaver.getMetaDao().getDocAppearance(docRef);
+    public DocumentCommonContent getI18nMeta(DocRef docRef) {
+        DocCommonContent ormAppearance = documentSaver.getMetaDao().getDocAppearance(docRef);
 
         return ormAppearance == null ? null : OrmToApi.toApi(ormAppearance);
     }
 
-    public Map<DocumentLanguage, DocumentAppearance> getAppearances(int docId) {
-        Map<DocumentLanguage, DocumentAppearance> appearancesMap = new HashMap<>();
+    public Map<DocumentLanguage, DocumentCommonContent> getAppearances(int docId) {
+        Map<DocumentLanguage, DocumentCommonContent> appearancesMap = new HashMap<>();
 
-        List<DocAppearance> ormAppearances = documentSaver.getMetaDao().getAppearance(docId);
+        List<DocCommonContent> ormAppearances = documentSaver.getMetaDao().getAppearance(docId);
 
-        for (DocAppearance ormAppearance : ormAppearances) {
+        for (DocCommonContent ormAppearance : ormAppearances) {
             appearancesMap.put(OrmToApi.toApi(ormAppearance.getLanguage()), OrmToApi.toApi(ormAppearance));
         }
 
@@ -1002,10 +1002,6 @@ public class DocumentMapper implements DocumentGetter {
 
         @Override
         public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        }
-
-        @Override
-        public void saveDocumentWithI18nSupport(DocumentDomainObject document, Set<DocumentAppearance> i18nMetas, EnumSet<SaveOpts> saveOpts, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         }
     }
 

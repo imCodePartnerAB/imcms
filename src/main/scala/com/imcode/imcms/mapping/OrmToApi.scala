@@ -25,7 +25,7 @@ object OrmToApi {
     .build()
 
 
-  def toApi(orm: DocAppearance): DocumentAppearance = DocumentAppearance.builder
+  def toApi(orm: DocCommonContent): DocumentCommonContent = DocumentCommonContent.builder
     .headline(orm.getHeadline)
     .menuImageURL(orm.getMenuImageURL)
     .menuText(orm.getMenuText)

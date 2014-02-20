@@ -134,7 +134,7 @@ class MetaDaoTestConfig {
       TestSetup.hibernate.configurators.addAnnotatedClasses(
         classOf[DocProperty],
         classOf[DocMeta],
-        classOf[DocumentAppearance],
+        classOf[DocumentCommonContent],
         classOf[DocVersion],
         classOf[DocLanguage],
         classOf[CategoryDomainObject],
