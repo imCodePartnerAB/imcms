@@ -963,13 +963,13 @@
                         </goals>
                     </execution>
 
-                    <execution>
-                        <id>compile-scala-test-classes-fist</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
+                    <!--<execution>-->
+                        <!--<id>compile-scala-test-classes-fist</id>-->
+                        <!--<phase>process-test-resources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>testCompile</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
                 </executions>
             </plugin>
 

@@ -1,17 +1,16 @@
-package com.imcode
-package imcms.dao
+package com.imcode.imcms.mapping.dao
 
 import _root_.javax.inject.Inject
+import com.imcode._
 import com.imcode.imcms.api._
+import com.imcode.imcms.mapping.dao.DocVersionDao
 import com.imcode.imcms.mapping.orm._
 import com.imcode.imcms.mapping.{DocVersionRef, DocRef, LoopItemRef, OrmToApi}
 import scala.collection.JavaConverters._
-import scala.collection.breakOut
 import org.hibernate.{ScrollMode, CacheMode}
 
 import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.dao.hibernate.HibernateSupport
-import imcode.server.document.TextDocumentUtils
 
 @Transactional(rollbackFor = Array(classOf[Throwable]))
 class TextDocDao extends HibernateSupport {
@@ -30,7 +29,7 @@ class TextDocDao extends HibernateSupport {
   //fixme: should return ORM
   def getTextsInAllLanguages(docRef: DocRef, no: Int, loopItemRefOpt: Option[LoopItemRef], createIfNotExists: Boolean): JList[TextDocText] = {
     for {
-      language <- docLanguageDao.getAllLanguages.asScala
+      language <- docLanguageDao.getAll.asScala
       docRef2 = DocRef.of(docRef.getDocId, docRef.getDocVersionNo, language.getCode)
       text <- getText(docRef2, no, loopItemRefOpt).asOption
     } yield text
@@ -145,7 +144,7 @@ class TextDocDao extends HibernateSupport {
   def getImagesInAllLanguages(ref: DocVersionRef, no: Int, contentRefOpt: Option[TextDocLoopEntry] = None,
                 createIfNotExists: Boolean = false): JList[TextDocImage] = {
     for {
-      language <- docLanguageDao.getAllLanguages.asScala
+      language <- docLanguageDao.getAll.asScala
       image <- getImage(ref, no, language, contentRefOpt).asOption
     } yield image
   } |> { _.asJava }

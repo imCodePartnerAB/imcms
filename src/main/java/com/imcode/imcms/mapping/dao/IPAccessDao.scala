@@ -1,7 +1,6 @@
-package com.imcode
-package imcms.dao
+package com.imcode.imcms.mapping.dao
 
-
+import com.imcode._
 import com.imcode.imcms.mapping.orm.IPAccess
 import org.springframework.transaction.annotation.Transactional
 import com.imcode.imcms.dao.hibernate.HibernateSupport

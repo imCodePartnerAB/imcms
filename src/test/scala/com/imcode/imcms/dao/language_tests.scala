@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.dao.DocLanguageDao
 import com.imcode.imcms.mapping.orm.{DocLanguage, SystemProperty}
 import org.junit.Assert._
 import org.junit.runner.RunWith
@@ -32,7 +33,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
 
 
   test("get all [2] languages") {
-    val languages = languageDao.getAllLanguages
+    val languages = languageDao.getAll
     assertTrue("DB contains 2 languages.", languages.size == 2)
   }
 
@@ -49,7 +50,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     builder.name("Estonain")
     builder.nativeName("Eesti")
     builder.enabled(true)
-    val language = languageDao.saveLanguage(builder.build())
+    val language = languageDao.save(builder.build())
     assertNotNull("Language with id %d exists." format id, languageDao.getById(3))
     assertNotNull("Language with code %s exists." format code, languageDao.getByCode(code))
   }
@@ -59,7 +60,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     assertTrue("Language is enabled.", language.isEnabled.booleanValue)
 
     val updatedLanguage = DocLanguage.builder(language).enabled(false).build()
-    languageDao.saveLanguage(updatedLanguage)
+    languageDao.save(updatedLanguage)
 
     val languageFromDb = languageDao.getById(1)
     assertFalse("Language is disabled.", languageFromDb.isEnabled)

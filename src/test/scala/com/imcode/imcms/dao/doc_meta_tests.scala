@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.dao.DocVersionDao
 import com.imcode.imcms.mapping.{DocumentCommonContent, DocRef}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -37,7 +38,6 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
   }
 
   def createMeta() = new DocMeta |>> { m =>
-    m.setActivate(1)
     m.setDocumentType(2)
     m.setCreatorId(3)
     m.setRestrictedOneMorePrivilegedThanRestrictedTwo(true)

@@ -72,13 +72,13 @@
 
     <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao" parent="dao"/>
 
-    <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocVersionDao" parent="dao"/>
+    <bean id="documentVersionDao" class="com.imcode.imcms.mapping.dao.DocVersionDao" parent="dao"/>
 
-    <bean id="languageDao" class="com.imcode.imcms.dao.DocLanguageDao" parent="dao"/>
+    <bean id="languageDao" class="com.imcode.imcms.mapping.dao.DocLanguageDao" parent="dao"/>
 
     <bean id="categoryMapper" class="com.imcode.imcms.mapping.CategoryMapper" parent="dao"/>
 
-    <bean id="ipAccessDao" class="com.imcode.imcms.dao.IPAccessDao" parent="dao"/>
+    <bean id="ipAccessDao" class="com.imcode.imcms.mapping.dao.IPAccessDao" parent="dao"/>
 
     <bean id="nativeQueriesDao" class="com.imcode.imcms.dao.NativeQueriesDao" parent="dao"/>
 

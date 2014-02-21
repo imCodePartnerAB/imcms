@@ -3,6 +3,7 @@ package imcms
 package admin.instance.settings.language
 
 import com.imcode.imcms.api.DocumentLanguage
+import com.imcode.imcms.mapping.dao.DocLanguageDao
 import com.imcode.imcms.mapping.orm.DocLanguage
 import com.imcode.imcms.mapping.OrmToApi
 import com.imcode.imcms.vaadin.Current
@@ -10,7 +11,7 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import _root_.imcode.server.Imcms
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
-import com.imcode.imcms.dao.{SystemDao, DocLanguageDao}
+import com.imcode.imcms.dao.SystemDao
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
@@ -41,7 +42,7 @@ class LanguageManager {
         new ConfirmationDialog("Delete selected language?") |>> { dlg =>
           dlg.setOkButtonHandler {
             Current.ui.privileged(permission) {
-              Ex.allCatch.either(languageDao.deleteLanguageByCode(code)) match {
+              Ex.allCatch.either(languageDao.deleteByCode(code)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("Language has been deleted")
                 case Left(ex) =>
@@ -114,7 +115,7 @@ class LanguageManager {
             language.setCode(c.txtCode.trimmedValue)
             language.setName(c.txtName.trimmedValue)
 
-            Ex.allCatch.either(languageDao.saveLanguage(language)) match {
+            Ex.allCatch.either(languageDao.save(language)) match {
               case Left(ex) =>
                 // todo: log ex, provide custom dialog with details -> show stack
                 Current.page.showErrorNotification("Internal error, please contact your administrator")
@@ -139,7 +140,7 @@ class LanguageManager {
 
     val default: JInteger = systemDao.getProperty("DefaultLanguageId").getValue.toInt
     for {
-      vo <- languageDao.getAllLanguages.asScala
+      vo <- languageDao.getAll.asScala
       code = vo.getCode
       isDefault = default == vo.getId.intValue
     } view.tblLanguages.addRow(code,

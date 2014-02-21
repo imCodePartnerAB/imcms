@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.dao.DocLanguageDao
 import com.imcode.imcms.mapping.orm.{DocLanguage, DocRef, TextDocTextHistory, DocRef}
 import scala.collection.JavaConverters._
 import org.junit.Assert._

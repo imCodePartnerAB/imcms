@@ -1,7 +1,8 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.orm.{DocLanguage, TextDocImageHistory, DocRef}
+import com.imcode.imcms.mapping.dao.DocLanguageDao
+import com.imcode.imcms.mapping.orm.{DocLanguage, TextDocImageHistory}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.test.fixtures.UserFX
 import com.imcode.imcms.test.fixtures.LanguageFX.mkEnglish
-import imcode.server.document.textdocument.{ContentLoopRef, ImageDomainObject}
+import imcode.server.document.textdocument.{ImageDomainObject}
 
 
 @RunWith(classOf[JUnitRunner])

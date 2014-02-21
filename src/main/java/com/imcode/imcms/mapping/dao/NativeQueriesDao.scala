@@ -1,6 +1,6 @@
-package com.imcode
-package imcms.dao
+package com.imcode.imcms.mapping.dao
 
+import com.imcode._
 import scala.collection.JavaConverters._
 
 import org.springframework.transaction.annotation.Transactional

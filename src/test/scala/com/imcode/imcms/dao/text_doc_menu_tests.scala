@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.orm.{TextDocMenuHistory, DocRef}
+import com.imcode.imcms.mapping.orm.{TextDocMenuHistory}
 import scala.collection.JavaConverters._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

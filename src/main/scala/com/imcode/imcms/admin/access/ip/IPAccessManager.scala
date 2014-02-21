@@ -2,11 +2,11 @@ package com.imcode
 package imcms
 package admin.access.ip
 
+import com.imcode.imcms.mapping.dao.IPAccessDao
 import com.imcode.imcms.mapping.orm.IPAccess
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.security.PermissionGranted
-import com.imcode.imcms.dao.IPAccessDao
 import com.imcode.imcms.admin.access.user.select.UserSingleSelectDialog
 
 import com.imcode.imcms.vaadin.Current
