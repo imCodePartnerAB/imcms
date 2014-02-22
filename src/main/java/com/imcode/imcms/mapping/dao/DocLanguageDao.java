@@ -4,11 +4,11 @@ import com.imcode.imcms.mapping.orm.DocLanguage;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Service
+@Repository
 public interface DocLanguageDao extends CrudRepository<DocLanguage, Integer> {
 
     DocLanguage getByCode(String code);

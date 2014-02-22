@@ -12,6 +12,7 @@
         <property name="hibernate.archive.autodetection"/>
 
         <mapping class="com.imcode.imcms.mapping.orm.DocLanguage"/>
+        <mapping class="com.imcode.imcms.mapping.orm.SystemProperty"/>
     </session-factory>
 
 </hibernate-configuration>

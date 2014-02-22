@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.mapping
 
-import com.imcode.imcms.mapping.dao.{SystemDao, DocLanguageDao}
+import com.imcode.imcms.mapping.dao.{SystemPropertyDao, DocLanguageDao}
 import javax.inject.Inject
 import _root_.java.util
 import com.imcode.imcms.api.{DocumentLanguage, DocumentLanguageService}
@@ -17,7 +17,7 @@ class DefaultDocumentLanguageService extends DocumentLanguageService with Log4jL
 
   @Inject
   @BeanProperty
-  var systemDao : SystemDao = null
+  var systemDao : SystemPropertyDao = null
 
   override def getByCode(code: String): DocumentLanguage = languageDao.getByCode(code) |> OrmToApi.toApi
 
@@ -27,7 +27,7 @@ class DefaultDocumentLanguageService extends DocumentLanguageService with Log4jL
 
   override def isDefault(language: DocumentLanguage): Boolean = getDefault == language
 
-  override def getDefault: DocumentLanguage = systemDao.getProperty("DefaultLanguageId") match {
+  override def getDefault: DocumentLanguage = systemDao.findByName("DefaultLanguageId") match {
     case null =>
       logger.info("Default document language property (DefaultLanguageId) is not set.")
       null

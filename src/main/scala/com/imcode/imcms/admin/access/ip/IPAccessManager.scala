@@ -37,7 +37,7 @@ class IPAccessManager {
     w.miNew.setCommandHandler { _ => editAndSave(new IPAccess) }
     w.miEdit.setCommandHandler { _ =>
       whenSelected(w.tblIP) { id =>
-        ipAccessDao.get(id) match {
+        ipAccessDao.findOne(id) match {
           case null => reload()
           case vo => editAndSave(vo)
         }
@@ -48,7 +48,7 @@ class IPAccessManager {
         new ConfirmationDialog("Delete selected IP access?") |>> { dlg =>
           dlg.setOkButtonHandler {
             Current.ui.privileged(permission) {
-              Ex.allCatch.either(ipAccessDao delete id) match {
+              Ex.allCatch.either(ipAccessDao.delete(id)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("IP access has been deleted")
                   reload()
@@ -124,7 +124,7 @@ class IPAccessManager {
   def reload() {
     view.tblIP.removeAllItems
     for {
-      vo <- ipAccessDao.getAll.asScala
+      vo <- ipAccessDao.findAll.asScala
       id = vo.getId
       user = roleMapper getUser vo.getUserId.intValue
     } view.tblIP.addRow(id, id, user.getLoginName, toDDN(vo.getStart), toDDN(vo.getEnd))

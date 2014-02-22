@@ -3,7 +3,7 @@ package imcms
 package admin.instance.settings.language
 
 import com.imcode.imcms.api.DocumentLanguage
-import com.imcode.imcms.mapping.dao.{SystemDao, DocLanguageDao}
+import com.imcode.imcms.mapping.dao.{SystemPropertyDao, DocLanguageDao}
 import com.imcode.imcms.mapping.orm.DocLanguage
 import com.imcode.imcms.mapping.OrmToApi
 import com.imcode.imcms.vaadin.Current
@@ -20,7 +20,7 @@ import com.imcode.imcms.vaadin.server._
 //todo delete in use message
 class LanguageManager {
   private val languageDao = Imcms.getServices.getManagedBean(classOf[DocLanguageDao])
-  private val systemDao = Imcms.getServices.getManagedBean(classOf[SystemDao])
+  private val systemDao = Imcms.getServices.getManagedBean(classOf[SystemPropertyDao])
 
   val view = new LanguageManagerView |>> { v =>
     v.miReload.setCommandHandler { _ => reload() }
@@ -61,10 +61,10 @@ class LanguageManager {
           dlg.setOkButtonHandler {
             Current.ui.privileged(permission) {
               val id = languageDao.getByCode(code).getId
-              val property = systemDao.getProperty("DefaultLanguageId")
+              val property = systemDao.findByName("DefaultLanguageId")
               property.setValue(id.toString)
 
-              Ex.allCatch.either(systemDao.saveProperty(property)) match {
+              Ex.allCatch.either(systemDao.save(property)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("Default language has been changed")
                 case Left(ex) =>
@@ -137,7 +137,7 @@ class LanguageManager {
   def reload() {
     view.tblLanguages.removeAllItems()
 
-    val default: JInteger = systemDao.getProperty("DefaultLanguageId").getValue.toInt
+    val default: JInteger = systemDao.findByName("DefaultLanguageId").getValue.toInt
     for {
       vo <- languageDao.findAll.asScala
       code = vo.getCode
